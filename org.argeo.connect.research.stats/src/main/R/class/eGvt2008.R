@@ -2,7 +2,7 @@ source("src/main/R/class/common.R")
 
 eGvt2008.data <- function (){
 	dataPath <- "src/main/data/class/UN-DESA-eGvt-2008/UN-DESA-eGvt-2008.csv"
-	d <- readCsvData(dataPath,12)
+	d <- readCsvData(dataPath,11)
 	d
 }
 
