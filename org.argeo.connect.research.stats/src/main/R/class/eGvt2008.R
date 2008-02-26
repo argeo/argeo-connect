@@ -6,6 +6,16 @@ eGvt2008.data <- function (){
 	d
 }
 
+eGvt2008.bestPca <- function(){
+	# as found by previously running bestPca algorithm
+	cols <- c(2,5,8,9,11)
+	rawData <- eGvt2008.data()
+	pca <- computePca(rawData[,cols])
+	res <- list(pca=pca,cols=cols,rawData=rawData)
+	res <- prepareClassRes(res)
+	res
+}
+
 eGvt2008.dataIndex <- function (){
 	d <- eGvt2008.data()[,c(1,2,3,4,12)]
 	d

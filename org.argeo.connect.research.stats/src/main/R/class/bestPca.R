@@ -1,5 +1,4 @@
 source("src/main/R/class/common.R")
-source("src/main/R/class/eGvt2008.R")
 
 bestPca <- function(rawData){
 	minCol <- 3

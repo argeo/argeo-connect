@@ -40,6 +40,18 @@ allColsPca <- function(rawData){
 	res
 }
 
+summaryClassRes <- function(classRes){
+	print("# Principal Component Analysis")
+	print(classRes$pca)
+	print(summary(classRes$pca))
+	print("# Quantiles")
+	print(classRes$quant)
+	print("# Correlations")
+	valCors(classRes)
+	
+	drawPca(classRes)
+}
+
 # COMPUTATIONS
 valCor <- function(val){
 	correlation <- cor(val[,1],val[,2])
