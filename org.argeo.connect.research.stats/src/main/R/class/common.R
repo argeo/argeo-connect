@@ -10,13 +10,17 @@ computePcaDesc <- function(dataNum){
 	pr
 }
 
-readCsvData <- function(datapath, colCount){
+readCsvData <- function(datapath, colCount,sep=","){
 	colClasses <- character(length=(colCount+1))
 	colClasses[1] <- "character"
 	colClasses[2:length(colClasses)] <- "numeric"
-	data <- read.csv(datapath,header=TRUE,row.names=1,sep=",",dec=".",colClasses=colClasses)
+	data <- read.csv(datapath,header=TRUE,row.names=1,sep=sep,dec=".",colClasses=colClasses)
 	dataNum <- data.matrix(data)
 	dataNum
+}
+
+writeCsvData <- function(datapath, pca){
+	write.csv(pca$x, file=datapath)
 }
 
 # CLASS RES
@@ -29,7 +33,7 @@ prepareClassRes <- function(classRes){
 	valMid <- subset(val,(val[,1] > quant["25%"]) & (val[,1] <= quant["75%"]))
 	valHig <- subset(val,val[,1] > quant["75%"])
 	
-	res <- list(pca=classRes$pca,scaled=scaled,cols=classRes$cols,rawData=classRes$rawData,val=val,valLow=valLow,valMid=valMid,valHig=valHig,quant=quant)
+	res <- list(pca=classRes$pca,scaled=scaled,cols=classRes$cols,rawData=classRes$rawData,val=val,valLow=valLow,valMid=valMid,valHig=valHig,quant=quant,inertias=classRes$inertias)
 }
 
 allColsPca <- function(rawData){
@@ -88,11 +92,7 @@ inertia <- function(pca){
 
 # GRAPHICS
 drawPca <- function(classRes){
-	
 	plot(classRes$val,pch=3,col="white")
-#plot(classRes$valLow,xlim=classRes$quant[c(1,4)],pch=3,col="red")
-	#points(classRes$valMid,pch=3,col="blue")
-	#points(classRes$valHig,pch=3,col="green")
 	
 	abline(v=classRes$quant["25%"])
 	abline(v=classRes$quant["50%"])
@@ -103,9 +103,6 @@ drawPca <- function(classRes){
 	drawLabels(classRes$valMid,col="blue")
 	drawLabels(classRes$valHig,col="green")
 	abline(line(classRes$valHig),col="green")
-#	names <- row.names(classRes$val)
-#	names <- substr(names,0,5)
-#	text(classRes$val,names,cex=0.6,pos=4)
 }
 
 drawLabels <- function(val,col){
@@ -124,7 +121,7 @@ drawCorCircle <- function(classRes){
 	
 	# active variables
 	corCirc <- pca$rotation[,c(1,2)] %*% diag(pca$sdev[c(1,2)])
-	plot(corCirc,xlim=c(-siz,siz),ylim=c(-siz,siz),axes=TRUE,pch=3,asp=1,col="red")
+	plot(corCirc,xlim=c(-siz,siz),ylim=c(-siz,siz),axes=TRUE,pch=3,asp=1,col="red",xlab="PC1",ylab="PC2",main="Correlation circle")
 	text(corCirc,row.names(corCirc),cex=0.8,pos=1,col="red")
 	
 	# supplementary variables
@@ -143,4 +140,15 @@ drawCorCircle <- function(classRes){
 	symbols(0,0,circles=c(1),add=TRUE,inches=FALSE,asp=1)
 	abline(v=0)
 	abline(h=0)
+}
+
+drawInfraEdu <- function(classRes){
+	plot(c(),xlim=c(0,1),ylim=c(0,1),xlab="EducationIndex",ylab="InfrastructureIndex",main="Education and Infrastructure in raw data")
+	drawInfraEduVal(classRes$rawData,classRes$valLow,col="red")
+	drawInfraEduVal(classRes$rawData,classRes$valMid,col="blue")
+	drawInfraEduVal(classRes$rawData,classRes$valHig,col="green")
+}
+
+drawInfraEduVal <- function(rawData,val,col){
+	points(rawData[rownames(val),c("EducationIndex","InfrastructureIndex")],pch=19,col=col,asp=1)
 }

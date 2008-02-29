@@ -15,15 +15,3 @@ eGvt2008.bestPca <- function(){
 	res <- prepareClassRes(res)
 	res
 }
-
-eGvt2008.dataIndex <- function (){
-	d <- eGvt2008.data()[,c(1,2,3,4,12)]
-	d
-}
-
-eGvt2008.dataRaw <- function (){
-	#d <- eGvt2008.data()[,c(5,6,7,8,9,10,11)]
-	d <- eGvt2008.data()[,c(5,6,7,8,9,10,11)]
-	d
-}
-

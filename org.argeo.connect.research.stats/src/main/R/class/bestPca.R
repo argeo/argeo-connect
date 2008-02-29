@@ -24,21 +24,19 @@ bestPca <- function(rawData){
 				inert <- inertia(pca)
 				if(inert >= 0.9){
 					st <- screeTest(pca)		
-					#if(st){
-						cols[[indx]] <- col
-						pcas[[indx]] <- pca
-						pc1[[indx]] <- pca$sdev[1]
-						pc2[[indx]] <- pca$sdev[2]
-						screeTests[[indx]] <- st
-						inertias[[indx]] <- inert
-						
-						print(indx)
-						print(col)
-						print(inert)
-						print(st)
-						
-						indx <- indx + 1
-					#}
+					cols[[indx]] <- col
+					pcas[[indx]] <- pca
+					pc1[[indx]] <- pca$sdev[1]
+					pc2[[indx]] <- pca$sdev[2]
+					screeTests[[indx]] <- st
+					inertias[[indx]] <- inert
+					
+					print(indx)
+					print(col)
+					print(inert)
+					print(st)
+					
+					indx <- indx + 1
 				}
 			}
 		}
@@ -50,28 +48,28 @@ bestPca <- function(rawData){
 	dim(inertias) <- length(inertias)
 	dim(pc1) <- length(pc1)
 	dim(pc2) <- length(pc2)
-	#pcRatio <- pc2/pc1
-	
-	#df <- data.frame(cols=cols,screeTest=screeTests,inertia=inertias,pc1=pc1,pc2=pc2,pca=pcas,pcRatio=pcRatio)
-	
-	#bestPcaInertia <- df$pca[[which.max(df$inertia)]]
-	#bestPcaPc2 <- df$pca[[which.max(df$pc2)]]
-	#bestPcaPcRatio <- df$pca[[which.max(df$pcRatio)]]
-	
-	#split.screen(c(2,2),erase = TRUE)
-	#screen(n=1)
-	#biplot(bestPcaInertia)
-	#screen(n=2)
-	#biplot(bestPcaPc2)
-	#screen(n=3)
-	#biplot(bestPcaPcRatio)
 	
 	# maximise inertia
 	bestIndx <- which.max(inertias)
 	print("Best index:")
 	print(bestIndx)
 		
-	res <- list(pca=pcas[[bestIndx]],cols=cols[[bestIndx]],rawData=rawData)
+	res <- list(pca=pcas[[bestIndx]],cols=cols[[bestIndx]],rawData=rawData, inertias=inertias)
 	res <- prepareClassRes(res)
 	res
+}
+
+bestPcaCheck <- function(classRes){
+	print("Best inertia:")
+	print(inertia(classRes$pca))
+	print("Active variables:")
+	print(colnames(classRes$scaled[,classRes$cols]))
+	print("Passive variables:")
+	print(colnames(classRes$scaled[,-classRes$cols]))
+	print("Mean Inertia:")
+	print(mean(classRes$inertias))
+	print("Inertias standard deviation:")
+	print(sd(classRes$inertias))
+	
+	plot(classRes$inertias,type="h",ylab="Inertias",main="Inertias computed during bestPca algorithm")
 }
