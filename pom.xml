@@ -1,0 +1,201 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.argeo.commons</groupId>
+		<artifactId>argeo-commons</artifactId>
+		<version>0.2.3-SNAPSHOT</version>
+	</parent>
+	<groupId>org.argeo.connect</groupId>
+	<artifactId>argeo-connect</artifactId>
+	<packaging>pom</packaging>
+	<name>Argeo Connect</name>
+	<version>0.1.0-SNAPSHOT</version>
+	<properties>
+		<developmentCycle.connect>0.1</developmentCycle.connect>
+		<site.repoBase>file:///srv/projects/www/connect/site</site.repoBase>
+		<site.urlBase>http://projects.argeo.org/connect/site</site.urlBase>
+		<version.connect>${developmentCycle.connect}.1-SNAPSHOT</version.connect>
+	</properties>
+	<modules>
+		<module>dep</module>
+	</modules>
+	<url>${site.urlBase}/${developmentCycle.connect}</url>
+	<scm>
+		<connection>scm:svn:https://svn.argeo.org/connect/trunk</connection>
+		<developerConnection>scm:svn:https://svn.argeo.org/connect/trunk</developerConnection>
+		<url>https://svn.argeo.org/connect/trunk</url>
+	</scm>
+	<licenses>
+		<license>
+			<name>GPL v3</name>
+			<url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+			<distribution>repo</distribution>
+			<comments><![CDATA[
+Argeo Connect - Rugged software for a rough world
+			   
+Copyright 2011 Mathieu Baudier
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+]]>
+			</comments>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<id>mbaudier</id>
+			<name>Mathieu Baudier</name>
+			<email><![CDATA[http://mailhide.recaptcha.net/d?k=01EM7GpnvY3k8woQ2tnnZLUA==&c=crsNpHjhOBDPswHG6HD_gXaqymhC69wmBf7wlagcSHw=]]></email>
+			<organization>Argeo</organization>
+			<organizationUrl>http://www.argeo.org</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+				<role>QA</role>
+			</roles>
+		</developer>
+	</developers>
+	<repositories>
+		<repository>
+			<id>argeo</id>
+			<url>http://maven.argeo.org/argeo</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+				<updatePolicy>never</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>argeo-snapshots</id>
+			<url>http://dev.argeo.org/maven/argeo-snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+				<updatePolicy>never</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+	<distributionManagement>
+		<site>
+			<id>argeo-connect-site</id>
+			<name>Connect Site</name>
+			<url>file://${site.repoBase}/${developmentCycle.connect}/</url>
+		</site>
+	</distributionManagement>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.3.1</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>index</report>
+							<report>summary</report>
+							<report>license</report>
+							<report>scm</report>
+							<report>issue-tracking</report>
+							<report>dependencies</report>
+						</reports>
+					</reportSet>
+					<reportSet>
+						<inherited>false</inherited>
+						<reports>
+							<report>project-team</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.7</version>
+				<inherited>false</inherited>
+				<configuration>
+					<aggregate>true</aggregate>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<aggregate>true</aggregate>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>2.7.1</version>
+				<inherited>false</inherited>
+				<configuration>
+					<aggregate>true</aggregate>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>taglist-maven-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<aggregate>true</aggregate>
+					<tags>
+						<tag>TODO</tag>
+						<tag>FIXME</tag>
+						<tag>@deprecated</tag>
+					</tags>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-changelog-plugin</artifactId>
+				<version>2.2</version>
+				<inherited>false</inherited>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>2.3</version>
+				<inherited>false</inherited>
+				<configuration>
+					<linkXref>true</linkXref>
+					<targetJdk>1.5</targetJdk>
+					<aggregate>true</aggregate>
+					<excludes>
+						<exclude>**/springutil/*.java</exclude>
+					</excludes>
+				</configuration>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>cpd</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
+</project>
