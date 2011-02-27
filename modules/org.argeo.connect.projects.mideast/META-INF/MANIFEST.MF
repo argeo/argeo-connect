@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Mideast
+Bundle-SymbolicName: org.argeo.connect.projects.mideast
+Bundle-Version: 1.0.0.qualifier
+Import-Package: javax.jcr;version="[2.0.0,3.0.0)",
+ org.apache.commons.dbcp;version="1.2.2.osgi",
+ org.apache.jackrabbit.core;version="[2.0.0,3.0.0)",
+ org.apache.jackrabbit.core.config;version="[2.0.0,3.0.0)",
+ org.apache.xalan.processor,
+ org.argeo.jackrabbit,
+ org.argeo.jcr,
+ org.geotools.data,
+ org.geotools.data.postgis,
+ org.postgresql;version="[8.0.0,9.0.0)",
+ org.springframework.beans.factory.config
