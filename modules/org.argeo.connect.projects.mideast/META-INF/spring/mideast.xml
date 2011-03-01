@@ -11,6 +11,14 @@
 		</property>
 	</bean>
 
+	<!-- JCR / GEOTOOLS INTEGRATION -->
+	<bean id="geoJcrIndex" class="org.argeo.geotools.jcr.GeoJcrIndex"
+		init-method="init" destroy-method="dispose">
+		<property name="session" ref="jcrSession" />
+		<property name="systemExecutionService" ref="systemExecutionService" />
+		<property name="dataStore" ref="postGisDataStore" />
+	</bean>
+
 	<!-- JACKRABBIT -->
 	<bean id="jcrRepository" class="org.argeo.jackrabbit.JackrabbitContainer">
 		<property name="uri" value="${connect.projects.mideast.repo.uri}" />
@@ -21,13 +29,20 @@
 		<property name="namespaces">
 			<map>
 				<entry key="argeo" value="http://www.argeo.org/argeo" />
+				<entry key="gis" value="http://www.argeo.org/gis" />
 			</map>
 		</property>
 		<property name="cndFiles">
 			<list>
 				<value>classpath:/org/argeo/jcr/argeo.cnd</value>
+				<value>classpath:/org/argeo/jcr/gis/argeo_gis.cnd</value>
 			</list>
 		</property>
+	</bean>
+
+	<bean id="jcrSession" class="org.argeo.jcr.ThreadBoundJcrSessionFactory">
+		<property name="repository" ref="jcrRepository" />
+		<property name="workspace" value="${connect.projects.mideast.repo.workspace}" />
 	</bean>
 
 	<!-- POSTGIS -->
@@ -40,7 +55,7 @@
 		</constructor-arg>
 	</bean>
 
-	<bean id="postGisDataStoreFactory" class="org.geotools.data.postgis.PostgisNGDataStoreFactory"></bean>
+	<bean id="postGisDataStoreFactory" class="org.geotools.data.postgis.PostgisNGDataStoreFactory" />
 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">

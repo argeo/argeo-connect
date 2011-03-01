@@ -75,7 +75,7 @@
 			class="org.apache.jackrabbit.core.security.simple.SimpleAccessManager">
 		</AccessManager>
 		<LoginModule
-			class="org.springframework.security.providers.jaas.SecurityContextLoginModule">
+			class="org.argeo.security.jackrabbit.spring.SpringLoginModule">
 		</LoginModule>
 	</Security>
 </Repository>

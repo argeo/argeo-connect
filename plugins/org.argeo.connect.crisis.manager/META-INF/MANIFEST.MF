@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Connect Crisis Manager
+Bundle-SymbolicName: org.argeo.connect.crisis.manager;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.argeo.connect.crisis.manager.CrisisManagerPlugin
+Bundle-Vendor: Argeo
+Require-Bundle: org.eclipse.ui;resolution:=optional,
+ org.eclipse.core.runtime,
+ org.eclipse.rap.ui;resolution:=optional
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Import-Package: org.argeo.gis.ui.views
