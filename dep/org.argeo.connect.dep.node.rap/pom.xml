@@ -12,7 +12,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.argeo.commons.security</groupId>
-			<artifactId>org.argeo.security.ui.application</artifactId>
+			<artifactId>org.argeo.security.ui.rap</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
 		<dependency>
