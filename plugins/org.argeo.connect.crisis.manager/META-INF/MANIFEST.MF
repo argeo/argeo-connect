@@ -8,6 +8,13 @@ Bundle-Vendor: Argeo
 Require-Bundle: org.eclipse.ui;resolution:=optional,
  org.eclipse.core.runtime,
  org.eclipse.rap.ui;resolution:=optional
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
-Import-Package: org.argeo.gis.ui.views
+Import-Package: javax.jcr;version="2.0.0",
+ javax.jcr.nodetype;version="2.0.0",
+ org.argeo,
+ org.argeo.connect,
+ org.argeo.gis.ui.views,
+ org.eclipse.ui.forms,
+ org.eclipse.ui.forms.editor,
+ org.eclipse.ui.forms.widgets

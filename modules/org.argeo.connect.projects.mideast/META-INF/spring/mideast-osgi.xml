@@ -8,7 +8,7 @@
        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://www.springframework.org/schema/util
        http://www.springframework.org/schema/util/spring-util-2.5.xsd">
-	
+
 	<!-- REFERENCES -->
 	<reference id="systemExecutionService" interface="org.argeo.security.SystemExecutionService" />
 
@@ -35,5 +35,10 @@
 		</service-properties>
 	</service>
 
-	<service ref="postGisDataStore" interface="org.geotools.data.DataStore" />
+	<service ref="postGisDataStore" interface="org.geotools.data.DataStore">
+		<service-properties>
+			<beans:entry key="alias" value="connect_mideast_geodb" />
+			<beans:entry key="publishedFeatureSources" value="connect_mideast_geodb" />
+		</service-properties>
+	</service>
 </beans:beans>
