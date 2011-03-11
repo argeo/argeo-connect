@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Slc
+Bundle-SymbolicName: org.argeo.connect.slc
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Argeo
+Import-Package: org.aopalliance.aop,
+ org.argeo.slc.core.execution,
+ org.argeo.slc.core.execution.tasks,
+ org.argeo.slc.execution,
+ org.argeo.slc.osgi,
+ org.argeo.slc.postgis,
+ org.springframework.aop,
+ org.springframework.aop.framework,
+ org.springframework.aop.scope,
+ org.springframework.beans.factory.config,
+ org.springframework.core.io;version="2.5.6.SEC01"
