@@ -13,7 +13,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 
-public class SituationEditor extends FormEditor {
+public class SituationStatusEditor extends FormEditor {
 	private Session session;
 
 	private Node node;

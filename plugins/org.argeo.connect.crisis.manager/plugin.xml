@@ -9,5 +9,23 @@
             name="Crisis Tracking">
       </perspective>
    </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="org.argeo.eclipse.spring.SpringExtensionFactory"
+            id="org.argeo.connect.crisis.manager.feedView"
+            name="Feed"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.argeo.eclipse.spring.SpringExtensionFactory"
+            default="false"
+            id="org.argeo.connect.crisis.manager.linkEditor"
+            name="Link">
+      </editor>
+   </extension>
 
 </plugin>

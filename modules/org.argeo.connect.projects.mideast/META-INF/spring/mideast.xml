@@ -18,6 +18,7 @@
 		<property name="systemExecutionService" ref="systemExecutionService" />
 		<property name="dataStore" ref="postGisDataStore" />
 	</bean>
+	<bean id="geoJcrMapper" class="org.argeo.geotools.jcr.SimpleGeoJcrMapper" />
 
 	<!-- JACKRABBIT -->
 	<bean id="jcrRepository" class="org.argeo.jackrabbit.JackrabbitContainer">

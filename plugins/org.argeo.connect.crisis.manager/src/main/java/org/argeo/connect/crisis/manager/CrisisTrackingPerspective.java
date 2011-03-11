@@ -17,7 +17,7 @@ public class CrisisTrackingPerspective implements IPerspectiveFactory {
 				IPageLayout.LEFT, 0.3f, editorArea);
 		topLeft.addView(LayersView.ID);
 		topLeft.addView(FeatureSourcesView.ID);
-		//topLeft.addView("org.argeo.jcr.ui.explorer.browserView");
+		topLeft.addView("org.argeo.connect.crisis.manager.feedView");
 	}
 
 }
