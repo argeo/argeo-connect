@@ -6,11 +6,11 @@
 	<DataSources>
 		<DataSource name="dataSource">
 			<param name="driver" value="org.postgresql.Driver" />
-			<param name="url" value="${connect.projects.mideast.repo.dburl}" />
-			<param name="user" value="${connect.projects.mideast.repo.dbuser}" />
-			<param name="password" value="${connect.projects.mideast.repo.dbpassword}" />
+			<param name="url" value="${connect.repo.dburl}" />
+			<param name="user" value="${connect.repo.dbuser}" />
+			<param name="password" value="${connect.repo.dbpassword}" />
 			<param name="databaseType" value="postgresql" />
-			<param name="maxPoolSize" value="${connect.projects.mideast.repo.maxPoolSize}" />
+			<param name="maxPoolSize" value="${connect.repo.maxPoolSize}" />
 		</DataSource>
 	</DataSources>
 

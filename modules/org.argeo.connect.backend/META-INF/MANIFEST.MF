@@ -4,12 +4,13 @@ Bundle-Name: Mideast
 Bundle-SymbolicName: org.argeo.connect.backend
 Bundle-Version: 1.0.0.qualifier
 Import-Package: javax.jcr;version="[2.0.0,3.0.0)",
- javax.jcr.lock;version="2.0.0",
+ javax.jcr.lock;version="[2.0.0,3.0.0)",
  org.aopalliance.aop,
  org.apache.commons.dbcp;version="1.2.2.osgi",
  org.apache.jackrabbit.core;version="[2.0.0,3.0.0)",
  org.apache.jackrabbit.core.config;version="[2.0.0,3.0.0)",
  org.apache.xalan.processor,
+ org.argeo.connect,
  org.argeo.geotools.jcr,
  org.argeo.jackrabbit,
  org.argeo.jcr,

@@ -7,7 +7,7 @@
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
 		<property name="locations">
-			<value>osgibundle:mideast.properties</value>
+			<value>osgibundle:backend.properties</value>
 		</property>
 	</bean>
 
@@ -16,58 +16,84 @@
 		init-method="init" destroy-method="dispose">
 		<property name="session" ref="jcrSession" />
 		<property name="systemExecutionService" ref="systemExecutionService" />
-		<property name="dataStore" ref="postGisDataStore" />
+		<property name="dataStore" ref="geoIndexDataStore" />
 	</bean>
+	
 	<bean id="geoJcrMapper" class="org.argeo.geotools.jcr.SimpleGeoJcrMapper" />
 
 	<!-- JACKRABBIT -->
 	<bean id="jcrRepository" class="org.argeo.jackrabbit.JackrabbitContainer">
-		<property name="uri" value="${connect.projects.mideast.repo.uri}" />
-		<property name="homeDirectory" value="${connect.projects.mideast.repo.home}" />
-		<property name="configuration"
-			value="${connect.projects.mideast.repo.configuration}" />
-		<property name="variables" value="osgibundle:/mideast.properties" />
+		<property name="uri" value="${connect.repo.uri}" />
+		<property name="homeDirectory" value="${connect.repo.home}" />
+		<property name="configuration" value="${connect.repo.configuration}" />
+		<property name="variables" value="osgibundle:/backend.properties" />
 		<property name="namespaces">
 			<map>
-				<entry key="argeo" value="http://www.argeo.org/argeo" />
-				<entry key="gis" value="http://www.argeo.org/gis" />
+				<entry key="argeo" value="http://www.argeo.org/ns/argeo" />
+				<entry key="gis" value="http://www.argeo.org/ns/gis" />
+				<entry key="connect" value="http://www.argeo.org/ns/connect" />
 			</map>
 		</property>
 		<property name="cndFiles">
 			<list>
 				<value>classpath:/org/argeo/jcr/argeo.cnd</value>
 				<value>classpath:/org/argeo/jcr/gis/argeo_gis.cnd</value>
+				<value>classpath:/org/argeo/connect/connect.cnd</value>
 			</list>
 		</property>
 	</bean>
 
 	<bean id="jcrSession" class="org.argeo.jcr.ThreadBoundJcrSessionFactory">
 		<property name="repository" ref="jcrRepository" />
-		<property name="workspace" value="${connect.projects.mideast.repo.workspace}" />
+		<property name="workspace" value="${connect.repo.workspace}" />
 	</bean>
 
 	<!-- POSTGIS -->
-	<bean id="postGisDataStore" factory-bean="postGisDataStoreFactory"
+	<bean id="postGisDataStoreFactory" class="org.geotools.data.postgis.PostgisNGDataStoreFactory" />
+
+	<bean id="geoIndexDataStore" factory-bean="postGisDataStoreFactory"
 		factory-method="createDataStore">
 		<constructor-arg>
 			<map>
-				<entry key="Data Source" value-ref="dataSource" />
+				<entry key="Data Source">
+					<bean class="org.apache.commons.dbcp.BasicDataSource"
+						destroy-method="close">
+						<property name="driverClassName" value="org.postgresql.Driver" />
+						<property name="url" value="${connect.repo.dburl}" />
+						<property name="username" value="${connect.repo.dbuser}" />
+						<property name="password" value="${connect.repo.dbpassword}" />
+						<property name="testOnBorrow" value="true" />
+						<property name="validationQuery" value="SELECT 1" />
+						<property name="maxActive" value="${connect.repo.maxPoolSize}" />
+						<property name="maxIdle" value="2" />
+					</bean>
+				</entry>
 			</map>
 		</constructor-arg>
 	</bean>
 
-	<bean id="postGisDataStoreFactory" class="org.geotools.data.postgis.PostgisNGDataStoreFactory" />
-
-	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
-		destroy-method="close">
-		<property name="driverClassName" value="org.postgresql.Driver" />
-		<property name="url" value="${connect.projects.mideast.repo.dburl}" />
-		<property name="username" value="${connect.projects.mideast.repo.dbuser}" />
-		<property name="password" value="${connect.projects.mideast.repo.dbpassword}" />
-		<property name="testOnBorrow" value="true" />
-		<property name="validationQuery" value="SELECT 1" />
-		<property name="maxActive" value="${connect.projects.mideast.repo.maxPoolSize}" />
-		<property name="maxIdle" value="2" />
+	<bean id="geoDbDataStore" factory-bean="postGisDataStoreFactory"
+		factory-method="createDataStore">
+		<constructor-arg>
+			<map>
+				<entry key="Data Source">
+					<bean class="org.apache.commons.dbcp.BasicDataSource"
+						destroy-method="close">
+						<property name="driverClassName" value="org.postgresql.Driver" />
+						<property name="url" value="${connect.geodb.dburl}" />
+						<property name="username" value="${connect.geodb.dbuser}" />
+						<property name="password" value="${connect.geodb.dbpassword}" />
+						<property name="testOnBorrow" value="true" />
+						<property name="validationQuery" value="SELECT 1" />
+						<property name="maxActive" value="${connect.geodb.maxPoolSize}" />
+						<property name="maxIdle" value="2" />
+					</bean>
+				</entry>
+			</map>
+		</constructor-arg>
 	</bean>
+
+
+
 
 </beans>

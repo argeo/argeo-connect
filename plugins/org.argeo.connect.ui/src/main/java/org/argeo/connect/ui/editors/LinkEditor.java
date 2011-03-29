@@ -21,28 +21,33 @@ import org.argeo.jcr.ArgeoTypes;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.gis.GisTypes;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 
 import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
 
 public class LinkEditor extends FormEditor {
-	private String url;
 	private String linksBasePath = "/connect/links";
-	private String feedsBasePath = "/connect/feeds";
 
 	private MapControlCreator mapControlCreator;
 
 	private MapFormPage mapFormPage;
 
+	public void init(IEditorSite site, IEditorInput input)
+			throws PartInitException {
+		super.init(site, input);
+		LinkEditorInput lei = (LinkEditorInput) getEditorInput();
+		setPartName(lei.getUrl());
+	}
+
 	@Override
 	protected void addPages() {
 		try {
 			LinkEditorInput lei = (LinkEditorInput) getEditorInput();
-			url = lei.getUrl();
 			addPage(new LinkBrowserPage(this, "browser", "Browser", lei));
-			mapFormPage = new MapFormPage(this, "map", "Map", null,
+			mapFormPage = new MapFormPage(this, "map", "Map", lei.getContext(),
 					mapControlCreator);
 			addPage(mapFormPage);
 		} catch (PartInitException e) {
@@ -53,60 +58,39 @@ public class LinkEditor extends FormEditor {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		LinkEditorInput lei = (LinkEditorInput) getEditorInput();
+		String url = lei.getUrl();
 		try {
-			LinkEditorInput lei = (LinkEditorInput) getEditorInput();
 			Session session = lei.getContext().getSession();
 
 			Node linkNode;
+			String linkPath = linksBasePath + '/' + JcrUtils.urlAsPath(url);
+			if (session.itemExists(linkPath)
+					&& session.getNode(linkPath)
+							.getProperty(ArgeoNames.ARGEO_URI).equals(url)) {
+				linkNode = session.getNode(linkPath);
+			}
 			// syndication entry
-			if (lei.getSyndEntry() != null) {
+			else if (lei.getSyndEntry() != null) {
 				SyndEntry entry = lei.getSyndEntry();
-				SyndFeed feed = entry.getSource();
-				String feedPath = feedsBasePath + '/'
-						+ JcrUtils.urlAsPath(feed.getUri());
-
-				Node feedNode;
-				if (!session.itemExists(feedPath)) {
-					feedNode = JcrUtils.mkdirs(session, feedPath,
-							ConnectTypes.CONNECT_SYND_FEED);
-					feedNode.setProperty(ArgeoNames.ARGEO_URI, feed.getUri());
-					feedNode.setProperty(Property.JCR_TITLE, feed.getTitle());
-					feedNode.setProperty(Property.JCR_DESCRIPTION,
-							feed.getDescription());
-				} else {
-					feedNode = session.getNode(feedPath);
-				}
-
 				Calendar publishedDate = new GregorianCalendar();
 				publishedDate.setTime(entry.getPublishedDate());
-				String name = entry.getTitle();
-				String entryPath = feedPath + '/'
-						+ JcrUtils.dateAsPath(publishedDate) + '/' + name;
-				if (!session.itemExists(entryPath)) {
-					linkNode = JcrUtils.mkdirs(session, entryPath,
-							ConnectTypes.CONNECT_SYND_ENTRY);
-					linkNode.setProperty(ArgeoNames.ARGEO_URI, entry.getUri());
-					linkNode.setProperty(Property.JCR_TITLE, entry.getTitle());
-					linkNode.setProperty(Property.JCR_DESCRIPTION, entry
-							.getDescription().getValue());
-					linkNode.setProperty(
-							ConnectNames.CONNECT_AUTHOR,
-							(String[]) entry.getAuthors().toArray(
-									new String[entry.getAuthors().size()]));
-				} else {
-					linkNode = session.getNode(entryPath);
-				}
-
-			} else {
-				String linkPath = linksBasePath + '/' + JcrUtils.urlAsPath(url);
-				if (session.itemExists(linkPath)
-						&& session.getNode(linkPath)
-								.getProperty(ArgeoNames.ARGEO_LINK).equals(url)) {
-					linkNode = session.getNode(linkPath);
-				} else {
-					linkNode = JcrUtils.mkdirs(session, linkPath,
-							ArgeoTypes.ARGEO_LINKS);
-				}
+				linkNode = JcrUtils.mkdirs(session, linkPath,
+						ConnectTypes.CONNECT_SYND_ENTRY);
+				linkNode.setProperty(ArgeoNames.ARGEO_URI, url);
+				linkNode.setProperty(Property.JCR_TITLE, entry.getTitle());
+				linkNode.setProperty(Property.JCR_DESCRIPTION, entry
+						.getDescription().getValue());
+				linkNode.setProperty(
+						ConnectNames.CONNECT_AUTHOR,
+						(String[]) entry.getAuthors().toArray(
+								new String[entry.getAuthors().size()]));
+			}
+			// raw link
+			else {
+				linkNode = JcrUtils.mkdirs(session, linkPath,
+						ArgeoTypes.ARGEO_LINK);
+				linkNode.setProperty(ArgeoNames.ARGEO_URI, url);
 			}
 
 			// geographical features

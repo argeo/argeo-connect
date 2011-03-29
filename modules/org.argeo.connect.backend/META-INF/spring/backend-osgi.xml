@@ -35,7 +35,7 @@
 		</service-properties>
 	</service>
 
-	<service ref="postGisDataStore" interface="org.geotools.data.DataStore">
+	<service ref="geoDbDataStore" interface="org.geotools.data.DataStore">
 		<service-properties>
 			<beans:entry key="alias" value="connect_geodb" />
 			<beans:entry key="publishedFeatureSources" value="connect_mideast_geodb" />

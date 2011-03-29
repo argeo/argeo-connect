@@ -70,6 +70,9 @@
                   style="push"
                   tooltip="New Map">
             </command>
+        </menuContribution>
+		<menuContribution
+                locationURI="toolbar:org.argeo.connect.ui.featureSourcesView">
              <command
                   commandId="org.argeo.connect.ui.addFeatureSources"
                   icon="icons/earth_edit.gif"

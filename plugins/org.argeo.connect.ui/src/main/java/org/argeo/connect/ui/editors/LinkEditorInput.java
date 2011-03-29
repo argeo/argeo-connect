@@ -25,7 +25,7 @@ public class LinkEditorInput implements IEditorInput {
 		this.syndEntry = syndEntry;
 	}
 
-	public Object getAdapter(Class adapter) {
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
 		return null;
 	}
 
@@ -57,7 +57,7 @@ public class LinkEditorInput implements IEditorInput {
 		return syndEntry;
 	}
 
-	protected Node getContext() {
+	public Node getContext() {
 		return context;
 	}
 
