@@ -19,6 +19,7 @@ import org.argeo.gis.ui.editors.MapFormPage;
 import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.ArgeoTypes;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.jcr.gis.GisNames;
 import org.argeo.jcr.gis.GisTypes;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
@@ -75,8 +76,8 @@ public class LinkEditor extends FormEditor {
 				SyndEntry entry = lei.getSyndEntry();
 				Calendar publishedDate = new GregorianCalendar();
 				publishedDate.setTime(entry.getPublishedDate());
-				linkNode = JcrUtils.mkdirs(session, linkPath,
-						ConnectTypes.CONNECT_SYND_ENTRY);
+				linkNode = JcrUtils.mkdirs(session, linkPath);
+				linkNode.addMixin(ConnectTypes.CONNECT_SYND_ENTRY);
 				linkNode.setProperty(ArgeoNames.ARGEO_URI, url);
 				linkNode.setProperty(Property.JCR_TITLE, entry.getTitle());
 				linkNode.setProperty(Property.JCR_DESCRIPTION, entry
@@ -85,11 +86,15 @@ public class LinkEditor extends FormEditor {
 						ConnectNames.CONNECT_AUTHOR,
 						(String[]) entry.getAuthors().toArray(
 								new String[entry.getAuthors().size()]));
+				linkNode.setProperty(ConnectNames.CONNECT_PUBLISHED_DATE,
+						publishedDate);
+				linkNode.setProperty(ConnectNames.CONNECT_UPDATED_DATE,
+						publishedDate);
 			}
 			// raw link
 			else {
-				linkNode = JcrUtils.mkdirs(session, linkPath,
-						ArgeoTypes.ARGEO_LINK);
+				linkNode = JcrUtils.mkdirs(session, linkPath);
+				linkNode.addMixin(ArgeoTypes.ARGEO_LINK);
 				linkNode.setProperty(ArgeoNames.ARGEO_URI, url);
 			}
 
@@ -102,6 +107,12 @@ public class LinkEditor extends FormEditor {
 						GisTypes.GIS_RELATED_FEATURE);
 				relatedFeature.setProperty(Property.JCR_PATH,
 						featureNode.getPath());
+				relatedFeature.setProperty(GisNames.GIS_SRS, featureNode
+						.getProperty(GisNames.GIS_SRS).getValue());
+				relatedFeature.setProperty(GisNames.GIS_BBOX, featureNode
+						.getProperty(GisNames.GIS_BBOX).getValue());
+				relatedFeature.setProperty(GisNames.GIS_CENTROID, featureNode
+						.getProperty(GisNames.GIS_CENTROID).getValue());
 
 			}
 			linkNode.getSession().save();

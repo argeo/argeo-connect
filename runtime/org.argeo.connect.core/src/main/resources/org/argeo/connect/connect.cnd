@@ -1,10 +1,11 @@
 <connect = 'http://www.argeo.org/ns/connect'>
 
 // syndication
-[connect:syndFeed] > nt:unstructured, mix:title
-- argeo:uri (STRING) m
+//[connect:syndFeed] > nt:unstructured, mix:title
+//- argeo:uri (STRING) m
 
-[connect:syndEntry] > nt:unstructured, mix:title, argeo:link
-- connect:author (STRING) m *
-- connect:publishedDate (DATE) m
-- connect:updatedDate (DATE) m
+[connect:syndEntry] > mix:title, argeo:link
+mixin
+- connect:author (STRING) *
+- connect:publishedDate (DATE)
+- connect:updatedDate (DATE)
