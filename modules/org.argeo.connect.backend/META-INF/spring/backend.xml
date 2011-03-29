@@ -18,7 +18,7 @@
 		<property name="systemExecutionService" ref="systemExecutionService" />
 		<property name="dataStore" ref="geoIndexDataStore" />
 	</bean>
-	
+
 	<bean id="geoJcrMapper" class="org.argeo.geotools.jcr.SimpleGeoJcrMapper" />
 
 	<!-- JACKRABBIT -->
@@ -41,9 +41,10 @@
 				<value>classpath:/org/argeo/connect/connect.cnd</value>
 			</list>
 		</property>
+		<property name="systemExecutor" ref="systemExecutionService" />
 	</bean>
 
-	<bean id="jcrSession" class="org.argeo.jcr.ThreadBoundJcrSessionFactory">
+	<bean id="jcrSession" class="org.argeo.security.jcr.SecureThreadBoundSession">
 		<property name="repository" ref="jcrRepository" />
 		<property name="workspace" value="${connect.repo.workspace}" />
 	</bean>

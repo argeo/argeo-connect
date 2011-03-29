@@ -297,10 +297,11 @@
 <location path="${system_property:user.home}/.m2/repository/org/slf4j/com.springsource.slf4j.org.apache.commons.logging.source/1.5.10" type="Directory"/>
 <location path="${system_property:user.home}/.m2/repository/org/slf4j/com.springsource.slf4j.api/1.5.10" type="Directory"/>
 <location path="${system_property:user.home}/.m2/repository/org/slf4j/com.springsource.slf4j.api.source/1.5.10" type="Directory"/>
+<location path="${system_property:user.home}/.m2/repository/org/argeo/commons/server/org.argeo.server.tomcat/0.3.2-SNAPSHOT" type="Directory"/>
 <location path="${system_property:user.home}/.m2/repository/org/junit/com.springsource.junit/3.8.2" type="Directory"/>
 <location path="${system_property:user.home}/.m2/repository/org/junit/com.springsource.junit.source/3.8.2" type="Directory"/>
-<location path="${system_property:user.home}/.m2/repository/org/argeo/commons/osgi/org.argeo.osgi.boot/0.2.3-SNAPSHOT" type="Directory"/>
-<location path="${system_property:user.home}/.m2/repository/org/argeo/commons/osgi/org.argeo.osgi.boot.source/0.2.3-SNAPSHOT" type="Directory"/>
+<location path="${system_property:user.home}/.m2/repository/org/argeo/commons/osgi/org.argeo.osgi.boot/0.3.2-SNAPSHOT" type="Directory"/>
+<location path="${system_property:user.home}/.m2/repository/org/argeo/commons/osgi/org.argeo.osgi.boot.source/0.3.2-SNAPSHOT" type="Directory"/>
 <location path="${system_property:user.home}/.m2/repository/org/eclipse/osgi/org.eclipse.osgi/3.6.2" type="Directory"/>
 <location path="${system_property:user.home}/.m2/repository/org/eclipse/osgi/org.eclipse.osgi.source/3.6.2" type="Directory"/>
 </locations>
@@ -600,6 +601,7 @@
 <plugin id="com.springsource.slf4j.org.apache.commons.logging.source"/>
 <plugin id="com.springsource.slf4j.api"/>
 <plugin id="com.springsource.slf4j.api.source"/>
+<plugin id="org.argeo.server.tomcat"/>
 <plugin id="com.springsource.junit"/>
 <plugin id="com.springsource.junit.source"/>
 <plugin id="org.argeo.osgi.boot"/>
