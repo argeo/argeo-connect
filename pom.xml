@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.argeo.commons</groupId>
 		<artifactId>argeo-commons</artifactId>
-		<version>0.2.3-SNAPSHOT</version>
+		<version>0.3.2-SNAPSHOT</version>
 	</parent>
 	<groupId>org.argeo.connect</groupId>
 	<artifactId>argeo-connect</artifactId>
@@ -19,6 +19,9 @@
 		<version.connect>${developmentCycle.connect}.0-SNAPSHOT</version.connect>
 	</properties>
 	<modules>
+		<module>runtime</module>
+		<module>plugins</module>
+		<module>modules</module>
 		<module>dep</module>
 	</modules>
 	<url>${site.urlBase}/${developmentCycle.connect}</url>
