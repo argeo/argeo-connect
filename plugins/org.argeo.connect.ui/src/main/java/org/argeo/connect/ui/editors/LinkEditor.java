@@ -34,6 +34,9 @@ public class LinkEditor extends FormEditor {
 
 	private MapControlCreator mapControlCreator;
 
+	private Node context;
+
+	private LinkBrowserPage linkBrowserPage;
 	private MapFormPage mapFormPage;
 
 	public void init(IEditorSite site, IEditorInput input)
@@ -47,7 +50,10 @@ public class LinkEditor extends FormEditor {
 	protected void addPages() {
 		try {
 			LinkEditorInput lei = (LinkEditorInput) getEditorInput();
-			addPage(new LinkBrowserPage(this, "browser", "Browser", lei));
+			context = lei.getContext();
+			linkBrowserPage = new LinkBrowserPage(this, "browser", "Browser",
+					lei);
+			addPage(linkBrowserPage);
 			mapFormPage = new MapFormPage(this, "map", "Map", lei.getContext(),
 					mapControlCreator);
 			addPage(mapFormPage);
@@ -60,9 +66,9 @@ public class LinkEditor extends FormEditor {
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		LinkEditorInput lei = (LinkEditorInput) getEditorInput();
-		String url = lei.getUrl();
+		String url = linkBrowserPage.getUrl();
 		try {
-			Session session = lei.getContext().getSession();
+			Session session = context.getSession();
 
 			Node linkNode;
 			String linkPath = linksBasePath + '/' + JcrUtils.urlAsPath(url);
@@ -97,14 +103,19 @@ public class LinkEditor extends FormEditor {
 				linkNode.addMixin(ArgeoTypes.ARGEO_LINK);
 				linkNode.setProperty(ArgeoNames.ARGEO_URI, url);
 			}
+			linkBrowserPage.doSave(monitor);
 
 			// geographical features
 			MapViewer mapViewer = mapFormPage.getMapViewer();
 			for (NodeIterator nit = mapViewer.getSelectedFeatures(); nit
 					.hasNext();) {
 				Node featureNode = nit.nextNode();
-				Node relatedFeature = linkNode.addNode(featureNode.getName(),
-						GisTypes.GIS_RELATED_FEATURE);
+				Node relatedFeature;
+				if (linkNode.hasNode(featureNode.getName()))
+					relatedFeature = featureNode.getNode(featureNode.getName());
+				else
+					relatedFeature = linkNode.addNode(featureNode.getName(),
+							GisTypes.GIS_RELATED_FEATURE);
 				relatedFeature.setProperty(Property.JCR_PATH,
 						featureNode.getPath());
 				relatedFeature.setProperty(GisNames.GIS_SRS, featureNode
@@ -115,7 +126,12 @@ public class LinkEditor extends FormEditor {
 						.getProperty(GisNames.GIS_CENTROID).getValue());
 
 			}
+			mapFormPage.doSave(monitor);
+
 			linkNode.getSession().save();
+			context = linkNode;
+			firePropertyChange(PROP_DIRTY);
+
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Cannot save link " + url, e);
 		}
@@ -123,13 +139,10 @@ public class LinkEditor extends FormEditor {
 
 	@Override
 	public void doSaveAs() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public boolean isSaveAsAllowed() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
