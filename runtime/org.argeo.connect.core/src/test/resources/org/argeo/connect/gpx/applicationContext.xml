@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="trackDao" class="org.argeo.connect.gpx.GeoToolsTrackDao"
+		init-method="init">
+		<!-- <property name="targetSrid" value="3857" /> -->
+		<property name="targetSrid" value="4326" />
+		<property name="dataStore" ref="dataStore" />
+	</bean>
+
+	<!-- <bean id="dataSource" -->
+	<!-- class="org.springframework.jdbc.datasource.SingleConnectionDataSource" -->
+	<!-- destroy-method="destroy" lazy-init="true"> -->
+	<!-- <property name="driverClassName" value="org.h2.Driver" /> -->
+	<!-- <property name="url" value="jdbc:h2:mem:test" /> -->
+	<!-- <property name="username" value="sa" /> -->
+	<!-- <property name="password" value="" /> -->
+	<!-- <property name="suppressClose" value="true" /> -->
+	<!-- </bean> -->
+
+	<!-- POSTGIS -->
+	<bean id="postGisDataStoreFactory" class="org.geotools.data.postgis.PostgisNGDataStoreFactory" />
+
+	<bean id="dataStore" factory-bean="postGisDataStoreFactory"
+		factory-method="createDataStore">
+		<constructor-arg>
+			<map>
+				<entry key="Data Source" value-ref="dataSource" />
+			</map>
+		</constructor-arg>
+	</bean>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="org.postgresql.Driver" />
+		<property name="url" value="jdbc:postgresql://air/test_berlin" />
+		<property name="username" value="argeo" />
+		<property name="password" value="argeo" />
+		<property name="testOnBorrow" value="true" />
+		<property name="validationQuery" value="SELECT 1" />
+		<property name="maxActive" value="10" />
+		<property name="maxIdle" value="2" />
+	</bean>
+
+	<!-- <bean id="dataSource" -->
+	<!-- class="org.springframework.jdbc.datasource.SingleConnectionDataSource" -->
+	<!-- destroy-method="destroy" lazy-init="true"> -->
+	<!-- <property name="driverClassName" value="org.postgresql.Driver" /> -->
+	<!-- <property name="url" value="jdbc:postgresql://air/test_berlin" /> -->
+	<!-- <property name="username" value="argeo" /> -->
+	<!-- <property name="password" value="argeo" /> -->
+	<!-- <property name="suppressClose" value="true" /> -->
+	<!-- </bean> -->
+
+</beans>

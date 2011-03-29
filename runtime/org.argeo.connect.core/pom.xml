@@ -32,11 +32,17 @@
 						<Export-Package>
 							org.argeo.connect.*
 						</Export-Package>
+						<Import-Package>org.springframework.core,*</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
+		<dependency>
+			<groupId>org.argeo.commons.gis</groupId>
+			<artifactId>org.argeo.gis.geotools</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
 	</dependencies>
 </project>
