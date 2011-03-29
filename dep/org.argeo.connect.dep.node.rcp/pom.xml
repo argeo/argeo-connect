@@ -15,6 +15,11 @@
 			<artifactId>org.argeo.security.dep.node.rcp</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.argeo.commons.security</groupId>
+			<artifactId>org.argeo.security.dao.ldap</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
 		<!-- <dependency> -->
 		<!-- <groupId>org.argeo.commons.gis</groupId> -->
 		<!-- <artifactId>org.argeo.gis.ui.rcp</artifactId> -->
@@ -35,10 +40,18 @@
 			<type>pom</type>
 		</dependency>
 
+		<!-- Jackrabbit authentication -->
+		<dependency>
+			<groupId>org.argeo.commons.security</groupId>
+			<artifactId>org.argeo.security.dao.jackrabbit</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+
 		<!-- Test -->
 		<dependency>
-			<groupId>org.junit</groupId>
-			<artifactId>com.springsource.junit</artifactId>
+			<groupId>org.argeo.commons.basic</groupId>
+			<artifactId>org.argeo.support.junit</artifactId>
+			<version>${version.argeo-commons}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

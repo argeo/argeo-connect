@@ -63,6 +63,13 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- JCR explorer -->
+		<dependency>
+			<groupId>org.argeo.commons.server</groupId>
+			<artifactId>org.argeo.jcr.ui.explorer</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.sun.syndication</groupId>
 			<artifactId>com.springsource.com.sun.syndication</artifactId>

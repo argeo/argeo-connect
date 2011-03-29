@@ -21,6 +21,13 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 			</plugin>
 			<plugin>
@@ -43,6 +50,14 @@
 			<groupId>org.argeo.commons.gis</groupId>
 			<artifactId>org.argeo.gis.geotools</artifactId>
 			<version>${version.argeo-commons}</version>
+		</dependency>
+
+		<!-- TEST -->
+		<dependency>
+			<groupId>org.argeo.commons.basic</groupId>
+			<artifactId>org.argeo.support.junit</artifactId>
+			<version>${version.argeo-commons}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
