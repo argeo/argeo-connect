@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product id="org.argeo.connect.ui.gps.product" application="org.argeo.security.ui.rcp.secureUi" useFeatures="false" includeLaunchers="true">
+<product application="org.argeo.security.ui.rcp.secureUi" useFeatures="false" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
