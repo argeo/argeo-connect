@@ -1,0 +1,102 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.argeo.connect</groupId>
+		<version>0.1.0-SNAPSHOT</version>
+		<artifactId>dep</artifactId>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>org.argeo.connect.dep.node</artifactId>
+	<name>Connect Node Dependencies</name>
+	<dependencies>
+		<!-- Node -->
+		<dependency>
+			<groupId>org.argeo.commons.security</groupId>
+			<artifactId>org.argeo.security.dep.node</artifactId>
+			<version>${version.argeo-commons}</version>
+			<type>pom</type>
+		</dependency>
+
+		<!-- Tomcat server.xml configuration -->
+		<dependency>
+			<groupId>org.argeo.commons.server</groupId>
+			<artifactId>org.argeo.server.tomcat</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+
+		<!-- SLC -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.slc.runtime</groupId> -->
+		<!-- <artifactId>org.argeo.slc.core</artifactId> -->
+		<!-- <version>${version.slc}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.slc.runtime</groupId> -->
+		<!-- <artifactId>org.argeo.slc.support.osgi</artifactId> -->
+		<!-- <version>${version.slc}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.slc.runtime</groupId> -->
+		<!-- <artifactId>org.argeo.slc.support.gis</artifactId> -->
+		<!-- <version>${version.slc}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.slc.modules</groupId> -->
+		<!-- <artifactId>org.argeo.slc.agent</artifactId> -->
+		<!-- <version>${version.slc}</version> -->
+		<!-- </dependency> -->
+		<!-- SLC agent (necessary to have it complete) -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.slc.runtime</groupId> -->
+		<!-- <artifactId>org.argeo.slc.support.simple</artifactId> -->
+		<!-- <version>${version.slc}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.slc.runtime</groupId> -->
+		<!-- <artifactId>org.argeo.slc.support.ant</artifactId> -->
+		<!-- <version>${version.slc}</version> -->
+		<!-- </dependency> -->
+		<!-- SLC UI (necessary to have it complete) -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.slc.runtime</groupId> -->
+		<!-- <artifactId>org.argeo.slc.support.simple</artifactId> -->
+		<!-- <version>${version.slc}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.slc.runtime</groupId> -->
+		<!-- <artifactId>org.argeo.slc.support.ant</artifactId> -->
+		<!-- <version>${version.slc}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.slc.runtime</groupId> -->
+		<!-- <artifactId>org.argeo.slc.support.castor</artifactId> -->
+		<!-- <version>${version.slc}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.slc.runtime</groupId> -->
+		<!-- <artifactId>org.argeo.slc.support.hibernate</artifactId> -->
+		<!-- <version>${version.slc}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.slc.modules</groupId> -->
+		<!-- <artifactId>org.argeo.slc.server.castor</artifactId> -->
+		<!-- <version>${version.slc}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.slc.modules</groupId> -->
+		<!-- <artifactId>org.argeo.slc.server.h2</artifactId> -->
+		<!-- <version>${version.slc}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>com.h2database</groupId> -->
+		<!-- <artifactId>com.springsource.org.h2</artifactId> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.commons.server</groupId> -->
+		<!-- <artifactId>org.argeo.server.jdbc</artifactId> -->
+		<!-- <version>${version.argeo-commons}</version> -->
+		<!-- </dependency> -->
+
+	</dependencies>
+</project>
