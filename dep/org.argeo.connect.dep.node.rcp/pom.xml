@@ -15,16 +15,6 @@
 			<artifactId>org.argeo.security.dep.node.rcp</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.argeo.commons.security</groupId>
-			<artifactId>org.argeo.security.dao.ldap</artifactId>
-			<version>${version.argeo-commons}</version>
-		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>org.argeo.commons.gis</groupId> -->
-		<!-- <artifactId>org.argeo.gis.ui.rcp</artifactId> -->
-		<!-- <version>${version.argeo-commons}</version> -->
-		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
@@ -43,13 +33,6 @@
 			<artifactId>org.argeo.connect.dep.node</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
 			<type>pom</type>
-		</dependency>
-
-		<!-- Jackrabbit authentication -->
-		<dependency>
-			<groupId>org.argeo.commons.security</groupId>
-			<artifactId>org.argeo.security.dao.jackrabbit</artifactId>
-			<version>${version.argeo-commons}</version>
 		</dependency>
 
 		<!-- Test -->

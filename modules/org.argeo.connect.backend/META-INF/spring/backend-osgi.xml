@@ -9,10 +9,13 @@
        http://www.springframework.org/schema/util
        http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
+
+
 	<!-- REFERENCES -->
 	<reference id="systemExecutionService" interface="org.argeo.security.SystemExecutionService" />
 
 	<!-- SERVICES -->
+	<service ref="trackDao" interface="org.argeo.connect.gpx.TrackDao"></service>
 	<service ref="jcrRepository" interface="javax.jcr.Repository">
 		<service-properties>
 			<beans:entry value="connect">

@@ -37,9 +37,16 @@
 		<!-- Node -->
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.dep.node</artifactId>
+			<artifactId>org.argeo.connect.dep.node.rap</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
 			<type>pom</type>
+		</dependency>
+
+		<!-- Tomcat server.xml configuration -->
+		<dependency>
+			<groupId>org.argeo.commons.server</groupId>
+			<artifactId>org.argeo.server.tomcat</artifactId>
+			<version>${version.argeo-commons}</version>
 		</dependency>
 
 		<!-- Test -->
