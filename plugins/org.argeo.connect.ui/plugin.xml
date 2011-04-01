@@ -8,14 +8,8 @@
             id="org.argeo.connect.ui.trackingPerspective"
             name="Tracking">
       </perspective>
-      <perspective
-            class="org.argeo.slc.ui.gis.GpsPerspective"
-            icon="icons/gis.gif"
-            id="org.argeo.slc.client.gis.gpsPerspective"
-            name="SLC GPS">
-      </perspective>
-   </extension>
-   <extension
+	</extension>
+   	<extension
          point="org.eclipse.ui.views">
       <view
             class="org.argeo.eclipse.spring.SpringExtensionFactory"
@@ -34,12 +28,6 @@
             icon="icons/gis_add_data.gif"
             class="org.argeo.eclipse.spring.SpringExtensionFactory"
             id="org.argeo.connect.ui.featureSourcesView">
-      </view>
-      <view
-            name="GPS"
-            icon="icons/gis.gif"
-            class="org.argeo.eclipse.spring.SpringExtensionFactory"
-            id="org.argeo.connect.ui.gpsBrowserView">
       </view>
    </extension>
    <extension
@@ -70,11 +58,6 @@
             id="org.argeo.connect.ui.addFeatureSources"
             name="Add Feature Sources">
     	</command>
-		<command
-            defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
-            id="org.argeo.connect.ui.importGpx"
-            name="ImportGPX ">
-    	</command>
     </extension>
 	<extension
          point="org.eclipse.ui.menus">
@@ -98,38 +81,5 @@
                   tooltip="Add Feature Sources">
             </command>
         </menuContribution>
-  <menuContribution
-        locationURI="popup:org.argeo.slorg.argeo.connect.ui.gpsiew">
-     <command
-           commandId="org.argeo.jcr.ui.explorer.refresh"
-           icon="icons/refresh.png"
-           style="push">
-     </command>
-     <command
-           commandId="org.argeo.jcr.ui.explorer.addFileFolder"
-           icon="icons/add.gif"
-           style="push">
-     </command>
-     <command
-           commandId="org.argeo.jcr.ui.explorer.deleteNode"
-           icon="icons/remove.gif"
-           style="push">
-     </command>
-     <command
-           commandId="org.argeo.jcr.ui.explorer.importFileSystem"
-           icon="icons/import_fs.png"
-           style="push"
-           tooltip="Import files from the files sytem to the repository">
-     </command>
-             <command
-                  commandId="org.argeo.connect.ui.importGpx"
-                  disabledIcon="icons/gis_add_data.gif"
-                  icon="icons/gis_add_data.gif"
-                  label="Import GPX"
-                  style="push"
-                  tooltip="Import GPX">
-            </command>
-  </menuContribution>
 	</extension>
-
 </plugin>

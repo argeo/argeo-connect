@@ -23,6 +23,16 @@
 			</beans:entry>
 		</service-properties>
 	</service>
+	<service ref="jcrRepository" interface="javax.jcr.Repository">
+		<service-properties>
+			<beans:entry value="node">
+				<beans:key>
+					<util:constant
+						static-field="org.argeo.jcr.ArgeoJcrConstants.JCR_REPOSITORY_ALIAS" />
+				</beans:key>
+			</beans:entry>
+		</service-properties>
+	</service>
 
 	<service ref="jcrSession" interface="javax.jcr.Session">
 		<service-properties>

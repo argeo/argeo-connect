@@ -22,9 +22,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<skipTests>true</skipTests>
-				</configuration>
+				<!-- <configuration> <skipTests>true</skipTests> </configuration> -->
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -59,5 +57,21 @@
 			<version>${version.argeo-commons}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.argeo.commons.server</groupId>
+			<artifactId>org.argeo.server.jackrabbit</artifactId>
+			<version>${version.argeo-commons}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>com.springsource.org.postgresql.jdbc3</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>com.h2database</groupId> -->
+		<!-- <artifactId>com.springsource.org.h2</artifactId> -->
+		<!-- <scope>test</scope> -->
+		<!-- </dependency> -->
 	</dependencies>
 </project>

@@ -10,16 +10,6 @@
 		<property name="dataStore" ref="dataStore" />
 	</bean>
 
-	<!-- <bean id="dataSource" -->
-	<!-- class="org.springframework.jdbc.datasource.SingleConnectionDataSource" -->
-	<!-- destroy-method="destroy" lazy-init="true"> -->
-	<!-- <property name="driverClassName" value="org.h2.Driver" /> -->
-	<!-- <property name="url" value="jdbc:h2:mem:test" /> -->
-	<!-- <property name="username" value="sa" /> -->
-	<!-- <property name="password" value="" /> -->
-	<!-- <property name="suppressClose" value="true" /> -->
-	<!-- </bean> -->
-
 	<!-- POSTGIS -->
 	<bean id="postGisDataStoreFactory" class="org.geotools.data.postgis.PostgisNGDataStoreFactory" />
 
@@ -35,7 +25,7 @@
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="org.postgresql.Driver" />
-		<property name="url" value="jdbc:postgresql://air/test_berlin" />
+		<property name="url" value="jdbc:postgresql://air/bsinou_connect" />
 		<property name="username" value="argeo" />
 		<property name="password" value="argeo" />
 		<property name="testOnBorrow" value="true" />
@@ -51,6 +41,17 @@
 	<!-- <property name="url" value="jdbc:postgresql://air/test_berlin" /> -->
 	<!-- <property name="username" value="argeo" /> -->
 	<!-- <property name="password" value="argeo" /> -->
+	<!-- <property name="suppressClose" value="true" /> -->
+	<!-- </bean> -->
+
+	<!-- HIBERNATE -->
+	<!-- <bean id="dataSource" -->
+	<!-- class="org.springframework.jdbc.datasource.SingleConnectionDataSource" -->
+	<!-- destroy-method="destroy" lazy-init="true"> -->
+	<!-- <property name="driverClassName" value="org.h2.Driver" /> -->
+	<!-- <property name="url" value="jdbc:h2:mem:test" /> -->
+	<!-- <property name="username" value="sa" /> -->
+	<!-- <property name="password" value="" /> -->
 	<!-- <property name="suppressClose" value="true" /> -->
 	<!-- </bean> -->
 
