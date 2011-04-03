@@ -14,15 +14,15 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="GPS"
+            name="GPS import"
             icon="icons/gis.gif"
             class="org.argeo.eclipse.spring.SpringExtensionFactory"
             id="org.argeo.connect.ui.gps.gpsBrowserView">
       </view>
     <!-- Old one, for test purpose only -->
     <view
-            name="GPS"
-            icon="icons/gis.gif"
+            name="JCR Explorer"
+            icon="icons/browser.gif"
             class="org.argeo.eclipse.spring.SpringExtensionFactory"
             id="org.argeo.connect.ui.gps.gpsView">
       </view>
