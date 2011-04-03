@@ -19,7 +19,11 @@
 	<reference id="trackDao" interface="org.argeo.connect.gpx.TrackDao"
 		cardinality="0..1" />
 
-	<set id="repositories" interface="javax.jcr.Repository" cardinality="0..N">
+	<reference id="jcrSession" interface="javax.jcr.Session" />
+
+
+	<set id="repositories" interface="javax.jcr.Repository"
+		cardinality="0..N">
 		<listener ref="repositoryRegister" bind-method="register"
 			unbind-method="unregister" />
 	</set>

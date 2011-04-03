@@ -7,7 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.gpx.TrackDao;
 import org.argeo.connect.ui.gps.wizards.ImportGpxWizard;
 import org.argeo.eclipse.ui.dialogs.Error;
-import org.argeo.eclipse.ui.jcr.views.GenericJcrBrowser;
+import org.argeo.eclipse.ui.jcr.views.AbstractJcrBrowser;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -24,8 +24,9 @@ public class ImportGpx extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		ISelection selection = HandlerUtil.getActiveWorkbenchWindow(event)
 				.getActivePage().getSelection();
-		GenericJcrBrowser view = (GenericJcrBrowser) HandlerUtil.getActiveWorkbenchWindow(event)
-				.getActivePage().findView(HandlerUtil.getActivePartId(event));
+		AbstractJcrBrowser view = (AbstractJcrBrowser) HandlerUtil
+				.getActiveWorkbenchWindow(event).getActivePage()
+				.findView(HandlerUtil.getActivePartId(event));
 		if (selection != null && !selection.isEmpty()
 				&& selection instanceof IStructuredSelection) {
 			Object obj = ((IStructuredSelection) selection).getFirstElement();

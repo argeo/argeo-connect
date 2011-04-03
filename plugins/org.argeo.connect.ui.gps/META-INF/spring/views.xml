@@ -5,9 +5,15 @@
 		http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+	<bean id="gpsBrowserView" class="org.argeo.connect.ui.gps.views.GpsBrowserView"
+		scope="prototype">
+		<property name="jcrSession" ref="jcrSession" />
+	</bean>
 
-	<bean id="gpsBrowserView" class="org.argeo.connect.ui.gps.views.GpsView"
+	<!-- Old one, using generic JCR View, not used for the moment being -->
+	<bean id="gpsView" class="org.argeo.connect.ui.gps.views.GpsView"
 		scope="prototype">
 		<property name="repositoryRegister" ref="repositoryRegister" />
 	</bean>
+
 </beans>

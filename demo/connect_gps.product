@@ -3,6 +3,7 @@
 
 <product application="org.argeo.security.ui.rcp.secureUi" useFeatures="false" includeLaunchers="true">
 
+
    <configIni use="default">
    </configIni>
 
@@ -14,12 +15,15 @@
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
+   <windowImages/>
+
    <launcher>
       <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
    </launcher>
+
 
    <vm>
    </vm>
@@ -77,6 +81,7 @@
       <plugin id="org.argeo.gis.geotools"/>
       <plugin id="org.argeo.gis.ui"/>
       <plugin id="org.argeo.jcr.ui.explorer"/>
+      <plugin id="org.argeo.node.repo.jackrabbit"/>
       <plugin id="org.argeo.node.repofactory.jackrabbit"/>
       <plugin id="org.argeo.security.core"/>
       <plugin id="org.argeo.security.dao.jackrabbit"/>

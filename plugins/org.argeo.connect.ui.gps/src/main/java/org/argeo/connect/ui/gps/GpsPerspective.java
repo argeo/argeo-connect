@@ -1,5 +1,6 @@
 package org.argeo.connect.ui.gps;
 
+import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.connect.ui.gps.views.GpsView;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
@@ -14,6 +15,7 @@ public class GpsPerspective implements IPerspectiveFactory {
 
 		IFolderLayout topLeft = layout.createFolder("topLeft",
 				IPageLayout.LEFT, 0.3f, editorArea);
+		topLeft.addView(GpsBrowserView.ID);
 		topLeft.addView(GpsView.ID);
 
 	}
