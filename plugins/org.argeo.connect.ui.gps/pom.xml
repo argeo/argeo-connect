@@ -46,7 +46,13 @@
 		<dependency>
 			<groupId>org.argeo.commons.eclipse</groupId>
 			<artifactId>org.argeo.eclipse.dep.rcp</artifactId>
-			<version>0.3.2-SNAPSHOT</version>
+			<version>${version.argeo-commons}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.commons.eclipse</groupId>
+			<artifactId>org.argeo.eclipse.ui.rcp</artifactId>
+			<version>${version.argeo-commons}</version>
 			<scope>provided</scope>
 		</dependency>
 

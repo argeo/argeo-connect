@@ -12,6 +12,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>org.argeo.connect.ui</module>
+		<module>org.argeo.connect.ui.gps</module>
 	</modules>
 	<build>
 		<resources>
