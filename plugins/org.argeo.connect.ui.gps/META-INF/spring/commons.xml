@@ -5,6 +5,11 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-	<bean id="repositoryRegister" class="org.argeo.jcr.DefaultRepositoryRegister">
+	<!-- Old one, using generic JCR View, not used for the time being <bean 
+		id="repositoryRegister" class="org.argeo.jcr.DefaultRepositoryRegister"> 
+		</bean> -->
+
+	<bean id="jcrSession" class="org.argeo.jcr.spring.ThreadBoundSession">
+		<property name="repository" ref="repository" />
 	</bean>
 </beans>

@@ -6,10 +6,16 @@
        http://www.springframework.org/schema/beans   
        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-	<!-- Old approach <reference id="jcrSession" interface="javax.jcr.Session" 
-		filter="(argeo.jcr.repository.alias=connect)" /> -->
+	<reference id="mapControlCreator" interface="org.argeo.gis.ui.MapControlCreator" />
+	<reference id="geoJcrMapper" interface="org.argeo.geotools.jcr.GeoJcrMapper" />
 
-	<!-- Moved in project crisis <reference id="mapControlCreator" interface="org.argeo.gis.ui.MapControlCreator" 
-		/> <reference id="geoJcrMapper" interface="org.argeo.geotools.jcr.GeoJcrMapper" 
-		/> -->
+	<!--  Old unsafe approach -->
+	<!-- <reference id="jcrSession" interface="javax.jcr.Session"
+		filter="(argeo.jcr.repository.alias=connect)" />
+	 -->	
+	 
+	<reference id="repository" interface="javax.jcr.Repository"
+		filter="(argeo.jcr.repository.alias=connect)" />
+	
+
 </beans:beans>

@@ -5,15 +5,10 @@
 		http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="linkEditor" class="org.argeo.connect.ui.editors.LinkEditor"
-		scope="prototype">
-		<property name="mapControlCreator" ref="mapControlCreator" />
-	</bean>
-
-	<bean id="defaultMapEditor" class="org.argeo.gis.ui.editors.DefaultMapEditor"
-		scope="prototype">
-		<property name="mapControlCreator" ref="mapControlCreator" />
-	</bean>
-
+	<!-- Moved in project crisis <bean id="linkEditor" class="org.argeo.connect.ui.editors.LinkEditor" 
+		scope="prototype"> <property name="mapControlCreator" ref="mapControlCreator" 
+		/> </bean> <bean id="defaultMapEditor" class="org.argeo.gis.ui.editors.DefaultMapEditor" 
+		scope="prototype"> <property name="mapControlCreator" ref="mapControlCreator" 
+		/> </bean> -->
 
 </beans>

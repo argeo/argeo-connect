@@ -1,4 +1,4 @@
-package org.argeo.connect.ui.editors;
+package org.argeo.connect.ui.crisis.editors;
 
 import org.argeo.connect.ConnectNames;
 import org.eclipse.swt.SWT;

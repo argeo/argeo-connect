@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Mideast
+Bundle-Name: Connect Backend module.
 Bundle-SymbolicName: org.argeo.connect.backend
 Bundle-Version: 0.1.0.SNAPSHOT
 Import-Package: javax.jcr;version="[2.0.0,3.0.0)",

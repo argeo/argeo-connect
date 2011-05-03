@@ -8,4 +8,8 @@
 		scope="prototype">
 		<property name="trackDao" ref="trackDao" />
 	</bean>
+
+	<bean id="openCleanDataEditor" class="org.argeo.connect.ui.gps.commands.OpenCleanDataEditor"
+		scope="prototype">
+	</bean>
 </beans>

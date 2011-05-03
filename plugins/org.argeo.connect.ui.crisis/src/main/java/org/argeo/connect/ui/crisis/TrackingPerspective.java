@@ -1,5 +1,6 @@
-package org.argeo.connect.ui;
+package org.argeo.connect.ui.crisis;
 
+import org.argeo.connect.ui.ConnectUiPlugin;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
@@ -13,9 +14,9 @@ public class TrackingPerspective implements IPerspectiveFactory {
 
 		IFolderLayout topLeft = layout.createFolder("topLeft",
 				IPageLayout.LEFT, 0.3f, editorArea);
-		topLeft.addView(ConnectUiPlugin.ID+".feedView");
-		topLeft.addView(ConnectUiPlugin.ID+".featureSourcesView");
-		topLeft.addView(ConnectUiPlugin.ID+".layersView");
+		topLeft.addView(ConnectUiPlugin.ID + ".feedView");
+		topLeft.addView(ConnectUiPlugin.ID + ".featureSourcesView");
+		topLeft.addView(ConnectUiPlugin.ID + ".layersView");
 	}
 
 }

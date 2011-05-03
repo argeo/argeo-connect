@@ -1,152 +1,177 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-      <extension
-         point="org.eclipse.ui.perspectives">
-      <perspective
-            class="org.argeo.connect.ui.gps.GpsPerspective"
+	<extension
+    	point="org.eclipse.ui.perspectives">
+		<perspective
+        	class="org.argeo.connect.ui.gps.GpsPerspective"
             icon="icons/gis.gif"
             id="org.argeo.connect.ui.gps.gpsPerspective"
             name="Connect GPS">
-      </perspective>
-   </extension>
-   <!-- Views and editors -->
-   <extension
-         point="org.eclipse.ui.views">
-      <view
-            name="GPS import"
-            icon="icons/gis.gif"
-            class="org.argeo.eclipse.spring.SpringExtensionFactory"
-            id="org.argeo.connect.ui.gps.gpsBrowserView">
-      </view>
-    <!-- Old one, for test purpose only -->
-    <view
+		</perspective>
+	</extension>
+	<!-- Views and editors -->
+	<extension
+    	point="org.eclipse.ui.views">
+		<view
+			name="GPS import"
+			icon="icons/gis.gif"
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			id="org.argeo.connect.ui.gps.gpsBrowserView">
+		</view>
+		<!-- Old one, can be configured and used for test purpose only -->
+		<!-- view
             name="JCR Explorer"
             icon="icons/browser.gif"
             class="org.argeo.eclipse.spring.SpringExtensionFactory"
             id="org.argeo.connect.ui.gps.gpsView">
-      </view>
-   </extension>
-   <extension
-         point="org.eclipse.ui.editors">
-   </extension>
-   
-   	<!-- Commands -->
-  	<extension
-         point="org.eclipse.ui.commands">
-		<command
-            defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
-            id="org.argeo.connect.ui.gps.importGpx"
-            name="ImportGPX ">
-    	</command>
-    </extension>
-    
-    <!-- Menus -->
+		</view -->
+	</extension>
+	
+	<!-- EDITORS --> 
+	<!-- CAUTION : icon attribute is compulsory for an editor.--> 
 	<extension
-         point="org.eclipse.ui.menus">
-		
+		point="org.eclipse.ui.editors">
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			id="org.argeo.connect.ui.gps.cleanDataEditor"
+			name="Clean Data Editor"
+			icon="icons/gis.gif"
+			default="false">
+		</editor>
+	</extension>
+   
+	<!-- Commands -->
+	<extension
+		point="org.eclipse.ui.commands">
+		<command
+			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
+			id="org.argeo.connect.ui.gps.importGpx"
+			name="ImportGPX ">
+		</command>
+		<command
+			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
+			id="org.argeo.connect.ui.gps.openCleanDataEditor"
+			name="OpenCleanDataEditor">
+		</command>    
+	</extension>
+    
+	<!-- Menus -->
+	<extension
+		point="org.eclipse.ui.menus">
+		<!-- Main tool bar menu -->
 		<menuContribution
-                allPopups="false"
-                locationURI="menu:org.eclipse.ui.main.menu?after=file">
-        	<menu label="Import GPS"
-              mnemonic="Import"
-              id="org.argeo.connect.ui.gps.importMenu">
-              	<command
-           		commandId="org.argeo.jcr.ui.explorer.refresh"
-           		icon="icons/refresh.png"
-           		style="push">
-     		</command>
-     		<command
-           		commandId="org.argeo.jcr.ui.explorer.addFileFolder"
-           		icon="icons/add.gif"
-           		style="push">
-     		</command>
-     		<command
-           		commandId="org.argeo.jcr.ui.explorer.deleteNode"
-           		icon="icons/remove.gif"
-           		style="push">
-     		</command>
-     		<command
-           		commandId="org.argeo.jcr.ui.explorer.importFileSystem"
-           		icon="icons/import_fs.png"
-           		style="push"
-           		tooltip="Import files from the files sytem to the repository">
-     		</command>
-            <command
-                  commandId="org.argeo.connect.ui.gps.importGpx"
-                  disabledIcon="icons/uploadFiles.gif"
-                  icon="icons/uploadFiles.gif"
-                  label="Import GPX"
-                  style="push"
-                  tooltip="Import GPX">
-            </command>
-    		</menu>
-          </menuContribution>
+			allPopups="false"
+			locationURI="menu:org.eclipse.ui.main.menu?after=file">
+			<menu label="Import GPS"
+				mnemonic="Import"
+				id="org.argeo.connect.ui.gps.importMenu">
+				<command
+					commandId="org.argeo.jcr.ui.explorer.refresh"
+					icon="icons/refresh.png"
+					style="push">
+				</command>
+				<command
+					commandId="org.argeo.jcr.ui.explorer.addFileFolder"
+					icon="icons/add.gif"
+					style="push">
+				</command>
+				<command
+					commandId="org.argeo.jcr.ui.explorer.deleteNode"
+					icon="icons/remove.gif"
+					style="push">
+				</command>
+				<command
+					commandId="org.argeo.jcr.ui.explorer.importFileSystem"
+					icon="icons/import_fs.png"
+					style="push"
+					tooltip="Import files from the files sytem to the repository">
+				</command>
+				<command
+					commandId="org.argeo.connect.ui.gps.importGpx"
+					disabledIcon="icons/uploadFiles.gif"
+					icon="icons/uploadFiles.gif"
+					label="Import GPX"
+					style="push"
+					tooltip="Import GPX">
+				</command>
+				<command
+					commandId="org.argeo.connect.ui.gps.openCleanDataEditor"
+					disabledIcon="icons/uploadFiles.gif"
+					icon="icons/uploadFiles.gif"
+					label="Open clean data editor"
+					style="push"
+					tooltip="Open clean data editor">
+				</command>
+			</menu>
+		</menuContribution>
 		
+		<!-- Popup Menu for gpsBrowser View-->
 		<menuContribution
-        	locationURI="popup:org.argeo.connect.ui.gps.gpsBrowserView">
-     		<command
-           		commandId="org.argeo.jcr.ui.explorer.refresh"
-           		icon="icons/refresh.png"
-           		style="push">
-     		</command>
-     		<command
-           		commandId="org.argeo.jcr.ui.explorer.addFileFolder"
-           		icon="icons/add.gif"
-           		style="push">
-     		</command>
-     		<command
-           		commandId="org.argeo.jcr.ui.explorer.deleteNode"
-           		icon="icons/remove.gif"
-           		style="push">
-     		</command>
-     		<command
-           		commandId="org.argeo.jcr.ui.explorer.importFileSystem"
-           		icon="icons/import_fs.png"
-           		style="push"
-           		tooltip="Import files from the files sytem to the repository">
-     		</command>
-            <command
-                  commandId="org.argeo.connect.ui.gps.importGpx"
-                  disabledIcon="icons/uploadFiles.gif"
-                  icon="icons/uploadFiles.gif"
-                  label="Import GPX"
-                  style="push"
-                  tooltip="Import GPX">
-            </command>
-  		</menuContribution>
+			locationURI="popup:org.argeo.connect.ui.gps.gpsBrowserView">
+			<command
+				commandId="org.argeo.jcr.ui.explorer.refresh"
+				icon="icons/refresh.png"
+				style="push">
+			</command>
+			<command
+				commandId="org.argeo.jcr.ui.explorer.addFileFolder"
+				icon="icons/add.gif"
+				style="push">
+			</command>
+			<command
+				commandId="org.argeo.jcr.ui.explorer.deleteNode"
+				icon="icons/remove.gif"
+				style="push">
+			</command>
+			<command
+				commandId="org.argeo.jcr.ui.explorer.importFileSystem"
+				icon="icons/import_fs.png"
+				style="push"
+				tooltip="Import files from the files sytem to the repository">
+			</command>
+			<command
+				commandId="org.argeo.connect.ui.gps.importGpx"
+				disabledIcon="icons/uploadFiles.gif"
+				icon="icons/uploadFiles.gif"
+				label="Import GPX"
+				style="push"
+				tooltip="Import GPX">
+			</command>
+		</menuContribution>
   		
-  		<menuContribution
-        	locationURI="popup:org.argeo.connect.ui.gps.gpsView">
-     		<command
-           		commandId="org.argeo.jcr.ui.explorer.refresh"
-           		icon="icons/refresh.png"
-           		style="push">
-     		</command>
-     		<command
-           		commandId="org.argeo.jcr.ui.explorer.addFileFolder"
-           		icon="icons/add.gif"
-           		style="push">
-     		</command>
-     		<command
-           		commandId="org.argeo.jcr.ui.explorer.deleteNode"
-           		icon="icons/remove.gif"
-           		style="push">
-     		</command>
-     		<command
-           		commandId="org.argeo.jcr.ui.explorer.importFileSystem"
-           		icon="icons/import_fs.png"
-           		style="push"
-           		tooltip="Import files from the files sytem to the repository">
-     		</command>
-            <command
-                  commandId="org.argeo.connect.ui.gps.importGpx"
-                  disabledIcon="icons/uploadFiles.gif"
-                  icon="icons/uploadFiles.gif"
-                  label="Import GPX"
-                  style="push"
-                  tooltip="Import GPX">
-            </command>
-  		</menuContribution>
+  		<!-- Menu contribution for GPS view -->
+		<menuContribution
+			locationURI="popup:org.argeo.connect.ui.gps.gpsView">
+			<command
+				commandId="org.argeo.jcr.ui.explorer.refresh"
+				icon="icons/refresh.png"
+				style="push">
+			</command>
+			<command
+				commandId="org.argeo.jcr.ui.explorer.addFileFolder"
+				icon="icons/add.gif"
+				style="push">
+			</command>
+			<command
+				commandId="org.argeo.jcr.ui.explorer.deleteNode"
+				icon="icons/remove.gif"
+				style="push">
+			</command>
+			<command
+				commandId="org.argeo.jcr.ui.explorer.importFileSystem"
+				icon="icons/import_fs.png"
+				style="push"
+				tooltip="Import files from the files sytem to the repository">
+			</command>
+			<command
+				commandId="org.argeo.connect.ui.gps.importGpx"
+				disabledIcon="icons/uploadFiles.gif"
+				icon="icons/uploadFiles.gif"
+				label="Import GPX"
+				style="push"
+				tooltip="Import GPX">
+			</command>
+		</menuContribution>
 	</extension>
 </plugin>

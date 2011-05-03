@@ -1,4 +1,4 @@
-package org.argeo.connect.ui.editors;
+package org.argeo.connect.ui.crisis.editors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,16 +33,12 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 
-public class SituationOverviewPage extends FormPage implements ConnectNames {
+public class SituationStatusPage extends FormPage implements ConnectNames {
 	private Node situationDefinitionNode;
-	private Node featureNode;
 
-	private String currentStatus;
-
-	public SituationOverviewPage(Node featureNode,
-			Node situationDefinitionNode, String id, String title) {
+	public SituationStatusPage(Node situationDefinitionNode, String id,
+			String title) {
 		super(id, title);
-		this.featureNode = featureNode;
 		this.situationDefinitionNode = situationDefinitionNode;
 	}
 
@@ -53,85 +49,22 @@ public class SituationOverviewPage extends FormPage implements ConnectNames {
 
 		FormToolkit tk = managedForm.getToolkit();
 
-		
 		// upper left
 		Composite upperLeft = tk.createComposite(parent);
 		upperLeft.setLayout(new GridLayout(1, true));
 
 		AbstractFormPart statusFormPart = new AbstractFormPart() {
 			public void initialize(IManagedForm form) {
-				try {
-					currentStatus = getSituationNode().getProperty(
-							CONNECT_STATUS).getString();
-				} catch (RepositoryException e) {
-					throw new ArgeoException("Cannot get value", e);
-				}
 				super.initialize(form);
 			}
 
 			public void commit(boolean onSave) {
-				try {
-					getSituationNode().setProperty(CONNECT_STATUS,
-							currentStatus);
-					super.commit(onSave);
-				} catch (RepositoryException e) {
-					throw new ArgeoException("Cannot set value", e);
-				}
+				super.commit(onSave);
 			}
 
 		};
 		createStatusViewer(parent, statusFormPart);
 		managedForm.addPart(statusFormPart);
-
-		final Text update = tk
-				.createText(upperLeft, "", SWT.MULTI | SWT.BORDER);
-
-		Composite priority = tk.createComposite(upperLeft);
-		final Button major = tk.createButton(priority,
-				"Highlight (breaking news, etc.)", SWT.CHECK);
-		final Button minor = tk.createButton(priority,
-				"Do not notify (for minor updates)", SWT.CHECK);
-
-		final Text description = tk.createText(parent, "", SWT.MULTI
-				| SWT.BORDER);
-
-		managedForm.addPart(new AbstractFormPart() {
-			public void commit(boolean onSave) {
-				Node situationNode = getSituationNode();
-				try {
-					if (!update.getText().trim().equals(""))
-						situationNode.setProperty(CONNECT_UPDATE,
-								update.getText());
-					situationNode.setProperty(CONNECT_TEXT,
-							description.getText());
-					super.commit(onSave);
-				} catch (RepositoryException e) {
-					throw new ArgeoException("Cannot commit " + situationNode,
-							e);
-				}
-			}
-		});
-	}
-
-	/** Create if does not exist */
-	protected Node getSituationNode() {
-		try {
-			String name = situationDefinitionNode.getName();
-			Node situationNode;
-			if (!featureNode.hasNode(name)) {
-				situationNode = featureNode.addNode(name);
-				situationNode.addMixin(NodeType.MIX_SIMPLE_VERSIONABLE);
-				situationNode.addMixin(NodeType.MIX_CREATED);
-				situationNode.addMixin(NodeType.MIX_LAST_MODIFIED);
-				situationNode.addMixin(NodeType.MIX_LANGUAGE);
-			} else {
-				situationNode = featureNode.getNode(name);
-			}
-			return situationNode;
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get situation node for "
-					+ featureNode, e);
-		}
 	}
 
 	protected void createStatusViewer(Composite parent,
@@ -245,7 +178,8 @@ public class SituationOverviewPage extends FormPage implements ConnectNames {
 		protected Object getValue(Object element) {
 			try {
 				String status = ((Node) element).getName();
-				return status.equals(currentStatus);
+				// return status.equals(currentStatus);
+				return true;
 			} catch (RepositoryException e) {
 				throw new ArgeoException("Cannot get value", e);
 			}
@@ -257,7 +191,7 @@ public class SituationOverviewPage extends FormPage implements ConnectNames {
 				Boolean hasStatus = (Boolean) value;
 				String status = ((Node) element).getName();
 				if (hasStatus) {
-					currentStatus = status;
+					// currentStatus = status;
 					formPart.markDirty();
 				}
 				viewer.refresh();

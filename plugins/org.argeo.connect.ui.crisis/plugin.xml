@@ -3,17 +3,14 @@
 <plugin>
    <extension
          point="org.eclipse.ui.perspectives">
-      
-      <!-- Moved in project crisis <perspective
-            class="org.argeo.connect.ui.TrackingPerspective"
+      <perspective
+            class="org.argeo.connect.ui.crisis.TrackingPerspective"
             id="org.argeo.connect.ui.trackingPerspective"
             name="Tracking">
       </perspective>
-      --> 
 	</extension>
    	<extension
          point="org.eclipse.ui.views">
-            <!-- Moved in project crisis 
       <view
             class="org.argeo.eclipse.spring.SpringExtensionFactory"
             id="org.argeo.connect.ui.feedView"
@@ -32,11 +29,9 @@
             class="org.argeo.eclipse.spring.SpringExtensionFactory"
             id="org.argeo.connect.ui.featureSourcesView">
       </view>
-      --> 
    </extension>
    <extension
          point="org.eclipse.ui.editors">
-            <!-- Moved in project crisis 
       <editor
             class="org.argeo.eclipse.spring.SpringExtensionFactory"
             default="false"
@@ -50,11 +45,9 @@
             icon="icons/earth_edit.gif"
             name="Map Editor">
       </editor>
-      -->
    </extension>
    	<extension
          point="org.eclipse.ui.commands">
-		      <!-- Moved in project crisis 
 		<command
             defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
             id="org.argeo.connect.ui.newMap"
@@ -65,9 +58,7 @@
             id="org.argeo.connect.ui.addFeatureSources"
             name="Add Feature Sources">
     	</command>
-    	-->
     </extension>
-      <!-- Moved in project crisis 
 	<extension
          point="org.eclipse.ui.menus">
 		<menuContribution
@@ -90,5 +81,5 @@
                   tooltip="Add Feature Sources">
             </command>
         </menuContribution>
-	</extension> -->
+	</extension>
 </plugin>

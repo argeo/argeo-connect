@@ -107,7 +107,7 @@ public class BeanFeatureTypeBuilder<T> implements FactoryBean {
 
 	public SimpleFeature buildFeature(Object object, String id) {
 		if (object == null)
-			throw new ArgeoException("Canbnot build feature from null");
+			throw new ArgeoException("Cannot build feature from null");
 
 		if (!((Class<?>) classBeanWrapper.getWrappedClass())
 				.isAssignableFrom(object.getClass())) {

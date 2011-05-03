@@ -5,13 +5,15 @@
 		http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="gpsBrowserView" class="org.argeo.connect.ui.gps.views.GpsBrowserView"
+	<bean id="linkEditor" class="org.argeo.connect.ui.editors.LinkEditor"
 		scope="prototype">
-		<property name="jcrSession" ref="jcrSession" />
+		<property name="mapControlCreator" ref="mapControlCreator" />
 	</bean>
 
-	<!-- Old one, using generic JCR View, not used for the time being -->
-	<!-- <bean id="gpsView" class="org.argeo.connect.ui.gps.views.GpsView" scope="prototype"> 
-		<property name="repositoryRegister" ref="repositoryRegister" /> </bean> -->
+	<bean id="defaultMapEditor" class="org.argeo.gis.ui.editors.DefaultMapEditor"
+		scope="prototype">
+		<property name="mapControlCreator" ref="mapControlCreator" />
+	</bean>
+
 
 </beans>

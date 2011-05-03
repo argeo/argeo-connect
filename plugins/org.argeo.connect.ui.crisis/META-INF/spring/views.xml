@@ -5,7 +5,6 @@
 		http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-      <!-- Moved in project crisis 
 	<bean id="feedView" class="org.argeo.connect.ui.views.FeedView"
 		scope="prototype">
 		<property name="session" ref="jcrSession" />
@@ -20,6 +19,5 @@
 	<bean id="layersView" class="org.argeo.gis.ui.views.LayersView"
 		scope="prototype">
 	</bean>
-	-->
 
 </beans>

@@ -76,7 +76,7 @@ public class GpsBrowserView extends AbstractJcrBrowser {
 		GridLayout gl = new GridLayout(1, false);
 		top.setLayout(gl);
 
-		// TODO : add here the capability to have more than one node at the
+		// TODO : add here the ability to have more than one node at the
 		// first level.
 		nodeContentProvider = new SimpleNodeContentProvider(jcrSession,
 				new String[] { JcrUtils.getUserHomePath(jcrSession) });

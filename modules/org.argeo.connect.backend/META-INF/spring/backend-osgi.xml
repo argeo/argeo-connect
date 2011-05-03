@@ -9,44 +9,29 @@
        http://www.springframework.org/schema/util
        http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-
-
 	<!-- REFERENCES -->
 	<reference id="systemExecutionService" interface="org.argeo.security.SystemExecutionService" />
 
 	<!-- SERVICES -->
-	<service ref="trackDao" interface="org.argeo.connect.gpx.TrackDao"></service>
+	<service ref="trackDao" interface="org.argeo.connect.gpx.TrackDao" />
+
+	<!-- WARNING : same repository is exposed twice with two different aliases -->
 	<service ref="jcrRepository" interface="javax.jcr.Repository">
 		<service-properties>
-			<beans:entry value="connect">
-				<beans:key>
-					<util:constant
-						static-field="org.argeo.jcr.ArgeoJcrConstants.JCR_REPOSITORY_ALIAS" />
-				</beans:key>
-			</beans:entry>
-		</service-properties>
-	</service>
-	<service ref="jcrRepository" interface="javax.jcr.Repository">
-		<service-properties>
-			<beans:entry value="node">
-				<beans:key>
-					<util:constant
-						static-field="org.argeo.jcr.ArgeoJcrConstants.JCR_REPOSITORY_ALIAS" />
-				</beans:key>
-			</beans:entry>
+			<beans:entry key="argeo.jcr.repository.alias" value="connect" />
 		</service-properties>
 	</service>
 
-	<service ref="jcrSession" interface="javax.jcr.Session">
+	<service ref="jcrRepository" interface="javax.jcr.Repository">
 		<service-properties>
-			<beans:entry value="connect">
-				<beans:key>
-					<util:constant
-						static-field="org.argeo.jcr.ArgeoJcrConstants.JCR_REPOSITORY_ALIAS" />
-				</beans:key>
-			</beans:entry>
+			<beans:entry key="argeo.jcr.repository.alias" value="node" />
 		</service-properties>
 	</service>
+
+	<!-- Old and unsafe approach, not used anymore -->
+	<!-- <service ref="jcrSession" interface="javax.jcr.Session"> <service-properties> 
+		<beans:entry value="connect"> <beans:key> <util:constant static-field="org.argeo.jcr.ArgeoJcrConstants.JCR_REPOSITORY_ALIAS" 
+		/> </beans:key> </beans:entry> </service-properties> </service> -->
 
 	<service ref="geoDbDataStore" interface="org.geotools.data.DataStore">
 		<service-properties>
@@ -56,6 +41,7 @@
 	</service>
 
 	<service ref="geoJcrMapper" interface="org.argeo.geotools.jcr.GeoJcrMapper" />
+
 	<list id="dataStores" interface="org.geotools.data.DataStore"
 		cardinality="0..N">
 		<listener ref="geoJcrMapper" bind-method="register"

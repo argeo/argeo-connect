@@ -1,4 +1,4 @@
-package org.argeo.connect.ui.views;
+package org.argeo.connect.ui.crisis.views;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.argeo.connect.ui.editors;
+package org.argeo.connect.ui.crisis.editors;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;

@@ -13,6 +13,7 @@
 	<modules>
 		<module>org.argeo.connect.ui</module>
 		<module>org.argeo.connect.ui.gps</module>
+		<module>org.argeo.connect.ui.crisis</module>
 	</modules>
 	<build>
 		<resources>

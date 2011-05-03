@@ -15,17 +15,16 @@
 		/> <list id="dataStores" interface="org.geotools.data.DataStore" cardinality="0..N" 
 		/> -->
 
-
 	<reference id="trackDao" interface="org.argeo.connect.gpx.TrackDao"
 		cardinality="0..1" />
 
-	<reference id="jcrSession" interface="javax.jcr.Session" />
+	<!-- old unsafe approach -->
+	<!-- <reference id="jcrSession" interface="javax.jcr.Session" /> -->
 
+	<reference id="repository" interface="javax.jcr.Repository"
+		filter="(argeo.jcr.repository.alias=connect)" />
 
-	<set id="repositories" interface="javax.jcr.Repository"
-		cardinality="0..N">
-		<listener ref="repositoryRegister" bind-method="register"
-			unbind-method="unregister" />
-	</set>
-
+	<!-- <set id="repositories" interface="javax.jcr.Repository" cardinality="0..N"> 
+		<listener ref="repositoryRegister" bind-method="register" unbind-method="unregister" 
+		/> </set> -->
 </beans:beans>

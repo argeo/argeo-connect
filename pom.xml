@@ -15,7 +15,6 @@
 		<developmentCycle.connect>0.1</developmentCycle.connect>
 		<site.repoBase>file:///srv/projects/www/connect/site</site.repoBase>
 		<site.urlBase>http://projects.argeo.org/connect/site</site.urlBase>
-<!-- 		<version.slc>0.13.1-SNAPSHOT</version.slc> -->
 		<version.connect>${developmentCycle.connect}.0-SNAPSHOT</version.connect>
 	</properties>
 	<modules>
@@ -68,6 +67,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<role>architect</role>
 				<role>developer</role>
 				<role>QA</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>bsinou</id>
+			<name>Bruno Sinou</name>
+			<email><![CDATA[http://www.google.com/recaptcha/mailhide/d?k=01SZoYvDnJzcw0KOR7M7u6Qg==&c=SVgEjXA_Uu9ZrNzLES92w1ght6puLFiVpoNUddCfSU8=]]></email>
+			<organization>Argeo</organization>
+			<organizationUrl>http://www.argeo.org</organizationUrl>
+			<roles>
+				<role>developer</role>
 			</roles>
 		</developer>
 	</developers>

@@ -1,4 +1,4 @@
-package org.argeo.connect.ui.views;
+package org.argeo.connect.ui.crisis.views;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import javax.jcr.Session;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.ui.ConnectUiPlugin;
-import org.argeo.connect.ui.editors.LinkEditorInput;
+import org.argeo.connect.ui.crisis.editors.LinkEditorInput;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewer;

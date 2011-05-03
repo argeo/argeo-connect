@@ -3,14 +3,13 @@
 
 <product application="org.argeo.security.ui.rcp.secureUi" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
       <programArgs>-console</programArgs>
-      <vmArgs>-Dconnect.repo.dburl=jdbc:postgresql://air/bsinou_connect
--Dconnect.geodb.dburl=jdbc:postgresql://air/bsinou_connect
+      <vmArgs>-Dconnect.repo.dburl=jdbc:postgresql://localhost/connect_jcr
+-Dconnect.geodb.dburl=jdbc:postgresql://localhost/connect
  -Dlog4j.configuration=file:${system_property:user.home}/dev/git/connect/demo/log4j.properties -Dorg.argeo.security.ui.initialPerspective=org.argeo.connect.ui.gps.gpsPerspective</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
@@ -23,7 +22,6 @@
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
    </vm>
