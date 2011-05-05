@@ -10,6 +10,9 @@
        http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
 	<!-- REFERENCES -->
+	<!-- Default JCR repository -->
+	<reference id="nodeRepository" interface="javax.jcr.Repository"
+		filter="(argeo.jcr.repository.alias=${argeo.node.repo.alias})" />
 	<reference id="systemExecutionService" interface="org.argeo.security.SystemExecutionService" />
 
 	<!-- SERVICES -->
@@ -21,17 +24,6 @@
 			<beans:entry key="argeo.jcr.repository.alias" value="connect" />
 		</service-properties>
 	</service>
-
-	<service ref="jcrRepository" interface="javax.jcr.Repository">
-		<service-properties>
-			<beans:entry key="argeo.jcr.repository.alias" value="node" />
-		</service-properties>
-	</service>
-
-	<!-- Old and unsafe approach, not used anymore -->
-	<!-- <service ref="jcrSession" interface="javax.jcr.Session"> <service-properties> 
-		<beans:entry value="connect"> <beans:key> <util:constant static-field="org.argeo.jcr.ArgeoJcrConstants.JCR_REPOSITORY_ALIAS" 
-		/> </beans:key> </beans:entry> </service-properties> </service> -->
 
 	<service ref="geoDbDataStore" interface="org.geotools.data.DataStore">
 		<service-properties>
