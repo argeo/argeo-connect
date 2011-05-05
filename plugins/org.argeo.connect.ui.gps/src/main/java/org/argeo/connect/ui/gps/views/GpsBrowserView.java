@@ -60,9 +60,8 @@ public class GpsBrowserView extends AbstractJcrBrowser {
 		// Instantiate the generic object that fits for
 		// both RCP & RAP, must be final to be accessed in the double click
 		// listener.
-		// Not that in RAP, it registers a service handler that provide the
+		// Note that in RAP, it registers a service handler that provide the
 		// access to the files.
-
 		final SingleSessionFileProvider ssfp = new SingleSessionFileProvider(
 				jcrSession);
 		fileHandler = new FileHandler(ssfp);
