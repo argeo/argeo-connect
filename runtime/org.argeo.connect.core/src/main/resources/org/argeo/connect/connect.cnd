@@ -4,8 +4,34 @@
 //[connect:syndFeed] > nt:unstructured, mix:title
 //- argeo:uri (STRING) m
 
+/** Connect Crisis types definition */
 [connect:syndEntry] > mix:title, argeo:link
 mixin
 - connect:author (STRING) *
 - connect:publishedDate (DATE)
 - connect:updatedDate (DATE)
+
+/** Connect GPS types definition */
+// root types for the UI 
+[connect:sessionRepository] > nt:unstructured, mix:title
+
+[connect:fileRepository] > nt:folder, mix:title
+
+// clean track session
+[connect:cleanTrackSession] > nt:unstructured, mix:title
+- connect:uuid (STRING) ! m
+- connect:name (STRING)
+- connect:sessionStatus (BOOLEAN) m  //open or closed 
+- connect:completed (DATE)
+- connect:comments (STRING)
+- connect:defaultSensor (STRING)
+- connect:data (REFERENCE) multiple //references files to clean
+
+// clean parameter 
+[connect:cleanParameter] > nt:unstructured
+- connect:paramName (STRING) primary
+- connect:paramValue (DOUBLE)
+- connect:paramDefaultValue (DOUBLE)
+- connect:paramMinValue (DOUBLE)
+- connect:paramMaxValue (DOUBLE)
+

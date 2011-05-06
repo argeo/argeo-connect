@@ -9,6 +9,17 @@
 		<property name="trackDao" ref="trackDao" />
 	</bean>
 
+	<bean id="importDirectoryContent"
+		class="org.argeo.connect.ui.gps.commands.ImportDirectoryContent"
+		scope="prototype" />
+
+	<bean id="addFileFolder" class="org.argeo.connect.ui.gps.commands.AddFileFolder"
+		scope="prototype" />
+	<bean id="newCleanDataSession" class="org.argeo.connect.ui.gps.commands.NewCleanDataSession"
+		scope="prototype" />
+
+
+
 	<bean id="openCleanDataEditor" class="org.argeo.connect.ui.gps.commands.OpenCleanDataEditor"
 		scope="prototype">
 	</bean>

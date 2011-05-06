@@ -1,5 +1,7 @@
 package org.argeo.connect.ui.gps.commands;
 
+import java.util.UUID;
+
 import org.argeo.ArgeoException;
 import org.argeo.connect.ui.gps.editors.CleanDataEditor;
 import org.argeo.connect.ui.gps.editors.CleanDataEditorInput;
@@ -15,16 +17,19 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * parameters prior to open the editor.
  */
 
-public class OpenCleanDataEditor extends AbstractHandler {
-	public final static String COMMAND_ID = "org.argeo.connect.ui.gps.openCleanDataEditor";
+public class NewCleanDataSession extends AbstractHandler {
+	public final static String ID = "org.argeo.connect.ui.gps.newCleanDataSession";
+	public final static String DEFAULT_ICON_REL_PATH = "icons/newSession.gif";
+	public final static String DEFAULT_LABEL = "Create a new clean data session";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
 		try {
+			String uuid = UUID.randomUUID().toString();
 			HandlerUtil
 					.getActiveWorkbenchWindow(event)
 					.getActivePage()
-					.openEditor(new CleanDataEditorInput(""),
+					.openEditor(new CleanDataEditorInput(uuid),
 							CleanDataEditor.ID);
 		} catch (Exception e) {
 			throw new ArgeoException("Cannot open editor", e);

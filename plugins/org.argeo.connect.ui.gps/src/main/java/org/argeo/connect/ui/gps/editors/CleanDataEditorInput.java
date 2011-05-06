@@ -6,14 +6,15 @@ import org.eclipse.ui.IPersistableElement;
 
 public class CleanDataEditorInput implements IEditorInput {
 
-	private final int filterId;
+	private final String uuid;
+	private String name = "new Session";
 
-	public CleanDataEditorInput(int filterId) {
-		this.filterId = filterId;
+	public CleanDataEditorInput(String uuid) {
+		this.uuid = uuid;
 	}
 
-	public int getfilterId() {
-		return filterId;
+	public String getUuid() {
+		return uuid;
 	}
 
 	@Override
@@ -28,7 +29,11 @@ public class CleanDataEditorInput implements IEditorInput {
 
 	@Override
 	public String getName() {
-		return String.valueOf(filterId);
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override
@@ -48,10 +53,7 @@ public class CleanDataEditorInput implements IEditorInput {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + filterId;
-		return result;
+		return uuid.hashCode();
 	}
 
 	@Override
@@ -63,7 +65,7 @@ public class CleanDataEditorInput implements IEditorInput {
 		if (getClass() != obj.getClass())
 			return false;
 		CleanDataEditorInput other = (CleanDataEditorInput) obj;
-		if (filterId != other.filterId)
+		if (uuid != other.getUuid())
 			return false;
 		return true;
 	}
