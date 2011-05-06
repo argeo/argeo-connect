@@ -7,9 +7,9 @@
 		<artifactId>argeo-connect</artifactId>
 		<relativePath>..</relativePath>
 	</parent>
-	<artifactId>modules</artifactId>
+	<artifactId>data</artifactId>
 	<packaging>bundles</packaging>
-	<name>Connect Modules</name>
+	<name>Connect Data</name>
 	<build>
 		<plugins>
 			<plugin>
@@ -17,7 +17,7 @@
 				<artifactId>maven-argeo-osgi-plugin</artifactId>
 				<extensions>true</extensions>
 				<configuration>
-					<bundlesPomArtifactId>org.argeo.connect.modules</bundlesPomArtifactId>
+					<bundlesPomArtifactId>org.argeo.connect.data</bundlesPomArtifactId>
 				</configuration>
 			</plugin>
 		</plugins>

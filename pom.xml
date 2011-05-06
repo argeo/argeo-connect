@@ -21,6 +21,7 @@
 		<module>runtime</module>
 		<module>plugins</module>
 		<module>modules</module>
+		<module>data</module>
 		<module>dep</module>
 	</modules>
 	<url>${site.urlBase}/${developmentCycle.connect}</url>
