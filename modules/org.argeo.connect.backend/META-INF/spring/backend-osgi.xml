@@ -13,7 +13,8 @@
 	<!-- Default JCR repository -->
 	<reference id="nodeRepository" interface="javax.jcr.Repository"
 		filter="(argeo.jcr.repository.alias=${argeo.node.repo.alias})" />
-	<reference id="systemExecutionService" interface="org.argeo.security.SystemExecutionService" />
+	<reference id="authenticationManager"
+		interface="org.springframework.security.AuthenticationManager" />
 
 	<!-- SERVICES -->
 	<service ref="trackDao" interface="org.argeo.connect.gpx.TrackDao" />

@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-	<!--  Configuration -->
+	<!-- Configuration -->
 	<bean
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
@@ -11,8 +11,8 @@
 			<value>osgibundle:backend.properties</value>
 		</property>
 	</bean>
-	
-	<!-- Dao used by connect GPS app  -->
+
+	<!-- Dao used by connect GPS app -->
 	<bean id="trackDao" class="org.argeo.connect.gpx.GeoToolsTrackDao"
 		init-method="init">
 		<property name="dataStore" ref="geoDbDataStore" />
@@ -22,11 +22,15 @@
 	<bean id="geoJcrIndex" class="org.argeo.geotools.jcr.GeoJcrIndex"
 		init-method="init" destroy-method="dispose">
 		<property name="session" ref="jcrSession" />
-		<property name="systemExecutionService" ref="systemExecutionService" />
 		<property name="dataStore" ref="geoDbDataStore" />
 	</bean>
 
-	<bean id="geoJcrMapper" class="org.argeo.geotools.jcr.SimpleGeoJcrMapper" />
+	<bean id="geoJcrMapper" class="org.argeo.geotools.jcr.SimpleGeoJcrMapper"
+		init-method="init" destroy-method="dispose">
+		<property name="systemSession">
+			<bean factory-bean="jcrRepository" factory-method="login" />
+		</property>
+	</bean>
 
 	<!-- JACKRABBIT -->
 	<bean id="jcrRepository" class="org.argeo.jackrabbit.JackrabbitContainer">
@@ -43,7 +47,6 @@
 				<value>classpath:/org/argeo/connect/connect.cnd</value>
 			</list>
 		</property>
-		<property name="systemExecutor" ref="systemExecutionService" />
 	</bean>
 
 	<bean id="jcrSession" class="org.argeo.security.jcr.SecureThreadBoundSession">
@@ -74,4 +77,11 @@
 			</map>
 		</constructor-arg>
 	</bean>
+
+	<!-- Execute initialization with a system authentication -->
+	<bean
+		class="org.argeo.security.core.AuthenticatedApplicationContextInitialization">
+		<property name="authenticationManager" ref="authenticationManager" />
+	</bean>
+
 </beans>

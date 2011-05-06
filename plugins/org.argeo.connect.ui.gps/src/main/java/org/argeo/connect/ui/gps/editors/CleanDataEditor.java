@@ -2,9 +2,13 @@ package org.argeo.connect.ui.gps.editors;
 
 import java.math.BigDecimal;
 
+import javax.jcr.Node;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.eclipse.ui.Error;
+import org.argeo.gis.ui.MapControlCreator;
+import org.argeo.gis.ui.MapViewer;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -46,6 +50,8 @@ public class CleanDataEditor extends EditorPart {
 	private Slider accelMaxSlider;
 	private Text accelMaxValue;
 
+	private MapControlCreator mapControlCreator;
+
 	// Initialization of the editor; recovering old parameter set must be
 	// handled here.
 	@Override
@@ -67,16 +73,30 @@ public class CleanDataEditor extends EditorPart {
 		sashForm.setLayout(new FillLayout());
 
 		Composite top = new Composite(sashForm, SWT.NONE);
-		Composite bottom = new Composite(sashForm, SWT.NONE);
-		bottom.setLayout(new GridLayout(1, false));
-
 		createParameterPart(top);
-		createMapPart(bottom);
+
+		Composite mapArea = new Composite(sashForm, SWT.NONE);
+		GridLayout layout = new GridLayout();
+		layout.marginHeight = 0;
+		layout.marginWidth = 0;
+		mapArea.setLayout(layout);
+		mapArea.setLayout(new GridLayout(1, false));
+		createMapPart(mapArea);
 	}
 
-	private void createMapPart(Composite parent) {
-		// TODO : implement this method
-		// Does Nothing
+	protected void createMapPart(Composite parent) {
+		Composite mapArea = new Composite(parent, SWT.NONE);
+		GridLayout layout = new GridLayout();
+		layout.marginHeight = 0;
+		layout.marginWidth = 0;
+		mapArea.setLayout(layout);
+		// FIXME we need a node
+		// Node editedNode = null;
+		// MapViewer mapViewer = mapControlCreator.createMapControl(editedNode,
+		// mapArea);
+		// mapViewer.getControl().setLayoutData(
+		// new GridData(SWT.FILL, SWT.FILL, true, true));
+
 	}
 
 	private void createParameterPart(Composite parent) {
