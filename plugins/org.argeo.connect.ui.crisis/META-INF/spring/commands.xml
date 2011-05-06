@@ -6,7 +6,7 @@
 
 	<bean id="newMap" class="org.argeo.gis.ui.commands.NewMap" scope="prototype">
 		<property name="session" ref="jcrSession"/>
-		<property name="editorId" value="org.argeo.connect.ui.defaultMapEditor"/>
+		<property name="editorId" value="org.argeo.connect.ui.crisis.defaultMapEditor"/>
 	</bean>
 	
 	<bean id="addFeatureSources" class="org.argeo.gis.ui.commands.AddFeatureSources"

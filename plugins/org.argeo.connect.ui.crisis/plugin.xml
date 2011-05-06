@@ -5,7 +5,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="org.argeo.connect.ui.crisis.TrackingPerspective"
-            id="org.argeo.connect.ui.trackingPerspective"
+            id="org.argeo.connect.ui.crisis.trackingPerspective"
             name="Tracking">
       </perspective>
 	</extension>
@@ -13,7 +13,7 @@
          point="org.eclipse.ui.views">
       <view
             class="org.argeo.eclipse.spring.SpringExtensionFactory"
-            id="org.argeo.connect.ui.feedView"
+            id="org.argeo.connect.ui.crisis.feedView"
             name="Feed"
             restorable="true">
       </view>
@@ -21,13 +21,13 @@
             name="Layers"
             icon="icons/layer_folder.gif"
             class="org.argeo.eclipse.spring.SpringExtensionFactory"
-            id="org.argeo.connect.ui.layersView">
+            id="org.argeo.connect.ui.crisis.layersView">
       </view>
       <view
             name="GIS Data"
             icon="icons/gis_add_data.gif"
             class="org.argeo.eclipse.spring.SpringExtensionFactory"
-            id="org.argeo.connect.ui.featureSourcesView">
+            id="org.argeo.connect.ui.crisis.featureSourcesView">
       </view>
    </extension>
    <extension
@@ -35,11 +35,11 @@
       <editor
             class="org.argeo.eclipse.spring.SpringExtensionFactory"
             default="false"
-            id="org.argeo.connect.ui.linkEditor"
+            id="org.argeo.connect.ui.crisis.linkEditor"
             name="Link">
       </editor>
       <editor
-            id="org.argeo.connect.ui.defaultMapEditor"
+            id="org.argeo.connect.ui.crisis.defaultMapEditor"
       		class="org.argeo.eclipse.spring.SpringExtensionFactory"
             default="true"
             icon="icons/earth_edit.gif"
@@ -50,21 +50,21 @@
          point="org.eclipse.ui.commands">
 		<command
             defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
-            id="org.argeo.connect.ui.newMap"
+            id="org.argeo.connect.ui.crisis.newMap"
             name="New Map">
     	</command>
 		<command
             defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
-            id="org.argeo.connect.ui.addFeatureSources"
+            id="org.argeo.connect.ui.crisis.addFeatureSources"
             name="Add Feature Sources">
     	</command>
     </extension>
 	<extension
          point="org.eclipse.ui.menus">
 		<menuContribution
-                locationURI="toolbar:org.argeo.connect.ui.layersView">
+                locationURI="toolbar:org.argeo.connect.ui.crisis.layersView">
              <command
-                  commandId="org.argeo.connect.ui.newMap"
+                  commandId="org.argeo.connect.ui.crisis.newMap"
                   icon="icons/earth_edit.gif"
                   label="New Map"
                   style="push"
@@ -72,9 +72,9 @@
             </command>
         </menuContribution>
 		<menuContribution
-                locationURI="toolbar:org.argeo.connect.ui.featureSourcesView">
+                locationURI="toolbar:org.argeo.connect.ui.crisis.featureSourcesView">
              <command
-                  commandId="org.argeo.connect.ui.addFeatureSources"
+                  commandId="org.argeo.connect.ui.crisis.addFeatureSources"
                   icon="icons/earth_edit.gif"
                   label="Add Feature Sources"
                   style="push"

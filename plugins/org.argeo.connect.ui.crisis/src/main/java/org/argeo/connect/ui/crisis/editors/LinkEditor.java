@@ -12,7 +12,7 @@ import javax.jcr.Session;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
-import org.argeo.eclipse.ui.dialogs.Error;
+import org.argeo.eclipse.ui.Error;
 import org.argeo.gis.ui.MapControlCreator;
 import org.argeo.gis.ui.MapViewer;
 import org.argeo.gis.ui.editors.MapFormPage;

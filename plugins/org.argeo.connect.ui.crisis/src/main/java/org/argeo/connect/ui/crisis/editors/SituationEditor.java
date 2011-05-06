@@ -4,13 +4,10 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.argeo.eclipse.ui.dialogs.Error;
+import org.argeo.eclipse.ui.Error;
 import org.argeo.eclipse.ui.jcr.editors.NodeEditorInput;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 
 public class SituationEditor extends FormEditor {

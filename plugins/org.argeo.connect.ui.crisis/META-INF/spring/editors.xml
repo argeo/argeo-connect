@@ -5,7 +5,7 @@
 		http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="linkEditor" class="org.argeo.connect.ui.editors.LinkEditor"
+	<bean id="linkEditor" class="org.argeo.connect.ui.crisis.editors.LinkEditor"
 		scope="prototype">
 		<property name="mapControlCreator" ref="mapControlCreator" />
 	</bean>

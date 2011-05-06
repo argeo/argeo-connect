@@ -8,7 +8,6 @@ import javax.jcr.Node;
 import javax.jcr.Session;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.ui.ConnectUiPlugin;
 import org.argeo.connect.ui.crisis.editors.LinkEditorInput;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -25,6 +24,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import com.sun.syndication.feed.synd.SyndContent;
@@ -80,8 +80,7 @@ public class FeedView extends ViewPart {
 				SyndEntry syndEntry = (SyndEntry) ((IStructuredSelection) event
 						.getSelection()).getFirstElement();
 				try {
-					ConnectUiPlugin
-							.getDefault()
+					PlatformUI
 							.getWorkbench()
 							.getActiveWorkbenchWindow()
 							.getActivePage()

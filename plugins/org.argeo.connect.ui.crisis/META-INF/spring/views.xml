@@ -5,10 +5,10 @@
 		http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="feedView" class="org.argeo.connect.ui.views.FeedView"
+	<bean id="feedView" class="org.argeo.connect.ui.crisis.views.FeedView"
 		scope="prototype">
 		<property name="session" ref="jcrSession" />
-		<property name="linkEditorId" value="org.argeo.connect.ui.linkEditor" />
+		<property name="linkEditorId" value="org.argeo.connect.ui.crisis.linkEditor" />
 	</bean>
 
 	<bean id="featureSourcesView" class="org.argeo.gis.ui.views.FeatureSourcesView"

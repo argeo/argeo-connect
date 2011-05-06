@@ -4,13 +4,11 @@ Bundle-Name: Argeo Connect Crisis
 Bundle-SymbolicName: org.argeo.connect.ui.crisis;singleton:=true
 Bundle-Version:  0.1.0.SNAPSHOT
 Bundle-ActivationPolicy: lazy
-Bundle-Activator: org.argeo.connect.ui.crisis.ConnectUiPlugin
 Bundle-Vendor: Argeo
 Export-Package: org.argeo.connect.ui.crisis
 Require-Bundle: org.eclipse.ui;resolution:=optional,
  org.eclipse.core.runtime,
  org.eclipse.rap.ui;resolution:=optional
-Bundle-RequiredExecutionEnvironment: JavaSE-1.5
 Import-Package: com.sun.syndication;version="1.0.0",
  com.sun.syndication.feed.module;version="1.0.0",
  com.sun.syndication.feed.synd;version="1.0.0",
@@ -22,11 +20,8 @@ Import-Package: com.sun.syndication;version="1.0.0",
  org.apache.commons.logging;version="1.1.1",
  org.argeo,
  org.argeo.connect,
- org.argeo.connect.gpx,
- org.argeo.connect.ui,
  org.argeo.eclipse.spring,
  org.argeo.eclipse.ui,
- org.argeo.eclipse.ui.dialogs,
  org.argeo.eclipse.ui.jcr,
  org.argeo.eclipse.ui.jcr.editors,
  org.argeo.eclipse.ui.jcr.explorer,
@@ -44,4 +39,5 @@ Import-Package: com.sun.syndication;version="1.0.0",
  org.eclipse.ui.forms.widgets,
  org.geotools.map,
  org.jdom;version="1.1.0"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 
