@@ -9,6 +9,7 @@ public class CleanDataEditorInput implements IEditorInput {
 	private final String uuid;
 	private String name = "new Session";
 
+	/** uuid must not be null */
 	public CleanDataEditorInput(String uuid) {
 		this.uuid = uuid;
 	}
@@ -65,7 +66,7 @@ public class CleanDataEditorInput implements IEditorInput {
 		if (getClass() != obj.getClass())
 			return false;
 		CleanDataEditorInput other = (CleanDataEditorInput) obj;
-		if (uuid != other.getUuid())
+		if (!uuid.equals(other.getUuid()))
 			return false;
 		return true;
 	}

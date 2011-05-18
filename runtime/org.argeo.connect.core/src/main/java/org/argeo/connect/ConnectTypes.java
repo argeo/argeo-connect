@@ -13,9 +13,10 @@ public interface ConnectTypes {
 	public final static String CONNECT_SESSION_REPOSITORY = CONNECT_
 			+ "sessionRepository";
 	public final static String CONNECT_FILE_REPOSITORY = CONNECT_
-	+ "fileRepository";
+			+ "fileRepository";
 	public final static String CONNECT_CLEAN_PARAMETER = CONNECT_
-	+ "cleanParameter";
-
+			+ "cleanParameter";
+	public final static String CONNECT_FILE_TO_IMPORT = CONNECT_
+			+ "fileToImport";
 
 }

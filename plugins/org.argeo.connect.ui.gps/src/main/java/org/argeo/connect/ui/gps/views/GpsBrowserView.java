@@ -1,9 +1,13 @@
 package org.argeo.connect.ui.gps.views;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
@@ -18,6 +22,7 @@ import org.argeo.connect.ui.gps.GpsNodeLabelProvider;
 import org.argeo.connect.ui.gps.commands.AddFileFolder;
 import org.argeo.connect.ui.gps.commands.ImportDirectoryContent;
 import org.argeo.connect.ui.gps.commands.NewCleanDataSession;
+import org.argeo.connect.ui.gps.commands.OpenCleanDataEditor;
 import org.argeo.eclipse.ui.jcr.SimpleNodeContentProvider;
 import org.argeo.eclipse.ui.jcr.utils.NodeViewerComparer;
 import org.argeo.eclipse.ui.jcr.utils.SingleSessionFileProvider;
@@ -25,6 +30,10 @@ import org.argeo.eclipse.ui.jcr.views.AbstractJcrBrowser;
 import org.argeo.eclipse.ui.jcr.views.GenericJcrBrowser;
 import org.argeo.eclipse.ui.specific.FileHandler;
 import org.argeo.jcr.JcrUtils;
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.IParameter;
+import org.eclipse.core.commands.Parameterization;
+import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -37,11 +46,19 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DragSourceListener;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.commands.ICommandService;
+import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.services.IServiceLocator;
@@ -57,17 +74,10 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 	private final static String trackSessionRelPath = "/.connect/importTrackSessions";
 	private final static String gpxFileDirectoryPath = "/connect/gpx";
 
-	// Generic command IDs
-	// private final static String CMD_ID_REFRESH
-	// ="org.argeo.jcr.ui.explorer.refresh";
-	// private final static String CMD_ID_DELETE
-	// ="org.argeo.jcr.ui.explorer.deleteNode";
-
 	private Session jcrSession;
 
 	private TreeViewer nodesViewer;
 	private SimpleNodeContentProvider nodeContentProvider;
-	// private TableViewer propertiesViewer;
 
 	private FileHandler fileHandler;
 
@@ -104,8 +114,9 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 				int lastIndex = sessionbasePath.lastIndexOf("/");
 				Node parFolder = JcrUtils.mkdirs(jcrSession,
 						sessionbasePath.substring(0, lastIndex));
-				log.debug("par folder node type"
-						+ parFolder.getPrimaryNodeType().getName());
+				if (log.isTraceEnabled())
+					log.debug("par folder node type"
+							+ parFolder.getPrimaryNodeType().getName());
 				parFolder.addNode(sessionbasePath.substring(lastIndex + 1),
 						CONNECT_SESSION_REPOSITORY);
 			}
@@ -116,8 +127,12 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 
 		// Configure here useful view root nodes
 		nodeContentProvider = new ViewContentProvider(jcrSession, new String[] {
-				userHomePath, userHomePath + trackSessionRelPath,
-				gpxFileDirectoryPath });
+				userHomePath + trackSessionRelPath, gpxFileDirectoryPath });
+		// home also
+		// nodeContentProvider = new ViewContentProvider(jcrSession, new
+		// String[] {
+		// userHomePath, userHomePath + trackSessionRelPath,
+		// gpxFileDirectoryPath });
 
 		// nodes viewer
 		nodesViewer = createNodeViewer(parent, nodeContentProvider);
@@ -138,6 +153,12 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 
 		// Selection Provider
 		getSite().setSelectionProvider(nodesViewer);
+
+		// add drag & drop support
+		int operations = DND.DROP_COPY | DND.DROP_MOVE;
+		Transfer[] tt = new Transfer[] { TextTransfer.getInstance() };
+		nodesViewer.addDragSupport(operations, tt, new ViewDragListener());
+
 	}
 
 	protected TreeViewer createNodeViewer(Composite parent,
@@ -157,15 +178,6 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 				.addSelectionChangedListener(new ISelectionChangedListener() {
 					public void selectionChanged(SelectionChangedEvent event) {
 						// Does nothing for the time being
-
-						// if (!event.getSelection().isEmpty()) {
-						// IStructuredSelection sel = (IStructuredSelection)
-						// event
-						// .getSelection();
-						// propertiesViewer.setInput(sel.getFirstElement());
-						// } else {
-						// propertiesViewer.setInput(getViewSite());
-						// }
 					}
 				});
 
@@ -185,23 +197,63 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 
 			Object obj = ((IStructuredSelection) event.getSelection())
 					.getFirstElement();
+			if (!(obj instanceof Node))
+				return;
+			Node node = (Node) obj;
 
-			if (obj instanceof Node) {
-				Node node = (Node) obj;
+			try {
+				if (node.isNodeType(NodeType.NT_FILE)) {
+					// open the file
+					String name = node.getName();
+					String id = node.getPath();
+					fileHandler.openFile(name, id);
+				} else if (node
+						.isNodeType(ConnectTypes.CONNECT_CLEAN_TRACK_SESSION)) {
+					// Call parameterized command "open Editor"
+					IWorkbench iw = ConnectUiPlugin.getDefault().getWorkbench();
+					IHandlerService handlerService = (IHandlerService) iw
+							.getService(IHandlerService.class);
 
-				// double clic on a file node triggers its opening
-				try {
-					if (node.isNodeType(NodeType.NT_FILE)) {
-						String name = node.getName();
-						String id = node.getPath();
-						fileHandler.openFile(name, id);
-					}
-				} catch (RepositoryException re) {
-					throw new ArgeoException(
-							"Repository error while getting Node file info", re);
+					// get the command from plugin.xml
+					IWorkbenchWindow window = iw.getActiveWorkbenchWindow();
+					ICommandService cmdService = (ICommandService) window
+							.getService(ICommandService.class);
+					Command cmd = cmdService.getCommand(OpenCleanDataEditor.ID);
+
+					ArrayList<Parameterization> parameters = new ArrayList<Parameterization>();
+
+					// get the parameter
+					IParameter iparam = cmd
+							.getParameter(OpenCleanDataEditor.PARAM_UUID);
+
+					Parameterization params = new Parameterization(iparam,
+							node.getIdentifier());
+					parameters.add(params);
+
+					// build the parameterized command
+					ParameterizedCommand pc = new ParameterizedCommand(cmd,
+							parameters.toArray(new Parameterization[parameters
+									.size()]));
+
+					// execute the command
+					handlerService = (IHandlerService) window
+							.getService(IHandlerService.class);
+					handlerService.executeCommand(pc, null);
+
+					// open the corresponding session
+					node.isNodeType(NodeType.NT_FILE);
 				}
+
+			} catch (RepositoryException re) {
+				throw new ArgeoException(
+						"Repository error while getting Node file info", re);
+			} catch (Exception e) {
+				throw new ArgeoException(
+						"Error while handling the double click in the GPS browser view.",
+						e);
 			}
 		}
+
 	}
 
 	@Override
@@ -316,9 +368,9 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 			for (Iterator<Node> it = children.iterator(); it.hasNext();) {
 				Node node = it.next();
 
-				// TODO : find correct constant to import : NodeType.NT_RESOURCE
-				// does not work
-				if (node.getPrimaryNodeType().getName().equals("nt:resource")) {
+				if (node.getPrimaryNodeType().isNodeType(NodeType.NT_RESOURCE)
+						|| node.getPrimaryNodeType().isNodeType(
+								CONNECT_CLEAN_PARAMETER)) {
 					it.remove();
 				}
 
@@ -337,6 +389,107 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 	@Override
 	protected TreeViewer getNodeViewer() {
 		return nodesViewer;
+	}
+
+	class ViewDragListener implements DragSourceListener {
+
+		public void dragStart(DragSourceEvent event) {
+			if (log.isTraceEnabled())
+				log.trace("Drag Start");
+		}
+
+		public void dragSetData(DragSourceEvent event) {
+			IStructuredSelection selection = (IStructuredSelection) nodesViewer
+					.getSelection();
+
+			Object obj = selection.getFirstElement();
+			// We ensure that current selection is valid.
+			if (obj instanceof Node) {
+				Node first = (Node) obj;
+
+				try {
+					// support multiple selecttion, but we insure that at least
+					// first node is of the correct type
+					if (first.getPrimaryNodeType().isNodeType(
+							CONNECT_FILE_REPOSITORY)
+							|| first.getPrimaryNodeType().isNodeType(
+									NodeType.NT_FILE)) {
+
+						Iterator<String> ids = getNodesIds(selection)
+								.iterator();
+
+						// We concatenate Ids since List is not supported by
+						// drag & drop
+						StringBuffer dataSB = new StringBuffer();
+						while (ids.hasNext()) {
+							dataSB.append(ids.next() + ";");
+						}
+						String dataS = dataSB.toString();
+						if (dataS.lastIndexOf(";") == dataS.length() - 1)
+							dataS = dataS.substring(0, dataS.length() - 1);
+
+						event.data = dataS;
+
+						// IHandlerService handlerService = (IHandlerService)
+						// getSite()
+						// .getService(IHandlerService.class);
+						// handlerService.executeCommand(commandId, null);
+					}
+				} catch (RepositoryException e) {
+					throw new ArgeoException(
+							"Error while drag & dropping some files.", e);
+				}
+			}
+
+		}
+
+		private List<String> getNodesIds(IStructuredSelection selection) {
+			Map<String, Node> nodeMap = new HashMap<String, Node>();
+			Iterator it = selection.iterator();
+			while (it.hasNext()) {
+				Node node = (Node) it.next();
+				nodeToMap(nodeMap, node);
+			}
+
+			List<String> ids = new ArrayList<String>();
+			for (String key : nodeMap.keySet()) {
+				ids.add(key);
+			}
+			return ids;
+		}
+
+		/** recursively constructs a node map from a parent node */
+		private void nodeToMap(Map<String, Node> map, Node curNode) {
+			try {
+				if (curNode.getPrimaryNodeType().isNodeType(NodeType.NT_FILE)) {
+					// check if it already contains the current node
+					if (!map.containsKey(curNode.getIdentifier()))
+						map.put(curNode.getIdentifier(), curNode);
+				}
+
+				else if (curNode.getPrimaryNodeType().isNodeType(
+						CONNECT_FILE_REPOSITORY)) {
+					NodeIterator ni = curNode.getNodes();
+					while (ni.hasNext()) {
+						nodeToMap(map, ni.nextNode());
+					}
+				} else {
+					if (log.isWarnEnabled())
+						log.warn("Invalid node type ("
+								+ curNode.getPrimaryNodeType().getName()
+								+ ") encountered while building the nodeList.");
+				}
+
+			} catch (RepositoryException re) {
+				throw new ArgeoException("Error while constructing NodeMap", re);
+
+			}
+		}
+
+		public void dragFinished(DragSourceEvent event) {
+			if (log.isTraceEnabled())
+				log.trace("Finished Drag");
+		}
 	}
 
 	// IoC

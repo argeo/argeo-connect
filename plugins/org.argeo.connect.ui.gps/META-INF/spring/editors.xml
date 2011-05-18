@@ -8,6 +8,8 @@
 	<!-- Editors -->
 	<bean id="org.argeo.connect.ui.gps.cleanDataEditor" class="org.argeo.connect.ui.gps.editors.CleanDataEditor"
 		scope="prototype">
+		<property name="currentSession" ref="jcrSession" />
+		<property name="trackDao" ref="trackDao" />
 	</bean>
 
 

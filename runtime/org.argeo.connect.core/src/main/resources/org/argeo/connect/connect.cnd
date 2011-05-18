@@ -19,19 +19,30 @@ mixin
 
 // clean track session
 [connect:cleanTrackSession] > nt:unstructured, mix:title
-- connect:uuid (STRING) ! m
 - connect:name (STRING)
-- connect:sessionStatus (BOOLEAN) m  //open or closed 
-- connect:completed (DATE)
+- connect:iscomplete (BOOLEAN) ='false' a m  //autocreated mandatory; FYI : closed=true 
+- connect:datecompleted (DATE)
 - connect:comments (STRING)
-- connect:defaultSensor (STRING)
-- connect:data (REFERENCE) multiple //references files to clean
+- connect:defaultsensor (STRING)
++ connect:linkedfiles =connect:fileToImport *
++ connect:param =connect:cleanParameter *
+//- connect:data (REFERENCE) multiple //references files to clean
+
+// files to import 
+[connect:fileToImport] > nt:unstructured
+- connect:fileref (REFERENCE) //reference of the linked file
+- connect:filename (STRING)
+- connect:tobeprocessed (BOOLEAN) ='true' a m  
+- connect:alreadyprocessed (BOOLEAN) ='false' a m  
+- connect:sensorname (STRING)
+
 
 // clean parameter 
 [connect:cleanParameter] > nt:unstructured
 - connect:paramName (STRING) primary
+- connect:paramLabel (STRING)
 - connect:paramValue (DOUBLE)
-- connect:paramDefaultValue (DOUBLE)
 - connect:paramMinValue (DOUBLE)
 - connect:paramMaxValue (DOUBLE)
+- connect:paramIsUsed (BOOLEAN) ='true' a
 

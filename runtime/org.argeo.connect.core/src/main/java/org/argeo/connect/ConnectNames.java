@@ -19,24 +19,46 @@ public interface ConnectNames {
 	/** Connect GPS */
 	// Session handling
 	public final static String CONNECT_NAME = CONNECT_ + "name";
-	public final static String CONNECT_UUID = CONNECT_ + "uuid";
-	public final static String CONNECT_SESSION_STATUS = CONNECT_
-			+ "sessionStatus";
-	public final static String CONNECT_COMPLETED = CONNECT_ + "completed";
+	// public final static String CONNECT_UUID = CONNECT_ + "uuid";
+	public final static String CONNECT_IS_COMPLETE = CONNECT_ + "iscomplete";
+	public final static String CONNECT_DATE_COMPLETED = CONNECT_
+			+ "datecompleted";
 	public final static String CONNECT_COMMENTS = CONNECT_ + "comments";
 	public final static String CONNECT_DEFAULT_SENSOR = CONNECT_
-			+ "defaultSensor";
+			+ "defaultsensor";
 
 	// Files to clean
+	public final static String CONNECT_SESSION_LINKED_FILE = CONNECT_
+			+ "linkedfiles";
+	public final static String CONNECT_LINKED_FILE_REF = CONNECT_ + "fileref";
+	public final static String CONNECT_SENSOR_NAME = CONNECT_ + "sensorname";
+	public final static String CONNECT_LINKED_FILE_NAME = CONNECT_ + "filename";
+	public final static String CONNECT_TO_BE_PROCESSED = CONNECT_
+			+ "tobeprocessed";
+	public final static String CONNECT_ALREADY_PROCESSED = CONNECT_
+			+ "alreadyprocessed";
 
 	// clean parameters
-	public final static String CONNECT_PARAMETER_NAME = CONNECT_ + "paramName";
+	public final static String CONNECT_PARAM_NAME = CONNECT_ + "paramName";
 	public final static String CONNECT_PARAM_VALUE = CONNECT_ + "paramValue";
-	public final static String CONNECT_PARAM_DEFAULT_VALUE = CONNECT_
-			+ "paramDefaultValue";
+	public final static String CONNECT_PARAM_LABEL = CONNECT_ + "paramLabel";
 	public final static String CONNECT_PARAM_MIN_VALUE = CONNECT_
 			+ "paramMinValue";
 	public final static String CONNECT_PARAM_MAX_VALUE = CONNECT_
-			+ "paramMaxValue";
+	+ "paramMaxValue";
+	public final static String CONNECT_PARAM_IS_USED = CONNECT_
+	+ "paramIsUsed";
+
+	// Possible parameters
+	public final static String CONNECT_PARAM_SPEED_MIN = CONNECT_ + "speedMin";
+	public final static String CONNECT_PARAM_SPEED_MAX = CONNECT_ + "speedMax";
+	public final static String CONNECT_PARAM_RADIAL_SPEED_MIN = CONNECT_
+			+ "radialSpeedMin";
+	public final static String CONNECT_PARAM_RADIAL_SPEED_MAX = CONNECT_
+			+ "radialSpeedMax";
+	public final static String CONNECT_PARAM_ACCELERATION_MIN = CONNECT_
+			+ "accelerationMin";
+	public final static String CONNECT_PARAM_ACCELERATION_MAX = CONNECT_
+			+ "accelerationMax";
 
 }

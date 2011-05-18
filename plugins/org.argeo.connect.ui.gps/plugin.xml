@@ -49,10 +49,15 @@
 			id="org.argeo.connect.ui.gps.importGpx"
 			name="ImportGPX ">
 		</command>
+		
 		<command
 			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
 			id="org.argeo.connect.ui.gps.openCleanDataEditor"
 			name="OpenCleanDataEditor">
+			<commandParameter
+				id="org.argeo.connect.ui.gps.connectSessionUuid"
+				name="Connect Session UUID">
+  	 		</commandParameter>
 		</command>    
 		<command
 			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
@@ -75,6 +80,7 @@
 	<extension
 		point="org.eclipse.ui.menus">
 		<!-- Main tool bar menu -->
+		<!-- Not used anymore; use context menu instead 
 		<menuContribution
 			allPopups="false"
 			locationURI="menu:org.eclipse.ui.main.menu?after=file">
@@ -120,7 +126,7 @@
 				</command>
 			</menu>
 		</menuContribution>
-		
+		-->
 		<!-- Popup Menu for GpsBrowserView-->
 		<menuContribution
 			locationURI="popup:org.argeo.connect.ui.gps.gpsBrowserView">

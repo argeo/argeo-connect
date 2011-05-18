@@ -1,5 +1,7 @@
 package org.argeo.connect.ui;
 
+import java.util.ResourceBundle;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -10,10 +12,15 @@ import org.osgi.framework.BundleContext;
 public class ConnectUiPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String ID = "org.argeo.connect.ui"; //$NON-NLS-1$
+	public static final String ID = "org.argeo.connect.ui";
 
 	// The shared instance
 	private static ConnectUiPlugin plugin;
+
+	private BundleContext bundleContext;
+
+	// Internationnalized labels for UI gps
+	private ResourceBundle messages_gps;
 
 	/**
 	 * The constructor
@@ -30,7 +37,9 @@ public class ConnectUiPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		this.bundleContext = context;
 		plugin = this;
+		messages_gps = ResourceBundle.getBundle("messages_gps");
 	}
 
 	/*
@@ -56,6 +65,10 @@ public class ConnectUiPlugin extends AbstractUIPlugin {
 
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(ID, path);
+	}
+
+	public static String getGPSMessage(String key) {
+		return getDefault().messages_gps.getString(key.replace(':', '_'));
 	}
 
 }

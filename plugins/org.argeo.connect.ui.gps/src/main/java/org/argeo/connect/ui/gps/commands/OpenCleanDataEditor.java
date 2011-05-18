@@ -16,15 +16,21 @@ import org.eclipse.ui.handlers.HandlerUtil;
  */
 
 public class OpenCleanDataEditor extends AbstractHandler {
-	public final static String COMMAND_ID = "org.argeo.connect.ui.gps.openCleanDataEditor";
+	// private final static Log log =
+	// LogFactory.getLog(OpenCleanDataEditor.class);
+
+	public final static String ID = "org.argeo.connect.ui.gps.openCleanDataEditor";
+	public final static String PARAM_UUID = "org.argeo.connect.ui.gps.connectSessionUuid";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+
+		String uuid = event.getParameter(PARAM_UUID);
 
 		try {
 			HandlerUtil
 					.getActiveWorkbenchWindow(event)
 					.getActivePage()
-					.openEditor(new CleanDataEditorInput(""),
+					.openEditor(new CleanDataEditorInput(uuid),
 							CleanDataEditor.ID);
 		} catch (Exception e) {
 			throw new ArgeoException("Cannot open editor", e);
