@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.SimpleFormatter;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -14,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ui.ConnectUiPlugin;
 import org.argeo.eclipse.ui.Error;
+import org.argeo.geotools.styling.StylingUtils;
 import org.argeo.gis.ui.MapControlCreator;
 import org.argeo.gis.ui.MapViewer;
 import org.eclipse.swt.SWT;
@@ -36,6 +38,11 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.geotools.data.FeatureSource;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.styling.Style;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 
 public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	private final static Log log = LogFactory
@@ -50,21 +57,10 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	private List<Node> paramNodeList = new ArrayList<Node>();;
 
 	private FormToolkit formToolkit;
-	// private final Map<String, Composite> paramWidgetLines = new
-	// HashMap<String, Composite>();
 
-	// private Slider speedMinSlider;
-	// private Text speedMinValue;
-	// private Slider speedMaxSlider;
-	// private Text speedMaxValue;
-	// private Slider accelMinSlider;
-	// private Text accelMinValue;
-	// private Slider accelMaxSlider;
-	// private Text accelMaxValue;
-	// private Slider radialSMinSlider;
-	// private Text radialSMinValue;
-	// private Slider radialSMaxSlider;
-	// private Text radialSMaxValue;
+	private SliderViewer maxSpeedViewer;
+	private SliderViewer maxAccelerationViewer;
+	private SliderViewer maxRotationViewer;
 
 	private MapControlCreator mapControlCreator;
 	private MapViewer mapViewer;
@@ -92,36 +88,94 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		// Initialize current form
 		ScrolledForm form = managedForm.getForm();
 		formToolkit = managedForm.getToolkit();
-		Composite composite = form.getBody();
-		composite.setLayout(new FillLayout());
+		Composite body = form.getBody();
+		body.setLayout(new GridLayout(1, true));
 
 		// create and initialize sashForm
-		SashForm sashForm = new SashForm(composite, SWT.VERTICAL);
-		sashForm.setSashWidth(4);
-		sashForm.setLayout(new FillLayout());
-		formToolkit.adapt(sashForm);
+		// SashForm sashForm = new SashForm(composite, SWT.VERTICAL);
+		// sashForm.setSashWidth(4);
+		// sashForm.setLayout(new FillLayout());
+		// formToolkit.adapt(sashForm);
 
 		// Create and populate top part
-		Composite top = formToolkit.createComposite(sashForm);
-		top.setLayout(new GridLayout());
-
-		createParameterPart(top);
-		addValidationButton(top);
+		createParameterPart(body);
 
 		// Create and populate bottom part
-		Composite mapArea = formToolkit.createComposite(sashForm, SWT.BORDER);
-		FillLayout layout = new FillLayout();
-		mapArea.setLayout(layout);
-		createMapPart(mapArea);
+		createMapPart(body);
+
+		addSpeedLayer();
+	}
+
+	private void createParameterPart(Composite top) {
+		SliderViewerListener sliderViewerListener = new SliderViewerListener() {
+			public void valueChanged(Double value) {
+				refreshSpeedLayer();
+			}
+		};
+		Composite parent = formToolkit.createComposite(top);
+		parent.setLayout(new GridLayout(6, false));
+		maxSpeedViewer = new SliderViewer(formToolkit, parent, "Max Speed", 0d,
+				250d, 200d);
+		maxSpeedViewer.setListener(sliderViewerListener);
+		maxAccelerationViewer = new SliderViewer(formToolkit, parent,
+				"Max Acceleration", 0d, 5d, 2d);
+		maxAccelerationViewer.setListener(sliderViewerListener);
+		maxRotationViewer = new SliderViewer(formToolkit, parent,
+				"Max Rotation", 0d, 360d, 90d);
+		maxRotationViewer.setListener(sliderViewerListener);
+		createValidationButtons(parent);
+	}
+
+	private void createValidationButtons(Composite parent) {
+		// visualize button
+		Button visualize = formToolkit.createButton(parent,
+				ConnectUiPlugin.getGPSMessage(VISUALIZE_BUTTON_LBL), SWT.PUSH);
+		GridData gridData = new GridData();
+		gridData.horizontalAlignment = GridData.BEGINNING;
+		visualize.setLayoutData(gridData);
+
+		Listener visualizeListener = new Listener() {
+			public void handleEvent(Event event) {
+
+				if (log.isDebugEnabled())
+					log.debug("Execute computation");
+				// TODO implement computation & corresponding UI workflow.
+			}
+		};
+		visualize.addListener(SWT.Selection, visualizeListener);
+
+		// Terminate button
+		Button terminate = formToolkit.createButton(parent,
+				ConnectUiPlugin.getGPSMessage(LAUNCH_CLEAN_BUTTON_LBL),
+				SWT.PUSH);
+		gridData = new GridData();
+		gridData.horizontalAlignment = GridData.BEGINNING;
+		gridData.horizontalSpan = 2;// span text and slider above
+		terminate.setLayoutData(gridData);
+
+		Listener terminateListener = new Listener() {
+			public void handleEvent(Event event) {
+
+				if (log.isDebugEnabled())
+					log.debug("Terminating process");
+				// TODO implement computation & corresponding UI workflow.
+			}
+		};
+		terminate.addListener(SWT.Selection, terminateListener);
 	}
 
 	protected void createMapPart(Composite parent) {
+		Composite mapArea = formToolkit.createComposite(parent, SWT.BORDER);
+		mapArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		FillLayout layout = new FillLayout();
+		mapArea.setLayout(layout);
 		mapViewer = mapControlCreator.createMapControl(getEditor()
-				.getCurrentSessionNode(), parent);
+				.getCurrentSessionNode(), mapArea);
 		getEditor().addBaseLayers(mapViewer);
 	}
 
-	private Section createParameterPart(Composite parent) {
+	/** @deprecated */
+	private Section createParameterPartOld(Composite parent) {
 
 		// Section
 		final Section section = formToolkit.createSection(parent,
@@ -337,46 +391,6 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 
 	}
 
-	private void addValidationButton(Composite parent) {
-		Composite composite = formToolkit.createComposite(parent);
-		composite.setLayout(new GridLayout(2, false));
-
-		// visualize button
-		Button visualize = formToolkit.createButton(composite,
-				ConnectUiPlugin.getGPSMessage(VISUALIZE_BUTTON_LBL), SWT.PUSH);
-		GridData gridData = new GridData();
-		gridData.horizontalAlignment = GridData.BEGINNING;
-		visualize.setLayoutData(gridData);
-
-		Listener visualizeListener = new Listener() {
-			public void handleEvent(Event event) {
-
-				if (log.isDebugEnabled())
-					log.debug("Execute computation");
-				// TODO implement computation & corresponding UI workflow.
-			}
-		};
-		visualize.addListener(SWT.Selection, visualizeListener);
-
-		// Terminate button
-		Button terminate = formToolkit.createButton(composite,
-				ConnectUiPlugin.getGPSMessage(LAUNCH_CLEAN_BUTTON_LBL),
-				SWT.PUSH);
-		gridData = new GridData();
-		gridData.horizontalAlignment = GridData.BEGINNING;
-		terminate.setLayoutData(gridData);
-
-		Listener terminateListener = new Listener() {
-			public void handleEvent(Event event) {
-
-				if (log.isDebugEnabled())
-					log.debug("Terminating process");
-				// TODO implement computation & corresponding UI workflow.
-			}
-		};
-		terminate.addListener(SWT.Selection, terminateListener);
-	}
-
 	// Inner Helpers
 	private Node getParameterNode(String paramName) {
 		try {
@@ -386,4 +400,194 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 					+ paramName, re);
 		}
 	}
+
+	/*
+	 * UI UTILITIES
+	 */
+	/** TODO factorize it in Argeo Commons as a generic component ? */
+	static class SliderViewer {
+		private final static Integer MIN_SLIDER = 0;
+		private final static Integer MAX_SLIDER = 100;
+
+		private String label;
+		private Double maxValue;
+		private Double minValue;
+		private Double defaultValue;
+
+		private FormToolkit formToolkit;
+		private Label lbl;
+		private Slider slider;
+		private Text txt;
+
+		/** TODO multiple listeners */
+		private SliderViewerListener listener;
+
+		public SliderViewer(FormToolkit formToolkit, Composite parent,
+				String label, Double minValue, Double maxValue,
+				Double defaultValue) {
+			this.formToolkit = formToolkit;
+			this.label = label;
+			this.minValue = minValue;
+			if (maxValue <= minValue)
+				throw new ArgeoException("Max value " + maxValue
+						+ " is lesser or equal than min value " + minValue);
+			this.maxValue = maxValue;
+			if (defaultValue < minValue || defaultValue > maxValue)
+				throw new ArgeoException("Default value " + defaultValue
+						+ " is not within acceptable range [" + minValue + ", "
+						+ maxValue + "]");
+			this.defaultValue = defaultValue;
+
+			createControls(parent);
+			addListeners();
+
+			slider.setSelection(convertToSliderSelection(this.defaultValue));
+			txt.setText(Double.toString(defaultValue));
+		}
+
+		protected void createControls(Composite parent) {
+			lbl = formToolkit.createLabel(parent, getDisplayedLabel());
+
+			slider = new Slider(parent, SWT.NONE);
+			slider.setMinimum(MIN_SLIDER);
+			slider.setMaximum(MAX_SLIDER);
+
+			txt = formToolkit.createText(parent, "");
+		}
+
+		protected void addListeners() {
+			// FIXME are we in stack overflow?(does each event trigger the
+			// other?)
+
+			slider.addListener(SWT.Selection, new Listener() {
+				public void handleEvent(Event event) {
+					Double value = getValue();
+					BigDecimal param = new BigDecimal(value).setScale(2,
+							BigDecimal.ROUND_HALF_EVEN);
+					txt.setText(param.toString());
+					if (listener != null)
+						listener.valueChanged(value);
+				}
+			});
+
+			txt.addListener(SWT.Modify, new Listener() {
+				public void handleEvent(Event event) {
+					// VERY IMPORTANT : otherwise UI crash on value change.
+					if (!txt.isFocusControl())
+						return;
+
+					String valueStr = txt.getText().trim();
+					Double value = null;
+					try {
+						value = Double.parseDouble(valueStr);
+						if (value < minValue || value > maxValue) {
+							value = null;
+						}
+					} catch (NumberFormatException e) {
+						// silent, value is null
+					}
+
+					// Check boundaries
+					if (value == null) {
+						Error.show("Value '" + valueStr
+								+ "' is not within acceptable range ["
+								+ minValue + ", " + maxValue + "]");
+						return;
+					}
+					slider.setSelection(convertToSliderSelection(value));
+					if (listener != null)
+						listener.valueChanged(value);
+				}
+			});
+
+		}
+
+		/** Label combined with min / max value */
+		protected String getDisplayedLabel() {
+			return label + " (" + minValue + "," + maxValue + ")";
+		}
+
+		public Double getValue() {
+			int sliderValue = slider.getSelection();
+			return ((maxValue - minValue) * sliderValue)
+					/ (MAX_SLIDER - MIN_SLIDER);
+		}
+
+		protected Integer convertToSliderSelection(Double value) {
+			return (int) Math
+					.round(((double) (value * (MAX_SLIDER - MIN_SLIDER)) / (maxValue - minValue)));
+		}
+
+		public void setListener(SliderViewerListener listener) {
+			this.listener = listener;
+		}
+
+	}
+
+	static interface SliderViewerListener {
+		public void valueChanged(Double value);
+	}
+
+	/*
+	 * GIS
+	 */
+	protected void addSpeedLayer() {
+		// Add speeds layer
+		String trackSpeedsPath = getEditor().getTrackDao()
+				.getTrackSpeedsSource();
+		try {
+
+			Node layerNode = getEditor().getCurrentSessionNode().getSession()
+					.getNode(trackSpeedsPath);
+			mapViewer.addLayer(layerNode, createToCleanStyle());
+
+			ReferencedEnvelope areaOfInterest = getFeatureSource().getBounds();
+			mapViewer.setAreaOfInterest(areaOfInterest);
+		} catch (Exception e) {
+			throw new ArgeoException("Cannot add layer " + trackSpeedsPath, e);
+		}
+
+	}
+
+	protected FeatureSource<SimpleFeatureType, SimpleFeature> getFeatureSource() {
+		String trackSpeedsPath = getEditor().getTrackDao()
+				.getTrackSpeedsSource();
+		try {
+
+			Node layerNode = getEditor().getCurrentSessionNode().getSession()
+					.getNode(trackSpeedsPath);
+			FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = mapViewer
+					.getGeoJcrMapper().getFeatureSource(layerNode);
+			return featureSource;
+		} catch (Exception e) {
+			throw new ArgeoException("Cannot get feature source "
+					+ trackSpeedsPath, e);
+		}
+	}
+
+	protected void refreshSpeedLayer() {
+		String trackSpeedsPath = getEditor().getTrackDao()
+				.getTrackSpeedsSource();
+		mapViewer.setStyle(trackSpeedsPath, createToCleanStyle());
+	}
+
+	protected Style createToCleanStyle() {
+		Style style = StylingUtils.createFilteredLineStyle(
+				getToCleanCqlFilter(), "RED", 3, "BLACK", 1);
+		return style;
+	}
+
+	protected String getToCleanCqlFilter() {
+		Double maxSpeed = maxSpeedViewer.getValue();
+		Double maxAbsoluteRotation = maxRotationViewer.getValue();
+		Double maxAbsoluteAcceleration = maxAccelerationViewer.getValue();
+		String cql = "speed>" + maxSpeed + " OR azimuthVariation<"
+				+ (-maxAbsoluteRotation) + " OR azimuthVariation>"
+				+ maxAbsoluteRotation + " OR acceleration<"
+				+ (-maxAbsoluteAcceleration) + " OR acceleration>"
+				+ maxAbsoluteAcceleration;
+		log.debug(cql);
+		return cql;
+	}
+
 }

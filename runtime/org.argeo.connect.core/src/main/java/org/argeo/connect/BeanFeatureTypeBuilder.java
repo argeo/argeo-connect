@@ -24,9 +24,10 @@ import java.util.List;
 import org.argeo.ArgeoException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.FactoryBean;
@@ -38,13 +39,25 @@ public class BeanFeatureTypeBuilder<T> implements FactoryBean {
 	private List<String> cachedAttributeList;
 	private String name;
 
+	private final CoordinateReferenceSystem crs;
+
 	public BeanFeatureTypeBuilder(Class<? extends T> clss) {
 		this(null, clss);
 	}
 
 	public BeanFeatureTypeBuilder(String name, Class<? extends T> clss) {
+		this(name, clss, null);
+	}
+
+	public BeanFeatureTypeBuilder(String name, Class<? extends T> clss,
+			CoordinateReferenceSystem crs) {
 		this.classBeanWrapper = new BeanWrapperImpl(clss);
 		this.name = name;
+		try {
+			this.crs = crs != null ? crs : CRS.decode("EPSG:4326");
+		} catch (Exception e) {
+			throw new ArgeoException("Cannot set CRS", e);
+		}
 		if (this.name == null)
 			this.name = getClassBeanWrapper().getWrappedClass().getSimpleName();
 		cachedFeatureType = doBuildFeatureType();
@@ -54,6 +67,12 @@ public class BeanFeatureTypeBuilder<T> implements FactoryBean {
 		SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
 
 		builder.setName(name);
+
+		// TODO: make it configurable
+		builder.setNamespaceURI("http://localhost/");
+		
+		// CRS has to be set BEFORE adding geometry attributes
+		builder.setCRS(crs);
 
 		cachedAttributeList = new ArrayList<String>();
 		props: for (PropertyDescriptor pd : getClassBeanWrapper()
@@ -67,9 +86,6 @@ public class BeanFeatureTypeBuilder<T> implements FactoryBean {
 			cachedAttributeList.add(pd.getName());
 		}
 
-		// TODO: make it configurable
-		builder.setNamespaceURI("http://localhost/");
-		builder.setCRS(DefaultGeographicCRS.WGS84);
 
 		return builder.buildFeatureType();
 	}

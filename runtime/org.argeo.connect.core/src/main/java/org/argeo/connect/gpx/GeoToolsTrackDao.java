@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.BeanFeatureTypeBuilder;
 import org.argeo.geotools.GeoToolsUtils;
+import org.argeo.jcr.gis.GisJcrConstants;
 import org.geotools.data.DataStore;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureStore;
@@ -65,9 +66,9 @@ public class GeoToolsTrackDao implements TrackDao {
 		trackPointType = new BeanFeatureTypeBuilder<TrackPoint>(
 				trackPointsToCleanTable, TrackPoint.class);
 		trackSegmentType = new BeanFeatureTypeBuilder<TrackSegment>(
-				trackSpeedsToCleanTable, TrackSegment.class);
+				trackSegmentsToCleanTable, TrackSegment.class);
 		trackSpeedType = new BeanFeatureTypeBuilder<TrackSpeed>(
-				trackSegmentsToCleanTable, TrackSpeed.class);
+				trackSpeedsToCleanTable, TrackSpeed.class);
 
 		trackPointsStore = getFeatureStore(trackPointType);
 		trackSegmentsStore = getFeatureStore(trackSegmentType);
@@ -261,6 +262,12 @@ public class GeoToolsTrackDao implements TrackDao {
 
 	public void setDataStore(DataStore dataStore) {
 		this.dataStore = dataStore;
+	}
+
+	public String getTrackSpeedsSource() {
+		// FIXME hardcoded data store alias
+		return GisJcrConstants.DATA_STORES_BASE_PATH + "/connect_geodb/"
+				+ trackSpeedsToCleanTable;
 	}
 
 	public class TrackGpxHandler extends GpxHandler {

@@ -17,6 +17,7 @@ import org.argeo.connect.gpx.TrackDao;
 import org.argeo.connect.ui.ConnectUiPlugin;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
+import org.argeo.geotools.styling.StylingUtils;
 import org.argeo.gis.ui.MapControlCreator;
 import org.argeo.gis.ui.MapViewer;
 import org.argeo.jcr.gis.GisJcrConstants;
@@ -25,6 +26,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
+import org.geotools.styling.Style;
 
 /**
  * Main multi tab view to handle a session to clean GPS data.
@@ -156,7 +158,7 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 					.trim();
 			try {
 				Node layerNode = currentSession.getNode(layerPath);
-				mapViewer.addLayer(layerNode);
+				mapViewer.addLayer(layerNode, null);
 			} catch (RepositoryException e) {
 				log.warn("Cannot retrieve " + alias + ": " + e);
 			}
