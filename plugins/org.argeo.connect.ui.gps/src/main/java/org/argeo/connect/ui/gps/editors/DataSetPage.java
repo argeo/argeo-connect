@@ -521,7 +521,6 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 			Session curSession = getEditor().getCurrentSessionNode()
 					.getSession();
 
-			log.debug("1");
 			Node refNode = curSession.getNodeByIdentifier(refNodeId);
 			Node node = curSession.getNodeByIdentifier(refNode.getProperty(
 					CONNECT_LINKED_FILE_REF).getString());

@@ -1,6 +1,8 @@
 package org.argeo.connect.ui.gps.views;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -377,6 +379,27 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 			}
 			return super.filterChildren(children);
 		}
+
+		@Override
+		protected Object[] sort(Object parent, Object[] children) {
+			Arrays.sort(children, new Comparator<Object>() {
+
+				@Override
+				public int compare(Object o1, Object o2) {
+					Node node1 = (Node) o1;
+					Node node2 = (Node) o2;
+					try {
+						return node1.getPath().compareTo(node2.getPath());
+					} catch (RepositoryException e) {
+						throw new ArgeoException("Cannot compare " + node1
+								+ " and " + node2, e);
+					}
+				}
+
+			});
+			return children;
+		}
+
 	}
 
 	// abstrat methods that must be overwritten

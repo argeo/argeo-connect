@@ -3,6 +3,7 @@ package org.argeo.connect.ui.gps.commons;
 import javax.jcr.Node;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 
@@ -19,7 +20,7 @@ public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 			// TODO : remove hard coding from instantiation of default model.
 			Node tmpNode;
 			// minimal speed
-			tmpNode = newSession.addNode(CONNECT_PARAM_SPEED_MIN,
+			tmpNode = newSession.addNode(ConnectConstants.CONNECT_PARAM_SPEED_MIN,
 					CONNECT_CLEAN_PARAMETER);
 			tmpNode.setProperty(CONNECT_PARAM_NAME, "Minimal speed");
 			tmpNode.setProperty(CONNECT_PARAM_LABEL,
@@ -29,7 +30,7 @@ public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 			tmpNode.setProperty(CONNECT_PARAM_VALUE, -500);
 
 			// maximal speed
-			tmpNode = newSession.addNode(CONNECT_PARAM_SPEED_MAX,
+			tmpNode = newSession.addNode(ConnectConstants.CONNECT_PARAM_SPEED_MAX,
 					CONNECT_CLEAN_PARAMETER);
 			tmpNode.setProperty(CONNECT_PARAM_NAME, "Maximal speed");
 			tmpNode.setProperty(CONNECT_PARAM_LABEL,
@@ -39,7 +40,7 @@ public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 			tmpNode.setProperty(CONNECT_PARAM_VALUE, 1000);
 
 			// Minimal acceleration
-			tmpNode = newSession.addNode(CONNECT_PARAM_ACCELERATION_MIN,
+			tmpNode = newSession.addNode(ConnectConstants.CONNECT_PARAM_ACCELERATION_MIN,
 					CONNECT_CLEAN_PARAMETER);
 			tmpNode.setProperty(CONNECT_PARAM_NAME, "Minimal acceleration");
 			tmpNode.setProperty(CONNECT_PARAM_LABEL,
@@ -49,7 +50,7 @@ public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 			tmpNode.setProperty(CONNECT_PARAM_VALUE, 0d);
 
 			// Maximal acceleration
-			tmpNode = newSession.addNode(CONNECT_PARAM_ACCELERATION_MAX,
+			tmpNode = newSession.addNode(ConnectConstants.CONNECT_PARAM_ACCELERATION_MAX,
 					CONNECT_CLEAN_PARAMETER);
 			tmpNode.setProperty(CONNECT_PARAM_NAME, "Maximal acceleration");
 			tmpNode.setProperty(CONNECT_PARAM_LABEL,
@@ -59,7 +60,7 @@ public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 			tmpNode.setProperty(CONNECT_PARAM_VALUE, 1000d);
 
 			// Minimal radial speed
-			tmpNode = newSession.addNode(CONNECT_PARAM_RADIAL_SPEED_MIN,
+			tmpNode = newSession.addNode(ConnectConstants.CONNECT_PARAM_RADIAL_SPEED_MIN,
 					CONNECT_CLEAN_PARAMETER);
 			tmpNode.setProperty(CONNECT_PARAM_NAME, "Minimal radial speed");
 			tmpNode.setProperty(CONNECT_PARAM_LABEL,
@@ -70,7 +71,7 @@ public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 			tmpNode.setProperty(CONNECT_PARAM_IS_USED, false);
 
 			// Maximal radial speed
-			tmpNode = newSession.addNode(CONNECT_PARAM_RADIAL_SPEED_MAX,
+			tmpNode = newSession.addNode(ConnectConstants.CONNECT_PARAM_RADIAL_SPEED_MAX,
 					CONNECT_CLEAN_PARAMETER);
 			tmpNode.setProperty(CONNECT_PARAM_NAME, "Maximal radial speed");
 			tmpNode.setProperty(CONNECT_PARAM_LABEL,

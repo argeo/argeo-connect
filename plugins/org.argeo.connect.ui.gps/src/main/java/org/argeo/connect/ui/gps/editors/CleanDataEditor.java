@@ -1,5 +1,7 @@
 package org.argeo.connect.ui.gps.editors;
 
+import java.util.List;
+
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
@@ -15,6 +17,9 @@ import org.argeo.connect.gpx.TrackDao;
 import org.argeo.connect.ui.ConnectUiPlugin;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
+import org.argeo.gis.ui.MapControlCreator;
+import org.argeo.gis.ui.MapViewer;
+import org.argeo.jcr.gis.GisJcrConstants;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -28,12 +33,15 @@ import org.eclipse.ui.forms.editor.FormEditor;
 public class CleanDataEditor extends FormEditor implements ConnectTypes,
 		ConnectNames, ConnectGpsLabels {
 	public static final String ID = "org.argeo.connect.ui.gps.cleanDataEditor";
-	
+
 	private final static Log log = LogFactory.getLog(CleanDataEditor.class);
 
 	// IoC
 	private Session currentSession;
 	private TrackDao trackDao;
+
+	private MapControlCreator mapControlCreator;
+	private List<String> baseLayers;
 
 	public CleanDataEditor() {
 	}
@@ -63,7 +71,8 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 			addPage(new DataSetPage(this,
 					ConnectUiPlugin.getGPSMessage(DATASET_PAGE_TITLE)));
 			addPage(new DefineParamsAndReviewPage(this,
-					ConnectUiPlugin.getGPSMessage(PARAMSET_PAGE_TITLE)));
+					ConnectUiPlugin.getGPSMessage(PARAMSET_PAGE_TITLE),
+					mapControlCreator));
 		} catch (PartInitException e) {
 			throw new ArgeoException("Not able to add page ", e);
 		}
@@ -73,7 +82,7 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 		try {
 
 			log.debug("CleanDataEditor.doSave");
-			
+
 			// Automatically commit all pages of the editor
 			commitPages(true);
 
@@ -123,6 +132,9 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 		return false;
 	}
 
+	/*
+	 * UTILITIES
+	 */
 	public Node getCurrentSessionNode() {
 		Node curNode;
 		try {
@@ -136,6 +148,19 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 					+ getEditorInput().getUuid() + " has not been found.", e);
 		}
 		return curNode;
+	}
+
+	public void addBaseLayers(MapViewer mapViewer) {
+		for (String alias : baseLayers) {
+			String layerPath = (GisJcrConstants.DATA_STORES_BASE_PATH + alias)
+					.trim();
+			try {
+				Node layerNode = currentSession.getNode(layerPath);
+				mapViewer.addLayer(layerNode);
+			} catch (RepositoryException e) {
+				log.warn("Cannot retrieve " + alias + ": " + e);
+			}
+		}
 	}
 
 	private String getSessionName() {
@@ -180,4 +205,13 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 	public void setTrackDao(TrackDao trackDao) {
 		this.trackDao = trackDao;
 	}
+
+	public void setMapControlCreator(MapControlCreator mapControlCreator) {
+		this.mapControlCreator = mapControlCreator;
+	}
+
+	public void setBaseLayers(List<String> baseLayers) {
+		this.baseLayers = baseLayers;
+	}
+
 }

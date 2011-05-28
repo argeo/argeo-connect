@@ -6,6 +6,8 @@
        http://www.springframework.org/schema/beans   
        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
+	<reference id="mapControlCreator" interface="org.argeo.gis.ui.MapControlCreator" />
+
 	<!-- <reference id="mapControlCreator" interface="org.argeo.gis.ui.MapControlCreator" 
 		/> <reference id="jcrSession" interface="javax.jcr.Session" filter="(argeo.jcr.repository.alias=connect)" 
 		/> <reference id="geoJcrMapper" interface="org.argeo.geotools.jcr.GeoJcrMapper" 

@@ -13,32 +13,42 @@ mixin
 
 /** Connect GPS types definition */
 // root types for the UI 
+
+// TODO use explicit relative path (to the home directory)
 [connect:sessionRepository] > nt:unstructured, mix:title
 
+// TODO use explicit absolute path
 [connect:fileRepository] > nt:folder, mix:title
 
 // clean track session
 [connect:cleanTrackSession] > nt:unstructured, mix:title
+// TODO remove?: use node name as name?
 - connect:name (STRING)
-- connect:iscomplete (BOOLEAN) ='false' a m  //autocreated mandatory; FYI : closed=true 
-- connect:datecompleted (DATE)
+- connect:isComplete (BOOLEAN) ='false' a m  //autocreated mandatory; FYI : closed=true 
+- connect:dateCompleted (DATE)
 - connect:comments (STRING)
-- connect:defaultsensor (STRING)
-+ connect:linkedfiles =connect:fileToImport *
+- connect:defaultSensor (STRING)
+// TODO + * (connect:fileToImport) * // node name is file name
++ connect:linkedFile =connect:fileToImport *
+// TODO + * (connect:cleanParameter) * // node name is param name
 + connect:param =connect:cleanParameter *
 //- connect:data (REFERENCE) multiple //references files to clean
 
 // files to import 
 [connect:fileToImport] > nt:unstructured
-- connect:fileref (REFERENCE) //reference of the linked file
-- connect:filename (STRING)
-- connect:tobeprocessed (BOOLEAN) ='true' a m  
-- connect:alreadyprocessed (BOOLEAN) ='false' a m  
-- connect:sensorname (STRING)
+// TODO use PATH instead of REFERENCE
+- connect:fileRef (REFERENCE) //reference of the linked file
+// TODO remove: file name is node name
+- connect:fileName (STRING)
+// TODO do we really need three states?
+- connect:toBeProcessed (BOOLEAN) ='true' a m  
+- connect:alreadyProcessed (BOOLEAN) ='false' a m  
+- connect:sensorName (STRING)
 
 
 // clean parameter 
 [connect:cleanParameter] > nt:unstructured
+// TODO remove: param name is node name
 - connect:paramName (STRING) primary
 - connect:paramLabel (STRING)
 - connect:paramValue (DOUBLE)

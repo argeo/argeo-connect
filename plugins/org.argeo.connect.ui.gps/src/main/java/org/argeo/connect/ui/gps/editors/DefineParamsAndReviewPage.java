@@ -15,6 +15,7 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.ui.ConnectUiPlugin;
 import org.argeo.eclipse.ui.Error;
 import org.argeo.gis.ui.MapControlCreator;
+import org.argeo.gis.ui.MapViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.FillLayout;
@@ -66,9 +67,12 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	// private Text radialSMaxValue;
 
 	private MapControlCreator mapControlCreator;
+	private MapViewer mapViewer;
 
-	public DefineParamsAndReviewPage(FormEditor editor, String title) {
+	public DefineParamsAndReviewPage(FormEditor editor, String title,
+			MapControlCreator mapControlCreator) {
 		super(editor, ID, title);
+		this.mapControlCreator = mapControlCreator;
 		try {
 			Node session = getEditor().getCurrentSessionNode();
 			NodeIterator ni = session.getNodes();
@@ -105,16 +109,16 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		addValidationButton(top);
 
 		// Create and populate bottom part
-		Composite mapArea = formToolkit.createComposite(sashForm);
+		Composite mapArea = formToolkit.createComposite(sashForm, SWT.BORDER);
 		FillLayout layout = new FillLayout();
 		mapArea.setLayout(layout);
 		createMapPart(mapArea);
 	}
 
 	protected void createMapPart(Composite parent) {
-		// TODO : Implement here map display
-		Label tmpLabel = formToolkit.createLabel(parent,
-				"Implement here map display.");
+		mapViewer = mapControlCreator.createMapControl(getEditor()
+				.getCurrentSessionNode(), parent);
+		getEditor().addBaseLayers(mapViewer);
 	}
 
 	private Section createParameterPart(Composite parent) {

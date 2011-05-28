@@ -1,7 +1,8 @@
 package org.argeo.connect;
 
+/** JCR types. see src/main/resources/org/argeo/connect/connect.cnd */
 public interface ConnectTypes {
-	public final static String CONNECT_ = "connect:";
+	final static String CONNECT_ = "connect:";
 
 	/** Connect Crisis */
 	public final static String CONNECT_SYND_FEED = CONNECT_ + "syndFeed";
