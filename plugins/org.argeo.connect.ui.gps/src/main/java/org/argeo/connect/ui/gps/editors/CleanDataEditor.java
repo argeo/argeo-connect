@@ -158,7 +158,7 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 					.trim();
 			try {
 				Node layerNode = currentSession.getNode(layerPath);
-				mapViewer.addLayer(layerNode, null);
+				mapViewer.addLayer(layerNode, StylingUtils.createLineStyle("LIGHT_GRAY", 1));
 			} catch (RepositoryException e) {
 				log.warn("Cannot retrieve " + alias + ": " + e);
 			}

@@ -56,27 +56,23 @@
 	</bean>
 
 	<!-- POSTGIS -->
-	<bean id="postGisDataStoreFactory" class="org.geotools.data.postgis.PostgisNGDataStoreFactory" />
+	<bean id="postGisDataStoreFactory" class="org.argeo.geotools.jdbc.PostgisDataStoreFactory" />
 
 	<bean id="geoDbDataStore" factory-bean="postGisDataStoreFactory"
 		factory-method="createDataStore">
-		<constructor-arg>
-			<map>
-				<entry key="Data Source">
-					<bean class="org.apache.commons.dbcp.BasicDataSource"
-						destroy-method="close">
-						<property name="driverClassName" value="org.postgresql.Driver" />
-						<property name="url" value="${connect.geodb.dburl}" />
-						<property name="username" value="${connect.geodb.dbuser}" />
-						<property name="password" value="${connect.geodb.dbpassword}" />
-						<property name="testOnBorrow" value="true" />
-						<property name="validationQuery" value="SELECT 1" />
-						<property name="maxActive" value="${connect.geodb.maxPoolSize}" />
-						<property name="maxIdle" value="2" />
-					</bean>
-				</entry>
-			</map>
-		</constructor-arg>
+		<constructor-arg ref="geoDbDataSource" />
+	</bean>
+
+	<bean id="geoDbDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="org.postgresql.Driver" />
+		<property name="url" value="${connect.geodb.dburl}" />
+		<property name="username" value="${connect.geodb.dbuser}" />
+		<property name="password" value="${connect.geodb.dbpassword}" />
+		<property name="testOnBorrow" value="true" />
+		<property name="validationQuery" value="SELECT 1" />
+		<property name="maxActive" value="${connect.geodb.maxPoolSize}" />
+		<property name="maxIdle" value="2" />
 	</bean>
 
 	<!-- Execute initialization with a system authentication -->
