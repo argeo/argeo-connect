@@ -26,6 +26,7 @@
 					<include>plugin.xml</include>
 					<include>META-INF/**</include>
 					<include>icons/**</include>
+					<include>messages*.properties</include>
 				</includes>
 			</resource>
 		</resources>
