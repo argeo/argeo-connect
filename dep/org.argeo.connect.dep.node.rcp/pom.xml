@@ -17,6 +17,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.argeo.commons.gis</groupId>
+			<artifactId>org.argeo.gis.ui.rcp.swing</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.ui</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
