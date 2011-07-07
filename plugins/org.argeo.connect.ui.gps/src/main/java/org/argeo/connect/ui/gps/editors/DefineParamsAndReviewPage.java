@@ -128,18 +128,18 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 
 	private void createValidationButtons(Composite parent) {
 		// visualize button
-		Button visualize = formToolkit.createButton(parent,
-				ConnectUiPlugin.getGPSMessage(VISUALIZE_BUTTON_LBL), SWT.PUSH);
+		// Button visualize = formToolkit.createButton(parent,
+		// ConnectUiPlugin.getGPSMessage(VISUALIZE_BUTTON_LBL), SWT.PUSH);
+		Button visualize = formToolkit.createButton(parent, "EPSG:3857",
+				SWT.PUSH);
+		visualize.setToolTipText("Not working!!");
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = GridData.BEGINNING;
 		visualize.setLayoutData(gridData);
 
 		Listener visualizeListener = new Listener() {
 			public void handleEvent(Event event) {
-
-				if (log.isDebugEnabled())
-					log.debug("Execute computation");
-				// TODO implement computation & corresponding UI workflow.
+				//mapViewer.setCoordinateReferenceSystem("EPSG:3857");
 			}
 		};
 		visualize.addListener(SWT.Selection, visualizeListener);
@@ -540,6 +540,8 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 			Node layerNode = getEditor().getCurrentSessionNode().getSession()
 					.getNode(trackSpeedsPath);
 			mapViewer.addLayer(layerNode, createToCleanStyle());
+
+			// mapViewer.setCoordinateReferenceSystem("EPSG:3857");
 
 			ReferencedEnvelope areaOfInterest = getFeatureSource().getBounds();
 			mapViewer.setAreaOfInterest(areaOfInterest);
