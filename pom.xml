@@ -23,6 +23,7 @@
 		<module>modules</module>
 		<module>data</module>
 		<module>dep</module>
+		<module>dist</module>
 	</modules>
 	<url>${site.urlBase}/${developmentCycle.connect}</url>
 	<scm>
