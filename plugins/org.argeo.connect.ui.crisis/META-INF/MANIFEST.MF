@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Argeo Connect Crisis
 Bundle-SymbolicName: org.argeo.connect.ui.crisis;singleton:=true
-Bundle-Version:  0.1.0.SNAPSHOT
+Bundle-Version: 0.1.0.SNAPSHOT
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: Argeo
 Export-Package: org.argeo.connect.ui.crisis
@@ -40,4 +40,3 @@ Import-Package: com.sun.syndication;version="1.0.0",
  org.geotools.map,
  org.jdom;version="1.1.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-
