@@ -33,6 +33,12 @@
 			<version>0.1.0-SNAPSHOT</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.gis.ui</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+		</dependency>
+
 		<!-- Argeo Commons -->
 		<dependency>
 			<groupId>org.argeo.commons.eclipse</groupId>
@@ -44,22 +50,12 @@
 			<artifactId>org.argeo.eclipse.ui.jcr</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.argeo.commons.gis</groupId>
-			<artifactId>org.argeo.gis.ui</artifactId>
-			<version>${version.argeo-commons}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.commons.gis</groupId>
-			<artifactId>org.argeo.gis.geotools</artifactId>
-			<version>${version.argeo-commons}</version>
-		</dependency>
 
 		<!-- RCP only dependency, needed at compile time -->
 		<dependency>
 			<groupId>org.argeo.commons.eclipse</groupId>
 			<artifactId>org.argeo.eclipse.dep.rcp</artifactId>
-			<version>0.3.2-SNAPSHOT</version>
+			<version>${version.argeo-commons}</version>
 			<scope>provided</scope>
 		</dependency>
 

@@ -11,6 +11,7 @@
 	<name>Connect Runtime</name>
 	<packaging>pom</packaging>
 	<modules>
+		<module>org.argeo.gis.geotools</module>
 		<module>org.argeo.connect.core</module>
 	</modules>
 	<build>

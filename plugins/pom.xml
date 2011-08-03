@@ -11,6 +11,9 @@
 	<name>Connect Plugins</name>
 	<packaging>pom</packaging>
 	<modules>
+		<module>org.argeo.gis.ui</module>
+		<module>org.argeo.gis.ui.rap.openlayers</module>
+		<module>org.argeo.gis.ui.rcp.swing</module>
 		<module>org.argeo.connect.ui</module>
 		<module>org.argeo.connect.ui.gps</module>
 		<module>org.argeo.connect.ui.crisis</module>

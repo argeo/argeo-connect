@@ -47,9 +47,9 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>org.argeo.commons.gis</groupId>
+			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.gis.geotools</artifactId>
-			<version>${version.argeo-commons}</version>
+			<version>0.1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.argeo.commons.server</groupId>
