@@ -13,7 +13,7 @@ import javax.jcr.RepositoryException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
-import org.argeo.connect.ui.ConnectUiPlugin;
+import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.eclipse.ui.Error;
 import org.argeo.geotools.styling.StylingUtils;
 import org.argeo.gis.ui.MapControlCreator;
@@ -146,7 +146,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 
 		// Terminate button
 		Button terminate = formToolkit.createButton(parent,
-				ConnectUiPlugin.getGPSMessage(LAUNCH_CLEAN_BUTTON_LBL),
+				ConnectUiGpsPlugin.getGPSMessage(LAUNCH_CLEAN_BUTTON_LBL),
 				SWT.PUSH);
 		gridData = new GridData();
 		gridData.horizontalAlignment = GridData.BEGINNING;
@@ -180,9 +180,9 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		// Section
 		final Section section = formToolkit.createSection(parent,
 				Section.DESCRIPTION | Section.TWISTIE | Section.EXPANDED);
-		section.setText(ConnectUiPlugin.getGPSMessage(PARAMS_SECTION_TITLE));
+		section.setText(ConnectUiGpsPlugin.getGPSMessage(PARAMS_SECTION_TITLE));
 		formToolkit.createCompositeSeparator(section);
-		section.setDescription(ConnectUiPlugin
+		section.setDescription(ConnectUiGpsPlugin
 				.getGPSMessage(PARAMS_SECTION_DESC));
 
 		// TODO : add here an expansion listener to reset sashForm sizes when

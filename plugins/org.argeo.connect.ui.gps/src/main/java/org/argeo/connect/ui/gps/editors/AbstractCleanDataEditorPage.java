@@ -6,8 +6,8 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.gpx.TrackDao;
-import org.argeo.connect.ui.ConnectUiPlugin;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
+import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -20,9 +20,9 @@ public abstract class AbstractCleanDataEditorPage extends FormPage implements
 		ConnectNames, ConnectTypes, ConnectGpsLabels {
 
 	// Images
-	protected final static Image CHECKED = ConnectUiPlugin.getImageDescriptor(
+	protected final static Image CHECKED = ConnectUiGpsPlugin.getImageDescriptor(
 			"icons/checked.gif").createImage();
-	protected final static Image UNCHECKED = ConnectUiPlugin
+	protected final static Image UNCHECKED = ConnectUiGpsPlugin
 			.getImageDescriptor("icons/unchecked.gif").createImage();
 
 	public AbstractCleanDataEditorPage(FormEditor editor, String id,

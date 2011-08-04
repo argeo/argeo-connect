@@ -14,8 +14,8 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.gpx.TrackDao;
-import org.argeo.connect.ui.ConnectUiPlugin;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
+import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.geotools.styling.StylingUtils;
 import org.argeo.gis.ui.MapControlCreator;
@@ -69,11 +69,11 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 	protected void addPages() {
 		try {
 			addPage(new MetaDataPage(this,
-					ConnectUiPlugin.getGPSMessage(METADATA_PAGE_TITLE)));
+					ConnectUiGpsPlugin.getGPSMessage(METADATA_PAGE_TITLE)));
 			addPage(new DataSetPage(this,
-					ConnectUiPlugin.getGPSMessage(DATASET_PAGE_TITLE)));
+					ConnectUiGpsPlugin.getGPSMessage(DATASET_PAGE_TITLE)));
 			addPage(new DefineParamsAndReviewPage(this,
-					ConnectUiPlugin.getGPSMessage(PARAMSET_PAGE_TITLE),
+					ConnectUiGpsPlugin.getGPSMessage(PARAMSET_PAGE_TITLE),
 					mapControlCreator));
 		} catch (PartInitException e) {
 			throw new ArgeoException("Not able to add page ", e);
@@ -104,7 +104,7 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 			this.setPartName(getSessionName());
 			firePropertyChange(PROP_TITLE);
 
-			GpsBrowserView gbView = (GpsBrowserView) ConnectUiPlugin
+			GpsBrowserView gbView = (GpsBrowserView) ConnectUiGpsPlugin
 					.getDefault().getWorkbench().getActiveWorkbenchWindow()
 					.getActivePage().findView(GpsBrowserView.ID);
 			gbView.refresh(getCurrentSessionNode());

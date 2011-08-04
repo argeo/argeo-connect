@@ -19,7 +19,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
-import org.argeo.connect.ui.ConnectUiPlugin;
+import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.connect.ui.gps.GpsNodeLabelProvider;
 import org.argeo.connect.ui.gps.commands.AddFileFolder;
 import org.argeo.connect.ui.gps.commands.ImportDirectoryContent;
@@ -212,7 +212,7 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 				} else if (node
 						.isNodeType(ConnectTypes.CONNECT_CLEAN_TRACK_SESSION)) {
 					// Call parameterized command "open Editor"
-					IWorkbench iw = ConnectUiPlugin.getDefault().getWorkbench();
+					IWorkbench iw = ConnectUiGpsPlugin.getDefault().getWorkbench();
 					IHandlerService handlerService = (IHandlerService) iw
 							.getService(IHandlerService.class);
 
@@ -278,7 +278,7 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 	 **/
 	protected void contextMenuAboutToShow(IMenuManager menuManager) {
 
-		IWorkbenchWindow window = ConnectUiPlugin.getDefault().getWorkbench()
+		IWorkbenchWindow window = ConnectUiGpsPlugin.getDefault().getWorkbench()
 				.getActiveWorkbenchWindow();
 
 		// Please note that commands that are not subject to programatic
@@ -338,7 +338,7 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 		if (showCommand) {
 			// Set Params
 			contributionItemParameter.label = label;
-			contributionItemParameter.icon = ConnectUiPlugin
+			contributionItemParameter.icon = ConnectUiGpsPlugin
 					.getImageDescriptor(iconPath);
 
 			// if (!REMOVE_CMD_ID.equals(cmdId)) {

@@ -16,7 +16,7 @@ import javax.jcr.Session;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
-import org.argeo.connect.ui.ConnectUiPlugin;
+import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.eclipse.ui.Error;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -116,7 +116,7 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 
 		// Corresponding Section
 		Section section = tk.createSection(parent, Section.TITLE_BAR);
-		section.setText(ConnectUiPlugin
+		section.setText(ConnectUiGpsPlugin
 				.getGPSMessage(IMPORT_FILE_SECTION_TITLE));
 		Composite body = tk.createComposite(section, SWT.WRAP);
 		body.setLayout(new GridLayout(1, false));
@@ -224,7 +224,7 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 
 		// Launch effective import button
 		Button launchImport = tk.createButton(parent,
-				ConnectUiPlugin.getGPSMessage(LAUNCH_IMPORT_BUTTON_LBL),
+				ConnectUiGpsPlugin.getGPSMessage(LAUNCH_IMPORT_BUTTON_LBL),
 				SWT.PUSH);
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = GridData.BEGINNING;
@@ -563,7 +563,7 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 	}
 
 	private Shell getShell() {
-		return ConnectUiPlugin.getDefault().getWorkbench()
+		return ConnectUiGpsPlugin.getDefault().getWorkbench()
 				.getActiveWorkbenchWindow().getShell();
 	}
 

@@ -11,7 +11,7 @@ import javax.jcr.RepositoryException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
-import org.argeo.connect.ui.ConnectUiPlugin;
+import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.connect.ui.gps.commons.ModifiedFieldListener;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -88,7 +88,7 @@ public class MetaDataPage extends AbstractCleanDataEditorPage {
 
 		// Session
 		Section section = tk.createSection(parent, Section.TITLE_BAR);
-		section.setText(ConnectUiPlugin.getGPSMessage(METADATA_SECTION_TITLE));
+		section.setText(ConnectUiGpsPlugin.getGPSMessage(METADATA_SECTION_TITLE));
 		Composite body = tk.createComposite(section, SWT.WRAP);
 		section.setClient(body);
 
@@ -99,7 +99,7 @@ public class MetaDataPage extends AbstractCleanDataEditorPage {
 
 		// Name and comments
 		Label label = new Label(body, SWT.NONE);
-		label.setText(ConnectUiPlugin.getGPSMessage(PARAM_SET_LABEL_LBL));
+		label.setText(ConnectUiGpsPlugin.getGPSMessage(PARAM_SET_LABEL_LBL));
 		paramSetLabel = new Text(body, SWT.FILL | SWT.BORDER);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		gd.horizontalSpan = 2;
@@ -107,7 +107,7 @@ public class MetaDataPage extends AbstractCleanDataEditorPage {
 		setTextValue(paramSetLabel, CONNECT_NAME);
 
 		label = new Label(body, SWT.NONE);
-		label.setText(ConnectUiPlugin.getGPSMessage(PARAM_SET_COMMENTS_LBL));
+		label.setText(ConnectUiGpsPlugin.getGPSMessage(PARAM_SET_COMMENTS_LBL));
 		paramSetComments = new Text(body, SWT.FILL | SWT.BORDER);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		gd.horizontalSpan = 2;
@@ -116,7 +116,7 @@ public class MetaDataPage extends AbstractCleanDataEditorPage {
 
 		// Default Sensor name
 		label = new Label(body, SWT.NONE);
-		label.setText(ConnectUiPlugin.getGPSMessage(DEFAULT_SENSOR_NAME_LBL));
+		label.setText(ConnectUiGpsPlugin.getGPSMessage(DEFAULT_SENSOR_NAME_LBL));
 		defaultSensorName = new Text(body, SWT.FILL | SWT.BORDER);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		gd.horizontalSpan = 2;
@@ -161,7 +161,7 @@ public class MetaDataPage extends AbstractCleanDataEditorPage {
 
 		// Section
 		Section section = tk.createSection(parent, Section.TITLE_BAR);
-		section.setText(ConnectUiPlugin
+		section.setText(ConnectUiGpsPlugin
 				.getGPSMessage(METADATA_PARAM_TABLE_TITLE));
 		Composite body = tk.createComposite(section, SWT.WRAP);
 		body.setLayout(new FillLayout());

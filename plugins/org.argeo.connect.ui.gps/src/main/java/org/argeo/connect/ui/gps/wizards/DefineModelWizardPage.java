@@ -8,7 +8,7 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.ui.ConnectUiPlugin;
+import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -40,9 +40,9 @@ public class DefineModelWizardPage extends WizardPage implements ModifyListener 
 
 	// List of the Nodes to import
 	private TableViewer nodesViewer;
-	private final static Image NODE_CHECKED = ConnectUiPlugin
+	private final static Image NODE_CHECKED = ConnectUiGpsPlugin
 			.getImageDescriptor("icons/checked.gif").createImage();
-	private final static Image NODE_UNCHECKED = ConnectUiPlugin
+	private final static Image NODE_UNCHECKED = ConnectUiGpsPlugin
 			.getImageDescriptor("icons/unchecked.gif").createImage();
 
 	private Node baseNode;

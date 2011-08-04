@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Argeo connect UI for Gps
 Bundle-SymbolicName: org.argeo.connect.ui.gps;singleton:=true
 Bundle-Version: 0.1.0.SNAPSHOT
-Bundle-Activator: org.argeo.connect.ui.ConnectUiPlugin
+Bundle-Activator: org.argeo.connect.ui.gps.ConnectUiGpsPlugin
 Require-Bundle: org.eclipse.ui;resolution:=optional,
  org.eclipse.core.runtime;resolution:=optional,
  org.eclipse.rap.ui;resolution:=optional,
@@ -21,7 +21,6 @@ Import-Package: com.sun.syndication;version="1.0.0",
  org.argeo,
  org.argeo.connect,
  org.argeo.connect.gpx,
- org.argeo.connect.ui,
  org.argeo.eclipse.spring,
  org.argeo.eclipse.ui,
  org.argeo.eclipse.ui.dialogs,

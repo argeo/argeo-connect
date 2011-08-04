@@ -7,7 +7,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
-import org.argeo.connect.ui.ConnectUiPlugin;
 import org.argeo.eclipse.ui.jcr.DefaultNodeLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
@@ -17,15 +16,15 @@ public class GpsNodeLabelProvider extends DefaultNodeLabelProvider implements
 			.getLog(GpsNodeLabelProvider.class);
 
 	// Images
-	public final static Image sessionFolder = ConnectUiPlugin
+	public final static Image sessionFolder = ConnectUiGpsPlugin
 			.getImageDescriptor("icons/home.gif").createImage();
-	public final static Image session = ConnectUiPlugin.getImageDescriptor(
+	public final static Image session = ConnectUiGpsPlugin.getImageDescriptor(
 			"icons/repository.gif").createImage();
 
-	public final static Image fileNewImg = ConnectUiPlugin.getImageDescriptor(
+	public final static Image fileNewImg = ConnectUiGpsPlugin.getImageDescriptor(
 			"icons/file_new.gif").createImage();
 
-	public final static Image fileProcessedImg = ConnectUiPlugin
+	public final static Image fileProcessedImg = ConnectUiGpsPlugin
 			.getImageDescriptor("icons/file_processed.gif").createImage();
 
 	public String getText(Object element) {
@@ -50,10 +49,10 @@ public class GpsNodeLabelProvider extends DefaultNodeLabelProvider implements
 				} else if (node.getPrimaryNodeType().isNodeType(
 						CONNECT_SESSION_REPOSITORY)) {
 					log.debug("Here & label = "
-							+ ConnectUiPlugin
+							+ ConnectUiGpsPlugin
 									.getGPSMessage(SESSION_REPOSITORY_LBL));
 					// Parent Session Node
-					curText = ConnectUiPlugin
+					curText = ConnectUiGpsPlugin
 							.getGPSMessage(SESSION_REPOSITORY_LBL);
 				}
 			} catch (Exception e) {

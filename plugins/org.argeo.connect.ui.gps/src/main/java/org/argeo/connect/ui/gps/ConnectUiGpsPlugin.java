@@ -1,4 +1,4 @@
-package org.argeo.connect.ui;
+package org.argeo.connect.ui.gps;
 
 import java.util.ResourceBundle;
 
@@ -9,46 +9,29 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class ConnectUiPlugin extends AbstractUIPlugin {
+public class ConnectUiGpsPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String ID = "org.argeo.connect.ui";
+	public static final String ID = "org.argeo.connect.ui.gps";
 
 	// The shared instance
-	private static ConnectUiPlugin plugin;
+	private static ConnectUiGpsPlugin plugin;
 
-	private BundleContext bundleContext;
-
-	// Internationnalized labels for UI gps
+	// Internationalized labels for UI gps
 	private ResourceBundle messages_gps;
 
 	/**
 	 * The constructor
 	 */
-	public ConnectUiPlugin() {
+	public ConnectUiGpsPlugin() {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
-	 * )
-	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		this.bundleContext = context;
 		plugin = this;
 		messages_gps = ResourceBundle.getBundle("messages_gps");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
-	 * )
-	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
@@ -59,7 +42,7 @@ public class ConnectUiPlugin extends AbstractUIPlugin {
 	 * 
 	 * @return the shared instance
 	 */
-	public static ConnectUiPlugin getDefault() {
+	public static ConnectUiGpsPlugin getDefault() {
 		return plugin;
 	}
 
