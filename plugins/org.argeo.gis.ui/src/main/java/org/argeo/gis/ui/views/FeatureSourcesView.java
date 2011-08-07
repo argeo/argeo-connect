@@ -1,13 +1,18 @@
 package org.argeo.gis.ui.views;
 
+import java.io.IOException;
+
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.ArgeoException;
+import org.argeo.eclipse.ui.Error;
 import org.argeo.eclipse.ui.jcr.JcrImages;
 import org.argeo.eclipse.ui.jcr.SimpleNodeContentProvider;
+import org.argeo.gis.ui.MapViewer;
 import org.argeo.gis.ui.editors.DefaultMapEditor;
+import org.argeo.gis.ui.editors.MapEditorInput;
 import org.argeo.gis.ui.editors.MapFormPage;
 import org.argeo.jcr.gis.GisTypes;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -19,9 +24,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.part.ViewPart;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 
 public class FeatureSourcesView extends ViewPart implements
 		IDoubleClickListener {
@@ -30,6 +38,8 @@ public class FeatureSourcesView extends ViewPart implements
 	private Session session;
 
 	private TreeViewer viewer;
+
+	private String editorId="org.argeo.connect.ui.crisis.defaultMapEditor";
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -45,33 +55,44 @@ public class FeatureSourcesView extends ViewPart implements
 	}
 
 	public void doubleClick(DoubleClickEvent event) {
-		if (!event.getSelection().isEmpty()) {
-			Object obj = ((IStructuredSelection) event.getSelection())
-					.getFirstElement();
-			if (obj instanceof Node) {
-				Node node = (Node) obj;
-				try {
-					if (!node.isNodeType(GisTypes.GIS_FEATURE_SOURCE))
-						return;
-				} catch (RepositoryException e) {
-					throw new ArgeoException("Cannot check type of " + node, e);
-				}
-				IEditorPart ed = getSite().getWorkbenchWindow().getActivePage()
-						.getActiveEditor();
+		if (event.getSelection().isEmpty())
+			return;
+		Object obj = ((IStructuredSelection) event.getSelection())
+				.getFirstElement();
+		if (obj instanceof Node) {
+			Node node = (Node) obj;
+			try {
+				if (!node.isNodeType(GisTypes.GIS_FEATURE_SOURCE))
+					return;
+
+				IWorkbenchPage activePage = getSite().getWorkbenchWindow()
+						.getActivePage();
+				IEditorPart ed = activePage.getActiveEditor();
+				if (ed == null)
+					ed = activePage.openEditor(new MapEditorInput(node),
+							editorId);
+
+				MapViewer mapViewer = null;
 				if (ed instanceof DefaultMapEditor) {
-					((DefaultMapEditor) ed).getMapViewer().addLayer(node, null);
+					mapViewer = ((DefaultMapEditor) ed).getMapViewer();
 				} else if (ed instanceof FormEditor) {
-					IFormPage activePage = ((FormEditor) ed)
+					IFormPage formPage = ((FormEditor) ed)
 							.getActivePageInstance();
-					if (activePage instanceof MapFormPage) {
-						((MapFormPage) activePage).getMapViewer().addLayer(
-								node, null);
-					}
+					if (formPage instanceof MapFormPage)
+						mapViewer = ((MapFormPage) activePage).getMapViewer();
 				}
+
+				if (mapViewer == null)
+					return;
+
+				mapViewer.addLayer(node, null);
+				ReferencedEnvelope areaOfInterest = mapViewer.getGeoJcrMapper()
+						.getFeatureSource(node).getBounds();
+				mapViewer.setAreaOfInterest(areaOfInterest);
+			} catch (Exception e) {
+				Error.show("Cannot open " + node, e);
 			}
-
 		}
-
 	}
 
 	@Override
