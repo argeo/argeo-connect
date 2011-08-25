@@ -10,9 +10,11 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.ArgeoException;
 import org.argeo.geotools.GeoToolsUtils;
 import org.argeo.geotools.jcr.GeoJcrMapper;
 import org.argeo.gis.ui.AbstractMapViewer;
@@ -167,14 +169,31 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 
 	@Override
 	protected void addFeatureSource(String layerId,
-			FeatureSource<SimpleFeatureType, SimpleFeature> featureSource, Object style) {
-		FeatureIterator<SimpleFeature> featureIterator = null;
+			FeatureSource<SimpleFeatureType, SimpleFeature> featureSource,
+			Object style) {
 		try {
-			VectorLayer vectorLayer = new VectorLayer(featureSource.getName()
-					.toString());
+			featureSources.put(layerId, featureSource);
+			FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource
+					.getFeatures();
+			addFeatures(layerId, featureCollection.features(), style);
+		} catch (IOException e) {
+			log.error("Cannot add layer " + featureSource.getName(), e);
+		}
+
+	}
+
+	public void addLayer(NodeIterator layer, Object style) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected void addFeatures(String layerId,
+			FeatureIterator<SimpleFeature> featureIterator, Object style) {
+		try {
+			VectorLayer vectorLayer = new VectorLayer(layerId.toString());
 			vectorLayer.setObjAttr("id", layerId);
 			vectorLayers.put(layerId, vectorLayer);
-			featureSources.put(layerId, featureSource);
 
 			// selection
 			HashMap<String, String> selectPayload = new HashMap<String, String>();
@@ -200,9 +219,6 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 			mfc.setRenderIntent("temporary");
 			mfc.activate();
 
-			FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource
-					.getFeatures();
-			featureIterator = featureCollection.features();
 			// TODO make this interruptible since it can easily block with huge
 			// data
 			while (featureIterator.hasNext()) {
@@ -235,28 +251,26 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 				}
 			}
 			map.addLayer(vectorLayer);
-		} catch (IOException e) {
-			log.error("Cannot add layer " + featureSource.getName(), e);
+		} catch (Exception e) {
+			throw new ArgeoException("Cannot add layer " + layerId, e);
 		} finally {
 			GeoToolsUtils.closeQuietly(featureIterator);
 		}
-
 	}
 
 	public void addLayer(String layerId, Collection<?> collection, Object style) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void setAreaOfInterest(ReferencedEnvelope areaOfInterest) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void setStyle(String layerId, Object style) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
-	
+
 }

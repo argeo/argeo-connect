@@ -17,6 +17,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.widgets.Composite;
 import org.geotools.data.FeatureSource;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.DefaultMapContext;
 import org.geotools.map.DefaultMapLayer;
@@ -67,6 +68,13 @@ public class SwingMapViewer extends AbstractMapViewer {
 
 		MapLayer mapLayer = new DefaultMapLayer(featureSource, (Style) style);
 		addMapLayer(layerId, mapLayer);
+	}
+
+	@Override
+	protected void addFeatures(String layerId,
+			FeatureIterator<SimpleFeature> featureIterator, Object style) {
+		// TODO Auto-generated method stub
+
 	}
 
 	protected void addMapLayer(String layerId, MapLayer mapLayer) {

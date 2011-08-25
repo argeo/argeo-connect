@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.jcr.Node;
@@ -14,13 +15,20 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.ArgeoException;
 import org.argeo.geotools.jcr.GeoJcrMapper;
+import org.argeo.geotools.jcr.GeoJcrUtils;
 import org.argeo.jcr.CollectionNodeIterator;
+import org.argeo.jcr.gis.GisNames;
 import org.argeo.jcr.gis.GisTypes;
+import org.argeo.jts.jcr.JtsJcrUtils;
 import org.eclipse.swt.widgets.Composite;
 import org.geotools.data.FeatureSource;
-import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Logic of a map viewer which is independent from a particular map display
@@ -40,6 +48,9 @@ public abstract class AbstractMapViewer implements MapViewer {
 			FeatureSource<SimpleFeatureType, SimpleFeature> featureSource,
 			Object style);
 
+	protected abstract void addFeatures(String layerId,
+			FeatureIterator<SimpleFeature> featureIterator, Object style);
+
 	public AbstractMapViewer(Node context, GeoJcrMapper geoJcrMapper) {
 		super();
 		this.context = context;
@@ -58,6 +69,51 @@ public abstract class AbstractMapViewer implements MapViewer {
 			throw new ArgeoException("Cannot add layer " + layer, e);
 		}
 
+	}
+
+	public void addLayer(String layerId, final NodeIterator layer, Object style) {
+		FeatureIterator<SimpleFeature> featureIterator = new FeatureIterator<SimpleFeature>() {
+
+			public boolean hasNext() {
+				return layer.hasNext();
+			}
+
+			public SimpleFeature next() throws NoSuchElementException {
+				Node node = layer.nextNode();
+				return nodeToFeature(node);
+			}
+
+			public void close() {
+			}
+
+		};
+		addFeatures(layerId, featureIterator, style);
+	}
+
+	protected SimpleFeature nodeToFeature(Node node) {
+		try {
+			if (node.isNodeType(GisTypes.GIS_GEOMETRY)) {
+				Geometry geom = JtsJcrUtils.readWkb(node
+						.getProperty(GisNames.GIS_WKB));
+
+				SimpleFeatureTypeBuilder sftb = new SimpleFeatureTypeBuilder();
+				sftb.setName(node.getPath());
+				sftb.add("the_geom", geom.getClass(),
+						GeoJcrUtils.getCoordinateReferenceSystem(node));
+				sftb.add("path", String.class);
+
+				Object[] values = { geom, node.getPath() };
+				SimpleFeature sf = SimpleFeatureBuilder.build(
+						sftb.buildFeatureType(), values, node.getIdentifier());
+				sf.setDefaultGeometry(geom);
+				return sf;
+			}
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Cannot convert node " + node
+					+ " to feature", e);
+		}
+		throw new ArgeoException("Don't know how to convert node " + node
+				+ " to feature");
 	}
 
 	public NodeIterator getSelectedFeatures() {

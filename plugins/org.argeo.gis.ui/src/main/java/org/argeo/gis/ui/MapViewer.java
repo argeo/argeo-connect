@@ -13,6 +13,8 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 public interface MapViewer {
 	public void addLayer(Node layer, Object style);
 
+	public void addLayer(String layerId, NodeIterator layer, Object style);
+
 	public void addLayer(String layerId, Collection<?> collection, Object style);
 
 	public NodeIterator getSelectedFeatures();
@@ -25,7 +27,7 @@ public interface MapViewer {
 
 	public void setAreaOfInterest(ReferencedEnvelope areaOfInterest);
 
-	//public void setCoordinateReferenceSystem(String crs);
+	// public void setCoordinateReferenceSystem(String crs);
 
 	public void setStyle(String layerId, Object style);
 
