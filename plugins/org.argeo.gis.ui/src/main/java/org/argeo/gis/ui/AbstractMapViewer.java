@@ -25,8 +25,12 @@ import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -40,6 +44,11 @@ public abstract class AbstractMapViewer implements MapViewer {
 
 	private Composite control;
 	private Map<String, Set<String>> selected = new HashMap<String, Set<String>>();
+
+	private CoordinateReferenceSystem mapProjection;
+	// private GeometryFactory geometryFactory = JTSFactoryFinder
+	// .getGeometryFactory(null);
+	// private MathTransform reprojection;
 
 	private Set<MapViewerListener> listeners = Collections
 			.synchronizedSet(new HashSet<MapViewerListener>());
@@ -55,6 +64,13 @@ public abstract class AbstractMapViewer implements MapViewer {
 		super();
 		this.context = context;
 		this.geoJcrMapper = geoJcrMapper;
+
+		// default is WGS84
+		try {
+			mapProjection = CRS.decode("EPSG:3857");
+		} catch (Exception e) {
+			throw new ArgeoException("Cannot define default map projection", e);
+		}
 	}
 
 	public void addLayer(Node layer, Object style) {
@@ -115,6 +131,43 @@ public abstract class AbstractMapViewer implements MapViewer {
 		throw new ArgeoException("Don't know how to convert node " + node
 				+ " to feature");
 	}
+
+	protected Geometry getReprojectedGeometry(SimpleFeature feature) {
+		CoordinateReferenceSystem crs = feature.getDefaultGeometryProperty()
+				.getDescriptor().getCoordinateReferenceSystem();
+		if (!crs.equals(mapProjection)) {
+			try {
+				MathTransform reprojection = CRS.findMathTransform(crs,
+						mapProjection);
+				return JTS.transform((Geometry) feature.getDefaultGeometry(),
+						reprojection);
+			} catch (Exception e) {
+				throw new ArgeoException("Cannot reproject " + feature
+						+ " from " + crs + " to " + mapProjection, e);
+			}
+
+		} else {
+			return (Geometry) feature.getDefaultGeometry();
+		}
+	}
+
+	// protected Point reproject(Coordinate coordinate) {
+	// if (reprojection != null) {
+	// try {
+	// // invert order
+	// DirectPosition2D pos = new DirectPosition2D(wgs84,
+	// coordinate.y, coordinate.x);
+	// DirectPosition targetPos = reprojection.transform(pos, null);
+	// Coordinate targetCoordinate = new Coordinate(
+	// targetPos.getOrdinate(0), targetPos.getOrdinate(1));
+	// return geometryFactory.createPoint(targetCoordinate);
+	// } catch (Exception e) {
+	// throw new ArgeoException("Cannot reproject " + coordinate, e);
+	// }
+	// } else {
+	// return geometryFactory.createPoint(coordinate);
+	// }
+	// }
 
 	public NodeIterator getSelectedFeatures() {
 		try {

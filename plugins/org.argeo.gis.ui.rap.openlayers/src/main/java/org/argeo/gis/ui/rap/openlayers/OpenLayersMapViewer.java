@@ -51,6 +51,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 
+/** Map viewer implementation based on open layers.*/
 public class OpenLayersMapViewer extends AbstractMapViewer implements
 		OpenLayersEventListener {
 	private final static Log log = LogFactory.getLog(OpenLayersMapViewer.class);
@@ -97,8 +98,8 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 		openLayersWidget.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		OpenLayersMap map = openLayersWidget.getMap();
-		map.setProjection(new Projection("EPSG:900913"));
 		map.setDisplayProjection(new Projection("EPSG:4326"));
+		map.setProjection(new Projection("EPSG:900913"));
 		map.setUnits("m");
 
 		map.addControl(new LayerSwitcherControl());
@@ -223,7 +224,9 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 			// data
 			while (featureIterator.hasNext()) {
 				SimpleFeature feature = featureIterator.next();
-				Geometry geom = (Geometry) feature.getDefaultGeometry();
+				
+				Geometry geom = getReprojectedGeometry(feature);
+				
 				if (log.isTraceEnabled())
 					log.trace("Feature " + feature.getID() + ", "
 							+ geom.getClass().getName());
