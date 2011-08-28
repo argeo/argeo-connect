@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import javax.jcr.Binary;
 import javax.jcr.Property;
+import javax.jcr.PropertyType;
 import javax.jcr.Session;
 
 import org.apache.commons.io.IOUtils;
@@ -16,6 +17,8 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.InputStreamInStream;
 import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.io.WKBWriter;
+import com.vividsolutions.jts.io.WKTReader;
+import com.vividsolutions.jts.io.WKTWriter;
 
 /** Utilities depending only from the JTS library. */
 public class JtsJcrUtils {
@@ -31,24 +34,49 @@ public class JtsJcrUtils {
 		}
 	};
 
+	private static ThreadLocal<WKTWriter> wktWriters = new ThreadLocal<WKTWriter>() {
+		protected WKTWriter initialValue() {
+			return new WKTWriter();
+		}
+	};
+	private static ThreadLocal<WKTReader> wktReaders = new ThreadLocal<WKTReader>() {
+		protected WKTReader initialValue() {
+			return new WKTReader(getGeometryFactory());
+		}
+	};
+
 	public static GeometryFactory getGeometryFactory() {
 		return geometryFactory;
 	}
 
-	public final static Geometry readWkb(Property property) {
-		Binary wkbBinary = null;
-		InputStream in = null;
+	/**
+	 * Reads WKB from {@link Binary} or WKT by converting other types to string.
+	 */
+	public final static Geometry readWkFormat(Property property) {
 		try {
-			wkbBinary = property.getBinary();
-			in = wkbBinary.getStream();
-			WKBReader wkbReader = wkbReaders.get();
-			return wkbReader.read(new InputStreamInStream(in));
+			if (property.getType() == PropertyType.BINARY) {
+				// WKB
+				Binary wkbBinary = null;
+				InputStream in = null;
+				try {
+					wkbBinary = property.getBinary();
+					in = wkbBinary.getStream();
+					WKBReader wkbReader = wkbReaders.get();
+					return wkbReader.read(new InputStreamInStream(in));
+				} finally {
+					IOUtils.closeQuietly(in);
+					JcrUtils.closeQuietly(wkbBinary);
+				}
+			} else {
+				// WKT
+				String wkt = property.getString();
+				WKTReader wktReader = wktReaders.get();
+				return wktReader.read(wkt);
+			}
 		} catch (Exception e) {
-			throw new ArgeoException("Cannot read WKB from " + property, e);
-		} finally {
-			IOUtils.closeQuietly(in);
-			JcrUtils.closeQuietly(wkbBinary);
+			throw new ArgeoException("Cannot read geometry from " + property, e);
 		}
+
 	}
 
 	/** The returned binary should be disposed by the caller */
@@ -66,5 +94,9 @@ public class JtsJcrUtils {
 		} finally {
 			IOUtils.closeQuietly(in);
 		}
+	}
+
+	public final static String writeWkt(Geometry geometry) {
+		return wktWriters.get().write(geometry);
 	}
 }

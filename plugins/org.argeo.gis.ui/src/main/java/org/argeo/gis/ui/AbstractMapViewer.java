@@ -105,8 +105,8 @@ public abstract class AbstractMapViewer implements MapViewer {
 	protected SimpleFeature nodeToFeature(Node node) {
 		try {
 			if (node.isNodeType(GisTypes.GIS_GEOMETRY)) {
-				Geometry geom = JtsJcrUtils.readWkb(node
-						.getProperty(GisNames.GIS_WKB));
+				Geometry geom = JtsJcrUtils.readWkFormat(node
+						.getProperty(GisNames.GIS_WKT));
 
 				SimpleFeatureTypeBuilder sftb = new SimpleFeatureTypeBuilder();
 				sftb.setName(node.getPath());

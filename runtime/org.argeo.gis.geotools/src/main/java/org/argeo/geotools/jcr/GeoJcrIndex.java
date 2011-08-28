@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.geotools.GeoToolsUtils;
+import org.argeo.gis.GisConstants;
 import org.argeo.gis.GisNames;
 import org.argeo.gis.GisTypes;
 import org.argeo.jcr.JcrUtils;
@@ -59,7 +60,7 @@ public class GeoJcrIndex implements EventListener, GisNames, GisTypes {
 	private Session session;
 	private Executor systemExecutionService;
 
-	private String crs = "EPSG:4326";
+	private String crs = GisConstants.WGS84;
 
 	/** The key is the workspace */
 	private Map<String, FeatureStore<SimpleFeatureType, SimpleFeature>> geoJcrIndexes = Collections
@@ -222,10 +223,10 @@ public class GeoJcrIndex implements EventListener, GisNames, GisTypes {
 			}
 
 			// TODO: reproject to the feature store SRS
-			Polygon bbox = (Polygon) JtsJcrUtils.readWkb(locatedNode
+			Polygon bbox = (Polygon) JtsJcrUtils.readWkFormat(locatedNode
 					.getProperty(GIS_BBOX));
 			builder.set(JcrUtils.normalize(GIS_BBOX), bbox);
-			Point centroid = (Point) JtsJcrUtils.readWkb(locatedNode
+			Point centroid = (Point) JtsJcrUtils.readWkFormat(locatedNode
 					.getProperty(GIS_CENTROID));
 			builder.set(JcrUtils.normalize(GIS_CENTROID), centroid);
 

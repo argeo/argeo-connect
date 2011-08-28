@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -106,8 +105,6 @@ public class SimpleGeoJcrMapper implements GeoJcrMapper, GisNames {
 	// }
 
 	public Node getFeatureNode(Node featureSourceNode, String featureId) {
-		Binary bbox = null;
-		Binary centroid = null;
 		try {
 			if (!featureSourceNode.hasNode(featureId)) {
 				FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = getFeatureSource(featureSourceNode);
@@ -150,12 +147,10 @@ public class SimpleGeoJcrMapper implements GeoJcrMapper, GisNames {
 					throw new ArgeoException("Unsupported envelope format "
 							+ envelope.getClass());
 				}
-				bbox = JtsJcrUtils.writeWkb(featureNode.getSession(),
-						bboxPolygon);
-				featureNode.setProperty(GIS_BBOX, bbox);
-				centroid = JtsJcrUtils.writeWkb(featureNode.getSession(),
-						geometry.getCentroid());
-				featureNode.setProperty(GIS_CENTROID, centroid);
+				featureNode.setProperty(GIS_BBOX,
+						JtsJcrUtils.writeWkt(bboxPolygon));
+				featureNode.setProperty(GIS_CENTROID,
+						JtsJcrUtils.writeWkt(geometry.getCentroid()));
 				featureSourceNode.getSession().save();
 				return featureNode;
 			} else {
@@ -164,9 +159,6 @@ public class SimpleGeoJcrMapper implements GeoJcrMapper, GisNames {
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Cannot get feature node for feature "
 					+ featureId + " from " + featureSourceNode, e);
-		} finally {
-			JcrUtils.closeQuietly(bbox);
-			JcrUtils.closeQuietly(centroid);
 		}
 	}
 
@@ -175,8 +167,7 @@ public class SimpleGeoJcrMapper implements GeoJcrMapper, GisNames {
 			// normalize by starting with a '/'
 			String path = dataStoreAlias.startsWith("/") ? GisConstants.DATA_STORES_BASE_PATH
 					+ dataStoreAlias
-					: GisConstants.DATA_STORES_BASE_PATH + '/'
-							+ dataStoreAlias;
+					: GisConstants.DATA_STORES_BASE_PATH + '/' + dataStoreAlias;
 			Node dataStoreNode = JcrUtils.mkdirs(session, path,
 					GisTypes.GIS_DATA_STORE);
 			dataStoreNode.setProperty(GIS_ALIAS, dataStoreAlias);
