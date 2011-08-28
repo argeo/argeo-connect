@@ -14,7 +14,7 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Source;
 
 import org.argeo.ArgeoException;
-import org.argeo.jcr.gis.GisTypes;
+import org.argeo.gis.GisTypes;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;

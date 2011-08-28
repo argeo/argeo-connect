@@ -44,7 +44,7 @@
 		</property>
 		<property name="cndFiles">
 			<list>
-				<value>classpath:/org/argeo/jcr/gis/argeo_gis.cnd</value>
+				<value>classpath:/org/argeo/gis/argeo_gis.cnd</value>
 				<value>classpath:/org/argeo/connect/connect.cnd</value>
 			</list>
 		</property>

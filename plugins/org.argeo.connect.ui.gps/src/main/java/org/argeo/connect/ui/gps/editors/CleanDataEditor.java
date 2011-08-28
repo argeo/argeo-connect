@@ -18,9 +18,9 @@ import org.argeo.connect.ui.gps.ConnectGpsLabels;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.geotools.styling.StylingUtils;
+import org.argeo.gis.GisConstants;
 import org.argeo.gis.ui.MapControlCreator;
 import org.argeo.gis.ui.MapViewer;
-import org.argeo.jcr.gis.GisJcrConstants;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -154,7 +154,7 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 
 	public void addBaseLayers(MapViewer mapViewer) {
 		for (String alias : baseLayers) {
-			String layerPath = (GisJcrConstants.DATA_STORES_BASE_PATH + alias)
+			String layerPath = (GisConstants.DATA_STORES_BASE_PATH + alias)
 					.trim();
 			try {
 				Node layerNode = currentSession.getNode(layerPath);

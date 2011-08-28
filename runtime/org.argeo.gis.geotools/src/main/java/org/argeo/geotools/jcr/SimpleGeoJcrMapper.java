@@ -17,10 +17,10 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.geotools.GeoToolsConstants;
 import org.argeo.geotools.GeoToolsUtils;
+import org.argeo.gis.GisConstants;
+import org.argeo.gis.GisNames;
+import org.argeo.gis.GisTypes;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.jcr.gis.GisJcrConstants;
-import org.argeo.jcr.gis.GisNames;
-import org.argeo.jcr.gis.GisTypes;
 import org.argeo.jts.jcr.JtsJcrUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
@@ -173,9 +173,9 @@ public class SimpleGeoJcrMapper implements GeoJcrMapper, GisNames {
 	protected Node getDataStoreNode(Session session, String dataStoreAlias) {
 		try {
 			// normalize by starting with a '/'
-			String path = dataStoreAlias.startsWith("/") ? GisJcrConstants.DATA_STORES_BASE_PATH
+			String path = dataStoreAlias.startsWith("/") ? GisConstants.DATA_STORES_BASE_PATH
 					+ dataStoreAlias
-					: GisJcrConstants.DATA_STORES_BASE_PATH + '/'
+					: GisConstants.DATA_STORES_BASE_PATH + '/'
 							+ dataStoreAlias;
 			Node dataStoreNode = JcrUtils.mkdirs(session, path,
 					GisTypes.GIS_DATA_STORE);

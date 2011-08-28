@@ -39,7 +39,7 @@
 						<Export-Package>
 							org.argeo.connect.*
 						</Export-Package>
-						<Import-Package>org.springframework.core,org.argeo.jcr.gis,*</Import-Package>
+						<Import-Package>org.springframework.core,org.argeo.gis,*</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>

@@ -14,7 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.BeanFeatureTypeBuilder;
 import org.argeo.geotools.GeoToolsUtils;
-import org.argeo.jcr.gis.GisJcrConstants;
+import org.argeo.gis.GisConstants;
 import org.geotools.data.DataStore;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureStore;
@@ -266,7 +266,7 @@ public class GeoToolsTrackDao implements TrackDao {
 
 	public String getTrackSpeedsSource() {
 		// FIXME hardcoded data store alias
-		return GisJcrConstants.DATA_STORES_BASE_PATH + "/connect_geodb/"
+		return GisConstants.DATA_STORES_BASE_PATH + "/connect_geodb/"
 				+ trackSpeedsToCleanTable;
 	}
 
