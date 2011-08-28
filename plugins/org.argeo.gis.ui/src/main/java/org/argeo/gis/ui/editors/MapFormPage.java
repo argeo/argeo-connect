@@ -59,7 +59,7 @@ public class MapFormPage extends FormPage {
 
 	public void setFocus() {
 		super.setFocus();
-		mapViewer.getControl().setFocus();
+		mapViewer.setFocus();
 	}
 
 	public MapViewer getMapViewer() {

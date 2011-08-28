@@ -19,6 +19,7 @@ import org.argeo.geotools.GeoToolsUtils;
 import org.argeo.geotools.jcr.GeoJcrMapper;
 import org.argeo.gis.ui.AbstractMapViewer;
 import org.argeo.gis.ui.MapViewerListener;
+import org.argeo.gis.ui.rap.openlayers.custom.GoogleLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -28,11 +29,15 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 import org.polymap.openlayers.rap.widget.OpenLayersWidget;
 import org.polymap.openlayers.rap.widget.base.OpenLayersEventListener;
 import org.polymap.openlayers.rap.widget.base.OpenLayersObject;
+import org.polymap.openlayers.rap.widget.base_types.Bounds;
 import org.polymap.openlayers.rap.widget.base_types.OpenLayersMap;
 import org.polymap.openlayers.rap.widget.base_types.Projection;
+import org.polymap.openlayers.rap.widget.base_types.Style;
+import org.polymap.openlayers.rap.widget.base_types.StyleMap;
 import org.polymap.openlayers.rap.widget.controls.KeyboardDefaultsControl;
 import org.polymap.openlayers.rap.widget.controls.LayerSwitcherControl;
 import org.polymap.openlayers.rap.widget.controls.MousePositionControl;
@@ -99,6 +104,18 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 				SWT.MULTI | SWT.WRAP);
 		openLayersWidget.setLayoutData(new GridData(GridData.FILL_BOTH));
 
+		String srs = "EPSG:3857";
+		setMapProjection(srs);
+		Projection projection = new Projection(srs);
+		Projection displayProjection = new Projection("EPSG:4326");
+		String units = "m";
+		Bounds bounds = new Bounds(Double.parseDouble("2427766.775"),
+				Double.parseDouble("970195.764"),
+				Double.parseDouble("4298713.456"),
+				Double.parseDouble("2538801.203"));
+		Float maxResolution = 7308.385472656251f;
+		openLayersWidget.createMap(projection, displayProjection, units,
+				bounds, maxResolution);
 		OpenLayersMap map = openLayersWidget.getMap();
 
 		map.addControl(new LayerSwitcherControl());
@@ -115,19 +132,29 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 		// "naturalearth:10m_admin_0_countries");
 
 		// map.setDisplayProjection(new Projection("EPSG:4326"));
-		// map.setUnits("m");
 
-		String srs = "EPSG:3857";
-		//String srs = "EPSG:4326";
-		map.setProjection(new Projection(srs));
-		setMapProjection(srs);
+		// String srs = "EPSG:4326";
 
 		// map.setProjection(new Projection("EPSG:900913"));
-		OSMLayer baseLayer = new OSMLayer("OSM",
+		WMSLayer wmsLayer = new WMSLayer("Sudan Basemap",
+				"https://gis.argeo.org:443/geoserver/wms", "sudan_basemap");
+		wmsLayer.setFormat("image/png");
+		map.addLayer(wmsLayer);
+		// map.zoomToExtent(bounds, true);
+		OSMLayer osmLayer = new OSMLayer("OSM",
 				"http://tile.openstreetmap.org/${z}/${x}/${y}.png", 19);
-//		WMSLayer baseLayer = new WMSLayer("Sudan Basemap",
-//				"https://gis.argeo.org:443/geoserver/wms", "sudan_basemap");
-		map.addLayer(baseLayer);
+		map.addLayer(osmLayer);
+
+		// VirtualEarthLayer virtualEarthLayer = new VirtualEarthLayer(
+		// "Virtual Earth Aerial", VirtualEarthLayer.AERIAL, true);
+		// map.addLayer(virtualEarthLayer);
+
+		map.addLayer(new GoogleLayer("Google Satellite",
+				GoogleLayer.G_SATELLITE_MAP));
+		map.addLayer(new GoogleLayer("Google Physical",
+				GoogleLayer.G_PHYSICAL_MAP));
+		map.addLayer(new GoogleLayer("Google Default", null));
+		map.addLayer(new GoogleLayer("Google Hybrid", GoogleLayer.G_HYBRID_MAP));
 
 		map.addControl(new OverviewMapControl());
 
@@ -204,7 +231,27 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 	protected void addFeatures(String layerId,
 			FeatureIterator<SimpleFeature> featureIterator, Object style) {
 		try {
-			VectorLayer vectorLayer = new VectorLayer(layerId.toString());
+			Style st = null;
+
+			if (style instanceof String) {
+				st = new Style();
+				st.setAttribute("externalGraphic", style.toString());
+				st.setAttribute("graphicOpacity", "1");
+				st.setAttribute("pointRadius", "8");
+			}
+			// AdvancedStyleMap styleMap = new AdvancedStyleMap();
+			// Map<String, String> lookup = new HashMap<String, String>();
+			// lookup.put("national", "national.gif");
+			// lookup.put("base", "base.gif");
+			// lookup.put("normal", "normal.gif");
+			// styleMap.addUniqueValueRules("default", "gr_siteType", lookup);
+
+			VectorLayer vectorLayer;
+			if (st != null)
+				vectorLayer = new VectorLayer(layerId.toString(), new StyleMap(
+						st));
+			else
+				vectorLayer = new VectorLayer(layerId.toString());
 			vectorLayer.setObjAttr("id", layerId);
 			vectorLayers.put(layerId, vectorLayer);
 
@@ -229,7 +276,7 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 			// unselectPayload);
 			map.addControl(mfc);
 			mfc.setMultiple(true);
-			mfc.setRenderIntent("temporary");
+			// mfc.setRenderIntent("temporary");
 			mfc.activate();
 
 			// TODO make this interruptible since it can easily block with huge
@@ -244,12 +291,12 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 							+ geom.getClass().getName());
 				// log.debug("  Geom: " + geom.getClass() + ", centroid="
 				// + geom.getCentroid());
+				VectorFeature vf;
 				if (geom instanceof Point) {
 					Point mp = (Point) geom;
 					PointGeometry pg = new PointGeometry(mp.getX(), mp.getY());
-					VectorFeature vf = new VectorFeature(pg);
+					vf = new VectorFeature(pg);
 					vf.setObjAttr("id", feature.getID());
-					vectorLayer.addFeatures(vf);
 				} else if (geom instanceof MultiPolygon) {
 					MultiPolygon mp = (MultiPolygon) geom;
 					List<PointGeometry> points = new ArrayList<PointGeometry>();
@@ -258,14 +305,35 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 						// log.debug(" " + coo.x + "," + coo.y);
 						points.add(new PointGeometry(coo.x, coo.y));
 					}
-					VectorFeature vf = new VectorFeature(
-							new LineStringGeometry(
-									points.toArray(new PointGeometry[points
-											.size()])));
-					vectorLayer.addFeatures(vf);
+					vf = new VectorFeature(new LineStringGeometry(
+							points.toArray(new PointGeometry[points.size()])));
+				} else {
+					throw new ArgeoException("Unsupported geometry type "
+							+ geom);
 				}
+
+				attributes: for (AttributeDescriptor desc : feature.getType()
+						.getAttributeDescriptors()) {
+					Object obj = feature.getAttribute(desc.getName());
+					if (obj instanceof Geometry)
+						continue attributes;
+					// log.debug("name=" + desc.getName() + ", local="
+					// + desc.getLocalName() + ", value=" + obj);
+					if (obj instanceof Integer)
+						vf.setObjAttr(desc.getLocalName(), (Integer) obj);
+					if (obj instanceof Double)
+						vf.setObjAttr(desc.getLocalName(), (Double) obj);
+					if (obj instanceof Boolean)
+						vf.setObjAttr(desc.getLocalName(), (Double) obj);
+					else
+						vf.setObjAttr(desc.getLocalName(), obj.toString());
+				}
+				vectorLayer.addFeatures(vf);
 			}
 			map.addLayer(vectorLayer);
+
+			map.addObjModCode(map.getJSObjRef() + ".zoomToExtent("
+					+ vectorLayer.getJSObjRef() + ".getDataExtent());");
 		} catch (Exception e) {
 			throw new ArgeoException("Cannot add layer " + layerId, e);
 		} finally {
@@ -279,13 +347,18 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 	}
 
 	public void setAreaOfInterest(ReferencedEnvelope areaOfInterest) {
-		// TODO Auto-generated method stub
 
 	}
 
 	public void setStyle(String layerId, Object style) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void setFocus() {
+		// TODO make sure dispolay is properly refreshed
+		super.setFocus();
 	}
 
 }

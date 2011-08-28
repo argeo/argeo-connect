@@ -32,4 +32,6 @@ public interface MapViewer {
 	public void setStyle(String layerId, Object style);
 
 	public GeoJcrMapper getGeoJcrMapper();
+	
+	public void setFocus();
 }

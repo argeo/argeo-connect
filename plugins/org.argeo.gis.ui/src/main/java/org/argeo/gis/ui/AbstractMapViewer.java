@@ -32,6 +32,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
@@ -104,28 +105,54 @@ public abstract class AbstractMapViewer implements MapViewer {
 
 	protected SimpleFeature nodeToFeature(Node node) {
 		try {
-			if (node.isNodeType(GisTypes.GIS_GEOMETRY)) {
-				Geometry geom = JtsJcrUtils.readWkFormat(node
-						.getProperty(GisNames.GIS_WKT));
+			SimpleFeatureTypeBuilder sftb = new SimpleFeatureTypeBuilder();
+			sftb.setName(node.getName().replace(':', '_'));
 
-				SimpleFeatureTypeBuilder sftb = new SimpleFeatureTypeBuilder();
-				sftb.setName(node.getPath());
-				sftb.add("the_geom", geom.getClass(),
-						GeoJcrUtils.getCoordinateReferenceSystem(node));
-				sftb.add("path", String.class);
+			List<Object> values = new ArrayList<Object>();
 
-				Object[] values = { geom, node.getPath() };
-				SimpleFeature sf = SimpleFeatureBuilder.build(
-						sftb.buildFeatureType(), values, node.getIdentifier());
-				sf.setDefaultGeometry(geom);
-				return sf;
+			Geometry geom = null;
+			NodeIterator children = node.getNodes();
+			while (children.hasNext()) {
+				Node child = children.nextNode();
+				if (child.isNodeType(GisTypes.GIS_GEOMETRY)) {
+					geom = JtsJcrUtils.readWkFormat(child
+							.getProperty(GisNames.GIS_WKT));
+					sftb.add(child.getName().replace(':', '_'),
+							geom.getClass(),
+							GeoJcrUtils.getCoordinateReferenceSystem(child));
+					break;
+				}
 			}
+
+			if (geom == null)
+				throw new ArgeoException("No geometry under " + node);
+			values.add(geom);
+
+			sftb.add("path", String.class);
+			values.add(node.getPath());
+
+			// PropertyIterator pit = parent.getProperties();
+			// while (pit.hasNext()) {
+			// Property p = pit.nextProperty();
+			// // TODO: typing
+			// sftb.add(p.getName().replace(':', '_'), String.class);
+			// values.add(p.getString());
+			// }
+
+			// sftb.add("thumbnail", String.class);
+			// values.add(parent.getProperty("gr:siteType").getString()
+			// + ".gif");
+
+			SimpleFeature sf = SimpleFeatureBuilder.build(
+					sftb.buildFeatureType(), values.toArray(),
+					node.getIdentifier());
+			sf.setDefaultGeometry(geom);
+			return sf;
+
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Cannot convert node " + node
 					+ " to feature", e);
 		}
-		throw new ArgeoException("Don't know how to convert node " + node
-				+ " to feature");
 	}
 
 	protected Geometry getReprojectedGeometry(SimpleFeature feature) {
@@ -144,6 +171,23 @@ public abstract class AbstractMapViewer implements MapViewer {
 
 		} else {
 			return (Geometry) feature.getDefaultGeometry();
+		}
+	}
+
+	protected Envelope getReprojectedEnvelope(CoordinateReferenceSystem crs,
+			Envelope envelope) {
+		if (!crs.equals(mapProjection)) {
+			try {
+				MathTransform reprojection = CRS.findMathTransform(crs,
+						mapProjection);
+				return JTS.transform(envelope, reprojection);
+			} catch (Exception e) {
+				throw new ArgeoException("Cannot reproject " + envelope
+						+ " from " + crs + " to " + mapProjection, e);
+			}
+
+		} else {
+			return envelope;
 		}
 	}
 
@@ -214,6 +258,10 @@ public abstract class AbstractMapViewer implements MapViewer {
 
 	public GeoJcrMapper getGeoJcrMapper() {
 		return geoJcrMapper;
+	}
+
+	public void setFocus() {
+		getControl().setFocus();
 	}
 
 	public void setMapProjection(String srs) {
