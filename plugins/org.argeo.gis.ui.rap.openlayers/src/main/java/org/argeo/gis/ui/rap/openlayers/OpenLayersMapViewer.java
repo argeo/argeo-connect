@@ -35,6 +35,7 @@ import org.polymap.openlayers.rap.widget.base_types.OpenLayersMap;
 import org.polymap.openlayers.rap.widget.base_types.Projection;
 import org.polymap.openlayers.rap.widget.controls.KeyboardDefaultsControl;
 import org.polymap.openlayers.rap.widget.controls.LayerSwitcherControl;
+import org.polymap.openlayers.rap.widget.controls.MousePositionControl;
 import org.polymap.openlayers.rap.widget.controls.NavigationControl;
 import org.polymap.openlayers.rap.widget.controls.OverviewMapControl;
 import org.polymap.openlayers.rap.widget.controls.PanZoomBarControl;
@@ -45,13 +46,14 @@ import org.polymap.openlayers.rap.widget.geometry.LineStringGeometry;
 import org.polymap.openlayers.rap.widget.geometry.PointGeometry;
 import org.polymap.openlayers.rap.widget.layers.OSMLayer;
 import org.polymap.openlayers.rap.widget.layers.VectorLayer;
+import org.polymap.openlayers.rap.widget.layers.WMSLayer;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 
-/** Map viewer implementation based on open layers.*/
+/** Map viewer implementation based on open layers. */
 public class OpenLayersMapViewer extends AbstractMapViewer implements
 		OpenLayersEventListener {
 	private final static Log log = LogFactory.getLog(OpenLayersMapViewer.class);
@@ -98,9 +100,6 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 		openLayersWidget.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		OpenLayersMap map = openLayersWidget.getMap();
-		map.setDisplayProjection(new Projection("EPSG:4326"));
-		map.setProjection(new Projection("EPSG:900913"));
-		map.setUnits("m");
 
 		map.addControl(new LayerSwitcherControl());
 		NavigationControl navigationControl = new NavigationControl();
@@ -115,11 +114,24 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 		// "https://dev.argeo.org/geoserver/wms?",
 		// "naturalearth:10m_admin_0_countries");
 
-		OSMLayer osmLayer = new OSMLayer("OSM",
+		// map.setDisplayProjection(new Projection("EPSG:4326"));
+		// map.setUnits("m");
+
+		String srs = "EPSG:3857";
+		//String srs = "EPSG:4326";
+		map.setProjection(new Projection(srs));
+		setMapProjection(srs);
+
+		// map.setProjection(new Projection("EPSG:900913"));
+		OSMLayer baseLayer = new OSMLayer("OSM",
 				"http://tile.openstreetmap.org/${z}/${x}/${y}.png", 19);
-		map.addLayer(osmLayer);
+//		WMSLayer baseLayer = new WMSLayer("Sudan Basemap",
+//				"https://gis.argeo.org:443/geoserver/wms", "sudan_basemap");
+		map.addLayer(baseLayer);
 
 		map.addControl(new OverviewMapControl());
+
+		map.addControl(new MousePositionControl());
 
 		setControl(openLayersWidget);
 	}
@@ -224,9 +236,9 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 			// data
 			while (featureIterator.hasNext()) {
 				SimpleFeature feature = featureIterator.next();
-				
+
 				Geometry geom = getReprojectedGeometry(feature);
-				
+
 				if (log.isTraceEnabled())
 					log.trace("Feature " + feature.getID() + ", "
 							+ geom.getClass().getName());

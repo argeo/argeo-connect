@@ -66,11 +66,7 @@ public abstract class AbstractMapViewer implements MapViewer {
 		this.geoJcrMapper = geoJcrMapper;
 
 		// default is WGS84
-		try {
-			mapProjection = CRS.decode("EPSG:3857");
-		} catch (Exception e) {
-			throw new ArgeoException("Cannot define default map projection", e);
-		}
+		setMapProjection("EPSG:4326");
 	}
 
 	public void addLayer(Node layer, Object style) {
@@ -218,6 +214,15 @@ public abstract class AbstractMapViewer implements MapViewer {
 
 	public GeoJcrMapper getGeoJcrMapper() {
 		return geoJcrMapper;
+	}
+
+	public void setMapProjection(String srs) {
+		try {
+			// mapProjection = CRS.decode("EPSG:3857");
+			mapProjection = CRS.decode(srs);
+		} catch (Exception e) {
+			throw new ArgeoException("Cannot define default map projection", e);
+		}
 	}
 
 }
