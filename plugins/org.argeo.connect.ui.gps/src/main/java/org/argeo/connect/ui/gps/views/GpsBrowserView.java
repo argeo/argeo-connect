@@ -29,7 +29,7 @@ import org.argeo.eclipse.ui.jcr.SimpleNodeContentProvider;
 import org.argeo.eclipse.ui.jcr.utils.NodeViewerComparer;
 import org.argeo.eclipse.ui.jcr.utils.SingleSessionFileProvider;
 import org.argeo.eclipse.ui.jcr.views.AbstractJcrBrowser;
-import org.argeo.eclipse.ui.jcr.views.GenericJcrBrowser;
+import org.argeo.jcr.ui.explorer.views.GenericJcrBrowser;
 import org.argeo.eclipse.ui.specific.FileHandler;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.Command;
@@ -69,7 +69,7 @@ import org.eclipse.ui.services.IServiceLocator;
 public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 		ConnectTypes { // extends ViewPart {
 
-	private final static Log log = LogFactory.getLog(GenericJcrBrowser.class);
+	private final static Log log = LogFactory.getLog(GpsBrowserView.class);
 	public final static String ID = "org.argeo.connect.ui.gps.gpsBrowserView";
 
 	// TODO : HARD CODED VARIABLES, MUST BE CLEANLY IMPLEMENTED LATER

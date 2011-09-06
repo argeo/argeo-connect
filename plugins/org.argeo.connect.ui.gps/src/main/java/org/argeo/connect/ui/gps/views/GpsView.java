@@ -1,7 +1,7 @@
 package org.argeo.connect.ui.gps.views;
 
-import org.argeo.eclipse.ui.jcr.explorer.JcrExplorerView;
+import org.argeo.jcr.ui.explorer.views.GenericJcrBrowser;
 
-public class GpsView extends JcrExplorerView {
-public final static String ID = "org.argeo.connect.ui.gps.gpsView";
+public class GpsView extends GenericJcrBrowser {
+	public final static String ID = "org.argeo.connect.ui.gps.gpsView";
 }
