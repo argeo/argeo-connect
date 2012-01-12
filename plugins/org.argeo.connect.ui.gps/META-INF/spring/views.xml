@@ -9,9 +9,4 @@
 		scope="prototype">
 		<property name="jcrSession" ref="jcrSession" />
 	</bean>
-
-	<!-- Old one, using generic JCR View, not used for the time being -->
-	<!-- <bean id="gpsView" class="org.argeo.connect.ui.gps.views.GpsView" scope="prototype"> 
-		<property name="repositoryRegister" ref="repositoryRegister" /> </bean> -->
-
 </beans>

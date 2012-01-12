@@ -29,7 +29,6 @@ import org.argeo.eclipse.ui.jcr.SimpleNodeContentProvider;
 import org.argeo.eclipse.ui.jcr.utils.NodeViewerComparer;
 import org.argeo.eclipse.ui.jcr.utils.SingleSessionFileProvider;
 import org.argeo.eclipse.ui.jcr.views.AbstractJcrBrowser;
-import org.argeo.jcr.ui.explorer.views.GenericJcrBrowser;
 import org.argeo.eclipse.ui.specific.FileHandler;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.Command;
@@ -98,7 +97,9 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 
 		parent.setLayout(new FillLayout());
 
-		String userHomePath = JcrUtils.getUserHomePath(jcrSession);
+		String username = jcrSession.getUserID();
+		JcrUtils.createUserHomeIfNeeded(jcrSession, username);
+		String userHomePath = JcrUtils.getUserHomePath(username);
 
 		try {
 			// Creating base directories if they don't exists
@@ -212,7 +213,8 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 				} else if (node
 						.isNodeType(ConnectTypes.CONNECT_CLEAN_TRACK_SESSION)) {
 					// Call parameterized command "open Editor"
-					IWorkbench iw = ConnectUiGpsPlugin.getDefault().getWorkbench();
+					IWorkbench iw = ConnectUiGpsPlugin.getDefault()
+							.getWorkbench();
 					IHandlerService handlerService = (IHandlerService) iw
 							.getService(IHandlerService.class);
 
@@ -278,8 +280,8 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 	 **/
 	protected void contextMenuAboutToShow(IMenuManager menuManager) {
 
-		IWorkbenchWindow window = ConnectUiGpsPlugin.getDefault().getWorkbench()
-				.getActiveWorkbenchWindow();
+		IWorkbenchWindow window = ConnectUiGpsPlugin.getDefault()
+				.getWorkbench().getActiveWorkbenchWindow();
 
 		// Please note that commands that are not subject to programatic
 		// conditions are directly define in the corresponding
@@ -468,7 +470,7 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 
 		private List<String> getNodesIds(IStructuredSelection selection) {
 			Map<String, Node> nodeMap = new HashMap<String, Node>();
-			Iterator it = selection.iterator();
+			Iterator<?> it = selection.iterator();
 			while (it.hasNext()) {
 				Node node = (Node) it.next();
 				nodeToMap(nodeMap, node);
