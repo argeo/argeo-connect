@@ -55,6 +55,10 @@ public class LayersView extends ViewPart implements MapLayerListListener {
 		viewer.refresh();
 	}
 
+	public void layerPreDispose(MapLayerListEvent event) {
+		viewer.refresh();
+	}
+
 	/*
 	 * VIEW
 	 */
