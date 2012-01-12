@@ -35,19 +35,14 @@
 	<!-- JACKRABBIT -->
 	<bean id="jcrRepository" class="org.argeo.jackrabbit.JackrabbitContainer"
 		init-method="init" destroy-method="dispose">
-		<property name="repository" ref="nodeRepository" />
-		<property name="namespaces">
-			<map>
-				<entry key="gis" value="http://www.argeo.org/ns/gis" />
-				<entry key="connect" value="http://www.argeo.org/ns/connect" />
-			</map>
-		</property>
 		<property name="cndFiles">
 			<list>
 				<value>classpath:/org/argeo/gis/argeo_gis.cnd</value>
 				<value>classpath:/org/argeo/connect/connect.cnd</value>
 			</list>
 		</property>
+		<property name="repository" ref="nodeRepository" />
+		<property name="bundleContext" ref="bundleContext" />
 	</bean>
 
 	<bean id="jcrSession" class="org.argeo.security.jcr.SecureThreadBoundSession">
