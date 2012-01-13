@@ -15,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.eclipse.ui.Error;
+import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.geotools.styling.StylingUtils;
 import org.argeo.gis.ui.MapControlCreator;
 import org.argeo.gis.ui.MapViewer;
@@ -43,6 +44,8 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.styling.Style;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+
+import com.sun.syndication.io.FeedException;
 
 public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	private final static Log log = LogFactory
@@ -103,7 +106,13 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		// Create and populate bottom part
 		createMapPart(body);
 
-		addSpeedLayer();
+		try {
+			addSpeedLayer();
+		} catch (Exception e) {
+			ErrorFeedback
+					.show("Cannot load speed layer. Did you import the GPX files from the previous tab?",
+							e);
+		}
 	}
 
 	private void createParameterPart(Composite top) {
@@ -139,7 +148,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 
 		Listener visualizeListener = new Listener() {
 			public void handleEvent(Event event) {
-				//mapViewer.setCoordinateReferenceSystem("EPSG:3857");
+				// mapViewer.setCoordinateReferenceSystem("EPSG:3857");
 			}
 		};
 		visualize.addListener(SWT.Selection, visualizeListener);
