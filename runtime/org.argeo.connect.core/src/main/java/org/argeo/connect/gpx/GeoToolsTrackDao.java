@@ -19,12 +19,18 @@ import org.geotools.data.DataStore;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureStore;
 import org.geotools.data.Transaction;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureCollections;
+import org.geotools.feature.FeatureIterator;
+import org.geotools.filter.text.cql2.CQL;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.GeodeticCalculator;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory;
 import org.xml.sax.InputSource;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -44,6 +50,8 @@ public class GeoToolsTrackDao implements TrackDao {
 	private Float maxSpeed = 200f;
 
 	private GeodeticCalculator geodeticCalculator;
+	private FilterFactory filterFactory = CommonFactoryFinder
+			.getFilterFactory(null);
 
 	private DataStore dataStore;
 
@@ -51,13 +59,19 @@ public class GeoToolsTrackDao implements TrackDao {
 	private String trackSpeedsToCleanTable = "toclean_track_speeds";
 	private String trackSegmentsToCleanTable = "toclean_track_segments";
 
+	private String positionsTable = "connect_positions";
+
 	private BeanFeatureTypeBuilder<TrackPoint> trackPointType;
 	private BeanFeatureTypeBuilder<TrackSegment> trackSegmentType;
 	private BeanFeatureTypeBuilder<TrackSpeed> trackSpeedType;
 
+	private BeanFeatureTypeBuilder<TrackPoint> positionType;
+
 	private FeatureStore<SimpleFeatureType, SimpleFeature> trackPointsStore;
 	private FeatureStore<SimpleFeatureType, SimpleFeature> trackSegmentsStore;
 	private FeatureStore<SimpleFeatureType, SimpleFeature> trackSpeedsStore;
+
+	private FeatureStore<SimpleFeatureType, SimpleFeature> positionStore;
 
 	public GeoToolsTrackDao() {
 	}
@@ -69,10 +83,13 @@ public class GeoToolsTrackDao implements TrackDao {
 				trackSegmentsToCleanTable, TrackSegment.class);
 		trackSpeedType = new BeanFeatureTypeBuilder<TrackSpeed>(
 				trackSpeedsToCleanTable, TrackSpeed.class);
+		positionType = new BeanFeatureTypeBuilder<TrackPoint>(positionsTable,
+				TrackPoint.class);
 
 		trackPointsStore = getFeatureStore(trackPointType);
 		trackSegmentsStore = getFeatureStore(trackSegmentType);
 		trackSpeedsStore = getFeatureStore(trackSpeedType);
+		positionStore = getFeatureStore(positionType);
 	}
 
 	protected FeatureStore<SimpleFeatureType, SimpleFeature> getFeatureStore(
@@ -102,6 +119,38 @@ public class GeoToolsTrackDao implements TrackDao {
 			if (log.isDebugEnabled())
 				log.debug("Imported " + source + " from sensor '" + sensor
 						+ "' in " + (duration) + " ms");
+		}
+	}
+
+	public void importCleanPositions(String source, String toRemoveCql) {
+		try {
+			SimpleFeatureCollection positions = FeatureCollections
+					.newCollection();
+
+			Filter filter = filterFactory.not(CQL.toFilter(toRemoveCql));
+			FeatureIterator<SimpleFeature> filteredSpeeds = trackSpeedsStore
+					.getFeatures(filter).features();
+			while (filteredSpeeds.hasNext()) {
+				SimpleFeature speed = filteredSpeeds.next();
+				SimpleFeature position = positionType.convertFeature(speed);
+				positions.add(position);
+			}
+
+			// persist
+			Transaction transaction = new DefaultTransaction();
+			positionStore.setTransaction(transaction);
+			try {
+				positionStore.addFeatures(positions);
+				transaction.commit();
+			} catch (Exception e) {
+				transaction.rollback();
+				throw new ArgeoException("Cannot persist changes", e);
+			} finally {
+				transaction.close();
+				positions.clear();
+			}
+		} catch (Exception e) {
+			throw new ArgeoException("Cannot copy speeds to positions", e);
 		}
 	}
 
@@ -149,8 +198,8 @@ public class GeoToolsTrackDao implements TrackDao {
 			// map to features
 			trackPointsToAdd.add(trackPointType.buildFeature(trackPoint));
 
-			coords.add(new Coordinate(trackPoint.getLocation().getX(),
-					trackPoint.getLocation().getY()));
+			coords.add(new Coordinate(trackPoint.getPosition().getX(),
+					trackPoint.getPosition().getY()));
 
 			if (i == 0)
 				trackSegment.setStartUtc(trackPoint.getUtcTimestamp());
@@ -161,15 +210,15 @@ public class GeoToolsTrackDao implements TrackDao {
 				// order 1 coefficients (speed)
 				TrackPoint next = trackSegment.getTrackPoints().get(i + 1);
 
-				Coordinate[] crds = { trackPoint.getLocation().getCoordinate(),
-						next.getLocation().getCoordinate() };
+				Coordinate[] crds = { trackPoint.getPosition().getCoordinate(),
+						next.getPosition().getCoordinate() };
 				LineString line = geometryFactory.createLineString(crds);
 				Long duration = next.getUtcTimestamp().getTime()
 						- trackPoint.getUtcTimestamp().getTime();
 				if (duration < 0) {
 					log.warn("Duration " + duration + " is negative between "
-							+ trackPoint.getLocation() + " and "
-							+ next.getLocation()
+							+ trackPoint.getPosition() + " and "
+							+ next.getPosition()
 							+ ", skipping speed computation");
 					currentTrackSpeed = null;
 					continue trackPoints;
@@ -178,8 +227,8 @@ public class GeoToolsTrackDao implements TrackDao {
 						duration, geodeticCalculator);
 				if (trackSpeed.getSpeed() > maxSpeed) {
 					log.warn("Speed " + trackSpeed.getSpeed() + " is above "
-							+ maxSpeed + " between " + trackPoint.getLocation()
-							+ " and " + next.getLocation()
+							+ maxSpeed + " between " + trackPoint.getPosition()
+							+ " and " + next.getPosition()
 							+ ", skipping speed computation");
 					currentTrackSpeed = null;
 					continue trackPoints;

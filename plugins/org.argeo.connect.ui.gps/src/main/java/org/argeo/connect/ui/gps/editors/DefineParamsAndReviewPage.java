@@ -2,9 +2,10 @@ package org.argeo.connect.ui.gps.editors;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.SimpleFormatter;
+import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -20,7 +21,6 @@ import org.argeo.geotools.styling.StylingUtils;
 import org.argeo.gis.ui.MapControlCreator;
 import org.argeo.gis.ui.MapViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -44,8 +44,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.styling.Style;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-
-import com.sun.syndication.io.FeedException;
 
 public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	private final static Log log = LogFactory
@@ -164,9 +162,10 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 
 		Listener terminateListener = new Listener() {
 			public void handleEvent(Event event) {
-
+				getEditor().getTrackDao().importCleanPositions(null,
+						getToCleanCqlFilter());
 				if (log.isDebugEnabled())
-					log.debug("Terminating process");
+					log.debug("Official import completed");
 				// TODO implement computation & corresponding UI workflow.
 			}
 		};
@@ -583,8 +582,20 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	}
 
 	protected Style createToCleanStyle() {
-		Style style = StylingUtils.createFilteredLineStyle(
-				getToCleanCqlFilter(), "RED", 3, "BLACK", 1);
+		Map<String, String> cqlFilters = new HashMap<String, String>();
+		Double maxSpeed = maxSpeedViewer.getValue();
+		cqlFilters.put("speed>" + maxSpeed, "GREEN");
+		Double maxAbsoluteRotation = maxRotationViewer.getValue();
+		cqlFilters.put("azimuthVariation<" + (-maxAbsoluteRotation)
+				+ " OR azimuthVariation>" + maxAbsoluteRotation, "RED");
+		Double maxAbsoluteAcceleration = maxAccelerationViewer.getValue();
+		cqlFilters.put("acceleration<" + (-maxAbsoluteAcceleration)
+				+ " OR acceleration>" + maxAbsoluteAcceleration, "BLUE");
+
+		// Style style = StylingUtils.createFilteredLineStyle(
+		// getToCleanCqlFilter(), "RED", 3, "BLACK", 1);
+		Style style = StylingUtils.createFilteredLineStyle(cqlFilters, 3,
+				"BLACK", 1);
 		return style;
 	}
 

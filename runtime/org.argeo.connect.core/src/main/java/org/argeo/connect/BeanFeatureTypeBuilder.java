@@ -19,12 +19,14 @@ package org.argeo.connect;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.argeo.ArgeoException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.referencing.CRS;
+import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -32,6 +34,10 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.FactoryBean;
 
+/**
+ * Creates a GeoTools {@link SimpleFeatureType} based on the properties of a
+ * bean class.
+ */
 public class BeanFeatureTypeBuilder<T> implements FactoryBean {
 	private final BeanWrapper classBeanWrapper;
 
@@ -70,7 +76,7 @@ public class BeanFeatureTypeBuilder<T> implements FactoryBean {
 
 		// TODO: make it configurable
 		builder.setNamespaceURI("http://localhost/");
-		
+
 		// CRS has to be set BEFORE adding geometry attributes
 		builder.setCRS(crs);
 
@@ -85,7 +91,6 @@ public class BeanFeatureTypeBuilder<T> implements FactoryBean {
 			builder.add(pd.getName(), pd.getPropertyType());
 			cachedAttributeList.add(pd.getName());
 		}
-
 
 		return builder.buildFeatureType();
 	}
@@ -140,6 +145,24 @@ public class BeanFeatureTypeBuilder<T> implements FactoryBean {
 		}
 
 		return featureBuilder.buildFeature(id);
+	}
+
+	/**
+	 * Converts a feature with another type by creating a new feature with the
+	 * properties that they have in common.
+	 */
+	public SimpleFeature convertFeature(SimpleFeature feature) {
+		SimpleFeatureType type = getFeatureType();
+
+		SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(type);
+		Iterator<Property> properties = feature.getProperties().iterator();
+		while (properties.hasNext()) {
+			Property property = properties.next();
+			if (type.indexOf(property.getName()) >= 0) {// has prop
+				featureBuilder.set(property.getName(), property.getValue());
+			}
+		}
+		return featureBuilder.buildFeature(null);
 	}
 
 	protected BeanWrapper getClassBeanWrapper() {

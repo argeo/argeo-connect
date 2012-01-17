@@ -1,6 +1,10 @@
 package org.argeo.geotools.styling;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.argeo.ArgeoException;
 import org.geotools.factory.CommonFactoryFinder;
@@ -46,35 +50,55 @@ public class StylingUtils {
 	public static Style createFilteredLineStyle(String cqlFilter,
 			String matchedColor, Integer matchedWidth, String unmatchedColor,
 			Integer unmatchedWidth) {
-		// selection filter
-		Filter filter;
-		try {
-			filter = CQL.toFilter(cqlFilter);
-		} catch (CQLException e) {
-			throw new ArgeoException("Cannot parse CQL filter: " + cqlFilter, e);
-		}
+		Map<String, String> cqlFilters = new HashMap<String, String>();
+		cqlFilters.put(cqlFilter, matchedColor);
+		return createFilteredLineStyle(cqlFilters, matchedWidth,
+				unmatchedColor, unmatchedWidth);
+	}
 
-		Rule[] rules;
-		// matched
-		Rule ruleMatched = styleFactory.createRule();
-		ruleMatched.symbolizers().add(
-				createLineSymbolizer(matchedColor, matchedWidth));
-		ruleMatched.setFilter(filter);
-
+	public static Style createFilteredLineStyle(Map<String, String> cqlFilters,
+			Integer matchedWidth, String unmatchedColor, Integer unmatchedWidth) {
 		// unmatched
+		Rule ruleUnMatched = null;
 		if (unmatchedColor != null) {
-			Rule ruleUnMatched = styleFactory.createRule();
+			ruleUnMatched = styleFactory.createRule();
 			ruleUnMatched.symbolizers().add(
 					createLineSymbolizer(unmatchedColor,
 							unmatchedWidth != null ? unmatchedWidth
 									: matchedWidth));
-			ruleUnMatched.setFilter(filterFactory.not(filter));
-			rules = new Rule[] { ruleMatched, ruleUnMatched };
-		} else {
-			rules = new Rule[] { ruleMatched };
+			// ruleUnMatched.setFilter(filterFactory.not(filter));
 		}
 
-		FeatureTypeStyle fts = styleFactory.createFeatureTypeStyle(rules);
+		List<Rule> rules = new ArrayList<Rule>();
+		// unmatched
+		if (ruleUnMatched != null) {
+			rules.add(ruleUnMatched);
+		}
+
+		for (String cqlFilter : cqlFilters.keySet()) {
+
+			String matchedColor = cqlFilters.get(cqlFilter);
+
+			// selection filter
+			Filter filter;
+			try {
+				filter = CQL.toFilter(cqlFilter);
+			} catch (CQLException e) {
+				throw new ArgeoException("Cannot parse CQL filter: "
+						+ cqlFilter, e);
+			}
+
+			// matched
+			Rule ruleMatched = styleFactory.createRule();
+			ruleMatched.symbolizers().add(
+					createLineSymbolizer(matchedColor, matchedWidth));
+			ruleMatched.setFilter(filter);
+
+			rules.add(ruleMatched);
+		}
+
+		FeatureTypeStyle fts = styleFactory.createFeatureTypeStyle(rules
+				.toArray(new Rule[rules.size()]));
 		Style style = styleFactory.createStyle();
 		style.featureTypeStyles().add(fts);
 		return style;

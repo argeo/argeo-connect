@@ -1,18 +1,15 @@
 package org.argeo.connect.gpx;
 
-import java.util.Date;
-
 import org.geotools.referencing.GeodeticCalculator;
 
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 
-public class TrackSpeed {
-	private Integer tid;
-	private String segmentUuid;
-	private String sensor;
-	private Date utcTimestamp;
-	private Point position;
+/**
+ * A 4D position enriched with order 1 and 2 informations (speed, acceleration,
+ * rotation) useful for cleaning GPS tracks.
+ */
+public class TrackSpeed extends TrackPoint {
 	private LineString line;
 	/** Orthodromic distance */
 	private Double distance;
@@ -30,10 +27,7 @@ public class TrackSpeed {
 
 	public TrackSpeed(TrackPoint ref, LineString line, Long duration,
 			GeodeticCalculator geodeticCalculator) {
-		segmentUuid = ref.getSegmentUuid();
-		sensor = ref.getSensor();
-		utcTimestamp = ref.getUtcTimestamp();
-		position = ref.getLocation();
+		super(ref);
 		this.line = line;
 		this.duration = duration;
 
@@ -47,46 +41,6 @@ public class TrackSpeed {
 		this.azimuth = geodeticCalculator.getAzimuth();
 		// in km/h
 		this.speed = (this.distance * 60 * 60) / this.duration;
-	}
-
-	public Integer getTid() {
-		return tid;
-	}
-
-	public void setTid(Integer tid) {
-		this.tid = tid;
-	}
-
-	public String getSegmentUuid() {
-		return segmentUuid;
-	}
-
-	public void setSegmentUuid(String segmentUuid) {
-		this.segmentUuid = segmentUuid;
-	}
-
-	public String getSensor() {
-		return sensor;
-	}
-
-	public void setSensor(String sensor) {
-		this.sensor = sensor;
-	}
-
-	public Date getUtcTimestamp() {
-		return utcTimestamp;
-	}
-
-	public void setUtcTimestamp(Date ts) {
-		this.utcTimestamp = ts;
-	}
-
-	public Point getPosition() {
-		return position;
-	}
-
-	public void setPosition(Point location) {
-		this.position = location;
 	}
 
 	public LineString getLine() {

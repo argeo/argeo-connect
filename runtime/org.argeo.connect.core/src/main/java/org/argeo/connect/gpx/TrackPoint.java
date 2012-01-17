@@ -4,13 +4,28 @@ import java.util.Date;
 
 import com.vividsolutions.jts.geom.Point;
 
-public class TrackPoint {
+/** A 4D position of a given sensor */
+public class TrackPoint implements Cloneable {
 	private Integer tid;
 	private String segmentUuid;
 	private String sensor;
 	private Date utcTimestamp;
-	private Point location;
+	private Point position;
 	private Double elevation;
+
+	/** Empty constructor */
+	public TrackPoint() {
+	}
+
+	/** Cloning constructor */
+	public TrackPoint(TrackPoint trackPoint) {
+		this.tid = trackPoint.tid;
+		this.segmentUuid = trackPoint.segmentUuid;
+		this.sensor = trackPoint.sensor;
+		this.utcTimestamp = trackPoint.utcTimestamp;
+		this.position = trackPoint.position;
+		this.elevation = trackPoint.elevation;
+	}
 
 	public Integer getTid() {
 		return tid;
@@ -44,12 +59,12 @@ public class TrackPoint {
 		this.utcTimestamp = ts;
 	}
 
-	public Point getLocation() {
-		return location;
+	public Point getPosition() {
+		return position;
 	}
 
-	public void setLocation(Point location) {
-		this.location = location;
+	public void setPosition(Point location) {
+		this.position = location;
 	}
 
 	public Double getElevation() {
@@ -58,6 +73,11 @@ public class TrackPoint {
 
 	public void setElevation(Double elevation) {
 		this.elevation = elevation;
+	}
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		return new TrackPoint(this);
 	}
 
 }

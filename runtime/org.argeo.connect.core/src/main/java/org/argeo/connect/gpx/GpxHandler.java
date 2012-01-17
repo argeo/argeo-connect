@@ -21,6 +21,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
 
+/** Parse the GPX format. */
 class GpxHandler extends DefaultHandler {
 	public static final String TAG_TRKSEG = "trkseg";
 	public static final String TAG_TRKPT = "trkpt";
@@ -101,7 +102,7 @@ class GpxHandler extends DefaultHandler {
 			Coordinate coordinate = new Coordinate(Double.parseDouble(lonStr),
 					Double.parseDouble(latStr));
 			Point location = reproject(coordinate);
-			currentTrackPoint.setLocation(location);
+			currentTrackPoint.setPosition(location);
 		}
 	}
 
