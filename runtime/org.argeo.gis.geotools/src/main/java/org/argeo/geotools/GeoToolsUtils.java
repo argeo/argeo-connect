@@ -2,8 +2,6 @@ package org.argeo.geotools;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -11,7 +9,8 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
-import org.geotools.data.FeatureStore;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.FilterFactoryImpl;
 import org.opengis.feature.simple.SimpleFeature;
@@ -30,20 +29,20 @@ public class GeoToolsUtils {
 	private static FilterFactory2 filterFactory = new FilterFactoryImpl();
 
 	/** Opens a read/write feature store */
-	public static FeatureStore<SimpleFeatureType, SimpleFeature> getFeatureStore(
-			DataStore dataStore, Name name) {
-		FeatureSource<SimpleFeatureType, SimpleFeature> featureSource;
+	public static SimpleFeatureStore getFeatureStore(DataStore dataStore,
+			Name name) {
+		SimpleFeatureSource featureSource;
 		try {
 			featureSource = dataStore.getFeatureSource(name);
 		} catch (IOException e) {
 			throw new ArgeoException("Cannot open feature source " + name
 					+ " in data store " + dataStore, e);
 		}
-		if (!(featureSource instanceof FeatureStore)) {
+		if (!(featureSource instanceof SimpleFeatureStore)) {
 			throw new ArgeoException("Feature source " + name
 					+ " is not writable.");
 		}
-		return (FeatureStore<SimpleFeatureType, SimpleFeature>) featureSource;
+		return (SimpleFeatureStore) featureSource;
 	}
 
 	/** Creates the provided schema in the data store. */

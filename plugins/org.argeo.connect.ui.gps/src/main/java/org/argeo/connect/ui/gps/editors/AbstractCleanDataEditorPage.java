@@ -5,7 +5,6 @@ import javax.jcr.RepositoryException;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
-import org.argeo.connect.gpx.TrackDao;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.eclipse.jface.viewers.TableViewer;

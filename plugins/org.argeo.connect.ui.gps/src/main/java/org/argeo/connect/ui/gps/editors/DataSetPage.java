@@ -17,7 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
-import org.argeo.eclipse.ui.Error;
+import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -91,6 +91,11 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 	// WARNING : key is the referenced file node ID, not the id of the
 	// corresponding node under currentSessionNode
 	private Map<String, Node> droppedNodes = new HashMap<String, Node>();
+
+	// FIXME retrieve a proper name
+	private String getCleanSession() {
+		return "HARDCODED";
+	}
 
 	public DataSetPage(FormEditor editor, String title) {
 		super(editor, ID, title);
@@ -240,6 +245,7 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 	}
 
 	private class NodesContentProvider implements IStructuredContentProvider {
+		@SuppressWarnings("unchecked")
 		public Object[] getElements(Object inputElement) {
 			return ((Map<String, Node>) inputElement).values().toArray();
 		}
@@ -354,8 +360,7 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 
 			// Check if a default sensor name has already been entered.
 			if (getEditor().getDefaultSensoreName() == null) {
-				org.argeo.eclipse.ui.Error
-						.show("Please enter a default sensor name");
+				ErrorFeedback.show("Please enter a default sensor name");
 				getEditor().setActivePage(MetaDataPage.ID);
 				return false;
 			}
@@ -490,7 +495,7 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 			filesViewer.refresh();
 
 		} catch (Exception e) {
-			Error.show("Cannot import GPX nodes", e);
+			ErrorFeedback.show("Cannot import GPX nodes", e);
 			failed = true;
 		}
 
@@ -529,11 +534,10 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 			binary = node.getNode(Property.JCR_CONTENT)
 					.getProperty(Property.JCR_DATA).getBinary();
 
-			String cpath = node.getPath();
 			String cname = refNode.getProperty(CONNECT_SENSOR_NAME).getString();
 
-			getEditor().getTrackDao().importTrackPoints(cpath, cname,
-					binary.getStream());
+			getEditor().getTrackDao().importRawToCleanSession(getCleanSession(),
+					cname, binary.getStream());
 			JcrUtils.closeQuietly(binary);
 
 			// Finalization of the import / UI updates

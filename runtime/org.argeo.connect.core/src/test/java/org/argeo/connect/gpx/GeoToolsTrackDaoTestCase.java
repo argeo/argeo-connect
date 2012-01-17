@@ -62,15 +62,15 @@ public class GeoToolsTrackDaoTestCase extends AbstractSpringTestCase {
 		try {
 			file = gpx1.getFilename();
 			in = gpx1.getInputStream();
-			trackDao.importTrackPoints(file, sensor, in);
+			trackDao.importRawToCleanSession(file, sensor, in);
 
 			file = gpx2.getFilename();
 			in2 = gpx2.getInputStream();
-			trackDao.importTrackPoints(file, sensor, in2);
+			trackDao.importRawToCleanSession(file, sensor, in2);
 
 			file = gpx3.getFilename();
 			in3 = gpx3.getInputStream();
-			trackDao.importTrackPoints(file, sensor, in3);
+			trackDao.importRawToCleanSession(file, sensor, in3);
 		} catch (Exception e) {
 			log.warn("Could not import " + file + ": " + e.getMessage());
 			throw e;
@@ -112,7 +112,7 @@ public class GeoToolsTrackDaoTestCase extends AbstractSpringTestCase {
 			FileInputStream in = null;
 			try {
 				in = new FileInputStream(file);
-				trackDao.importTrackPoints(file.getName(), sensor, in);
+				trackDao.importRawToCleanSession(file.getName(), sensor, in);
 			} catch (Exception e) {
 				log.warn("Could not import " + file + ": " + e.getMessage());
 				throw e;

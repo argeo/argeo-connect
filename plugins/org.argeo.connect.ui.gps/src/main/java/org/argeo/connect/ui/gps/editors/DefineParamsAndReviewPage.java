@@ -15,7 +15,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
-import org.argeo.eclipse.ui.Error;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.geotools.styling.StylingUtils;
 import org.argeo.gis.ui.MapControlCreator;
@@ -66,6 +65,16 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	private MapControlCreator mapControlCreator;
 	private MapViewer mapViewer;
 
+	// FIXME retrieve a proper name
+	private String getCleanSession() {
+		return "HARDCODED";
+	}
+
+	// FIXME retrieve a proper name
+	private String getReferential() {
+		return "HARDCODED";
+	}
+
 	public DefineParamsAndReviewPage(FormEditor editor, String title,
 			MapControlCreator mapControlCreator) {
 		super(editor, ID, title);
@@ -105,7 +114,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		createMapPart(body);
 
 		try {
-			addSpeedLayer();
+			addSpeedLayer(getCleanSession());
 		} catch (Exception e) {
 			ErrorFeedback
 					.show("Cannot load speed layer. Did you import the GPX files from the previous tab?",
@@ -116,7 +125,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	private void createParameterPart(Composite top) {
 		SliderViewerListener sliderViewerListener = new SliderViewerListener() {
 			public void valueChanged(Double value) {
-				refreshSpeedLayer();
+				refreshSpeedLayer(getCleanSession());
 			}
 		};
 		Composite parent = formToolkit.createComposite(top);
@@ -162,7 +171,8 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 
 		Listener terminateListener = new Listener() {
 			public void handleEvent(Event event) {
-				getEditor().getTrackDao().importCleanPositions(null,
+				getEditor().getTrackDao().publishCleanPositions(
+						getCleanSession(), getReferential(),
 						getToCleanCqlFilter());
 				if (log.isDebugEnabled())
 					log.debug("Official import completed");
@@ -371,8 +381,8 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 				try {
 					value = Double.parseDouble(valueStr);
 				} catch (NumberFormatException e) {
-					Error.show(
-							"Value "
+					ErrorFeedback
+							.show("Value "
 									+ valueStr
 									+ " is not valid, please enter a number within the following range : ["
 									+ minValue + ", " + maxValue + "]", e);
@@ -381,10 +391,11 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 
 				// Check boundaries
 				if (value < minValue || value > maxValue) {
-					Error.show("Value "
-							+ value
-							+ " is not within acceptable range, must be within : ["
-							+ minValue + ", " + maxValue + "]");
+					ErrorFeedback
+							.show("Value "
+									+ value
+									+ " is not within acceptable range, must be within : ["
+									+ minValue + ", " + maxValue + "]");
 				}
 
 				// move slider accordingly
@@ -497,7 +508,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 
 					// Check boundaries
 					if (value == null) {
-						Error.show("Value '" + valueStr
+						ErrorFeedback.show("Value '" + valueStr
 								+ "' is not within acceptable range ["
 								+ minValue + ", " + maxValue + "]");
 						return;
@@ -539,10 +550,10 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	/*
 	 * GIS
 	 */
-	protected void addSpeedLayer() {
+	protected void addSpeedLayer(String cleanSession) {
 		// Add speeds layer
 		String trackSpeedsPath = getEditor().getTrackDao()
-				.getTrackSpeedsSource();
+				.getTrackSpeedsSource(cleanSession);
 		try {
 
 			Node layerNode = getEditor().getCurrentSessionNode().getSession()
@@ -551,7 +562,8 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 
 			// mapViewer.setCoordinateReferenceSystem("EPSG:3857");
 
-			ReferencedEnvelope areaOfInterest = getFeatureSource().getBounds();
+			ReferencedEnvelope areaOfInterest = getFeatureSource(cleanSession)
+					.getBounds();
 			mapViewer.setAreaOfInterest(areaOfInterest);
 		} catch (Exception e) {
 			throw new ArgeoException("Cannot add layer " + trackSpeedsPath, e);
@@ -559,9 +571,10 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 
 	}
 
-	protected FeatureSource<SimpleFeatureType, SimpleFeature> getFeatureSource() {
+	protected FeatureSource<SimpleFeatureType, SimpleFeature> getFeatureSource(
+			String cleanSession) {
 		String trackSpeedsPath = getEditor().getTrackDao()
-				.getTrackSpeedsSource();
+				.getTrackSpeedsSource(cleanSession);
 		try {
 
 			Node layerNode = getEditor().getCurrentSessionNode().getSession()
@@ -575,9 +588,9 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		}
 	}
 
-	protected void refreshSpeedLayer() {
+	protected void refreshSpeedLayer(String cleanSession) {
 		String trackSpeedsPath = getEditor().getTrackDao()
-				.getTrackSpeedsSource();
+				.getTrackSpeedsSource(cleanSession);
 		mapViewer.setStyle(trackSpeedsPath, createToCleanStyle());
 	}
 

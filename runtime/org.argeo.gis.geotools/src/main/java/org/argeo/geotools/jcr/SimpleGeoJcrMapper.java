@@ -23,6 +23,7 @@ import org.argeo.jcr.JcrUtils;
 import org.argeo.jts.jcr.JtsJcrUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -220,6 +221,33 @@ public class SimpleGeoJcrMapper implements GeoJcrMapper, GisNames {
 			return dataStore.getFeatureSource(node.getName());
 		} catch (Exception e) {
 			throw new ArgeoException("Cannot find feature source " + node, e);
+		}
+	}
+
+	/** @return the data store registered under this alias or null if not found */
+	public DataStore getDataStore(String dataStoreAlias) {
+		if (!registeredDataStores.containsKey(dataStoreAlias))
+			return null;
+		return registeredDataStores.get(dataStoreAlias);
+	}
+
+	public SimpleFeatureSource getOrCreateFeatureSource(String dataStoreAlias,
+			SimpleFeatureType featureType) {
+		try {
+			DataStore dataStore = getDataStore(dataStoreAlias);
+			if (dataStore == null)
+				throw new ArgeoException("No data store with alias "
+						+ dataStoreAlias);
+			GeoToolsUtils.createSchemaIfNeeded(dataStore, featureType);
+			SimpleFeatureSource featureSource = dataStore
+					.getFeatureSource(featureType.getName());
+			// make sure the node is registered
+			getFeatureSourceNode(systemSession, dataStoreAlias, featureSource);
+			return featureSource;
+		} catch (IOException e) {
+			throw new ArgeoException(
+					"Cannot get or create feature source from data store "
+							+ dataStoreAlias + " for type " + featureType, e);
 		}
 	}
 

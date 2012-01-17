@@ -2,8 +2,6 @@ package org.argeo.connect.gpx;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -13,13 +11,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.BeanFeatureTypeBuilder;
-import org.argeo.geotools.GeoToolsUtils;
+import org.argeo.geotools.jcr.GeoJcrMapper;
 import org.argeo.gis.GisConstants;
-import org.geotools.data.DataStore;
 import org.geotools.data.DefaultTransaction;
-import org.geotools.data.FeatureStore;
 import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureCollections;
@@ -53,53 +50,32 @@ public class GeoToolsTrackDao implements TrackDao {
 	private FilterFactory filterFactory = CommonFactoryFinder
 			.getFilterFactory(null);
 
-	private DataStore dataStore;
+	private String dataStoreAlias;
+	private GeoJcrMapper geoJcrMapper;
 
-	private String trackPointsToCleanTable = "toclean_track_points";
-	private String trackSpeedsToCleanTable = "toclean_track_speeds";
-	private String trackSegmentsToCleanTable = "toclean_track_segments";
+	// private String trackSpeedsToCleanTable = "toclean_track_speeds";
+	// private BeanFeatureTypeBuilder<TrackSpeed> trackSpeedType;
+	// private FeatureStore<SimpleFeatureType, SimpleFeature> trackSpeedsStore;
 
-	private String positionsTable = "connect_positions";
-
-	private BeanFeatureTypeBuilder<TrackPoint> trackPointType;
-	private BeanFeatureTypeBuilder<TrackSegment> trackSegmentType;
-	private BeanFeatureTypeBuilder<TrackSpeed> trackSpeedType;
-
-	private BeanFeatureTypeBuilder<TrackPoint> positionType;
-
-	private FeatureStore<SimpleFeatureType, SimpleFeature> trackPointsStore;
-	private FeatureStore<SimpleFeatureType, SimpleFeature> trackSegmentsStore;
-	private FeatureStore<SimpleFeatureType, SimpleFeature> trackSpeedsStore;
-
-	private FeatureStore<SimpleFeatureType, SimpleFeature> positionStore;
+	// private String positionsTable = "connect_positions";
+	// private BeanFeatureTypeBuilder<TrackPoint> positionType;
+	// private FeatureStore<SimpleFeatureType, SimpleFeature> positionStore;
 
 	public GeoToolsTrackDao() {
 	}
 
-	public void init() {
-		trackPointType = new BeanFeatureTypeBuilder<TrackPoint>(
-				trackPointsToCleanTable, TrackPoint.class);
-		trackSegmentType = new BeanFeatureTypeBuilder<TrackSegment>(
-				trackSegmentsToCleanTable, TrackSegment.class);
-		trackSpeedType = new BeanFeatureTypeBuilder<TrackSpeed>(
-				trackSpeedsToCleanTable, TrackSpeed.class);
-		positionType = new BeanFeatureTypeBuilder<TrackPoint>(positionsTable,
-				TrackPoint.class);
+	// public void init() {
+	// trackSpeedType = new BeanFeatureTypeBuilder<TrackSpeed>(
+	// trackSpeedsToCleanTable, TrackSpeed.class);
+	// positionType = new BeanFeatureTypeBuilder<TrackPoint>(positionsTable,
+	// TrackPoint.class);
+	//
+	// trackSpeedsStore = getFeatureStore(trackSpeedType);
+	// positionStore = getFeatureStore(positionType);
+	// }
 
-		trackPointsStore = getFeatureStore(trackPointType);
-		trackSegmentsStore = getFeatureStore(trackSegmentType);
-		trackSpeedsStore = getFeatureStore(trackSpeedType);
-		positionStore = getFeatureStore(positionType);
-	}
-
-	protected FeatureStore<SimpleFeatureType, SimpleFeature> getFeatureStore(
-			BeanFeatureTypeBuilder<?> type) {
-		SimpleFeatureType featureType = type.getFeatureType();
-		GeoToolsUtils.createSchemaIfNeeded(dataStore, featureType);
-		return GeoToolsUtils.getFeatureStore(dataStore, featureType.getName());
-	}
-
-	public Object importTrackPoints(String source, String sensor, InputStream in) {
+	public Object importRawToCleanSession(String cleanSession, String sensor,
+			InputStream in) {
 		long begin = System.currentTimeMillis();
 		try {
 			SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -108,7 +84,8 @@ public class GeoToolsTrackDao implements TrackDao {
 			InputSource input = new InputSource(in);
 			geodeticCalculator = new GeodeticCalculator(CRS.decode("EPSG:"
 					+ targetSrid));
-			TrackGpxHandler handler = new TrackGpxHandler(sensor, targetSrid);
+			TrackGpxHandler handler = new TrackGpxHandler(sensor, targetSrid,
+					cleanSession);
 			sp.parse(input, handler);
 			return null;
 		} catch (Exception e) {
@@ -117,16 +94,25 @@ public class GeoToolsTrackDao implements TrackDao {
 			IOUtils.closeQuietly(in);
 			long duration = System.currentTimeMillis() - begin;
 			if (log.isDebugEnabled())
-				log.debug("Imported " + source + " from sensor '" + sensor
-						+ "' in " + (duration) + " ms");
+				log.debug("Imported " + cleanSession + " from sensor '"
+						+ sensor + "' in " + (duration) + " ms");
 		}
 	}
 
-	public void importCleanPositions(String source, String toRemoveCql) {
+	public void publishCleanPositions(String cleanSession, String referential,
+			String toRemoveCql) {
 		try {
+			String trackSpeedsToCleanTable = "connect_gpsclean_" + cleanSession;
+			BeanFeatureTypeBuilder<TrackSpeed> trackSpeedType = new BeanFeatureTypeBuilder<TrackSpeed>(
+					trackSpeedsToCleanTable, TrackSpeed.class);
+			String positionsTable = "connect_positions_" + cleanSession;
+			BeanFeatureTypeBuilder<TrackPoint> positionType = new BeanFeatureTypeBuilder<TrackPoint>(
+					positionsTable, TrackPoint.class);
+
 			SimpleFeatureCollection positions = FeatureCollections
 					.newCollection();
 
+			SimpleFeatureStore trackSpeedsStore = getFeatureStore(trackSpeedType);
 			Filter filter = filterFactory.not(CQL.toFilter(toRemoveCql));
 			FeatureIterator<SimpleFeature> filteredSpeeds = trackSpeedsStore
 					.getFeatures(filter).features();
@@ -138,6 +124,7 @@ public class GeoToolsTrackDao implements TrackDao {
 
 			// persist
 			Transaction transaction = new DefaultTransaction();
+			SimpleFeatureStore positionStore = getFeatureStore(positionType);
 			positionStore.setTransaction(transaction);
 			try {
 				positionStore.addFeatures(positions);
@@ -154,26 +141,15 @@ public class GeoToolsTrackDao implements TrackDao {
 		}
 	}
 
-	// protected SimpleFeatureType createTrackPointType() {
-	// SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-	// // builder.setNamespaceURI(GIS_NAMESPACE);
-	// builder.setName("TRACK_POINTS");
-	//
-	// builder.setDefaultGeometry("location");
-	// builder.add("location", Point.class);
-	//
-	// builder.add("segmentUuid", String.class);
-	//
-	// return builder.buildFeatureType();
-	// }
-
-	protected void processTrackSegment(TrackSegment trackSegment,
-			GeometryFactory geometryFactory) {
-
-		FeatureCollection<SimpleFeatureType, SimpleFeature> trackPointsToAdd = FeatureCollections
-				.newCollection();
-		FeatureCollection<SimpleFeatureType, SimpleFeature> trackSegmentsToAdd = FeatureCollections
-				.newCollection();
+	protected void processTrackSegment(
+			BeanFeatureTypeBuilder<TrackSpeed> trackSpeedType,
+			TrackSegment trackSegment, GeometryFactory geometryFactory) {
+		// FeatureCollection<SimpleFeatureType, SimpleFeature> trackPointsToAdd
+		// = FeatureCollections
+		// .newCollection();
+		// FeatureCollection<SimpleFeatureType, SimpleFeature>
+		// trackSegmentsToAdd = FeatureCollections
+		// .newCollection();
 		FeatureCollection<SimpleFeatureType, SimpleFeature> trackSpeedsToAdd = FeatureCollections
 				.newCollection();
 
@@ -182,24 +158,24 @@ public class GeoToolsTrackDao implements TrackDao {
 			return;
 		} else if (trackSegment.getTrackPoints().size() == 1) {
 			// single track points
-			TrackPoint trackPoint = trackSegment.getTrackPoints().get(0);
-			SimpleFeature trackPointFeature = trackPointType
-					.buildFeature(trackPoint);
-			trackPointsToAdd.add(trackPointFeature);
+			// TrackPoint trackPoint = trackSegment.getTrackPoints().get(0);
+			// SimpleFeature trackPointFeature = trackPointType
+			// .buildFeature(trackPoint);
+			// trackPointsToAdd.add(trackPointFeature);
 			return;
 		}
 
 		// multiple trackpoints
 		TrackSpeed currentTrackSpeed = null;
-		List<Coordinate> coords = new ArrayList<Coordinate>();
+		// List<Coordinate> coords = new ArrayList<Coordinate>();
 		trackPoints: for (int i = 0; i < trackSegment.getTrackPoints().size(); i++) {
 			TrackPoint trackPoint = trackSegment.getTrackPoints().get(i);
 
 			// map to features
-			trackPointsToAdd.add(trackPointType.buildFeature(trackPoint));
+			// trackPointsToAdd.add(trackPointType.buildFeature(trackPoint));
 
-			coords.add(new Coordinate(trackPoint.getPosition().getX(),
-					trackPoint.getPosition().getY()));
+			// coords.add(new Coordinate(trackPoint.getPosition().getX(),
+			// trackPoint.getPosition().getY()));
 
 			if (i == 0)
 				trackSegment.setStartUtc(trackPoint.getUtcTimestamp());
@@ -261,36 +237,46 @@ public class GeoToolsTrackDao implements TrackDao {
 			}
 
 		}
-		LineString segment = geometryFactory.createLineString(coords
-				.toArray(new Coordinate[coords.size()]));
-		trackSegment.setSegment(segment);
-		trackSegmentsToAdd.add(trackSegmentType.buildFeature(trackSegment));
+		// LineString segment = geometryFactory.createLineString(coords
+		// .toArray(new Coordinate[coords.size()]));
+		// trackSegment.setSegment(segment);
+		// trackSegmentsToAdd.add(trackSegmentType.buildFeature(trackSegment));
 
 		// persist
+		SimpleFeatureStore trackSpeedsStore = getFeatureStore(trackSpeedType);
 		try {
 			Transaction transaction = new DefaultTransaction();
-			trackPointsStore.setTransaction(transaction);
+			// trackPointsStore.setTransaction(transaction);
 			trackSpeedsStore.setTransaction(transaction);
-			trackSegmentsStore.setTransaction(transaction);
+			// trackSegmentsStore.setTransaction(transaction);
 			try {
-				trackPointsStore.addFeatures(trackPointsToAdd);
+				// trackPointsStore.addFeatures(trackPointsToAdd);
 				trackSpeedsStore.addFeatures(trackSpeedsToAdd);
-				trackSegmentsStore.addFeatures(trackSegmentsToAdd);
+				// trackSegmentsStore.addFeatures(trackSegmentsToAdd);
 				transaction.commit();
 			} catch (Exception e) {
 				transaction.rollback();
 				throw new ArgeoException("Cannot persist changes", e);
 			} finally {
 				transaction.close();
-				trackPointsToAdd.clear();
+				// trackPointsToAdd.clear();
 				trackSpeedsToAdd.clear();
-				trackSegmentsToAdd.clear();
+				// trackSegmentsToAdd.clear();
 			}
 		} catch (ArgeoException e) {
 			throw e;
 		} catch (IOException e) {
 			throw new ArgeoException("Unexpected issue with the transaction", e);
 		}
+	}
+
+	protected SimpleFeatureStore getFeatureStore(BeanFeatureTypeBuilder<?> type) {
+		SimpleFeatureType featureType = type.getFeatureType();
+		return (SimpleFeatureStore) geoJcrMapper.getOrCreateFeatureSource(
+				dataStoreAlias, featureType);
+		// GeoToolsUtils.createSchemaIfNeeded(dataStore, featureType);
+		// return GeoToolsUtils.getFeatureStore(dataStore,
+		// featureType.getName());
 	}
 
 	/** Normalize from [-180°,180°] to [0°,360°] */
@@ -309,27 +295,38 @@ public class GeoToolsTrackDao implements TrackDao {
 		this.maxSpeed = maxSpeed;
 	}
 
-	public void setDataStore(DataStore dataStore) {
-		this.dataStore = dataStore;
+	protected String getTrackSpeedsTable(String cleanSession) {
+		return "connect_gpsclean_" + cleanSession;
 	}
 
-	public String getTrackSpeedsSource() {
-		// FIXME hardcoded data store alias
-		return GisConstants.DATA_STORES_BASE_PATH + "/connect_geodb/"
-				+ trackSpeedsToCleanTable;
+	public String getTrackSpeedsSource(String cleanSession) {
+		return GisConstants.DATA_STORES_BASE_PATH + "/" + dataStoreAlias + "/"
+				+ getTrackSpeedsTable(cleanSession);
+	}
+
+	public void setDataStoreAlias(String dataStoreAlias) {
+		this.dataStoreAlias = dataStoreAlias;
+	}
+
+	public void setGeoJcrMapper(GeoJcrMapper geoJcrMapper) {
+		this.geoJcrMapper = geoJcrMapper;
 	}
 
 	public class TrackGpxHandler extends GpxHandler {
+		private BeanFeatureTypeBuilder<TrackSpeed> trackSpeedType;
 
-		public TrackGpxHandler(String sensor, Integer srid) {
+		public TrackGpxHandler(String sensor, Integer srid, String cleanSession) {
 			super(sensor, srid);
+			String trackSpeedsToCleanTable = "connect_gpsclean_" + cleanSession;
+			trackSpeedType = new BeanFeatureTypeBuilder<TrackSpeed>(
+					trackSpeedsToCleanTable, TrackSpeed.class);
 		}
 
 		@Override
 		protected void processTrackSegment(TrackSegment trackSegment,
 				GeometryFactory geometryFactory) {
-			GeoToolsTrackDao.this.processTrackSegment(trackSegment,
-					geometryFactory);
+			GeoToolsTrackDao.this.processTrackSegment(trackSpeedType,
+					trackSegment, geometryFactory);
 
 		}
 	}

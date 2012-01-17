@@ -47,6 +47,7 @@ public class CleanDataEditorInput implements IEditorInput {
 		return "Display an editor to clean data for the corresponding parameter set";
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Object getAdapter(Class adapter) {
 		return null;

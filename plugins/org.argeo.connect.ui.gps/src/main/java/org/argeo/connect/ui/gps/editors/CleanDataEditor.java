@@ -17,6 +17,7 @@ import org.argeo.connect.gpx.TrackDao;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
+import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.geotools.styling.StylingUtils;
 import org.argeo.gis.GisConstants;
 import org.argeo.gis.ui.MapControlCreator;
@@ -26,7 +27,6 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.geotools.styling.Style;
 
 /**
  * Main multi tab view to handle a session to clean GPS data.
@@ -111,7 +111,7 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			org.argeo.eclipse.ui.Error.show("Cannot save session "
+			ErrorFeedback.show("Cannot save session "
 					+ getEditorInput().getUuid(), e);
 		}
 	}
@@ -158,7 +158,8 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 					.trim();
 			try {
 				Node layerNode = currentSession.getNode(layerPath);
-				mapViewer.addLayer(layerNode, StylingUtils.createLineStyle("LIGHT_GRAY", 1));
+				mapViewer.addLayer(layerNode,
+						StylingUtils.createLineStyle("LIGHT_GRAY", 1));
 			} catch (RepositoryException e) {
 				log.warn("Cannot retrieve " + alias + ": " + e);
 			}

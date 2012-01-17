@@ -13,7 +13,7 @@ import javax.jcr.nodetype.NodeType;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.gpx.TrackDao;
-import org.argeo.eclipse.ui.dialogs.Error;
+import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -25,9 +25,14 @@ public class ImportGpxWizard extends Wizard {
 	private Node baseNode;
 	private TrackDao trackDao;
 
-	private Map<String, Node> nodesToImport = new TreeMap<String, Node>();
+	// private Map<String, Node> nodesToImport = new TreeMap<String, Node>();
 
 	private DefineModelWizardPage defineModelPage;
+
+	// FIXME retrieve a proper name
+	private String getCleanSession() {
+		return "HARDCODED";
+	}
 
 	public ImportGpxWizard(TrackDao trackDao, Node baseNode) {
 		super();
@@ -91,7 +96,7 @@ public class ImportGpxWizard extends Wizard {
 			// }
 			// });
 		} catch (Exception e) {
-			Error.show("Cannot import GPX nodes", e);
+			ErrorFeedback.show("Cannot import GPX nodes", e);
 			failed = true;
 		}
 
@@ -164,7 +169,7 @@ public class ImportGpxWizard extends Wizard {
 
 			binary = node.getNode(Property.JCR_CONTENT)
 					.getProperty(Property.JCR_DATA).getBinary();
-			trackDao.importTrackPoints(node.getPath(),
+			trackDao.importRawToCleanSession(getCleanSession(),
 					defineModelPage.getSensorName(), binary.getStream());
 			JcrUtils.closeQuietly(binary);
 			stats.nodeCount++;

@@ -6,12 +6,14 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
+import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.simple.SimpleFeatureSource;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
- * Maps datastore and feature sources with JCR nodes. It is meant to be
+ * Maps data stores and feature sources with JCR nodes. It is meant to be
  * repository independent.
  */
 public interface GeoJcrMapper {
@@ -24,6 +26,11 @@ public interface GeoJcrMapper {
 
 	public FeatureSource<SimpleFeatureType, SimpleFeature> getFeatureSource(
 			Node node);
+
+	public DataStore getDataStore(String dataStoreAlias);
+
+	public SimpleFeatureSource getOrCreateFeatureSource(String dataStoreAlias,
+			SimpleFeatureType featureType);
 
 	public SimpleFeature getFeature(Node node);
 }
