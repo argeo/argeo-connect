@@ -18,9 +18,8 @@
 	<bean id="newCleanDataSession" class="org.argeo.connect.ui.gps.commands.NewCleanDataSession"
 		scope="prototype" />
 
-
-
 	<bean id="openCleanDataEditor" class="org.argeo.connect.ui.gps.commands.OpenCleanDataEditor"
 		scope="prototype">
+		<property name="session" ref="jcrSession" />
 	</bean>
 </beans>

@@ -359,7 +359,7 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 		public boolean performDrop(Object data) {
 
 			// Check if a default sensor name has already been entered.
-			if (getEditor().getDefaultSensoreName() == null) {
+			if (getEditor().getDefaultSensorName() == null) {
 				ErrorFeedback.show("Please enter a default sensor name");
 				getEditor().setActivePage(MetaDataPage.ID);
 				return false;
@@ -536,8 +536,8 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 
 			String cname = refNode.getProperty(CONNECT_SENSOR_NAME).getString();
 
-			getEditor().getTrackDao().importRawToCleanSession(getCleanSession(),
-					cname, binary.getStream());
+			getEditor().getTrackDao().importRawToCleanSession(
+					getCleanSession(), cname, binary.getStream());
 			JcrUtils.closeQuietly(binary);
 
 			// Finalization of the import / UI updates

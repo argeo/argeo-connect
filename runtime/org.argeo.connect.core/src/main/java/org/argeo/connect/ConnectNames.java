@@ -2,6 +2,9 @@ package org.argeo.connect;
 
 /** JCR names. see src/main/resources/org/argeo/connect/connect.cnd */
 public interface ConnectNames {
+	
+	public final static String CONNECT_NAMESPACE = "http://www.argeo.org/ns/connect";
+	
 	final static String CONNECT_ = "connect:";
 
 	public final static String CONNECT_AUTHOR = CONNECT_ + "author";

@@ -20,11 +20,11 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
-import org.argeo.connect.ui.gps.GpsNodeLabelProvider;
 import org.argeo.connect.ui.gps.commands.AddFileFolder;
 import org.argeo.connect.ui.gps.commands.ImportDirectoryContent;
 import org.argeo.connect.ui.gps.commands.NewCleanDataSession;
 import org.argeo.connect.ui.gps.commands.OpenCleanDataEditor;
+import org.argeo.connect.ui.gps.providers.GpsNodeLabelProvider;
 import org.argeo.eclipse.ui.jcr.SimpleNodeContentProvider;
 import org.argeo.eclipse.ui.jcr.utils.NodeViewerComparer;
 import org.argeo.eclipse.ui.jcr.utils.SingleSessionFileProvider;
@@ -245,7 +245,7 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 					handlerService.executeCommand(pc, null);
 
 					// open the corresponding session
-					node.isNodeType(NodeType.NT_FILE);
+					// node.isNodeType(NodeType.NT_FILE);
 				}
 
 			} catch (RepositoryException re) {
@@ -404,7 +404,7 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 
 	}
 
-	// abstrat methods that must be overwritten
+	// abstract methods that must be overwritten
 	@Override
 	protected int[] getWeights() {
 		// Useles : current view is not a sash form
@@ -433,7 +433,7 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 				Node first = (Node) obj;
 
 				try {
-					// support multiple selecttion, but we insure that at least
+					// support multiple selection, but we insure that at least
 					// first node is of the correct type
 					if (first.getPrimaryNodeType().isNodeType(
 							CONNECT_FILE_REPOSITORY)

@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
@@ -38,10 +37,9 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 
 	private final static Log log = LogFactory.getLog(CleanDataEditor.class);
 
-	// IoC
+	/* DEPENDENCY INJECTION */
 	private Session currentSession;
 	private TrackDao trackDao;
-
 	private MapControlCreator mapControlCreator;
 	private List<String> baseLayers;
 
@@ -60,12 +58,6 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 		this.setPartName(getSessionName());
 	}
 
-	// protected FormToolkit createToolkit(Display display) {
-	// // Create a toolkit that shares colors between editors.
-	// return new FormToolkit(ClientUiPlugin.getDefault().getFormColors(
-	// display));
-	// }
-
 	protected void addPages() {
 		try {
 			addPage(new MetaDataPage(this,
@@ -83,15 +75,11 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 	public void doSave(IProgressMonitor monitor) {
 		try {
 
-			log.debug("CleanDataEditor.doSave");
+			if (log.isTraceEnabled())
+				log.trace("CleanDataEditor.doSave");
 
 			// Automatically commit all pages of the editor
 			commitPages(true);
-
-			// it is thus useless.
-			// findPage(DataSetPage.ID).doSave(monitor);
-			// findPage(MetaDataPage.ID).doSave(monitor);
-			// findPage(DefineParamsAndReviewPage.ID).doSave(monitor);
 
 			// commit all changes in JCR
 			currentSession.save();
@@ -130,7 +118,6 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 
 	@Override
 	public boolean isSaveAsAllowed() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -167,14 +154,13 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 	}
 
 	private String getSessionName() {
-		String name = "(New Session)";
+		String name;
 		try {
-			String tmp = getCurrentSessionNode().getProperty(CONNECT_NAME)
-					.getString();
-			if (!"".equals(tmp))
-				name = tmp;
-		} catch (PathNotFoundException pnfe) {
-			// Silent : property has not been initialized yet.
+			if (getCurrentSessionNode().hasProperty(CONNECT_NAME))
+				name = getCurrentSessionNode().getProperty(CONNECT_NAME)
+						.getString();
+			else
+				name = "(new Session)";
 		} catch (RepositoryException re) {
 			throw new ArgeoException("Error while getting session name", re);
 		}
@@ -190,9 +176,9 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 	 * returns the default sensor name or null if none or an empty string has
 	 * been entered
 	 */
-	public String getDefaultSensoreName() {
+	public String getDefaultSensorName() {
 		return ((MetaDataPage) findPage(MetaDataPage.ID))
-				.getDefaultSensoreName();
+				.getDefaultSensorName();
 	}
 
 	/** Returns injected track DAO */
@@ -200,7 +186,7 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 		return trackDao;
 	}
 
-	// IoC
+	/* DEPENDENCY INJECTION */
 	public void setCurrentSession(Session currentSession) {
 		this.currentSession = currentSession;
 	}

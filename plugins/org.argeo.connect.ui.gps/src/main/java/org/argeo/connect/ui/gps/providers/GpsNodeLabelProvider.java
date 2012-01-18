@@ -1,4 +1,4 @@
-package org.argeo.connect.ui.gps;
+package org.argeo.connect.ui.gps.providers;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -7,6 +7,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
+import org.argeo.connect.ui.gps.ConnectGpsLabels;
+import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.eclipse.ui.jcr.DefaultNodeLabelProvider;
 import org.eclipse.swt.graphics.Image;
 

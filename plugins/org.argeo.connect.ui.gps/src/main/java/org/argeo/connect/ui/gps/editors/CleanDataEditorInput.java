@@ -7,7 +7,7 @@ import org.eclipse.ui.IPersistableElement;
 public class CleanDataEditorInput implements IEditorInput {
 
 	private final String uuid;
-	private String name = "new Session";
+	private String name;
 
 	/** uuid must not be null */
 	public CleanDataEditorInput(String uuid) {

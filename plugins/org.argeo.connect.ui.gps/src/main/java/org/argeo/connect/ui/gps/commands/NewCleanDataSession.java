@@ -1,5 +1,9 @@
 package org.argeo.connect.ui.gps.commands;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
+
 import javax.jcr.Node;
 
 import org.argeo.ArgeoException;
@@ -26,6 +30,9 @@ public class NewCleanDataSession extends AbstractHandler {
 	public final static String DEFAULT_ICON_REL_PATH = "icons/newSession.gif";
 	public final static String DEFAULT_LABEL = "Create a new clean data session";
 
+	// Define here the default node name
+	private DateFormat timeFormatter = new SimpleDateFormat("yyyyMMdd_HHmmss");
+
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
 		try {
@@ -49,19 +56,20 @@ public class NewCleanDataSession extends AbstractHandler {
 
 					parentNode = (Node) obj;
 
+					String nodeName = timeFormatter
+							.format(new GregorianCalendar().getTime());
 					Node newNode = JcrSessionUtils.createNewSession(parentNode,
-							"new Session");
+							nodeName);
 
 					view.nodeAdded(parentNode, newNode);
 					parentNode.getSession().save();
 
-					HandlerUtil
-							.getActiveWorkbenchWindow(event)
-							.getActivePage()
-							.openEditor(
-									new CleanDataEditorInput(
-											newNode.getIdentifier()),
-									CleanDataEditor.ID);
+					CleanDataEditorInput cdei = new CleanDataEditorInput(
+							newNode.getIdentifier());
+					cdei.setName(nodeName);
+
+					HandlerUtil.getActiveWorkbenchWindow(event).getActivePage()
+							.openEditor(cdei, CleanDataEditor.ID);
 				}
 			}
 		} catch (Exception e) {

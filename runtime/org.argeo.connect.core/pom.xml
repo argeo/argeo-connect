@@ -38,7 +38,13 @@
 						<Export-Package>
 							org.argeo.connect.*
 						</Export-Package>
-						<Import-Package>org.springframework.core,org.argeo.gis,*</Import-Package>
+						<Import-Package>
+							org.springframework.core,
+							org.argeo.gis,
+							javax.jcr,
+							javax.jcr.query,
+							*
+						</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>
@@ -46,9 +52,20 @@
 	</build>
 	<dependencies>
 		<dependency>
+			<groupId>org.argeo.commons.basic</groupId>
+			<artifactId>org.argeo.basic.nodeps</artifactId>
+			<version>0.3.4-SNAPSHOT</version>
+		</dependency>
+		<!-- Connect specific dependencies -->
+		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.gis.geotools</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
+		</dependency>
+		<!-- JCR -->
+		<dependency>
+			<groupId>org.argeo.dep.osgi</groupId>
+			<artifactId>org.argeo.dep.osgi.jcr</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.argeo.commons.server</groupId>
@@ -63,10 +80,13 @@
 			<version>${version.argeo-commons}</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- <dependency> <groupId>org.argeo.commons.server</groupId> <artifactId>org.argeo.server.jackrabbit</artifactId> 
+			<version>${version.argeo-commons}</version> <scope>test</scope> </dependency> -->
 		<dependency>
-			<groupId>org.argeo.commons.server</groupId>
-			<artifactId>org.argeo.server.jackrabbit</artifactId>
+			<groupId>org.argeo.commons.osgi</groupId>
+			<artifactId>org.argeo.osgi.dep.jackrabbit</artifactId>
 			<version>${version.argeo-commons}</version>
+			<type>pom</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -74,10 +94,10 @@
 			<artifactId>com.springsource.org.postgresql.jdbc3</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>com.h2database</groupId> -->
-		<!-- <artifactId>com.springsource.org.h2</artifactId> -->
-		<!-- <scope>test</scope> -->
-		<!-- </dependency> -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>com.springsource.org.h2</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>
