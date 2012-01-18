@@ -1,8 +1,11 @@
 package org.argeo.connect.ui.gps.editors;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.connect.ui.gps.commons.ModifiedFieldListener;
@@ -23,8 +26,8 @@ import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
 public class MetaDataPage extends AbstractCleanDataEditorPage {
-	// private final static Log log = LogFactory
-	// .getLog(DefineParamsAndReviewPage.class);
+	private final static Log log = LogFactory
+			.getLog(DefineParamsAndReviewPage.class);
 
 	// local variables
 	public final static String ID = "cleanDataEditor.metaDataPage";
@@ -43,21 +46,14 @@ public class MetaDataPage extends AbstractCleanDataEditorPage {
 	}
 
 	protected void createFormContent(IManagedForm managedForm) {
-		try {
-			ScrolledForm form = managedForm.getForm();
-
-			TableWrapLayout twt = new TableWrapLayout();
-			TableWrapData twd = new TableWrapData(SWT.FILL);
-			twd.grabHorizontal = true;
-			form.getBody().setLayout(twt);
-			form.getBody().setLayoutData(twd);
-
-			createFields(form.getBody());
-			// createParamTable(form.getBody());
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		ScrolledForm form = managedForm.getForm();
+		TableWrapLayout twt = new TableWrapLayout();
+		TableWrapData twd = new TableWrapData(SWT.FILL);
+		twd.grabHorizontal = true;
+		form.getBody().setLayout(twt);
+		form.getBody().setLayoutData(twd);
+		createFields(form.getBody());
+		((CleanDataEditor) getEditor()).refreshReadOnlyState();
 	}
 
 	private Section createFields(Composite parent) {
@@ -83,14 +79,14 @@ public class MetaDataPage extends AbstractCleanDataEditorPage {
 		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		gd.horizontalSpan = 2;
 		paramSetLabel.setLayoutData(gd);
-		if (getJcrStringValue(CONNECT_NAME) == null)
+		if (getJcrStringValue(Property.JCR_NAME) == null)
 			try {
 				paramSetLabel.setText(getEditor().getCurrentSessionNode()
 						.getName());
 			} catch (RepositoryException re) {// Silent
 			}
 		else
-			paramSetLabel.setText(getJcrStringValue(CONNECT_NAME));
+			paramSetLabel.setText(getJcrStringValue(Property.JCR_NAME));
 
 		label = new Label(body, SWT.NONE);
 		label.setText(ConnectUiGpsPlugin.getGPSMessage(PARAM_SET_COMMENTS_LBL));
@@ -114,35 +110,24 @@ public class MetaDataPage extends AbstractCleanDataEditorPage {
 
 		AbstractFormPart part = new SectionPart(section) {
 			public void commit(boolean onSave) {
-				// implements here what must be done while committing and saving
-				// (if onSave = true)
-
-				Node currentSessionNode = getEditor().getCurrentSessionNode();
-				try {
-					currentSessionNode.setProperty(CONNECT_NAME,
-							paramSetLabel.getText());
-					currentSessionNode.setProperty(CONNECT_COMMENTS,
-							paramSetComments.getText());
-					currentSessionNode.setProperty(CONNECT_DEFAULT_SENSOR,
-							defaultSensorName.getText());
-					super.commit(onSave);
-
-					// Only to get record of the pattern:
-					// // We inform param page that the model has changed.
-					// IManagedForm imf = getEditor().findPage(
-					// DefineParamsAndReviewPage.ID).getManagedForm();
-					// if (imf != null)
-					// ((AbstractFormPart) imf.getParts()[0]).markStale();
-					// // refresh() method of the corresponding abstract form
-					// // part must then be implemented to have the required
-					// // behaviour.
-
-				} catch (RepositoryException re) {
-					throw new ArgeoException(
-							"Error while trying to persist Meta Data for Session",
-							re);
-				}
-
+				if (onSave)
+					try {
+						Node currentSessionNode = getEditor()
+								.getCurrentSessionNode();
+						currentSessionNode.setProperty(Property.JCR_NAME,
+								paramSetLabel.getText());
+						currentSessionNode.setProperty(CONNECT_COMMENTS,
+								paramSetComments.getText());
+						currentSessionNode.setProperty(CONNECT_DEFAULT_SENSOR,
+								defaultSensorName.getText());
+						super.commit(onSave);
+					} catch (RepositoryException re) {
+						throw new ArgeoException(
+								"Error while trying to persist Meta Data for Session",
+								re);
+					}
+				else if (log.isDebugEnabled())
+					log.debug("commit(false)");
 			}
 		};
 

@@ -21,11 +21,9 @@ mixin
 [connect:fileRepository] > nt:folder, mix:title
 
 // clean track session
-[connect:cleanTrackSession] > nt:unstructured, mix:title
-// TODO remove?: use node name as name?
-- connect:name (STRING)
-- connect:isComplete (BOOLEAN) ='false' a m  //autocreated mandatory; FYI : closed=true 
-- connect:dateCompleted (DATE)
+[connect:cleanTrackSession] > nt:unstructured, mix:title, mix:lastModified
+- jcr:name (STRING)
+- connect:isSessionComplete (BOOLEAN) ='false' a m  //autocreated mandatory; FYI : closed=true 
 - connect:comments (STRING)
 - connect:defaultSensor (STRING)
 // TODO + * (connect:fileToImport) * // node name is file name
@@ -48,9 +46,7 @@ mixin
 
 // clean parameter 
 [connect:cleanParameter] > nt:unstructured
-// TODO remove: param name is node name
-- connect:paramName (STRING) primary
-- connect:paramLabel (STRING)
+- jcr:description (STRING)
 - connect:paramValue (DOUBLE)
 - connect:paramMinValue (DOUBLE)
 - connect:paramMaxValue (DOUBLE)

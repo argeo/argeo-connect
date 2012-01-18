@@ -1,6 +1,7 @@
 package org.argeo.connect.ui.gps.commons;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectConstants;
@@ -19,66 +20,34 @@ public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 
 			// TODO : remove hard coding from instantiation of default model.
 			Node tmpNode;
-			// minimal speed
-			tmpNode = newSession.addNode(ConnectConstants.CONNECT_PARAM_SPEED_MIN,
-					CONNECT_CLEAN_PARAMETER);
-			tmpNode.setProperty(CONNECT_PARAM_NAME, "Minimal speed");
-			tmpNode.setProperty(CONNECT_PARAM_LABEL,
-					"Enter minimal acceptable speed value ");
-			tmpNode.setProperty(CONNECT_PARAM_MIN_VALUE, -1000d);
-			tmpNode.setProperty(CONNECT_PARAM_MAX_VALUE, 0d);
-			tmpNode.setProperty(CONNECT_PARAM_VALUE, -500);
-
+	
 			// maximal speed
 			tmpNode = newSession.addNode(ConnectConstants.CONNECT_PARAM_SPEED_MAX,
 					CONNECT_CLEAN_PARAMETER);
-			tmpNode.setProperty(CONNECT_PARAM_NAME, "Maximal speed");
-			tmpNode.setProperty(CONNECT_PARAM_LABEL,
-					"Enter maximal acceptable speed value ");
+			tmpNode.setProperty(Property.JCR_DESCRIPTION,
+					"Maximal acceptable speed value ");
 			tmpNode.setProperty(CONNECT_PARAM_MIN_VALUE, 0d);
-			tmpNode.setProperty(CONNECT_PARAM_MAX_VALUE, 2000d);
-			tmpNode.setProperty(CONNECT_PARAM_VALUE, 1000);
-
-			// Minimal acceleration
-			tmpNode = newSession.addNode(ConnectConstants.CONNECT_PARAM_ACCELERATION_MIN,
-					CONNECT_CLEAN_PARAMETER);
-			tmpNode.setProperty(CONNECT_PARAM_NAME, "Minimal acceleration");
-			tmpNode.setProperty(CONNECT_PARAM_LABEL,
-					"Enter minimal acceptable acceleration value ");
-			tmpNode.setProperty(CONNECT_PARAM_MIN_VALUE, -1000d);
-			tmpNode.setProperty(CONNECT_PARAM_MAX_VALUE, 1000d);
-			tmpNode.setProperty(CONNECT_PARAM_VALUE, 0d);
+			tmpNode.setProperty(CONNECT_PARAM_MAX_VALUE, 250d);
+			// default value
+			tmpNode.setProperty(CONNECT_PARAM_VALUE, 100d);
 
 			// Maximal acceleration
 			tmpNode = newSession.addNode(ConnectConstants.CONNECT_PARAM_ACCELERATION_MAX,
 					CONNECT_CLEAN_PARAMETER);
-			tmpNode.setProperty(CONNECT_PARAM_NAME, "Maximal acceleration");
-			tmpNode.setProperty(CONNECT_PARAM_LABEL,
-					"Enter maximal acceptable acceleration value ");
+			tmpNode.setProperty(Property.JCR_DESCRIPTION,
+					"Maximal acceptable acceleration value ");
 			tmpNode.setProperty(CONNECT_PARAM_MIN_VALUE, 0d);
-			tmpNode.setProperty(CONNECT_PARAM_MAX_VALUE, 2000d);
-			tmpNode.setProperty(CONNECT_PARAM_VALUE, 1000d);
-
-			// Minimal radial speed
-			tmpNode = newSession.addNode(ConnectConstants.CONNECT_PARAM_RADIAL_SPEED_MIN,
-					CONNECT_CLEAN_PARAMETER);
-			tmpNode.setProperty(CONNECT_PARAM_NAME, "Minimal radial speed");
-			tmpNode.setProperty(CONNECT_PARAM_LABEL,
-					"Enter minimal acceptable radial speed value ");
-			tmpNode.setProperty(CONNECT_PARAM_MIN_VALUE, -1000d);
-			tmpNode.setProperty(CONNECT_PARAM_MAX_VALUE, 0d);
-			tmpNode.setProperty(CONNECT_PARAM_VALUE, -500d);
-			tmpNode.setProperty(CONNECT_PARAM_IS_USED, false);
+			tmpNode.setProperty(CONNECT_PARAM_MAX_VALUE, 5d);
+			tmpNode.setProperty(CONNECT_PARAM_VALUE, 2d);
 
 			// Maximal radial speed
-			tmpNode = newSession.addNode(ConnectConstants.CONNECT_PARAM_RADIAL_SPEED_MAX,
+			tmpNode = newSession.addNode(ConnectConstants.CONNECT_PARAM_ROTATION_MAX,
 					CONNECT_CLEAN_PARAMETER);
-			tmpNode.setProperty(CONNECT_PARAM_NAME, "Maximal radial speed");
-			tmpNode.setProperty(CONNECT_PARAM_LABEL,
-					"Enter maximal acceptable radial value ");
+			tmpNode.setProperty(Property.JCR_DESCRIPTION,
+					"Maximal acceptable rotation speed value ");
 			tmpNode.setProperty(CONNECT_PARAM_MIN_VALUE, 0d);
-			tmpNode.setProperty(CONNECT_PARAM_MAX_VALUE, 10000d);
-			tmpNode.setProperty(CONNECT_PARAM_VALUE, 5000d);
+			tmpNode.setProperty(CONNECT_PARAM_MAX_VALUE, 360d);
+			tmpNode.setProperty(CONNECT_PARAM_VALUE, 90d);
 
 		} catch (Exception e) {
 			throw new ArgeoException(

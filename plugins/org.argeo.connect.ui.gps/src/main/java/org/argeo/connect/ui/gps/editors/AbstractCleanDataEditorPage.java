@@ -55,7 +55,7 @@ public abstract class AbstractCleanDataEditorPage extends FormPage implements
 		try {
 			// Cannot edit a completed session
 			return getEditor().getCurrentSessionNode()
-					.getProperty(CONNECT_IS_COMPLETE).getBoolean();
+					.getProperty(CONNECT_IS_SESSION_COMPLETE).getBoolean();
 		} catch (RepositoryException re) {
 			throw new ArgeoException(
 					"Cannot access node to see if it has already been imported.");

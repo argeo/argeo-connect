@@ -15,9 +15,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 /** TODO factorize it in Argeo Commons as a generic component ? */
 public class SliderViewer {
 	private final static Integer MIN_SLIDER = 0;
-	// Fixme : if MAX_SLIDER = 100, maximum cannot be reached moving the slider
+	// Fixme : Maximum cannot be reached moving the slider
 	// with the mouse.
-	private final static Integer MAX_SLIDER = 90;
+	private final static Integer MAX_SLIDER = 100;
 
 	private String label;
 	private Double maxValue;

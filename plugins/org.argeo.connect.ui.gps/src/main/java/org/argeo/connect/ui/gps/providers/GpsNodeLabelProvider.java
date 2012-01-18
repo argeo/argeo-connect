@@ -1,6 +1,7 @@
 package org.argeo.connect.ui.gps.providers;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
@@ -23,8 +24,8 @@ public class GpsNodeLabelProvider extends DefaultNodeLabelProvider implements
 	public final static Image session = ConnectUiGpsPlugin.getImageDescriptor(
 			"icons/repository.gif").createImage();
 
-	public final static Image fileNewImg = ConnectUiGpsPlugin.getImageDescriptor(
-			"icons/file_new.gif").createImage();
+	public final static Image fileNewImg = ConnectUiGpsPlugin
+			.getImageDescriptor("icons/file_new.gif").createImage();
 
 	public final static Image fileProcessedImg = ConnectUiGpsPlugin
 			.getImageDescriptor("icons/file_processed.gif").createImage();
@@ -39,8 +40,10 @@ public class GpsNodeLabelProvider extends DefaultNodeLabelProvider implements
 				if (node.getPrimaryNodeType().isNodeType(
 						CONNECT_CLEAN_TRACK_SESSION)) {
 					// Session
-					if (!"".equals(node.getProperty(CONNECT_NAME).getString()))
-						curText = node.getProperty(CONNECT_NAME).getString();
+					if (!"".equals(node.getProperty(Property.JCR_NAME)
+							.getString()))
+						curText = node.getProperty(Property.JCR_NAME)
+								.getString();
 				} else if (node.getPrimaryNodeType().isNodeType(
 						CONNECT_FILE_TO_IMPORT)) {
 					// File

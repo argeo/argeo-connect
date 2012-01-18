@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
@@ -22,6 +23,7 @@ import org.argeo.gis.GisConstants;
 import org.argeo.gis.ui.MapControlCreator;
 import org.argeo.gis.ui.MapViewer;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -54,7 +56,6 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 			throw new RuntimeException("Wrong input");
 		setSite(site);
 		setInput(input);
-
 		this.setPartName(getSessionName());
 	}
 
@@ -74,10 +75,6 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 
 	public void doSave(IProgressMonitor monitor) {
 		try {
-
-			if (log.isTraceEnabled())
-				log.trace("CleanDataEditor.doSave");
-
 			// Automatically commit all pages of the editor
 			commitPages(true);
 
@@ -139,6 +136,28 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 		return curNode;
 	}
 
+	// change enable state of all children control to readOnly
+	public void refreshReadOnlyState() {
+
+		try {
+			if (getCurrentSessionNode().getProperty(
+					ConnectNames.CONNECT_IS_SESSION_COMPLETE).getBoolean())
+				for (int i = 0; i < getPageCount(); i++) {
+					Control curPage = getControl(i);
+					if (curPage != null)
+						curPage.setEnabled(false);
+				}
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Error while refreshing readonly state",
+					re);
+		}
+	}
+
+	@Override
+	public CleanDataEditorInput getEditorInput() {
+		return (CleanDataEditorInput) super.getEditorInput();
+	}
+
 	public void addBaseLayers(MapViewer mapViewer) {
 		for (String alias : baseLayers) {
 			String layerPath = (GisConstants.DATA_STORES_BASE_PATH + alias)
@@ -156,20 +175,15 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 	private String getSessionName() {
 		String name;
 		try {
-			if (getCurrentSessionNode().hasProperty(CONNECT_NAME))
-				name = getCurrentSessionNode().getProperty(CONNECT_NAME)
+			if (getCurrentSessionNode().hasProperty(Property.JCR_NAME))
+				name = getCurrentSessionNode().getProperty(Property.JCR_NAME)
 						.getString();
 			else
-				name = "(new Session)";
+				name = getEditorInput().getName();
 		} catch (RepositoryException re) {
 			throw new ArgeoException("Error while getting session name", re);
 		}
 		return name;
-	}
-
-	@Override
-	public CleanDataEditorInput getEditorInput() {
-		return (CleanDataEditorInput) super.getEditorInput();
 	}
 
 	/**

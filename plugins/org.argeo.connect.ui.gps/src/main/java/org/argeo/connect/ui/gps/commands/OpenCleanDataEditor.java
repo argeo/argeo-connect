@@ -1,10 +1,10 @@
 package org.argeo.connect.ui.gps.commands;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.Session;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.gps.editors.CleanDataEditor;
 import org.argeo.connect.ui.gps.editors.CleanDataEditorInput;
 import org.eclipse.core.commands.AbstractHandler;
@@ -25,7 +25,7 @@ public class OpenCleanDataEditor extends AbstractHandler {
 
 	/* DEPENDENCY INJECTION */
 	private Session session;
-	
+
 	public final static String ID = "org.argeo.connect.ui.gps.openCleanDataEditor";
 	public final static String PARAM_UUID = "org.argeo.connect.ui.gps.connectSessionUuid";
 
@@ -35,29 +35,26 @@ public class OpenCleanDataEditor extends AbstractHandler {
 
 		try {
 			// Initializes the editor input.
-			CleanDataEditorInput cdei = new CleanDataEditorInput(
-					uuid);
+			CleanDataEditorInput cdei = new CleanDataEditorInput(uuid);
 			String nodeName;
 			Node node = session.getNodeByIdentifier(uuid);
-			if (node.hasProperty(ConnectNames.CONNECT_NAME))
-				nodeName = node.getProperty(ConnectNames.CONNECT_NAME).getString();
-			else 
+			if (node.hasProperty(Property.JCR_NAME))
+				nodeName = node.getProperty(Property.JCR_NAME)
+						.getString();
+			else
 				nodeName = node.getName();
 			cdei.setName(nodeName);
-			
-			HandlerUtil
-					.getActiveWorkbenchWindow(event)
-					.getActivePage()
-					.openEditor(cdei,
-							CleanDataEditor.ID);
+
+			HandlerUtil.getActiveWorkbenchWindow(event).getActivePage()
+					.openEditor(cdei, CleanDataEditor.ID);
 		} catch (Exception e) {
 			throw new ArgeoException("Cannot open editor", e);
 		}
 		return null;
 	}
-	
+
 	/* DEPENDENCY INJECTION */
-	public void setSession(Session session){
+	public void setSession(Session session) {
 		this.session = session;
 	}
 }

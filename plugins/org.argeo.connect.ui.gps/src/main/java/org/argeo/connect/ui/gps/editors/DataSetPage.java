@@ -56,6 +56,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
+import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
@@ -102,7 +103,6 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 	}
 
 	protected void createFormContent(IManagedForm managedForm) {
-
 		ScrolledForm form = managedForm.getForm();
 		tk = getManagedForm().getToolkit();
 		Composite composite = form.getBody();
@@ -114,6 +114,7 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 
 		// Initialize with persisted values.
 		initializePage();
+		((CleanDataEditor) getEditor()).refreshReadOnlyState();
 	}
 
 	// Manage the files to import table
@@ -131,12 +132,9 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 		Table table = tk.createTable(body, SWT.NONE | SWT.H_SCROLL
 				| SWT.V_SCROLL | SWT.BORDER);
 
-		// TODO check if this is usefull
 		GridData gridData = new GridData(SWT.LEFT, SWT.FILL, false, true);
 		gridData.heightHint = 400;
-		// gridData.horizontalSpan = 2;
 		table.setLayoutData(gridData);
-		// table.setSize(300, 600);
 
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
@@ -357,11 +355,26 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 
 		@Override
 		public boolean performDrop(Object data) {
-
 			// Check if a default sensor name has already been entered.
 			if (getEditor().getDefaultSensorName() == null) {
 				ErrorFeedback.show("Please enter a default sensor name");
 				getEditor().setActivePage(MetaDataPage.ID);
+				return false;
+			}
+
+			// check if the Metadata Page is dirty
+			if (getEditor().findPage(MetaDataPage.ID).isDirty()) {
+				ErrorFeedback
+						.show("Please save Metadata before starting file import process.");
+				return false;
+			}
+
+			// check if the session is read only
+			FormPage page = (FormPage) getManagedForm().getContainer();
+			boolean enabled = page.getPartControl().getEnabled();
+			if (!page.getPartControl().getEnabled()) {
+				ErrorFeedback
+						.show("This session has already been commited and closed. No more file can be added.");
 				return false;
 			}
 			try {
@@ -378,13 +391,9 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 
 					}
 				}
-
 				getViewer().refresh();
-
-				log.debug("here");
 				// resize the table if needed.
 				getViewer().getControl().getParent().layout();
-
 			} catch (RepositoryException e) {
 				throw new ArgeoException("Error while parsing Dropped data", e);
 			}
