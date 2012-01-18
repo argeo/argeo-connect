@@ -2,11 +2,9 @@ package org.argeo.connect.ui.gps.commands;
 
 import javax.jcr.Node;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.gpx.TrackDao;
 import org.argeo.connect.ui.gps.wizards.ImportGpxWizard;
-import org.argeo.eclipse.ui.dialogs.Error;
+import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.eclipse.ui.jcr.views.AbstractJcrBrowser;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -18,7 +16,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 /** Open a JCR query editor. */
 public class ImportGpx extends AbstractHandler {
-	private final static Log log = LogFactory.getLog(ImportGpx.class);
+	// private final static Log log = LogFactory.getLog(ImportGpx.class);
 	private TrackDao trackDao;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -40,10 +38,10 @@ public class ImportGpx extends AbstractHandler {
 					dialog.open();
 					view.refresh(baseNode);
 				} else {
-					Error.show("Can only import to a node");
+					ErrorFeedback.show("Can only import to a node");
 				}
 			} catch (Exception e) {
-				Error.show("Cannot import files to " + obj, e);
+				ErrorFeedback.show("Cannot import files to " + obj, e);
 			}
 		}
 		return null;

@@ -5,7 +5,7 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
-import org.argeo.eclipse.ui.Error;
+import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.eclipse.ui.dialogs.SingleValue;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -39,12 +39,12 @@ public class AddFileFolder extends AbstractHandler implements ConnectTypes {
 						view.nodeAdded(parentNode, newNode);
 						parentNode.getSession().save();
 					} catch (RepositoryException e) {
-						Error.show("Cannot create folder " + folderName
+						ErrorFeedback.show("Cannot create folder " + folderName
 								+ " under " + parentNode, e);
 					}
 				}
 			} else {
-				Error.show("Can only add file folder to a node");
+				ErrorFeedback.show("Can only add file folder to a node");
 			}
 		}
 		return null;
