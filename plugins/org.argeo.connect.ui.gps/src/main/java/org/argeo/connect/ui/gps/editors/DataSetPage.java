@@ -13,8 +13,6 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.eclipse.ui.ErrorFeedback;
@@ -62,7 +60,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 
 public class DataSetPage extends AbstractCleanDataEditorPage {
-	private final static Log log = LogFactory.getLog(DataSetPage.class);
+	// private final static Log log = LogFactory.getLog(DataSetPage.class);
 	public final static String ID = "cleanDataEditor.dataSetPage";
 
 	// The main table.
@@ -92,11 +90,6 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 	// WARNING : key is the referenced file node ID, not the id of the
 	// corresponding node under currentSessionNode
 	private Map<String, Node> droppedNodes = new HashMap<String, Node>();
-
-	// FIXME retrieve a proper name
-	private String getCleanSession() {
-		return "HARDCODED";
-	}
 
 	public DataSetPage(FormEditor editor, String title) {
 		super(editor, ID, title);
@@ -371,7 +364,7 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 			// check if the session is read only
 			FormPage page = (FormPage) getManagedForm().getContainer();
 			boolean enabled = page.getPartControl().getEnabled();
-			if (!page.getPartControl().getEnabled()) {
+			if (!enabled) {
 				ErrorFeedback
 						.show("This session has already been commited and closed. No more file can be added.");
 				return false;

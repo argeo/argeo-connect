@@ -53,7 +53,7 @@ public class MetaDataPage extends AbstractCleanDataEditorPage {
 		form.getBody().setLayout(twt);
 		form.getBody().setLayoutData(twd);
 		createFields(form.getBody());
-		//((CleanDataEditor) getEditor()).refreshReadOnlyState();
+		// ((CleanDataEditor) getEditor()).refreshReadOnlyState();
 	}
 
 	private Section createFields(Composite parent) {
@@ -104,9 +104,17 @@ public class MetaDataPage extends AbstractCleanDataEditorPage {
 		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		gd.horizontalSpan = 2;
 		defaultSensorName.setLayoutData(gd);
-		if (getJcrStringValue(CONNECT_COMMENTS) != null)
+		if (getJcrStringValue(CONNECT_DEFAULT_SENSOR) != null)
 			defaultSensorName
 					.setText(getJcrStringValue(CONNECT_DEFAULT_SENSOR));
+		else
+			try {
+				defaultSensorName.setText(getEditor().getCurrentSessionNode()
+						.getSession().getUserID());
+			} catch (RepositoryException re) {
+				throw new ArgeoException(
+						"Unexpected error while getting user name", re);
+			}
 
 		AbstractFormPart part = new SectionPart(section) {
 			public void commit(boolean onSave) {

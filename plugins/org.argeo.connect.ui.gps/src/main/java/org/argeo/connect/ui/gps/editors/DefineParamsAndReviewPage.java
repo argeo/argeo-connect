@@ -57,11 +57,6 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	private MapViewer mapViewer;
 
 	// FIXME retrieve a proper name
-	private String getCleanSession() {
-		return "HARDCODED";
-	}
-
-	// FIXME retrieve a proper name
 	private String getReferential() {
 		return "HARDCODED";
 	}

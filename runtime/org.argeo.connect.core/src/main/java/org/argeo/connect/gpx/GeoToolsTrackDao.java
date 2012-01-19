@@ -64,6 +64,13 @@ public class GeoToolsTrackDao implements TrackDao {
 	public GeoToolsTrackDao() {
 	}
 
+	private String addGpsCleanTablePrefix(String baseName){
+		return "connect_gpsclean_" + baseName;
+	}
+
+	private String addPositionTablePrefix(String baseName){
+		return "connect_positions_" + baseName;
+	}
 	// public void init() {
 	// trackSpeedType = new BeanFeatureTypeBuilder<TrackSpeed>(
 	// trackSpeedsToCleanTable, TrackSpeed.class);
@@ -94,7 +101,7 @@ public class GeoToolsTrackDao implements TrackDao {
 			IOUtils.closeQuietly(in);
 			long duration = System.currentTimeMillis() - begin;
 			if (log.isDebugEnabled())
-				log.debug("Imported " + cleanSession + " from sensor '"
+				log.debug("Gpx file imported to table " + addGpsCleanTablePrefix(cleanSession) + " with sensor '"
 						+ sensor + "' in " + (duration) + " ms");
 		}
 	}
@@ -102,10 +109,10 @@ public class GeoToolsTrackDao implements TrackDao {
 	public void publishCleanPositions(String cleanSession, String referential,
 			String toRemoveCql) {
 		try {
-			String trackSpeedsToCleanTable = "connect_gpsclean_" + cleanSession;
+			String trackSpeedsToCleanTable = addGpsCleanTablePrefix(cleanSession);
 			BeanFeatureTypeBuilder<TrackSpeed> trackSpeedType = new BeanFeatureTypeBuilder<TrackSpeed>(
 					trackSpeedsToCleanTable, TrackSpeed.class);
-			String positionsTable = "connect_positions_" + cleanSession;
+			String positionsTable = addPositionTablePrefix(referential);
 			BeanFeatureTypeBuilder<TrackPoint> positionType = new BeanFeatureTypeBuilder<TrackPoint>(
 					positionsTable, TrackPoint.class);
 
@@ -317,9 +324,9 @@ public class GeoToolsTrackDao implements TrackDao {
 
 		public TrackGpxHandler(String sensor, Integer srid, String cleanSession) {
 			super(sensor, srid);
-			String trackSpeedsToCleanTable = "connect_gpsclean_" + cleanSession;
+			//String trackSpeedsToCleanTable = "connect_gpsclean_" + cleanSession;
 			trackSpeedType = new BeanFeatureTypeBuilder<TrackSpeed>(
-					trackSpeedsToCleanTable, TrackSpeed.class);
+					addGpsCleanTablePrefix(cleanSession), TrackSpeed.class);
 		}
 
 		@Override

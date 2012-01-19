@@ -4,8 +4,6 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
@@ -15,8 +13,8 @@ import org.eclipse.swt.graphics.Image;
 
 public class GpsNodeLabelProvider extends DefaultNodeLabelProvider implements
 		ConnectTypes, ConnectNames, ConnectGpsLabels {
-	private final static Log log = LogFactory
-			.getLog(GpsNodeLabelProvider.class);
+	// private final static Log log = LogFactory
+	// .getLog(GpsNodeLabelProvider.class);
 
 	// Images
 	public final static Image sessionFolder = ConnectUiGpsPlugin
@@ -53,9 +51,6 @@ public class GpsNodeLabelProvider extends DefaultNodeLabelProvider implements
 								.getString();
 				} else if (node.getPrimaryNodeType().isNodeType(
 						CONNECT_SESSION_REPOSITORY)) {
-					log.debug("Here & label = "
-							+ ConnectUiGpsPlugin
-									.getGPSMessage(SESSION_REPOSITORY_LBL));
 					// Parent Session Node
 					curText = ConnectUiGpsPlugin
 							.getGPSMessage(SESSION_REPOSITORY_LBL);

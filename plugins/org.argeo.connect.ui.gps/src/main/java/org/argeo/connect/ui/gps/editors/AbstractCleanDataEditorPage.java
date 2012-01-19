@@ -1,5 +1,6 @@
 package org.argeo.connect.ui.gps.editors;
 
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.ArgeoException;
@@ -12,8 +13,6 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 
@@ -62,6 +61,24 @@ public abstract class AbstractCleanDataEditorPage extends FormPage implements
 			throw new ArgeoException(
 					"Cannot access node to see if it has already been imported.");
 		}
+	}
+
+	/**
+	 * Returns the cleanSession name: it is the corresponding jcr node name
+	 * 
+	 */
+	protected String getCleanSession() {
+
+		String csName;
+		try {
+			Node sessionNode = getEditor().getCurrentSessionNode();
+			csName = sessionNode.getName();
+		} catch (RepositoryException re) {
+			throw new ArgeoException(
+					"Unexpected error while retrieving node session name.", re);
+		}
+
+		return csName;
 	}
 
 	@Override
