@@ -14,6 +14,9 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.ConnectNames;
+import org.argeo.connect.ConnectTypes;
+import org.argeo.connect.ui.gps.ConnectGpsLabels;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.jcr.JcrUtils;
@@ -115,7 +118,7 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 		// Corresponding Section
 		Section section = tk.createSection(parent, Section.TITLE_BAR);
 		section.setText(ConnectUiGpsPlugin
-				.getGPSMessage(IMPORT_FILE_SECTION_TITLE));
+				.getGPSMessage(ConnectGpsLabels.IMPORT_FILE_SECTION_TITLE));
 		Composite body = tk.createComposite(section, SWT.WRAP);
 		body.setLayout(new GridLayout(1, false));
 		section.setClient(body);
@@ -150,7 +153,8 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 					Node cnode = (Node) element;
 					if (!canEditLine(cnode))
 						return null;
-					if (cnode.getProperty(CONNECT_TO_BE_PROCESSED).getBoolean())
+					if (cnode.getProperty(ConnectNames.CONNECT_TO_BE_PROCESSED)
+							.getBoolean())
 						return CHECKED;
 					else
 						return UNCHECKED;
@@ -191,8 +195,8 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 			public void update(final ViewerCell cell) {
 				try {
 					Node cnode = (Node) cell.getElement();
-					String currentText = cnode.getProperty(CONNECT_SENSOR_NAME)
-							.getString();
+					String currentText = cnode.getProperty(
+							ConnectNames.CONNECT_SENSOR_NAME).getString();
 					StyledString styledString;
 					if (canEditLine(cnode))
 						styledString = new StyledString(currentText,
@@ -217,8 +221,8 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 	private void addButtonsPart(Composite parent) {
 
 		// Launch effective import button
-		Button launchImport = tk.createButton(parent,
-				ConnectUiGpsPlugin.getGPSMessage(LAUNCH_IMPORT_BUTTON_LBL),
+		Button launchImport = tk.createButton(parent, ConnectUiGpsPlugin
+				.getGPSMessage(ConnectGpsLabels.LAUNCH_IMPORT_BUTTON_LBL),
 				SWT.PUSH);
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = GridData.BEGINNING;
@@ -271,7 +275,8 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 		protected Object getValue(Object element) {
 			try {
 				Node curNode = (Node) element;
-				return curNode.getProperty(CONNECT_SENSOR_NAME).getString();
+				return curNode.getProperty(ConnectNames.CONNECT_SENSOR_NAME)
+						.getString();
 			} catch (RepositoryException re) {
 				throw new ArgeoException("Cannot retrieve sensore name", re);
 			}
@@ -281,7 +286,8 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 		protected void setValue(Object element, Object value) {
 			try {
 				Node curNode = (Node) element;
-				curNode.setProperty(CONNECT_SENSOR_NAME, (String) value);
+				curNode.setProperty(ConnectNames.CONNECT_SENSOR_NAME,
+						(String) value);
 				curNode.getSession().save();
 				viewer.refresh();
 			} catch (RepositoryException re) {
@@ -315,7 +321,8 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 		protected Object getValue(Object element) {
 			try {
 				Node curNode = (Node) element;
-				return curNode.getProperty(CONNECT_TO_BE_PROCESSED)
+				return curNode
+						.getProperty(ConnectNames.CONNECT_TO_BE_PROCESSED)
 						.getBoolean();
 			} catch (RepositoryException re) {
 				throw new ArgeoException(
@@ -327,7 +334,8 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 		protected void setValue(Object element, Object value) {
 			try {
 				Node curNode = (Node) element;
-				curNode.setProperty(CONNECT_TO_BE_PROCESSED, (Boolean) value);
+				curNode.setProperty(ConnectNames.CONNECT_TO_BE_PROCESSED,
+						(Boolean) value);
 				curNode.getSession().save();
 			} catch (RepositoryException re) {
 				throw new ArgeoException(
@@ -408,10 +416,11 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 
 			// we name nodes based on the name of the file they reference
 			Node fileNode = sessionNode.addNode(fileName,
-					CONNECT_FILE_TO_IMPORT);
-			fileNode.setProperty(CONNECT_LINKED_FILE_REF, refId);
-			fileNode.setProperty(CONNECT_SENSOR_NAME,
-					sessionNode.getProperty(CONNECT_DEFAULT_SENSOR).getString());
+					ConnectTypes.CONNECT_FILE_TO_IMPORT);
+			fileNode.setProperty(ConnectNames.CONNECT_LINKED_FILE_REF, refId);
+			fileNode.setProperty(ConnectNames.CONNECT_SENSOR_NAME, sessionNode
+					.getProperty(ConnectNames.CONNECT_DEFAULT_SENSOR)
+					.getString());
 			sessionNode.getSession().save();
 			droppedNodes.put(refId, fileNode);
 		} catch (RepositoryException e) {
@@ -432,9 +441,9 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 			while (ni.hasNext()) {
 				Node curNode = ni.nextNode();
 				if (curNode.getPrimaryNodeType().isNodeType(
-						CONNECT_FILE_TO_IMPORT)) {
-					String id = curNode.getProperty(CONNECT_LINKED_FILE_REF)
-							.getString();
+						ConnectTypes.CONNECT_FILE_TO_IMPORT)) {
+					String id = curNode.getProperty(
+							ConnectNames.CONNECT_LINKED_FILE_REF).getString();
 					droppedNodes.put(id, curNode);
 				}
 			}
@@ -454,8 +463,10 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 		List<String> ids = new ArrayList<String>();
 		for (Node node : droppedNodes.values()) {
 			try {
-				if (node.getProperty(CONNECT_TO_BE_PROCESSED).getBoolean()
-						&& !node.getProperty(CONNECT_ALREADY_PROCESSED)
+				if (node.getProperty(ConnectNames.CONNECT_TO_BE_PROCESSED)
+						.getBoolean()
+						&& !node.getProperty(
+								ConnectNames.CONNECT_ALREADY_PROCESSED)
 								.getBoolean()) {
 					ids.add(node.getIdentifier());
 				}
@@ -526,20 +537,21 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 
 			Node refNode = curSession.getNodeByIdentifier(refNodeId);
 			Node node = curSession.getNodeByIdentifier(refNode.getProperty(
-					CONNECT_LINKED_FILE_REF).getString());
+					ConnectNames.CONNECT_LINKED_FILE_REF).getString());
 			String name = node.getName();
 			monitor.subTask("Importing " + name);
 			binary = node.getNode(Property.JCR_CONTENT)
 					.getProperty(Property.JCR_DATA).getBinary();
 
-			String cname = refNode.getProperty(CONNECT_SENSOR_NAME).getString();
+			String cname = refNode
+					.getProperty(ConnectNames.CONNECT_SENSOR_NAME).getString();
 
 			getEditor().getTrackDao().importRawToCleanSession(
 					getCleanSession(), cname, binary.getStream());
 			JcrUtils.closeQuietly(binary);
 
 			// Finalization of the import / UI updates
-			refNode.setProperty(CONNECT_ALREADY_PROCESSED, true);
+			refNode.setProperty(ConnectNames.CONNECT_ALREADY_PROCESSED, true);
 			curSession.save();
 
 			stats.nodeCount++;
@@ -557,7 +569,8 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 			// Cannot edit a completed session
 			if (isSessionAlreadyComplete())
 				return false;
-			return !node.getProperty(CONNECT_ALREADY_PROCESSED).getBoolean();
+			return !node.getProperty(ConnectNames.CONNECT_ALREADY_PROCESSED)
+					.getBoolean();
 		} catch (RepositoryException re) {
 			throw new ArgeoException(
 					"Cannot access node to see if it has already been imported.");

@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
+import org.argeo.connect.ui.gps.ConnectGpsLabels;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.connect.ui.gps.commons.ModifiedFieldListener;
 import org.argeo.eclipse.ui.ErrorFeedback;
@@ -72,7 +73,7 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 		// clean session metadata
 		Section section = tk.createSection(parent, Section.TITLE_BAR);
 		section.setText(ConnectUiGpsPlugin
-				.getGPSMessage(METADATA_SECTION_TITLE));
+				.getGPSMessage(ConnectGpsLabels.METADATA_SECTION_TITLE));
 		Composite body = tk.createComposite(section, SWT.WRAP);
 		section.setClient(body);
 
@@ -82,8 +83,8 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 		body.setLayout(layout);
 
 		// Session display name
-		Label label = tk.createLabel(body,
-				ConnectUiGpsPlugin.getGPSMessage(PARAM_SET_LABEL_LBL));
+		Label label = tk.createLabel(body, ConnectUiGpsPlugin
+				.getGPSMessage(ConnectGpsLabels.PARAM_SET_LABEL_LBL));
 		sessionDisplayName = new Text(body, SWT.FILL | SWT.BORDER);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		gd.grabExcessHorizontalSpace = true;
@@ -98,8 +99,8 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 			} // Silent
 
 		// Session description
-		label = tk.createLabel(body,
-				ConnectUiGpsPlugin.getGPSMessage(PARAM_SET_COMMENTS_LBL));
+		label = tk.createLabel(body, ConnectUiGpsPlugin
+				.getGPSMessage(ConnectGpsLabels.PARAM_SET_COMMENTS_LBL));
 		sessionDescription = new Text(body, SWT.FILL | SWT.BORDER
 				| SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
@@ -111,13 +112,14 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 
 		// Default Sensor name
 		label = new Label(body, SWT.NONE);
-		label.setText(ConnectUiGpsPlugin.getGPSMessage(DEFAULT_SENSOR_NAME_LBL));
+		label.setText(ConnectUiGpsPlugin
+				.getGPSMessage(ConnectGpsLabels.DEFAULT_SENSOR_NAME_LBL));
 		defaultSensorName = new Text(body, SWT.FILL | SWT.BORDER);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		defaultSensorName.setLayoutData(gd);
-		if (getJcrStringValue(CONNECT_DEFAULT_SENSOR) != null)
+		if (getJcrStringValue(ConnectNames.CONNECT_DEFAULT_SENSOR) != null)
 			defaultSensorName
-					.setText(getJcrStringValue(CONNECT_DEFAULT_SENSOR));
+					.setText(getJcrStringValue(ConnectNames.CONNECT_DEFAULT_SENSOR));
 		else
 			try {
 				defaultSensorName.setText(getEditor().getCurrentSessionNode()
@@ -137,9 +139,9 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 
 		populateRepoCombo(localRepoCombo);
 
-		if (getJcrStringValue(CONNECT_DEFAULT_SENSOR) != null)
+		if (getJcrStringValue(ConnectNames.CONNECT_DEFAULT_SENSOR) != null)
 			defaultSensorName
-					.setText(getJcrStringValue(CONNECT_DEFAULT_SENSOR));
+					.setText(getJcrStringValue(ConnectNames.CONNECT_DEFAULT_SENSOR));
 		else
 			try {
 				defaultSensorName.setText(getEditor().getCurrentSessionNode()
@@ -160,7 +162,8 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 						currentSessionNode.setProperty(
 								Property.JCR_DESCRIPTION,
 								sessionDescription.getText());
-						currentSessionNode.setProperty(CONNECT_DEFAULT_SENSOR,
+						currentSessionNode.setProperty(
+								ConnectNames.CONNECT_DEFAULT_SENSOR,
 								defaultSensorName.getText());
 						// TODO enhance that. works because repo list is usually
 						// small
@@ -169,12 +172,15 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 						if (tmpStr != null)
 							for (String key : repos.keySet()) {
 								if (tmpStr.equals(repos.get(key))) {
-									currentSessionNode.setProperty(
-											CONNECT_LOCAL_REPO_NAME, key);
+									currentSessionNode
+											.setProperty(
+													ConnectNames.CONNECT_LOCAL_REPO_NAME,
+													key);
 									break;
 								}
 							}
-						currentSessionNode.setProperty(CONNECT_DEFAULT_SENSOR,
+						currentSessionNode.setProperty(
+								ConnectNames.CONNECT_DEFAULT_SENSOR,
 								defaultSensorName.getText());
 						super.commit(onSave);
 					} catch (RepositoryException re) {

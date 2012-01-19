@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
+import org.argeo.connect.ui.gps.ConnectGpsLabels;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.connect.ui.gps.commons.SliderViewer;
 import org.argeo.connect.ui.gps.commons.SliderViewerListener;
@@ -222,7 +223,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 
 		// Terminate button
 		Button terminate = formToolkit.createButton(parent,
-				ConnectUiGpsPlugin.getGPSMessage(LAUNCH_CLEAN_BUTTON_LBL),
+				ConnectUiGpsPlugin.getGPSMessage(ConnectGpsLabels.LAUNCH_CLEAN_BUTTON_LBL),
 				SWT.PUSH);
 		gridData = new GridData();
 		gridData.horizontalAlignment = GridData.BEGINNING;
@@ -265,7 +266,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 							"Import done",
 							null,
 							"Clean data have been pushed to referential "
-									+ getReferential()
+									+ getReferentialDisplayName()
 									+ "\n Current clean session is now read only.",
 							SWT.NONE, new String[] { "OK" }, 0);
 

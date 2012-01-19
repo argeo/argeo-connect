@@ -1,14 +1,12 @@
 package org.argeo.connect.ui.gps.editors;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectNames;
-import org.argeo.connect.ConnectTypes;
-import org.argeo.connect.ui.gps.ConnectGpsLabels;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
-import org.argeo.eclipse.ui.ErrorFeedback;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -17,8 +15,8 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 
-public abstract class AbstractCleanDataEditorPage extends FormPage implements
-		ConnectNames, ConnectTypes, ConnectGpsLabels {
+public abstract class AbstractCleanDataEditorPage extends FormPage {
+	// implements ConnectNames, ConnectTypes, ConnectGpsLabels {
 
 	// Images
 	protected final static Image CHECKED = ConnectUiGpsPlugin
@@ -57,7 +55,8 @@ public abstract class AbstractCleanDataEditorPage extends FormPage implements
 		try {
 			// Cannot edit a completed session
 			return getEditor().getCurrentSessionNode()
-					.getProperty(CONNECT_IS_SESSION_COMPLETE).getBoolean();
+					.getProperty(ConnectNames.CONNECT_IS_SESSION_COMPLETE)
+					.getBoolean();
 		} catch (RepositoryException re) {
 			throw new ArgeoException(
 					"Cannot access node to see if it has already been imported.");
@@ -88,15 +87,40 @@ public abstract class AbstractCleanDataEditorPage extends FormPage implements
 	protected String getReferential() {
 		try {
 			Node sessionNode = getEditor().getCurrentSessionNode();
-			if (sessionNode.hasProperty(CONNECT_LOCAL_REPO_NAME)
+			if (!sessionNode.hasProperty(ConnectNames.CONNECT_LOCAL_REPO_NAME)
 					|| "".equals(sessionNode
-							.getProperty(CONNECT_LOCAL_REPO_NAME).getString()
-							.trim())) {
-				//ErrorFeedback.show("No local repository has been defined yet.");
+							.getProperty(ConnectNames.CONNECT_LOCAL_REPO_NAME)
+							.getString().trim())) {
+				// ErrorFeedback.show("No local repository has been defined yet.");
 				return null;
 			} else
-				return sessionNode.getProperty(CONNECT_LOCAL_REPO_NAME)
-						.getString();
+				return sessionNode.getProperty(
+						ConnectNames.CONNECT_LOCAL_REPO_NAME).getString();
+		} catch (RepositoryException re) {
+			throw new ArgeoException(
+					"Unexpected error while retrieving node session name.", re);
+		}
+	}
+
+	protected String getReferentialDisplayName() {
+		try {
+			Node sessionNode = getEditor().getCurrentSessionNode();
+			if (!sessionNode.hasProperty(ConnectNames.CONNECT_LOCAL_REPO_NAME)
+					|| "".equals(sessionNode
+							.getProperty(ConnectNames.CONNECT_LOCAL_REPO_NAME)
+							.getString().trim())) {
+				return null;
+			} else {
+				Node tmp = getEditor().getTrackDao()
+						.getLocalRepositoriesParentNode(
+								getEditor().getJcrSession());
+				return tmp
+						.getNode(
+								sessionNode.getProperty(
+										ConnectNames.CONNECT_LOCAL_REPO_NAME)
+										.getString())
+						.getProperty(Property.JCR_TITLE).getString();
+			}
 		} catch (RepositoryException re) {
 			throw new ArgeoException(
 					"Unexpected error while retrieving node session name.", re);
