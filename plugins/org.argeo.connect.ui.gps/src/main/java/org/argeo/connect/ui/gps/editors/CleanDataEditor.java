@@ -201,9 +201,14 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 				.getDefaultSensorName();
 	}
 
-	/** Returns injected track DAO */
-	public TrackDao getTrackDao() {
+	/** exposes injected track DAO to its FormPart */
+	protected TrackDao getTrackDao() {
 		return trackDao;
+	}
+
+	/** exposes injected session to its FormPart */
+	protected Session getJcrSession() {
+		return currentSession;
 	}
 
 	/* DEPENDENCY INJECTION */

@@ -24,9 +24,10 @@ public interface ConnectNames {
 	// Session handling
 	public final static String CONNECT_IS_SESSION_COMPLETE = CONNECT_
 			+ "isSessionComplete";
-	// public final static String CONNECT_COMMENTS = CONNECT_ + "comments";
 	public final static String CONNECT_DEFAULT_SENSOR = CONNECT_
 			+ "defaultSensor";
+	public final static String CONNECT_LOCAL_REPO_NAME = CONNECT_
+			+ "	localRepoName";
 
 	// Files to clean
 	public final static String CONNECT_LINKED_FILE = CONNECT_ + "linkedFile";
@@ -34,7 +35,6 @@ public interface ConnectNames {
 	// Files to clean
 	public final static String CONNECT_LINKED_FILE_REF = CONNECT_ + "fileRef";
 	public final static String CONNECT_SENSOR_NAME = CONNECT_ + "sensorName";
-	public final static String CONNECT_LINKED_FILE_NAME = CONNECT_ + "fileName";
 	public final static String CONNECT_TO_BE_PROCESSED = CONNECT_
 			+ "toBeProcessed";
 	public final static String CONNECT_ALREADY_PROCESSED = CONNECT_

@@ -56,11 +56,8 @@ public class LocalRepoEditor extends FormEditor {
 		setSite(site);
 		setInput(input);
 
-		String username = jcrSession.getUserID();
-		Node userHomeDirectory = JcrUtils.createUserHomeIfNeeded(jcrSession,
-				username);
 		Node parentNode = trackDao
-				.getLocalRepositoriesParentNode(userHomeDirectory);
+				.getLocalRepositoriesParentNode(jcrSession);
 		try {
 			currentLocalRepo = parentNode.getNode(input.getName());
 			this.setPartName(currentLocalRepo.getProperty(Property.JCR_TITLE)

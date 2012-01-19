@@ -88,24 +88,21 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 
 		parent.setLayout(new FillLayout());
 
-		String username = jcrSession.getUserID();
-		Node userHomeDirectory = JcrUtils.createUserHomeIfNeeded(jcrSession,
-				username);
 		// String userHomePath = JcrUtils.getUserHomePath(username);
 
 		// Creating base directories if they don't exists
-		if (trackDao.getGpxFilesDirectory(userHomeDirectory) == null
-				|| trackDao.getLocalRepositoriesParentNode(userHomeDirectory) == null
-				|| trackDao.getTrackSessionsParentNode(userHomeDirectory) == null)
-			trackDao.initialiseLocalRepository(userHomeDirectory);
+		if (trackDao.getGpxFilesDirectory(jcrSession) == null
+				|| trackDao.getLocalRepositoriesParentNode(jcrSession) == null
+				|| trackDao.getTrackSessionsParentNode(jcrSession) == null)
+			trackDao.initialiseLocalRepository(jcrSession);
 
 		String[] rootNodes = new String[3];
 		try {
 			rootNodes[0] = trackDao.getLocalRepositoriesParentNode(
-					userHomeDirectory).getPath();
+					jcrSession).getPath();
 			rootNodes[1] = trackDao.getTrackSessionsParentNode(
-					userHomeDirectory).getPath();
-			rootNodes[2] = trackDao.getGpxFilesDirectory(userHomeDirectory)
+					jcrSession).getPath();
+			rootNodes[2] = trackDao.getGpxFilesDirectory(jcrSession)
 					.getPath();
 		} catch (RepositoryException re) {
 			throw new ArgeoException("unexpected error while initializing"

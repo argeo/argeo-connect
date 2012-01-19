@@ -84,12 +84,14 @@ public class GeoToolsTrackDao implements TrackDao {
 	}
 
 	// INITILISATION
-	public boolean initialiseLocalRepository(Node userHomeDirectory) {
+	public boolean initialiseLocalRepository(Session jcrSession) {
 		boolean success = false;
 		try {
 
+			String username = jcrSession.getUserID();
+			Node userHomeDirectory = JcrUtils.createUserHomeIfNeeded(
+					jcrSession, username);
 			String userHomePath = userHomeDirectory.getPath();
-			Session jcrSession = userHomeDirectory.getSession();
 
 			// Clean track sessions
 			String sessionbasePath = userHomePath + trackSessionRelPath;
@@ -134,9 +136,11 @@ public class GeoToolsTrackDao implements TrackDao {
 		return success;
 	}
 
-	public Node getTrackSessionsParentNode(Node userHomeDirectory) {
+	public Node getTrackSessionsParentNode(Session jcrSession) {
 		try {
-			Session jcrSession = userHomeDirectory.getSession();
+			Node userHomeDirectory = JcrUtils.getUserHome(jcrSession);
+			if (userHomeDirectory == null)
+				return null;
 			String sessionbasePath = userHomeDirectory.getPath()
 					+ trackSessionRelPath;
 			if (jcrSession.nodeExists(sessionbasePath))
@@ -149,9 +153,11 @@ public class GeoToolsTrackDao implements TrackDao {
 		}
 	}
 
-	public Node getLocalRepositoriesParentNode(Node userHomeDirectory) {
+	public Node getLocalRepositoriesParentNode(Session jcrSession) {
 		try {
-			Session jcrSession = userHomeDirectory.getSession();
+			Node userHomeDirectory = JcrUtils.getUserHome(jcrSession);
+			if (userHomeDirectory == null)
+				return null;
 			String sessionbasePath = userHomeDirectory.getPath()
 					+ localRepositoriesRelPath;
 			if (jcrSession.nodeExists(sessionbasePath))
@@ -164,9 +170,8 @@ public class GeoToolsTrackDao implements TrackDao {
 		}
 	}
 
-	public Node getGpxFilesDirectory(Node userHomeDirectory) {
+	public Node getGpxFilesDirectory(Session jcrSession) {
 		try {
-			Session jcrSession = userHomeDirectory.getSession();
 			if (jcrSession.nodeExists(gpxFileDirectoryPath))
 				return jcrSession.getNode(gpxFileDirectoryPath);
 			else
@@ -410,9 +415,9 @@ public class GeoToolsTrackDao implements TrackDao {
 		this.maxSpeed = maxSpeed;
 	}
 
-//	protected String getTrackSpeedsTable(String cleanSession) {
-//		return "connect_gpsclean_" + cleanSession;
-//	}
+	// protected String getTrackSpeedsTable(String cleanSession) {
+	// return "connect_gpsclean_" + cleanSession;
+	// }
 
 	public String getTrackSpeedsSource(String cleanSession) {
 		return GisConstants.DATA_STORES_BASE_PATH + "/" + dataStoreAlias + "/"

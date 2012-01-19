@@ -6,7 +6,6 @@ import javax.jcr.Session;
 import org.argeo.ArgeoException;
 import org.argeo.connect.gpx.TrackDao;
 import org.argeo.connect.gpx.utils.JcrSessionUtils;
-import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.wizard.Wizard;
 
 public class CreateLocalRepoWizard extends Wizard {
@@ -37,12 +36,7 @@ public class CreateLocalRepoWizard extends Wizard {
 	public boolean performFinish() {
 		if (!canFinish())
 			return false;
-
-		String username = jcrSession.getUserID();
-		Node userHomeDirectory = JcrUtils.createUserHomeIfNeeded(jcrSession,
-				username);
-		Node parentNode = trackDao
-				.getLocalRepositoriesParentNode(userHomeDirectory);
+		Node parentNode = trackDao.getLocalRepositoriesParentNode(jcrSession);
 		JcrSessionUtils.createLocalRepository(parentNode,
 				defineRepositoryModel.getTechName(),
 				defineRepositoryModel.getDisplayName());

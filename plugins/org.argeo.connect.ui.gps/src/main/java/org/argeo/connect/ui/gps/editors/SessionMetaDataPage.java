@@ -1,17 +1,26 @@
 package org.argeo.connect.ui.gps.editors;
 
+import java.util.HashMap;
+
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
+import org.argeo.connect.ConnectNames;
+import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.connect.ui.gps.commons.ModifiedFieldListener;
+import org.argeo.eclipse.ui.ErrorFeedback;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -22,9 +31,9 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
+/** Manages all metadata corresponding to the current clean data session */
 public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 	private final static Log log = LogFactory
 			.getLog(DefineParamsAndReviewPage.class);
@@ -32,10 +41,14 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 	// local variables
 	public final static String ID = "cleanDataEditor.metaDataPage";
 
+	private HashMap<String, String> repos;
 	// Current page widgets
-	private Text paramSetLabel;
-	private Text paramSetComments;
+	private Text sessionDisplayName;
+	private Text sessionDescription;
 	private Text defaultSensorName;
+	private Combo localRepoCombo;
+
+	private FormToolkit tk;
 
 	// parameter table
 	// private TableViewer paramsTableViewer;
@@ -46,18 +59,14 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 	}
 
 	protected void createFormContent(IManagedForm managedForm) {
+		tk = managedForm.getToolkit();
 		ScrolledForm form = managedForm.getForm();
-		TableWrapLayout twt = new TableWrapLayout();
-		TableWrapData twd = new TableWrapData(SWT.FILL);
-		twd.grabHorizontal = true;
-		form.getBody().setLayout(twt);
-		form.getBody().setLayoutData(twd);
+		form.getBody().setLayout(new TableWrapLayout());
+
 		createFields(form.getBody());
-		// ((CleanDataEditor) getEditor()).refreshReadOnlyState();
 	}
 
 	private Section createFields(Composite parent) {
-		FormToolkit tk = getManagedForm().getToolkit();
 		GridData gd;
 
 		// clean session metadata
@@ -69,33 +78,35 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 
 		GridLayout layout = new GridLayout();
 		layout.marginWidth = layout.marginHeight = 0;
-		layout.numColumns = 3;
+		layout.numColumns = 2;
 		body.setLayout(layout);
 
-		// Name and comments
-		Label label = new Label(body, SWT.NONE);
-		label.setText(ConnectUiGpsPlugin.getGPSMessage(PARAM_SET_LABEL_LBL));
-		paramSetLabel = new Text(body, SWT.FILL | SWT.BORDER);
+		// Session display name
+		Label label = tk.createLabel(body,
+				ConnectUiGpsPlugin.getGPSMessage(PARAM_SET_LABEL_LBL));
+		sessionDisplayName = new Text(body, SWT.FILL | SWT.BORDER);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
-		gd.horizontalSpan = 2;
-		paramSetLabel.setLayoutData(gd);
-		if (getJcrStringValue(Property.JCR_TITLE) == null)
-			try {
-				paramSetLabel.setText(getEditor().getCurrentSessionNode()
-						.getName());
-			} catch (RepositoryException re) {// Silent
-			}
+		gd.grabExcessHorizontalSpace = true;
+		sessionDisplayName.setLayoutData(gd);
+		if (getJcrStringValue(Property.JCR_TITLE) != null)
+			sessionDisplayName.setText(getJcrStringValue(Property.JCR_TITLE));
 		else
-			paramSetLabel.setText(getJcrStringValue(Property.JCR_TITLE));
+			try {
+				sessionDisplayName.setText(getEditor().getCurrentSessionNode()
+						.getName());
+			} catch (RepositoryException re) {
+			} // Silent
 
-		label = new Label(body, SWT.NONE);
-		label.setText(ConnectUiGpsPlugin.getGPSMessage(PARAM_SET_COMMENTS_LBL));
-		paramSetComments = new Text(body, SWT.FILL | SWT.BORDER);
+		// Session description
+		label = tk.createLabel(body,
+				ConnectUiGpsPlugin.getGPSMessage(PARAM_SET_COMMENTS_LBL));
+		sessionDescription = new Text(body, SWT.FILL | SWT.BORDER
+				| SWT.V_SCROLL | SWT.WRAP);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
-		gd.horizontalSpan = 2;
-		paramSetComments.setLayoutData(gd);
+		gd.heightHint = 60;
+		sessionDescription.setLayoutData(gd);
 		if (getJcrStringValue(Property.JCR_DESCRIPTION) != null)
-			paramSetComments
+			sessionDescription
 					.setText(getJcrStringValue(Property.JCR_DESCRIPTION));
 
 		// Default Sensor name
@@ -103,8 +114,29 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 		label.setText(ConnectUiGpsPlugin.getGPSMessage(DEFAULT_SENSOR_NAME_LBL));
 		defaultSensorName = new Text(body, SWT.FILL | SWT.BORDER);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
-		gd.horizontalSpan = 2;
 		defaultSensorName.setLayoutData(gd);
+		if (getJcrStringValue(CONNECT_DEFAULT_SENSOR) != null)
+			defaultSensorName
+					.setText(getJcrStringValue(CONNECT_DEFAULT_SENSOR));
+		else
+			try {
+				defaultSensorName.setText(getEditor().getCurrentSessionNode()
+						.getSession().getUserID());
+			} catch (RepositoryException re) {
+				throw new ArgeoException(
+						"Unexpected error while getting user name", re);
+			}
+
+		// Local repository name
+		label = new Label(body, SWT.NONE);
+		label.setText("Choose a local repository.");
+		localRepoCombo = new Combo(body, SWT.BORDER | SWT.READ_ONLY
+				| SWT.V_SCROLL);
+		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+		localRepoCombo.setLayoutData(gd);
+
+		populateRepoCombo(localRepoCombo);
+
 		if (getJcrStringValue(CONNECT_DEFAULT_SENSOR) != null)
 			defaultSensorName
 					.setText(getJcrStringValue(CONNECT_DEFAULT_SENSOR));
@@ -124,10 +156,26 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 						Node currentSessionNode = getEditor()
 								.getCurrentSessionNode();
 						currentSessionNode.setProperty(Property.JCR_TITLE,
-								paramSetLabel.getText());
+								sessionDisplayName.getText());
 						currentSessionNode.setProperty(
 								Property.JCR_DESCRIPTION,
-								paramSetComments.getText());
+								sessionDescription.getText());
+						currentSessionNode.setProperty(CONNECT_DEFAULT_SENSOR,
+								defaultSensorName.getText());
+						// TODO enhance that. works because repo list is usually
+						// small
+						String tmpStr = localRepoCombo.getItem(localRepoCombo
+								.getSelectionIndex());
+						if (tmpStr != null)
+							for (String key : repos.keySet()) {
+								if (tmpStr.equals(repos.get(key))) {
+								}
+								{
+									currentSessionNode.setProperty(
+											CONNECT_LOCAL_REPO_NAME, key);
+									break;
+								}
+							}
 						currentSessionNode.setProperty(CONNECT_DEFAULT_SENSOR,
 								defaultSensorName.getText());
 						super.commit(onSave);
@@ -141,9 +189,10 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 			}
 		};
 
-		paramSetLabel.addModifyListener(new ModifiedFieldListener(part));
-		paramSetComments.addModifyListener(new ModifiedFieldListener(part));
+		sessionDisplayName.addModifyListener(new ModifiedFieldListener(part));
+		sessionDescription.addModifyListener(new ModifiedFieldListener(part));
 		defaultSensorName.addModifyListener(new ModifiedFieldListener(part));
+		localRepoCombo.addSelectionListener(new ComboListener(part));
 
 		getManagedForm().addPart(part);
 		return section;
@@ -164,6 +213,46 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 		return value;
 	}
 
+	// fill the combo
+	private void populateRepoCombo(Combo combo) {
+		repos = new HashMap<String, String>();
+		try {
+			Node parNode = getEditor()
+					.getTrackDao()
+					.getLocalRepositoriesParentNode(getEditor().getJcrSession());
+			NodeIterator ni = parNode.getNodes();
+			while (ni.hasNext()) {
+				Node curNode = ni.nextNode();
+				if (curNode.isNodeType(ConnectTypes.CONNECT_LOCAL_REPOSITORY)) {
+					repos.put(curNode.getName(),
+							curNode.getProperty(Property.JCR_TITLE).getString());
+				}
+			}
+			combo.removeAll();
+			for (String key : repos.keySet()) {
+				combo.add(repos.get(key));
+			}
+
+			// Initialize to persisted repo name
+			Node sessionNode = getEditor().getCurrentSessionNode();
+			if (sessionNode.hasProperty(ConnectNames.CONNECT_LOCAL_REPO_NAME)) {
+
+				String tmp = sessionNode
+						.getProperty(ConnectNames.CONNECT_LOCAL_REPO_NAME)
+						.getString().trim();
+
+				if (repos.containsKey(tmp)) {
+					combo.select(combo.indexOf(repos.get(tmp)));
+				} else
+					ErrorFeedback
+							.show("Session is linked to a absent local repository");
+			}
+		} catch (RepositoryException re) {
+			throw new ArgeoException(
+					"Unexpected error wile populating comboo list", re);
+		}
+	}
+
 	/**
 	 * returns the default sensor name or null if none or an empty string has
 	 * been entered
@@ -175,5 +264,25 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 			return null;
 		else
 			return name;
+	}
+
+	// Inner classes
+	private class ComboListener implements SelectionListener {
+		private AbstractFormPart part;
+
+		public ComboListener(AbstractFormPart part) {
+			this.part = part;
+		}
+
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			part.markDirty();
+		}
+
+		@Override
+		public void widgetDefaultSelected(SelectionEvent e) {
+			// Do nothing
+		}
+
 	}
 }

@@ -33,6 +33,7 @@ mixin
 [connect:cleanTrackSession] > nt:unstructured, mix:title, mix:lastModified
 - connect:isSessionComplete (BOOLEAN) ='false' a m  //autocreated mandatory; FYI : closed=true 
 - connect:defaultSensor (STRING)
+- connect:localRepoName (STRING)
 + * (connect:cleanParameter) * // node name is param name
 + * (connect:fileToImport) * // node name is file name
 
