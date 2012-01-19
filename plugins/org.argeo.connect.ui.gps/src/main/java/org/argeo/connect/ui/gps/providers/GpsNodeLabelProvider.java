@@ -20,11 +20,16 @@ public class GpsNodeLabelProvider extends DefaultNodeLabelProvider implements
 	public final static Image sessionFolder = ConnectUiGpsPlugin
 			.getImageDescriptor("icons/home.gif").createImage();
 	public final static Image session = ConnectUiGpsPlugin.getImageDescriptor(
-			"icons/repository.gif").createImage();
+			"icons/session.gif").createImage();
+	public final static Image sessionDone = ConnectUiGpsPlugin
+			.getImageDescriptor("icons/sessionDone.gif").createImage();
+	public final static Image repos = ConnectUiGpsPlugin.getImageDescriptor(
+			"icons/repos.gif").createImage();
+	public final static Image repo = ConnectUiGpsPlugin.getImageDescriptor(
+			"icons/repo.gif").createImage();
 
 	public final static Image fileNewImg = ConnectUiGpsPlugin
 			.getImageDescriptor("icons/file_new.gif").createImage();
-
 	public final static Image fileProcessedImg = ConnectUiGpsPlugin
 			.getImageDescriptor("icons/file_processed.gif").createImage();
 
@@ -63,7 +68,7 @@ public class GpsNodeLabelProvider extends DefaultNodeLabelProvider implements
 		if (element instanceof Node) {
 			Node node = (Node) element;
 			try {
-				// ref to files.
+				// Files.
 				if (node.getPrimaryNodeType()
 						.isNodeType(CONNECT_FILE_TO_IMPORT))
 					if (node.getProperty(CONNECT_ALREADY_PROCESSED)
@@ -71,9 +76,25 @@ public class GpsNodeLabelProvider extends DefaultNodeLabelProvider implements
 						curImg = fileProcessedImg;
 					else
 						curImg = fileNewImg;
+				// Sessions
+				else if (node.getPrimaryNodeType().isNodeType(
+						CONNECT_CLEAN_TRACK_SESSION))
+					if (node.getProperty(CONNECT_IS_SESSION_COMPLETE)
+							.getBoolean())
+						curImg = session;
+					else
+						curImg = sessionDone;
+				else if (node.getPrimaryNodeType().isNodeType(
+						CONNECT_LOCAL_REPOSITORY))
+					curImg = repo;
+				// Parent folder
 				else if (node.getPrimaryNodeType().isNodeType(
 						CONNECT_SESSION_REPOSITORY))
 					curImg = sessionFolder;
+				else if (node.getPrimaryNodeType().isNodeType(
+						CONNECT_LOCAL_REPOSITORIES))
+					curImg = repos;
+
 			} catch (Exception e) {
 				// silent
 			}

@@ -19,11 +19,12 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
+import org.argeo.connect.gpx.TrackDao;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.connect.ui.gps.commands.AddFileFolder;
 import org.argeo.connect.ui.gps.commands.ImportDirectoryContent;
 import org.argeo.connect.ui.gps.commands.NewCleanDataSession;
-import org.argeo.connect.ui.gps.commands.OpenCleanDataEditor;
+import org.argeo.connect.ui.gps.providers.GpsDoubleClickListener;
 import org.argeo.connect.ui.gps.providers.GpsNodeLabelProvider;
 import org.argeo.eclipse.ui.jcr.SimpleNodeContentProvider;
 import org.argeo.eclipse.ui.jcr.utils.NodeViewerComparer;
@@ -31,16 +32,10 @@ import org.argeo.eclipse.ui.jcr.utils.SingleSessionFileProvider;
 import org.argeo.eclipse.ui.jcr.views.AbstractJcrBrowser;
 import org.argeo.eclipse.ui.specific.FileHandler;
 import org.argeo.jcr.JcrUtils;
-import org.eclipse.core.commands.Command;
-import org.eclipse.core.commands.IParameter;
-import org.eclipse.core.commands.Parameterization;
-import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -56,10 +51,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.commands.ICommandService;
-import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.services.IServiceLocator;
@@ -71,11 +63,9 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 	private final static Log log = LogFactory.getLog(GpsBrowserView.class);
 	public final static String ID = "org.argeo.connect.ui.gps.gpsBrowserView";
 
-	// TODO : HARD CODED VARIABLES, MUST BE CLEANLY IMPLEMENTED LATER
-	private final static String trackSessionRelPath = "/.connect/importTrackSessions";
-	private final static String gpxFileDirectoryPath = "/connect/gpx";
-
+	/* DEPENDENCY INJECTION */
 	private Session jcrSession;
+	private TrackDao trackDao;
 
 	private TreeViewer nodesViewer;
 	private SimpleNodeContentProvider nodeContentProvider;
@@ -98,45 +88,31 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 		parent.setLayout(new FillLayout());
 
 		String username = jcrSession.getUserID();
-		JcrUtils.createUserHomeIfNeeded(jcrSession, username);
-		String userHomePath = JcrUtils.getUserHomePath(username);
+		Node userHomeDirectory = JcrUtils.createUserHomeIfNeeded(jcrSession,
+				username);
+		// String userHomePath = JcrUtils.getUserHomePath(username);
 
+		// Creating base directories if they don't exists
+		if (trackDao.getGpxFilesDirectory(userHomeDirectory) == null
+				|| trackDao.getLocalRepositoriesParentNode(userHomeDirectory) == null
+				|| trackDao.getTrackSessionsParentNode(userHomeDirectory) == null)
+			trackDao.initialiseLocalRepository(userHomeDirectory);
+
+		String[] rootNodes = new String[3];
 		try {
-			// Creating base directories if they don't exists
-			if (!jcrSession.nodeExists(gpxFileDirectoryPath)) {
-				int lastIndex = gpxFileDirectoryPath.lastIndexOf("/");
-				Node parFolder = JcrUtils.mkdirs(jcrSession,
-						gpxFileDirectoryPath.substring(0, lastIndex));
-				parFolder.addNode(
-						gpxFileDirectoryPath.substring(lastIndex + 1),
-						CONNECT_FILE_REPOSITORY);
-			}
-
-			String sessionbasePath = userHomePath + trackSessionRelPath;
-			if (!jcrSession.nodeExists(sessionbasePath)) {
-				int lastIndex = sessionbasePath.lastIndexOf("/");
-				Node parFolder = JcrUtils.mkdirs(jcrSession,
-						sessionbasePath.substring(0, lastIndex));
-				if (log.isTraceEnabled())
-					log.debug("par folder node type"
-							+ parFolder.getPrimaryNodeType().getName());
-				parFolder.addNode(sessionbasePath.substring(lastIndex + 1),
-						CONNECT_SESSION_REPOSITORY);
-			}
+			rootNodes[0] = trackDao.getLocalRepositoriesParentNode(
+					userHomeDirectory).getPath();
+			rootNodes[1] = trackDao.getTrackSessionsParentNode(
+					userHomeDirectory).getPath();
+			rootNodes[2] = trackDao.getGpxFilesDirectory(userHomeDirectory)
+					.getPath();
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Error while initializing jcr repository",
-					re);
+			throw new ArgeoException("unexpected error while initializing"
+					+ " roots of the view browser", re);
 		}
 
 		// Configure here useful view root nodes
-		nodeContentProvider = new ViewContentProvider(jcrSession, new String[] {
-				userHomePath + trackSessionRelPath, gpxFileDirectoryPath });
-		// home also
-		// nodeContentProvider = new ViewContentProvider(jcrSession, new
-		// String[] {
-		// userHomePath, userHomePath + trackSessionRelPath,
-		// gpxFileDirectoryPath });
-
+		nodeContentProvider = new ViewContentProvider(jcrSession, rootNodes);
 		// nodes viewer
 		nodesViewer = createNodeViewer(parent, nodeContentProvider);
 		nodesViewer.setComparer(new NodeViewerComparer());
@@ -161,7 +137,6 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 		int operations = DND.DROP_COPY | DND.DROP_MOVE;
 		Transfer[] tt = new Transfer[] { TextTransfer.getInstance() };
 		nodesViewer.addDragSupport(operations, tt, new ViewDragListener());
-
 	}
 
 	protected TreeViewer createNodeViewer(Composite parent,
@@ -185,79 +160,6 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 				});
 
 		return tmpNodeViewer;
-	}
-
-	private class GpsDoubleClickListener implements IDoubleClickListener {
-		private FileHandler fileHandler;
-
-		public GpsDoubleClickListener(FileHandler fileHandler) {
-			this.fileHandler = fileHandler;
-		}
-
-		public void doubleClick(DoubleClickEvent event) {
-			if (event.getSelection() == null || event.getSelection().isEmpty())
-				return;
-
-			Object obj = ((IStructuredSelection) event.getSelection())
-					.getFirstElement();
-			if (!(obj instanceof Node))
-				return;
-			Node node = (Node) obj;
-
-			try {
-				if (node.isNodeType(NodeType.NT_FILE)) {
-					// open the file
-					String name = node.getName();
-					String id = node.getPath();
-					fileHandler.openFile(name, id);
-				} else if (node
-						.isNodeType(ConnectTypes.CONNECT_CLEAN_TRACK_SESSION)) {
-					// Call parameterized command "open Editor"
-					IWorkbench iw = ConnectUiGpsPlugin.getDefault()
-							.getWorkbench();
-					IHandlerService handlerService = (IHandlerService) iw
-							.getService(IHandlerService.class);
-
-					// get the command from plugin.xml
-					IWorkbenchWindow window = iw.getActiveWorkbenchWindow();
-					ICommandService cmdService = (ICommandService) window
-							.getService(ICommandService.class);
-					Command cmd = cmdService.getCommand(OpenCleanDataEditor.ID);
-
-					ArrayList<Parameterization> parameters = new ArrayList<Parameterization>();
-
-					// get the parameter
-					IParameter iparam = cmd
-							.getParameter(OpenCleanDataEditor.PARAM_UUID);
-
-					Parameterization params = new Parameterization(iparam,
-							node.getIdentifier());
-					parameters.add(params);
-
-					// build the parameterized command
-					ParameterizedCommand pc = new ParameterizedCommand(cmd,
-							parameters.toArray(new Parameterization[parameters
-									.size()]));
-
-					// execute the command
-					handlerService = (IHandlerService) window
-							.getService(IHandlerService.class);
-					handlerService.executeCommand(pc, null);
-
-					// open the corresponding session
-					// node.isNodeType(NodeType.NT_FILE);
-				}
-
-			} catch (RepositoryException re) {
-				throw new ArgeoException(
-						"Repository error while getting Node file info", re);
-			} catch (Exception e) {
-				throw new ArgeoException(
-						"Error while handling the double click in the GPS browser view.",
-						e);
-			}
-		}
-
 	}
 
 	@Override
@@ -517,9 +419,13 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 		}
 	}
 
-	// IoC
+	/* DEPENDENCY INJECTION */
 	public void setJcrSession(Session jcrSession) {
 		this.jcrSession = jcrSession;
+	}
+
+	public void setTrackDao(TrackDao trackDao) {
+		this.trackDao = trackDao;
 	}
 
 }

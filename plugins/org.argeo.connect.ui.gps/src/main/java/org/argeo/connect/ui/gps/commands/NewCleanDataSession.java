@@ -7,7 +7,7 @@ import java.util.GregorianCalendar;
 import javax.jcr.Node;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.ui.gps.commons.JcrSessionUtils;
+import org.argeo.connect.gpx.utils.JcrSessionUtils;
 import org.argeo.connect.ui.gps.editors.CleanDataEditor;
 import org.argeo.connect.ui.gps.editors.CleanDataEditorInput;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
@@ -27,7 +27,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 public class NewCleanDataSession extends AbstractHandler {
 	public final static String ID = "org.argeo.connect.ui.gps.newCleanDataSession";
-	public final static String DEFAULT_ICON_REL_PATH = "icons/newSession.gif";
+	public final static String DEFAULT_ICON_REL_PATH = "icons/sessionAdd.gif";
 	public final static String DEFAULT_LABEL = "Create a new clean data session";
 
 	// Define here the default node name

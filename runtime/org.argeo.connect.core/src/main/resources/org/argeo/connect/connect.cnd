@@ -15,7 +15,7 @@ mixin
 // root types for the UI 
 
 // TODO use explicit relative path (to the home directory)
-[connect:localReferentialRepository] > nt:unstructured, mix:title
+[connect:localRepositories] > nt:unstructured, mix:title
 + * (connect:localRepository) *
 
 // local cleaned repository

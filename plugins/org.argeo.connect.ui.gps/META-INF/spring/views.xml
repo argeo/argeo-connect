@@ -8,5 +8,6 @@
 	<bean id="gpsBrowserView" class="org.argeo.connect.ui.gps.views.GpsBrowserView"
 		scope="prototype">
 		<property name="jcrSession" ref="jcrSession" />
+		<property name="trackDao" ref="trackDao" />
 	</bean>
 </beans>

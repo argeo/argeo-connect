@@ -3,6 +3,9 @@ package org.argeo.connect.gpx;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -11,8 +14,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.BeanFeatureTypeBuilder;
+import org.argeo.connect.ConnectTypes;
+import org.argeo.connect.gpx.utils.JcrSessionUtils;
 import org.argeo.geotools.jcr.GeoJcrMapper;
 import org.argeo.gis.GisConstants;
+import org.argeo.jcr.JcrUtils;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -53,6 +59,19 @@ public class GeoToolsTrackDao implements TrackDao {
 	private String dataStoreAlias;
 	private GeoJcrMapper geoJcrMapper;
 
+	// TODO : HARD CODED VARIABLES, MUST BE CLEANLY IMPLEMENTED LATER
+	private final static String trackSessionRelPath = "/.connect/importTrackSessions";
+	private final static String localRepositoriesRelPath = "/.connect/localRepositories";
+	private final static String gpxFileDirectoryPath = "/connect/gpx";
+
+	private String addGpsCleanTablePrefix(String baseName) {
+		return "connect_gpsclean_" + baseName;
+	}
+
+	private String addPositionTablePrefix(String baseName) {
+		return "connect_positions_" + baseName;
+	}
+
 	// private String trackSpeedsToCleanTable = "toclean_track_speeds";
 	// private BeanFeatureTypeBuilder<TrackSpeed> trackSpeedType;
 	// private FeatureStore<SimpleFeatureType, SimpleFeature> trackSpeedsStore;
@@ -64,13 +83,100 @@ public class GeoToolsTrackDao implements TrackDao {
 	public GeoToolsTrackDao() {
 	}
 
-	private String addGpsCleanTablePrefix(String baseName){
-		return "connect_gpsclean_" + baseName;
+	// INITILISATION
+	public boolean initialiseLocalRepository(Node userHomeDirectory) {
+		boolean success = false;
+		try {
+
+			String userHomePath = userHomeDirectory.getPath();
+			Session jcrSession = userHomeDirectory.getSession();
+
+			// Clean track sessions
+			String sessionbasePath = userHomePath + trackSessionRelPath;
+			if (!jcrSession.nodeExists(sessionbasePath)) {
+				int lastIndex = sessionbasePath.lastIndexOf("/");
+				Node parFolder = JcrUtils.mkdirs(jcrSession,
+						sessionbasePath.substring(0, lastIndex));
+				parFolder.addNode(sessionbasePath.substring(lastIndex + 1),
+						ConnectTypes.CONNECT_SESSION_REPOSITORY);
+			}
+
+			// Local repository for clean data with default already created
+			// directory
+			String localRepoBasePath = userHomePath + localRepositoriesRelPath;
+			if (!jcrSession.nodeExists(localRepoBasePath)) {
+				int lastIndex = localRepoBasePath.lastIndexOf("/");
+				Node parFolder = JcrUtils.mkdirs(jcrSession,
+						localRepoBasePath.substring(0, lastIndex));
+				Node repos = parFolder.addNode(
+						localRepoBasePath.substring(lastIndex + 1),
+						ConnectTypes.CONNECT_LOCAL_REPOSITORIES);
+				JcrSessionUtils.createLocalRepository(repos, "main", "Default");
+
+			}
+
+			// Gpx base directory
+			if (!jcrSession.nodeExists(gpxFileDirectoryPath)) {
+				int lastIndex = gpxFileDirectoryPath.lastIndexOf("/");
+				Node parFolder = JcrUtils.mkdirs(jcrSession,
+						gpxFileDirectoryPath.substring(0, lastIndex));
+				parFolder.addNode(
+						gpxFileDirectoryPath.substring(lastIndex + 1),
+						ConnectTypes.CONNECT_FILE_REPOSITORY);
+			}
+
+			jcrSession.save();
+			success = true;
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Error while initializing jcr repository",
+					re);
+		}
+		return success;
 	}
 
-	private String addPositionTablePrefix(String baseName){
-		return "connect_positions_" + baseName;
+	public Node getTrackSessionsParentNode(Node userHomeDirectory) {
+		try {
+			Session jcrSession = userHomeDirectory.getSession();
+			String sessionbasePath = userHomeDirectory.getPath()
+					+ trackSessionRelPath;
+			if (jcrSession.nodeExists(sessionbasePath))
+				return jcrSession.getNode(sessionbasePath);
+			else
+				return null;
+		} catch (RepositoryException re) {
+			throw new ArgeoException(
+					"Error while getting track session parent node.", re);
+		}
 	}
+
+	public Node getLocalRepositoriesParentNode(Node userHomeDirectory) {
+		try {
+			Session jcrSession = userHomeDirectory.getSession();
+			String sessionbasePath = userHomeDirectory.getPath()
+					+ localRepositoriesRelPath;
+			if (jcrSession.nodeExists(sessionbasePath))
+				return jcrSession.getNode(sessionbasePath);
+			else
+				return null;
+		} catch (RepositoryException re) {
+			throw new ArgeoException(
+					"Error while getting local repositories parent node.", re);
+		}
+	}
+
+	public Node getGpxFilesDirectory(Node userHomeDirectory) {
+		try {
+			Session jcrSession = userHomeDirectory.getSession();
+			if (jcrSession.nodeExists(gpxFileDirectoryPath))
+				return jcrSession.getNode(gpxFileDirectoryPath);
+			else
+				return null;
+		} catch (RepositoryException re) {
+			throw new ArgeoException(
+					"Error while getting track session parent node.", re);
+		}
+	}
+
 	// public void init() {
 	// trackSpeedType = new BeanFeatureTypeBuilder<TrackSpeed>(
 	// trackSpeedsToCleanTable, TrackSpeed.class);
@@ -101,8 +207,10 @@ public class GeoToolsTrackDao implements TrackDao {
 			IOUtils.closeQuietly(in);
 			long duration = System.currentTimeMillis() - begin;
 			if (log.isDebugEnabled())
-				log.debug("Gpx file imported to table " + addGpsCleanTablePrefix(cleanSession) + " with sensor '"
-						+ sensor + "' in " + (duration) + " ms");
+				log.debug("Gpx file imported to table "
+						+ addGpsCleanTablePrefix(cleanSession)
+						+ " with sensor '" + sensor + "' in " + (duration)
+						+ " ms");
 		}
 	}
 
@@ -324,7 +432,8 @@ public class GeoToolsTrackDao implements TrackDao {
 
 		public TrackGpxHandler(String sensor, Integer srid, String cleanSession) {
 			super(sensor, srid);
-			//String trackSpeedsToCleanTable = "connect_gpsclean_" + cleanSession;
+			// String trackSpeedsToCleanTable = "connect_gpsclean_" +
+			// cleanSession;
 			trackSpeedType = new BeanFeatureTypeBuilder<TrackSpeed>(
 					addGpsCleanTablePrefix(cleanSession), TrackSpeed.class);
 		}
@@ -337,5 +446,4 @@ public class GeoToolsTrackDao implements TrackDao {
 
 		}
 	}
-
 }

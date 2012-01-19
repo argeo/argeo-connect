@@ -1,4 +1,4 @@
-package org.argeo.connect.ui.gps.commons;
+package org.argeo.connect.gpx.utils;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -7,6 +7,7 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
+import org.argeo.jcr.JcrUtils;
 
 public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 
@@ -20,9 +21,10 @@ public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 
 			// TODO : remove hard coding from instantiation of default model.
 			Node tmpNode;
-	
+
 			// maximal speed
-			tmpNode = newSession.addNode(ConnectConstants.CONNECT_PARAM_SPEED_MAX,
+			tmpNode = newSession.addNode(
+					ConnectConstants.CONNECT_PARAM_SPEED_MAX,
 					CONNECT_CLEAN_PARAMETER);
 			tmpNode.setProperty(Property.JCR_DESCRIPTION,
 					"Maximal acceptable speed value ");
@@ -32,7 +34,8 @@ public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 			tmpNode.setProperty(CONNECT_PARAM_VALUE, 100d);
 
 			// Maximal acceleration
-			tmpNode = newSession.addNode(ConnectConstants.CONNECT_PARAM_ACCELERATION_MAX,
+			tmpNode = newSession.addNode(
+					ConnectConstants.CONNECT_PARAM_ACCELERATION_MAX,
 					CONNECT_CLEAN_PARAMETER);
 			tmpNode.setProperty(Property.JCR_DESCRIPTION,
 					"Maximal acceptable acceleration value ");
@@ -41,7 +44,8 @@ public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 			tmpNode.setProperty(CONNECT_PARAM_VALUE, 2d);
 
 			// Maximal radial speed
-			tmpNode = newSession.addNode(ConnectConstants.CONNECT_PARAM_ROTATION_MAX,
+			tmpNode = newSession.addNode(
+					ConnectConstants.CONNECT_PARAM_ROTATION_MAX,
 					CONNECT_CLEAN_PARAMETER);
 			tmpNode.setProperty(Property.JCR_DESCRIPTION,
 					"Maximal acceptable rotation speed value ");
@@ -56,5 +60,21 @@ public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 		}
 
 		return newSession;
+	}
+
+	public static Node createLocalRepository(Node parent, String techName,
+			String title) {
+		Node localRepo;
+		try {
+			localRepo = parent.addNode(techName, CONNECT_LOCAL_REPOSITORY);
+			localRepo.setProperty(Property.JCR_TITLE, title);
+			JcrUtils.updateLastModified(localRepo);
+			localRepo.getSession().save();
+		} catch (Exception e) {
+			throw new ArgeoException(
+					"Cannot create new repository for node named [" + techName
+							+ "]", e);
+		}
+		return localRepo;
 	}
 }
