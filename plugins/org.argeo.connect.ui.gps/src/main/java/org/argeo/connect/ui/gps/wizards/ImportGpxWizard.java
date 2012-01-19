@@ -75,26 +75,6 @@ public class ImportGpxWizard extends Wizard {
 					monitor.done();
 				}
 			});
-
-			// getContainer().run(true, true, new IRunnableWithProgress() {
-			// public void run(IProgressMonitor monitor) {
-			// try {
-			// monitor.beginTask("Importing GPX nodes", nodeSize);
-			// for (String key : nodesToImport.keySet()) {
-			// importOneNode(nodesToImport.get(key), monitor,
-			// stats);
-			// }
-			// // TODO REAL IMPORT
-			// monitor.done();
-			// } catch (Exception e) {
-			// if (e instanceof RuntimeException)
-			// throw (RuntimeException) e;
-			// else
-			// throw new ArgeoException("Cannot import GPX nodes",
-			// e);
-			// }
-			// }
-			// });
 		} catch (Exception e) {
 			ErrorFeedback.show("Cannot import GPX nodes", e);
 			failed = true;
@@ -118,27 +98,6 @@ public class ImportGpxWizard extends Wizard {
 					message.toString());
 		return true;
 	}
-
-	// Binary binary = null;
-	// try {
-	// for (NodeIterator children = baseNode.getNodes(); children
-	// .hasNext();) {
-	// Node child = children.nextNode();
-	// if (child.isNodeType(NodeType.NT_FILE)
-	// && child.getName().endsWith(".gpx")) {
-	// binary = child.getNode(Property.JCR_CONTENT)
-	// .getProperty(Property.JCR_DATA).getBinary();
-	// trackDao.importTrackPoints(child.getPath(),
-	// defineModelPage.getSensorName(), binary.getStream());
-	// JcrUtils.closeQuietly(binary);
-	// }
-	// }
-	// } catch (RepositoryException e) {
-	// throw new ArgeoException("Cannot import GPS from " + baseNode, e);
-	// } finally {
-	// JcrUtils.closeQuietly(binary);
-	// }
-	// return false;
 
 	private Map<String, Node> constructNodeToImport(List<String> nodePathes) {
 		Map<String, Node> nodes = new TreeMap<String, Node>();

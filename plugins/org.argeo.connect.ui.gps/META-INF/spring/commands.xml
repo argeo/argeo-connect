@@ -4,6 +4,12 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+	<bean id="openNewRepoWizard" class="org.argeo.connect.ui.gps.commands.OpenNewRepoWizard"
+		scope="prototype">
+		<property name="trackDao" ref="trackDao" />
+		<property name="jcrSession" ref="jcrSession" />
+	</bean>
+
 	<bean id="importGpx" class="org.argeo.connect.ui.gps.commands.ImportGpx"
 		scope="prototype">
 		<property name="trackDao" ref="trackDao" />
@@ -21,5 +27,8 @@
 	<bean id="openCleanDataEditor" class="org.argeo.connect.ui.gps.commands.OpenCleanDataEditor"
 		scope="prototype">
 		<property name="session" ref="jcrSession" />
+	</bean>
+	<bean id="openLocalRepoEditor" class="org.argeo.connect.ui.gps.commands.OpenLocalRepoEditor"
+		scope="prototype">
 	</bean>
 </beans>

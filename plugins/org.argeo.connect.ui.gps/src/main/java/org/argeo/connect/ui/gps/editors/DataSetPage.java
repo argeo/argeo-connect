@@ -349,12 +349,12 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 			// Check if a default sensor name has already been entered.
 			if (getEditor().getDefaultSensorName() == null) {
 				ErrorFeedback.show("Please enter a default sensor name");
-				getEditor().setActivePage(MetaDataPage.ID);
+				getEditor().setActivePage(SessionMetaDataPage.ID);
 				return false;
 			}
 
 			// check if the Metadata Page is dirty
-			if (getEditor().findPage(MetaDataPage.ID).isDirty()) {
+			if (getEditor().findPage(SessionMetaDataPage.ID).isDirty()) {
 				ErrorFeedback
 						.show("Please save Metadata before starting file import process.");
 				return false;

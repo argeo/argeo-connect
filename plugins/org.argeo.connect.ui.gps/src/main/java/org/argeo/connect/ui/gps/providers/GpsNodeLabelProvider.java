@@ -81,9 +81,9 @@ public class GpsNodeLabelProvider extends DefaultNodeLabelProvider implements
 						CONNECT_CLEAN_TRACK_SESSION))
 					if (node.getProperty(CONNECT_IS_SESSION_COMPLETE)
 							.getBoolean())
-						curImg = session;
-					else
 						curImg = sessionDone;
+					else
+						curImg = session;
 				else if (node.getPrimaryNodeType().isNodeType(
 						CONNECT_LOCAL_REPOSITORY))
 					curImg = repo;

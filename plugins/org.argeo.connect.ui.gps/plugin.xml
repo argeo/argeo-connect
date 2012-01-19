@@ -29,6 +29,13 @@
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			id="org.argeo.connect.ui.gps.cleanDataEditor"
 			name="Clean Data Editor"
+			icon="icons/session.gif"
+			default="false">
+		</editor>
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			id="org.argeo.connect.ui.gps.localRepoEditor"
+			name="Local repository Editor"
 			icon="icons/gis.gif"
 			default="false">
 		</editor>
@@ -42,7 +49,11 @@
 			id="org.argeo.connect.ui.gps.importGpx"
 			name="ImportGPX ">
 		</command>
-		
+		<command
+			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
+			id="org.argeo.connect.ui.gps.openNewRepoWizard"
+			name="ImportGPX ">
+		</command>
 		<command
 			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
 			id="org.argeo.connect.ui.gps.openCleanDataEditor"
@@ -50,6 +61,15 @@
 			<commandParameter
 				id="org.argeo.connect.ui.gps.connectSessionUuid"
 				name="Connect Session UUID">
+  	 		</commandParameter>
+		</command>    
+		<command
+			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
+			id="org.argeo.connect.ui.gps.openLocalRepoEditor"
+			name="OpenLocalRepoEditor">
+			<commandParameter
+				id="org.argeo.connect.ui.gps.localRepoName"
+				name="Local repository technical name">
   	 		</commandParameter>
 		</command>    
 		<command

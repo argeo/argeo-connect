@@ -24,6 +24,7 @@ import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.connect.ui.gps.commands.AddFileFolder;
 import org.argeo.connect.ui.gps.commands.ImportDirectoryContent;
 import org.argeo.connect.ui.gps.commands.NewCleanDataSession;
+import org.argeo.connect.ui.gps.commands.OpenNewRepoWizard;
 import org.argeo.connect.ui.gps.providers.GpsDoubleClickListener;
 import org.argeo.connect.ui.gps.providers.GpsNodeLabelProvider;
 import org.argeo.eclipse.ui.jcr.SimpleNodeContentProvider;
@@ -199,16 +200,18 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 
 		boolean isFileRepo = false;
 		boolean isSessionRepo = false;
+		boolean isLocalRepos = false;
+		
 		// We want to add GPX file only in the right place of the repository
 		try {
 			if (!multipleSel && selection.getFirstElement() instanceof Node) {
 				Node node = (Node) selection.getFirstElement();
-				if (node.getPrimaryNodeType().getName()
-						.equals(ConnectTypes.CONNECT_FILE_REPOSITORY))
+				if (node.isNodeType(ConnectTypes.CONNECT_FILE_REPOSITORY))
 					isFileRepo = true;
-				if (node.getPrimaryNodeType().getName()
-						.equals(ConnectTypes.CONNECT_SESSION_REPOSITORY))
+				if (node.isNodeType(ConnectTypes.CONNECT_SESSION_REPOSITORY))
 					isSessionRepo = true;
+				if (node.isNodeType(ConnectTypes.CONNECT_LOCAL_REPOSITORIES))
+					isLocalRepos = true;
 			}
 
 		} catch (RepositoryException re) {
@@ -228,6 +231,10 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 		refreshCommand(menuManager, window, NewCleanDataSession.ID,
 				NewCleanDataSession.DEFAULT_LABEL,
 				NewCleanDataSession.DEFAULT_ICON_REL_PATH, isSessionRepo);
+
+		refreshCommand(menuManager, window, OpenNewRepoWizard.ID,
+				OpenNewRepoWizard.DEFAULT_LABEL,
+				OpenNewRepoWizard.DEFAULT_ICON_REL_PATH, isLocalRepos);
 	}
 
 	protected void refreshCommand(IMenuManager menuManager,

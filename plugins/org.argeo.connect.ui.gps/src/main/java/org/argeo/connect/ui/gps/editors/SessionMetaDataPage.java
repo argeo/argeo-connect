@@ -25,7 +25,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
-public class MetaDataPage extends AbstractCleanDataEditorPage {
+public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 	private final static Log log = LogFactory
 			.getLog(DefineParamsAndReviewPage.class);
 
@@ -41,7 +41,7 @@ public class MetaDataPage extends AbstractCleanDataEditorPage {
 	// private TableViewer paramsTableViewer;
 	// private List<Node> paramNodeList;
 
-	public MetaDataPage(FormEditor editor, String title) {
+	public SessionMetaDataPage(FormEditor editor, String title) {
 		super(editor, ID, title);
 	}
 

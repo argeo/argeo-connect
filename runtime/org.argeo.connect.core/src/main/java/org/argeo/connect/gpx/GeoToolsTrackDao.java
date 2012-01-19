@@ -410,13 +410,13 @@ public class GeoToolsTrackDao implements TrackDao {
 		this.maxSpeed = maxSpeed;
 	}
 
-	protected String getTrackSpeedsTable(String cleanSession) {
-		return "connect_gpsclean_" + cleanSession;
-	}
+//	protected String getTrackSpeedsTable(String cleanSession) {
+//		return "connect_gpsclean_" + cleanSession;
+//	}
 
 	public String getTrackSpeedsSource(String cleanSession) {
 		return GisConstants.DATA_STORES_BASE_PATH + "/" + dataStoreAlias + "/"
-				+ getTrackSpeedsTable(cleanSession);
+				+ addGpsCleanTablePrefix(cleanSession);
 	}
 
 	public void setDataStoreAlias(String dataStoreAlias) {

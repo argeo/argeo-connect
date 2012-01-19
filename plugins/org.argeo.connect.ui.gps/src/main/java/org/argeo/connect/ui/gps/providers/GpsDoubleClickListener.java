@@ -10,6 +10,7 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.connect.ui.gps.commands.OpenCleanDataEditor;
+import org.argeo.connect.ui.gps.commands.OpenLocalRepoEditor;
 import org.argeo.eclipse.ui.specific.FileHandler;
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.IParameter;
@@ -79,6 +80,37 @@ public class GpsDoubleClickListener implements IDoubleClickListener {
 				handlerService = (IHandlerService) window
 						.getService(IHandlerService.class);
 				handlerService.executeCommand(pc, null);
+			} else if (node.isNodeType(ConnectTypes.CONNECT_LOCAL_REPOSITORY)) {
+				// Call parameterized command "open Editor"
+				IWorkbench iw = ConnectUiGpsPlugin.getDefault().getWorkbench();
+				IHandlerService handlerService = (IHandlerService) iw
+						.getService(IHandlerService.class);
+
+				// get the command from plugin.xml
+				IWorkbenchWindow window = iw.getActiveWorkbenchWindow();
+				ICommandService cmdService = (ICommandService) window
+						.getService(ICommandService.class);
+				Command cmd = cmdService.getCommand(OpenLocalRepoEditor.ID);
+
+				ArrayList<Parameterization> parameters = new ArrayList<Parameterization>();
+
+				// get the parameter
+				IParameter iparam = cmd
+						.getParameter(OpenLocalRepoEditor.PARAM_NAME);
+
+				Parameterization params = new Parameterization(iparam,
+						node.getName());
+				parameters.add(params);
+
+				// build the parameterized command
+				ParameterizedCommand pc = new ParameterizedCommand(cmd,
+						parameters.toArray(new Parameterization[parameters
+								.size()]));
+
+				// execute the command
+				handlerService = (IHandlerService) window
+						.getService(IHandlerService.class);
+				handlerService.executeCommand(pc, null);
 			}
 
 		} catch (RepositoryException re) {
@@ -90,5 +122,4 @@ public class GpsDoubleClickListener implements IDoubleClickListener {
 					e);
 		}
 	}
-
 }

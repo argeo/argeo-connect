@@ -30,7 +30,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 
 /**
- * Main multi tab view to handle a session to clean GPS data.
+ * Main multitab editor to handle a session to clean GPS data.
  * 
  */
 public class CleanDataEditor extends FormEditor implements ConnectTypes,
@@ -61,7 +61,7 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 
 	protected void addPages() {
 		try {
-			addPage(new MetaDataPage(this,
+			addPage(new SessionMetaDataPage(this,
 					ConnectUiGpsPlugin.getGPSMessage(METADATA_PAGE_TITLE)));
 			addPage(new DataSetPage(this,
 					ConnectUiGpsPlugin.getGPSMessage(DATASET_PAGE_TITLE)));
@@ -197,7 +197,7 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 	 * been entered
 	 */
 	public String getDefaultSensorName() {
-		return ((MetaDataPage) findPage(MetaDataPage.ID))
+		return ((SessionMetaDataPage) findPage(SessionMetaDataPage.ID))
 				.getDefaultSensorName();
 	}
 
