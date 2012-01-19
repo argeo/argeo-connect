@@ -79,14 +79,14 @@ public class MetaDataPage extends AbstractCleanDataEditorPage {
 		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		gd.horizontalSpan = 2;
 		paramSetLabel.setLayoutData(gd);
-		if (getJcrStringValue(Property.JCR_NAME) == null)
+		if (getJcrStringValue(Property.JCR_TITLE) == null)
 			try {
 				paramSetLabel.setText(getEditor().getCurrentSessionNode()
 						.getName());
 			} catch (RepositoryException re) {// Silent
 			}
 		else
-			paramSetLabel.setText(getJcrStringValue(Property.JCR_NAME));
+			paramSetLabel.setText(getJcrStringValue(Property.JCR_TITLE));
 
 		label = new Label(body, SWT.NONE);
 		label.setText(ConnectUiGpsPlugin.getGPSMessage(PARAM_SET_COMMENTS_LBL));
@@ -94,8 +94,9 @@ public class MetaDataPage extends AbstractCleanDataEditorPage {
 		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		gd.horizontalSpan = 2;
 		paramSetComments.setLayoutData(gd);
-		if (getJcrStringValue(CONNECT_COMMENTS) != null)
-			paramSetComments.setText(getJcrStringValue(CONNECT_COMMENTS));
+		if (getJcrStringValue(Property.JCR_DESCRIPTION) != null)
+			paramSetComments
+					.setText(getJcrStringValue(Property.JCR_DESCRIPTION));
 
 		// Default Sensor name
 		label = new Label(body, SWT.NONE);
@@ -122,9 +123,10 @@ public class MetaDataPage extends AbstractCleanDataEditorPage {
 					try {
 						Node currentSessionNode = getEditor()
 								.getCurrentSessionNode();
-						currentSessionNode.setProperty(Property.JCR_NAME,
+						currentSessionNode.setProperty(Property.JCR_TITLE,
 								paramSetLabel.getText());
-						currentSessionNode.setProperty(CONNECT_COMMENTS,
+						currentSessionNode.setProperty(
+								Property.JCR_DESCRIPTION,
 								paramSetComments.getText());
 						currentSessionNode.setProperty(CONNECT_DEFAULT_SENSOR,
 								defaultSensorName.getText());

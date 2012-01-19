@@ -169,8 +169,7 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 			public void update(final ViewerCell cell) {
 				try {
 					Node cnode = (Node) cell.getElement();
-					String currentText = cnode.getProperty(
-							CONNECT_LINKED_FILE_NAME).getString();
+					String currentText = cnode.getName();
 					StyledString styledString;
 					if (canEditLine(cnode))
 						styledString = new StyledString(currentText,
@@ -405,18 +404,16 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 		Node sessionNode = getEditor().getCurrentSessionNode();
 
 		try {
-			// we name nodes based on the ID they reference
-			Node fileNode = sessionNode.addNode(refId, CONNECT_FILE_TO_IMPORT);
+			String fileName = node.getName();
+
+			// we name nodes based on the name of the file they reference
+			Node fileNode = sessionNode.addNode(fileName,
+					CONNECT_FILE_TO_IMPORT);
 			fileNode.setProperty(CONNECT_LINKED_FILE_REF, refId);
 			fileNode.setProperty(CONNECT_SENSOR_NAME,
 					sessionNode.getProperty(CONNECT_DEFAULT_SENSOR).getString());
-			Session curSession = sessionNode.getSession();
-			Node refNode = curSession.getNodeByIdentifier(refId);
-			fileNode.setProperty(CONNECT_LINKED_FILE_NAME, refNode.getName());
-			curSession.save();
-
+			sessionNode.getSession().save();
 			droppedNodes.put(refId, fileNode);
-
 		} catch (RepositoryException e) {
 			throw new ArgeoException(
 					"Error creating a new linked file node for session ", e);

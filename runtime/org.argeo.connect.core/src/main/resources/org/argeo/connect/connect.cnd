@@ -15,38 +15,39 @@ mixin
 // root types for the UI 
 
 // TODO use explicit relative path (to the home directory)
+[connect:localReferentialRepository] > nt:unstructured, mix:title
++ * (connect:localRepository) *
+
+// local cleaned repository
+[connect:localRepository] > nt:unstructured, mix:title, mix:lastModified
+
+// TODO use explicit relative path (to the home directory)
 [connect:sessionRepository] > nt:unstructured, mix:title
++ * (connect:cleanTrackSession) *
++ * (connect:sessionRepository) *
 
 // TODO use explicit absolute path
 [connect:fileRepository] > nt:folder, mix:title
 
 // clean track session
 [connect:cleanTrackSession] > nt:unstructured, mix:title, mix:lastModified
-- jcr:name (STRING)
 - connect:isSessionComplete (BOOLEAN) ='false' a m  //autocreated mandatory; FYI : closed=true 
-- connect:comments (STRING)
 - connect:defaultSensor (STRING)
-// TODO + * (connect:fileToImport) * // node name is file name
-+ connect:linkedFile =connect:fileToImport *
-// TODO + * (connect:cleanParameter) * // node name is param name
-+ connect:param =connect:cleanParameter *
-//- connect:data (REFERENCE) multiple //references files to clean
++ * (connect:cleanParameter) * // node name is param name
++ * (connect:fileToImport) * // node name is file name
 
 // files to import 
 [connect:fileToImport] > nt:unstructured
 // TODO use PATH instead of REFERENCE
 - connect:fileRef (REFERENCE) //reference of the linked file
-// TODO remove: file name is node name
-- connect:fileName (STRING)
-// TODO do we really need three states?
+// We really need three states to be able to persist session while work is still in progress
 - connect:toBeProcessed (BOOLEAN) ='true' a m  
 - connect:alreadyProcessed (BOOLEAN) ='false' a m  
 - connect:sensorName (STRING)
 
 
 // clean parameter 
-[connect:cleanParameter] > nt:unstructured
-- jcr:description (STRING)
+[connect:cleanParameter] > nt:unstructured, mix:title
 - connect:paramValue (DOUBLE)
 - connect:paramMinValue (DOUBLE)
 - connect:paramMaxValue (DOUBLE)

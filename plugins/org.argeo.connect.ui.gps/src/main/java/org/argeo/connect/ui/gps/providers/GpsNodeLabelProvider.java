@@ -29,27 +29,14 @@ public class GpsNodeLabelProvider extends DefaultNodeLabelProvider implements
 			.getImageDescriptor("icons/file_processed.gif").createImage();
 
 	public String getText(Object element) {
-		// GPS connect Specific labels.
 		String curText = super.getText(element);
-
+		// GPS connect Specific labels.
 		if (element instanceof Node) {
 			Node node = (Node) element;
 			try {
-				if (node.getPrimaryNodeType().isNodeType(
-						CONNECT_CLEAN_TRACK_SESSION)) {
-					// Session
-					if (!"".equals(node.getProperty(Property.JCR_NAME)
-							.getString()))
-						curText = node.getProperty(Property.JCR_NAME)
-								.getString();
-				} else if (node.getPrimaryNodeType().isNodeType(
-						CONNECT_FILE_TO_IMPORT)) {
-					// File
-					if (!"".equals(node.getProperty(CONNECT_LINKED_FILE_NAME)
-							.getString()))
-						curText = node.getProperty(CONNECT_LINKED_FILE_NAME)
-								.getString();
-				} else if (node.getPrimaryNodeType().isNodeType(
+				if (node.hasProperty(Property.JCR_TITLE))
+					curText = node.getProperty(Property.JCR_TITLE).getString();
+				else if (node.getPrimaryNodeType().isNodeType(
 						CONNECT_SESSION_REPOSITORY)) {
 					// Parent Session Node
 					curText = ConnectUiGpsPlugin

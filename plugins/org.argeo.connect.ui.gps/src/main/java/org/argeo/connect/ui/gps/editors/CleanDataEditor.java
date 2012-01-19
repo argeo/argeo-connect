@@ -153,12 +153,12 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 		}
 	}
 
-//	@Override
-//	protected void setActivePage(int pageIndex) {
-//		super.setActivePage(pageIndex);
-//		refreshReadOnlyState();
-//	}
-	
+	// @Override
+	// protected void setActivePage(int pageIndex) {
+	// super.setActivePage(pageIndex);
+	// refreshReadOnlyState();
+	// }
+
 	@Override
 	public CleanDataEditorInput getEditorInput() {
 		return (CleanDataEditorInput) super.getEditorInput();
@@ -181,8 +181,8 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 	private String getSessionName() {
 		String name;
 		try {
-			if (getCurrentSessionNode().hasProperty(Property.JCR_NAME))
-				name = getCurrentSessionNode().getProperty(Property.JCR_NAME)
+			if (getCurrentSessionNode().hasProperty(Property.JCR_TITLE))
+				name = getCurrentSessionNode().getProperty(Property.JCR_TITLE)
 						.getString();
 			else
 				name = getEditorInput().getName();

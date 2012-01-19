@@ -22,8 +22,9 @@ public interface ConnectNames {
 
 	/** Connect GPS */
 	// Session handling
-	public final static String CONNECT_IS_SESSION_COMPLETE = CONNECT_ + "isSessionComplete";
-	public final static String CONNECT_COMMENTS = CONNECT_ + "comments";
+	public final static String CONNECT_IS_SESSION_COMPLETE = CONNECT_
+			+ "isSessionComplete";
+	// public final static String CONNECT_COMMENTS = CONNECT_ + "comments";
 	public final static String CONNECT_DEFAULT_SENSOR = CONNECT_
 			+ "defaultSensor";
 
@@ -46,5 +47,4 @@ public interface ConnectNames {
 	public final static String CONNECT_PARAM_MAX_VALUE = CONNECT_
 			+ "paramMaxValue";
 	public final static String CONNECT_PARAM_IS_USED = CONNECT_ + "paramIsUsed";
-
 }
