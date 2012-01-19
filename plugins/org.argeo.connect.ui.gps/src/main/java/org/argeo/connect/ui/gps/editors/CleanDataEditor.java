@@ -153,6 +153,12 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 		}
 	}
 
+//	@Override
+//	protected void setActivePage(int pageIndex) {
+//		super.setActivePage(pageIndex);
+//		refreshReadOnlyState();
+//	}
+	
 	@Override
 	public CleanDataEditorInput getEditorInput() {
 		return (CleanDataEditorInput) super.getEditorInput();

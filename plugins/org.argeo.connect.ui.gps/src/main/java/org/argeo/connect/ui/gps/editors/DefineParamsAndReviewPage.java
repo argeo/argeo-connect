@@ -91,7 +91,6 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 					.show("Cannot load speed layer. Did you import the GPX files from the previous tab?",
 							e);
 		}
-		((CleanDataEditor) getEditor()).refreshReadOnlyState();
 	}
 
 	private void createParameterPart(Composite top) {

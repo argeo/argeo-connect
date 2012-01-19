@@ -12,6 +12,8 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 
@@ -19,8 +21,8 @@ public abstract class AbstractCleanDataEditorPage extends FormPage implements
 		ConnectNames, ConnectTypes, ConnectGpsLabels {
 
 	// Images
-	protected final static Image CHECKED = ConnectUiGpsPlugin.getImageDescriptor(
-			"icons/checked.gif").createImage();
+	protected final static Image CHECKED = ConnectUiGpsPlugin
+			.getImageDescriptor("icons/checked.gif").createImage();
 	protected final static Image UNCHECKED = ConnectUiGpsPlugin
 			.getImageDescriptor("icons/unchecked.gif").createImage();
 
@@ -60,6 +62,12 @@ public abstract class AbstractCleanDataEditorPage extends FormPage implements
 			throw new ArgeoException(
 					"Cannot access node to see if it has already been imported.");
 		}
+	}
+
+	@Override
+	public void setActive(boolean active) {
+		super.setActive(active);
+		((CleanDataEditor) getEditor()).refreshReadOnlyState();
 	}
 
 }

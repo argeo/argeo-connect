@@ -53,7 +53,7 @@ public class MetaDataPage extends AbstractCleanDataEditorPage {
 		form.getBody().setLayout(twt);
 		form.getBody().setLayoutData(twd);
 		createFields(form.getBody());
-		((CleanDataEditor) getEditor()).refreshReadOnlyState();
+		//((CleanDataEditor) getEditor()).refreshReadOnlyState();
 	}
 
 	private Section createFields(Composite parent) {

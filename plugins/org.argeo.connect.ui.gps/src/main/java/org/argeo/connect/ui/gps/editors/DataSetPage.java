@@ -114,7 +114,6 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 
 		// Initialize with persisted values.
 		initializePage();
-		((CleanDataEditor) getEditor()).refreshReadOnlyState();
 	}
 
 	// Manage the files to import table
