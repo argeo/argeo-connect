@@ -27,7 +27,7 @@ public interface ConnectNames {
 	public final static String CONNECT_DEFAULT_SENSOR = CONNECT_
 			+ "defaultSensor";
 	public final static String CONNECT_LOCAL_REPO_NAME = CONNECT_
-			+ "	localRepoName";
+			+ "localRepoName";
 
 	// Files to clean
 	public final static String CONNECT_LINKED_FILE = CONNECT_ + "linkedFile";

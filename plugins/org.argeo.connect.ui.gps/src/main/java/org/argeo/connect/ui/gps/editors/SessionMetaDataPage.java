@@ -101,7 +101,7 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 		label = tk.createLabel(body,
 				ConnectUiGpsPlugin.getGPSMessage(PARAM_SET_COMMENTS_LBL));
 		sessionDescription = new Text(body, SWT.FILL | SWT.BORDER
-				| SWT.V_SCROLL | SWT.WRAP);
+				| SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		gd.heightHint = 60;
 		sessionDescription.setLayoutData(gd);
@@ -169,8 +169,6 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 						if (tmpStr != null)
 							for (String key : repos.keySet()) {
 								if (tmpStr.equals(repos.get(key))) {
-								}
-								{
 									currentSessionNode.setProperty(
 											CONNECT_LOCAL_REPO_NAME, key);
 									break;

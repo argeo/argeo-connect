@@ -8,6 +8,7 @@ import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
+import org.argeo.eclipse.ui.ErrorFeedback;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -77,8 +78,29 @@ public abstract class AbstractCleanDataEditorPage extends FormPage implements
 			throw new ArgeoException(
 					"Unexpected error while retrieving node session name.", re);
 		}
-
 		return csName;
+	}
+
+	/**
+	 * Returns the localRepositoryName: it is the corresponding jcr node name
+	 * 
+	 */
+	protected String getReferential() {
+		try {
+			Node sessionNode = getEditor().getCurrentSessionNode();
+			if (sessionNode.hasProperty(CONNECT_LOCAL_REPO_NAME)
+					|| "".equals(sessionNode
+							.getProperty(CONNECT_LOCAL_REPO_NAME).getString()
+							.trim())) {
+				//ErrorFeedback.show("No local repository has been defined yet.");
+				return null;
+			} else
+				return sessionNode.getProperty(CONNECT_LOCAL_REPO_NAME)
+						.getString();
+		} catch (RepositoryException re) {
+			throw new ArgeoException(
+					"Unexpected error while retrieving node session name.", re);
+		}
 	}
 
 	@Override

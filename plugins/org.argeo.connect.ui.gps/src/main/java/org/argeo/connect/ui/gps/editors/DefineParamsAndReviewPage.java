@@ -56,16 +56,10 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	private MapControlCreator mapControlCreator;
 	private MapViewer mapViewer;
 
-	// FIXME retrieve a proper name
-	private String getReferential() {
-		return "HARDCODED";
-	}
-
 	public DefineParamsAndReviewPage(FormEditor editor, String title,
 			MapControlCreator mapControlCreator) {
 		super(editor, ID, title);
 		this.mapControlCreator = mapControlCreator;
-
 	}
 
 	protected void createFormContent(IManagedForm managedForm) {
