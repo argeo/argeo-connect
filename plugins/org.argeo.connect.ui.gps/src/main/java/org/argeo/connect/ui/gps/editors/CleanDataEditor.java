@@ -93,7 +93,7 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 			GpsBrowserView gbView = (GpsBrowserView) ConnectUiGpsPlugin
 					.getDefault().getWorkbench().getActiveWorkbenchWindow()
 					.getActivePage().findView(GpsBrowserView.ID);
-			gbView.refresh(getCurrentSessionNode());
+			gbView.refresh(getCurrentSessionNode().getParent());
 
 		} catch (Exception e) {
 			e.printStackTrace();

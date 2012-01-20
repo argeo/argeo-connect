@@ -532,8 +532,7 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 		Binary binary = null;
 		try {
 
-			Session curSession = getEditor().getCurrentSessionNode()
-					.getSession();
+			Session curSession = getEditor().getJcrSession();
 
 			Node refNode = curSession.getNodeByIdentifier(refNodeId);
 			Node node = curSession.getNodeByIdentifier(refNode.getProperty(

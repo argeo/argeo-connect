@@ -31,7 +31,7 @@ public class DefineRepositoryModel extends WizardPage implements ModifyListener 
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout(2, false));
 		Label lbl = new Label(composite, SWT.LEAD);
-		lbl.setText("Technical name (no blank & no special chars)");
+		lbl.setText("Technical name (no blank, no special chars)");
 		lbl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		techName = new Text(composite, SWT.LEAD | SWT.BORDER);
 		techName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -86,7 +86,7 @@ public class DefineRepositoryModel extends WizardPage implements ModifyListener 
 
 		String displayStr = displayName.getText();
 		if (displayStr == null || "".equals(displayStr))
-			return "Please enter a diplayable name for the new repository.";
+			return "Please enter a displayable name for the new repository.";
 		return null;
 	}
 }

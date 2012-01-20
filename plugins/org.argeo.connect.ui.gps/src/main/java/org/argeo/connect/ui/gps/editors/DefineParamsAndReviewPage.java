@@ -15,6 +15,7 @@ import org.argeo.connect.ui.gps.ConnectGpsLabels;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
 import org.argeo.connect.ui.gps.commons.SliderViewer;
 import org.argeo.connect.ui.gps.commons.SliderViewerListener;
+import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.geotools.styling.StylingUtils;
 import org.argeo.gis.ui.MapControlCreator;
@@ -222,8 +223,8 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		// visualize.addListener(SWT.Selection, visualizeListener);
 
 		// Terminate button
-		Button terminate = formToolkit.createButton(parent,
-				ConnectUiGpsPlugin.getGPSMessage(ConnectGpsLabels.LAUNCH_CLEAN_BUTTON_LBL),
+		Button terminate = formToolkit.createButton(parent, ConnectUiGpsPlugin
+				.getGPSMessage(ConnectGpsLabels.LAUNCH_CLEAN_BUTTON_LBL),
 				SWT.PUSH);
 		gridData = new GridData();
 		gridData.horizontalAlignment = GridData.BEGINNING;
@@ -249,8 +250,8 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 					// TODO implement computation & corresponding UI workflow.
 
 					// prevent further modification of the Current clean session
+					Node sessionNode = getEditor().getCurrentSessionNode();
 					try {
-						Node sessionNode = getEditor().getCurrentSessionNode();
 						sessionNode.setProperty(
 								ConnectNames.CONNECT_IS_SESSION_COMPLETE, true);
 						JcrUtils.updateLastModified(sessionNode);
@@ -261,6 +262,13 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 						throw new ArgeoException(
 								"Unexpected error while finalising import", re);
 					}
+
+					GpsBrowserView gbView = (GpsBrowserView) ConnectUiGpsPlugin
+							.getDefault().getWorkbench()
+							.getActiveWorkbenchWindow().getActivePage()
+							.findView(GpsBrowserView.ID);
+					gbView.refresh(sessionNode);
+
 					MessageDialog dialog = new MessageDialog(
 							getSite().getShell(),
 							"Import done",
