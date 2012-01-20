@@ -14,7 +14,7 @@
 	<extension
     	point="org.eclipse.ui.views">
 		<view
-			name="GPS import"
+			name="Workspace explorer"
 			icon="icons/gis.gif"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			id="org.argeo.connect.ui.gps.gpsBrowserView">
@@ -36,7 +36,7 @@
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			id="org.argeo.connect.ui.gps.localRepoEditor"
 			name="Local repository Editor"
-			icon="icons/gis.gif"
+			icon="icons/repo.gif"
 			default="false">
 		</editor>
 	</extension>
