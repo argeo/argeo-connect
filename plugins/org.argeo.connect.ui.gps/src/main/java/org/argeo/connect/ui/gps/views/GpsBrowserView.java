@@ -32,7 +32,6 @@ import org.argeo.eclipse.ui.jcr.utils.NodeViewerComparer;
 import org.argeo.eclipse.ui.jcr.utils.SingleSessionFileProvider;
 import org.argeo.eclipse.ui.jcr.views.AbstractJcrBrowser;
 import org.argeo.eclipse.ui.specific.FileHandler;
-import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -98,12 +97,11 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 
 		String[] rootNodes = new String[3];
 		try {
-			rootNodes[0] = trackDao.getLocalRepositoriesParentNode(
-					jcrSession).getPath();
-			rootNodes[1] = trackDao.getTrackSessionsParentNode(
-					jcrSession).getPath();
-			rootNodes[2] = trackDao.getGpxFilesDirectory(jcrSession)
+			rootNodes[0] = trackDao.getLocalRepositoriesParentNode(jcrSession)
 					.getPath();
+			rootNodes[1] = trackDao.getTrackSessionsParentNode(jcrSession)
+					.getPath();
+			rootNodes[2] = trackDao.getGpxFilesDirectory(jcrSession).getPath();
 		} catch (RepositoryException re) {
 			throw new ArgeoException("unexpected error while initializing"
 					+ " roots of the view browser", re);
@@ -198,7 +196,7 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 		boolean isFileRepo = false;
 		boolean isSessionRepo = false;
 		boolean isLocalRepos = false;
-		
+
 		// We want to add GPX file only in the right place of the repository
 		try {
 			if (!multipleSel && selection.getFirstElement() instanceof Node) {

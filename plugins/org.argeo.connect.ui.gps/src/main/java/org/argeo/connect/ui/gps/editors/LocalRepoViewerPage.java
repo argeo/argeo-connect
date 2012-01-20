@@ -1,7 +1,5 @@
 package org.argeo.connect.ui.gps.editors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.gis.ui.MapControlCreator;
 import org.argeo.gis.ui.MapViewer;
@@ -16,7 +14,8 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 
 public class LocalRepoViewerPage extends FormPage {
-	private final static Log log = LogFactory.getLog(LocalRepoViewerPage.class);
+	// private final static Log log =
+	// LogFactory.getLog(LocalRepoViewerPage.class);
 	public final static String ID = "localRepoEditor.localRepoViewerPage";
 
 	private MapControlCreator mapControlCreator;

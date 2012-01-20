@@ -18,7 +18,6 @@ import org.argeo.geotools.styling.StylingUtils;
 import org.argeo.gis.GisConstants;
 import org.argeo.gis.ui.MapControlCreator;
 import org.argeo.gis.ui.MapViewer;
-import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -56,8 +55,7 @@ public class LocalRepoEditor extends FormEditor {
 		setSite(site);
 		setInput(input);
 
-		Node parentNode = trackDao
-				.getLocalRepositoriesParentNode(jcrSession);
+		Node parentNode = trackDao.getLocalRepositoriesParentNode(jcrSession);
 		try {
 			currentLocalRepo = parentNode.getNode(input.getName());
 			this.setPartName(currentLocalRepo.getProperty(Property.JCR_TITLE)
