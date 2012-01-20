@@ -16,6 +16,7 @@ import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.gpx.TrackDao;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
+import org.argeo.connect.ui.gps.providers.GpsNodeLabelProvider;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.geotools.styling.StylingUtils;
@@ -141,12 +142,15 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 
 		try {
 			if (getCurrentSessionNode().getProperty(
-					ConnectNames.CONNECT_IS_SESSION_COMPLETE).getBoolean())
+					ConnectNames.CONNECT_IS_SESSION_COMPLETE).getBoolean()) {
 				for (int i = 0; i < getPageCount(); i++) {
 					Control curPage = getControl(i);
 					if (curPage != null)
 						curPage.setEnabled(false);
 				}
+				this.setTitleImage(GpsNodeLabelProvider.sessionDone);
+				firePropertyChange(PROP_TITLE);
+			}
 		} catch (RepositoryException re) {
 			throw new ArgeoException("Error while refreshing readonly state",
 					re);
