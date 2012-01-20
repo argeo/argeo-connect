@@ -18,6 +18,7 @@ import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
 import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
+import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -502,6 +503,10 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 				}
 			});
 			filesViewer.refresh();
+			GpsBrowserView gbView = (GpsBrowserView) ConnectUiGpsPlugin
+					.getDefault().getWorkbench().getActiveWorkbenchWindow()
+					.getActivePage().findView(GpsBrowserView.ID);
+			gbView.refresh(getEditor().getCurrentSessionNode());
 
 		} catch (Exception e) {
 			ErrorFeedback.show("Cannot import GPX nodes", e);
