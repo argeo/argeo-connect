@@ -54,7 +54,7 @@ public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 			tmpNode.setProperty(CONNECT_PARAM_VALUE, 90d);
 
 			tmpNode.getSession().save();
-			
+
 		} catch (Exception e) {
 			throw new ArgeoException(
 					"Cannot create new session for node named [" + name + "]",
@@ -80,7 +80,6 @@ public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 
 			// Copy parameter nodes
 			NodeIterator ni = modelNode.getNodes();
-
 			while (ni.hasNext()) {
 				Node modParamNode = ni.nextNode();
 				if (modParamNode
@@ -95,6 +94,16 @@ public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 					copyOneParameterNode(modParamNode, newParamNode);
 				}
 			}
+
+			// Copy default sensor & local repo name if defined
+			if (modelNode.hasProperty(CONNECT_DEFAULT_SENSOR))
+				newNode.setProperty(CONNECT_DEFAULT_SENSOR, modelNode
+						.getProperty(CONNECT_DEFAULT_SENSOR).getString());
+
+			if (modelNode.hasProperty(CONNECT_LOCAL_REPO_NAME))
+				newNode.setProperty(CONNECT_LOCAL_REPO_NAME, modelNode
+						.getProperty(CONNECT_LOCAL_REPO_NAME).getString());
+
 			newNode.getSession().save();
 		} catch (Exception e) {
 			throw new ArgeoException(

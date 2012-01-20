@@ -63,7 +63,7 @@ public class NewCleanDataSession extends AbstractHandler {
 					nodeName);
 
 			if (modelId != null) {
-				Node modelNode = jcrSession.getNodeByIdentifier(parNodeId);
+				Node modelNode = jcrSession.getNodeByIdentifier(modelId);
 				JcrSessionUtils.copyDataFromModel(modelNode, newNode);
 			}
 

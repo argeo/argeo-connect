@@ -224,26 +224,29 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 					ImportDirectoryContent.DEFAULT_ICON_REL_PATH, isFileRepo,
 					null);
 
-			refreshCommand(menuManager, window, NewCleanDataSession.ID,
-					NewCleanDataSession.DEFAULT_LABEL,
-					NewCleanDataSession.DEFAULT_ICON_REL_PATH, isSessionRepo,
-					null);
-
-			// create session from current one
 			Map<String, String> params = null;
-
 			if (curNode != null) {
 				params = new HashMap<String, String>();
-				params.put(NewCleanDataSession.PARAM_MODEL_ID,
-						curNode.getIdentifier());
-				params.put(NewCleanDataSession.PARAM_PARENT_ID, curNode
-						.getParent().getIdentifier());
+				if (isSession) {
+					// create session from current one
+					params.put(NewCleanDataSession.PARAM_PARENT_ID, curNode
+							.getParent().getIdentifier());
+					params.put(NewCleanDataSession.PARAM_MODEL_ID,
+							curNode.getIdentifier());
+					refreshCommand(menuManager, window, NewCleanDataSession.ID,
+							NewCleanDataSession.COPY_SESSION_LABEL,
+							NewCleanDataSession.DEFAULT_ICON_REL_PATH,
+							isSession, params);
+				} else {
+					params.put(NewCleanDataSession.PARAM_PARENT_ID,
+							curNode.getIdentifier());
+					// create session from default
+					refreshCommand(menuManager, window, NewCleanDataSession.ID,
+							NewCleanDataSession.DEFAULT_LABEL,
+							NewCleanDataSession.DEFAULT_ICON_REL_PATH,
+							isSessionRepo, null);
+				}
 			}
-
-			refreshCommand(menuManager, window, NewCleanDataSession.ID,
-					NewCleanDataSession.COPY_SESSION_LABEL,
-					NewCleanDataSession.DEFAULT_ICON_REL_PATH, isSession,
-					params);
 
 			refreshCommand(menuManager, window, OpenNewRepoWizard.ID,
 					OpenNewRepoWizard.DEFAULT_LABEL,
