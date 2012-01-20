@@ -165,20 +165,22 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 						currentSessionNode.setProperty(
 								ConnectNames.CONNECT_DEFAULT_SENSOR,
 								defaultSensorName.getText());
-						// TODO enhance that. works because repo list is usually
-						// small
-						String tmpStr = localRepoCombo.getItem(localRepoCombo
-								.getSelectionIndex());
-						if (tmpStr != null)
-							for (String key : repos.keySet()) {
-								if (tmpStr.equals(repos.get(key))) {
-									currentSessionNode
-											.setProperty(
-													ConnectNames.CONNECT_LOCAL_REPO_NAME,
-													key);
-									break;
+						// prevent error thrown if user hasn't selected any repo. 
+						if (localRepoCombo.getSelectionIndex() >= 0) {
+							// TODO enhance. Works because repo list is usually small
+							String tmpStr = localRepoCombo
+									.getItem(localRepoCombo.getSelectionIndex());
+							if (tmpStr != null)
+								for (String key : repos.keySet()) {
+									if (tmpStr.equals(repos.get(key))) {
+										currentSessionNode
+												.setProperty(
+														ConnectNames.CONNECT_LOCAL_REPO_NAME,
+														key);
+										break;
+									}
 								}
-							}
+						}
 						currentSessionNode.setProperty(
 								ConnectNames.CONNECT_DEFAULT_SENSOR,
 								defaultSensorName.getText());
