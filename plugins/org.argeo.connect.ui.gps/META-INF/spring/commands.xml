@@ -21,13 +21,18 @@
 
 	<bean id="addFileFolder" class="org.argeo.connect.ui.gps.commands.AddFileFolder"
 		scope="prototype" />
+
 	<bean id="newCleanDataSession" class="org.argeo.connect.ui.gps.commands.NewCleanDataSession"
-		scope="prototype" />
+		scope="prototype">
+		<property name="trackDao" ref="trackDao" />
+		<property name="jcrSession" ref="jcrSession" />
+	</bean>
 
 	<bean id="openCleanDataEditor" class="org.argeo.connect.ui.gps.commands.OpenCleanDataEditor"
 		scope="prototype">
 		<property name="session" ref="jcrSession" />
 	</bean>
+
 	<bean id="openLocalRepoEditor" class="org.argeo.connect.ui.gps.commands.OpenLocalRepoEditor"
 		scope="prototype">
 	</bean>

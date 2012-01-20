@@ -178,61 +178,85 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 	 **/
 	protected void contextMenuAboutToShow(IMenuManager menuManager) {
 
-		IWorkbenchWindow window = ConnectUiGpsPlugin.getDefault()
-				.getWorkbench().getActiveWorkbenchWindow();
-
-		// Please note that commands that are not subject to programatic
-		// conditions are directly define in the corresponding
-		// menuContribution
-		// of the plugin.xml.
-
-		// Building conditions
-
-		// Some commands are meaningless for multiple selection
-		IStructuredSelection selection = (IStructuredSelection) nodesViewer
-				.getSelection();
-		boolean multipleSel = selection.size() > 1;
-
-		boolean isFileRepo = false;
-		boolean isSessionRepo = false;
-		boolean isLocalRepos = false;
-
-		// We want to add GPX file only in the right place of the repository
 		try {
+			IWorkbenchWindow window = ConnectUiGpsPlugin.getDefault()
+					.getWorkbench().getActiveWorkbenchWindow();
+
+			// Please note that commands that are not subject to programatic
+			// conditions are directly define in the corresponding
+			// menuContribution
+			// of the plugin.xml.
+
+			// Building conditions
+
+			// Some commands are meaningless for multiple selection
+			IStructuredSelection selection = (IStructuredSelection) nodesViewer
+					.getSelection();
+			boolean multipleSel = selection.size() > 1;
+
+			boolean isFileRepo = false;
+			boolean isSessionRepo = false;
+			boolean isSession = false;
+			boolean isLocalRepos = false;
+			Node curNode = null;
+
+			// We want to add GPX file only in the right place of the repository
 			if (!multipleSel && selection.getFirstElement() instanceof Node) {
-				Node node = (Node) selection.getFirstElement();
-				if (node.isNodeType(ConnectTypes.CONNECT_FILE_REPOSITORY))
+				curNode = (Node) selection.getFirstElement();
+				if (curNode.isNodeType(ConnectTypes.CONNECT_FILE_REPOSITORY))
 					isFileRepo = true;
-				if (node.isNodeType(ConnectTypes.CONNECT_SESSION_REPOSITORY))
+				if (curNode.isNodeType(ConnectTypes.CONNECT_SESSION_REPOSITORY))
 					isSessionRepo = true;
-				if (node.isNodeType(ConnectTypes.CONNECT_LOCAL_REPOSITORIES))
+				if (curNode.isNodeType(ConnectTypes.CONNECT_LOCAL_REPOSITORIES))
 					isLocalRepos = true;
+				if (curNode
+						.isNodeType(ConnectTypes.CONNECT_CLEAN_TRACK_SESSION))
+					isSession = true;
 			}
+
+			// Effective Refresh
+			refreshCommand(menuManager, window, AddFileFolder.ID,
+					AddFileFolder.DEFAULT_LABEL,
+					AddFileFolder.DEFAULT_ICON_REL_PATH, isFileRepo, null);
+
+			refreshCommand(menuManager, window, ImportDirectoryContent.ID,
+					ImportDirectoryContent.DEFAULT_LABEL,
+					ImportDirectoryContent.DEFAULT_ICON_REL_PATH, isFileRepo,
+					null);
+
+			refreshCommand(menuManager, window, NewCleanDataSession.ID,
+					NewCleanDataSession.DEFAULT_LABEL,
+					NewCleanDataSession.DEFAULT_ICON_REL_PATH, isSessionRepo,
+					null);
+
+			// create session from current one
+			Map<String, String> params = null;
+
+			if (curNode != null) {
+				params = new HashMap<String, String>();
+				params.put(NewCleanDataSession.PARAM_MODEL_ID,
+						curNode.getIdentifier());
+				params.put(NewCleanDataSession.PARAM_PARENT_ID, curNode
+						.getParent().getIdentifier());
+			}
+
+			refreshCommand(menuManager, window, NewCleanDataSession.ID,
+					NewCleanDataSession.COPY_SESSION_LABEL,
+					NewCleanDataSession.DEFAULT_ICON_REL_PATH, isSession,
+					params);
+
+			refreshCommand(menuManager, window, OpenNewRepoWizard.ID,
+					OpenNewRepoWizard.DEFAULT_LABEL,
+					OpenNewRepoWizard.DEFAULT_ICON_REL_PATH, isLocalRepos, null);
 
 		} catch (RepositoryException re) {
 			throw new ArgeoException(
 					"RepositoryException while refreshing context menu", re);
 		}
 
-		// Effective Refresh
-		refreshCommand(menuManager, window, AddFileFolder.ID,
-				AddFileFolder.DEFAULT_LABEL,
-				AddFileFolder.DEFAULT_ICON_REL_PATH, isFileRepo);
-
-		refreshCommand(menuManager, window, ImportDirectoryContent.ID,
-				ImportDirectoryContent.DEFAULT_LABEL,
-				ImportDirectoryContent.DEFAULT_ICON_REL_PATH, isFileRepo);
-
-		refreshCommand(menuManager, window, NewCleanDataSession.ID,
-				NewCleanDataSession.DEFAULT_LABEL,
-				NewCleanDataSession.DEFAULT_ICON_REL_PATH, isSessionRepo);
-
-		refreshCommand(menuManager, window, OpenNewRepoWizard.ID,
-				OpenNewRepoWizard.DEFAULT_LABEL,
-				OpenNewRepoWizard.DEFAULT_ICON_REL_PATH, isLocalRepos);
 	}
 
-	protected void refreshCommand(IMenuManager menuManager,
+	protected void refreshParametrizedCommand(IMenuManager menuManager,
 			IServiceLocator locator, String cmdId, String label,
 			String iconPath, boolean showCommand) {
 		IContributionItem ici = menuManager.find(cmdId);
@@ -247,14 +271,30 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 			contributionItemParameter.icon = ConnectUiGpsPlugin
 					.getImageDescriptor(iconPath);
 
-			// if (!REMOVE_CMD_ID.equals(cmdId)) {
-			// Map<String, String> params = new HashMap<String, String>();
-			// params.put(UUID_PARAM_ID, selectedRa.getUuid());
-			// params.put(NAME_PARAM_ID,
-			// (selectedRa.getAttributes().get("testCase") == null) ? null
-			// : selectedRa.getAttributes().get("testCase"));
-			// contributionItemParameter.parameters = params;
-			// }
+			CommandContributionItem cci = new CommandContributionItem(
+					contributionItemParameter);
+			cci.setId(cmdId);
+			menuManager.add(cci);
+		}
+	}
+
+	protected void refreshCommand(IMenuManager menuManager,
+			IServiceLocator locator, String cmdId, String label,
+			String iconPath, boolean showCommand, Map<String, String> params) {
+		IContributionItem ici = menuManager.find(cmdId);
+		if (ici != null)
+			menuManager.remove(ici);
+		CommandContributionItemParameter contributionItemParameter = new CommandContributionItemParameter(
+				locator, null, cmdId, SWT.PUSH);
+
+		if (showCommand) {
+			// Set Params
+			contributionItemParameter.label = label;
+			contributionItemParameter.icon = ConnectUiGpsPlugin
+					.getImageDescriptor(iconPath);
+
+			if (params != null)
+				contributionItemParameter.parameters = params;
 
 			CommandContributionItem cci = new CommandContributionItem(
 					contributionItemParameter);

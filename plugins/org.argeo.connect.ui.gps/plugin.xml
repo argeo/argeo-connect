@@ -86,6 +86,14 @@
 			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
 			id="org.argeo.connect.ui.gps.newCleanDataSession"
 			name="newCleanDataSession">
+			<commandParameter
+				id="org.argeo.connect.ui.gps.modelSessionId"
+				name="Node Id of the model Node">
+  	 		</commandParameter>
+  	 		<commandParameter
+				id="org.argeo.connect.ui.gps.parentNodeId"
+				name="Parent Node Id">
+  	 		</commandParameter>
 		</command>   
 	</extension>
     

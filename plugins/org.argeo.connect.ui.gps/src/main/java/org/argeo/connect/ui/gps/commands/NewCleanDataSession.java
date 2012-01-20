@@ -5,8 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 
 import javax.jcr.Node;
+import javax.jcr.Session;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.gpx.TrackDao;
 import org.argeo.connect.gpx.utils.JcrSessionUtils;
 import org.argeo.connect.ui.gps.editors.CleanDataEditor;
 import org.argeo.connect.ui.gps.editors.CleanDataEditorInput;
@@ -14,8 +16,6 @@ import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
@@ -29,52 +29,62 @@ public class NewCleanDataSession extends AbstractHandler {
 	public final static String ID = "org.argeo.connect.ui.gps.newCleanDataSession";
 	public final static String DEFAULT_ICON_REL_PATH = "icons/sessionAdd.gif";
 	public final static String DEFAULT_LABEL = "Create a new clean data session";
+	public final static String COPY_SESSION_LABEL = "Create a new session using this session params";
+	public final static String PARAM_MODEL_ID = "org.argeo.connect.ui.gps.modelSessionId";
+	public final static String PARAM_PARENT_ID = "org.argeo.connect.ui.gps.parentNodeId";
+
+	/* DEPENDENCY INJECTION */
+	private TrackDao trackDao;
+	private Session jcrSession;
 
 	// Define here the default node name
 	private DateFormat timeFormatter = new SimpleDateFormat("yyyyMMdd_HHmmss");
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-
+		String modelId = event.getParameter(PARAM_MODEL_ID);
+		String parNodeId = event.getParameter(PARAM_PARENT_ID);
 		try {
-			// String uuid = UUID.randomUUID().toString();
-			Node parentNode;
-
-			// Retrieve parent node.
-			ISelection selection = HandlerUtil.getActiveWorkbenchWindow(event)
-					.getActivePage().getSelection();
+			// Get GpsBrowserView
 			GpsBrowserView view = (GpsBrowserView) HandlerUtil
 					.getActiveWorkbenchWindow(event).getActivePage()
 					.findView(HandlerUtil.getActivePartId(event));
-			if (selection != null && !selection.isEmpty()
-					&& selection instanceof IStructuredSelection) {
 
-				// Command is visible only when a single item is selected in the
-				// tree node.
-				Object obj = ((IStructuredSelection) selection)
-						.getFirstElement();
-				if (obj instanceof Node) {
+			// Define parent Node
+			Node parentNode;
+			if (parNodeId == null) {
+				// get the default parent
+				parentNode = trackDao.getTrackSessionsParentNode(jcrSession);
+			} else
+				parentNode = jcrSession.getNodeByIdentifier(parNodeId);
 
-					parentNode = (Node) obj;
+			String nodeName = timeFormatter.format(new GregorianCalendar()
+					.getTime());
+			Node newNode = JcrSessionUtils.createNewSession(parentNode,
+					nodeName);
 
-					String nodeName = timeFormatter
-							.format(new GregorianCalendar().getTime());
-					Node newNode = JcrSessionUtils.createNewSession(parentNode,
-							nodeName);
-
-					view.nodeAdded(parentNode, newNode);
-					parentNode.getSession().save();
-
-					CleanDataEditorInput cdei = new CleanDataEditorInput(
-							newNode.getIdentifier());
-					cdei.setName(nodeName);
-
-					HandlerUtil.getActiveWorkbenchWindow(event).getActivePage()
-							.openEditor(cdei, CleanDataEditor.ID);
-				}
+			if (modelId != null) {
+				Node modelNode = jcrSession.getNodeByIdentifier(parNodeId);
+				JcrSessionUtils.copyDataFromModel(modelNode, newNode);
 			}
+
+			view.nodeAdded(parentNode, newNode);
+			CleanDataEditorInput cdei = new CleanDataEditorInput(
+					newNode.getIdentifier());
+			cdei.setName(nodeName);
+			HandlerUtil.getActiveWorkbenchWindow(event).getActivePage()
+					.openEditor(cdei, CleanDataEditor.ID);
 		} catch (Exception e) {
 			throw new ArgeoException("Cannot open editor", e);
 		}
 		return null;
+	}
+
+	/* DEPENDENCY INJECTION */
+	public void setTrackDao(TrackDao trackDao) {
+		this.trackDao = trackDao;
+	}
+
+	public void setJcrSession(Session jcrSession) {
+		this.jcrSession = jcrSession;
 	}
 }
