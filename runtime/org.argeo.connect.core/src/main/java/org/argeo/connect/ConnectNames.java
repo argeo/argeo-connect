@@ -32,14 +32,15 @@ public interface ConnectNames {
 	// Files to clean
 	public final static String CONNECT_LINKED_FILE = CONNECT_ + "linkedFile";
 
-	// Files to clean
+	// Imported files
 	public final static String CONNECT_LINKED_FILE_REF = CONNECT_ + "fileRef";
 	public final static String CONNECT_SENSOR_NAME = CONNECT_ + "sensorName";
 	public final static String CONNECT_TO_BE_PROCESSED = CONNECT_
 			+ "toBeProcessed";
 	public final static String CONNECT_ALREADY_PROCESSED = CONNECT_
 			+ "alreadyProcessed";
-
+	public final static String CONNECT_SEGMENT_UUID =  "connect:segmentUuid";
+	
 	// Clean parameters
 	public final static String CONNECT_PARAM_VALUE = CONNECT_ + "paramValue";
 	public final static String CONNECT_PARAM_MIN_VALUE = CONNECT_

@@ -550,10 +550,23 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 			String cname = refNode
 					.getProperty(ConnectNames.CONNECT_SENSOR_NAME).getString();
 
-			getEditor().getTrackDao().importRawToCleanSession(
-					getCleanSession(), cname, binary.getStream());
+			List<String> segmentUuids = (List<String>) getEditor()
+					.getTrackDao().importRawToCleanSession(getCleanSession(),
+							cname, binary.getStream());
 			JcrUtils.closeQuietly(binary);
 
+			String[] uuids = segmentUuids.toArray(new String[0]);
+			
+//			Iterator<String> it = segmentUuids.iterator();
+//			while (it.hasNext()) {
+//				refNode.setProperty(ConnectNames.CONNECT_SEGMENT_UUID,
+//						it.next());
+//			}
+//			
+			refNode.setProperty(ConnectNames.CONNECT_SEGMENT_UUID,
+					uuids);
+
+			
 			// Finalization of the import / UI updates
 			refNode.setProperty(ConnectNames.CONNECT_ALREADY_PROCESSED, true);
 			curSession.save();

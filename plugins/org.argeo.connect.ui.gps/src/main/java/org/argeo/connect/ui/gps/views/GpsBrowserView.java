@@ -93,7 +93,7 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 		if (trackDao.getGpxFilesDirectory(jcrSession) == null
 				|| trackDao.getLocalRepositoriesParentNode(jcrSession) == null
 				|| trackDao.getTrackSessionsParentNode(jcrSession) == null)
-			trackDao.initialiseLocalRepository(jcrSession);
+			trackDao.initializeLocalRepository(jcrSession);
 
 		String[] rootNodes = new String[3];
 		try {

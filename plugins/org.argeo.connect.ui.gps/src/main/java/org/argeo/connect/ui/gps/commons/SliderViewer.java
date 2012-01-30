@@ -15,9 +15,10 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 /** TODO factorize it in Argeo Commons as a generic component ? */
 public class SliderViewer {
 	private final static Integer MIN_SLIDER = 0;
-	// Fixme : Maximum cannot be reached moving the slider
-	// with the mouse.
-	private final static Integer MAX_SLIDER = 100;
+	// Add a -10 offset to MAX_SLIDER before computing the value to workaround a
+	// bug of the slider widget (max value is not reachable while using the mouse)
+	private final static Integer MAX_SLIDER = 110;
+	private final static Integer MAX_OFFSET = 10;
 
 	private String label;
 	private Double maxValue;
@@ -112,13 +113,13 @@ public class SliderViewer {
 
 	/** Label combined with min / max value */
 	protected String getDisplayedLabel() {
-		return label + " (" + minValue + "," + maxValue + ")";
+		return label + "  [" + minValue + "," + maxValue + "]";
 	}
 
 	public Double getValue() {
 		int sliderValue = slider.getSelection();
 		return ((maxValue - minValue) * sliderValue)
-				/ (MAX_SLIDER - MIN_SLIDER);
+				/ (MAX_SLIDER - MIN_SLIDER - MAX_OFFSET);
 	}
 
 	protected Integer convertToSliderSelection(Double value) {

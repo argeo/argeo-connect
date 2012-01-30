@@ -45,6 +45,7 @@ mixin
 - connect:toBeProcessed (BOOLEAN) ='true' a m  
 - connect:alreadyProcessed (BOOLEAN) ='false' a m  
 - connect:sensorName (STRING)
+- connect:segmentUuid (STRING) *
 
 
 // clean parameter 

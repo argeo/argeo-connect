@@ -54,7 +54,7 @@
 		<dependency>
 			<groupId>org.argeo.commons.basic</groupId>
 			<artifactId>org.argeo.basic.nodeps</artifactId>
-			<version>0.3.4-SNAPSHOT</version>
+			<version>${version.argeo-commons}</version>
 		</dependency>
 		<!-- Connect specific dependencies -->
 		<dependency>
