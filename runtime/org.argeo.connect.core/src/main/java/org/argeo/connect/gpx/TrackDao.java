@@ -23,9 +23,16 @@ public interface TrackDao {
 	/** Returns the path to the positions feature source */
 	public String getPositionsSource(String positionsRepositoryName);
 
-	/** Publish the cleaned-up positions to a positions referential. */
+	/** Returns the path to the positions display feature source */
+	public String getPositionsDisplaySource(String positionsRepositoryName);
+
+	/** Publishes the cleaned-up positions to a positions referential. */
 	public void publishCleanPositions(String cleanSession, String referential,
 			String toRemoveCql);
+
+	/** Removes segments from this referential */
+	public void deleteCleanPositions(String referential,
+			List<String> segmentUuuids);
 
 	/** Initializes position repository if needed */
 	public boolean initializeLocalRepository(Session curSession);

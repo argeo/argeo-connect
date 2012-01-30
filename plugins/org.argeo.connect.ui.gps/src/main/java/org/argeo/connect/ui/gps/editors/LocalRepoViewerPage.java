@@ -121,13 +121,12 @@ public class LocalRepoViewerPage extends FormPage {
 	 */
 	protected void addPositionsLayer() {
 		// Add speeds layer
-		String trackSpeedsPath = getEditor().getTrackDao().getPositionsSource(
-				getReferential());
+		String positionsDisplayPath = getEditor().getTrackDao()
+				.getPositionsDisplaySource(getReferential());
 		try {
 			Node layerNode = getEditor().getCurrentRepoNode().getSession()
-					.getNode(trackSpeedsPath);
-			Style style = StylingUtils.createPointStyle("Circle", "BLACK", 1,
-					null, null);
+					.getNode(positionsDisplayPath);
+			Style style = StylingUtils.createLineStyle("BLACK", 1);
 			mapViewer.addLayer(layerNode, style);
 
 			// mapViewer.setCoordinateReferenceSystem("EPSG:3857");
@@ -136,7 +135,8 @@ public class LocalRepoViewerPage extends FormPage {
 					.getBounds();
 			mapViewer.setAreaOfInterest(areaOfInterest);
 		} catch (Exception e) {
-			throw new ArgeoException("Cannot add layer " + trackSpeedsPath, e);
+			throw new ArgeoException(
+					"Cannot add layer " + positionsDisplayPath, e);
 		}
 	}
 

@@ -3,6 +3,7 @@ package org.argeo.connect.gpx;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -30,18 +31,22 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.text.cql2.CQL;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.GeodeticCalculator;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 import org.xml.sax.InputSource;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.PrecisionModel;
 
 /**
  * Parses a GPX track file and import the data
@@ -200,8 +205,8 @@ public class GeoToolsTrackDao implements TrackDao {
 	// positionStore = getFeatureStore(positionType);
 	// }
 
-	public List<String> importRawToCleanSession(String cleanSession, String sensor,
-			InputStream in) {
+	public List<String> importRawToCleanSession(String cleanSession,
+			String sensor, InputStream in) {
 		long begin = System.currentTimeMillis();
 		try {
 			SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -230,6 +235,16 @@ public class GeoToolsTrackDao implements TrackDao {
 	public void publishCleanPositions(String cleanSession, String referential,
 			String toRemoveCql) {
 		try {
+			int srid = 3857;
+			// set up the math transform used to process the data
+			CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326");
+			CoordinateReferenceSystem popularMercator = CRS.decode("EPSG:"
+					+ srid);
+			MathTransform transform = CRS.findMathTransform(wgs84,
+					popularMercator);
+			PrecisionModel precisionModel = new PrecisionModel();
+			GeometryFactory targetGF = new GeometryFactory(precisionModel, srid);
+
 			String trackSpeedsToCleanTable = addGpsCleanTablePrefix(cleanSession);
 			BeanFeatureTypeBuilder<TrackSpeed> trackSpeedType = new BeanFeatureTypeBuilder<TrackSpeed>(
 					trackSpeedsToCleanTable, TrackSpeed.class);
@@ -238,7 +253,7 @@ public class GeoToolsTrackDao implements TrackDao {
 					positionsTable, TrackPoint.class);
 			String positionsDisplayTable = addPositionsDisplayTablePrefix(referential);
 			BeanFeatureTypeBuilder<TrackSegment> positionDisplayType = new BeanFeatureTypeBuilder<TrackSegment>(
-					positionsDisplayTable, TrackSegment.class);
+					positionsDisplayTable, TrackSegment.class, popularMercator);
 
 			SimpleFeatureCollection positions = FeatureCollections
 					.newCollection();
@@ -250,22 +265,51 @@ public class GeoToolsTrackDao implements TrackDao {
 			FeatureIterator<SimpleFeature> filteredSpeeds = trackSpeedsStore
 					.getFeatures(filter).features();
 
-			List<Coordinate> coords = new ArrayList<Coordinate>();
+			List<Coordinate> currSegmentCoords = new ArrayList<Coordinate>();
+			TrackSegment currSegment = null;
 			while (filteredSpeeds.hasNext()) {
 				SimpleFeature speed = filteredSpeeds.next();
 				SimpleFeature position = positionType.convertFeature(speed);
 				positions.add(position);
 
+				// segmet
+				String segmentUuid = (String) position
+						.getAttribute("segmentUuid");
+				if (currSegment == null) {
+					currSegment = startNewSegment(position);
+				}
+
+				if (!currSegment.getUuid().equals(segmentUuid)) {
+					Coordinate[] line = currSegmentCoords
+							.toArray(new Coordinate[currSegmentCoords.size()]);
+					LineString segment = targetGF.createLineString(line);
+					currSegment.setSegment(segment);
+					Date end = (Date) position.getAttribute("utcTimestamp");
+					currSegment.setEndUtc(end);
+
+					segments.add(positionDisplayType.buildFeature(currSegment));
+					currSegment = startNewSegment(position);
+					currSegmentCoords.clear();
+				}
+
+				// reproject point
 				Point point = (Point) position.getDefaultGeometry();
-				coords.add(new Coordinate(point.getX(), point.getY()));
+				Coordinate coor = new Coordinate(point.getX(), point.getY());
+				Coordinate targetCoor = new Coordinate();
+				JTS.transform(coor, targetCoor, transform);
+				currSegmentCoords.add(targetCoor);
+
 			}
 
 			// persist
 			Transaction transaction = new DefaultTransaction();
 			SimpleFeatureStore positionStore = getFeatureStore(positionType);
+			SimpleFeatureStore positionDisplayStore = getFeatureStore(positionDisplayType);
 			positionStore.setTransaction(transaction);
+			positionDisplayStore.setTransaction(transaction);
 			try {
 				positionStore.addFeatures(positions);
+				positionDisplayStore.addFeatures(segments);
 				transaction.commit();
 			} catch (Exception e) {
 				transaction.rollback();
@@ -273,10 +317,22 @@ public class GeoToolsTrackDao implements TrackDao {
 			} finally {
 				transaction.close();
 				positions.clear();
+				segments.clear();
 			}
 		} catch (Exception e) {
 			throw new ArgeoException("Cannot copy speeds to positions", e);
 		}
+	}
+
+	private TrackSegment startNewSegment(SimpleFeature position) {
+		String sensor = (String) position.getAttribute("sensor");
+		String segmentUuid = (String) position.getAttribute("segmentUuid");
+		Date utcTimestamp = (Date) position.getAttribute("utcTimestamp");
+		TrackSegment currSegment = new TrackSegment();
+		currSegment.setSensor(sensor);
+		currSegment.setUuid(segmentUuid);
+		currSegment.setStartUtc(utcTimestamp);
+		return currSegment;
 	}
 
 	protected void processTrackSegment(
@@ -425,6 +481,12 @@ public class GeoToolsTrackDao implements TrackDao {
 			return azimuth;
 	}
 
+	public void deleteCleanPositions(String referential,
+			List<String> segmentUuuids) {
+		// TODO Auto-generated method stub
+
+	}
+
 	public void setTargetSrid(Integer targetSrid) {
 		this.targetSrid = targetSrid;
 	}
@@ -445,6 +507,11 @@ public class GeoToolsTrackDao implements TrackDao {
 	public String getPositionsSource(String positionsRepositoryName) {
 		return GisConstants.DATA_STORES_BASE_PATH + "/" + dataStoreAlias + "/"
 				+ addPositionsTablePrefix(positionsRepositoryName);
+	}
+
+	public String getPositionsDisplaySource(String positionsRepositoryName) {
+		return GisConstants.DATA_STORES_BASE_PATH + "/" + dataStoreAlias + "/"
+				+ addPositionsDisplayTablePrefix(positionsRepositoryName);
 	}
 
 	public void setDataStoreAlias(String dataStoreAlias) {
