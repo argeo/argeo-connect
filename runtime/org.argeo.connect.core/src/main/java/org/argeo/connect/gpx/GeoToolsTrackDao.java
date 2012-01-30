@@ -2,6 +2,8 @@ package org.argeo.connect.gpx;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -39,6 +41,7 @@ import org.xml.sax.InputSource;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
 
 /**
  * Parses a GPX track file and import the data
@@ -72,6 +75,10 @@ public class GeoToolsTrackDao implements TrackDao {
 		return "connect_positions_" + baseName;
 	}
 
+	private String addPositionsDisplayTablePrefix(String baseName) {
+		return "connect_positions_display_" + baseName;
+	}
+
 	// private String trackSpeedsToCleanTable = "toclean_track_speeds";
 	// private BeanFeatureTypeBuilder<TrackSpeed> trackSpeedType;
 	// private FeatureStore<SimpleFeatureType, SimpleFeature> trackSpeedsStore;
@@ -84,7 +91,7 @@ public class GeoToolsTrackDao implements TrackDao {
 	}
 
 	// INITILISATION
-	public boolean initialiseLocalRepository(Session jcrSession) {
+	public boolean initializeLocalRepository(Session jcrSession) {
 		boolean success = false;
 		try {
 
@@ -193,7 +200,7 @@ public class GeoToolsTrackDao implements TrackDao {
 	// positionStore = getFeatureStore(positionType);
 	// }
 
-	public Object importRawToCleanSession(String cleanSession, String sensor,
+	public List<String> importRawToCleanSession(String cleanSession, String sensor,
 			InputStream in) {
 		long begin = System.currentTimeMillis();
 		try {
@@ -206,7 +213,7 @@ public class GeoToolsTrackDao implements TrackDao {
 			TrackGpxHandler handler = new TrackGpxHandler(sensor, targetSrid,
 					cleanSession);
 			sp.parse(input, handler);
-			return null;
+			return handler.getSegmentUuids();
 		} catch (Exception e) {
 			throw new ArgeoException("Cannot parse GPX stream", e);
 		} finally {
@@ -229,18 +236,28 @@ public class GeoToolsTrackDao implements TrackDao {
 			String positionsTable = addPositionsTablePrefix(referential);
 			BeanFeatureTypeBuilder<TrackPoint> positionType = new BeanFeatureTypeBuilder<TrackPoint>(
 					positionsTable, TrackPoint.class);
+			String positionsDisplayTable = addPositionsDisplayTablePrefix(referential);
+			BeanFeatureTypeBuilder<TrackSegment> positionDisplayType = new BeanFeatureTypeBuilder<TrackSegment>(
+					positionsDisplayTable, TrackSegment.class);
 
 			SimpleFeatureCollection positions = FeatureCollections
+					.newCollection();
+			SimpleFeatureCollection segments = FeatureCollections
 					.newCollection();
 
 			SimpleFeatureStore trackSpeedsStore = getFeatureStore(trackSpeedType);
 			Filter filter = filterFactory.not(CQL.toFilter(toRemoveCql));
 			FeatureIterator<SimpleFeature> filteredSpeeds = trackSpeedsStore
 					.getFeatures(filter).features();
+
+			List<Coordinate> coords = new ArrayList<Coordinate>();
 			while (filteredSpeeds.hasNext()) {
 				SimpleFeature speed = filteredSpeeds.next();
 				SimpleFeature position = positionType.convertFeature(speed);
 				positions.add(position);
+
+				Point point = (Point) position.getDefaultGeometry();
+				coords.add(new Coordinate(point.getX(), point.getY()));
 			}
 
 			// persist
@@ -440,6 +457,7 @@ public class GeoToolsTrackDao implements TrackDao {
 
 	public class TrackGpxHandler extends GpxHandler {
 		private BeanFeatureTypeBuilder<TrackSpeed> trackSpeedType;
+		private List<String> segmentUuids = new ArrayList<String>();
 
 		public TrackGpxHandler(String sensor, Integer srid, String cleanSession) {
 			super(sensor, srid);
@@ -454,7 +472,12 @@ public class GeoToolsTrackDao implements TrackDao {
 				GeometryFactory geometryFactory) {
 			GeoToolsTrackDao.this.processTrackSegment(trackSpeedType,
 					trackSegment, geometryFactory);
-
+			segmentUuids.add(trackSegment.getUuid());
 		}
+
+		public List<String> getSegmentUuids() {
+			return segmentUuids;
+		}
+
 	}
 }
