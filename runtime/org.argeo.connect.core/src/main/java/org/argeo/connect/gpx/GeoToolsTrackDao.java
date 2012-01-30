@@ -68,7 +68,7 @@ public class GeoToolsTrackDao implements TrackDao {
 		return "connect_gpsclean_" + baseName;
 	}
 
-	private String addPositionTablePrefix(String baseName) {
+	private String addPositionsTablePrefix(String baseName) {
 		return "connect_positions_" + baseName;
 	}
 
@@ -130,6 +130,7 @@ public class GeoToolsTrackDao implements TrackDao {
 			jcrSession.save();
 			success = true;
 		} catch (RepositoryException re) {
+			JcrUtils.discardQuietly(jcrSession);
 			throw new ArgeoException("Error while initializing jcr repository",
 					re);
 		}
@@ -225,7 +226,7 @@ public class GeoToolsTrackDao implements TrackDao {
 			String trackSpeedsToCleanTable = addGpsCleanTablePrefix(cleanSession);
 			BeanFeatureTypeBuilder<TrackSpeed> trackSpeedType = new BeanFeatureTypeBuilder<TrackSpeed>(
 					trackSpeedsToCleanTable, TrackSpeed.class);
-			String positionsTable = addPositionTablePrefix(referential);
+			String positionsTable = addPositionsTablePrefix(referential);
 			BeanFeatureTypeBuilder<TrackPoint> positionType = new BeanFeatureTypeBuilder<TrackPoint>(
 					positionsTable, TrackPoint.class);
 
@@ -422,6 +423,11 @@ public class GeoToolsTrackDao implements TrackDao {
 	public String getTrackSpeedsSource(String cleanSession) {
 		return GisConstants.DATA_STORES_BASE_PATH + "/" + dataStoreAlias + "/"
 				+ addGpsCleanTablePrefix(cleanSession);
+	}
+
+	public String getPositionsSource(String positionsRepositoryName) {
+		return GisConstants.DATA_STORES_BASE_PATH + "/" + dataStoreAlias + "/"
+				+ addPositionsTablePrefix(positionsRepositoryName);
 	}
 
 	public void setDataStoreAlias(String dataStoreAlias) {

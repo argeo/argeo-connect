@@ -1,6 +1,10 @@
 package org.argeo.connect.ui.gps.editors;
 
+import javax.jcr.Node;
+
+import org.argeo.ArgeoException;
 import org.argeo.eclipse.ui.ErrorFeedback;
+import org.argeo.geotools.styling.StylingUtils;
 import org.argeo.gis.ui.MapControlCreator;
 import org.argeo.gis.ui.MapViewer;
 import org.eclipse.swt.SWT;
@@ -12,6 +16,11 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.geotools.data.FeatureSource;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.styling.Style;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 
 public class LocalRepoViewerPage extends FormPage {
 	// private final static Log log =
@@ -44,7 +53,7 @@ public class LocalRepoViewerPage extends FormPage {
 
 		createMapPart(body);
 		try {
-			addCleanDataLayer(getReferential());
+			addPositionsLayer();
 		} catch (Exception e) {
 			ErrorFeedback.show("Cannot load data layer", e);
 		}
@@ -64,7 +73,41 @@ public class LocalRepoViewerPage extends FormPage {
 	/*
 	 * GIS
 	 */
-	protected void addCleanDataLayer(String referential) {
-		// TODO implement this method
+	protected void addPositionsLayer() {
+		// Add speeds layer
+		String trackSpeedsPath = getEditor().getTrackDao().getPositionsSource(
+				getReferential());
+		try {
+			Node layerNode = getEditor().getCurrentRepoNode().getSession()
+					.getNode(trackSpeedsPath);
+			Style style = StylingUtils.createPointStyle("Circle", "BLACK", 1,
+					null, null);
+			mapViewer.addLayer(layerNode, style);
+
+			// mapViewer.setCoordinateReferenceSystem("EPSG:3857");
+
+			ReferencedEnvelope areaOfInterest = getPositionsFeatureSource()
+					.getBounds();
+			mapViewer.setAreaOfInterest(areaOfInterest);
+		} catch (Exception e) {
+			throw new ArgeoException("Cannot add layer " + trackSpeedsPath, e);
+		}
 	}
+
+	protected FeatureSource<SimpleFeatureType, SimpleFeature> getPositionsFeatureSource() {
+		String trackSpeedsPath = getEditor().getTrackDao().getPositionsSource(
+				getReferential());
+		try {
+
+			Node layerNode = getEditor().getCurrentRepoNode().getSession()
+					.getNode(trackSpeedsPath);
+			FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = mapViewer
+					.getGeoJcrMapper().getFeatureSource(layerNode);
+			return featureSource;
+		} catch (Exception e) {
+			throw new ArgeoException("Cannot get feature source "
+					+ trackSpeedsPath, e);
+		}
+	}
+
 }

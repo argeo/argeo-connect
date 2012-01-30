@@ -11,7 +11,10 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.Graphic;
 import org.geotools.styling.LineSymbolizer;
+import org.geotools.styling.Mark;
+import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
@@ -34,12 +37,34 @@ public class StylingUtils {
 	 * @param width
 	 *            the width of the line
 	 * @param cqlFilter
-	 *            filter in CQL formqt restricting the feqture upon which the
+	 *            filter in CQL format restricting the feature upon which the
 	 *            style will apply
 	 */
 	public static Style createLineStyle(String color, Integer width) {
 		Rule rule = styleFactory.createRule();
 		rule.symbolizers().add(createLineSymbolizer(color, width));
+		FeatureTypeStyle fts = styleFactory
+				.createFeatureTypeStyle(new Rule[] { rule });
+		Style style = styleFactory.createStyle();
+		style.featureTypeStyles().add(fts);
+		return style;
+	}
+
+	/**
+	 * @param markWellKnownName
+	 *            Square, Circle, Cross, X, Triangle, Star
+	 * @param strokeColor
+	 *            can be null to indicate no stroke
+	 */
+	public static Style createPointStyle(String markWellKnownName,
+			String fillColor, Integer width, String strokeColor,
+			Integer strokeWidth) {
+		Mark mark = styleFactory.getDefaultMark();
+		mark.setWellKnownName(filterFactory.literal(markWellKnownName));
+		PointSymbolizer symb = createPointSymbolizer(mark, fillColor, width,
+				strokeColor, strokeWidth);
+		Rule rule = styleFactory.createRule();
+		rule.symbolizers().add(symb);
 		FeatureTypeStyle fts = styleFactory
 				.createFeatureTypeStyle(new Rule[] { rule });
 		Style style = styleFactory.createStyle();
@@ -110,6 +135,29 @@ public class StylingUtils {
 				filterFactory.literal(stringToColor(color)),
 				filterFactory.literal(width));
 		return styleFactory.createLineSymbolizer(stroke, null);
+	}
+
+	public static PointSymbolizer createPointSymbolizer(Mark mark,
+			String fillColor, Integer width, String strokeColor,
+			Integer strokeWidth) {
+		Graphic gr = styleFactory.createDefaultGraphic();
+
+		if (strokeColor != null)
+			mark.setStroke(styleFactory.createStroke(
+					filterFactory.literal(stringToColor(strokeColor)),
+					filterFactory.literal(strokeWidth)));
+
+		mark.setFill(styleFactory.createFill(filterFactory
+				.literal(stringToColor(fillColor))));
+
+		gr.graphicalSymbols().clear();
+		gr.graphicalSymbols().add(mark);
+		gr.setSize(filterFactory.literal(width));
+
+		// Setting the geometryPropertyName arg to null signals that we want to
+		// draw the default geometry of features
+		PointSymbolizer sym = styleFactory.createPointSymbolizer(gr, null);
+		return sym;
 	}
 
 	/**

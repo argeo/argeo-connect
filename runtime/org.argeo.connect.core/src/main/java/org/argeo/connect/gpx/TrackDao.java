@@ -17,15 +17,19 @@ public interface TrackDao {
 	/** Returns the path to the track speeds feature source */
 	public String getTrackSpeedsSource(String cleanSession);
 
+	/** Returns the path to the positions feature source */
+	public String getPositionsSource(String positionsRepositoryName);
+
 	/** Publish the cleaned-up positions to a positions referential. */
 	public void publishCleanPositions(String cleanSession, String referential,
 			String toRemoveCql);
 	
-	/** Initialises local repository if needed */ 
+	/** Initializes position repository if needed */ 
 	public boolean initialiseLocalRepository(Session curSession);
 	
 	/** Returns parent node for clean track sessions or null if the repository has not been initialized yet */
 	public Node getTrackSessionsParentNode(Session curSession);
+	
 	
 	/** Returns parent node for local cleaned data or null if the repository has not been initialized yet */
 	public Node getLocalRepositoriesParentNode(Session curSession);
