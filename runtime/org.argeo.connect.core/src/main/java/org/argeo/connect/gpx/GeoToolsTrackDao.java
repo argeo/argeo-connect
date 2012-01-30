@@ -280,14 +280,17 @@ public class GeoToolsTrackDao implements TrackDao {
 				}
 
 				if (!currSegment.getUuid().equals(segmentUuid)) {
-					Coordinate[] line = currSegmentCoords
-							.toArray(new Coordinate[currSegmentCoords.size()]);
-					LineString segment = targetGF.createLineString(line);
-					currSegment.setSegment(segment);
-					Date end = (Date) position.getAttribute("utcTimestamp");
-					currSegment.setEndUtc(end);
-
-					segments.add(positionDisplayType.buildFeature(currSegment));
+					if (currSegmentCoords.size() < 2) {// skip single point
+						Coordinate[] line = currSegmentCoords
+								.toArray(new Coordinate[currSegmentCoords
+										.size()]);
+						LineString segment = targetGF.createLineString(line);
+						currSegment.setSegment(segment);
+						Date end = (Date) position.getAttribute("utcTimestamp");
+						currSegment.setEndUtc(end);
+						segments.add(positionDisplayType
+								.buildFeature(currSegment));
+					}
 					currSegment = startNewSegment(position);
 					currSegmentCoords.clear();
 				}
