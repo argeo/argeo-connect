@@ -6,13 +6,7 @@
 
 	<bean id="openNewRepoWizard" class="org.argeo.connect.ui.gps.commands.OpenNewRepoWizard"
 		scope="prototype">
-		<property name="trackDao" ref="trackDao" />
-		<property name="jcrSession" ref="jcrSession" />
-	</bean>
-
-	<bean id="importGpx" class="org.argeo.connect.ui.gps.commands.ImportGpx"
-		scope="prototype">
-		<property name="trackDao" ref="trackDao" />
+		<property name="uiJcrServices" ref="uiJcrServices" />
 	</bean>
 
 	<bean id="importDirectoryContent"
@@ -24,13 +18,17 @@
 
 	<bean id="newCleanDataSession" class="org.argeo.connect.ui.gps.commands.NewCleanDataSession"
 		scope="prototype">
-		<property name="trackDao" ref="trackDao" />
-		<property name="jcrSession" ref="jcrSession" />
+		<property name="uiJcrServices" ref="uiJcrServices" />
 	</bean>
-
+	
+	<bean id="removeImportedData" class="org.argeo.connect.ui.gps.commands.RemoveImportedData"
+		scope="prototype">
+		<property name="uiGisServices" ref="uiGisServices" />
+	</bean>
+	
 	<bean id="openCleanDataEditor" class="org.argeo.connect.ui.gps.commands.OpenCleanDataEditor"
 		scope="prototype">
-		<property name="session" ref="jcrSession" />
+		<property name="uiJcrServices" ref="uiJcrServices" />
 	</bean>
 
 	<bean id="openLocalRepoEditor" class="org.argeo.connect.ui.gps.commands.OpenLocalRepoEditor"

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.Workspace;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,13 +13,14 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
-import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
+import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
+import org.argeo.connect.ui.gps.GpsUiGisServices;
+import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.commons.SliderViewer;
 import org.argeo.connect.ui.gps.commons.SliderViewerListener;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.geotools.styling.StylingUtils;
-import org.argeo.gis.ui.MapControlCreator;
 import org.argeo.gis.ui.MapViewer;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -55,16 +57,24 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	private SliderViewer maxAccelerationViewer;
 	private SliderViewer maxRotationViewer;
 
-	private MapControlCreator mapControlCreator;
+	// private MapControlCreator mapControlCreator;
 	private MapViewer mapViewer;
 
-	public DefineParamsAndReviewPage(FormEditor editor, String title,
-			MapControlCreator mapControlCreator) {
+	// Local object used as cache
+	private GpsUiJcrServices uiJcrServices;
+	private GpsUiGisServices uiGisServices;
+	private Node currCleanSession;
+
+	public DefineParamsAndReviewPage(FormEditor editor, String title) {
 		super(editor, ID, title);
-		this.mapControlCreator = mapControlCreator;
 	}
 
 	protected void createFormContent(IManagedForm managedForm) {
+		// initialize cache
+		uiJcrServices = getEditor().getUiJcrServices();
+		uiGisServices = getEditor().getUiGisServices();
+		currCleanSession = getEditor().getCurrentCleanSession();
+
 		// Initialize current form
 		ScrolledForm form = managedForm.getForm();
 		formToolkit = managedForm.getToolkit();
@@ -76,7 +86,8 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		// Create and populate bottom part
 		createMapPart(body);
 		try {
-			addSpeedLayer(getCleanSession());
+			addSpeedLayer(uiJcrServices
+					.getCleanSessionTechName(currCleanSession));
 		} catch (Exception e) {
 			ErrorFeedback
 					.show("Cannot load speed layer. Did you import the GPX files from the previous tab?",
@@ -85,7 +96,6 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	}
 
 	private void createParameterPart(Composite top) {
-
 		Composite parent = formToolkit.createComposite(top);
 		parent.setLayout(new GridLayout(6, false));
 
@@ -93,11 +103,11 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 			double min, max, val;
 			ParamFormPart paramPart = null;
 			ParamSliderViewerListener sliderViewerListener;
-			Node sessionNode = getEditor().getCurrentSessionNode();
 
 			// Max speed
-			if (sessionNode.hasNode(ConnectConstants.CONNECT_PARAM_SPEED_MAX)) {
-				Node curNode = sessionNode
+			if (currCleanSession
+					.hasNode(ConnectConstants.CONNECT_PARAM_SPEED_MAX)) {
+				Node curNode = currCleanSession
 						.getNode(ConnectConstants.CONNECT_PARAM_SPEED_MAX);
 				min = curNode.getProperty(ConnectNames.CONNECT_PARAM_MIN_VALUE)
 						.getDouble();
@@ -113,9 +123,9 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 				getManagedForm().addPart(paramPart);
 			}
 			// Max acceleration
-			if (sessionNode
+			if (currCleanSession
 					.hasNode(ConnectConstants.CONNECT_PARAM_ACCELERATION_MAX)) {
-				Node curNode = sessionNode
+				Node curNode = currCleanSession
 						.getNode(ConnectConstants.CONNECT_PARAM_ACCELERATION_MAX);
 				min = curNode.getProperty(ConnectNames.CONNECT_PARAM_MIN_VALUE)
 						.getDouble();
@@ -131,9 +141,9 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 				getManagedForm().addPart(paramPart);
 			}
 			// Max rotation
-			if (sessionNode
+			if (currCleanSession
 					.hasNode(ConnectConstants.CONNECT_PARAM_ROTATION_MAX)) {
-				Node curNode = sessionNode
+				Node curNode = currCleanSession
 						.getNode(ConnectConstants.CONNECT_PARAM_ROTATION_MAX);
 				min = curNode.getProperty(ConnectNames.CONNECT_PARAM_MIN_VALUE)
 						.getDouble();
@@ -154,7 +164,6 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		} catch (RepositoryException re) {
 			throw new ArgeoException("Cannot initialize list of parameters", re);
 		}
-
 	}
 
 	// Inner classes to handle param changes
@@ -197,7 +206,8 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		}
 
 		public void valueChanged(Double value) {
-			refreshSpeedLayer(getCleanSession());
+			refreshSpeedLayer(uiJcrServices
+					.getCleanSessionTechName(currCleanSession));
 			formPart.setValue(value);
 			formPart.markDirty();
 		}
@@ -223,7 +233,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		// visualize.addListener(SWT.Selection, visualizeListener);
 
 		// Terminate button
-		Button terminate = formToolkit.createButton(parent, ConnectUiGpsPlugin
+		Button terminate = formToolkit.createButton(parent, ConnectGpsUiPlugin
 				.getGPSMessage(ConnectGpsLabels.LAUNCH_CLEAN_BUTTON_LBL),
 				SWT.PUSH);
 		gridData = new GridData();
@@ -234,47 +244,25 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		Listener terminateListener = new Listener() {
 			public void handleEvent(Event event) {
 
-				if (getReferential() == null) {
+				GpsUiJcrServices uiServices = getEditor().getUiJcrServices();
+				Node currCS = getEditor().getCurrentCleanSession();
+
+				if (uiServices.getLinkedReferential(currCS) == null) {
 					ErrorFeedback
 							.show("Please configure a valid referential as a target for the data import.");
-				}// else if (getManagedForm().isDirty())
-					// we rather use this one to be sure that ALL pages of the
-					// editor have been changed.
-				else if (getEditor().isDirty())
+				} else if (getEditor().isDirty())
 					ErrorFeedback
 							.show("Please save the session prior to try launching the real import.");
 				else {
-					getEditor().getTrackDao().publishCleanPositions(
-							getCleanSession(), getReferential(),
-							getToCleanCqlFilter());
-					// TODO implement computation & corresponding UI workflow.
-
-					// prevent further modification of the Current clean session
-					Node sessionNode = getEditor().getCurrentSessionNode();
-					try {
-						sessionNode.setProperty(
-								ConnectNames.CONNECT_IS_SESSION_COMPLETE, true);
-						JcrUtils.updateLastModified(sessionNode);
-						sessionNode.getSession().save();
-						((CleanDataEditor) getEditor()).refreshReadOnlyState();
-
-					} catch (RepositoryException re) {
-						throw new ArgeoException(
-								"Unexpected error while finalising import", re);
-					}
-
-					GpsBrowserView gbView = (GpsBrowserView) ConnectUiGpsPlugin
-							.getDefault().getWorkbench()
-							.getActiveWorkbenchWindow().getActivePage()
-							.findView(GpsBrowserView.ID);
-					gbView.refresh(sessionNode);
-
+					pushDataToLocalRepo();
 					MessageDialog dialog = new MessageDialog(
 							getSite().getShell(),
 							"Import done",
 							null,
 							"Clean data have been pushed to referential "
-									+ getReferentialDisplayName()
+									+ uiServices
+											.getReferentialDisplayName(uiServices
+													.getLinkedReferential(currCS))
 									+ "\n Current clean session is now read only.",
 							SWT.NONE, new String[] { "OK" }, 0);
 
@@ -290,9 +278,47 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		mapArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		FillLayout layout = new FillLayout();
 		mapArea.setLayout(layout);
-		mapViewer = mapControlCreator.createMapControl(getEditor()
-				.getCurrentSessionNode(), mapArea);
-		getEditor().addBaseLayers(mapViewer);
+		mapViewer = uiGisServices.getMapControlCreator().createMapControl(
+				currCleanSession, mapArea);
+		uiGisServices.addBaseLayers(mapViewer);
+	}
+
+	private void pushDataToLocalRepo() {
+
+		uiGisServices.getTrackDao().publishCleanPositions(
+				uiJcrServices.getCleanSessionTechName(currCleanSession),
+				uiJcrServices.getLinkedReferentialTechName(currCleanSession),
+				getToCleanCqlFilter());
+
+		try {
+			// to be able to refresh after the move.
+			Node sessionPar = currCleanSession.getParent();
+			// prevent further modification of the Current clean session
+			currCleanSession.setProperty(
+					ConnectNames.CONNECT_IS_SESSION_COMPLETE, true);
+			JcrUtils.updateLastModified(currCleanSession);
+			currCleanSession.getSession().save();
+
+			// When a session has been completed, we must access it via
+			// the corresponding Local Repository to enable further
+			// delete.
+			Node currRepo = uiJcrServices
+					.getLinkedReferential(currCleanSession);
+			Workspace ws = currRepo.getSession().getWorkspace();
+			ws.move(currCleanSession.getPath(), currRepo.getPath() + "/"
+					+ currCleanSession.getName());
+
+			getEditor().refreshReadOnlyState();
+
+			GpsBrowserView gbView = (GpsBrowserView) ConnectGpsUiPlugin
+					.getDefault().getWorkbench().getActiveWorkbenchWindow()
+					.getActivePage().findView(GpsBrowserView.ID);
+			gbView.refresh(sessionPar);
+			gbView.refresh(currRepo);
+		} catch (RepositoryException re) {
+			throw new ArgeoException(
+					"Unexpected error while finalising import", re);
+		}
 	}
 
 	/*
@@ -300,12 +326,12 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	 */
 	protected void addSpeedLayer(String cleanSession) {
 		// Add speeds layer
-		String trackSpeedsPath = getEditor().getTrackDao()
+		String trackSpeedsPath = uiGisServices.getTrackDao()
 				.getTrackSpeedsSource(cleanSession);
 		try {
 
-			Node layerNode = getEditor().getCurrentSessionNode().getSession()
-					.getNode(trackSpeedsPath);
+			Node layerNode = currCleanSession.getSession().getNode(
+					trackSpeedsPath);
 			mapViewer.addLayer(layerNode, createToCleanStyle());
 
 			// mapViewer.setCoordinateReferenceSystem("EPSG:3857");
@@ -321,12 +347,12 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 
 	protected FeatureSource<SimpleFeatureType, SimpleFeature> getFeatureSource(
 			String cleanSession) {
-		String trackSpeedsPath = getEditor().getTrackDao()
+		String trackSpeedsPath = uiGisServices.getTrackDao()
 				.getTrackSpeedsSource(cleanSession);
 		try {
 
-			Node layerNode = getEditor().getCurrentSessionNode().getSession()
-					.getNode(trackSpeedsPath);
+			Node layerNode = currCleanSession.getSession().getNode(
+					trackSpeedsPath);
 			FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = mapViewer
 					.getGeoJcrMapper().getFeatureSource(layerNode);
 			return featureSource;
@@ -337,7 +363,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	}
 
 	protected void refreshSpeedLayer(String cleanSession) {
-		String trackSpeedsPath = getEditor().getTrackDao()
+		String trackSpeedsPath = uiGisServices.getTrackDao()
 				.getTrackSpeedsSource(cleanSession);
 		mapViewer.setStyle(trackSpeedsPath, createToCleanStyle());
 	}

@@ -19,12 +19,13 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
-import org.argeo.connect.gpx.TrackDao;
-import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
+import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
+import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.commands.AddFileFolder;
 import org.argeo.connect.ui.gps.commands.ImportDirectoryContent;
 import org.argeo.connect.ui.gps.commands.NewCleanDataSession;
 import org.argeo.connect.ui.gps.commands.OpenNewRepoWizard;
+import org.argeo.connect.ui.gps.commands.RemoveImportedData;
 import org.argeo.connect.ui.gps.providers.GpsDoubleClickListener;
 import org.argeo.connect.ui.gps.providers.GpsNodeLabelProvider;
 import org.argeo.eclipse.ui.jcr.SimpleNodeContentProvider;
@@ -64,8 +65,9 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 	public final static String ID = "org.argeo.connect.ui.gps.gpsBrowserView";
 
 	/* DEPENDENCY INJECTION */
-	private Session jcrSession;
-	private TrackDao trackDao;
+	// private Session jcrSession;
+	// private TrackDao trackDao;
+	private GpsUiJcrServices uiJcrServices;
 
 	private TreeViewer nodesViewer;
 	private SimpleNodeContentProvider nodeContentProvider;
@@ -80,9 +82,8 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 		// listener.
 		// Note that in RAP, it registers a service handler that provide the
 		// access to the files.
-
 		final SingleSessionFileProvider ssfp = new SingleSessionFileProvider(
-				jcrSession);
+				uiJcrServices.getJcrSession());
 		fileHandler = new FileHandler(ssfp);
 
 		parent.setLayout(new FillLayout());
@@ -90,25 +91,25 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 		// String userHomePath = JcrUtils.getUserHomePath(username);
 
 		// Creating base directories if they don't exists
-		if (trackDao.getGpxFilesDirectory(jcrSession) == null
-				|| trackDao.getLocalRepositoriesParentNode(jcrSession) == null
-				|| trackDao.getTrackSessionsParentNode(jcrSession) == null)
-			trackDao.initializeLocalRepository(jcrSession);
+		if (uiJcrServices.getGpxFilesDirectory() == null
+				|| uiJcrServices.getLocalRepositoriesParentNode() == null
+				|| uiJcrServices.getTrackSessionsParentNode() == null)
+			uiJcrServices.initializeLocalRepository();
 
 		String[] rootNodes = new String[3];
 		try {
-			rootNodes[0] = trackDao.getLocalRepositoriesParentNode(jcrSession)
+			rootNodes[0] = uiJcrServices.getLocalRepositoriesParentNode()
 					.getPath();
-			rootNodes[1] = trackDao.getTrackSessionsParentNode(jcrSession)
-					.getPath();
-			rootNodes[2] = trackDao.getGpxFilesDirectory(jcrSession).getPath();
+			rootNodes[1] = uiJcrServices.getTrackSessionsParentNode().getPath();
+			rootNodes[2] = uiJcrServices.getGpxFilesDirectory().getPath();
 		} catch (RepositoryException re) {
 			throw new ArgeoException("unexpected error while initializing"
 					+ " roots of the view browser", re);
 		}
 
 		// Configure here useful view root nodes
-		nodeContentProvider = new ViewContentProvider(jcrSession, rootNodes);
+		nodeContentProvider = new ViewContentProvider(
+				uiJcrServices.getJcrSession(), rootNodes);
 		// nodes viewer
 		nodesViewer = createNodeViewer(parent, nodeContentProvider);
 		nodesViewer.setComparer(new NodeViewerComparer());
@@ -179,10 +180,10 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 	protected void contextMenuAboutToShow(IMenuManager menuManager) {
 
 		try {
-			IWorkbenchWindow window = ConnectUiGpsPlugin.getDefault()
+			IWorkbenchWindow window = ConnectGpsUiPlugin.getDefault()
 					.getWorkbench().getActiveWorkbenchWindow();
 
-			// Please note that commands that are not subject to programatic
+			// Please note that commands that are not subject to programmatic
 			// conditions are directly define in the corresponding
 			// menuContribution
 			// of the plugin.xml.
@@ -197,10 +198,10 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 			boolean isFileRepo = false;
 			boolean isSessionRepo = false;
 			boolean isSession = false;
-			boolean isLocalRepos = false;
+			boolean isLocalRepoParent = false;
+			boolean isCompleted = false;
 			Node curNode = null;
 
-			// We want to add GPX file only in the right place of the repository
 			if (!multipleSel && selection.getFirstElement() instanceof Node) {
 				curNode = (Node) selection.getFirstElement();
 				if (curNode.isNodeType(ConnectTypes.CONNECT_FILE_REPOSITORY))
@@ -208,10 +209,16 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 				if (curNode.isNodeType(ConnectTypes.CONNECT_SESSION_REPOSITORY))
 					isSessionRepo = true;
 				if (curNode.isNodeType(ConnectTypes.CONNECT_LOCAL_REPOSITORIES))
-					isLocalRepos = true;
+					isLocalRepoParent = true;
 				if (curNode
 						.isNodeType(ConnectTypes.CONNECT_CLEAN_TRACK_SESSION))
 					isSession = true;
+
+				if (curNode
+						.hasProperty(ConnectNames.CONNECT_IS_SESSION_COMPLETE))
+					isCompleted = curNode.getProperty(
+							ConnectNames.CONNECT_IS_SESSION_COMPLETE)
+							.getBoolean();
 			}
 
 			// Effective Refresh
@@ -248,9 +255,18 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 				}
 			}
 
+			params = new HashMap<String, String>();
+			params.put(RemoveImportedData.PARAM_SESSION_ID,
+					curNode.getIdentifier());
+			refreshCommand(menuManager, window, RemoveImportedData.ID,
+					RemoveImportedData.DEFAULT_LABEL,
+					RemoveImportedData.DEFAULT_ICON_REL_PATH, isCompleted,
+					params);
+
 			refreshCommand(menuManager, window, OpenNewRepoWizard.ID,
 					OpenNewRepoWizard.DEFAULT_LABEL,
-					OpenNewRepoWizard.DEFAULT_ICON_REL_PATH, isLocalRepos, null);
+					OpenNewRepoWizard.DEFAULT_ICON_REL_PATH, isLocalRepoParent,
+					null);
 
 		} catch (RepositoryException re) {
 			throw new ArgeoException(
@@ -271,7 +287,7 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 		if (showCommand) {
 			// Set Params
 			contributionItemParameter.label = label;
-			contributionItemParameter.icon = ConnectUiGpsPlugin
+			contributionItemParameter.icon = ConnectGpsUiPlugin
 					.getImageDescriptor(iconPath);
 
 			CommandContributionItem cci = new CommandContributionItem(
@@ -293,7 +309,7 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 		if (showCommand) {
 			// Set Params
 			contributionItemParameter.label = label;
-			contributionItemParameter.icon = ConnectUiGpsPlugin
+			contributionItemParameter.icon = ConnectGpsUiPlugin
 					.getImageDescriptor(iconPath);
 
 			if (params != null)
@@ -465,12 +481,7 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setJcrSession(Session jcrSession) {
-		this.jcrSession = jcrSession;
+	public void setUiJcrServices(GpsUiJcrServices uiJcrServices) {
+		this.uiJcrServices = uiJcrServices;
 	}
-
-	public void setTrackDao(TrackDao trackDao) {
-		this.trackDao = trackDao;
-	}
-
 }

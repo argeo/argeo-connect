@@ -49,5 +49,4 @@ public class AddFileFolder extends AbstractHandler implements ConnectTypes {
 		}
 		return null;
 	}
-
 }

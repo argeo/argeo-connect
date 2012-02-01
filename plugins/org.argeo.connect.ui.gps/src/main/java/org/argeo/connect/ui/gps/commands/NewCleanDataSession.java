@@ -10,6 +10,7 @@ import javax.jcr.Session;
 import org.argeo.ArgeoException;
 import org.argeo.connect.gpx.TrackDao;
 import org.argeo.connect.gpx.utils.JcrSessionUtils;
+import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.editors.CleanDataEditor;
 import org.argeo.connect.ui.gps.editors.CleanDataEditorInput;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
@@ -34,9 +35,8 @@ public class NewCleanDataSession extends AbstractHandler {
 	public final static String PARAM_PARENT_ID = "org.argeo.connect.ui.gps.parentNodeId";
 
 	/* DEPENDENCY INJECTION */
-	private TrackDao trackDao;
-	private Session jcrSession;
-
+	private GpsUiJcrServices uiJcrServices;
+	
 	// Define here the default node name
 	private DateFormat timeFormatter = new SimpleDateFormat("yyyyMMdd_HHmmss");
 
@@ -53,17 +53,16 @@ public class NewCleanDataSession extends AbstractHandler {
 			Node parentNode;
 			if (parNodeId == null) {
 				// get the default parent
-				parentNode = trackDao.getTrackSessionsParentNode(jcrSession);
+				parentNode = uiJcrServices.getTrackSessionsParentNode();
 			} else
-				parentNode = jcrSession.getNodeByIdentifier(parNodeId);
-
+				parentNode = uiJcrServices.getJcrSession().getNodeByIdentifier(parNodeId);
 			String nodeName = timeFormatter.format(new GregorianCalendar()
 					.getTime());
 			Node newNode = JcrSessionUtils.createNewSession(parentNode,
 					nodeName);
 
 			if (modelId != null) {
-				Node modelNode = jcrSession.getNodeByIdentifier(modelId);
+				Node modelNode = uiJcrServices.getJcrSession().getNodeByIdentifier(modelId);
 				JcrSessionUtils.copyDataFromModel(modelNode, newNode);
 			}
 
@@ -80,11 +79,7 @@ public class NewCleanDataSession extends AbstractHandler {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setTrackDao(TrackDao trackDao) {
-		this.trackDao = trackDao;
-	}
-
-	public void setJcrSession(Session jcrSession) {
-		this.jcrSession = jcrSession;
+	public void setUiJcrServices(GpsUiJcrServices uiJcrServices) {
+		this.uiJcrServices = uiJcrServices;
 	}
 }

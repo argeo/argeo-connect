@@ -7,7 +7,7 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
-import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
+import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
 import org.argeo.eclipse.ui.jcr.DefaultNodeLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
@@ -17,20 +17,20 @@ public class GpsNodeLabelProvider extends DefaultNodeLabelProvider implements
 	// .getLog(GpsNodeLabelProvider.class);
 
 	// Images
-	public final static Image sessionFolder = ConnectUiGpsPlugin
+	public final static Image sessionFolder = ConnectGpsUiPlugin
 			.getImageDescriptor("icons/home.gif").createImage();
-	public final static Image session = ConnectUiGpsPlugin.getImageDescriptor(
+	public final static Image session = ConnectGpsUiPlugin.getImageDescriptor(
 			"icons/session.gif").createImage();
-	public final static Image sessionDone = ConnectUiGpsPlugin
+	public final static Image sessionDone = ConnectGpsUiPlugin
 			.getImageDescriptor("icons/sessionDone.gif").createImage();
-	public final static Image repos = ConnectUiGpsPlugin.getImageDescriptor(
+	public final static Image repos = ConnectGpsUiPlugin.getImageDescriptor(
 			"icons/repos.gif").createImage();
-	public final static Image repo = ConnectUiGpsPlugin.getImageDescriptor(
+	public final static Image repo = ConnectGpsUiPlugin.getImageDescriptor(
 			"icons/repo.gif").createImage();
 
-	public final static Image fileNewImg = ConnectUiGpsPlugin
+	public final static Image fileNewImg = ConnectGpsUiPlugin
 			.getImageDescriptor("icons/file_new.gif").createImage();
-	public final static Image fileProcessedImg = ConnectUiGpsPlugin
+	public final static Image fileProcessedImg = ConnectGpsUiPlugin
 			.getImageDescriptor("icons/file_processed.gif").createImage();
 
 	public String getText(Object element) {
@@ -44,7 +44,7 @@ public class GpsNodeLabelProvider extends DefaultNodeLabelProvider implements
 				else if (node.getPrimaryNodeType().isNodeType(
 						CONNECT_SESSION_REPOSITORY)) {
 					// Parent Session Node
-					curText = ConnectUiGpsPlugin
+					curText = ConnectGpsUiPlugin
 							.getGPSMessage(SESSION_REPOSITORY_LBL);
 				}
 			} catch (Exception e) {

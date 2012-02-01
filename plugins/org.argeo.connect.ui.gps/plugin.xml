@@ -95,6 +95,15 @@
 				name="Parent Node Id">
   	 		</commandParameter>
 		</command>   
+		<command
+			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
+			id="org.argeo.connect.ui.gps.removeImportedData"
+			name="removeImportedData">
+			<commandParameter
+				id="org.argeo.connect.ui.gps.sessionId"
+				name="sessionId">
+  	 		</commandParameter>
+		</command>   
 	</extension>
     
 	<!-- Menus -->

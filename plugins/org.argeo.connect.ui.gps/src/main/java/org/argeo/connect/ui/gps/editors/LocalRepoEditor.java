@@ -1,17 +1,24 @@
 package org.argeo.connect.ui.gps.editors;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
+import org.argeo.connect.ConnectNames;
+import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.gpx.TrackDao;
-import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
+import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
+import org.argeo.connect.ui.gps.GpsUiGisServices;
+import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.geotools.styling.StylingUtils;
@@ -35,16 +42,12 @@ public class LocalRepoEditor extends FormEditor {
 	public static final String ID = "org.argeo.connect.ui.gps.localRepoEditor";
 
 	/* DEPENDENCY INJECTION */
-	private Session jcrSession;
-	private TrackDao trackDao;
-	private MapControlCreator mapControlCreator;
-	private List<String> baseLayers;
+	private GpsUiJcrServices uiJcrServices;
+	private GpsUiGisServices uiGisServices;
 
 	// Business objects
 	private Node currentLocalRepo;
 
-	public LocalRepoEditor() {
-	}
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
@@ -55,7 +58,7 @@ public class LocalRepoEditor extends FormEditor {
 		setSite(site);
 		setInput(input);
 
-		Node parentNode = trackDao.getLocalRepositoriesParentNode(jcrSession);
+		Node parentNode = uiJcrServices.getLocalRepositoriesParentNode();
 		try {
 			currentLocalRepo = parentNode.getNode(input.getName());
 			this.setPartName(currentLocalRepo.getProperty(Property.JCR_TITLE)
@@ -68,7 +71,7 @@ public class LocalRepoEditor extends FormEditor {
 
 	protected void addPages() {
 		try {
-			addPage(new LocalRepoViewerPage(this, "Viewer", mapControlCreator));
+			addPage(new LocalRepoViewerPage(this, "Viewer"));
 			addPage(new LocalRepoMetaDataPage(this, "Meta infos"));
 		} catch (PartInitException e) {
 			throw new ArgeoException("Not able to add page ", e);
@@ -79,9 +82,8 @@ public class LocalRepoEditor extends FormEditor {
 		try {
 			// Automatically commit all pages of the editor
 			commitPages(true);
-
 			// commit all changes in JCR
-			jcrSession.save();
+			currentLocalRepo.getSession().save();
 
 			// clean status.
 			firePropertyChange(PROP_DIRTY);
@@ -92,7 +94,7 @@ public class LocalRepoEditor extends FormEditor {
 					.getString());
 			firePropertyChange(PROP_TITLE);
 
-			GpsBrowserView gbView = (GpsBrowserView) ConnectUiGpsPlugin
+			GpsBrowserView gbView = (GpsBrowserView) ConnectGpsUiPlugin
 					.getDefault().getWorkbench().getActiveWorkbenchWindow()
 					.getActivePage().findView(GpsBrowserView.ID);
 			gbView.refresh(currentLocalRepo);
@@ -103,10 +105,6 @@ public class LocalRepoEditor extends FormEditor {
 		}
 	}
 
-	/**
-	 * CAUTION : We assume that the setFocus is called after everything has been
-	 * correctly initialized.
-	 */
 	public void setFocus() {
 	}
 
@@ -120,43 +118,42 @@ public class LocalRepoEditor extends FormEditor {
 		return false;
 	}
 
-	public void addBaseLayers(MapViewer mapViewer) {
-		for (String alias : baseLayers) {
-			String layerPath = (GisConstants.DATA_STORES_BASE_PATH + alias)
-					.trim();
-			try {
-				Node layerNode = jcrSession.getNode(layerPath);
-				mapViewer.addLayer(layerNode,
-						StylingUtils.createLineStyle("LIGHT_GRAY", 1));
-			} catch (RepositoryException e) {
-				log.warn("Cannot retrieve " + alias + ": " + e);
-			}
-		}
-	}
+//	public void addBaseLayers(MapViewer mapViewer) {
+//		for (String alias : baseLayers) {
+//			String layerPath = (GisConstants.DATA_STORES_BASE_PATH + alias)
+//					.trim();
+//			try {
+//				Node layerNode = jcrSession.getNode(layerPath);
+//				mapViewer.addLayer(layerNode,
+//						StylingUtils.createLineStyle("LIGHT_GRAY", 1));
+//			} catch (RepositoryException e) {
+//				log.warn("Cannot retrieve " + alias + ": " + e);
+//			}
+//		}
+//	}
 
 	protected Node getCurrentRepoNode() {
 		return currentLocalRepo;
 	}
 
-	/** Returns injected track DAO */
-	public TrackDao getTrackDao() {
-		return trackDao;
+	/*
+	 * Centralize management of business objects for both the editor and its
+	 * children pages
+	 */
+
+	/** exposes injected uiJcrServices to its FormPart */
+	protected GpsUiJcrServices getUiJcrServices() {
+		return uiJcrServices;
 	}
 
+	/** exposes injected uiGisServices to its FormPart */
+	protected GpsUiGisServices getUiGisServices() {
+		return uiGisServices;
+	}
+	
 	/* DEPENDENCY INJECTION */
-	public void setJcrSession(Session jcrSession) {
-		this.jcrSession = jcrSession;
-	}
-
-	public void setTrackDao(TrackDao trackDao) {
-		this.trackDao = trackDao;
-	}
-
-	public void setMapControlCreator(MapControlCreator mapControlCreator) {
-		this.mapControlCreator = mapControlCreator;
-	}
-
-	public void setBaseLayers(List<String> baseLayers) {
-		this.baseLayers = baseLayers;
+	public void setUiGisServices(GpsUiGisServices uiGisServices) {
+		this.uiGisServices = uiGisServices;
+		this.uiJcrServices = uiGisServices.getUiJcrServices();
 	}
 }

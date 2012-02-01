@@ -1,25 +1,25 @@
 package org.argeo.connect.ui.gps.wizards;
 
 import javax.jcr.Node;
-import javax.jcr.Session;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.gpx.TrackDao;
 import org.argeo.connect.gpx.utils.JcrSessionUtils;
+import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
+import org.argeo.connect.ui.gps.GpsUiJcrServices;
+import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.eclipse.jface.wizard.Wizard;
 
 public class CreateLocalRepoWizard extends Wizard {
 
-	private Session jcrSession;
-	private TrackDao trackDao;
+	// private Session jcrSession;
+	private GpsUiJcrServices uiJcrServices;
 
 	// This page widget
 	private DefineRepositoryModel defineRepositoryModel;
 
-	public CreateLocalRepoWizard(Session jcrSession, TrackDao trackDao) {
+	public CreateLocalRepoWizard(GpsUiJcrServices uiJcrServices) {
 		super();
-		this.jcrSession = jcrSession;
-		this.trackDao = trackDao;
+		this.uiJcrServices = uiJcrServices;
 	}
 
 	@Override
@@ -36,17 +36,16 @@ public class CreateLocalRepoWizard extends Wizard {
 	public boolean performFinish() {
 		if (!canFinish())
 			return false;
-		Node parentNode = trackDao.getLocalRepositoriesParentNode(jcrSession);
+		Node parentNode = uiJcrServices.getLocalRepositoriesParentNode();
 		JcrSessionUtils.createLocalRepository(parentNode,
 				defineRepositoryModel.getTechName(),
 				defineRepositoryModel.getDisplayName());
-		// TODO: refresh the tree
-		//
-		// GpsBrowserView view = (GpsBrowserView)
-		// ConnectUiGpsPlugin.getDefault()
-		// .getWorkbench().getViewRegistry().find(GpsBrowserView.ID);
-		// view.refresh(parentNode);
 
+		// refresh the tree
+		GpsBrowserView gbView = (GpsBrowserView) ConnectGpsUiPlugin
+				.getDefault().getWorkbench().getActiveWorkbenchWindow()
+				.getActivePage().findView(GpsBrowserView.ID);
+		gbView.refresh(parentNode);
 		return true;
 	}
 }

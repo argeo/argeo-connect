@@ -1,28 +1,18 @@
 package org.argeo.connect.ui.gps.editors;
 
-import java.util.List;
-
-import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
-import javax.jcr.Property;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
-import org.argeo.connect.gpx.TrackDao;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
-import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
+import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
+import org.argeo.connect.ui.gps.GpsUiGisServices;
+import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.providers.GpsNodeLabelProvider;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.eclipse.ui.ErrorFeedback;
-import org.argeo.geotools.styling.StylingUtils;
-import org.argeo.gis.GisConstants;
-import org.argeo.gis.ui.MapControlCreator;
-import org.argeo.gis.ui.MapViewer;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
@@ -36,17 +26,20 @@ import org.eclipse.ui.forms.editor.FormEditor;
  */
 public class CleanDataEditor extends FormEditor implements ConnectTypes,
 		ConnectNames, ConnectGpsLabels {
+	// private final static Log log = LogFactory.getLog(CleanDataEditor.class);
+
 	public static final String ID = "org.argeo.connect.ui.gps.cleanDataEditor";
 
-	private final static Log log = LogFactory.getLog(CleanDataEditor.class);
-
 	/* DEPENDENCY INJECTION */
-	private Session currentSession;
-	private TrackDao trackDao;
-	private MapControlCreator mapControlCreator;
-	private List<String> baseLayers;
+	private GpsUiJcrServices uiJcrServices;
+	private GpsUiGisServices uiGisServices;
 
-	public CleanDataEditor() {
+	// The session we are currently editing
+	private Node currCleanSession;
+
+	@Override
+	public CleanDataEditorInput getEditorInput() {
+		return (CleanDataEditorInput) super.getEditorInput();
 	}
 
 	@Override
@@ -57,18 +50,24 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 			throw new RuntimeException("Wrong input");
 		setSite(site);
 		setInput(input);
-		this.setPartName(getSessionName());
+		try {
+			currCleanSession = uiJcrServices.getJcrSession()
+					.getNodeByIdentifier(getEditorInput().getUuid());
+		} catch (RepositoryException e) {
+			throw new ArgeoException("unable to retrieve current session", e);
+		}
+		this.setPartName(uiJcrServices
+				.getCleanSessionDisplayName(currCleanSession));
 	}
 
 	protected void addPages() {
 		try {
 			addPage(new SessionMetaDataPage(this,
-					ConnectUiGpsPlugin.getGPSMessage(METADATA_PAGE_TITLE)));
+					ConnectGpsUiPlugin.getGPSMessage(METADATA_PAGE_TITLE)));
 			addPage(new DataSetPage(this,
-					ConnectUiGpsPlugin.getGPSMessage(DATASET_PAGE_TITLE)));
+					ConnectGpsUiPlugin.getGPSMessage(DATASET_PAGE_TITLE)));
 			addPage(new DefineParamsAndReviewPage(this,
-					ConnectUiGpsPlugin.getGPSMessage(PARAMSET_PAGE_TITLE),
-					mapControlCreator));
+					ConnectGpsUiPlugin.getGPSMessage(PARAMSET_PAGE_TITLE)));
 		} catch (PartInitException e) {
 			throw new ArgeoException("Not able to add page ", e);
 		}
@@ -78,23 +77,19 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 		try {
 			// Automatically commit all pages of the editor
 			commitPages(true);
-
 			// commit all changes in JCR
-			currentSession.save();
-
+			uiJcrServices.getJcrSession().save();
 			// clean status.
 			firePropertyChange(PROP_DIRTY);
-
 			// Refresh Editor & Jcr Tree.
 			// useful when the name has changed.
-			this.setPartName(getSessionName());
+			this.setPartName(uiJcrServices
+					.getCleanSessionDisplayName(currCleanSession));
 			firePropertyChange(PROP_TITLE);
-
-			GpsBrowserView gbView = (GpsBrowserView) ConnectUiGpsPlugin
+			GpsBrowserView gbView = (GpsBrowserView) ConnectGpsUiPlugin
 					.getDefault().getWorkbench().getActiveWorkbenchWindow()
 					.getActivePage().findView(GpsBrowserView.ID);
-			gbView.refresh(getCurrentSessionNode().getParent());
-
+			gbView.refresh(currCleanSession.getParent());
 		} catch (Exception e) {
 			e.printStackTrace();
 			ErrorFeedback.show("Cannot save session "
@@ -102,10 +97,6 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 		}
 	}
 
-	/**
-	 * CAUTION : We assume that the setFocus is called after everything has been
-	 * correctly initialized.
-	 */
 	public void setFocus() {
 	}
 
@@ -119,81 +110,25 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 		return false;
 	}
 
-	/*
-	 * UTILITIES
-	 */
-	public Node getCurrentSessionNode() {
-		Node curNode;
-		try {
-			curNode = currentSession.getNodeByIdentifier(getEditorInput()
-					.getUuid());
-		} catch (ItemNotFoundException e) {
-			throw new ArgeoException("Node of uuid "
-					+ getEditorInput().getUuid() + " has not been found.", e);
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Node of uuid "
-					+ getEditorInput().getUuid() + " has not been found.", e);
-		}
-		return curNode;
-	}
-
 	// change enable state of all children control to readOnly
 	public void refreshReadOnlyState() {
-
-		try {
-			if (getCurrentSessionNode().getProperty(
-					ConnectNames.CONNECT_IS_SESSION_COMPLETE).getBoolean()) {
-				for (int i = 0; i < getPageCount(); i++) {
-					Control curPage = getControl(i);
-					if (curPage != null)
-						curPage.setEnabled(false);
-				}
-				this.setTitleImage(GpsNodeLabelProvider.sessionDone);
-				firePropertyChange(PROP_TITLE);
+		if (uiJcrServices.isSessionComplete(currCleanSession)) {
+			for (int i = 0; i < getPageCount(); i++) {
+				Control curPage = getControl(i);
+				if (curPage != null)
+					curPage.setEnabled(false);
 			}
-		} catch (RepositoryException re) {
-			throw new ArgeoException("Error while refreshing readonly state",
-					re);
-		}
-	}
-
-	// @Override
-	// protected void setActivePage(int pageIndex) {
-	// super.setActivePage(pageIndex);
-	// refreshReadOnlyState();
-	// }
-
-	@Override
-	public CleanDataEditorInput getEditorInput() {
-		return (CleanDataEditorInput) super.getEditorInput();
-	}
-
-	public void addBaseLayers(MapViewer mapViewer) {
-		for (String alias : baseLayers) {
-			String layerPath = (GisConstants.DATA_STORES_BASE_PATH + alias)
-					.trim();
-			try {
-				Node layerNode = currentSession.getNode(layerPath);
-				mapViewer.addLayer(layerNode,
-						StylingUtils.createLineStyle("LIGHT_GRAY", 1));
-			} catch (RepositoryException e) {
-				log.warn("Cannot retrieve " + alias + ": " + e);
+			this.setTitleImage(GpsNodeLabelProvider.sessionDone);
+			firePropertyChange(PROP_TITLE);
+		} else {
+			for (int i = 0; i < getPageCount(); i++) {
+				Control curPage = getControl(i);
+				if (curPage != null)
+					curPage.setEnabled(true);
 			}
+			this.setTitleImage(GpsNodeLabelProvider.session);
+			firePropertyChange(PROP_TITLE);
 		}
-	}
-
-	private String getSessionName() {
-		String name;
-		try {
-			if (getCurrentSessionNode().hasProperty(Property.JCR_TITLE))
-				name = getCurrentSessionNode().getProperty(Property.JCR_TITLE)
-						.getString();
-			else
-				name = getEditorInput().getName();
-		} catch (RepositoryException re) {
-			throw new ArgeoException("Error while getting session name", re);
-		}
-		return name;
 	}
 
 	/**
@@ -205,31 +140,25 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 				.getDefaultSensorName();
 	}
 
-	/** exposes injected track DAO to its FormPart */
-	protected TrackDao getTrackDao() {
-		return trackDao;
+	/** exposes the current GPS Clean session to its FormPart */
+	protected Node getCurrentCleanSession() {
+		return currCleanSession;
 	}
 
-	/** exposes injected session to its FormPart */
-	protected Session getJcrSession() {
-		return currentSession;
+	/** exposes injected uiJcrServices to its FormPart */
+	protected GpsUiJcrServices getUiJcrServices() {
+		return uiJcrServices;
+	}
+
+	/** exposes injected uiGisServices to its FormPart */
+	protected GpsUiGisServices getUiGisServices() {
+		return uiGisServices;
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setCurrentSession(Session currentSession) {
-		this.currentSession = currentSession;
-	}
-
-	public void setTrackDao(TrackDao trackDao) {
-		this.trackDao = trackDao;
-	}
-
-	public void setMapControlCreator(MapControlCreator mapControlCreator) {
-		this.mapControlCreator = mapControlCreator;
-	}
-
-	public void setBaseLayers(List<String> baseLayers) {
-		this.baseLayers = baseLayers;
+	public void setUiGisServices(GpsUiGisServices uiGisServices) {
+		this.uiGisServices = uiGisServices;
+		this.uiJcrServices = uiGisServices.getUiJcrServices();
 	}
 
 }

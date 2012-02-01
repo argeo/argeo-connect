@@ -8,7 +8,7 @@ import javax.jcr.nodetype.NodeType;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectTypes;
-import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
+import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
 import org.argeo.connect.ui.gps.commands.OpenCleanDataEditor;
 import org.argeo.connect.ui.gps.commands.OpenLocalRepoEditor;
 import org.argeo.eclipse.ui.specific.FileHandler;
@@ -51,7 +51,7 @@ public class GpsDoubleClickListener implements IDoubleClickListener {
 			} else if (node
 					.isNodeType(ConnectTypes.CONNECT_CLEAN_TRACK_SESSION)) {
 				// Call parameterized command "open Editor"
-				IWorkbench iw = ConnectUiGpsPlugin.getDefault().getWorkbench();
+				IWorkbench iw = ConnectGpsUiPlugin.getDefault().getWorkbench();
 				IHandlerService handlerService = (IHandlerService) iw
 						.getService(IHandlerService.class);
 
@@ -82,7 +82,7 @@ public class GpsDoubleClickListener implements IDoubleClickListener {
 				handlerService.executeCommand(pc, null);
 			} else if (node.isNodeType(ConnectTypes.CONNECT_LOCAL_REPOSITORY)) {
 				// Call parameterized command "open Editor"
-				IWorkbench iw = ConnectUiGpsPlugin.getDefault().getWorkbench();
+				IWorkbench iw = ConnectGpsUiPlugin.getDefault().getWorkbench();
 				IHandlerService handlerService = (IHandlerService) iw
 						.getService(IHandlerService.class);
 

@@ -1,13 +1,20 @@
 package org.argeo.connect.ui.gps.editors;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.jcr.Node;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.geotools.styling.StylingUtils;
-import org.argeo.gis.ui.MapControlCreator;
 import org.argeo.gis.ui.MapViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -28,30 +35,21 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 public class LocalRepoViewerPage extends FormPage {
-	// private final static Log log =
-	// LogFactory.getLog(LocalRepoViewerPage.class);
+	private final static Log log = LogFactory.getLog(LocalRepoViewerPage.class);
 	public final static String ID = "localRepoEditor.localRepoViewerPage";
 
-	private MapControlCreator mapControlCreator;
-	private MapViewer mapViewer;
+	// This page widgets
 	private FormToolkit ft;
-
+	private MapViewer mapViewer;
 	private Button displayAllSensorsChk, showBaseLayerChk;
-	private Combo chooseUserCmb;
+	private Combo chooseSensorCmb;
 
-	public LocalRepoViewerPage(FormEditor editor, String title,
-			MapControlCreator mapControlCreator) {
+	public LocalRepoViewerPage(FormEditor editor, String title) {
 		super(editor, ID, title);
-		this.mapControlCreator = mapControlCreator;
-
 	}
 
 	public LocalRepoEditor getEditor() {
 		return (LocalRepoEditor) super.getEditor();
-	}
-
-	private String getReferential() {
-		return getEditor().getEditorInput().getName();
 	}
 
 	protected void createFormContent(IManagedForm managedForm) {
@@ -77,31 +75,46 @@ public class LocalRepoViewerPage extends FormPage {
 		GridData gd;
 
 		// Choose a sensor to enlight
-		ft.createLabel(parent,"Choose a specific sensor:", SWT.NONE);
-		chooseUserCmb = new Combo(parent, SWT.BORDER | SWT.READ_ONLY
+		ft.createLabel(parent, "Choose a specific sensor:", SWT.NONE);
+		chooseSensorCmb = new Combo(parent, SWT.BORDER | SWT.READ_ONLY
 				| SWT.V_SCROLL);
 		gd = new GridData(SWT.LEFT, SWT.FILL, true, false);
-		chooseUserCmb.setLayoutData(gd);
-		populateChooseUserCmb(chooseUserCmb);
-
+		chooseSensorCmb.setLayoutData(gd);
+		populateChooseSensorCmb(chooseSensorCmb);
+		ModifyListener modifyListener = new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				updateLayers();
+			}
+		};
+		chooseSensorCmb.addModifyListener(modifyListener);
 		// Manage layers to display
-		displayAllSensorsChk = ft.createButton(parent, "Show all sensors", SWT.CHECK | SWT.LEFT);
-		showBaseLayerChk  = ft.createButton(parent, "Show base layer", SWT.CHECK | SWT.LEFT);
+		displayAllSensorsChk = ft.createButton(parent, "Show all sensors",
+				SWT.CHECK | SWT.LEFT);
+		showBaseLayerChk = ft.createButton(parent, "Show base layer", SWT.CHECK
+				| SWT.LEFT);
 		Listener executeListener = new Listener() {
 			public void handleEvent(Event event) {
-				displayAllSensors();
+				updateLayers();
 			}
 		};
 		displayAllSensorsChk.addListener(SWT.Selection, executeListener);
 		showBaseLayerChk.addListener(SWT.Selection, executeListener);
 	}
 
-	private void populateChooseUserCmb(Combo combo) {
-		// TODO implement
+	private void populateChooseSensorCmb(Combo combo) {
+		combo.removeAll();
+		List<String> sensors = getEditor().getUiJcrServices().getSensors(
+				getEditor().getCurrentRepoNode());
+		for (String sensor : sensors) {
+			combo.add(sensor);
+		}
 	}
 
-	private void displayAllSensors() {
+	private void updateLayers() {
+		refreshSensorLayer();
 		// TODO implement
+		log.debug("Update Layer... ");
 	}
 
 	protected void createMapPart(Composite parent) {
@@ -110,22 +123,41 @@ public class LocalRepoViewerPage extends FormPage {
 		mapArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		FillLayout layout = new FillLayout();
 		mapArea.setLayout(layout);
-		mapViewer = mapControlCreator.createMapControl(getEditor()
-				.getCurrentRepoNode(), mapArea);
-		getEditor().addBaseLayers(mapViewer);
+		mapViewer = getEditor().getUiGisServices().getMapControlCreator()
+				.createMapControl(getEditor().getCurrentRepoNode(), mapArea);
+		getEditor().getUiGisServices().addBaseLayers(mapViewer);
 	}
 
 	/*
 	 * GIS
 	 */
+
+	// public void addBaseLayers(MapViewer mapViewer) {
+	// for (String alias : baseLayers) {
+	// String layerPath = (GisConstants.DATA_STORES_BASE_PATH + alias)
+	// .trim();
+	// try {
+	// Node layerNode = currentSession.getNode(layerPath);
+	// mapViewer.addLayer(layerNode,
+	// StylingUtils.createLineStyle("LIGHT_GRAY", 1));
+	// } catch (RepositoryException e) {
+	// log.warn("Cannot retrieve " + alias + ": " + e);
+	// }
+	// }
+	// }
+
 	protected void addPositionsLayer() {
-		// Add speeds layer
-		String positionsDisplayPath = getEditor().getTrackDao()
-				.getPositionsDisplaySource(getReferential());
+		// Add position layer
+		String positionsDisplayPath = getEditor()
+				.getUiGisServices()
+				.getTrackDao()
+				.getPositionsDisplaySource(
+						getEditor().getUiJcrServices().getReferentialTechName(
+								getEditor().getCurrentRepoNode()));
 		try {
 			Node layerNode = getEditor().getCurrentRepoNode().getSession()
 					.getNode(positionsDisplayPath);
-			Style style = StylingUtils.createLineStyle("BLACK", 1);
+			Style style = createSensorStyle();
 			mapViewer.addLayer(layerNode, style);
 
 			// mapViewer.setCoordinateReferenceSystem("EPSG:3857");
@@ -140,8 +172,12 @@ public class LocalRepoViewerPage extends FormPage {
 	}
 
 	protected FeatureSource<SimpleFeatureType, SimpleFeature> getPositionsFeatureSource() {
-		String trackSpeedsPath = getEditor().getTrackDao().getPositionsSource(
-				getReferential());
+		String trackSpeedsPath = getEditor()
+				.getUiGisServices()
+				.getTrackDao()
+				.getPositionsSource(
+						getEditor().getUiJcrServices().getReferentialTechName(
+								getEditor().getCurrentRepoNode()));
 		try {
 
 			Node layerNode = getEditor().getCurrentRepoNode().getSession()
@@ -153,6 +189,30 @@ public class LocalRepoViewerPage extends FormPage {
 			throw new ArgeoException("Cannot get feature source "
 					+ trackSpeedsPath, e);
 		}
+	}
+
+	protected void refreshSensorLayer() {
+		String positionsDisplayPath = getEditor()
+				.getUiGisServices()
+				.getTrackDao()
+				.getPositionsDisplaySource(
+						getEditor().getUiJcrServices().getReferentialTechName(
+								getEditor().getCurrentRepoNode()));
+		mapViewer.setStyle(positionsDisplayPath, createSensorStyle());
+	}
+
+	protected Style createSensorStyle() {
+		Map<String, String> cqlFilters = new HashMap<String, String>();
+		if (chooseSensorCmb.getSelectionIndex() != -1) {
+			String sensor = chooseSensorCmb.getItem(chooseSensorCmb
+					.getSelectionIndex());
+			cqlFilters.put("sensor='" + sensor + "'", "RED");
+		}
+		String color = displayAllSensorsChk.getSelection() ? "BLACK" : null;
+
+		Style style = StylingUtils.createFilteredLineStyle(cqlFilters, 3,
+				color, 1);
+		return style;
 	}
 
 }

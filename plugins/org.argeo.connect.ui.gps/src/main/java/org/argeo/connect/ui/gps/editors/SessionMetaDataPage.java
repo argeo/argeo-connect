@@ -13,7 +13,7 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
-import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
+import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
 import org.argeo.connect.ui.gps.commands.OpenNewRepoWizard;
 import org.argeo.connect.ui.gps.commons.ModifiedFieldListener;
 import org.argeo.eclipse.ui.ErrorFeedback;
@@ -82,7 +82,7 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 
 		// clean session metadata
 		Section section = tk.createSection(parent, Section.TITLE_BAR);
-		section.setText(ConnectUiGpsPlugin
+		section.setText(ConnectGpsUiPlugin
 				.getGPSMessage(ConnectGpsLabels.METADATA_SECTION_TITLE));
 		// section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 
@@ -95,7 +95,7 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 		body.setLayout(layout);
 
 		// Session display name
-		Label label = tk.createLabel(body, ConnectUiGpsPlugin
+		Label label = tk.createLabel(body, ConnectGpsUiPlugin
 				.getGPSMessage(ConnectGpsLabels.PARAM_SET_LABEL_LBL));
 		sessionDisplayName = new Text(body, SWT.FILL | SWT.BORDER);
 		gd = new GridData(SWT.LEFT, SWT.FILL, true, false);
@@ -107,14 +107,14 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 			sessionDisplayName.setText(getJcrStringValue(Property.JCR_TITLE));
 		else
 			try {
-				sessionDisplayName.setText(getEditor().getCurrentSessionNode()
+				sessionDisplayName.setText(getEditor().getCurrentCleanSession()
 						.getName());
 			} catch (RepositoryException re) {
 			} // Silent
 
 		// Default Sensor name
 		label = new Label(body, SWT.NONE);
-		label.setText(ConnectUiGpsPlugin
+		label.setText(ConnectGpsUiPlugin
 				.getGPSMessage(ConnectGpsLabels.DEFAULT_SENSOR_NAME_LBL));
 		defaultSensorName = new Text(body, SWT.FILL | SWT.BORDER);
 		gd = new GridData(SWT.LEFT, SWT.FILL, true, false);
@@ -126,7 +126,7 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 					.setText(getJcrStringValue(ConnectNames.CONNECT_DEFAULT_SENSOR));
 		else
 			try {
-				defaultSensorName.setText(getEditor().getCurrentSessionNode()
+				defaultSensorName.setText(getEditor().getCurrentCleanSession()
 						.getSession().getUserID());
 			} catch (RepositoryException re) {
 				throw new ArgeoException(
@@ -160,7 +160,7 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 		execute.addListener(SWT.Selection, executeListener);
 
 		// Session description
-		label = tk.createLabel(body, ConnectUiGpsPlugin
+		label = tk.createLabel(body, ConnectGpsUiPlugin
 				.getGPSMessage(ConnectGpsLabels.PARAM_SET_COMMENTS_LBL));
 		gd = new GridData(SWT.FILL, SWT.TOP, true, false);
 		label.setLayoutData(gd);
@@ -180,7 +180,7 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 				if (onSave)
 					try {
 						Node currentSessionNode = getEditor()
-								.getCurrentSessionNode();
+								.getCurrentCleanSession();
 						currentSessionNode.setProperty(Property.JCR_TITLE,
 								sessionDisplayName.getText());
 						currentSessionNode.setProperty(
@@ -234,7 +234,7 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 	private String getJcrStringValue(String jcrPropertyName) {
 		String value = null;
 		try {
-			Node curNode = getEditor().getCurrentSessionNode();
+			Node curNode = getEditor().getCurrentCleanSession();
 			if (curNode.hasProperty(jcrPropertyName))
 				value = curNode.getProperty(jcrPropertyName).getString();
 		} catch (RepositoryException re) {
@@ -249,9 +249,8 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 	private void populateRepoCombo(Combo combo) {
 		repos = new HashMap<String, String>();
 		try {
-			Node parNode = getEditor()
-					.getTrackDao()
-					.getLocalRepositoriesParentNode(getEditor().getJcrSession());
+			Node parNode = getEditor().getUiJcrServices()
+					.getLocalRepositoriesParentNode();
 			NodeIterator ni = parNode.getNodes();
 			while (ni.hasNext()) {
 				Node curNode = ni.nextNode();
@@ -266,13 +265,11 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 			}
 
 			// Initialize to persisted repo name
-			Node sessionNode = getEditor().getCurrentSessionNode();
+			Node sessionNode = getEditor().getCurrentCleanSession();
 			if (sessionNode.hasProperty(ConnectNames.CONNECT_LOCAL_REPO_NAME)) {
-
 				String tmp = sessionNode
 						.getProperty(ConnectNames.CONNECT_LOCAL_REPO_NAME)
 						.getString().trim();
-
 				if (repos.containsKey(tmp)) {
 					combo.select(combo.indexOf(repos.get(tmp)));
 				} else
@@ -287,7 +284,7 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 
 	private void callNewRepoCommand() {
 		try {
-			IWorkbench iw = ConnectUiGpsPlugin.getDefault().getWorkbench();
+			IWorkbench iw = ConnectGpsUiPlugin.getDefault().getWorkbench();
 			IHandlerService handlerService = (IHandlerService) iw
 					.getService(IHandlerService.class);
 

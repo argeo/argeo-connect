@@ -53,5 +53,4 @@ public class ImportDirectoryContent extends AbstractHandler {
 		}
 		return null;
 	}
-
 }

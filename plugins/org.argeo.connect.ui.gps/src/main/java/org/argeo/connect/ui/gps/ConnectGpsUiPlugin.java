@@ -9,13 +9,13 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class ConnectUiGpsPlugin extends AbstractUIPlugin {
+public class ConnectGpsUiPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String ID = "org.argeo.connect.ui.gps";
 
 	// The shared instance
-	private static ConnectUiGpsPlugin plugin;
+	private static ConnectGpsUiPlugin plugin;
 
 	// Internationalized labels for UI gps
 	private ResourceBundle messages_gps;
@@ -23,7 +23,7 @@ public class ConnectUiGpsPlugin extends AbstractUIPlugin {
 	/**
 	 * The constructor
 	 */
-	public ConnectUiGpsPlugin() {
+	public ConnectGpsUiPlugin() {
 	}
 
 	public void start(BundleContext context) throws Exception {
@@ -42,7 +42,7 @@ public class ConnectUiGpsPlugin extends AbstractUIPlugin {
 	 * 
 	 * @return the shared instance
 	 */
-	public static ConnectUiGpsPlugin getDefault() {
+	public static ConnectGpsUiPlugin getDefault() {
 		return plugin;
 	}
 

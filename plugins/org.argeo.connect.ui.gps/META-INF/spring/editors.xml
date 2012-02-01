@@ -8,28 +8,12 @@
 	<!-- Editors -->
 	<bean id="org.argeo.connect.ui.gps.cleanDataEditor" class="org.argeo.connect.ui.gps.editors.CleanDataEditor"
 		scope="prototype">
-		<property name="baseLayers">
-			<list>
-				<value><![CDATA[/gisdata/naturalearth/cultural/10m_admin_0_countries.shp/10m_admin_0_countries]]></value>
-				<!-- <value><![CDATA[/gisdata/naturalearth/cultural/10m_populated_places_simple.shp/10m_populated_places_simple]]></value> -->
-			</list>
-		</property>
-		<property name="currentSession" ref="jcrSession" />
-		<property name="trackDao" ref="trackDao" />
-		<property name="mapControlCreator" ref="mapControlCreator" />
+		<property name="uiGisServices" ref="uiGisServices" />
 	</bean>
 
 	<bean id="localRepoEditor" class="org.argeo.connect.ui.gps.editors.LocalRepoEditor"
 		scope="prototype">
-		<property name="baseLayers">
-			<list>
-				<value><![CDATA[/gisdata/naturalearth/cultural/10m_admin_0_countries.shp/10m_admin_0_countries]]></value>
-				<!-- <value><![CDATA[/gisdata/naturalearth/cultural/10m_populated_places_simple.shp/10m_populated_places_simple]]></value> -->
-			</list>
-		</property>
-		<property name="jcrSession" ref="jcrSession" />
-		<property name="trackDao" ref="trackDao" />
-		<property name="mapControlCreator" ref="mapControlCreator" />
+		<property name="uiGisServices" ref="uiGisServices" />
 	</bean>
 
 

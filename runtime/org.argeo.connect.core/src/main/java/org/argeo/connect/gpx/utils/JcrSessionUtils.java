@@ -118,6 +118,7 @@ public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 		try {
 			localRepo = parent.addNode(techName, CONNECT_LOCAL_REPOSITORY);
 			localRepo.setProperty(Property.JCR_TITLE, title);
+			
 			JcrUtils.updateLastModified(localRepo);
 			localRepo.getSession().save();
 		} catch (Exception e) {

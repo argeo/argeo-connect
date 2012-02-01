@@ -20,6 +20,7 @@ mixin
 
 // local cleaned repository
 [connect:localRepository] > nt:unstructured, mix:title, mix:lastModified
++ * (connect:cleanTrackSession) *
 
 // TODO use explicit relative path (to the home directory)
 [connect:sessionRepository] > nt:unstructured, mix:title

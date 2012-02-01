@@ -3,9 +3,6 @@ package org.argeo.connect.gpx;
 import java.io.InputStream;
 import java.util.List;
 
-import javax.jcr.Node;
-import javax.jcr.Session;
-
 /** Geo-processing and geo-storage of the positions */
 public interface TrackDao {
 	/**
@@ -30,28 +27,35 @@ public interface TrackDao {
 	public void publishCleanPositions(String cleanSession, String referential,
 			String toRemoveCql);
 
-	/** Removes segments from this referential */
+	/**
+	 * Removes segments from this referential
+	 * 
+	 * @param referential
+	 *            the technical name of the corresponding positions repository
+	 */
 	public void deleteCleanPositions(String referential,
 			List<String> segmentUuuids);
 
 	/** Initializes position repository if needed */
-	public boolean initializeLocalRepository(Session curSession);
+	//public boolean initializeLocalRepository(Session curSession);
 
-	/**
-	 * Returns parent node for clean track sessions or null if the repository
-	 * has not been initialized yet
-	 */
-	public Node getTrackSessionsParentNode(Session curSession);
-
-	/**
-	 * Returns parent node for local cleaned data or null if the repository has
-	 * not been initialized yet
-	 */
-	public Node getLocalRepositoriesParentNode(Session curSession);
-
-	/**
-	 * Returns parent node to store GPX files or null if the repository has not
-	 * been initialized yet
-	 */
-	public Node getGpxFilesDirectory(Session curSession);
+	// /**
+	// * Returns parent node for clean track sessions or null if the repository
+	// * has not been initialized yet
+	// */
+	// public Node getTrackSessionsParentNode(Session curSession);
+	//
+	// /**
+	// * Returns parent node for local cleaned data or null if the repository
+	// has
+	// * not been initialized yet
+	// */
+	// public Node getLocalRepositoriesParentNode(Session curSession);
+	//
+	// /**
+	// * Returns parent node to store GPX files or null if the repository has
+	// not
+	// * been initialized yet
+	// */
+	// public Node getGpxFilesDirectory(Session curSession);
 }

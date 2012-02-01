@@ -17,7 +17,9 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
-import org.argeo.connect.ui.gps.ConnectUiGpsPlugin;
+import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
+import org.argeo.connect.ui.gps.GpsUiGisServices;
+import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.jcr.JcrUtils;
@@ -118,7 +120,7 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 
 		// Corresponding Section
 		Section section = tk.createSection(parent, Section.TITLE_BAR);
-		section.setText(ConnectUiGpsPlugin
+		section.setText(ConnectGpsUiPlugin
 				.getGPSMessage(ConnectGpsLabels.IMPORT_FILE_SECTION_TITLE));
 		Composite body = tk.createComposite(section, SWT.WRAP);
 		body.setLayout(new GridLayout(1, false));
@@ -222,7 +224,7 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 	private void addButtonsPart(Composite parent) {
 
 		// Launch effective import button
-		Button launchImport = tk.createButton(parent, ConnectUiGpsPlugin
+		Button launchImport = tk.createButton(parent, ConnectGpsUiPlugin
 				.getGPSMessage(ConnectGpsLabels.LAUNCH_IMPORT_BUTTON_LBL),
 				SWT.PUSH);
 		GridData gridData = new GridData();
@@ -378,17 +380,14 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 				return false;
 			}
 			try {
-
 				// parse data :
 				String[] ids = ((String) data).split(";");
-				Session session = getEditor().getCurrentSessionNode()
+				Session session = getEditor().getCurrentCleanSession()
 						.getSession();
-
 				for (int i = 0; i < ids.length; i++) {
 					if (!droppedNodes.containsKey(ids[i])) {
 						Node node = session.getNodeByIdentifier(ids[i]);
 						addFileNode(node, ids[i]);
-
 					}
 				}
 				getViewer().refresh();
@@ -397,7 +396,6 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 			} catch (RepositoryException e) {
 				throw new ArgeoException("Error while parsing Dropped data", e);
 			}
-
 			return true;
 		}
 
@@ -410,8 +408,7 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 
 	/** Add a new file node to current Session */
 	private void addFileNode(Node node, String refId) {
-		Node sessionNode = getEditor().getCurrentSessionNode();
-
+		Node sessionNode = getEditor().getCurrentCleanSession();
 		try {
 			String fileName = node.getName();
 
@@ -433,7 +430,7 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 
 	/** Initialize page */
 	private void initializePage() {
-		Node sessionNode = getEditor().getCurrentSessionNode();
+		Node sessionNode = getEditor().getCurrentCleanSession();
 
 		// Handle existing file references
 		try {
@@ -503,10 +500,10 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 				}
 			});
 			filesViewer.refresh();
-			GpsBrowserView gbView = (GpsBrowserView) ConnectUiGpsPlugin
+			GpsBrowserView gbView = (GpsBrowserView) ConnectGpsUiPlugin
 					.getDefault().getWorkbench().getActiveWorkbenchWindow()
 					.getActivePage().findView(GpsBrowserView.ID);
-			gbView.refresh(getEditor().getCurrentSessionNode());
+			gbView.refresh(getEditor().getCurrentCleanSession());
 
 		} catch (Exception e) {
 			ErrorFeedback.show("Cannot import GPX nodes", e);
@@ -536,11 +533,10 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 			Stats stats) {
 		Binary binary = null;
 		try {
-
-			Session curSession = getEditor().getJcrSession();
-
-			Node refNode = curSession.getNodeByIdentifier(refNodeId);
-			Node node = curSession.getNodeByIdentifier(refNode.getProperty(
+			Session currJcrSession = getEditor().getCurrentCleanSession()
+					.getSession();
+			Node refNode = currJcrSession.getNodeByIdentifier(refNodeId);
+			Node node = currJcrSession.getNodeByIdentifier(refNode.getProperty(
 					ConnectNames.CONNECT_LINKED_FILE_REF).getString());
 			String name = node.getName();
 			monitor.subTask("Importing " + name);
@@ -550,27 +546,21 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 			String cname = refNode
 					.getProperty(ConnectNames.CONNECT_SENSOR_NAME).getString();
 
-			List<String> segmentUuids = (List<String>) getEditor()
-					.getTrackDao().importRawToCleanSession(getCleanSession(),
-							cname, binary.getStream());
+			GpsUiGisServices uiGisServices = getEditor().getUiGisServices();
+			GpsUiJcrServices uiJcrServices = getEditor().getUiJcrServices();
+
+			List<String> segmentUuids = (List<String>) uiGisServices.getTrackDao()
+					.importRawToCleanSession(
+							uiJcrServices.getCleanSessionTechName(getEditor()
+									.getCurrentCleanSession()), cname,
+							binary.getStream());
 			JcrUtils.closeQuietly(binary);
-
 			String[] uuids = segmentUuids.toArray(new String[0]);
-			
-//			Iterator<String> it = segmentUuids.iterator();
-//			while (it.hasNext()) {
-//				refNode.setProperty(ConnectNames.CONNECT_SEGMENT_UUID,
-//						it.next());
-//			}
-//			
-			refNode.setProperty(ConnectNames.CONNECT_SEGMENT_UUID,
-					uuids);
+			refNode.setProperty(ConnectNames.CONNECT_SEGMENT_UUID, uuids);
 
-			
 			// Finalization of the import / UI updates
 			refNode.setProperty(ConnectNames.CONNECT_ALREADY_PROCESSED, true);
-			curSession.save();
-
+			currJcrSession.save();
 			stats.nodeCount++;
 			monitor.worked(1);
 		} catch (RepositoryException e) {
@@ -595,12 +585,11 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 	}
 
 	private Shell getShell() {
-		return ConnectUiGpsPlugin.getDefault().getWorkbench()
+		return ConnectGpsUiPlugin.getDefault().getWorkbench()
 				.getActiveWorkbenchWindow().getShell();
 	}
 
 	static class Stats {
 		public Long nodeCount = 0l;
 	}
-
 }

@@ -2,9 +2,9 @@ package org.argeo.connect.ui.gps.commands;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
-import javax.jcr.Session;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.editors.CleanDataEditor;
 import org.argeo.connect.ui.gps.editors.CleanDataEditorInput;
 import org.eclipse.core.commands.AbstractHandler;
@@ -24,23 +24,20 @@ public class OpenCleanDataEditor extends AbstractHandler {
 	// LogFactory.getLog(OpenCleanDataEditor.class);
 
 	/* DEPENDENCY INJECTION */
-	private Session session;
+	private GpsUiJcrServices uiJcrServices;
 
 	public final static String ID = "org.argeo.connect.ui.gps.openCleanDataEditor";
 	public final static String PARAM_UUID = "org.argeo.connect.ui.gps.connectSessionUuid";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-
 		String uuid = event.getParameter(PARAM_UUID);
-
 		try {
 			// Initializes the editor input.
 			CleanDataEditorInput cdei = new CleanDataEditorInput(uuid);
 			String nodeName;
-			Node node = session.getNodeByIdentifier(uuid);
+			Node node = uiJcrServices.getJcrSession().getNodeByIdentifier(uuid);
 			if (node.hasProperty(Property.JCR_NAME))
-				nodeName = node.getProperty(Property.JCR_NAME)
-						.getString();
+				nodeName = node.getProperty(Property.JCR_NAME).getString();
 			else
 				nodeName = node.getName();
 			cdei.setName(nodeName);
@@ -54,7 +51,7 @@ public class OpenCleanDataEditor extends AbstractHandler {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setSession(Session session) {
-		this.session = session;
+	public void setUiJcrServices(GpsUiJcrServices uiJcrServices) {
+		this.uiJcrServices = uiJcrServices;
 	}
 }

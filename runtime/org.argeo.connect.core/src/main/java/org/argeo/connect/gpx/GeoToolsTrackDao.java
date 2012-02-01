@@ -17,6 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.BeanFeatureTypeBuilder;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.gpx.utils.JcrSessionUtils;
 import org.argeo.geotools.jcr.GeoJcrMapper;
@@ -67,11 +68,6 @@ public class GeoToolsTrackDao implements TrackDao {
 	private String dataStoreAlias;
 	private GeoJcrMapper geoJcrMapper;
 
-	// TODO : HARD CODED VARIABLES, MUST BE CLEANLY IMPLEMENTED LATER
-	private final static String trackSessionRelPath = "/.connect/importTrackSessions";
-	private final static String localRepositoriesRelPath = "/.connect/localRepositories";
-	private final static String gpxFileDirectoryPath = "/connect/gpx";
-
 	private String addGpsCleanTablePrefix(String baseName) {
 		return "connect_gpsclean_" + baseName;
 	}
@@ -93,106 +89,6 @@ public class GeoToolsTrackDao implements TrackDao {
 	// private FeatureStore<SimpleFeatureType, SimpleFeature> positionStore;
 
 	public GeoToolsTrackDao() {
-	}
-
-	// INITILISATION
-	public boolean initializeLocalRepository(Session jcrSession) {
-		boolean success = false;
-		try {
-
-			String username = jcrSession.getUserID();
-			Node userHomeDirectory = JcrUtils.createUserHomeIfNeeded(
-					jcrSession, username);
-			String userHomePath = userHomeDirectory.getPath();
-
-			// Clean track sessions
-			String sessionbasePath = userHomePath + trackSessionRelPath;
-			if (!jcrSession.nodeExists(sessionbasePath)) {
-				int lastIndex = sessionbasePath.lastIndexOf("/");
-				Node parFolder = JcrUtils.mkdirs(jcrSession,
-						sessionbasePath.substring(0, lastIndex));
-				parFolder.addNode(sessionbasePath.substring(lastIndex + 1),
-						ConnectTypes.CONNECT_SESSION_REPOSITORY);
-			}
-
-			// Local repository for clean data with default already created
-			// directory
-			String localRepoBasePath = userHomePath + localRepositoriesRelPath;
-			if (!jcrSession.nodeExists(localRepoBasePath)) {
-				int lastIndex = localRepoBasePath.lastIndexOf("/");
-				Node parFolder = JcrUtils.mkdirs(jcrSession,
-						localRepoBasePath.substring(0, lastIndex));
-				Node repos = parFolder.addNode(
-						localRepoBasePath.substring(lastIndex + 1),
-						ConnectTypes.CONNECT_LOCAL_REPOSITORIES);
-				JcrSessionUtils.createLocalRepository(repos, "main", "Default");
-
-			}
-
-			// Gpx base directory
-			if (!jcrSession.nodeExists(gpxFileDirectoryPath)) {
-				int lastIndex = gpxFileDirectoryPath.lastIndexOf("/");
-				Node parFolder = JcrUtils.mkdirs(jcrSession,
-						gpxFileDirectoryPath.substring(0, lastIndex));
-				parFolder.addNode(
-						gpxFileDirectoryPath.substring(lastIndex + 1),
-						ConnectTypes.CONNECT_FILE_REPOSITORY);
-			}
-
-			jcrSession.save();
-			success = true;
-		} catch (RepositoryException re) {
-			JcrUtils.discardQuietly(jcrSession);
-			throw new ArgeoException("Error while initializing jcr repository",
-					re);
-		}
-		return success;
-	}
-
-	public Node getTrackSessionsParentNode(Session jcrSession) {
-		try {
-			Node userHomeDirectory = JcrUtils.getUserHome(jcrSession);
-			if (userHomeDirectory == null)
-				return null;
-			String sessionbasePath = userHomeDirectory.getPath()
-					+ trackSessionRelPath;
-			if (jcrSession.nodeExists(sessionbasePath))
-				return jcrSession.getNode(sessionbasePath);
-			else
-				return null;
-		} catch (RepositoryException re) {
-			throw new ArgeoException(
-					"Error while getting track session parent node.", re);
-		}
-	}
-
-	public Node getLocalRepositoriesParentNode(Session jcrSession) {
-		try {
-			Node userHomeDirectory = JcrUtils.getUserHome(jcrSession);
-			if (userHomeDirectory == null)
-				return null;
-			String sessionbasePath = userHomeDirectory.getPath()
-					+ localRepositoriesRelPath;
-			if (jcrSession.nodeExists(sessionbasePath))
-				return jcrSession.getNode(sessionbasePath);
-			else
-				return null;
-		} catch (RepositoryException re) {
-			throw new ArgeoException(
-					"Error while getting local repositories parent node.", re);
-		}
-	}
-
-	public Node getGpxFilesDirectory(Session jcrSession) {
-		try {
-			if (jcrSession.nodeExists(gpxFileDirectoryPath))
-				return jcrSession.getNode(gpxFileDirectoryPath);
-			else
-				return null;
-		} catch (RepositoryException re) {
-			throw new ArgeoException(
-					"Error while getting track session parent node.", re);
-		}
 	}
 
 	// public void init() {
@@ -280,7 +176,7 @@ public class GeoToolsTrackDao implements TrackDao {
 				}
 
 				if (!currSegment.getUuid().equals(segmentUuid)) {
-					if (currSegmentCoords.size() < 2) {// skip single point
+					if (currSegmentCoords.size() >= 2) {// skip single point
 						Coordinate[] line = currSegmentCoords
 								.toArray(new Coordinate[currSegmentCoords
 										.size()]);
