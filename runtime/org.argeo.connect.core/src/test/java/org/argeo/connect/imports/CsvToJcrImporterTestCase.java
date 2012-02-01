@@ -21,8 +21,6 @@ import java.io.InputStreamReader;
 
 import javax.jcr.Repository;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.commons.cnd.CndImporter;
 import org.apache.jackrabbit.core.TransientRepository;
 import org.argeo.ArgeoException;
@@ -37,8 +35,7 @@ import org.springframework.core.io.Resource;
  * injection and then test parsing and import of csv files to JCR.
  */
 public class CsvToJcrImporterTestCase extends AbstractJcrTestCase {
-
-	private final static Log log = LogFactory.getLog(JcrModelTest.class);
+	// private final static Log log = LogFactory.getLog(JcrModelTest.class);
 
 	protected String pathToRepository = System.getProperty("user.dir")
 			+ "/target/jackrabbit-" + System.getProperty("user.name");

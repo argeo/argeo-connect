@@ -35,27 +35,4 @@ public interface TrackDao {
 	 */
 	public void deleteCleanPositions(String referential,
 			List<String> segmentUuuids);
-
-	/** Initializes position repository if needed */
-	//public boolean initializeLocalRepository(Session curSession);
-
-	// /**
-	// * Returns parent node for clean track sessions or null if the repository
-	// * has not been initialized yet
-	// */
-	// public Node getTrackSessionsParentNode(Session curSession);
-	//
-	// /**
-	// * Returns parent node for local cleaned data or null if the repository
-	// has
-	// * not been initialized yet
-	// */
-	// public Node getLocalRepositoriesParentNode(Session curSession);
-	//
-	// /**
-	// * Returns parent node to store GPX files or null if the repository has
-	// not
-	// * been initialized yet
-	// */
-	// public Node getGpxFilesDirectory(Session curSession);
 }

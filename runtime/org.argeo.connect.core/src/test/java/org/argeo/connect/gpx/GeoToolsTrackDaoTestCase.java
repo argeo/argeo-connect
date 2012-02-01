@@ -87,6 +87,7 @@ public class GeoToolsTrackDaoTestCase extends AbstractSpringTestCase {
 
 	}
 
+	@SuppressWarnings("unused")
 	private void forBigImport() throws Exception {
 		String sensor = "mbaudier";
 

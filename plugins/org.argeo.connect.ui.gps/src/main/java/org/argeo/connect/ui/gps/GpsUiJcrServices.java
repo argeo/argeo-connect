@@ -9,8 +9,6 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
@@ -23,7 +21,7 @@ import org.argeo.jcr.JcrUtils;
  * corresponding model.
  */
 public class GpsUiJcrServices {
-	private final static Log log = LogFactory.getLog(GpsUiJcrServices.class);
+	// private final static Log log = LogFactory.getLog(GpsUiJcrServices.class);
 
 	/* DEPENDENCY INJECTION */
 	private Session jcrSession;
@@ -62,39 +60,57 @@ public class GpsUiJcrServices {
 
 	/**
 	 * 
-	 * @return the list of all sensors that are listed in sessions imported
-	 *         files and NOT sensors that have been persisted in the repository.
+	 * @return the list of all distinct values of the given property that are
+	 *         listed in all sessions imported files linked to the given
+	 *         referential.
 	 */
-	public List<String> getSensors(Node currLocalRepo) {
-		List<String> sensors = new ArrayList<String>();
+	public List<String> getCatalogFromRepo(Node currLocalRepo,
+			String propertyName) {
+		List<String> values = new ArrayList<String>();
 		try {
 			NodeIterator ni = currLocalRepo.getNodes();
 			while (ni.hasNext()) {
 				Node currSess = ni.nextNode();
 				if (currSess
 						.isNodeType(ConnectTypes.CONNECT_CLEAN_TRACK_SESSION)) {
-					NodeIterator fi = currSess.getNodes();
-					while (fi.hasNext()) {
-						Node currFile = fi.nextNode();
-						if (currFile
-								.isNodeType(ConnectTypes.CONNECT_FILE_TO_IMPORT)
-								&& currFile
-										.hasProperty(ConnectNames.CONNECT_SENSOR_NAME)) {
-							String sensor = currFile.getProperty(
-									ConnectNames.CONNECT_SENSOR_NAME)
-									.getString();
-							if (sensor != null && !sensors.contains(sensor)) {
-								sensors.add(sensor);
-							}
-						}
-					}
+					values.addAll(getCatalogFromSession(currSess, propertyName));
 				}
 			}
 		} catch (RepositoryException e) {
 			throw new ArgeoException(
 					"unexpected error while retrieving sensor list.", e);
 		}
-		return sensors;
+		return values;
+	}
+
+	/**
+	 * 
+	 * @return the list of all distinct values of the given property that are
+	 *         listed in the given session's imported files.
+	 */
+	public List<String> getCatalogFromSession(Node currCleanSession,
+			String propertyName) {
+		List<String> values = new ArrayList<String>();
+		try {
+			NodeIterator fi = currCleanSession.getNodes();
+			while (fi.hasNext()) {
+				Node currFile = fi.nextNode();
+				if (currFile.isNodeType(ConnectTypes.CONNECT_FILE_TO_IMPORT)
+						&& currFile.hasProperty(propertyName)) {
+					String value = currFile.getProperty(propertyName)
+							.getString();
+					if (value != null && !values.contains(value)) {
+						values.add(value);
+					}
+				}
+
+			}
+
+		} catch (RepositoryException e) {
+			throw new ArgeoException(
+					"unexpected error while retrieving catalog.", e);
+		}
+		return values;
 	}
 
 	/** returns the read-only status of the given clean data session */

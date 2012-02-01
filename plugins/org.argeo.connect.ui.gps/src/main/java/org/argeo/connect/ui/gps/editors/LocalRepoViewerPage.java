@@ -6,9 +6,8 @@ import java.util.Map;
 
 import javax.jcr.Node;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
+import org.argeo.connect.ConnectNames;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.geotools.styling.StylingUtils;
 import org.argeo.gis.ui.MapViewer;
@@ -35,7 +34,8 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 public class LocalRepoViewerPage extends FormPage {
-	private final static Log log = LogFactory.getLog(LocalRepoViewerPage.class);
+	// private final static Log log =
+	// LogFactory.getLog(LocalRepoViewerPage.class);
 	public final static String ID = "localRepoEditor.localRepoViewerPage";
 
 	// This page widgets
@@ -43,6 +43,7 @@ public class LocalRepoViewerPage extends FormPage {
 	private MapViewer mapViewer;
 	private Button displayAllSensorsChk, showBaseLayerChk;
 	private Combo chooseSensorCmb;
+	private Composite mapArea;
 
 	public LocalRepoViewerPage(FormEditor editor, String title) {
 		super(editor, ID, title);
@@ -84,68 +85,61 @@ public class LocalRepoViewerPage extends FormPage {
 		ModifyListener modifyListener = new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
-				updateLayers();
+				refreshSensorLayer();
 			}
 		};
 		chooseSensorCmb.addModifyListener(modifyListener);
 		// Manage layers to display
 		displayAllSensorsChk = ft.createButton(parent, "Show all sensors",
 				SWT.CHECK | SWT.LEFT);
+		displayAllSensorsChk.setSelection(true);
 		showBaseLayerChk = ft.createButton(parent, "Show base layer", SWT.CHECK
 				| SWT.LEFT);
 		Listener executeListener = new Listener() {
 			public void handleEvent(Event event) {
-				updateLayers();
+				refreshSensorLayer();
+			}
+		};
+
+		Listener baseLayerListener = new Listener() {
+			public void handleEvent(Event event) {
+				createMapPart(mapArea.getParent());
 			}
 		};
 		displayAllSensorsChk.addListener(SWT.Selection, executeListener);
-		showBaseLayerChk.addListener(SWT.Selection, executeListener);
+		showBaseLayerChk.addListener(SWT.Selection, baseLayerListener);
 	}
 
 	private void populateChooseSensorCmb(Combo combo) {
 		combo.removeAll();
-		List<String> sensors = getEditor().getUiJcrServices().getSensors(
-				getEditor().getCurrentRepoNode());
+		List<String> sensors = getEditor().getUiJcrServices()
+				.getCatalogFromRepo(getEditor().getCurrentRepoNode(),
+						ConnectNames.CONNECT_SENSOR_NAME);
 		for (String sensor : sensors) {
 			combo.add(sensor);
 		}
 	}
 
-	private void updateLayers() {
-		refreshSensorLayer();
-		// TODO implement
-		log.debug("Update Layer... ");
-	}
-
 	protected void createMapPart(Composite parent) {
-		Composite mapArea = getManagedForm().getToolkit().createComposite(
-				parent, SWT.BORDER);
+		if (mapArea != null)
+			mapArea.dispose();
+		mapArea = getManagedForm().getToolkit().createComposite(parent,
+				SWT.BORDER);
 		mapArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		FillLayout layout = new FillLayout();
+		FillLayout layout = new FillLayout(SWT.FILL);
 		mapArea.setLayout(layout);
 		mapViewer = getEditor().getUiGisServices().getMapControlCreator()
 				.createMapControl(getEditor().getCurrentRepoNode(), mapArea);
-		getEditor().getUiGisServices().addBaseLayers(mapViewer);
+		if (showBaseLayerChk.getSelection()) {
+			getEditor().getUiGisServices().addBaseLayers(mapViewer);
+		}
+		parent.layout();
+		addPositionsLayer();
 	}
 
 	/*
 	 * GIS
 	 */
-
-	// public void addBaseLayers(MapViewer mapViewer) {
-	// for (String alias : baseLayers) {
-	// String layerPath = (GisConstants.DATA_STORES_BASE_PATH + alias)
-	// .trim();
-	// try {
-	// Node layerNode = currentSession.getNode(layerPath);
-	// mapViewer.addLayer(layerNode,
-	// StylingUtils.createLineStyle("LIGHT_GRAY", 1));
-	// } catch (RepositoryException e) {
-	// log.warn("Cannot retrieve " + alias + ": " + e);
-	// }
-	// }
-	// }
-
 	protected void addPositionsLayer() {
 		// Add position layer
 		String positionsDisplayPath = getEditor()
@@ -159,9 +153,6 @@ public class LocalRepoViewerPage extends FormPage {
 					.getNode(positionsDisplayPath);
 			Style style = createSensorStyle();
 			mapViewer.addLayer(layerNode, style);
-
-			// mapViewer.setCoordinateReferenceSystem("EPSG:3857");
-
 			ReferencedEnvelope areaOfInterest = getPositionsFeatureSource()
 					.getBounds();
 			mapViewer.setAreaOfInterest(areaOfInterest);
@@ -209,10 +200,8 @@ public class LocalRepoViewerPage extends FormPage {
 			cqlFilters.put("sensor='" + sensor + "'", "RED");
 		}
 		String color = displayAllSensorsChk.getSelection() ? "BLACK" : null;
-
 		Style style = StylingUtils.createFilteredLineStyle(cqlFilters, 3,
 				color, 1);
 		return style;
 	}
-
 }

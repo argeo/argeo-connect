@@ -1,6 +1,8 @@
 package org.argeo.connect.ui.gps.editors;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -47,17 +49,21 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -65,14 +71,26 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 
-public class DataSetPage extends AbstractCleanDataEditorPage {
+public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 	// private final static Log log = LogFactory.getLog(DataSetPage.class);
+
 	public final static String ID = "cleanDataEditor.dataSetPage";
 
-	// The main table.
+	// This page widgets
 	private TableViewer filesViewer;
-
 	private FormToolkit tk;
+	private Combo defaultSensorNameCmb;
+	private Combo defaultDeviceNameCmb;
+
+	// Shortcuts to increase readability of the code
+	private GpsUiJcrServices uiJcrServices;
+	private Node currCleanSession;
+
+	// list of all nodes that have been dropped in the editor.
+	// WARNING : key is the referenced file node ID, not the id of the
+	// corresponding node under currentSessionNode
+	private Map<String, Node> droppedNodes = new HashMap<String, Node>();
+
 	// Rendering
 	private final static Color grey = new Color(null, 200, 200, 200);
 	private Styler NOT_EDITABLE = new Styler() {
@@ -92,28 +110,124 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 		}
 	};
 
-	// list of all nodes that have been dropped in the editor.
-	// WARNING : key is the referenced file node ID, not the id of the
-	// corresponding node under currentSessionNode
-	private Map<String, Node> droppedNodes = new HashMap<String, Node>();
-
-	public DataSetPage(FormEditor editor, String title) {
+	public GpxFilesProcessingPage(FormEditor editor, String title) {
 		super(editor, ID, title);
 	}
 
 	protected void createFormContent(IManagedForm managedForm) {
+		// initilize widgets and shortcuts
 		ScrolledForm form = managedForm.getForm();
 		tk = getManagedForm().getToolkit();
 		Composite composite = form.getBody();
 		composite.setLayout(new GridLayout(1, false));
+		uiJcrServices = getEditor().getUiJcrServices();
+		currCleanSession = getEditor().getCurrentCleanSession();
 
 		// Fill the form with the different parts
+		addDefaultNamesPart(composite);
 		addFilesTablePart(composite);
 		addButtonsPart(composite);
-
-		// Initialize with persisted values.
 		initializePage();
 	}
+
+	private void addDefaultNamesPart(Composite composite) {
+		Composite parent = tk.createComposite(composite);
+		parent.setLayout(new GridLayout(4, false));
+
+		GridData gd;
+		DefaultNamesFormPart dnfPart = null;
+		DefaultNamesComboListener dncListener;
+
+		// Default sensor name
+		tk.createLabel(parent, "Enter a default sensor name:");
+		defaultSensorNameCmb = new Combo(parent, SWT.BORDER | SWT.V_SCROLL);
+		gd = new GridData(SWT.LEFT, SWT.FILL, true, false);
+		gd.widthHint = 200;
+		defaultSensorNameCmb.setLayoutData(gd);
+		populateCombo(defaultSensorNameCmb,
+				ConnectNames.CONNECT_DEFAULT_SENSOR,
+				ConnectNames.CONNECT_SENSOR_NAME);
+
+		// Default sensor name
+		tk.createLabel(parent, "Enter a default device name:");
+		defaultDeviceNameCmb = new Combo(parent, SWT.BORDER | SWT.V_SCROLL);
+		gd = new GridData(SWT.LEFT, SWT.FILL, true, false);
+		gd.widthHint = 200;
+		defaultDeviceNameCmb.setLayoutData(gd);
+		populateCombo(defaultDeviceNameCmb,
+				ConnectNames.CONNECT_DEFAULT_DEVICE,
+				ConnectNames.CONNECT_DEVICE_NAME);
+
+		dnfPart = new DefaultNamesFormPart();
+		dncListener = new DefaultNamesComboListener(dnfPart);
+		defaultSensorNameCmb.addModifyListener(dncListener);
+		defaultDeviceNameCmb.addModifyListener(dncListener);
+		getManagedForm().addPart(dnfPart);
+	}
+
+	private void populateCombo(Combo combo, String defaultPropertyName,
+			String propertyName) {
+		// we try to retrieve the list of the existing values to help end user
+		try {
+			Node currReferential = uiJcrServices
+					.getLinkedReferential(currCleanSession);
+			List<String> values = null;
+			if (currReferential != null) {
+				values = uiJcrServices.getCatalogFromRepo(currReferential,
+						propertyName);
+				values.addAll(uiJcrServices.getCatalogFromSession(
+						currCleanSession, propertyName));
+			}
+			if (!values.isEmpty())
+				combo.setItems(values.toArray(new String[0]));
+			String curValue = null;
+			if (currCleanSession.hasProperty(defaultPropertyName))
+				curValue = currCleanSession.getProperty(defaultPropertyName)
+						.getString();
+			if (curValue != null) {
+				if (!values.contains(curValue))
+					combo.add(curValue);
+				combo.select(combo.indexOf(curValue));
+			}
+		} catch (RepositoryException re) {
+			throw new ArgeoException(
+					"unexpected error retrieving existing default names.", re);
+		}
+	}
+
+	// Inner classes to handle param changes
+	private class DefaultNamesFormPart extends AbstractFormPart {
+		public void commit(boolean onSave) {
+			if (onSave)
+				try {
+					if (defaultSensorNameCmb.getText() != null)
+						currCleanSession.setProperty(
+								ConnectNames.CONNECT_DEFAULT_SENSOR,
+								defaultSensorNameCmb.getText());
+					if (defaultDeviceNameCmb.getText() != null)
+						currCleanSession.setProperty(
+								ConnectNames.CONNECT_DEFAULT_DEVICE,
+								defaultDeviceNameCmb.getText());
+					super.commit(onSave);
+				} catch (RepositoryException re) {
+					throw new ArgeoException(
+							"unexpected error while saving default names.", re);
+				}
+		}
+	}
+
+	private class DefaultNamesComboListener implements ModifyListener {
+		private DefaultNamesFormPart formPart;
+
+		public DefaultNamesComboListener(DefaultNamesFormPart formPart) {
+			this.formPart = formPart;
+		}
+
+		@Override
+		public void modifyText(ModifyEvent e) {
+			formPart.markDirty();
+		}
+	};
 
 	// Manage the files to import table
 	private Section addFilesTablePart(Composite parent) {
@@ -216,13 +330,36 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 		});
 		column.setEditingSupport(new SensorNameEditingSupport(filesViewer));
 
+		// Device name column
+		column = createTableViewerColumn(filesViewer, "Device", 200);
+		column.setLabelProvider(new StyledCellLabelProvider() {
+			public void update(final ViewerCell cell) {
+				try {
+					Node cnode = (Node) cell.getElement();
+					String currentText = cnode.getProperty(
+							ConnectNames.CONNECT_DEVICE_NAME).getString();
+					StyledString styledString;
+					if (canEditLine(cnode))
+						styledString = new StyledString(currentText,
+								DEFAULT_FONT);
+					else
+						styledString = new StyledString(currentText,
+								NOT_EDITABLE);
+					cell.setText(styledString.getString());
+					cell.setStyleRanges(styledString.getStyleRanges());
+				} catch (RepositoryException re) {
+					throw new ArgeoException("Problem getting sensor name", re);
+				}
+			}
+		});
+		column.setEditingSupport(new DeviceNameEditingSupport(filesViewer));
+
 		filesViewer.setContentProvider(new NodesContentProvider());
 		filesViewer.setInput(droppedNodes);
 		return null;
 	}
 
 	private void addButtonsPart(Composite parent) {
-
 		// Launch effective import button
 		Button launchImport = tk.createButton(parent, ConnectGpsUiPlugin
 				.getGPSMessage(ConnectGpsLabels.LAUNCH_IMPORT_BUTTON_LBL),
@@ -230,36 +367,53 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = GridData.BEGINNING;
 		launchImport.setLayoutData(gridData);
-
 		Listener launchListener = new Listener() {
 			public void handleEvent(Event event) {
 				performEffectiveFileImport();
 			}
 		};
-
 		launchImport.addListener(SWT.Selection, launchListener);
 	}
 
 	private class NodesContentProvider implements IStructuredContentProvider {
 		@SuppressWarnings("unchecked")
 		public Object[] getElements(Object inputElement) {
-			return ((Map<String, Node>) inputElement).values().toArray();
+			return sort(((Map<String, Node>) inputElement).values().toArray());
 		}
 
 		public void dispose() {
 		}
 
+		protected Object[] sort(Object[] elements) {
+			Arrays.sort(elements, new Comparator<Object>() {
+
+				@Override
+				public int compare(Object o1, Object o2) {
+					Node node1 = (Node) o1;
+					Node node2 = (Node) o2;
+					try {
+						return node1.getPath().compareTo(node2.getPath());
+					} catch (RepositoryException e) {
+						throw new ArgeoException("Cannot compare " + node1
+								+ " and " + node2, e);
+					}
+				}
+
+			});
+			return elements;
+		}
+		
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			filesViewer.refresh();
 		}
 	}
 
-	/** Modify the sensor Name */
-	protected class SensorNameEditingSupport extends EditingSupport {
+	/* EDITING SUPPORT */
+	private abstract class NameEditingSupport extends EditingSupport {
 
-		private final TableViewer viewer;
+		protected final TableViewer viewer;
 
-		public SensorNameEditingSupport(TableViewer viewer) {
+		public NameEditingSupport(TableViewer viewer) {
 			super(viewer);
 			this.viewer = viewer;
 		}
@@ -273,6 +427,14 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 		protected boolean canEdit(Object element) {
 			return canEditLine((Node) element);
 		}
+	}
+
+	/** Modify the sensor Name */
+	protected class SensorNameEditingSupport extends NameEditingSupport {
+
+		public SensorNameEditingSupport(TableViewer viewer) {
+			super(viewer);
+		}
 
 		@Override
 		protected Object getValue(Object element) {
@@ -281,7 +443,7 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 				return curNode.getProperty(ConnectNames.CONNECT_SENSOR_NAME)
 						.getString();
 			} catch (RepositoryException re) {
-				throw new ArgeoException("Cannot retrieve sensore name", re);
+				throw new ArgeoException("Cannot retrieve sensor name", re);
 			}
 		}
 
@@ -294,8 +456,39 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 				curNode.getSession().save();
 				viewer.refresh();
 			} catch (RepositoryException re) {
-				throw new ArgeoException(
-						"Cannot determine if node is already checked", re);
+				throw new ArgeoException("Cannot update sensor name", re);
+			}
+		}
+	}
+
+	/** Modify the device name */
+	protected class DeviceNameEditingSupport extends NameEditingSupport {
+
+		public DeviceNameEditingSupport(TableViewer viewer) {
+			super(viewer);
+		}
+
+		@Override
+		protected Object getValue(Object element) {
+			try {
+				Node curNode = (Node) element;
+				return curNode.getProperty(ConnectNames.CONNECT_DEVICE_NAME)
+						.getString();
+			} catch (RepositoryException re) {
+				throw new ArgeoException("Cannot retrieve device name", re);
+			}
+		}
+
+		@Override
+		protected void setValue(Object element, Object value) {
+			try {
+				Node curNode = (Node) element;
+				curNode.setProperty(ConnectNames.CONNECT_DEVICE_NAME,
+						(String) value);
+				curNode.getSession().save();
+				viewer.refresh();
+			} catch (RepositoryException re) {
+				throw new ArgeoException("Cannot update device name ", re);
 			}
 		}
 	}
@@ -358,14 +551,13 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 		@Override
 		public boolean performDrop(Object data) {
 			// Check if a default sensor name has already been entered.
-			if (getEditor().getDefaultSensorName() == null) {
+			if (defaultSensorNameCmb.getText() == null) {
 				ErrorFeedback.show("Please enter a default sensor name");
-				getEditor().setActivePage(SessionMetaDataPage.ID);
 				return false;
 			}
 
 			// check if the Metadata Page is dirty
-			if (getEditor().findPage(SessionMetaDataPage.ID).isDirty()) {
+			if (getEditor().findPage(CleanSessionInfoPage.ID).isDirty()) {
 				ErrorFeedback
 						.show("Please save Metadata before starting file import process.");
 				return false;
@@ -418,6 +610,9 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 			fileNode.setProperty(ConnectNames.CONNECT_LINKED_FILE_REF, refId);
 			fileNode.setProperty(ConnectNames.CONNECT_SENSOR_NAME, sessionNode
 					.getProperty(ConnectNames.CONNECT_DEFAULT_SENSOR)
+					.getString());
+			fileNode.setProperty(ConnectNames.CONNECT_DEVICE_NAME, sessionNode
+					.getProperty(ConnectNames.CONNECT_DEFAULT_DEVICE)
 					.getString());
 			sessionNode.getSession().save();
 			droppedNodes.put(refId, fileNode);
@@ -549,8 +744,8 @@ public class DataSetPage extends AbstractCleanDataEditorPage {
 			GpsUiGisServices uiGisServices = getEditor().getUiGisServices();
 			GpsUiJcrServices uiJcrServices = getEditor().getUiJcrServices();
 
-			List<String> segmentUuids = (List<String>) uiGisServices.getTrackDao()
-					.importRawToCleanSession(
+			List<String> segmentUuids = (List<String>) uiGisServices
+					.getTrackDao().importRawToCleanSession(
 							uiJcrServices.getCleanSessionTechName(getEditor()
 									.getCurrentCleanSession()), cname,
 							binary.getStream());

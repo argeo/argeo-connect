@@ -62,9 +62,9 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 
 	protected void addPages() {
 		try {
-			addPage(new SessionMetaDataPage(this,
+			addPage(new CleanSessionInfoPage(this,
 					ConnectGpsUiPlugin.getGPSMessage(METADATA_PAGE_TITLE)));
-			addPage(new DataSetPage(this,
+			addPage(new GpxFilesProcessingPage(this,
 					ConnectGpsUiPlugin.getGPSMessage(DATASET_PAGE_TITLE)));
 			addPage(new DefineParamsAndReviewPage(this,
 					ConnectGpsUiPlugin.getGPSMessage(PARAMSET_PAGE_TITLE)));
@@ -129,15 +129,6 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 			this.setTitleImage(GpsNodeLabelProvider.session);
 			firePropertyChange(PROP_TITLE);
 		}
-	}
-
-	/**
-	 * returns the default sensor name or null if none or an empty string has
-	 * been entered
-	 */
-	public String getDefaultSensorName() {
-		return ((SessionMetaDataPage) findPage(SessionMetaDataPage.ID))
-				.getDefaultSensorName();
 	}
 
 	/** exposes the current GPS Clean session to its FormPart */

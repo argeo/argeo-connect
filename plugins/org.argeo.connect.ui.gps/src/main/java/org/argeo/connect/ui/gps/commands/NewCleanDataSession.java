@@ -5,10 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 
 import javax.jcr.Node;
-import javax.jcr.Session;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.gpx.TrackDao;
 import org.argeo.connect.gpx.utils.JcrSessionUtils;
 import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.editors.CleanDataEditor;

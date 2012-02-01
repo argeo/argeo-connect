@@ -1,8 +1,5 @@
 package org.argeo.connect.ui.gps.commands;
 
-import javax.jcr.Session;
-
-import org.argeo.connect.gpx.TrackDao;
 import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.wizards.CreateLocalRepoWizard;
 import org.eclipse.core.commands.AbstractHandler;

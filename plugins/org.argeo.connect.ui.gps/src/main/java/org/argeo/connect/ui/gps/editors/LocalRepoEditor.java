@@ -1,30 +1,15 @@
 package org.argeo.connect.ui.gps.editors;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
-import org.argeo.connect.ConnectNames;
-import org.argeo.connect.ConnectTypes;
-import org.argeo.connect.gpx.TrackDao;
 import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
 import org.argeo.connect.ui.gps.GpsUiGisServices;
 import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.eclipse.ui.ErrorFeedback;
-import org.argeo.geotools.styling.StylingUtils;
-import org.argeo.gis.GisConstants;
-import org.argeo.gis.ui.MapControlCreator;
-import org.argeo.gis.ui.MapViewer;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -37,7 +22,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
  */
 
 public class LocalRepoEditor extends FormEditor {
-	private final static Log log = LogFactory.getLog(LocalRepoEditor.class);
+	// private final static Log log = LogFactory.getLog(LocalRepoEditor.class);
 
 	public static final String ID = "org.argeo.connect.ui.gps.localRepoEditor";
 
@@ -47,7 +32,6 @@ public class LocalRepoEditor extends FormEditor {
 
 	// Business objects
 	private Node currentLocalRepo;
-
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
@@ -118,19 +102,19 @@ public class LocalRepoEditor extends FormEditor {
 		return false;
 	}
 
-//	public void addBaseLayers(MapViewer mapViewer) {
-//		for (String alias : baseLayers) {
-//			String layerPath = (GisConstants.DATA_STORES_BASE_PATH + alias)
-//					.trim();
-//			try {
-//				Node layerNode = jcrSession.getNode(layerPath);
-//				mapViewer.addLayer(layerNode,
-//						StylingUtils.createLineStyle("LIGHT_GRAY", 1));
-//			} catch (RepositoryException e) {
-//				log.warn("Cannot retrieve " + alias + ": " + e);
-//			}
-//		}
-//	}
+	// public void addBaseLayers(MapViewer mapViewer) {
+	// for (String alias : baseLayers) {
+	// String layerPath = (GisConstants.DATA_STORES_BASE_PATH + alias)
+	// .trim();
+	// try {
+	// Node layerNode = jcrSession.getNode(layerPath);
+	// mapViewer.addLayer(layerNode,
+	// StylingUtils.createLineStyle("LIGHT_GRAY", 1));
+	// } catch (RepositoryException e) {
+	// log.warn("Cannot retrieve " + alias + ": " + e);
+	// }
+	// }
+	// }
 
 	protected Node getCurrentRepoNode() {
 		return currentLocalRepo;
@@ -150,7 +134,7 @@ public class LocalRepoEditor extends FormEditor {
 	protected GpsUiGisServices getUiGisServices() {
 		return uiGisServices;
 	}
-	
+
 	/* DEPENDENCY INJECTION */
 	public void setUiGisServices(GpsUiGisServices uiGisServices) {
 		this.uiGisServices = uiGisServices;

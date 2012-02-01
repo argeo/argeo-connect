@@ -21,6 +21,7 @@ import org.argeo.connect.ui.gps.commons.SliderViewerListener;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.geotools.styling.StylingUtils;
+import org.argeo.gis.ui.MapControlCreator;
 import org.argeo.gis.ui.MapViewer;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -48,16 +49,11 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 			.getLog(DefineParamsAndReviewPage.class);
 	public final static String ID = "cleanDataEditor.defineParamsAndReviewPage";
 
-	// Defined parameters
-	// private List<Node> paramNodeList = new ArrayList<Node>();;
-
+	// This page widget
 	private FormToolkit formToolkit;
-
 	private SliderViewer maxSpeedViewer;
 	private SliderViewer maxAccelerationViewer;
 	private SliderViewer maxRotationViewer;
-
-	// private MapControlCreator mapControlCreator;
 	private MapViewer mapViewer;
 
 	// Local object used as cache
@@ -92,6 +88,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 			ErrorFeedback
 					.show("Cannot load speed layer. Did you import the GPX files from the previous tab?",
 							e);
+			getEditor().setActivePage(GpxFilesProcessingPage.ID);
 		}
 	}
 
@@ -215,22 +212,6 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 
 	private void createValidationButtons(Composite parent) {
 		GridData gridData;
-		// visualize button
-		// Button visualize = formToolkit.createButton(parent,
-		// ConnectUiPlugin.getGPSMessage(VISUALIZE_BUTTON_LBL), SWT.PUSH);
-		// Button visualize = formToolkit.createButton(parent, "EPSG:3857",
-		// SWT.PUSH);
-		// visualize.setToolTipText("Not working!!");
-		// GridData gridData = new GridData();
-		// gridData.horizontalAlignment = GridData.BEGINNING;
-		// visualize.setLayoutData(gridData);
-		//
-		// Listener visualizeListener = new Listener() {
-		// public void handleEvent(Event event) {
-		// // mapViewer.setCoordinateReferenceSystem("EPSG:3857");
-		// }
-		// };
-		// visualize.addListener(SWT.Selection, visualizeListener);
 
 		// Terminate button
 		Button terminate = formToolkit.createButton(parent, ConnectGpsUiPlugin
@@ -265,7 +246,6 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 													.getLinkedReferential(currCS))
 									+ "\n Current clean session is now read only.",
 							SWT.NONE, new String[] { "OK" }, 0);
-
 					dialog.open();
 				}
 			}
@@ -278,13 +258,12 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		mapArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		FillLayout layout = new FillLayout();
 		mapArea.setLayout(layout);
-		mapViewer = uiGisServices.getMapControlCreator().createMapControl(
-				currCleanSession, mapArea);
+		MapControlCreator mcc = uiGisServices.getMapControlCreator();
+		mapViewer = mcc.createMapControl(currCleanSession, mapArea);
 		uiGisServices.addBaseLayers(mapViewer);
 	}
 
 	private void pushDataToLocalRepo() {
-
 		uiGisServices.getTrackDao().publishCleanPositions(
 				uiJcrServices.getCleanSessionTechName(currCleanSession),
 				uiJcrServices.getLinkedReferentialTechName(currCleanSession),
@@ -350,7 +329,6 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		String trackSpeedsPath = uiGisServices.getTrackDao()
 				.getTrackSpeedsSource(cleanSession);
 		try {
-
 			Node layerNode = currCleanSession.getSession().getNode(
 					trackSpeedsPath);
 			FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = mapViewer
@@ -378,9 +356,6 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		Double maxAbsoluteAcceleration = maxAccelerationViewer.getValue();
 		cqlFilters.put("acceleration<" + (-maxAbsoluteAcceleration)
 				+ " OR acceleration>" + maxAbsoluteAcceleration, "BLUE");
-
-		// Style style = StylingUtils.createFilteredLineStyle(
-		// getToCleanCqlFilter(), "RED", 3, "BLACK", 1);
 		Style style = StylingUtils.createFilteredLineStyle(cqlFilters, 3,
 				"BLACK", 1);
 		return style;
@@ -398,5 +373,4 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		log.debug(cql);
 		return cql;
 	}
-
 }

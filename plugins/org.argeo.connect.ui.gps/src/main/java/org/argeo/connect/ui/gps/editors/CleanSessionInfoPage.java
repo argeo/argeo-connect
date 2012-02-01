@@ -45,10 +45,9 @@ import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.eclipse.ui.handlers.IHandlerService;
 
 /** Manages all metadata corresponding to the current clean data session */
-public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
+public class CleanSessionInfoPage extends AbstractCleanDataEditorPage {
 	private final static Log log = LogFactory
 			.getLog(DefineParamsAndReviewPage.class);
-
 	// local variables
 	public final static String ID = "cleanDataEditor.metaDataPage";
 
@@ -56,16 +55,11 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 	// Current page widgets
 	private Text sessionDisplayName;
 	private Text sessionDescription;
-	private Text defaultSensorName;
 	private Combo localRepoCombo;
 
 	private FormToolkit tk;
 
-	// parameter table
-	// private TableViewer paramsTableViewer;
-	// private List<Node> paramNodeList;
-
-	public SessionMetaDataPage(FormEditor editor, String title) {
+	public CleanSessionInfoPage(FormEditor editor, String title) {
 		super(editor, ID, title);
 	}
 
@@ -84,7 +78,6 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 		Section section = tk.createSection(parent, Section.TITLE_BAR);
 		section.setText(ConnectGpsUiPlugin
 				.getGPSMessage(ConnectGpsLabels.METADATA_SECTION_TITLE));
-		// section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 
 		Composite body = tk.createComposite(section, SWT.WRAP);
 		section.setClient(body);
@@ -111,27 +104,6 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 						.getName());
 			} catch (RepositoryException re) {
 			} // Silent
-
-		// Default Sensor name
-		label = new Label(body, SWT.NONE);
-		label.setText(ConnectGpsUiPlugin
-				.getGPSMessage(ConnectGpsLabels.DEFAULT_SENSOR_NAME_LBL));
-		defaultSensorName = new Text(body, SWT.FILL | SWT.BORDER);
-		gd = new GridData(SWT.LEFT, SWT.FILL, true, false);
-		gd.horizontalSpan = 2;
-		gd.widthHint = 330;
-		defaultSensorName.setLayoutData(gd);
-		if (getJcrStringValue(ConnectNames.CONNECT_DEFAULT_SENSOR) != null)
-			defaultSensorName
-					.setText(getJcrStringValue(ConnectNames.CONNECT_DEFAULT_SENSOR));
-		else
-			try {
-				defaultSensorName.setText(getEditor().getCurrentCleanSession()
-						.getSession().getUserID());
-			} catch (RepositoryException re) {
-				throw new ArgeoException(
-						"Unexpected error while getting user name", re);
-			}
 
 		// Local repository name
 		label = new Label(body, SWT.NONE);
@@ -186,9 +158,6 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 						currentSessionNode.setProperty(
 								Property.JCR_DESCRIPTION,
 								sessionDescription.getText());
-						currentSessionNode.setProperty(
-								ConnectNames.CONNECT_DEFAULT_SENSOR,
-								defaultSensorName.getText());
 						// prevent error thrown if user hasn't selected any
 						// repo.
 						if (localRepoCombo.getSelectionIndex() >= 0) {
@@ -207,25 +176,19 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 									}
 								}
 						}
-						currentSessionNode.setProperty(
-								ConnectNames.CONNECT_DEFAULT_SENSOR,
-								defaultSensorName.getText());
 						super.commit(onSave);
 					} catch (RepositoryException re) {
 						throw new ArgeoException(
 								"Error while trying to persist Meta Data for Session",
 								re);
 					}
-				else if (log.isDebugEnabled())
+				else if (log.isTraceEnabled())
 					log.debug("commit(false)");
 			}
 		};
-
 		sessionDisplayName.addModifyListener(new ModifiedFieldListener(part));
 		sessionDescription.addModifyListener(new ModifiedFieldListener(part));
-		defaultSensorName.addModifyListener(new ModifiedFieldListener(part));
 		localRepoCombo.addSelectionListener(new ComboListener(part));
-
 		getManagedForm().addPart(part);
 		return section;
 	}
@@ -287,7 +250,6 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 			IWorkbench iw = ConnectGpsUiPlugin.getDefault().getWorkbench();
 			IHandlerService handlerService = (IHandlerService) iw
 					.getService(IHandlerService.class);
-
 			// get the command from plugin.xml
 			IWorkbenchWindow window = iw.getActiveWorkbenchWindow();
 			ICommandService cmdService = (ICommandService) window
@@ -295,7 +257,6 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 			Command cmd = cmdService.getCommand(OpenNewRepoWizard.ID);
 			// build the parameterized command
 			ParameterizedCommand pc = new ParameterizedCommand(cmd, null);
-
 			// execute the command
 			handlerService = (IHandlerService) window
 					.getService(IHandlerService.class);
@@ -306,18 +267,6 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 		}
 	}
 
-	/**
-	 * returns the default sensor name or null if none or an empty string has
-	 * been entered
-	 */
-	public String getDefaultSensorName() {
-		String name = defaultSensorName.getText();
-
-		if (name == null || "".equals(name))
-			return null;
-		else
-			return name;
-	}
 
 	// Inner classes
 	private class ComboListener implements SelectionListener {
@@ -336,6 +285,5 @@ public class SessionMetaDataPage extends AbstractCleanDataEditorPage {
 		public void widgetDefaultSelected(SelectionEvent e) {
 			// Do nothing
 		}
-
 	}
 }

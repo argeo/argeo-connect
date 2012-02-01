@@ -34,6 +34,7 @@ mixin
 [connect:cleanTrackSession] > nt:unstructured, mix:title, mix:lastModified
 - connect:isSessionComplete (BOOLEAN) ='false' a m  //autocreated mandatory; FYI : closed=true 
 - connect:defaultSensor (STRING)
+- connect:defaultDevice (STRING)
 - connect:localRepoName (STRING)
 + * (connect:cleanParameter) * // node name is param name
 + * (connect:fileToImport) * // node name is file name
@@ -46,6 +47,7 @@ mixin
 - connect:toBeProcessed (BOOLEAN) ='true' a m  
 - connect:alreadyProcessed (BOOLEAN) ='false' a m  
 - connect:sensorName (STRING)
+- connect:deviceName (STRING)
 - connect:segmentUuid (STRING) *
 
 

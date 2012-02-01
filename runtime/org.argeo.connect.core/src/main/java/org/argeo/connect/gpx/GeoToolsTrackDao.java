@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -17,12 +14,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.BeanFeatureTypeBuilder;
-import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.ConnectTypes;
-import org.argeo.connect.gpx.utils.JcrSessionUtils;
 import org.argeo.geotools.jcr.GeoJcrMapper;
 import org.argeo.gis.GisConstants;
-import org.argeo.jcr.JcrUtils;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -80,26 +73,8 @@ public class GeoToolsTrackDao implements TrackDao {
 		return "connect_positions_display_" + baseName;
 	}
 
-	// private String trackSpeedsToCleanTable = "toclean_track_speeds";
-	// private BeanFeatureTypeBuilder<TrackSpeed> trackSpeedType;
-	// private FeatureStore<SimpleFeatureType, SimpleFeature> trackSpeedsStore;
-
-	// private String positionsTable = "connect_positions";
-	// private BeanFeatureTypeBuilder<TrackPoint> positionType;
-	// private FeatureStore<SimpleFeatureType, SimpleFeature> positionStore;
-
 	public GeoToolsTrackDao() {
 	}
-
-	// public void init() {
-	// trackSpeedType = new BeanFeatureTypeBuilder<TrackSpeed>(
-	// trackSpeedsToCleanTable, TrackSpeed.class);
-	// positionType = new BeanFeatureTypeBuilder<TrackPoint>(positionsTable,
-	// TrackPoint.class);
-	//
-	// trackSpeedsStore = getFeatureStore(trackSpeedType);
-	// positionStore = getFeatureStore(positionType);
-	// }
 
 	public List<String> importRawToCleanSession(String cleanSession,
 			String sensor, InputStream in) {
@@ -393,10 +368,6 @@ public class GeoToolsTrackDao implements TrackDao {
 	public void setMaxSpeed(Float maxSpeed) {
 		this.maxSpeed = maxSpeed;
 	}
-
-	// protected String getTrackSpeedsTable(String cleanSession) {
-	// return "connect_gpsclean_" + cleanSession;
-	// }
 
 	public String getTrackSpeedsSource(String cleanSession) {
 		return GisConstants.DATA_STORES_BASE_PATH + "/" + dataStoreAlias + "/"
