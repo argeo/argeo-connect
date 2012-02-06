@@ -370,7 +370,8 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 				+ maxAbsoluteRotation + " OR acceleration<"
 				+ (-maxAbsoluteAcceleration) + " OR acceleration>"
 				+ maxAbsoluteAcceleration;
-		log.debug(cql);
+		if (log.isDebugEnabled())
+			log.debug(cql);
 		return cql;
 	}
 }

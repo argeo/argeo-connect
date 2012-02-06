@@ -4,6 +4,8 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
 import org.argeo.connect.ui.gps.GpsUiGisServices;
@@ -22,7 +24,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
  */
 
 public class LocalRepoEditor extends FormEditor {
-	// private final static Log log = LogFactory.getLog(LocalRepoEditor.class);
+	private final static Log log = LogFactory.getLog(LocalRepoEditor.class);
 
 	public static final String ID = "org.argeo.connect.ui.gps.localRepoEditor";
 
@@ -32,6 +34,7 @@ public class LocalRepoEditor extends FormEditor {
 
 	// Business objects
 	private Node currentLocalRepo;
+	private LocalRepoViewerPage viewerPage;
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
@@ -55,7 +58,8 @@ public class LocalRepoEditor extends FormEditor {
 
 	protected void addPages() {
 		try {
-			addPage(new LocalRepoViewerPage(this, "Viewer"));
+			viewerPage = new LocalRepoViewerPage(this, "Viewer");
+			addPage(viewerPage);
 			addPage(new LocalRepoMetaDataPage(this, "Meta infos"));
 		} catch (PartInitException e) {
 			throw new ArgeoException("Not able to add page ", e);
@@ -92,29 +96,19 @@ public class LocalRepoEditor extends FormEditor {
 	public void setFocus() {
 	}
 
+	public void refresh() {
+		viewerPage.refresh();
+	}
+
 	@Override
 	public void doSaveAs() {
-		// not implemented, save as is not allowed
+		// save as is not allowed
 	}
 
 	@Override
 	public boolean isSaveAsAllowed() {
 		return false;
 	}
-
-	// public void addBaseLayers(MapViewer mapViewer) {
-	// for (String alias : baseLayers) {
-	// String layerPath = (GisConstants.DATA_STORES_BASE_PATH + alias)
-	// .trim();
-	// try {
-	// Node layerNode = jcrSession.getNode(layerPath);
-	// mapViewer.addLayer(layerNode,
-	// StylingUtils.createLineStyle("LIGHT_GRAY", 1));
-	// } catch (RepositoryException e) {
-	// log.warn("Cannot retrieve " + alias + ": " + e);
-	// }
-	// }
-	// }
 
 	protected Node getCurrentRepoNode() {
 		return currentLocalRepo;

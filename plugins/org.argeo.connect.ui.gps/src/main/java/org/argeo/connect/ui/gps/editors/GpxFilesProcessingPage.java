@@ -71,10 +71,20 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 
+/**
+ * Manages files to process with drag & drop capabilities and ability to set
+ * both sensor and device name. Device name are still unused but can be persited
+ * here.
+ * 
+ * Segment ids corresponding to distinct segments of a given GPX file are
+ * retrieved and stored in the corresponding JCR Node after the processing.
+ * 
+ * 
+ */
 public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 	// private final static Log log = LogFactory.getLog(DataSetPage.class);
 
-	public final static String ID = "cleanDataEditor.dataSetPage";
+	public final static String ID = "cleanDataEditor.gpxFilesProcessingPage";
 
 	// This page widgets
 	private TableViewer filesViewer;
@@ -91,7 +101,7 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 	// corresponding node under currentSessionNode
 	private Map<String, Node> droppedNodes = new HashMap<String, Node>();
 
-	// Rendering
+	// Rendering to differentiate new files from the already processed ones.
 	private final static Color grey = new Color(null, 200, 200, 200);
 	private Styler NOT_EDITABLE = new Styler() {
 		@Override
@@ -109,6 +119,46 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 					.getFont(JFaceResources.DEFAULT_FONT);
 		}
 	};
+
+	/** effective processing of a single GPX file */
+	private void importOneNode(String refNodeId, IProgressMonitor monitor,
+			Stats stats) {
+		Binary binary = null;
+		try {
+			Session currJcrSession = currCleanSession.getSession();
+			Node refNode = currJcrSession.getNodeByIdentifier(refNodeId);
+			Node node = currJcrSession.getNodeByIdentifier(refNode.getProperty(
+					ConnectNames.CONNECT_LINKED_FILE_REF).getString());
+			String name = node.getName();
+			monitor.subTask("Importing " + name);
+			binary = node.getNode(Property.JCR_CONTENT)
+					.getProperty(Property.JCR_DATA).getBinary();
+			String cname = refNode
+					.getProperty(ConnectNames.CONNECT_SENSOR_NAME).getString();
+
+			GpsUiGisServices uiGisServices = getEditor().getUiGisServices();
+			GpsUiJcrServices uiJcrServices = getEditor().getUiJcrServices();
+
+			List<String> segmentUuids = (List<String>) uiGisServices
+					.getTrackDao().importRawToCleanSession(
+							uiJcrServices.getCleanSessionTechName(getEditor()
+									.getCurrentCleanSession()), cname,
+							binary.getStream());
+			JcrUtils.closeQuietly(binary);
+
+			// Finalization of the import
+			String[] uuids = segmentUuids.toArray(new String[0]);
+			refNode.setProperty(ConnectNames.CONNECT_SEGMENT_UUID, uuids);
+			refNode.setProperty(ConnectNames.CONNECT_ALREADY_PROCESSED, true);
+			currJcrSession.save();
+			stats.nodeCount++;
+			monitor.worked(1);
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Cannot import GPS from node", e);
+		} finally {
+			JcrUtils.closeQuietly(binary);
+		}
+	}
 
 	public GpxFilesProcessingPage(FormEditor editor, String title) {
 		super(editor, ID, title);
@@ -402,7 +452,7 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 			});
 			return elements;
 		}
-		
+
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			filesViewer.refresh();
 		}
@@ -551,13 +601,14 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 		@Override
 		public boolean performDrop(Object data) {
 			// Check if a default sensor name has already been entered.
-			if (defaultSensorNameCmb.getText() == null) {
+			if (defaultSensorNameCmb.getText() == null
+					|| "".equals(defaultSensorNameCmb.getText().trim())) {
 				ErrorFeedback.show("Please enter a default sensor name");
 				return false;
 			}
 
 			// check if the Metadata Page is dirty
-			if (getEditor().findPage(CleanSessionInfoPage.ID).isDirty()) {
+			if (getEditor().findPage(ID).isDirty()) {
 				ErrorFeedback
 						.show("Please save Metadata before starting file import process.");
 				return false;
@@ -642,8 +693,8 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 			}
 			filesViewer.setInput(droppedNodes);
 		} catch (RepositoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new ArgeoException("Unexpected error while "
+					+ "initializing the GPX files table.", e);
 		}
 
 	}
@@ -721,48 +772,6 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 		else
 			MessageDialog.openInformation(getShell(), "Import successful",
 					message.toString());
-		return true;
-	}
-
-	private boolean importOneNode(String refNodeId, IProgressMonitor monitor,
-			Stats stats) {
-		Binary binary = null;
-		try {
-			Session currJcrSession = getEditor().getCurrentCleanSession()
-					.getSession();
-			Node refNode = currJcrSession.getNodeByIdentifier(refNodeId);
-			Node node = currJcrSession.getNodeByIdentifier(refNode.getProperty(
-					ConnectNames.CONNECT_LINKED_FILE_REF).getString());
-			String name = node.getName();
-			monitor.subTask("Importing " + name);
-			binary = node.getNode(Property.JCR_CONTENT)
-					.getProperty(Property.JCR_DATA).getBinary();
-
-			String cname = refNode
-					.getProperty(ConnectNames.CONNECT_SENSOR_NAME).getString();
-
-			GpsUiGisServices uiGisServices = getEditor().getUiGisServices();
-			GpsUiJcrServices uiJcrServices = getEditor().getUiJcrServices();
-
-			List<String> segmentUuids = (List<String>) uiGisServices
-					.getTrackDao().importRawToCleanSession(
-							uiJcrServices.getCleanSessionTechName(getEditor()
-									.getCurrentCleanSession()), cname,
-							binary.getStream());
-			JcrUtils.closeQuietly(binary);
-			String[] uuids = segmentUuids.toArray(new String[0]);
-			refNode.setProperty(ConnectNames.CONNECT_SEGMENT_UUID, uuids);
-
-			// Finalization of the import / UI updates
-			refNode.setProperty(ConnectNames.CONNECT_ALREADY_PROCESSED, true);
-			currJcrSession.save();
-			stats.nodeCount++;
-			monitor.worked(1);
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot import GPS from node", e);
-		} finally {
-			JcrUtils.closeQuietly(binary);
-		}
 		return true;
 	}
 

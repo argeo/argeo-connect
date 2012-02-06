@@ -81,7 +81,7 @@ public class LocalRepoViewerPage extends FormPage {
 				| SWT.V_SCROLL);
 		gd = new GridData(SWT.LEFT, SWT.FILL, true, false);
 		chooseSensorCmb.setLayoutData(gd);
-		populateChooseSensorCmb(chooseSensorCmb);
+		populateChooseSensorCmb();
 		ModifyListener modifyListener = new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
@@ -95,28 +95,28 @@ public class LocalRepoViewerPage extends FormPage {
 		displayAllSensorsChk.setSelection(true);
 		showBaseLayerChk = ft.createButton(parent, "Show base layer", SWT.CHECK
 				| SWT.LEFT);
-		Listener executeListener = new Listener() {
-			public void handleEvent(Event event) {
-				refreshSensorLayer();
-			}
-		};
 
 		Listener baseLayerListener = new Listener() {
 			public void handleEvent(Event event) {
 				createMapPart(mapArea.getParent());
 			}
 		};
-		displayAllSensorsChk.addListener(SWT.Selection, executeListener);
+		displayAllSensorsChk.addListener(SWT.Selection, baseLayerListener);
 		showBaseLayerChk.addListener(SWT.Selection, baseLayerListener);
 	}
 
-	private void populateChooseSensorCmb(Combo combo) {
-		combo.removeAll();
+	protected void refresh() {
+		populateChooseSensorCmb();
+		createMapPart(mapArea.getParent());
+	}
+
+	private void populateChooseSensorCmb() {
+		chooseSensorCmb.removeAll();
 		List<String> sensors = getEditor().getUiJcrServices()
 				.getCatalogFromRepo(getEditor().getCurrentRepoNode(),
 						ConnectNames.CONNECT_SENSOR_NAME);
 		for (String sensor : sensors) {
-			combo.add(sensor);
+			chooseSensorCmb.add(sensor);
 		}
 	}
 

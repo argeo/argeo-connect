@@ -13,6 +13,8 @@ import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.ui.gps.GpsUiGisServices;
 import org.argeo.connect.ui.gps.GpsUiJcrServices;
+import org.argeo.connect.ui.gps.editors.LocalRepoEditor;
+import org.argeo.connect.ui.gps.editors.LocalRepoEditorInput;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -26,6 +28,8 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * 
  * Corresponding session is then moved back to the root of the
  * "clean track session" repository and the read-only flag is removed.
+ * 
+ * Both browser view and local repo editor (if open) are refreshed.
  * 
  */
 
@@ -51,7 +55,8 @@ public class RemoveImportedData extends AbstractHandler {
 			// model Id is compulsory
 			if (modelId == null)
 				return null;
-			Node currSess = uiJcrServices.getJcrSession().getNodeByIdentifier(modelId);
+			Node currSess = uiJcrServices.getJcrSession().getNodeByIdentifier(
+					modelId);
 
 			// get linked local repository
 			Node currRepo = currSess.getParent();
@@ -61,15 +66,20 @@ public class RemoveImportedData extends AbstractHandler {
 			while (ni.hasNext()) {
 				Node tmpNode = ni.nextNode();
 				if (tmpNode.isNodeType(ConnectTypes.CONNECT_FILE_TO_IMPORT)) {
-					Value[] values = tmpNode.getProperty(
-							ConnectNames.CONNECT_SEGMENT_UUID).getValues();
-					for (int i = 0; i < values.length; i++) {
-						segmentIds.add(values[i].getString());
+					if (tmpNode.hasProperty(ConnectNames.CONNECT_SEGMENT_UUID)) {
+						// sometimes no segment are created from a single gpx
+						// file: all points have been cleaned out
+						Value[] values = tmpNode.getProperty(
+								ConnectNames.CONNECT_SEGMENT_UUID).getValues();
+						for (int i = 0; i < values.length; i++) {
+							segmentIds.add(values[i].getString());
+						}
 					}
 				}
 			}
 			// Effective removal of the data
-			uiGisServices.getTrackDao().deleteCleanPositions(currRepo.getName(), segmentIds);
+			uiGisServices.getTrackDao().deleteCleanPositions(
+					currRepo.getName(), segmentIds);
 
 			// Update JCR info
 			currSess.setProperty(ConnectNames.CONNECT_IS_SESSION_COMPLETE,
@@ -91,6 +101,14 @@ public class RemoveImportedData extends AbstractHandler {
 			// .getActivePage().findView(GpsBrowserView.ID);
 			gbView.refresh(sessionRepo);
 			gbView.refresh(currRepo);
+
+			// Refresh local repo editor if open
+			LocalRepoEditor fe = (LocalRepoEditor) HandlerUtil
+					.getActiveWorkbenchWindow(event).getActivePage()
+					.findEditor(new LocalRepoEditorInput(currRepo.getName()));
+			if (fe != null)
+				fe.refresh();
+
 		} catch (Exception e) {
 			throw new ArgeoException("Cannot open editor", e);
 		}

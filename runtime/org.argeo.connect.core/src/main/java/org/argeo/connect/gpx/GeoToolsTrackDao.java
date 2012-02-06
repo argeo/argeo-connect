@@ -143,7 +143,7 @@ public class GeoToolsTrackDao implements TrackDao {
 				SimpleFeature position = positionType.convertFeature(speed);
 				positions.add(position);
 
-				// segmet
+				// segment
 				String segmentUuid = (String) position
 						.getAttribute("segmentUuid");
 				if (currSegment == null) {
@@ -356,9 +356,38 @@ public class GeoToolsTrackDao implements TrackDao {
 	}
 
 	public void deleteCleanPositions(String referential,
-			List<String> segmentUuuids) {
-		// TODO Auto-generated method stub
+			List<String> segmentUuids) {
+		try {
+			String positionsTable = addPositionsTablePrefix(referential);
+			BeanFeatureTypeBuilder<TrackPoint> positionType = new BeanFeatureTypeBuilder<TrackPoint>(
+					positionsTable, TrackPoint.class);
+			String positionsDisplayTable = addPositionsDisplayTablePrefix(referential);
+			BeanFeatureTypeBuilder<TrackSegment> positionDisplayType = new BeanFeatureTypeBuilder<TrackSegment>(
+					positionsDisplayTable, TrackSegment.class, null);
+			Transaction transaction = new DefaultTransaction();
+			SimpleFeatureStore positionStore = getFeatureStore(positionType);
+			SimpleFeatureStore positionDisplayStore = getFeatureStore(positionDisplayType);
+			positionStore.setTransaction(transaction);
+			positionDisplayStore.setTransaction(transaction);
+			Filter filter;
+			try {
+				for (String segmentUuid : segmentUuids) {
+					filter = CQL.toFilter("segmentUuid = '" + segmentUuid+"'");
+					positionStore.removeFeatures(filter);
+					filter = CQL.toFilter("uuid = '" + segmentUuid+"'");
+					positionDisplayStore.removeFeatures(filter);					
+				}
 
+				transaction.commit();
+			} catch (Exception e) {
+				transaction.rollback();
+				throw new ArgeoException("Cannot remove segments", e);
+			} finally {
+				transaction.close();
+			}
+		} catch (Exception e) {
+			throw new ArgeoException("Cannot remove segments from local referential", e);
+		}
 	}
 
 	public void setTargetSrid(Integer targetSrid) {

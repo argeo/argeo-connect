@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import javax.jcr.Node;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.gpx.utils.JcrSessionUtils;
 import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.editors.CleanDataEditor;
@@ -34,7 +35,7 @@ public class NewCleanDataSession extends AbstractHandler {
 
 	/* DEPENDENCY INJECTION */
 	private GpsUiJcrServices uiJcrServices;
-	
+
 	// Define here the default node name
 	private DateFormat timeFormatter = new SimpleDateFormat("yyyyMMdd_HHmmss");
 
@@ -45,22 +46,28 @@ public class NewCleanDataSession extends AbstractHandler {
 			// Get GpsBrowserView
 			GpsBrowserView view = (GpsBrowserView) HandlerUtil
 					.getActiveWorkbenchWindow(event).getActivePage()
-					.findView(HandlerUtil.getActivePartId(event));
+					.findView(GpsBrowserView.ID);
 
 			// Define parent Node
-			Node parentNode;
-			if (parNodeId == null) {
-				// get the default parent
+			Node parentNode = null;
+			if (parNodeId != null)
+				parentNode = uiJcrServices.getJcrSession().getNodeByIdentifier(
+						parNodeId);
+
+			if (parentNode == null || // get the params from a read-only session
+					parentNode
+							.isNodeType(ConnectTypes.CONNECT_LOCAL_REPOSITORY))
+				// use default parent
 				parentNode = uiJcrServices.getTrackSessionsParentNode();
-			} else
-				parentNode = uiJcrServices.getJcrSession().getNodeByIdentifier(parNodeId);
+
 			String nodeName = timeFormatter.format(new GregorianCalendar()
 					.getTime());
 			Node newNode = JcrSessionUtils.createNewSession(parentNode,
 					nodeName);
 
 			if (modelId != null) {
-				Node modelNode = uiJcrServices.getJcrSession().getNodeByIdentifier(modelId);
+				Node modelNode = uiJcrServices.getJcrSession()
+						.getNodeByIdentifier(modelId);
 				JcrSessionUtils.copyDataFromModel(modelNode, newNode);
 			}
 
