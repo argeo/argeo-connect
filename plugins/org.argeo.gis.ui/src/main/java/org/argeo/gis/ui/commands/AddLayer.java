@@ -2,7 +2,7 @@ package org.argeo.gis.ui.commands;
 
 import javax.jcr.Session;
 
-import org.argeo.eclipse.ui.dialogs.Error;
+import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.gis.ui.editors.MapEditorInput;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -22,7 +22,7 @@ public class AddLayer extends AbstractHandler {
 					.openEditor(new MapEditorInput(session.getRootNode()),
 							editorId);
 		} catch (Exception e) {
-			Error.show("Cannot open editor", e);
+			ErrorFeedback.show("Cannot open editor", e);
 		}
 		return null;
 	}

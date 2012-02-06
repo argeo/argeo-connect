@@ -4,6 +4,9 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+	<bean id="deleteNodes" class="org.argeo.connect.ui.gps.commands.DeleteNodesExt"
+			scope="prototype" />
+	
 	<bean id="openNewRepoWizard" class="org.argeo.connect.ui.gps.commands.OpenNewRepoWizard"
 		scope="prototype">
 		<property name="uiJcrServices" ref="uiJcrServices" />

@@ -228,7 +228,7 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 				values.addAll(uiJcrServices.getCatalogFromSession(
 						currCleanSession, propertyName));
 			}
-			if (!values.isEmpty())
+			if (values!= null && !values.isEmpty())
 				combo.setItems(values.toArray(new String[0]));
 			String curValue = null;
 			if (currCleanSession.hasProperty(defaultPropertyName))
@@ -662,9 +662,12 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 			fileNode.setProperty(ConnectNames.CONNECT_SENSOR_NAME, sessionNode
 					.getProperty(ConnectNames.CONNECT_DEFAULT_SENSOR)
 					.getString());
-			fileNode.setProperty(ConnectNames.CONNECT_DEVICE_NAME, sessionNode
-					.getProperty(ConnectNames.CONNECT_DEFAULT_DEVICE)
-					.getString());
+			fileNode.setProperty(
+					ConnectNames.CONNECT_DEVICE_NAME,
+					sessionNode
+							.hasProperty(ConnectNames.CONNECT_DEFAULT_DEVICE) ? sessionNode
+							.getProperty(ConnectNames.CONNECT_DEFAULT_DEVICE)
+							.getString() : "");
 			sessionNode.getSession().save();
 			droppedNodes.put(refId, fileNode);
 		} catch (RepositoryException e) {

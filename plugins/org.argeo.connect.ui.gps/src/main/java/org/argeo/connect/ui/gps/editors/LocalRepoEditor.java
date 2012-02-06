@@ -4,8 +4,6 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
 import org.argeo.connect.ui.gps.GpsUiGisServices;
@@ -24,7 +22,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
  */
 
 public class LocalRepoEditor extends FormEditor {
-	private final static Log log = LogFactory.getLog(LocalRepoEditor.class);
+	// private final static Log log = LogFactory.getLog(LocalRepoEditor.class);
 
 	public static final String ID = "org.argeo.connect.ui.gps.localRepoEditor";
 

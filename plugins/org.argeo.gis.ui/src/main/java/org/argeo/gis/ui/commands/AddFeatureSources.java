@@ -12,8 +12,8 @@ import javax.jcr.Session;
 
 import org.argeo.ArgeoException;
 import org.argeo.eclipse.ui.AbstractTreeContentProvider;
+import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.eclipse.ui.TreeParent;
-import org.argeo.eclipse.ui.dialogs.Error;
 import org.argeo.geotools.jcr.GeoJcrMapper;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -60,7 +60,7 @@ public class AddFeatureSources extends AbstractHandler {
 				}
 			}
 		} catch (Exception e) {
-			Error.show("Cannot add new feature source", e);
+			ErrorFeedback.show("Cannot add new feature source", e);
 		}
 		return null;
 	}

@@ -46,6 +46,11 @@
 		point="org.eclipse.ui.commands">
 		<command
 			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
+			id="org.argeo.connect.ui.gps.deleteNodes"
+			name="DeleteNode">
+		</command>
+		<command
+			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
 			id="org.argeo.connect.ui.gps.importGpx"
 			name="ImportGPX ">
 		</command>
@@ -115,11 +120,6 @@
 			<command
 				commandId="org.argeo.jcr.ui.explorer.refresh"
 				icon="icons/refresh.png"
-				style="push">
-			</command>
-			<command
-				commandId="org.argeo.jcr.ui.explorer.deleteNode"
-				icon="icons/remove.gif"
 				style="push">
 			</command>
 		</menuContribution>

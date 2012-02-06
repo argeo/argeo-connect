@@ -1,13 +1,11 @@
 package org.argeo.gis.ui.views;
 
-import java.io.IOException;
-
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.ArgeoException;
-import org.argeo.eclipse.ui.Error;
+import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.eclipse.ui.jcr.JcrImages;
 import org.argeo.eclipse.ui.jcr.SimpleNodeContentProvider;
 import org.argeo.gis.GisTypes;
@@ -25,7 +23,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.part.ViewPart;
@@ -39,7 +36,7 @@ public class FeatureSourcesView extends ViewPart implements
 
 	private TreeViewer viewer;
 
-	private String editorId="org.argeo.connect.ui.crisis.defaultMapEditor";
+	private String editorId = "org.argeo.connect.ui.crisis.defaultMapEditor";
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -90,7 +87,7 @@ public class FeatureSourcesView extends ViewPart implements
 						.getFeatureSource(node).getBounds();
 				mapViewer.setAreaOfInterest(areaOfInterest);
 			} catch (Exception e) {
-				Error.show("Cannot open " + node, e);
+				ErrorFeedback.show("Cannot open " + node, e);
 			}
 		}
 	}

@@ -22,6 +22,7 @@ import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
 import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.commands.AddFileFolder;
+import org.argeo.connect.ui.gps.commands.DeleteNodesExt;
 import org.argeo.connect.ui.gps.commands.ImportDirectoryContent;
 import org.argeo.connect.ui.gps.commands.NewCleanDataSession;
 import org.argeo.connect.ui.gps.commands.OpenNewRepoWizard;
@@ -200,6 +201,7 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 			boolean isSession = false;
 			boolean isLocalRepoParent = false;
 			boolean isCompleted = false;
+			boolean canBeDeleted = false;
 			Node curNode = null;
 
 			if (!multipleSel && selection.getFirstElement() instanceof Node) {
@@ -219,6 +221,11 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 					isCompleted = curNode.getProperty(
 							ConnectNames.CONNECT_IS_SESSION_COMPLETE)
 							.getBoolean();
+
+				if (isCompleted || isSessionRepo || isLocalRepoParent)
+					canBeDeleted = false;
+				else
+					canBeDeleted = true;
 			}
 
 			// Effective Refresh
@@ -253,20 +260,24 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 							NewCleanDataSession.DEFAULT_ICON_REL_PATH,
 							isSessionRepo, null);
 				}
-			}
 
-			params = new HashMap<String, String>();
-			params.put(RemoveImportedData.PARAM_SESSION_ID,
-					curNode.getIdentifier());
-			refreshCommand(menuManager, window, RemoveImportedData.ID,
-					RemoveImportedData.DEFAULT_LABEL,
-					RemoveImportedData.DEFAULT_ICON_REL_PATH, isCompleted,
-					params);
+				params = new HashMap<String, String>();
+				params.put(RemoveImportedData.PARAM_SESSION_ID,
+						curNode.getIdentifier());
+				refreshCommand(menuManager, window, RemoveImportedData.ID,
+						RemoveImportedData.DEFAULT_LABEL,
+						RemoveImportedData.DEFAULT_ICON_REL_PATH, isCompleted,
+						params);
+			}
 
 			refreshCommand(menuManager, window, OpenNewRepoWizard.ID,
 					OpenNewRepoWizard.DEFAULT_LABEL,
 					OpenNewRepoWizard.DEFAULT_ICON_REL_PATH, isLocalRepoParent,
 					null);
+
+			refreshCommand(menuManager, window, DeleteNodesExt.ID,
+					DeleteNodesExt.DEFAULT_LABEL,
+					DeleteNodesExt.DEFAULT_ICON_REL_PATH, canBeDeleted, null);
 
 		} catch (RepositoryException re) {
 			throw new ArgeoException(

@@ -240,11 +240,11 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 							getSite().getShell(),
 							"Import done",
 							null,
-							"Clean data have been pushed to referential "
+							"Clean data have been pushed to referential.\n"
 									+ uiServices
 											.getReferentialDisplayName(uiServices
 													.getLinkedReferential(currCS))
-									+ "\n Current clean session is now read only.",
+									+ "Current clean session is now read only.",
 							SWT.NONE, new String[] { "OK" }, 0);
 					dialog.open();
 				}
