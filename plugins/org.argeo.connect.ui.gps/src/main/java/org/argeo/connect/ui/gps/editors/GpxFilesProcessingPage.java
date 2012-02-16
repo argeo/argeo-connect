@@ -81,7 +81,8 @@ import org.eclipse.ui.forms.widgets.Section;
  * 
  */
 public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
-	// private final static Log log = LogFactory.getLog(DataSetPage.class);
+	// private final static Log log = LogFactory
+	// .getLog(GpxFilesProcessingPage.class);
 
 	public final static String ID = "cleanDataEditor.gpxFilesProcessingPage";
 
@@ -100,6 +101,7 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 	// corresponding node under currentSessionNode
 	private Map<String, Node> droppedNodes = new HashMap<String, Node>();
 
+	// DOES NOT WORK BEFORE RAP 1.4
 	// Rendering to differentiate new files from the already processed ones.
 	// private final static Color grey = new Color(null, 200, 200, 200);
 	// private Styler NOT_EDITABLE = new Styler() {
@@ -336,74 +338,15 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 		// File name column
 		column = createTableViewerColumn(filesViewer, "Files", 200);
 		column.setLabelProvider(new FilesTableLabelProvider());
-		// new StyledCellLabelProvider() {
-		// public void update(final ViewerCell cell) {
-		// try {
-		// Node cnode = (Node) cell.getElement();
-		// String currentText = cnode.getName();
-		// StyledString styledString;
-		// if (canEditLine(cnode))
-		// styledString = new StyledString(currentText,
-		// DEFAULT_FONT);
-		// else
-		// styledString = new StyledString(currentText,
-		// NOT_EDITABLE);
-		// cell.setText(styledString.getString());
-		// cell.setStyleRanges(styledString.getStyleRanges());
-		// } catch (RepositoryException re) {
-		// throw new ArgeoException("Problem getting sensor name", re);
-		// }
-		// }
-		// });
 
 		// Sensor name column
 		column = createTableViewerColumn(filesViewer, "Sensor", 200);
 		column.setLabelProvider(new FilesTableLabelProvider());
-		// new StyledCellLabelProvider() {
-		// public void update(final ViewerCell cell) {
-		// try {
-		// Node cnode = (Node) cell.getElement();
-		// String currentText = cnode.getProperty(
-		// ConnectNames.CONNECT_SENSOR_NAME).getString();
-		// StyledString styledString;
-		// if (canEditLine(cnode))
-		// styledString = new StyledString(currentText,
-		// DEFAULT_FONT);
-		// else
-		// styledString = new StyledString(currentText,
-		// NOT_EDITABLE);
-		// cell.setText(styledString.getString());
-		// cell.setStyleRanges(styledString.getStyleRanges());
-		// } catch (RepositoryException re) {
-		// throw new ArgeoException("Problem getting sensor name", re);
-		// }
-		// }
-		// });
 		column.setEditingSupport(new SensorNameEditingSupport(filesViewer));
 
 		// Device name column
 		column = createTableViewerColumn(filesViewer, "Device", 200);
 		column.setLabelProvider(new FilesTableLabelProvider());
-		// new StyledCellLabelProvider() {
-		// public void update(final ViewerCell cell) {
-		// try {
-		// Node cnode = (Node) cell.getElement();
-		// String currentText = cnode.getProperty(
-		// ConnectNames.CONNECT_DEVICE_NAME).getString();
-		// StyledString styledString;
-		// if (canEditLine(cnode))
-		// styledString = new StyledString(currentText,
-		// DEFAULT_FONT);
-		// else
-		// styledString = new StyledString(currentText,
-		// NOT_EDITABLE);
-		// cell.setText(styledString.getString());
-		// cell.setStyleRanges(styledString.getStyleRanges());
-		// } catch (RepositoryException re) {
-		// throw new ArgeoException("Problem getting sensor name", re);
-		// }
-		// }
-		// });
 		column.setEditingSupport(new DeviceNameEditingSupport(filesViewer));
 
 		filesViewer.setContentProvider(new NodesContentProvider());
@@ -412,6 +355,7 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 	}
 
 	private class FilesTableLabelProvider extends CellLabelProvider {
+		// extends StyledCellLabelProvider {
 
 		private static final int COLUMN_CHK_BOX = 0;
 		private static final int COLUMN_FILE_NAME = 1;
@@ -419,33 +363,39 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 		private static final int COLUMN_DEVICE = 3;
 
 		private final Device device;
-		private final Font normalFont;
-		private final Font alreadyImportedFont;
+		private Font normalFont;
+		private Font alreadyImportedFont;
 		private final Color grey = new Color(null, 200, 200, 200);
 		private final Color black = new Color(null, 0, 0, 0);
-
-		// private final Color normalColor;
-		// private final Color alreadyImportedColor;
 
 		FilesTableLabelProvider() {
 			super();
 			this.device = ConnectGpsUiPlugin.getDefault().getWorkbench()
 					.getDisplay();
-			// TODO: remove hardcoded fonts 
-			this.normalFont = createFont(
-					"'Segoe UI', Corbel, Calibri, Tahoma, 'Lucida Sans Unicode', sans-serif",
-					12, SWT.NORMAL);
-			// this.normalColor = Graphics.getColor(255, 0, 0);
-			this.alreadyImportedFont = createFont(
-					"'Segoe UI', Corbel, Calibri, Tahoma, 'Lucida Sans Unicode', sans-serif",
-					12, SWT.ITALIC);
-			// this.alreadyImportedColor = Graphics.getColor(127, 127, 127);
 		}
 
 		@Override
 		public void update(ViewerCell cell) {
-			try {
+			if (normalFont == null) {
+				// initialize on first pass
+				// Workaround to wait for RAP 1.4
+				FontData[] fontDatas = cell.getFont().getFontData();
+				if (fontDatas[0] != null) {
+					normalFont = new Font(device, fontDatas[0]);
+					fontDatas[0].setStyle(SWT.ITALIC);
+					alreadyImportedFont = new Font(device, fontDatas[0]);
+				} else {
 
+					normalFont = createFont(
+							"'Segoe UI', Corbel, Calibri, Tahoma, 'Lucida Sans Unicode', sans-serif",
+							12, SWT.NORMAL);
+					alreadyImportedFont = createFont(
+							"'Segoe UI', Corbel, Calibri, Tahoma, 'Lucida Sans Unicode', sans-serif",
+							12, SWT.ITALIC);
+				}
+			}
+
+			try {
 				int columnIndex = cell.getColumnIndex();
 				Node cnode = (Node) cell.getElement();
 				String currText = null;
@@ -465,6 +415,16 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 							ConnectNames.CONNECT_DEVICE_NAME).getString();
 					break;
 				}
+				
+				// if (canEditLine(cnode))
+				// styledString = new StyledString(currentText,
+				// DEFAULT_FONT);
+				// else
+				// styledString = new StyledString(currentText,
+				// NOT_EDITABLE);
+				// cell.setText(styledString.getString());
+				// cell.setStyleRanges(styledString.getStyleRanges());
+				
 				if (canEditLine(cnode)) {
 					cell.setText(currText);
 					cell.setFont(normalFont);
