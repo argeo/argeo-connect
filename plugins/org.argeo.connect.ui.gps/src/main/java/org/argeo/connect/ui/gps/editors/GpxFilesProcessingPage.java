@@ -29,15 +29,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.StyledCellLabelProvider;
-import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
@@ -52,8 +49,10 @@ import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -102,23 +101,23 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 	private Map<String, Node> droppedNodes = new HashMap<String, Node>();
 
 	// Rendering to differentiate new files from the already processed ones.
-	private final static Color grey = new Color(null, 200, 200, 200);
-	private Styler NOT_EDITABLE = new Styler() {
-		@Override
-		public void applyStyles(TextStyle textStyle) {
-			textStyle.foreground = grey;
-			textStyle.font = JFaceResources.getFontRegistry().getItalic(
-					JFaceResources.DEFAULT_FONT);
-		}
-	};
-	private Styler DEFAULT_FONT = new Styler() {
-		@Override
-		public void applyStyles(TextStyle textStyle) {
-			textStyle.foreground = new Color(null, 0, 0, 0);
-			textStyle.font = JFaceResources
-					.getFont(JFaceResources.DEFAULT_FONT);
-		}
-	};
+	// private final static Color grey = new Color(null, 200, 200, 200);
+	// private Styler NOT_EDITABLE = new Styler() {
+	// @Override
+	// public void applyStyles(TextStyle textStyle) {
+	// textStyle.foreground = grey;
+	// textStyle.font = JFaceResources.getFontRegistry().getItalic(
+	// JFaceResources.DEFAULT_FONT);
+	// }
+	// };
+	// private Styler DEFAULT_FONT = new Styler() {
+	// @Override
+	// public void applyStyles(TextStyle textStyle) {
+	// textStyle.foreground = new Color(null, 0, 0, 0);
+	// textStyle.font = JFaceResources
+	// .getFont(JFaceResources.DEFAULT_FONT);
+	// }
+	// };
 
 	/** effective processing of a single GPX file */
 	private void importOneNode(String refNodeId, IProgressMonitor monitor,
@@ -228,7 +227,7 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 				values.addAll(uiJcrServices.getCatalogFromSession(
 						currCleanSession, propertyName));
 			}
-			if (values!= null && !values.isEmpty())
+			if (values != null && !values.isEmpty())
 				combo.setItems(values.toArray(new String[0]));
 			String curValue = null;
 			if (currCleanSession.hasProperty(defaultPropertyName))
@@ -336,77 +335,146 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 
 		// File name column
 		column = createTableViewerColumn(filesViewer, "Files", 200);
-		column.setLabelProvider(new StyledCellLabelProvider() {
-			public void update(final ViewerCell cell) {
-				try {
-					Node cnode = (Node) cell.getElement();
-					String currentText = cnode.getName();
-					StyledString styledString;
-					if (canEditLine(cnode))
-						styledString = new StyledString(currentText,
-								DEFAULT_FONT);
-					else
-						styledString = new StyledString(currentText,
-								NOT_EDITABLE);
-					cell.setText(styledString.getString());
-					cell.setStyleRanges(styledString.getStyleRanges());
-				} catch (RepositoryException re) {
-					throw new ArgeoException("Problem getting sensor name", re);
-				}
-			}
-		});
+		column.setLabelProvider(new FilesTableLabelProvider());
+		// new StyledCellLabelProvider() {
+		// public void update(final ViewerCell cell) {
+		// try {
+		// Node cnode = (Node) cell.getElement();
+		// String currentText = cnode.getName();
+		// StyledString styledString;
+		// if (canEditLine(cnode))
+		// styledString = new StyledString(currentText,
+		// DEFAULT_FONT);
+		// else
+		// styledString = new StyledString(currentText,
+		// NOT_EDITABLE);
+		// cell.setText(styledString.getString());
+		// cell.setStyleRanges(styledString.getStyleRanges());
+		// } catch (RepositoryException re) {
+		// throw new ArgeoException("Problem getting sensor name", re);
+		// }
+		// }
+		// });
 
 		// Sensor name column
 		column = createTableViewerColumn(filesViewer, "Sensor", 200);
-		column.setLabelProvider(new StyledCellLabelProvider() {
-			public void update(final ViewerCell cell) {
-				try {
-					Node cnode = (Node) cell.getElement();
-					String currentText = cnode.getProperty(
-							ConnectNames.CONNECT_SENSOR_NAME).getString();
-					StyledString styledString;
-					if (canEditLine(cnode))
-						styledString = new StyledString(currentText,
-								DEFAULT_FONT);
-					else
-						styledString = new StyledString(currentText,
-								NOT_EDITABLE);
-					cell.setText(styledString.getString());
-					cell.setStyleRanges(styledString.getStyleRanges());
-				} catch (RepositoryException re) {
-					throw new ArgeoException("Problem getting sensor name", re);
-				}
-			}
-		});
+		column.setLabelProvider(new FilesTableLabelProvider());
+		// new StyledCellLabelProvider() {
+		// public void update(final ViewerCell cell) {
+		// try {
+		// Node cnode = (Node) cell.getElement();
+		// String currentText = cnode.getProperty(
+		// ConnectNames.CONNECT_SENSOR_NAME).getString();
+		// StyledString styledString;
+		// if (canEditLine(cnode))
+		// styledString = new StyledString(currentText,
+		// DEFAULT_FONT);
+		// else
+		// styledString = new StyledString(currentText,
+		// NOT_EDITABLE);
+		// cell.setText(styledString.getString());
+		// cell.setStyleRanges(styledString.getStyleRanges());
+		// } catch (RepositoryException re) {
+		// throw new ArgeoException("Problem getting sensor name", re);
+		// }
+		// }
+		// });
 		column.setEditingSupport(new SensorNameEditingSupport(filesViewer));
 
 		// Device name column
 		column = createTableViewerColumn(filesViewer, "Device", 200);
-		column.setLabelProvider(new StyledCellLabelProvider() {
-			public void update(final ViewerCell cell) {
-				try {
-					Node cnode = (Node) cell.getElement();
-					String currentText = cnode.getProperty(
-							ConnectNames.CONNECT_DEVICE_NAME).getString();
-					StyledString styledString;
-					if (canEditLine(cnode))
-						styledString = new StyledString(currentText,
-								DEFAULT_FONT);
-					else
-						styledString = new StyledString(currentText,
-								NOT_EDITABLE);
-					cell.setText(styledString.getString());
-					cell.setStyleRanges(styledString.getStyleRanges());
-				} catch (RepositoryException re) {
-					throw new ArgeoException("Problem getting sensor name", re);
-				}
-			}
-		});
+		column.setLabelProvider(new FilesTableLabelProvider());
+		// new StyledCellLabelProvider() {
+		// public void update(final ViewerCell cell) {
+		// try {
+		// Node cnode = (Node) cell.getElement();
+		// String currentText = cnode.getProperty(
+		// ConnectNames.CONNECT_DEVICE_NAME).getString();
+		// StyledString styledString;
+		// if (canEditLine(cnode))
+		// styledString = new StyledString(currentText,
+		// DEFAULT_FONT);
+		// else
+		// styledString = new StyledString(currentText,
+		// NOT_EDITABLE);
+		// cell.setText(styledString.getString());
+		// cell.setStyleRanges(styledString.getStyleRanges());
+		// } catch (RepositoryException re) {
+		// throw new ArgeoException("Problem getting sensor name", re);
+		// }
+		// }
+		// });
 		column.setEditingSupport(new DeviceNameEditingSupport(filesViewer));
 
 		filesViewer.setContentProvider(new NodesContentProvider());
 		filesViewer.setInput(droppedNodes);
 		return null;
+	}
+
+	private class FilesTableLabelProvider extends CellLabelProvider {
+
+		private static final int COLUMN_CHK_BOX = 0;
+		private static final int COLUMN_FILE_NAME = 1;
+		private static final int COLUMN_SENSOR = 2;
+		private static final int COLUMN_DEVICE = 3;
+
+		private final Device device;
+		private final Font normalFont;
+		private final Font alreadyImportedFont;
+		private final Color grey = new Color(null, 200, 200, 200);
+		private final Color black = new Color(null, 0, 0, 0);
+
+		// private final Color normalColor;
+		// private final Color alreadyImportedColor;
+
+		FilesTableLabelProvider() {
+			super();
+			this.device = ConnectGpsUiPlugin.getDefault().getWorkbench()
+					.getDisplay();
+			this.normalFont = createFont("Times New Roman", 13, SWT.BOLD);
+			// this.normalColor = Graphics.getColor(255, 0, 0);
+			this.alreadyImportedFont = createFont("Times New Roman", 13,
+					SWT.ITALIC);
+			// this.alreadyImportedColor = Graphics.getColor(127, 127, 127);
+		}
+
+		@Override
+		public void update(ViewerCell cell) {
+			try {
+
+				int columnIndex = cell.getColumnIndex();
+				Node cnode = (Node) cell.getElement();
+				String currText = null;
+				switch (columnIndex) {
+				case COLUMN_CHK_BOX:
+					throw new ArgeoException("This label provider"
+							+ " is not intended to be used with the checkbox");
+				case COLUMN_FILE_NAME:
+					currText = cnode.getName();
+					break;
+				case COLUMN_SENSOR:
+					currText = cnode.getProperty(
+							ConnectNames.CONNECT_SENSOR_NAME).getString();
+					break;
+				case COLUMN_DEVICE:
+					currText = cnode.getProperty(
+							ConnectNames.CONNECT_DEVICE_NAME).getString();
+					break;
+				}
+				cell.setText(currText);
+				cell.setFont(alreadyImportedFont);
+				cell.setForeground(grey);
+
+			} catch (RepositoryException re) {
+				throw new ArgeoException(
+						"Error while retrieving file properties.", re);
+			}
+		}
+
+		private Font createFont(String name, int size, int style) {
+			FontData fontData = new FontData(name, size, style);
+			return new Font(device, fontData);
+		}
 	}
 
 	private void addButtonsPart(Composite parent) {
