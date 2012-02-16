@@ -431,10 +431,14 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 			super();
 			this.device = ConnectGpsUiPlugin.getDefault().getWorkbench()
 					.getDisplay();
-			this.normalFont = createFont("Times New Roman", 13, SWT.BOLD);
+			// TODO: remove hardcoded fonts 
+			this.normalFont = createFont(
+					"'Segoe UI', Corbel, Calibri, Tahoma, 'Lucida Sans Unicode', sans-serif",
+					12, SWT.NORMAL);
 			// this.normalColor = Graphics.getColor(255, 0, 0);
-			this.alreadyImportedFont = createFont("Times New Roman", 13,
-					SWT.ITALIC);
+			this.alreadyImportedFont = createFont(
+					"'Segoe UI', Corbel, Calibri, Tahoma, 'Lucida Sans Unicode', sans-serif",
+					12, SWT.ITALIC);
 			// this.alreadyImportedColor = Graphics.getColor(127, 127, 127);
 		}
 
@@ -461,9 +465,15 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 							ConnectNames.CONNECT_DEVICE_NAME).getString();
 					break;
 				}
-				cell.setText(currText);
-				cell.setFont(alreadyImportedFont);
-				cell.setForeground(grey);
+				if (canEditLine(cnode)) {
+					cell.setText(currText);
+					cell.setFont(normalFont);
+					cell.setForeground(black);
+				} else {
+					cell.setText(currText);
+					cell.setFont(alreadyImportedFont);
+					cell.setForeground(grey);
+				}
 
 			} catch (RepositoryException re) {
 				throw new ArgeoException(

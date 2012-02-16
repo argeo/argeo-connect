@@ -26,7 +26,7 @@ import org.argeo.gis.ui.MapViewer;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FillLayout;
+//import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -256,7 +256,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	protected void createMapPart(Composite parent) {
 		Composite mapArea = formToolkit.createComposite(parent, SWT.BORDER);
 		mapArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		FillLayout layout = new FillLayout();
+		GridLayout layout = new GridLayout();
 		mapArea.setLayout(layout);
 		MapControlCreator mcc = uiGisServices.getMapControlCreator();
 		mapViewer = mcc.createMapControl(currCleanSession, mapArea);

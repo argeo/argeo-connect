@@ -14,7 +14,6 @@ import org.argeo.gis.ui.MapViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -126,7 +125,7 @@ public class LocalRepoViewerPage extends FormPage {
 		mapArea = getManagedForm().getToolkit().createComposite(parent,
 				SWT.BORDER);
 		mapArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		FillLayout layout = new FillLayout(SWT.FILL);
+		GridLayout layout = new GridLayout();
 		mapArea.setLayout(layout);
 		mapViewer = getEditor().getUiGisServices().getMapControlCreator()
 				.createMapControl(getEditor().getCurrentRepoNode(), mapArea);
