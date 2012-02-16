@@ -137,10 +137,12 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 		// String srs = "EPSG:4326";
 
 		// map.setProjection(new Projection("EPSG:900913"));
-		WMSLayer wmsLayer = new WMSLayer("Sudan Basemap",
-				"https://gis.argeo.org:443/geoserver/wms", "sudan_basemap");
-		wmsLayer.setFormat("image/png");
-		map.addLayer(wmsLayer);
+
+//		WMSLayer wmsLayer = new WMSLayer("Sudan Basemap",
+//				"https://gis.argeo.org:443/geoserver/wms", "sudan_basemap");
+//		wmsLayer.setFormat("image/png");
+//		map.addLayer(wmsLayer);
+		
 		// map.zoomToExtent(bounds, true);
 		OSMLayer osmLayer = new OSMLayer("OSM",
 				"http://tile.openstreetmap.org/${z}/${x}/${y}.png", 19);
@@ -150,12 +152,12 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 		// "Virtual Earth Aerial", VirtualEarthLayer.AERIAL, true);
 		// map.addLayer(virtualEarthLayer);
 
-		map.addLayer(new GoogleLayer("Google Satellite",
-				GoogleLayer.G_SATELLITE_MAP));
-		map.addLayer(new GoogleLayer("Google Physical",
-				GoogleLayer.G_PHYSICAL_MAP));
-		map.addLayer(new GoogleLayer("Google Default", null));
-		map.addLayer(new GoogleLayer("Google Hybrid", GoogleLayer.G_HYBRID_MAP));
+//		map.addLayer(new GoogleLayer("Google Satellite",
+//				GoogleLayer.G_SATELLITE_MAP));
+//		map.addLayer(new GoogleLayer("Google Physical",
+//				GoogleLayer.G_PHYSICAL_MAP));
+//		map.addLayer(new GoogleLayer("Google Default", null));
+//		map.addLayer(new GoogleLayer("Google Hybrid", GoogleLayer.G_HYBRID_MAP));
 
 		map.addControl(new OverviewMapControl());
 
@@ -322,15 +324,16 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 				attributes: for (AttributeDescriptor desc : feature.getType()
 						.getAttributeDescriptors()) {
 					Object obj = feature.getAttribute(desc.getName());
+
 					if (obj instanceof Geometry)
 						continue attributes;
-					// log.debug("name=" + desc.getName() + ", local="
-					// + desc.getLocalName() + ", value=" + obj);
-					if (obj instanceof Integer)
+					else if (obj == null)
+						vf.setObjAttr(desc.getLocalName(), (String) null);
+					else if (obj instanceof Integer)
 						vf.setObjAttr(desc.getLocalName(), (Integer) obj);
-					if (obj instanceof Double)
+					else if (obj instanceof Double)
 						vf.setObjAttr(desc.getLocalName(), (Double) obj);
-					if (obj instanceof Boolean)
+					else if (obj instanceof Boolean)
 						vf.setObjAttr(desc.getLocalName(), (Double) obj);
 					else
 						vf.setObjAttr(desc.getLocalName(), obj.toString());
