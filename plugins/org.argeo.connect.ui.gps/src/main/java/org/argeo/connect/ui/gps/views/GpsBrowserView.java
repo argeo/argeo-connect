@@ -49,8 +49,8 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -87,7 +87,7 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 				uiJcrServices.getJcrSession());
 		fileHandler = new FileHandler(ssfp);
 
-		parent.setLayout(new FillLayout());
+		parent.setLayout(new GridLayout());
 
 		// String userHomePath = JcrUtils.getUserHomePath(username);
 
