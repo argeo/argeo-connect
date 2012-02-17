@@ -47,7 +47,8 @@ public class GpsDoubleClickListener implements IDoubleClickListener {
 				// open the file
 				String name = node.getName();
 				String id = node.getPath();
-				fileHandler.openFile(name, id);
+				// TODO fix file download on RAP
+				// fileHandler.openFile(name, id);
 			} else if (node
 					.isNodeType(ConnectTypes.CONNECT_CLEAN_TRACK_SESSION)) {
 				// Call parameterized command "open Editor"
