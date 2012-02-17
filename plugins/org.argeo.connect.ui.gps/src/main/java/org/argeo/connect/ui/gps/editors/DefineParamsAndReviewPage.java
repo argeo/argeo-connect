@@ -21,12 +21,10 @@ import org.argeo.connect.ui.gps.commons.SliderViewerListener;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.geotools.styling.StylingUtils;
-import org.argeo.gis.ui.MapControlCreator;
 import org.argeo.gis.ui.MapViewer;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-//import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -203,8 +201,9 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		}
 
 		public void valueChanged(Double value) {
-			refreshSpeedLayer(uiJcrServices
-					.getCleanSessionTechName(currCleanSession));
+			// TODO Enable this @ RAP WORKAROUND FOR LEUVEN PROJECT
+			// refreshSpeedLayer(uiJcrServices
+			// .getCleanSessionTechName(currCleanSession));
 			formPart.setValue(value);
 			formPart.markDirty();
 		}
@@ -258,9 +257,10 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		mapArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		GridLayout layout = new GridLayout();
 		mapArea.setLayout(layout);
-		MapControlCreator mcc = uiGisServices.getMapControlCreator();
-		mapViewer = mcc.createMapControl(currCleanSession, mapArea);
-		uiGisServices.addBaseLayers(mapViewer);
+		// TODO Enable this @ RAP WORKAROUND FOR LEUVEN PROJECT
+		// MapControlCreator mcc = uiGisServices.getMapControlCreator();
+		// mapViewer = mcc.createMapControl(currCleanSession, mapArea);
+		// uiGisServices.addBaseLayers(mapViewer);
 	}
 
 	private void pushDataToLocalRepo() {
