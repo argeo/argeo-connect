@@ -382,7 +382,7 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 				FontData[] fontDatas = cell.getFont().getFontData();
 				if (fontDatas[0] != null) {
 					normalFont = new Font(device, fontDatas[0]);
-					fontDatas[0].setStyle(SWT.ITALIC);
+					//fontDatas[0].setStyle(SWT.ITALIC);
 					alreadyImportedFont = new Font(device, fontDatas[0]);
 				} else {
 
