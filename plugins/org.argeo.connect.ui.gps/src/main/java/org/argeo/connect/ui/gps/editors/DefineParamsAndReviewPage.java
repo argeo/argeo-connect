@@ -37,7 +37,6 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.geotools.data.FeatureSource;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.styling.Style;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -79,15 +78,17 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		createParameterPart(body);
 		// Create and populate bottom part
 		createMapPart(body);
-		try {
-			addSpeedLayer(uiJcrServices
-					.getCleanSessionTechName(currCleanSession));
-		} catch (Exception e) {
-			ErrorFeedback
-					.show("Cannot load speed layer. Did you import the GPX files from the previous tab?",
-							e);
-			getEditor().setActivePage(GpxFilesProcessingPage.ID);
-		}
+
+		// TODO Enable this @ RAP WORKAROUND FOR LEUVEN PROJECT
+		// try {
+		// addSpeedLayer(uiJcrServices
+		// .getCleanSessionTechName(currCleanSession));
+		// } catch (Exception e) {
+		// ErrorFeedback
+		// .show("Cannot load speed layer. Did you import the GPX files from the previous tab?",
+		// e);
+		// getEditor().setActivePage(GpxFilesProcessingPage.ID);
+		// }
 	}
 
 	private void createParameterPart(Composite top) {
@@ -303,26 +304,26 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	/*
 	 * GIS
 	 */
-	protected void addSpeedLayer(String cleanSession) {
-		// Add speeds layer
-		String trackSpeedsPath = uiGisServices.getTrackDao()
-				.getTrackSpeedsSource(cleanSession);
-		try {
-
-			Node layerNode = currCleanSession.getSession().getNode(
-					trackSpeedsPath);
-			mapViewer.addLayer(layerNode, createToCleanStyle());
-
-			// mapViewer.setCoordinateReferenceSystem("EPSG:3857");
-
-			ReferencedEnvelope areaOfInterest = getFeatureSource(cleanSession)
-					.getBounds();
-			mapViewer.setAreaOfInterest(areaOfInterest);
-		} catch (Exception e) {
-			throw new ArgeoException("Cannot add layer " + trackSpeedsPath, e);
-		}
-
-	}
+	// protected void addSpeedLayer(String cleanSession) {
+	// // Add speeds layer
+	// String trackSpeedsPath = uiGisServices.getTrackDao()
+	// .getTrackSpeedsSource(cleanSession);
+	// try {
+	//
+	// Node layerNode = currCleanSession.getSession().getNode(
+	// trackSpeedsPath);
+	// mapViewer.addLayer(layerNode, createToCleanStyle());
+	//
+	// // mapViewer.setCoordinateReferenceSystem("EPSG:3857");
+	//
+	// ReferencedEnvelope areaOfInterest = getFeatureSource(cleanSession)
+	// .getBounds();
+	// mapViewer.setAreaOfInterest(areaOfInterest);
+	// } catch (Exception e) {
+	// throw new ArgeoException("Cannot add layer " + trackSpeedsPath, e);
+	// }
+	//
+	// }
 
 	protected FeatureSource<SimpleFeatureType, SimpleFeature> getFeatureSource(
 			String cleanSession) {
