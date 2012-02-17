@@ -1,8 +1,6 @@
 package org.argeo.connect.ui.gps.editors;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.jcr.Node;
 
@@ -27,8 +25,10 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.feature.DefaultFeatureCollections;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.styling.Style;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
@@ -140,25 +140,26 @@ public class LocalRepoViewerPage extends FormPage {
 	 * GIS
 	 */
 	protected void addPositionsLayer() {
-		// Add position layer
-		String positionsDisplayPath = getEditor()
-				.getUiGisServices()
-				.getTrackDao()
-				.getPositionsDisplaySource(
-						getEditor().getUiJcrServices().getReferentialTechName(
-								getEditor().getCurrentRepoNode()));
-		try {
-			Node layerNode = getEditor().getCurrentRepoNode().getSession()
-					.getNode(positionsDisplayPath);
-			Style style = createSensorStyle();
-			mapViewer.addLayer(layerNode, style);
-			ReferencedEnvelope areaOfInterest = getPositionsFeatureSource()
-					.getBounds();
-			mapViewer.setAreaOfInterest(areaOfInterest);
-		} catch (Exception e) {
-			throw new ArgeoException(
-					"Cannot add layer " + positionsDisplayPath, e);
-		}
+		refreshSensorLayer();
+		// // Add position layer
+		// String positionsDisplayPath = getEditor()
+		// .getUiGisServices()
+		// .getTrackDao()
+		// .getPositionsDisplaySource(
+		// getEditor().getUiJcrServices().getReferentialTechName(
+		// getEditor().getCurrentRepoNode()));
+		// try {
+		// Node layerNode = getEditor().getCurrentRepoNode().getSession()
+		// .getNode(positionsDisplayPath);
+		// Style style = createSensorStyle();
+		// mapViewer.addLayer(layerNode, style);
+		// ReferencedEnvelope areaOfInterest = getPositionsFeatureSource()
+		// .getBounds();
+		// mapViewer.setAreaOfInterest(areaOfInterest);
+		// } catch (Exception e) {
+		// throw new ArgeoException(
+		// "Cannot add layer " + positionsDisplayPath, e);
+		// }
 	}
 
 	protected FeatureSource<SimpleFeatureType, SimpleFeature> getPositionsFeatureSource() {
@@ -181,26 +182,112 @@ public class LocalRepoViewerPage extends FormPage {
 		}
 	}
 
-	protected void refreshSensorLayer() {
-		String positionsDisplayPath = getEditor()
+	protected FeatureSource<SimpleFeatureType, SimpleFeature> getPositionsDisplayFeatureSource() {
+		String trackSpeedsPath = getEditor()
 				.getUiGisServices()
 				.getTrackDao()
 				.getPositionsDisplaySource(
 						getEditor().getUiJcrServices().getReferentialTechName(
 								getEditor().getCurrentRepoNode()));
-		mapViewer.setStyle(positionsDisplayPath, createSensorStyle());
+		try {
+
+			Node layerNode = getEditor().getCurrentRepoNode().getSession()
+					.getNode(trackSpeedsPath);
+			FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = mapViewer
+					.getGeoJcrMapper().getFeatureSource(layerNode);
+			return featureSource;
+		} catch (Exception e) {
+			throw new ArgeoException("Cannot get feature source "
+					+ trackSpeedsPath, e);
+		}
 	}
 
-	protected Style createSensorStyle() {
-		Map<String, String> cqlFilters = new HashMap<String, String>();
-		if (chooseSensorCmb.getSelectionIndex() != -1) {
-			String sensor = chooseSensorCmb.getItem(chooseSensorCmb
-					.getSelectionIndex());
-			cqlFilters.put("sensor='" + sensor + "'", "RED");
+	// WORK WITH RAP
+
+	protected void refreshSensorLayer() {
+		try {
+			mapViewer.removeAllLayers();
+
+			String positionsDisplayPath = getEditor()
+					.getUiGisServices()
+					.getTrackDao()
+					.getPositionsDisplaySource(
+							getEditor().getUiJcrServices()
+									.getReferentialTechName(
+											getEditor().getCurrentRepoNode()));
+			Node featureSourceNode = getEditor().getCurrentRepoNode()
+					.getSession().getNode(positionsDisplayPath);
+			FeatureSource<SimpleFeatureType, SimpleFeature> featureSource = getPositionsDisplayFeatureSource();
+
+			if (displayAllSensorsChk.getSelection()) {
+				mapViewer.addLayer(featureSourceNode,
+						StylingUtils.createLineStyle("BLUE", 2));
+			}
+
+			if (chooseSensorCmb.getSelectionIndex() != -1) {
+				String sensor = chooseSensorCmb.getItem(chooseSensorCmb
+						.getSelectionIndex());
+
+				SimpleFeatureCollection filteredCollection = DefaultFeatureCollections
+						.newCollection();
+				FeatureIterator<SimpleFeature> featureIt = featureSource
+						.getFeatures().features();
+				while (featureIt.hasNext()) {
+					SimpleFeature feature = featureIt.next();
+					Object obj = feature.getAttribute("sensor");
+					if (obj.toString().equals(sensor)) {
+						filteredCollection.add(feature);
+					}
+				}
+				featureIt.close();
+
+				// FIXME doesn't work because of OSGi / GeoTools
+				// String cqlFilter = "sensor='" + sensor + "'";
+				// Filter filter = CQL.toFilter(cqlFilter);
+				// FeatureIterator<SimpleFeature> featureCollection
+				// =featureSource.getFeatures().subCollection(filter).features();
+				// FeatureIterator<SimpleFeature> featureCollection =
+				// featureSource
+				// .getFeatures(filter).features();
+				if (filteredCollection.size() > 0)
+					mapViewer.addLayer(sensor, filteredCollection.features(),
+							StylingUtils.createLineStyle("RED", 3));
+
+			}
+
+			ReferencedEnvelope areaOfInterest = getPositionsDisplayFeatureSource()
+					.getBounds();
+			if (areaOfInterest != null)
+				mapViewer.setAreaOfInterest(areaOfInterest);
+
+			// mapViewer.setStyle(positionsDisplayPath, createSensorStyle());
+		} catch (Exception e) {
+			throw new ArgeoException("Cannot refresh sensor layers", e);
 		}
-		String color = displayAllSensorsChk.getSelection() ? "BLACK" : null;
-		Style style = StylingUtils.createFilteredLineStyle(cqlFilters, 3,
-				color, 1);
-		return style;
 	}
+
+	// WORK WITH RCP
+
+	// protected void refreshSensorLayer() {
+	// String positionsDisplayPath = getEditor()
+	// .getUiGisServices()
+	// .getTrackDao()
+	// .getPositionsDisplaySource(
+	// getEditor().getUiJcrServices().getReferentialTechName(
+	// getEditor().getCurrentRepoNode()));
+	// mapViewer.setStyle(positionsDisplayPath, createSensorStyle());
+	// }
+	//
+	// protected Style createSensorStyle() {
+	// Map<String, String> cqlFilters = new HashMap<String, String>();
+	// if (chooseSensorCmb.getSelectionIndex() != -1) {
+	// String sensor = chooseSensorCmb.getItem(chooseSensorCmb
+	// .getSelectionIndex());
+	// cqlFilters.put("sensor='" + sensor + "'", "RED");
+	// }
+	// String color = displayAllSensorsChk.getSelection() ? "BLACK" : null;
+	// Style style = StylingUtils.createFilteredLineStyle(cqlFilters, 3,
+	// color, 1);
+	// return style;
+	// }
 }

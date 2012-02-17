@@ -58,7 +58,7 @@ public abstract class AbstractMapViewer implements MapViewer {
 			FeatureSource<SimpleFeatureType, SimpleFeature> featureSource,
 			Object style);
 
-	protected abstract void addFeatures(String layerId,
+	public abstract void addLayer(String layerId,
 			FeatureIterator<SimpleFeature> featureIterator, Object style);
 
 	public AbstractMapViewer(Node context, GeoJcrMapper geoJcrMapper) {
@@ -100,7 +100,7 @@ public abstract class AbstractMapViewer implements MapViewer {
 			}
 
 		};
-		addFeatures(layerId, featureIterator, style);
+		addLayer(layerId, featureIterator, style);
 	}
 
 	protected SimpleFeature nodeToFeature(Node node) {
@@ -273,4 +273,7 @@ public abstract class AbstractMapViewer implements MapViewer {
 		}
 	}
 
+	public void removeAllLayers() {
+		// FIXME implement in RCP
+	}
 }

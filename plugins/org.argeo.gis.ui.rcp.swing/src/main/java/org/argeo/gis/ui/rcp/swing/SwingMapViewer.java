@@ -71,7 +71,7 @@ public class SwingMapViewer extends AbstractMapViewer {
 	}
 
 	@Override
-	protected void addFeatures(String layerId,
+	public void addLayer(String layerId,
 			FeatureIterator<SimpleFeature> featureIterator, Object style) {
 		// TODO Auto-generated method stub
 

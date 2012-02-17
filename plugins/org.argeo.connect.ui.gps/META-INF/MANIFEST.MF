@@ -47,9 +47,16 @@ Import-Package: com.sun.syndication;version="1.0.0",
  org.eclipse.ui.forms.editor,
  org.eclipse.ui.forms.widgets,
  org.geotools.data,
+ org.geotools.data.simple,
+ org.geotools.feature,
+ org.geotools.feature.collection,
+ org.geotools.feature.simple,
+ org.geotools.filter.text.cql2,
  org.geotools.geometry.jts,
  org.geotools.map,
  org.geotools.styling,
  org.jdom;version="1.1.0",
- org.opengis.feature.simple
+ org.opengis.feature,
+ org.opengis.feature.simple,
+ org.opengis.filter
 Bundle-ActivationPolicy: lazy

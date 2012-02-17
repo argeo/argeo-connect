@@ -1,5 +1,6 @@
 package org.argeo.gis.ui.rap.openlayers;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,7 +20,6 @@ import org.argeo.geotools.GeoToolsUtils;
 import org.argeo.geotools.jcr.GeoJcrMapper;
 import org.argeo.gis.ui.AbstractMapViewer;
 import org.argeo.gis.ui.MapViewerListener;
-import org.argeo.gis.ui.rap.openlayers.custom.GoogleLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -27,6 +27,9 @@ import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.styling.LineSymbolizer;
+import org.geotools.styling.SLD;
+import org.geotools.styling.Symbolizer;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -51,7 +54,6 @@ import org.polymap.openlayers.rap.widget.geometry.LineStringGeometry;
 import org.polymap.openlayers.rap.widget.geometry.PointGeometry;
 import org.polymap.openlayers.rap.widget.layers.OSMLayer;
 import org.polymap.openlayers.rap.widget.layers.VectorLayer;
-import org.polymap.openlayers.rap.widget.layers.WMSLayer;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -138,11 +140,11 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 
 		// map.setProjection(new Projection("EPSG:900913"));
 
-//		WMSLayer wmsLayer = new WMSLayer("Sudan Basemap",
-//				"https://gis.argeo.org:443/geoserver/wms", "sudan_basemap");
-//		wmsLayer.setFormat("image/png");
-//		map.addLayer(wmsLayer);
-		
+		// WMSLayer wmsLayer = new WMSLayer("Sudan Basemap",
+		// "https://gis.argeo.org:443/geoserver/wms", "sudan_basemap");
+		// wmsLayer.setFormat("image/png");
+		// map.addLayer(wmsLayer);
+
 		// map.zoomToExtent(bounds, true);
 		OSMLayer osmLayer = new OSMLayer("OSM",
 				"http://tile.openstreetmap.org/${z}/${x}/${y}.png", 19);
@@ -152,17 +154,17 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 		// "Virtual Earth Aerial", VirtualEarthLayer.AERIAL, true);
 		// map.addLayer(virtualEarthLayer);
 
-//		map.addLayer(new GoogleLayer("Google Satellite",
-//				GoogleLayer.G_SATELLITE_MAP));
-//		map.addLayer(new GoogleLayer("Google Physical",
-//				GoogleLayer.G_PHYSICAL_MAP));
-//		map.addLayer(new GoogleLayer("Google Default", null));
-//		map.addLayer(new GoogleLayer("Google Hybrid", GoogleLayer.G_HYBRID_MAP));
+		// map.addLayer(new GoogleLayer("Google Satellite",
+		// GoogleLayer.G_SATELLITE_MAP));
+		// map.addLayer(new GoogleLayer("Google Physical",
+		// GoogleLayer.G_PHYSICAL_MAP));
+		// map.addLayer(new GoogleLayer("Google Default", null));
+		// map.addLayer(new GoogleLayer("Google Hybrid",
+		// GoogleLayer.G_HYBRID_MAP));
 
 		map.addControl(new OverviewMapControl());
 
 		map.addControl(new MousePositionControl());
-
 		setControl(openLayersWidget);
 	}
 
@@ -218,7 +220,7 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 			featureSources.put(layerId, featureSource);
 			FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = featureSource
 					.getFeatures();
-			addFeatures(layerId, featureCollection.features(), style);
+			addLayer(layerId, featureCollection.features(), style);
 		} catch (IOException e) {
 			log.error("Cannot add layer " + featureSource.getName(), e);
 		}
@@ -231,7 +233,7 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 	}
 
 	@Override
-	protected void addFeatures(String layerId,
+	public void addLayer(String layerId,
 			FeatureIterator<SimpleFeature> featureIterator, Object style) {
 		try {
 			Style st = null;
@@ -241,6 +243,31 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 				st.setAttribute("externalGraphic", style.toString());
 				st.setAttribute("graphicOpacity", "1");
 				st.setAttribute("pointRadius", "8");
+			} else if (style instanceof org.geotools.styling.Style) {
+				// FIXME make it more generic
+				org.geotools.styling.Style gtStyle = (org.geotools.styling.Style) style;
+				Symbolizer symb = gtStyle.featureTypeStyles().get(0).rules()
+						.get(0).getSymbolizers()[0];
+				if (symb instanceof LineSymbolizer) {
+					LineSymbolizer lSymb = (LineSymbolizer) symb;
+					Color color = SLD.color(lSymb);
+					int width = SLD.width(lSymb);
+					String hexColor = "#" + hexString2Chars(color.getRed())
+							+ hexString2Chars(color.getGreen())
+							+ hexString2Chars(color.getBlue());
+					// FIXME ugly hack because there seem to be a bug with black
+					// and blue
+					// String hexColor = SLD.colorToHex(color);
+					// if (hexColor.length() == 3)
+					// hexColor = hexColor + "0000";
+					st = new Style();
+					st.setAttribute("strokeColor", hexColor);
+					st.setAttribute("strokeWidth", width);
+					if (log.isDebugEnabled())
+						log.debug("Stroke color=" + hexColor + ", width="
+								+ width);
+
+				}
 			}
 			// AdvancedStyleMap styleMap = new AdvancedStyleMap();
 			// Map<String, String> lookup = new HashMap<String, String>();
@@ -351,6 +378,14 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 		}
 	}
 
+	/** Normalize to 2 characters */
+	private String hexString2Chars(int i) {
+		String str = Integer.toHexString(i);
+		if (str.length() == 1)
+			str = "0" + str;
+		return str;
+	}
+
 	public void addLayer(String layerId, Collection<?> collection, Object style) {
 		// TODO Auto-generated method stub
 
@@ -363,6 +398,13 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 	public void setStyle(String layerId, Object style) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public void removeAllLayers() {
+		for (String layerId : vectorLayers.keySet()) {
+			map.removeLayer(vectorLayers.get(layerId));
+		}
+		vectorLayers.clear();
 	}
 
 	@Override
