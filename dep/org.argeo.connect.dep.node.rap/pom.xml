@@ -72,14 +72,5 @@
 			<version>${version.argeo-commons}</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- LDAP server (target platform generation only) -->
-		<dependency>
-			<groupId>org.argeo.commons.security</groupId>
-			<artifactId>org.argeo.security.dep.ads</artifactId>
-			<version>${version.argeo-commons}</version>
-			<type>pom</type>
-			<scope>test</scope>
-		</dependency>
-
 	</dependencies>
 </project>
