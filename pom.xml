@@ -18,10 +18,10 @@
 		<version.connect>${developmentCycle.connect}.0</version.connect>
 	</properties>
 	<modules>
+		<module>data</module>
 		<module>runtime</module>
 		<module>plugins</module>
 		<module>modules</module>
-		<module>data</module>
 		<module>dep</module>
 		<module>dist</module>
 	</modules>
