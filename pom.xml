@@ -15,7 +15,7 @@
 		<developmentCycle.connect>0.1</developmentCycle.connect>
 		<site.repoBase>file:///srv/projects/www/connect/site</site.repoBase>
 		<site.urlBase>http://projects.argeo.org/connect/site</site.urlBase>
-		<version.connect>${developmentCycle.connect}.0-SNAPSHOT</version.connect>
+		<version.connect>${developmentCycle.connect}.0</version.connect>
 	</properties>
 	<modules>
 		<module>runtime</module>

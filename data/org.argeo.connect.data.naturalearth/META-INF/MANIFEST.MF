@@ -2,6 +2,6 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Connect subset of Natural Earth GIS data
 Bundle-SymbolicName: org.argeo.connect.data.naturalearth
-Bundle-Version: 0.1.0.SNAPSHOT
+Bundle-Version: 0.1.0
 Bundle-Activator: org.argeo.geotools.osgi.GisResourcesActivator
 Import-Package: org.argeo.geotools.osgi
