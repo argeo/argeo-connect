@@ -1,7 +1,17 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Connect subset of Natural Earth GIS data
-Bundle-SymbolicName: org.argeo.connect.data.naturalearth
-Bundle-Version: 0.1.0
+Bnd-LastModified: 1342343768202
+Build-Jdk: 1.6.0_24
+Built-By: mbaudier
 Bundle-Activator: org.argeo.geotools.osgi.GisResourcesActivator
+Bundle-Description: Connect subset of Natural Earth GIS data
+Bundle-DocURL: http://www.argeo.org
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
+Bundle-ManifestVersion: 2
+Bundle-Name: Connect Data Natural Earth
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-SymbolicName: org.argeo.connect.data.naturalearth
+Bundle-Vendor: Argeo
+Bundle-Version: 0.1.0.SNAPSHOT-r120715_1116
+Created-By: Apache Maven Bundle Plugin
 Import-Package: org.argeo.geotools.osgi
+Tool: Bnd-1.50.0

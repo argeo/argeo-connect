@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.data.naturalearth</artifactId>
-			<version>${version.connect}</version>
+			<version>0.1.0-SNAPSHOT</version>
 		</dependency>
 
 		<!-- Node -->

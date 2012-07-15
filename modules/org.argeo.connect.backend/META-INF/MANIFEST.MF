@@ -1,29 +1,21 @@
 Manifest-Version: 1.0
+Bnd-LastModified: 1342343785895
+Build-Jdk: 1.6.0_24
+Built-By: mbaudier
+Bundle-Description: Generic layers integrating free / open source techno
+ logies in order to quickly develop custom enterprise systems: security,
+  JCR, user interface, monitoring
+Bundle-DocURL: http://www.argeo.org
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
 Bundle-ManifestVersion: 2
-Bundle-Name: Connect Backend module.
-Bundle-SymbolicName: org.argeo.connect.backend
-Bundle-Version: 0.1.0
-Import-Package: javax.jcr;version="[2.0.0,3.0.0)",
- javax.jcr.lock;version="[2.0.0,3.0.0)",
- org.aopalliance.aop,
- org.apache.commons.dbcp,
- org.apache.jackrabbit.core;version="[2.0.0,3.0.0)",
- org.apache.jackrabbit.core.config;version="[2.0.0,3.0.0)",
- org.apache.xalan.processor,
- org.argeo.connect,
- org.argeo.connect.gpx,
- org.argeo.geotools.jcr,
- org.argeo.geotools.jdbc,
- org.argeo.gis,
- org.argeo.jackrabbit,
- org.argeo.jcr,
- org.argeo.security,
- org.argeo.security.core,
- org.argeo.security.jcr,
- org.geotools.data,
- org.geotools.data.postgis,
- org.geotools.jdbc,
- org.opengis.feature,
- org.postgresql;version="[8.0.0,9.0.0)",
- org.springframework.beans.factory.config,
- org.springframework.security;version="2.0.6.RELEASE"
+Bundle-Name: Connect Backend
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-SymbolicName: org.argeo.connect.backend;singleton:=true
+Bundle-Vendor: Argeo
+Bundle-Version: 0.1.0.SNAPSHOT-r120715_1116
+Created-By: Apache Maven Bundle Plugin
+Import-Package: javax.jcr,org.apache.commons.dbcp,org.argeo.connect.gpx,
+ org.argeo.geotools.jcr,org.argeo.geotools.jdbc,org.argeo.jackrabbit,org
+ .argeo.security.core,org.argeo.security.jcr,org.geotools.data,org.sprin
+ gframework.beans.factory.config,org.springframework.security
+Tool: Bnd-1.50.0

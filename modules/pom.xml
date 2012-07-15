@@ -8,17 +8,52 @@
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>modules</artifactId>
-	<packaging>bundles</packaging>
+	<packaging>pom</packaging>
 	<name>Connect Modules</name>
+	<modules>
+		<module>org.argeo.connect.backend</module>
+		<module>org.argeo.connect.slc</module>
+	</modules>
 	<build>
+		<resources>
+			<resource>
+				<directory>.</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+				<excludes>
+					<exclude>.*</exclude>
+					<exclude>.*/**</exclude>
+					<exclude>pom.xml</exclude>
+					<exclude>build.properties</exclude>
+				</excludes>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
-				<groupId>org.argeo.maven.plugins</groupId>
-				<artifactId>maven-argeo-osgi-plugin</artifactId>
-				<extensions>true</extensions>
+				<artifactId>maven-clean-plugin</artifactId>
 				<configuration>
-					<bundlesPomArtifactId>org.argeo.connect.modules</bundlesPomArtifactId>
-					<buildNumber>${timestamp}</buildNumber>
+					<filesets>
+						<fileset>
+							<directory>META-INF</directory>
+							<includes>
+								<include>MANIFEST.MF</include>
+							</includes>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<configuration>
+					<instructions>
+						<Export-Package />
+					</instructions>
 				</configuration>
 			</plugin>
 		</plugins>
