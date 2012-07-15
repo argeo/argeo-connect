@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.argeo.connect</groupId>
@@ -48,71 +48,71 @@
 
 		<!-- Geotools, JTS, etc. -->
 		<dependency>
-			<groupId>org.argeo.dep.osgi</groupId>
-			<artifactId>org.argeo.dep.osgi.geotools</artifactId>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>org.geotools</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.argeo.dep.osgi</groupId>
-			<artifactId>org.argeo.dep.osgi.jts</artifactId>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>com.vividsolutions.jts</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jdom</groupId>
-			<artifactId>com.springsource.org.jdom</artifactId>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>org.jdom</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jaxen</groupId>
-			<artifactId>com.springsource.org.jaxen</artifactId>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>org.jaxen</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.argeo.dep.osgi</groupId>
-			<artifactId>org.argeo.dep.osgi.jsr275</artifactId>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>javax.measure</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.argeo.dep.osgi</groupId>
-			<artifactId>org.argeo.dep.osgi.java3d</artifactId>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>javax.vecmath</artifactId>
 		</dependency>
 		<!-- For EPSG database -->
 		<dependency>
-			<groupId>org.hsqldb</groupId>
-			<artifactId>com.springsource.org.hsqldb</artifactId>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>org.hsqldb</artifactId>
 		</dependency>
 		<!-- Apache Commons -->
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>com.springsource.org.apache.commons.beanutils</artifactId>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>org.apache.commons.beanutils</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>com.springsource.org.apache.commons.dbcp</artifactId>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>org.apache.commons.dbcp</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>com.springsource.org.apache.commons.lang</artifactId>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>org.apache.commons.lang</artifactId>
 		</dependency>
 		<!-- JAI -->
 		<dependency>
-			<groupId>javax.media.jai</groupId>
-			<artifactId>com.springsource.javax.media.jai.core</artifactId>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>javax.media.jai.core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.media.jai</groupId>
-			<artifactId>com.springsource.javax.media.jai.codec</artifactId>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>javax.media.jai.codec</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.argeo.dep.osgi</groupId>
-			<artifactId>org.argeo.dep.osgi.jai.imageio</artifactId>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>com.sun.media.jai.imageio</artifactId>
 		</dependency>
 
 		<!-- Logging -->
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>com.springsource.slf4j.org.apache.commons.logging
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>slf4j.org.apache.commons.logging
 			</artifactId>
 		</dependency>
 
 		<!-- OSGi -->
 		<dependency>
-			<groupId>org.eclipse.osgi</groupId>
+			<groupId>org.argeo.tp</groupId>
 			<artifactId>org.eclipse.osgi</artifactId>
 		</dependency>
 

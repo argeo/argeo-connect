@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.argeo.connect</groupId>
@@ -41,12 +43,12 @@
 
 		<!-- OpenLayers RAP widget -->
 		<dependency>
-			<groupId>org.argeo.dep.osgi</groupId>
+			<groupId>org.argeo.tp.rap</groupId>
 			<artifactId>org.polymap.openlayers.rap.widget</artifactId>
 		</dependency>
 		<!-- Jetty is required by Polymap OpenLayers RAP Widget -->
 		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
+			<groupId>org.argeo.tp</groupId>
 			<artifactId>org.mortbay.jetty.util</artifactId>
 		</dependency>
 
@@ -57,4 +59,15 @@
 			<version>${version.argeo-commons}</version>
 		</dependency>
 	</dependencies>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.argeo.tp.rap</groupId>
+				<artifactId>binaries</artifactId>
+				<version>${version.argeo-distribution}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>
