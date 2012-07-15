@@ -32,22 +32,6 @@
 					</instructions>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.argeo.maven.plugins</groupId>
-				<artifactId>maven-argeo-osgi-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>check-osgi</id>
-						<phase>test</phase>
-						<goals>
-							<goal>equinox</goal>
-						</goals>
-						<configuration>
-							<onlyCheck>true</onlyCheck>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
