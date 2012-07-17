@@ -118,14 +118,14 @@
 
 		<!-- OSGi test -->
 		<dependency>
-			<groupId>org.argeo.commons.osgi</groupId>
+			<groupId>org.argeo.commons.base</groupId>
 			<artifactId>org.argeo.osgi.boot</artifactId>
 			<version>${version.argeo-commons}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.argeo.commons.basic</groupId>
-			<artifactId>org.argeo.basic.dep.log4j</artifactId>
+			<groupId>org.argeo.commons.base</groupId>
+			<artifactId>org.argeo.dep.log4j</artifactId>
 			<version>${version.argeo-commons}</version>
 			<type>pom</type>
 			<scope>test</scope>
