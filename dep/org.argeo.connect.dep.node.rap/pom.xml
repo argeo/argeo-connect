@@ -37,13 +37,6 @@
 			<version>${version.argeo-commons}</version>
 		</dependency>
 
-		<!-- SLC UI -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.argeo.slc.eclipse</groupId> -->
-		<!-- <artifactId>org.argeo.slc.client.ui</artifactId> -->
-		<!-- <version>${version.slc}</version> -->
-		<!-- </dependency> -->
-
 		<!-- Node -->
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
