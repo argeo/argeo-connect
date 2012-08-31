@@ -15,6 +15,7 @@ import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.gpx.utils.JcrSessionUtils;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.jcr.UserJcrUtils;
 
 /**
  * Centralizes UI specific methods to manage the Connect Gps UI and
@@ -212,8 +213,8 @@ public class GpsUiJcrServices {
 	public void initializeLocalRepository() {
 		try {
 			String username = jcrSession.getUserID();
-			Node userHomeDirectory = JcrUtils.createUserHomeIfNeeded(
-					jcrSession, username);
+			Node userHomeDirectory = UserJcrUtils.getUserHome(jcrSession,
+					username);
 			String userHomePath = userHomeDirectory.getPath();
 
 			// Clean track sessions
@@ -263,7 +264,7 @@ public class GpsUiJcrServices {
 
 	public Node getTrackSessionsParentNode() {
 		try {
-			Node userHomeDirectory = JcrUtils.getUserHome(jcrSession);
+			Node userHomeDirectory = UserJcrUtils.getUserHome(jcrSession);
 			if (userHomeDirectory == null)
 				return null;
 			String sessionbasePath = userHomeDirectory.getPath()
@@ -280,7 +281,7 @@ public class GpsUiJcrServices {
 
 	public Node getLocalRepositoriesParentNode() {
 		try {
-			Node userHomeDirectory = JcrUtils.getUserHome(jcrSession);
+			Node userHomeDirectory = UserJcrUtils.getUserHome(jcrSession);
 			if (userHomeDirectory == null)
 				return null;
 			String sessionbasePath = userHomeDirectory.getPath()
