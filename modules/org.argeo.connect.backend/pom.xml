@@ -18,6 +18,9 @@
 						<Bundle-SymbolicName>${project.artifactId};singleton:=true</Bundle-SymbolicName>
 						<Import-Package>
 							*,
+							org.argeo.gis,
+							org.argeo.connect,
+							org.postgresql,
 						</Import-Package>
 					</instructions>
 				</configuration>

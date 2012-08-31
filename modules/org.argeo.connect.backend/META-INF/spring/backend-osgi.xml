@@ -12,7 +12,7 @@
 	<!-- REFERENCES -->
 	<!-- Default JCR repository -->
 	<reference id="nodeRepository" interface="javax.jcr.Repository"
-		filter="(argeo.jcr.repository.alias=mode)" />
+		filter="(argeo.jcr.repository.alias=node)" />
 	<reference id="authenticationManager"
 		interface="org.springframework.security.AuthenticationManager" />
 

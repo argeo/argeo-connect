@@ -33,12 +33,12 @@
 	</bean>
 
 	<!-- JACKRABBIT -->
-	<bean id="jcrRepository" class="org.argeo.jackrabbit.JackrabbitContainer"
-		init-method="init" destroy-method="dispose">
+	<bean id="jcrRepository" class="org.argeo.jackrabbit.JackrabbitWrapper"
+		init-method="init" destroy-method="destroy">
 		<property name="cndFiles">
 			<list>
-				<value>classpath:/org/argeo/gis/argeo_gis.cnd</value>
-				<value>classpath:/org/argeo/connect/connect.cnd</value>
+				<value>/org/argeo/gis/argeo_gis.cnd</value>
+				<value>/org/argeo/connect/connect.cnd</value>
 			</list>
 		</property>
 		<property name="repository" ref="nodeRepository" />
