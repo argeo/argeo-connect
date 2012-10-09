@@ -11,6 +11,9 @@
 	<packaging>pom</packaging>
 	<name>Argeo Connect</name>
 	<version>1.1.1-SNAPSHOT</version>
+	<properties>
+		<version.connect>1.1.1-SNAPSHOT</version.connect>
+	</properties>
 	<modules>
 		<module>data</module>
 		<module>runtime</module>
