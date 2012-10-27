@@ -1,35 +1,40 @@
 Manifest-Version: 1.0
+Bnd-LastModified: 1351333144651
+Build-Jdk: 1.6.0_24
+Built-By: mbaudier
+Bundle-ActivationPolicy: lazy
+Bundle-Description: Generic layers integrating free / open source techno
+ logies in order to quickly develop custom enterprise systems: security,
+  JCR, user interface, monitoring
+Bundle-DocURL: http://www.argeo.org
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
 Bundle-ManifestVersion: 2
-Bundle-Name: RCP specific components based on Swing
-Bundle-SymbolicName: org.argeo.gis.ui.rcp.swing
-Bundle-Version: 1.1.1.SNAPSHOT
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Import-Package: com.vividsolutions.jts.geom;version="1.10.0",
- javax.jcr;version="2.0.0",
- javax.measure.converter,
- javax.media.jai;version="1.1.3";resolution:=optional,
- javax.vecmath,
- org.argeo,
- org.argeo.geotools.jcr,
- org.argeo.geotools.styling,
- org.argeo.gis.ui,
- org.eclipse.swt,
- org.eclipse.swt.awt,
- org.eclipse.swt.widgets,
- org.geotools.data,
- org.geotools.feature,
- org.geotools.geometry,
- org.geotools.geometry.jts,
- org.geotools.map,
- org.geotools.referencing,
- org.geotools.referencing.crs,
- org.geotools.renderer,
- org.geotools.renderer.lite,
- org.geotools.styling,
- org.geotools.swing,
- org.geotools.swing.event,
- org.geotools.swing.tool,
- org.opengis.feature,
- org.opengis.feature.simple,
- org.opengis.geometry,
- org.opengis.referencing.crs
+Bundle-Name: Connect GIS RCP Swing
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-SymbolicName: org.argeo.gis.ui.rcp.swing;singleton:=true
+Bundle-Vendor: Argeo
+Bundle-Version: 1.1.1.SNAPSHOT-r121027_1218
+Created-By: Apache Maven Bundle Plugin
+Export-Package: org.argeo.gis.ui.rcp.swing;uses:="javax.jcr,org.eclipse.
+ swt.widgets,org.argeo.geotools.jcr,org.argeo.gis.ui,org.argeo,org.argeo
+ .geotools.styling,org.geotools.geometry.jts,org.geotools.styling,org.ge
+ otools.map,org.geotools.swing.tool,org.opengis.feature.simple,org.eclip
+ se.swt.awt,org.geotools.renderer,org.geotools.feature,org.opengis.geome
+ try,org.opengis.referencing.crs,org.geotools.referencing,org.geotools.r
+ enderer.lite,org.geotools.swing,org.geotools.data,javax.swing.event,jav
+ ax.swing,org.geotools.swing.event,org.geotools.geometry";version="1.1.1
+ .SNAPSHOT-r121027_1218"
+Import-Package: com.vividsolutions.jts.geom;version="[1.10,2)",javax.jcr
+ ;version="[2.0,3)",javax.swing,javax.swing.event,org.argeo;version="[1.
+ 1,2)",org.argeo.eclipse.spring;version="[1.1,2)",org.argeo.geotools.jcr
+ ;version="[1.1,2)",org.argeo.geotools.styling;version="[1.1,2)",org.arg
+ eo.gis.ui;version="[1.1,2)",org.eclipse.swt.awt,org.eclipse.swt.widgets
+ ,org.geotools.data,org.geotools.feature,org.geotools.geometry,org.geoto
+ ols.geometry.jts,org.geotools.map,org.geotools.referencing,org.geotools
+ .renderer,org.geotools.renderer.lite,org.geotools.styling,org.geotools.
+ swing,org.geotools.swing.event,org.geotools.swing.tool,org.opengis.feat
+ ure.simple,org.opengis.geometry,org.opengis.referencing.crs
+Require-Bundle: org.eclipse.ui;resolution:=optional,org.eclipse.core.run
+ time;resolution:=optional,org.eclipse.rap.ui;resolution:=optional,org.e
+ clipse.rap.ui.workbench;resolution:=optional
+Tool: Bnd-1.50.0
