@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<!-- Old one, using generic JCR View, should not be used -->
+	<bean id="repositoryRegister" class="org.argeo.jcr.DefaultRepositoryRegister">
+	</bean>
+
+	<bean id="jcrSession" class="org.argeo.jcr.spring.ThreadBoundSession">
+		<!-- <property name="repository" ref="repository" /> -->
+		<property name="repository" ref="nodeRepository" />
+	</bean>
+</beans>

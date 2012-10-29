@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.argeo.connect.demo</groupId>
+		<artifactId>dep</artifactId>
+		<version>1.1.1-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>org.argeo.connect.demo.dep.rap</artifactId>
+	<name>Connect Demo RAP Dependencies</name>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.argeo.maven.plugins</groupId>
+				<artifactId>maven-argeo-osgi-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+
+		<!-- UI - RAP specific -->
+		<dependency>
+			<groupId>org.argeo.connect.demo</groupId>
+			<artifactId>org.argeo.connect.demo.rap</artifactId>
+			<version>1.1.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.argeo.connect.demo</groupId>
+			<artifactId>org.argeo.connect.demo.gr.ui</artifactId>
+			<version>1.1.1-SNAPSHOT</version>
+		</dependency>
+
+		<!-- GR Core -->
+		<dependency>
+			<groupId>org.argeo.connect.demo</groupId>
+			<artifactId>org.argeo.connect.demo.dep.backend</artifactId>
+			<version>1.1.1-SNAPSHOT</version>
+		</dependency>
+
+		<!-- Argeo Connect distribution for RAP projects with security -->
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.dep.node.rap</artifactId>
+			<version>${version.connect}</version>
+		</dependency>
+	</dependencies>
+</project>

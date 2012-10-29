@@ -21,6 +21,7 @@
 		<module>modules</module>
 		<module>dep</module>
 		<module>dist</module>
+		<module>demo</module>
 	</modules>
 	<url>${site.urlBase}/${developmentCycle.connect}</url>
 	<scm>

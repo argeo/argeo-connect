@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<import resource="classpath:/org/argeo/connect/demo/gr/impl/service/spring-mappings.xml" />
+	<import resource="classpath:/org/argeo/connect/demo/gr/spring-catalogs.xml" />
+
+	<bean id="grBackend" class="org.argeo.connect.demo.gr.impl.service.GrBackendImpl"
+		init-method="init" destroy-method="destroy">
+		<property name="repository" ref="jcrRepository" />
+		<property name="managedRoles" ref="managedRoles" />
+		<property name="siteTypes" ref="siteTypes" />
+		<property name="pointTypes" ref="pointTypes" />
+		<property name="testData" value="osgibundle:/testdata/connect-demo-testdata.csv" />
+	</bean>
+
+	<bean
+		class="org.argeo.security.core.AuthenticatedApplicationContextInitialization">
+		<property name="authenticationManager" ref="authenticationManager" />
+	</bean>
+
+</beans>

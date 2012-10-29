@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="jcrRepository" class="org.argeo.jackrabbit.JackrabbitWrapper"
+		init-method="init" destroy-method="destroy">
+		<property name="cndFiles">
+			<list>
+				<value>/org/argeo/gis/argeo_gis.cnd</value>
+				<value>/org/argeo/connect/demo/gr/gr-0.0.1.cnd</value>
+			</list>
+		</property>
+		<property name="repository" ref="nodeRepository" />
+		<property name="bundleContext" ref="bundleContext" />
+	</bean>
+
+	<!-- Security -->
+	<bean class="org.argeo.jackrabbit.JackrabbitAuthorizations"
+		init-method="init">
+		<property name="groupPrivileges">
+			<map>
+				<entry key="jcr:all" value="ROLE_MANAGER" />
+				<entry key="jcr:read" value="ROLE_CONSULTANT" />
+			</map>
+		</property>
+		<property name="repository" ref="jcrRepository" />
+	</bean>
+</beans>

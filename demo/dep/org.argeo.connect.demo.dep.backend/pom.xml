@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.argeo.connect.demo</groupId>
+		<artifactId>dep</artifactId>
+		<version>1.1.1-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>org.argeo.connect.demo.dep.backend</artifactId>
+	<name>Connect Demo Backend Dependencies</name>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.argeo.maven.plugins</groupId>
+				<artifactId>maven-argeo-osgi-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<!-- Connect Demo GR -->
+		<dependency>
+			<groupId>org.argeo.connect.demo</groupId>
+			<artifactId>org.argeo.connect.demo.gr.core</artifactId>
+			<version>1.1.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.connect.demo</groupId>
+			<artifactId>org.argeo.connect.demo.gr.services</artifactId>
+			<version>1.1.1-SNAPSHOT</version>
+		</dependency>
+
+		<!-- Node runtime -->
+		<dependency>
+			<groupId>org.argeo.commons.security</groupId>
+			<artifactId>org.argeo.security.dep.node</artifactId>
+			<version>${version.argeo-commons}</version>
+			<type>pom</type>
+		</dependency>
+
+		<!-- Excel -->
+		<dependency>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>jxl</artifactId>
+		</dependency>
+
+		<!-- SDK -->
+		<dependency>
+			<groupId>org.argeo.commons.base</groupId>
+			<artifactId>org.argeo.support.junit</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>org.h2</artifactId>
+		</dependency>
+	</dependencies>
+</project>
