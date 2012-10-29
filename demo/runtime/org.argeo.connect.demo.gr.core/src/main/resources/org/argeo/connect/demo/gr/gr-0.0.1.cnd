@@ -1,0 +1,21 @@
+<gr = 'http://www.ignfi.com/ns/gr'>
+
+[gr:network] > nt:folder, mix:lastModified
+// properties
+//+ * (nt:file) *
++ * (gr:site) *
+
+[gr:site] > nt:folder, mix:lastModified
+- gr:siteType (STRING)
++ gr:mainPoint (gr:point) m
++ gr:secondaryPoint (gr:point) *
+//+ * (nt:file) *
++ gr:siteComments (nt:unstructured) m
+
+[gr:comment] > nt:unstructured, mix:lastModified
+- gr:content (STRING)
+
+[gr:point] > gis:geometry
+- gr:pointType (STRING)
+- gr:wgs84Longitude (DOUBLE)
+- gr:wgs84Latitude (DOUBLE)

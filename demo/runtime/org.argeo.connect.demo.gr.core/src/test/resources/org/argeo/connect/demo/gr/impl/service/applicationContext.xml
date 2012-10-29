@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<import resource="classpath:/com/ignfi/gr/spring-catalogs.xml" />
+
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<property name="locations">
+			<value>classpath:/org/argeo/connect/demo/gr/jackrabbit-test.properties
+			</value>
+		</property>
+	</bean>
+
+	<!-- WARNING: in order to be able to define different version of the same 
+		repository in only one application context file, jcr related beans must be 
+		lazy loaded. -->
+
+	<!-- bean used to test model for version 0.0.1 -->
+	<bean id="grBackend" class="org.argeo.connect.demo.gr.impl.service.GrBackendImpl"
+		init-method="init" destroy-method="shutdown" lazy-init="true">
+		<property name="session" ref="jcrSession" />
+	</bean>
+	<bean id="jcrRepository" class="org.argeo.jackrabbit.JackrabbitContainer"
+		lazy-init="true" init-method="init" destroy-method="dispose">
+		<property name="homeDirectory" value="target/jackrabbit-${user.name}" />
+		<property name="configuration" value="${gr.jackrabbit.repo.test.configuration}" />
+		<property name="inMemory" value="${gr.jackrabbit.repo.test.inMemory}" />
+		<property name="namespaces" ref="namespaces" />
+		<property name="cndFiles">
+			<list>
+				<value>/org/argeo/connect/demo/gr/gr-0.0.1.cnd</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="jcrSession" class="org.argeo.jcr.spring.ThreadBoundSession"
+		lazy-init="true">
+		<property name="repository" ref="jcrRepository" />
+		<property name="forceDefaultCredentials" value="true" />
+	</bean>
+</beans>
