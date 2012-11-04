@@ -40,6 +40,7 @@ public abstract class AbstractJcrTestCase extends AbstractSpringTestCase {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected <T> T getBeanWithName(Class<? extends T> clss, String name) {
 		ConfigurableApplicationContext cac = getContext();
 		// cac.refresh();

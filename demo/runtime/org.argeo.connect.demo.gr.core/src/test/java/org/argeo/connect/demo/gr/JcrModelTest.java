@@ -30,8 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.commons.cnd.CndImporter;
 import org.apache.jackrabbit.core.TransientRepository;
 import org.argeo.ArgeoException;
-import org.argeo.connect.demo.gr.GrNames;
-import org.argeo.connect.demo.gr.GrTypes;
 import org.argeo.gis.GisNames;
 import org.argeo.jcr.unit.AbstractJcrTestCase;
 import org.springframework.core.io.ClassPathResource;
@@ -75,8 +73,7 @@ public class JcrModelTest extends AbstractJcrTestCase implements GrTypes {
 		CndImporter.registerNodeTypes(reader, session());
 		reader.close();
 
-		NodeIterator ni;
-		ni = executeSqlQuery("SELECT * FROM [nt:base]");
+		executeSqlQuery("SELECT * FROM [nt:base]");
 	}
 
 	private NodeIterator executeSqlQuery(String xpathQuery) {
@@ -102,7 +99,7 @@ public class JcrModelTest extends AbstractJcrTestCase implements GrTypes {
 	@Override
 	protected File getRepositoryFile() throws Exception {
 		Resource res = new ClassPathResource(
-				"/org/argeo/connect/demo/gr/impl/service/repository-h2.xml");
+				"/org/argeo/connect/demo/gr/repository-h2.xml");
 		return res.getFile();
 	}
 
