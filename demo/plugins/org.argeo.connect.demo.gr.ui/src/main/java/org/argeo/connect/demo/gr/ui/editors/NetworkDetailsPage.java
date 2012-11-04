@@ -9,9 +9,9 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.GrTypes;
-import org.argeo.connect.demo.gr.service.GrBackend;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.connect.demo.gr.ui.commands.CreateSite;
 import org.argeo.connect.demo.gr.ui.utils.AbstractHyperlinkListener;

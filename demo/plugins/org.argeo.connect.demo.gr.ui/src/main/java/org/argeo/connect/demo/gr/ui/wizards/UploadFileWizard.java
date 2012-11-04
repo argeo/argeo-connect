@@ -5,7 +5,7 @@ import javax.jcr.Node;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
-import org.argeo.connect.demo.gr.service.GrBackend;
+import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.eclipse.jface.wizard.Wizard;
 

@@ -3,7 +3,7 @@ package org.argeo.connect.demo.gr.ui.commands;
 import java.io.File;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.demo.gr.service.GrBackend;
+import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.connect.demo.gr.ui.utils.TmpFileProvider;
 import org.argeo.eclipse.ui.specific.FileHandler;

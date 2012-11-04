@@ -11,7 +11,7 @@
 	<beans:description>UI Components</beans:description>
 
 	<!-- REFERENCES -->
-	<reference id="grBackend" interface="org.argeo.connect.demo.gr.service.GrBackend" />
+	<reference id="grBackend" interface="org.argeo.connect.demo.gr.GrBackend" />
 	<reference id="nodeRepository" interface="javax.jcr.Repository"
 		filter="(argeo.jcr.repository.alias=node)" />
 

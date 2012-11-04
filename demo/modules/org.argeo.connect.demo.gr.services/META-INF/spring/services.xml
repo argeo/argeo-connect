@@ -3,10 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-	<import resource="classpath:/org/argeo/connect/demo/gr/impl/service/spring-mappings.xml" />
 	<import resource="classpath:/org/argeo/connect/demo/gr/spring-catalogs.xml" />
 
-	<bean id="grBackend" class="org.argeo.connect.demo.gr.impl.service.GrBackendImpl"
+	<bean id="grBackend" class="org.argeo.connect.demo.gr.GrBackendImpl"
 		init-method="init" destroy-method="destroy">
 		<property name="repository" ref="jcrRepository" />
 		<property name="managedRoles" ref="managedRoles" />

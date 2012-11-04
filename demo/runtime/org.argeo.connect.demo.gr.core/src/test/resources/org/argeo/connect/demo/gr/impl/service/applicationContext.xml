@@ -19,7 +19,7 @@
 		lazy loaded. -->
 
 	<!-- bean used to test model for version 0.0.1 -->
-	<bean id="grBackend" class="org.argeo.connect.demo.gr.impl.service.GrBackendImpl"
+	<bean id="grBackend" class="org.argeo.connect.demo.gr.GrBackendImpl"
 		init-method="init" destroy-method="shutdown" lazy-init="true">
 		<property name="session" ref="jcrSession" />
 	</bean>

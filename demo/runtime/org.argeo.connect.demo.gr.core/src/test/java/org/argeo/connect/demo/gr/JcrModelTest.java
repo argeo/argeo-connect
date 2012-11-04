@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.argeo.connect.demo.gr.impl.service;
+package org.argeo.connect.demo.gr;
 
 import java.io.File;
 import java.io.InputStreamReader;

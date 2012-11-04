@@ -21,7 +21,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 import org.argeo.ArgeoException;
-import org.argeo.connect.demo.gr.service.GrBackend;
+import org.argeo.connect.demo.gr.GrBackend;
 
 
 public class SiteReportPublisher {

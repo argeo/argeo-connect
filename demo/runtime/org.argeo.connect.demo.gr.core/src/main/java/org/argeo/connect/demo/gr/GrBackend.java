@@ -1,4 +1,4 @@
-package org.argeo.connect.demo.gr.service;
+package org.argeo.connect.demo.gr;
 
 import java.io.File;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.argeo.connect.demo.gr.impl.service;
+package org.argeo.connect.demo.gr;
 
 import java.io.File;
 import java.io.InputStream;
@@ -19,12 +19,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
-import org.argeo.connect.demo.gr.GrConstants;
-import org.argeo.connect.demo.gr.GrNames;
-import org.argeo.connect.demo.gr.GrTypes;
-import org.argeo.connect.demo.gr.GrUtils;
 import org.argeo.connect.demo.gr.pdf.SiteReportPublisher;
-import org.argeo.connect.demo.gr.service.GrBackend;
 import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.UserJcrUtils;

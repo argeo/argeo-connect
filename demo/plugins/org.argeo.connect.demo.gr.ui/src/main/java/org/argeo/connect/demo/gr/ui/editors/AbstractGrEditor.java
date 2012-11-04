@@ -1,6 +1,6 @@
 package org.argeo.connect.demo.gr.ui.editors;
 
-import org.argeo.connect.demo.gr.service.GrBackend;
+import org.argeo.connect.demo.gr.GrBackend;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
