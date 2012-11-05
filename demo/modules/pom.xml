@@ -12,7 +12,6 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>org.argeo.connect.demo.gr.services</module>
-		<module>org.argeo.connect.demo.ads</module>
 	</modules>
 	<build>
 		<resources>
