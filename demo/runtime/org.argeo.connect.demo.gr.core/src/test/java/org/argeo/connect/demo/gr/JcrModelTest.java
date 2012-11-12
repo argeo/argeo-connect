@@ -69,7 +69,7 @@ public class JcrModelTest extends AbstractJcrTestCase implements GrTypes {
 		reader.close();
 
 		reader = new InputStreamReader(getClass().getResourceAsStream(
-				"/org/argeo/connect/demo/gr/gr-0.0.1.cnd"));
+				"/org/argeo/connect/demo/gr/gr.cnd"));
 		CndImporter.registerNodeTypes(reader, session());
 		reader.close();
 
