@@ -8,7 +8,7 @@
 		<property name="cndFiles">
 			<list>
 				<value>/org/argeo/gis/argeo_gis.cnd</value>
-				<value>/org/argeo/connect/demo/gr/gr-0.0.1.cnd</value>
+				<value>/org/argeo/connect/demo/gr/gr.cnd</value>
 			</list>
 		</property>
 		<property name="repository" ref="nodeRepository" />

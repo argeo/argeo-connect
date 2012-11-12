@@ -74,9 +74,9 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 
 		// Configure here useful view root nodes
 		nodeContentProvider = new ViewContentProvider(jcrSession,
-				new String[] { GR_BASE_PATH + GR_NETWORKS });
+				new String[] { GR_NETWORKS_BASE_PATH });
 		try {
-			networksRootNode = jcrSession.getNode(GR_BASE_PATH + GR_NETWORKS);
+			networksRootNode = jcrSession.getNode(GR_NETWORKS_BASE_PATH);
 		} catch (RepositoryException re) {
 			throw new ArgeoException("Cannot get root networks node", re);
 		}

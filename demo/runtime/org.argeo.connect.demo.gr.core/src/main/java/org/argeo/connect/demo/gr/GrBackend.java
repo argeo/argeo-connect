@@ -7,7 +7,7 @@ import javax.jcr.Node;
 import javax.jcr.Session;
 import javax.jcr.query.Query;
 
-/** Provides method interfaces to access the geodesic repository backend */
+/** Provides method interfaces to access the repository backend */
 public interface GrBackend {
 
 	/* Queries */
@@ -20,8 +20,6 @@ public interface GrBackend {
 
 	/* Application wide lists */
 	public List<String> getSiteTypes();
-
-	public List<String> getPointTypes();
 
 	/* Users */
 	/** returns true if the current user is in the specified role */
@@ -38,11 +36,9 @@ public interface GrBackend {
 	 * repository, by instance
 	 */
 	public Session getCurrentSession();
-	
+
 	public File getSiteReport(String siteUid);
-	
+
 	public File getFileFromNode(Node node);
-	
-	
 
 }

@@ -49,7 +49,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
-
 public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 	private final static Log log = LogFactory.getLog(SiteDetailsPage.class);
 
@@ -73,7 +72,6 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 	private FormToolkit tk;
 	private Combo siteType;
 	private Text pointName;
-	private Combo pointType;
 	private Text wgs84Longitude;
 	private Text wgs84Latitude;
 	private TableViewer commentsTableViewer;
@@ -118,13 +116,11 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 
 			// Set title of the section
 			StringBuffer sbuf = new StringBuffer();
-			sbuf.append(GrUiPlugin.getMessage(MSG_PRE
-					+ "DataSectionTitlePre"));
+			sbuf.append(GrUiPlugin.getMessage(MSG_PRE + "DataSectionTitlePre"));
 			sbuf.append(" ");
 			sbuf.append(siteNode.getName());
 			sbuf.append(" ");
-			sbuf.append(GrUiPlugin.getMessage(MSG_PRE
-					+ "DataSectionTitlePost"));
+			sbuf.append(GrUiPlugin.getMessage(MSG_PRE + "DataSectionTitlePost"));
 			sbuf.append(networkNode.getName());
 
 			if (log.isTraceEnabled()) {
@@ -226,8 +222,8 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 
 			// Set title of the section
 			StringBuffer sbuf = new StringBuffer();
-			sbuf.append(GrUiPlugin.getMessage(MSG_PRE
-					+ "MainPointSectionTitle"));
+			sbuf.append(GrUiPlugin
+					.getMessage(MSG_PRE + "MainPointSectionTitle"));
 			section.setText(sbuf.toString());
 
 			// Layout for the body of the section
@@ -255,21 +251,21 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 			lbl = new Label(body, SWT.NONE);
 			lbl.setText(GrUiPlugin.getMessage("pointTypeLbl"));
 
-			pointType = new Combo(body, SWT.NONE);
-			List<String> pointTypesLst = grBackend.getPointTypes();
-			Iterator<String> it = pointTypesLst.iterator();
-			while (it.hasNext()) {
-				pointType.add(it.next());
-			}
-
-			if (mainPointNode.hasProperty(GR_POINT_TYPE)) {
-				String pointTypeValue = mainPointNode
-						.getProperty(GR_POINT_TYPE).getString();
-				if (pointTypeValue != null && !"".equals(pointTypeValue)
-						&& pointType.indexOf(pointTypeValue) > -1) {
-					pointType.select(pointType.indexOf(pointTypeValue));
-				}
-			}
+			// pointType = new Combo(body, SWT.NONE);
+			// List<String> pointTypesLst = grBackend.getPointTypes();
+			// Iterator<String> it = pointTypesLst.iterator();
+			// while (it.hasNext()) {
+			// pointType.add(it.next());
+			// }
+			//
+			// if (mainPointNode.hasProperty(GR_POINT_TYPE)) {
+			// String pointTypeValue = mainPointNode
+			// .getProperty(GR_POINT_TYPE).getString();
+			// if (pointTypeValue != null && !"".equals(pointTypeValue)
+			// && pointType.indexOf(pointTypeValue) > -1) {
+			// pointType.select(pointType.indexOf(pointTypeValue));
+			// }
+			// }
 
 			// Longitude
 			lbl = new Label(body, SWT.NONE);
@@ -302,10 +298,11 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 					if (onSave) {
 						try {
 							// Point Type
-							int index = pointType.getSelectionIndex();
-							if (index > -1)
-								mainPointNode.setProperty(GR_POINT_TYPE,
-										pointType.getItem(index));
+							// int index = pointType.getSelectionIndex();
+							// if (index > -1)
+							// mainPointNode.setProperty(GR_POINT_TYPE,
+							// pointType.getItem(index));
+
 							// Gps coordinate
 							String tmpStr = wgs84Longitude.getText();
 							if (tmpStr != null && !"".equals(tmpStr)) {
@@ -331,7 +328,8 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 				}
 			};
 
-			pointType.addSelectionListener(new ModifiedSelectionListener(part));
+			// pointType.addSelectionListener(new
+			// ModifiedSelectionListener(part));
 			wgs84Longitude.addModifyListener(new ModifiedFieldListener(part));
 			wgs84Latitude.addModifyListener(new ModifiedFieldListener(part));
 			getManagedForm().addPart(part);
@@ -348,8 +346,7 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 	private Section createCommentsTable(Composite parent) {
 		// Section
 		Section section = tk.createSection(parent, Section.TITLE_BAR);
-		section.setText(GrUiPlugin.getMessage(MSG_PRE
-				+ "CommentsTableTitle"));
+		section.setText(GrUiPlugin.getMessage(MSG_PRE + "CommentsTableTitle"));
 		Composite body = tk.createComposite(section, SWT.WRAP);
 		body.setLayout(new GridLayout(1, false));
 		section.setClient(body);
@@ -437,8 +434,8 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 
 		NewCommentDialog idiag = new NewCommentDialog(getSite().getShell(),
 				GrUiPlugin.getMessage("addNewCommentDialogTitle"),
-				GrUiPlugin.getMessage("addNewCommentDialogDescription"),
-				"", null);
+				GrUiPlugin.getMessage("addNewCommentDialogDescription"), "",
+				null);
 
 		idiag.open();
 		String commentString = idiag.getValue();

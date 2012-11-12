@@ -12,7 +12,9 @@ public interface GrConstants {
 	 * PATHS
 	 */
 	/** Base path for all GR specific nodes */
-	public final static String GR_BASE_PATH = "/com/ignfi/gr/";
+	public final static String GR_BASE_PATH = "/gr:system";
+	public final static String GR_NETWORKS_BASE_PATH = GR_BASE_PATH + '/'
+			+ GrNames.GR_NETWORKS;
 
 	/* NODES METADATA */
 	// TODO : it mights not be the cleanest way to access JCR NODES UID
@@ -33,10 +35,7 @@ public interface GrConstants {
 	public final static String DATE_TIME_FORMAT = "dd/MM/yyyy, HH:mm";
 
 	/* SITE TYPES */
-	public final static String NATIONAL = "national";
-	public final static String BASE = "base";
-	public final static String NORMAL = "normal";
-
-	/* POINT TYPES */
-	public final static String MAIN = "main";
+	public final static String NATIONAL = "monitored";
+	public final static String BASE = "visited";
+	public final static String NORMAL = "registered";
 }

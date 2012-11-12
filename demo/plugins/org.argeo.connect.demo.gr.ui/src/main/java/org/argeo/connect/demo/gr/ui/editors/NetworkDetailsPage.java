@@ -10,6 +10,7 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.demo.gr.GrBackend;
+import org.argeo.connect.demo.gr.GrConstants;
 import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.GrTypes;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
@@ -39,7 +40,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
-
 public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames {
 	// private final static Log log =
 	// LogFactory.getLog(NetworkDetailsPage.class);
@@ -51,10 +51,10 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 	// IMG
 	public final static Image ICON_NATIONAL_TYPE = GrUiPlugin
 			.getImageDescriptor("icons/national.gif").createImage();
-	public final static Image ICON_NORMAL_TYPE = GrUiPlugin
-			.getImageDescriptor("icons/normal.gif").createImage();
-	public final static Image ICON_BASE_TYPE = GrUiPlugin
-			.getImageDescriptor("icons/base.gif").createImage();
+	public final static Image ICON_NORMAL_TYPE = GrUiPlugin.getImageDescriptor(
+			"icons/normal.gif").createImage();
+	public final static Image ICON_BASE_TYPE = GrUiPlugin.getImageDescriptor(
+			"icons/base.gif").createImage();
 
 	// This page widgets;
 	private TableViewer sitesTableViewer;
@@ -93,8 +93,7 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 		try {
 			// Network metadata
 			Section section = tk.createSection(parent, Section.TITLE_BAR);
-			section.setText(GrUiPlugin.getMessage(MSG_PRE
-					+ "DataSectionTitle")
+			section.setText(GrUiPlugin.getMessage(MSG_PRE + "DataSectionTitle")
 					+ network.getName());
 			section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 
@@ -110,12 +109,10 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 			body.setLayout(layout);
 
 			StringBuffer displayStr = new StringBuffer();
-			displayStr.append(GrUiPlugin.getMessage(MSG_PRE
-					+ "LastUpdateLbl"));
+			displayStr.append(GrUiPlugin.getMessage(MSG_PRE + "LastUpdateLbl"));
 			displayStr.append(getPropertyCalendarWithTimeAsString(network,
 					Property.JCR_LAST_MODIFIED));
-			displayStr.append(GrUiPlugin
-					.getMessage(MSG_PRE + "LastUserLbl"));
+			displayStr.append(GrUiPlugin.getMessage(MSG_PRE + "LastUserLbl"));
 			displayStr.append(getPropertyString(network,
 					Property.JCR_LAST_MODIFIED_BY));
 			displayStr.append(". ");
@@ -170,29 +167,27 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 			public Image getImage(Object element) {
 				Node node = (Node) element;
 				try {
-
 					if (!node.hasProperty(GR_SITE_TYPE))
 						return null;
 					String type = node.getProperty(GR_SITE_TYPE).getString();
-					// TODO make that generic
-					if ("normal".equals(type))
+					if (GrConstants.NORMAL.equals(type))
 						return ICON_NORMAL_TYPE;
-					if ("national".equals(type))
+					if (GrConstants.NATIONAL.equals(type))
 						return ICON_NATIONAL_TYPE;
-					if ("base".equals(type))
+					if (GrConstants.BASE.equals(type))
 						return ICON_BASE_TYPE;
-
-				} catch (RepositoryException re) {
-					// silent
+				} catch (RepositoryException e) {
+					throw new ArgeoException("Cannot get image for node "
+							+ node, e);
 				}
 				return null;
-
 			}
 		});
 
 		// Initialize the table input
 		sites = new ArrayList<Node>();
 		try {
+			// TODO use query so that we can add depth
 			NodeIterator ni = network.getNodes();
 			while (ni.hasNext()) {
 				Node node = ni.nextNode();

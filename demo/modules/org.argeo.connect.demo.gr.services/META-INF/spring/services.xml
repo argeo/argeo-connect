@@ -10,7 +10,6 @@
 		<property name="repository" ref="jcrRepository" />
 		<property name="managedRoles" ref="managedRoles" />
 		<property name="siteTypes" ref="siteTypes" />
-		<property name="pointTypes" ref="pointTypes" />
 		<property name="testData" value="osgibundle:/testdata/connect-demo-testdata.csv" />
 	</bean>
 

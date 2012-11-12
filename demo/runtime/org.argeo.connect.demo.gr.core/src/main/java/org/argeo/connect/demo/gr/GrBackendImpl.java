@@ -29,7 +29,6 @@ import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.context.SecurityContextHolder;
 
-
 /** Concrete access to the backend */
 public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 	private final static Log log = LogFactory.getLog(GrBackendImpl.class);
@@ -38,7 +37,6 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 	private Repository repository;
 	private Map<Integer, String> managedRoles;
 	private List<String> siteTypes;
-	private List<String> pointTypes;
 
 	private Resource testData = null;
 	private Session adminSession;
@@ -49,23 +47,18 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 	 * receive/provide data.
 	 */
 	public void init() {
-		// Make sure that base directories are available
 		try {
 			adminSession = repository.login();
-			if (!adminSession.nodeExists(GR_BASE_PATH + GR_NETWORKS)) {
-				Node parent = JcrUtils.mkdirs(adminSession, GR_BASE_PATH);
-				if (!parent.hasNode(GR_NETWORKS)) {
-					parent.addNode(GR_NETWORKS);
-					adminSession.save();
-				}
+			if (!adminSession.nodeExists(GR_NETWORKS_BASE_PATH)) {
+				// Make sure that base directories are available
+				JcrUtils.mkdirs(adminSession, GR_NETWORKS_BASE_PATH);
+				adminSession.save();
 			}
 
-			if (testData != null) {
-				CsvParserWithLinesAsMap parser = new TestDataParser();
-				parser.parse(testData.getInputStream());
-			}
-
+			if (testData != null)
+				new TestDataParser().parse(testData.getInputStream());
 		} catch (Exception e) {
+			JcrUtils.logoutQuietly(adminSession);
 			throw new ArgeoException("Cannot initialize backend", e);
 		}
 	}
@@ -131,10 +124,6 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 		return new ArrayList<String>(siteTypes);
 	}
 
-	public List<String> getPointTypes() {
-		return new ArrayList<String>(pointTypes);
-	}
-
 	/* Users */
 	/** returns true if the current user is in the specified role */
 	public boolean isUserInRole(Integer userRole) {
@@ -195,10 +184,6 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 		this.siteTypes = siteTypes;
 	}
 
-	public void setPointTypes(List<String> pointTypes) {
-		this.pointTypes = pointTypes;
-	}
-
 	public void setManagedRoles(Map<Integer, String> managedRoles) {
 		this.managedRoles = managedRoles;
 	}
@@ -216,19 +201,18 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 		@Override
 		protected void processLine(Integer lineNumber, Map<String, String> line) {
 			try {
-				Node networks = adminSession
-						.getNode(GR_BASE_PATH + GR_NETWORKS);
+				Node networks = adminSession.getNode(GR_NETWORKS_BASE_PATH);
 				String networkName = line.get(GrTypes.GR_NETWORK);
 				Node network;
-				if (!networks.hasNode(networkName)) {
+				if (!networks.hasNode(networkName))
 					network = networks.addNode(networkName, GrTypes.GR_NETWORK);
-				} else {
+				else
 					network = networks.getNode(networkName);
-				}
 
 				String siteName = line.get(GrTypes.GR_SITE);
 				Node site;
 				if (!network.hasNode(siteName)) {
+					// TODO add depth
 					site = network.addNode(siteName, GrTypes.GR_SITE);
 					site.addNode(GR_SITE_COMMENTS, NodeType.NT_UNSTRUCTURED);
 
@@ -241,7 +225,6 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 				Node mainPoint = site.hasNode(GR_SITE_MAIN_POINT) ? site
 						.getNode(GR_SITE_MAIN_POINT) : site.addNode(
 						GR_SITE_MAIN_POINT, GrTypes.GR_POINT);
-				mainPoint.setProperty(GR_POINT_TYPE, GrConstants.MAIN);
 				mainPoint.setProperty(GR_WGS84_LATITUDE,
 						line.get(GR_WGS84_LATITUDE));
 				mainPoint.setProperty(GR_WGS84_LONGITUDE,

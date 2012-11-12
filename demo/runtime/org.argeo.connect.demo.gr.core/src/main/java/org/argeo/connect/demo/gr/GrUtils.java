@@ -38,6 +38,18 @@ public class GrUtils implements GrNames {
 
 	}
 
+	/**
+	 * Extracts the last part of an uuid (e.g. 'bdaa90111466' for
+	 * '5eddb136-f906-401b-8d8d-bdaa90111466')
+	 */
+	public static String shortenUuid(String uuid) {
+		int index = uuid.lastIndexOf('-');
+		if (index > 0)
+			return uuid.substring(index);
+		else
+			return uuid;
+	}
+
 	private GrUtils() {
 	}
 }

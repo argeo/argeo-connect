@@ -35,9 +35,4 @@
 		<util:constant static-field="org.argeo.connect.demo.gr.GrConstants.BASE" />
 		<util:constant static-field="org.argeo.connect.demo.gr.GrConstants.NORMAL" />
 	</util:list>
-
-	<!-- Various point types -->
-	<util:list id="pointTypes" scope="prototype">
-		<value>main</value>
-	</util:list>
 </beans>

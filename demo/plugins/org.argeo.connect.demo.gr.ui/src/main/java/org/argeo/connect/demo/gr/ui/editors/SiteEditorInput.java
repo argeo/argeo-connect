@@ -4,6 +4,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 
+/** Site editor input */
 public class SiteEditorInput implements IEditorInput {
 
 	private final String uid;

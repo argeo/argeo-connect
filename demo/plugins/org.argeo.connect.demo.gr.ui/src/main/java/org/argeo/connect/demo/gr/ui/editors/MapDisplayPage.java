@@ -13,7 +13,7 @@ import org.argeo.gis.ui.editors.MapFormPage;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.editor.FormEditor;
 
-
+/** Display a map for a whole network */
 public class MapDisplayPage extends MapFormPage {
 	private NetworkEditor networkEditor;
 
