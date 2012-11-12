@@ -1,9 +1,10 @@
 <gr = 'http://www.ignfi.com/ns/gr'>
 
-[gr:network] > nt:folder, mix:lastModified
-+ * (gr:site) *
+[gr:network] > nt:unstructured, mix:lastModified, mix:title
+- gr:uuid (STRING) m
 
-[gr:site] > nt:folder, mix:lastModified, mix:title
+[gr:site] > nt:unstructured, mix:lastModified, mix:title
+- gr:uuid (STRING) m
 - gr:siteType (STRING)
 + gr:mainPoint (gr:point) m
 + gr:siteComments (nt:unstructured) m

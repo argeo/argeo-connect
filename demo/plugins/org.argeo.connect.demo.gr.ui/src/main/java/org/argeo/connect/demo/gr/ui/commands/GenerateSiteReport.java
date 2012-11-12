@@ -11,15 +11,14 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 
+/** Generates a site report in PDF */
 public class GenerateSiteReport extends AbstractHandler {
 	public final static String ID = GrUiPlugin.PLUGIN_ID
 			+ ".generateSiteReport";
-	public final static String PARAM_UID = "com.ignfi.gr.client.ui.siteUid";
+	public final static String PARAM_UID = GrUiPlugin.PLUGIN_ID + ".siteUid";
 
 	/* DEPENDENCY INJECTION */
 	private GrBackend grBackend;
-
-	private FileHandler fileHandler;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		String uid = event.getParameter(PARAM_UID);

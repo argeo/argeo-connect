@@ -5,8 +5,6 @@ import java.io.File;
 import javax.jcr.Node;
 import javax.jcr.nodetype.NodeType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrTypes;
@@ -17,10 +15,10 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 
-
+/** Double-click management */
 public class GrDoubleClickListener implements IDoubleClickListener {
-	private final static Log log = LogFactory
-			.getLog(GrDoubleClickListener.class);
+	// private final static Log log = LogFactory
+	// .getLog(GrDoubleClickListener.class);
 	private GrBackend grBackend;
 	private FileHandler fileHandler;
 
@@ -49,7 +47,6 @@ public class GrDoubleClickListener implements IDoubleClickListener {
 			if (node.isNodeType(NodeType.NT_FILE)) {
 				// open the file
 				String name = node.getName();
-				String id = node.getPath();
 				// fileHandler.openFile(name, id);
 				File tmpFile = grBackend.getFileFromNode(node);
 				tmpFile.deleteOnExit();

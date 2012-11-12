@@ -3,8 +3,6 @@ package org.argeo.connect.demo.gr.ui.commands;
 import javax.jcr.Node;
 import javax.jcr.nodetype.NodeType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrNames;
@@ -12,22 +10,22 @@ import org.argeo.connect.demo.gr.GrTypes;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.connect.demo.gr.ui.editors.SiteEditor;
 import org.argeo.connect.demo.gr.ui.editors.SiteEditorInput;
-import org.argeo.gis.GisTypes;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 
+/** Creates a new site */
 public class CreateSite extends AbstractHandler implements GrNames {
 
-	private final static Log log = LogFactory.getLog(CreateSite.class);
+	// private final static Log log = LogFactory.getLog(CreateSite.class);
 
 	public final static String ID = GrUiPlugin.PLUGIN_ID + ".createSite";
 	public final static String DEFAULT_ICON_REL_PATH = "icons/newSite.gif";
 	public final static String DEFAULT_LABEL = GrUiPlugin
 			.getMessage("cmdLblCreateSite");
-	public final static String PARAM_UID = "com.ignfi.gr.client.ui.networkUid";
+	public final static String PARAM_UID = GrUiPlugin.PLUGIN_ID + ".networkUid";
 
 	/** DEPENDENCY INJECTION **/
 	private GrBackend grBackend;
@@ -41,8 +39,7 @@ public class CreateSite extends AbstractHandler implements GrNames {
 			InputDialog idiag = new InputDialog(
 					HandlerUtil.getActiveShell(event),
 					GrUiPlugin.getMessage("enterSiteNameDialogTitle"),
-					GrUiPlugin.getMessage("enterSiteNameDialogLbl"), "",
-					null);
+					GrUiPlugin.getMessage("enterSiteNameDialogLbl"), "", null);
 
 			idiag.open();
 			String siteName = idiag.getValue();
@@ -50,7 +47,7 @@ public class CreateSite extends AbstractHandler implements GrNames {
 
 			Node site = network.addNode(siteName, GrTypes.GR_SITE);
 
-			// Add compulory nodes :
+			// Add mandatory nodes :
 			site.addNode(GR_SITE_MAIN_POINT, GrTypes.GR_POINT);
 			site.addNode(GR_SITE_COMMENTS, NodeType.NT_UNSTRUCTURED);
 

@@ -13,7 +13,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
-import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrConstants;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.eclipse.ui.specific.GenericUploadControl;
@@ -23,10 +22,8 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-
 
 public class UploadFileWizardPage extends WizardPage implements ModifyListener,
 		GrConstants {
@@ -37,11 +34,7 @@ public class UploadFileWizardPage extends WizardPage implements ModifyListener,
 	private UploadFileWizard wizard;
 
 	// Main business objects
-	private GrBackend grBackend;
 	private Node currentNode;
-
-	// current page fields to be filled in by the end user
-	private Combo documentTypes;
 
 	private GenericUploadControl uploadFileControl;
 
@@ -52,7 +45,6 @@ public class UploadFileWizardPage extends WizardPage implements ModifyListener,
 	public void createControl(Composite parent) {
 		// initialise business objects
 		wizard = (UploadFileWizard) getWizard();
-		grBackend = wizard.getGrBackend();
 		currentNode = wizard.getCurrentNode();
 
 		// Set wizard description
@@ -76,19 +68,6 @@ public class UploadFileWizardPage extends WizardPage implements ModifyListener,
 	}
 
 	private void populateLayout(Composite body) {
-		Label lbl;
-
-		// Document Type
-		// lbl = new Label(body, SWT.NONE);
-		// lbl.setText(ClientUiPlugin.getMessage("documentTypeLbl"));
-		//
-		// documentTypes = new Combo(body, SWT.NONE);
-		// List<String> documentTypesLst = wizard.getGrBackend().getSiteTypes();
-		// Iterator<String> it = documentTypesLst.iterator();
-		// while (it.hasNext()) {
-		// documentTypes.add(it.next());
-		// }
-
 		// Document upload
 		new Label(body, SWT.NONE).setText(GrUiPlugin
 				.getMessage("chooseFileToImportLabel"));
@@ -123,8 +102,7 @@ public class UploadFileWizardPage extends WizardPage implements ModifyListener,
 		byte[] curFile = uploadFileControl.performUpload();
 
 		if (curFile == null || curFile.length == 0) {
-			setErrorMessage(GrUiPlugin
-					.getMessage("emptyFileCannotBeUploaded"));
+			setErrorMessage(GrUiPlugin.getMessage("emptyFileCannotBeUploaded"));
 			return false;
 		} else {
 			ByteArrayInputStream bis = new ByteArrayInputStream(curFile);

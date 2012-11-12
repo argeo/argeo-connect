@@ -1,7 +1,5 @@
 package org.argeo.connect.demo.gr.ui.views;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -13,10 +11,9 @@ import org.eclipse.ui.part.ViewPart;
 
 /** List Networks in the current Repository */
 public class NetworkListView extends ViewPart {
-	private final static Log log = LogFactory.getLog(NetworkListView.class);
+	// private final static Log log = LogFactory.getLog(NetworkListView.class);
 
-	public static final String ID = GrUiPlugin.PLUGIN_ID
-			+ ".networkListView";
+	public static final String ID = GrUiPlugin.PLUGIN_ID + ".networkListView";
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {

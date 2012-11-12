@@ -2,13 +2,11 @@ package org.argeo.connect.demo.gr.ui.views;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,22 +14,18 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrConstants;
 import org.argeo.connect.demo.gr.GrNames;
-import org.argeo.connect.demo.gr.GrTypes;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.connect.demo.gr.ui.commands.CreateNetwork;
 import org.argeo.connect.demo.gr.ui.utils.GrDoubleClickListener;
 import org.argeo.connect.demo.gr.ui.utils.GrNodeLabelProvider;
 import org.argeo.eclipse.ui.jcr.SimpleNodeContentProvider;
 import org.argeo.eclipse.ui.jcr.utils.NodeViewerComparer;
-import org.argeo.eclipse.ui.jcr.utils.SingleSessionFileProvider;
 import org.argeo.eclipse.ui.jcr.views.AbstractJcrBrowser;
-import org.argeo.eclipse.ui.specific.FileHandler;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -59,17 +53,11 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 	// UI management
 	private TreeViewer nodesViewer;
 	private SimpleNodeContentProvider nodeContentProvider;
-	private FileHandler fileHandler;
 
 	private Node networksRootNode;
 
 	@Override
 	public void createPartControl(Composite parent) {
-
-		final SingleSessionFileProvider ssfp = new SingleSessionFileProvider(
-				jcrSession);
-		fileHandler = new FileHandler(ssfp);
-
 		parent.setLayout(new FillLayout());
 
 		// Configure here useful view root nodes
@@ -156,38 +144,13 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 		// Building conditions
 
 		// Some commands are meaningless for multiple selection
-		IStructuredSelection selection = (IStructuredSelection) nodesViewer
-				.getSelection();
-		boolean multipleSel = selection.size() > 1;
 		boolean isFolder = true;
-
-		// //boolean isFolder = false;
-		//
-		// // We add networks only under NT_FOLDER nodes
-		// try {
-		// if (!multipleSel && selection.getFirstElement() instanceof Node) {
-		// Node node = (Node) selection.getFirstElement();
-		// if (node.getPrimaryNodeType().getName()
-		// .equals(NodeType.NT_FOLDER))
-		// isFolder = true;
-		// }
-		// } catch (RepositoryException re) {
-		// throw new ArgeoException(
-		// "RepositoryException while refreshing context menu", re);
-		// }
 
 		// Effective Refresh
 		refreshCommand(menuManager, window, CreateNetwork.ID,
 				CreateNetwork.DEFAULT_LABEL,
 				CreateNetwork.DEFAULT_ICON_REL_PATH, isFolder);
 
-		// refreshCommand(menuManager, window, ImportDirectoryContent.ID,
-		// ImportDirectoryContent.DEFAULT_LABEL,
-		// ImportDirectoryContent.DEFAULT_ICON_REL_PATH, isFileRepo);
-		//
-		// refreshCommand(menuManager, window, NewCleanDataSession.ID,
-		// NewCleanDataSession.DEFAULT_LABEL,
-		// NewCleanDataSession.DEFAULT_ICON_REL_PATH, isSessionRepo);
 	}
 
 	protected void refreshCommand(IMenuManager menuManager,
@@ -226,17 +189,17 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 		@Override
 		protected List<Node> filterChildren(List<Node> children)
 				throws RepositoryException {
-			for (Iterator<Node> it = children.iterator(); it.hasNext();) {
-				Node node = it.next();
-
-				if (node.getPrimaryNodeType().isNodeType(NodeType.NT_RESOURCE)) {
-					it.remove();
-				}
-				if (node.getPrimaryNodeType().isNodeType(GrTypes.GR_SITE)) {
-					it.remove();
-				}
-
-			}
+			// for (Iterator<Node> it = children.iterator(); it.hasNext();) {
+			// Node node = it.next();
+			//
+			// if (node.getPrimaryNodeType().isNodeType(NodeType.NT_RESOURCE)) {
+			// it.remove();
+			// }
+			// if (node.getPrimaryNodeType().isNodeType(GrTypes.GR_SITE)) {
+			// it.remove();
+			// }
+			//
+			// }
 			return super.filterChildren(children);
 		}
 

@@ -1,6 +1,7 @@
 package org.argeo.connect.demo.gr.ui.editors;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.ArgeoException;
@@ -42,7 +43,7 @@ public class NetworkEditor extends AbstractGrEditor {
 			network = getGrBackend().getCurrentSession().getNodeByIdentifier(
 					nei.getUid());
 			this.setPartName(GrUiPlugin.getMessage("networkLbl") + " "
-					+ network.getName());
+					+ network.getProperty(Property.JCR_TITLE).getString());
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Cannot load network.", e);
 		}

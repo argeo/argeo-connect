@@ -45,7 +45,7 @@ public class GrUtils implements GrNames {
 	public static String shortenUuid(String uuid) {
 		int index = uuid.lastIndexOf('-');
 		if (index > 0)
-			return uuid.substring(index);
+			return uuid.substring(index + 1);
 		else
 			return uuid;
 	}

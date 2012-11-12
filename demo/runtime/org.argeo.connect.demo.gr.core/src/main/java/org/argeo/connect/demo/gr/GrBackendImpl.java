@@ -203,23 +203,32 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 			try {
 				Node networks = adminSession.getNode(GR_NETWORKS_BASE_PATH);
 				String networkName = line.get(GrTypes.GR_NETWORK);
+				String networkUuid = line.get(GR_UUID);
+				String networkNodeName = GrUtils.shortenUuid(networkUuid);
 				Node network;
-				if (!networks.hasNode(networkName))
-					network = networks.addNode(networkName, GrTypes.GR_NETWORK);
-				else
-					network = networks.getNode(networkName);
-
-				String siteName = line.get(GrTypes.GR_SITE);
-				Node site;
-				if (!network.hasNode(siteName)) {
-					// TODO add depth
-					site = network.addNode(siteName, GrTypes.GR_SITE);
-					site.addNode(GR_SITE_COMMENTS, NodeType.NT_UNSTRUCTURED);
-
+				if (!networks.hasNode(networkNodeName)) {
+					network = networks.addNode(networkNodeName,
+							GrTypes.GR_NETWORK);
+					network.setProperty(GR_UUID, networkUuid);
+					network.setProperty(Property.JCR_TITLE, networkName);
+					network.getSession().save();
 				} else {
-					// skip if already exist
-					return;
+					network = networks.getNode(networkNodeName);
 				}
+
+				String siteUuid = line.get(GrTypes.GR_SITE);
+				String siteRelativePath = siteUuid.substring(0, 1) + '/'
+						+ siteUuid;
+				Node site;
+				if (network.hasNode(siteRelativePath))
+					return;// skip if present
+
+				site = JcrUtils.mkdirs(network, siteRelativePath,
+						GrTypes.GR_WATER_SITE);
+				site.setProperty(GR_UUID, siteUuid);
+				site.setProperty(Property.JCR_TITLE,
+						GrUtils.shortenUuid(siteUuid));
+				site.addNode(GR_SITE_COMMENTS, NodeType.NT_UNSTRUCTURED);
 				site.setProperty(GR_SITE_TYPE, line.get(GR_SITE_TYPE));
 
 				Node mainPoint = site.hasNode(GR_SITE_MAIN_POINT) ? site
@@ -231,10 +240,11 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 						line.get(GR_WGS84_LONGITUDE));
 				GrUtils.syncPointGeometry(mainPoint);
 
-				adminSession.save();
+				site.getSession().save();
 
 				if (log.isDebugEnabled())
 					log.debug("Test data: loaded " + site);
+
 			} catch (RepositoryException e) {
 				throw new ArgeoException("Cannot process line " + lineNumber
 						+ " " + line, e);

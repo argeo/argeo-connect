@@ -247,26 +247,6 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 			// http://stackoverflow.com/questions/4164995/jcr-node-how-to-changing-name
 			pointName.setEnabled(false);
 
-			// Point Type
-			lbl = new Label(body, SWT.NONE);
-			lbl.setText(GrUiPlugin.getMessage("pointTypeLbl"));
-
-			// pointType = new Combo(body, SWT.NONE);
-			// List<String> pointTypesLst = grBackend.getPointTypes();
-			// Iterator<String> it = pointTypesLst.iterator();
-			// while (it.hasNext()) {
-			// pointType.add(it.next());
-			// }
-			//
-			// if (mainPointNode.hasProperty(GR_POINT_TYPE)) {
-			// String pointTypeValue = mainPointNode
-			// .getProperty(GR_POINT_TYPE).getString();
-			// if (pointTypeValue != null && !"".equals(pointTypeValue)
-			// && pointType.indexOf(pointTypeValue) > -1) {
-			// pointType.select(pointType.indexOf(pointTypeValue));
-			// }
-			// }
-
 			// Longitude
 			lbl = new Label(body, SWT.NONE);
 			lbl.setText(GrUiPlugin.getMessage("wgs84LongitudeLbl"));

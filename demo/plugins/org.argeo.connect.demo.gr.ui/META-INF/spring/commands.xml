@@ -7,7 +7,8 @@
 	<bean id="openNetworkEditor" class="org.argeo.connect.demo.gr.ui.commands.OpenNetworkEditor"
 		scope="prototype">
 	</bean>
-	<bean id="generateSiteReport" class="org.argeo.connect.demo.gr.ui.commands.GenerateSiteReport"
+	<bean id="generateSiteReport"
+		class="org.argeo.connect.demo.gr.ui.commands.GenerateSiteReport"
 		scope="prototype">
 		<property name="grBackend" ref="grBackend" />
 	</bean>
@@ -20,7 +21,6 @@
 	</bean>
 	<bean id="createNetwork" class="org.argeo.connect.demo.gr.ui.commands.CreateNetwork"
 		scope="prototype">
-		<property name="grBackend" ref="grBackend" />
 	</bean>
 	<bean id="createSite" class="org.argeo.connect.demo.gr.ui.commands.CreateSite"
 		scope="prototype">

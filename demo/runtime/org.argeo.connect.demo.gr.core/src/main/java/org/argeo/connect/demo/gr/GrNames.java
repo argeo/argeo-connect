@@ -8,7 +8,8 @@ public interface GrNames {
 	/* Parent node for all networks */
 	public final static String GR_NETWORKS = "gr:networks";
 
-	/* Network */
+	/* Common */
+	public final static String GR_UUID = "gr:uuid";
 
 	/* Site */
 	public final static String GR_SITE_TYPE = "gr:siteType";
@@ -20,7 +21,7 @@ public interface GrNames {
 	public final static String GR_COMMENT_CONTENT = "gr:content";
 
 	/* Point */
-	//public final static String GR_POINT_TYPE = "gr:pointType";
+	// public final static String GR_POINT_TYPE = "gr:pointType";
 	public final static String GR_WGS84_LONGITUDE = "gr:wgs84Longitude";
 	public final static String GR_WGS84_LATITUDE = "gr:wgs84Latitude";
 }

@@ -7,6 +7,7 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
+import javax.jcr.query.Query;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.demo.gr.GrBackend;
@@ -187,13 +188,16 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 		// Initialize the table input
 		sites = new ArrayList<Node>();
 		try {
-			// TODO use query so that we can add depth
-			NodeIterator ni = network.getNodes();
-			while (ni.hasNext()) {
-				Node node = ni.nextNode();
-				if (node.getPrimaryNodeType().isNodeType(GrTypes.GR_SITE))
-					sites.add(node);
-			}
+			String stmt = "SELECT * FROM [" + GrTypes.GR_WATER_SITE
+					+ "] WHERE ISDESCENDANTNODE('" + network.getPath() + "')";
+			// String stmt = "SELECT site FROM [" + GrTypes.GR_WATER_SITE + "]";
+			Query query = network.getSession().getWorkspace().getQueryManager()
+					.createQuery(stmt, Query.JCR_SQL2);
+
+			NodeIterator ni = query.execute().getNodes();
+			// NodeIterator ni = network.getNodes();
+			while (ni.hasNext())
+				sites.add(ni.nextNode());
 		} catch (RepositoryException re) {
 			throw new ArgeoException("Cannot initialize the table that lists"
 					+ " sites for the current network", re);
