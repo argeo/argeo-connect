@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -40,6 +41,8 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 
 	private Resource testData = null;
 	private Session adminSession;
+
+	public Random random = new Random();
 
 	/* Life cycle management */
 	/**
@@ -231,6 +234,12 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 				site.addNode(GR_SITE_COMMENTS, NodeType.NT_UNSTRUCTURED);
 				site.setProperty(GR_SITE_TYPE, line.get(GR_SITE_TYPE));
 
+				// values
+				site.setProperty(GR_WATER_LEVEL, generateRandomData(1d, 15d));
+				site.setProperty(GR_ECOLI_RATE, generateRandomData(10d, 500d));
+				site.setProperty(GR_WITHDRAWN_WATER,
+						generateRandomData(0d, 10d));
+
 				Node mainPoint = site.hasNode(GR_SITE_MAIN_POINT) ? site
 						.getNode(GR_SITE_MAIN_POINT) : site.addNode(
 						GR_SITE_MAIN_POINT, GrTypes.GR_POINT);
@@ -252,4 +261,7 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 		}
 	}
 
+	private Double generateRandomData(Double min, Double max) {
+		return min + random.nextDouble() * (max - min);
+	}
 }

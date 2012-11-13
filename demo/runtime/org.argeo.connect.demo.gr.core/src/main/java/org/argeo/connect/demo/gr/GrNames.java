@@ -17,6 +17,11 @@ public interface GrNames {
 	public final static String GR_SITE_MAIN_POINT = "gr:mainPoint";
 	// public final static String GR_SITE_SECONDARY_POINT = "gr:secondaryPoint";
 
+	/* Date */
+	public final static String GR_WATER_LEVEL = "gr:waterLevel";
+	public final static String GR_ECOLI_RATE = "gr:eColiRate";
+	public final static String GR_WITHDRAWN_WATER = "gr:withdrawnWater";
+
 	/* Comment */
 	public final static String GR_COMMENT_CONTENT = "gr:content";
 
