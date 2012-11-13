@@ -118,7 +118,6 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 	public void refresh(Object obj) {
 		if (obj == null) {
 			nodesViewer.refresh(networksRootNode);
-			log.debug("refreshing the whole tree");
 		} else
 			nodesViewer.refresh(obj);
 	}
@@ -137,7 +136,7 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 		IWorkbenchWindow window = GrUiPlugin.getDefault().getWorkbench()
 				.getActiveWorkbenchWindow();
 
-		// Please note that commands that are not subject to programmatic
+		// Please note that commands that are not subject to programatic
 		// conditions are directly defined in the corresponding
 		// menuContribution of the plugin.xml.
 
@@ -189,17 +188,6 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 		@Override
 		protected List<Node> filterChildren(List<Node> children)
 				throws RepositoryException {
-			// for (Iterator<Node> it = children.iterator(); it.hasNext();) {
-			// Node node = it.next();
-			//
-			// if (node.getPrimaryNodeType().isNodeType(NodeType.NT_RESOURCE)) {
-			// it.remove();
-			// }
-			// if (node.getPrimaryNodeType().isNodeType(GrTypes.GR_SITE)) {
-			// it.remove();
-			// }
-			//
-			// }
 			return super.filterChildren(children);
 		}
 

@@ -15,30 +15,27 @@
          point="org.eclipse.ui.views">
  	  	<view
            class="org.argeo.eclipse.spring.SpringExtensionFactory"
-           icon="icons/checked.gif"
-           id="org.argeo.connect.demo.gr.ui.networkListView"
-           name="Admin only page"
-           restorable="true">
-   		</view>
-	</extension>
-    <extension
-         point="org.eclipse.ui.views">
- 	  	<view
-           class="org.argeo.eclipse.spring.SpringExtensionFactory"
            icon="icons/gr.gif"
            id="org.argeo.connect.demo.gr.ui.networkBrowserView"
-           name="Liste des réseaux"
+           name="%networkBrowserView_title"
+           restorable="true">
+   		</view>
+ 	  	<view
+           class="org.argeo.eclipse.spring.SpringExtensionFactory"
+           icon="icons/checked.gif"
+           id="org.argeo.connect.demo.gr.ui.networkListView"
+           name="%networkListView_title"
            restorable="true">
    		</view>
 	</extension>
-		<!-- EDITORS --> 
+	<!-- EDITORS --> 
 	<!-- CAUTION : icon attribute is compulsory for an editor.--> 
 	<extension
 		point="org.eclipse.ui.editors">
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			id="org.argeo.connect.demo.gr.ui.networkEditor"
-			name="Network Editor"
+			name="%networkEditor_title"
 			icon="icons/network.png"
 			default="false">
 		</editor>

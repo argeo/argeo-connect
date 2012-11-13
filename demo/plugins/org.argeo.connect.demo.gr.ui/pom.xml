@@ -18,6 +18,7 @@
 				<configuration>
 					<instructions>
 						<Bundle-Activator>org.argeo.connect.demo.gr.ui.GrUiPlugin</Bundle-Activator>
+						<Bundle-Localization>properties/plugin</Bundle-Localization>
 						<Import-Package>
 							org.geotools.feature,
 							org.argeo.gis,

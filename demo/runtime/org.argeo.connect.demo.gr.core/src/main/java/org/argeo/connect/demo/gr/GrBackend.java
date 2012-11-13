@@ -40,5 +40,4 @@ public interface GrBackend {
 	public File getSiteReport(String siteUid);
 
 	public File getFileFromNode(Node node);
-
 }

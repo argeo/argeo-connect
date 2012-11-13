@@ -1,26 +1,41 @@
 package org.argeo.connect.demo.gr.ui.wizards;
 
-import javax.jcr.Node;
+import java.io.ByteArrayInputStream;
 
+import javax.jcr.Binary;
+import javax.jcr.ItemExistsException;
+import javax.jcr.Node;
+import javax.jcr.Property;
+import javax.jcr.RepositoryException;
+import javax.jcr.nodetype.NodeType;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.demo.gr.GrBackend;
+import org.argeo.connect.demo.gr.GrConstants;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
+import org.argeo.eclipse.ui.specific.GenericUploadControl;
 import org.eclipse.jface.wizard.Wizard;
-
+import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 
 public class UploadFileWizard extends Wizard {
 	private final static Log log = LogFactory.getLog(UploadFileWizard.class);
 
 	// Main business objects
-	private GrBackend grBackend;
 	private Node currentNode;
 
 	private UploadFileWizardPage uploadFileWizardPage;
 
 	public UploadFileWizard(GrBackend grBackend, Node currentNode) {
-		this.grBackend = grBackend;
 		this.currentNode = currentNode;
 		setWindowTitle(GrUiPlugin.getMessage("uploadFileWizardTitle"));
 	}
@@ -28,8 +43,7 @@ public class UploadFileWizard extends Wizard {
 	@Override
 	public void addPages() {
 		try {
-			uploadFileWizardPage = new UploadFileWizardPage("unused title");
-			addPage(uploadFileWizardPage);
+			addPage(new UploadFileWizardPage("unused title"));
 		} catch (Exception e) {
 			throw new ArgeoException("Cannot add page to wizard ", e);
 		}
@@ -56,12 +70,97 @@ public class UploadFileWizard extends Wizard {
 		return true;
 	}
 
-	// Package protected methods to expose business objects.
-	GrBackend getGrBackend() {
-		return grBackend;
-	}
+	private class UploadFileWizardPage extends WizardPage implements
+			ModifyListener, GrConstants {
 
-	Node getCurrentNode() {
-		return currentNode;
+		private GenericUploadControl uploadFileControl;
+
+		public UploadFileWizardPage(String pageName) {
+			super(pageName);
+		}
+
+		public void createControl(Composite parent) {
+
+			// Set wizard description
+			StringBuffer strBuf = new StringBuffer();
+			strBuf.append(GrUiPlugin
+					.getMessage("uploadFileWizardGenericDescription"));
+			strBuf.append(" [");
+			try {
+				strBuf.append(currentNode.getName());
+			} catch (RepositoryException re) {
+				throw new ArgeoException("Cannot get current node name.", re);
+			}
+			strBuf.append("].");
+			setDescription(strBuf.toString());
+
+			Composite composite = new Composite(parent, SWT.NONE);
+			composite.setLayout(new GridLayout(2, false));
+			composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+					false));
+			populateLayout(composite);
+			setControl(composite);
+		}
+
+		private void populateLayout(Composite body) {
+			// Document upload
+			new Label(body, SWT.NONE).setText(GrUiPlugin
+					.getMessage("chooseFileToImportLabel"));
+			uploadFileControl = new GenericUploadControl(body, SWT.NONE,
+					GrUiPlugin.getMessage("browseButtonLbl"));
+			uploadFileControl.addModifyListener(this);
+		}
+
+		/**
+		 * method called when a file is chosen because current class implements
+		 * ModifyListener Interface. Refresh among other the 'next' button
+		 * state.
+		 */
+		public void modifyText(ModifyEvent event) {
+			setErrorMessage(null);
+			getWizard().getContainer().updateButtons();
+		}
+
+		// set properties filled in that page.
+		boolean performFinish() {
+			if (log.isDebugEnabled())
+				log.debug("Starting real upload");
+
+			// Upload
+			byte[] curFile = uploadFileControl.performUpload();
+
+			if (curFile == null || curFile.length == 0) {
+				setErrorMessage(GrUiPlugin
+						.getMessage("emptyFileCannotBeUploaded"));
+				return false;
+			} else {
+				ByteArrayInputStream bis = new ByteArrayInputStream(curFile);
+				String docName = uploadFileControl.getLastFileUploadedName();
+				try {
+					Node fileNode = currentNode.addNode(docName,
+							NodeType.NT_FILE);
+					Node resNode = fileNode.addNode(Property.JCR_CONTENT,
+							NodeType.NT_RESOURCE);
+					Binary binary = null;
+					try {
+						binary = currentNode.getSession().getValueFactory()
+								.createBinary(bis);
+						resNode.setProperty(Property.JCR_DATA, binary);
+					} finally {
+						if (binary != null)
+							binary.dispose();
+						IOUtils.closeQuietly(bis);
+					}
+				} catch (ItemExistsException iee) {
+					setErrorMessage(GrUiPlugin.getMessage("existingFileError"));
+					return false;
+				} catch (Exception e) {
+					throw new ArgeoException(
+							"Unexpected error while creating new node file", e);
+				}
+				return true;
+			}
+		}
+
 	}
 }

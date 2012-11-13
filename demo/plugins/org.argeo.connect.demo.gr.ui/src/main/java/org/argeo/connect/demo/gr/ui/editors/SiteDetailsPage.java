@@ -16,6 +16,7 @@ import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.GrTypes;
 import org.argeo.connect.demo.gr.GrUtils;
+import org.argeo.connect.demo.gr.ui.GrMessages;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.connect.demo.gr.ui.commands.GenerateSiteReport;
 import org.argeo.connect.demo.gr.ui.utils.AbstractHyperlinkListener;
@@ -58,9 +59,6 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 	public final static String USER_COLUMN_NAME = "User";
 	public final static String COMMENT_COLUMN_NAME = "Comment";
 
-	// for internationalized messages
-	private final static String MSG_PRE = "grSiteEditorSiteDetailsPage";
-
 	// Main business Objects
 	private Node networkNode;
 	private Node siteNode;
@@ -71,7 +69,6 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 	// This page widgets
 	private FormToolkit tk;
 	private Combo siteType;
-	private Text pointName;
 	private Text wgs84Longitude;
 	private Text wgs84Latitude;
 	private TableViewer commentsTableViewer;
@@ -98,7 +95,7 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 			form.getBody().setLayout(twt);
 			createMetadataSection(form.getBody());
 			createMainPointSection(form.getBody());
-			createDocumentsTable(form.getBody(), tk, siteNode);
+			// createDocumentsTable(form.getBody(), tk, siteNode);
 			createCommentsTable(form.getBody());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -116,16 +113,9 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 
 			// Set title of the section
 			StringBuffer sbuf = new StringBuffer();
-			sbuf.append(GrUiPlugin.getMessage(MSG_PRE + "DataSectionTitlePre"));
-			sbuf.append(" ");
+			sbuf.append(GrMessages.get().siteEditor_detailPage_title);
+			// sbuf.append(" ");
 			sbuf.append(siteNode.getName());
-			sbuf.append(" ");
-			sbuf.append(GrUiPlugin.getMessage(MSG_PRE + "DataSectionTitlePost"));
-			sbuf.append(networkNode.getName());
-
-			if (log.isTraceEnabled()) {
-				log.trace("Full section title: " + sbuf.toString());
-			}
 			section.setText(sbuf.toString());
 
 			// Layout for the body of the section
@@ -136,7 +126,7 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 
 			// Site Type
 			Label lbl = new Label(body, SWT.NONE);
-			lbl.setText(GrUiPlugin.getMessage("siteTypeLbl"));
+			lbl.setText(GrMessages.get().siteTypeLbl);
 
 			siteType = new Combo(body, SWT.NONE);
 			List<String> siteTypesLst = grBackend.getSiteTypes();
@@ -153,32 +143,75 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 					siteType.select(siteType.indexOf(siteTypeValue));
 				}
 			}
+
+			// Longitude
+			lbl = new Label(body, SWT.NONE);
+			lbl.setText(GrMessages.get().longitudeLbl);
+
+			wgs84Longitude = new Text(body, SWT.BORDER | SWT.SINGLE);
+			wgs84Longitude.setEnabled(true);
+
+			if (mainPointNode.hasProperty(GR_WGS84_LONGITUDE)) {
+				String value = mainPointNode.getProperty(GR_WGS84_LONGITUDE)
+						.getString();
+				wgs84Longitude.setText(value);
+			}
+
+			// Latitude
+			lbl = new Label(body, SWT.NONE);
+			lbl.setText(GrMessages.get().latitudeLbl);
+
+			wgs84Latitude = new Text(body, SWT.BORDER | SWT.SINGLE);
+			wgs84Latitude.setEnabled(true);
+
+			if (mainPointNode.hasProperty(GR_WGS84_LATITUDE)) {
+				String value = mainPointNode.getProperty(GR_WGS84_LATITUDE)
+						.getString();
+				wgs84Latitude.setText(value);
+			}
+
 			AbstractFormPart part = new SectionPart(section) {
 				public void commit(boolean onSave) {
 					if (onSave) {
-						if (log.isDebugEnabled())
-							log.debug("Save here site type");
-						int index = siteType.getSelectionIndex();
-						if (index > -1)
-							try {
+						try {
+							int index = siteType.getSelectionIndex();
+							if (index > -1)
+
 								siteNode.setProperty(GR_SITE_TYPE,
 										siteType.getItem(index));
-							} catch (RepositoryException re) {
-								throw new ArgeoException(
-										"Jcr Error while saving site matadata",
-										re);
+							// Gps coordinate
+							String tmpStr = wgs84Longitude.getText();
+							if (tmpStr != null && !"".equals(tmpStr)) {
+								mainPointNode.setProperty(GR_WGS84_LONGITUDE,
+										tmpStr);
 							}
+
+							tmpStr = wgs84Latitude.getText();
+							if (tmpStr != null && !"".equals(tmpStr)) {
+								mainPointNode.setProperty(GR_WGS84_LATITUDE,
+										tmpStr);
+							}
+							// Geometry
+							GrUtils.syncPointGeometry(mainPointNode);
+						} catch (RepositoryException re) {
+							throw new ArgeoException(
+									"Jcr Error while saving site matadata", re);
+						}
+
 					}
 					super.commit(onSave);
 				}
 			};
 
 			siteType.addSelectionListener(new ModifiedSelectionListener(part));
+			wgs84Longitude.addModifyListener(new ModifiedFieldListener(part));
+			wgs84Latitude.addModifyListener(new ModifiedFieldListener(part));
+
 			getManagedForm().addPart(part);
 
 			// Generate report link
 			Hyperlink generateReportLink = tk.createHyperlink(body,
-					GrUiPlugin.getMessage("generateSiteReportLbl"), 0);
+					GrMessages.get().generateSiteReport_lbl, 0);
 
 			generateReportLink
 					.addHyperlinkListener(new AbstractHyperlinkListener() {
@@ -207,7 +240,6 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 
 	}
 
-	// TODO: implement handling of more than one point by site
 	private Section createMainPointSection(Composite parent) {
 		try {
 
@@ -222,8 +254,7 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 
 			// Set title of the section
 			StringBuffer sbuf = new StringBuffer();
-			sbuf.append(GrUiPlugin
-					.getMessage(MSG_PRE + "MainPointSectionTitle"));
+			sbuf.append(GrMessages.get().siteEditor_lastUpdatedInfoSection_title);
 			section.setText(sbuf.toString());
 
 			// Layout for the body of the section
@@ -234,84 +265,82 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 
 			Label lbl;
 
-			// Point name
+			// Water level
 			lbl = new Label(body, SWT.NONE);
-			lbl.setText(GrUiPlugin.getMessage("pointNameLbl"));
+			lbl.setText(GrMessages.get().waterLevelLbl);
 
-			pointName = new Text(body, SWT.BORDER | SWT.SINGLE);
-			pointName.setText(mainPointNode.getName());
+			final Text waterLevelTxt = new Text(body, SWT.BORDER | SWT.SINGLE);
+			waterLevelTxt.setEnabled(true);
 
-			// read only for the time being, changing the name of a node can be
-			// tricky and is not in the scope of current prototype
-			// See
-			// http://stackoverflow.com/questions/4164995/jcr-node-how-to-changing-name
-			pointName.setEnabled(false);
-
-			// Longitude
-			lbl = new Label(body, SWT.NONE);
-			lbl.setText(GrUiPlugin.getMessage("wgs84LongitudeLbl"));
-
-			wgs84Longitude = new Text(body, SWT.BORDER | SWT.SINGLE);
-			wgs84Longitude.setEnabled(true);
-
-			if (mainPointNode.hasProperty(GR_WGS84_LONGITUDE)) {
-				String value = mainPointNode.getProperty(GR_WGS84_LONGITUDE)
+			if (mainPointNode.hasProperty(GR_WATER_LEVEL)) {
+				String value = mainPointNode.getProperty(GR_WATER_LEVEL)
 						.getString();
-				wgs84Longitude.setText(value);
+				waterLevelTxt.setText(value);
 			}
 
-			// Latitude
+			// E-Coli rate
 			lbl = new Label(body, SWT.NONE);
-			lbl.setText(GrUiPlugin.getMessage("wgs84LatitudeLbl"));
+			lbl.setText(GrMessages.get().eColiRateLbl);
 
-			wgs84Latitude = new Text(body, SWT.BORDER | SWT.SINGLE);
-			wgs84Latitude.setEnabled(true);
+			final Text eColiRateTxt = new Text(body, SWT.BORDER | SWT.SINGLE);
+			eColiRateTxt.setEnabled(true);
 
-			if (mainPointNode.hasProperty(GR_WGS84_LATITUDE)) {
-				String value = mainPointNode.getProperty(GR_WGS84_LATITUDE)
+			if (mainPointNode.hasProperty(GR_ECOLI_RATE)) {
+				String value = mainPointNode.getProperty(GR_ECOLI_RATE)
 						.getString();
-				wgs84Latitude.setText(value);
+				eColiRateTxt.setText(value);
+			}
+
+			// Withdrawn water
+			lbl = new Label(body, SWT.NONE);
+			lbl.setText(GrMessages.get().withdrawnWaterLbl);
+
+			final Text withdrawnWaterTxt = new Text(body, SWT.BORDER
+					| SWT.SINGLE);
+			withdrawnWaterTxt.setEnabled(true);
+
+			if (mainPointNode.hasProperty(GR_WITHDRAWN_WATER)) {
+				String value = mainPointNode.getProperty(GR_WITHDRAWN_WATER)
+						.getString();
+				eColiRateTxt.setText(value);
 			}
 
 			AbstractFormPart part = new SectionPart(section) {
 				public void commit(boolean onSave) {
 					if (onSave) {
 						try {
-							// Point Type
-							// int index = pointType.getSelectionIndex();
-							// if (index > -1)
-							// mainPointNode.setProperty(GR_POINT_TYPE,
-							// pointType.getItem(index));
-
-							// Gps coordinate
-							String tmpStr = wgs84Longitude.getText();
+							// Waterlevel
+							String tmpStr = waterLevelTxt.getText();
 							if (tmpStr != null && !"".equals(tmpStr)) {
-								mainPointNode.setProperty(GR_WGS84_LONGITUDE,
+								mainPointNode.setProperty(GR_WATER_LEVEL,
 										tmpStr);
 							}
-
-							tmpStr = wgs84Latitude.getText();
+							// Ecoli rate
+							tmpStr = eColiRateTxt.getText();
 							if (tmpStr != null && !"".equals(tmpStr)) {
-								mainPointNode.setProperty(GR_WGS84_LATITUDE,
+								mainPointNode
+										.setProperty(GR_ECOLI_RATE, tmpStr);
+							}
+							// Withdrawn water
+							tmpStr = withdrawnWaterTxt.getText();
+							if (tmpStr != null && !"".equals(tmpStr)) {
+								mainPointNode.setProperty(GR_WITHDRAWN_WATER,
 										tmpStr);
 							}
-
-							// Geometry
-							GrUtils.syncPointGeometry(mainPointNode);
 						} catch (RepositoryException re) {
 							throw new ArgeoException(
-									"Jcr Error while saving point", re);
-
+									"Jcr Error while saving site matadata", re);
 						}
+
 					}
 					super.commit(onSave);
 				}
 			};
 
-			// pointType.addSelectionListener(new
-			// ModifiedSelectionListener(part));
+			siteType.addSelectionListener(new ModifiedSelectionListener(part));
 			wgs84Longitude.addModifyListener(new ModifiedFieldListener(part));
 			wgs84Latitude.addModifyListener(new ModifiedFieldListener(part));
+
 			getManagedForm().addPart(part);
 
 			return section;
@@ -326,7 +355,7 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 	private Section createCommentsTable(Composite parent) {
 		// Section
 		Section section = tk.createSection(parent, Section.TITLE_BAR);
-		section.setText(GrUiPlugin.getMessage(MSG_PRE + "CommentsTableTitle"));
+		section.setText(GrMessages.get().siteEditor_commentsSection_title);
 		Composite body = tk.createComposite(section, SWT.WRAP);
 		body.setLayout(new GridLayout(1, false));
 		section.setClient(body);
@@ -346,17 +375,17 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 
 		// Date updated
 		TableViewerColumn tvc = createTableViewerColumn(commentsTableViewer,
-				GrUiPlugin.getMessage("date"), 80);
+				GrMessages.get().dateLbl, 80);
 		tvc.setLabelProvider(getLabelProvider(Property.JCR_LAST_MODIFIED));
 
 		// Date updated
 		tvc = createTableViewerColumn(commentsTableViewer,
-				GrUiPlugin.getMessage("userNameLbl"), 80);
+				GrMessages.get().userNameLbl, 80);
 		tvc.setLabelProvider(getLabelProvider(Property.JCR_LAST_MODIFIED_BY));
 
 		// comment content
 		tvc = createTableViewerColumn(commentsTableViewer,
-				GrUiPlugin.getMessage("commentContent"), 350);
+				GrMessages.get().commentTxtLbl, 350);
 		tvc.setLabelProvider(getLabelProvider(GR_COMMENT_CONTENT));
 
 		commentsTableViewer.setContentProvider(new TableContentProvider());
@@ -366,7 +395,7 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 
 		// "Add new comment" hyperlink :
 		Hyperlink addNewCommentLink = tk.createHyperlink(body,
-				GrUiPlugin.getMessage("createNewCommentLbl"), 0);
+				GrMessages.get().addComment_lbl, 0);
 
 		final AbstractFormPart formPart = new SectionPart(section) {
 			public void commit(boolean onSave) {
