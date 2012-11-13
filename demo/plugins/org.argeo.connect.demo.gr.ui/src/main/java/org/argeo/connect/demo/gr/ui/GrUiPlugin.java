@@ -36,7 +36,8 @@ public class GrUiPlugin extends AbstractUIPlugin {
 		super.start(context);
 		this.bundleContext = context;
 		plugin = this;
-		messages = ResourceBundle.getBundle("org.argeo.connect.demo.gr.ui.messages");
+		messages = ResourceBundle
+				.getBundle("org.argeo.connect.demo.gr.ui.messages");
 	}
 
 	public void stop(BundleContext context) throws Exception {
