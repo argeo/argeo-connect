@@ -1,6 +1,7 @@
 package org.argeo.connect.demo.gr;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,10 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 	private List<String> siteTypes;
 
 	private Resource testData = null;
+	private Resource monitoredPic;
+	private Resource visitedPic;
+	private Resource registeredPic;
+
 	private Session adminSession;
 
 	public Random random = new Random();
@@ -194,6 +199,18 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 		this.testData = testData;
 	}
 
+	public void setMonitoredPic(Resource monitoredPic) {
+		this.monitoredPic = monitoredPic;
+	}
+
+	public void setVisitedPic(Resource visitedPic) {
+		this.visitedPic = visitedPic;
+	}
+
+	public void setRegisteredPic(Resource registeredPic) {
+		this.registeredPic = registeredPic;
+	}
+
 	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
@@ -231,13 +248,22 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 				site.setProperty(Property.JCR_TITLE,
 						GrUtils.shortenUuid(siteUuid));
 				site.addNode(GR_SITE_COMMENTS, NodeType.NT_UNSTRUCTURED);
-				site.setProperty(GR_SITE_TYPE, line.get(GR_SITE_TYPE));
+				String type = line.get(GR_SITE_TYPE);
+				site.setProperty(GR_SITE_TYPE, type);
 
 				// values
 				site.setProperty(GR_WATER_LEVEL, generateRandomData(1d, 15d));
 				site.setProperty(GR_ECOLI_RATE, generateRandomData(10d, 500d));
 				site.setProperty(GR_WITHDRAWN_WATER,
 						generateRandomData(0d, 10d));
+
+				// pic
+				if (GrConstants.MONITORED.equals(type))
+					addPic(site, monitoredPic);
+				else if (GrConstants.VISITED.equals(type))
+					addPic(site, visitedPic);
+				else if (GrConstants.REGISTERED.equals(type))
+					addPic(site, registeredPic);
 
 				Node mainPoint = site.hasNode(GR_SITE_MAIN_POINT) ? site
 						.getNode(GR_SITE_MAIN_POINT) : site.addNode(
@@ -257,6 +283,18 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 				throw new ArgeoException("Cannot process line " + lineNumber
 						+ " " + line, e);
 			}
+		}
+	}
+
+	private void addPic(Node site, Resource pic) {
+		InputStream in = null;
+		try {
+			in = pic.getInputStream();
+			JcrUtils.copyStreamAsFile(site, "SitePicture.jpg", in);
+		} catch (IOException e) {
+			throw new GrException("Cannot upload " + pic + " to " + site, e);
+		} finally {
+			IOUtils.closeQuietly(in);
 		}
 	}
 

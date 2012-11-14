@@ -10,7 +10,11 @@
 		<property name="repository" ref="jcrRepository" />
 		<property name="managedRoles" ref="managedRoles" />
 		<property name="siteTypes" ref="siteTypes" />
-		<property name="testData" value="osgibundle:/testdata/connect-demo-testdata.csv" />
+		<property name="testData"
+			value="osgibundle:/testdata/connect-demo-testdata.csv" />
+		<property name="monitoredPic" value="osgibundle:/testdata/monitored.jpg" />
+		<property name="visitedPic" value="osgibundle:/testdata/visited.jpg" />
+		<property name="registeredPic" value="osgibundle:/testdata/registered.jpg" />
 	</bean>
 
 	<bean

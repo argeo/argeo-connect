@@ -3,31 +3,38 @@ package org.argeo.connect.demo.gr.pdf;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
+import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Property;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 import org.argeo.ArgeoException;
 import org.argeo.connect.demo.gr.GrBackendImpl;
+import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.jcr.JcrUtils;
 
 /** Generate a PDF report about a site */
-public class SiteReportPublisher {
+public class SiteReportPublisher implements GrNames {
 	// private final static Log log =
 	// LogFactory.getLog(SiteReportPublisher.class);
-
+	private int fontSize = 12;
 	// private GrBackend grBackend;
 	private Repository repository;
 
@@ -52,11 +59,15 @@ public class SiteReportPublisher {
 
 	private void populateSiteReport(String siteUid, String filePath) {
 		Session session = null;
+		Binary binary = null;
+		InputStream in = null;
 		try {
 
 			session = repository.login();
 			Node site = session.getNodeByIdentifier(siteUid);
 
+			SimpleDateFormat sdf = new SimpleDateFormat(
+					"EEE, d MMM yyyy, HH:mm");
 			// the document
 			PDDocument doc = null;
 			try {
@@ -64,21 +75,77 @@ public class SiteReportPublisher {
 
 				PDPage page = new PDPage();
 				doc.addPage(page);
-				PDFont font = PDType1Font.HELVETICA_BOLD;
 
-				PDPageContentStream contentStream = new PDPageContentStream(
-						doc, page);
-				contentStream.beginText();
-				contentStream.setFont(font, 12);
-				contentStream.moveTextPositionByAmount(100, 700);
-				contentStream.drawString("NOM DU SITE : " + site.getName());
-				contentStream.endText();
-				contentStream.close();
+				PDSimpleFont fontBold = PDType1Font.HELVETICA_BOLD;
+				PDSimpleFont fontOblique = PDType1Font.HELVETICA_OBLIQUE;
+				PDSimpleFont fontNormal = PDType1Font.HELVETICA;
+				float height = fontBold.getFontDescriptor()
+						.getFontBoundingBox().getHeight() / 1000;
+				// calculate font height and increase by 5 percent.
+				height = height * fontSize * 1.05f;
+
+				PDPageContentStream cs = new PDPageContentStream(doc, page);
+				cs.beginText();
+				cs.moveTextPositionByAmount(100, 700);
+
+				writeValue(cs, "General information", null, fontOblique, null,
+						height);
+
+				writeValue(cs, "Site name : ",
+						site.getProperty(Property.JCR_TITLE).getString(),
+						fontBold, fontNormal, height);
+				writeValue(cs, "Site id : ", site.getProperty(GR_UUID)
+						.getString(), fontBold, fontNormal, height);
+				writeValue(cs, "Site type : ", site.getProperty(GR_SITE_TYPE)
+						.getString(), fontBold, fontNormal, height);
+				Date lastModif = site.getProperty(Property.JCR_LAST_MODIFIED)
+						.getDate().getTime();
+				String lastModifStr = sdf.format(lastModif);
+				writeValue(cs, "Last modified on ", lastModifStr
+						+ " (by "
+						+ site.getProperty(Property.JCR_LAST_MODIFIED_BY)
+								.getString() + ")", fontBold, fontNormal,
+						height);
+
+				writeValue(cs, null, null, null, null, height);
+				writeValue(cs, "Water quality monitoring", null, fontOblique,
+						null, height);
+
+				writeValue(cs, "Water level (m) : ",
+						site.getProperty(GR_WATER_LEVEL).getString(), fontBold,
+						fontNormal, height);
+				writeValue(cs, "E-Coli rate (count/100ml) : ", site
+						.getProperty(GR_ECOLI_RATE).getString(), fontBold,
+						fontNormal, height);
+				writeValue(cs, "Withdrawn water (m3/day) : ",
+						site.getProperty(GR_WITHDRAWN_WATER).getString(),
+						fontBold, fontNormal, height);
+
+				cs.endText();
+
+//				String fileName = "SitePicture.jpg";
+//				if (site.hasNode(fileName)) {
+//					try {
+//						binary = site.getNode(fileName)
+//								.getNode(Node.JCR_CONTENT)
+//								.getProperty(Property.JCR_DATA).getBinary();
+//						in = binary.getStream();
+//						PDXObjectImage ximage = null;
+//						ximage = new PDJpeg(doc, in);
+//						cs.drawImage(ximage, 20, 20);
+//					} catch (Exception e) {
+//						log.error("Cannot write image from " + site, e);
+//					}
+//				}
+
+				cs.close();
 				doc.save(filePath);
 
 				// Add images if there is some
 				addImagesToPdf(filePath, site);
 			} finally {
+				JcrUtils.closeQuietly(binary);
+				IOUtils.closeQuietly(in);
 				if (doc != null) {
 					doc.close();
 				}
@@ -94,13 +161,27 @@ public class SiteReportPublisher {
 		}
 	}
 
-	private void addImagesToPdf(String fileName, Node siteNode) {
+	protected void writeValue(PDPageContentStream contentStream, String label,
+			String value, PDSimpleFont fontBold, PDSimpleFont font, float height)
+			throws IOException {
+		if (label != null) {
+			contentStream.setFont(fontBold, fontSize);
+			contentStream.drawString(label);
+		}
+		if (value != null) {
+			contentStream.setFont(font, fontSize);
+			contentStream.drawString(value);
+		}
+		contentStream.moveTextPositionByAmount(0, -height);
+
+	}
+
+	protected void addImagesToPdf(String fileName, Node siteNode) {
 		try {
 			NodeIterator it = siteNode.getNodes();
 			while (it.hasNext()) {
 				Node curNode = it.nextNode();
 				if (curNode.isNodeType(NodeType.NT_FILE)) {
-
 					if (curNode.getName().toLowerCase().endsWith(".jpg")) {
 						File tmpFile = GrBackendImpl.getFileFromNode(curNode);
 						addJpgImageToPdf(fileName, tmpFile);
@@ -125,7 +206,7 @@ public class SiteReportPublisher {
 			ximage = new PDJpeg(doc, new FileInputStream(image));
 			PDPageContentStream contentStream;
 			contentStream = new PDPageContentStream(doc, page, true, true);
-			contentStream.drawImage(ximage, 20, 20);
+			contentStream.drawImage(ximage, 100, 300);
 			contentStream.close();
 			doc.save(fileName);
 		} catch (COSVisitorException e) {
