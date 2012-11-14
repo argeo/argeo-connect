@@ -10,8 +10,6 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrNames;
@@ -53,7 +51,7 @@ import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
 public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
-	private final static Log log = LogFactory.getLog(SiteDetailsPage.class);
+	// private final static Log log = LogFactory.getLog(SiteDetailsPage.class);
 
 	// local constants
 	public final static String ID = "grSiteEditor.siteDetailsPage";
@@ -62,7 +60,7 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 	public final static String COMMENT_COLUMN_NAME = "Comment";
 
 	// Main business Objects
-	private Node networkNode;
+	// private Node networkNode;
 	private Node siteNode;
 	private Node commentsNode;
 	private Node mainPointNode;
@@ -78,7 +76,7 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 	public SiteDetailsPage(FormEditor editor, String title) {
 		super(editor, ID, title);
 		siteNode = ((SiteEditor) editor).getCurrentSite();
-		networkNode = ((SiteEditor) editor).getNetwork();
+		// networkNode = ((SiteEditor) editor).getNetwork();
 		grBackend = getGrBackend();
 		// initialize compulsory nodes
 		try {

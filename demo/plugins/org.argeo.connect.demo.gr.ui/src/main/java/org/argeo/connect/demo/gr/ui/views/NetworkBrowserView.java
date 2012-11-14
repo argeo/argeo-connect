@@ -8,8 +8,6 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrConstants;
@@ -42,7 +40,8 @@ import org.eclipse.ui.services.IServiceLocator;
 public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 		GrConstants {
 
-	private final static Log log = LogFactory.getLog(NetworkBrowserView.class);
+	// private final static Log log =
+	// LogFactory.getLog(NetworkBrowserView.class);
 	public final static String ID = GrUiPlugin.PLUGIN_ID
 			+ ".networkBrowserView";
 
