@@ -277,9 +277,8 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 			final Text waterLevelTxt = new Text(body, SWT.BORDER | SWT.SINGLE);
 			waterLevelTxt.setEnabled(true);
 
-			if (mainPointNode.hasProperty(GR_WATER_LEVEL)) {
-				String value = mainPointNode.getProperty(GR_WATER_LEVEL)
-						.getString();
+			if (siteNode.hasProperty(GR_WATER_LEVEL)) {
+				String value = siteNode.getProperty(GR_WATER_LEVEL).getString();
 				waterLevelTxt.setText(value);
 			}
 
@@ -290,9 +289,8 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 			final Text eColiRateTxt = new Text(body, SWT.BORDER | SWT.SINGLE);
 			eColiRateTxt.setEnabled(true);
 
-			if (mainPointNode.hasProperty(GR_ECOLI_RATE)) {
-				String value = mainPointNode.getProperty(GR_ECOLI_RATE)
-						.getString();
+			if (siteNode.hasProperty(GR_ECOLI_RATE)) {
+				String value = siteNode.getProperty(GR_ECOLI_RATE).getString();
 				eColiRateTxt.setText(value);
 			}
 
@@ -304,10 +302,10 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 					| SWT.SINGLE);
 			withdrawnWaterTxt.setEnabled(true);
 
-			if (mainPointNode.hasProperty(GR_WITHDRAWN_WATER)) {
-				String value = mainPointNode.getProperty(GR_WITHDRAWN_WATER)
+			if (siteNode.hasProperty(GR_WITHDRAWN_WATER)) {
+				String value = siteNode.getProperty(GR_WITHDRAWN_WATER)
 						.getString();
-				eColiRateTxt.setText(value);
+				withdrawnWaterTxt.setText(value);
 			}
 
 			AbstractFormPart part = new SectionPart(section) {

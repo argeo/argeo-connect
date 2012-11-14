@@ -49,7 +49,8 @@ public class SiteEditor extends AbstractGrEditor implements GrNames {
 	@Override
 	protected void addPages() {
 		try {
-			addPage(new SiteDetailsPage(this, "unused title"));
+			addPage(new SiteDetailsPage(this,
+					GrMessages.get().siteEditor_detailPage_title));
 			MapFormPage mapFormPage = new SiteMapDisplayPage(this, "map",
 					GrMessages.get().siteEditor_mapPage_title, currentSite,
 					mapControlCreator);

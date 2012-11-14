@@ -5,11 +5,13 @@ import org.eclipse.swt.graphics.Image;
 
 /** Shared icons. */
 public class GrImages {
-	public final static Image networkFolderImg = GrUiPlugin.getImageDescriptor(
+	// Generic icons
+	public final static Image ICON_NETWORKS = GrUiPlugin.getImageDescriptor(
 			"icons/networkList.gif").createImage();
-	public final static Image networkImg = GrUiPlugin.getImageDescriptor(
+	public final static Image ICON_NETWORK = GrUiPlugin.getImageDescriptor(
 			"icons/network.png").createImage();
-	// IMG
+
+	// various site types
 	public final static Image ICON_MONITORED_TYPE = GrUiPlugin
 			.getImageDescriptor("icons/" + GrConstants.MONITORED + ".gif")
 			.createImage();

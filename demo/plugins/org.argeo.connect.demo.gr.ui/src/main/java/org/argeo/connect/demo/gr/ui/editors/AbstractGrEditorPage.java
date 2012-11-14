@@ -14,7 +14,6 @@ import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-//import org.argeo.ArgeoException;
 import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrConstants;
 import org.argeo.connect.demo.gr.GrException;
@@ -98,7 +97,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 		}
 
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			viewer.refresh();
+			// viewer.refresh();
 		}
 	}
 
@@ -153,8 +152,8 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 					try {
 						return node.getIdentifier();
 					} catch (RepositoryException e) {
-						throw new GrException("Cannot jcr:id for node "
-								+ node, e);
+						throw new GrException("Cannot jcr:id for node " + node,
+								e);
 					}
 				}
 
@@ -169,8 +168,8 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 					try {
 						return node.getName();
 					} catch (RepositoryException e) {
-						throw new GrException("Cannot get name of node "
-								+ node, e);
+						throw new GrException(
+								"Cannot get name of node " + node, e);
 					}
 				}
 

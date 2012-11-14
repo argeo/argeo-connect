@@ -10,14 +10,13 @@ import org.argeo.connect.demo.gr.GrException;
 import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.GrTypes;
 import org.argeo.connect.demo.gr.ui.GrImages;
+import org.argeo.connect.demo.gr.ui.GrMessages;
 import org.argeo.eclipse.ui.jcr.DefaultNodeLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
 /** Label provider for the browser tree */
 public class GrNodeLabelProvider extends DefaultNodeLabelProvider implements
 		GrConstants {
-	// /private final static Log log =
-	// LogFactory.getLog(GrNodeLabelProvider.class);
 
 	// Helper to simplify retrieving of a user friendly name for the various
 	// node types of GR Application
@@ -27,8 +26,14 @@ public class GrNodeLabelProvider extends DefaultNodeLabelProvider implements
 				return node.getIdentifier().substring(0, 7);
 			else if (node.isNodeType(NodeType.MIX_TITLE))
 				return node.getProperty(Property.JCR_TITLE).getString();
-			else
-				return node.getName();
+			else {
+				String name = node.getName();
+				if (GrNames.GR_NETWORKS.equals(name))
+					return GrMessages.get().networksLbl;
+				else
+					return name;
+			}
+
 		} catch (RepositoryException e) {
 			throw new GrException("Cannot retrieve name for node", e);
 		}
@@ -40,7 +45,7 @@ public class GrNodeLabelProvider extends DefaultNodeLabelProvider implements
 	public static Image getIcon(Node node) {
 		try {
 			if (node.isNodeType(GrTypes.GR_NETWORK))
-				return GrImages.networkImg;
+				return GrImages.ICON_NETWORK;
 			else if (node.isNodeType(GrTypes.GR_SITE)) {
 				String siteType = node.getProperty(GrNames.GR_SITE_TYPE)
 						.getString();
@@ -50,7 +55,9 @@ public class GrNodeLabelProvider extends DefaultNodeLabelProvider implements
 					return GrImages.ICON_VISITED_TYPE;
 				else if (GrConstants.REGISTERED.equals(siteType))
 					return GrImages.ICON_REGISTERED_TYPE;
-			}
+			} else if (GrNames.GR_NETWORKS.equals(node.getName()))
+				return GrImages.ICON_NETWORKS;
+
 		} catch (RepositoryException e) {
 			throw new GrException("Cannot retrieve name for node", e);
 		}

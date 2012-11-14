@@ -12,6 +12,7 @@ public class GrMessages extends NLS {
 
 	// Networks
 	public String networkLbl;
+	public String networksLbl;
 
 	// Sites
 	public String siteLbl;

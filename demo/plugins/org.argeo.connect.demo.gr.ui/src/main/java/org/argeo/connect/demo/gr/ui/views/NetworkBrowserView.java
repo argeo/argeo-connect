@@ -1,9 +1,5 @@
 package org.argeo.connect.demo.gr.ui.views;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -15,6 +11,7 @@ import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.connect.demo.gr.ui.commands.CreateNetwork;
 import org.argeo.connect.demo.gr.ui.providers.GrNodeLabelProvider;
+import org.argeo.connect.demo.gr.ui.providers.GrTreeContentProvider;
 import org.argeo.connect.demo.gr.ui.utils.GrDoubleClickListener;
 import org.argeo.eclipse.ui.jcr.SimpleNodeContentProvider;
 import org.argeo.eclipse.ui.jcr.utils.NodeViewerComparer;
@@ -60,7 +57,7 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 		parent.setLayout(new FillLayout());
 
 		// Configure here useful view root nodes
-		nodeContentProvider = new ViewContentProvider(jcrSession,
+		nodeContentProvider = new GrTreeContentProvider(jcrSession,
 				new String[] { GR_NETWORKS_BASE_PATH });
 		try {
 			networksRootNode = jcrSession.getNode(GR_NETWORKS_BASE_PATH);
@@ -177,40 +174,6 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 		return nodesViewer;
 	}
 
-	// Add specific behaviours to the node provider
-	class ViewContentProvider extends SimpleNodeContentProvider {
-
-		public ViewContentProvider(Session session, String[] basePaths) {
-			super(session, basePaths);
-		}
-
-		@Override
-		protected List<Node> filterChildren(List<Node> children)
-				throws RepositoryException {
-			return super.filterChildren(children);
-		}
-
-		@Override
-		protected Object[] sort(Object parent, Object[] children) {
-			Arrays.sort(children, new Comparator<Object>() {
-
-				public int compare(Object o1, Object o2) {
-					Node node1 = (Node) o1;
-					Node node2 = (Node) o2;
-					try {
-						return node1.getPath().compareTo(node2.getPath());
-					} catch (RepositoryException e) {
-						throw new ArgeoException("Cannot compare " + node1
-								+ " and " + node2, e);
-					}
-				}
-
-			});
-			return children;
-		}
-
-	}
-
 	// abstract methods that must be overwritten
 	@Override
 	protected int[] getWeights() {
@@ -231,5 +194,4 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 	public void setGrBackend(GrBackend grBackend) {
 		this.grBackend = grBackend;
 	}
-
 }
