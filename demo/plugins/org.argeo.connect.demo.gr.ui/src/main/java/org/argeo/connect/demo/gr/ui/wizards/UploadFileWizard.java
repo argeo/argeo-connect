@@ -44,7 +44,8 @@ public class UploadFileWizard extends Wizard {
 	@Override
 	public void addPages() {
 		try {
-			addPage(new UploadFileWizardPage("unused title"));
+			uploadFileWizardPage = new UploadFileWizardPage("unused title");
+			addPage(uploadFileWizardPage);
 		} catch (Exception e) {
 			throw new GrException("Cannot add page to wizard ", e);
 		}
