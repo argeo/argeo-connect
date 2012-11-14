@@ -14,8 +14,11 @@ import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrConstants;
 import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.GrTypes;
+import org.argeo.connect.demo.gr.ui.GrImages;
+import org.argeo.connect.demo.gr.ui.GrMessages;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.connect.demo.gr.ui.commands.CreateSite;
+import org.argeo.connect.demo.gr.ui.providers.GrNodeLabelProvider;
 import org.argeo.connect.demo.gr.ui.utils.AbstractHyperlinkListener;
 import org.argeo.connect.demo.gr.ui.utils.CommandUtils;
 import org.argeo.connect.demo.gr.ui.utils.GrDoubleClickListener;
@@ -23,6 +26,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -45,17 +49,6 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 	// private final static Log log =
 	// LogFactory.getLog(NetworkDetailsPage.class);
 	public final static String ID = "grNetworkEditor.networkDetailsPage";
-
-	// for internationalized messages
-	private final static String MSG_PRE = "grNetworkEditorNetworkDetailsPage";
-
-	// IMG
-	public final static Image ICON_NATIONAL_TYPE = GrUiPlugin
-			.getImageDescriptor("icons/national.gif").createImage();
-	public final static Image ICON_NORMAL_TYPE = GrUiPlugin.getImageDescriptor(
-			"icons/normal.gif").createImage();
-	public final static Image ICON_BASE_TYPE = GrUiPlugin.getImageDescriptor(
-			"icons/base.gif").createImage();
 
 	// This page widgets;
 	private TableViewer sitesTableViewer;
@@ -82,54 +75,44 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 			TableWrapLayout twt = new TableWrapLayout();
 			form.getBody().setLayout(twt);
 
-			createFields(form.getBody());
+			createMainSection(form.getBody());
 			createDocumentsTable(form.getBody(), tk, network);
-			createSitesTable(form.getBody());
+			createSitesSection(form.getBody());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private Section createFields(Composite parent) {
-		try {
-			// Network metadata
-			Section section = tk.createSection(parent, Section.TITLE_BAR);
-			section.setText(GrUiPlugin.getMessage(MSG_PRE + "DataSectionTitle")
-					+ network.getName());
-			section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
+	private Section createMainSection(Composite parent) {
+		// Network metadata
+		Section section = tk.createSection(parent, Section.TITLE_BAR);
+		section.setText(GrMessages.get().networkEditor_mainSection_title);
+		section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 
-			Composite body = tk.createComposite(section, SWT.WRAP);
-			TableWrapData twd = new TableWrapData(TableWrapData.FILL_GRAB);
-			twd.grabHorizontal = true;
-			body.setLayoutData(twd);
-			section.setClient(body);
+		Composite body = tk.createComposite(section, SWT.WRAP);
+		TableWrapData twd = new TableWrapData(TableWrapData.FILL_GRAB);
+		twd.grabHorizontal = true;
+		body.setLayoutData(twd);
+		section.setClient(body);
 
-			GridLayout layout = new GridLayout();
-			layout.marginWidth = layout.marginHeight = 0;
-			layout.numColumns = 1;
-			body.setLayout(layout);
+		GridLayout layout = new GridLayout();
+		layout.marginWidth = layout.marginHeight = 0;
+		layout.numColumns = 1;
+		body.setLayout(layout);
 
-			StringBuffer displayStr = new StringBuffer();
-			displayStr.append(GrUiPlugin.getMessage(MSG_PRE + "LastUpdateLbl"));
-			displayStr.append(getPropertyCalendarWithTimeAsString(network,
-					Property.JCR_LAST_MODIFIED));
-			displayStr.append(GrUiPlugin.getMessage(MSG_PRE + "LastUserLbl"));
-			displayStr.append(getPropertyString(network,
-					Property.JCR_LAST_MODIFIED_BY));
-			displayStr.append(". ");
-
-			tk.createLabel(body, displayStr.toString());
-			return section;
-		} catch (RepositoryException re) {
-			throw new ArgeoException(
-					"Error during creation of network details section", re);
-		}
+		String displayStr = NLS.bind(
+				GrMessages.get().lastUpdatedLbl,
+				getPropertyCalendarWithTimeAsString(network,
+						Property.JCR_LAST_MODIFIED),
+				getPropertyString(network, Property.JCR_LAST_MODIFIED_BY));
+		tk.createLabel(body, displayStr);
+		return section;
 	}
 
-	private Section createSitesTable(Composite parent) {
+	private Section createSitesSection(Composite parent) {
 		// Section
 		Section section = tk.createSection(parent, Section.TITLE_BAR);
-		section.setText(GrUiPlugin.getMessage(MSG_PRE + "SitesTableTitle"));
+		section.setText(GrMessages.get().networkEditor_sitesSection_title);
 
 		Composite body = tk.createComposite(section, SWT.WRAP);
 		body.setLayout(new GridLayout(1, false));
@@ -156,32 +139,11 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 		column = createTableViewerColumn(sitesTableViewer, "", 200);
 		column.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
-				Node node = (Node) element;
-				try {
-					return node.getName();
-				} catch (RepositoryException e) {
-					throw new ArgeoException("Cannot get name of node " + node,
-							e);
-				}
+				return GrNodeLabelProvider.getName((Node)element);
 			}
 
 			public Image getImage(Object element) {
-				Node node = (Node) element;
-				try {
-					if (!node.hasProperty(GR_SITE_TYPE))
-						return null;
-					String type = node.getProperty(GR_SITE_TYPE).getString();
-					if (GrConstants.NORMAL.equals(type))
-						return ICON_NORMAL_TYPE;
-					if (GrConstants.NATIONAL.equals(type))
-						return ICON_NATIONAL_TYPE;
-					if (GrConstants.BASE.equals(type))
-						return ICON_BASE_TYPE;
-				} catch (RepositoryException e) {
-					throw new ArgeoException("Cannot get image for node "
-							+ node, e);
-				}
-				return null;
+				return GrNodeLabelProvider.getIcon((Node)element);
 			}
 		});
 
@@ -210,8 +172,7 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 				.addDoubleClickListener(new GrDoubleClickListener(null));
 
 		// "Add new site" hyperlink :
-		Hyperlink addNewSiteLink = tk.createHyperlink(body,
-				GrUiPlugin.getMessage("createNewSiteLbl"), 0);
+		Hyperlink addNewSiteLink = tk.createHyperlink(body,GrMessages.get().createSite_lbl, 0);
 
 		final AbstractFormPart formPart = new SectionPart(section) {
 			public void commit(boolean onSave) {

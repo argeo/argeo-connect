@@ -24,11 +24,17 @@ public class GrMessages extends NLS {
 	public String eColiRateLbl;
 	public String withdrawnWaterLbl;
 
+	// Documents
+	public String docNameLbl;
+
 	// Users
 	public String userNameLbl;
 
-	// Miscellaneous
+	// Dates
 	public String dateLbl;
+	public String lastUpdatedLbl;
+
+	// Miscellaneous
 	public String commentTxtLbl;
 
 	/* Views */
@@ -41,11 +47,14 @@ public class GrMessages extends NLS {
 	public String networkListView_msg;
 
 	/* Editors */
+	// Generic
+	public String editor_docSection_title;
 
 	// Network editor
-	public String networkEditor_title;
 	public String networkEditor_detailPage_title;
 	public String networkEditor_mapPage_title;
+	public String networkEditor_mainSection_title;
+	public String networkEditor_sitesSection_title;
 
 	// Site editor
 	public String siteEditor_title_pre;
@@ -73,8 +82,10 @@ public class GrMessages extends NLS {
 	public String createSite_lbl;
 	public String generateSiteReport_lbl;
 	public String addComment_lbl;
+	public String addDocument_lbl;
 
 	public static GrMessages get() {
 		return nls.get();
 	}
+
 }

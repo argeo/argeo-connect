@@ -8,6 +8,7 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
+import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,7 +18,6 @@ import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.GrTypes;
 import org.argeo.connect.demo.gr.GrUtils;
 import org.argeo.connect.demo.gr.ui.GrMessages;
-import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.connect.demo.gr.ui.commands.GenerateSiteReport;
 import org.argeo.connect.demo.gr.ui.utils.AbstractHyperlinkListener;
 import org.argeo.connect.demo.gr.ui.utils.CommandUtils;
@@ -28,6 +28,8 @@ import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -96,7 +98,7 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 			createMetadataSection(form.getBody());
 			createMainPointSection(form.getBody());
 			// createDocumentsTable(form.getBody(), tk, siteNode);
-			createCommentsTable(form.getBody());
+			createCommentsSection(form.getBody());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -105,18 +107,23 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 	private Section createMetadataSection(Composite parent) {
 		try {
 			// Site metadata
-			Section section = tk.createSection(parent, Section.TITLE_BAR);
+			Section section = tk.createSection(parent, Section.TITLE_BAR
+					| Section.DESCRIPTION);
 			section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 			Composite body = tk.createComposite(section, SWT.WRAP);
 			body.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 			section.setClient(body);
 
 			// Set title of the section
-			StringBuffer sbuf = new StringBuffer();
-			sbuf.append(GrMessages.get().siteEditor_detailPage_title);
-			// sbuf.append(" ");
-			sbuf.append(siteNode.getName());
-			section.setText(sbuf.toString());
+			section.setText(GrMessages.get().siteEditor_detailPage_title);
+
+			if (siteNode.isNodeType(NodeType.MIX_LAST_MODIFIED))
+				section.setDescription(NLS.bind(
+						GrMessages.get().lastUpdatedLbl,
+						getPropertyCalendarWithTimeAsString(siteNode,
+								Property.JCR_LAST_MODIFIED),
+						getPropertyString(siteNode,
+								Property.JCR_LAST_MODIFIED_BY)));
 
 			// Layout for the body of the section
 			GridLayout layout = new GridLayout();
@@ -352,7 +359,7 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 	/*
 	 * COMMENTS TABLE MANAGEMENT
 	 */
-	private Section createCommentsTable(Composite parent) {
+	private Section createCommentsSection(Composite parent) {
 		// Section
 		Section section = tk.createSection(parent, Section.TITLE_BAR);
 		section.setText(GrMessages.get().siteEditor_commentsSection_title);
@@ -442,15 +449,15 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 	private boolean addNewComment() {
 
 		NewCommentDialog idiag = new NewCommentDialog(getSite().getShell(),
-				GrUiPlugin.getMessage("addNewCommentDialogTitle"),
-				GrUiPlugin.getMessage("addNewCommentDialogDescription"), "",
-				null);
+				GrMessages.get().dialog_createComment_title,
+				GrMessages.get().dialog_createComment_msg, "", null);
 
-		idiag.open();
+		int result = idiag.open();
 		String commentString = idiag.getValue();
 		idiag.close();
 
-		if (commentString != null && !"".equals(commentString)) {
+		if (result == Window.OK
+				&& !(commentString == null || "".equals(commentString))) {
 			try {
 				Node commentNode = commentsNode.addNode("gr:comment",
 						GrTypes.GR_COMMENT);

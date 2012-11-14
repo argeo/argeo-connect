@@ -10,6 +10,7 @@ import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrTypes;
 import org.argeo.connect.demo.gr.ui.commands.OpenNetworkEditor;
 import org.argeo.connect.demo.gr.ui.commands.OpenSiteEditor;
+import org.argeo.connect.demo.gr.ui.providers.TmpFileProvider;
 import org.argeo.eclipse.ui.specific.FileHandler;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;

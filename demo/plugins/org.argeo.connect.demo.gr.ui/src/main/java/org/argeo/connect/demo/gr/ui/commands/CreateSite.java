@@ -40,7 +40,7 @@ public class CreateSite extends AbstractHandler implements GrNames {
 			InputDialog idiag = new InputDialog(
 					HandlerUtil.getActiveShell(event),
 					GrMessages.get().dialog_createSite_title,
-					GrMessages.get().dialog_createSite_title, "", null);
+					GrMessages.get().dialog_createSite_msg, "", null);
 
 			if (idiag.open() == org.eclipse.jface.window.Window.OK) {
 				String siteName = idiag.getValue();

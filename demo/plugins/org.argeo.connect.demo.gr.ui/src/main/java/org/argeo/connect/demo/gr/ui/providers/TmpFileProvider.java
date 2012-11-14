@@ -1,4 +1,4 @@
-package org.argeo.connect.demo.gr.ui.utils;
+package org.argeo.connect.demo.gr.ui.providers;
 
 import java.io.File;
 import java.io.IOException;

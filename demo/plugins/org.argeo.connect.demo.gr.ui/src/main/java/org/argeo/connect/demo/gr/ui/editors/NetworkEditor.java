@@ -5,6 +5,7 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.demo.gr.ui.GrMessages;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.gis.ui.MapControlCreator;
 import org.argeo.gis.ui.editors.MapFormPage;
@@ -32,7 +33,7 @@ public class NetworkEditor extends AbstractGrEditor {
 	private MapFormPage mapFormPage;
 
 	// for internationalized messages
-	private final static String MSG_PRE = "grNetworkEditor";
+	//private final static String MSG_PRE = "grNetworkEditor";
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -42,8 +43,7 @@ public class NetworkEditor extends AbstractGrEditor {
 		try {
 			network = getGrBackend().getCurrentSession().getNodeByIdentifier(
 					nei.getUid());
-			this.setPartName(GrUiPlugin.getMessage("networkLbl") + " "
-					+ network.getProperty(Property.JCR_TITLE).getString());
+			this.setPartName(network.getProperty(Property.JCR_TITLE).getString());
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Cannot load network.", e);
 		}
@@ -54,14 +54,14 @@ public class NetworkEditor extends AbstractGrEditor {
 		try {
 
 			NetworkDetailsPage networkDetailsPage = new NetworkDetailsPage(
-					this, GrUiPlugin.getMessage(MSG_PRE + "DetailPageTitle"));
+					this, GrMessages.get().networkEditor_detailPage_title);
 			addPage(networkDetailsPage);
 			// addPage(new MapDisplayPage(this,
 			// ClientUiPlugin.getMessage(MSG_PRE
 			// + "MapPageTitle")));
 
 			mapFormPage = new MapDisplayPage(this, "map",
-					GrUiPlugin.getMessage(MSG_PRE + "MapPageTitle"), network,
+					GrMessages.get().networkEditor_mapPage_title, network,
 					mapControlCreator, this);
 			addPage(mapFormPage);
 

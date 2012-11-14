@@ -4,9 +4,9 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.demo.gr.GrConstants;
 import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
+import org.argeo.connect.demo.gr.ui.providers.GrNodeLabelProvider;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -34,15 +34,8 @@ public class SiteEditor extends AbstractGrEditor implements GrNames {
 			currentSite = getGrBackend().getCurrentSession()
 					.getNodeByIdentifier(sei.getUid());
 			network = currentSite.getParent();
-			this.setPartName(GrUiPlugin.getMessage("siteLbl") + " "
-					+ currentSite.getName());
-			String siteType = currentSite.getProperty(GR_SITE_TYPE).getString();
-			if (GrConstants.NATIONAL.equals(siteType))
-				setTitleImage(NetworkDetailsPage.ICON_NATIONAL_TYPE);
-			else if (GrConstants.BASE.equals(siteType))
-				setTitleImage(NetworkDetailsPage.ICON_BASE_TYPE);
-			else if (GrConstants.NORMAL.equals(siteType))
-				setTitleImage(NetworkDetailsPage.ICON_NORMAL_TYPE);
+			this.setPartName(GrNodeLabelProvider.getName(currentSite));
+			setTitleImage(GrNodeLabelProvider.getIcon(currentSite));
 		} catch (RepositoryException e) {
 			throw new ArgeoException(
 					"Error while initialising SiteEditor with JCR information.",

@@ -14,10 +14,12 @@ import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.ArgeoException;
+//import org.argeo.ArgeoException;
 import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrConstants;
+import org.argeo.connect.demo.gr.GrException;
 import org.argeo.connect.demo.gr.GrNames;
+import org.argeo.connect.demo.gr.ui.GrMessages;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.connect.demo.gr.ui.utils.AbstractHyperlinkListener;
 import org.argeo.connect.demo.gr.ui.utils.GrDoubleClickListener;
@@ -43,7 +45,6 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.Section;
-
 
 /**
  * Factorizes type independent method for the editor, among others table and
@@ -116,7 +117,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 						return timeFormatter.format(node
 								.getProperty(columnName).getDate().getTime());
 					} catch (RepositoryException e) {
-						throw new ArgeoException(
+						throw new GrException(
 								"Cannot get last modified date for node "
 										+ node, e);
 					}
@@ -135,7 +136,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 						return grBackend.getUserDisplayName(node.getProperty(
 								columnName).getString());
 					} catch (RepositoryException e) {
-						throw new ArgeoException(
+						throw new GrException(
 								"Cannot get last modified user for node "
 										+ node, e);
 					}
@@ -152,7 +153,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 					try {
 						return node.getIdentifier();
 					} catch (RepositoryException e) {
-						throw new ArgeoException("Cannot jcr:id for node "
+						throw new GrException("Cannot jcr:id for node "
 								+ node, e);
 					}
 				}
@@ -168,7 +169,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 					try {
 						return node.getName();
 					} catch (RepositoryException e) {
-						throw new ArgeoException("Cannot get name of node "
+						throw new GrException("Cannot get name of node "
 								+ node, e);
 					}
 				}
@@ -184,7 +185,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 					try {
 						return node.getProperty(columnName).getString();
 					} catch (RepositoryException e) {
-						throw new ArgeoException(
+						throw new GrException(
 								"Cannot get string property for node " + node,
 								e);
 					}
@@ -205,7 +206,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 			final Node node) {
 		// Section
 		Section section = tk.createSection(parent, Section.TITLE_BAR);
-		section.setText(GrUiPlugin.getMessage("documentsSectionTitle"));
+		section.setText(GrMessages.get().editor_docSection_title);
 		Composite body = tk.createComposite(section, SWT.WRAP);
 		body.setLayout(new GridLayout(1, false));
 		section.setClient(body);
@@ -230,23 +231,18 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 
 		// Date updated
 		tvc = createTableViewerColumn(documentsTableViewer,
-				GrUiPlugin.getMessage("date"), 80);
+				GrMessages.get().dateLbl, 80);
 		tvc.setLabelProvider(getLabelProvider(Property.JCR_CREATED));
 
 		// Updated By
 		tvc = createTableViewerColumn(documentsTableViewer,
-				GrUiPlugin.getMessage("userNameLbl"), 80);
+				GrMessages.get().userNameLbl, 80);
 		tvc.setLabelProvider(getLabelProvider(Property.JCR_CREATED_BY));
 
 		// Document name
 		tvc = createTableViewerColumn(documentsTableViewer,
-				GrUiPlugin.getMessage("documentNameLbl"), 350);
+				GrMessages.get().docNameLbl, 350);
 		tvc.setLabelProvider(getLabelProvider(Property.JCR_NAME));
-
-		// // Document Type
-		// tvc = createTableViewerColumn(documentsTableViewer,
-		// ClientUiPlugin.getMessage("commentContent"), 350);
-		// tvc.setLabelProvider(getLabelProvider(GR_COMMENT_CONTENT));
 
 		documentsTableViewer.setContentProvider(new TableContentProvider());
 		getDocumentsTableViewer().addDoubleClickListener(
@@ -257,7 +253,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 
 		// "Upload new Document" hyperlink :
 		Hyperlink addNewDocLink = tk.createHyperlink(body,
-				GrUiPlugin.getMessage("addDocumentLbl"), 0);
+				GrMessages.get().addDocument_lbl, 0);
 
 		final AbstractFormPart formPart = new SectionPart(section) {
 			public void commit(boolean onSave) {
@@ -270,9 +266,9 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 			@Override
 			public void linkActivated(HyperlinkEvent e) {
 				UploadFileWizard wizard = new UploadFileWizard(grBackend, node);
-				WizardDialog dialog = new WizardDialog(GrUiPlugin
-						.getDefault().getWorkbench().getActiveWorkbenchWindow()
-						.getShell(), wizard);
+				WizardDialog dialog = new WizardDialog(GrUiPlugin.getDefault()
+						.getWorkbench().getActiveWorkbenchWindow().getShell(),
+						wizard);
 				Object returnCode = dialog.open();
 				if (returnCode instanceof Integer) {
 					int result = ((Integer) returnCode).intValue();
@@ -304,7 +300,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 					documents.add(curNode);
 			}
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Cannot refresh list of documents node"
+			throw new GrException("Cannot refresh list of documents node"
 					+ " for the current node : " + node, re);
 		}
 		getDocumentsTableViewer().setInput(documents);
@@ -324,7 +320,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 			if (log.isTraceEnabled())
 				log.warn("Property " + propertyName + " not found");
 		} catch (Exception e) {
-			throw new ArgeoException("Getting property " + propertyName, e);
+			throw new GrException("Getting property " + propertyName, e);
 		}
 		return prop;
 	}
@@ -338,7 +334,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 			if (log.isTraceEnabled())
 				log.warn("Property " + propertyName + " not found");
 		} catch (Exception e) {
-			throw new ArgeoException("Getting property " + propertyName, e);
+			throw new GrException("Getting property " + propertyName, e);
 		}
 		return "";
 	}
@@ -353,7 +349,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 			if (log.isTraceEnabled())
 				log.warn("Property " + propertyName + " not found");
 		} catch (Exception e) {
-			throw new ArgeoException("Getting property " + propertyName, e);
+			throw new GrException("Getting property " + propertyName, e);
 		}
 		return "";
 	}
@@ -366,7 +362,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 			if (log.isTraceEnabled())
 				log.warn("Property " + propertyName + " not found");
 		} catch (Exception e) {
-			throw new ArgeoException("Getting property " + propertyName, e);
+			throw new GrException("Getting property " + propertyName, e);
 		}
 		return false;
 	}
