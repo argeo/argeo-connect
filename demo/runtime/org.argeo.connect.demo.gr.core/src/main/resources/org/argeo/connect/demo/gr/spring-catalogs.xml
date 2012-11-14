@@ -31,8 +31,8 @@
 
 	<!-- Various site types -->
 	<util:list id="siteTypes" scope="prototype">
-		<util:constant static-field="org.argeo.connect.demo.gr.GrConstants.NATIONAL" />
-		<util:constant static-field="org.argeo.connect.demo.gr.GrConstants.BASE" />
-		<util:constant static-field="org.argeo.connect.demo.gr.GrConstants.NORMAL" />
+		<util:constant static-field="org.argeo.connect.demo.gr.GrConstants.MONITORED" />
+		<util:constant static-field="org.argeo.connect.demo.gr.GrConstants.VISITED" />
+		<util:constant static-field="org.argeo.connect.demo.gr.GrConstants.REGISTERED" />
 	</util:list>
 </beans>

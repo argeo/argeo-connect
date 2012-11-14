@@ -76,12 +76,12 @@ public class DataGenerator implements Runnable, GrNames {
 
 				writePoints(buf,
 						generateRandomPoints(nationalSitesCount, polygon),
-						networkName, GrConstants.NATIONAL);
+						networkName, GrConstants.MONITORED);
 				writePoints(buf, generateRandomPoints(baseSitesCount, polygon),
-						networkName, GrConstants.BASE);
+						networkName, GrConstants.VISITED);
 				writePoints(buf,
 						generateRandomPoints(normalSitesCount, polygon),
-						networkName, GrConstants.NORMAL);
+						networkName, GrConstants.REGISTERED);
 
 				System.out.println("Generated test data for network '"
 						+ networkName + "'");

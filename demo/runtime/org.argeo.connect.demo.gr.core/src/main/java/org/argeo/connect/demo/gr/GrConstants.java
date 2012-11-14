@@ -35,7 +35,7 @@ public interface GrConstants {
 	public final static String DATE_TIME_FORMAT = "dd/MM/yyyy, HH:mm";
 
 	/* SITE TYPES */
-	public final static String NATIONAL = "monitored";
-	public final static String BASE = "visited";
-	public final static String NORMAL = "registered";
+	public final static String MONITORED = "monitored";
+	public final static String VISITED = "visited";
+	public final static String REGISTERED = "registered";
 }

@@ -15,25 +15,23 @@ import org.eclipse.ui.forms.editor.FormEditor;
 
 /** Display a map for a whole network */
 public class MapDisplayPage extends MapFormPage {
-	private NetworkEditor networkEditor;
+	private Node network;
 
 	public MapDisplayPage(FormEditor editor, String id, String title,
-			Node context, MapControlCreator mapControlCreator,
-			NetworkEditor networkEditor) {
+			Node context, MapControlCreator mapControlCreator) {
 		super(editor, id, title, context, mapControlCreator);
-		this.networkEditor = networkEditor;
+		this.network = context;
 	}
 
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
-		addLayer(GrConstants.NORMAL);
-		addLayer(GrConstants.BASE);
-		addLayer(GrConstants.NATIONAL);
+		addLayer(GrConstants.REGISTERED);
+		addLayer(GrConstants.VISITED);
+		addLayer(GrConstants.MONITORED);
 	}
 
 	protected void addLayer(String type) {
-		Node network = networkEditor.getNetwork();
 		try {
 			QueryManager qm = network.getSession().getWorkspace()
 					.getQueryManager();

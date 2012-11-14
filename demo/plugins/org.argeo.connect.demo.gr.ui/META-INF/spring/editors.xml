@@ -17,5 +17,6 @@
 		scope="prototype">
 		<property name="grBackend" ref="grBackend" />
 		<property name="repository" ref="nodeRepository" />
+		<property name="mapControlCreator" ref="mapControlCreator" />
 	</bean>
 </beans>

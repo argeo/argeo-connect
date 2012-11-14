@@ -59,6 +59,7 @@ public class GrMessages extends NLS {
 	// Site editor
 	public String siteEditor_title_pre;
 	public String siteEditor_detailPage_title;
+	public String siteEditor_mapPage_title;
 	public String siteEditor_metadataSection_title_pre;
 	public String siteEditor_lastUpdatedInfoSection_title;
 	public String siteEditor_commentsSection_title;

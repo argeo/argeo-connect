@@ -8,8 +8,8 @@ public class GrException extends RuntimeException {
 		super(message);
 	}
 
-	public GrException(String message, Throwable cause) {
-		super(message, cause);
+	public GrException(String message, Throwable e) {
+		super(message, e);
 	}
 
 }

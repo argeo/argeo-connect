@@ -33,7 +33,7 @@ public class NetworkEditor extends AbstractGrEditor {
 	private MapFormPage mapFormPage;
 
 	// for internationalized messages
-	//private final static String MSG_PRE = "grNetworkEditor";
+	// private final static String MSG_PRE = "grNetworkEditor";
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -43,7 +43,8 @@ public class NetworkEditor extends AbstractGrEditor {
 		try {
 			network = getGrBackend().getCurrentSession().getNodeByIdentifier(
 					nei.getUid());
-			this.setPartName(network.getProperty(Property.JCR_TITLE).getString());
+			this.setPartName(network.getProperty(Property.JCR_TITLE)
+					.getString());
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Cannot load network.", e);
 		}
@@ -62,7 +63,7 @@ public class NetworkEditor extends AbstractGrEditor {
 
 			mapFormPage = new MapDisplayPage(this, "map",
 					GrMessages.get().networkEditor_mapPage_title, network,
-					mapControlCreator, this);
+					mapControlCreator);
 			addPage(mapFormPage);
 
 		} catch (PartInitException e) {

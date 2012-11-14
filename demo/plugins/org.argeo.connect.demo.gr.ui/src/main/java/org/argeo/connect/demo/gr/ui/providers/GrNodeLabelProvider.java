@@ -44,12 +44,12 @@ public class GrNodeLabelProvider extends DefaultNodeLabelProvider implements
 			else if (node.isNodeType(GrTypes.GR_SITE)) {
 				String siteType = node.getProperty(GrNames.GR_SITE_TYPE)
 						.getString();
-				if (GrConstants.NATIONAL.equals(siteType))
-					return GrImages.ICON_NATIONAL_TYPE;
-				else if (GrConstants.BASE.equals(siteType))
-					return GrImages.ICON_BASE_TYPE;
-				else if (GrConstants.NORMAL.equals(siteType))
-					return GrImages.ICON_NORMAL_TYPE;
+				if (GrConstants.MONITORED.equals(siteType))
+					return GrImages.ICON_MONITORED_TYPE;
+				else if (GrConstants.VISITED.equals(siteType))
+					return GrImages.ICON_VISITED_TYPE;
+				else if (GrConstants.REGISTERED.equals(siteType))
+					return GrImages.ICON_REGISTERED_TYPE;
 			}
 		} catch (RepositoryException e) {
 			throw new GrException("Cannot retrieve name for node", e);

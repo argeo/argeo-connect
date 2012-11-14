@@ -130,14 +130,14 @@
 	</extension>
     <extension point="org.eclipse.equinox.http.registry.resources">
         <resource
-        	alias="/national.gif"
-        	base-name="icons/national.gif" />
+        	alias="/monitored.gif"
+        	base-name="icons/monitored.gif" />
        <resource
-        	alias="/base.gif"
-        	base-name="icons/base.gif" />
+        	alias="/visited.gif"
+        	base-name="icons/visited.gif" />
        <resource
-        	alias="/normal.gif"
-        	base-name="icons/normal.gif" />
+        	alias="/registered.gif"
+        	base-name="icons/registered.gif" />
 	</extension>
   <extension
            point="org.eclipse.ui.activities">
