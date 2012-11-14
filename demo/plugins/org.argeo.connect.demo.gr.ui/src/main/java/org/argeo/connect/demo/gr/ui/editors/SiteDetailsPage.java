@@ -1,5 +1,6 @@
 package org.argeo.connect.demo.gr.ui.editors;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -55,10 +56,11 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 
 	// local constants
 	public final static String ID = "grSiteEditor.siteDetailsPage";
-	public final static String DATE_COLUMN_NAME = "Date";
-	public final static String USER_COLUMN_NAME = "User";
-	public final static String COMMENT_COLUMN_NAME = "Comment";
+	// public final static String DATE_COLUMN_NAME = "Date";
+	// public final static String USER_COLUMN_NAME = "User";
+	// public final static String COMMENT_COLUMN_NAME = "Comment";
 
+	private NumberFormat nf = NumberFormat.getInstance();
 	// Main business Objects
 	// private Node networkNode;
 	private Node siteNode;
@@ -85,6 +87,7 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 		} catch (RepositoryException re) {
 			throw new ArgeoException("Cannot initialize compulsory nodes ", re);
 		}
+		nf.setMaximumFractionDigits(2);
 	}
 
 	protected void createFormContent(IManagedForm managedForm) {
@@ -132,8 +135,15 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 			// Site Type
 			Label lbl = new Label(body, SWT.NONE);
 			lbl.setText(GrMessages.get().siteTypeLbl);
+			GridData gd = new GridData();
+			gd.widthHint = 200;
+			lbl.setLayoutData(gd);
 
-			siteType = new Combo(body, SWT.NONE);
+			siteType = new Combo(body, SWT.FILL);
+			gd = new GridData(SWT.FILL);
+			gd.widthHint = 100;
+			siteType.setLayoutData(gd);
+
 			List<String> siteTypesLst = grBackend.getSiteTypes();
 			Iterator<String> it = siteTypesLst.iterator();
 			while (it.hasNext()) {
@@ -153,12 +163,16 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 			lbl = new Label(body, SWT.NONE);
 			lbl.setText(GrMessages.get().longitudeLbl);
 
-			wgs84Longitude = new Text(body, SWT.BORDER | SWT.SINGLE);
+			wgs84Longitude = new Text(body, SWT.BORDER | SWT.SINGLE | SWT.RIGHT);
+			gd = new GridData();
+			gd.widthHint = 100;
+			wgs84Longitude.setLayoutData(gd);
 			wgs84Longitude.setEnabled(true);
 
 			if (mainPointNode.hasProperty(GR_WGS84_LONGITUDE)) {
-				String value = mainPointNode.getProperty(GR_WGS84_LONGITUDE)
-						.getString();
+				String value = nf.format(mainPointNode.getProperty(
+						GR_WGS84_LONGITUDE).getDouble());
+
 				wgs84Longitude.setText(value);
 			}
 
@@ -166,12 +180,15 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 			lbl = new Label(body, SWT.NONE);
 			lbl.setText(GrMessages.get().latitudeLbl);
 
-			wgs84Latitude = new Text(body, SWT.BORDER | SWT.SINGLE);
+			wgs84Latitude = new Text(body, SWT.BORDER | SWT.SINGLE | SWT.RIGHT);
 			wgs84Latitude.setEnabled(true);
+			gd = new GridData();
+			gd.widthHint = 100;
+			wgs84Latitude.setLayoutData(gd);
 
 			if (mainPointNode.hasProperty(GR_WGS84_LATITUDE)) {
-				String value = mainPointNode.getProperty(GR_WGS84_LATITUDE)
-						.getString();
+				String value = nf.format(mainPointNode.getProperty(
+						GR_WGS84_LATITUDE).getDouble());
 				wgs84Latitude.setText(value);
 			}
 
@@ -217,6 +234,9 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 			// Generate report link
 			Hyperlink generateReportLink = tk.createHyperlink(body,
 					GrMessages.get().generateSiteReport_lbl, 0);
+			gd = new GridData();
+			gd.horizontalSpan = 2;
+			generateReportLink.setLayoutData(gd);
 
 			generateReportLink
 					.addHyperlinkListener(new AbstractHyperlinkListener() {
@@ -273,12 +293,20 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 			// Water level
 			lbl = new Label(body, SWT.NONE);
 			lbl.setText(GrMessages.get().waterLevelLbl);
+			GridData gd = new GridData();
+			gd.widthHint = 200;
+			lbl.setLayoutData(gd);
 
-			final Text waterLevelTxt = new Text(body, SWT.BORDER | SWT.SINGLE);
+			final Text waterLevelTxt = new Text(body, SWT.BORDER | SWT.SINGLE
+					| SWT.RIGHT);
 			waterLevelTxt.setEnabled(true);
+			gd = new GridData(SWT.FILL);
+			gd.widthHint = 100;
+			waterLevelTxt.setLayoutData(gd);
 
 			if (siteNode.hasProperty(GR_WATER_LEVEL)) {
-				String value = siteNode.getProperty(GR_WATER_LEVEL).getString();
+				String value = nf.format(siteNode.getProperty(GR_WATER_LEVEL)
+						.getDouble());
 				waterLevelTxt.setText(value);
 			}
 
@@ -286,11 +314,16 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 			lbl = new Label(body, SWT.NONE);
 			lbl.setText(GrMessages.get().eColiRateLbl);
 
-			final Text eColiRateTxt = new Text(body, SWT.BORDER | SWT.SINGLE);
+			final Text eColiRateTxt = new Text(body, SWT.BORDER | SWT.SINGLE
+					| SWT.RIGHT);
 			eColiRateTxt.setEnabled(true);
+			gd = new GridData(SWT.FILL);
+			gd.widthHint = 100;
+			eColiRateTxt.setLayoutData(gd);
 
 			if (siteNode.hasProperty(GR_ECOLI_RATE)) {
-				String value = siteNode.getProperty(GR_ECOLI_RATE).getString();
+				String value = nf.format(siteNode.getProperty(GR_ECOLI_RATE)
+						.getDouble());
 				eColiRateTxt.setText(value);
 			}
 
@@ -299,12 +332,15 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 			lbl.setText(GrMessages.get().withdrawnWaterLbl);
 
 			final Text withdrawnWaterTxt = new Text(body, SWT.BORDER
-					| SWT.SINGLE);
+					| SWT.SINGLE | SWT.RIGHT);
 			withdrawnWaterTxt.setEnabled(true);
+			gd = new GridData(SWT.FILL);
+			gd.widthHint = 100;
+			withdrawnWaterTxt.setLayoutData(gd);
 
 			if (siteNode.hasProperty(GR_WITHDRAWN_WATER)) {
-				String value = siteNode.getProperty(GR_WITHDRAWN_WATER)
-						.getString();
+				String value = nf.format(siteNode.getProperty(
+						GR_WITHDRAWN_WATER).getDouble());
 				withdrawnWaterTxt.setText(value);
 			}
 
