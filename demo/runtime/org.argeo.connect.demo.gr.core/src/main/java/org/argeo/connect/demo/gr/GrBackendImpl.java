@@ -20,7 +20,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
-import org.argeo.connect.demo.gr.pdf.SiteReportPublisher;
 import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.UserJcrUtils;
@@ -85,12 +84,12 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 
 	/* File management */
 
-	public File getSiteReport(String siteUid) {
-		SiteReportPublisher srp = new SiteReportPublisher(this);
-		return srp.createNewReport(siteUid);
-	}
+	// public File getSiteReport(String siteUid) {
+	// SiteReportPublisher srp = new SiteReportPublisher(this);
+	// return srp.createNewReport(siteUid);
+	// }
 
-	public File getFileFromNode(Node node) {
+	public static File getFileFromNode(Node node) {
 		try {
 			InputStream fis = null;
 			byte[] ba = null;
@@ -177,8 +176,8 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 		}
 	}
 
-	public Session getCurrentSession() {
-		return adminSession;
+	public Repository getRepository() {
+		return repository;
 	}
 
 	/* DEPENDENCY INJECTION */

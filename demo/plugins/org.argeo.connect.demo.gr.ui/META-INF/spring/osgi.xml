@@ -12,8 +12,5 @@
 
 	<!-- REFERENCES -->
 	<reference id="grBackend" interface="org.argeo.connect.demo.gr.GrBackend" />
-	<reference id="nodeRepository" interface="javax.jcr.Repository"
-		filter="(argeo.jcr.repository.alias=node)" />
-
 	<reference id="mapControlCreator" interface="org.argeo.gis.ui.MapControlCreator" />
 </beans:beans>

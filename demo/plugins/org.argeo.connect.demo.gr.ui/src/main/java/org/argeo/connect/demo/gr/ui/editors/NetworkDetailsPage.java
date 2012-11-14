@@ -10,17 +10,11 @@ import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.GrTypes;
 import org.argeo.connect.demo.gr.ui.GrMessages;
-import org.argeo.connect.demo.gr.ui.GrUiPlugin;
-import org.argeo.connect.demo.gr.ui.commands.CreateSite;
 import org.argeo.connect.demo.gr.ui.providers.GrNodeLabelProvider;
-import org.argeo.connect.demo.gr.ui.utils.AbstractHyperlinkListener;
-import org.argeo.connect.demo.gr.ui.utils.CommandUtils;
 import org.argeo.connect.demo.gr.ui.utils.GrDoubleClickListener;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -35,9 +29,7 @@ import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.SectionPart;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
@@ -55,12 +47,12 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 
 	// Main business objects
 	private Node network;
-	private GrBackend grBackend;
+	//private GrBackend grBackend;
 
 	public NetworkDetailsPage(FormEditor editor, String title) {
 		super(editor, ID, title);
 		network = ((NetworkEditor) editor).getNetwork();
-		grBackend = getGrBackend();
+		//grBackend = getGrBackend();
 	}
 
 	protected void createFormContent(IManagedForm managedForm) {
@@ -167,11 +159,12 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 
 		// Add listener
 		sitesTableViewer
-				.addDoubleClickListener(new GrDoubleClickListener(null));
+				.addDoubleClickListener(new GrDoubleClickListener());
 
 		// "Add new site" hyperlink :
-		Hyperlink addNewSiteLink = tk.createHyperlink(body,
-				GrMessages.get().createSite_lbl, 0);
+		// FIXME site creation life cycle must be improved
+//		Hyperlink addNewSiteLink = tk.createHyperlink(body,
+//				GrMessages.get().createSite_lbl, 0);
 
 		final AbstractFormPart formPart = new SectionPart(section) {
 			public void commit(boolean onSave) {
@@ -179,22 +172,22 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 			}
 		};
 
-		addNewSiteLink.addHyperlinkListener(new AbstractHyperlinkListener() {
-
-			@Override
-			public void linkActivated(HyperlinkEvent e) {
-				if (grBackend.isUserInRole(ROLE_ADMIN)
-						|| grBackend.isUserInRole(ROLE_MANAGER)) {
-					callCreateSiteCommand();
-					formPart.markDirty();
-				} else
-					MessageDialog.openError(GrUiPlugin.getDefault()
-							.getWorkbench().getActiveWorkbenchWindow()
-							.getShell(),
-							GrMessages.get().forbiddenAction_title,
-							GrMessages.get().forbiddenAction_msg);
-			}
-		});
+//		addNewSiteLink.addHyperlinkListener(new AbstractHyperlinkListener() {
+//
+//			@Override
+//			public void linkActivated(HyperlinkEvent e) {
+//				if (grBackend.isUserInRole(ROLE_ADMIN)
+//						|| grBackend.isUserInRole(ROLE_MANAGER)) {
+//					callCreateSiteCommand();
+//					formPart.markDirty();
+//				} else
+//					MessageDialog.openError(GrUiPlugin.getDefault()
+//							.getWorkbench().getActiveWorkbenchWindow()
+//							.getShell(),
+//							GrMessages.get().forbiddenAction_title,
+//							GrMessages.get().forbiddenAction_msg);
+//			}
+//		});
 
 		getManagedForm().addPart(formPart);
 
@@ -202,15 +195,15 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 
 	}
 
-	private void callCreateSiteCommand() {
-		String uid;
-		try {
-			uid = network.getIdentifier();
-		} catch (RepositoryException e) {
-			throw new ArgeoException(
-					"JCR Error while getting current network node uid", e);
-		}
-		CommandUtils.CallCommandWithOneParameter(CreateSite.ID,
-				CreateSite.PARAM_UID, uid);
-	}
+//	private void callCreateSiteCommand() {
+//		String uid;
+//		try {
+//			uid = network.getIdentifier();
+//		} catch (RepositoryException e) {
+//			throw new ArgeoException(
+//					"JCR Error while getting current network node uid", e);
+//		}
+//		CommandUtils.CallCommandWithOneParameter(CreateSite.ID,
+//				CreateSite.PARAM_UID, uid);
+//	}
 }

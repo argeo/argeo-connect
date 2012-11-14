@@ -34,8 +34,7 @@ public class SiteEditor extends AbstractGrEditor implements GrNames {
 
 		SiteEditorInput sei = (SiteEditorInput) getEditorInput();
 		try {
-			currentSite = getGrBackend().getCurrentSession()
-					.getNodeByIdentifier(sei.getUid());
+			currentSite = getSession().getNodeByIdentifier(sei.getUid());
 			network = currentSite.getParent();
 			this.setPartName(GrNodeLabelProvider.getName(currentSite));
 			setTitleImage(GrNodeLabelProvider.getIcon(currentSite));
@@ -65,7 +64,7 @@ public class SiteEditor extends AbstractGrEditor implements GrNames {
 		try {
 			// Automatically commit all pages of the editor
 			commitPages(true);
-			getGrBackend().getCurrentSession().save();
+			currentSite.getSession().save();
 			firePropertyChange(PROP_DIRTY);
 		} catch (Exception e) {
 			throw new ArgeoException("Error while saving site: " + currentSite,

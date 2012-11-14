@@ -6,12 +6,11 @@ import java.io.IOException;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -21,16 +20,19 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 import org.argeo.ArgeoException;
-import org.argeo.connect.demo.gr.GrBackend;
+import org.argeo.connect.demo.gr.GrBackendImpl;
+import org.argeo.jcr.JcrUtils;
 
-
+/** Generate a PDF report about a site */
 public class SiteReportPublisher {
-	private final static Log log = LogFactory.getLog(SiteReportPublisher.class);
+	// private final static Log log =
+	// LogFactory.getLog(SiteReportPublisher.class);
 
-	private GrBackend grBackend;
+	// private GrBackend grBackend;
+	private Repository repository;
 
-	public SiteReportPublisher(GrBackend grBackend) {
-		this.grBackend = grBackend;
+	public SiteReportPublisher(Repository repository) {
+		this.repository = repository;
 	}
 
 	public File createNewReport(String siteUid) {
@@ -49,9 +51,10 @@ public class SiteReportPublisher {
 	}
 
 	private void populateSiteReport(String siteUid, String filePath) {
+		Session session = null;
 		try {
 
-			Session session = grBackend.getCurrentSession();
+			session = repository.login();
 			Node site = session.getNodeByIdentifier(siteUid);
 
 			// the document
@@ -86,6 +89,8 @@ public class SiteReportPublisher {
 					+ "to generate site report for site : " + siteUid, re);
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			JcrUtils.logoutQuietly(session);
 		}
 	}
 
@@ -94,11 +99,10 @@ public class SiteReportPublisher {
 			NodeIterator it = siteNode.getNodes();
 			while (it.hasNext()) {
 				Node curNode = it.nextNode();
-				log.debug("Cur Node name " + curNode.getName());
 				if (curNode.isNodeType(NodeType.NT_FILE)) {
 
 					if (curNode.getName().toLowerCase().endsWith(".jpg")) {
-						File tmpFile = grBackend.getFileFromNode(curNode);
+						File tmpFile = GrBackendImpl.getFileFromNode(curNode);
 						addJpgImageToPdf(fileName, tmpFile);
 					}
 				}

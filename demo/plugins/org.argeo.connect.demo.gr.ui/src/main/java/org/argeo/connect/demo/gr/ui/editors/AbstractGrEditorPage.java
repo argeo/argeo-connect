@@ -54,7 +54,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 	protected final static Log log = LogFactory
 			.getLog(AbstractGrEditorPage.class);
 
-	private GrBackend grBackend;
+	protected GrBackend grBackend;
 	private TableViewer documentsTableViewer;
 
 	// Images
@@ -69,7 +69,6 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 	public AbstractGrEditorPage(FormEditor editor, String id, String title) {
 		super(editor, id, title);
 		grBackend = ((AbstractGrEditor) editor).getGrBackend();
-
 	}
 
 	/* Management of tables whose rows are nodes */
@@ -133,7 +132,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 					Node node = (Node) element;
 					try {
 						return grBackend.getUserDisplayName(node.getProperty(
-								columnName).getString());
+						 columnName).getString());
 					} catch (RepositoryException e) {
 						throw new GrException(
 								"Cannot get last modified user for node "
@@ -245,7 +244,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 
 		documentsTableViewer.setContentProvider(new TableContentProvider());
 		getDocumentsTableViewer().addDoubleClickListener(
-				new GrDoubleClickListener(grBackend));
+				new GrDoubleClickListener());
 
 		// Initialize the table input
 		refreshDocumentsTable(node);
@@ -264,7 +263,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 
 			@Override
 			public void linkActivated(HyperlinkEvent e) {
-				UploadFileWizard wizard = new UploadFileWizard(grBackend, node);
+				UploadFileWizard wizard = new UploadFileWizard(node);
 				WizardDialog dialog = new WizardDialog(GrUiPlugin.getDefault()
 						.getWorkbench().getActiveWorkbenchWindow().getShell(),
 						wizard);
@@ -367,7 +366,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 	}
 
 	/* Exposes private business objects to children classes */
-	protected GrBackend getGrBackend() {
-		return grBackend;
-	}
+	// protected GrBackend getGrBackend() {
+	// return grBackend;
+	// }
 }

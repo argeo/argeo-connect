@@ -41,8 +41,7 @@ public class NetworkEditor extends AbstractGrEditor {
 
 		NetworkEditorInput nei = (NetworkEditorInput) getEditorInput();
 		try {
-			network = getGrBackend().getCurrentSession().getNodeByIdentifier(
-					nei.getUid());
+			network = getSession().getNodeByIdentifier(nei.getUid());
 			this.setPartName(network.getProperty(Property.JCR_TITLE)
 					.getString());
 		} catch (RepositoryException e) {
@@ -76,7 +75,7 @@ public class NetworkEditor extends AbstractGrEditor {
 		try {
 			// Automatically commit all pages of the editor
 			commitPages(true);
-			getGrBackend().getCurrentSession().save();
+			network.getSession().save();
 			firePropertyChange(PROP_DIRTY);
 		} catch (Exception e) {
 			throw new ArgeoException("Error while saving network: " + network,

@@ -11,7 +11,8 @@
 	</bean>
 	<bean id="org.argeo.connect.demo.gr.ui.networkBrowserView" class="org.argeo.connect.demo.gr.ui.views.NetworkBrowserView"
 		scope="prototype">
-		<property name="jcrSession" ref="jcrSession" />
-		<property name="grBackend" ref="grBackend" />
+		<property name="repository">
+			<bean factory-bean="grBackend" factory-method="getRepository" />
+		</property>
 	</bean>
 </beans>

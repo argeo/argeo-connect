@@ -11,7 +11,6 @@ import javax.jcr.nodetype.NodeType;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrConstants;
 import org.argeo.connect.demo.gr.GrException;
 import org.argeo.connect.demo.gr.ui.GrMessages;
@@ -36,7 +35,7 @@ public class UploadFileWizard extends Wizard {
 
 	private UploadFileWizardPage uploadFileWizardPage;
 
-	public UploadFileWizard(GrBackend grBackend, Node currentNode) {
+	public UploadFileWizard(Node currentNode) {
 		this.currentNode = currentNode;
 		setWindowTitle(GrMessages.get().wizard_attachDoc_title);
 	}

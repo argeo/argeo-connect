@@ -2,8 +2,10 @@ package org.argeo.connect.demo.gr.ui.commands;
 
 import java.io.File;
 
+import javax.jcr.Repository;
+
 import org.argeo.ArgeoException;
-import org.argeo.connect.demo.gr.GrBackend;
+import org.argeo.connect.demo.gr.pdf.SiteReportPublisher;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.connect.demo.gr.ui.providers.TmpFileProvider;
 import org.argeo.eclipse.ui.specific.FileHandler;
@@ -18,12 +20,14 @@ public class GenerateSiteReport extends AbstractHandler {
 	public final static String PARAM_UID = GrUiPlugin.PLUGIN_ID + ".siteUid";
 
 	/* DEPENDENCY INJECTION */
-	private GrBackend grBackend;
+	private Repository repository;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		String uid = event.getParameter(PARAM_UID);
 		try {
-			File file = grBackend.getSiteReport(uid);
+			SiteReportPublisher srp = new SiteReportPublisher(repository);
+
+			File file = srp.createNewReport(uid);
 			TmpFileProvider ssfp = new TmpFileProvider();
 			FileHandler fileHandler = new FileHandler(ssfp);
 			StringBuffer fileName = new StringBuffer();
@@ -44,9 +48,10 @@ public class GenerateSiteReport extends AbstractHandler {
 		return null;
 	}
 
-	/* DEPENDENCY INJECTION */
-	public void setGrBackend(GrBackend grBackend) {
-		this.grBackend = grBackend;
+	public void setRepository(Repository repository) {
+		this.repository = repository;
 	}
+
+	/* DEPENDENCY INJECTION */
 
 }

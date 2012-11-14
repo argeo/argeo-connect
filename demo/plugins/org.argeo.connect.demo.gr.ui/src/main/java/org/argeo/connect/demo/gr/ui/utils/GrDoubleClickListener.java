@@ -6,7 +6,7 @@ import javax.jcr.Node;
 import javax.jcr.nodetype.NodeType;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.demo.gr.GrBackend;
+import org.argeo.connect.demo.gr.GrBackendImpl;
 import org.argeo.connect.demo.gr.GrTypes;
 import org.argeo.connect.demo.gr.ui.commands.OpenNetworkEditor;
 import org.argeo.connect.demo.gr.ui.commands.OpenSiteEditor;
@@ -20,11 +20,11 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 public class GrDoubleClickListener implements IDoubleClickListener {
 	// private final static Log log = LogFactory
 	// .getLog(GrDoubleClickListener.class);
-	private GrBackend grBackend;
+	//private GrBackend grBackend;
 	private FileHandler fileHandler;
 
-	public GrDoubleClickListener(GrBackend grBackend) {
-		this.grBackend = grBackend;
+	public GrDoubleClickListener() {
+		//this.grBackend = grBackend;
 		TmpFileProvider tfp = new TmpFileProvider();
 		fileHandler = new FileHandler(tfp);
 	}
@@ -49,7 +49,7 @@ public class GrDoubleClickListener implements IDoubleClickListener {
 				// open the file
 				String name = node.getName();
 				// fileHandler.openFile(name, id);
-				File tmpFile = grBackend.getFileFromNode(node);
+				File tmpFile = GrBackendImpl.getFileFromNode(node);
 				tmpFile.deleteOnExit();
 				fileHandler.openFile(name, tmpFile.getPath());
 			} else if (node.isNodeType(GrTypes.GR_NETWORK)) {

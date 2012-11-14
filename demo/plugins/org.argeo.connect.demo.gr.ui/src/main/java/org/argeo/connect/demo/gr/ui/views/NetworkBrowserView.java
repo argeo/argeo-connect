@@ -1,11 +1,11 @@
 package org.argeo.connect.demo.gr.ui.views;
 
 import javax.jcr.Node;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrConstants;
 import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
@@ -16,6 +16,7 @@ import org.argeo.connect.demo.gr.ui.utils.GrDoubleClickListener;
 import org.argeo.eclipse.ui.jcr.SimpleNodeContentProvider;
 import org.argeo.eclipse.ui.jcr.utils.NodeViewerComparer;
 import org.argeo.eclipse.ui.jcr.views.AbstractJcrBrowser;
+import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -43,8 +44,9 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 			+ ".networkBrowserView";
 
 	/* DEPENDENCY INJECTION */
-	private Session jcrSession;
-	private GrBackend grBackend;
+	private Repository repository;
+	private Session session;
+	// private GrBackend grBackend;
 
 	// UI management
 	private TreeViewer nodesViewer;
@@ -57,10 +59,11 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 		parent.setLayout(new FillLayout());
 
 		// Configure here useful view root nodes
-		nodeContentProvider = new GrTreeContentProvider(jcrSession,
-				new String[] { GR_NETWORKS_BASE_PATH });
 		try {
-			networksRootNode = jcrSession.getNode(GR_NETWORKS_BASE_PATH);
+			session = repository.login();
+			nodeContentProvider = new GrTreeContentProvider(session,
+					new String[] { GR_NETWORKS_BASE_PATH });
+			networksRootNode = session.getNode(GR_NETWORKS_BASE_PATH);
 		} catch (RepositoryException re) {
 			throw new ArgeoException("Cannot get root networks node", re);
 		}
@@ -94,8 +97,7 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 		// Add Listeners
 		// tmpNodeViewer.addDoubleClickListener(new GrDoubleClickListener(
 		// fileHandler));
-		tmpNodeViewer.addDoubleClickListener(new GrDoubleClickListener(
-				grBackend));
+		tmpNodeViewer.addDoubleClickListener(new GrDoubleClickListener());
 		tmpNodeViewer
 				.addSelectionChangedListener(new ISelectionChangedListener() {
 					public void selectionChanged(SelectionChangedEvent event) {
@@ -109,6 +111,11 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 	@Override
 	public void setFocus() {
 		nodesViewer.getTree().setFocus();
+	}
+
+	@Override
+	public void dispose() {
+		JcrUtils.logoutQuietly(session);
 	}
 
 	public void refresh(Object obj) {
@@ -186,12 +193,16 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 		return nodesViewer;
 	}
 
-	/** DEPENDENCY INJECTION */
-	public void setJcrSession(Session jcrSession) {
-		this.jcrSession = jcrSession;
+	public void setRepository(Repository repository) {
+		this.repository = repository;
 	}
 
-	public void setGrBackend(GrBackend grBackend) {
-		this.grBackend = grBackend;
-	}
+	/** DEPENDENCY INJECTION */
+	// public void setJcrSession(Session jcrSession) {
+	// this.jcrSession = jcrSession;
+	// }
+
+	// public void setGrBackend(GrBackend grBackend) {
+	// this.grBackend = grBackend;
+	// }
 }

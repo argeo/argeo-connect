@@ -1,16 +1,20 @@
 package org.argeo.connect.demo.gr.ui.commands;
 
+import java.util.UUID;
+
 import javax.jcr.Node;
+import javax.jcr.Repository;
+import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 
-import org.argeo.ArgeoException;
-import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.GrTypes;
+import org.argeo.connect.demo.gr.GrUtils;
 import org.argeo.connect.demo.gr.ui.GrMessages;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.connect.demo.gr.ui.editors.SiteEditor;
 import org.argeo.connect.demo.gr.ui.editors.SiteEditorInput;
+import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -21,21 +25,21 @@ import org.eclipse.ui.handlers.HandlerUtil;
 /** Creates a new site */
 public class CreateSite extends AbstractHandler implements GrNames {
 
-	// private final static Log log = LogFactory.getLog(CreateSite.class);
-
 	public final static String ID = GrUiPlugin.PLUGIN_ID + ".createSite";
 	public final static String DEFAULT_ICON_REL_PATH = "icons/newSite.gif";
 	public final static String DEFAULT_LABEL = GrMessages.get().createSite_lbl;
 	public final static String PARAM_UID = GrUiPlugin.PLUGIN_ID + ".networkUid";
 
 	/** DEPENDENCY INJECTION **/
-	private GrBackend grBackend;
+	// private GrBackend grBackend;
+	private Repository repository;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+		Session session = null;
 		try {
 			String networkUid = event.getParameter(PARAM_UID);
-			Node network = grBackend.getCurrentSession().getNodeByIdentifier(
-					networkUid);
+			session = repository.login();
+			Node network = session.getNodeByIdentifier(networkUid);
 
 			InputDialog idiag = new InputDialog(
 					HandlerUtil.getActiveShell(event),
@@ -47,7 +51,13 @@ public class CreateSite extends AbstractHandler implements GrNames {
 
 				if (siteName != null && !"".equals(siteName.trim())) {
 					Node site = network.addNode(siteName, GrTypes.GR_SITE);
-					site.addNode(GR_SITE_MAIN_POINT, GrTypes.GR_POINT);
+					site.setProperty(GR_UUID, UUID.randomUUID().toString());
+					// FIXME add site type, etc.
+					Node mainPoint = site.addNode(GR_SITE_MAIN_POINT,
+							GrTypes.GR_POINT);
+					mainPoint.setProperty(GR_WGS84_LATITUDE, 0);
+					mainPoint.setProperty(GR_WGS84_LONGITUDE, 0);
+					GrUtils.syncPointGeometry(mainPoint);
 					site.addNode(GR_SITE_COMMENTS, NodeType.NT_UNSTRUCTURED);
 
 					JcrUtils.updateLastModified(network);
@@ -65,13 +75,16 @@ public class CreateSite extends AbstractHandler implements GrNames {
 			}
 			idiag.close();
 		} catch (Exception e) {
-			throw new ArgeoException("Cannot create network node", e);
+			ErrorFeedback.show("Cannot add new site", e);
+		} finally {
+			JcrUtils.logoutQuietly(session);
 		}
 		return null;
 	}
 
-	/** DEPENDENCY INJECTION */
-	public void setGrBackend(GrBackend grBackend) {
-		this.grBackend = grBackend;
+	public void setRepository(Repository repository) {
+		this.repository = repository;
 	}
+
+	/** DEPENDENCY INJECTION */
 }

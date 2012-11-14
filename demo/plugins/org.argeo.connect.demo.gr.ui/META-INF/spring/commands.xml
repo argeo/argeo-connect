@@ -10,7 +10,9 @@
 	<bean id="generateSiteReport"
 		class="org.argeo.connect.demo.gr.ui.commands.GenerateSiteReport"
 		scope="prototype">
-		<property name="grBackend" ref="grBackend" />
+		<property name="repository">
+			<bean factory-bean="grBackend" factory-method="getRepository" />
+		</property>
 	</bean>
 	<bean id="refreshNetworkBrowserView"
 		class="org.argeo.connect.demo.gr.ui.commands.RefreshNetworkBrowserView"
@@ -24,6 +26,8 @@
 	</bean>
 	<bean id="createSite" class="org.argeo.connect.demo.gr.ui.commands.CreateSite"
 		scope="prototype">
-		<property name="grBackend" ref="grBackend" />
+		<property name="repository">
+			<bean factory-bean="grBackend" factory-method="getRepository" />
+		</property>
 	</bean>
 </beans>

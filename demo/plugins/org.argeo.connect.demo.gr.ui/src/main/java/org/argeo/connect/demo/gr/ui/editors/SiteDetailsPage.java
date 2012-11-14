@@ -12,7 +12,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeType;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.GrTypes;
 import org.argeo.connect.demo.gr.GrUtils;
@@ -66,7 +65,6 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 	private Node siteNode;
 	private Node commentsNode;
 	private Node mainPointNode;
-	private GrBackend grBackend;
 
 	// This page widgets
 	private FormToolkit tk;
@@ -79,7 +77,7 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 		super(editor, ID, title);
 		siteNode = ((SiteEditor) editor).getCurrentSite();
 		// networkNode = ((SiteEditor) editor).getNetwork();
-		grBackend = getGrBackend();
+		// grBackend = getGrBackend();
 		// initialize compulsory nodes
 		try {
 			commentsNode = siteNode.getNode(GR_SITE_COMMENTS);

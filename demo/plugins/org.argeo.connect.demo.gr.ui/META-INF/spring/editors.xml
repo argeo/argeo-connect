@@ -9,14 +9,12 @@
 	<bean id="org.argeo.connect.demo.gr.ui.networkEditor" class="org.argeo.connect.demo.gr.ui.editors.NetworkEditor"
 		scope="prototype">
 		<property name="grBackend" ref="grBackend" />
-		<property name="repository" ref="nodeRepository" />
 		<property name="mapControlCreator" ref="mapControlCreator" />
 	</bean>
 
 	<bean id="org.argeo.connect.demo.gr.ui.siteEditor" class="org.argeo.connect.demo.gr.ui.editors.SiteEditor"
 		scope="prototype">
 		<property name="grBackend" ref="grBackend" />
-		<property name="repository" ref="nodeRepository" />
 		<property name="mapControlCreator" ref="mapControlCreator" />
 	</bean>
 </beans>
