@@ -6,19 +6,20 @@ import javax.jcr.Binary;
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.Property;
-import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.ArgeoException;
 import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrConstants;
-import org.argeo.connect.demo.gr.ui.GrUiPlugin;
+import org.argeo.connect.demo.gr.GrException;
+import org.argeo.connect.demo.gr.ui.GrMessages;
+import org.argeo.connect.demo.gr.ui.providers.GrNodeLabelProvider;
 import org.argeo.eclipse.ui.specific.GenericUploadControl;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -37,7 +38,7 @@ public class UploadFileWizard extends Wizard {
 
 	public UploadFileWizard(GrBackend grBackend, Node currentNode) {
 		this.currentNode = currentNode;
-		setWindowTitle(GrUiPlugin.getMessage("uploadFileWizardTitle"));
+		setWindowTitle(GrMessages.get().wizard_attachDoc_title);
 	}
 
 	@Override
@@ -45,7 +46,7 @@ public class UploadFileWizard extends Wizard {
 		try {
 			addPage(new UploadFileWizardPage("unused title"));
 		} catch (Exception e) {
-			throw new ArgeoException("Cannot add page to wizard ", e);
+			throw new GrException("Cannot add page to wizard ", e);
 		}
 	}
 
@@ -80,19 +81,8 @@ public class UploadFileWizard extends Wizard {
 		}
 
 		public void createControl(Composite parent) {
-
-			// Set wizard description
-			StringBuffer strBuf = new StringBuffer();
-			strBuf.append(GrUiPlugin
-					.getMessage("uploadFileWizardGenericDescription"));
-			strBuf.append(" [");
-			try {
-				strBuf.append(currentNode.getName());
-			} catch (RepositoryException re) {
-				throw new ArgeoException("Cannot get current node name.", re);
-			}
-			strBuf.append("].");
-			setDescription(strBuf.toString());
+			setDescription(NLS.bind(GrMessages.get().wizard_attachDoc_msg,
+					GrNodeLabelProvider.getName(currentNode)));
 
 			Composite composite = new Composite(parent, SWT.NONE);
 			composite.setLayout(new GridLayout(2, false));
@@ -104,10 +94,10 @@ public class UploadFileWizard extends Wizard {
 
 		private void populateLayout(Composite body) {
 			// Document upload
-			new Label(body, SWT.NONE).setText(GrUiPlugin
-					.getMessage("chooseFileToImportLabel"));
+			new Label(body, SWT.NONE)
+					.setText(GrMessages.get().wizard_attachDoc_lbl);
 			uploadFileControl = new GenericUploadControl(body, SWT.NONE,
-					GrUiPlugin.getMessage("browseButtonLbl"));
+					GrMessages.get().browseButtonLbl);
 			uploadFileControl.addModifyListener(this);
 		}
 
@@ -130,8 +120,7 @@ public class UploadFileWizard extends Wizard {
 			byte[] curFile = uploadFileControl.performUpload();
 
 			if (curFile == null || curFile.length == 0) {
-				setErrorMessage(GrUiPlugin
-						.getMessage("emptyFileCannotBeUploaded"));
+				setErrorMessage(GrMessages.get().emptyFileCannotBeUploaded);
 				return false;
 			} else {
 				ByteArrayInputStream bis = new ByteArrayInputStream(curFile);
@@ -152,10 +141,10 @@ public class UploadFileWizard extends Wizard {
 						IOUtils.closeQuietly(bis);
 					}
 				} catch (ItemExistsException iee) {
-					setErrorMessage(GrUiPlugin.getMessage("existingFileError"));
+					setErrorMessage(GrMessages.get().existingFileError);
 					return false;
 				} catch (Exception e) {
-					throw new ArgeoException(
+					throw new GrException(
 							"Unexpected error while creating new node file", e);
 				}
 				return true;

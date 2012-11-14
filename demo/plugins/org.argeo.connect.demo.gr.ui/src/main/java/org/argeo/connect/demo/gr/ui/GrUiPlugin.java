@@ -79,14 +79,14 @@ public class GrUiPlugin extends AbstractUIPlugin {
 	}
 
 	/** Returns the internationalized label for the given key */
-	public static String getMessage(String key) {
-		try {
-			return getDefault().messages.getString(key.replace(':', '_'));
-		} catch (NullPointerException npe) {
-			log.warn(key.replace(':', '_') + " not found.");
-			return key;
-		}
-	}
+	// public static String getMessage(String key) {
+	// try {
+	// return getDefault().messages.getString(key.replace(':', '_'));
+	// } catch (NullPointerException npe) {
+	// log.warn(key.replace(':', '_') + " not found.");
+	// return key;
+	// }
+	// }
 
 	/**
 	 * Gives access to the internationalization message bundle. Returns null in

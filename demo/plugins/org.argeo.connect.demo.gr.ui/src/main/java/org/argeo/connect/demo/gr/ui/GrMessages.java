@@ -63,8 +63,17 @@ public class GrMessages extends NLS {
 	public String siteEditor_lastUpdatedInfoSection_title;
 	public String siteEditor_commentsSection_title;
 
-	/* Dialogs */
+	/* Commands, links and buttons */
 
+	public String createNetwork_lbl;
+	public String createSite_lbl;
+	public String generateSiteReport_lbl;
+	public String addComment_lbl;
+	public String addDocument_lbl;
+
+	public String browseButtonLbl;
+
+	/* Dialogs and wizards */
 	// Comments
 	public String dialog_createComment_title;
 	public String dialog_createComment_msg;
@@ -77,12 +86,16 @@ public class GrMessages extends NLS {
 	public String dialog_createSite_title;
 	public String dialog_createSite_msg;
 
-	/* Commands */
-	public String createNetwork_lbl;
-	public String createSite_lbl;
-	public String generateSiteReport_lbl;
-	public String addComment_lbl;
-	public String addDocument_lbl;
+	// documents
+	public String wizard_attachDoc_title;
+	public String wizard_attachDoc_msg;
+	public String wizard_attachDoc_lbl;
+
+	/* Errors */
+	public String forbiddenAction_title;
+	public String forbiddenAction_msg;
+	public String emptyFileCannotBeUploaded;
+	public String existingFileError;
 
 	public static GrMessages get() {
 		return nls.get();

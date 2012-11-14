@@ -11,10 +11,8 @@ import javax.jcr.query.Query;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.demo.gr.GrBackend;
-import org.argeo.connect.demo.gr.GrConstants;
 import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.GrTypes;
-import org.argeo.connect.demo.gr.ui.GrImages;
 import org.argeo.connect.demo.gr.ui.GrMessages;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.connect.demo.gr.ui.commands.CreateSite;
@@ -139,11 +137,11 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 		column = createTableViewerColumn(sitesTableViewer, "", 200);
 		column.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
-				return GrNodeLabelProvider.getName((Node)element);
+				return GrNodeLabelProvider.getName((Node) element);
 			}
 
 			public Image getImage(Object element) {
-				return GrNodeLabelProvider.getIcon((Node)element);
+				return GrNodeLabelProvider.getIcon((Node) element);
 			}
 		});
 
@@ -172,7 +170,8 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 				.addDoubleClickListener(new GrDoubleClickListener(null));
 
 		// "Add new site" hyperlink :
-		Hyperlink addNewSiteLink = tk.createHyperlink(body,GrMessages.get().createSite_lbl, 0);
+		Hyperlink addNewSiteLink = tk.createHyperlink(body,
+				GrMessages.get().createSite_lbl, 0);
 
 		final AbstractFormPart formPart = new SectionPart(section) {
 			public void commit(boolean onSave) {
@@ -192,8 +191,8 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 					MessageDialog.openError(GrUiPlugin.getDefault()
 							.getWorkbench().getActiveWorkbenchWindow()
 							.getShell(),
-							GrUiPlugin.getMessage("forbiddenActionTitle"),
-							GrUiPlugin.getMessage("forbiddenActionText"));
+							GrMessages.get().forbiddenAction_title,
+							GrMessages.get().forbiddenAction_msg);
 			}
 		});
 

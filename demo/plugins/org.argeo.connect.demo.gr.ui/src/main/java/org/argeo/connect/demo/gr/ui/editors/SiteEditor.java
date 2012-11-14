@@ -4,6 +4,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.demo.gr.GrException;
 import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.connect.demo.gr.ui.providers.GrNodeLabelProvider;
@@ -22,9 +23,6 @@ public class SiteEditor extends AbstractGrEditor implements GrNames {
 	private Node network;
 	private Node currentSite;
 
-	// for internationalized messages
-	private final static String MSG_PRE = "grSiteEditor";
-
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
@@ -37,7 +35,7 @@ public class SiteEditor extends AbstractGrEditor implements GrNames {
 			this.setPartName(GrNodeLabelProvider.getName(currentSite));
 			setTitleImage(GrNodeLabelProvider.getIcon(currentSite));
 		} catch (RepositoryException e) {
-			throw new ArgeoException(
+			throw new GrException(
 					"Error while initialising SiteEditor with JCR information.",
 					e);
 		}
@@ -47,9 +45,8 @@ public class SiteEditor extends AbstractGrEditor implements GrNames {
 	protected void addPages() {
 		try {
 			SiteDetailsPage siteDetailsPage = new SiteDetailsPage(this,
-					GrUiPlugin.getMessage(MSG_PRE + "DetailPageTitle"));
+					"unused title");
 			addPage(siteDetailsPage);
-
 		} catch (PartInitException e) {
 			throw new ArgeoException("Not able to add page ", e);
 		}
