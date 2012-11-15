@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.argeo.commons</groupId>
 		<artifactId>argeo-commons</artifactId>
-		<version>1.1.5</version>
+		<version>1.1.6-SNAPSHOT</version>
 	</parent>
 	<groupId>org.argeo.connect</groupId>
 	<artifactId>argeo-connect</artifactId>
@@ -12,8 +12,7 @@
 	<name>Argeo Connect</name>
 	<version>1.1.1-SNAPSHOT</version>
 	<properties>
-		<version.argeo-commons>1.1.5</version.argeo-commons>
-		<version.connect>[1.1,1.2)</version.connect>
+		<version.connect>1.1.1-SNAPSHOT</version.connect>
 	</properties>
 	<modules>
 		<module>data</module>
@@ -82,7 +81,7 @@ limitations under the License.
 	<repositories>
 		<repository>
 			<id>argeo-commons</id>
-			<url>http://repo.argeo.org/org.argeo.jcr.webapp/public/java/org.argeo.commons-1.1.x</url>
+			<url>http://repo.argeo.org/data/public/java/org.argeo.commons-1.1.x</url>
 			<releases>
 				<enabled>true</enabled>
 				<updatePolicy>daily</updatePolicy>
@@ -93,7 +92,7 @@ limitations under the License.
 	<distributionManagement>
 		<repository>
 			<id>staging</id>
-			<url>dav:http://localhost:7080/org.argeo.jcr.webapp/webdav/java/org.argeo.connect-1.1.x</url>
+			<url>dav:http://localhost:7080/data/files/java/org.argeo.connect-1.1.x</url>
 			<uniqueVersion>false</uniqueVersion>
 		</repository>
 	</distributionManagement>
