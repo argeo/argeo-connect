@@ -12,7 +12,6 @@
 	<name>Connect Modules</name>
 	<modules>
 		<module>org.argeo.connect.backend</module>
-		<module>org.argeo.connect.slc</module>
 	</modules>
 	<build>
 		<resources>
