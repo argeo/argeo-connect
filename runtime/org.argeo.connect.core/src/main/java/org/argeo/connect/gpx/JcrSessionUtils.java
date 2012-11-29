@@ -1,4 +1,4 @@
-package org.argeo.connect.gpx.utils;
+package org.argeo.connect.gpx;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;

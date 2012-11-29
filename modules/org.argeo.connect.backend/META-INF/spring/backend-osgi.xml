@@ -17,9 +17,6 @@
 		interface="org.springframework.security.AuthenticationManager" />
 
 	<!-- SERVICES -->
-	<service ref="trackDao" interface="org.argeo.connect.gpx.TrackDao" />
-
-	<!-- WARNING : same repository is exposed twice with two different aliases -->
 	<service ref="jcrRepository" interface="javax.jcr.Repository">
 		<service-properties>
 			<beans:entry key="argeo.jcr.repository.alias" value="connect" />
@@ -29,7 +26,8 @@
 	<service ref="geoDbDataStore" interface="org.geotools.data.DataStore">
 		<service-properties>
 			<beans:entry key="alias" value="connect_geodb" />
-			<beans:entry key="publishedFeatureSources" value="connect_mideast_geodb" />
+			<!-- <beans:entry key="publishedFeatureSources" value="connect_geodb" 
+				/> -->
 		</service-properties>
 	</service>
 

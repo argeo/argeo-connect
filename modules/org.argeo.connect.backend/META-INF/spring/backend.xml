@@ -12,12 +12,6 @@
 		</property>
 	</bean>
 
-	<!-- Dao used by connect GPS app -->
-	<bean id="trackDao" class="org.argeo.connect.gpx.GeoToolsTrackDao">
-		<property name="dataStoreAlias" value="connect_geodb" />
-		<property name="geoJcrMapper" ref="geoJcrMapper" />
-	</bean>
-
 	<!-- JCR / GEOTOOLS INTEGRATION -->
 	<bean id="geoJcrIndex" class="org.argeo.geotools.jcr.GeoJcrIndex"
 		init-method="init" destroy-method="dispose">

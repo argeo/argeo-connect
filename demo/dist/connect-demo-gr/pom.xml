@@ -7,19 +7,9 @@
 		<version>1.1.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
-	<artifactId>connect-demo-web</artifactId>
+	<artifactId>connect-demo-gr</artifactId>
 	<packaging>pom</packaging>
-	<name>Connect Demo Web Distribution</name>
-	<properties>
-		<package.version>${project.version}</package.version>
-		<distribution.label>argeo</distribution.label>
-		<distribution.root>/var/argeo/linux/argeo-el/5/argeo-testing
-		</distribution.root>
-	</properties>
-	<build>
-		<plugins>
-		</plugins>
-	</build>
+	<name>Connect Demo GR Web Distribution</name>
 	<dependencies>
 		<dependency>
 			<groupId>org.argeo.connect.demo</groupId>
@@ -96,23 +86,6 @@
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-dependency-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>copy-dependencies</id>
-								<phase>package</phase>
-								<goals>
-									<goal>copy-dependencies</goal>
-								</goals>
-								<configuration>
-									<includeTypes>jar</includeTypes>
-									<outputDirectory>${project.build.directory}/lib</outputDirectory>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>rpm-maven-plugin</artifactId>
 						<executions>
@@ -123,6 +96,7 @@
 									<goal>rpm</goal>
 								</goals>
 								<configuration>
+									<name>argeo-connect-demo-gr</name>
 									<mappings>
 										<mapping>
 											<directory>/etc/init.d</directory>
@@ -142,9 +116,10 @@
 										<mapping>
 											<directory>/etc/gr</directory>
 											<username>root</username>
-											<groupname>root</groupname>
-											<filemode>644</filemode>
-											<configuration>true</configuration>
+											<groupname>gr</groupname>
+											<filemode>640</filemode>
+											<configuration>noreplace</configuration>
+											<directoryIncluded>false</directoryIncluded>
 											<sources>
 												<source>
 													<location>src/main/rpm/etc/gr</location>
@@ -154,53 +129,20 @@
 												</source>
 											</sources>
 										</mapping>
-										<mapping>
-											<directory>/etc/httpd/conf.d</directory>
-											<username>root</username>
-											<groupname>root</groupname>
-											<filemode>644</filemode>
-											<configuration>true</configuration>
-											<sources>
-												<source>
-													<location>src/main/rpm/etc/httpd/conf.d</location>
-													<includes>
-														<include>*</include>
-													</includes>
-												</source>
-											</sources>
-										</mapping>
-										<mapping>
-											<directory>/usr/share/gr/lib</directory>
-											<username>root</username>
-											<groupname>root</groupname>
-											<filemode>644</filemode>
-											<directoryIncluded>false</directoryIncluded>
-											<sources>
-												<source>
-													<location>target/lib</location>
-													<includes>
-														<include>*.jar</include>
-													</includes>
-												</source>
-											</sources>
-										</mapping>
 									</mappings>
-									<!-- <postinstallScriptlet> -->
-									<!-- <scriptFile>src/main/scripts/postinstall</scriptFile> -->
-									<!-- </postinstallScriptlet> -->
-									<!-- <preremoveScriptlet> -->
-									<!-- <scriptFile>src/main/scripts/preremove</scriptFile> -->
-									<!-- </preremoveScriptlet> -->
-									<!-- <postremoveScriptlet> -->
-									<!-- <scriptFile>src/main/scripts/postremove</scriptFile> -->
-									<!-- </postremoveScriptlet> -->
+									<preinstallScriptlet>
+										<scriptFile>src/main/scripts/preinstall-${rpm.release}</scriptFile>
+									</preinstallScriptlet>
+									<postinstallScriptlet>
+										<scriptFile>src/main/scripts/postinstall</scriptFile>
+									</postinstallScriptlet>
+									<preremoveScriptlet>
+										<scriptFile>src/main/scripts/preremove-${rpm.release}</scriptFile>
+									</preremoveScriptlet>
 									<requires>
+										<require>argeo-connect-demo-rap</require>
+										<require>osgi-boot</require>
 										<require>java-1.6.0-openjdk</require>
-										<require>mysql-server</require>
-										<require>openldap-servers</require>
-										<!-- For the start/stop scripts -->
-										<require>telnet</require>
-										<require>expect</require>
 									</requires>
 								</configuration>
 							</execution>

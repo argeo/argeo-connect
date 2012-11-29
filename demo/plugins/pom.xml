@@ -15,6 +15,28 @@
 		<module>org.argeo.connect.demo.rap</module>
 	</modules>
 	<build>
+		<!-- TODO remove when upgrading to Commons v1.1.8 -->
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>.</directory>
+				<includes>
+					<include>plugin.xml</include>
+					<include>META-INF/**</include>
+					<include>WEB-INF/**</include>
+					<include>icons/**</include>
+					<include>branding/**</include>
+					<include>*.properties</include>
+					<include>properties/*.properties</include>
+					<include>p2.inf</include>
+				</includes>
+				<excludes>
+					<exclude>build.properties</exclude>
+				</excludes>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.felix</groupId>
