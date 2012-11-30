@@ -53,7 +53,7 @@
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.dep.node.rap</artifactId>
-			<version>${version.connect}</version>
+			<version>1.1.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<profiles>
