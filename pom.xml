@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.argeo.commons</groupId>
@@ -10,7 +9,7 @@
 	<artifactId>argeo-connect</artifactId>
 	<packaging>pom</packaging>
 	<name>Argeo Connect</name>
-	<version>1.1.1-SNAPSHOT</version>
+	<version>1.1.1</version>
 	<properties>
 		<version.connect>1.1.1</version.connect>
 	</properties>
@@ -25,9 +24,9 @@
 	</modules>
 	<url>${site.urlBase}/${developmentCycle.connect}</url>
 	<scm>
-		<connection>scm:svn:https://svn.argeo.org/connect/trunk</connection>
-		<developerConnection>scm:svn:https://svn.argeo.org/connect/trunk</developerConnection>
-		<url>https://svn.argeo.org/connect/trunk</url>
+		<connection>scm:svn:https://svn.argeo.org/connect/tags/argeo-connect-1.1.1</connection>
+		<developerConnection>scm:svn:https://svn.argeo.org/connect/tags/argeo-connect-1.1.1</developerConnection>
+		<url>https://svn.argeo.org/connect/tags/argeo-connect-1.1.1</url>
 	</scm>
 	<licenses>
 		<license>
@@ -49,7 +48,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>
+along with this program.  If not, see <http://www.gnu.org/licenses />
 
 Additional permission under GNU GPL version 3 section 7
 
