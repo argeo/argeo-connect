@@ -11,7 +11,7 @@
 	<name>Argeo Connect</name>
 	<version>1.1.2-SNAPSHOT</version>
 	<properties>
-		<version.connect>1.1.1</version.connect>
+		<version.connect>1.1.2-SNAPSHOT</version.connect>
 	</properties>
 	<modules>
 		<module>data</module>
@@ -110,7 +110,7 @@ which are used as well as that of the covered work.]]>
 	<distributionManagement>
 		<repository>
 			<id>staging</id>
-			<url>dav:http://localhost:7080/data/files/java/org.argeo.connect-1.1.x</url>
+			<url>dav:https://repo.argeo.org/data/files/java/org.argeo.connect-1.1.x</url>
 			<uniqueVersion>false</uniqueVersion>
 		</repository>
 	</distributionManagement>
