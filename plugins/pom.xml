@@ -16,6 +16,7 @@
 		<module>org.argeo.connect.ui</module>
 		<module>org.argeo.connect.ui.gps</module>
 		<module>org.argeo.connect.ui.crisis</module>
+		<module>org.argeo.photo.manager.ui</module>
 	</modules>
 	<build>
 		<plugins>
