@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Argeo Photo Manager
+Bundle-SymbolicName: org.argeo.photo.manager.ui;singleton:=true
+Bundle-Version: 0.2.1
+Bundle-Activator: org.argeo.photo.manager.ui.PhotoManagerUiPlugin
+Bundle-Vendor: Argeo
+Require-Bundle: org.eclipse.ui;resolution:=optional,
+ org.eclipse.rap.ui;resolution:=optional,
+ org.eclipse.core.runtime,
+ com.springsource.org.apache.commons.io;bundle-version="1.4.0"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Import-Package: org.apache.commons.logging;version="1.1.1",
+ org.argeo
