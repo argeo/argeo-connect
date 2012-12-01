@@ -1,10 +1,11 @@
-package org.argeo.photo.manager.ui;
+package org.argeo.photo.manager.ui.views;
 
 import java.io.File;
 import java.text.MessageFormat;
 import java.text.ParseException;
 
 import org.argeo.photo.manager.PhotoDesc;
+import org.argeo.photo.manager.ui.PhotoManagerUiPlugin;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;

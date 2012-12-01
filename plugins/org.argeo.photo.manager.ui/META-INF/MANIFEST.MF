@@ -1,14 +1,54 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Argeo Photo Manager
-Bundle-SymbolicName: org.argeo.photo.manager.ui;singleton:=true
-Bundle-Version: 0.2.1
+Bnd-LastModified: 1354373317262
+Build-Jdk: 1.6.0_24
+Built-By: mbaudier
+Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.argeo.photo.manager.ui.PhotoManagerUiPlugin
+Bundle-Description: Generic layers integrating free / open source techno
+ logies in order to quickly develop custom enterprise systems: security,
+  JCR, user interface, monitoring
+Bundle-DocURL: http://www.argeo.org
+Bundle-License: http://www.gnu.org/licenses/gpl-3.0.txt
+Bundle-ManifestVersion: 2
+Bundle-Name: Photo Manager UI
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-SymbolicName: org.argeo.photo.manager.ui;singleton:=true
 Bundle-Vendor: Argeo
-Require-Bundle: org.eclipse.ui;resolution:=optional,
- org.eclipse.rap.ui;resolution:=optional,
- org.eclipse.core.runtime,
- com.springsource.org.apache.commons.io;bundle-version="1.4.0"
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Import-Package: org.apache.commons.logging;version="1.1.1",
- org.argeo
+Bundle-Version: 1.1.2.SNAPSHOT-r121201_1548
+Created-By: Apache Maven Bundle Plugin
+Export-Package: org.argeo.photo.manager;uses:="org.argeo.photo.manager.u
+ i";version="1.1.2.SNAPSHOT-r121201_1548",org.argeo.photo.manager.ui;use
+ s:="org.eclipse.ui.application,org.eclipse.ui,org.eclipse.equinox.app,o
+ rg.eclipse.swt.widgets,org.eclipse.jface.action,org.eclipse.ui.actions,
+ org.eclipse.jface.resource,org.osgi.framework,org.eclipse.swt.graphics,
+ org.eclipse.ui.plugin";version="1.1.2.SNAPSHOT-r121201_1548",org.argeo.
+ photo.manager.ui.commands;uses:="org.eclipse.jface.wizard,org.eclipse.u
+ i.handlers,org.argeo.photo.manager.ui.wizards,org.eclipse.core.commands
+ ,org.eclipse.swt.widgets";version="1.1.2.SNAPSHOT-r121201_1548",org.arg
+ eo.photo.manager.ui.parts;uses:="org.eclipse.jface.viewers,org.argeo.ph
+ oto.manager,org.eclipse.swt.graphics,org.eclipse.swt.custom,org.eclipse
+ .swt.widgets";version="1.1.2.SNAPSHOT-r121201_1548",org.argeo.photo.man
+ ager.ui.views;uses:="org.eclipse.jface.viewers,org.eclipse.swt.graphics
+ ,org.eclipse.ui,org.eclipse.swt.custom,org.eclipse.ui.part,org.eclipse.
+ swt.widgets,org.eclipse.swt.layout,org.eclipse.swt.events";version="1.1
+ .2.SNAPSHOT-r121201_1548",org.argeo.photo.manager.ui.wizards;uses:="org
+ .argeo,org.eclipse.jface.wizard,org.argeo.photo.manager.ui,org.apache.c
+ ommons.logging,org.eclipse.jface.viewers,org.apache.commons.io,org.ecli
+ pse.swt.widgets,org.argeo.photo.manager,org.argeo.photo.manager.ui.part
+ s,org.eclipse.swt.events,org.eclipse.ui,org.eclipse.swt.layout";version
+ ="1.1.2.SNAPSHOT-r121201_1548"
+Import-Package: org.apache.commons.io;version="[1.4,2)",org.apache.commo
+ ns.logging;version="[1.1,2)",org.argeo;version="[1.1,2)",org.argeo.ecli
+ pse.spring;version="[1.1,2)",org.eclipse.core.commands,org.eclipse.equi
+ nox.app;version="[1.1,2)",org.eclipse.jface.action,org.eclipse.jface.re
+ source,org.eclipse.jface.viewers,org.eclipse.jface.wizard,org.eclipse.s
+ wt.custom,org.eclipse.swt.events,org.eclipse.swt.graphics,org.eclipse.s
+ wt.layout,org.eclipse.swt.widgets,org.eclipse.ui;ui.workbench=split,org
+ .eclipse.ui.actions;ui.workbench=split,org.eclipse.ui.application,org.e
+ clipse.ui.handlers,org.eclipse.ui.part;ui.workbench=split,org.eclipse.u
+ i.plugin,org.osgi.framework;version="[1.3,2)"
+Require-Bundle: org.eclipse.ui;resolution:=optional,org.eclipse.core.run
+ time;resolution:=optional,org.eclipse.rap.ui;resolution:=optional,org.e
+ clipse.rap.ui.workbench;resolution:=optional
+SLC-GroupId: org.argeo.connect
+Tool: Bnd-1.50.0

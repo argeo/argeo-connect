@@ -9,18 +9,17 @@
 		</application>
 	</extension>
 	<extension point="org.eclipse.ui.perspectives">
-		<perspective name="Perspective"
-			class="org.argeo.photo.manager.ui.PhotoManagerPerspective"
-			id="org.argeo.photo.manager.ui.perspective">
+		<perspective
+        class="org.argeo.photo.manager.ui.PhotoManagerPerspective"
+        icon="icons/photo_manager.png"
+        id="org.argeo.photo.manager.ui.perspective"
+        name="Photo Manager">
 		</perspective>
 	</extension>
 	<extension point="org.eclipse.ui.views">
-		<view name="View" class="org.argeo.photo.manager.ui.RenameView"
-			id="org.argeo.photo.manager.ui.renameView">
-		</view>
-		<view name="Photo Navigator"
-			class="org.eclipse.ui.navigator.CommonNavigator"
-			id="org.argeo.photo.manager.ui.navigatorView">
+		<view name="Photo Browser"
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			id="org.argeo.photo.manager.ui.photoBrowserView">
 		</view>
 	</extension>
 	<!--<extension point="org.eclipse.ui.navigator.viewer">
