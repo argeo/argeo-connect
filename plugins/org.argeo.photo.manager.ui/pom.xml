@@ -21,6 +21,7 @@
 						<Import-Package>
 							*,
 							org.argeo.eclipse.spring,
+							org.h2,
 						</Import-Package>
 					</instructions>
 				</configuration>
@@ -32,10 +33,23 @@
 			<groupId>org.argeo.tp</groupId>
 			<artifactId>org.apache.commons.io</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>org.springframework.beans</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>org.h2</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.argeo.commons.base</groupId>
 			<artifactId>org.argeo.eclipse.ui</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.commons.server</groupId>
+			<artifactId>org.argeo.server.jcr</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
 
