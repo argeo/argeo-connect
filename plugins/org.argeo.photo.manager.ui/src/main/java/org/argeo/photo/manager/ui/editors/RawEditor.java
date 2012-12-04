@@ -27,6 +27,7 @@
 package org.argeo.photo.manager.ui.editors;
 
 import org.argeo.ArgeoException;
+import org.argeo.photo.manager.PictureManager;
 import org.argeo.photo.manager.ui.PhotoManagerUiPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
@@ -39,7 +40,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
  * 
  */
 public class RawEditor extends FormEditor {
-	// private final static Log log = LogFactory.getLog(CleanDataEditor.class);
+	private PictureManager pictureManager;
 
 	public static final String ID = PhotoManagerUiPlugin.PLUGIN_ID
 			+ ".rawEditor";
@@ -52,7 +53,7 @@ public class RawEditor extends FormEditor {
 
 	protected void addPages() {
 		try {
-			addPage(new RawDisplayPage(this, "rawDisplayPage", "View"));
+			addPage(new PictureDisplayPage(this, pictureManager));
 			// addPage(new SwingRawDisplayPage(this, "rawDisplayPage", "View"));
 		} catch (PartInitException e) {
 			throw new ArgeoException("Not able to add page ", e);
@@ -73,6 +74,10 @@ public class RawEditor extends FormEditor {
 	@Override
 	public boolean isSaveAsAllowed() {
 		return false;
+	}
+
+	public void setPictureManager(PictureManager pictureManager) {
+		this.pictureManager = pictureManager;
 	}
 
 }

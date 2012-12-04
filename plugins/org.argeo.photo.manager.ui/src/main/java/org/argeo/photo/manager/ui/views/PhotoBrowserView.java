@@ -1,19 +1,20 @@
 package org.argeo.photo.manager.ui.views;
 
-import java.io.File;
-
-import javax.jcr.Repository;
+import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
-import javax.jcr.RepositoryFactory;
-import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 
 import org.argeo.ArgeoException;
-import org.argeo.jcr.ArgeoJcrUtils;
-import org.argeo.jcr.JcrUtils;
+import org.argeo.eclipse.ui.ErrorFeedback;
+import org.argeo.photo.manager.PictureManager;
+import org.argeo.photo.manager.ui.PhotoManagerImages;
 import org.argeo.photo.manager.ui.PhotoManagerUiPlugin;
+import org.argeo.photo.manager.ui.editors.PictureEditorInput;
 import org.argeo.photo.manager.ui.editors.RawEditor;
-import org.argeo.photo.manager.ui.editors.RawEditorInput;
-import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreePathContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreePath;
@@ -22,7 +23,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
 /** Allows to browse the various photo repositories */
@@ -32,52 +32,24 @@ public class PhotoBrowserView extends ViewPart {
 
 	private TreeViewer viewer;
 
-	private final static String JCR_REPO_RELATIVE_PATH = "/metadata/jcr";
-	private String picturesBase = System.getProperty("user.home") + "/Pictures";
-
-	private RepositoryFactory repositoryFactory;
-	private Session session;
+	private PictureManager pictureManager;
 
 	public void createPartControl(Composite root) {
-		String jcrRepoUri = "file://" + picturesBase + JCR_REPO_RELATIVE_PATH;
-		try {
-			Repository repository = ArgeoJcrUtils.getRepositoryByUri(
-					repositoryFactory, jcrRepoUri);
-			session = repository.login();
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot access JCR repository "
-					+ jcrRepoUri, e);
-		}
-
 		viewer = new TreeViewer(root, SWT.MULTI | SWT.V_SCROLL);
 
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
+		viewer.addDoubleClickListener(new ViewDoubleClickListener());
 		viewer.setInput(getViewSite());
 
-		try {
-			getSite().getPage().openEditor(new RawEditorInput(), RawEditor.ID);
-		} catch (PartInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
 
-	@Override
-	public void dispose() {
-		JcrUtils.logoutQuietly(session);
-	}
-
-	public void setPicturesBase(String picturesBase) {
-		this.picturesBase = picturesBase;
-	}
-
-	public void setRepositoryFactory(RepositoryFactory repositoryFactory) {
-		this.repositoryFactory = repositoryFactory;
+	public void setPictureManager(PictureManager pictureManager) {
+		this.pictureManager = pictureManager;
 	}
 
 	class ViewContentProvider implements ITreePathContentProvider {
@@ -89,11 +61,12 @@ public class PhotoBrowserView extends ViewPart {
 		}
 
 		public Object[] getChildren(TreePath parentPath) {
-			return null;
+			return pictureManager.getChildren(
+					treePathToRelativePath(parentPath)).toArray();
 		}
 
 		public boolean hasChildren(TreePath path) {
-			return false;
+			return pictureManager.hasChildren(treePathToRelativePath(path));
 		}
 
 		public TreePath[] getParents(Object element) {
@@ -101,33 +74,81 @@ public class PhotoBrowserView extends ViewPart {
 		}
 
 		public Object[] getElements(Object parent) {
-			return new Object[0];
+			return pictureManager.getChildren(treePathToRelativePath(null))
+					.toArray();
+		}
+
+		private String treePathToRelativePath(TreePath path) {
+			if (path == null || path.getSegmentCount() == 0)
+				return "/";
+
+			Node node = (Node) path.getLastSegment();
+			try {
+				String nodePath = node.getPath();
+				return nodePath;
+			} catch (RepositoryException e) {
+				throw new ArgeoException("Cannot return relative path", e);
+			}
+			//
+			// StringBuilder sb = new StringBuilder("");
+			// for (int i = 0; i < path.getSegmentCount(); i++) {
+			//
+			// sb.append('/').append(path.getSegment(i).toString());
+			// }
+			// return sb.toString();
 		}
 	}
 
-	class ViewLabelProvider extends LabelProvider implements
-			ITableLabelProvider {
-		public String getColumnText(Object obj, int index) {
-			if (!(obj instanceof File)) {
-				if (index == 0)
-					return obj != null ? obj.toString() : "null";
-				else
-					return "";
+	class ViewLabelProvider extends LabelProvider {
+		public String getText(Object obj) {
+			if (obj instanceof Node) {
+				Node node = (Node) obj;
+				try {
+					if (node.isNodeType(NodeType.MIX_TITLE))
+						return node.getProperty(Property.JCR_TITLE).getString();
+					else
+						return node.getName();
+				} catch (RepositoryException e) {
+					throw new ArgeoException("Cannot get label", e);
+				}
 			}
-
-			File file = (File) obj;
-
-			if (index == 0) {
-				return file.getName();
-			} else {
-				return null;
-			}
+			return null;
 		}
 
-		public Image getColumnImage(Object obj, int index) {
+		@Override
+		public Image getImage(Object obj) {
+			if (obj instanceof Node) {
+				Node node = (Node) obj;
+				try {
+					if (node.isNodeType(NodeType.NT_FILE))
+						return PhotoManagerImages.FILE;
+					else if (node.isNodeType(NodeType.NT_FOLDER))
+						return PhotoManagerImages.FOLDER;
+				} catch (RepositoryException e) {
+					throw new ArgeoException("Cannot get image", e);
+				}
+			}
 			return null;
 		}
 
 	}
 
+	public class ViewDoubleClickListener implements IDoubleClickListener {
+
+		public void doubleClick(DoubleClickEvent event) {
+			Object obj = ((IStructuredSelection) event.getSelection())
+					.getFirstElement();
+			if (obj instanceof Node) {
+				Node node = (Node) obj;
+				try {
+					getSite().getPage().openEditor(
+							new PictureEditorInput(node.getPath()),
+							RawEditor.ID);
+				} catch (Exception e) {
+					ErrorFeedback.show("Cannot open editor", e);
+				}
+			}
+		}
+
+	}
 }

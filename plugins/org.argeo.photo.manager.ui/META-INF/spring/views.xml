@@ -8,8 +8,7 @@
 
 	<bean id="photoBrowserView" class="org.argeo.photo.manager.ui.views.PhotoBrowserView"
 		scope="prototype">
-		<property name="picturesBase" value="${argeo.photo.picturesBase}" />
-		<property name="repositoryFactory" ref="repositoryFactory" />
+		<property name="pictureManager" ref="pictureManager" />
 	</bean>
 
 </beans>
