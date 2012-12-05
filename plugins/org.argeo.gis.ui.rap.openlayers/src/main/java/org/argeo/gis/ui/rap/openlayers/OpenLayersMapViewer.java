@@ -45,6 +45,7 @@ import org.argeo.geotools.GeoToolsUtils;
 import org.argeo.geotools.jcr.GeoJcrMapper;
 import org.argeo.gis.ui.AbstractMapViewer;
 import org.argeo.gis.ui.MapViewerListener;
+import org.argeo.gis.ui.rap.openlayers.custom.GoogleLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -180,8 +181,8 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 		// "Virtual Earth Aerial", VirtualEarthLayer.AERIAL, true);
 		// map.addLayer(virtualEarthLayer);
 
-		// map.addLayer(new GoogleLayer("Google Satellite",
-		// GoogleLayer.G_SATELLITE_MAP));
+		map.addLayer(new GoogleLayer("Google Satellite",
+				GoogleLayer.G_SATELLITE_MAP));
 		// map.addLayer(new GoogleLayer("Google Physical",
 		// GoogleLayer.G_PHYSICAL_MAP));
 		// map.addLayer(new GoogleLayer("Google Default", null));
@@ -288,8 +289,7 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 						log.debug("Stroke color=" + hexColor + ", width="
 								+ width);
 
-				}
-				else if (symb instanceof PointSymbolizer) {
+				} else if (symb instanceof PointSymbolizer) {
 					// only support images
 					st = new Style();
 					st.setAttribute("externalGraphic", gtStyle.getName());
