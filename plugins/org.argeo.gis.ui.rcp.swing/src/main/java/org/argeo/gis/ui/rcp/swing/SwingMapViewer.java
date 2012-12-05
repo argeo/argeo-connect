@@ -36,13 +36,15 @@ import java.util.Map;
 import javax.jcr.Node;
 
 import org.argeo.ArgeoException;
+import org.argeo.geotools.StylingUtils;
 import org.argeo.geotools.jcr.GeoJcrMapper;
-import org.argeo.geotools.styling.StylingUtils;
 import org.argeo.gis.ui.AbstractMapViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.widgets.Composite;
 import org.geotools.data.FeatureSource;
+import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.DefaultMapContext;
@@ -58,6 +60,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /** Map viewer implementation based on GeoTools Swing components. */
+@SuppressWarnings("deprecation")
 public class SwingMapViewer extends AbstractMapViewer {
 	private Composite embedded;
 	private JMapPane mapPane;
@@ -99,8 +102,19 @@ public class SwingMapViewer extends AbstractMapViewer {
 	@Override
 	public void addLayer(String layerId,
 			FeatureIterator<SimpleFeature> featureIterator, Object style) {
-		// TODO Auto-generated method stub
+		if (!featureIterator.hasNext())
+			return;
+		SimpleFeature firstFeature = featureIterator.next();
+		FeatureCollection<SimpleFeatureType, SimpleFeature> coll = new DefaultFeatureCollection(
+				layerId, firstFeature.getFeatureType());
+		coll.add(firstFeature);
+		while (featureIterator.hasNext())
+			coll.add(featureIterator.next());
 
+		// Style geoStyle = StylingUtils.createPointStyle("Square", "RED", 4,
+		// "BLACK", 1);
+		MapLayer mapLayer = new DefaultMapLayer(coll, (Style) style);
+		addMapLayer(layerId, mapLayer);
 	}
 
 	protected void addMapLayer(String layerId, MapLayer mapLayer) {

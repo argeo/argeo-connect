@@ -46,7 +46,7 @@ import org.argeo.connect.ui.gps.commons.SliderViewer;
 import org.argeo.connect.ui.gps.commons.SliderViewerListener;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.eclipse.ui.ErrorFeedback;
-import org.argeo.geotools.styling.StylingUtils;
+import org.argeo.geotools.StylingUtils;
 import org.argeo.gis.ui.MapViewer;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;

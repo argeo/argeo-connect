@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,6 +53,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.styling.LineSymbolizer;
+import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Symbolizer;
 import org.opengis.feature.simple.SimpleFeature;
@@ -253,11 +253,6 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 
 	}
 
-	public void addLayer(NodeIterator layer, Object style) {
-		// TODO Auto-generated method stub
-
-	}
-
 	@Override
 	public void addLayer(String layerId,
 			FeatureIterator<SimpleFeature> featureIterator, Object style) {
@@ -293,6 +288,13 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 						log.debug("Stroke color=" + hexColor + ", width="
 								+ width);
 
+				}
+				else if (symb instanceof PointSymbolizer) {
+					// only support images
+					st = new Style();
+					st.setAttribute("externalGraphic", gtStyle.getName());
+					st.setAttribute("graphicOpacity", "1");
+					st.setAttribute("pointRadius", "8");
 				}
 			}
 			// AdvancedStyleMap styleMap = new AdvancedStyleMap();

@@ -24,9 +24,10 @@
  * combination shall include the source code for the parts of such software
  * which are used as well as that of the covered work.
  */
-package org.argeo.geotools.styling;
+package org.argeo.geotools;
 
 import java.awt.Color;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.argeo.ArgeoException;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
+import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Graphic;
 import org.geotools.styling.LineSymbolizer;
@@ -44,6 +46,7 @@ import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
+import org.geotools.styling.StyleBuilder;
 import org.geotools.styling.StyleFactory;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
@@ -95,6 +98,25 @@ public class StylingUtils {
 				.createFeatureTypeStyle(new Rule[] { rule });
 		Style style = styleFactory.createStyle();
 		style.featureTypeStyles().add(fts);
+		return style;
+	}
+
+	public static Style createImagePointStyle(URL url, String mimeType) {
+		StyleBuilder styleBuilder = new StyleBuilder(styleFactory);
+		Style style = styleBuilder.createStyle();
+		PointSymbolizer pointSymbolizer = styleBuilder.createPointSymbolizer();
+
+		Graphic graphic = styleBuilder.createGraphic();
+		ExternalGraphic external = styleBuilder.createExternalGraphic(url,
+				mimeType);
+		graphic.graphicalSymbols().add(external);
+		graphic.graphicalSymbols().add(styleBuilder.createMark("circle"));
+
+		pointSymbolizer.setGraphic(graphic);
+		Rule rule = styleBuilder.createRule(pointSymbolizer);
+		FeatureTypeStyle featureTypeStyle = styleBuilder
+				.createFeatureTypeStyle("Feature", rule);
+		style.featureTypeStyles().add(featureTypeStyle);
 		return style;
 	}
 

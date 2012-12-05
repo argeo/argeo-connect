@@ -33,7 +33,7 @@ import javax.jcr.Node;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.eclipse.ui.ErrorFeedback;
-import org.argeo.geotools.styling.StylingUtils;
+import org.argeo.geotools.StylingUtils;
 import org.argeo.gis.ui.MapViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;

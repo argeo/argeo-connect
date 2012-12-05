@@ -26,6 +26,7 @@
  */
 package org.argeo.connect.demo.gr.ui;
 
+import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
@@ -90,6 +91,10 @@ public class GrUiPlugin extends AbstractUIPlugin {
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}
+
+	public URL imageUrl(String path) {
+		return bundleContext.getBundle().getResource(path);
 	}
 
 	@Override

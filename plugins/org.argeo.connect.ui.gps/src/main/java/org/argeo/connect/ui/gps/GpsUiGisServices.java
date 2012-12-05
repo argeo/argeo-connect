@@ -34,7 +34,7 @@ import javax.jcr.RepositoryException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.gpx.TrackDao;
-import org.argeo.geotools.styling.StylingUtils;
+import org.argeo.geotools.StylingUtils;
 import org.argeo.gis.GisConstants;
 import org.argeo.gis.ui.MapControlCreator;
 import org.argeo.gis.ui.MapViewer;
