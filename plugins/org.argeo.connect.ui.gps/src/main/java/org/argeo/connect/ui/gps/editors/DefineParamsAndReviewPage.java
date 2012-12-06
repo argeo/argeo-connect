@@ -47,6 +47,7 @@ import org.argeo.connect.ui.gps.commons.SliderViewerListener;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.geotools.StylingUtils;
+import org.argeo.gis.ui.MapControlCreator;
 import org.argeo.gis.ui.MapViewer;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -63,6 +64,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.geotools.data.FeatureSource;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.styling.Style;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -106,15 +108,15 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		createMapPart(body);
 
 		// TODO Enable this @ RAP WORKAROUND FOR LEUVEN PROJECT
-		// try {
-		// addSpeedLayer(uiJcrServices
-		// .getCleanSessionTechName(currCleanSession));
-		// } catch (Exception e) {
-		// ErrorFeedback
-		// .show("Cannot load speed layer. Did you import the GPX files from the previous tab?",
-		// e);
-		// getEditor().setActivePage(GpxFilesProcessingPage.ID);
-		// }
+		try {
+			addSpeedLayer(uiJcrServices
+					.getCleanSessionTechName(currCleanSession));
+		} catch (Exception e) {
+			ErrorFeedback
+					.show("Cannot load speed layer. Did you import the GPX files from the previous tab?",
+							e);
+			getEditor().setActivePage(GpxFilesProcessingPage.ID);
+		}
 	}
 
 	private void createParameterPart(Composite top) {
@@ -229,8 +231,8 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 
 		public void valueChanged(Double value) {
 			// TODO Enable this @ RAP WORKAROUND FOR LEUVEN PROJECT
-			// refreshSpeedLayer(uiJcrServices
-			// .getCleanSessionTechName(currCleanSession));
+			refreshSpeedLayer(uiJcrServices
+					.getCleanSessionTechName(currCleanSession));
 			formPart.setValue(value);
 			formPart.markDirty();
 		}
@@ -285,9 +287,11 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		GridLayout layout = new GridLayout();
 		mapArea.setLayout(layout);
 		// TODO Enable this @ RAP WORKAROUND FOR LEUVEN PROJECT
-		// MapControlCreator mcc = uiGisServices.getMapControlCreator();
-		// mapViewer = mcc.createMapControl(currCleanSession, mapArea);
-		// uiGisServices.addBaseLayers(mapViewer);
+		MapControlCreator mcc = uiGisServices.getMapControlCreator();
+		mapViewer = mcc.createMapControl(currCleanSession, mapArea);
+		mapViewer.getControl().setLayoutData(
+				new GridData(SWT.FILL, SWT.FILL, true, true));
+		uiGisServices.addBaseLayers(mapViewer);
 	}
 
 	private void pushDataToLocalRepo() {
@@ -330,26 +334,26 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	/*
 	 * GIS
 	 */
-	// protected void addSpeedLayer(String cleanSession) {
-	// // Add speeds layer
-	// String trackSpeedsPath = uiGisServices.getTrackDao()
-	// .getTrackSpeedsSource(cleanSession);
-	// try {
-	//
-	// Node layerNode = currCleanSession.getSession().getNode(
-	// trackSpeedsPath);
-	// mapViewer.addLayer(layerNode, createToCleanStyle());
-	//
-	// // mapViewer.setCoordinateReferenceSystem("EPSG:3857");
-	//
-	// ReferencedEnvelope areaOfInterest = getFeatureSource(cleanSession)
-	// .getBounds();
-	// mapViewer.setAreaOfInterest(areaOfInterest);
-	// } catch (Exception e) {
-	// throw new ArgeoException("Cannot add layer " + trackSpeedsPath, e);
-	// }
-	//
-	// }
+	protected void addSpeedLayer(String cleanSession) {
+		// Add speeds layer
+		String trackSpeedsPath = uiGisServices.getTrackDao()
+				.getTrackSpeedsSource(cleanSession);
+		try {
+
+			Node layerNode = currCleanSession.getSession().getNode(
+					trackSpeedsPath);
+			mapViewer.addLayer(layerNode, createToCleanStyle());
+
+			// mapViewer.setCoordinateReferenceSystem("EPSG:3857");
+
+			ReferencedEnvelope areaOfInterest = getFeatureSource(cleanSession)
+					.getBounds();
+			mapViewer.setAreaOfInterest(areaOfInterest);
+		} catch (Exception e) {
+			throw new ArgeoException("Cannot add layer " + trackSpeedsPath, e);
+		}
+
+	}
 
 	protected FeatureSource<SimpleFeatureType, SimpleFeature> getFeatureSource(
 			String cleanSession) {
