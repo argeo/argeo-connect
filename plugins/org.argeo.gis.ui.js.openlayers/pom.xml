@@ -18,6 +18,20 @@
 		</license>
 	</licenses>
 	<build>
+		<resources>
+			<resource>
+				<directory>.</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+				<excludes>
+					<exclude>.*</exclude>
+					<exclude>.*/**</exclude>
+					<exclude>pom.xml</exclude>
+					<exclude>build.properties</exclude>
+				</excludes>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.felix</groupId>

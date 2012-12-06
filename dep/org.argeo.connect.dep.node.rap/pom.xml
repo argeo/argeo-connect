@@ -123,6 +123,7 @@
 											<directoryIncluded>false</directoryIncluded>
 											<dependency>
 												<includes>
+													<include>org.argeo.connect:org.argeo.gis.ui.js.openlayers</include>
 													<include>org.argeo.connect:org.argeo.gis.ui.rap.openlayers</include>
 												</includes>
 											</dependency>
