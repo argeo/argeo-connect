@@ -39,13 +39,25 @@ public class GrImages {
 
 	// various site types
 	public final static Image ICON_MONITORED_TYPE = GrUiPlugin
-			.getImageDescriptor("icons/" + GrConstants.MONITORED + ".gif")
+			.getImageDescriptor(GrImages.getTypeIconResource(GrConstants.MONITORED))
 			.createImage();
 	public final static Image ICON_VISITED_TYPE = GrUiPlugin
-			.getImageDescriptor("icons/" + GrConstants.VISITED + ".gif")
+			.getImageDescriptor(GrImages.getTypeIconResource(GrConstants.VISITED))
 			.createImage();
 	public final static Image ICON_REGISTERED_TYPE = GrUiPlugin
-			.getImageDescriptor("icons/" + GrConstants.REGISTERED + ".gif")
+			.getImageDescriptor(GrImages.getTypeIconResource(GrConstants.REGISTERED))
 			.createImage();
-
+	/** Returns the internationalized label for the given key */
+	// public static String getMessage(String key) {
+	// try {
+	// return getDefault().messages.getString(key.replace(':', '_'));
+	// } catch (NullPointerException npe) {
+	// log.warn(key.replace(':', '_') + " not found.");
+	// return key;
+	// }
+	// }
+	
+	public static String getTypeIconResource(String type) {
+		return "icons/" + type + ".gif";
+	}
 }

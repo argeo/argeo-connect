@@ -28,6 +28,7 @@ package org.argeo.gis.ui.rap.openlayers;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,6 +47,7 @@ import org.argeo.geotools.jcr.GeoJcrMapper;
 import org.argeo.gis.ui.AbstractMapViewer;
 import org.argeo.gis.ui.MapViewerListener;
 import org.argeo.gis.ui.rap.openlayers.custom.GoogleLayer;
+import org.eclipse.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -53,6 +55,7 @@ import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.SLD;
@@ -60,6 +63,7 @@ import org.geotools.styling.Symbolizer;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.style.GraphicalSymbol;
 import org.polymap.openlayers.rap.widget.OpenLayersWidget;
 import org.polymap.openlayers.rap.widget.base.OpenLayersEventListener;
 import org.polymap.openlayers.rap.widget.base.OpenLayersObject;
@@ -132,6 +136,8 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 	protected void createControl(Composite parent) {
 		OpenLayersWidget openLayersWidget = new OpenLayersWidget(parent,
 				SWT.MULTI | SWT.WRAP);
+//		OpenLayersWidget openLayersWidget = new OpenLayersWidget(parent,
+//				SWT.MULTI | SWT.WRAP, "js/OpenLayers.js");
 		openLayersWidget.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		String srs = "EPSG:3857";
@@ -290,9 +296,30 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 								+ width);
 
 				} else if (symb instanceof PointSymbolizer) {
-					// only support images
+					ExternalGraphic externalGraphic = null;
+					for (GraphicalSymbol symbol : ((PointSymbolizer) symb)
+							.getGraphic().graphicalSymbols()) {
+						if (symbol instanceof ExternalGraphic) {
+							externalGraphic = (ExternalGraphic) symbol;
+							break;
+						}
+					}
+
+					String resourceName;
+					if (externalGraphic != null) {
+						URL osgiUrl = externalGraphic.getLocation();
+						resourceName = osgiUrl.getHost() + osgiUrl.getPath();
+					} else
+						resourceName = gtStyle.getName();
+					// String gtStyleName = gtStyle.getName();
+					String imgLocation = null;
+					if (resourceName != null) {
+						imgLocation = RWT.getResourceManager().getLocation(
+								resourceName);
+					}
+
 					st = new Style();
-					st.setAttribute("externalGraphic", gtStyle.getName());
+					st.setAttribute("externalGraphic", imgLocation);
 					st.setAttribute("graphicOpacity", "1");
 					st.setAttribute("pointRadius", "8");
 				}

@@ -128,6 +128,7 @@
 			</command>
 		</menuContribution>
 	</extension>
+	<!--
     <extension point="org.eclipse.equinox.http.registry.resources">
         <resource
         	alias="/monitored.gif"
@@ -139,6 +140,7 @@
         	alias="/registered.gif"
         	base-name="icons/registered.gif" />
 	</extension>
+	-->
   <extension
            point="org.eclipse.ui.activities">
         <activity

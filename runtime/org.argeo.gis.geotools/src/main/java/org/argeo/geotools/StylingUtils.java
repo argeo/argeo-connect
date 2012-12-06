@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.argeo.ArgeoException;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQL;
@@ -101,12 +102,21 @@ public class StylingUtils {
 		return style;
 	}
 
-	public static Style createImagePointStyle(URL url, String mimeType) {
+	public static Style createImagePointStyle(URL url) {
 		StyleBuilder styleBuilder = new StyleBuilder(styleFactory);
 		Style style = styleBuilder.createStyle();
 		PointSymbolizer pointSymbolizer = styleBuilder.createPointSymbolizer();
 
 		Graphic graphic = styleBuilder.createGraphic();
+		String ext = FilenameUtils.getExtension(url.getFile()).toLowerCase();
+		String mimeType = null;
+		if ("gif".equals(ext))
+			mimeType = "image/gif";
+		else if ("png".equals(ext))
+			mimeType = "image/gif";
+		else if ("jpg".equals(ext) || "jpeg".equals(ext))
+			mimeType = "image/gif";
+
 		ExternalGraphic external = styleBuilder.createExternalGraphic(url,
 				mimeType);
 		graphic.graphicalSymbols().add(external);

@@ -34,8 +34,11 @@ import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.demo.gr.GrConstants;
+import org.argeo.connect.demo.gr.ui.GrImages;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.geotools.StylingUtils;
 import org.argeo.gis.ui.MapControlCreator;
@@ -46,6 +49,8 @@ import org.geotools.styling.Style;
 
 /** Display a map for a whole network */
 public class MapDisplayPage extends MapFormPage {
+	private final static Log log = LogFactory.getLog(MapDisplayPage.class);
+
 	private Node network;
 
 	public MapDisplayPage(FormEditor editor, String id, String title,
@@ -74,10 +79,8 @@ public class MapDisplayPage extends MapFormPage {
 							Query.JCR_SQL2).execute().getNodes();
 
 			URL imageUrl = GrUiPlugin.getDefault().imageUrl(
-					"icons/" + type + ".gif");
-			Style style = StylingUtils.createImagePointStyle(imageUrl,
-					"image/gif");
-			style.setName(type + ".gif");
+					GrImages.getTypeIconResource(type));
+			Style style = StylingUtils.createImagePointStyle(imageUrl);
 			getMapViewer().addLayer(type, l, style);
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Cannot list sites", e);
