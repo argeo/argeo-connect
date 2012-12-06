@@ -3,15 +3,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-	<bean id="jcrRepository" class="org.argeo.jackrabbit.JackrabbitWrapper"
+	<bean id="grRepository" class="org.argeo.jackrabbit.JackrabbitWrapper"
 		init-method="init" destroy-method="destroy">
 		<property name="cndFiles">
 			<list>
-				<value>/org/argeo/gis/argeo_gis.cnd</value>
 				<value>/org/argeo/connect/demo/gr/gr.cnd</value>
 			</list>
 		</property>
-		<property name="repository" ref="nodeRepository" />
+		<property name="repository" ref="connectRepository" />
 		<property name="bundleContext" ref="bundleContext" />
 	</bean>
 
@@ -24,6 +23,6 @@
 				<entry key="jcr:read" value="ROLE_CONSULTANT" />
 			</map>
 		</property>
-		<property name="repository" ref="jcrRepository" />
+		<property name="repository" ref="grRepository" />
 	</bean>
 </beans>

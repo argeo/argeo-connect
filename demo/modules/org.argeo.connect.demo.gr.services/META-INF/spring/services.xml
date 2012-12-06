@@ -7,7 +7,7 @@
 
 	<bean id="grBackend" class="org.argeo.connect.demo.gr.GrBackendImpl"
 		init-method="init" destroy-method="destroy">
-		<property name="repository" ref="jcrRepository" />
+		<property name="repository" ref="grRepository" />
 		<property name="managedRoles" ref="managedRoles" />
 		<property name="siteTypes" ref="siteTypes" />
 		<property name="testData"
