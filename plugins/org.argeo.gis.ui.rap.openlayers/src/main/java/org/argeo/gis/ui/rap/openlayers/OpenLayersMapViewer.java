@@ -134,10 +134,10 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 	}
 
 	protected void createControl(Composite parent) {
-		OpenLayersWidget openLayersWidget = new OpenLayersWidget(parent,
-				SWT.MULTI | SWT.WRAP);
 //		OpenLayersWidget openLayersWidget = new OpenLayersWidget(parent,
-//				SWT.MULTI | SWT.WRAP, "js/OpenLayers.js");
+//				SWT.MULTI | SWT.WRAP);
+		OpenLayersWidget openLayersWidget = new OpenLayersWidget(parent,
+				SWT.MULTI | SWT.WRAP, "OpenLayers/OpenLayers.js");
 		openLayersWidget.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		String srs = "EPSG:3857";
