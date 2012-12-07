@@ -38,12 +38,6 @@
 			<type>pom</type>
 		</dependency>
 
-		<!-- Excel -->
-		<dependency>
-			<groupId>org.argeo.tp</groupId>
-			<artifactId>jxl</artifactId>
-		</dependency>
-
 		<!-- SDK -->
 		<dependency>
 			<groupId>org.argeo.commons.base</groupId>
