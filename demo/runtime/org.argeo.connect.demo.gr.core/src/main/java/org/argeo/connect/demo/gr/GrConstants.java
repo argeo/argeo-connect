@@ -59,6 +59,7 @@ public interface GrConstants {
 	 */
 	public final static String DATE_FORMAT = "dd/MM/yyyy";
 	public final static String DATE_TIME_FORMAT = "dd/MM/yyyy, HH:mm";
+	public final static String NUMBER_FORMAT = "#,##0.00";
 
 	/* SITE TYPES */
 	public final static String MONITORED = "monitored";
