@@ -34,8 +34,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.demo.gr.GrConstants;
 import org.argeo.connect.demo.gr.ui.GrImages;
@@ -49,7 +47,7 @@ import org.geotools.styling.Style;
 
 /** Display a map for a whole network */
 public class MapDisplayPage extends MapFormPage {
-	private final static Log log = LogFactory.getLog(MapDisplayPage.class);
+	// private final static Log log = LogFactory.getLog(MapDisplayPage.class);
 
 	private Node network;
 

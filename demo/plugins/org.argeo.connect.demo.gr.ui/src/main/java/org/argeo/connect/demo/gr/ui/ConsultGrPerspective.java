@@ -28,7 +28,6 @@ package org.argeo.connect.demo.gr.ui;
 
 import org.argeo.connect.demo.gr.GrConstants;
 import org.argeo.connect.demo.gr.ui.views.NetworkBrowserView;
-import org.argeo.connect.demo.gr.ui.views.NetworkListView;
 import org.argeo.connect.demo.gr.ui.views.SiteListView;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
@@ -44,11 +43,11 @@ public class ConsultGrPerspective implements IPerspectiveFactory, GrConstants {
 		layout.setFixed(false);
 
 		IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT,
-				0.4f, editorArea);
+				0.5f, editorArea);
 		left.addView(NetworkBrowserView.ID);
 		left.addView(SiteListView.ID);
 		// TODO better deal with unauthorized
-		left.addView(NetworkListView.ID);
-	
+		// left.addView(NetworkListView.ID);
+
 	}
 }

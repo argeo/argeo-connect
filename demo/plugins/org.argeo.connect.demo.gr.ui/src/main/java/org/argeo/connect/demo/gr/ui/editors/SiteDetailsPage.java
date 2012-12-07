@@ -425,6 +425,30 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 		body.setLayout(new GridLayout(1, false));
 		section.setClient(body);
 
+		// "Add new comment" hyperlink :
+		Hyperlink addNewCommentLink = tk.createHyperlink(body,
+				GrMessages.get().addComment_lbl, 0);
+
+		final AbstractFormPart formPart = new SectionPart(section) {
+			public void commit(boolean onSave) {
+				super.commit(onSave);
+			}
+		};
+
+		addNewCommentLink.addHyperlinkListener(new AbstractHyperlinkListener() {
+
+			@Override
+			public void linkActivated(HyperlinkEvent e) {
+				boolean success = addNewComment();
+				if (success) {
+					formPart.markDirty();
+					refreshCommentsTable();
+				}
+			}
+		});
+
+		getManagedForm().addPart(formPart);
+
 		// Create the table containing the comments about current site
 		final Table table = tk.createTable(body, SWT.NONE | SWT.H_SCROLL
 				| SWT.V_SCROLL | SWT.BORDER);
@@ -458,29 +482,6 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 		// Initialize the table input
 		refreshCommentsTable();
 
-		// "Add new comment" hyperlink :
-		Hyperlink addNewCommentLink = tk.createHyperlink(body,
-				GrMessages.get().addComment_lbl, 0);
-
-		final AbstractFormPart formPart = new SectionPart(section) {
-			public void commit(boolean onSave) {
-				super.commit(onSave);
-			}
-		};
-
-		addNewCommentLink.addHyperlinkListener(new AbstractHyperlinkListener() {
-
-			@Override
-			public void linkActivated(HyperlinkEvent e) {
-				boolean success = addNewComment();
-				if (success) {
-					formPart.markDirty();
-					refreshCommentsTable();
-				}
-			}
-		});
-
-		getManagedForm().addPart(formPart);
 		return section;
 	}
 
