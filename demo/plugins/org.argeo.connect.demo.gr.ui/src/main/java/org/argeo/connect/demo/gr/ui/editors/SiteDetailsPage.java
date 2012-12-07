@@ -26,7 +26,7 @@
  */
 package org.argeo.connect.demo.gr.ui.editors;
 
-import java.text.NumberFormat;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -38,6 +38,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeType;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.demo.gr.GrConstants;
 import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.GrTypes;
 import org.argeo.connect.demo.gr.GrUtils;
@@ -85,7 +86,7 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 	// public final static String USER_COLUMN_NAME = "User";
 	// public final static String COMMENT_COLUMN_NAME = "Comment";
 
-	private NumberFormat nf = NumberFormat.getInstance();
+	private DecimalFormat nf;
 	// Main business Objects
 	// private Node networkNode;
 	private Node siteNode;
@@ -111,7 +112,8 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 		} catch (RepositoryException re) {
 			throw new ArgeoException("Cannot initialize compulsory nodes ", re);
 		}
-		nf.setMaximumFractionDigits(2);
+		nf = (DecimalFormat) DecimalFormat.getInstance();
+		nf.applyPattern(GrConstants.NUMBER_FORMAT);
 	}
 
 	protected void createFormContent(IManagedForm managedForm) {
@@ -334,23 +336,6 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 				waterLevelTxt.setText(value);
 			}
 
-			// E-Coli rate
-			lbl = new Label(body, SWT.NONE);
-			lbl.setText(GrMessages.get().eColiRateLbl);
-
-			final Text eColiRateTxt = new Text(body, SWT.BORDER | SWT.SINGLE
-					| SWT.RIGHT);
-			eColiRateTxt.setEnabled(true);
-			gd = new GridData(SWT.FILL);
-			gd.widthHint = 100;
-			eColiRateTxt.setLayoutData(gd);
-
-			if (siteNode.hasProperty(GR_ECOLI_RATE)) {
-				String value = nf.format(siteNode.getProperty(GR_ECOLI_RATE)
-						.getDouble());
-				eColiRateTxt.setText(value);
-			}
-
 			// Withdrawn water
 			lbl = new Label(body, SWT.NONE);
 			lbl.setText(GrMessages.get().withdrawnWaterLbl);
@@ -366,6 +351,23 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 				String value = nf.format(siteNode.getProperty(
 						GR_WITHDRAWN_WATER).getDouble());
 				withdrawnWaterTxt.setText(value);
+			}
+
+			// E-Coli rate
+			lbl = new Label(body, SWT.NONE);
+			lbl.setText(GrMessages.get().eColiRateLbl);
+
+			final Text eColiRateTxt = new Text(body, SWT.BORDER | SWT.SINGLE
+					| SWT.RIGHT);
+			eColiRateTxt.setEnabled(true);
+			gd = new GridData(SWT.FILL);
+			gd.widthHint = 100;
+			eColiRateTxt.setLayoutData(gd);
+
+			if (siteNode.hasProperty(GR_ECOLI_RATE)) {
+				String value = nf.format(siteNode.getProperty(GR_ECOLI_RATE)
+						.getDouble());
+				eColiRateTxt.setText(value);
 			}
 
 			AbstractFormPart part = new SectionPart(section) {
@@ -429,7 +431,7 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		GridData gd = new GridData();
-		gd.heightHint = 100;
+		gd.heightHint = 250;
 		gd.horizontalAlignment = SWT.FILL;
 		gd.grabExcessHorizontalSpace = true;
 		table.setLayoutData(gd);

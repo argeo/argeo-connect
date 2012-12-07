@@ -73,12 +73,13 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 
 	// Main business objects
 	private Node network;
-	//private GrBackend grBackend;
+
+	// private GrBackend grBackend;
 
 	public NetworkDetailsPage(FormEditor editor, String title) {
 		super(editor, ID, title);
 		network = ((NetworkEditor) editor).getNetwork();
-		//grBackend = getGrBackend();
+		// grBackend = getGrBackend();
 	}
 
 	protected void createFormContent(IManagedForm managedForm) {
@@ -136,13 +137,15 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 
 		// Create table containing the sites of the current network
 		final Table table = tk.createTable(body, SWT.NONE | SWT.H_SCROLL
-				| SWT.V_SCROLL | SWT.BORDER);
+				| SWT.BORDER);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
 		GridData gd = new GridData();
-		gd.heightHint = 100;
+		gd.heightHint = 500;
 		gd.horizontalAlignment = SWT.FILL;
 		gd.grabExcessHorizontalSpace = true;
+		// gd.verticalAlignment = SWT.FILL;
+		// gd.grabExcessVerticalSpace = true;
 		table.setLayoutData(gd);
 		sitesTableViewer = new TableViewer(table);
 
@@ -184,13 +187,12 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 		sitesTableViewer.setInput(sites);
 
 		// Add listener
-		sitesTableViewer
-				.addDoubleClickListener(new GrDoubleClickListener());
+		sitesTableViewer.addDoubleClickListener(new GrDoubleClickListener());
 
 		// "Add new site" hyperlink :
 		// FIXME site creation life cycle must be improved
-//		Hyperlink addNewSiteLink = tk.createHyperlink(body,
-//				GrMessages.get().createSite_lbl, 0);
+		// Hyperlink addNewSiteLink = tk.createHyperlink(body,
+		// GrMessages.get().createSite_lbl, 0);
 
 		final AbstractFormPart formPart = new SectionPart(section) {
 			public void commit(boolean onSave) {
@@ -198,22 +200,22 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 			}
 		};
 
-//		addNewSiteLink.addHyperlinkListener(new AbstractHyperlinkListener() {
-//
-//			@Override
-//			public void linkActivated(HyperlinkEvent e) {
-//				if (grBackend.isUserInRole(ROLE_ADMIN)
-//						|| grBackend.isUserInRole(ROLE_MANAGER)) {
-//					callCreateSiteCommand();
-//					formPart.markDirty();
-//				} else
-//					MessageDialog.openError(GrUiPlugin.getDefault()
-//							.getWorkbench().getActiveWorkbenchWindow()
-//							.getShell(),
-//							GrMessages.get().forbiddenAction_title,
-//							GrMessages.get().forbiddenAction_msg);
-//			}
-//		});
+		// addNewSiteLink.addHyperlinkListener(new AbstractHyperlinkListener() {
+		//
+		// @Override
+		// public void linkActivated(HyperlinkEvent e) {
+		// if (grBackend.isUserInRole(ROLE_ADMIN)
+		// || grBackend.isUserInRole(ROLE_MANAGER)) {
+		// callCreateSiteCommand();
+		// formPart.markDirty();
+		// } else
+		// MessageDialog.openError(GrUiPlugin.getDefault()
+		// .getWorkbench().getActiveWorkbenchWindow()
+		// .getShell(),
+		// GrMessages.get().forbiddenAction_title,
+		// GrMessages.get().forbiddenAction_msg);
+		// }
+		// });
 
 		getManagedForm().addPart(formPart);
 
@@ -221,15 +223,15 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 
 	}
 
-//	private void callCreateSiteCommand() {
-//		String uid;
-//		try {
-//			uid = network.getIdentifier();
-//		} catch (RepositoryException e) {
-//			throw new ArgeoException(
-//					"JCR Error while getting current network node uid", e);
-//		}
-//		CommandUtils.CallCommandWithOneParameter(CreateSite.ID,
-//				CreateSite.PARAM_UID, uid);
-//	}
+	// private void callCreateSiteCommand() {
+	// String uid;
+	// try {
+	// uid = network.getIdentifier();
+	// } catch (RepositoryException e) {
+	// throw new ArgeoException(
+	// "JCR Error while getting current network node uid", e);
+	// }
+	// CommandUtils.CallCommandWithOneParameter(CreateSite.ID,
+	// CreateSite.PARAM_UID, uid);
+	// }
 }

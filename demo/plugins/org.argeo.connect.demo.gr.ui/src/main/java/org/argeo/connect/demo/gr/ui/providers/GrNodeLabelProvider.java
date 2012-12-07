@@ -41,15 +41,14 @@ import org.argeo.eclipse.ui.jcr.DefaultNodeLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
 /** Label provider for the browser tree */
-public class GrNodeLabelProvider extends DefaultNodeLabelProvider implements
-		GrConstants {
+public class GrNodeLabelProvider extends DefaultNodeLabelProvider {
 
 	// Helper to simplify retrieving of a user friendly name for the various
 	// node types of GR Application
 	public static String getName(Node node) {
 		try {
 			if (node.isNodeType(GrTypes.GR_SITE))
-				return node.getIdentifier().substring(0, 7);
+				return node.getIdentifier().substring(0, 8);
 			else if (node.isNodeType(NodeType.MIX_TITLE))
 				return node.getProperty(Property.JCR_TITLE).getString();
 			else {

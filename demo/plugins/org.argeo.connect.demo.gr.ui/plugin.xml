@@ -27,6 +27,13 @@
            name="%networkListView_title"
            restorable="true">
    		</view>
+   		<view
+           class="org.argeo.eclipse.spring.SpringExtensionFactory"
+           icon="icons/find.png"
+           id="org.argeo.connect.demo.gr.ui.siteListView"
+           name="%siteListView_title"
+           restorable="true">
+   		</view>
 	</extension>
 	<!-- EDITORS --> 
 	<!-- CAUTION : icon attribute is compulsory for an editor.--> 
@@ -68,7 +75,16 @@
 				id="org.argeo.connect.demo.gr.ui.siteUid"
 				name="Site UID">
   	 		</commandParameter>
-		</command>    
+		</command>
+		<command
+         	defaultHandler="org.argeo.connect.demo.gr.ui.commands.GetCalcExtract"
+      		id="org.argeo.connect.demo.gr.ui.getCalcExtract"
+            name="getCalcExtract">
+            <commandParameter
+         		id="org.argeo.connect.demo.gr.ui.extractId"
+         		name="Extract type">
+  	 		</commandParameter>
+    	</command>
 		<command
 			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
 			id="org.argeo.connect.demo.gr.ui.createNetwork"
@@ -112,6 +128,20 @@
                 tooltip="Refresh networks view">
             </command>
         </menuContribution>
+		<menuContribution
+        	locationURI="toolbar:org.argeo.connect.demo.gr.ui.siteListView">
+        	<command
+				commandId="org.argeo.connect.demo.gr.ui.getCalcExtract"
+				icon="icons/spreadsheet.gif"
+				label="%calcExportCmd_lbl"
+				style="push"
+				tooltip="%calcExportCmd_toolTip">
+				<parameter
+					name="org.argeo.connect.demo.gr.ui.extractId"
+               		value="siteListExport" />
+			</command>
+        </menuContribution>
+        
 	
 		<!-- WARNING : when a command is not found it is not display without warning or error -->
 		<menuContribution

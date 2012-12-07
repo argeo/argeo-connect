@@ -15,4 +15,8 @@
 			<bean factory-bean="grBackend" factory-method="getRepository" />
 		</property>
 	</bean>
+	<bean id="org.argeo.connect.demo.gr.ui.siteListView" class="org.argeo.connect.demo.gr.ui.views.SiteListView"
+		scope="prototype">
+		<property name="grBackend" ref="grBackend" />
+	</bean>
 </beans>

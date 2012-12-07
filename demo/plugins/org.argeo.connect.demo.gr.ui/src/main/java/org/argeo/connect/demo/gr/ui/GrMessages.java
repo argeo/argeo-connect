@@ -50,6 +50,9 @@ public class GrMessages extends NLS {
 	public String waterLevelLbl;
 	public String eColiRateLbl;
 	public String withdrawnWaterLbl;
+	public String waterLevelShortLbl;
+	public String eColiRateShortLbl;
+	public String withdrawnWaterShortLbl;
 
 	// Documents
 	public String docNameLbl;
@@ -63,11 +66,19 @@ public class GrMessages extends NLS {
 
 	// Miscellaneous
 	public String commentTxtLbl;
+	public String name_lbl;
 
 	/* Views */
 
 	// NetworkBrowser view
 	public String networkBrowserView_title;
+
+	// SiteList view
+	public String siteListView_displayFilterLbl;
+	public String siteListView_siteTypeCmb;
+	public String siteListView_maxWaterLevelLbl;
+	public String siteListView_maxWithdrawnWaterLbl;
+	public String siteListView_minEColiRateLbl;
 
 	// NetworkList view
 	public String networkListView_title;
