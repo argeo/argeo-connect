@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.argeo.commons</groupId>
 		<artifactId>argeo-commons</artifactId>
-		<version>1.1.8-SNAPSHOT</version>
+		<version>1.1.8</version>
 	</parent>
 	<groupId>org.argeo.connect</groupId>
 	<artifactId>argeo-connect</artifactId>
@@ -11,7 +11,7 @@
 	<name>Argeo Connect</name>
 	<version>1.1.2-SNAPSHOT</version>
 	<properties>
-		<version.connect>1.1.2-SNAPSHOT</version.connect>
+		<version.connect>1.1.2</version.connect>
 	</properties>
 	<modules>
 		<module>data</module>
