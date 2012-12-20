@@ -88,7 +88,7 @@ which are used as well as that of the covered work.]]>
 	<repositories>
 		<repository>
 			<id>argeo-commons</id>
-			<url>http://repo.argeo.org/data/public/java/org.argeo.commons-1.1.x</url>
+			<url>http://repo.argeo.org/data/public/java/org.argeo.commons-1.2.x</url>
 			<releases>
 				<enabled>true</enabled>
 				<updatePolicy>daily</updatePolicy>
