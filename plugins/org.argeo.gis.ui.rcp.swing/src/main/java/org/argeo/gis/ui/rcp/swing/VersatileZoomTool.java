@@ -39,8 +39,6 @@ import java.awt.geom.Point2D;
 import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputAdapter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -49,7 +47,7 @@ import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.tool.AbstractZoomTool;
 
 public class VersatileZoomTool extends AbstractZoomTool {
-	private Log log = LogFactory.getLog(VersatileZoomTool.class);
+	// private Log log = LogFactory.getLog(VersatileZoomTool.class);
 
 	// Cursors
 	private Cursor zoomInCursor;
@@ -117,10 +115,6 @@ public class VersatileZoomTool extends AbstractZoomTool {
 		Envelope2D newMapArea = new Envelope2D();
 		newMapArea.setFrameFromCenter(mapPos, corner);
 		getMapPane().setDisplayArea(newMapArea);
-
-		if (log.isDebugEnabled())
-			log.debug("MapPos: " + mapPos + ", Corner: " + corner
-					+ ", DisplayArea: " + newMapArea);
 	}
 
 	/**
@@ -213,7 +207,7 @@ public class VersatileZoomTool extends AbstractZoomTool {
 		getMapPane().addMouseListener(dragBox);
 		getMapPane().addMouseMotionListener(dragBox);
 		getMapPane().addMouseWheelListener(new MouseWheelListener() {
-			private double clickToZoom = 0.1; // 1 wheel click is 10% zoom
+			private double clickToZoom = 0.2; // 1 wheel click is 20% zoom
 
 			public void mouseWheelMoved(MouseWheelEvent ev) {
 				Point mouseLocation = ev.getPoint();
