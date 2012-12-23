@@ -33,8 +33,8 @@ import javax.jcr.Workspace;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
-import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
+import org.argeo.connect.gps.GpsConstants;
 import org.argeo.connect.gps.TrackSpeed;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
 import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
@@ -50,6 +50,7 @@ import org.argeo.gis.ui.MapViewer;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -67,7 +68,8 @@ import org.geotools.styling.Style;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
+public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage
+		implements ConnectNames, GpsConstants {
 	private final static Log log = LogFactory
 			.getLog(DefineParamsAndReviewPage.class);
 	public final static String ID = "cleanDataEditor.defineParamsAndReviewPage";
@@ -77,6 +79,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	private SliderViewer maxSpeedViewer;
 	private SliderViewer maxAccelerationViewer;
 	private SliderViewer maxRotationViewer;
+	private SliderViewer maxVerticalSpeedViewer;
 
 	private Button preview;
 	private Button lines;
@@ -124,6 +127,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 
 	protected void createParameterPart(Composite top) {
 		Composite parent = formToolkit.createComposite(top);
+		parent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		parent.setLayout(new GridLayout(6, false));
 
 		try {
@@ -131,58 +135,60 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 			ParamFormPart paramPart = null;
 			ParamSliderViewerListener sliderViewerListener;
 
-			// Max speed
-			if (currCleanSession
-					.hasNode(ConnectConstants.CONNECT_PARAM_SPEED_MAX)) {
+			// Max rotation
+			if (currCleanSession.hasNode(CONNECT_PARAM_ROTATION_MAX)) {
 				Node curNode = currCleanSession
-						.getNode(ConnectConstants.CONNECT_PARAM_SPEED_MAX);
-				min = curNode.getProperty(ConnectNames.CONNECT_PARAM_MIN_VALUE)
-						.getDouble();
-				max = curNode.getProperty(ConnectNames.CONNECT_PARAM_MAX_VALUE)
-						.getDouble();
-				val = curNode.getProperty(ConnectNames.CONNECT_PARAM_VALUE)
-						.getDouble();
-				maxSpeedViewer = new SliderViewer(formToolkit, parent,
-						"Max Speed", min, max, val);
+						.getNode(CONNECT_PARAM_ROTATION_MAX);
+				min = curNode.getProperty(CONNECT_PARAM_MIN_VALUE).getDouble();
+				max = curNode.getProperty(CONNECT_PARAM_MAX_VALUE).getDouble();
+				val = curNode.getProperty(CONNECT_PARAM_VALUE).getDouble();
+				maxRotationViewer = new SliderViewer(formToolkit, parent,
+						"Rotation", min, max, val, SWT.COLOR_RED);
+				paramPart = new ParamFormPart(curNode);
+				sliderViewerListener = new ParamSliderViewerListener(paramPart);
+				maxRotationViewer.setListener(sliderViewerListener);
+				getManagedForm().addPart(paramPart);
+			}
+			// Max vertical speed
+			if (currCleanSession.hasNode(CONNECT_PARAM_VERTICAL_SPEED_MAX)) {
+				Node curNode = currCleanSession
+						.getNode(CONNECT_PARAM_VERTICAL_SPEED_MAX);
+				min = curNode.getProperty(CONNECT_PARAM_MIN_VALUE).getDouble();
+				max = curNode.getProperty(CONNECT_PARAM_MAX_VALUE).getDouble();
+				val = curNode.getProperty(CONNECT_PARAM_VALUE).getDouble();
+				maxVerticalSpeedViewer = new SliderViewer(formToolkit, parent,
+						"Vertical Speed", min, max, val, SWT.COLOR_GREEN);
+				paramPart = new ParamFormPart(curNode);
+				sliderViewerListener = new ParamSliderViewerListener(paramPart);
+				maxVerticalSpeedViewer.setListener(sliderViewerListener);
+				getManagedForm().addPart(paramPart);
+			}
+			// Max speed
+			if (currCleanSession.hasNode(CONNECT_PARAM_SPEED_MAX)) {
+				Node curNode = currCleanSession
+						.getNode(CONNECT_PARAM_SPEED_MAX);
+				min = curNode.getProperty(CONNECT_PARAM_MIN_VALUE).getDouble();
+				max = curNode.getProperty(CONNECT_PARAM_MAX_VALUE).getDouble();
+				val = curNode.getProperty(CONNECT_PARAM_VALUE).getDouble();
+				maxSpeedViewer = new SliderViewer(formToolkit, parent, "Speed",
+						min, max, val, SWT.COLOR_BLUE);
 				paramPart = new ParamFormPart(curNode);
 				sliderViewerListener = new ParamSliderViewerListener(paramPart);
 				maxSpeedViewer.setListener(sliderViewerListener);
 				getManagedForm().addPart(paramPart);
 			}
 			// Max acceleration
-			if (currCleanSession
-					.hasNode(ConnectConstants.CONNECT_PARAM_ACCELERATION_MAX)) {
+			if (currCleanSession.hasNode(CONNECT_PARAM_ACCELERATION_MAX)) {
 				Node curNode = currCleanSession
-						.getNode(ConnectConstants.CONNECT_PARAM_ACCELERATION_MAX);
-				min = curNode.getProperty(ConnectNames.CONNECT_PARAM_MIN_VALUE)
-						.getDouble();
-				max = curNode.getProperty(ConnectNames.CONNECT_PARAM_MAX_VALUE)
-						.getDouble();
-				val = curNode.getProperty(ConnectNames.CONNECT_PARAM_VALUE)
-						.getDouble();
+						.getNode(CONNECT_PARAM_ACCELERATION_MAX);
+				min = curNode.getProperty(CONNECT_PARAM_MIN_VALUE).getDouble();
+				max = curNode.getProperty(CONNECT_PARAM_MAX_VALUE).getDouble();
+				val = curNode.getProperty(CONNECT_PARAM_VALUE).getDouble();
 				maxAccelerationViewer = new SliderViewer(formToolkit, parent,
-						"Max Acceleration", min, max, val);
+						"Acceleration", min, max, val, SWT.COLOR_YELLOW);
 				paramPart = new ParamFormPart(curNode);
 				sliderViewerListener = new ParamSliderViewerListener(paramPart);
 				maxAccelerationViewer.setListener(sliderViewerListener);
-				getManagedForm().addPart(paramPart);
-			}
-			// Max rotation
-			if (currCleanSession
-					.hasNode(ConnectConstants.CONNECT_PARAM_ROTATION_MAX)) {
-				Node curNode = currCleanSession
-						.getNode(ConnectConstants.CONNECT_PARAM_ROTATION_MAX);
-				min = curNode.getProperty(ConnectNames.CONNECT_PARAM_MIN_VALUE)
-						.getDouble();
-				max = curNode.getProperty(ConnectNames.CONNECT_PARAM_MAX_VALUE)
-						.getDouble();
-				val = curNode.getProperty(ConnectNames.CONNECT_PARAM_VALUE)
-						.getDouble();
-				maxRotationViewer = new SliderViewer(formToolkit, parent,
-						"Max Rotation", min, max, val);
-				paramPart = new ParamFormPart(curNode);
-				sliderViewerListener = new ParamSliderViewerListener(paramPart);
-				maxRotationViewer.setListener(sliderViewerListener);
 				getManagedForm().addPart(paramPart);
 			}
 
@@ -195,14 +201,12 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	}
 
 	protected void createDisplayControls(Composite parent) {
-		preview = formToolkit.createButton(parent, "Preview", SWT.CHECK);
-		preview.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				refreshSpeedLayer();
-			}
-		});
+		Composite panel = formToolkit.createComposite(parent);
+		panel.setLayout(new FillLayout());
+		panel.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false,
+				false, 3, 1));
 
-		lines = formToolkit.createButton(parent, "Lines", SWT.RADIO);
+		lines = formToolkit.createButton(panel, "Lines", SWT.RADIO);
 		lines.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				refreshSpeedLayer();
@@ -210,8 +214,15 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		});
 		lines.setSelection(true);
 
-		points = formToolkit.createButton(parent, "Points", SWT.RADIO);
+		points = formToolkit.createButton(panel, "Points", SWT.RADIO);
 		points.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				refreshSpeedLayer();
+			}
+		});
+
+		preview = formToolkit.createButton(panel, "Preview", SWT.CHECK);
+		preview.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				refreshSpeedLayer();
 			}
@@ -219,16 +230,21 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	}
 
 	protected void createValidationButtons(Composite parent) {
-		GridData gridData;
+		Composite panel = formToolkit.createComposite(parent);
+		panel.setLayout(new FillLayout());
+		panel.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false,
+				false, 3, 1));
+
+		// GridData gridData;
 
 		// Terminate button
-		Button terminate = formToolkit.createButton(parent, ConnectGpsUiPlugin
+		Button terminate = formToolkit.createButton(panel, ConnectGpsUiPlugin
 				.getGPSMessage(ConnectGpsLabels.LAUNCH_CLEAN_BUTTON_LBL),
 				SWT.PUSH);
-		gridData = new GridData();
-		gridData.horizontalAlignment = GridData.BEGINNING;
-		gridData.horizontalSpan = 2;// span text and slider above
-		terminate.setLayoutData(gridData);
+		// gridData = new GridData();
+		// gridData.horizontalAlignment = GridData.BEGINNING;
+		// gridData.horizontalSpan = 2;// span text and slider above
+		// terminate.setLayoutData(gridData);
 
 		Listener terminateListener = new Listener() {
 			public void handleEvent(Event event) {
@@ -286,8 +302,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 			// to be able to refresh after the move.
 			Node sessionPar = currCleanSession.getParent();
 			// prevent further modification of the Current clean session
-			currCleanSession.setProperty(
-					ConnectNames.CONNECT_IS_SESSION_COMPLETE, true);
+			currCleanSession.setProperty(CONNECT_IS_SESSION_COMPLETE, true);
 			JcrUtils.updateLastModified(currCleanSession);
 			currCleanSession.getSession().save();
 
@@ -368,16 +383,20 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 				: TrackSpeed.POSITION;
 		return GpsStyling.createGpsCleanStyle(displayedField,
 				preview.getSelection(), maxSpeedViewer.getValue(),
-				maxAccelerationViewer.getValue(), maxRotationViewer.getValue());
+				maxAccelerationViewer.getValue(), maxRotationViewer.getValue(),
+				maxVerticalSpeedViewer.getValue());
 	}
 
 	protected String getToCleanCqlFilter() {
-		Double maxSpeed = maxSpeedViewer.getValue();
 		Double maxAbsoluteRotation = maxRotationViewer.getValue();
+		Double maxAbsoluteVerticalSpeed = maxVerticalSpeedViewer.getValue();
+		Double maxSpeed = maxSpeedViewer.getValue();
 		Double maxAbsoluteAcceleration = maxAccelerationViewer.getValue();
 		String cql = "speed>" + maxSpeed + " OR azimuthVariation<"
 				+ (-maxAbsoluteRotation) + " OR azimuthVariation>"
-				+ maxAbsoluteRotation + " OR acceleration<"
+				+ maxAbsoluteRotation + " OR verticalSpeed<"
+				+ (-maxAbsoluteVerticalSpeed) + " OR verticalSpeed>"
+				+ maxAbsoluteVerticalSpeed + " OR acceleration<"
 				+ (-maxAbsoluteAcceleration) + " OR acceleration>"
 				+ maxAbsoluteAcceleration;
 		if (log.isDebugEnabled())
@@ -403,8 +422,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 			if (onSave)
 				try {
 					if (paramValue != null)
-						paramNode.setProperty(ConnectNames.CONNECT_PARAM_VALUE,
-								paramValue);
+						paramNode.setProperty(CONNECT_PARAM_VALUE, paramValue);
 					super.commit(onSave);
 				} catch (RepositoryException re) {
 					throw new ArgeoException(

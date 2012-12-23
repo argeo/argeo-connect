@@ -43,9 +43,13 @@ public class TrackSpeed extends TrackPoint {
 	/** Orthodromic distance */
 	private Double distance;
 	private Double azimuth;
+	// ascent in m
+	private Double ascent;
 	private Long duration;
 	// orthodromicDistance(line) in km/(duration in h)
 	private Double speed;
+	// verticlaSpeed in m/s
+	private Double verticalSpeed;
 	// can be null
 	private Double acceleration;
 	// can be null
@@ -54,11 +58,18 @@ public class TrackSpeed extends TrackPoint {
 	public TrackSpeed() {
 	}
 
+	/**
+	 * @param duration
+	 *            in ms
+	 * @param ascent
+	 *            in m
+	 */
 	public TrackSpeed(TrackPoint ref, LineString line, Long duration,
-			GeodeticCalculator geodeticCalculator) {
+			Double ascent, GeodeticCalculator geodeticCalculator) {
 		super(ref);
 		this.line = line;
 		this.duration = duration;
+		this.ascent = ascent;
 
 		Point startPoint = line.getStartPoint();
 		Point endPoint = line.getEndPoint();
@@ -70,6 +81,8 @@ public class TrackSpeed extends TrackPoint {
 		this.azimuth = geodeticCalculator.getAzimuth();
 		// in km/h
 		this.speed = (this.distance * 60 * 60) / this.duration;
+		// in m/s
+		this.verticalSpeed = (this.ascent * 1000) / this.duration;
 	}
 
 	public LineString getLine() {
@@ -126,6 +139,22 @@ public class TrackSpeed extends TrackPoint {
 
 	public void setAzimuthVariation(Double azimuthVariation) {
 		this.azimuthVariation = azimuthVariation;
+	}
+
+	public Double getAscent() {
+		return ascent;
+	}
+
+	public void setAscent(Double ascent) {
+		this.ascent = ascent;
+	}
+
+	public Double getVerticalSpeed() {
+		return verticalSpeed;
+	}
+
+	public void setVerticalSpeed(Double verticalSpeed) {
+		this.verticalSpeed = verticalSpeed;
 	}
 
 }

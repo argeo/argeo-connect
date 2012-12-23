@@ -110,9 +110,6 @@ class GpxHandler extends DefaultHandler {
 	@Override
 	public void startElement(String uri, String localName, String qName,
 			Attributes attributes) throws SAXException {
-		// log.debug("Element: localName=" + localName + ", uri=" + uri
-		// + ", qName=" + qName);
-
 		accumulator.setLength(0); // Ready to accumulate new text
 		if (qName.equals(TAG_TRKSEG)) {
 			currentSegmentUuid = UUID.randomUUID().toString();
@@ -135,8 +132,6 @@ class GpxHandler extends DefaultHandler {
 	@Override
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException {
-		// if (log.isDebugEnabled())
-		// log.debug("TAG " + qName);
 		if (qName.equals(TAG_ELE)) {
 			Double elevation = Double
 					.parseDouble(accumulator.toString().trim());
@@ -160,22 +155,7 @@ class GpxHandler extends DefaultHandler {
 
 			currentTrackPoint = null;
 		} else if (qName.equals(TAG_TRKSEG)) {
-			// if (log.isDebugEnabled())
-			// log.debug("Processed segment " + currentSegmentUuid + ": "
-			// + currentSegmentPointCount + " points");
-
 			processTrackSegment(currentTrackSegment, targetGF);
-			// segmentCount++;
-			// if (currentTrackSegment.getTrackPoints().size() > 1) {
-			//
-			// // persist
-			// // getHibernateTemplate().save(currentTrackSegment);
-			// segmentCount++;
-			// } else if (currentTrackSegment.getTrackPoints().size() == 1) {
-			// TrackPoint trackPoint = currentTrackSegment.getTrackPoints()
-			// .get(0);
-			// // getHibernateTemplate().save(trackPoint);
-			// }
 			currentSegmentPointCount = 0l;
 			currentSegmentUuid = null;
 		}

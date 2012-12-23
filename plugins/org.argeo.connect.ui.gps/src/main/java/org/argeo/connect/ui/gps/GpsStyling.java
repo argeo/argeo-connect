@@ -33,12 +33,14 @@ public class GpsStyling {
 
 	public static Style createGpsCleanStyle(String field, Boolean preview,
 			Double maxSpeed, Double maxAbsoluteAcceleration,
-			Double maxAbsoluteRotation) {
+			Double maxAbsoluteRotation, Double maxAbsoluteVerticalSpeed) {
 		// map filters and colors
 		Map<String, String> cqlFilters = new HashMap<String, String>();
-		cqlFilters.put("speed>" + maxSpeed, "GREEN");
+		cqlFilters.put("speed>" + maxSpeed, "YELLOW");
 		cqlFilters.put("azimuthVariation<" + (-maxAbsoluteRotation)
 				+ " OR azimuthVariation>" + maxAbsoluteRotation, "RED");
+		cqlFilters.put("verticalSpeed<" + (-maxAbsoluteVerticalSpeed)
+				+ " OR verticalSpeed>" + maxAbsoluteVerticalSpeed, "GREEN");
 		cqlFilters.put("acceleration<" + (-maxAbsoluteAcceleration)
 				+ " OR acceleration>" + maxAbsoluteAcceleration, "BLUE");
 

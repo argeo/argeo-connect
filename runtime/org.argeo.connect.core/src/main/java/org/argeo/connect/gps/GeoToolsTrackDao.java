@@ -238,12 +238,6 @@ public class GeoToolsTrackDao implements TrackDao {
 	protected void processTrackSegment(
 			BeanFeatureTypeBuilder<TrackSpeed> trackSpeedType,
 			TrackSegment trackSegment, GeometryFactory geometryFactory) {
-		// FeatureCollection<SimpleFeatureType, SimpleFeature> trackPointsToAdd
-		// = FeatureCollections
-		// .newCollection();
-		// FeatureCollection<SimpleFeatureType, SimpleFeature>
-		// trackSegmentsToAdd = FeatureCollections
-		// .newCollection();
 		FeatureCollection<SimpleFeatureType, SimpleFeature> trackSpeedsToAdd = FeatureCollections
 				.newCollection();
 
@@ -252,10 +246,6 @@ public class GeoToolsTrackDao implements TrackDao {
 			return;
 		} else if (trackSegment.getTrackPoints().size() == 1) {
 			// single track points
-			// TrackPoint trackPoint = trackSegment.getTrackPoints().get(0);
-			// SimpleFeature trackPointFeature = trackPointType
-			// .buildFeature(trackPoint);
-			// trackPointsToAdd.add(trackPointFeature);
 			return;
 		}
 
@@ -264,12 +254,6 @@ public class GeoToolsTrackDao implements TrackDao {
 		// List<Coordinate> coords = new ArrayList<Coordinate>();
 		trackPoints: for (int i = 0; i < trackSegment.getTrackPoints().size(); i++) {
 			TrackPoint trackPoint = trackSegment.getTrackPoints().get(i);
-
-			// map to features
-			// trackPointsToAdd.add(trackPointType.buildFeature(trackPoint));
-
-			// coords.add(new Coordinate(trackPoint.getPosition().getX(),
-			// trackPoint.getPosition().getY()));
 
 			if (i == 0)
 				trackSegment.setStartUtc(trackPoint.getUtcTimestamp());
@@ -293,8 +277,9 @@ public class GeoToolsTrackDao implements TrackDao {
 					currentTrackSpeed = null;
 					continue trackPoints;
 				}
+				Double ascent = next.getElevation() - trackPoint.getElevation();
 				TrackSpeed trackSpeed = new TrackSpeed(trackPoint, line,
-						duration, geodeticCalculator);
+						duration, ascent, geodeticCalculator);
 				if (trackSpeed.getSpeed() > maxSpeed) {
 					log.warn("Speed " + trackSpeed.getSpeed() + " is above "
 							+ maxSpeed + " between " + trackPoint.getPosition()
@@ -306,7 +291,7 @@ public class GeoToolsTrackDao implements TrackDao {
 
 				// order 2 coefficients (acceleration, azimuth variation)
 				if (currentTrackSpeed != null) {
-					// compute acceleration (in m/s²)
+					// acceleration (in m/s²)
 					Double speed1 = trackSpeed.getDistance()
 							/ (trackSpeed.getDuration() / 1000);
 					Double speed2 = currentTrackSpeed.getDistance()
@@ -315,6 +300,7 @@ public class GeoToolsTrackDao implements TrackDao {
 							/ (currentTrackSpeed.getDuration() / 1000);
 					trackSpeed.setAcceleration(acceleration);
 
+					// azimut variation
 					Double azimuthVariation = convertAzimuth(trackSpeed
 							.getAzimuth())
 							- convertAzimuth(currentTrackSpeed.getAzimuth());
@@ -398,10 +384,11 @@ public class GeoToolsTrackDao implements TrackDao {
 			Filter filter;
 			try {
 				for (String segmentUuid : segmentUuids) {
-					filter = CQL.toFilter("segmentUuid = '" + segmentUuid+"'");
+					filter = CQL
+							.toFilter("segmentUuid = '" + segmentUuid + "'");
 					positionStore.removeFeatures(filter);
-					filter = CQL.toFilter("uuid = '" + segmentUuid+"'");
-					positionDisplayStore.removeFeatures(filter);					
+					filter = CQL.toFilter("uuid = '" + segmentUuid + "'");
+					positionDisplayStore.removeFeatures(filter);
 				}
 
 				transaction.commit();
@@ -412,7 +399,8 @@ public class GeoToolsTrackDao implements TrackDao {
 				transaction.close();
 			}
 		} catch (Exception e) {
-			throw new ArgeoException("Cannot remove segments from local referential", e);
+			throw new ArgeoException(
+					"Cannot remove segments from local referential", e);
 		}
 	}
 

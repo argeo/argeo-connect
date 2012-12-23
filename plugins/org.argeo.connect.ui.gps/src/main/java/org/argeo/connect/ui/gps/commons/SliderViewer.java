@@ -31,8 +31,11 @@ import java.math.BigDecimal;
 import org.argeo.ArgeoException;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
@@ -42,7 +45,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class SliderViewer {
 	private final static Integer MIN_SLIDER = 0;
 	// Add a -10 offset to MAX_SLIDER before computing the value to workaround a
-	// bug of the slider widget (max value is not reachable while using the mouse)
+	// bug of the slider widget (max value is not reachable while using the
+	// mouse)
 	private final static Integer MAX_SLIDER = 110;
 	private final static Integer MAX_OFFSET = 10;
 
@@ -55,11 +59,14 @@ public class SliderViewer {
 	private Slider slider;
 	private Text txt;
 
+	private Color color;
+
 	/** TODO multiple listeners */
 	private SliderViewerListener listener;
 
 	public SliderViewer(FormToolkit formToolkit, Composite parent,
-			String label, Double minValue, Double maxValue, Double defaultValue) {
+			String label, Double minValue, Double maxValue,
+			Double defaultValue, Integer systemColorCode) {
 		this.formToolkit = formToolkit;
 		this.label = label;
 		this.minValue = minValue;
@@ -73,21 +80,28 @@ public class SliderViewer {
 					+ maxValue + "]");
 		this.defaultValue = defaultValue;
 
+		color = formToolkit.getColors().getDisplay()
+				.getSystemColor(systemColorCode);
+
+		// initialize UI
 		createControls(parent);
 		addListeners();
-
 		slider.setSelection(convertToSliderSelection(this.defaultValue));
 		txt.setText(Double.toString(defaultValue));
 	}
 
 	protected void createControls(Composite parent) {
-		formToolkit.createLabel(parent, getDisplayedLabel());
+		Label lbl = formToolkit.createLabel(parent, getDisplayedLabel());
+		lbl.setForeground(color);
 
 		slider = new Slider(parent, SWT.NONE);
 		slider.setMinimum(MIN_SLIDER);
 		slider.setMaximum(MAX_SLIDER);
+		slider.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		// formToolkit.adapt(slider, true, true);
 
-		txt = formToolkit.createText(parent, "");
+		txt = formToolkit.createText(parent, "", SWT.BORDER | SWT.RIGHT);
+		txt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 	}
 
 	protected void addListeners() {

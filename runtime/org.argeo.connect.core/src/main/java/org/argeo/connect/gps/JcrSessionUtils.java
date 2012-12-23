@@ -31,7 +31,6 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.jcr.JcrUtils;
@@ -47,10 +46,32 @@ public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 			// Add Parameter Nodes
 
 			// TODO : remove hard coding from instantiation of default model.
+			// Put it in preferences.
 			Node tmpNode;
-			// maximal speed
+
+			// Maximal rotation speed
 			tmpNode = newSession.addNode(
-					ConnectConstants.CONNECT_PARAM_SPEED_MAX,
+					GpsConstants.CONNECT_PARAM_ROTATION_MAX,
+					CONNECT_CLEAN_PARAMETER);
+			tmpNode.setProperty(Property.JCR_DESCRIPTION,
+					"Maximal acceptable rotation speed value ");
+			tmpNode.setProperty(CONNECT_PARAM_MIN_VALUE, 0d);
+			tmpNode.setProperty(CONNECT_PARAM_MAX_VALUE, 360d);
+			tmpNode.setProperty(CONNECT_PARAM_VALUE, 90d);
+
+			// Maximal vertical speed
+			tmpNode = newSession.addNode(
+					GpsConstants.CONNECT_PARAM_VERTICAL_SPEED_MAX,
+					CONNECT_CLEAN_PARAMETER);
+			tmpNode.setProperty(Property.JCR_DESCRIPTION,
+					"Maximal acceptable vertical speed value ");
+			tmpNode.setProperty(CONNECT_PARAM_MIN_VALUE, 0d);
+			// cf. http://en.wikipedia.org/wiki/Elevator#Taipei_101
+			tmpNode.setProperty(CONNECT_PARAM_MAX_VALUE, 20d);
+			tmpNode.setProperty(CONNECT_PARAM_VALUE, 16d);
+
+			// maximal speed
+			tmpNode = newSession.addNode(GpsConstants.CONNECT_PARAM_SPEED_MAX,
 					CONNECT_CLEAN_PARAMETER);
 			tmpNode.setProperty(Property.JCR_DESCRIPTION,
 					"Maximal acceptable speed value ");
@@ -61,23 +82,13 @@ public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 
 			// Maximal acceleration
 			tmpNode = newSession.addNode(
-					ConnectConstants.CONNECT_PARAM_ACCELERATION_MAX,
+					GpsConstants.CONNECT_PARAM_ACCELERATION_MAX,
 					CONNECT_CLEAN_PARAMETER);
 			tmpNode.setProperty(Property.JCR_DESCRIPTION,
 					"Maximal acceptable acceleration value ");
 			tmpNode.setProperty(CONNECT_PARAM_MIN_VALUE, 0d);
 			tmpNode.setProperty(CONNECT_PARAM_MAX_VALUE, 10d);
 			tmpNode.setProperty(CONNECT_PARAM_VALUE, 2d);
-
-			// Maximal rotation speed
-			tmpNode = newSession.addNode(
-					ConnectConstants.CONNECT_PARAM_ROTATION_MAX,
-					CONNECT_CLEAN_PARAMETER);
-			tmpNode.setProperty(Property.JCR_DESCRIPTION,
-					"Maximal acceptable rotation speed value ");
-			tmpNode.setProperty(CONNECT_PARAM_MIN_VALUE, 0d);
-			tmpNode.setProperty(CONNECT_PARAM_MAX_VALUE, 360d);
-			tmpNode.setProperty(CONNECT_PARAM_VALUE, 90d);
 
 			tmpNode.getSession().save();
 
@@ -144,7 +155,7 @@ public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 		try {
 			localRepo = parent.addNode(techName, CONNECT_LOCAL_REPOSITORY);
 			localRepo.setProperty(Property.JCR_TITLE, title);
-			
+
 			JcrUtils.updateLastModified(localRepo);
 			localRepo.getSession().save();
 		} catch (Exception e) {
