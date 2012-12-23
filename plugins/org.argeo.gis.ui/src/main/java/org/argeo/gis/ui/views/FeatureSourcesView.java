@@ -34,6 +34,7 @@ import org.argeo.ArgeoException;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.eclipse.ui.jcr.JcrImages;
 import org.argeo.eclipse.ui.jcr.SimpleNodeContentProvider;
+import org.argeo.geotools.StylingUtils;
 import org.argeo.gis.GisTypes;
 import org.argeo.gis.ui.MapViewer;
 import org.argeo.gis.ui.editors.DefaultMapEditor;
@@ -53,6 +54,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.part.ViewPart;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.styling.Style;
 
 public class FeatureSourcesView extends ViewPart implements
 		IDoubleClickListener {
@@ -108,7 +110,9 @@ public class FeatureSourcesView extends ViewPart implements
 				if (mapViewer == null)
 					return;
 
-				mapViewer.addLayer(node, null);
+				// FIXME deal with other geometry types
+				Style style = StylingUtils.createLineStyle("BLACK", 1);
+				mapViewer.addLayer(node, style);
 				ReferencedEnvelope areaOfInterest = mapViewer.getGeoJcrMapper()
 						.getFeatureSource(node).getBounds();
 				mapViewer.setAreaOfInterest(areaOfInterest);

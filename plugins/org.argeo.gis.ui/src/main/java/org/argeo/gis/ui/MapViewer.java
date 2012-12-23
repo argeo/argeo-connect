@@ -58,7 +58,7 @@ public interface MapViewer {
 
 	public void setAreaOfInterest(ReferencedEnvelope areaOfInterest);
 
-	// public void setCoordinateReferenceSystem(String crs);
+	public void setCoordinateReferenceSystem(String crs);
 
 	public void setStyle(String layerId, Object style);
 

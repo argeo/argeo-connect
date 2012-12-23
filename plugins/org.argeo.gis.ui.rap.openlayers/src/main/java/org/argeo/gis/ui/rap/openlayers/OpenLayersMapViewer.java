@@ -55,6 +55,7 @@ import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.PointSymbolizer;
@@ -63,6 +64,7 @@ import org.geotools.styling.Symbolizer;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.style.GraphicalSymbol;
 import org.polymap.openlayers.rap.widget.OpenLayersWidget;
 import org.polymap.openlayers.rap.widget.base.OpenLayersEventListener;
@@ -466,6 +468,13 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 	public void setFocus() {
 		// TODO make sure dispolay is properly refreshed
 		super.setFocus();
+	}
+
+	public void setCoordinateReferenceSystem(String crs) {
+		final String EPSG_3857="EPSG:3857";
+		if(!crs.equals(EPSG_3857))
+			throw new ArgeoException("Only "+EPSG_3857+" is currently supported by this viewer");
+
 	}
 
 }

@@ -36,6 +36,7 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plug-in life cycle
  */
 public class ConnectGpsUiPlugin extends AbstractUIPlugin {
+	public final static String EPSG_3857 = "EPSG:3857";
 
 	// The plug-in ID
 	public static final String ID = "org.argeo.connect.ui.gps";

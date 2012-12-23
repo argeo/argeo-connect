@@ -35,13 +35,14 @@ import java.util.Map;
 
 import javax.jcr.Node;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.geotools.StylingUtils;
 import org.argeo.geotools.jcr.GeoJcrMapper;
 import org.argeo.gis.ui.AbstractMapViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.DefaultFeatureCollection;
@@ -63,6 +64,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 /** Map viewer implementation based on GeoTools Swing components. */
 @SuppressWarnings("deprecation")
 public class SwingMapViewer extends AbstractMapViewer {
+	private final static Log log = LogFactory.getLog(SwingMapViewer.class);
+
 	private Composite embedded;
 	private JMapPane mapPane;
 	private VersatileZoomTool versatileZoomTool;
@@ -87,6 +90,17 @@ public class SwingMapViewer extends AbstractMapViewer {
 		frame.add(mapPane);
 
 		setControl(embedded);
+
+		printDisplayCrs();
+	}
+
+	private void printDisplayCrs() {
+		if (log.isDebugEnabled()) {
+			CoordinateReferenceSystem crs = mapPane.getMapContext()
+					.getCoordinateReferenceSystem();
+			log.debug("Display CRS: "
+					+ (crs != null ? crs.getName() : "<null>"));
+		}
 	}
 
 	@Override
@@ -94,10 +108,14 @@ public class SwingMapViewer extends AbstractMapViewer {
 			FeatureSource<SimpleFeatureType, SimpleFeature> featureSource,
 			Object style) {
 		if (style == null)
-			style = StylingUtils.createLineStyle("BLACK", 1);
-
+			throw new ArgeoException("Style must be specified");
+		if (log.isDebugEnabled()) {
+			CoordinateReferenceSystem crs = featureSource.getInfo().getCRS();
+			log.debug("Add layer '" + layerId + "', " + crs.getName());
+		}
 		MapLayer mapLayer = new DefaultMapLayer(featureSource, (Style) style);
 		addMapLayer(layerId, mapLayer);
+		printDisplayCrs();
 	}
 
 	@Override
@@ -157,6 +175,7 @@ public class SwingMapViewer extends AbstractMapViewer {
 			CoordinateReferenceSystem crsObj = CRS.decode(crs);
 			mapPane.getMapContext().setCoordinateReferenceSystem(crsObj);
 			mapPane.repaint();
+			printDisplayCrs();
 		} catch (Exception e) {
 			throw new ArgeoException("Cannot set CRS '" + crs + "'", e);
 		}

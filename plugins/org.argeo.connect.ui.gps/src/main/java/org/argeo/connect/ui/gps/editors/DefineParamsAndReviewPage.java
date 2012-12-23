@@ -308,6 +308,8 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		mapViewer = mcc.createMapControl(currCleanSession, mapArea);
 		mapViewer.getControl().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		mapViewer.setCoordinateReferenceSystem(ConnectGpsUiPlugin.EPSG_3857);
 		uiGisServices.addBaseLayers(mapViewer);
 	}
 

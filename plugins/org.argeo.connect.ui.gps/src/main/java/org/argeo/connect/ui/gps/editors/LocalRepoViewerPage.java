@@ -32,6 +32,7 @@ import javax.jcr.Node;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectNames;
+import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.geotools.StylingUtils;
 import org.argeo.gis.ui.MapViewer;
@@ -88,11 +89,6 @@ public class LocalRepoViewerPage extends FormPage {
 
 		createParameterPart(body);
 		createMapPart(body);
-		try {
-			addPositionsLayer();
-		} catch (Exception e) {
-			ErrorFeedback.show("Cannot load data layer", e);
-		}
 	}
 
 	private void createParameterPart(Composite top) {
@@ -155,11 +151,19 @@ public class LocalRepoViewerPage extends FormPage {
 		mapArea.setLayout(layout);
 		mapViewer = getEditor().getUiGisServices().getMapControlCreator()
 				.createMapControl(getEditor().getCurrentRepoNode(), mapArea);
+		mapViewer.getControl().setLayoutData(
+				new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		mapViewer.setCoordinateReferenceSystem(ConnectGpsUiPlugin.EPSG_3857);
 		if (showBaseLayerChk.getSelection()) {
 			getEditor().getUiGisServices().addBaseLayers(mapViewer);
 		}
 		parent.layout();
-		addPositionsLayer();
+		try {
+			addPositionsLayer();
+		} catch (Exception e) {
+			ErrorFeedback.show("Cannot load data layer", e);
+		}
 	}
 
 	/*
