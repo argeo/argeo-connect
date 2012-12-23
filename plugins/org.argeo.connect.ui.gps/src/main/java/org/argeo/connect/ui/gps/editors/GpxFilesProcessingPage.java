@@ -106,7 +106,8 @@ import org.eclipse.ui.forms.widgets.Section;
  * 
  * 
  */
-public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
+public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage
+		implements ConnectNames, ConnectGpsLabels {
 	// private final static Log log = LogFactory
 	// .getLog(GpxFilesProcessingPage.class);
 
@@ -155,13 +156,12 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 			Session currJcrSession = currCleanSession.getSession();
 			Node refNode = currJcrSession.getNodeByIdentifier(refNodeId);
 			Node node = currJcrSession.getNodeByIdentifier(refNode.getProperty(
-					ConnectNames.CONNECT_LINKED_FILE_REF).getString());
+					CONNECT_LINKED_FILE_REF).getString());
 			String name = node.getName();
 			monitor.subTask("Importing " + name);
 			binary = node.getNode(Property.JCR_CONTENT)
 					.getProperty(Property.JCR_DATA).getBinary();
-			String cname = refNode
-					.getProperty(ConnectNames.CONNECT_SENSOR_NAME).getString();
+			String cname = refNode.getProperty(CONNECT_SENSOR_NAME).getString();
 
 			GpsUiGisServices uiGisServices = getEditor().getUiGisServices();
 			GpsUiJcrServices uiJcrServices = getEditor().getUiJcrServices();
@@ -175,8 +175,8 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 
 			// Finalization of the import
 			String[] uuids = segmentUuids.toArray(new String[0]);
-			refNode.setProperty(ConnectNames.CONNECT_SEGMENT_UUID, uuids);
-			refNode.setProperty(ConnectNames.CONNECT_ALREADY_PROCESSED, true);
+			refNode.setProperty(CONNECT_SEGMENT_UUID, uuids);
+			refNode.setProperty(CONNECT_ALREADY_PROCESSED, true);
 			currJcrSession.save();
 			stats.nodeCount++;
 			monitor.worked(1);
@@ -216,24 +216,24 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 		DefaultNamesComboListener dncListener;
 
 		// Default sensor name
-		tk.createLabel(parent, "Enter a default sensor name:");
+		tk.createLabel(parent,
+				ConnectGpsUiPlugin.getGPSMessage(DEFAULT_SENSOR_NAME_LBL));
 		defaultSensorNameCmb = new Combo(parent, SWT.BORDER | SWT.V_SCROLL);
 		gd = new GridData(SWT.LEFT, SWT.FILL, true, false);
 		gd.widthHint = 200;
 		defaultSensorNameCmb.setLayoutData(gd);
-		populateCombo(defaultSensorNameCmb,
-				ConnectNames.CONNECT_DEFAULT_SENSOR,
-				ConnectNames.CONNECT_SENSOR_NAME);
+		populateCombo(defaultSensorNameCmb, CONNECT_DEFAULT_SENSOR,
+				CONNECT_SENSOR_NAME);
 
 		// Default sensor name
-		tk.createLabel(parent, "Enter a default device name:");
+		tk.createLabel(parent,
+				ConnectGpsUiPlugin.getGPSMessage(DEFAULT_DEVICE_NAME_LBL));
 		defaultDeviceNameCmb = new Combo(parent, SWT.BORDER | SWT.V_SCROLL);
 		gd = new GridData(SWT.LEFT, SWT.FILL, true, false);
 		gd.widthHint = 200;
 		defaultDeviceNameCmb.setLayoutData(gd);
-		populateCombo(defaultDeviceNameCmb,
-				ConnectNames.CONNECT_DEFAULT_DEVICE,
-				ConnectNames.CONNECT_DEVICE_NAME);
+		populateCombo(defaultDeviceNameCmb, CONNECT_DEFAULT_DEVICE,
+				CONNECT_DEVICE_NAME);
 
 		dnfPart = new DefaultNamesFormPart();
 		dncListener = new DefaultNamesComboListener(dnfPart);
@@ -248,7 +248,7 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 		try {
 			Node currReferential = uiJcrServices
 					.getLinkedReferential(currCleanSession);
-			List<String> values = null;
+			List<String> values = new ArrayList<String>();
 			if (currReferential != null) {
 				values = uiJcrServices.getCatalogFromRepo(currReferential,
 						propertyName);
@@ -265,6 +265,11 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 				if (!values.contains(curValue))
 					combo.add(curValue);
 				combo.select(combo.indexOf(curValue));
+			} else {
+				final String DEFAULT = "default";
+				if (combo.indexOf(DEFAULT) < 0)
+					combo.add(DEFAULT);
+				combo.select(combo.indexOf(DEFAULT));
 			}
 		} catch (RepositoryException re) {
 			throw new ArgeoException(
@@ -278,12 +283,10 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 			if (onSave)
 				try {
 					if (defaultSensorNameCmb.getText() != null)
-						currCleanSession.setProperty(
-								ConnectNames.CONNECT_DEFAULT_SENSOR,
+						currCleanSession.setProperty(CONNECT_DEFAULT_SENSOR,
 								defaultSensorNameCmb.getText());
 					if (defaultDeviceNameCmb.getText() != null)
-						currCleanSession.setProperty(
-								ConnectNames.CONNECT_DEFAULT_DEVICE,
+						currCleanSession.setProperty(CONNECT_DEFAULT_DEVICE,
 								defaultDeviceNameCmb.getText());
 					super.commit(onSave);
 				} catch (RepositoryException re) {
@@ -347,8 +350,7 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 					Node cnode = (Node) element;
 					if (!canEditLine(cnode))
 						return null;
-					if (cnode.getProperty(ConnectNames.CONNECT_TO_BE_PROCESSED)
-							.getBoolean())
+					if (cnode.getProperty(CONNECT_TO_BE_PROCESSED).getBoolean())
 						return CHECKED;
 					else
 						return UNCHECKED;
@@ -408,7 +410,7 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 				FontData[] fontDatas = cell.getFont().getFontData();
 				if (fontDatas[0] != null) {
 					normalFont = new Font(device, fontDatas[0]);
-					//fontDatas[0].setStyle(SWT.ITALIC);
+					// fontDatas[0].setStyle(SWT.ITALIC);
 					alreadyImportedFont = new Font(device, fontDatas[0]);
 				} else {
 
@@ -433,15 +435,15 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 					currText = cnode.getName();
 					break;
 				case COLUMN_SENSOR:
-					currText = cnode.getProperty(
-							ConnectNames.CONNECT_SENSOR_NAME).getString();
+					currText = cnode.getProperty(CONNECT_SENSOR_NAME)
+							.getString();
 					break;
 				case COLUMN_DEVICE:
-					currText = cnode.getProperty(
-							ConnectNames.CONNECT_DEVICE_NAME).getString();
+					currText = cnode.getProperty(CONNECT_DEVICE_NAME)
+							.getString();
 					break;
 				}
-				
+
 				// if (canEditLine(cnode))
 				// styledString = new StyledString(currentText,
 				// DEFAULT_FONT);
@@ -450,7 +452,7 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 				// NOT_EDITABLE);
 				// cell.setText(styledString.getString());
 				// cell.setStyleRanges(styledString.getStyleRanges());
-				
+
 				if (canEditLine(cnode)) {
 					cell.setText(currText);
 					cell.setFont(normalFont);
@@ -554,8 +556,7 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 		protected Object getValue(Object element) {
 			try {
 				Node curNode = (Node) element;
-				return curNode.getProperty(ConnectNames.CONNECT_SENSOR_NAME)
-						.getString();
+				return curNode.getProperty(CONNECT_SENSOR_NAME).getString();
 			} catch (RepositoryException re) {
 				throw new ArgeoException("Cannot retrieve sensor name", re);
 			}
@@ -565,8 +566,7 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 		protected void setValue(Object element, Object value) {
 			try {
 				Node curNode = (Node) element;
-				curNode.setProperty(ConnectNames.CONNECT_SENSOR_NAME,
-						(String) value);
+				curNode.setProperty(CONNECT_SENSOR_NAME, (String) value);
 				curNode.getSession().save();
 				viewer.refresh();
 			} catch (RepositoryException re) {
@@ -586,8 +586,7 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 		protected Object getValue(Object element) {
 			try {
 				Node curNode = (Node) element;
-				return curNode.getProperty(ConnectNames.CONNECT_DEVICE_NAME)
-						.getString();
+				return curNode.getProperty(CONNECT_DEVICE_NAME).getString();
 			} catch (RepositoryException re) {
 				throw new ArgeoException("Cannot retrieve device name", re);
 			}
@@ -597,8 +596,7 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 		protected void setValue(Object element, Object value) {
 			try {
 				Node curNode = (Node) element;
-				curNode.setProperty(ConnectNames.CONNECT_DEVICE_NAME,
-						(String) value);
+				curNode.setProperty(CONNECT_DEVICE_NAME, (String) value);
 				curNode.getSession().save();
 				viewer.refresh();
 			} catch (RepositoryException re) {
@@ -631,8 +629,7 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 		protected Object getValue(Object element) {
 			try {
 				Node curNode = (Node) element;
-				return curNode
-						.getProperty(ConnectNames.CONNECT_TO_BE_PROCESSED)
+				return curNode.getProperty(CONNECT_TO_BE_PROCESSED)
 						.getBoolean();
 			} catch (RepositoryException re) {
 				throw new ArgeoException(
@@ -644,8 +641,7 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 		protected void setValue(Object element, Object value) {
 			try {
 				Node curNode = (Node) element;
-				curNode.setProperty(ConnectNames.CONNECT_TO_BE_PROCESSED,
-						(Boolean) value);
+				curNode.setProperty(CONNECT_TO_BE_PROCESSED, (Boolean) value);
 				curNode.getSession().save();
 			} catch (RepositoryException re) {
 				throw new ArgeoException(
@@ -719,19 +715,24 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 		try {
 			String fileName = node.getName();
 
+			// save values of combos
+			// FIXME rewrite all this sensor / device stuff
+			if (!sessionNode.hasProperty(CONNECT_DEFAULT_SENSOR))
+				sessionNode.setProperty(CONNECT_DEFAULT_SENSOR,
+						defaultSensorNameCmb.getText());
+			if (!sessionNode.hasProperty(CONNECT_DEFAULT_DEVICE))
+				sessionNode.setProperty(CONNECT_DEFAULT_DEVICE,
+						defaultDeviceNameCmb.getText());
+
 			// we name nodes based on the name of the file they reference
 			Node fileNode = sessionNode.addNode(fileName,
 					ConnectTypes.CONNECT_FILE_TO_IMPORT);
-			fileNode.setProperty(ConnectNames.CONNECT_LINKED_FILE_REF, refId);
-			fileNode.setProperty(ConnectNames.CONNECT_SENSOR_NAME, sessionNode
-					.getProperty(ConnectNames.CONNECT_DEFAULT_SENSOR)
-					.getString());
-			fileNode.setProperty(
-					ConnectNames.CONNECT_DEVICE_NAME,
-					sessionNode
-							.hasProperty(ConnectNames.CONNECT_DEFAULT_DEVICE) ? sessionNode
-							.getProperty(ConnectNames.CONNECT_DEFAULT_DEVICE)
-							.getString() : "");
+			fileNode.setProperty(CONNECT_LINKED_FILE_REF, refId);
+			fileNode.setProperty(CONNECT_SENSOR_NAME,
+					sessionNode.getProperty(CONNECT_DEFAULT_SENSOR).getString());
+			fileNode.setProperty(CONNECT_DEVICE_NAME, sessionNode
+					.hasProperty(CONNECT_DEFAULT_DEVICE) ? sessionNode
+					.getProperty(CONNECT_DEFAULT_DEVICE).getString() : "");
 			sessionNode.getSession().save();
 			droppedNodes.put(refId, fileNode);
 		} catch (RepositoryException e) {
@@ -753,8 +754,8 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 				Node curNode = ni.nextNode();
 				if (curNode.getPrimaryNodeType().isNodeType(
 						ConnectTypes.CONNECT_FILE_TO_IMPORT)) {
-					String id = curNode.getProperty(
-							ConnectNames.CONNECT_LINKED_FILE_REF).getString();
+					String id = curNode.getProperty(CONNECT_LINKED_FILE_REF)
+							.getString();
 					droppedNodes.put(id, curNode);
 				}
 			}
@@ -774,10 +775,8 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 		List<String> ids = new ArrayList<String>();
 		for (Node node : droppedNodes.values()) {
 			try {
-				if (node.getProperty(ConnectNames.CONNECT_TO_BE_PROCESSED)
-						.getBoolean()
-						&& !node.getProperty(
-								ConnectNames.CONNECT_ALREADY_PROCESSED)
+				if (node.getProperty(CONNECT_TO_BE_PROCESSED).getBoolean()
+						&& !node.getProperty(CONNECT_ALREADY_PROCESSED)
 								.getBoolean()) {
 					ids.add(node.getIdentifier());
 				}
@@ -847,8 +846,7 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage {
 			// Cannot edit a completed session
 			if (isSessionAlreadyComplete())
 				return false;
-			return !node.getProperty(ConnectNames.CONNECT_ALREADY_PROCESSED)
-					.getBoolean();
+			return !node.getProperty(CONNECT_ALREADY_PROCESSED).getBoolean();
 		} catch (RepositoryException re) {
 			throw new ArgeoException(
 					"Cannot access node to see if it has already been imported.");

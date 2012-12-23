@@ -54,7 +54,7 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 		ConnectNames, ConnectGpsLabels {
 	// private final static Log log = LogFactory.getLog(CleanDataEditor.class);
 
-	public static final String ID = "org.argeo.connect.ui.gps.cleanDataEditor";
+	public static final String ID = ConnectGpsUiPlugin.ID + ".cleanDataEditor";
 
 	/* DEPENDENCY INJECTION */
 	private GpsUiJcrServices uiJcrServices;
@@ -88,12 +88,12 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 
 	protected void addPages() {
 		try {
-			addPage(new CleanSessionInfoPage(this,
-					ConnectGpsUiPlugin.getGPSMessage(METADATA_PAGE_TITLE)));
 			addPage(new GpxFilesProcessingPage(this,
 					ConnectGpsUiPlugin.getGPSMessage(DATASET_PAGE_TITLE)));
 			addPage(new DefineParamsAndReviewPage(this,
 					ConnectGpsUiPlugin.getGPSMessage(PARAMSET_PAGE_TITLE)));
+			addPage(new CleanSessionInfoPage(this,
+					ConnectGpsUiPlugin.getGPSMessage(METADATA_PAGE_TITLE)));
 		} catch (PartInitException e) {
 			throw new ArgeoException("Not able to add page ", e);
 		}

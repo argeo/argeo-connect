@@ -49,7 +49,9 @@ public interface ConnectGpsLabels {
 	public final static String PARAM_SET_COMMENTS_LBL = CONNECT_
 			+ CLEAN_DATA_EDITOR + "paramSetCommentsLbl";
 	public final static String DEFAULT_SENSOR_NAME_LBL = CONNECT_
-			+ CLEAN_DATA_EDITOR + "defaultSensorNameLbl";
+	+ CLEAN_DATA_EDITOR + "defaultSensorNameLbl";
+	public final static String DEFAULT_DEVICE_NAME_LBL = CONNECT_
+	+ CLEAN_DATA_EDITOR + "defaultDeviceNameLbl";
 
 	public final static String METADATA_PARAM_TABLE_TITLE = CONNECT_
 			+ CLEAN_DATA_EDITOR + "paramTableTitle";
