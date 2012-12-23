@@ -29,7 +29,7 @@ package org.argeo.connect.ui.gps.wizards;
 import javax.jcr.Node;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.gpx.JcrSessionUtils;
+import org.argeo.connect.gps.JcrSessionUtils;
 import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
 import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;

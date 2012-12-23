@@ -15,5 +15,5 @@
 	<reference id="geoJcrMapper" interface="org.argeo.geotools.jcr.GeoJcrMapper" />
 
 	<!-- SERVICES -->
-	<service ref="trackDao" interface="org.argeo.connect.gpx.TrackDao" />
+	<service ref="trackDao" interface="org.argeo.connect.gps.TrackDao" />
 </beans:beans>

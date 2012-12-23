@@ -17,7 +17,7 @@
 		/> <list id="dataStores" interface="org.geotools.data.DataStore" cardinality="0..N" 
 		/> -->
 
-	<reference id="trackDao" interface="org.argeo.connect.gpx.TrackDao"
+	<reference id="trackDao" interface="org.argeo.connect.gps.TrackDao"
 		cardinality="0..1" />
 
 	<!-- old unsafe approach -->

@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 	<!-- Dao used by connect GPS app -->
-	<bean id="trackDao" class="org.argeo.connect.gpx.GeoToolsTrackDao">
+	<bean id="trackDao" class="org.argeo.connect.gps.GeoToolsTrackDao">
 		<property name="dataStoreAlias" value="connect_geodb" />
 		<property name="geoJcrMapper" ref="geoJcrMapper" />
 	</bean>

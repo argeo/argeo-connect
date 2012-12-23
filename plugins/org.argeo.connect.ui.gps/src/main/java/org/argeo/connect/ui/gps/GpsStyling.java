@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.gpx.TrackSpeed;
+import org.argeo.connect.gps.TrackSpeed;
 import org.argeo.geotools.StylingUtils;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQL;

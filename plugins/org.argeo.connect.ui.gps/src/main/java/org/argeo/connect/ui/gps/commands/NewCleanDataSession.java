@@ -34,7 +34,7 @@ import javax.jcr.Node;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectTypes;
-import org.argeo.connect.gpx.JcrSessionUtils;
+import org.argeo.connect.gps.JcrSessionUtils;
 import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.editors.CleanDataEditor;
 import org.argeo.connect.ui.gps.editors.CleanDataEditorInput;

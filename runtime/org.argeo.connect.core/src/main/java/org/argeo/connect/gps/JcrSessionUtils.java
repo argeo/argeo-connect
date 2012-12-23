@@ -24,7 +24,7 @@
  * combination shall include the source code for the parts of such software
  * which are used as well as that of the covered work.
  */
-package org.argeo.connect.gpx;
+package org.argeo.connect.gps;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;

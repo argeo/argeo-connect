@@ -31,7 +31,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-	<bean id="trackDao" class="org.argeo.connect.gpx.GeoToolsTrackDao"
+	<bean id="trackDao" class="org.argeo.connect.gps.GeoToolsTrackDao"
 		init-method="init">
 		<!-- <property name="targetSrid" value="3857" /> -->
 		<property name="targetSrid" value="4326" />

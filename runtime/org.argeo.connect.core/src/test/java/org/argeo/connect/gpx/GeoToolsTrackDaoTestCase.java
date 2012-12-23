@@ -34,6 +34,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.io.IOUtils;
+import org.argeo.connect.gps.TrackDao;
 import org.argeo.support.junit.AbstractSpringTestCase;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;

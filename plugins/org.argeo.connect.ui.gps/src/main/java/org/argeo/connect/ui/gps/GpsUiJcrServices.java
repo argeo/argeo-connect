@@ -39,7 +39,7 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
-import org.argeo.connect.gpx.JcrSessionUtils;
+import org.argeo.connect.gps.JcrSessionUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.UserJcrUtils;
 

@@ -35,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
-import org.argeo.connect.gpx.TrackSpeed;
+import org.argeo.connect.gps.TrackSpeed;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
 import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
 import org.argeo.connect.ui.gps.GpsStyling;
