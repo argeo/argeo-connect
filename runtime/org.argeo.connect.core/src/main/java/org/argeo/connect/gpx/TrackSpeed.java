@@ -36,6 +36,9 @@ import com.vividsolutions.jts.geom.Point;
  * rotation) useful for cleaning GPS tracks.
  */
 public class TrackSpeed extends TrackPoint {
+	/** Name of the related geometry field */
+	public final static String LINE = "line";
+
 	private LineString line;
 	/** Orthodromic distance */
 	private Double distance;

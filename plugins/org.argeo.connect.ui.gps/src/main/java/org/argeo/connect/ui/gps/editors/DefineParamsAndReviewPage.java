@@ -26,9 +26,6 @@
  */
 package org.argeo.connect.ui.gps.editors;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Workspace;
@@ -38,15 +35,16 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
+import org.argeo.connect.gpx.TrackSpeed;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
 import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
+import org.argeo.connect.ui.gps.GpsStyling;
 import org.argeo.connect.ui.gps.GpsUiGisServices;
 import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.commons.SliderViewer;
 import org.argeo.connect.ui.gps.commons.SliderViewerListener;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.eclipse.ui.ErrorFeedback;
-import org.argeo.geotools.StylingUtils;
 import org.argeo.gis.ui.MapControlCreator;
 import org.argeo.gis.ui.MapViewer;
 import org.argeo.jcr.JcrUtils;
@@ -85,6 +83,8 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	private GpsUiJcrServices uiJcrServices;
 	private GpsUiGisServices uiGisServices;
 	private Node currCleanSession;
+
+	private String displayedField = TrackSpeed.LINE;
 
 	public DefineParamsAndReviewPage(FormEditor editor, String title) {
 		super(editor, ID, title);
@@ -241,6 +241,23 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	private void createValidationButtons(Composite parent) {
 		GridData gridData;
 
+		final Button switchView = formToolkit.createButton(parent, "Showing "
+				+ displayedField, SWT.PUSH);
+		switchView.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				if (displayedField.equals(TrackSpeed.LINE)) {
+					displayedField = TrackSpeed.POSITION;
+					refreshSpeedLayer(uiJcrServices
+							.getCleanSessionTechName(currCleanSession));
+				} else if (displayedField.equals(TrackSpeed.POSITION)) {
+					displayedField = TrackSpeed.LINE;
+					refreshSpeedLayer(uiJcrServices
+							.getCleanSessionTechName(currCleanSession));
+				}
+				switchView.setText("Showing " + displayedField);
+			}
+		});
+
 		// Terminate button
 		Button terminate = formToolkit.createButton(parent, ConnectGpsUiPlugin
 				.getGPSMessage(ConnectGpsLabels.LAUNCH_CLEAN_BUTTON_LBL),
@@ -342,7 +359,9 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 
 			Node layerNode = currCleanSession.getSession().getNode(
 					trackSpeedsPath);
-			mapViewer.addLayer(layerNode, createToCleanStyle());
+			// mapViewer.addLayer(layerNode,
+			// createToCleanStyle(TrackSpeed.LINE));
+			mapViewer.addLayer(layerNode, createToCleanStyle(displayedField));
 
 			// mapViewer.setCoordinateReferenceSystem("EPSG:3857");
 
@@ -374,22 +393,26 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	protected void refreshSpeedLayer(String cleanSession) {
 		String trackSpeedsPath = uiGisServices.getTrackDao()
 				.getTrackSpeedsSource(cleanSession);
-		mapViewer.setStyle(trackSpeedsPath, createToCleanStyle());
+		// mapViewer
+		// .setStyle(trackSpeedsPath, createToCleanStyle(TrackSpeed.LINE));
+		mapViewer.setStyle(trackSpeedsPath, createToCleanStyle(displayedField));
 	}
 
-	protected Style createToCleanStyle() {
-		Map<String, String> cqlFilters = new HashMap<String, String>();
-		Double maxSpeed = maxSpeedViewer.getValue();
-		cqlFilters.put("speed>" + maxSpeed, "GREEN");
-		Double maxAbsoluteRotation = maxRotationViewer.getValue();
-		cqlFilters.put("azimuthVariation<" + (-maxAbsoluteRotation)
-				+ " OR azimuthVariation>" + maxAbsoluteRotation, "RED");
-		Double maxAbsoluteAcceleration = maxAccelerationViewer.getValue();
-		cqlFilters.put("acceleration<" + (-maxAbsoluteAcceleration)
-				+ " OR acceleration>" + maxAbsoluteAcceleration, "BLUE");
-		Style style = StylingUtils.createFilteredLineStyle(cqlFilters, 3,
-				"BLACK", 1);
-		return style;
+	protected Style createToCleanStyle(String field) {
+		// Map<String, String> cqlFilters = new HashMap<String, String>();
+		// Double maxSpeed = maxSpeedViewer.getValue();
+		// cqlFilters.put("speed>" + maxSpeed, "GREEN");
+		// Double maxAbsoluteRotation = maxRotationViewer.getValue();
+		// cqlFilters.put("azimuthVariation<" + (-maxAbsoluteRotation)
+		// + " OR azimuthVariation>" + maxAbsoluteRotation, "RED");
+		// Double maxAbsoluteAcceleration = maxAccelerationViewer.getValue();
+		// cqlFilters.put("acceleration<" + (-maxAbsoluteAcceleration)
+		// + " OR acceleration>" + maxAbsoluteAcceleration, "BLUE");
+		// Style style = StylingUtils.createFilteredLineStyle(cqlFilters, 3,
+		// "BLACK", 1);
+		// return style;
+		return GpsStyling.createGpsCleanStyle(field, maxSpeedViewer.getValue(),
+				maxAccelerationViewer.getValue(), maxRotationViewer.getValue());
 	}
 
 	protected String getToCleanCqlFilter() {

@@ -21,6 +21,8 @@
 							*,
 							org.argeo.eclipse.spring,
 							org.argeo.gis,
+							org.opengis.filter.expression,
+							org.opengis.style
 						</Import-Package>
 					</instructions>
 				</configuration>

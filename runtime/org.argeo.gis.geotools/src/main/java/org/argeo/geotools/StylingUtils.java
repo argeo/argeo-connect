@@ -27,11 +27,14 @@
 package org.argeo.geotools;
 
 import java.awt.Color;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.transform.TransformerException;
 
 import org.apache.commons.io.FilenameUtils;
 import org.argeo.ArgeoException;
@@ -45,6 +48,7 @@ import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.Mark;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.Rule;
+import org.geotools.styling.SLDTransformer;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
@@ -216,6 +220,16 @@ public class StylingUtils {
 		// draw the default geometry of features
 		PointSymbolizer sym = styleFactory.createPointSymbolizer(gr, null);
 		return sym;
+	}
+
+	/** Write a {@link Style} in the standard SLC XML format. */
+	public void writeStyleAsSld(Style style, OutputStream out) {
+		SLDTransformer sldTransformer = new SLDTransformer();
+		try {
+			sldTransformer.transform(style, out);
+		} catch (TransformerException e) {
+			throw new ArgeoException("Cannot write SLD", e);
+		}
 	}
 
 	/**

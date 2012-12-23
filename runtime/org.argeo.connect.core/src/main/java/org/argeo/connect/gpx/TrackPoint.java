@@ -32,6 +32,9 @@ import com.vividsolutions.jts.geom.Point;
 
 /** A 4D position of a given sensor */
 public class TrackPoint implements Cloneable {
+	/** Name of the related geometry field */
+	public final static String POSITION = "position";
+	
 	private Integer tid;
 	private String segmentUuid;
 	private String sensor;
