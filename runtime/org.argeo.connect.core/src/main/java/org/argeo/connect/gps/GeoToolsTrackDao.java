@@ -28,6 +28,8 @@ package org.argeo.connect.gps;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -221,6 +223,71 @@ public class GeoToolsTrackDao implements TrackDao {
 			}
 		} catch (Exception e) {
 			throw new ArgeoException("Cannot copy speeds to positions", e);
+		}
+	}
+
+	public void exportAsGpx(String cleanSession, String referential,
+			String toRemoveCql, OutputStream out) {
+		try {
+			String trackSpeedsToCleanTable = addGpsCleanTablePrefix(cleanSession);
+			BeanFeatureTypeBuilder<TrackSpeed> trackSpeedType = new BeanFeatureTypeBuilder<TrackSpeed>(
+					trackSpeedsToCleanTable, TrackSpeed.class);
+			SimpleFeatureStore trackSpeedsStore = getFeatureStore(trackSpeedType);
+
+			PrintWriter writer = new PrintWriter(out);
+			writer.append("<gpx"
+					+ " xmlns=\"http://www.topografix.com/GPX/1/1\""
+					+ " creator=\"\""
+					+ " version=\"1.1\""
+					+ " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+					+ " xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\""
+					+ ">\n");
+
+			Filter filter = filterFactory.not(CQL.toFilter(toRemoveCql));
+			FeatureIterator<SimpleFeature> filteredSpeeds = trackSpeedsStore
+					.getFeatures(filter).features();
+
+			String currSegmentUuid = null;
+			while (filteredSpeeds.hasNext()) {
+				SimpleFeature speed = filteredSpeeds.next();
+				String segmentUuid = speed.getAttribute("segmentUuid")
+						.toString();
+				Point position = (Point) speed.getAttribute("position");
+				Double elevation = (Double) speed.getAttribute("elevation");
+				Date utcTimestamp = (Date) speed.getAttribute("utcTimestamp");
+
+				// write
+				if (currSegmentUuid == null
+						|| !currSegmentUuid.equals(segmentUuid)) {
+					if (currSegmentUuid != null)
+						writer.append("</trkseg></trk>\n");
+					writer.append("<trk>\n");
+					writer.append("<name>Session ").append(cleanSession)
+							.append(" ").append(segmentUuid)
+							.append("</name>\n");
+					writer.append("<trkseg>\n");
+					currSegmentUuid = segmentUuid;
+				}
+
+				writer.append(" <trkpt lat=\"")
+						.append(Double.toString(position.getCoordinate().y))
+						.append("\" lon=\"")
+						.append(Double.toString(position.getCoordinate().x))
+						.append("\">");
+				writer.append("<ele>").append(Double.toString(elevation))
+						.append("</ele>");
+				writer.append("<time>")
+						.append(GpxHandler.ISO8601.format(utcTimestamp))
+						.append("Z</time>");
+				writer.append("</trkpt>\n");
+			}
+			if (currSegmentUuid != null)
+				writer.append("</trkseg></trk>\n");
+			writer.append("</gpx>\n");
+			writer.flush();
+		} catch (Exception e) {
+			throw new ArgeoException(
+					"Cannot write " + cleanSession + " as GPX", e);
 		}
 	}
 

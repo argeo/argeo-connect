@@ -27,6 +27,7 @@
 package org.argeo.connect.gps;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /** Geo-processing and geo-storage of the positions */
@@ -52,6 +53,13 @@ public interface TrackDao {
 	/** Publishes the cleaned-up positions to a positions referential. */
 	public void publishCleanPositions(String cleanSession, String referential,
 			String toRemoveCql);
+
+	/**
+	 * Publishes the cleaned-up positions to a positions referential Export in
+	 * the GPX format.
+	 */
+	public void exportAsGpx(String cleanSession, String referential,
+			String toRemoveCql, OutputStream out);
 
 	/**
 	 * Removes segments from this referential

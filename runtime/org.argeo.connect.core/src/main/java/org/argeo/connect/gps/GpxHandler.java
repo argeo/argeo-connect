@@ -56,7 +56,7 @@ class GpxHandler extends DefaultHandler {
 	public static final String ATTR_LAT = "lat";
 	public static final String ATTR_LON = "lon";
 
-	private final static DateFormat ISO8601 = new SimpleDateFormat(
+	public final static DateFormat ISO8601 = new SimpleDateFormat(
 			"yyyy-MM-dd'T'HH:mm:ss");
 
 	private final CoordinateReferenceSystem wgs84;

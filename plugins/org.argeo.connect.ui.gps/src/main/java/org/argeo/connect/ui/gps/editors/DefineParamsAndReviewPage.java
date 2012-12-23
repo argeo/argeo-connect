@@ -26,15 +26,22 @@
  */
 package org.argeo.connect.ui.gps.editors;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Workspace;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.gps.GpsConstants;
+import org.argeo.connect.gps.TrackDao;
 import org.argeo.connect.gps.TrackSpeed;
 import org.argeo.connect.ui.gps.ConnectGpsLabels;
 import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
@@ -56,6 +63,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
@@ -235,18 +243,46 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage
 		panel.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false,
 				false, 3, 1));
 
-		// GridData gridData;
+		Button exportAsGpx = formToolkit.createButton(panel, ConnectGpsUiPlugin
+				.getGPSMessage(ConnectGpsLabels.EXPORT_AS_GPX_BUTTON_LBL),
+				SWT.PUSH);
+		exportAsGpx.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				FileDialog fileDialog = new FileDialog(getEditor().getSite()
+						.getShell());
+				String path = fileDialog.open();
+				if (path == null)
+					return;
 
-		// Terminate button
+				File file = new File(path);
+				if (file.exists())
+					if (!MessageDialog.openConfirm(getSite().getShell(),
+							"File already exists",
+							"File " + file.getAbsolutePath()
+									+ " already exists. Overwrite?"))
+						return;
+				OutputStream out = null;
+				try {
+					out = new FileOutputStream(path);
+					TrackDao trackDao = uiGisServices.getTrackDao();
+					trackDao.exportAsGpx(
+							uiJcrServices
+									.getCleanSessionTechName(currCleanSession),
+							uiJcrServices
+									.getLinkedReferentialTechName(currCleanSession),
+							getToCleanCqlFilter(), out);
+				} catch (FileNotFoundException e) {
+					throw new ArgeoException("Cannot open " + path);
+				} finally {
+					IOUtils.closeQuietly(out);
+				}
+
+			}
+		});
 		Button terminate = formToolkit.createButton(panel, ConnectGpsUiPlugin
 				.getGPSMessage(ConnectGpsLabels.LAUNCH_CLEAN_BUTTON_LBL),
 				SWT.PUSH);
-		// gridData = new GridData();
-		// gridData.horizontalAlignment = GridData.BEGINNING;
-		// gridData.horizontalSpan = 2;// span text and slider above
-		// terminate.setLayoutData(gridData);
-
-		Listener terminateListener = new Listener() {
+		terminate.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 
 				GpsUiJcrServices uiServices = getEditor().getUiJcrServices();
@@ -273,8 +309,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage
 					dialog.open();
 				}
 			}
-		};
-		terminate.addListener(SWT.Selection, terminateListener);
+		});
 	}
 
 	protected void createMapPart(Composite parent) {

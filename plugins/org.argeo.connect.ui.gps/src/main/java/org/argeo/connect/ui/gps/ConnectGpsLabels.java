@@ -74,5 +74,7 @@ public interface ConnectGpsLabels {
 	public final static String VISUALIZE_BUTTON_LBL = CONNECT_
 			+ CLEAN_DATA_EDITOR + "visualizeButtonLbl";
 	public final static String LAUNCH_CLEAN_BUTTON_LBL = CONNECT_
-			+ CLEAN_DATA_EDITOR + "launchProcessButtonLbl";
+	+ CLEAN_DATA_EDITOR + "launchProcessButtonLbl";
+	public final static String EXPORT_AS_GPX_BUTTON_LBL = CONNECT_
+	+ CLEAN_DATA_EDITOR + "exportAsGpxButtonLbl";
 }

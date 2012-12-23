@@ -150,7 +150,9 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 			for (int i = 0; i < getPageCount(); i++) {
 				Control curPage = getControl(i);
 				if (curPage != null)
-					curPage.setEnabled(false);
+					curPage.setEnabled(true);
+				// FIXME workaround in order to keep buttons active
+				// curPage.setEnabled(false);
 			}
 			this.setTitleImage(GpsNodeLabelProvider.sessionDone);
 			firePropertyChange(PROP_TITLE);
