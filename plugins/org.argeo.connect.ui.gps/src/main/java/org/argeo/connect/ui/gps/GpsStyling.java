@@ -31,8 +31,9 @@ public class GpsStyling {
 	private static FilterFactory ff = CommonFactoryFinder
 			.getFilterFactory(null);
 
-	public static Style createGpsCleanStyle(String field, Double maxSpeed,
-			Double maxAbsoluteAcceleration, Double maxAbsoluteRotation) {
+	public static Style createGpsCleanStyle(String field, Boolean preview,
+			Double maxSpeed, Double maxAbsoluteAcceleration,
+			Double maxAbsoluteRotation) {
 		// map filters and colors
 		Map<String, String> cqlFilters = new HashMap<String, String>();
 		cqlFilters.put("speed>" + maxSpeed, "GREEN");
@@ -44,13 +45,28 @@ public class GpsStyling {
 		String unmatchedColor = "BLACK";
 		Integer matchedWidth = 2;
 
-		// build rules
+		Filter unmatchedFilter = null;
+		if (preview) {
+			List<Filter> filters = new ArrayList<Filter>();
+			for (String cqlFilter : cqlFilters.keySet()) {
+				Filter filter;
+				try {
+					filter = CQL.toFilter(cqlFilter);
+					filters.add(ff.not(filter));
+				} catch (CQLException e) {
+					throw new ArgeoException("Cannot parse CQL filter: "
+							+ cqlFilter, e);
+				}
+			}
+			unmatchedFilter = ff.and(filters);
+
+		}
 
 		List<Rule> rules = new ArrayList<Rule>();
 		// unmatched
-		if (field == null || field.equals(TrackSpeed.LINE)) {
+		Rule ruleUnMatched = null;
+		if (field.equals(TrackSpeed.LINE)) {
 			Integer unmatchedWidth = 1;
-			Rule ruleUnMatched = null;
 			ruleUnMatched = sf.createRule();
 			ruleUnMatched.symbolizers().add(
 					StylingUtils.createLineSymbolizer(unmatchedColor,
@@ -59,7 +75,6 @@ public class GpsStyling {
 			rules.add(ruleUnMatched);
 		} else if (field.equals(TrackSpeed.POSITION)) {
 			Integer unmatchedWidth = 1;
-			Rule ruleUnMatched = null;
 			ruleUnMatched = sf.createRule();
 			ruleUnMatched.symbolizers().add(
 					StylingUtils.createPointSymbolizer(sf.getSquareMark(),
@@ -67,46 +82,53 @@ public class GpsStyling {
 			rules.add(ruleUnMatched);
 		}
 
-		for (String cqlFilter : cqlFilters.keySet()) {
+		if (unmatchedFilter != null && ruleUnMatched != null)
+			ruleUnMatched.setFilter(unmatchedFilter);
 
-			String matchedColor = cqlFilters.get(cqlFilter);
+		if (!preview) {
 
-			// selection filter
-			Filter filter;
-			try {
-				filter = CQL.toFilter(cqlFilter);
-			} catch (CQLException e) {
-				throw new ArgeoException("Cannot parse CQL filter: "
-						+ cqlFilter, e);
-			}
+			for (String cqlFilter : cqlFilters.keySet()) {
 
-			if (field == null || field.equals(TrackSpeed.LINE)) {
-				// matched line
-				Rule ruleMatched = sf.createRule();
-				Stroke stroke = sf.createStroke(
-						ff.literal(stringToColor(matchedColor)),
-						ff.literal(matchedWidth));
-				ruleMatched.symbolizers().add(
-						sf.createLineSymbolizer(stroke, field));
-				ruleMatched.setFilter(filter);
-				rules.add(ruleMatched);
-			} else if (field.equals(TrackSpeed.POSITION)) {
-				Integer markWidth = 7;
-				// matched point
-				Graphic gr = sf.createDefaultGraphic();
-				Mark mark = sf.getCrossMark();
-				mark.setStroke(sf.createStroke(
-						ff.literal(stringToColor(matchedColor)), ff.literal(1)));
-				// mark.setFill(sf.createFill(ff
-				// .literal(stringToColor(matchedColor))));
-				gr.graphicalSymbols().clear();
-				gr.graphicalSymbols().add(mark);
-				gr.setSize(ff.literal(markWidth));
-				PointSymbolizer sym = sf.createPointSymbolizer(gr, field);
-				Rule ruleMatchedPt = sf.createRule();
-				ruleMatchedPt.symbolizers().add(sym);
-				ruleMatchedPt.setFilter(filter);
-				rules.add(ruleMatchedPt);
+				String matchedColor = cqlFilters.get(cqlFilter);
+
+				// selection filter
+				Filter filter;
+				try {
+					filter = CQL.toFilter(cqlFilter);
+				} catch (CQLException e) {
+					throw new ArgeoException("Cannot parse CQL filter: "
+							+ cqlFilter, e);
+				}
+
+				if (field.equals(TrackSpeed.LINE)) {
+					// matched line
+					Rule ruleMatched = sf.createRule();
+					Stroke stroke = sf.createStroke(
+							ff.literal(stringToColor(matchedColor)),
+							ff.literal(matchedWidth));
+					ruleMatched.symbolizers().add(
+							sf.createLineSymbolizer(stroke, field));
+					ruleMatched.setFilter(filter);
+					rules.add(ruleMatched);
+				} else if (field.equals(TrackSpeed.POSITION)) {
+					Integer markWidth = 7;
+					// matched point
+					Graphic gr = sf.createDefaultGraphic();
+					Mark mark = sf.getCrossMark();
+					mark.setStroke(sf.createStroke(
+							ff.literal(stringToColor(matchedColor)),
+							ff.literal(1)));
+					// mark.setFill(sf.createFill(ff
+					// .literal(stringToColor(matchedColor))));
+					gr.graphicalSymbols().clear();
+					gr.graphicalSymbols().add(mark);
+					gr.setSize(ff.literal(markWidth));
+					PointSymbolizer sym = sf.createPointSymbolizer(gr, field);
+					Rule ruleMatchedPt = sf.createRule();
+					ruleMatchedPt.symbolizers().add(sym);
+					ruleMatchedPt.setFilter(filter);
+					rules.add(ruleMatchedPt);
+				}
 			}
 		}
 

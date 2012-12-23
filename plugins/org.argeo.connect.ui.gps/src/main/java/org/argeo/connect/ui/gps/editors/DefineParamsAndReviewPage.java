@@ -77,14 +77,17 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 	private SliderViewer maxSpeedViewer;
 	private SliderViewer maxAccelerationViewer;
 	private SliderViewer maxRotationViewer;
+
+	private Button preview;
+	private Button lines;
+	private Button points;
+
 	private MapViewer mapViewer;
 
 	// Local object used as cache
 	private GpsUiJcrServices uiJcrServices;
 	private GpsUiGisServices uiGisServices;
 	private Node currCleanSession;
-
-	private String displayedField = TrackSpeed.LINE;
 
 	public DefineParamsAndReviewPage(FormEditor editor, String title) {
 		super(editor, ID, title);
@@ -119,7 +122,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		}
 	}
 
-	private void createParameterPart(Composite top) {
+	protected void createParameterPart(Composite top) {
 		Composite parent = formToolkit.createComposite(top);
 		parent.setLayout(new GridLayout(6, false));
 
@@ -183,6 +186,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 				getManagedForm().addPart(paramPart);
 			}
 
+			createDisplayControls(parent);
 			createValidationButtons(parent);
 
 		} catch (RepositoryException re) {
@@ -190,73 +194,32 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		}
 	}
 
-	// Inner classes to handle param changes
-	private class ParamFormPart extends AbstractFormPart {
-
-		private Node paramNode;
-		private Double paramValue = null;
-
-		public ParamFormPart(Node paramNode) {
-			this.paramNode = paramNode;
-		}
-
-		public void setValue(Double value) {
-			paramValue = value;
-		}
-
-		public void commit(boolean onSave) {
-			if (onSave)
-				try {
-					if (paramValue != null)
-						paramNode.setProperty(ConnectNames.CONNECT_PARAM_VALUE,
-								paramValue);
-					super.commit(onSave);
-				} catch (RepositoryException re) {
-					throw new ArgeoException(
-							"unexpected error while saving parameter value.",
-							re);
-				}
-			else if (log.isDebugEnabled())
-				log.debug("commit(false)");
-		}
-	}
-
-	private class ParamSliderViewerListener implements SliderViewerListener {
-
-		private ParamFormPart formPart;
-
-		public ParamSliderViewerListener(ParamFormPart paramFormPart) {
-			this.formPart = paramFormPart;
-		}
-
-		public void valueChanged(Double value) {
-			// TODO Enable this @ RAP WORKAROUND FOR LEUVEN PROJECT
-			refreshSpeedLayer(uiJcrServices
-					.getCleanSessionTechName(currCleanSession));
-			formPart.setValue(value);
-			formPart.markDirty();
-		}
-	};
-
-	private void createValidationButtons(Composite parent) {
-		GridData gridData;
-
-		final Button switchView = formToolkit.createButton(parent, "Showing "
-				+ displayedField, SWT.PUSH);
-		switchView.addListener(SWT.Selection, new Listener() {
+	protected void createDisplayControls(Composite parent) {
+		preview = formToolkit.createButton(parent, "Preview", SWT.CHECK);
+		preview.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
-				if (displayedField.equals(TrackSpeed.LINE)) {
-					displayedField = TrackSpeed.POSITION;
-					refreshSpeedLayer(uiJcrServices
-							.getCleanSessionTechName(currCleanSession));
-				} else if (displayedField.equals(TrackSpeed.POSITION)) {
-					displayedField = TrackSpeed.LINE;
-					refreshSpeedLayer(uiJcrServices
-							.getCleanSessionTechName(currCleanSession));
-				}
-				switchView.setText("Showing " + displayedField);
+				refreshSpeedLayer();
 			}
 		});
+
+		lines = formToolkit.createButton(parent, "Lines", SWT.RADIO);
+		lines.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				refreshSpeedLayer();
+			}
+		});
+		lines.setSelection(true);
+
+		points = formToolkit.createButton(parent, "Points", SWT.RADIO);
+		points.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				refreshSpeedLayer();
+			}
+		});
+	}
+
+	protected void createValidationButtons(Composite parent) {
+		GridData gridData;
 
 		// Terminate button
 		Button terminate = formToolkit.createButton(parent, ConnectGpsUiPlugin
@@ -313,7 +276,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		uiGisServices.addBaseLayers(mapViewer);
 	}
 
-	private void pushDataToLocalRepo() {
+	protected void pushDataToLocalRepo() {
 		uiGisServices.getTrackDao().publishCleanPositions(
 				uiJcrServices.getCleanSessionTechName(currCleanSession),
 				uiJcrServices.getLinkedReferentialTechName(currCleanSession),
@@ -363,7 +326,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 					trackSpeedsPath);
 			// mapViewer.addLayer(layerNode,
 			// createToCleanStyle(TrackSpeed.LINE));
-			mapViewer.addLayer(layerNode, createToCleanStyle(displayedField));
+			mapViewer.addLayer(layerNode, createToCleanStyle());
 
 			// mapViewer.setCoordinateReferenceSystem("EPSG:3857");
 
@@ -392,28 +355,19 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 		}
 	}
 
-	protected void refreshSpeedLayer(String cleanSession) {
+	protected void refreshSpeedLayer() {
+		String cleanSession = uiJcrServices
+				.getCleanSessionTechName(currCleanSession);
 		String trackSpeedsPath = uiGisServices.getTrackDao()
 				.getTrackSpeedsSource(cleanSession);
-		// mapViewer
-		// .setStyle(trackSpeedsPath, createToCleanStyle(TrackSpeed.LINE));
-		mapViewer.setStyle(trackSpeedsPath, createToCleanStyle(displayedField));
+		mapViewer.setStyle(trackSpeedsPath, createToCleanStyle());
 	}
 
-	protected Style createToCleanStyle(String field) {
-		// Map<String, String> cqlFilters = new HashMap<String, String>();
-		// Double maxSpeed = maxSpeedViewer.getValue();
-		// cqlFilters.put("speed>" + maxSpeed, "GREEN");
-		// Double maxAbsoluteRotation = maxRotationViewer.getValue();
-		// cqlFilters.put("azimuthVariation<" + (-maxAbsoluteRotation)
-		// + " OR azimuthVariation>" + maxAbsoluteRotation, "RED");
-		// Double maxAbsoluteAcceleration = maxAccelerationViewer.getValue();
-		// cqlFilters.put("acceleration<" + (-maxAbsoluteAcceleration)
-		// + " OR acceleration>" + maxAbsoluteAcceleration, "BLUE");
-		// Style style = StylingUtils.createFilteredLineStyle(cqlFilters, 3,
-		// "BLACK", 1);
-		// return style;
-		return GpsStyling.createGpsCleanStyle(field, maxSpeedViewer.getValue(),
+	protected Style createToCleanStyle() {
+		String displayedField = lines.getSelection() ? TrackSpeed.LINE
+				: TrackSpeed.POSITION;
+		return GpsStyling.createGpsCleanStyle(displayedField,
+				preview.getSelection(), maxSpeedViewer.getValue(),
 				maxAccelerationViewer.getValue(), maxRotationViewer.getValue());
 	}
 
@@ -430,4 +384,52 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage {
 			log.debug(cql);
 		return cql;
 	}
+
+	// Inner classes to handle param changes
+	private class ParamFormPart extends AbstractFormPart {
+
+		private Node paramNode;
+		private Double paramValue = null;
+
+		public ParamFormPart(Node paramNode) {
+			this.paramNode = paramNode;
+		}
+
+		public void setValue(Double value) {
+			paramValue = value;
+		}
+
+		public void commit(boolean onSave) {
+			if (onSave)
+				try {
+					if (paramValue != null)
+						paramNode.setProperty(ConnectNames.CONNECT_PARAM_VALUE,
+								paramValue);
+					super.commit(onSave);
+				} catch (RepositoryException re) {
+					throw new ArgeoException(
+							"unexpected error while saving parameter value.",
+							re);
+				}
+			else if (log.isDebugEnabled())
+				log.debug("commit(false)");
+		}
+	}
+
+	private class ParamSliderViewerListener implements SliderViewerListener {
+
+		private ParamFormPart formPart;
+
+		public ParamSliderViewerListener(ParamFormPart paramFormPart) {
+			this.formPart = paramFormPart;
+		}
+
+		public void valueChanged(Double value) {
+			// TODO Enable this @ RAP WORKAROUND FOR LEUVEN PROJECT
+			refreshSpeedLayer();
+			formPart.setValue(value);
+			formPart.markDirty();
+		}
+	};
+
 }
