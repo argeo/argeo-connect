@@ -88,13 +88,21 @@ public class CleanDataEditor extends FormEditor implements ConnectTypes,
 
 	protected void addPages() {
 		try {
-			addPage(new GpxFilesProcessingPage(this,
-					ConnectGpsUiPlugin.getGPSMessage(DATASET_PAGE_TITLE)));
-			addPage(new DefineParamsAndReviewPage(this,
-					ConnectGpsUiPlugin.getGPSMessage(PARAMSET_PAGE_TITLE)));
+			Boolean gpxImported = currCleanSession.getNodes("*.gpx").hasNext();
+			if (gpxImported) {
+				addPage(new DefineParamsAndReviewPage(this,
+						ConnectGpsUiPlugin.getGPSMessage(PARAMSET_PAGE_TITLE)));
+				addPage(new GpxFilesProcessingPage(this,
+						ConnectGpsUiPlugin.getGPSMessage(DATASET_PAGE_TITLE)));
+			} else {
+				addPage(new GpxFilesProcessingPage(this,
+						ConnectGpsUiPlugin.getGPSMessage(DATASET_PAGE_TITLE)));
+				addPage(new DefineParamsAndReviewPage(this,
+						ConnectGpsUiPlugin.getGPSMessage(PARAMSET_PAGE_TITLE)));
+			}
 			addPage(new CleanSessionInfoPage(this,
 					ConnectGpsUiPlugin.getGPSMessage(METADATA_PAGE_TITLE)));
-		} catch (PartInitException e) {
+		} catch (Exception e) {
 			throw new ArgeoException("Not able to add page ", e);
 		}
 	}
