@@ -39,6 +39,8 @@ import java.awt.geom.Point2D;
 import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputAdapter;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -47,10 +49,7 @@ import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.tool.AbstractZoomTool;
 
 public class VersatileZoomTool extends AbstractZoomTool {
-	// private Log log = LogFactory.getLog(VersatileZoomTool.class);
-
-	// private static final ResourceBundle stringRes = ResourceBundle
-	// .getBundle("org/geotools/swing/Text");
+	private Log log = LogFactory.getLog(VersatileZoomTool.class);
 
 	// Cursors
 	private Cursor zoomInCursor;
@@ -69,16 +68,7 @@ public class VersatileZoomTool extends AbstractZoomTool {
 	 * Constructor
 	 */
 	public VersatileZoomTool() {
-		// Toolkit tk = Toolkit.getDefaultToolkit();
-		// zoomInCursor = tk.createCustomCursor(new ImageIcon(getClass()
-		// .getResource("/org/geotools/swing/icons/mActionZoomIn.png"))
-		// .getImage(), new Point(14, 9), stringRes
-		// .getString("tool_name_zoom_in"));
 		zoomInCursor = new Cursor(Cursor.SE_RESIZE_CURSOR);
-		// panCursor = tk.createCustomCursor(new
-		// ImageIcon(getClass().getResource(
-		// "/org/geotools/swing/icons/mActionPan.png")).getImage(),
-		// new Point(15, 15), stringRes.getString("tool_name_pan"));
 		panCursor = new Cursor(Cursor.HAND_CURSOR);
 		defaultCursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
 
@@ -127,6 +117,10 @@ public class VersatileZoomTool extends AbstractZoomTool {
 		Envelope2D newMapArea = new Envelope2D();
 		newMapArea.setFrameFromCenter(mapPos, corner);
 		getMapPane().setDisplayArea(newMapArea);
+
+		if (log.isDebugEnabled())
+			log.debug("MapPos: " + mapPos + ", Corner: " + corner
+					+ ", DisplayArea: " + newMapArea);
 	}
 
 	/**
@@ -222,6 +216,10 @@ public class VersatileZoomTool extends AbstractZoomTool {
 			private double clickToZoom = 0.1; // 1 wheel click is 10% zoom
 
 			public void mouseWheelMoved(MouseWheelEvent ev) {
+				Point mouseLocation = ev.getPoint();
+				Point2D mouseCoor = getMapPane().getScreenToWorldTransform()
+						.transform(mouseLocation, null);
+
 				int clicks = ev.getWheelRotation();
 				// -ve means wheel moved up, +ve means down
 				int sign = (clicks < 0 ? -1 : 1);
@@ -233,6 +231,13 @@ public class VersatileZoomTool extends AbstractZoomTool {
 				double delta = width * clickToZoom * sign;
 
 				env.expandBy(delta);
+				getMapPane().setDisplayArea(env);
+				Point2D newMouseCoor = getMapPane().getScreenToWorldTransform()
+						.transform(mouseLocation, null);
+				// move envelope so that mouse always at the same geographical
+				// coordinate
+				env.translate(mouseCoor.getX() - newMouseCoor.getX(),
+						mouseCoor.getY() - newMouseCoor.getY());
 				getMapPane().setDisplayArea(env);
 				getMapPane().repaint();
 			}
