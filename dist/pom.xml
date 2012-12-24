@@ -10,13 +10,8 @@
 	<artifactId>dist</artifactId>
 	<name>Connect Distributions</name>
 	<packaging>pom</packaging>
-	<profiles>
-		<profile>
-			<id>dist</id>
 			<modules>
 				<module>argeo-connect-rcp</module>
-				<module>argeo-connect-rap</module>
+<!-- 				<module>argeo-connect-rap</module> -->
 			</modules>
-		</profile>
-	</profiles>
 </project>
