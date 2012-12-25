@@ -45,6 +45,7 @@ import org.argeo.connect.BeanFeatureTypeBuilder;
 import org.argeo.geotools.jcr.GeoJcrMapper;
 import org.argeo.gis.GisConstants;
 import org.geotools.data.DefaultTransaction;
+import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureStore;
@@ -60,6 +61,8 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.sort.SortBy;
+import org.opengis.filter.sort.SortOrder;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.xml.sax.InputSource;
@@ -161,8 +164,11 @@ public class GeoToolsTrackDao implements TrackDao {
 
 			SimpleFeatureStore trackSpeedsStore = getFeatureStore(trackSpeedType);
 			Filter filter = filterFactory.not(CQL.toFilter(toRemoveCql));
+			Query query = new Query(trackSpeedsToCleanTable, filter);
+			query.setSortBy(new SortBy[] { filterFactory.sort("utcTimestamp",
+					SortOrder.ASCENDING) });
 			FeatureIterator<SimpleFeature> filteredSpeeds = trackSpeedsStore
-					.getFeatures(filter).features();
+					.getFeatures(query).features();
 
 			List<Coordinate> currSegmentCoords = new ArrayList<Coordinate>();
 			TrackSegment currSegment = null;
@@ -244,8 +250,18 @@ public class GeoToolsTrackDao implements TrackDao {
 					+ ">\n");
 
 			Filter filter = filterFactory.not(CQL.toFilter(toRemoveCql));
+			// SortBy order = filterFactory.sort("utcTimestamp",
+			// SortOrder.ASCENDING);
+			//
+			// FeatureIterator<SimpleFeature> filteredSpeeds = trackSpeedsStore
+			// .getFeatures(filter).sort(order).features();
+
+			// sorted query
+			Query query = new Query(trackSpeedsToCleanTable, filter);
+			query.setSortBy(new SortBy[] { filterFactory.sort("utcTimestamp",
+					SortOrder.ASCENDING) });
 			FeatureIterator<SimpleFeature> filteredSpeeds = trackSpeedsStore
-					.getFeatures(filter).features();
+					.getFeatures(query).features();
 
 			String currSegmentUuid = null;
 			while (filteredSpeeds.hasNext()) {
