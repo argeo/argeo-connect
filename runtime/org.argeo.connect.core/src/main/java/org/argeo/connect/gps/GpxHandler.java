@@ -26,12 +26,14 @@
  */
 package org.argeo.connect.gps;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.xml.bind.DatatypeConverter;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.referencing.CRS;
@@ -49,6 +51,8 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 
 /** Parse the GPX format. */
 class GpxHandler extends DefaultHandler {
+	private final static Log log = LogFactory.getLog(GpxHandler.class);
+
 	public static final String TAG_TRKSEG = "trkseg";
 	public static final String TAG_TRKPT = "trkpt";
 	public static final String TAG_TIME = "time";
@@ -56,8 +60,8 @@ class GpxHandler extends DefaultHandler {
 	public static final String ATTR_LAT = "lat";
 	public static final String ATTR_LON = "lon";
 
-	public final static DateFormat ISO8601 = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss");
+	// public final static DateFormat ISO8601 = new SimpleDateFormat(
+	// "yyyy-MM-dd'T'HH:mm:ss");
 
 	private final CoordinateReferenceSystem wgs84;
 	private final GeometryFactory targetGF;
@@ -139,9 +143,15 @@ class GpxHandler extends DefaultHandler {
 		} else if (qName.equals(TAG_TIME) && currentTrackPoint != null) {
 			String timeStr = accumulator.toString().trim();
 			try {
-				Date time = ISO8601.parse(timeStr);
+				Calendar utcCalendar = DatatypeConverter.parseDateTime(timeStr);
+
+				Date time = utcCalendar.getTime();
+				if (log.isDebugEnabled())
+					log.debug("utcCalendar=" + utcCalendar + ", timeZone="
+							+ utcCalendar.getTimeZone());
+				// Date time = ISO8601.parse(timeStr);
 				currentTrackPoint.setUtcTimestamp(time);
-			} catch (ParseException e) {
+			} catch (IllegalArgumentException e) {
 				throw new ArgeoException("Cannot parse date " + timeStr);
 			}
 		} else if (qName.equals(TAG_TRKPT)) {

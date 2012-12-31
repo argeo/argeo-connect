@@ -31,9 +31,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -81,6 +84,8 @@ import com.vividsolutions.jts.geom.PrecisionModel;
  */
 public class GeoToolsTrackDao implements TrackDao {
 	private final static Log log = LogFactory.getLog(GeoToolsTrackDao.class);
+
+	private final static TimeZone UTC = TimeZone.getTimeZone("UTC");
 
 	private Integer targetSrid = 4326;
 	private Float maxSpeed = 200f;
@@ -292,9 +297,10 @@ public class GeoToolsTrackDao implements TrackDao {
 						.append("\">");
 				writer.append("<ele>").append(Double.toString(elevation))
 						.append("</ele>");
-				writer.append("<time>")
-						.append(GpxHandler.ISO8601.format(utcTimestamp))
-						.append("Z</time>");
+				Calendar utcCalendar = Calendar.getInstance(UTC);
+				utcCalendar.setTime(utcTimestamp);
+				String timeStr = DatatypeConverter.printDateTime(utcCalendar);
+				writer.append("<time>").append(timeStr).append("</time>");
 				writer.append("</trkpt>\n");
 			}
 			if (currSegmentUuid != null)
@@ -352,8 +358,9 @@ public class GeoToolsTrackDao implements TrackDao {
 				LineString line = geometryFactory.createLineString(crds);
 				Long duration = next.getUtcTimestamp().getTime()
 						- trackPoint.getUtcTimestamp().getTime();
-				if (duration < 0) {
-					log.warn("Duration " + duration + " is negative between "
+				if (duration <= 0) {
+					log.warn("Duration " + duration
+							+ " is negative or nil between "
 							+ trackPoint.getPosition() + " and "
 							+ next.getPosition()
 							+ ", skipping speed computation");
