@@ -35,6 +35,9 @@ import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.jcr.JcrUtils;
 
+/**
+ * Centralize useful methods to manage a user defined cleaning session.
+ */
 public class JcrSessionUtils implements ConnectTypes, ConnectNames {
 
 	public static Node createNewSession(Node parent, String name) {
