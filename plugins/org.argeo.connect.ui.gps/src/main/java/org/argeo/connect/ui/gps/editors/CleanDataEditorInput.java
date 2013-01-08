@@ -30,6 +30,9 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 
+/**
+ * Used to identify a given cleaning session editor
+ */
 public class CleanDataEditorInput implements IEditorInput {
 
 	private final String uuid;

@@ -47,7 +47,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 
 /**
- * Main multitab editor to handle a session to clean GPS data.
+ * Main multi-tab editor to handle a session to clean GPS data.
  * 
  */
 public class CleanDataEditor extends FormEditor implements ConnectTypes,

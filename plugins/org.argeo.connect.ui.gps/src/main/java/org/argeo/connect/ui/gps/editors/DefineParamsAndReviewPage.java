@@ -434,8 +434,8 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage
 				+ maxAbsoluteVerticalSpeed + " OR acceleration<"
 				+ (-maxAbsoluteAcceleration) + " OR acceleration>"
 				+ maxAbsoluteAcceleration;
-		if (log.isDebugEnabled())
-			log.debug(cql);
+		if (log.isTraceEnabled())
+			log.trace(cql);
 		return cql;
 	}
 
@@ -464,8 +464,8 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage
 							"unexpected error while saving parameter value.",
 							re);
 				}
-			else if (log.isDebugEnabled())
-				log.debug("commit(false)");
+			else if (log.isTraceEnabled())
+				log.trace("commit(false)");
 		}
 	}
 

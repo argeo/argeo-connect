@@ -41,7 +41,8 @@ import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
-/** TODO factorize it in Argeo Commons as a generic component ? */
+/** Generic component to display a slider and a text area that are bound.
+ * TODO factorize it in Argeo Commons as a generic component ? */
 public class SliderViewer {
 	private final static Integer MIN_SLIDER = 0;
 	// Add a -10 offset to MAX_SLIDER before computing the value to workaround a

@@ -129,7 +129,8 @@ public class CleanSessionInfoPage extends AbstractCleanDataEditorPage {
 				sessionDisplayName.setText(getEditor().getCurrentCleanSession()
 						.getName());
 			} catch (RepositoryException re) {
-			} // Silent
+				throw new ArgeoException("unexpected error while retrieving current clean session node name.", re);
+			} 
 
 		// Local repository name
 		label = new Label(body, SWT.NONE);

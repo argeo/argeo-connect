@@ -38,6 +38,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+/**
+ * Display a form to collect useful information to create a new repository
+ */
 public class DefineRepositoryModel extends WizardPage implements ModifyListener {
 
 	// This page widget

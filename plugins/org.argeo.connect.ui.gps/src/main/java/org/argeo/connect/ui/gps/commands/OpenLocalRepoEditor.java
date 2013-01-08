@@ -27,6 +27,7 @@
 package org.argeo.connect.ui.gps.commands;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
 import org.argeo.connect.ui.gps.editors.LocalRepoEditor;
 import org.argeo.connect.ui.gps.editors.LocalRepoEditorInput;
 import org.eclipse.core.commands.AbstractHandler;
@@ -44,8 +45,10 @@ public class OpenLocalRepoEditor extends AbstractHandler {
 	// private final static Log log =
 	// LogFactory.getLog(OpenCleanDataEditor.class);
 
-	public final static String ID = "org.argeo.connect.ui.gps.openLocalRepoEditor";
-	public final static String PARAM_NAME = "org.argeo.connect.ui.gps.localRepoName";
+	public final static String ID = ConnectGpsUiPlugin.ID
+			+ ".openLocalRepoEditor";
+	public final static String PARAM_NAME = ConnectGpsUiPlugin.ID
+			+ ".localRepoName";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		String name = event.getParameter(PARAM_NAME);

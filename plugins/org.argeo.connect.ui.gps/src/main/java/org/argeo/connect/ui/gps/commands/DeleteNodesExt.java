@@ -45,8 +45,14 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 
+/**
+ * GPS UI specfic command handler. Enable deletion of user created directories,
+ * imported files and user sessions closing the corresponding editors if they
+ * are opened.
+ * 
+ */
 public class DeleteNodesExt extends DeleteNodes {
-	public final static String ID = "org.argeo.connect.ui.gps.deleteNodes";
+	public final static String ID = ConnectGpsUiPlugin.ID + ".deleteNodes";
 	public final static String DEFAULT_ICON_REL_PATH = "icons/remove.gif";
 	public final static String DEFAULT_LABEL = "Delete selected nodes";
 

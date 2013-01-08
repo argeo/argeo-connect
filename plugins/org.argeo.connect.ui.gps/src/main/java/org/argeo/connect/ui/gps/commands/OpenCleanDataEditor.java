@@ -30,6 +30,7 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
 import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.editors.CleanDataEditor;
 import org.argeo.connect.ui.gps.editors.CleanDataEditorInput;
@@ -52,8 +53,10 @@ public class OpenCleanDataEditor extends AbstractHandler {
 	/* DEPENDENCY INJECTION */
 	private GpsUiJcrServices uiJcrServices;
 
-	public final static String ID = "org.argeo.connect.ui.gps.openCleanDataEditor";
-	public final static String PARAM_UUID = "org.argeo.connect.ui.gps.connectSessionUuid";
+	public final static String ID = ConnectGpsUiPlugin.ID
+			+ ".openCleanDataEditor";
+	public final static String PARAM_UUID = ConnectGpsUiPlugin.ID
+			+ ".connectSessionUuid";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		String uuid = event.getParameter(PARAM_UUID);

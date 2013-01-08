@@ -444,15 +444,6 @@ public class GpxFilesProcessingPage extends AbstractCleanDataEditorPage
 					break;
 				}
 
-				// if (canEditLine(cnode))
-				// styledString = new StyledString(currentText,
-				// DEFAULT_FONT);
-				// else
-				// styledString = new StyledString(currentText,
-				// NOT_EDITABLE);
-				// cell.setText(styledString.getString());
-				// cell.setStyleRanges(styledString.getStyleRanges());
-
 				if (canEditLine(cnode)) {
 					cell.setText(currText);
 					cell.setFont(normalFont);

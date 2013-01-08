@@ -35,6 +35,7 @@ import javax.jcr.Node;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.gps.JcrSessionUtils;
+import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
 import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.editors.CleanDataEditor;
 import org.argeo.connect.ui.gps.editors.CleanDataEditorInput;
@@ -52,12 +53,16 @@ import org.eclipse.ui.handlers.HandlerUtil;
  */
 
 public class NewCleanDataSession extends AbstractHandler {
-	public final static String ID = "org.argeo.connect.ui.gps.newCleanDataSession";
+	public final static String ID = ConnectGpsUiPlugin.ID
+			+ ".newCleanDataSession";
+	public final static String PARAM_MODEL_ID = ConnectGpsUiPlugin.ID
+			+ ".modelSessionId";
+	public final static String PARAM_PARENT_ID = ConnectGpsUiPlugin.ID
+			+ ".parentNodeId";
+
 	public final static String DEFAULT_ICON_REL_PATH = "icons/sessionAdd.gif";
 	public final static String DEFAULT_LABEL = "Create a new clean data session";
 	public final static String COPY_SESSION_LABEL = "Create a new session using this session params";
-	public final static String PARAM_MODEL_ID = "org.argeo.connect.ui.gps.modelSessionId";
-	public final static String PARAM_PARENT_ID = "org.argeo.connect.ui.gps.parentNodeId";
 
 	/* DEPENDENCY INJECTION */
 	private GpsUiJcrServices uiJcrServices;

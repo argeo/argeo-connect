@@ -35,6 +35,9 @@ import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.eclipse.jface.wizard.Wizard;
 
+/**
+ * Wizard to create a new repository. 
+ */
 public class CreateLocalRepoWizard extends Wizard {
 
 	// private Session jcrSession;

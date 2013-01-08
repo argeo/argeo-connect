@@ -37,6 +37,7 @@ import javax.jcr.Workspace;
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
+import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
 import org.argeo.connect.ui.gps.GpsUiGisServices;
 import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.editors.LocalRepoEditor;
@@ -63,24 +64,25 @@ public class RemoveImportedData extends AbstractHandler {
 	// private final static Log log =
 	// LogFactory.getLog(OpenCleanDataEditor.class);
 
-	public final static String ID = "org.argeo.connect.ui.gps.removeImportedData";
+	public final static String ID = ConnectGpsUiPlugin.ID
+			+ ".removeImportedData";
+	public final static String PARAM_SESSION_ID = ConnectGpsUiPlugin.ID
+			+ ".sessionId";
 	public final static String DEFAULT_ICON_REL_PATH = "icons/sessionRemove.gif";
 	public final static String DEFAULT_LABEL = "Remove corresponding data from the local repository";
-	public final static String PARAM_SESSION_ID = "org.argeo.connect.ui.gps.sessionId";
 
 	/* DEPENDENCY INJECTION */
 	private GpsUiGisServices uiGisServices;
 	private GpsUiJcrServices uiJcrServices;
 
-	// Define here the default node name
-
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		try {
 			// Retrieve the session node
 			String modelId = event.getParameter(PARAM_SESSION_ID);
-			// model Id is compulsory
+			// modelId is compulsory
 			if (modelId == null)
 				return null;
+
 			Node currSess = uiJcrServices.getJcrSession().getNodeByIdentifier(
 					modelId);
 
@@ -122,9 +124,6 @@ public class RemoveImportedData extends AbstractHandler {
 			GpsBrowserView gbView = (GpsBrowserView) HandlerUtil
 					.getActiveWorkbenchWindow(event).getActivePage()
 					.findView(HandlerUtil.getActivePartId(event));
-			// GpsBrowserView gbView = (GpsBrowserView) ConnectUiGpsPlugin
-			// .getDefault().getWorkbench().getActiveWorkbenchWindow()
-			// .getActivePage().findView(GpsBrowserView.ID);
 			gbView.refresh(sessionRepo);
 			gbView.refresh(currRepo);
 

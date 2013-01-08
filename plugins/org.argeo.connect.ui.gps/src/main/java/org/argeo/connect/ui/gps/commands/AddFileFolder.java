@@ -30,6 +30,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.connect.ConnectTypes;
+import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.eclipse.ui.dialogs.SingleValue;
@@ -40,8 +41,11 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
 
+/**
+ * Enable addition of file folders in the user defined tree structure.
+ */
 public class AddFileFolder extends AbstractHandler implements ConnectTypes {
-	public final static String ID = "org.argeo.connect.ui.gps.addFileFolder";
+	public final static String ID = ConnectGpsUiPlugin.ID + ".addFileFolder";
 	public final static String DEFAULT_ICON_REL_PATH = "icons/addFolder.gif";
 	public final static String DEFAULT_LABEL = "Add a sub folder";
 

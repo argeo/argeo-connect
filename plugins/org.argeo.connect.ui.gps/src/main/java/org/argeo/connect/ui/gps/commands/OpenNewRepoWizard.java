@@ -26,6 +26,7 @@
  */
 package org.argeo.connect.ui.gps.commands;
 
+import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
 import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.wizards.CreateLocalRepoWizard;
 import org.eclipse.core.commands.AbstractHandler;
@@ -36,13 +37,14 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 /** Open the new repository wizard . */
 public class OpenNewRepoWizard extends AbstractHandler {
-	public final static String ID = "org.argeo.connect.ui.gps.openNewRepoWizard";
+	public final static String ID = ConnectGpsUiPlugin.ID
+			+ ".openNewRepoWizard";
 	public final static String DEFAULT_ICON_REL_PATH = "icons/repo.gif";
 	public final static String DEFAULT_LABEL = "Create a new local repository";
-	
+
 	/* DEPENDENCY INJECTION */
 	private GpsUiJcrServices uiJcrServices;
-	
+
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
 		CreateLocalRepoWizard wizard = new CreateLocalRepoWizard(uiJcrServices);

@@ -35,6 +35,10 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 
+/**
+ * Add specific GPS UI cleaning session methods to the base FormPage abstract
+ * class.
+ */
 public abstract class AbstractCleanDataEditorPage extends FormPage {
 
 	// Images

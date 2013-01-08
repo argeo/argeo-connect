@@ -84,16 +84,14 @@ import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.services.IServiceLocator;
 
-/** Specific Gps explorer View */
+/** Specific GPS explorer View */
 public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 		ConnectTypes { // extends ViewPart {
 
 	private final static Log log = LogFactory.getLog(GpsBrowserView.class);
-	public final static String ID = "org.argeo.connect.ui.gps.gpsBrowserView";
+	public final static String ID = ConnectGpsUiPlugin.ID + ".gpsBrowserView";
 
 	/* DEPENDENCY INJECTION */
-	// private Session jcrSession;
-	// private TrackDao trackDao;
 	private GpsUiJcrServices uiJcrServices;
 
 	private TreeViewer nodesViewer;
@@ -113,16 +111,13 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 				uiJcrServices.getJcrSession());
 		fileHandler = new FileHandler(ssfp);
 
-		parent.setLayout(new GridLayout());
-
-		// String userHomePath = JcrUtils.getUserHomePath(username);
-
-		// Creating base directories if they don't exists
+		// Create base directories if they don't exists
 		if (uiJcrServices.getGpxFilesDirectory() == null
 				|| uiJcrServices.getLocalRepositoriesParentNode() == null
 				|| uiJcrServices.getTrackSessionsParentNode() == null)
 			uiJcrServices.initializeLocalRepository();
 
+		// Create UI objects
 		String[] rootNodes = new String[3];
 		try {
 			rootNodes[0] = uiJcrServices.getLocalRepositoriesParentNode()
@@ -133,11 +128,11 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 			throw new ArgeoException("unexpected error while initializing"
 					+ " roots of the view browser", re);
 		}
-
-		// Configure here useful view root nodes
 		nodeContentProvider = new ViewContentProvider(
 				uiJcrServices.getJcrSession(), rootNodes);
-		// nodes viewer
+
+		// TreeViewer
+		parent.setLayout(new GridLayout());
 		nodesViewer = createNodeViewer(parent, nodeContentProvider);
 		nodesViewer.setComparer(new NodeViewerComparer());
 		nodesViewer.setInput(getViewSite());
@@ -150,7 +145,6 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 				contextMenuAboutToShow(manager);
 			}
 		});
-
 		nodesViewer.getTree().setMenu(menu);
 		getSite().registerContextMenu(menuManager, nodesViewer);
 
@@ -210,10 +204,9 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 			IWorkbenchWindow window = ConnectGpsUiPlugin.getDefault()
 					.getWorkbench().getActiveWorkbenchWindow();
 
-			// Please note that commands that are not subject to programmatic
+			// Note that commands that are not subject to programmatic
 			// conditions are directly define in the corresponding
-			// menuContribution
-			// of the plugin.xml.
+			// menuContribution of the plugin.xml.
 
 			// Building conditions
 
