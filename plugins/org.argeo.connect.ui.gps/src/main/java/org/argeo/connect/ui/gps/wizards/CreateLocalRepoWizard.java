@@ -29,7 +29,7 @@ package org.argeo.connect.ui.gps.wizards;
 import javax.jcr.Node;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.gps.JcrSessionUtils;
+import org.argeo.connect.gps.CleaningSessionUtils;
 import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
 import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
@@ -66,7 +66,7 @@ public class CreateLocalRepoWizard extends Wizard {
 		if (!canFinish())
 			return false;
 		Node parentNode = uiJcrServices.getLocalRepositoriesParentNode();
-		JcrSessionUtils.createLocalRepository(parentNode,
+		CleaningSessionUtils.createLocalRepository(parentNode,
 				defineRepositoryModel.getTechName(),
 				defineRepositoryModel.getDisplayName());
 

@@ -34,7 +34,7 @@ import javax.jcr.Node;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectTypes;
-import org.argeo.connect.gps.JcrSessionUtils;
+import org.argeo.connect.gps.CleaningSessionUtils;
 import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
 import org.argeo.connect.ui.gps.GpsImages;
 import org.argeo.connect.ui.gps.GpsUiJcrServices;
@@ -95,13 +95,13 @@ public class NewCleanDataSession extends AbstractHandler {
 
 			String nodeName = timeFormatter.format(new GregorianCalendar()
 					.getTime());
-			Node newNode = JcrSessionUtils.createNewSession(parentNode,
+			Node newNode = CleaningSessionUtils.createNewSession(parentNode,
 					nodeName);
 
 			if (modelId != null) {
 				Node modelNode = uiJcrServices.getJcrSession()
 						.getNodeByIdentifier(modelId);
-				JcrSessionUtils.copyDataFromModel(modelNode, newNode);
+				CleaningSessionUtils.copyDataFromModel(modelNode, newNode);
 			}
 
 			view.nodeAdded(parentNode, newNode);

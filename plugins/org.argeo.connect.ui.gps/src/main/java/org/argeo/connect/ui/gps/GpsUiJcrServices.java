@@ -39,7 +39,7 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
-import org.argeo.connect.gps.JcrSessionUtils;
+import org.argeo.connect.gps.CleaningSessionUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.UserJcrUtils;
 
@@ -265,7 +265,8 @@ public class GpsUiJcrServices {
 				Node repos = parFolder.addNode(
 						localRepoBasePath.substring(lastIndex + 1),
 						ConnectTypes.CONNECT_LOCAL_REPOSITORIES);
-				JcrSessionUtils.createLocalRepository(repos, "main", "Default");
+				CleaningSessionUtils.createLocalRepository(repos, "main",
+						"Default");
 
 			}
 

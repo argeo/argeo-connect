@@ -30,8 +30,7 @@ package org.argeo.connect;
 public interface ConnectNames {
 
 	public final static String CONNECT_NAMESPACE = "http://www.argeo.org/ns/connect";
-
-		public final static String CONNECT_AUTHOR = "connect:author";
+	public final static String CONNECT_AUTHOR = "connect:author";
 	public final static String CONNECT_PUBLISHED_DATE = "connect:publishedDate";
 	public final static String CONNECT_UPDATED_DATE = "connect:updatedDate";
 	public final static String CONNECT_SOURCE_URI = "connect:sourceUri";
@@ -59,8 +58,8 @@ public interface ConnectNames {
 	public final static String CONNECT_DEVICE_NAME = "connect:deviceName";
 	public final static String CONNECT_TO_BE_PROCESSED = "connect:toBeProcessed";
 	public final static String CONNECT_ALREADY_PROCESSED = "connect:alreadyProcessed";
-	public final static String CONNECT_SEGMENT_UUID =  "connect:segmentUuid";
-	
+	public final static String CONNECT_SEGMENT_UUID = "connect:segmentUuid";
+
 	// Clean parameters
 	public final static String CONNECT_PARAM_VALUE = "connect:paramValue";
 	public final static String CONNECT_PARAM_MIN_VALUE = "connect:paramMinValue";

@@ -26,7 +26,7 @@
  */
 package org.argeo.connect.ui.gps.editors;
 
-import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
+import org.argeo.connect.ui.gps.GpsImages;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -42,10 +42,9 @@ import org.eclipse.ui.forms.editor.FormPage;
 public abstract class AbstractCleanDataEditorPage extends FormPage {
 
 	// Images
-	protected final static Image CHECKED = ConnectGpsUiPlugin
-			.getImageDescriptor("icons/checked.gif").createImage();
-	protected final static Image UNCHECKED = ConnectGpsUiPlugin
-			.getImageDescriptor("icons/unchecked.gif").createImage();
+	protected final static Image CHECKED = GpsImages.ICON_CHECKED.createImage();
+	protected final static Image UNCHECKED = GpsImages.ICON_UNCHECKED
+			.createImage();
 
 	public AbstractCleanDataEditorPage(FormEditor editor, String id,
 			String title) {
