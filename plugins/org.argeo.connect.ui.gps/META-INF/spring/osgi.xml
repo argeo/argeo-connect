@@ -8,25 +8,10 @@
 
 	<reference id="mapControlCreator" interface="org.argeo.gis.ui.MapControlCreator" />
 
-	<!-- <reference id="mapControlCreator" interface="org.argeo.gis.ui.MapControlCreator" 
-		/> <reference id="jcrSession" interface="javax.jcr.Session" filter="(argeo.jcr.repository.alias=connect)" 
-		/> <reference id="geoJcrMapper" interface="org.argeo.geotools.jcr.GeoJcrMapper" 
-		/> -->
-
-	<!-- <reference id="nodeRepository" interface="javax.jcr.Repository" filter="(argeo.jcr.repository.alias=node)" 
-		/> <list id="dataStores" interface="org.geotools.data.DataStore" cardinality="0..N" 
-		/> -->
-
 	<reference id="trackDao" interface="org.argeo.connect.gps.TrackDao"
 		cardinality="0..1" />
-
-	<!-- old unsafe approach -->
-	<!-- <reference id="jcrSession" interface="javax.jcr.Session" /> -->
 
 	<reference id="repository" interface="javax.jcr.Repository"
 		filter="(argeo.jcr.repository.alias=connect)" />
 
-	<!-- <set id="repositories" interface="javax.jcr.Repository" cardinality="0..N"> 
-		<listener ref="repositoryRegister" bind-method="register" unbind-method="unregister" 
-		/> </set> -->
 </beans:beans>

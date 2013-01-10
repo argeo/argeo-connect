@@ -46,3 +46,4 @@ public class ModifiedFieldListener implements ModifyListener {
 		formPart.markDirty();
 	}
 }
+

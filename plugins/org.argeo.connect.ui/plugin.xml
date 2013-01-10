@@ -3,92 +3,14 @@
 <plugin>
    <extension
          point="org.eclipse.ui.perspectives">
-      
-      <!-- Moved in project crisis <perspective
-            class="org.argeo.connect.ui.TrackingPerspective"
-            id="org.argeo.connect.ui.trackingPerspective"
-            name="Tracking">
-      </perspective>
-      --> 
 	</extension>
    	<extension
          point="org.eclipse.ui.views">
-            <!-- Moved in project crisis 
-      <view
-            class="org.argeo.eclipse.spring.SpringExtensionFactory"
-            id="org.argeo.connect.ui.feedView"
-            name="Feed"
-            restorable="true">
-      </view>
-      <view
-            name="Layers"
-            icon="icons/layer_folder.gif"
-            class="org.argeo.eclipse.spring.SpringExtensionFactory"
-            id="org.argeo.connect.ui.layersView">
-      </view>
-      <view
-            name="GIS Data"
-            icon="icons/gis_add_data.gif"
-            class="org.argeo.eclipse.spring.SpringExtensionFactory"
-            id="org.argeo.connect.ui.featureSourcesView">
-      </view>
-      --> 
    </extension>
    <extension
          point="org.eclipse.ui.editors">
-            <!-- Moved in project crisis 
-      <editor
-            class="org.argeo.eclipse.spring.SpringExtensionFactory"
-            default="false"
-            id="org.argeo.connect.ui.linkEditor"
-            name="Link">
-      </editor>
-      <editor
-            id="org.argeo.connect.ui.defaultMapEditor"
-      		class="org.argeo.eclipse.spring.SpringExtensionFactory"
-            default="true"
-            icon="icons/earth_edit.gif"
-            name="Map Editor">
-      </editor>
-      -->
    </extension>
    	<extension
          point="org.eclipse.ui.commands">
-		      <!-- Moved in project crisis 
-		<command
-            defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
-            id="org.argeo.connect.ui.newMap"
-            name="New Map">
-    	</command>
-		<command
-            defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
-            id="org.argeo.connect.ui.addFeatureSources"
-            name="Add Feature Sources">
-    	</command>
-    	-->
     </extension>
-      <!-- Moved in project crisis 
-	<extension
-         point="org.eclipse.ui.menus">
-		<menuContribution
-                locationURI="toolbar:org.argeo.connect.ui.layersView">
-             <command
-                  commandId="org.argeo.connect.ui.newMap"
-                  icon="icons/earth_edit.gif"
-                  label="New Map"
-                  style="push"
-                  tooltip="New Map">
-            </command>
-        </menuContribution>
-		<menuContribution
-                locationURI="toolbar:org.argeo.connect.ui.featureSourcesView">
-             <command
-                  commandId="org.argeo.connect.ui.addFeatureSources"
-                  icon="icons/earth_edit.gif"
-                  label="Add Feature Sources"
-                  style="push"
-                  tooltip="Add Feature Sources">
-            </command>
-        </menuContribution>
-	</extension> -->
 </plugin>

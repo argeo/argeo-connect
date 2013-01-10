@@ -334,7 +334,6 @@ public class GpsUiJcrServices {
 		}
 	}
 
-	/* Exposes injected objects */
 	/** exposes injected session */
 	public Session getJcrSession() {
 		return jcrSession;

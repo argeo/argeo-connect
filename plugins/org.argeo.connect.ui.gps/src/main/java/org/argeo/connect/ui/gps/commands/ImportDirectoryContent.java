@@ -40,15 +40,16 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-/** 
- * Recursively upload files and directory from the user file system to JCR
- * TODO: filter unwanted files and directories
+/**
+ * Recursively upload files and directory from the user file system to JCR TODO:
+ * filter unwanted files and directories
  * 
  */
 public class ImportDirectoryContent extends AbstractHandler {
 	// private static Log log = LogFactory.getLog(ImportDirectoryContent.class);
 
-	public final static String ID = ConnectGpsUiPlugin.ID + ".importDirectoryContent";
+	public final static String ID = ConnectGpsUiPlugin.ID
+			+ ".importDirectoryContent";
 	public final static String DEFAULT_ICON_REL_PATH = "icons/import_fs.png";
 	public final static String DEFAULT_LABEL = "Upload GPS data to repository";
 

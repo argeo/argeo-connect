@@ -16,5 +16,4 @@
 		<property name="uiGisServices" ref="uiGisServices" />
 	</bean>
 
-
 </beans>
