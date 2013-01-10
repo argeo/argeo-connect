@@ -38,6 +38,7 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
+import org.argeo.connect.ui.gps.GpsImages;
 import org.argeo.connect.ui.gps.GpsUiGisServices;
 import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.editors.LocalRepoEditor;
@@ -47,6 +48,7 @@ import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
@@ -68,7 +70,7 @@ public class RemoveImportedData extends AbstractHandler {
 			+ ".removeImportedData";
 	public final static String PARAM_SESSION_ID = ConnectGpsUiPlugin.ID
 			+ ".sessionId";
-	public final static String DEFAULT_ICON_REL_PATH = "icons/sessionRemove.gif";
+	public final static ImageDescriptor DEFAULT_ICON = GpsImages.ICON_REMOVE_CLEANING_SESSION;
 	public final static String DEFAULT_LABEL = "Remove corresponding data from the local repository";
 
 	/* DEPENDENCY INJECTION */

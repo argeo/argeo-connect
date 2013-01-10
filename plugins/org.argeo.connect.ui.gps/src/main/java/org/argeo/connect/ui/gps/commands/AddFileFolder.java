@@ -31,12 +31,14 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
+import org.argeo.connect.ui.gps.GpsImages;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.eclipse.ui.dialogs.SingleValue;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -46,8 +48,8 @@ import org.eclipse.ui.handlers.HandlerUtil;
  */
 public class AddFileFolder extends AbstractHandler implements ConnectTypes {
 	public final static String ID = ConnectGpsUiPlugin.ID + ".addFileFolder";
-	public final static String DEFAULT_ICON_REL_PATH = "icons/addFolder.gif";
 	public final static String DEFAULT_LABEL = "Add a sub folder";
+	public final static ImageDescriptor DEFAULT_ICON = GpsImages.ICON_ADD_FOLDER;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		ISelection selection = HandlerUtil.getActiveWorkbenchWindow(event)

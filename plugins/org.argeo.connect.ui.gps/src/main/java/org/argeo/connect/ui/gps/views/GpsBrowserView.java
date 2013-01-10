@@ -60,7 +60,7 @@ import org.argeo.eclipse.ui.jcr.utils.NodeViewerComparer;
 import org.argeo.eclipse.ui.jcr.utils.SingleSessionFileProvider;
 import org.argeo.eclipse.ui.jcr.views.AbstractJcrBrowser;
 import org.argeo.eclipse.ui.specific.FileHandler;
-import org.eclipse.jface.action.IContributionItem;
+import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -80,9 +80,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.menus.CommandContributionItem;
-import org.eclipse.ui.menus.CommandContributionItemParameter;
-import org.eclipse.ui.services.IServiceLocator;
 
 /** Specific GPS explorer View */
 public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
@@ -203,7 +200,6 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 		try {
 			IWorkbenchWindow window = ConnectGpsUiPlugin.getDefault()
 					.getWorkbench().getActiveWorkbenchWindow();
-
 			// Note that commands that are not subject to programmatic
 			// conditions are directly define in the corresponding
 			// menuContribution of the plugin.xml.
@@ -248,14 +244,14 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 			}
 
 			// Effective Refresh
-			refreshCommand(menuManager, window, AddFileFolder.ID,
-					AddFileFolder.DEFAULT_LABEL,
-					AddFileFolder.DEFAULT_ICON_REL_PATH, isFileRepo, null);
+			CommandUtils.refreshCommand(menuManager, window, AddFileFolder.ID,
+					AddFileFolder.DEFAULT_LABEL, AddFileFolder.DEFAULT_ICON,
+					isFileRepo);
 
-			refreshCommand(menuManager, window, ImportDirectoryContent.ID,
+			CommandUtils.refreshCommand(menuManager, window,
+					ImportDirectoryContent.ID,
 					ImportDirectoryContent.DEFAULT_LABEL,
-					ImportDirectoryContent.DEFAULT_ICON_REL_PATH, isFileRepo,
-					null);
+					ImportDirectoryContent.DEFAULT_ICON, isFileRepo);
 
 			Map<String, String> params = null;
 			if (curNode != null) {
@@ -266,37 +262,38 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 							.getParent().getIdentifier());
 					params.put(NewCleanDataSession.PARAM_MODEL_ID,
 							curNode.getIdentifier());
-					refreshCommand(menuManager, window, NewCleanDataSession.ID,
-							NewCleanDataSession.COPY_SESSION_LABEL,
-							NewCleanDataSession.DEFAULT_ICON_REL_PATH,
-							isSession, params);
+					CommandUtils
+							.refreshParametrizedCommand(menuManager, window,
+									NewCleanDataSession.ID,
+									NewCleanDataSession.COPY_SESSION_LABEL,
+									NewCleanDataSession.DEFAULT_ICON,
+									isSession, params);
 				} else {
 					params.put(NewCleanDataSession.PARAM_PARENT_ID,
 							curNode.getIdentifier());
 					// create session from default
-					refreshCommand(menuManager, window, NewCleanDataSession.ID,
+					CommandUtils.refreshCommand(menuManager, window,
+							NewCleanDataSession.ID,
 							NewCleanDataSession.DEFAULT_LABEL,
-							NewCleanDataSession.DEFAULT_ICON_REL_PATH,
-							isSessionRepo, null);
+							NewCleanDataSession.DEFAULT_ICON, isSessionRepo);
 				}
 
 				params = new HashMap<String, String>();
 				params.put(RemoveImportedData.PARAM_SESSION_ID,
 						curNode.getIdentifier());
-				refreshCommand(menuManager, window, RemoveImportedData.ID,
+				CommandUtils.refreshParametrizedCommand(menuManager, window,
+						RemoveImportedData.ID,
 						RemoveImportedData.DEFAULT_LABEL,
-						RemoveImportedData.DEFAULT_ICON_REL_PATH, isCompleted,
-						params);
+						RemoveImportedData.DEFAULT_ICON, isCompleted, params);
 			}
 
-			refreshCommand(menuManager, window, OpenNewRepoWizard.ID,
-					OpenNewRepoWizard.DEFAULT_LABEL,
-					OpenNewRepoWizard.DEFAULT_ICON_REL_PATH, isLocalRepoParent,
-					null);
+			CommandUtils.refreshCommand(menuManager, window,
+					OpenNewRepoWizard.ID, OpenNewRepoWizard.DEFAULT_LABEL,
+					OpenNewRepoWizard.DEFAULT_ICON, isLocalRepoParent);
 
-			refreshCommand(menuManager, window, DeleteNodesExt.ID,
-					DeleteNodesExt.DEFAULT_LABEL,
-					DeleteNodesExt.DEFAULT_ICON_REL_PATH, canBeDeleted, null);
+			CommandUtils.refreshCommand(menuManager, window, DeleteNodesExt.ID,
+					DeleteNodesExt.DEFAULT_LABEL, DeleteNodesExt.DEFAULT_ICON,
+					canBeDeleted);
 
 		} catch (RepositoryException re) {
 			throw new ArgeoException(
@@ -305,52 +302,54 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 
 	}
 
-	protected void refreshParametrizedCommand(IMenuManager menuManager,
-			IServiceLocator locator, String cmdId, String label,
-			String iconPath, boolean showCommand) {
-		IContributionItem ici = menuManager.find(cmdId);
-		if (ici != null)
-			menuManager.remove(ici);
-		CommandContributionItemParameter contributionItemParameter = new CommandContributionItemParameter(
-				locator, null, cmdId, SWT.PUSH);
-
-		if (showCommand) {
-			// Set Params
-			contributionItemParameter.label = label;
-			contributionItemParameter.icon = ConnectGpsUiPlugin
-					.getImageDescriptor(iconPath);
-
-			CommandContributionItem cci = new CommandContributionItem(
-					contributionItemParameter);
-			cci.setId(cmdId);
-			menuManager.add(cci);
-		}
-	}
-
-	protected void refreshCommand(IMenuManager menuManager,
-			IServiceLocator locator, String cmdId, String label,
-			String iconPath, boolean showCommand, Map<String, String> params) {
-		IContributionItem ici = menuManager.find(cmdId);
-		if (ici != null)
-			menuManager.remove(ici);
-		CommandContributionItemParameter contributionItemParameter = new CommandContributionItemParameter(
-				locator, null, cmdId, SWT.PUSH);
-
-		if (showCommand) {
-			// Set Params
-			contributionItemParameter.label = label;
-			contributionItemParameter.icon = ConnectGpsUiPlugin
-					.getImageDescriptor(iconPath);
-
-			if (params != null)
-				contributionItemParameter.parameters = params;
-
-			CommandContributionItem cci = new CommandContributionItem(
-					contributionItemParameter);
-			cci.setId(cmdId);
-			menuManager.add(cci);
-		}
-	}
+	// protected void refreshParametrizedCommand(IMenuManager menuManager,
+	// IServiceLocator locator, String cmdId, String label,
+	// String iconPath, boolean showCommand) {
+	// IContributionItem ici = menuManager.find(cmdId);
+	// if (ici != null)
+	// menuManager.remove(ici);
+	// CommandContributionItemParameter contributionItemParameter = new
+	// CommandContributionItemParameter(
+	// locator, null, cmdId, SWT.PUSH);
+	//
+	// if (showCommand) {
+	// // Set Params
+	// contributionItemParameter.label = label;
+	// contributionItemParameter.icon = ConnectGpsUiPlugin
+	// .getImageDescriptor(iconPath);
+	//
+	// CommandContributionItem cci = new CommandContributionItem(
+	// contributionItemParameter);
+	// cci.setId(cmdId);
+	// menuManager.add(cci);
+	// }
+	// }
+	//
+	// protected void refreshCommand(IMenuManager menuManager,
+	// IServiceLocator locator, String cmdId, String label,
+	// String iconPath, boolean showCommand, Map<String, String> params) {
+	// IContributionItem ici = menuManager.find(cmdId);
+	// if (ici != null)
+	// menuManager.remove(ici);
+	// CommandContributionItemParameter contributionItemParameter = new
+	// CommandContributionItemParameter(
+	// locator, null, cmdId, SWT.PUSH);
+	//
+	// if (showCommand) {
+	// // Set Params
+	// contributionItemParameter.label = label;
+	// contributionItemParameter.icon = ConnectGpsUiPlugin
+	// .getImageDescriptor(iconPath);
+	//
+	// if (params != null)
+	// contributionItemParameter.parameters = params;
+	//
+	// CommandContributionItem cci = new CommandContributionItem(
+	// contributionItemParameter);
+	// cci.setId(cmdId);
+	// menuManager.add(cci);
+	// }
+	// }
 
 	// Add specific behaviours to the node provider
 	class ViewContentProvider extends SimpleNodeContentProvider {

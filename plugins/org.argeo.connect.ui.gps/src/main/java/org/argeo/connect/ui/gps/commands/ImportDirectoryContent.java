@@ -29,12 +29,14 @@ package org.argeo.connect.ui.gps.commands;
 import javax.jcr.Node;
 
 import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
+import org.argeo.connect.ui.gps.GpsImages;
 import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.jcr.ui.explorer.wizards.ImportFileSystemWizard;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -50,7 +52,7 @@ public class ImportDirectoryContent extends AbstractHandler {
 
 	public final static String ID = ConnectGpsUiPlugin.ID
 			+ ".importDirectoryContent";
-	public final static String DEFAULT_ICON_REL_PATH = "icons/import_fs.png";
+	public final static ImageDescriptor DEFAULT_ICON = GpsImages.ICON_IMPORT_FOLDER;
 	public final static String DEFAULT_LABEL = "Upload GPS data to repository";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {

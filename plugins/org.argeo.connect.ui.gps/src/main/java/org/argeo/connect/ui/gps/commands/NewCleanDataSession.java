@@ -36,6 +36,7 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.gps.JcrSessionUtils;
 import org.argeo.connect.ui.gps.ConnectGpsUiPlugin;
+import org.argeo.connect.ui.gps.GpsImages;
 import org.argeo.connect.ui.gps.GpsUiJcrServices;
 import org.argeo.connect.ui.gps.editors.CleanDataEditor;
 import org.argeo.connect.ui.gps.editors.CleanDataEditorInput;
@@ -43,6 +44,7 @@ import org.argeo.connect.ui.gps.views.GpsBrowserView;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
@@ -60,7 +62,7 @@ public class NewCleanDataSession extends AbstractHandler {
 	public final static String PARAM_PARENT_ID = ConnectGpsUiPlugin.ID
 			+ ".parentNodeId";
 
-	public final static String DEFAULT_ICON_REL_PATH = "icons/sessionAdd.gif";
+	public final static ImageDescriptor DEFAULT_ICON = GpsImages.ICON_ADD_CLEANING_SESSION;
 	public final static String DEFAULT_LABEL = "Create a new clean data session";
 	public final static String COPY_SESSION_LABEL = "Create a new session using this session params";
 

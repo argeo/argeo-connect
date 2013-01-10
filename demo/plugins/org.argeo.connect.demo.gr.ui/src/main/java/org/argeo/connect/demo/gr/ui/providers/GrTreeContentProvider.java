@@ -44,7 +44,7 @@ import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.GrTypes;
 import org.argeo.eclipse.ui.jcr.SimpleNodeContentProvider;
 
-// Add specific behaviours to the node provider
+// Add specific behaviors to the node provider
 public class GrTreeContentProvider extends SimpleNodeContentProvider {
 
 	private Session session;

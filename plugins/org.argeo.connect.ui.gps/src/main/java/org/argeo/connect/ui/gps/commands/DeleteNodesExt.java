@@ -39,9 +39,11 @@ import org.argeo.eclipse.ui.jcr.commands.DeleteNodes;
 import org.argeo.eclipse.ui.jcr.views.AbstractJcrBrowser;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 
@@ -53,7 +55,9 @@ import org.eclipse.ui.handlers.HandlerUtil;
  */
 public class DeleteNodesExt extends DeleteNodes {
 	public final static String ID = ConnectGpsUiPlugin.ID + ".deleteNodes";
-	public final static String DEFAULT_ICON_REL_PATH = "icons/remove.gif";
+	public final static ImageDescriptor DEFAULT_ICON = ConnectGpsUiPlugin
+			.getDefault().getWorkbench().getSharedImages()
+			.getImageDescriptor(ISharedImages.IMG_ELCL_REMOVE);
 	public final static String DEFAULT_LABEL = "Delete selected nodes";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
