@@ -39,6 +39,7 @@ import org.geotools.referencing.CRS;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -55,6 +56,8 @@ public class BeanFeatureTypeBuilder<T> implements FactoryBean {
 	private List<String> cachedAttributeList;
 	private String name;
 
+	private String defaultGeometryName;
+
 	private final CoordinateReferenceSystem crs;
 
 	public BeanFeatureTypeBuilder(Class<? extends T> clss) {
@@ -62,11 +65,15 @@ public class BeanFeatureTypeBuilder<T> implements FactoryBean {
 	}
 
 	public BeanFeatureTypeBuilder(String name, Class<? extends T> clss) {
-		this(name, clss, null);
+		this(name, clss, null, null);
 	}
 
+	/**
+	 * If defaultGeometry name is not null all other geometries will be ignored,
+	 * for compatibility with the shapefile format
+	 */
 	public BeanFeatureTypeBuilder(String name, Class<? extends T> clss,
-			CoordinateReferenceSystem crs) {
+			CoordinateReferenceSystem crs, String defaultGeometryName) {
 		this.classBeanWrapper = new BeanWrapperImpl(clss);
 		this.name = name;
 		try {
@@ -76,6 +83,7 @@ public class BeanFeatureTypeBuilder<T> implements FactoryBean {
 		}
 		if (this.name == null)
 			this.name = getClassBeanWrapper().getWrappedClass().getSimpleName();
+		this.defaultGeometryName = defaultGeometryName;
 		cachedFeatureType = doBuildFeatureType();
 	}
 
@@ -98,10 +106,18 @@ public class BeanFeatureTypeBuilder<T> implements FactoryBean {
 				continue props;
 			if (Collection.class.isAssignableFrom(pd.getPropertyType()))
 				continue props;
+			// skip non default geometry properties (shapefile compatibility)
+//			if (defaultGeometryName != null
+//					&& Geometry.class.isAssignableFrom(pd.getPropertyType())
+//					&& !defaultGeometryName.equals(pd.getName()))
+//				continue;
+
 			builder.add(pd.getName(), pd.getPropertyType());
 			cachedAttributeList.add(pd.getName());
 		}
 
+		if (defaultGeometryName != null)
+			builder.setDefaultGeometry(defaultGeometryName);
 		return builder.buildFeatureType();
 	}
 
@@ -191,4 +207,43 @@ public class BeanFeatureTypeBuilder<T> implements FactoryBean {
 		return true;
 	}
 
+	public void setDefaultGeometryName(String defaultGeometryName) {
+		this.defaultGeometryName = defaultGeometryName;
+	}
+
+	public SimpleFeature buildFeature(SimpleFeatureType featureType,
+			Object object) {
+		BeanWrapper instanceWrapper = new BeanWrapperImpl(object);
+		SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(
+				featureType);
+		attrs: for (AttributeDescriptor ad : featureType
+				.getAttributeDescriptors()) {
+			// default geometry (shapefile)
+			if (defaultGeometryName != null
+					&& featureType.getGeometryDescriptor().getName()
+							.equals(ad.getName())) {
+				featureBuilder.add(instanceWrapper
+						.getPropertyValue(defaultGeometryName));
+				continue attrs;
+			}
+			String property = ad.getLocalName();
+			if (!instanceWrapper.isReadableProperty(property)) {
+				properties: for (PropertyDescriptor pd : instanceWrapper
+						.getPropertyDescriptors()) {
+					if (pd.getName().startsWith(property)) {
+						property = pd.getName();
+						break properties;
+					}
+				}
+			}
+			if (!instanceWrapper.isReadableProperty(property)) {
+				throw new ArgeoException(
+						"Could not find bean property for feature attribute "
+								+ ad.getLocalName());
+			}
+			Object value = instanceWrapper.getPropertyValue(property);
+			featureBuilder.add(value);
+		}
+		return featureBuilder.buildFeature(null);
+	}
 }

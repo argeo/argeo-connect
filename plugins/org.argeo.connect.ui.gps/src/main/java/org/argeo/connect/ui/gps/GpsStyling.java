@@ -36,13 +36,23 @@ public class GpsStyling {
 			Double maxAbsoluteRotation, Double maxAbsoluteVerticalSpeed) {
 		// map filters and colors
 		Map<String, String> cqlFilters = new HashMap<String, String>();
-		cqlFilters.put("speed>" + maxSpeed, "YELLOW");
-		cqlFilters.put("azimuthVariation<" + (-maxAbsoluteRotation)
-				+ " OR azimuthVariation>" + maxAbsoluteRotation, "RED");
-		cqlFilters.put("verticalSpeed<" + (-maxAbsoluteVerticalSpeed)
-				+ " OR verticalSpeed>" + maxAbsoluteVerticalSpeed, "GREEN");
-		cqlFilters.put("acceleration<" + (-maxAbsoluteAcceleration)
-				+ " OR acceleration>" + maxAbsoluteAcceleration, "BLUE");
+		if (ConnectGpsUiPlugin.shapefileBackend) {
+			cqlFilters.put("speed>" + maxSpeed, "YELLOW");
+			cqlFilters.put("azimuthVar<" + (-maxAbsoluteRotation)
+					+ " OR azimuthVar>" + maxAbsoluteRotation, "RED");
+			cqlFilters.put("verticalSp<" + (-maxAbsoluteVerticalSpeed)
+					+ " OR verticalSp>" + maxAbsoluteVerticalSpeed, "GREEN");
+			cqlFilters.put("accelerati<" + (-maxAbsoluteAcceleration)
+					+ " OR accelerati>" + maxAbsoluteAcceleration, "BLUE");
+		} else {
+			cqlFilters.put("speed>" + maxSpeed, "YELLOW");
+			cqlFilters.put("azimuthVariation<" + (-maxAbsoluteRotation)
+					+ " OR azimuthVariation>" + maxAbsoluteRotation, "RED");
+			cqlFilters.put("verticalSpeed<" + (-maxAbsoluteVerticalSpeed)
+					+ " OR verticalSpeed>" + maxAbsoluteVerticalSpeed, "GREEN");
+			cqlFilters.put("acceleration<" + (-maxAbsoluteAcceleration)
+					+ " OR acceleration>" + maxAbsoluteAcceleration, "BLUE");
+		}
 
 		String unmatchedColor = "BLACK";
 		Integer matchedWidth = 2;
@@ -108,8 +118,12 @@ public class GpsStyling {
 					Stroke stroke = sf.createStroke(
 							ff.literal(stringToColor(matchedColor)),
 							ff.literal(matchedWidth));
-					ruleMatched.symbolizers().add(
-							sf.createLineSymbolizer(stroke, field));
+					ruleMatched
+							.symbolizers()
+							.add(sf.createLineSymbolizer(
+									stroke,
+									ConnectGpsUiPlugin.shapefileBackend ? "the_geom"
+											: field));
 					ruleMatched.setFilter(filter);
 					rules.add(ruleMatched);
 				} else if (field.equals(TrackSpeed.POSITION)) {

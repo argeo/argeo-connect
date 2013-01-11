@@ -44,13 +44,23 @@
 		<property name="workspace" value="${connect.repo.workspace}" />
 	</bean>
 
+	<!-- SHAPEFILE -->
+	<bean id="shapefileDataStoreFactory" class="org.argeo.geotools.ShpDataStoreFactory">
+		<property name="url" value="${osgi.instance.area}/geodb" />
+	</bean>
+
+	<bean id="geoDbDataStore" factory-bean="shapefileDataStoreFactory"
+		factory-method="createDataStore">
+	</bean>
+
+
 	<!-- POSTGIS -->
 	<bean id="postGisDataStoreFactory" class="org.argeo.geotools.jdbc.PostgisDataStoreFactory" />
 
-	<bean id="geoDbDataStore" factory-bean="postGisDataStoreFactory"
-		factory-method="createDataStore">
-		<constructor-arg ref="geoDbDataSource" />
-	</bean>
+	<!-- <bean id="geoDbDataStore" factory-bean="postGisDataStoreFactory" -->
+	<!-- factory-method="createDataStore"> -->
+	<!-- <constructor-arg ref="geoDbDataSource" /> -->
+	<!-- </bean> -->
 
 	<bean id="geoDbDataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">

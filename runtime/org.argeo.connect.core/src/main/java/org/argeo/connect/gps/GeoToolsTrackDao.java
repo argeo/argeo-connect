@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.SAXParser;
@@ -84,8 +83,6 @@ import com.vividsolutions.jts.geom.PrecisionModel;
  */
 public class GeoToolsTrackDao implements TrackDao {
 	private final static Log log = LogFactory.getLog(GeoToolsTrackDao.class);
-
-	private final static TimeZone UTC = TimeZone.getTimeZone("UTC");
 
 	private Integer targetSrid = 4326;
 	private Float maxSpeed = 200f;
@@ -160,7 +157,8 @@ public class GeoToolsTrackDao implements TrackDao {
 					positionsTable, TrackPoint.class);
 			String positionsDisplayTable = addPositionsDisplayTablePrefix(referential);
 			BeanFeatureTypeBuilder<TrackSegment> positionDisplayType = new BeanFeatureTypeBuilder<TrackSegment>(
-					positionsDisplayTable, TrackSegment.class, popularMercator);
+					positionsDisplayTable, TrackSegment.class, popularMercator,
+					"position");
 
 			SimpleFeatureCollection positions = FeatureCollections
 					.newCollection();
@@ -255,11 +253,6 @@ public class GeoToolsTrackDao implements TrackDao {
 					+ ">\n");
 
 			Filter filter = filterFactory.not(CQL.toFilter(toRemoveCql));
-			// SortBy order = filterFactory.sort("utcTimestamp",
-			// SortOrder.ASCENDING);
-			//
-			// FeatureIterator<SimpleFeature> filteredSpeeds = trackSpeedsStore
-			// .getFeatures(filter).sort(order).features();
 
 			// sorted query
 			Query query = new Query(trackSpeedsToCleanTable, filter);
@@ -297,9 +290,12 @@ public class GeoToolsTrackDao implements TrackDao {
 						.append("\">");
 				writer.append("<ele>").append(Double.toString(elevation))
 						.append("</ele>");
-				Calendar utcCalendar = Calendar.getInstance(UTC);
-				utcCalendar.setTime(utcTimestamp);
-				String timeStr = DatatypeConverter.printDateTime(utcCalendar);
+
+				// GeoTools 2.7 returns timestamps relative to local timezone
+				Calendar localCalendar = Calendar.getInstance();
+				localCalendar.setTime(utcTimestamp);
+				String timeStr = DatatypeConverter.printDateTime(localCalendar);
+
 				writer.append("<time>").append(timeStr).append("</time>");
 				writer.append("</trkpt>\n");
 			}
@@ -338,9 +334,11 @@ public class GeoToolsTrackDao implements TrackDao {
 			return;
 		}
 
+		// persist
+		SimpleFeatureStore trackSpeedsStore = getFeatureStore(trackSpeedType);
+
 		// multiple trackpoints
 		TrackSpeed currentTrackSpeed = null;
-		// List<Coordinate> coords = new ArrayList<Coordinate>();
 		trackPoints: for (int i = 0; i < trackSegment.getTrackPoints().size(); i++) {
 			TrackPoint trackPoint = trackSegment.getTrackPoints().get(i);
 
@@ -402,36 +400,26 @@ public class GeoToolsTrackDao implements TrackDao {
 				}
 				trackSegment.getTrackSpeeds().add(trackSpeed);
 				// map to features
-				trackSpeedsToAdd.add(trackSpeedType.buildFeature(trackSpeed));
+				SimpleFeature trackSpeedFeature = trackSpeedType.buildFeature(
+						trackSpeedsStore.getSchema(), trackSpeed);
+				trackSpeedsToAdd.add(trackSpeedFeature);
 				currentTrackSpeed = trackSpeed;
 			}
 
 		}
-		// LineString segment = geometryFactory.createLineString(coords
-		// .toArray(new Coordinate[coords.size()]));
-		// trackSegment.setSegment(segment);
-		// trackSegmentsToAdd.add(trackSegmentType.buildFeature(trackSegment));
 
-		// persist
-		SimpleFeatureStore trackSpeedsStore = getFeatureStore(trackSpeedType);
 		try {
 			Transaction transaction = new DefaultTransaction();
-			// trackPointsStore.setTransaction(transaction);
 			trackSpeedsStore.setTransaction(transaction);
-			// trackSegmentsStore.setTransaction(transaction);
 			try {
-				// trackPointsStore.addFeatures(trackPointsToAdd);
 				trackSpeedsStore.addFeatures(trackSpeedsToAdd);
-				// trackSegmentsStore.addFeatures(trackSegmentsToAdd);
 				transaction.commit();
 			} catch (Exception e) {
 				transaction.rollback();
 				throw new ArgeoException("Cannot persist changes", e);
 			} finally {
 				transaction.close();
-				// trackPointsToAdd.clear();
 				trackSpeedsToAdd.clear();
-				// trackSegmentsToAdd.clear();
 			}
 		} catch (ArgeoException e) {
 			throw e;
@@ -442,11 +430,9 @@ public class GeoToolsTrackDao implements TrackDao {
 
 	protected SimpleFeatureStore getFeatureStore(BeanFeatureTypeBuilder<?> type) {
 		SimpleFeatureType featureType = type.getFeatureType();
-		return (SimpleFeatureStore) geoJcrMapper.getOrCreateFeatureSource(
-				dataStoreAlias, featureType);
-		// GeoToolsUtils.createSchemaIfNeeded(dataStore, featureType);
-		// return GeoToolsUtils.getFeatureStore(dataStore,
-		// featureType.getName());
+		SimpleFeatureStore featureStore = (SimpleFeatureStore) geoJcrMapper
+				.getOrCreateFeatureSource(dataStoreAlias, featureType);
+		return featureStore;
 	}
 
 	/** Normalize from [-180°,180°] to [0°,360°] */
@@ -465,7 +451,7 @@ public class GeoToolsTrackDao implements TrackDao {
 					positionsTable, TrackPoint.class);
 			String positionsDisplayTable = addPositionsDisplayTablePrefix(referential);
 			BeanFeatureTypeBuilder<TrackSegment> positionDisplayType = new BeanFeatureTypeBuilder<TrackSegment>(
-					positionsDisplayTable, TrackSegment.class, null);
+					positionsDisplayTable, TrackSegment.class, null, "segment");
 			Transaction transaction = new DefaultTransaction();
 			SimpleFeatureStore positionStore = getFeatureStore(positionType);
 			SimpleFeatureStore positionDisplayStore = getFeatureStore(positionDisplayType);
@@ -534,7 +520,8 @@ public class GeoToolsTrackDao implements TrackDao {
 			// String trackSpeedsToCleanTable = "connect_gpsclean_" +
 			// cleanSession;
 			trackSpeedType = new BeanFeatureTypeBuilder<TrackSpeed>(
-					addGpsCleanTablePrefix(cleanSession), TrackSpeed.class);
+					addGpsCleanTablePrefix(cleanSession), TrackSpeed.class,
+					null, "line");
 		}
 
 		@Override

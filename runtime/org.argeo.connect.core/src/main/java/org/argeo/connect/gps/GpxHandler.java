@@ -32,8 +32,6 @@ import java.util.UUID;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.referencing.CRS;
@@ -51,7 +49,7 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 
 /** Parse the GPX format. */
 class GpxHandler extends DefaultHandler {
-	private final static Log log = LogFactory.getLog(GpxHandler.class);
+	// private final static Log log = LogFactory.getLog(GpxHandler.class);
 
 	public static final String TAG_TRKSEG = "trkseg";
 	public static final String TAG_TRKPT = "trkpt";
@@ -144,25 +142,15 @@ class GpxHandler extends DefaultHandler {
 			String timeStr = accumulator.toString().trim();
 			try {
 				Calendar utcCalendar = DatatypeConverter.parseDateTime(timeStr);
-
 				Date time = utcCalendar.getTime();
-				if (log.isDebugEnabled())
-					log.debug("utcCalendar=" + utcCalendar + ", timeZone="
-							+ utcCalendar.getTimeZone());
-				// Date time = ISO8601.parse(timeStr);
 				currentTrackPoint.setUtcTimestamp(time);
 			} catch (IllegalArgumentException e) {
 				throw new ArgeoException("Cannot parse date " + timeStr);
 			}
 		} else if (qName.equals(TAG_TRKPT)) {
-			// trackPoints.add(currentTrackPoint);
 			pointCount++;
 			currentSegmentPointCount++;
-
 			currentTrackSegment.getTrackPoints().add(currentTrackPoint);
-
-			// getHibernateTemplate().save(currentTrackPoint);
-
 			currentTrackPoint = null;
 		} else if (qName.equals(TAG_TRKSEG)) {
 			processTrackSegment(currentTrackSegment, targetGF);

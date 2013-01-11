@@ -76,7 +76,7 @@ public class GeoToolsUtils {
 			SimpleFeatureType featureType) {
 		try {
 			dataStore.getSchema(featureType.getName());
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// assume it does not exist
 			try {
 				dataStore.createSchema(featureType);

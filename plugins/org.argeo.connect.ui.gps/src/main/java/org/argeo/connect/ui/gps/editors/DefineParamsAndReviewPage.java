@@ -427,13 +427,25 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage
 		Double maxAbsoluteVerticalSpeed = maxVerticalSpeedViewer.getValue();
 		Double maxSpeed = maxSpeedViewer.getValue();
 		Double maxAbsoluteAcceleration = maxAccelerationViewer.getValue();
-		String cql = "speed>" + maxSpeed + " OR azimuthVariation<"
-				+ (-maxAbsoluteRotation) + " OR azimuthVariation>"
-				+ maxAbsoluteRotation + " OR verticalSpeed<"
-				+ (-maxAbsoluteVerticalSpeed) + " OR verticalSpeed>"
-				+ maxAbsoluteVerticalSpeed + " OR acceleration<"
-				+ (-maxAbsoluteAcceleration) + " OR acceleration>"
-				+ maxAbsoluteAcceleration;
+
+		String cql;
+		if (ConnectGpsUiPlugin.shapefileBackend) {
+			cql = "speed>" + maxSpeed + " OR azimuthVar<"
+					+ (-maxAbsoluteRotation) + " OR azimuthVar>"
+					+ maxAbsoluteRotation + " OR verticalSp<"
+					+ (-maxAbsoluteVerticalSpeed) + " OR verticalSp>"
+					+ maxAbsoluteVerticalSpeed + " OR accelerati<"
+					+ (-maxAbsoluteAcceleration) + " OR accelerati>"
+					+ maxAbsoluteAcceleration;
+		} else {
+			cql = "speed>" + maxSpeed + " OR azimuthVariation<"
+					+ (-maxAbsoluteRotation) + " OR azimuthVariation>"
+					+ maxAbsoluteRotation + " OR verticalSpeed<"
+					+ (-maxAbsoluteVerticalSpeed) + " OR verticalSpeed>"
+					+ maxAbsoluteVerticalSpeed + " OR acceleration<"
+					+ (-maxAbsoluteAcceleration) + " OR acceleration>"
+					+ maxAbsoluteAcceleration;
+		}
 		if (log.isTraceEnabled())
 			log.trace(cql);
 		return cql;
