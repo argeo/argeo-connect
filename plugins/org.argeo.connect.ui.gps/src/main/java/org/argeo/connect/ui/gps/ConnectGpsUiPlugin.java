@@ -37,7 +37,7 @@ import org.osgi.framework.BundleContext;
  */
 public class ConnectGpsUiPlugin extends AbstractUIPlugin {
 	// FIXME make it generic
-	public static Boolean shapefileBackend = true;
+	public static Boolean shapefileBackend = false;
 
 	public final static String EPSG_3857 = "EPSG:3857";
 
