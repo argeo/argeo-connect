@@ -179,7 +179,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage
 				max = curNode.getProperty(CONNECT_PARAM_MAX_VALUE).getDouble();
 				val = curNode.getProperty(CONNECT_PARAM_VALUE).getDouble();
 				maxSpeedViewer = new SliderViewer(formToolkit, parent, "Speed",
-						min, max, val, SWT.COLOR_BLUE);
+						min, max, val, SWT.COLOR_DARK_YELLOW);
 				paramPart = new ParamFormPart(curNode);
 				sliderViewerListener = new ParamSliderViewerListener(paramPart);
 				maxSpeedViewer.setListener(sliderViewerListener);
@@ -193,7 +193,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage
 				max = curNode.getProperty(CONNECT_PARAM_MAX_VALUE).getDouble();
 				val = curNode.getProperty(CONNECT_PARAM_VALUE).getDouble();
 				maxAccelerationViewer = new SliderViewer(formToolkit, parent,
-						"Acceleration", min, max, val, SWT.COLOR_YELLOW);
+						"Acceleration", min, max, val, SWT.COLOR_BLUE);
 				paramPart = new ParamFormPart(curNode);
 				sliderViewerListener = new ParamSliderViewerListener(paramPart);
 				maxAccelerationViewer.setListener(sliderViewerListener);

@@ -37,7 +37,7 @@ public class GpsStyling {
 		// map filters and colors
 		Map<String, String> cqlFilters = new HashMap<String, String>();
 		if (ConnectGpsUiPlugin.shapefileBackend) {
-			cqlFilters.put("speed>" + maxSpeed, "YELLOW");
+			cqlFilters.put("speed>" + maxSpeed, "ORANGE");
 			cqlFilters.put("azimuthVar<" + (-maxAbsoluteRotation)
 					+ " OR azimuthVar>" + maxAbsoluteRotation, "RED");
 			cqlFilters.put("verticalSp<" + (-maxAbsoluteVerticalSpeed)
@@ -45,7 +45,7 @@ public class GpsStyling {
 			cqlFilters.put("accelerati<" + (-maxAbsoluteAcceleration)
 					+ " OR accelerati>" + maxAbsoluteAcceleration, "BLUE");
 		} else {
-			cqlFilters.put("speed>" + maxSpeed, "YELLOW");
+			cqlFilters.put("speed>" + maxSpeed, "ORANGE");
 			cqlFilters.put("azimuthVariation<" + (-maxAbsoluteRotation)
 					+ " OR azimuthVariation>" + maxAbsoluteRotation, "RED");
 			cqlFilters.put("verticalSpeed<" + (-maxAbsoluteVerticalSpeed)
@@ -57,25 +57,8 @@ public class GpsStyling {
 		String unmatchedColor = "BLACK";
 		Integer matchedWidth = 2;
 
-		Filter unmatchedFilter = null;
-		if (preview) {
-			List<Filter> filters = new ArrayList<Filter>();
-			for (String cqlFilter : cqlFilters.keySet()) {
-				Filter filter;
-				try {
-					filter = CQL.toFilter(cqlFilter);
-					filters.add(ff.not(filter));
-				} catch (CQLException e) {
-					throw new ArgeoException("Cannot parse CQL filter: "
-							+ cqlFilter, e);
-				}
-			}
-			unmatchedFilter = ff.and(filters);
-
-		}
-
 		List<Rule> rules = new ArrayList<Rule>();
-		// unmatched
+		// unmatched (to keep)
 		Rule ruleUnMatched = null;
 		if (field.equals(TrackSpeed.LINE)) {
 			Integer unmatchedWidth = 1;
@@ -93,16 +76,27 @@ public class GpsStyling {
 							unmatchedColor, unmatchedWidth, null, null));
 			rules.add(ruleUnMatched);
 		}
-
-		if (unmatchedFilter != null && ruleUnMatched != null)
-			ruleUnMatched.setFilter(unmatchedFilter);
-
-		if (!preview) {
-
+		
+		if (preview) {
+			List<Filter> filters = new ArrayList<Filter>();
 			for (String cqlFilter : cqlFilters.keySet()) {
+				Filter filter;
+				try {
+					filter = CQL.toFilter(cqlFilter);
+					filters.add(filter);
+				} catch (CQLException e) {
+					throw new ArgeoException("Cannot parse CQL filter: "
+							+ cqlFilter, e);
+				}
+			}
+			Filter unmatchedFilter = ff.not(ff.or(filters));
+			ruleUnMatched.setFilter(unmatchedFilter);
+		}
 
+		// matched (to clean)
+		if (!preview) {
+			for (String cqlFilter : cqlFilters.keySet()) {
 				String matchedColor = cqlFilters.get(cqlFilter);
-
 				// selection filter
 				Filter filter;
 				try {

@@ -91,17 +91,17 @@ public class SwingMapViewer extends AbstractMapViewer {
 
 		setControl(embedded);
 
-		printDisplayCrs();
+		//printDisplayCrs();
 	}
 
-	private void printDisplayCrs() {
-		if (log.isDebugEnabled()) {
-			CoordinateReferenceSystem crs = mapPane.getMapContext()
-					.getCoordinateReferenceSystem();
-			log.debug("Display CRS: "
-					+ (crs != null ? crs.getName() : "<null>"));
-		}
-	}
+//	private void printDisplayCrs() {
+//		if (log.isDebugEnabled()) {
+//			CoordinateReferenceSystem crs = mapPane.getMapContext()
+//					.getCoordinateReferenceSystem();
+//			log.debug("Display CRS: "
+//					+ (crs != null ? crs.getName() : "<null>"));
+//		}
+//	}
 
 	@Override
 	protected void addFeatureSource(String layerId,
@@ -115,7 +115,7 @@ public class SwingMapViewer extends AbstractMapViewer {
 		}
 		MapLayer mapLayer = new DefaultMapLayer(featureSource, (Style) style);
 		addMapLayer(layerId, mapLayer);
-		printDisplayCrs();
+		//printDisplayCrs();
 	}
 
 	@Override
@@ -175,7 +175,7 @@ public class SwingMapViewer extends AbstractMapViewer {
 			CoordinateReferenceSystem crsObj = CRS.decode(crs);
 			mapPane.getMapContext().setCoordinateReferenceSystem(crsObj);
 			mapPane.repaint();
-			printDisplayCrs();
+			//printDisplayCrs();
 		} catch (Exception e) {
 			throw new ArgeoException("Cannot set CRS '" + crs + "'", e);
 		}
