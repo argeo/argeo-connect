@@ -1,4 +1,4 @@
-<gr = 'http://www.ignfi.com/ns/gr'>
+<gr = 'http://www.argeo.org/ns/gr'>
 
 [gr:network] > nt:unstructured, mix:lastModified, mix:title
 - gr:uuid (STRING) m

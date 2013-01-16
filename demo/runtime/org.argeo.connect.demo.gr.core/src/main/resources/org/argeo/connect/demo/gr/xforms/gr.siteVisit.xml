@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml"
+	xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:jr="http://openrosa.org/javarosa">
+	<h:head>
+		<h:title>Water Site Visit</h:title>
+		<model>
+			<instance>
+				<siteVisit id="org.argeo.connect.demo.gr.siteVisit"
+					version="1.1" xmlns="http://www.argeo.org/ns/gr">
+					<!-- OpenRosa metadta -->
+					<meta>
+						<instanceID />
+						<deviceID />
+						<timeStart />
+						<timeEnd />
+					</meta>
+					<!-- Context data -->
+					<today />
+					<timestamp />
+					<location />
+					<comment />
+					<!-- Functional data -->
+					<waterLevel />
+					<eColiRate />
+					<withdrawnWater />
+				</siteVisit>
+			</instance>
+			<!-- OpenRosa metadata -->
+			<bind nodeset="/siteVisit/meta/instanceID" type="string"
+				readonly="true()" calculate="concat('uuid:',uuid())" />
+			<bind nodeset="/siteVisit/meta/deviceID" type="string"
+				jr:preload="property" jr:preloadParams="deviceid" />
+			<bind nodeset="/siteVisit/meta/timeStart" type="dateTime"
+				jr:preload="timestamp" jr:preloadParams="start" />
+			<bind nodeset="/siteVisit/meta/timeEnd" type="dateTime"
+				jr:preload="timestamp" jr:preloadParams="end" />
+			<bind nodeset="/siteVisit/today" type="date" jr:preload="date"
+				jr:preloadParams="today" />
+			<!-- Context data -->
+			<bind nodeset="/siteVisit/timestamp" type="dateTime" readonly="true()"
+				calculate="now()" />
+			<bind nodeset="/siteVisit/location" type="geopoint" />
+			<bind nodeset="/siteVisit/comment" type="string" />
+			<!-- Functional data -->
+			<bind nodeset="/siteVisit/waterLevel" type="decimal" />
+			<bind nodeset="/siteVisit/eColiRate" type="decimal" />
+			<bind nodeset="/siteVisit/withdrawnWater" type="decimal" />
+		</model>
+	</h:head>
+	<h:body>
+		<input ref="waterLevel">
+			<label>Water Level (m)</label>
+		</input>
+		<input ref="withdrawnWater">
+			<label>Withdrawn Water (m³/day)</label>
+		</input>
+		<input ref="eColiRate">
+			<label>E-Coli Rate (count/100ml)</label>
+		</input>
+		<input ref="location">
+			<label>Location</label>
+		</input>
+		<input ref="comment">
+			<label>Comment</label>
+		</input>
+	</h:body>
+</h:html>
