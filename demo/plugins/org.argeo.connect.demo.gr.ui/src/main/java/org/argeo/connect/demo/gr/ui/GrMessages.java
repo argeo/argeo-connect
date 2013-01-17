@@ -130,6 +130,9 @@ public class GrMessages extends NLS {
 	public String wizard_attachDoc_msg;
 	public String wizard_attachDoc_lbl;
 
+	// imports 
+	public String wizard_importInstances_title;
+	
 	/* Errors */
 	public String forbiddenAction_title;
 	public String forbiddenAction_msg;

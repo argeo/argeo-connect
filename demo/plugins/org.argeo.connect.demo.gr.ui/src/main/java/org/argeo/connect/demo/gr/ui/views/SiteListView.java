@@ -77,7 +77,7 @@ public class SiteListView extends AbstractSitesView implements
 		// Water level
 		lbl = new Label(body, SWT.NONE);
 		lbl.setText(GrMessages.get().siteListView_maxWaterLevelLbl);
-		maxWLevelTxt = new Text(body, SWT.BORDER | SWT.V_SCROLL);
+		maxWLevelTxt = new Text(body, SWT.BORDER | SWT.SINGLE);
 		gd = new GridData(SWT.FILL, SWT.FILL, false, false);
 		maxWLevelTxt.setLayoutData(gd);
 		maxWLevelTxt.setText("");
@@ -91,7 +91,7 @@ public class SiteListView extends AbstractSitesView implements
 		// Withdrawn water
 		lbl = new Label(body, SWT.NONE);
 		lbl.setText(GrMessages.get().siteListView_maxWithdrawnWaterLbl);
-		maxWithdrawnTxt = new Text(body, SWT.BORDER | SWT.V_SCROLL);
+		maxWithdrawnTxt = new Text(body, SWT.BORDER | SWT.SINGLE);
 		gd = new GridData(SWT.FILL, SWT.FILL, false, false);
 		maxWithdrawnTxt.setLayoutData(gd);
 		maxWithdrawnTxt.setText("");
@@ -106,7 +106,7 @@ public class SiteListView extends AbstractSitesView implements
 		lbl = new Label(body, SWT.NONE);
 		lbl.setText(GrMessages.get().siteListView_minEColiRateLbl);
 
-		minEColiRateTxt = new Text(body, SWT.BORDER | SWT.V_SCROLL);
+		minEColiRateTxt = new Text(body, SWT.BORDER | SWT.SINGLE);
 		gd = new GridData(SWT.FILL, SWT.FILL, false, false);
 		minEColiRateTxt.setLayoutData(gd);
 		minEColiRateTxt.setText("");

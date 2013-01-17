@@ -113,6 +113,11 @@
 				name="Network UID">
   	 		</commandParameter>
 		</command>    
+		<command
+			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
+			id="org.argeo.connect.demo.gr.ui.importInstancesFromDevice"
+			name="Import Instances from device">
+		</command>    
 	</extension>	
 	<!-- Menus -->
 	<extension
@@ -139,6 +144,13 @@
 				<parameter
 					name="org.argeo.connect.demo.gr.ui.extractId"
                		value="siteListExport" />
+			</command>
+			<command
+				commandId="org.argeo.connect.demo.gr.ui.importInstancesFromDevice"
+				icon="icons/importInstances.png"
+				label="%importInstancesCmd_lbl"
+				style="push"
+				tooltip="%importInstancesCmd_toolTip">
 			</command>
         </menuContribution>
         

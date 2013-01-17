@@ -30,4 +30,11 @@
 			<bean factory-bean="grBackend" factory-method="getRepository" />
 		</property>
 	</bean>
+	<bean id="importInstancesFromDevice" class="org.argeo.connect.demo.gr.ui.commands.ImportInstancesFromDevice"
+		scope="prototype">
+		<property name="repository">
+			<bean factory-bean="grBackend" factory-method="getRepository" />
+		</property>
+	</bean>
+	
 </beans>

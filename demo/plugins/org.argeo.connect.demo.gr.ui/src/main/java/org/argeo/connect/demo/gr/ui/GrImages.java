@@ -37,6 +37,11 @@ public class GrImages {
 	public final static Image ICON_NETWORK = GrUiPlugin.getImageDescriptor(
 			"icons/network.png").createImage();
 
+	public final static Image ICON_IMPORT_INSTANCES = GrUiPlugin
+			.getImageDescriptor("icons/importInstances.png").createImage();
+	public final static Image ICON_FORM_INSTANCE = GrUiPlugin
+			.getImageDescriptor("icons/formInstance.gif").createImage();
+
 	// various site types
 	public final static Image ICON_MONITORED_TYPE = GrUiPlugin
 			.getImageDescriptor(
