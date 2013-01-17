@@ -85,6 +85,7 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 			if (!adminSession.nodeExists(GR_NETWORKS_BASE_PATH)) {
 				// Make sure that base directories are available
 				JcrUtils.mkdirs(adminSession, GR_NETWORKS_BASE_PATH);
+				JcrUtils.mkdirs(adminSession, GR_IMPORTS_BASE_PATH);
 				adminSession.save();
 			}
 

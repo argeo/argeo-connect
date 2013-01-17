@@ -33,6 +33,8 @@ public interface GrNames {
 
 	/* Parent node for all networks */
 	public final static String GR_NETWORKS = "gr:networks";
+	/* Parent node for all imports */
+	public final static String GR_IMPORTS = "gr:imports";
 
 	/* Common */
 	public final static String GR_UUID = "gr:uuid";

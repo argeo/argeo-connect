@@ -41,6 +41,8 @@ public interface GrConstants {
 	public final static String GR_BASE_PATH = "/gr:system";
 	public final static String GR_NETWORKS_BASE_PATH = GR_BASE_PATH + '/'
 			+ GrNames.GR_NETWORKS;
+	public final static String GR_IMPORTS_BASE_PATH = GR_BASE_PATH + '/'
+			+ GrNames.GR_IMPORTS;
 
 	/* NODES METADATA */
 	// TODO : it mights not be the cleanest way to access JCR NODES UID
