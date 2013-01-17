@@ -29,7 +29,7 @@ package org.argeo.connect.demo.gr;
 /** JCR node and property names used in GR */
 public interface GrNames {
 
-	public final static String GR_NAMESPACE = "http://www.ignfi.com/ns/gr";
+	public final static String GR_NAMESPACE = "http://www.argeo.org/ns/gr";
 
 	/* Parent node for all networks */
 	public final static String GR_NETWORKS = "gr:networks";
