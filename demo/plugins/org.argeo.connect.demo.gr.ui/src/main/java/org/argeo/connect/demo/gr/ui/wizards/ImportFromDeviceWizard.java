@@ -293,16 +293,16 @@ public class ImportFromDeviceWizard extends Wizard {
 			try {
 
 				// TODO dummy generation of node for the PoC
-				if (!folder.hasNode("gr.siteVisite_2012-11-16_10-22-11")) {
-					folder.addNode("gr.siteVisite_2012-11-16_10-22-11");
-					folder.addNode("gr.siteVisite_2012-11-17_09-48-15");
-					folder.addNode("gr.siteVisite_2012-11-17_11-05-07");
-					folder.addNode("gr.siteVisite_2012-11-17_13-41-51");
-					folder.addNode("gr.siteVisite_2012-11-17_15-25-33");
-					folder.addNode("gr.siteVisite_2012-11-17_19-48-11");
-					folder.addNode("gr.siteVisite_2012-11-19_08-59-03");
-					folder.addNode("gr.siteVisite_2012-11-19_11-35-01");
-					folder.addNode("gr.siteVisite_2012-11-19_15-22-17");
+				if (!folder.hasNode("gr.siteVisit_2012-11-16_10-22-11")) {
+					folder.addNode("gr.siteVisit_2012-11-16_10-22-11");
+					folder.addNode("gr.siteVisit_2012-11-17_09-48-15");
+					folder.addNode("gr.siteVisit_2012-11-17_11-05-07");
+					folder.addNode("gr.siteVisit_2012-11-17_13-41-51");
+					folder.addNode("gr.siteVisit_2012-11-17_15-25-33");
+					folder.addNode("gr.siteVisit_2012-11-17_19-48-11");
+					folder.addNode("gr.siteVisit_2012-11-19_08-59-03");
+					folder.addNode("gr.siteVisit_2012-11-19_11-35-01");
+					folder.addNode("gr.siteVisit_2012-11-19_15-22-17");
 					folder.getSession().save();
 				}
 
