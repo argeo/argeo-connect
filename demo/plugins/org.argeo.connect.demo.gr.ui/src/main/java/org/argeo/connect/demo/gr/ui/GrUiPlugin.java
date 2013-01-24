@@ -27,7 +27,6 @@
 package org.argeo.connect.demo.gr.ui;
 
 import java.net.URL;
-import java.util.ResourceBundle;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -48,8 +47,6 @@ public class GrUiPlugin extends AbstractUIPlugin {
 
 	private BundleContext bundleContext;
 
-	private ResourceBundle messages;
-
 	/** Default constructor */
 	public GrUiPlugin() {
 	}
@@ -58,8 +55,6 @@ public class GrUiPlugin extends AbstractUIPlugin {
 		super.start(context);
 		this.bundleContext = context;
 		plugin = this;
-		messages = ResourceBundle
-				.getBundle("org.argeo.connect.demo.gr.ui.messages");
 	}
 
 	public void stop(BundleContext context) throws Exception {
@@ -102,17 +97,5 @@ public class GrUiPlugin extends AbstractUIPlugin {
 
 	public FormColors getFormColors(Display display) {
 		return new FormColors(display);
-	}
-
-	/**
-	 * Gives access to the internationalization message bundle. Returns null in
-	 * case the ClientUiPlugin is not started (for JUnit tests, by instance)
-	 */
-	public static ResourceBundle getMessagesBundle() {
-		if (getDefault() != null)
-			// To avoid NPE
-			return getDefault().messages;
-		else
-			return null;
 	}
 }
