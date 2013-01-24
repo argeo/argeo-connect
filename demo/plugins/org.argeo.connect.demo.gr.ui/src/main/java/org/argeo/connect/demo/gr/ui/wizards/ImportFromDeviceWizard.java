@@ -251,7 +251,7 @@ public class ImportFromDeviceWizard extends Wizard {
 					.hasCurrentThreadAuthority(GrConstants.ROLE_ADMIN_STR))
 				lbl.setText("implement here a file browser for both RAP and RCP");
 			else
-				lbl.setText("You don't have sufficient privileges to updates collected data.");
+				lbl.setText("You don't have sufficient privileges to update collected data.");
 
 			// FIXME this below is RCP specific
 			// dfe = new DirectoryFieldEditor("directory", "From", parent);
