@@ -46,7 +46,6 @@ import org.argeo.geotools.GeoToolsUtils;
 import org.argeo.geotools.jcr.GeoJcrMapper;
 import org.argeo.gis.ui.AbstractMapViewer;
 import org.argeo.gis.ui.MapViewerListener;
-import org.argeo.gis.ui.rap.openlayers.custom.GoogleLayer;
 import org.eclipse.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -55,7 +54,6 @@ import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.PointSymbolizer;
@@ -64,7 +62,6 @@ import org.geotools.styling.Symbolizer;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.style.GraphicalSymbol;
 import org.polymap.openlayers.rap.widget.OpenLayersWidget;
 import org.polymap.openlayers.rap.widget.base.OpenLayersEventListener;
@@ -189,8 +186,9 @@ public class OpenLayersMapViewer extends AbstractMapViewer implements
 		// "Virtual Earth Aerial", VirtualEarthLayer.AERIAL, true);
 		// map.addLayer(virtualEarthLayer);
 
-		map.addLayer(new GoogleLayer("Google Satellite",
-				GoogleLayer.G_SATELLITE_MAP));
+//		map.addLayer(new GoogleLayer("Google Satellite",
+//				GoogleLayer.G_SATELLITE_MAP));
+		
 		// map.addLayer(new GoogleLayer("Google Physical",
 		// GoogleLayer.G_PHYSICAL_MAP));
 		// map.addLayer(new GoogleLayer("Google Default", null));
