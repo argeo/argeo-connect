@@ -26,17 +26,23 @@
  */
 package org.argeo.connect.demo.gr.ui.commands;
 
+import org.argeo.connect.demo.gr.ui.GrImages;
+import org.argeo.connect.demo.gr.ui.GrMessages;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.connect.demo.gr.ui.views.NetworkBrowserView;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 /** Refresh the main EBI list. */
 public class RefreshNetworkBrowserView extends AbstractHandler {
 	public final static String ID = GrUiPlugin.PLUGIN_ID
 			+ ".refreshNetworkBrowserView";
+
+	public final static ImageDescriptor DEFAULT_ICON_DESC = GrImages.IMDESC_REFRESH;
+	public final static String DEFAULT_LABEL = GrMessages.get().refreshButtonLbl;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 

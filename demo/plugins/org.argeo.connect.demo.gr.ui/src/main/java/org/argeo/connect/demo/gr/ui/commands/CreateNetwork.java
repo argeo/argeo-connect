@@ -31,6 +31,7 @@ import javax.jcr.Node;
 import org.argeo.ArgeoException;
 import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.GrTypes;
+import org.argeo.connect.demo.gr.ui.GrImages;
 import org.argeo.connect.demo.gr.ui.GrMessages;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.connect.demo.gr.ui.views.NetworkBrowserView;
@@ -39,6 +40,7 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -46,7 +48,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 /** Creates a new network */
 public class CreateNetwork extends AbstractHandler implements GrNames {
 	public final static String ID = GrUiPlugin.PLUGIN_ID + ".createNetwork";
-	public final static String DEFAULT_ICON_REL_PATH = "icons/newNetwork.gif";
+	public final static ImageDescriptor DEFAULT_ICON_DESC = GrImages.IMDESC_NEW_NETWORK;
 	public final static String DEFAULT_LABEL = GrMessages.get().createNetwork_lbl;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {

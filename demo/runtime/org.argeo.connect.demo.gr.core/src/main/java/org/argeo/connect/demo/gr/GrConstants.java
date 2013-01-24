@@ -55,6 +55,7 @@ public interface GrConstants {
 	public final static Integer ROLE_CONSULTANT = 0;
 	public final static Integer ROLE_MANAGER = 1;
 	public final static Integer ROLE_ADMIN = 2;
+	public final static String ROLE_ADMIN_STR = "ROLE_ADMIN";
 
 	/*
 	 * MISCEALLENEOUS

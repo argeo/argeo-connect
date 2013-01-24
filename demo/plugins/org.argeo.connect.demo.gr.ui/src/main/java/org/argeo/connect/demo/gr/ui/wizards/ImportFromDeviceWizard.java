@@ -38,10 +38,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
+import org.argeo.connect.demo.gr.GrConstants;
 import org.argeo.connect.demo.gr.ui.GrImages;
 import org.argeo.connect.demo.gr.ui.GrMessages;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
+import org.argeo.security.SecurityUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -59,6 +61,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 
+/**
+ * Import XForm instances from a mobile device through this wizard. Must be
+ * finalized.
+ * 
+ */
 public class ImportFromDeviceWizard extends Wizard {
 	private final static Log log = LogFactory
 			.getLog(ImportFromDeviceWizard.class);
@@ -77,8 +84,11 @@ public class ImportFromDeviceWizard extends Wizard {
 		importPage = new ImportWizardPage();
 		addPage(importPage);
 
-		validWizardPage = new ValidWizardPage();
-		addPage(validWizardPage);
+		// FIXME implement relevant security management
+		if (SecurityUtils.hasCurrentThreadAuthority(GrConstants.ROLE_ADMIN_STR)) {
+			validWizardPage = new ValidWizardPage();
+			addPage(validWizardPage);
+		}
 
 		setNeedsProgressMonitor(true);
 	}
@@ -237,7 +247,12 @@ public class ImportFromDeviceWizard extends Wizard {
 
 		public void createControl(Composite parent) {
 			Label lbl = new Label(parent, SWT.NONE);
-			lbl.setText("implement here a file browser for both RAP and RCP");
+			if (SecurityUtils
+					.hasCurrentThreadAuthority(GrConstants.ROLE_ADMIN_STR))
+				lbl.setText("implement here a file browser for both RAP and RCP");
+			else
+				lbl.setText("You don't have sufficient privileges to updates collected data.");
+
 			// FIXME this below is RCP specific
 			// dfe = new DirectoryFieldEditor("directory", "From", parent);
 			// setControl(dfe.getTextControl(parent));

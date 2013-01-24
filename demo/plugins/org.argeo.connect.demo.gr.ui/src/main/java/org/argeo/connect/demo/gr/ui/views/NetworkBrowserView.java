@@ -32,18 +32,20 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.demo.gr.GrBackend;
 import org.argeo.connect.demo.gr.GrConstants;
 import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.connect.demo.gr.ui.commands.CreateNetwork;
+import org.argeo.connect.demo.gr.ui.commands.RefreshNetworkBrowserView;
 import org.argeo.connect.demo.gr.ui.providers.GrNodeLabelProvider;
 import org.argeo.connect.demo.gr.ui.providers.GrTreeContentProvider;
 import org.argeo.connect.demo.gr.ui.utils.GrDoubleClickListener;
 import org.argeo.eclipse.ui.jcr.SimpleNodeContentProvider;
 import org.argeo.eclipse.ui.jcr.utils.NodeViewerComparer;
 import org.argeo.eclipse.ui.jcr.views.AbstractJcrBrowser;
+import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
-import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -56,9 +58,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.menus.CommandContributionItem;
-import org.eclipse.ui.menus.CommandContributionItemParameter;
-import org.eclipse.ui.services.IServiceLocator;
 
 /** Specific network explorer View */
 public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
@@ -70,9 +69,11 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 			+ ".networkBrowserView";
 
 	/* DEPENDENCY INJECTION */
+	private GrBackend grBackend;
+
+	// retrieved with the backend.
 	private Repository repository;
 	private Session session;
-	// private GrBackend grBackend;
 
 	// UI management
 	private TreeViewer nodesViewer;
@@ -165,42 +166,29 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 		IWorkbenchWindow window = GrUiPlugin.getDefault().getWorkbench()
 				.getActiveWorkbenchWindow();
 
-		// Please note that commands that are not subject to programatic
+		// Please note that commands that are not subject to programmatic
 		// conditions are directly defined in the corresponding
 		// menuContribution of the plugin.xml.
 
 		// Building conditions
+		boolean isAdmin = grBackend.isUserInRole(ROLE_ADMIN);
 
 		// Some commands are meaningless for multiple selection
 		boolean isFolder = true;
 
-		// Effective Refresh
-		refreshCommand(menuManager, window, CreateNetwork.ID,
-				CreateNetwork.DEFAULT_LABEL,
-				CreateNetwork.DEFAULT_ICON_REL_PATH, isFolder);
+		// Effective Refresh of the menu
 
-	}
+		// Create new network
+		CommandUtils.refreshCommand(menuManager, window, CreateNetwork.ID,
+				CreateNetwork.DEFAULT_LABEL, CreateNetwork.DEFAULT_ICON_DESC,
+				isFolder && isAdmin);
 
-	protected void refreshCommand(IMenuManager menuManager,
-			IServiceLocator locator, String cmdId, String label,
-			String iconPath, boolean showCommand) {
-		IContributionItem ici = menuManager.find(cmdId);
-		if (ici != null)
-			menuManager.remove(ici);
-		CommandContributionItemParameter contributionItemParameter = new CommandContributionItemParameter(
-				locator, null, cmdId, SWT.PUSH);
+		// Add a refresh command so that context menu is not empty for non-admin
+		// users
+		CommandUtils.refreshCommand(menuManager, window,
+				RefreshNetworkBrowserView.ID, RefreshNetworkBrowserView.DEFAULT_LABEL,
+				RefreshNetworkBrowserView.DEFAULT_ICON_DESC, true);
 
-		if (showCommand) {
-			// Set Params
-			contributionItemParameter.label = label;
-			contributionItemParameter.icon = GrUiPlugin
-					.getImageDescriptor(iconPath);
-
-			CommandContributionItem cci = new CommandContributionItem(
-					contributionItemParameter);
-			cci.setId(cmdId);
-			menuManager.add(cci);
-		}
 	}
 
 	public TreeViewer getTreeViewer() {
@@ -219,16 +207,9 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 		return nodesViewer;
 	}
 
-	public void setRepository(Repository repository) {
-		this.repository = repository;
+	/* DEPENDENCY INJECTION */
+	public void setGrBackend(GrBackend grBackend) {
+		this.grBackend = grBackend;
+		this.repository = grBackend.getRepository();
 	}
-
-	/** DEPENDENCY INJECTION */
-	// public void setJcrSession(Session jcrSession) {
-	// this.jcrSession = jcrSession;
-	// }
-
-	// public void setGrBackend(GrBackend grBackend) {
-	// this.grBackend = grBackend;
-	// }
 }

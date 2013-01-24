@@ -51,6 +51,7 @@ import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.Window;
@@ -251,6 +252,11 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 				}
 			};
 
+			// Manage authorizations
+			siteType.setEnabled(isEditable());
+			wgs84Longitude.setEditable(isEditable());
+			wgs84Latitude.setEditable(isEditable());
+
 			siteType.addSelectionListener(new ModifiedSelectionListener(part));
 			wgs84Longitude.addModifyListener(new ModifiedFieldListener(part));
 			wgs84Latitude.addModifyListener(new ModifiedFieldListener(part));
@@ -325,7 +331,6 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 
 			final Text waterLevelTxt = new Text(body, SWT.BORDER | SWT.SINGLE
 					| SWT.RIGHT);
-			waterLevelTxt.setEnabled(true);
 			gd = new GridData(SWT.FILL);
 			gd.widthHint = 100;
 			waterLevelTxt.setLayoutData(gd);
@@ -342,7 +347,6 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 
 			final Text withdrawnWaterTxt = new Text(body, SWT.BORDER
 					| SWT.SINGLE | SWT.RIGHT);
-			withdrawnWaterTxt.setEnabled(true);
 			gd = new GridData(SWT.FILL);
 			gd.widthHint = 100;
 			withdrawnWaterTxt.setLayoutData(gd);
@@ -359,7 +363,6 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 
 			final Text eColiRateTxt = new Text(body, SWT.BORDER | SWT.SINGLE
 					| SWT.RIGHT);
-			eColiRateTxt.setEnabled(true);
 			gd = new GridData(SWT.FILL);
 			gd.widthHint = 100;
 			eColiRateTxt.setLayoutData(gd);
@@ -402,9 +405,14 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 				}
 			};
 
-			siteType.addSelectionListener(new ModifiedSelectionListener(part));
-			wgs84Longitude.addModifyListener(new ModifiedFieldListener(part));
-			wgs84Latitude.addModifyListener(new ModifiedFieldListener(part));
+			waterLevelTxt.setEditable(isEditable());
+			withdrawnWaterTxt.setEditable(isEditable());
+			eColiRateTxt.setEditable(isEditable());
+
+			waterLevelTxt.addModifyListener(new ModifiedFieldListener(part));
+			withdrawnWaterTxt
+					.addModifyListener(new ModifiedFieldListener(part));
+			eColiRateTxt.addModifyListener(new ModifiedFieldListener(part));
 
 			getManagedForm().addPart(part);
 
@@ -439,11 +447,16 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 
 			@Override
 			public void linkActivated(HyperlinkEvent e) {
-				boolean success = addNewComment();
-				if (success) {
-					formPart.markDirty();
-					refreshCommentsTable();
-				}
+				if (isEditable()) {
+					boolean success = addNewComment();
+					if (success) {
+						formPart.markDirty();
+						refreshCommentsTable();
+					}
+				} else
+					MessageDialog.openWarning(e.display.getActiveShell(),
+							GrMessages.get().forbiddenAction_title,
+							GrMessages.get().forbiddenAction_msg);
 			}
 		});
 

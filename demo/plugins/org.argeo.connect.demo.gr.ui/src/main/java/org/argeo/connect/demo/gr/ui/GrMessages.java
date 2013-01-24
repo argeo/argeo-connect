@@ -111,6 +111,7 @@ public class GrMessages extends NLS {
 	public String addDocument_lbl;
 
 	public String browseButtonLbl;
+	public String refreshButtonLbl;
 
 	/* Dialogs and wizards */
 	// Comments

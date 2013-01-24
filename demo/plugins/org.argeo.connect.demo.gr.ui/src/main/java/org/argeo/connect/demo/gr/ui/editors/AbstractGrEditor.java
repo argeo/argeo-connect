@@ -43,8 +43,10 @@ import org.eclipse.ui.forms.editor.FormEditor;
  * manage a life cycle of the JCR session that is bound to it
  */
 public abstract class AbstractGrEditor extends FormEditor {
-	/** DEPENDENCY INJECTION **/
-	protected GrBackend grBackend;
+
+	/* DEPENDENCY INJECTION * */
+	private GrBackend grBackend;
+
 	private Repository repository;
 
 	// We use a one session per editor pattern to secure various nodes and
@@ -55,7 +57,6 @@ public abstract class AbstractGrEditor extends FormEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		repository = grBackend.getRepository();
 		try {
 			session = repository.login();
 		} catch (RepositoryException e) {
@@ -87,5 +88,6 @@ public abstract class AbstractGrEditor extends FormEditor {
 	/** DEPENDENCY INJECTION **/
 	public void setGrBackend(GrBackend grBackend) {
 		this.grBackend = grBackend;
+		repository = grBackend.getRepository();
 	}
 }

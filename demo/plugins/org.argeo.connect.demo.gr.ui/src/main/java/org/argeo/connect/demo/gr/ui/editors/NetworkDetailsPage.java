@@ -74,12 +74,9 @@ public class NetworkDetailsPage extends AbstractGrEditorPage implements GrNames 
 	// Main business objects
 	private Node network;
 
-	// private GrBackend grBackend;
-
 	public NetworkDetailsPage(FormEditor editor, String title) {
 		super(editor, ID, title);
 		network = ((NetworkEditor) editor).getNetwork();
-		// grBackend = getGrBackend();
 	}
 
 	protected void createFormContent(IManagedForm managedForm) {

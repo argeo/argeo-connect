@@ -49,6 +49,7 @@ import org.argeo.connect.demo.gr.ui.GrUiPlugin;
 import org.argeo.connect.demo.gr.ui.utils.AbstractHyperlinkListener;
 import org.argeo.connect.demo.gr.ui.utils.GrDoubleClickListener;
 import org.argeo.connect.demo.gr.ui.wizards.UploadFileWizard;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -83,18 +84,17 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 	protected GrBackend grBackend;
 	private TableViewer documentsTableViewer;
 
-	// Images
-	protected final static Image CHECKED = GrUiPlugin.getImageDescriptor(
-			"icons/checked.gif").createImage();
-	protected final static Image UNCHECKED = GrUiPlugin.getImageDescriptor(
-			"icons/unchecked.gif").createImage();
-
 	protected DateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
 	protected DateFormat timeFormatter = new SimpleDateFormat(DATE_TIME_FORMAT);
+
+	private boolean editable = false;
 
 	public AbstractGrEditorPage(FormEditor editor, String id, String title) {
 		super(editor, id, title);
 		grBackend = ((AbstractGrEditor) editor).getGrBackend();
+		if (grBackend.isUserInRole(GrConstants.ROLE_ADMIN))
+			editable = true;
+
 	}
 
 	/* Management of tables whose rows are nodes */
@@ -158,7 +158,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 					Node node = (Node) element;
 					try {
 						return grBackend.getUserDisplayName(node.getProperty(
-						 columnName).getString());
+								columnName).getString());
 					} catch (RepositoryException e) {
 						throw new GrException(
 								"Cannot get last modified user for node "
@@ -289,21 +289,28 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 
 			@Override
 			public void linkActivated(HyperlinkEvent e) {
-				UploadFileWizard wizard = new UploadFileWizard(node);
-				WizardDialog dialog = new WizardDialog(GrUiPlugin.getDefault()
-						.getWorkbench().getActiveWorkbenchWindow().getShell(),
-						wizard);
-				Object returnCode = dialog.open();
-				if (returnCode instanceof Integer) {
-					int result = ((Integer) returnCode).intValue();
-					if (result == 0) {
-						formPart.markDirty();
+				if (isEditable()) {
+
+					UploadFileWizard wizard = new UploadFileWizard(node);
+					WizardDialog dialog = new WizardDialog(GrUiPlugin
+							.getDefault().getWorkbench()
+							.getActiveWorkbenchWindow().getShell(), wizard);
+					Object returnCode = dialog.open();
+					if (returnCode instanceof Integer) {
+						int result = ((Integer) returnCode).intValue();
+						if (result == 0) {
+							formPart.markDirty();
+							refreshDocumentsTable(node);
+						}
+					} else
+						// return code type might be plateform dependent
 						refreshDocumentsTable(node);
-					}
 				} else
-					// return code type might be plateform dependent
-					refreshDocumentsTable(node);
+					MessageDialog.openWarning(e.display.getActiveShell(),
+							GrMessages.get().forbiddenAction_title,
+							GrMessages.get().forbiddenAction_msg);
 			}
+
 		});
 
 		getManagedForm().addPart(formPart);
@@ -392,7 +399,7 @@ public abstract class AbstractGrEditorPage extends FormPage implements
 	}
 
 	/* Exposes private business objects to children classes */
-	// protected GrBackend getGrBackend() {
-	// return grBackend;
-	// }
+	protected boolean isEditable() {
+		return editable;
+	}
 }

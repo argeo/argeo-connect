@@ -27,15 +27,34 @@
 package org.argeo.connect.demo.gr.ui;
 
 import org.argeo.connect.demo.gr.GrConstants;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 
 /** Shared icons. */
 public class GrImages {
 	// Generic icons
-	public final static Image ICON_NETWORKS = GrUiPlugin.getImageDescriptor(
-			"icons/networkList.gif").createImage();
-	public final static Image ICON_NETWORK = GrUiPlugin.getImageDescriptor(
-			"icons/network.png").createImage();
+	public final static ImageDescriptor IMDESC_NETWORKS = GrUiPlugin
+			.getImageDescriptor("icons/networkList.gif");
+	public final static Image ICON_NETWORKS = IMDESC_NETWORKS.createImage();
+
+	public final static ImageDescriptor IMDESC_NETWORK = GrUiPlugin
+			.getImageDescriptor("icons/network.png");
+	public final static Image ICON_NETWORK = IMDESC_NETWORK.createImage();
+
+	public final static ImageDescriptor IMDESC_NEW_NETWORK = GrUiPlugin
+			.getImageDescriptor("icons/newNetwork.gif");
+	public final static Image ICON_NEW_NETWORK = IMDESC_NEW_NETWORK
+			.createImage();
+
+	// FIXME use default refresh icon
+	public final static ImageDescriptor IMDESC_REFRESH = GrUiPlugin
+			.getImageDescriptor("icons/refresh.png");
+	public final static Image ICON_REFRESH = IMDESC_REFRESH.createImage();
+
+	public final static Image CHECKED = GrUiPlugin.getImageDescriptor(
+			"icons/checked.gif").createImage();
+	public final static Image ICON_UNCHECKED = GrUiPlugin.getImageDescriptor(
+			"icons/unchecked.gif").createImage();
 
 	public final static Image ICON_IMPORT_INSTANCES = GrUiPlugin
 			.getImageDescriptor("icons/importInstances.png").createImage();
@@ -59,4 +78,5 @@ public class GrImages {
 	public static String getTypeIconResource(String type) {
 		return "icons/" + type + ".gif";
 	}
+
 }

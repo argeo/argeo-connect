@@ -95,6 +95,7 @@ public class GrBackendImpl implements GrBackend, GrNames, GrConstants, GrTypes {
 			JcrUtils.logoutQuietly(adminSession);
 			throw new ArgeoException("Cannot initialize backend", e);
 		}
+		log.info("GR backend has been correctly initialized...");
 	}
 
 	/** Clean shutdown of the backend. */
