@@ -44,7 +44,7 @@ public class GpsNodeLabelProvider extends DefaultNodeLabelProvider implements
 
 	// Images
 	public final static Image sessionFolder = ConnectGpsUiPlugin
-			.getImageDescriptor("icons/home.gif").createImage();
+			.getImageDescriptor("icons/cleanSessionsParent.gif").createImage();
 	public final static Image session = ConnectGpsUiPlugin.getImageDescriptor(
 			"icons/session.gif").createImage();
 	public final static Image sessionDone = ConnectGpsUiPlugin

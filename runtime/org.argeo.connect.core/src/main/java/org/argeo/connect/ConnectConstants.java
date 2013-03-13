@@ -40,4 +40,9 @@ public interface ConnectConstants {
 			+ "/localRepositories";
 	public final static String GPX_FILE_DIR_PATH = CONNECT_BASE_PATH + "/gpx";
 
+	/** CORRESPONDING LABELS */
+	public final static String TRACK_SESSIONS_PARENT_LABEL = "Clean Sessions";
+	public final static String LOCAL_REPO_PARENT_LABEL = "Repositories";
+	public final static String GPX_FILE_DIR_LABEL = "Gpx Files";
+
 }

@@ -3,8 +3,7 @@ package org.argeo.connect.ui.gps;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 /**
- * Shared icons. Note that it returns ImageDescriptors object rather than
- * images.
+ * Shared icons. Returns either ImageDescriptors or Image objects.
  */
 public class GpsImages {
 	private final static String ICON_REL_PATH = "icons/";

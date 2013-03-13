@@ -53,7 +53,7 @@ public class ImportDirectoryContent extends AbstractHandler {
 	public final static String ID = ConnectGpsUiPlugin.ID
 			+ ".importDirectoryContent";
 	public final static ImageDescriptor DEFAULT_ICON = GpsImages.ICON_IMPORT_FOLDER;
-	public final static String DEFAULT_LABEL = "Upload GPS data to repository";
+	public final static String DEFAULT_LABEL = "Upload .gpx files...";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		ISelection selection = HandlerUtil.getActiveWorkbenchWindow(event)

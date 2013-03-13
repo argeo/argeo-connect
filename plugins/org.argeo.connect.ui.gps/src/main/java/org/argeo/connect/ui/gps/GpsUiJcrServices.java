@@ -34,6 +34,7 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.ConnectConstants;
@@ -250,8 +251,12 @@ public class GpsUiJcrServices {
 				int lastIndex = sessionbasePath.lastIndexOf("/");
 				Node parFolder = JcrUtils.mkdirs(jcrSession,
 						sessionbasePath.substring(0, lastIndex));
-				parFolder.addNode(sessionbasePath.substring(lastIndex + 1),
+				Node node = parFolder.addNode(
+						sessionbasePath.substring(lastIndex + 1),
 						ConnectTypes.CONNECT_SESSION_REPOSITORY);
+				node.addMixin(NodeType.MIX_TITLE);
+				node.setProperty(Property.JCR_TITLE,
+						ConnectConstants.TRACK_SESSIONS_PARENT_LABEL);
 			}
 
 			// Local repository for clean data with default already created
@@ -265,6 +270,10 @@ public class GpsUiJcrServices {
 				Node repos = parFolder.addNode(
 						localRepoBasePath.substring(lastIndex + 1),
 						ConnectTypes.CONNECT_LOCAL_REPOSITORIES);
+				repos.addMixin(NodeType.MIX_TITLE);
+				repos.setProperty(Property.JCR_TITLE,
+						ConnectConstants.LOCAL_REPO_PARENT_LABEL);
+
 				CleaningSessionUtils.createLocalRepository(repos, "main",
 						"Default");
 
@@ -277,9 +286,14 @@ public class GpsUiJcrServices {
 				Node parFolder = JcrUtils.mkdirs(jcrSession,
 						ConnectConstants.GPX_FILE_DIR_PATH.substring(0,
 								lastIndex));
-				parFolder.addNode(ConnectConstants.GPX_FILE_DIR_PATH
-						.substring(lastIndex + 1),
+				Node node = parFolder.addNode(
+						ConnectConstants.GPX_FILE_DIR_PATH
+								.substring(lastIndex + 1),
 						ConnectTypes.CONNECT_FILE_REPOSITORY);
+				node.addMixin(NodeType.MIX_TITLE);
+				node.setProperty(Property.JCR_TITLE,
+						ConnectConstants.GPX_FILE_DIR_LABEL);
+
 			}
 			jcrSession.save();
 		} catch (RepositoryException re) {

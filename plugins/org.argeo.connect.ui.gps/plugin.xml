@@ -14,7 +14,7 @@
 	<extension
     	point="org.eclipse.ui.views">
 		<view
-			name="Workspace explorer"
+			name="Browser"
 			icon="icons/gis.gif"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			id="org.argeo.connect.ui.gps.gpsBrowserView">

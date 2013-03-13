@@ -48,7 +48,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
  */
 public class AddFileFolder extends AbstractHandler implements ConnectTypes {
 	public final static String ID = ConnectGpsUiPlugin.ID + ".addFileFolder";
-	public final static String DEFAULT_LABEL = "Add a sub folder";
+	public final static String DEFAULT_LABEL = "New folder";
 	public final static ImageDescriptor DEFAULT_ICON = GpsImages.ICON_ADD_FOLDER;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {

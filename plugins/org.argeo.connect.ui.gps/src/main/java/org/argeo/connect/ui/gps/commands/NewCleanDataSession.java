@@ -63,8 +63,8 @@ public class NewCleanDataSession extends AbstractHandler {
 			+ ".parentNodeId";
 
 	public final static ImageDescriptor DEFAULT_ICON = GpsImages.ICON_ADD_CLEANING_SESSION;
-	public final static String DEFAULT_LABEL = "Create a new clean data session";
-	public final static String COPY_SESSION_LABEL = "Create a new session using this session params";
+	public final static String DEFAULT_LABEL = "Create session...";
+	public final static String COPY_SESSION_LABEL = "Create session with this params...";
 
 	/* DEPENDENCY INJECTION */
 	private GpsUiJcrServices uiJcrServices;

@@ -302,55 +302,6 @@ public class GpsBrowserView extends AbstractJcrBrowser implements ConnectNames,
 
 	}
 
-	// protected void refreshParametrizedCommand(IMenuManager menuManager,
-	// IServiceLocator locator, String cmdId, String label,
-	// String iconPath, boolean showCommand) {
-	// IContributionItem ici = menuManager.find(cmdId);
-	// if (ici != null)
-	// menuManager.remove(ici);
-	// CommandContributionItemParameter contributionItemParameter = new
-	// CommandContributionItemParameter(
-	// locator, null, cmdId, SWT.PUSH);
-	//
-	// if (showCommand) {
-	// // Set Params
-	// contributionItemParameter.label = label;
-	// contributionItemParameter.icon = ConnectGpsUiPlugin
-	// .getImageDescriptor(iconPath);
-	//
-	// CommandContributionItem cci = new CommandContributionItem(
-	// contributionItemParameter);
-	// cci.setId(cmdId);
-	// menuManager.add(cci);
-	// }
-	// }
-	//
-	// protected void refreshCommand(IMenuManager menuManager,
-	// IServiceLocator locator, String cmdId, String label,
-	// String iconPath, boolean showCommand, Map<String, String> params) {
-	// IContributionItem ici = menuManager.find(cmdId);
-	// if (ici != null)
-	// menuManager.remove(ici);
-	// CommandContributionItemParameter contributionItemParameter = new
-	// CommandContributionItemParameter(
-	// locator, null, cmdId, SWT.PUSH);
-	//
-	// if (showCommand) {
-	// // Set Params
-	// contributionItemParameter.label = label;
-	// contributionItemParameter.icon = ConnectGpsUiPlugin
-	// .getImageDescriptor(iconPath);
-	//
-	// if (params != null)
-	// contributionItemParameter.parameters = params;
-	//
-	// CommandContributionItem cci = new CommandContributionItem(
-	// contributionItemParameter);
-	// cci.setId(cmdId);
-	// menuManager.add(cci);
-	// }
-	// }
-
 	// Add specific behaviours to the node provider
 	class ViewContentProvider extends SimpleNodeContentProvider {
 
