@@ -79,7 +79,9 @@ public class SiteEditor extends AbstractGrEditor implements GrNames {
 			MapFormPage mapFormPage = new SiteMapDisplayPage(this, "map",
 					GrMessages.get().siteEditor_mapPage_title, currentSite,
 					mapControlCreator);
-			addPage(mapFormPage);
+			// TODO enable the mapformpage when Bug #120 has been fixed
+			// https://www.argeo.org/bugzilla/show_bug.cgi?id=120
+			// addPage(mapFormPage);
 		} catch (PartInitException e) {
 			throw new ArgeoException("Not able to add page ", e);
 		}

@@ -44,8 +44,8 @@ public class ConsultGrPerspective implements IPerspectiveFactory, GrConstants {
 
 		IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT,
 				0.3f, editorArea);
-		left.addView(SiteListView.ID);
 		left.addView(NetworkBrowserView.ID);
+		left.addView(SiteListView.ID);
 		// TODO better deal with unauthorized
 		// left.addView(NetworkListView.ID);
 
