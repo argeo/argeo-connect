@@ -66,6 +66,8 @@ public class SiteListView extends AbstractSitesView implements
 		siteTypes.add(GrConstants.REGISTERED);
 		String[] items = siteTypes.toArray(new String[siteTypes.size()]);
 		siteTypeCmb.setItems(items);
+		// use a default to reduce loading time
+		siteTypeCmb.select(1);
 
 		siteTypeCmb.addModifyListener(new ModifyListener() {
 			@Override
@@ -186,14 +188,14 @@ public class SiteListView extends AbstractSitesView implements
 		// column.addSelectionListener(getSelectionAdapter(column, 0));
 
 		currColLbl = GrMessages.get().siteLbl;
-		column = ViewerUtils.createColumn(table, currColLbl, SWT.LEFT, 120);
+		column = ViewerUtils.createColumn(table, currColLbl, SWT.LEFT, 80);
 		propertiesList.add(Property.JCR_TITLE);
 		propertyTypesList.add(PropertyType.STRING);
 		column.addSelectionListener(getSelectionAdapter(column, 1));
 
 		// Water level
 		currColLbl = GrMessages.get().waterLevelShortLbl;
-		column = ViewerUtils.createColumn(table, currColLbl, SWT.RIGHT, 100);
+		column = ViewerUtils.createColumn(table, currColLbl, SWT.RIGHT, 60);
 		propertiesList.add(GrNames.GR_WATER_LEVEL);
 		propertyTypesList.add(PropertyType.DOUBLE);
 		column.addSelectionListener(getSelectionAdapter(column, 2));
@@ -201,7 +203,7 @@ public class SiteListView extends AbstractSitesView implements
 
 		// Withdrawn water
 		currColLbl = GrMessages.get().withdrawnWaterShortLbl;
-		column = ViewerUtils.createColumn(table, currColLbl, SWT.RIGHT, 120);
+		column = ViewerUtils.createColumn(table, currColLbl, SWT.RIGHT, 60);
 		propertiesList.add(GrNames.GR_WITHDRAWN_WATER);
 		propertyTypesList.add(PropertyType.DOUBLE);
 		column.addSelectionListener(getSelectionAdapter(column, 3));
@@ -209,7 +211,7 @@ public class SiteListView extends AbstractSitesView implements
 
 		// E-Coli rate
 		currColLbl = GrMessages.get().eColiRateShortLbl;
-		column = ViewerUtils.createColumn(table, currColLbl, SWT.RIGHT, 100);
+		column = ViewerUtils.createColumn(table, currColLbl, SWT.RIGHT, 60);
 		propertiesList.add(GrNames.GR_ECOLI_RATE);
 		propertyTypesList.add(PropertyType.DOUBLE);
 		column.addSelectionListener(getSelectionAdapter(column, 4));

@@ -32,6 +32,15 @@ import org.eclipse.swt.graphics.Image;
 
 /** Shared icons. */
 public class GrImages {
+	// Image label to be included in the sites details page
+	// TODO manage these images with JCR
+	public final static Image IMAGE_MONITORED = GrUiPlugin.getImageDescriptor(
+			"icons/monitored.jpg").createImage();
+	public final static Image IMAGE_REGISTERED = GrUiPlugin.getImageDescriptor(
+			"icons/registered.jpg").createImage();
+	public final static Image IMAGE_VISITED = GrUiPlugin.getImageDescriptor(
+			"icons/visited.jpg").createImage();
+
 	// Generic icons
 	public final static ImageDescriptor IMDESC_NETWORKS = GrUiPlugin
 			.getImageDescriptor("icons/networkList.gif");

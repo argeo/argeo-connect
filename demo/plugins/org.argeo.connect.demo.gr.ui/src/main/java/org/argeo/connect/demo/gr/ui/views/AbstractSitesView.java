@@ -20,8 +20,8 @@ import org.argeo.connect.demo.gr.GrTypes;
 import org.argeo.connect.demo.gr.ui.GrMessages;
 import org.argeo.connect.demo.gr.ui.exports.CalcExtractHeaderLabelProvider;
 import org.argeo.connect.demo.gr.ui.exports.ICalcExtractProvider;
-import org.argeo.connect.demo.gr.ui.providers.IJcrPropertyLabelProvider;
 import org.argeo.connect.demo.gr.ui.providers.GrJcrPropertyValueProvider;
+import org.argeo.connect.demo.gr.ui.providers.IJcrPropertyLabelProvider;
 import org.argeo.connect.demo.gr.ui.utils.GrDoubleClickListener;
 import org.argeo.connect.demo.gr.ui.utils.NodeViewerComparator;
 import org.argeo.jcr.JcrUtils;
@@ -110,6 +110,9 @@ public abstract class AbstractSitesView extends ViewPart implements
 		table.setLayoutData(gd);
 		table.setLayout(new FillLayout());
 		createTablePart(table);
+
+		// set data
+		refreshFilteredList();
 	}
 
 	public abstract void createHeaderPart(Composite body);
@@ -150,7 +153,6 @@ public abstract class AbstractSitesView extends ViewPart implements
 		tableViewer.setContentProvider(new ViewContentProvider());
 		tableViewer.addDoubleClickListener(new GrDoubleClickListener());
 		// fill the table
-		refresh();
 	}
 
 	protected abstract TableViewer createTableViewer(Composite parent);
@@ -217,14 +219,15 @@ public abstract class AbstractSitesView extends ViewPart implements
 
 	/** Reset the PIC list and refresh the view */
 	public void refresh() {
-		if (tableViewer != null)
-			refresh(getSitesWithWhereClause(null));
+		refreshFilteredList();
+		// if (tableViewer != null)
+		// refresh(getSitesWithWhereClause(null));
 	}
 
-	/** Refresh the view with the given PIC list */
-	public void refresh(List<Node> pics) {
+	/** Refresh the view with the given nodes list */
+	public void refresh(List<Node> nodes) {
 		if (tableViewer != null)
-			tableViewer.setInput(pics);
+			tableViewer.setInput(nodes);
 	}
 
 	protected SelectionAdapter getSelectionAdapter(final TableColumn column,

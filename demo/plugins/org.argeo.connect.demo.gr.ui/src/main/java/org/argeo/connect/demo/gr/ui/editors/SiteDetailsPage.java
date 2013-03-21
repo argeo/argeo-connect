@@ -42,6 +42,7 @@ import org.argeo.connect.demo.gr.GrConstants;
 import org.argeo.connect.demo.gr.GrNames;
 import org.argeo.connect.demo.gr.GrTypes;
 import org.argeo.connect.demo.gr.GrUtils;
+import org.argeo.connect.demo.gr.ui.GrImages;
 import org.argeo.connect.demo.gr.ui.GrMessages;
 import org.argeo.connect.demo.gr.ui.commands.GenerateSiteReport;
 import org.argeo.connect.demo.gr.ui.utils.AbstractHyperlinkListener;
@@ -100,6 +101,7 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 	private Text wgs84Longitude;
 	private Text wgs84Latitude;
 	private TableViewer commentsTableViewer;
+	private Label siteImage;
 
 	public SiteDetailsPage(FormEditor editor, String title) {
 		super(editor, ID, title);
@@ -134,10 +136,24 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 
 	private Section createMetadataSection(Composite parent) {
 		try {
+			Composite header = new Composite(parent, SWT.NONE);
+			header.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
+			header.setLayout(new GridLayout(2, false));
+			header.setBackground(parent.getBackground());
+
+			// An image linked to the current site
+			siteImage = new Label(header, SWT.NONE);
+			siteImage.setLayoutData(new GridData());
+			siteImage.setBackground(parent.getBackground());
+
 			// Site metadata
-			Section section = tk.createSection(parent, Section.TITLE_BAR
+			Section section = tk.createSection(header, Section.TITLE_BAR
 					| Section.DESCRIPTION);
-			section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
+			section.setLayoutData(new GridData(GridData.FILL_BOTH
+					| GridData.GRAB_HORIZONTAL));
+			// section.setLayoutData(new
+			// TableWrapData(TableWrapData.FILL_GRAB));
+
 			Composite body = tk.createComposite(section, SWT.WRAP);
 			body.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 			section.setClient(body);
@@ -183,7 +199,17 @@ public class SiteDetailsPage extends AbstractGrEditorPage implements GrNames {
 				if (siteTypeValue != null && !"".equals(siteTypeValue)
 						&& siteType.indexOf(siteTypeValue) > -1) {
 					siteType.select(siteType.indexOf(siteTypeValue));
+
 				}
+				// FIXME retrieve corresponding image from JCR
+				if (siteTypeValue.equals(GrConstants.REGISTERED))
+					siteImage.setImage(GrImages.IMAGE_REGISTERED);
+				else if (siteTypeValue.equals(GrConstants.VISITED))
+					siteImage.setImage(GrImages.IMAGE_VISITED);
+				else
+					// if (siteTypeValue.equals(GrConstants.MONITORED))
+					siteImage.setImage(GrImages.IMAGE_MONITORED);
+
 			}
 
 			// Longitude

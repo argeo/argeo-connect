@@ -109,6 +109,9 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 		});
 		nodesViewer.getTree().setMenu(menu);
 
+		// expends a little bit
+		nodesViewer.expandToLevel(2);
+
 	}
 
 	protected TreeViewer createNodeViewer(Composite parent,
@@ -186,7 +189,8 @@ public class NetworkBrowserView extends AbstractJcrBrowser implements GrNames,
 		// Add a refresh command so that context menu is not empty for non-admin
 		// users
 		CommandUtils.refreshCommand(menuManager, window,
-				RefreshNetworkBrowserView.ID, RefreshNetworkBrowserView.DEFAULT_LABEL,
+				RefreshNetworkBrowserView.ID,
+				RefreshNetworkBrowserView.DEFAULT_LABEL,
 				RefreshNetworkBrowserView.DEFAULT_ICON_DESC, true);
 
 	}
