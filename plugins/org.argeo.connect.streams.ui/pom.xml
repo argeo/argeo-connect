@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.argeo.connect</groupId>
+		<version>1.1.4-SNAPSHOT</version>
+		<artifactId>plugins</artifactId>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>org.argeo.connect.streams.ui</artifactId>
+	<name>Connect Information Streams UI</name>
+	<packaging>jar</packaging>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<configuration>
+					<instructions>
+						<Import-Package>
+							*,
+							org.argeo.eclipse.spring,
+							org.argeo.gis,
+							javax.jcr.nodetype,
+							org.jdom,
+						</Import-Package>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.ui</artifactId>
+			<version>1.1.3-SNAPSHOT</version>
+		</dependency>
+
+		<!-- Connect GIS Utilities -->
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.gis.ui</artifactId>
+			<version>1.1.3-SNAPSHOT</version>
+		</dependency>
+
+		<!--  Feeds -->
+		<dependency>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>com.sun.syndication</artifactId>
+		</dependency>
+
+		<!-- RCP only dependency, needed at compile time -->
+		<dependency>
+			<groupId>org.argeo.commons.base</groupId>
+			<artifactId>org.argeo.eclipse.dep.rcp</artifactId>
+			<version>${version.argeo-commons}</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+</project>
