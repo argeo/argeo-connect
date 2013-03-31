@@ -33,6 +33,7 @@
 			<list>
 				<value>/org/argeo/gis/argeo_gis.cnd</value>
 				<value>/org/argeo/connect/connect.cnd</value>
+				<value>/org/argeo/connect/people/argeo_people.cnd</value>
 			</list>
 		</property>
 		<property name="repository" ref="nodeRepository" />

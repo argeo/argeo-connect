@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+ <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.argeo.connect.people.ui.PeoplePerspective"
+            icon="icons/people.gif"
+            id="org.argeo.connect.people.ui.peoplePerspective"
+            name="People">
+      </perspective>
+   </extension>
+    <!-- Views -->
+    <extension
+         point="org.eclipse.ui.views">
+ 	  	<view
+           class="org.argeo.eclipse.spring.SpringExtensionFactory"
+           icon="icons/people.gif"
+           id="org.argeo.connect.people.ui.peopleBrowserView"
+           name="%peopleBrowserView_title"
+           restorable="true">
+   		</view>
+	</extension>
+	<!-- Commands -->
+	<extension
+		point="org.eclipse.ui.commands">
+		<command
+			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
+			id="org.argeo.connect.people.ui.importPeople"
+			name="Open Network Editor">
+		</command>    
+	</extension>	
+	<!-- Menus -->
+	<extension
+		point="org.eclipse.ui.menus">
+		<!-- Popup Menu for NetworkBrowserView-->
+		<!-- View Specific Menus --> 
+		<menuContribution
+        	locationURI="toolbar:org.argeo.connect.people.ui.peopleBrowserView">
+            <command
+            	commandId="org.argeo.connect.people.ui.importPeople"
+                icon="icons/people.gif"
+                label="Import"
+                tooltip="Import People">
+            </command>
+        </menuContribution>
+	</extension>
+  <extension
+           point="org.eclipse.ui.activities">
+        <activity
+              description="Only for admins"
+              id="org.argeo.connect.people.ui.adminActivity"
+              name="People Admin">
+		  <enabledWhen>
+		    <with variable="roles">
+		      <iterate ifEmpty="false" operator="or">
+		        <equals value="ROLE_PEOPLE_ADMIN" />
+		      </iterate>
+		    </with>
+		  </enabledWhen>
+        </activity>
+        <!--
+        <activityPatternBinding
+              activityId="org.argeo.connect.people.ui.adminActivity"
+              isEqualityPattern="true"
+              pattern="org.argeo.connect.people.ui/org.argeo.connect.people.ui.peoplePerspective">
+        </activityPatternBinding>
+        -->
+     </extension>
+</plugin>

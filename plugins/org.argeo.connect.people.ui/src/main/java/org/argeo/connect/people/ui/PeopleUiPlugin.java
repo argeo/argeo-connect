@@ -6,18 +6,18 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class ConnectPeopleUiPlugin extends AbstractUIPlugin {
+public class PeopleUiPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.argeo.connect.people.ui"; //$NON-NLS-1$
 
 	// The shared instance
-	private static ConnectPeopleUiPlugin plugin;
+	private static PeopleUiPlugin plugin;
 	
 	/**
 	 * The constructor
 	 */
-	public ConnectPeopleUiPlugin() {
+	public PeopleUiPlugin() {
 	}
 
 	/*
@@ -43,7 +43,7 @@ public class ConnectPeopleUiPlugin extends AbstractUIPlugin {
 	 *
 	 * @return the shared instance
 	 */
-	public static ConnectPeopleUiPlugin getDefault() {
+	public static PeopleUiPlugin getDefault() {
 		return plugin;
 	}
 

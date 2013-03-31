@@ -20,6 +20,7 @@
 							*,
 							org.argeo.gis,
 							org.argeo.connect,
+							org.argeo.connect.people;resolution:=optional,
 							org.postgresql,
 						</Import-Package>
 					</instructions>
