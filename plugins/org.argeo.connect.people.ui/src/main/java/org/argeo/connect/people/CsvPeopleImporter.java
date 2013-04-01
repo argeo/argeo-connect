@@ -11,6 +11,7 @@ import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.Repository;
@@ -21,6 +22,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
+import org.argeo.ArgeoMonitor;
 import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.util.CsvParserWithLinesAsMap;
@@ -33,7 +35,9 @@ public class CsvPeopleImporter implements Runnable, PeopleNames, ArgeoNames {
 	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 	private String url;
+	private String base = PeopleConstants.PEOPLE_BASE_PATH;
 	private Repository repository;
+	private ArgeoMonitor monitor;
 
 	@Override
 	public void run() {
@@ -65,9 +69,8 @@ public class CsvPeopleImporter implements Runnable, PeopleNames, ArgeoNames {
 
 		// Path
 		String country = values.get("PAYS");
-		String votingBooth = values.get("LIB_BUREAU_DE_VOTE");
-		String vbPath = PeopleConstants.PEOPLE_BASE_PATH + "/" + country + "/"
-				+ votingBooth;
+		String votingBooth = values.get("LIB_BUREAU_DE_VOTE").replace('/', ' ');
+		String vbPath = base + "/" + country + "/" + votingBooth;
 		Integer birthYear = dateOfBirth.get(Calendar.YEAR);
 		Integer birthDecade = birthYear - (birthYear % 10);
 		String dbPath = birthDecade.toString();
@@ -81,17 +84,38 @@ public class CsvPeopleImporter implements Runnable, PeopleNames, ArgeoNames {
 		Node personNode = baseNode.addNode(personUuidStr,
 				PeopleTypes.PEOPLE_PERSON);
 		personNode.setProperty(PEOPLE_PERSON_UUID, personUuidStr);
+		personNode.setProperty(PEOPLE_DATE_OF_BIRTH, dateOfBirth);
 		// personNode.setProperty(PEOPLE_DN, dn);
 		personNode.setProperty(ARGEO_LAST_NAME, lastName);
 		personNode.setProperty(ARGEO_FIRST_NAME, firstName);
 		personNode.setProperty(Property.JCR_TITLE,
 				firstName + " " + lastName.toUpperCase());
 
+		// count
+		incrementPeopleCount(personNode.getParent());
+
 		session.save();
+	}
+
+	/** Recursively update people counts */
+	protected void incrementPeopleCount(Node node) throws RepositoryException {
+		Long count = 0l;
+		if (node.hasProperty(PEOPLE_COUNT))
+			count = node.getProperty(PEOPLE_COUNT).getLong();
+		node.setProperty(PEOPLE_COUNT, count + 1);
+		try {
+			incrementPeopleCount(node.getParent());
+		} catch (ItemNotFoundException e) {// root
+			// silent
+		}
 	}
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public void setBase(String base) {
+		this.base = base;
 	}
 
 	public void setRepository(Repository repository) {
@@ -115,9 +139,12 @@ public class CsvPeopleImporter implements Runnable, PeopleNames, ArgeoNames {
 
 				addPerson(session, lastName, firstName, dateOfBirth, line);
 
-				if ((lineNumber % 100) == 0)
+				if ((lineNumber % 100) == 0) {
 					if (log.isDebugEnabled())
 						log.debug("Processed line " + lineNumber);
+					if (monitor != null)
+						monitor.subTask("Processed line " + lineNumber);
+				}
 			} catch (Exception e) {
 				log.error("Line " + lineNumber + ": " + e.getMessage());
 				if (log.isDebugEnabled())

@@ -8,5 +8,6 @@
 	<!-- Views -->
 	<bean id="peopleBrowserView" class="org.argeo.connect.people.ui.views.PeopleBrowserView"
 		scope="prototype">
+		<property name="repository" ref="repository" />
 	</bean>
 </beans>

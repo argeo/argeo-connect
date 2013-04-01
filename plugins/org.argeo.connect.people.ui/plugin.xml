@@ -17,7 +17,7 @@
            class="org.argeo.eclipse.spring.SpringExtensionFactory"
            icon="icons/people.gif"
            id="org.argeo.connect.people.ui.peopleBrowserView"
-           name="%peopleBrowserView_title"
+           name="People Browser"
            restorable="true">
    		</view>
 	</extension>

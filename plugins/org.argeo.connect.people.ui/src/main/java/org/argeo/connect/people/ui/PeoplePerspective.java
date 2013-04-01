@@ -14,7 +14,7 @@ public class PeoplePerspective implements IPerspectiveFactory {
 		layout.setFixed(false);
 
 		IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT,
-				0.3f, editorArea);
+				0.5f, editorArea);
 		left.addView(PeopleBrowserView.ID);
 	}
 }
