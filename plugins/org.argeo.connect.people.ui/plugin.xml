@@ -59,12 +59,10 @@
 		    </with>
 		  </enabledWhen>
         </activity>
-        <!--
         <activityPatternBinding
               activityId="org.argeo.connect.people.ui.adminActivity"
               isEqualityPattern="true"
               pattern="org.argeo.connect.people.ui/org.argeo.connect.people.ui.peoplePerspective">
         </activityPatternBinding>
-        -->
      </extension>
 </plugin>
