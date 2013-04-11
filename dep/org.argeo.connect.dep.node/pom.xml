@@ -142,7 +142,6 @@
 													<include>org.argeo.tp:javax.media.jai.codec</include>
 													<include>org.argeo.tp:com.sun.media.jai.imageio</include>
 													<!-- TODO move to commons -->
-													<include>org.argeo.tp:org.apache.pdfbox</include>
 													<include>org.argeo.tp:org.hsqldb</include>
 												</includes>
 											</dependency>
