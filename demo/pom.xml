@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.argeo.connect</groupId>
 		<artifactId>argeo-connect</artifactId>
-		<version>1.1.4-SNAPSHOT</version>
+		<version>1.1.4</version>
 	</parent>
 	<groupId>org.argeo.connect.demo</groupId>
 	<artifactId>argeo-connect-demo</artifactId>
