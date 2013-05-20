@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.argeo.commons</groupId>
 		<artifactId>argeo-commons</artifactId>
-		<version>1.2.1</version>
+		<version>2.1.1</version>
 	</parent>
 	<groupId>org.argeo.connect</groupId>
 	<artifactId>argeo-connect</artifactId>
@@ -11,7 +11,7 @@
 	<name>Argeo Connect</name>
 	<version>1.1.5-SNAPSHOT</version>
 	<properties>
-		<version.connect>1.1.5-SNAPSHOT</version.connect>
+		<version.connect>2.0.0</version.connect>
 	</properties>
 	<modules>
 		<module>data</module>
@@ -88,7 +88,7 @@ which are used as well as that of the covered work.]]>
 	<repositories>
 		<repository>
 			<id>argeo-commons</id>
-			<url>http://repo.argeo.org/data/public/java/org.argeo.commons-1.2.x</url>
+			<url>http://repo.argeo.org/data/public/java/org.argeo.commons-2.1.x</url>
 			<releases>
 				<enabled>true</enabled>
 				<updatePolicy>daily</updatePolicy>
@@ -110,7 +110,7 @@ which are used as well as that of the covered work.]]>
 	<distributionManagement>
 		<repository>
 			<id>staging</id>
-			<url>dav:https://repo.argeo.org/data/files/java/org.argeo.connect-1.1.x</url>
+			<url>dav:https://repo.argeo.org/data/files/java/org.argeo.connect-2.1.x</url>
 			<uniqueVersion>false</uniqueVersion>
 		</repository>
 	</distributionManagement>
