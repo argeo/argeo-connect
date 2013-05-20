@@ -11,7 +11,7 @@
 	<name>Argeo Connect</name>
 	<version>2.1.1-SNAPSHOT</version>
 	<properties>
-		<version.connect>2.0.0</version.connect>
+		<version.connect>2.1.1-SNAPSHOT</version.connect>
 	</properties>
 	<modules>
 		<module>data</module>
