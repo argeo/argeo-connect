@@ -46,7 +46,7 @@ import org.argeo.geotools.GeoToolsUtils;
 import org.argeo.geotools.jcr.GeoJcrMapper;
 import org.argeo.gis.ui.AbstractMapViewer;
 import org.argeo.gis.ui.MapViewerListener;
-import org.eclipse.rwt.RWT;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
