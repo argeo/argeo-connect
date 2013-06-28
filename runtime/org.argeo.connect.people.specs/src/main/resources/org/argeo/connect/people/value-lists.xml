@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<!-- Define here the lists that will be displayed in the interface -->
+
+	<!-- Film lists -->
+	<util:map id="aMapExample">
+		<entry>
+			<key>
+				<util:constant static-field="com.mrschilling.man.MsmConstants.ROLE_CONSULTANT" />
+			</key>
+			<value>ROLE_CONSULTANT</value>
+		</entry>
+		<entry>
+			<key>
+				<util:constant static-field="com.mrschilling.man.MsmConstants.ROLE_MANAGER" />
+			</key>
+			<value>ROLE_MANAGER</value>
+		</entry>
+	</util:map>
+</beans>
