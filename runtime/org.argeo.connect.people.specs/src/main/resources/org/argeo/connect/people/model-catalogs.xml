@@ -5,21 +5,15 @@
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-	<!-- Define here the lists that will be displayed in the interface -->
+	<!-- Define here various catalogs that are not UI specific -->
 
-	<!-- Film lists -->
+	<!-- sample -->
 	<util:map id="aMapExample">
 		<entry>
 			<key>
-				<util:constant static-field="com.mrschilling.man.MsmConstants.ROLE_CONSULTANT" />
+				<util:constant static-field="org.argeo.connect.people.PeopleConstants.PEOPLE_BASE_PATH" />
 			</key>
-			<value>ROLE_CONSULTANT</value>
-		</entry>
-		<entry>
-			<key>
-				<util:constant static-field="com.mrschilling.man.MsmConstants.ROLE_MANAGER" />
-			</key>
-			<value>ROLE_MANAGER</value>
+			<value>AN_IMPORTANT_PATH</value>
 		</entry>
 	</util:map>
 </beans>

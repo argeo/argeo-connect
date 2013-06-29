@@ -3,4 +3,167 @@
 //
 // PARENT BASE TYPE
 //
+[people:entity] > nt:unstructured
+// An implementation dependant UUID for each entity
+-people:uuid (String) m
+// Maps the FN value of a vCard
+- people:displayName (String) m
+- people:source (URI)
+// A free text description of the current entity
+- people:description (STRING)
 
+
+//
+// PERSON
+//
+[people:person] > people:entity, people:contactable, people:tagable
+- people:firstName (STRING) 
+- people:middleName (STRING)
+- people:lastName (STRING)
+- people:salutation (STRING)
+- people:honorificTitle (STRING)
+- people:nameSuffix (STRING)
+- people:nickname (STRING)
+- people:maidenName (STRING)
+- people:latinPhoneticSpelling (STRING)
+- people:birthDate (DATE) 
+// Enable approximative birth date 
+- people:birthDateTxt
+// Sex component:  A single letter.  M stands for "male", 
+// F stands for "female", O stands for "other", N stands for "none or not
+// applicable", U stands for "unknown".
+// Some free-form text comments might be added after a semicolon separator
+- people:gender (STRING)
+// Positions in the various organisations this person is attached to
++ * (people:job) *
+
+
+//
+// ORGANISATION
+//
+[people:org] > people:entity, people:contactable, people:tagable
+- people:legalName (STRING)
+- people:legalForm (STRING)
+- people:vatIdNb (STRING)
+// Departments or organisational units
++ * (people:org) *
+
+//
+// GROUP : base type for all groups of persons, organisations and/or other groups 
+//
+[people:group] > people:entity, people:contactable, people:tagable
++ * (people:member) *
+
+
+// 
+// LINKS Between entities
+//
+[people:position] > (nt:unstructured)
+- people:role (STRING) 
+// OPTIONAL: the nature of the subject in this relation: 
+// For instance "Actor" or "Engineer" 
+- people:title (STRING) 
+- people:dateBegin (DATE)
+- people:dateEnd (DATE)
+// enable to notify that a position is not relevant anymore in the case 
+// we don't know when it has ended 
+- people:isCurrent (BOOLEAN) ="true" a m
+
+// The job or position of a person in an organisation
+[people:job] > (people:position)
+// ONLY an organisation
+- people:orgRef (REFERENCE) m
+
+// Membership in a group
+[people:member] > (people:position)
+// MIGHT BE a person, an organisation or another group
+- people:memberRef (REFERENCE) m
+
+// 
+// TAGABLE
+//
+[people:tagable] 
+mixin
++ * (people:tag) *
+
+//
+// MULTILANG
+//
+[people:multiLang]
+mixin
++ * (people:language) *
+
+[people:language] > nt:unstructured, people:orderable
+// A single language tag, as defined in http://tools.ietf.org/html/rfc5646
+- people:lang (STRING) ='en' m a
+
+// 
+// ORDERABLE
+//
+[people:orderable] 
+mixin
+// 1 is the most prefered
+- people:pref (LONG) =100 m a
+
+
+/////// COMMUNICATION
+
+// 
+// CONTACTABLE
+//
+[people:contactable] 
+mixin
++ * (people:contact) *
+
+// 
+// CONTACTS
+// 
+[people:contact] > nt:unstructured, people:orderable
+// work, home, other
+- people:contactCategory (STRING)
+// optional label 
+- people:contactType (STRING)
+// if contactCategory == work 
+- people:relatedOrg (REFERENCE)
+//OPTIONNAL an URI translated from the contact type 
+// value to be used directly by the system.
+- people:contactUri (URI) 
+- people:contactValue (STRING) 
+
+
+// TEL
+[people:tel] > people:contact 
+// to display current time for this timezone
+// Stores time offset to UTC as a parseable String for the time being
+- people:timeZone (STRING)
+
+// EMAIL
+[people:email] > people:contact 
+
+// IMPP
+[people:impp] > people:contact 
+
+// WEBSITE
+[people:website] > people:contact 
+
+// ADDRESS
+[people:address] > people:contact 
+// Display address SHOULD be stored in the contactValue property
+// when updating following properties 
+- people:street (STRING)
+- people:streetComplement (STRING)
+- people:zipCode (STRING)
+- people:city (STRING)
+- people:state (STRING)
+- people:country (STRING)
+
+// BANK ACCOUNT
+[people:bankAccount] > people:address 
+- people:bankName m
+- people:currency (STRING)
+// To be used while passing transaction orders
+- people:accountOwnerLbl (STRING)
+- people:accountNb (STRING)
+- people:bankCode (STRING)
+- people:iban (STRING)
+- people:bic (STRING)

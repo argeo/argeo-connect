@@ -5,25 +5,25 @@
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-	<!-- Map of the roles used in the user interface - TODO merge with new role 
+	<!-- Map of the roles used in Argeo People - TODO merge with new role 
 		definition -->
 	<util:map id="managedRoles">
 		<entry>
 			<key>
 				<util:constant
-					static-field="com.mrschilling.manager.MsmConstants.ROLE_CONSULTANT" />
+					static-field="org.argeo.connect.people.PeopleConstants.ROLE_CONSULTANT" />
 			</key>
 			<value>ROLE_CONSULTANT</value>
 		</entry>
 		<entry>
 			<key>
-				<util:constant static-field="com.mrschilling.manager.MsmConstants.ROLE_MANAGER" />
+				<util:constant static-field="org.argeo.connect.people.PeopleConstants.ROLE_MANAGER" />
 			</key>
 			<value>ROLE_MANAGER</value>
 		</entry>
 		<entry>
 			<key>
-				<util:constant static-field="com.mrschilling.manager.MsmConstants.ROLE_ADMIN" />
+				<util:constant static-field="org.argeo.connect.people.PeopleConstants.ROLE_ADMIN" />
 			</key>
 			<value>ROLE_ADMIN</value>
 		</entry>
