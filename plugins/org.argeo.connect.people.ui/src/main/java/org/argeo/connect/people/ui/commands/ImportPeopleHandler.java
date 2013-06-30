@@ -2,8 +2,8 @@ package org.argeo.connect.people.ui.commands;
 
 import javax.jcr.Repository;
 
-import org.argeo.connect.people.CsvPeopleImporter;
 import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.people.imports.CsvPeopleImporter;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;

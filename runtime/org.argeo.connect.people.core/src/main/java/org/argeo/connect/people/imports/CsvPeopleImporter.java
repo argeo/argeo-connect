@@ -1,4 +1,4 @@
-package org.argeo.connect.people;
+package org.argeo.connect.people.imports;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -23,6 +23,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.ArgeoMonitor;
+import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleTypes;
 import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.util.CsvParserWithLinesAsMap;
@@ -37,8 +40,7 @@ public class CsvPeopleImporter implements Runnable, PeopleNames, ArgeoNames {
 	private String url;
 	private String base = PeopleConstants.PEOPLE_BASE_PATH;
 	private Repository repository;
-	private ArgeoMonitor monitor;
-
+	
 	@Override
 	public void run() {
 		Session session = null;
@@ -141,10 +143,8 @@ public class CsvPeopleImporter implements Runnable, PeopleNames, ArgeoNames {
 
 				if ((lineNumber % 100) == 0) {
 					if (log.isDebugEnabled())
-						log.debug("Processed line " + lineNumber);
-					if (monitor != null)
-						monitor.subTask("Processed line " + lineNumber);
-				}
+						log.debug("Processed line " + lineNumber);}
+			
 			} catch (Exception e) {
 				log.error("Line " + lineNumber + ": " + e.getMessage());
 				if (log.isDebugEnabled())

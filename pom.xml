@@ -12,6 +12,8 @@
 	<version>2.1.1-SNAPSHOT</version>
 	<properties>
 		<version.connect>2.1.1-SNAPSHOT</version.connect>
+		<!-- TEST ez-vcard  -->
+		<version.ez-vcard>0.8.2-SNAPSHOT</version.ez-vcard>
 	</properties>
 	<modules>
 		<module>data</module>
@@ -89,6 +91,16 @@ which are used as well as that of the covered work.]]>
 		<repository>
 			<id>argeo-commons</id>
 			<url>http://repo.argeo.org/data/public/java/org.argeo.commons-2.1.tp</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+		</repository>
+		<!--  LOCAL REPOSITORY TO PROVIDE ADDITIONNAL EXPERIMENTAL THIRD PARTIES -->
+		<repository>
+			<id>argeo-connect-tp</id>
+			<url>http://localhost:7070/data/public/java/org.argeo.tp-2.1.br</url>
 			<releases>
 				<enabled>true</enabled>
 				<updatePolicy>daily</updatePolicy>

@@ -41,7 +41,7 @@
 		<!-- People model -->
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.people.specs</artifactId>
+			<artifactId>org.argeo.connect.people.core</artifactId>
 			<version>2.1.1-SNAPSHOT</version>
 		</dependency>
 
@@ -50,9 +50,6 @@
 			<artifactId>org.argeo.server.jcr</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
-
-
-
 
 		<dependency>
 			<groupId>org.argeo.commons.base</groupId>

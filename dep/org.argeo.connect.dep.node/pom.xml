@@ -53,6 +53,13 @@
 			<groupId>org.argeo.tp</groupId>
 			<artifactId>org.apache.pdfbox</artifactId>
 		</dependency>
+
+		<!-- add vCard Parsing abilities -->
+		<dependency>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>ez-vcard</artifactId>
+			<version>${version.ez-vcard}</version>
+		</dependency>
 	</dependencies>
 	<profiles>
 		<profile>

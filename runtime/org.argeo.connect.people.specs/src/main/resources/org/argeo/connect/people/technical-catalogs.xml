@@ -5,8 +5,13 @@
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-	<!-- Map of the roles used in Argeo People - TODO merge with new role 
-		definition -->
+	<!-- Namespaces used by the application -->
+	<util:map id="peopleNamespaces">
+		<entry key="people" value="http://org.argeo.org/ns/people" />
+	</util:map>
+
+
+	<!-- Map of the roles used in Argeo People - TODO merge with new role definition -->
 	<util:map id="managedRoles">
 		<entry>
 			<key>
@@ -17,7 +22,8 @@
 		</entry>
 		<entry>
 			<key>
-				<util:constant static-field="org.argeo.connect.people.PeopleConstants.ROLE_MANAGER" />
+				<util:constant
+					static-field="org.argeo.connect.people.PeopleConstants.ROLE_MANAGER" />
 			</key>
 			<value>ROLE_MANAGER</value>
 		</entry>

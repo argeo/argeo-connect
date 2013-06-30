@@ -20,6 +20,11 @@
 						<Import-Package>
 							*,
 							javax.jcr.nodetype,
+							org.apache.jackrabbit.core,
+							org.apache.jackrabbit.core.config,
+							org.apache.tika,
+							ezvcard,
+
 						</Import-Package>
 					</instructions>
 				</configuration>
@@ -27,10 +32,7 @@
 		</plugins>
 	</build>
 	<dependencies>
-
 		<!-- The specification bundle -->
-
-
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.people.specs</artifactId>
@@ -48,23 +50,23 @@
 			<version>${version.argeo-commons}</version>
 		</dependency>
 
-		<!-- TEST -->
-		<dependency>
-			<groupId>org.argeo.commons.server</groupId>
-			<artifactId>org.argeo.server.jackrabbit</artifactId>
-			<version>${version.argeo-commons}</version>
-			<scope>test</scope>
-		</dependency>
+		<!-- add vCard Parsing abilities -->
 		<dependency>
 			<groupId>org.argeo.tp</groupId>
-			<artifactId>org.h2</artifactId>
-			<scope>test</scope>
+			<artifactId>ez-vcard</artifactId>
+			<version>${version.ez-vcard}</version>
 		</dependency>
+
+		<!-- TEST -->
 		<dependency>
 			<groupId>org.argeo.commons.base</groupId>
 			<artifactId>org.argeo.support.junit</artifactId>
 			<version>${version.argeo-commons}</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- <dependency> <groupId>org.argeo.commons.server</groupId> <artifactId>org.argeo.server.jackrabbit</artifactId> 
+			<version>${version.argeo-commons}</version> <scope>test</scope> </dependency> 
+			<dependency> <groupId>org.argeo.tp</groupId> <artifactId>org.h2</artifactId> 
+			<scope>test</scope> </dependency> -->
 	</dependencies>
 </project>

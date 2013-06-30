@@ -58,7 +58,7 @@
 // 
 // LINKS Between entities
 //
-[people:position] > (nt:unstructured)
+[people:position] > nt:unstructured
 - people:role (STRING) 
 // OPTIONAL: the nature of the subject in this relation: 
 // For instance "Actor" or "Engineer" 
@@ -70,12 +70,12 @@
 - people:isCurrent (BOOLEAN) ="true" a m
 
 // The job or position of a person in an organisation
-[people:job] > (people:position)
+[people:job] > people:position
 // ONLY an organisation
 - people:orgRef (REFERENCE) m
 
 // Membership in a group
-[people:member] > (people:position)
+[people:member] > people:position
 // MIGHT BE a person, an organisation or another group
 - people:memberRef (REFERENCE) m
 
@@ -84,7 +84,8 @@
 //
 [people:tagable] 
 mixin
-+ * (people:tag) *
+- people:tag (STRING) *
+
 
 //
 // MULTILANG
@@ -103,7 +104,7 @@ mixin
 [people:orderable] 
 mixin
 // 1 is the most prefered
-- people:pref (LONG) =100 m a
+- people:pref (LONG) ='100' m a
 
 
 /////// COMMUNICATION
