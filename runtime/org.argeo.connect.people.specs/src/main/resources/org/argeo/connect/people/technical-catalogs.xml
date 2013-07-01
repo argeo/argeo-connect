@@ -7,7 +7,7 @@
 
 	<!-- Namespaces used by the application -->
 	<util:map id="peopleNamespaces">
-		<entry key="people" value="http://org.argeo.org/ns/people" />
+		<entry key="people" value="http://www.argeo.org/ns/people" />
 	</util:map>
 
 
