@@ -20,9 +20,6 @@
 						<Import-Package>
 							*,
 							javax.jcr.nodetype,
-							org.apache.jackrabbit.core,
-							org.apache.jackrabbit.core.config,
-							org.apache.tika,
 							ezvcard,
 
 						</Import-Package>
