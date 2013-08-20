@@ -4,7 +4,7 @@
 // PARENT BASE TYPE
 //
 [people:entity] > nt:unstructured
-// An implementation dependant UUID for each entity
+// An implementation dependent UUID for each entity
 -people:uuid (String) m
 // Maps the FN value of a vCard
 - people:displayName (String) m
