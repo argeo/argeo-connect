@@ -56,7 +56,6 @@
 <!-- 			<artifactId>org.mortbay.jetty.util</artifactId> -->
 <!-- 		</dependency> -->
 
-		<!-- RCP only dependency, needed at compile time -->
 		<dependency>
 			<groupId>org.argeo.commons.base</groupId>
 			<artifactId>org.argeo.eclipse.dep.rap</artifactId>

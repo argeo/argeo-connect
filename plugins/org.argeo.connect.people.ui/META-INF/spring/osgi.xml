@@ -12,5 +12,7 @@
 
 	<!-- REFERENCES -->
 	<reference id="repository" interface="javax.jcr.Repository"
-		filter="(argeo.jcr.repository.alias=connect)" />
+		filter="(argeo.jcr.repository.alias=people)" />	
+<!-- 		<reference id="repository" interface="javax.jcr.Repository"
+		filter="(argeo.jcr.repository.alias=connect)" /> -->
 </beans:beans>

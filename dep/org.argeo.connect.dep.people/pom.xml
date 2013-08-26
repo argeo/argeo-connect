@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.argeo.connect</groupId>
+		<version>2.1.1-SNAPSHOT</version>
+		<artifactId>dep</artifactId>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>org.argeo.connect.dep.people</artifactId>
+	<name>People base Dependencies</name>
+	<dependencies>
+		<!-- Node -->
+		<dependency>
+			<groupId>org.argeo.commons.security</groupId>
+			<artifactId>org.argeo.security.dep.node</artifactId>
+			<version>${version.argeo-commons}</version>
+			<type>pom</type>
+			<exclusions>
+				<exclusion>
+					<groupId>org.argeo.commons.server</groupId>
+					<artifactId>org.argeo.server.dep.tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Modules -->
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.people.services</artifactId>
+			<version>2.1.1-SNAPSHOT</version>
+		</dependency>
+
+		<!-- add vCard Parsing abilities -->
+		<!--  <dependency>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>ez-vcard</artifactId>
+			<version>${version.ez-vcard}</version>
+		</dependency>  -->
+	</dependencies>
+</project>
