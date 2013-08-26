@@ -55,11 +55,11 @@
 		</dependency>
 
 		<!-- add vCard Parsing abilities -->
-		<dependency>
+		<!--  <dependency>
 			<groupId>org.argeo.tp</groupId>
 			<artifactId>ez-vcard</artifactId>
 			<version>${version.ez-vcard}</version>
-		</dependency>
+		</dependency>  -->
 	</dependencies>
 	<profiles>
 		<profile>

@@ -19,10 +19,10 @@
 					<instructions>
 						<Import-Package>
 							*,
-							javax.jcr.nodetype,
-							ezvcard,
-
+							javax.jcr.nodetype,	
 						</Import-Package>
+						<!--  Add ezVcard import package : 
+						    ezvcard,  -->
 					</instructions>
 				</configuration>
 			</plugin>
@@ -48,11 +48,11 @@
 		</dependency>
 
 		<!-- add vCard Parsing abilities -->
-		<dependency>
+		<!--   <dependency>
 			<groupId>org.argeo.tp</groupId>
 			<artifactId>ez-vcard</artifactId>
 			<version>${version.ez-vcard}</version>
-		</dependency>
+		</dependency> -->
 
 		<!-- TEST -->
 		<dependency>
