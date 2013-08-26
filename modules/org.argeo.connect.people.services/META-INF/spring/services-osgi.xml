@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/osgi"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/osgi  
+       http://www.springframework.org/schema/osgi/spring-osgi-1.1.xsd
+       http://www.springframework.org/schema/beans   
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<!-- LABEL -->
+	<beans:bean class="org.argeo.security.core.OsgiModuleLabel">
+		<beans:property name="bundleContext" ref="bundleContext" />
+	</beans:bean>
+
+	<!-- REFERENCES -->
+	<reference id="nodeRepository" interface="javax.jcr.Repository"
+		filter="(argeo.jcr.repository.alias=node)" />
+	<reference id="authenticationManager"
+		interface="org.springframework.security.AuthenticationManager" />
+
+	<!-- SERVICES -->
+	<service ref="peopleService" interface="org.argeo.connect.people.PeopleService" />
+
+	<!-- ROLES -->
+	<reference id="userAdminService" interface="org.argeo.security.UserAdminService" />
+
+	<beans:bean class="org.argeo.security.core.SimpleRoleRegistration"
+		init-method="run">
+		<beans:property name="userAdminService" ref="userAdminService" />
+	</beans:bean>
+</beans:beans>
