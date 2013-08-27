@@ -58,42 +58,15 @@ public interface PeopleNames {
 	public final static String PEOPLE_LEGAL_STATUS = "people:legalStatus";
 	public final static String PEOPLE_VAT_ID_NB = "people:vatIdNb";
 
-	/* FILMS */
-	public final static String PEOPLE_FILM_ID = "people:filmId";
-	public final static String PEOPLE_FILM_PROD_YEAR = "people:filmProductionYear";
-	public final static String PEOPLE_FILM_PROD_COUNTRY = "people:filmProductionCountry";
-	public final static String PEOPLE_FILM_PROD_COUNTRY_SHORT = "people:filmProdCountryShort";
-	public final static String PEOPLE_FILM_LENGHT = "people:filmLenght";
-	public final static String PEOPLE_FILM_DIRECTOR = "people:director";
-	public final static String PEOPLE_FILM_ORIGINAL_LANGUAGE = "people:filmOriginalLanguage";
-	public final static String PEOPLE_FILM_ORIG_LATIN_TITLE = "people:filmOrigLatinTitle";
-
-	public final static String PEOPLE_FILM_TITLE_VALUE = "people:filmTitleValue";
-	public final static String PEOPLE_FILM_TITLE_ARTICLE = "people:filmTitleArticle";
-
-	public final static String PEOPLE_SYNOPSIS_CONTENT = "people:synopsisContent";
-
 	/* WORKFLOWS */
 	public final static String PEOPLE_DATE_BEGIN = "people:dateBegin";
 	public final static String PEOPLE_DATE_END = "people:dateEnd";
-
 	public final static String PEOPLE_WF_ID = "people:wfId";
 	public final static String PEOPLE_WF_VERSION = "people:wfVersion";
 	public final static String PEOPLE_WF_STATUS = "people:wfStatus";
 
-	// Film selection workflow
-	// public final static String PEOPLE_PROJECT = "people:project";
-	// public final static String PEOPLE_EDITION = "people:edition";
-	// a reference to the film linked to the current workflow
-	public final static String PEOPLE_FILM_REF = "people:filmRef";
-	public final static String PEOPLE_FILM_CATEGORY = "people:filmCategory";
-	public final static String PEOPLE_CATEGORY_LABEL = "people:categoryLabel";
-	public final static String PEOPLE_FILM_RATE = "people:filmRate";
-	public final static String PEOPLE_FILM_RATED_BY = "people:filmRatedBy";
-	public final static String PEOPLE_COMMENT = "people:comment";
 
 	/* CONTACTS */
-
 	// base properties for all contact type nodes
 	public final static String PEOPLE_CONTACT_VALUE = "people:contactValue";
 	public final static String PEOPLE_CONTACT_CATEGORY = "people:contactCategory";

@@ -1,6 +1,6 @@
 <people = 'http://www.argeo.org/ns/people'>
 
-[people:person] > mix:title
+[people:anonymousPerson] > mix:title
 - people:personUuid (STRING) m
 - people:dateOfBirth (DATE)
 - argeo:firstName (STRING)

@@ -83,7 +83,7 @@ public class CsvPeopleImporter implements Runnable, PeopleNames, ArgeoNames {
 		if (baseNode.hasNode(personUuidStr))
 			return;
 		Node personNode = baseNode.addNode(personUuidStr,
-				PeopleTypes.PEOPLE_PERSON);
+				PeopleTypes.PEOPLE_ANONYMOUS_PERSON);
 		personNode.setProperty(PEOPLE_PERSON_UUID, personUuidStr);
 		personNode.setProperty(PEOPLE_DATE_OF_BIRTH, dateOfBirth);
 		// personNode.setProperty(PEOPLE_DN, dn);
