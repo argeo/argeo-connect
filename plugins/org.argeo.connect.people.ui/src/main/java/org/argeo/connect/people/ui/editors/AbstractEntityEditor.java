@@ -1,14 +1,10 @@
 package org.argeo.connect.people.ui.editors;
 
-import java.util.Calendar;
-
 import javax.jcr.Node;
-import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.version.VersionManager;
-import javax.swing.event.HyperlinkEvent;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleService;
@@ -38,8 +34,8 @@ import org.eclipse.ui.part.EditorPart;
 /**
  * Parent Abstract Form editor for a given entity. Insure the presence of a
  * corresponding people services and manage a life cycle of the JCR session that
- * is bound to it. It provides a header with some meta informations and a tab
- * folder to add tabs with further details.
+ * is bound to it. It provides a header with some meta informations and a
+ * <code>CTabFolder</code> to add tabs with further details.
  */
 public abstract class AbstractEntityEditor extends EditorPart {
 
@@ -110,7 +106,6 @@ public abstract class AbstractEntityEditor extends EditorPart {
 			String path = entityNode.getPath();
 			if (session.itemExists(path))
 				vm.checkin(path);
-
 			mForm.commit(true);
 		} catch (Exception e) {
 			throw new ArgeoException("Error while saving jcr node.", e);
@@ -134,8 +129,12 @@ public abstract class AbstractEntityEditor extends EditorPart {
 
 	@Override
 	public void setFocus() {
-		// mForm.refresh();
+	}
 
+	// specific refresh
+	protected void forceRefresh() {
+		for (IFormPart part : mForm.getParts())
+			part.refresh();
 	}
 
 	/* CONTENT CREATION */
@@ -152,20 +151,23 @@ public abstract class AbstractEntityEditor extends EditorPart {
 		header.setBackground(body.getBackground());
 		createHeaderPart(header);
 		// NO_FOCUS to solve our "tab browsing" issue
-		folder = createTabFolder(body, SWT.NO_FOCUS);
+		folder = createCTabFolder(body, SWT.NO_FOCUS);
+		populateTabFolder(folder);
+		folder.setSelection(0);
 
 	}
 
-	// utils to factorize some of the commons configurations to apply to all
-	// tabs and folders.
-	protected CTabFolder createTabFolder(Composite parent, int style) {
+	protected abstract void createHeaderPart(Composite parent);
+
+	protected abstract void populateTabFolder(CTabFolder tabFolder);
+
+	/* MANAGE TAB FOLDER */
+	protected CTabFolder createCTabFolder(Composite parent, int style) {
 		CTabFolder tabFolder = new CTabFolder(parent, style);
 		GridData gd = new GridData(GridData.FILL_BOTH | GridData.GRAB_VERTICAL
 				| GridData.GRAB_HORIZONTAL);
 		gd.grabExcessVerticalSpace = true;
 		tabFolder.setLayoutData(gd);
-		populateTabFolder(tabFolder);
-		tabFolder.setSelection(0);
 		return tabFolder;
 	}
 
@@ -177,7 +179,18 @@ public abstract class AbstractEntityEditor extends EditorPart {
 		return item;
 	}
 
-	/* create or open the corresponding tab */
+	protected CTabItem createCTab(CTabFolder tabFolder, String tabId) {
+		CTabItem item = new CTabItem(tabFolder, SWT.NO_FOCUS);
+		item.setData(CTAB_INSTANCE_ID, tabId);
+		item.setText(tabId);
+		Composite body = toolkit.createComposite(tabFolder);
+		body.setLayout(new GridLayout(1, false));
+		toolkit.createLabel(body, "Add content here.");
+		item.setControl(body);
+		return item;
+	}
+
+	/** create or open the corresponding tab */
 	public void openTabItem(String id) {
 		CTabItem[] items = folder.getItems();
 
@@ -192,122 +205,6 @@ public abstract class AbstractEntityEditor extends EditorPart {
 		folder.setSelection(item);
 	}
 
-	protected abstract void createHeaderPart(Composite parent);
-
-	protected abstract void populateTabFolder(CTabFolder tabFolder);
-
-	protected CTabItem createCTab(CTabFolder tabFolder, String tabId) {
-		CTabItem item = new CTabItem(tabFolder, SWT.NO_FOCUS);
-		item.setData(CTAB_INSTANCE_ID, tabId);
-		item.setText(tabId);
-		Composite body = toolkit.createComposite(tabFolder);
-		body.setLayout(new GridLayout(1, false));
-		toolkit.createLabel(body, "Add content here.");
-		item.setControl(body);
-		return item;
-	}
-
-	/* JCR HELPERS */
-	/**
-	 * Centralizes management of updating property value. Among other to avoid
-	 * infinite loop when the new value is the same as the ones that is already
-	 * stored in JCR.
-	 * 
-	 * @return true if the value as changed
-	 */
-	protected boolean setJcrProperty(String propName, int propertyType,
-			Object value) {
-		try {
-			switch (propertyType) {
-			case PropertyType.STRING:
-				if (getNode().hasProperty(propName)
-						&& getNode().getProperty(propName).getString()
-								.equals((String) value))
-					// nothing changed yet
-					return false;
-				else {
-					getNode().setProperty(propName, (String) value);
-					return true;
-				}
-			case PropertyType.BOOLEAN:
-				if (getNode().hasProperty(propName)
-						&& getNode().getProperty(propName).getBoolean() == (Boolean) value)
-					// nothing changed yet
-					return false;
-				else {
-					getNode().setProperty(propName, (Boolean) value);
-					return true;
-				}
-			case PropertyType.DATE:
-				if (getNode().hasProperty(propName)
-						&& getNode().getProperty(propName).getDate()
-								.equals((Calendar) value))
-					// nothing changed yet
-					return false;
-				else {
-					getNode().setProperty(propName, (Calendar) value);
-					return true;
-				}
-
-			default:
-				throw new ArgeoException("Unimplemented property save");
-			}
-		} catch (RepositoryException re) {
-			throw new ArgeoException("Unexpected error while setting property",
-					re);
-		}
-	}
-
-	protected boolean setJcrProperty(Node node, String propName,
-			int propertyType, Object value) {
-		try {
-			// int propertyType = getPic().getProperty(propName).getType();
-			switch (propertyType) {
-			case PropertyType.STRING:
-				if (node.hasProperty(propName)
-						&& node.getProperty(propName).getString()
-								.equals((String) value))
-					// nothing changed yet
-					return false;
-				else {
-					node.setProperty(propName, (String) value);
-					return true;
-				}
-			case PropertyType.BOOLEAN:
-				if (node.hasProperty(propName)
-						&& node.getProperty(propName).getBoolean() == (Boolean) value)
-					// nothing changed yet
-					return false;
-				else {
-					node.setProperty(propName, (Boolean) value);
-					return true;
-				}
-			case PropertyType.DATE:
-				if (node.hasProperty(propName)
-						&& node.getProperty(propName).getDate()
-								.equals((Calendar) value))
-					// nothing changed yet
-					return false;
-				else {
-					node.setProperty(propName, (Calendar) value);
-					return true;
-				}
-
-			default:
-				throw new ArgeoException("Unimplemented property save");
-			}
-		} catch (RepositoryException re) {
-			throw new ArgeoException("Unexpected error while setting property",
-					re);
-		}
-	}
-
-	protected void forceRefresh() {
-		for (IFormPart part : mForm.getParts())
-			part.refresh();
-	}
-
-	/* MANAGE TAB FOLDER */
 	protected boolean checkControl(Control control) {
 		return control != null && !control.isDisposed();
 	}
@@ -327,7 +224,6 @@ public abstract class AbstractEntityEditor extends EditorPart {
 				AbstractEntityEditor.this.firePropertyChange(PROP_DIRTY);
 			}
 		}
-
 	}
 
 	/* EXPOSES TO CHILDREN CLASSES */
@@ -371,9 +267,8 @@ public abstract class AbstractEntityEditor extends EditorPart {
 		return tvc;
 	}
 
-	
 	/* DEPENDENCY INJECTION */
-	public void setMsmService(PeopleService peopleService) {
+	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
 		repository = peopleService.getRepository();
 	}
