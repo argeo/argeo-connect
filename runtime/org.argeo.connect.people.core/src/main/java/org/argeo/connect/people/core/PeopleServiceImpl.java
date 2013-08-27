@@ -7,7 +7,7 @@ import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleService;
 
-/** Concrete access to the backend */
+/** Concrete access to people services */
 public class PeopleServiceImpl implements PeopleService {
 
 	/* DEPENDENCY INJECTION */

@@ -91,6 +91,8 @@ public class PeopleBrowserView extends ViewPart implements ArgeoNames,
 	}
 
 	class PeopleBrowserContentProvider implements ITreeContentProvider {
+		private static final long serialVersionUID = 1L;
+
 		public Object[] getChildren(Object parentElement) {
 			try {
 				Node node = (Node) parentElement;
@@ -143,6 +145,7 @@ public class PeopleBrowserView extends ViewPart implements ArgeoNames,
 	}
 
 	class PeopleBrowserLabelProvider implements ITableLabelProvider {
+		private static final long serialVersionUID = 1L;
 
 		public Image getColumnImage(Object element, int columnIndex) {
 			try {

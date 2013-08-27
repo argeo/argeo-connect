@@ -33,6 +33,8 @@ import org.eclipse.ui.forms.ManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.EditorPart;
 
+// public abstract class AbstractEntityEditor{}
+
 /**
  * Parent Abstract Form editor for a given entity. Insure the presence of a
  * corresponding people services and manage a life cycle of the JCR session that
@@ -42,7 +44,7 @@ import org.eclipse.ui.part.EditorPart;
 public abstract class AbstractEntityEditor extends EditorPart {
 
 	/* DEPENDENCY INJECTION */
-	private PeopleService msmService;
+	private PeopleService peopleService;
 
 	// We use a one session per editor pattern to secure various nodes and
 	// changes life cycle
@@ -369,17 +371,7 @@ public abstract class AbstractEntityEditor extends EditorPart {
 		return tvc;
 	}
 
-	protected abstract class MyHyperlinkListener implements IHyperlinkListener {
-		public void linkEntered(HyperlinkEvent e) {
-		}
-
-		public void linkExited(HyperlinkEvent e) {
-		}
-
-		/** Must be overriden **/
-		public abstract void linkActivated(HyperlinkEvent e);
-	}
-
+	
 	/* DEPENDENCY INJECTION */
 	public void setMsmService(PeopleService peopleService) {
 		this.peopleService = peopleService;
