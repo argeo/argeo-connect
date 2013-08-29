@@ -10,7 +10,7 @@ public interface PeopleNames {
 	public static String PEOPLE_DATE_OF_BIRTH = "people:dateOfBirth";
 	/** A number of people */
 	public static String PEOPLE_COUNT = "people:count";
-	
+
 	/* Parent node for all persons */
 	public final static String PEOPLE_PERSONS = "people:persons";
 	/* Parent node for all organisations */
@@ -19,7 +19,7 @@ public interface PeopleNames {
 	public final static String PEOPLE_FILMS = "people:films";
 	/* Parent node for all projects */
 	public final static String PEOPLE_PROJECTS = "people:projects";
-	
+
 	// path to parent node for various sub concepts
 	public final static String PEOPLE_BANK_ACCOUNTS = "people:bankAccounts";
 	public final static String PEOPLE_CONTACTS = "people:contacts";
@@ -33,7 +33,12 @@ public interface PeopleNames {
 	public final static String PEOPLE_FILM_SELECTION_WFS = "people:filmSelectionWorkflows";
 
 	/* Common concept */
-	public final static String PEOPLE_ITEM_PICTURE = "people:itemPicture";
+	public final static String PEOPLE_PICTURE = "people:picture";
+	public final static String PEOPLE_DISPLAY_NAME = "people:displayName";
+	public final static String PEOPLE_UID = "people:uid";
+	
+	// an integer to enable ordering, 1 is the most prefered
+	public final static String PEOPLE_PREF = "people:pref";
 
 	/* PERSONS */
 	public final static String PEOPLE_LAST_NAME = "people:lastName";
@@ -43,7 +48,6 @@ public interface PeopleNames {
 	public final static String PEOPLE_TAGS = "people:tags";
 
 	// Person names
-	public final static String PEOPLE_DISPLAY_NAME = "people:displayName";
 	public final static String PEOPLE_SALUTATION = "people:salutation";
 	public final static String PEOPLE_PERSON_TITLE = "people:personTitle";
 	public final static String PEOPLE_NAME_SUFFIX = "people:nameSuffix";
@@ -64,7 +68,6 @@ public interface PeopleNames {
 	public final static String PEOPLE_WF_ID = "people:wfId";
 	public final static String PEOPLE_WF_VERSION = "people:wfVersion";
 	public final static String PEOPLE_WF_STATUS = "people:wfStatus";
-
 
 	/* CONTACTS */
 	// base properties for all contact type nodes
@@ -91,7 +94,8 @@ public interface PeopleNames {
 	public final static String PEOPLE_STATE = "people:state";
 	public final static String PEOPLE_COUNTRY = "people:country";
 	// A shortcut to store the displayed address
-	// public final static String PEOPLE_DISPLAY_ADDRESS = "people:displayAddress";
+	// public final static String PEOPLE_DISPLAY_ADDRESS =
+	// "people:displayAddress";
 
 	/* MISCENELLANEOUS */
 
@@ -99,7 +103,7 @@ public interface PeopleNames {
 	public final static String PEOPLE_LANGUAGE = "people:language";
 
 	// Flag a node as primary node in a set
-	public final static String PEOPLE_IS_PRIMARY = "people:isPrimary";
+	// public final static String PEOPLE_IS_PRIMARY = "people:isPrimary";
 
 	// To modelize links between the various concepts
 	public final static String PEOPLE_POSITION = "people:position";
@@ -119,5 +123,4 @@ public interface PeopleNames {
 	public final static String PEOPLE_IBAN = "people:iban";
 	public final static String PEOPLE_BIC = "people:bic";
 
-	
 }

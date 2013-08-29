@@ -1,24 +1,37 @@
 package org.argeo.connect.people.ui.editors;
 
+import java.io.InputStream;
+
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.VersionManager;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.ui.PeopleImages;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -29,8 +42,6 @@ import org.eclipse.ui.forms.ManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.EditorPart;
 
-// public abstract class AbstractEntityEditor{}
-
 /**
  * Parent Abstract Form editor for a given entity. Insure the presence of a
  * corresponding people services and manage a life cycle of the JCR session that
@@ -38,6 +49,8 @@ import org.eclipse.ui.part.EditorPart;
  * <code>CTabFolder</code> to add tabs with further details.
  */
 public abstract class AbstractEntityEditor extends EditorPart {
+	private final static Log log = LogFactory
+			.getLog(AbstractEntityEditor.class);
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
@@ -50,6 +63,8 @@ public abstract class AbstractEntityEditor extends EditorPart {
 
 	// Business Objects
 	private Node entityNode;
+	// A corresponding picture that must be explicitly disposed
+	private Image itemPicture = null;
 
 	// Manage tab Folder
 	// We rather use CTabFolder to enable further customization
@@ -67,9 +82,29 @@ public abstract class AbstractEntityEditor extends EditorPart {
 		setInput(input);
 		try {
 			session = repository.login();
-			NodeEditorInput sei = (NodeEditorInput) getEditorInput();
+			EntityEditorInput sei = (EntityEditorInput) getEditorInput();
 			vm = session.getWorkspace().getVersionManager();
 			entityNode = getSession().getNodeByIdentifier(sei.getUid());
+
+			InputStream is = null;
+			try {
+				if (entityNode.hasNode(PeopleNames.PEOPLE_PICTURE)) {
+					Node imageNode = entityNode.getNode(
+							PeopleNames.PEOPLE_PICTURE).getNode(
+							NodeType.NT_RESOURCE);
+
+					is = imageNode.getProperty(Property.JCR_DATA).getBinary()
+							.getStream();
+					itemPicture = new Image(this.getSite().getShell()
+							.getDisplay(), is);
+				} else
+					itemPicture = PeopleImages.NO_PICTURE;
+			} catch (Exception e) {
+				// No image found. silent
+			} finally {
+				IOUtils.closeQuietly(is);
+			}
+
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Unable to create new session"
 					+ " to use with current editor", e);
@@ -85,6 +120,14 @@ public abstract class AbstractEntityEditor extends EditorPart {
 			// corresponding node does not exists
 			if (session.itemExists(path))
 				vm.checkin(path);
+
+			// Free the resources.
+			if (itemPicture != null
+					&& !itemPicture.equals(PeopleImages.NO_PICTURE))
+				itemPicture.dispose();
+			else
+				log.debug("Undisposed image: " + itemPicture.toString());
+
 		} catch (RepositoryException e) {
 			throw new ArgeoException("unexpected error "
 					+ "while disposing the control", e);
@@ -157,7 +200,26 @@ public abstract class AbstractEntityEditor extends EditorPart {
 
 	}
 
-	protected abstract void createHeaderPart(Composite parent);
+	protected void createHeaderPart(final Composite header) {
+		header.setLayout(new GridLayout(2, false));
+		// An image linked to the current person
+		Label image = toolkit.createLabel(header, "", SWT.NO_FOCUS);
+		image.setData(RWT.CUSTOM_VARIANT,
+				PeopleUiConstants.PEOPLE_CSS_ITEM_IMAGE);
+		image.setBackground(header.getBackground());
+		image.setImage(getPicture());
+
+		// General information
+		final Composite mainInfoComposite = toolkit.createComposite(header,
+				SWT.NO_FOCUS);
+		mainInfoComposite.setLayoutData(new GridData(GridData.FILL_BOTH
+				| GridData.GRAB_HORIZONTAL));
+		mainInfoComposite.setLayout(new GridLayout());
+		createMainInfoSection(mainInfoComposite);
+	}
+
+	/** Implement here a entity specific header */
+	protected abstract void createMainInfoSection(final Composite parent);
 
 	protected abstract void populateTabFolder(CTabFolder tabFolder);
 
@@ -241,6 +303,10 @@ public abstract class AbstractEntityEditor extends EditorPart {
 
 	protected Node getNode() {
 		return entityNode;
+	}
+
+	protected Image getPicture() {
+		return itemPicture;
 	}
 
 	/* UTILITES */

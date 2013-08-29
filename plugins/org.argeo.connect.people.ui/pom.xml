@@ -63,10 +63,10 @@
 			<version>${version.argeo-commons}</version>
 		</dependency>
 
-		<!-- RCP only dependency, needed at compile time -->
+		<!-- RAP only dependency, needed at compile time -->
 		<dependency>
 			<groupId>org.argeo.commons.base</groupId>
-			<artifactId>org.argeo.eclipse.dep.rcp</artifactId>
+			<artifactId>org.argeo.eclipse.dep.rap</artifactId>
 			<version>${version.argeo-commons}</version>
 			<scope>provided</scope>
 		</dependency>

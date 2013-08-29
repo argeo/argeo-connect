@@ -5,12 +5,12 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 
 /** Editor input for generic editor that display info on a given JCR Node */
-public class NodeEditorInput implements IEditorInput {
+public class EntityEditorInput implements IEditorInput {
 
 	private final String uid;
 
 	/** uid must not be null */
-	public NodeEditorInput(String uid) {
+	public EntityEditorInput(String uid) {
 		this.uid = uid;
 	}
 
@@ -54,7 +54,7 @@ public class NodeEditorInput implements IEditorInput {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		NodeEditorInput other = (NodeEditorInput) obj;
+		EntityEditorInput other = (EntityEditorInput) obj;
 		if (!uid.equals(other.getUid()))
 			return false;
 		return true;

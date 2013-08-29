@@ -6,6 +6,9 @@ import javax.jcr.Repository;
 import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleService;
+import org.springframework.security.Authentication;
+import org.springframework.security.GrantedAuthority;
+import org.springframework.security.context.SecurityContextHolder;
 
 /** Concrete access to people services */
 public class PeopleServiceImpl implements PeopleService {
@@ -31,6 +34,33 @@ public class PeopleServiceImpl implements PeopleService {
 	}
 
 	/* Persons */
+
+	/* USER MANAGEMENT */
+	/** returns true if the current user is in the specified role */
+	public boolean isUserInRole(Integer userRole) {
+		String role = managedRoles.get(userRole);
+		Authentication authen = SecurityContextHolder.getContext()
+				.getAuthentication();
+		for (GrantedAuthority ga : authen.getAuthorities()) {
+			if (ga.getAuthority().equals(role))
+				return true;
+		}
+		return false;
+		// return currentUserService.getCurrentUser().getRoles().contains(role);
+	}
+
+	/** returns the current user ID **/
+	public String getCurrentUserId() {
+		Authentication authen = SecurityContextHolder.getContext()
+				.getAuthentication();
+		return authen.getName();
+	}
+
+	/** Returns a human readable display name using the user ID **/
+	public String getUserDisplayName(String userId) {
+		// FIXME Must use a commons utils
+		return userId;
+	}
 
 	/** Expose injected repository */
 	public Repository getRepository() {

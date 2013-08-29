@@ -6,16 +6,25 @@ public interface PeopleTypes {
 	// type used in MBaudier proof of concept
 	public final static String PEOPLE_ANONYMOUS_PERSON = "people:anonymousPerson";
 
+	
+	/* COMMON CONCEPTS */
+	// Parent base type
+	public final static String PEOPLE_ENTITY = "people:entity";
+	public final static String PEOPLE_TAGABLE = "people:tagable";
+	public final static String PEOPLE_ORDERABLE = "people:orderable";
+	public final static String PEOPLE_CONTACTABLE = "people:contactable";
+	
 	/* PERSONS */
 	public final static String PEOPLE_PERSON = "people:person";
-	public final static String PEOPLE_PERSON_NAME = "people:personName";
 
 	/* ORGANIZATIONS */
-	public final static String PEOPLE_ORGANIZATION = "people:organization";
+	public final static String PEOPLE_ORGANIZATION = "people:org";
 
 	/* MISCELLANEOUS */
 	// Enable links between nodes
-	public final static String PEOPLE_LINKED_UNIT = "people:linkedUnit";
+	public final static String PEOPLE_POSITION = "people:position";
+	public final static String PEOPLE_JOB = "people:job";
+	public final static String PEOPLE_MEMBER = "people:member";
 	public final static String PEOPLE_BANK_ACCOUNT = "people:bankAccount";
 
 	/* CONTACT */

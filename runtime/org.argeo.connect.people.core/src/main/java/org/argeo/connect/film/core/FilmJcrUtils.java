@@ -10,6 +10,7 @@ import org.argeo.connect.film.FilmNames;
 import org.argeo.connect.film.FilmTypes;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.PeopleJcrUtils;
 
 /**
  * static utils methods to manage film concepts. See what can be factorized
@@ -40,6 +41,48 @@ public class FilmJcrUtils implements FilmNames {
 		}
 	}
 
+	/** Return a display string for the original title of the given film */
+	public static void setOriginalTitle(Node film, String origTitle,
+			String origTitleArticle, String origLatinTitle) {
+		try {
+			film.setProperty(FILM_ORIGINAL_TITLE, origTitle);
+			if (PeopleJcrUtils.checkNotEmptyString(origTitleArticle))
+				film.setProperty(FILM_ORIG_TITLE_ARTICLE, origTitleArticle);
+			if (PeopleJcrUtils.checkNotEmptyString(origLatinTitle))
+				film.setProperty(FILM_ORIG_LATIN_TITLE, origLatinTitle);
+		} catch (RepositoryException re) {
+			throw new ArgeoException(
+					"Unable to set original title on film node", re);
+		}
+	}
+
+	/**
+	 * Return a display string for alternative title corresponding to the given
+	 * language or null the title is not defined for this language
+	 */
+	public static String getAltTitle(Node film, String lang) {
+		try {
+			String title = null;
+			Node altTitle = getAltTitleNode(film, lang);
+			if (altTitle != null) {
+				title = film.getProperty(FILM_TITLE).getString();
+				if (film.hasProperty(FILM_TITLE_ARTICLE))
+					title += ", "
+							+ film.getProperty(FILM_ORIG_TITLE_ARTICLE)
+									.getString();
+			}
+			return title;
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Unable to get alt " + lang
+					+ " title for film", re);
+		}
+	}
+
+	/**
+	 * 
+	 * Return a display string for alternative title corresponding to the given
+	 * language or null the title is not defined for this language
+	 */
 	public static Node getAltTitleNode(Node film, String lang) {
 		try {
 			if (film.hasNode(FILM_ALT_TITLES) && lang != null) {

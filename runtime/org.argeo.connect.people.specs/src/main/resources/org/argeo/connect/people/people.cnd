@@ -3,7 +3,7 @@
 //
 // PARENT BASE TYPE
 //
-[people:entity] > nt:unstructured
+[people:entity] > nt:unstructured, mix:versionable
 // An implementation dependent UID for each entity
 - people:uid (String) m
 // Maps the FN value of a vCard
@@ -11,6 +11,8 @@
 - people:source (URI)
 // A free text description of the current entity
 - people:description (STRING)
++ people:picture (nt:file) 
+
 
 
 //
@@ -36,7 +38,6 @@
 - people:gender (STRING)
 // Positions in the various organisations this person is attached to
 + * (people:job) *
-
 
 //
 // ORGANISATION
@@ -72,12 +73,12 @@
 // The job or position of a person in an organisation
 [people:job] > people:position
 // ONLY an organisation
-- people:orgRef (REFERENCE) m
+- people:orgId (STRING) m
 
 // Membership in a group
 [people:member] > people:position
 // MIGHT BE a person, an organisation or another group
-- people:memberRef (REFERENCE) m
+- people:memberId (STRING) m
 
 // 
 // TAGABLE
@@ -125,7 +126,7 @@ mixin
 // optional label 
 - people:contactType (STRING)
 // if contactCategory == work 
-- people:relatedOrg (REFERENCE)
+- people:relatedOrgId (STRING)
 //OPTIONNAL an URI translated from the contact type 
 // value to be used directly by the system.
 - people:contactUri (URI) 

@@ -14,6 +14,11 @@
 - film:director (String)
 // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
 - film:originalLanguage (STRING) *
+- film:origTitle (STRING)
+- film:origTitleArticle (STRING)
+// Helper to be able to read the original title when it is in a foreign alphabet
+- film:origLatinTitle (STRING)
+
 
 // Alternative titles
 [msm:filmTitle] > nt:unstructured

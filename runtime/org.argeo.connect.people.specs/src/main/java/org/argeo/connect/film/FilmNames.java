@@ -13,7 +13,7 @@ public interface FilmNames {
 	public final static String FILM_DIRECTOR = "film:director";
 	public final static String FILM_ORIGINAL_LANGUAGE = "film:originalLanguage";
 	// Main Title Management
-	public final static String FILM_ORIGINAL_TITLE = "film:originalTitle";
+	public final static String FILM_ORIGINAL_TITLE = "film:origTitle";
 	public final static String FILM_ORIG_TITLE_ARTICLE = "film:origTitleArticle";
 	public final static String FILM_ORIG_LATIN_TITLE = "film:origLatinTitle";
 	// Alternative Titles (for various country / languages)
