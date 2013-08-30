@@ -1,15 +1,35 @@
 package org.argeo.connect.people.ui.editors;
 
 import javax.jcr.Node;
+import javax.jcr.PropertyType;
+import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.PersonJcrUtils;
 import org.argeo.jcr.JcrUtils;
+import org.eclipse.rap.rwt.RWT;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -38,216 +58,231 @@ public class PersonEditor extends AbstractEntityEditor {
 
 	@Override
 	protected void createMainInfoSection(final Composite parent) {
+		parent.setLayout(new GridLayout());
+		Composite buttons = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		buttons.setLayout(new GridLayout());
+		Button switchBtn = toolkit.createButton(buttons, "Switch", SWT.PUSH
+				| SWT.RIGHT);
+		Composite switchingPanel = toolkit
+				.createComposite(parent, SWT.NO_FOCUS);
+		switchingPanel.setLayout(new FormLayout());
 
-		// // READ ONLY
-		// final Section roSection = toolkit.createSection(parent,
-		// Section.NO_TITLE | SWT.NO_FOCUS);
-		// GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
-		// roSection.setLayoutData(gd);
-		// Composite roSectionBody = toolkit.createComposite(roSection,
-		// SWT.NO_FOCUS);
-		// roSectionBody.setData(RWT.CUSTOM_VARIANT,
-		// PeopleUiConstants.MSM_CSS_GENERALINFO_COMPOSITE);
-		//
-		// roSectionBody.setLayout(new GridLayout(2, false));
-		// roSection.setClient(roSectionBody);
-		//
-		// // Intern layout
-		//
-		// // display name
-		// final Label displayNameROLbl = toolkit.createLabel(roSectionBody, "",
-		// SWT.NONE);
-		// displayNameROLbl.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true,
-		// false, 2, 1));
-		// displayNameROLbl.setData(RWT.CUSTOM_VARIANT,
-		// PeopleUiConstants.MSM_CSS_GENERALINFO_TITLE);
-		//
-		// // various name info
-		// final Label nameInfoROLbl = toolkit.createLabel(roSectionBody, "",
-		// SWT.NONE);
-		// nameInfoROLbl.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true,
-		// false, 2, 1));
-		// nameInfoROLbl.setData(RWT.CUSTOM_VARIANT,
-		// PeopleUiConstants.MSM_CSS_GENERALINFO_SUBTITLE);
-		//
-		// // secondary name
-		// final Label secondaryNameROLbl = toolkit.createLabel(roSectionBody,
-		// "",
-		// SWT.NONE);
-		// secondaryNameROLbl.setLayoutData(new GridData(SWT.LEFT, SWT.TOP,
-		// true,
-		// false, 2, 1));
-		//
-		// // tags
-		// final Label tagsROLbl = toolkit
-		// .createLabel(roSectionBody, "", SWT.WRAP);
-		// tagsROLbl.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false,
-		// 2,
-		// 1));
-		// tagsROLbl.setData(RWT.CUSTOM_VARIANT,
-		// PeopleUiConstants.MSM_CSS_GENERALINFO_TAGS);
-		//
-		// // EDIT
-		// final Section editSection = toolkit.createSection(parent,
-		// Section.NO_TITLE | SWT.NO_FOCUS);
-		// gd = new GridData(SWT.FILL, SWT.FILL, true, false);
-		// editSection.setLayoutData(gd);
-		//
-		// // intern layout
-		// final Composite editSectionBody =
-		// toolkit.createComposite(editSection,
-		// SWT.NO_FOCUS);
-		// editSection.setExpanded(false);
-		// editSectionBody.setLayout(new GridLayout(10, false));
-		// editSection.setClient(editSectionBody);
-		//
-		// // Salutation
-		// Label lbl = toolkit
-		// .createLabel(editSectionBody, "Salutation", SWT.NONE);
-		// lbl.setLayoutData(new GridData());
-		// final Text salutationTxt = toolkit.createText(editSectionBody, "",
-		// SWT.BORDER | SWT.SINGLE | SWT.LEFT);
-		// gd = new GridData();
-		// gd.widthHint = 40;
-		// salutationTxt.setLayoutData(gd);
-		//
-		// // Title
-		// lbl = toolkit.createLabel(editSectionBody, "Title", SWT.NONE);
-		// lbl.setLayoutData(new GridData());
-		// final Text titleTxt = toolkit.createText(editSectionBody, "",
-		// SWT.BORDER | SWT.SINGLE | SWT.LEFT);
-		// gd = new GridData();
-		// gd.widthHint = 50;
-		// titleTxt.setLayoutData(gd);
-		//
-		// // first Name
-		// lbl = toolkit.createLabel(editSectionBody, "First Name", SWT.NONE);
-		// lbl.setLayoutData(new GridData());
-		// final Text firstNameTxt = toolkit.createText(editSectionBody, "",
-		// SWT.BORDER | SWT.SINGLE | SWT.LEFT);
-		// firstNameTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
-		// | GridData.FILL_HORIZONTAL));
-		//
-		// // Last name
-		// lbl = toolkit.createLabel(editSectionBody, "Name", SWT.NONE);
-		// lbl.setLayoutData(new GridData());
-		// final Text lastNameTxt = toolkit.createText(editSectionBody, "",
-		// SWT.BORDER | SWT.SINGLE | SWT.LEFT);
-		// lastNameTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
-		// | GridData.FILL_HORIZONTAL));
-		//
-		// // Name suffix
-		// lbl = toolkit.createLabel(editSectionBody, "Suffix", SWT.NONE);
-		// lbl.setLayoutData(new GridData());
-		// final Text suffixTxt = toolkit.createText(editSectionBody, "",
-		// SWT.BORDER | SWT.SINGLE | SWT.LEFT);
-		// gd = new GridData();
-		// gd.widthHint = 50;
-		// suffixTxt.setLayoutData(gd);
-		//
-		// final MsmAbstractFormPart editPart = new MsmAbstractFormPart() {
-		// public void refresh() { // update display value
-		// super.refresh();
-		// // EDIT PART
-		// String salut = CommonsJcrUtils.getStringValue(person,
-		// MsmNames.MSM_SALUTATION);
-		// if (salut != null)
-		// salutationTxt.setText(salut);
-		//
-		// String firstName = JcrUtils
-		// .get(person, MsmNames.MSM_FIRST_NAME);
-		// if (firstName != null)
-		// firstNameTxt.setText(firstName);
-		//
-		// String lastName = JcrUtils.get(person, MsmNames.MSM_LAST_NAME);
-		// if (lastName != null)
-		// lastNameTxt.setText(lastName);
-		//
-		// String title = CommonsJcrUtils.getStringValue(person,
-		// MsmNames.MSM_PERSON_TITLE);
-		// if (title != null)
-		// titleTxt.setText(title);
-		//
-		// String suff = CommonsJcrUtils.getStringValue(person,
-		// MsmNames.MSM_NAME_SUFFIX);
-		// if (suff != null)
-		// suffixTxt.setText(suff);
-		//
-		// editSection.setExpanded(isCheckoutedByMe());
-		//
-		// // READ ONLY PART
-		// displayNameROLbl.setText(PersonJcrUtils.getDisplayName(person));
-		// nameInfoROLbl
-		// .setText(PersonJcrUtils.getVariousNameInfo(person));
-		// secondaryNameROLbl.setText(PersonJcrUtils
-		// .getSecondaryName(person));
-		// tagsROLbl.setText(PersonJcrUtils.getTags(person));
-		//
-		// roSection.setExpanded(!isCheckoutedByMe());
-		//
-		// // FIXME tests about focus and tab behaviour
-		// if (isCheckedOutByMe) {
-		// salutationTxt.setFocus();
-		// }
-		// }
-		// };
-		//
-		// // Listeners
-		// salutationTxt.addModifyListener(new ModifyListener() {
-		// private static final long serialVersionUID = -8632477454943247841L;
-		//
-		// @Override
-		// public void modifyText(ModifyEvent event) {
-		// if (setJcrProperty(MsmNames.MSM_SALUTATION,
-		// PropertyType.STRING, salutationTxt.getText()))
-		// editPart.markDirty();
-		// }
-		// });
-		// titleTxt.addModifyListener(new ModifyListener() {
-		// private static final long serialVersionUID = 3041117992838491824L;
-		//
-		// @Override
-		// public void modifyText(ModifyEvent event) {
-		// if (setJcrProperty(MsmNames.MSM_PERSON_TITLE,
-		// PropertyType.STRING, titleTxt.getText()))
-		// editPart.markDirty();
-		// }
-		// });
-		//
-		// firstNameTxt.addModifyListener(new ModifyListener() {
-		// private static final long serialVersionUID = -8632477454943247841L;
-		//
-		// @Override
-		// public void modifyText(ModifyEvent event) {
-		// if (setJcrProperty(MsmNames.MSM_FIRST_NAME,
-		// PropertyType.STRING, firstNameTxt.getText()))
-		// editPart.markDirty();
-		// }
-		// });
-		//
-		// lastNameTxt.addModifyListener(new ModifyListener() {
-		// private static final long serialVersionUID = 3041117992838491824L;
-		//
-		// @Override
-		// public void modifyText(ModifyEvent event) {
-		// if (setJcrProperty(MsmNames.MSM_LAST_NAME, PropertyType.STRING,
-		// lastNameTxt.getText()))
-		// editPart.markDirty();
-		// }
-		// });
-		//
-		// suffixTxt.addModifyListener(new ModifyListener() {
-		// private static final long serialVersionUID = 3041117992838491824L;
-		//
-		// @Override
-		// public void modifyText(ModifyEvent event) {
-		// if (setJcrProperty(MsmNames.MSM_NAME_SUFFIX,
-		// PropertyType.STRING, suffixTxt.getText()))
-		// editPart.markDirty();
-		// }
-		// });
-		//
-		// getManagedForm().addPart(editPart);
+		// READ ONLY
+		final Composite mainInfoCmpRO = toolkit.createComposite(switchingPanel,
+				SWT.NO_FOCUS);
+		FormData fdLabel = new FormData();
+		fdLabel.top = new FormAttachment(0, 0);
+		fdLabel.left = new FormAttachment(0, 0);
+		fdLabel.right = new FormAttachment(100, 0);
+		fdLabel.bottom = new FormAttachment(100, 0);
+		mainInfoCmpRO.setLayoutData(fdLabel);
+		mainInfoCmpRO.setData(RWT.CUSTOM_VARIANT,
+				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
+
+		// Intern layout
+		mainInfoCmpRO.setLayout(new GridLayout(2, false));
+		// display name
+		final Label displayNameROLbl = toolkit.createLabel(mainInfoCmpRO, "",
+				SWT.NONE);
+
+		displayNameROLbl.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true,
+				false, 2, 1));
+		displayNameROLbl.setData(RWT.CUSTOM_VARIANT,
+				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_TITLE);
+		// tags
+		final Label tagsROLbl = toolkit
+				.createLabel(mainInfoCmpRO, "", SWT.WRAP);
+		tagsROLbl.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 2,
+				1));
+		tagsROLbl.setData(RWT.CUSTOM_VARIANT,
+				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_TAGS);
+
+		// EDIT
+		final Composite mainInfoCmpEdit = toolkit.createComposite(
+				switchingPanel, SWT.NO_FOCUS);
+		fdLabel = new FormData();
+		fdLabel.top = new FormAttachment(0, 0);
+		fdLabel.left = new FormAttachment(0, 0);
+		fdLabel.right = new FormAttachment(100, 0);
+		fdLabel.bottom = new FormAttachment(100, 0);
+		mainInfoCmpEdit.setLayoutData(fdLabel);
+		mainInfoCmpEdit.setData(RWT.CUSTOM_VARIANT,
+				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
+
+		// intern layout
+		mainInfoCmpEdit.setLayout(new GridLayout(10, false));
+		// Salutation
+		Label lbl = toolkit
+				.createLabel(mainInfoCmpEdit, "Salutation", SWT.NONE);
+		lbl.setLayoutData(new GridData());
+		final Text salutationTxt = toolkit.createText(mainInfoCmpEdit, "",
+				SWT.BORDER | SWT.SINGLE | SWT.LEFT);
+		GridData gd = new GridData();
+		gd.widthHint = 40;
+		salutationTxt.setLayoutData(gd);
+
+		// Title
+		lbl = toolkit.createLabel(mainInfoCmpEdit, "Title", SWT.NONE);
+		lbl.setLayoutData(new GridData());
+		final Text titleTxt = toolkit.createText(mainInfoCmpEdit, "",
+				SWT.BORDER | SWT.SINGLE | SWT.LEFT);
+		gd = new GridData();
+		gd.widthHint = 50;
+		titleTxt.setLayoutData(gd);
+
+		// first Name
+		lbl = toolkit.createLabel(mainInfoCmpEdit, "First Name", SWT.NONE);
+		lbl.setLayoutData(new GridData());
+		final Text firstNameTxt = toolkit.createText(mainInfoCmpEdit, "",
+				SWT.BORDER | SWT.SINGLE | SWT.LEFT);
+		firstNameTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
+				| GridData.FILL_HORIZONTAL));
+
+		// Last name
+		lbl = toolkit.createLabel(mainInfoCmpEdit, "Name", SWT.NONE);
+		lbl.setLayoutData(new GridData());
+		final Text lastNameTxt = toolkit.createText(mainInfoCmpEdit, "",
+				SWT.BORDER | SWT.SINGLE | SWT.LEFT);
+		lastNameTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
+				| GridData.FILL_HORIZONTAL));
+
+		// Name suffix
+		lbl = toolkit.createLabel(mainInfoCmpEdit, "Suffix", SWT.NONE);
+		lbl.setLayoutData(new GridData());
+		final Text suffixTxt = toolkit.createText(mainInfoCmpEdit, "",
+				SWT.BORDER | SWT.SINGLE | SWT.LEFT);
+		gd = new GridData();
+		gd.widthHint = 50;
+		suffixTxt.setLayoutData(gd);
+
+		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
+			public void refresh() { // update display value
+				super.refresh();
+				// EDIT PART
+				String salut = CommonsJcrUtils.getStringValue(person,
+						PeopleNames.PEOPLE_SALUTATION);
+				if (CommonsJcrUtils.checkNotEmptyString(salut))
+					salutationTxt.setText(salut);
+
+				String firstName = JcrUtils.get(person,
+						PeopleNames.PEOPLE_FIRST_NAME);
+				if (CommonsJcrUtils.checkNotEmptyString(firstName))
+					firstNameTxt.setText(firstName);
+
+				String lastName = JcrUtils.get(person,
+						PeopleNames.PEOPLE_LAST_NAME);
+				if (CommonsJcrUtils.checkNotEmptyString(lastName))
+					lastNameTxt.setText(lastName);
+
+				String title = CommonsJcrUtils.getStringValue(person,
+						PeopleNames.PEOPLE_PERSON_TITLE);
+				if (title != null)
+					titleTxt.setText(title);
+
+				String suff = CommonsJcrUtils.getStringValue(person,
+						PeopleNames.PEOPLE_NAME_SUFFIX);
+				if (suff != null)
+					suffixTxt.setText(suff);
+
+				// READ ONLY PART
+				displayNameROLbl.setText(PersonJcrUtils.getDisplayName(person));
+				tagsROLbl.setText(PersonJcrUtils.getTags(person));
+				try {
+					if (person.isCheckedOut())
+						mainInfoCmpEdit.moveAbove(mainInfoCmpRO);
+					else
+						mainInfoCmpEdit.moveBelow(mainInfoCmpRO);
+				} catch (RepositoryException e) {
+					throw new PeopleException(
+							"Unable to get checked out status", e);
+				}
+				mainInfoCmpEdit.getParent().layout();
+			}
+		};
+
+		// Listeners
+		salutationTxt.addModifyListener(new ModifyListener() {
+			private static final long serialVersionUID = -8632477454943247841L;
+
+			@Override
+			public void modifyText(ModifyEvent event) {
+				if (setJcrProperty(person, PeopleNames.PEOPLE_SALUTATION,
+						PropertyType.STRING, salutationTxt.getText()))
+					editPart.markDirty();
+			}
+		});
+		titleTxt.addModifyListener(new ModifyListener() {
+			private static final long serialVersionUID = 3041117992838491824L;
+
+			@Override
+			public void modifyText(ModifyEvent event) {
+				if (setJcrProperty(person, PeopleNames.PEOPLE_PERSON_TITLE,
+						PropertyType.STRING, titleTxt.getText()))
+					editPart.markDirty();
+			}
+		});
+
+		firstNameTxt.addModifyListener(new ModifyListener() {
+			private static final long serialVersionUID = -8632477454943247841L;
+
+			@Override
+			public void modifyText(ModifyEvent event) {
+				if (setJcrProperty(person, PeopleNames.PEOPLE_FIRST_NAME,
+						PropertyType.STRING, firstNameTxt.getText()))
+					editPart.markDirty();
+			}
+		});
+
+		lastNameTxt.addModifyListener(new ModifyListener() {
+			private static final long serialVersionUID = 3041117992838491824L;
+
+			@Override
+			public void modifyText(ModifyEvent event) {
+				if (setJcrProperty(person, PeopleNames.PEOPLE_LAST_NAME,
+						PropertyType.STRING, lastNameTxt.getText()))
+					editPart.markDirty();
+			}
+		});
+
+		suffixTxt.addModifyListener(new ModifyListener() {
+			private static final long serialVersionUID = 3041117992838491824L;
+
+			@Override
+			public void modifyText(ModifyEvent event) {
+				if (setJcrProperty(person, PeopleNames.PEOPLE_NAME_SUFFIX,
+						PropertyType.STRING, suffixTxt.getText()))
+					editPart.markDirty();
+			}
+		});
+
+		getManagedForm().addPart(editPart);
+		editPart.refresh();
+
+		switchBtn.addSelectionListener(new SelectionListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				try {
+					if (person.isCheckedOut()) {
+						person.checkin();
+						editPart.refresh();
+					} else {
+						person.checkout();
+						editPart.refresh();
+					}
+				} catch (RepositoryException e1) {
+					e1.printStackTrace();
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
 	}
 
 	protected void populateTabFolder(CTabFolder folder) {
@@ -255,21 +290,21 @@ public class PersonEditor extends AbstractEntityEditor {
 		// CTabItem currItem = addTabToFolder(folder, SWT.NO_FOCUS, "Contacts",
 		// "msm:contacts");
 		// currItem.setToolTipText("Contact information for "
-		// + JcrUtils.get(person, MsmNames.MSM_LAST_NAME));
+		// + JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME));
 		// createDetailsContent(currItem);
 		//
 		// // Organisation informations
 		// currItem = addTabToFolder(folder, SWT.NO_FOCUS, "Organisations",
 		// "msm:organisations");
 		// currItem.setToolTipText("Organisations linked to "
-		// + JcrUtils.get(person, MsmNames.MSM_LAST_NAME));
+		// + JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME));
 		// createOrgaContent(currItem);
 		//
 		// // Film informations
 		// currItem = addTabToFolder(folder, SWT.NO_FOCUS, "Films",
 		// "msm:films");
 		// currItem.setToolTipText("Films related to "
-		// + JcrUtils.get(person, MsmNames.MSM_LAST_NAME));
+		// + JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME));
 		// createFilmContent(currItem);
 	}
 
@@ -416,15 +451,15 @@ public class PersonEditor extends AbstractEntityEditor {
 	//
 	// NodeIterator ni;
 	// try {
-	// ni = person.getNode(MsmNames.MSM_CONTACTS).getNodes();
+	// ni = person.getNode(PeopleNames.PEOPLE_CONTACTS).getNodes();
 	// while (ni.hasNext()) {
 	// Node currNode = ni.nextNode();
-	// if (!currNode.isNodeType(MsmTypes.MSM_ADDRESS)) {
+	// if (!currNode.isNodeType(MsmTypes.PEOPLE_ADDRESS)) {
 	// String type = CommonsJcrUtils.getStringValue(currNode,
-	// MsmNames.MSM_CONTACT_TYPE);
+	// PeopleNames.PEOPLE_CONTACT_TYPE);
 	// if (type == null)
 	// type = CommonsJcrUtils.getStringValue(currNode,
-	// MsmNames.MSM_CONTACT_CATEGORY);
+	// PeopleNames.PEOPLE_CONTACT_CATEGORY);
 	// if (type == null)
 	// type = PeopleJcrUtils.getContactTypeAsString(currNode);
 	// toolkit.createLabel(body, type, SWT.NO_FOCUS);
@@ -433,7 +468,7 @@ public class PersonEditor extends AbstractEntityEditor {
 	// gd.widthHint = 200;
 	// gd.heightHint = 14;
 	// currCtl.setLayoutData(gd);
-	// currCtl.setData("propName", MsmNames.MSM_CONTACT_VALUE);
+	// currCtl.setData("propName", PeopleNames.PEOPLE_CONTACT_VALUE);
 	// controls.put(currNode.getPath(), currCtl);
 	// }
 	// }
@@ -491,15 +526,15 @@ public class PersonEditor extends AbstractEntityEditor {
 	//
 	// NodeIterator ni;
 	// try {
-	// ni = person.getNode(MsmNames.MSM_CONTACTS).getNodes();
+	// ni = person.getNode(PeopleNames.PEOPLE_CONTACTS).getNodes();
 	// while (ni.hasNext()) {
 	// Node currNode = ni.nextNode();
-	// if (!currNode.isNodeType(MsmTypes.MSM_ADDRESS)) {
+	// if (!currNode.isNodeType(MsmTypes.PEOPLE_ADDRESS)) {
 	// String type = CommonsJcrUtils.getStringValue(currNode,
-	// MsmNames.MSM_CONTACT_TYPE);
+	// PeopleNames.PEOPLE_CONTACT_TYPE);
 	// if (type == null)
 	// type = CommonsJcrUtils.getStringValue(currNode,
-	// MsmNames.MSM_CONTACT_CATEGORY);
+	// PeopleNames.PEOPLE_CONTACT_CATEGORY);
 	// if (type == null)
 	// type = PeopleJcrUtils.getContactTypeAsString(currNode);
 	// toolkit.createLabel(body, type, SWT.NO_FOCUS);
@@ -508,7 +543,7 @@ public class PersonEditor extends AbstractEntityEditor {
 	// gd.widthHint = 200;
 	// gd.heightHint = 14;
 	// currCtl.setLayoutData(gd);
-	// currCtl.setData("propName", MsmNames.MSM_CONTACT_VALUE);
+	// currCtl.setData("propName", PeopleNames.PEOPLE_CONTACT_VALUE);
 	// controls.put(currNode.getPath(), currCtl);
 	//
 	// if (defaultTxt == null)
@@ -628,7 +663,7 @@ public class PersonEditor extends AbstractEntityEditor {
 	// // Check if have the right type of node
 	// Property prop = pi.nextProperty();
 	// if (prop.getParent().getParent().getParent()
-	// .isNodeType(MsmTypes.MSM_ORGANIZATION)) {
+	// .isNodeType(MsmTypes.PEOPLE_ORGANIZATION)) {
 	// Node linkItem = prop.getParent();
 	// orgas.add(linkItem);
 	// }
@@ -692,7 +727,7 @@ public class PersonEditor extends AbstractEntityEditor {
 	// while (pi.hasNext()) {
 	// Property prop = pi.nextProperty();
 	// if (prop.getParent().getParent().getParent()
-	// .isNodeType(MsmTypes.MSM_FILM)) {
+	// .isNodeType(MsmTypes.PEOPLE_FILM)) {
 	// Node linkItem = prop.getParent();
 	// films.add(linkItem);
 	// }

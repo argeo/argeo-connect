@@ -1,9 +1,11 @@
 package org.argeo.connect.people.ui.editors;
 
 import java.io.InputStream;
+import java.util.Calendar;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
+import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -14,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleImages;
@@ -331,6 +334,53 @@ public abstract class AbstractEntityEditor extends EditorPart {
 		column.setWidth(width);
 		column.setResizable(true);
 		return tvc;
+	}
+
+	protected boolean setJcrProperty(Node node, String propName,
+			int propertyType, Object value) {
+		try {
+			if (!node.isCheckedOut())
+				return false;
+
+			// int propertyType = getPic().getProperty(propName).getType();
+			switch (propertyType) {
+			case PropertyType.STRING:
+				if (node.hasProperty(propName)
+						&& node.getProperty(propName).getString()
+								.equals((String) value))
+					// nothing changed yet
+					return false;
+				else {
+					node.setProperty(propName, (String) value);
+					return true;
+				}
+			case PropertyType.BOOLEAN:
+				if (node.hasProperty(propName)
+						&& node.getProperty(propName).getBoolean() == (Boolean) value)
+					// nothing changed yet
+					return false;
+				else {
+					node.setProperty(propName, (Boolean) value);
+					return true;
+				}
+			case PropertyType.DATE:
+				if (node.hasProperty(propName)
+						&& node.getProperty(propName).getDate()
+								.equals((Calendar) value))
+					// nothing changed yet
+					return false;
+				else {
+					node.setProperty(propName, (Calendar) value);
+					return true;
+				}
+
+			default:
+				throw new PeopleException("Unimplemented property save");
+			}
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Unexpected error while setting property",
+					re);
+		}
 	}
 
 	/* DEPENDENCY INJECTION */
