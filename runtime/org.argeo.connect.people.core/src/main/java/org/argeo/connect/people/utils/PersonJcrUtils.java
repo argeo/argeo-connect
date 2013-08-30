@@ -1,5 +1,7 @@
 package org.argeo.connect.people.utils;
 
+import java.util.Calendar;
+
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -18,15 +20,13 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 
 /**
- * static utils methods to manage CRM concepts in JCR. Rather use these methods
- * than direct Jcr queries in order to ease model evolution.
+ * static utils methods to manage Person concepts in JCR. Rather use these
+ * methods than direct Jcr queries in order to ease model evolution.
  */
 public class PersonJcrUtils implements PeopleNames {
 
 	/**
-	 * 
 	 * Get the display name
-	 * 
 	 */
 	public static String getDisplayName(Node person) {
 		if (CommonsJcrUtils.getStringValue(person, PEOPLE_DISPLAY_NAME) != null)
@@ -138,4 +138,44 @@ public class PersonJcrUtils implements PeopleNames {
 			return ni.nextNode();
 		return null;
 	}
+
+	/**
+	 * Add a job for a given person
+	 * 
+	 * @param role
+	 *            the role of the given entity in this group. Cannot be null
+	 * @param title
+	 *            OPTIONAL: the nature of the subject in this relation, for
+	 *            instance "Actor" or "Engineer"
+	 * */
+	public static Node addJob(Node person, Node org, String role, String title,
+			Calendar dateBegin, Calendar dateEnd, Boolean isCurrent)
+			throws RepositoryException {
+
+		Node jobs = CommonsJcrUtils.getOrCreateDirNode(person, PEOPLE_JOBS);
+		Node job = jobs.addNode(org.getName(), PeopleTypes.PEOPLE_JOB);
+		job.setProperty(PEOPLE_ORG_ID, org.getIdentifier());
+		job.setProperty(PEOPLE_ROLE, role);
+		if (CommonsJcrUtils.checkNotEmptyString(title))
+			job.setProperty(PEOPLE_TITLE, title);
+		if (dateBegin != null)
+			job.setProperty(PEOPLE_DATE_BEGIN, dateBegin);
+		if (dateEnd != null)
+			job.setProperty(PEOPLE_DATE_END, dateEnd);
+		if (isCurrent != null)
+			job.setProperty(PEOPLE_IS_CURRENT, isCurrent);
+		return job;
+	}
+
+	/**
+	 * Shortcut to add a job for a given person using default values
+	 * 
+	 * @param role
+	 *            the role of the given entity in this group. Cannot be null
+	 * */
+	public static Node addJob(Node person, Node org, String role)
+			throws RepositoryException {
+		return addJob(person, org, role, null, null, null, null);
+	}
+
 }

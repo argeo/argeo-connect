@@ -105,18 +105,29 @@ public interface PeopleNames {
 	// Flag a node as primary node in a set
 	// public final static String PEOPLE_IS_PRIMARY = "people:isPrimary";
 
-	/* GROUP MANAGEMENT */
+	/* GROUP AND JOBS MANAGEMENT */
+	// parent node relpath
+	public final static String PEOPLE_MEMBERS = "people:members";
+	public final static String PEOPLE_JOBS = "people:jobs";
+
 	public final static String PEOPLE_MEMBER_ID = "people:memberId";
-	
+	public final static String PEOPLE_ORG_ID = "people:orgId";
+	// An optional department within the org corresponding to the current
+	// position
+	public final static String PEOPLE_DEPARTMENT = "people:department";
+
 	// nature of the participation of the given entity in a group
 	public final static String PEOPLE_ROLE = "people:role";
 	public final static String PEOPLE_TITLE = "people:title";
 	public final static String PEOPLE_POSITION = "people:position";
 	public final static String PEOPLE_IS_CURRENT = "people:isCurrent";
 
-	public final static String PEOPLE_LINKED_ITEM_REF = "people:linkedItemRef";
-	public final static String PEOPLE_LINKED_ITEM_WEAKREF = "people:linkedItemWeakRef";
-	public final static String PEOPLE_LINKED_ITEM_PATH = "people:linkedItemPath";
+	// public final static String PEOPLE_LINKED_ITEM_REF =
+	// "people:linkedItemRef";
+	// public final static String PEOPLE_LINKED_ITEM_WEAKREF =
+	// "people:linkedItemWeakRef";
+	// public final static String PEOPLE_LINKED_ITEM_PATH =
+	// "people:linkedItemPath";
 
 	// Bank account
 	public final static String PEOPLE_BANK_NAME = "people:bankName";

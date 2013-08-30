@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.nodetype.NodeType;
 
 import org.argeo.ArgeoException;
 
@@ -131,6 +132,16 @@ public class CommonsJcrUtils {
 			throw new ArgeoException("Cannot get boolean property "
 					+ propertyName + " of " + node, e);
 		}
+	}
+
+	public static Node getOrCreateDirNode(Node parent, String dirName)
+			throws RepositoryException {
+		Node dirNode;
+		if (parent.hasNode(dirName))
+			dirNode = parent.getNode(dirName);
+		else
+			dirNode = parent.addNode(dirName, NodeType.NT_UNSTRUCTURED);
+		return dirNode;
 	}
 
 }

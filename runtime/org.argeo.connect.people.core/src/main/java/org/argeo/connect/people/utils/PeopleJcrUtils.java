@@ -6,7 +6,6 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
-import javax.jcr.nodetype.NodeType;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
@@ -35,8 +34,11 @@ public class PeopleJcrUtils implements PeopleNames {
 	public static Node addEntityToGroup(Node group, Node entity, String role,
 			String title, Calendar dateBegin, Calendar dateEnd,
 			Boolean isCurrent) throws RepositoryException {
-		Node member = group
-				.addNode(entity.getName(), PeopleTypes.PEOPLE_MEMBER);
+
+		Node members = CommonsJcrUtils
+				.getOrCreateDirNode(group, PEOPLE_MEMBERS);
+		Node member = members.addNode(entity.getName(),
+				PeopleTypes.PEOPLE_MEMBER);
 		member.setProperty(PEOPLE_MEMBER_ID, entity.getIdentifier());
 		member.setProperty(PEOPLE_ROLE, role);
 		if (CommonsJcrUtils.checkNotEmptyString(title))
@@ -61,16 +63,6 @@ public class PeopleJcrUtils implements PeopleNames {
 		return addEntityToGroup(group, entity, role, null, null, null, null);
 	}
 
-	public static Node getOrCreateDirNode(Node parent, String dirName)
-			throws RepositoryException {
-		Node dirNode;
-		if (parent.hasNode(dirName))
-			dirNode = parent.getNode(dirName);
-		else
-			dirNode = parent.addNode(dirName, NodeType.NT_UNSTRUCTURED);
-		return dirNode;
-	}
-
 	public static void setContactType(Node contactNode, String label)
 			throws RepositoryException {
 		if (!CommonsJcrUtils.isEmptyString(label))
@@ -83,8 +75,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			contactNode.setProperty(PEOPLE_CONTACT_CATEGORY, category);
 			if (category.equals(PeopleConstants.PEOPLE_CONTACT_CATEGORY_WORK)
 					&& orga != null)
-				contactNode
-						.setProperty(PEOPLE_LINKED_ITEM_PATH, orga.getPath());
+				contactNode.setProperty(PEOPLE_ORG_ID, orga.getPath());
 		}
 	}
 
@@ -195,7 +186,8 @@ public class PeopleJcrUtils implements PeopleNames {
 			String name, String value, int pref, String contactCategory,
 			String contactType) {
 		try {
-			Node contacts = getOrCreateDirNode(parentNode, PEOPLE_CONTACTS);
+			Node contacts = CommonsJcrUtils.getOrCreateDirNode(parentNode,
+					PEOPLE_CONTACTS);
 			Node contact = contacts.addNode(name, nodeType);
 			contact.setProperty(PEOPLE_CONTACT_VALUE, value);
 			contact.setProperty(PEOPLE_PREF, pref);

@@ -13,8 +13,6 @@
 - people:description (STRING)
 + people:picture (nt:file) 
 
-
-
 //
 // PERSON
 //
@@ -74,6 +72,8 @@
 [people:job] > people:position
 // ONLY an organisation
 - people:orgId (STRING) m
+// An optional department within the org corresponding to the current position
+- people:department (STRING) m
 
 // Membership in a group
 [people:member] > people:position
