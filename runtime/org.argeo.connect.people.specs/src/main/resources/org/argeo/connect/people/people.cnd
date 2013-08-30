@@ -73,7 +73,7 @@
 // ONLY an organisation
 - people:orgId (STRING) m
 // An optional department within the org corresponding to the current position
-- people:department (STRING) m
+- people:department (STRING)
 
 // Membership in a group
 [people:member] > people:position
