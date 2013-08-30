@@ -15,10 +15,15 @@ public class CommonsJcrUtils {
 	 * is considered as empty
 	 */
 	public static boolean isEmptyString(String stringToTest) {
-		if (stringToTest == null || "".equals(stringToTest.trim()))
-			return true;
-		else
-			return false;
+		return stringToTest == null || "".equals(stringToTest.trim());
+	}
+
+	/**
+	 * Check if a string is null or an empty string (a string with only spaces
+	 * is considered as empty
+	 */
+	public static boolean checkNotEmptyString(String string) {
+		return string != null && !"".equals(string.trim());
 	}
 
 	/**
@@ -127,4 +132,5 @@ public class CommonsJcrUtils {
 					+ propertyName + " of " + node, e);
 		}
 	}
+
 }

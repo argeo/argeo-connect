@@ -1,5 +1,7 @@
 package org.argeo.connect.people.utils;
 
+import java.util.Calendar;
+
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -20,6 +22,45 @@ import org.argeo.connect.people.PeopleTypes;
  */
 public class PeopleJcrUtils implements PeopleNames {
 
+	/* GROUP MANAGEMENT */
+	/**
+	 * Add an entity to a given group
+	 * 
+	 * @param role
+	 *            the role of the given entity in this group. Cannot be null
+	 * @param title
+	 *            OPTIONAL: the nature of the subject in this relation, for
+	 *            instance "Actor" or "Engineer"
+	 * */
+	public static Node addEntityToGroup(Node group, Node entity, String role,
+			String title, Calendar dateBegin, Calendar dateEnd,
+			Boolean isCurrent) throws RepositoryException {
+		Node member = group
+				.addNode(entity.getName(), PeopleTypes.PEOPLE_MEMBER);
+		member.setProperty(PEOPLE_MEMBER_ID, entity.getIdentifier());
+		member.setProperty(PEOPLE_ROLE, role);
+		if (CommonsJcrUtils.checkNotEmptyString(title))
+			member.setProperty(PEOPLE_TITLE, title);
+		if (dateBegin != null)
+			member.setProperty(PEOPLE_DATE_BEGIN, dateBegin);
+		if (dateEnd != null)
+			member.setProperty(PEOPLE_DATE_END, dateEnd);
+		if (isCurrent != null)
+			member.setProperty(PEOPLE_IS_CURRENT, isCurrent);
+		return member;
+	}
+
+	/**
+	 * Shortcut to add an entity to a given group using default values
+	 * 
+	 * @param role
+	 *            the role of the given entity in this group. Cannot be null
+	 * */
+	public static Node addEntityToGroup(Node group, Node entity, String role)
+			throws RepositoryException {
+		return addEntityToGroup(group, entity, role, null, null, null, null);
+	}
+
 	public static Node getOrCreateDirNode(Node parent, String dirName)
 			throws RepositoryException {
 		Node dirNode;
@@ -28,10 +69,6 @@ public class PeopleJcrUtils implements PeopleNames {
 		else
 			dirNode = parent.addNode(dirName, NodeType.NT_UNSTRUCTURED);
 		return dirNode;
-	}
-
-	public static boolean checkNotEmptyString(String string) {
-		return string != null && !"".equals(string.trim());
 	}
 
 	public static void setContactType(Node contactNode, String label)

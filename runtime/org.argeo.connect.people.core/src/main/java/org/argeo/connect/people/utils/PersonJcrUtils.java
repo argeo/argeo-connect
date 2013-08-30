@@ -1,11 +1,21 @@
 package org.argeo.connect.people.utils;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.Value;
+import javax.jcr.query.QueryResult;
+import javax.jcr.query.qom.Constraint;
+import javax.jcr.query.qom.DynamicOperand;
+import javax.jcr.query.qom.QueryObjectModel;
+import javax.jcr.query.qom.QueryObjectModelFactory;
+import javax.jcr.query.qom.Selector;
+import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleTypes;
 
 /**
  * static utils methods to manage CRM concepts in JCR. Rather use these methods
@@ -103,5 +113,29 @@ public class PersonJcrUtils implements PeopleNames {
 			throw new PeopleException("Error while getting tags for node "
 					+ person, e);
 		}
+	}
+
+	/** Helper to retrieve a person given his last Name. Must be refined. */
+	public static Node getPersonWithLastName(Session session, String lastName)
+			throws RepositoryException {
+		QueryObjectModelFactory factory = session.getWorkspace()
+				.getQueryManager().getQOMFactory();
+		final String typeSelector = "person";
+		Selector source = factory.selector(PeopleTypes.PEOPLE_PERSON,
+				typeSelector);
+		DynamicOperand dynOp = factory.propertyValue(source.getSelectorName(),
+				PEOPLE_LAST_NAME);
+		StaticOperand statOp = factory.literal(session.getValueFactory()
+				.createValue(lastName));
+		Constraint defaultC = factory.comparison(dynOp,
+				QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+		QueryObjectModel query = factory.createQuery(source, defaultC, null,
+				null);
+		QueryResult result = query.execute();
+		NodeIterator ni = result.getNodes();
+		// TODO clean this to handle multiple result
+		if (ni.hasNext())
+			return ni.nextNode();
+		return null;
 	}
 }

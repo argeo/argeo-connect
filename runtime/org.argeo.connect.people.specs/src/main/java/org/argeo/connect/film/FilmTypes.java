@@ -6,5 +6,5 @@ public interface FilmTypes {
 	/* FILMS */
 	public final static String FILM = "film:film";
 	public final static String FILM_SYNOPSIS = "film:synopsis";
-	public final static String FILM_TITLE = "film:title";
+	public final static String FILM_TITLE = "film:altTitle";
 }

@@ -36,7 +36,7 @@ public interface PeopleNames {
 	public final static String PEOPLE_PICTURE = "people:picture";
 	public final static String PEOPLE_DISPLAY_NAME = "people:displayName";
 	public final static String PEOPLE_UID = "people:uid";
-	
+
 	// an integer to enable ordering, 1 is the most prefered
 	public final static String PEOPLE_PREF = "people:pref";
 
@@ -105,7 +105,12 @@ public interface PeopleNames {
 	// Flag a node as primary node in a set
 	// public final static String PEOPLE_IS_PRIMARY = "people:isPrimary";
 
-	// To modelize links between the various concepts
+	/* GROUP MANAGEMENT */
+	public final static String PEOPLE_MEMBER_ID = "people:memberId";
+	
+	// nature of the participation of the given entity in a group
+	public final static String PEOPLE_ROLE = "people:role";
+	public final static String PEOPLE_TITLE = "people:title";
 	public final static String PEOPLE_POSITION = "people:position";
 	public final static String PEOPLE_IS_CURRENT = "people:isCurrent";
 

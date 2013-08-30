@@ -3,14 +3,21 @@ package org.argeo.connect.film.core;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.query.QueryResult;
+import javax.jcr.query.qom.Constraint;
+import javax.jcr.query.qom.DynamicOperand;
+import javax.jcr.query.qom.QueryObjectModel;
+import javax.jcr.query.qom.QueryObjectModelFactory;
+import javax.jcr.query.qom.Selector;
+import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.film.FilmNames;
 import org.argeo.connect.film.FilmTypes;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.PeopleJcrUtils;
 
 /**
  * static utils methods to manage film concepts. See what can be factorized
@@ -46,9 +53,9 @@ public class FilmJcrUtils implements FilmNames {
 			String origTitleArticle, String origLatinTitle) {
 		try {
 			film.setProperty(FILM_ORIGINAL_TITLE, origTitle);
-			if (PeopleJcrUtils.checkNotEmptyString(origTitleArticle))
+			if (CommonsJcrUtils.checkNotEmptyString(origTitleArticle))
 				film.setProperty(FILM_ORIG_TITLE_ARTICLE, origTitleArticle);
-			if (PeopleJcrUtils.checkNotEmptyString(origLatinTitle))
+			if (CommonsJcrUtils.checkNotEmptyString(origLatinTitle))
 				film.setProperty(FILM_ORIG_LATIN_TITLE, origLatinTitle);
 		} catch (RepositoryException re) {
 			throw new ArgeoException(
@@ -125,5 +132,34 @@ public class FilmJcrUtils implements FilmNames {
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to add a new Title node", re);
 		}
+	}
+
+	public static Node getFilmWithId(Session session, String filmId)
+			throws RepositoryException {
+		QueryObjectModelFactory factory = session.getWorkspace()
+				.getQueryManager().getQOMFactory();
+		final String typeSelector = "film";
+		Selector source = factory.selector(FilmTypes.FILM, typeSelector);
+
+		DynamicOperand legalNameDO = factory.propertyValue(
+				source.getSelectorName(), FilmNames.FILM_ID);
+
+		// TODO NOT RELIABLE
+		String sFilmId = filmId.replaceAll("[^a-zA-Z0-9-]", "");
+
+		StaticOperand so = factory.literal(session.getValueFactory()
+				.createValue(sFilmId));
+		Constraint defaultC = factory.comparison(legalNameDO,
+				QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, so);
+
+		QueryObjectModel query = factory.createQuery(source, defaultC, null,
+				null);
+
+		QueryResult result = query.execute();
+		NodeIterator ni = result.getNodes();
+		// TODO clean this to handle multiple result
+		if (ni.hasNext())
+			return ni.nextNode();
+		return null;
 	}
 }
