@@ -27,10 +27,12 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class FilmPanelToolkit {
 	private final static Log log = LogFactory.getLog(FilmPanelToolkit.class);
 
-	public void populateSynopsisPanel(Composite panel, final Node entity,
-			FormToolkit toolkit, final IManagedForm form) {
+	public static void populateSynopsisPanel(Composite panel,
+			final Node entity, FormToolkit toolkit, final IManagedForm form) {
 		try {
+			panel.setLayout(new org.eclipse.swt.layout.GridLayout());
 			// Original synopsis
+			toolkit.createLabel(panel, "Synopsis EN: ", SWT.NONE);
 			final Text synopsisTxt = toolkit.createText(panel, "", SWT.BORDER
 					| SWT.MULTI | SWT.WRAP);
 			GridData gd = new GridData(GridData.FILL_BOTH);
@@ -54,7 +56,6 @@ public class FilmPanelToolkit {
 			final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
 				public void refresh() {
 					super.refresh();
-
 					try {
 						String path = (String) enSynopsisTxt
 								.getData("LinkedNode");

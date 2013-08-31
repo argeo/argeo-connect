@@ -58,7 +58,8 @@ public class FilmEditor extends AbstractEntityEditor {
 	protected void populateMainInfoComposite(final Composite parent) {
 		try {
 			parent.setLayout(new FormLayout());
-			// READ ONLY
+
+			// READ ONLY PANEL
 			final Composite roPanelCmp = toolkit.createComposite(parent,
 					SWT.NO_FOCUS);
 			setSwitchingFormData(roPanelCmp);
@@ -67,15 +68,14 @@ public class FilmEditor extends AbstractEntityEditor {
 
 			roPanelCmp.setLayout(new GridLayout());
 
-			// Add a label with info provided by the OrgOverviewLabelProvider
+			// Add a label with info provided by the FilmOverviewLabelProvider
 			final Label filmInfoROLbl = toolkit.createLabel(roPanelCmp, "",
 					SWT.WRAP);
 			filmInfoROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider filmExtractLP = new FilmOverviewLabelProvider(
 					false);
 
-			// EDIT
-			// Create the section
+			// EDIT PANEL
 			final Composite editPanelCmp = toolkit.createComposite(parent,
 					SWT.NONE);
 			setSwitchingFormData(editPanelCmp);
@@ -212,5 +212,11 @@ public class FilmEditor extends AbstractEntityEditor {
 	}
 
 	protected void populateTabFolder(CTabFolder folder) {
+		// Synopses
+		String tooltip = "The synopses for film "
+				+ JcrUtils.get(film, FilmNames.FILM_ID);
+		Composite innerPannel = addTabToFolder(folder, SWT.NO_FOCUS,
+				"Synopsis", "msm:synopses", tooltip);
+		FilmPanelToolkit.populateSynopsisPanel(innerPannel, film, toolkit, getManagedForm());
 	}
 }

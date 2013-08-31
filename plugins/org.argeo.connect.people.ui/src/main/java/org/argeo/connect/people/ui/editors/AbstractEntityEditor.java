@@ -213,7 +213,7 @@ public abstract class AbstractEntityEditor extends EditorPart {
 
 	protected void createHeaderPart(final Composite header) {
 		header.setLayout(new GridLayout(2, false));
-		
+
 		// image linked to the current entity
 		Label image = toolkit.createLabel(header, "", SWT.NO_FOCUS);
 		image.setData(RWT.CUSTOM_VARIANT,
@@ -286,12 +286,18 @@ public abstract class AbstractEntityEditor extends EditorPart {
 		return tabFolder;
 	}
 
-	protected CTabItem addTabToFolder(CTabFolder tabFolder, int style,
-			String label, String id) {
+	protected Composite addTabToFolder(CTabFolder tabFolder, int style,
+			String label, String id, String tooltip) {
 		CTabItem item = new CTabItem(tabFolder, style);
 		item.setData(CTAB_INSTANCE_ID, id);
 		item.setText(label);
-		return item;
+		item.setToolTipText(tooltip);
+		Composite innerPannel = toolkit.createComposite(tabFolder, SWT.NONE);
+		innerPannel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
+		innerPannel.setLayout(new GridLayout(1, false));
+		// must set control
+		item.setControl(innerPannel);
+		return innerPannel;
 	}
 
 	protected CTabItem createCTab(CTabFolder tabFolder, String tabId) {
