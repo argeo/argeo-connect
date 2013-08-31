@@ -22,7 +22,10 @@ public interface FilmNames {
 	public final static String FILM_TITLE_ARTICLE = "film:titleArticle";
 
 	/* SYNOPSES */
+	// parent node for all synopses
+	public final static String FILM_SYNOPSES = "film:synopses";
 	public final static String SYNOPSIS_CONTENT = "film:synopsisContent";
+	public final static String SYNOPSIS_CONTENT_SHORT = "film:synopsisContentShort";
 
 	/* MISCEALLENEOUS */
 	// A tag to define the corresponding language(s) for a node or a property,

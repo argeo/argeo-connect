@@ -1,17 +1,22 @@
 package org.argeo.connect.people.utils;
 
+import java.io.InputStream;
 import java.util.Calendar;
 
+import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
+import javax.jcr.nodetype.NodeType;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.jcr.JcrUtils;
 
 /**
  * Static utilitary methods to manage generic CRM concepts within JCR.
@@ -270,5 +275,26 @@ public class PeopleJcrUtils implements PeopleNames {
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to add a new address node", re);
 		}
+	}
+
+	/**
+	 * Set the default picture for the current entity, overwrite without asking
+	 * but do not save and check in corresponding node
+	 */
+	public static void setEntityPicture(Node entity, InputStream picture,
+			String fileName) throws RepositoryException {
+		Node picNode = JcrUtils
+				.mkdirs(entity, PEOPLE_PICTURE, NodeType.NT_FILE);
+		Node contentNode;
+		if (picNode.hasNode(Node.JCR_CONTENT))
+			contentNode = picNode.getNode(Node.JCR_CONTENT);
+		else
+			contentNode = picNode.addNode(Node.JCR_CONTENT,
+					NodeType.NT_RESOURCE);
+		Binary binary = null;
+		binary = entity.getSession().getValueFactory().createBinary(picture);
+		contentNode.setProperty(Property.JCR_DATA, binary);
+		contentNode.setProperty(Property.JCR_MIMETYPE, fileName.substring(
+				fileName.lastIndexOf("."), fileName.length()));
 	}
 }

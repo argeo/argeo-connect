@@ -18,12 +18,14 @@ import org.argeo.connect.film.FilmNames;
 import org.argeo.connect.film.FilmTypes;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.jcr.JcrUtils;
 
 /**
  * static utils methods to manage film concepts. See what can be factorized
  */
 public class FilmJcrUtils implements FilmNames {
 
+	@Deprecated
 	protected static Node getOrCreateDirNode(Node parent, String dirName)
 			throws RepositoryException {
 		Node dirNode;
@@ -86,9 +88,8 @@ public class FilmJcrUtils implements FilmNames {
 	}
 
 	/**
-	 * 
-	 * Return a display string for alternative title corresponding to the given
-	 * language or null the title is not defined for this language
+	 * Return the alternative title node, given a film and a language or null if
+	 * the title is not defined for this language
 	 */
 	public static Node getAltTitleNode(Node film, String lang) {
 		try {
@@ -131,6 +132,60 @@ public class FilmJcrUtils implements FilmNames {
 			return tNode;
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to add a new Title node", re);
+		}
+	}
+
+	/**
+	 * Return the alternative title node, given a film and a language or null if
+	 * the title is not defined for this language
+	 */
+	public static Node getSynopsisNode(Node film, String lang) {
+		try {
+			if (film.hasNode(FILM_SYNOPSES) && lang != null) {
+				NodeIterator ni = film.getNode(FILM_SYNOPSES).getNodes();
+				while (ni.hasNext()) {
+					Node currNode = ni.nextNode();
+					if (currNode.hasProperty(FilmNames.FILM_LANG)
+							&& lang.equals(currNode.getProperty(
+									FilmNames.FILM_LANG).getString()))
+						return currNode;
+				}
+			}
+			return null;
+		} catch (RepositoryException re) {
+			throw new ArgeoException(
+					"Unable to get synopse node for film with lang " + lang, re);
+		}
+	}
+
+	/**
+	 * Add or update the a synopsis Node given a film and a Language Short
+	 * synopsis is optional
+	 * */
+	public static Node addOrUpdateSynopsisNode(Node film, String synopsis,
+			String synopsisShort, String lang) {
+		try {
+			Node synopses = JcrUtils.mkdirs(film, FILM_SYNOPSES,
+					NodeType.NT_UNSTRUCTURED);
+			if (CommonsJcrUtils.checkNotEmptyString(synopsis)
+					&& CommonsJcrUtils.checkNotEmptyString(lang)) {
+
+				Node sNode = null;
+				if (synopses.hasNode(lang))
+
+					sNode = synopses.getNode(lang);
+				else
+					sNode = synopses.addNode(lang, FilmTypes.FILM_SYNOPSIS);
+
+				sNode.setProperty(SYNOPSIS_CONTENT, synopsis);
+				if (CommonsJcrUtils.checkNotEmptyString(synopsisShort))
+					sNode.setProperty(SYNOPSIS_CONTENT_SHORT, synopsisShort);
+				sNode.setProperty(FILM_LANG, lang);
+			}
+			return null;
+		} catch (RepositoryException re) {
+			throw new ArgeoException(
+					"Unable to get synopse node for film with lang " + lang, re);
 		}
 	}
 

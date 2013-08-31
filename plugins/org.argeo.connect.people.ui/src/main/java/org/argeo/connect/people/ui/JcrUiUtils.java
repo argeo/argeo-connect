@@ -33,8 +33,8 @@ public class JcrUiUtils {
 	 * 
 	 * @return true if the value as changed
 	 */
-	public boolean setJcrProperty(Node node, String propName, int propertyType,
-			Object value) {
+	public static boolean setJcrProperty(Node node, String propName,
+			int propertyType, Object value) {
 		try {
 			// int propertyType = getPic().getProperty(propName).getType();
 			switch (propertyType) {

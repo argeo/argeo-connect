@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -19,14 +20,9 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -57,25 +53,13 @@ public class PersonEditor extends AbstractEntityEditor {
 	}
 
 	@Override
-	protected void createMainInfoSection(final Composite parent) {
-		parent.setLayout(new GridLayout());
-		Composite buttons = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		buttons.setLayout(new GridLayout());
-		Button switchBtn = toolkit.createButton(buttons, "Switch", SWT.PUSH
-				| SWT.RIGHT);
-		Composite switchingPanel = toolkit
-				.createComposite(parent, SWT.NO_FOCUS);
+	protected void populateMainInfoComposite(final Composite switchingPanel) {
 		switchingPanel.setLayout(new FormLayout());
 
 		// READ ONLY
 		final Composite mainInfoCmpRO = toolkit.createComposite(switchingPanel,
 				SWT.NO_FOCUS);
-		FormData fdLabel = new FormData();
-		fdLabel.top = new FormAttachment(0, 0);
-		fdLabel.left = new FormAttachment(0, 0);
-		fdLabel.right = new FormAttachment(100, 0);
-		fdLabel.bottom = new FormAttachment(100, 0);
-		mainInfoCmpRO.setLayoutData(fdLabel);
+		setSwitchingFormData(mainInfoCmpRO);
 		mainInfoCmpRO.setData(RWT.CUSTOM_VARIANT,
 				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 
@@ -100,12 +84,7 @@ public class PersonEditor extends AbstractEntityEditor {
 		// EDIT
 		final Composite mainInfoCmpEdit = toolkit.createComposite(
 				switchingPanel, SWT.NO_FOCUS);
-		fdLabel = new FormData();
-		fdLabel.top = new FormAttachment(0, 0);
-		fdLabel.left = new FormAttachment(0, 0);
-		fdLabel.right = new FormAttachment(100, 0);
-		fdLabel.bottom = new FormAttachment(100, 0);
-		mainInfoCmpEdit.setLayoutData(fdLabel);
+		setSwitchingFormData(mainInfoCmpEdit);
 		mainInfoCmpEdit.setData(RWT.CUSTOM_VARIANT,
 				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 
@@ -187,6 +166,7 @@ public class PersonEditor extends AbstractEntityEditor {
 				// READ ONLY PART
 				displayNameROLbl.setText(PersonJcrUtils.getDisplayName(person));
 				tagsROLbl.setText(PersonJcrUtils.getTags(person));
+				
 				try {
 					if (person.isCheckedOut())
 						mainInfoCmpEdit.moveAbove(mainInfoCmpRO);
@@ -206,7 +186,7 @@ public class PersonEditor extends AbstractEntityEditor {
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				if (setJcrProperty(person, PeopleNames.PEOPLE_SALUTATION,
+				if (JcrUiUtils.setJcrProperty(person, PeopleNames.PEOPLE_SALUTATION,
 						PropertyType.STRING, salutationTxt.getText()))
 					editPart.markDirty();
 			}
@@ -216,7 +196,7 @@ public class PersonEditor extends AbstractEntityEditor {
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				if (setJcrProperty(person, PeopleNames.PEOPLE_PERSON_TITLE,
+				if (JcrUiUtils.setJcrProperty(person, PeopleNames.PEOPLE_PERSON_TITLE,
 						PropertyType.STRING, titleTxt.getText()))
 					editPart.markDirty();
 			}
@@ -227,7 +207,7 @@ public class PersonEditor extends AbstractEntityEditor {
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				if (setJcrProperty(person, PeopleNames.PEOPLE_FIRST_NAME,
+				if (JcrUiUtils.setJcrProperty(person, PeopleNames.PEOPLE_FIRST_NAME,
 						PropertyType.STRING, firstNameTxt.getText()))
 					editPart.markDirty();
 			}
@@ -238,7 +218,7 @@ public class PersonEditor extends AbstractEntityEditor {
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				if (setJcrProperty(person, PeopleNames.PEOPLE_LAST_NAME,
+				if (JcrUiUtils.setJcrProperty(person, PeopleNames.PEOPLE_LAST_NAME,
 						PropertyType.STRING, lastNameTxt.getText()))
 					editPart.markDirty();
 			}
@@ -249,40 +229,12 @@ public class PersonEditor extends AbstractEntityEditor {
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				if (setJcrProperty(person, PeopleNames.PEOPLE_NAME_SUFFIX,
+				if (JcrUiUtils.setJcrProperty(person, PeopleNames.PEOPLE_NAME_SUFFIX,
 						PropertyType.STRING, suffixTxt.getText()))
 					editPart.markDirty();
 			}
 		});
-
 		getManagedForm().addPart(editPart);
-		editPart.refresh();
-
-		switchBtn.addSelectionListener(new SelectionListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try {
-					if (person.isCheckedOut()) {
-						person.checkin();
-						editPart.refresh();
-					} else {
-						person.checkout();
-						editPart.refresh();
-					}
-				} catch (RepositoryException e1) {
-					e1.printStackTrace();
-				}
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-		});
-
 	}
 
 	protected void populateTabFolder(CTabFolder folder) {

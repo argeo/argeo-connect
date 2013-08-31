@@ -1,22 +1,18 @@
 package org.argeo.connect.people.ui.editors;
 
 import java.io.InputStream;
-import java.util.Calendar;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
-import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.VersionManager;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
-import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleImages;
@@ -29,9 +25,14 @@ import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -57,6 +58,10 @@ public abstract class AbstractEntityEditor extends EditorPart {
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
+
+	/* CONSTANTS */
+	// lenght for short strings (typically tab names)
+	protected final static int SHORT_NAME_LENGHT = 10;
 
 	// We use a one session per editor pattern to secure various nodes and
 	// changes life cycle
@@ -94,8 +99,7 @@ public abstract class AbstractEntityEditor extends EditorPart {
 				if (entityNode.hasNode(PeopleNames.PEOPLE_PICTURE)) {
 					Node imageNode = entityNode.getNode(
 							PeopleNames.PEOPLE_PICTURE).getNode(
-							NodeType.NT_RESOURCE);
-
+							Node.JCR_CONTENT);
 					is = imageNode.getProperty(Property.JCR_DATA).getBinary()
 							.getStream();
 					itemPicture = new Image(this.getSite().getShell()
@@ -201,11 +205,16 @@ public abstract class AbstractEntityEditor extends EditorPart {
 		populateTabFolder(folder);
 		folder.setSelection(0);
 
+		// We delegate the feed of all widgets with corresponding texts to the
+		// refresh method of the various form parts.
+		// We must then insure the refresh is done before display.
+		forceRefresh();
 	}
 
 	protected void createHeaderPart(final Composite header) {
 		header.setLayout(new GridLayout(2, false));
-		// An image linked to the current person
+		
+		// image linked to the current entity
 		Label image = toolkit.createLabel(header, "", SWT.NO_FOCUS);
 		image.setData(RWT.CUSTOM_VARIANT,
 				PeopleUiConstants.PEOPLE_CSS_ITEM_IMAGE);
@@ -218,11 +227,52 @@ public abstract class AbstractEntityEditor extends EditorPart {
 		mainInfoComposite.setLayoutData(new GridData(GridData.FILL_BOTH
 				| GridData.GRAB_HORIZONTAL));
 		mainInfoComposite.setLayout(new GridLayout());
-		createMainInfoSection(mainInfoComposite);
+
+		// The buttons
+		Composite buttonPanel = toolkit.createComposite(mainInfoComposite,
+				SWT.NO_FOCUS);
+		populateButtonsComposite(buttonPanel);
+
+		// Main info panel
+		Composite switchingPanel = toolkit.createComposite(mainInfoComposite,
+				SWT.NO_FOCUS);
+		populateMainInfoComposite(switchingPanel);
+	}
+
+	protected void populateButtonsComposite(final Composite parent) {
+		parent.setLayout(new GridLayout());
+
+		Composite buttons = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		buttons.setLayout(new GridLayout());
+		Button switchBtn = toolkit.createButton(buttons, "Switch", SWT.PUSH
+				| SWT.RIGHT);
+
+		switchBtn.addSelectionListener(new SelectionListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				try {
+					if (entityNode.isCheckedOut()) {
+						entityNode.checkin();
+						forceRefresh();
+					} else {
+						entityNode.checkout();
+						forceRefresh();
+					}
+				} catch (RepositoryException e1) {
+					e1.printStackTrace();
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
 	}
 
 	/** Implement here a entity specific header */
-	protected abstract void createMainInfoSection(final Composite parent);
+	protected abstract void populateMainInfoComposite(final Composite parent);
 
 	protected abstract void populateTabFolder(CTabFolder tabFolder);
 
@@ -336,51 +386,13 @@ public abstract class AbstractEntityEditor extends EditorPart {
 		return tvc;
 	}
 
-	protected boolean setJcrProperty(Node node, String propName,
-			int propertyType, Object value) {
-		try {
-			if (!node.isCheckedOut())
-				return false;
-
-			// int propertyType = getPic().getProperty(propName).getType();
-			switch (propertyType) {
-			case PropertyType.STRING:
-				if (node.hasProperty(propName)
-						&& node.getProperty(propName).getString()
-								.equals((String) value))
-					// nothing changed yet
-					return false;
-				else {
-					node.setProperty(propName, (String) value);
-					return true;
-				}
-			case PropertyType.BOOLEAN:
-				if (node.hasProperty(propName)
-						&& node.getProperty(propName).getBoolean() == (Boolean) value)
-					// nothing changed yet
-					return false;
-				else {
-					node.setProperty(propName, (Boolean) value);
-					return true;
-				}
-			case PropertyType.DATE:
-				if (node.hasProperty(propName)
-						&& node.getProperty(propName).getDate()
-								.equals((Calendar) value))
-					// nothing changed yet
-					return false;
-				else {
-					node.setProperty(propName, (Calendar) value);
-					return true;
-				}
-
-			default:
-				throw new PeopleException("Unimplemented property save");
-			}
-		} catch (RepositoryException re) {
-			throw new ArgeoException("Unexpected error while setting property",
-					re);
-		}
+	protected void setSwitchingFormData(Composite composite) {
+		FormData fdLabel = new FormData();
+		fdLabel.top = new FormAttachment(0, 0);
+		fdLabel.left = new FormAttachment(0, 0);
+		fdLabel.right = new FormAttachment(100, 0);
+		fdLabel.bottom = new FormAttachment(100, 0);
+		composite.setLayoutData(fdLabel);
 	}
 
 	/* DEPENDENCY INJECTION */
