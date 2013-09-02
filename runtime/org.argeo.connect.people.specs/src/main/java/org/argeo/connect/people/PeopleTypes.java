@@ -6,6 +6,10 @@ public interface PeopleTypes {
 	// type used in MBaudier proof of concept
 	public final static String PEOPLE_ANONYMOUS_PERSON = "people:anonymousPerson";
 
+	/* RESOURCES */
+	public final static String PEOPLE_ISO_COUNTRY = "people:isoCountry";
+	public final static String PEOPLE_ISO_LANGUAGE = "people:isoLanguage";
+
 	
 	/* COMMON CONCEPTS */
 	// Parent base type

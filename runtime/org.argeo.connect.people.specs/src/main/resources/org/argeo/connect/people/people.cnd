@@ -91,7 +91,7 @@ mixin
 
 
 //
-// MULTILANG
+// LANGUAGES AND COUNTRIES
 //
 [people:multiLang]
 mixin
@@ -100,6 +100,14 @@ mixin
 [people:language] > nt:unstructured, people:orderable
 // A single language tag, as defined in http://tools.ietf.org/html/rfc5646
 - people:lang (STRING) ='en' m a
+
+// a reference for a given language
+[people:isoLanguage] > nt:unstructured, mix:title
+- people:isoCode (STRING) m 
+
+// a reference for a given country
+[people:isoCountry] > nt:unstructured, mix:title
+- people:isoCode (STRING) m
 
 // 
 // ORDERABLE

@@ -101,6 +101,8 @@ public interface PeopleNames {
 
 	public final static String PEOPLE_LATIN_PHONETIC_SPELLING = "people:latinPhoneticSpelling";
 	public final static String PEOPLE_LANGUAGE = "people:language";
+	// the iso code of a given resource
+	public final static String PEOPLE_ISO_CODE = "people:isoCode";
 
 	// Flag a node as primary node in a set
 	// public final static String PEOPLE_IS_PRIMARY = "people:isPrimary";

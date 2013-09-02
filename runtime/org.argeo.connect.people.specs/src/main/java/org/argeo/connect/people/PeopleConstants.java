@@ -3,6 +3,10 @@ package org.argeo.connect.people;
 public interface PeopleConstants {
 	public final static String PEOPLE_BASE_PATH = "/people:system";
 
+	// People resources, typically language and country lists
+	public final static String PEOPLE_RESOURCES_PATH = PEOPLE_BASE_PATH
+			+ "/people:resources";
+
 	/*
 	 * USER ROLES
 	 */
