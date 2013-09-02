@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
- 	<extension
-         point="org.eclipse.ui.perspectives">
-      <perspective
-            class="org.argeo.connect.people.ui.PeoplePerspective"
-            icon="icons/people.gif"
+	<!-- Perspective --> 
+	<extension
+    	point="org.eclipse.ui.perspectives">
+		<perspective
+			class="org.argeo.connect.people.ui.PeoplePerspective"
+			icon="icons/people.gif"
             id="org.argeo.connect.people.ui.peoplePerspective"
             name="People">
       </perspective>
    </extension>
     <!-- Views -->
     <extension
-         point="org.eclipse.ui.views">
- 	  	<view
-           class="org.argeo.eclipse.spring.SpringExtensionFactory"
-           icon="icons/people.gif"
-           id="org.argeo.connect.people.ui.peopleBrowserView"
-           name="People Browser"
-           restorable="true">
-   		</view>
+		point="org.eclipse.ui.views">
+		<view
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/people.gif"
+			id="org.argeo.connect.people.ui.peopleBrowserView"
+			name="People Browser"
+			restorable="true">
+		</view>
 	</extension>
 	<!-- Commands -->
 	<extension
@@ -45,9 +46,9 @@
             </command>
         </menuContribution>
 	</extension>
-  <extension
-           point="org.eclipse.ui.activities">
-        <activity
+	<extension
+		point="org.eclipse.ui.activities">
+		<activity
               description="Only for admins"
               id="org.argeo.connect.people.ui.adminActivity"
               name="People Admin">

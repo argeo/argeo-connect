@@ -17,6 +17,8 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.utils.CheckoutSourceProvider;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.TableViewer;
@@ -39,12 +41,15 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.ManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.EditorPart;
+import org.eclipse.ui.services.ISourceProviderService;
 
 /**
  * Parent Abstract Form editor for a given entity. Insure the presence of a
@@ -52,7 +57,8 @@ import org.eclipse.ui.part.EditorPart;
  * is bound to it. It provides a header with some meta informations and a
  * <code>CTabFolder</code> to add tabs with further details.
  */
-public abstract class AbstractEntityEditor extends EditorPart {
+public abstract class AbstractEntityEditor extends EditorPart implements
+		IVersionedItemEditor {
 	private final static Log log = LogFactory
 			.getLog(AbstractEntityEditor.class);
 
@@ -82,6 +88,7 @@ public abstract class AbstractEntityEditor extends EditorPart {
 	// Form and corresponding life cycle
 	private MyManagedForm mForm;
 	protected FormToolkit toolkit;
+	private boolean isCheckedOutByMe = false;
 
 	// LIFE CYCLE
 	public void init(IEditorSite site, IEditorInput input)
@@ -157,6 +164,7 @@ public abstract class AbstractEntityEditor extends EditorPart {
 			if (session.itemExists(path))
 				vm.checkin(path);
 			mForm.commit(true);
+			setCheckOutState(false);
 		} catch (Exception e) {
 			throw new ArgeoException("Error while saving jcr node.", e);
 		}
@@ -399,6 +407,76 @@ public abstract class AbstractEntityEditor extends EditorPart {
 		fdLabel.right = new FormAttachment(100, 0);
 		fdLabel.bottom = new FormAttachment(100, 0);
 		composite.setLayoutData(fdLabel);
+	}
+
+	// * MANAGE CHECK IN & OUT - Enables management of editable fields. */
+	/** Checks whether the current user can edit the node */
+	@Override
+	public boolean canBeCheckedOutByMe() {
+		// FIXME add an error/warning message in the editor if the node has
+		// already been checked out by someone else.
+		if (isCheckedOutByMe)
+			return false;
+		else
+			// TODO add a check depending on current user rights
+			return true; // getMsmBackend().isUserInRole(MsmConstants.ROLE_CONSULTANT);
+	}
+
+	protected boolean isCheckedOutByMe() {
+		return isCheckedOutByMe;
+	}
+
+	/** Manage check out state and corresponding refresh of the UI */
+	protected void setCheckOutState(boolean checkedOut) {
+		isCheckedOutByMe = checkedOut;
+		forceRefresh();
+		// update enable state of the check out button
+		IWorkbench iw = PeopleUiPlugin.getDefault().getWorkbench();
+		IWorkbenchWindow window = iw.getActiveWorkbenchWindow();
+		ISourceProviderService sourceProviderService = (ISourceProviderService) window
+				.getService(ISourceProviderService.class);
+		CheckoutSourceProvider csp = (CheckoutSourceProvider) sourceProviderService
+				.getSourceProvider(CheckoutSourceProvider.CHECKOUT_STATE);
+		csp.setIsCurrentItemCheckedOut(isCheckedOutByMe);
+	}
+
+	@Override
+	public void checkoutItem() {
+		try {
+			boolean isCheckedOut = vm.isCheckedOut(entityNode.getPath());
+			if (isCheckedOut) {
+				// Do nothing, for the time being JCR implementation does not
+				// care about who has checked out the node.
+				if (log.isTraceEnabled())
+					log.trace("Current node "
+							+ " is already checked out. Nothing has been done.");
+			} else
+				vm.checkout(entityNode.getPath());
+			setCheckOutState(true);
+		} catch (RepositoryException re) {
+			throw new ArgeoException(
+					"Unexpected error while managing check out state", re);
+		}
+	}
+
+	@Override
+	public void cancelAndCheckInItem() {
+		try {
+			boolean isCheckedOut = vm.isCheckedOut(entityNode.getPath());
+			if (isCheckedOut) {
+				String path = entityNode.getPath();
+				JcrUtils.discardUnderlyingSessionQuietly(entityNode);
+				// if a newly created node has been discarded before the first
+				// save,
+				// corresponding node does not exists
+				if (session.itemExists(path))
+					vm.checkin(path);
+			}
+			setCheckOutState(false);
+		} catch (RepositoryException re) {
+			throw new ArgeoException(
+					"Unexpected error while managing check out state", re);
+		}
 	}
 
 	/* DEPENDENCY INJECTION */
