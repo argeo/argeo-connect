@@ -32,7 +32,7 @@ public class FilmPanelToolkit {
 		try {
 			panel.setLayout(new org.eclipse.swt.layout.GridLayout());
 			// Original synopsis
-			toolkit.createLabel(panel, "Synopsis EN: ", SWT.NONE);
+			toolkit.createLabel(panel, "German synopsis: ", SWT.NONE);
 			final Text synopsisTxt = toolkit.createText(panel, "", SWT.BORDER
 					| SWT.MULTI | SWT.WRAP);
 			GridData gd = new GridData(GridData.FILL_BOTH);
@@ -43,7 +43,7 @@ public class FilmPanelToolkit {
 			synopsisTxt.setData("LinkedNode", origSynopsisNode.getPath());
 
 			// EN synopsis
-			toolkit.createLabel(panel, "Synopsis EN: ", SWT.NONE);
+			toolkit.createLabel(panel, "English synopsis: ", SWT.NONE);
 			final Text enSynopsisTxt = toolkit.createText(panel, "", SWT.BORDER
 					| SWT.MULTI | SWT.WRAP);
 			gd = new GridData(GridData.FILL_BOTH);

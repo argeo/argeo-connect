@@ -46,6 +46,8 @@
 - people:vatIdNb (STRING)
 // Departments or organisational units
 + * (people:org) *
+// tag like multivalued properties to add an organisation to a given branch
+- people:orgBranche (STRING) *
 
 //
 // GROUP : base type for all groups of persons, organisations and/or other groups 
