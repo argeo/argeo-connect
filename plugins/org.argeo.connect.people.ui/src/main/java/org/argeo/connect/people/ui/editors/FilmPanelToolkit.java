@@ -16,6 +16,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
@@ -30,7 +31,7 @@ public class FilmPanelToolkit {
 	public static void populateSynopsisPanel(Composite panel,
 			final Node entity, FormToolkit toolkit, final IManagedForm form) {
 		try {
-			panel.setLayout(new org.eclipse.swt.layout.GridLayout());
+			panel.setLayout(new GridLayout());
 			// Original synopsis
 			toolkit.createLabel(panel, "German synopsis: ", SWT.NONE);
 			final Text synopsisTxt = toolkit.createText(panel, "", SWT.BORDER

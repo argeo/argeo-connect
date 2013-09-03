@@ -19,6 +19,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.commands.CancelAndCheckInItem;
 import org.argeo.connect.people.ui.commands.CheckOutItem;
 import org.argeo.connect.people.ui.utils.CheckoutSourceProvider;
@@ -34,8 +35,6 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -265,7 +264,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		// READ ONLY PANEL
 		final Composite roPanelCmp = toolkit.createComposite(buttons,
 				SWT.NO_FOCUS);
-		setSwitchingFormData(roPanelCmp);
+		PeopleUiUtils.setSwitchingFormData(roPanelCmp);
 		roPanelCmp.setData(RWT.CUSTOM_VARIANT,
 				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 		roPanelCmp.setLayout(new GridLayout());
@@ -293,7 +292,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		// EDIT PANEL
 		final Composite editPanelCmp = toolkit.createComposite(buttons,
 				SWT.NONE);
-		setSwitchingFormData(editPanelCmp);
+		PeopleUiUtils.setSwitchingFormData(editPanelCmp);
 		editPanelCmp.setData(RWT.CUSTOM_VARIANT,
 				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 		editPanelCmp.setLayout(new GridLayout(2, true));
@@ -473,15 +472,6 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		column.setWidth(width);
 		column.setResizable(true);
 		return tvc;
-	}
-
-	protected void setSwitchingFormData(Composite composite) {
-		FormData fdLabel = new FormData();
-		fdLabel.top = new FormAttachment(0, 0);
-		fdLabel.left = new FormAttachment(0, 0);
-		fdLabel.right = new FormAttachment(100, 0);
-		fdLabel.bottom = new FormAttachment(100, 0);
-		composite.setLayoutData(fdLabel);
 	}
 
 	// * MANAGE CHECK IN & OUT - Enables management of editable fields. */

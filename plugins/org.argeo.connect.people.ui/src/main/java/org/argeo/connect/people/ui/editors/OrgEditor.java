@@ -11,6 +11,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -61,7 +62,7 @@ public class OrgEditor extends AbstractEntityEditor {
 			// READ ONLY PANEL
 			final Composite roPanelCmp = toolkit.createComposite(parent,
 					SWT.NO_FOCUS);
-			setSwitchingFormData(roPanelCmp);
+			PeopleUiUtils.setSwitchingFormData(roPanelCmp);
 			roPanelCmp.setData(RWT.CUSTOM_VARIANT,
 					PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 			roPanelCmp.setLayout(new GridLayout());
@@ -76,7 +77,7 @@ public class OrgEditor extends AbstractEntityEditor {
 			// EDIT PANEL
 			final Composite editPanelCmp = toolkit.createComposite(parent,
 					SWT.NONE);
-			setSwitchingFormData(editPanelCmp);
+			PeopleUiUtils.setSwitchingFormData(editPanelCmp);
 			editPanelCmp.setData(RWT.CUSTOM_VARIANT,
 					PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 			editPanelCmp.setLayout(new GridLayout(2, false));

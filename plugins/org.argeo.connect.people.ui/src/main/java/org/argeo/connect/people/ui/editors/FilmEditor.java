@@ -12,6 +12,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.providers.FilmOverviewLabelProvider;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -62,7 +63,7 @@ public class FilmEditor extends AbstractEntityEditor {
 			// READ ONLY PANEL
 			final Composite roPanelCmp = toolkit.createComposite(parent,
 					SWT.NO_FOCUS);
-			setSwitchingFormData(roPanelCmp);
+			PeopleUiUtils.setSwitchingFormData(roPanelCmp);
 			roPanelCmp.setData(RWT.CUSTOM_VARIANT,
 					PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 
@@ -78,7 +79,7 @@ public class FilmEditor extends AbstractEntityEditor {
 			// EDIT PANEL
 			final Composite editPanelCmp = toolkit.createComposite(parent,
 					SWT.NONE);
-			setSwitchingFormData(editPanelCmp);
+			PeopleUiUtils.setSwitchingFormData(editPanelCmp);
 			editPanelCmp.setData(RWT.CUSTOM_VARIANT,
 					PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 			editPanelCmp.setLayout(new GridLayout(4, false));
@@ -217,6 +218,7 @@ public class FilmEditor extends AbstractEntityEditor {
 				+ JcrUtils.get(film, FilmNames.FILM_ID);
 		Composite innerPannel = addTabToFolder(folder, SWT.NO_FOCUS,
 				"Synopsis", "msm:synopses", tooltip);
-		FilmPanelToolkit.populateSynopsisPanel(innerPannel, film, toolkit, getManagedForm());
+		FilmPanelToolkit.populateSynopsisPanel(innerPannel, film, toolkit,
+				getManagedForm());
 	}
 }

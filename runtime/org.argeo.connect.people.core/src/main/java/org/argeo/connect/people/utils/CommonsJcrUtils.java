@@ -1,12 +1,11 @@
 package org.argeo.connect.people.utils;
 
-import java.util.List;
-
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeType;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleException;
 
 /** Some static utils methods that might be factorized in a near future */
 public class CommonsJcrUtils {
@@ -28,47 +27,49 @@ public class CommonsJcrUtils {
 	}
 
 	/**
-	 * Workaround for bug 158
+	 * Wraps the versionMananger.isCheckedOut(path) method to adapt it to the
+	 * current check in / check out policy.
 	 * 
-	 * @deprecated
-	 * @param nodeType
-	 *            the type of the leaf node
+	 * TODO : add management of check out by others.
 	 */
-	public static Node mkdirs(Node parentNode, String relativePath,
-			String nodeType) {
-		return mkdirs(parentNode, relativePath, nodeType, null);
+	public static boolean isNodeCheckedOut(Node node) {
+		try {
+			return node.getSession().getWorkspace().getVersionManager()
+					.isCheckedOut(node.getPath());
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Unable to get check out status for node", re);
+		}
 	}
 
 	/**
-	 * Workaround for bug 158
+	 * Wraps the versionMananger.checkedOut(path) method to adapt it to the
+	 * current check in / check out policy.
 	 * 
-	 * @deprecated
-	 * 
-	 * @param nodeType
-	 *            the type of the leaf node
+	 * TODO : add management of check out by others.
 	 */
-	public static Node mkdirs(Node parentNode, String relativePath,
-			String nodeType, String intermediaryNodeType) {
-		List<String> tokens = org.argeo.jcr.JcrUtils.tokenize(relativePath);
-		Node currParent = parentNode;
+	public static void checkout(Node node) {
 		try {
-			for (int i = 0; i < tokens.size(); i++) {
-				String name = tokens.get(i);
-				if (currParent.hasNode(name)) {
-					currParent = currParent.getNode(name);
-				} else {
-					if (i != (tokens.size() - 1)) {// intermediary
-						currParent = currParent.addNode(name,
-								intermediaryNodeType);
-					} else {// leaf
-						currParent = currParent.addNode(name, nodeType);
-					}
-				}
-			}
-			return currParent;
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot mkdirs relative path "
-					+ relativePath + " from " + parentNode, e);
+			node.getSession().getWorkspace().getVersionManager()
+					.checkout(node.getPath());
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to check out Node", re);
+		}
+	}
+
+	/**
+	 * Wraps the versionMananger.checkedIn(path) method to adapt it to the
+	 * current check in / check out policy.
+	 * 
+	 * TODO : add management of check out by others.
+	 */
+	public static void checkin(Node node) {
+		try {
+			node.getSession().getWorkspace().getVersionManager()
+					.checkin(node.getPath());
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Unable to get check out status for node", re);
 		}
 	}
 
