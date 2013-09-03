@@ -4,10 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.editors.IVersionedItemEditor;
 import org.eclipse.ui.AbstractSourceProvider;
 import org.eclipse.ui.ISources;
-import org.eclipse.ui.IWorkbenchPart;
 
 /**
  * Used to manage the checkout state of a node for various ui editors. TODO
@@ -44,8 +42,8 @@ public class CheckoutSourceProvider extends AbstractSourceProvider {
 	 * respectively checked-out or checked in..
 	 */
 	public void setIsCurrentItemCheckedOut(boolean isCheckedOut) {
-		if (this.isCheckedOut == isCheckedOut)
-			return; // no change
+		// if (this.isCheckedOut == isCheckedOut)
+		// return; // no change
 		this.isCheckedOut = isCheckedOut;
 		String checkoutState = isCheckedOut ? CHECKED_OUT : NOT_CHECKED_OUT;
 		fireSourceChanged(ISources.WORKBENCH, CHECKOUT_STATE, checkoutState);

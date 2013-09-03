@@ -13,12 +13,16 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.commands.CancelAndCheckInItem;
+import org.argeo.connect.people.ui.commands.CheckOutItem;
 import org.argeo.connect.people.ui.utils.CheckoutSourceProvider;
+import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.TableViewer;
@@ -32,6 +36,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -42,6 +47,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IFormPart;
@@ -249,27 +255,81 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 
 	protected void populateButtonsComposite(final Composite parent) {
 		parent.setLayout(new GridLayout());
-
 		Composite buttons = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		buttons.setLayout(new GridLayout());
-		Button switchBtn = toolkit.createButton(buttons, "Switch", SWT.PUSH
-				| SWT.RIGHT);
+		GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
+		gd.grabExcessHorizontalSpace = true;
+		buttons.setLayoutData(gd);
 
-		switchBtn.addSelectionListener(new SelectionListener() {
+		buttons.setLayout(new FormLayout());
+
+		// READ ONLY PANEL
+		final Composite roPanelCmp = toolkit.createComposite(buttons,
+				SWT.NO_FOCUS);
+		setSwitchingFormData(roPanelCmp);
+		roPanelCmp.setData(RWT.CUSTOM_VARIANT,
+				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
+		roPanelCmp.setLayout(new GridLayout());
+
+		Button editBtn = toolkit.createButton(roPanelCmp, "Edit", SWT.PUSH
+				| SWT.RIGHT);
+		editBtn.addSelectionListener(new SelectionListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (canBeCheckedOutByMe())
+					// CommandUtils.callCommand(IWorkbenchCommandConstants.FILE_SAVE);
+					CommandUtils.callCommand(CheckOutItem.ID);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+		gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
+		gd.grabExcessHorizontalSpace = true;
+		editBtn.setLayoutData(gd);
+
+		// EDIT PANEL
+		final Composite editPanelCmp = toolkit.createComposite(buttons,
+				SWT.NONE);
+		setSwitchingFormData(editPanelCmp);
+		editPanelCmp.setData(RWT.CUSTOM_VARIANT,
+				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
+		editPanelCmp.setLayout(new GridLayout(2, true));
+
+		Button cancelBtn = toolkit.createButton(editPanelCmp, "Cancel",
+				SWT.PUSH | SWT.RIGHT);
+		cancelBtn.addSelectionListener(new SelectionListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (!canBeCheckedOutByMe())
+					CommandUtils.callCommand(CancelAndCheckInItem.ID);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+		cancelBtn.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
+
+		Button saveBtn = toolkit.createButton(editPanelCmp, "Save", SWT.PUSH
+				| SWT.RIGHT);
+		saveBtn.addSelectionListener(new SelectionListener() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try {
-					if (entityNode.isCheckedOut()) {
-						entityNode.checkin();
-						forceRefresh();
-					} else {
-						entityNode.checkout();
-						forceRefresh();
-					}
-				} catch (RepositoryException e1) {
-					e1.printStackTrace();
+					if (!canBeCheckedOutByMe()
+							&& entityNode.getSession().hasPendingChanges())
+						CommandUtils
+								.callCommand(IWorkbenchCommandConstants.FILE_SAVE);
+				} catch (RepositoryException re) {
+					throw new PeopleException("Unable to save pending changes",
+							re);
 				}
 			}
 
@@ -277,6 +337,21 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
+		saveBtn.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
+
+		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
+			// Update values on refresh
+			public void refresh() {
+				super.refresh();
+				if (!canBeCheckedOutByMe())
+					editPanelCmp.moveAbove(roPanelCmp);
+				else
+					editPanelCmp.moveBelow(roPanelCmp);
+				roPanelCmp.getParent().layout();
+			}
+		};
+		editPart.refresh();
+		getManagedForm().addPart(editPart);
 	}
 
 	/** Implement here a entity specific header */
