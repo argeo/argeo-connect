@@ -1,10 +1,12 @@
 package org.argeo.connect.film;
 
+import org.argeo.connect.people.PeopleNames;
+
 /** JCR names managed by Connect Film. */
 public interface FilmNames {
 
 	/* FILMS */
-	public final static String FILM_ID = "film:uid";
+	public final static String FILM_ID = PeopleNames.PEOPLE_UID;
 	public final static String FILM_PROD_YEAR = "film:productionYear";
 	public final static String FILM_PROD_COUNTRY = "film:productionCountry";
 	// The corresponding value to ease various searches
@@ -31,5 +33,4 @@ public interface FilmNames {
 	// A tag to define the corresponding language(s) for a node or a property,
 	// might be multiple
 	public final static String FILM_LANG = "film:lang";
-
 }

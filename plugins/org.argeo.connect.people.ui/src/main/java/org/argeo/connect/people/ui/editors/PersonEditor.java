@@ -13,6 +13,7 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.toolkits.EntityPanelToolkit;
+import org.argeo.connect.people.ui.toolkits.ListPanelToolkit;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PersonJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -57,32 +58,30 @@ public class PersonEditor extends AbstractEntityEditor {
 		// Create usefull toolkits
 		EntityPanelToolkit entityPanelToolkit = new EntityPanelToolkit(toolkit,
 				getManagedForm());
+		ListPanelToolkit listPanelToolkit = new ListPanelToolkit(toolkit,
+				getManagedForm(), getPeopleServices(), getPeopleUiServices());
 
 		// Contact informations
 		String tooltip = "Contact information for "
 				+ JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
 		Composite innerPannel = addTabToFolder(folder, SWT.NO_FOCUS,
-				"Contact details", "people:contactDetails", tooltip);
+				"Contact details", PeopleUiConstants.PANEL_CONTACT_DETAILS,
+				tooltip);
 		entityPanelToolkit.populateContactPanelWithNotes(innerPannel, person);
 
-		// CTabItem currItem = addTabToFolder(folder, SWT.NO_FOCUS, "Contacts",
-		// "msm:contacts");
-		// currItem.setToolTipText(
-		// createDetailsContent(currItem);
-		//
-		// // Organisation informations
-		// currItem = addTabToFolder(folder, SWT.NO_FOCUS, "Organisations",
-		// "msm:organisations");
-		// currItem.setToolTipText("Organisations linked to "
-		// + JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME));
-		// createOrgaContent(currItem);
-		//
-		// // Film informations
-		// currItem = addTabToFolder(folder, SWT.NO_FOCUS, "Films",
-		// "msm:films");
-		// currItem.setToolTipText("Films related to "
-		// + JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME));
-		// createFilmContent(currItem);
+		// Jobs panel
+		tooltip = "Organisations linked to "
+				+ JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
+		innerPannel = addTabToFolder(folder, SWT.NO_FOCUS, "Organisations",
+				PeopleUiConstants.PANEL_JOBS, tooltip);
+		listPanelToolkit.populateJobsPanel(innerPannel, person);
+
+		// Films panel
+		tooltip = "Films related to "
+				+ JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
+		innerPannel = addTabToFolder(folder, SWT.NO_FOCUS, "Films",
+				PeopleUiConstants.PANEL_PRODUCTIONS, tooltip);
+		listPanelToolkit.populateFilmsPanel(innerPannel, person);
 		folder.layout();
 	}
 

@@ -44,7 +44,7 @@ public class PeopleJcrUtils implements PeopleNames {
 				.getOrCreateDirNode(group, PEOPLE_MEMBERS);
 		Node member = members.addNode(entity.getName(),
 				PeopleTypes.PEOPLE_MEMBER);
-		member.setProperty(PEOPLE_MEMBER_ID, entity.getIdentifier());
+		member.setProperty(PEOPLE_REF_UID, entity.getIdentifier());
 		member.setProperty(PEOPLE_ROLE, role);
 		if (CommonsJcrUtils.checkNotEmptyString(title))
 			member.setProperty(PEOPLE_TITLE, title);
@@ -80,7 +80,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			contactNode.setProperty(PEOPLE_CONTACT_CATEGORY, category);
 			if (category.equals(PeopleConstants.PEOPLE_CONTACT_CATEGORY_WORK)
 					&& orga != null)
-				contactNode.setProperty(PEOPLE_ORG_ID, orga.getPath());
+				contactNode.setProperty(PEOPLE_REF_UID, orga.getPath());
 		}
 	}
 

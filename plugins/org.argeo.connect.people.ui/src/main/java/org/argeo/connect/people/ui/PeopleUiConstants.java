@@ -3,6 +3,11 @@ package org.argeo.connect.people.ui;
 /** Defines some constants that are used all across the user interface **/
 public interface PeopleUiConstants {
 
+	/* IDs for the various panels */
+	public final static String PANEL_CONTACT_DETAILS = "people:contactDetails";
+	public final static String PANEL_JOBS = "people:jobs";
+	public final static String PANEL_PRODUCTIONS = "people:productions";
+	
 	/* CUSTOM CSS TAGS */
 	// a composite used to put titles in various lists
 	public final static String PEOPLE_CSS_TITLE_COMPOSITE_FIRST = "peopleCss-titleCompositeFirst";

@@ -73,14 +73,14 @@
 // The job or position of a person in an organisation
 [people:job] > people:position
 // ONLY an organisation
-- people:orgId (STRING) m
+- people:refUid (STRING) m
 // An optional department within the org corresponding to the current position
 - people:department (STRING)
 
 // Membership in a group
 [people:member] > people:position
 // MIGHT BE a person, an organisation or another group
-- people:memberId (STRING) m
+- people:refUid (STRING) m
 
 // 
 // TAGABLE
@@ -131,8 +131,16 @@ mixin
 // CONTACTS
 // 
 [people:contact] > nt:unstructured, people:orderable
+- people:contactValue (STRING) 
 // work, home, other
-
+- people:contactCategory (STRING)
+// optional label 
+- people:contactLabel (STRING)
+// if contactCategory == work 
+- people:refUid (STRING)
+// OPTIONNAL an URI translated from the contact type 
+// value to be used directly by the system.
+- people:contactUri (URI) 
 
 // TEL
 [people:phone] > people:contact 

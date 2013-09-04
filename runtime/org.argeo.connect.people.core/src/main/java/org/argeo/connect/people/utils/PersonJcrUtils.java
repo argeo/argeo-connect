@@ -154,7 +154,7 @@ public class PersonJcrUtils implements PeopleNames {
 
 		Node jobs = CommonsJcrUtils.getOrCreateDirNode(person, PEOPLE_JOBS);
 		Node job = jobs.addNode(org.getName(), PeopleTypes.PEOPLE_JOB);
-		job.setProperty(PEOPLE_ORG_ID, org.getIdentifier());
+		job.setProperty(PEOPLE_REF_UID, org.getIdentifier());
 		job.setProperty(PEOPLE_ROLE, role);
 		if (CommonsJcrUtils.checkNotEmptyString(title))
 			job.setProperty(PEOPLE_TITLE, title);

@@ -86,7 +86,7 @@ public class OrgEditor extends AbstractEntityEditor {
 					SWT.WRAP);
 			orgInfoROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider orgLP = new OrgOverviewLabelProvider(
-					false);
+					false, getPeopleServices());
 
 			// EDIT PANEL
 			final Composite editPanelCmp = toolkit.createComposite(parent,

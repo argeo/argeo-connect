@@ -19,6 +19,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.commands.CancelAndCheckInItem;
 import org.argeo.connect.people.ui.commands.CheckOutItem;
@@ -69,6 +70,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
+	private PeopleUiService peopleUiService;
 
 	/* CONSTANTS */
 	// lenght for short strings (typically tab names)
@@ -462,6 +464,10 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		return peopleService;
 	}
 
+	protected PeopleUiService getPeopleUiServices() {
+		return peopleUiService;
+	}
+
 	protected Session getSession() {
 		return session;
 	}
@@ -572,5 +578,9 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
 		repository = peopleService.getRepository();
+	}
+
+	public void setPeopleUiService(PeopleUiService peopleUiService) {
+		this.peopleUiService = peopleUiService;
 	}
 }

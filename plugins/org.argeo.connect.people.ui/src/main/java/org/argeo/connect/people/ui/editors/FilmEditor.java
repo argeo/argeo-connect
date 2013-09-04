@@ -88,7 +88,7 @@ public class FilmEditor extends AbstractEntityEditor {
 					SWT.WRAP);
 			filmInfoROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider filmExtractLP = new FilmOverviewLabelProvider(
-					false);
+					false, getPeopleServices());
 
 			// EDIT PANEL
 			final Composite editPanelCmp = toolkit.createComposite(parent,

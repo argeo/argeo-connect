@@ -4,7 +4,7 @@
 // FILM
 //
 [film:film] > nt:unstructured, mix:versionable, people:tagable
-- film:uid (STRING)
+- people:uid (STRING)
 - film:productionYear (LONG) *
 // A list of countries as defined in ISO 3166-1
 - film:productionCountry (STRING) *

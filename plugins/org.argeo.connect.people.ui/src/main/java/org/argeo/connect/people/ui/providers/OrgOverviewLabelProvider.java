@@ -5,6 +5,7 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -21,9 +22,12 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 	// .getLog(OrgOverviewLabelProvider.class);
 
 	private boolean isSmallList;
+	private PeopleService peopleService;
 
-	public OrgOverviewLabelProvider(boolean isSmallList) {
+	public OrgOverviewLabelProvider(boolean isSmallList,
+			PeopleService peopleService) {
 		this.isSmallList = isSmallList;
+		this.peopleService = peopleService;
 	}
 
 	@Override
@@ -35,7 +39,8 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 			if (node.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION))
 				orga = node;
 			else if (node.isNodeType(PeopleTypes.PEOPLE_JOB)) {
-				orga = node.getParent().getParent();
+				orga = peopleService.getEntityById(node.getSession(), node
+						.getProperty(PeopleNames.PEOPLE_REF_UID).getString());
 			} else
 				throw new PeopleException("Unvalid node type. "
 						+ "Cannot display org information");

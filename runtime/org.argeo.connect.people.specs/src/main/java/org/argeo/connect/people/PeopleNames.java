@@ -35,7 +35,11 @@ public interface PeopleNames {
 	/* Common concept */
 	public final static String PEOPLE_PICTURE = "people:picture";
 	public final static String PEOPLE_DISPLAY_NAME = "people:displayName";
+	// an implementation specific UID, might be a JCR node Identifier but it is
+	// not compulsory
 	public final static String PEOPLE_UID = "people:uid";
+	// Reference an other entity using the implementation specific UID
+	public final static String PEOPLE_REF_UID = "people:refUid";
 
 	// an integer to enable ordering, 1 is the most prefered
 	public final static String PEOPLE_PREF = "people:pref";
@@ -58,15 +62,14 @@ public interface PeopleNames {
 	/* ORGANIZATIONS */
 	public final static String PEOPLE_LEGAL_NAME = "people:legalName";
 	public final static String PEOPLE_ORG_BRANCHE = "people:orgBranche";
-
 	public final static String PEOPLE_LEGAL_STATUS = "people:legalStatus";
 	public final static String PEOPLE_VAT_ID_NB = "people:vatIdNb";
 
 	/* WORKFLOWS */
 	public final static String PEOPLE_DATE_BEGIN = "people:dateBegin";
 	public final static String PEOPLE_DATE_END = "people:dateEnd";
-	public final static String PEOPLE_WF_ID = "people:wfId";
 	public final static String PEOPLE_WF_VERSION = "people:wfVersion";
+	public final static String PEOPLE_WF_VERSION_ID = "people:wfId";
 	public final static String PEOPLE_WF_STATUS = "people:wfStatus";
 
 	/* CONTACTS */
@@ -74,12 +77,11 @@ public interface PeopleNames {
 	public final static String PEOPLE_CONTACT_VALUE = "people:contactValue";
 	public final static String PEOPLE_CONTACT_CATEGORY = "people:contactCategory";
 	public final static String PEOPLE_CONTACT_LABEL = "people:contactLabel";
-	// if contactCategory == work 
-	public final static String PEOPLE_REL_ORG_ID = "people:relatedOrgId";
+	// if contactCategory == work
+	// Rather use PEOPLE_REF_UID
+	// public final static String PEOPLE_REL_ORG_ID = "people:relatedOrgId";
 	public final static String PEOPLE_CONTACT_URI = "people:contactUri";
 
-	
-	
 	// tel
 	// public final static String PEOPLE_PHONE_NUMBER = "people:phoneNumber";
 	// to display current time for this timezone
@@ -117,8 +119,8 @@ public interface PeopleNames {
 	public final static String PEOPLE_MEMBERS = "people:members";
 	public final static String PEOPLE_JOBS = "people:jobs";
 
-	public final static String PEOPLE_MEMBER_ID = "people:memberId";
-	public final static String PEOPLE_ORG_ID = "people:orgId";
+	// public final static String PEOPLE_MEMBER_ID = "people:memberId";
+	// public final static String PEOPLE_ORG_ID = "people:orgId";
 	// An optional department within the org corresponding to the current
 	// position
 	public final static String PEOPLE_DEPARTMENT = "people:department";
@@ -145,5 +147,4 @@ public interface PeopleNames {
 	public final static String PEOPLE_BANK_CODE = "people:bankCode";
 	public final static String PEOPLE_IBAN = "people:iban";
 	public final static String PEOPLE_BIC = "people:bic";
-
 }

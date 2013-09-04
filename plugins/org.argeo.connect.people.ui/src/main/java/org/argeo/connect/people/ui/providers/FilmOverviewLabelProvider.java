@@ -7,6 +7,7 @@ import org.argeo.connect.film.FilmNames;
 import org.argeo.connect.film.FilmTypes;
 import org.argeo.connect.film.core.FilmJcrUtils;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -19,9 +20,12 @@ public class FilmOverviewLabelProvider extends ColumnLabelProvider implements
 
 	private static final long serialVersionUID = 6332600690181244737L;
 	private boolean isSmallList;
+	private PeopleService peopleService;
 
-	public FilmOverviewLabelProvider(boolean isSmallList) {
+	public FilmOverviewLabelProvider(boolean isSmallList,
+			PeopleService peopleService) {
 		this.isSmallList = isSmallList;
+		this.peopleService = peopleService;
 	}
 
 	@Override
