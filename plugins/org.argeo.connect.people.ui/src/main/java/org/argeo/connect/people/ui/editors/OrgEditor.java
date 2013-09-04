@@ -56,6 +56,16 @@ public class OrgEditor extends AbstractEntityEditor {
 		}
 	}
 
+	protected void populateTabFolder(CTabFolder folder) {
+		// Contact informations
+		String tooltip = "Contact information for "
+				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
+		Composite innerPannel = addTabToFolder(folder, SWT.NO_FOCUS,
+				"Org. details", "people:contactDetails", tooltip);
+		EntityPanelToolkit.populateContactPanelWithNotes(innerPannel, org,
+				toolkit, getManagedForm());
+	}
+	
 	protected void populateMainInfoComposite(final Composite parent) {
 		try {
 			parent.setLayout(new FormLayout());
@@ -162,6 +172,5 @@ public class OrgEditor extends AbstractEntityEditor {
 		}
 	}
 
-	protected void populateTabFolder(CTabFolder folder) {
-	}
+	
 }

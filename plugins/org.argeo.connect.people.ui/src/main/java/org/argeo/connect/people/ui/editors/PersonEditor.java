@@ -57,7 +57,7 @@ public class PersonEditor extends AbstractEntityEditor {
 		String tooltip = "Contact information for "
 				+ JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
 		Composite innerPannel = addTabToFolder(folder, SWT.NO_FOCUS,
-				"Contact details", "msm:contacts", tooltip);
+				"Contact details", "people:contactDetails", tooltip);
 		EntityPanelToolkit.populateContactPanelWithNotes(innerPannel, person,
 				toolkit, getManagedForm());
 
