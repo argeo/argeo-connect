@@ -1,4 +1,4 @@
-package org.argeo.connect.people.ui.editors;
+package org.argeo.connect.people.ui.toolkits;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +14,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.PeopleValueCatalogs;
 import org.argeo.connect.people.ui.JcrUiUtils;
+import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.eclipse.swt.SWT;
@@ -43,9 +44,17 @@ public class EntityPanelToolkit {
 	// private final static Log log =
 	// LogFactory.getLog(EntityPanelToolkit.class);
 
-	public static void populateContactPanelWithNotes(Composite panel,
-			final Node entity, final FormToolkit toolkit,
-			final IManagedForm form) {
+	private final FormToolkit toolkit;
+	private final IManagedForm form;
+
+	public EntityPanelToolkit(FormToolkit toolkit, IManagedForm form) {
+		// formToolkit
+		// managedForm
+		this.toolkit = toolkit;
+		this.form = form;
+	}
+
+	public void populateContactPanelWithNotes(Composite panel, final Node entity) {
 		panel.setLayout(new GridLayout(2, false));
 		GridData gd;
 		final Composite contactListCmp = toolkit.createComposite(panel,
@@ -61,7 +70,7 @@ public class EntityPanelToolkit {
 		gd.grabExcessHorizontalSpace = true;
 		rightCmp.setLayoutData(gd);
 
-		populateNotePanel(rightCmp, entity, toolkit, form);
+		populateNotePanel(rightCmp, entity);
 
 		final Composite newContactCmp = toolkit.createComposite(panel,
 				SWT.NO_FOCUS);
@@ -74,7 +83,7 @@ public class EntityPanelToolkit {
 			public void refresh() {
 				try {
 					super.refresh();
-					refreshContactPanel(contactListCmp, entity, toolkit, this);
+					refreshContactPanel(contactListCmp, entity, this);
 					for (String path : controls.keySet()) {
 						Text txt = controls.get(path);
 						Node currNode = entity.getSession().getNode(path);
@@ -92,18 +101,16 @@ public class EntityPanelToolkit {
 			}
 		};
 
-		populateAddContactPanel(newContactCmp, entity, toolkit, form);
+		populateAddContactPanel(newContactCmp, entity);
 
 		// This must be moved in the called method.
 		contactListCmp.setLayout(new GridLayout(2, false));
-		refreshContactPanel(contactListCmp, entity, toolkit, sPart);
+		refreshContactPanel(contactListCmp, entity, sPart);
 		form.addPart(sPart);
 		panel.layout();
 	}
 
-	public static void populateContactPanel(final Composite panel,
-			final Node entity, final FormToolkit toolkit,
-			final IManagedForm form) {
+	public void populateContactPanel(final Composite panel, final Node entity) {
 		panel.setLayout(new GridLayout());
 		GridData gd;
 		// Hyperlink addNewMailLink = toolkit.createHyperlink(panel,
@@ -126,7 +133,7 @@ public class EntityPanelToolkit {
 			public void refresh() {
 				try {
 					super.refresh();
-					refreshContactPanel(contactListCmp, entity, toolkit, this);
+					refreshContactPanel(contactListCmp, entity, this);
 					for (String path : controls.keySet()) {
 						Text txt = controls.get(path);
 						Node currNode = entity.getSession().getNode(path);
@@ -145,11 +152,11 @@ public class EntityPanelToolkit {
 			}
 		};
 
-		populateAddContactPanel(newContactCmp, entity, toolkit, form);
+		populateAddContactPanel(newContactCmp, entity);
 
 		// This must be moved in the called method.
 		contactListCmp.setLayout(new GridLayout(2, false));
-		refreshContactPanel(contactListCmp, entity, toolkit, sPart);
+		refreshContactPanel(contactListCmp, entity, sPart);
 		form.addPart(sPart);
 		panel.layout();
 
@@ -164,9 +171,8 @@ public class EntityPanelToolkit {
 		// });
 	}
 
-	public static void populateNotePanel(final Composite rightPartComp,
-			final Node entity, final FormToolkit toolkit,
-			final IManagedForm form) {
+	public void populateNotePanel(final Composite rightPartComp,
+			final Node entity) {
 		rightPartComp.setLayout(new GridLayout());
 
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -210,8 +216,8 @@ public class EntityPanelToolkit {
 	}
 
 	/** Manage display and update of existing contact Nodes */
-	private static void refreshContactPanel(Composite panel, final Node entity,
-			FormToolkit toolkit, final EntityAbstractFormPart part) {
+	private void refreshContactPanel(Composite panel, final Node entity,
+			final EntityAbstractFormPart part) {
 
 		// Clean old controls
 		for (Control ctl : panel.getChildren()) {
@@ -285,9 +291,7 @@ public class EntityPanelToolkit {
 	}
 
 	/** Populate a composite that enable addition of a new contact */
-	public static void populateAddContactPanel(Composite parent,
-			final Node entity, final FormToolkit toolkit,
-			final IManagedForm form) {
+	public void populateAddContactPanel(Composite parent, final Node entity) {
 		parent.setLayout(new GridLayout(2, false));
 
 		final Combo addContactCmb = new Combo(parent, SWT.NONE | SWT.READ_ONLY
@@ -330,7 +334,7 @@ public class EntityPanelToolkit {
 				populateEditableContactComposite(editPanel, entity,
 						PeopleValueCatalogs.getKeyByValue(
 								PeopleValueCatalogs.MAPS_CONTACT_TYPES,
-								selected), toolkit, form);
+								selected));
 				editPanel.setVisible(true);
 			}
 
@@ -342,9 +346,8 @@ public class EntityPanelToolkit {
 	}
 
 	/** Populate an editable contact composite */
-	public static void populateEditableContactComposite(Composite parent,
-			final Node entity, final String contactType,
-			final FormToolkit toolkit, final IManagedForm form) {
+	public void populateEditableContactComposite(Composite parent,
+			final Node entity, final String contactType) {
 
 		if (parent.getLayout() == null) {
 			RowLayout layout = new RowLayout();

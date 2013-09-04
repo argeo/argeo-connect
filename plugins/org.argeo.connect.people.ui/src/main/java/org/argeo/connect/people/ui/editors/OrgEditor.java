@@ -13,6 +13,7 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.providers.OrgOverviewLabelProvider;
+import org.argeo.connect.people.ui.toolkits.EntityPanelToolkit;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -41,7 +42,7 @@ public class OrgEditor extends AbstractEntityEditor {
 
 	// Main business Objects
 	private Node org;
-
+	
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
@@ -57,13 +58,16 @@ public class OrgEditor extends AbstractEntityEditor {
 	}
 
 	protected void populateTabFolder(CTabFolder folder) {
+		// Create usefull toolkits
+		EntityPanelToolkit entityPanelToolkit = new EntityPanelToolkit(toolkit, getManagedForm());
+
+		
 		// Contact informations
 		String tooltip = "Contact information for "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		Composite innerPannel = addTabToFolder(folder, SWT.NO_FOCUS,
 				"Org. details", "people:contactDetails", tooltip);
-		EntityPanelToolkit.populateContactPanelWithNotes(innerPannel, org,
-				toolkit, getManagedForm());
+		entityPanelToolkit.populateContactPanelWithNotes(innerPannel, org);
 	}
 	
 	protected void populateMainInfoComposite(final Composite parent) {

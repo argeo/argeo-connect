@@ -14,6 +14,7 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.providers.FilmOverviewLabelProvider;
+import org.argeo.connect.people.ui.toolkits.FilmPanelToolkit;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
@@ -54,6 +55,19 @@ public class FilmEditor extends AbstractEntityEditor {
 						+ "...";
 			setPartName(shortName);
 		}
+	}
+
+	protected void populateTabFolder(CTabFolder folder) {
+		// Create usefull toolkits
+		FilmPanelToolkit filmPanelToolkit = new FilmPanelToolkit(toolkit,
+				getManagedForm());
+
+		// Synopses
+		String tooltip = "The synopses for film "
+				+ JcrUtils.get(film, FilmNames.FILM_ID);
+		Composite innerPannel = addTabToFolder(folder, SWT.NO_FOCUS,
+				"Synopsis", "msm:synopses", tooltip);
+		filmPanelToolkit.populateSynopsisPanel(innerPannel, film);
 	}
 
 	protected void populateMainInfoComposite(final Composite parent) {
@@ -212,13 +226,4 @@ public class FilmEditor extends AbstractEntityEditor {
 		}
 	}
 
-	protected void populateTabFolder(CTabFolder folder) {
-		// Synopses
-		String tooltip = "The synopses for film "
-				+ JcrUtils.get(film, FilmNames.FILM_ID);
-		Composite innerPannel = addTabToFolder(folder, SWT.NO_FOCUS,
-				"Synopsis", "msm:synopses", tooltip);
-		FilmPanelToolkit.populateSynopsisPanel(innerPannel, film, toolkit,
-				getManagedForm());
-	}
 }

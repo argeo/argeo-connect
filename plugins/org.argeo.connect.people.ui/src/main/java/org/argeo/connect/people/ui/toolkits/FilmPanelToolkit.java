@@ -1,4 +1,4 @@
-package org.argeo.connect.people.ui.editors;
+package org.argeo.connect.people.ui.toolkits;
 
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
@@ -10,6 +10,7 @@ import org.argeo.connect.film.FilmNames;
 import org.argeo.connect.film.core.FilmJcrUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.JcrUiUtils;
+import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;
@@ -28,8 +29,17 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class FilmPanelToolkit {
 	private final static Log log = LogFactory.getLog(FilmPanelToolkit.class);
 
-	public static void populateSynopsisPanel(Composite panel,
-			final Node entity, FormToolkit toolkit, final IManagedForm form) {
+	private final FormToolkit toolkit;
+	private final IManagedForm form;
+
+	public FilmPanelToolkit(FormToolkit toolkit, IManagedForm form) {
+		// formToolkit
+		// managedForm
+		this.toolkit = toolkit;
+		this.form = form;
+	}
+
+	public void populateSynopsisPanel(Composite panel, final Node entity) {
 		try {
 			panel.setLayout(new GridLayout());
 			// Original synopsis

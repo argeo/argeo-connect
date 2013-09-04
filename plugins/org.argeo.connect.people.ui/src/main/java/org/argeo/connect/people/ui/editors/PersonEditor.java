@@ -12,6 +12,7 @@ import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.connect.people.ui.toolkits.EntityPanelToolkit;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PersonJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -53,13 +54,16 @@ public class PersonEditor extends AbstractEntityEditor {
 	}
 
 	protected void populateTabFolder(CTabFolder folder) {
+		// Create usefull toolkits
+		EntityPanelToolkit entityPanelToolkit = new EntityPanelToolkit(toolkit,
+				getManagedForm());
+
 		// Contact informations
 		String tooltip = "Contact information for "
 				+ JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
 		Composite innerPannel = addTabToFolder(folder, SWT.NO_FOCUS,
 				"Contact details", "people:contactDetails", tooltip);
-		EntityPanelToolkit.populateContactPanelWithNotes(innerPannel, person,
-				toolkit, getManagedForm());
+		entityPanelToolkit.populateContactPanelWithNotes(innerPannel, person);
 
 		// CTabItem currItem = addTabToFolder(folder, SWT.NO_FOCUS, "Contacts",
 		// "msm:contacts");

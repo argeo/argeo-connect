@@ -234,21 +234,36 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		image.setBackground(header.getBackground());
 		image.setImage(getPicture());
 
-		// General information
+		// General information panel (on the right of the image)
 		final Composite mainInfoComposite = toolkit.createComposite(header,
 				SWT.NO_FOCUS);
-		mainInfoComposite.setLayoutData(new GridData(GridData.FILL_BOTH
-				| GridData.GRAB_HORIZONTAL));
+		GridData gd = new GridData();
+		gd.grabExcessHorizontalSpace = true;
+		gd.horizontalAlignment = SWT.FILL;
+		mainInfoComposite.setLayoutData(gd);
+
 		mainInfoComposite.setLayout(new GridLayout());
 
 		// The buttons
 		Composite buttonPanel = toolkit.createComposite(mainInfoComposite,
 				SWT.NO_FOCUS);
+		gd = new GridData();
+		gd.grabExcessHorizontalSpace = true;
+		gd.horizontalAlignment = SWT.FILL;
+		gd.verticalAlignment = SWT.TOP;
+
+		buttonPanel.setLayoutData(gd);
 		populateButtonsComposite(buttonPanel);
 
 		// Main info panel
 		Composite switchingPanel = toolkit.createComposite(mainInfoComposite,
 				SWT.NO_FOCUS);
+		gd = new GridData();
+		gd.grabExcessHorizontalSpace = true;
+		gd.grabExcessVerticalSpace = true;
+		gd.horizontalAlignment = SWT.FILL;
+		gd.verticalAlignment = SWT.TOP;
+
 		populateMainInfoComposite(switchingPanel);
 	}
 
@@ -257,6 +272,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		Composite buttons = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
 		gd.grabExcessHorizontalSpace = true;
+		gd.heightHint = 30;
 		buttons.setLayoutData(gd);
 
 		buttons.setLayout(new FormLayout());
@@ -269,8 +285,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 		roPanelCmp.setLayout(new GridLayout());
 
-		Button editBtn = toolkit.createButton(roPanelCmp, "Edit", SWT.PUSH
-				| SWT.RIGHT);
+		Button editBtn = toolkit.createButton(roPanelCmp, "Edit", SWT.PUSH);
 		editBtn.addSelectionListener(new SelectionListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -287,6 +302,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		});
 		gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
 		gd.grabExcessHorizontalSpace = true;
+		gd.widthHint = 70;
 		editBtn.setLayoutData(gd);
 
 		// EDIT PANEL
@@ -295,10 +311,15 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		PeopleUiUtils.setSwitchingFormData(editPanelCmp);
 		editPanelCmp.setData(RWT.CUSTOM_VARIANT,
 				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
-		editPanelCmp.setLayout(new GridLayout(2, true));
+		editPanelCmp.setLayout(new GridLayout(2, false));
 
 		Button cancelBtn = toolkit.createButton(editPanelCmp, "Cancel",
-				SWT.PUSH | SWT.RIGHT);
+				SWT.PUSH);
+		gd = new GridData();
+		gd.widthHint = 70;
+		gd.grabExcessHorizontalSpace = true;
+		gd.horizontalAlignment = SWT.RIGHT;
+		cancelBtn.setLayoutData(gd);
 		cancelBtn.addSelectionListener(new SelectionListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -312,10 +333,8 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-		cancelBtn.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
 
-		Button saveBtn = toolkit.createButton(editPanelCmp, "Save", SWT.PUSH
-				| SWT.RIGHT);
+		Button saveBtn = toolkit.createButton(editPanelCmp, "Save", SWT.PUSH);
 		saveBtn.addSelectionListener(new SelectionListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -336,7 +355,10 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-		saveBtn.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
+		gd = new GridData();
+		gd.widthHint = 70;
+		gd.horizontalAlignment = SWT.FILL;
+		saveBtn.setLayoutData(gd);
 
 		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
 			// Update values on refresh
