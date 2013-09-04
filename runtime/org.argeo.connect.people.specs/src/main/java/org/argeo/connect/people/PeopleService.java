@@ -1,11 +1,20 @@
 package org.argeo.connect.people;
 
+import java.util.Map;
+
 import javax.jcr.Repository;
 
 /** Provides method interfaces to manage a people repository */
 public interface PeopleService {
 
-	/* Users */
+	/* ENTITIES */
+	/**
+	 * returns the list of predefined values for a given property or null if
+	 * none has been defined.
+	 */
+	public Map<String, String> getMapValuesForProperty(String propertyName);
+
+	/* USERS */
 	/** returns true if the current user is in the specified role */
 	public boolean isUserInRole(Integer userRole);
 

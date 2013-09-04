@@ -73,8 +73,13 @@ public interface PeopleNames {
 	// base properties for all contact type nodes
 	public final static String PEOPLE_CONTACT_VALUE = "people:contactValue";
 	public final static String PEOPLE_CONTACT_CATEGORY = "people:contactCategory";
-	public final static String PEOPLE_CONTACT_TYPE = "people:contactType";
+	public final static String PEOPLE_CONTACT_LABEL = "people:contactLabel";
+	// if contactCategory == work 
+	public final static String PEOPLE_REL_ORG_ID = "people:relatedOrgId";
+	public final static String PEOPLE_CONTACT_URI = "people:contactUri";
 
+	
+	
 	// tel
 	// public final static String PEOPLE_PHONE_NUMBER = "people:phoneNumber";
 	// to display current time for this timezone

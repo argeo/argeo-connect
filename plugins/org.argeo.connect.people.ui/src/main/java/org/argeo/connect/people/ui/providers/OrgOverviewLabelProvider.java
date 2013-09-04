@@ -89,7 +89,7 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 				builder.append("</a> </span> ~ ");
 			}
 			tmpStr = PeopleJcrUtils.getDefaultContactValue(orga,
-					PeopleTypes.PEOPLE_WEBSITE);
+					PeopleTypes.PEOPLE_URL);
 			if (tmpStr != null) {
 				builder.append("<span> <a "
 						+ PeopleUiConstants.PEOPLE_CSS_URL_STYLE

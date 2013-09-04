@@ -16,4 +16,5 @@ public interface PeopleConstants {
 
 	/* CONTACT CATEGORIES */
 	public final static String PEOPLE_CONTACT_CATEGORY_WORK = "Work";
+	
 }

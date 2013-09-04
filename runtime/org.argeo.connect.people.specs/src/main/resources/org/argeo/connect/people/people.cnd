@@ -132,19 +132,10 @@ mixin
 // 
 [people:contact] > nt:unstructured, people:orderable
 // work, home, other
-- people:contactCategory (STRING)
-// optional label 
-- people:contactType (STRING)
-// if contactCategory == work 
-- people:relatedOrgId (STRING)
-//OPTIONNAL an URI translated from the contact type 
-// value to be used directly by the system.
-- people:contactUri (URI) 
-- people:contactValue (STRING) 
 
 
 // TEL
-[people:tel] > people:contact 
+[people:phone] > people:contact 
 // to display current time for this timezone
 // Stores time offset to UTC as a parseable String for the time being
 - people:timeZone (STRING)
@@ -156,7 +147,7 @@ mixin
 [people:impp] > people:contact 
 
 // WEBSITE
-[people:website] > people:contact 
+[people:url] > people:contact 
 
 // ADDRESS
 [people:address] > people:contact 

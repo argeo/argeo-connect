@@ -41,6 +41,10 @@ public class FilmPanelToolkit {
 			gd.heightHint = 120;
 			synopsisTxt.setLayoutData(gd);
 			Node origSynopsisNode = FilmJcrUtils.getSynopsisNode(entity, "de");
+			// force creation to avoid npe and ease form life cycle
+			// if (origSynopsisNode == null)
+			// origSynopsisNode = FilmJcrUtils.addOrUpdateSynopsisNode(entity,
+			// null, null, "de");
 			synopsisTxt.setData("LinkedNode", origSynopsisNode.getPath());
 
 			// EN synopsis
@@ -52,6 +56,10 @@ public class FilmPanelToolkit {
 			gd.heightHint = 120;
 			enSynopsisTxt.setLayoutData(gd);
 			Node enSynopsisNode = FilmJcrUtils.getSynopsisNode(entity, "en");
+			// force creation to avoid npe and ease form life cycle
+			// if (enSynopsisNode == null)
+			// enSynopsisNode = FilmJcrUtils.addOrUpdateSynopsisNode(entity,
+			// null, null, "en");
 			enSynopsisTxt.setData("LinkedNode", enSynopsisNode.getPath());
 
 			final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {

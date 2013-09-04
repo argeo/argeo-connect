@@ -16,6 +16,9 @@ public class PeopleServiceImpl implements PeopleService {
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private Map<Integer, String> managedRoles;
+	// business catalogs maintained in file business catalogs of the specs
+	// bundle
+	private Map<String, Object> businessCatalogs;
 
 	private Session adminSession = null;
 
@@ -31,6 +34,12 @@ public class PeopleServiceImpl implements PeopleService {
 	/** Clean shutdown of the backend. */
 	public void destroy() {
 		// Do nothing
+	}
+
+	/* ENTITY SERVICES */
+	@Override
+	public Map<String, String> getMapValuesForProperty(String propertyName) {
+		return null;
 	}
 
 	/* Persons */
@@ -70,6 +79,11 @@ public class PeopleServiceImpl implements PeopleService {
 	/* DEPENDENCY INJECTION */
 	public void setManagedRoles(Map<Integer, String> managedRoles) {
 		this.managedRoles = managedRoles;
+	}
+
+	// Inject a map with all business catalogs
+	public void setBusinessCatalogs(Map<String, Object> businessCatalogs) {
+		this.businessCatalogs = businessCatalogs;
 	}
 
 	public void setRepository(Repository repository) {

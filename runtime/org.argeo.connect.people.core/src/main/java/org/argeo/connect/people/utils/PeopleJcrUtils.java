@@ -71,7 +71,7 @@ public class PeopleJcrUtils implements PeopleNames {
 	public static void setContactType(Node contactNode, String label)
 			throws RepositoryException {
 		if (!CommonsJcrUtils.isEmptyString(label))
-			contactNode.setProperty(PEOPLE_CONTACT_TYPE, label);
+			contactNode.setProperty(PEOPLE_CONTACT_LABEL, label);
 	}
 
 	public static void setContactCategory(Node contactNode, String category,
@@ -173,7 +173,7 @@ public class PeopleJcrUtils implements PeopleNames {
 		try {
 			if (contact.isNodeType(PeopleTypes.PEOPLE_EMAIL))
 				return "E-Mail";
-			else if (contact.isNodeType(PeopleTypes.PEOPLE_WEBSITE))
+			else if (contact.isNodeType(PeopleTypes.PEOPLE_URL))
 				return "Site";
 			else if (contact.isNodeType(PeopleTypes.PEOPLE_PHONE))
 				return "Phone";
@@ -234,14 +234,14 @@ public class PeopleJcrUtils implements PeopleNames {
 	 */
 	public static Node createWebsite(Node parentNode, String urlString,
 			int pref, String contactCategory, String contactType) {
-		return createContact(parentNode, PeopleTypes.PEOPLE_WEBSITE,
+		return createContact(parentNode, PeopleTypes.PEOPLE_URL,
 				urlString.replaceAll("[^a-zA-Z0-9]", ""), urlString, pref,
 				contactCategory, contactType);
 	}
 
 	public static Node createPhone(Node parentNode, String phoneNumber,
 			int pref, String contactCategory, String contactType) {
-		return createContact(parentNode, PeopleTypes.PEOPLE_WEBSITE, "p"
+		return createContact(parentNode, PeopleTypes.PEOPLE_URL, "p"
 				+ phoneNumber.replaceAll("[^a-zA-Z0-9]", ""), phoneNumber,
 				pref, contactCategory, contactType);
 	}

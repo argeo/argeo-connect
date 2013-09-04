@@ -167,12 +167,13 @@ public class FilmJcrUtils implements FilmNames {
 		try {
 			Node synopses = JcrUtils.mkdirs(film, FILM_SYNOPSES,
 					NodeType.NT_UNSTRUCTURED);
-			if (CommonsJcrUtils.checkNotEmptyString(synopsis)
-					&& CommonsJcrUtils.checkNotEmptyString(lang)) {
+			if (synopsis == null)
+				// force creation of the property
+				synopsis = "";
 
+			if (CommonsJcrUtils.checkNotEmptyString(lang)) {
 				Node sNode = null;
 				if (synopses.hasNode(lang))
-
 					sNode = synopses.getNode(lang);
 				else
 					sNode = synopses.addNode(lang, FilmTypes.FILM_SYNOPSIS);
@@ -181,6 +182,7 @@ public class FilmJcrUtils implements FilmNames {
 				if (CommonsJcrUtils.checkNotEmptyString(synopsisShort))
 					sNode.setProperty(SYNOPSIS_CONTENT_SHORT, synopsisShort);
 				sNode.setProperty(FILM_LANG, lang);
+				return sNode;
 			}
 			return null;
 		} catch (RepositoryException re) {

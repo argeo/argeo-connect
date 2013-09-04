@@ -58,8 +58,8 @@ public class PersonEditor extends AbstractEntityEditor {
 				+ JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
 		Composite innerPannel = addTabToFolder(folder, SWT.NO_FOCUS,
 				"Contact details", "msm:contacts", tooltip);
-		EntityPanelToolkit.populateContactPanel(innerPannel, person, toolkit,
-				getManagedForm());
+		EntityPanelToolkit.populateContactPanelWithNotes(innerPannel, person,
+				toolkit, getManagedForm());
 
 		// CTabItem currItem = addTabToFolder(folder, SWT.NO_FOCUS, "Contacts",
 		// "msm:contacts");
@@ -79,6 +79,7 @@ public class PersonEditor extends AbstractEntityEditor {
 		// currItem.setToolTipText("Films related to "
 		// + JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME));
 		// createFilmContent(currItem);
+		folder.layout();
 	}
 
 	@Override

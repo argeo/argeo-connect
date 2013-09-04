@@ -43,6 +43,15 @@ public class CommonsJcrUtils {
 	}
 
 	/**
+	 * For the time being, same as isNodeCheckedOut(Node node).
+	 * 
+	 * TODO : add management of check out by others.
+	 */
+	public static boolean isNodeCheckedOutByMe(Node node) {
+		return isNodeCheckedOut(node);
+	}
+
+	/**
 	 * Wraps the versionMananger.checkedOut(path) method to adapt it to the
 	 * current check in / check out policy.
 	 * 
@@ -63,13 +72,13 @@ public class CommonsJcrUtils {
 	 * 
 	 * TODO : add management of check out by others.
 	 */
-	public static void checkin(Node node) {
+	public static void saveAndCheckin(Node node) {
 		try {
+			node.getSession().save();
 			node.getSession().getWorkspace().getVersionManager()
 					.checkin(node.getPath());
 		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"Unable to get check out status for node", re);
+			throw new PeopleException("Unable to save and chek in node", re);
 		}
 	}
 

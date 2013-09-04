@@ -10,14 +10,13 @@ public interface PeopleTypes {
 	public final static String PEOPLE_ISO_COUNTRY = "people:isoCountry";
 	public final static String PEOPLE_ISO_LANGUAGE = "people:isoLanguage";
 
-	
 	/* COMMON CONCEPTS */
 	// Parent base type
 	public final static String PEOPLE_ENTITY = "people:entity";
 	public final static String PEOPLE_TAGABLE = "people:tagable";
 	public final static String PEOPLE_ORDERABLE = "people:orderable";
 	public final static String PEOPLE_CONTACTABLE = "people:contactable";
-	
+
 	/* PERSONS */
 	public final static String PEOPLE_PERSON = "people:person";
 
@@ -35,6 +34,7 @@ public interface PeopleTypes {
 	public final static String PEOPLE_CONTACT = "people:contact";
 	public final static String PEOPLE_PHONE = "people:phone";
 	public final static String PEOPLE_EMAIL = "people:email";
-	public final static String PEOPLE_WEBSITE = "people:website";
+	public final static String PEOPLE_IMPP = "people:impp";
+	public final static String PEOPLE_URL = "people:url";
 	public final static String PEOPLE_ADDRESS = "people:address";
 }

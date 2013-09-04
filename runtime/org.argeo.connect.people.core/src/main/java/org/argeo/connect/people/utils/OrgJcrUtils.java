@@ -28,7 +28,7 @@ public class OrgJcrUtils {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
 		QueryObjectModelFactory factory = queryManager.getQOMFactory();
 		final String typeSelector = "website";
-		Selector source = factory.selector(PeopleTypes.PEOPLE_WEBSITE,
+		Selector source = factory.selector(PeopleTypes.PEOPLE_URL,
 				typeSelector);
 		DynamicOperand dynOp = factory.propertyValue(source.getSelectorName(),
 				PeopleNames.PEOPLE_CONTACT_VALUE);
