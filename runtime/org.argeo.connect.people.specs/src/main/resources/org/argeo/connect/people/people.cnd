@@ -7,7 +7,7 @@
 // An implementation dependent UID for each entity
 - people:uid (String) m
 // Maps the FN value of a vCard
-- people:displayName (String) m
+- people:displayName (String) 
 - people:source (URI)
 // A free text description of the current entity
 - people:description (STRING)
@@ -35,7 +35,7 @@
 // Some free-form text comments might be added after a semicolon separator
 - people:gender (STRING)
 // Positions in the various organisations this person is attached to
-+ * (people:job) *
++ people:jobs (nt:unstructured) = nt:unstructured m a
 
 //
 // ORGANISATION
@@ -52,7 +52,7 @@
 //
 // GROUP : base type for all groups of persons, organisations and/or other groups 
 //
-[people:group] > people:entity, people:contactable, people:tagable
+[people:group] > people:entity, people:tagable
 + * (people:member) *
 
 

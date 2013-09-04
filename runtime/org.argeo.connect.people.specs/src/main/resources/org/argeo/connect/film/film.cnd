@@ -3,8 +3,7 @@
 //
 // FILM
 //
-[film:film] > nt:unstructured, mix:versionable, people:tagable
-- people:uid (STRING)
+[film:film] > people:group
 - film:productionYear (LONG) *
 // A list of countries as defined in ISO 3166-1
 - film:productionCountry (STRING) *
@@ -18,8 +17,8 @@
 - film:origTitleArticle (STRING)
 // Helper to be able to read the original title when it is in a foreign alphabet
 - film:origLatinTitle (STRING)
-// The crew for this film
-+ * (people:member) *
+// The crew for this film inherited from people:group
+// + * (people:member) *
 
 
 // Alternative titles

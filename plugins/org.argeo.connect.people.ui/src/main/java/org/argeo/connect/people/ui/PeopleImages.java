@@ -32,6 +32,9 @@ import org.eclipse.swt.graphics.Image;
 public class PeopleImages {
 	public final static Image PERSON = PeopleUiPlugin.getImageDescriptor(
 			"icons/person.gif").createImage();
+	
+	public final static Image LOGO = PeopleUiPlugin.getImageDescriptor(
+			"icons/logo.png").createImage();
 
 	public final static Image NO_PICTURE = PeopleUiPlugin.getImageDescriptor(
 			"icons/noPicture.gif").createImage();
