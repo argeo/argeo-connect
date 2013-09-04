@@ -1,5 +1,6 @@
 package org.argeo.connect.people.core;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -71,17 +72,17 @@ public class PeopleServiceImpl implements PeopleService {
 	}
 
 	@Override
-	public List<Node> getRelatedEntities(Node entity, String relatedEntitiesType) {
+	public List<Node> getRelatedEntities(Node entity, String linkNodeType,
+			String relatedEntityType) {
 		try {
 			Session session = entity.getSession();
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
 			final String typeSelector = "relatedType";
-			Selector source = factory.selector(relatedEntitiesType,
-					typeSelector);
+			Selector source = factory.selector(linkNodeType, typeSelector);
 			DynamicOperand dynOp = factory.propertyValue(
-					source.getSelectorName(), PeopleNames.PEOPLE_UID);
+					source.getSelectorName(), PeopleNames.PEOPLE_REF_UID);
 			StaticOperand statOp = factory.literal(session.getValueFactory()
 					.createValue(
 							entity.getProperty(PeopleNames.PEOPLE_UID)
@@ -90,9 +91,23 @@ public class PeopleServiceImpl implements PeopleService {
 					QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
 			QueryObjectModel query = factory.createQuery(source, defaultC,
 					null, null);
-			QueryResult result = query.execute();
-			NodeIterator ni = result.getNodes();
-			return JcrUtils.nodeIteratorToList(ni);
+			QueryResult queryResult = query.execute();
+			NodeIterator ni = queryResult.getNodes();
+
+			if (relatedEntityType == null)
+				return JcrUtils.nodeIteratorToList(ni);
+			else {
+
+				List<Node> result = new ArrayList<Node>();
+				while (ni.hasNext()) {
+					Node currNode = ni.nextNode();
+					if (currNode.getParent().getParent()
+							.isNodeType(relatedEntityType))
+						result.add(currNode);
+				}
+				return result;
+			}
+
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to retrieve related entities", e);
 		}

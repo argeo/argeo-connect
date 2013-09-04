@@ -54,7 +54,8 @@ public class EntityPanelToolkit {
 		this.form = form;
 	}
 
-	public void populateContactPanelWithNotes(Composite panel, final Node entity) {
+	public void populateContactPanelWithNotes(Composite panel,
+			final Node entity) {
 		panel.setLayout(new GridLayout(2, false));
 		GridData gd;
 		final Composite contactListCmp = toolkit.createComposite(panel,

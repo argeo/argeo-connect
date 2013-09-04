@@ -25,16 +25,25 @@ import org.eclipse.ui.PartInitException;
 public class NodeListDoubleClickListener implements IDoubleClickListener {
 
 	private PeopleService peopleService;
-	private String currentTableId;
+	private String parentNodeType;
+	private String tableId;
 
 	/**
 	 * Set people service and table id to enable opening of the correct editor
 	 * when displaying list of references
 	 */
 	public NodeListDoubleClickListener(PeopleService peopleService,
-			String currentTableId) {
+			String parentNodeType) {
 		this.peopleService = peopleService;
-		this.currentTableId = currentTableId;
+		this.parentNodeType = parentNodeType;
+	}
+
+	public NodeListDoubleClickListener(PeopleService peopleService,
+			String parentNodeType, String tableId) {
+		this.peopleService = peopleService;
+		this.parentNodeType = parentNodeType;
+		this.tableId = tableId;
+
 	}
 
 	protected void openNodeEditor(String nodeId, String editorId) {
@@ -61,13 +70,13 @@ public class NodeListDoubleClickListener implements IDoubleClickListener {
 				Session session = curNode.getSession();
 				// Mapping for jobs
 				if (curNode.isNodeType(PeopleTypes.PEOPLE_JOB)) {
-					if (PeopleTypes.PEOPLE_PERSON.equals(currentTableId)) {
+					if (PeopleTypes.PEOPLE_PERSON.equals(parentNodeType)) {
 						Node linkedOrg = peopleService.getEntityById(session,
 								curNode.getProperty(PeopleNames.PEOPLE_REF_UID)
 										.getString());
 						openNodeEditor(linkedOrg.getIdentifier(), OrgEditor.ID);
 					} else if (PeopleTypes.PEOPLE_ORGANIZATION
-							.equals(currentTableId))
+							.equals(parentNodeType))
 						openNodeEditor(curNode.getParent().getParent()
 								.getIdentifier(), PersonEditor.ID);
 				} else if (curNode.isNodeType(PeopleTypes.PEOPLE_PERSON)) {

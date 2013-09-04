@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 
 /** Provides method interfaces to manage a people repository */
 public interface PeopleService {
@@ -28,9 +27,13 @@ public interface PeopleService {
 	 * Returns all entities with the given NodeType related to this entity or
 	 * null if not has been found. Key for relation is implementation specific:
 	 * it might be a JCR Identifier but must not.
+	 * 
+	 * @param relatedEntityType
+	 *            optionaly, the type of the grand-parent node typically to
+	 *            choose between an organisation, a group or a person in a group
 	 * */
-	public List<Node> getRelatedEntities(Node entity,
-			String relatedEntitiesType);
+	public List<Node> getRelatedEntities(Node entity, String linkNodeType,
+			String relatedEntityType);
 
 	/* USERS */
 	/** returns true if the current user is in the specified role */

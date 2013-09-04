@@ -14,6 +14,14 @@ public interface PeopleUiService {
 	 * management of project specific UI Parts
 	 */
 	public NodeListDoubleClickListener getNewNodeListDoubleClickListener(
-			PeopleService peopleService, String currentTableId);
+			PeopleService peopleService, String parentNodeType);
+
+	/**
+	 * Overwrite this method to provide project specific listener to enable
+	 * management of project specific UI Parts
+	 */
+	public NodeListDoubleClickListener getNewNodeListDoubleClickListener(
+			PeopleService peopleService, String parentNodeType,
+			String currentTableId);
 
 }

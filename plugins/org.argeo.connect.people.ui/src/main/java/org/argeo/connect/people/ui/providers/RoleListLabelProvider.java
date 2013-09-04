@@ -24,7 +24,7 @@ public class RoleListLabelProvider extends ColumnLabelProvider implements
 		try {
 			Node node = (Node) element;
 			Node link;
-			if (node.isNodeType(PeopleTypes.PEOPLE_JOB)) {
+			if (node.isNodeType(PeopleTypes.PEOPLE_POSITION)) {
 				link = node;
 			} else
 				throw new PeopleException("Unvalid node type. "

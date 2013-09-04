@@ -7,6 +7,11 @@ public interface PeopleConstants {
 	public final static String PEOPLE_RESOURCES_PATH = PEOPLE_BASE_PATH
 			+ "/people:resources";
 
+	// Helper to decide wether we speak about the parent object of a link node or about the ref it points to
+	public final static Integer TARGET_LINK_PARENT = 0;
+	public final static Integer TARGET_LINK_REF = 1;
+	
+	
 	/*
 	 * USER ROLES
 	 */

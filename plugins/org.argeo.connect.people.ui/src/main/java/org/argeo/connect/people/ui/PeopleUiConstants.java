@@ -6,7 +6,9 @@ public interface PeopleUiConstants {
 	/* IDs for the various panels */
 	public final static String PANEL_CONTACT_DETAILS = "people:contactDetails";
 	public final static String PANEL_JOBS = "people:jobs";
+	public final static String PANEL_EMPLOYEES = "people:employees";
 	public final static String PANEL_PRODUCTIONS = "people:productions";
+	public final static String PANEL_MEMBERS = "people:members";
 	
 	/* CUSTOM CSS TAGS */
 	// a composite used to put titles in various lists
