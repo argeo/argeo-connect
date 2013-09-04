@@ -375,8 +375,10 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		item.setText(label);
 		item.setToolTipText(tooltip);
 		Composite innerPannel = toolkit.createComposite(tabFolder, SWT.NONE);
-		innerPannel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
-		innerPannel.setLayout(new GridLayout(1, false));
+		GridData gd = new GridData(SWT.FILL, SWT.TOP, true, true);
+		gd.grabExcessHorizontalSpace = true;
+		gd.grabExcessVerticalSpace = true;
+		innerPannel.setLayoutData(gd);
 		// must set control
 		item.setControl(innerPannel);
 		return innerPannel;

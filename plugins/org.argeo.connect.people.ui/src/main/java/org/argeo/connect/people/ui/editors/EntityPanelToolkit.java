@@ -43,12 +43,6 @@ public class EntityPanelToolkit {
 	// private final static Log log =
 	// LogFactory.getLog(EntityPanelToolkit.class);
 
-	public static void populateContactDetailsPanel(Composite panel,
-			final Node entity, final FormToolkit toolkit,
-			final IManagedForm form) {
-
-	}
-
 	public static void populateContactPanelWithNotes(Composite panel,
 			final Node entity, final FormToolkit toolkit,
 			final IManagedForm form) {
@@ -105,20 +99,11 @@ public class EntityPanelToolkit {
 		refreshContactPanel(contactListCmp, entity, toolkit, sPart);
 		form.addPart(sPart);
 		panel.layout();
-
-		// addNewMailLink.addHyperlinkListener(new SimpleHyperlinkListener() {
-		// @Override
-		// public void linkActivated(HyperlinkEvent e) {
-		// PeopleJcrUtils.createEmail(entity, "test@mail.de", 100, "test",
-		// null);
-		// refreshContactPanel(contactComposite, entity, toolkit, sPart);
-		// sPart.markDirty();
-		// }
-		// });
 	}
 
-	public static void populateContactPanel(Composite panel, final Node entity,
-			final FormToolkit toolkit, final IManagedForm form) {
+	public static void populateContactPanel(final Composite panel,
+			final Node entity, final FormToolkit toolkit,
+			final IManagedForm form) {
 		panel.setLayout(new GridLayout());
 		GridData gd;
 		// Hyperlink addNewMailLink = toolkit.createHyperlink(panel,
@@ -152,6 +137,7 @@ public class EntityPanelToolkit {
 							txt.setText(value);
 						txt.setEnabled(entity.isCheckedOut());
 					}
+					panel.layout();
 				} catch (RepositoryException e) {
 					throw new PeopleException(
 							"Cannot refresh contact panel formPart", e);
@@ -291,9 +277,10 @@ public class EntityPanelToolkit {
 			throw new PeopleException("Error while getting properties", e);
 		}
 		part.setTextControls(controls);
+		panel.redraw();
 		panel.layout();
-		panel.pack(true);
-		panel.getParent().pack(true);
+		// panel.pack(true);
+		// panel.getParent().pack(true);
 		panel.getParent().layout();
 	}
 
