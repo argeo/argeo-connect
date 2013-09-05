@@ -16,7 +16,6 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiService;
@@ -86,7 +85,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	// Business Objects
 	private Node entityNode;
 	// A corresponding picture that must be explicitly disposed
-	private Image itemPicture = null;
+	protected Image itemPicture = null;
 
 	// Manage tab Folder
 	// We rather use CTabFolder to enable further customization
@@ -119,8 +118,10 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 							.getStream();
 					itemPicture = new Image(this.getSite().getShell()
 							.getDisplay(), is);
-				} else
-					itemPicture = PeopleImages.NO_PICTURE;
+				}
+				// TODO repair this
+				// else
+				// itemPicture = PeopleImages.NO_PICTURE;
 			} catch (Exception e) {
 				// No image found. silent
 			} finally {
@@ -143,12 +144,13 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			if (session.itemExists(path))
 				vm.checkin(path);
 
-			// Free the resources.
-			if (itemPicture != null
-					&& !itemPicture.equals(PeopleImages.NO_PICTURE))
-				itemPicture.dispose();
-			else
-				log.debug("Undisposed image: " + itemPicture.toString());
+			// TODO clean default image management
+			if (itemPicture != null)
+				// && !itemPicture.equals(PeopleImages.NO_PICTURE))
+				itemPicture.dispose(); // Free the resources.
+
+			// else
+			// log.debug("Undisposed image: " + itemPicture.toString());
 
 		} catch (RepositoryException e) {
 			throw new ArgeoException("unexpected error "
@@ -232,8 +234,13 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		image.setData(RWT.CUSTOM_VARIANT,
 				PeopleUiConstants.PEOPLE_CSS_ITEM_IMAGE);
 		image.setBackground(header.getBackground());
-		image.setImage(getPicture());
-
+		if (getPicture() != null)
+			image.setImage(getPicture());
+		else {
+			GridData gd = new GridData();
+			gd.widthHint = 30;
+			image.setLayoutData(gd);
+		}
 		// General information panel (on the right of the image)
 		final Composite mainInfoComposite = toolkit.createComposite(header,
 				SWT.NO_FOCUS);
