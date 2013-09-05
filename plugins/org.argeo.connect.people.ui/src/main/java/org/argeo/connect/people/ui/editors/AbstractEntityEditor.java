@@ -336,15 +336,15 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		});
 		gd = new GridData();
 		gd.widthHint = 70;
-		gd.horizontalAlignment = SWT.FILL;
+		gd.grabExcessHorizontalSpace = true;
+		gd.horizontalAlignment = SWT.RIGHT;
 		saveBtn.setLayoutData(gd);
 
 		Button cancelBtn = toolkit.createButton(editPanelCmp, "Cancel",
 				SWT.PUSH);
 		gd = new GridData();
 		gd.widthHint = 70;
-		gd.grabExcessHorizontalSpace = true;
-		gd.horizontalAlignment = SWT.RIGHT;
+		gd.horizontalAlignment = SWT.FILL;
 		cancelBtn.setLayoutData(gd);
 		cancelBtn.addSelectionListener(new SelectionListener() {
 			private static final long serialVersionUID = 1L;
