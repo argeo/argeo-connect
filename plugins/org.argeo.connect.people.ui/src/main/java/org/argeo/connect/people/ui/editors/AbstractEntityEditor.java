@@ -247,9 +247,14 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		GridData gd = new GridData();
 		gd.grabExcessHorizontalSpace = true;
 		gd.horizontalAlignment = SWT.FILL;
+		
+		// gd.grabExcessHorizontalSpace = true;
+		gd.verticalAlignment = SWT.FILL;
 		mainInfoComposite.setLayoutData(gd);
 
-		mainInfoComposite.setLayout(new GridLayout());
+		GridLayout gl = new GridLayout();
+		gl.verticalSpacing = 0;
+		mainInfoComposite.setLayout(gl);
 
 		// The buttons
 		Composite buttonPanel = toolkit.createComposite(mainInfoComposite,
@@ -269,13 +274,16 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		gd.grabExcessHorizontalSpace = true;
 		gd.grabExcessVerticalSpace = true;
 		gd.horizontalAlignment = SWT.FILL;
-		gd.verticalAlignment = SWT.TOP;
+		gd.verticalAlignment = SWT.FILL;
 
 		populateMainInfoComposite(switchingPanel);
 	}
 
 	protected void populateButtonsComposite(final Composite parent) {
-		parent.setLayout(new GridLayout());
+		GridLayout gl = new GridLayout();
+		gl.verticalSpacing = 0;
+		parent.setLayout(gl);
+		
 		Composite buttons = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
 		gd.grabExcessHorizontalSpace = true;

@@ -2,29 +2,29 @@ package org.argeo.connect.people.ui.editors;
 
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
-import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.connect.people.ui.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.ui.toolkits.EntityPanelToolkit;
 import org.argeo.connect.people.ui.toolkits.ListPanelToolkit;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.PersonJcrUtils;
 import org.argeo.jcr.JcrUtils;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -90,126 +90,63 @@ public class PersonEditor extends AbstractEntityEditor {
 		switchingPanel.setLayout(new FormLayout());
 
 		// READ ONLY
-		final Composite mainInfoCmpRO = toolkit.createComposite(switchingPanel,
+		final Composite readOnlyPanel = toolkit.createComposite(switchingPanel,
 				SWT.NO_FOCUS);
-		PeopleUiUtils.setSwitchingFormData(mainInfoCmpRO);
-		mainInfoCmpRO.setData(RWT.CUSTOM_VARIANT,
+		PeopleUiUtils.setSwitchingFormData(readOnlyPanel);
+		readOnlyPanel.setData(RWT.CUSTOM_VARIANT,
 				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
+		readOnlyPanel.setLayout(new GridLayout());
 
-		// Intern layout
-		mainInfoCmpRO.setLayout(new GridLayout(2, false));
-		// display name
-		final Label displayNameROLbl = toolkit.createLabel(mainInfoCmpRO, "",
-				SWT.NONE);
-
-		displayNameROLbl.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true,
-				false, 2, 1));
-		displayNameROLbl.setData(RWT.CUSTOM_VARIANT,
-				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_TITLE);
-		// tags
-		final Label tagsROLbl = toolkit
-				.createLabel(mainInfoCmpRO, "", SWT.WRAP);
-		tagsROLbl.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 2,
-				1));
-		tagsROLbl.setData(RWT.CUSTOM_VARIANT,
-				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_TAGS);
+		// Add a label with info provided by the OrgOverviewLabelProvider
+		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
+				SWT.WRAP);
+		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		final ColumnLabelProvider personLP = new PersonOverviewLabelProvider(
+				false, getPeopleServices());
 
 		// EDIT
-		final Composite mainInfoCmpEdit = toolkit.createComposite(
-				switchingPanel, SWT.NO_FOCUS);
-		PeopleUiUtils.setSwitchingFormData(mainInfoCmpEdit);
-		mainInfoCmpEdit.setData(RWT.CUSTOM_VARIANT,
+		final Composite editPanel = toolkit.createComposite(switchingPanel,
+				SWT.NO_FOCUS);
+		PeopleUiUtils.setSwitchingFormData(editPanel);
+		editPanel.setData(RWT.CUSTOM_VARIANT,
 				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 
 		// intern layout
-		mainInfoCmpEdit.setLayout(new GridLayout(10, false));
-		// Salutation
-		Label lbl = toolkit
-				.createLabel(mainInfoCmpEdit, "Salutation", SWT.NONE);
-		lbl.setLayoutData(new GridData());
-		final Text salutationTxt = toolkit.createText(mainInfoCmpEdit, "",
-				SWT.BORDER | SWT.SINGLE | SWT.LEFT);
-		GridData gd = new GridData();
-		gd.widthHint = 40;
-		salutationTxt.setLayoutData(gd);
+		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
+		rl.wrap = true;
+		editPanel.setLayout(rl);
 
-		// Title
-		lbl = toolkit.createLabel(mainInfoCmpEdit, "Title", SWT.NONE);
-		lbl.setLayoutData(new GridData());
-		final Text titleTxt = toolkit.createText(mainInfoCmpEdit, "",
-				SWT.BORDER | SWT.SINGLE | SWT.LEFT);
-		gd = new GridData();
-		gd.widthHint = 50;
-		titleTxt.setLayoutData(gd);
-
-		// first Name
-		lbl = toolkit.createLabel(mainInfoCmpEdit, "First Name", SWT.NONE);
-		lbl.setLayoutData(new GridData());
-		final Text firstNameTxt = toolkit.createText(mainInfoCmpEdit, "",
-				SWT.BORDER | SWT.SINGLE | SWT.LEFT);
-		firstNameTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
-				| GridData.FILL_HORIZONTAL));
-
-		// Last name
-		lbl = toolkit.createLabel(mainInfoCmpEdit, "Name", SWT.NONE);
-		lbl.setLayoutData(new GridData());
-		final Text lastNameTxt = toolkit.createText(mainInfoCmpEdit, "",
-				SWT.BORDER | SWT.SINGLE | SWT.LEFT);
-		lastNameTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
-				| GridData.FILL_HORIZONTAL));
-
-		// Name suffix
-		lbl = toolkit.createLabel(mainInfoCmpEdit, "Suffix", SWT.NONE);
-		lbl.setLayoutData(new GridData());
-		final Text suffixTxt = toolkit.createText(mainInfoCmpEdit, "",
-				SWT.BORDER | SWT.SINGLE | SWT.LEFT);
-		gd = new GridData();
-		gd.widthHint = 50;
-		suffixTxt.setLayoutData(gd);
+		// Create edit text
+		final Text salutationTxt = createText(editPanel, "Salutation",
+				"Mr, Mrs...", 40);
+		final Text titleTxt = createText(editPanel, "Title", "Doc., Sir...", 60);
+		final Text firstNameTxt = createText(editPanel, "First Name",
+				"Usual first name for this person", 100);
+		final Text lastNameTxt = createText(editPanel, "Last Name",
+				"Usual last name for this person", 100);
+		final Text suffixTxt = createText(editPanel, "Suffix",
+				"Junior, the third...", 80);
 
 		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
 			public void refresh() { // update display value
 				super.refresh();
 				// EDIT PART
-				String salut = CommonsJcrUtils.getStringValue(person,
-						PeopleNames.PEOPLE_SALUTATION);
-				if (CommonsJcrUtils.checkNotEmptyString(salut))
-					salutationTxt.setText(salut);
-
-				String firstName = JcrUtils.get(person,
-						PeopleNames.PEOPLE_FIRST_NAME);
-				if (CommonsJcrUtils.checkNotEmptyString(firstName))
-					firstNameTxt.setText(firstName);
-
-				String lastName = JcrUtils.get(person,
-						PeopleNames.PEOPLE_LAST_NAME);
-				if (CommonsJcrUtils.checkNotEmptyString(lastName))
-					lastNameTxt.setText(lastName);
-
-				String title = CommonsJcrUtils.getStringValue(person,
-						PeopleNames.PEOPLE_PERSON_TITLE);
-				if (title != null)
-					titleTxt.setText(title);
-
-				String suff = CommonsJcrUtils.getStringValue(person,
-						PeopleNames.PEOPLE_NAME_SUFFIX);
-				if (suff != null)
-					suffixTxt.setText(suff);
+				refreshTextValue(salutationTxt, person, PeopleNames.PEOPLE_SALUTATION);
+				refreshTextValue(firstNameTxt, person, PeopleNames.PEOPLE_FIRST_NAME);
+				refreshTextValue(lastNameTxt, person, PeopleNames.PEOPLE_LAST_NAME);
+				refreshTextValue(titleTxt, person, PeopleNames.PEOPLE_PERSON_TITLE);
+				refreshTextValue(suffixTxt, person, PeopleNames.PEOPLE_NAME_SUFFIX);
 
 				// READ ONLY PART
-				displayNameROLbl.setText(PersonJcrUtils.getDisplayName(person));
-				tagsROLbl.setText(PersonJcrUtils.getTags(person));
+				String roText = personLP.getText(person);
+				readOnlyInfoLbl.setText(roText);
 
-				try {
-					if (person.isCheckedOut())
-						mainInfoCmpEdit.moveAbove(mainInfoCmpRO);
-					else
-						mainInfoCmpEdit.moveBelow(mainInfoCmpRO);
-				} catch (RepositoryException e) {
-					throw new PeopleException(
-							"Unable to get checked out status", e);
-				}
-				mainInfoCmpEdit.getParent().layout();
+				// Manage switch
+				if (CommonsJcrUtils.isNodeCheckedOutByMe(person))
+					editPanel.moveAbove(readOnlyPanel);
+				else
+					editPanel.moveBelow(readOnlyPanel);
+				editPanel.getParent().layout();
 			}
 		};
 
@@ -273,5 +210,21 @@ public class PersonEditor extends AbstractEntityEditor {
 			}
 		});
 		getManagedForm().addPart(editPart);
+	}
+
+	private void refreshTextValue(Text text, Node entity, String propName) {
+		String tmpStr = CommonsJcrUtils.getStringValue(entity, propName);
+		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+			text.setText(tmpStr);
+	}
+
+	private Text createText(Composite parent, String msg, String toolTip,
+			int width) {
+		Text text = toolkit.createText(parent, "", SWT.BORDER | SWT.SINGLE
+				| SWT.LEFT);
+		text.setMessage(msg);
+		text.setToolTipText(toolTip);
+		text.setLayoutData(new RowData(width, SWT.DEFAULT));
+		return text;
 	}
 }
