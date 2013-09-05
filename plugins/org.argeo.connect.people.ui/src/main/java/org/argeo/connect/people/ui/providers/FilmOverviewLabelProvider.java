@@ -9,6 +9,7 @@ import org.argeo.connect.film.core.FilmJcrUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
@@ -18,7 +19,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 public class FilmOverviewLabelProvider extends ColumnLabelProvider implements
 		FilmNames {
 
-	private static final long serialVersionUID = 6332600690181244737L;
+	private static final long serialVersionUID = 1L;
 	private boolean isSmallList;
 	private PeopleService peopleService;
 
@@ -86,8 +87,10 @@ public class FilmOverviewLabelProvider extends ColumnLabelProvider implements
 			if (origLang != null)
 				builder.append(origLang).append(", ");
 			builder.append(CommonsJcrUtils.getStringValue(film, FILM_LENGHT));
-
 			builder.append("</i>");
+
+			if (!isSmallList)
+				builder.append(PeopleHtmlUtils.getLastUpdateSnippet(film));
 
 			builder.append("</span>");
 

@@ -6,15 +6,9 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
 	<import resource="classpath:/org/argeo/connect/people/technical-catalogs.xml" />
-
-	<bean id="peopleService" class="org.argeo.connect.people.core.PeopleServiceImpl"
-		init-method="init" destroy-method="destroy">
-		<property name="repository" ref="peopleRepository" />
-		<property name="managedRoles" ref="managedRoles" />
-	</bean>
-
-	<bean
-		class="org.argeo.security.core.AuthenticatedApplicationContextInitialization">
-		<property name="authenticationManager" ref="authenticationManager" />
-	</bean>
+	<!-- <bean id="peopleService" class="org.argeo.connect.people.core.PeopleServiceImpl" 
+		init-method="init" destroy-method="destroy"> <property name="repository" 
+		ref="peopleRepository" /> <property name="managedRoles" ref="managedRoles" 
+		/> </bean> <bean class="org.argeo.security.core.AuthenticatedApplicationContextInitialization"> 
+		<property name="authenticationManager" ref="authenticationManager" /> </bean> -->
 </beans>

@@ -35,6 +35,7 @@ import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.Hyperlink;
 
 /**
  * Centralize the creation of common panels for entity, to be used in various
@@ -114,8 +115,8 @@ public class EntityPanelToolkit {
 	public void populateContactPanel(final Composite panel, final Node entity) {
 		panel.setLayout(new GridLayout());
 		GridData gd;
-		// Hyperlink addNewMailLink = toolkit.createHyperlink(panel,
-		// "Add a new contact address", SWT.NO_FOCUS);
+		Hyperlink addNewMailLink = toolkit.createHyperlink(panel,
+				"Add a new contact address", SWT.NO_FOCUS);
 
 		final Composite contactListCmp = toolkit.createComposite(panel,
 				SWT.NO_FOCUS);

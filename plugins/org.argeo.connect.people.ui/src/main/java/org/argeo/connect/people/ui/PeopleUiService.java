@@ -1,5 +1,7 @@
 package org.argeo.connect.people.ui;
 
+import javax.jcr.Node;
+
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.listeners.NodeListDoubleClickListener;
 
@@ -8,6 +10,13 @@ import org.argeo.connect.people.ui.listeners.NodeListDoubleClickListener;
  * implementations
  */
 public interface PeopleUiService {
+
+	/**
+	 * Overwrite this method to provide project specific listener to enable
+	 * management of project specific UI Parts
+	 */
+	public NodeListDoubleClickListener getNewNodeListDoubleClickListener(
+			PeopleService peopleService);
 
 	/**
 	 * Overwrite this method to provide project specific listener to enable
@@ -24,4 +33,9 @@ public interface PeopleUiService {
 			PeopleService peopleService, String parentNodeType,
 			String currentTableId);
 
+	/**
+	 * Overwrite this method to provide project editors given the type of the
+	 * entity node that is to be displayed
+	 */
+	public String getEditorIdFromNode(Node curNode);
 }

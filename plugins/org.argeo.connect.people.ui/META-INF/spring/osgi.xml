@@ -9,10 +9,13 @@
 	osgi:default-timeout="30000">
 
 	<beans:description>People UI</beans:description>
-
+	<!-- TODO manage stand alone case -->
+	<!-- <reference id="peopleService" interface="org.argeo.connect.people.PeopleService" 
+		/> <reference id="peopleUiService" interface="org.argeo.connect.people.ui.PeopleUiService" 
+		/> -->
 	<!-- REFERENCES -->
-	<reference id="repository" interface="javax.jcr.Repository"
-		filter="(argeo.jcr.repository.alias=people)" />	
-<!-- 		<reference id="repository" interface="javax.jcr.Repository"
-		filter="(argeo.jcr.repository.alias=connect)" /> -->
+	<!-- <reference id="repository" interface="javax.jcr.Repository" filter="(argeo.jcr.repository.alias=people)" 
+		/> -->
+	<!-- <reference id="repository" interface="javax.jcr.Repository" filter="(argeo.jcr.repository.alias=connect)" 
+		/> -->
 </beans:beans>

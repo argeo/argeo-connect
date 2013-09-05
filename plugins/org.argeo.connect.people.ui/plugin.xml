@@ -22,6 +22,15 @@
 			restorable="true">
 		</view>
 	</extension>
+    <extension
+		point="org.eclipse.ui.editors">
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/search.png"
+			id="org.argeo.connect.people.ui.searchEntityEditor"
+			name="Search">
+		</editor>
+	</extension>
 	<!-- Commands -->
 	<extension
 		point="org.eclipse.ui.commands">
@@ -30,7 +39,29 @@
 			id="org.argeo.connect.people.ui.importPeople"
 			name="Open Network Editor">
 		</command>    
-	</extension>	
+		<!-- <command
+			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
+			id="org.argeo.connect.people.ui.openEntityEditor"
+			name="Open Network Editor">
+			 <commandParameter
+         		id="param.entityType"
+         		name="Entity Node Type">
+  	 		</commandParameter>
+			 <commandParameter
+         		id="param.entityUid"
+         		name="The Model Specific Entity Uid">
+  	 		</commandParameter>
+		</command>    
+		<command
+			defaultHandler="org.argeo.connect.people.ui.commands.OpenSearchEntityEditor"
+			id="org.argeo.connect.people.ui.openSearchEntityEditor"
+			name="Open Search Entity Editor">
+			 <commandParameter
+         		id="param.entityType"
+         		name="Entity Node Type">
+  	 		</commandParameter>
+		</command> -->   
+	</extension>		
 	<!-- Menus -->
 	<extension
 		point="org.eclipse.ui.menus">

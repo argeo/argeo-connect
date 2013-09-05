@@ -7,6 +7,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
@@ -69,11 +70,13 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 					builder.append(country);
 				builder.append("]");
 			}
-			builder.append("<br/><i>");
-			builder.append(PeopleJcrUtils.getBranches(orga));
-			builder.append("</i><br/>");
+			builder.append("<br/>");
 
-			String tmpStr = PeopleJcrUtils.getDefaultContactValue(orga,
+			String tmpStr = PeopleJcrUtils.getBranches(orga);
+			if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+				builder.append("<i>").append(tmpStr).append("</i><br/>");
+
+			tmpStr = PeopleJcrUtils.getDefaultContactValue(orga,
 					PeopleTypes.PEOPLE_PHONE);
 			builder.append("<small>");
 
@@ -109,6 +112,8 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 				builder.deleteCharAt(builder.lastIndexOf("~"));
 
 			builder.append("</small>");
+			if (!isSmallList)
+				builder.append(PeopleHtmlUtils.getLastUpdateSnippet(orga));
 			builder.append("</span>");
 			return builder.toString();
 

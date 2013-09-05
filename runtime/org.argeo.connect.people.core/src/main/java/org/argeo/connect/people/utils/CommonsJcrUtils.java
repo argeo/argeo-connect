@@ -6,6 +6,7 @@ import javax.jcr.nodetype.NodeType;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.jcr.JcrUtils;
 
 /** Some static utils methods that might be factorized in a near future */
 public class CommonsJcrUtils {
@@ -74,6 +75,7 @@ public class CommonsJcrUtils {
 	 */
 	public static void saveAndCheckin(Node node) {
 		try {
+			JcrUtils.updateLastModified(node);
 			node.getSession().save();
 			node.getSession().getWorkspace().getVersionManager()
 					.checkin(node.getPath());

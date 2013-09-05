@@ -25,13 +25,17 @@ import org.eclipse.ui.PartInitException;
 public class NodeListDoubleClickListener implements IDoubleClickListener {
 
 	private PeopleService peopleService;
-	private String parentNodeType;
-	private String tableId;
+	private String parentNodeType= null;
+	private String tableId = null;
 
 	/**
 	 * Set people service and table id to enable opening of the correct editor
 	 * when displaying list of references
 	 */
+	public NodeListDoubleClickListener(PeopleService peopleService) {
+		this.peopleService = peopleService;
+	}
+	
 	public NodeListDoubleClickListener(PeopleService peopleService,
 			String parentNodeType) {
 		this.peopleService = peopleService;

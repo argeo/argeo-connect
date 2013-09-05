@@ -24,6 +24,7 @@ import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.commands.CancelAndCheckInItem;
 import org.argeo.connect.people.ui.commands.CheckOutItem;
 import org.argeo.connect.people.ui.utils.CheckoutSourceProvider;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -166,10 +167,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		try {
-			session.save();
-			String path = entityNode.getPath();
-			if (session.itemExists(path))
-				vm.checkin(path);
+			CommonsJcrUtils.saveAndCheckin(entityNode);
 			mForm.commit(true);
 			setCheckOutState(false);
 		} catch (Exception e) {
@@ -315,27 +313,6 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 		editPanelCmp.setLayout(new GridLayout(2, false));
 
-		Button cancelBtn = toolkit.createButton(editPanelCmp, "Cancel",
-				SWT.PUSH);
-		gd = new GridData();
-		gd.widthHint = 70;
-		gd.grabExcessHorizontalSpace = true;
-		gd.horizontalAlignment = SWT.RIGHT;
-		cancelBtn.setLayoutData(gd);
-		cancelBtn.addSelectionListener(new SelectionListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (!canBeCheckedOutByMe())
-					CommandUtils.callCommand(CancelAndCheckInItem.ID);
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-
 		Button saveBtn = toolkit.createButton(editPanelCmp, "Save", SWT.PUSH);
 		saveBtn.addSelectionListener(new SelectionListener() {
 			private static final long serialVersionUID = 1L;
@@ -361,6 +338,27 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		gd.widthHint = 70;
 		gd.horizontalAlignment = SWT.FILL;
 		saveBtn.setLayoutData(gd);
+
+		Button cancelBtn = toolkit.createButton(editPanelCmp, "Cancel",
+				SWT.PUSH);
+		gd = new GridData();
+		gd.widthHint = 70;
+		gd.grabExcessHorizontalSpace = true;
+		gd.horizontalAlignment = SWT.RIGHT;
+		cancelBtn.setLayoutData(gd);
+		cancelBtn.addSelectionListener(new SelectionListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (!canBeCheckedOutByMe())
+					CommandUtils.callCommand(CancelAndCheckInItem.ID);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
 
 		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
 			// Update values on refresh
