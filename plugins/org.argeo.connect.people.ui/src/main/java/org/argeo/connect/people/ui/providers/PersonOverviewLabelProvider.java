@@ -7,6 +7,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
@@ -61,18 +62,35 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 				builder.append(currValue);
 			}
 
-			builder.append("</big> </b>").append("<br/>").append("</span>");
+			builder.append("</big> </b>");
+			String fmn = PeopleHtmlUtils.getFullMontyName(entity);
+			String local = PeopleHtmlUtils.getLocalisationInfo(entity);
+			if (isSmallList) {
+				if (CommonsJcrUtils.checkNotEmptyString(local))
+					builder.append("[").append(local).append("]");
+			} else {
+				if (CommonsJcrUtils.checkNotEmptyString(fmn)
+						|| CommonsJcrUtils.checkNotEmptyString(local)) {
+					builder.append("<br/>").append(fmn);
+					if (CommonsJcrUtils.checkNotEmptyString(fmn)
+							&& CommonsJcrUtils.checkNotEmptyString(local))
+						builder.append(" ~ ");
+					builder.append(local);
+				}
+			}
+			builder.append("<br/>");
 
-			// currValue = CommonsJcrUtils.getStringValue(person,
-			// MSM_PRIMARY_EMAIL);
-			// // builder.append("<small>");
-			// if (currValue != null) {
-			// builder.append(" <a href=\"mailto:");
-			// builder.append(currValue);
-			// builder.append("\">");
-			// builder.append(currValue);
-			// builder.append("</a>");
-			// }
+			if (PeopleHtmlUtils.getTags(entity) != null)
+				builder.append(PeopleHtmlUtils.getTags(entity)).append("<br/>");
+
+			if (PeopleHtmlUtils.getPrimaryContacts(entity, isSmallList) != null)
+				builder.append(
+						PeopleHtmlUtils.getPrimaryContacts(entity, isSmallList))
+						.append("<br/>");
+
+			if (!isSmallList)
+				builder.append(PeopleHtmlUtils.getLastUpdateSnippet(entity));
+			builder.append("</span>");
 			return builder.toString();
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot create organizations content", re);

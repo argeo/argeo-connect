@@ -101,6 +101,7 @@ public class PersonJcrUtils implements PeopleNames {
 		return secondaryName == null ? "" : secondaryName;
 	}
 
+	@Deprecated
 	public static String getTags(Node person) {
 		try {
 			StringBuilder tags = new StringBuilder();
