@@ -1,9 +1,20 @@
 package org.argeo.connect.streams.ui.views;
 
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+import javax.jcr.query.qom.Constraint;
+import javax.jcr.query.qom.QueryObjectModel;
+import javax.jcr.query.qom.QueryObjectModelFactory;
+import javax.jcr.query.qom.Selector;
+import javax.jcr.query.qom.StaticOperand;
 
+import org.argeo.ArgeoException;
+import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.streams.RssService;
+import org.argeo.connect.streams.RssTypes;
 import org.argeo.connect.streams.ui.RssUiPlugin;
 import org.argeo.connect.streams.ui.listeners.NodeListDoubleClickListener;
 import org.argeo.connect.streams.ui.providers.RssListLabelProvider;
@@ -56,11 +67,13 @@ public class RssSearchView extends ViewPart {
 	}
 
 	public void addHeaderPanel(Composite parent) {
+		parent.setLayout(new GridLayout());
 		// The logo
 		// Label image = new Label(parent, SWT.NONE);
 		// image.setBackground(parent.getBackground());
 		// image.setImage(DemoImages.DEMO_IMG_LOGO);
 		// image.setLayoutData(new GridData());
+
 		Link link = new Link(parent, SWT.NONE);
 		link.setText("<a>Home</a>");
 		link.addSelectionListener(new SelectionAdapter() {
@@ -72,27 +85,27 @@ public class RssSearchView extends ViewPart {
 			}
 		});
 
-		// link = new Link(parent, SWT.NONE);
-		// link.setText("<a>85579 Persons</a>");
-		// link.addSelectionListener(new SelectionAdapter() {
-		// private static final long serialVersionUID = 1L;
-		//
-		// @Override
-		// public void widgetSelected(final SelectionEvent event) {
-		// openEditorForId(PeopleTypes.PEOPLE_PERSON);
-		// }
-		// });
-		//
-		// link = new Link(parent, SWT.NONE);
-		// link.setText("<a>1369 Organisations </a>");
-		// link.addSelectionListener(new SelectionAdapter() {
-		// private static final long serialVersionUID = 1L;
-		//
-		// @Override
-		// public void widgetSelected(final SelectionEvent event) {
-		// openEditorForId(PeopleTypes.PEOPLE_ORGANIZATION);
-		// }
-		// });
+		link = new Link(parent, SWT.NONE);
+		link.setText("<a>A few Chanels</a>");
+		link.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent event) {
+				openEditorForId(RssTypes.RSS_CHANNEL);
+			}
+		});
+
+		link = new Link(parent, SWT.NONE);
+		link.setText("<a>23035 Feeds </a>");
+		link.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent event) {
+				openEditorForId(RssTypes.RSS_ITEM);
+			}
+		});
 		//
 		// link = new Link(parent, SWT.NONE);
 		// link.setText("<a>15222 Films </a>");
@@ -134,7 +147,7 @@ public class RssSearchView extends ViewPart {
 
 			public void modifyText(ModifyEvent event) {
 				// might be better to use an asynchronous Refresh();
-				refreshFilteredList();
+				refreshFilteredList(RssTypes.RSS_ITEM);
 			}
 		});
 	}
@@ -159,11 +172,11 @@ public class RssSearchView extends ViewPart {
 
 		// Corresponding table & style
 		Table table = v.getTable();
-		table.setLinesVisible(true);
+		table.setLinesVisible(false);
 		table.setHeaderVisible(false);
 		// Enable markups
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(20));
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(30));
 		v.setContentProvider(new BasicNodeListContentProvider());
 		v.addDoubleClickListener(new NodeListDoubleClickListener(rssService,
 				null));
@@ -180,46 +193,45 @@ public class RssSearchView extends ViewPart {
 	public void setFocus() {
 	}
 
-	protected void refreshFilteredList() {
-		// try {
-		// String filter = filterTxt.getText();
-		// QueryManager queryManager = session.getWorkspace()
-		// .getQueryManager();
-		// QueryObjectModelFactory factory = queryManager.getQOMFactory();
-		//
-		// Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
-		// "selector");
-		//
-		// // no Default Constraint
-		// Constraint defaultC = null;
-		//
-		// // Parse the String
-		// String[] strs = filter.trim().split(" ");
-		// if (strs.length == 0) {
-		// StaticOperand so = factory.literal(session.getValueFactory()
-		// .createValue("*"));
-		// defaultC = factory.fullTextSearch("selector", null, so);
-		// } else {
-		// for (String token : strs) {
-		// StaticOperand so = factory.literal(session
-		// .getValueFactory().createValue("*" + token + "*"));
-		// Constraint currC = factory.fullTextSearch(
-		// source.getSelectorName(), null, so);
-		// if (defaultC == null)
-		// defaultC = currC;
-		// else
-		// defaultC = factory.and(defaultC, currC);
-		// }
-		// }
-		// QueryObjectModel query;
-		// query = factory.createQuery(source, defaultC, null, null);
-		//
-		// QueryResult result = query.execute();
-		// entityViewer.setInput(JcrUiUtils.nodeIteratorToList(
-		// result.getNodes(), 30));
-		// } catch (RepositoryException e) {
-		// throw new RssException("Unable to list persons", e);
-		// }
+	protected void refreshFilteredList(String nodeType) {
+		try {
+			String filter = filterTxt.getText();
+			QueryManager queryManager = session.getWorkspace()
+					.getQueryManager();
+			QueryObjectModelFactory factory = queryManager.getQOMFactory();
+
+			Selector source = factory.selector(nodeType, "selector");
+
+			// no Default Constraint
+			Constraint defaultC = null;
+
+			// Parse the String
+			String[] strs = filter.trim().split(" ");
+			if (strs.length == 0) {
+				StaticOperand so = factory.literal(session.getValueFactory()
+						.createValue("*"));
+				defaultC = factory.fullTextSearch("selector", null, so);
+			} else {
+				for (String token : strs) {
+					StaticOperand so = factory.literal(session
+							.getValueFactory().createValue("*" + token + "*"));
+					Constraint currC = factory.fullTextSearch(
+							source.getSelectorName(), null, so);
+					if (defaultC == null)
+						defaultC = currC;
+					else
+						defaultC = factory.and(defaultC, currC);
+				}
+			}
+			QueryObjectModel query;
+			query = factory.createQuery(source, defaultC, null, null);
+
+			QueryResult result = query.execute();
+			entityViewer.setInput(JcrUiUtils.nodeIteratorToList(
+					result.getNodes(), 30));
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Unable to list " + nodeType, e);
+		}
 	}
 
 	// private void asynchronousRefresh() {

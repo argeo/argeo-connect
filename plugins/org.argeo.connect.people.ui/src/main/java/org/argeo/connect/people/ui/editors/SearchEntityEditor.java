@@ -144,7 +144,7 @@ public class SearchEntityEditor extends EditorPart {
 			entityViewer.setInput(JcrUiUtils.nodeIteratorToList(
 					result.getNodes(), 30));
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to list persons", e);
+			throw new PeopleException("Unable to list entity", e);
 		}
 	}
 
