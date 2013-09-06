@@ -3,6 +3,7 @@ package org.argeo.connect.streams.ui.views;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Constraint;
@@ -11,13 +12,12 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.editors.EntityEditorInput;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.streams.RssManager;
 import org.argeo.connect.streams.RssTypes;
 import org.argeo.connect.streams.ui.RssUiPlugin;
@@ -48,9 +48,10 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
+/** Fisrt draft of a user friendly pannel to manage rss channels and feeds */
 public class RssSearchView extends ViewPart {
 
-	private final static Log log = LogFactory.getLog(RssSearchView.class);
+	// private final static Log log = LogFactory.getLog(RssSearchView.class);
 	public static final String ID = RssUiPlugin.PLUGIN_ID + ".rssSearchView";
 
 	/* DEPENDENCY INJECTION */
@@ -168,6 +169,11 @@ public class RssSearchView extends ViewPart {
 		try {
 			Node channel = rssManager.getOrCreateChannel(session, sourceStr);
 			rssManager.retrieveItems();
+			channel.addMixin(NodeType.MIX_LAST_MODIFIED);
+			channel.addMixin(NodeType.MIX_VERSIONABLE);
+			CommonsJcrUtils.saveAndCheckin(channel);
+			channel.getSession().getWorkspace().getVersionManager()
+					.checkin(channel.getPath());
 			openEditorForId(channel.getIdentifier());
 
 		} catch (RepositoryException e) {
