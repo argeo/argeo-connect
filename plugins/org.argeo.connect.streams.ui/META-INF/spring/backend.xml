@@ -10,13 +10,20 @@
 		init-method="init" destroy-method="destroy">
 		<property name="defaultChannels">
 			<map>
-				<entry key="http://projects.apache.org/feeds/rss.xml">
+				<!-- Weird bug with descriptions -->
+				<!-- <entry key="http://projects.apache.org/feeds/rss.xml"> -->
+				<!-- <list> -->
+				<!-- <value>Apache</value> -->
+				<!-- </list> -->
+				<!-- </entry> -->
+				<entry key="http://feeds.nytimes.com/nyt/rss/Technology">
 					<list>
-						<value>Apache</value>
+						<value>New York Times</value>
 					</list>
 				</entry>
 			</map>
 		</property>
+		<property name="pollingPeriod" value="${argeo.connect.streams.pollingPeriod}" />
 		<property name="repository" ref="repository" />
 	</bean>
 

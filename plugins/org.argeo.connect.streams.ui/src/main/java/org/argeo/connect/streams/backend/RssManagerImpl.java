@@ -42,6 +42,9 @@ public class RssManagerImpl implements RssNames {
 
 	private Map<String, List<String>> defaultChannels = new HashMap<String, List<String>>();
 
+	private Integer pollingPeriod = 0;
+	private Thread pollingThread = null;
+
 	public void init() {
 		try {
 			adminSession = repository.login();
@@ -58,30 +61,65 @@ public class RssManagerImpl implements RssNames {
 
 			for (String url : notRegisteredUrls) {
 				try {
-					URL feedUrl = new URL(url);
-					SyndFeedInput input = new SyndFeedInput();
-					SyndFeed feed = input.build(new XmlReader(feedUrl));
-					createChannel(adminSession, feed, url);
-					adminSession.save();
+					getOrCreateChannel(adminSession, url);
 				} catch (Exception e) {
 					log.error("Cannot register " + url, e);
 				}
 			}
 
 			// Load latest
-			updateStreams();
+			retrieveItems();
+
+			// Polling htread
+			if (pollingPeriod > 0) {
+				pollingThread = new PollingThread();
+				pollingThread.start();
+			}
 		} catch (RepositoryException e) {
 			JcrUtils.logoutQuietly(adminSession);
 			throw new ArgeoException("Cannot login to repository", e);
 		}
 	}
 
-	public void destroy() {
+	public synchronized void destroy() {
 		JcrUtils.logoutQuietly(adminSession);
+		adminSession = null;// used as marker by the polling thread
+		notifyAll();
+		if (pollingThread != null)
+			pollingThread.interrupt();
+	}
+
+	public Node getOrCreateChannel(Session session, String url) {
+		try {
+			for (NodeIterator nit = session.getNode(
+					RssConstants.RSS_CHANNELS_BASE).getNodes(); nit.hasNext();) {
+				Node channelNode = nit.nextNode();
+				String channelUrl = channelNode.getProperty(RSS_URI)
+						.getString();
+				if (channelUrl.equals(url))
+					return channelNode;
+			}
+			URL feedUrl = new URL(url);
+			SyndFeedInput input = new SyndFeedInput();
+			SyndFeed feed = input.build(new XmlReader(feedUrl));
+			String nodeName = JcrUtils.replaceInvalidChars(feed.getTitle());
+			Node channelNode = adminSession.getNode(
+					RssConstants.RSS_CHANNELS_BASE).addNode(nodeName);
+			channelNode.setProperty(Property.JCR_TITLE, feed.getTitle());
+			channelNode.setProperty(RSS_URI, url);
+			channelNode.setProperty(RSS_LINK, feed.getLink());
+			if (log.isDebugEnabled())
+				log.debug("Registered channel: '" + feed.getTitle() + "' ("
+						+ url + ")");
+			adminSession.save();
+			return channelNode;
+		} catch (Exception e) {
+			throw new ArgeoException("Cannot create channel", e);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public void updateStreams() {
+	public synchronized void retrieveItems() {
 		try {
 			for (NodeIterator nit = adminSession.getNode(
 					RssConstants.RSS_CHANNELS_BASE).getNodes(); nit.hasNext();) {
@@ -119,27 +157,6 @@ public class RssManagerImpl implements RssNames {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void createChannel(Session session, SyndFeed feed, String url)
-			throws RepositoryException {
-		String nodeName = JcrUtils.replaceInvalidChars(feed.getTitle());
-		Node channelNode = adminSession.getNode(RssConstants.RSS_CHANNELS_BASE)
-				.addNode(nodeName);
-		channelNode.setProperty(Property.JCR_TITLE, feed.getTitle());
-		channelNode.setProperty(RSS_URI, url);
-		channelNode.setProperty(RSS_LINK, feed.getLink());
-		List<String> categories = new ArrayList<String>();
-		for (SyndCategory syndCategory : (List<SyndCategory>) feed
-				.getCategories()) {
-			categories.add(syndCategory.getName());
-		}
-		channelNode.setProperty(RSS_CATEGORY,
-				categories.toArray(new String[categories.size()]));
-		if (log.isDebugEnabled())
-			log.debug("Registered channel: '" + feed.getTitle() + "' (" + url
-					+ ")");
-	}
-
-	@SuppressWarnings("unchecked")
 	protected Boolean saveEntry(Node channelNode, SyndEntry entry)
 			throws RepositoryException {
 		Calendar publishedDate = new GregorianCalendar();
@@ -166,14 +183,13 @@ public class RssManagerImpl implements RssNames {
 		}
 		itemNode.setProperty(RSS_LINK, entry.getLink());
 		itemNode.setProperty(Property.JCR_TITLE, entry.getTitle());
-		itemNode.setProperty(Property.JCR_DESCRIPTION, entry.getDescription()
-				.getValue());
-		// linkNode.setProperty(ConnectNames.CONNECT_AUTHOR, (String[])
-		// entry
-		// .getAuthors().toArray(new String[entry.getAuthors().size()]));
+		
+		String description = entry.getDescription().getValue();
+		itemNode.setProperty(Property.JCR_DESCRIPTION, description);
+		
 		itemNode.setProperty(RSS_PUB_DATE, publishedDate);
-		// linkNode.setProperty(ConnectNames.CONNECT_UPDATED_DATE,
-		// publishedDate);
+		if (updatedDate != null)
+			itemNode.setProperty(RSS_UPDATE_DATE, updatedDate);
 		List<String> categories = new ArrayList<String>();
 		for (SyndCategory syndCategory : (List<SyndCategory>) entry
 				.getCategories()) {
@@ -194,4 +210,33 @@ public class RssManagerImpl implements RssNames {
 		this.defaultChannels = defaultChannels;
 	}
 
+	/** Polling period, in s. 0 is no polling. */
+	public void setPollingPeriod(Integer pollingPeriod) {
+		this.pollingPeriod = pollingPeriod;
+	}
+
+	private class PollingThread extends Thread {
+		public PollingThread() {
+			super("RSS Polling");
+		}
+
+		public void run() {
+			if (log.isDebugEnabled())
+				log.debug("Started " + getName() + " thread");
+			try {
+				Thread.sleep(pollingPeriod * 1000);
+			} catch (InterruptedException e) {
+				// silent
+			}
+
+			while (adminSession != null) {
+				retrieveItems();
+				try {
+					Thread.sleep(pollingPeriod * 1000);
+				} catch (InterruptedException e) {
+					// silent
+				}
+			}
+		}
+	}
 }
