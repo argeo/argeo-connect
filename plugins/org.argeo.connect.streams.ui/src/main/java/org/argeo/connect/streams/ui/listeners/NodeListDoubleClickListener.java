@@ -2,13 +2,18 @@ package org.argeo.connect.streams.ui.listeners;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.editors.EntityEditorInput;
+import org.argeo.connect.streams.RssTypes;
+import org.argeo.connect.streams.ui.editors.ChannelEditor;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.PartInitException;
 
 /**
  * Centralizes the management of double click on a node
@@ -41,17 +46,17 @@ public class NodeListDoubleClickListener implements IDoubleClickListener {
 
 	}
 
-	protected void openNodeEditor(String nodeId, String editorId) {
-		// try {
-		// EntityEditorInput eei = new EntityEditorInput(nodeId);
-		// PeopleUiPlugin.getDefault().getWorkbench()
-		// .getActiveWorkbenchWindow().getActivePage()
-		// .openEditor(eei, editorId);
-		// } catch (PartInitException pie) {
-		// throw new PeopleException(
-		// "Unexpected PartInitException while opening entity editor",
-		// pie);
-		// }
+	protected void openNodeEditor(String editorId, String nodeId) {
+		try {
+			EntityEditorInput eei = new EntityEditorInput(nodeId);
+			PeopleUiPlugin.getDefault().getWorkbench()
+					.getActiveWorkbenchWindow().getActivePage()
+					.openEditor(eei, editorId);
+		} catch (PartInitException pie) {
+			throw new PeopleException(
+					"Unexpected PartInitException while opening entity editor",
+					pie);
+		}
 	}
 
 	public void doubleClick(DoubleClickEvent event) {
@@ -62,15 +67,14 @@ public class NodeListDoubleClickListener implements IDoubleClickListener {
 		if (obj instanceof Node) {
 			try {
 				Node curNode = (Node) obj;
-				Session session = curNode.getSession();
-				// Mapping for jobs
-				// if (curNode.isNodeType(RssTypes.SOURCE)) {
-				// // if (PeopleTypes.PEOPLE_PERSON.equals(parentNodeType)) {
-				// // Node linkedOrg = peopleService.getEntityById(session,
-				// // curNode.getProperty(PeopleNames.PEOPLE_REF_UID)
-				// // .getString());
-				// // openNodeEditor(linkedOrg.getIdentifier(), OrgEditor.ID);
-				// }
+				if (curNode.isNodeType(RssTypes.RSS_CHANNEL)) {
+					openNodeEditor(ChannelEditor.ID, curNode.getIdentifier());
+					// if (PeopleTypes.PEOPLE_PERSON.equals(parentNodeType)) {
+					// Node linkedOrg = peopleService.getEntityById(session,
+					// curNode.getProperty(PeopleNames.PEOPLE_REF_UID)
+					// .getString());
+					// openNodeEditor(linkedOrg.getIdentifier(), OrgEditor.ID);
+				}
 			} catch (RepositoryException re) {
 				throw new ArgeoException("Unable to open editor for node", re);
 			}

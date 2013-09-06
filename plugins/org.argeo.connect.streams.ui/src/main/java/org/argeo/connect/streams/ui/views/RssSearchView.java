@@ -1,6 +1,7 @@
 package org.argeo.connect.streams.ui.views;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
@@ -76,7 +77,7 @@ public class RssSearchView extends ViewPart {
 		entityViewer = createListPart(parent, new RssListLabelProvider());
 
 		// set data
-		refreshFilteredList(RssTypes.RSS_ITEM);
+		refreshFilteredList(RssTypes.RSS_CHANNEL);
 	}
 
 	public void addHeaderPanel(Composite parent) {
@@ -94,6 +95,7 @@ public class RssSearchView extends ViewPart {
 
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
+				refreshFilteredList(RssTypes.RSS_CHANNEL);
 				// CommandUtils.callCommand(OpenDefaultEditor.ID);
 			}
 		});
@@ -275,8 +277,8 @@ public class RssSearchView extends ViewPart {
 			query = factory.createQuery(source, defaultC, null, null);
 
 			QueryResult result = query.execute();
-			entityViewer.setInput(JcrUiUtils.nodeIteratorToList(
-					result.getNodes(), 30));
+			NodeIterator ni = result.getNodes();
+			entityViewer.setInput(JcrUiUtils.nodeIteratorToList(ni, 30));
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Unable to list " + nodeType, e);
 		}
