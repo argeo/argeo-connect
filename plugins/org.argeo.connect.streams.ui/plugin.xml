@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            class="org.argeo.connect.ui.crisis.TrackingPerspective"
+            class="org.argeo.connect.streams.ui.rssPerspective"
             id="org.argeo.connect.streams.ui.trackingPerspective"
             name="Tracking">
       </perspective>
