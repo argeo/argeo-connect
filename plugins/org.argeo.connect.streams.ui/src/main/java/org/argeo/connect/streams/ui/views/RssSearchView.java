@@ -123,7 +123,8 @@ public class RssSearchView extends ViewPart {
 	private void openEditorForId(String uid) {
 		try {
 			EntityEditorInput eei = new EntityEditorInput(uid);
-			IWorkbenchWindow iww  = RssUiPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow();
+			IWorkbenchWindow iww = RssUiPlugin.getDefault().getWorkbench()
+					.getActiveWorkbenchWindow();
 			iww.getActivePage().openEditor(eei, ChannelEditor.ID);
 		} catch (PartInitException pie) {
 			throw new ArgeoException(
@@ -164,11 +165,11 @@ public class RssSearchView extends ViewPart {
 	}
 
 	private boolean registerRssLink(String sourceStr) {
-		log.debug("Implement here.");
 		try {
 			Node channel = rssManager.getOrCreateChannel(session, sourceStr);
-
+			rssManager.retrieveItems();
 			openEditorForId(channel.getIdentifier());
+
 		} catch (RepositoryException e) {
 			throw new ArgeoException(
 					"You loose... Not so easy to create a Stream", e);

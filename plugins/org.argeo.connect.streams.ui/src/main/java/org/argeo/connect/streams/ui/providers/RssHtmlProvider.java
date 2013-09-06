@@ -68,12 +68,13 @@ public class RssHtmlProvider implements RssNames {
 		builder.append("<a ");
 		// + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " "
 		builder.append("href=\"");
-		// String sLegalName = legalName.replaceAll("[^a-zA-Z0-9]", "");
-		builder.append(shortenString(link, link.indexOf("&emc")));
+		link = link.replaceAll("&", "&amp;");
+		// builder.append(shortenString(link, link.indexOf("&emc")));
 		builder.append("\"").append(" target=\"_blank\" ").append(">");
 		// builder.append("a link");
 		String title = CommonsJcrUtils.getStringValue(node, Property.JCR_TITLE);
-		builder.append(shortenString(title, 40));
+		builder.append(title);
+		// builder.append(shortenString(title, 40));
 		builder.append("</a>");
 
 		builder.append("<br/>");
@@ -84,7 +85,9 @@ public class RssHtmlProvider implements RssNames {
 		if (desc != null) {
 			// TODO clean
 			// String sLegalName = legalName.replaceAll("[^a-zA-Z0-9]", "");
-			desc = desc.substring(0, desc.indexOf("<"));
+			int index = desc.indexOf("<");
+			if (index > 0)
+				desc = desc.substring(0, desc.indexOf("<"));
 			// builder.append("<span>");
 			builder.append(desc);
 		}
