@@ -7,5 +7,6 @@
 	<bean id="org.argeo.connect.streams.ui.rssSearchView" class="org.argeo.connect.streams.ui.views.RssSearchView"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
+		<property name="rssManager" ref="rssManager" />
 	</bean>
 </beans>

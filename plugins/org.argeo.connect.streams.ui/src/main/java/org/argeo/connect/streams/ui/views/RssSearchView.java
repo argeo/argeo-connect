@@ -1,5 +1,6 @@
 package org.argeo.connect.streams.ui.views;
 
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.QueryManager;
@@ -17,6 +18,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.editors.EntityEditorInput;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
+import org.argeo.connect.streams.RssManager;
 import org.argeo.connect.streams.RssTypes;
 import org.argeo.connect.streams.ui.RssUiPlugin;
 import org.argeo.connect.streams.ui.editors.ChannelEditor;
@@ -53,6 +55,7 @@ public class RssSearchView extends ViewPart {
 	/* DEPENDENCY INJECTION */
 	private Session session;
 	private PeopleService peopleService;
+	private RssManager rssManager;
 
 	// This page widgets
 	private TableViewer entityViewer;
@@ -161,7 +164,16 @@ public class RssSearchView extends ViewPart {
 
 	private boolean registerRssLink(String sourceStr) {
 		log.debug("Implement here.");
-		return false;
+		try {
+			Node channel = rssManager.getOrCreateChannel(session, sourceStr);
+
+			openEditorForId(channel.getIdentifier());
+		} catch (RepositoryException e) {
+			throw new ArgeoException(
+					"You loose... Not so easy to create a Stream", e);
+		}
+
+		return true;
 	}
 
 	public void addFilterPanel(Composite parent) {
@@ -271,6 +283,10 @@ public class RssSearchView extends ViewPart {
 			throw new ArgeoException("Unable to initialize "
 					+ "session for view " + ID, e);
 		}
+	}
+
+	public void setRssManager(RssManager rssManager) {
+		this.rssManager = rssManager;
 	}
 
 }

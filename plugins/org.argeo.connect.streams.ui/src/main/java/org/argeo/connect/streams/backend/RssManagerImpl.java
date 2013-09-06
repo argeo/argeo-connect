@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.streams.RssConstants;
+import org.argeo.connect.streams.RssManager;
 import org.argeo.connect.streams.RssNames;
 import org.argeo.connect.streams.RssTypes;
 import org.argeo.jcr.JcrUtils;
@@ -38,7 +39,7 @@ import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 
 /** Retrieve items and manages them in the repository. */
-public class RssManagerImpl implements RssNames {
+public class RssManagerImpl implements RssNames, RssManager {
 	private final static Log log = LogFactory.getLog(RssManagerImpl.class);
 
 	private Repository repository;
