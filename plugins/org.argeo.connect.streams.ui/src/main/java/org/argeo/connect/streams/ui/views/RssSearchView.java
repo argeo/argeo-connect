@@ -11,9 +11,9 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
-import org.argeo.connect.streams.RssService;
 import org.argeo.connect.streams.RssTypes;
 import org.argeo.connect.streams.ui.RssUiPlugin;
 import org.argeo.connect.streams.ui.listeners.NodeListDoubleClickListener;
@@ -45,7 +45,7 @@ public class RssSearchView extends ViewPart {
 
 	/* DEPENDENCY INJECTION */
 	private Session session;
-	private RssService rssService;
+	private PeopleService peopleService;
 
 	// This page widgets
 	private TableViewer entityViewer;
@@ -54,12 +54,10 @@ public class RssSearchView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		// MainLayout
 		parent.setLayout(new GridLayout(1, false));
 
 		addHeaderPanel(parent);
 		addFilterPanel(parent);
-
 		entityViewer = createListPart(parent, new RssListLabelProvider());
 
 		// set data
@@ -106,18 +104,6 @@ public class RssSearchView extends ViewPart {
 				openEditorForId(RssTypes.RSS_ITEM);
 			}
 		});
-		//
-		// link = new Link(parent, SWT.NONE);
-		// link.setText("<a>15222 Films </a>");
-		// link.addSelectionListener(new SelectionAdapter() {
-		// private static final long serialVersionUID = 1L;
-		//
-		// @Override
-		// public void widgetSelected(final SelectionEvent event) {
-		// openEditorForId(FilmTypes.FILM);
-		// }
-		// });
-
 	}
 
 	private void openEditorForId(String entityType) {
@@ -176,10 +162,9 @@ public class RssSearchView extends ViewPart {
 		table.setHeaderVisible(false);
 		// Enable markups
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(30));
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(50));
 		v.setContentProvider(new BasicNodeListContentProvider());
-		v.addDoubleClickListener(new NodeListDoubleClickListener(rssService,
-				null));
+		v.addDoubleClickListener(new NodeListDoubleClickListener(peopleService));
 		return v;
 	}
 
@@ -234,55 +219,15 @@ public class RssSearchView extends ViewPart {
 		}
 	}
 
-	// private void asynchronousRefresh() {
-	// RefreshJob job = new RefreshJob(filterTxt.getText(), personViewer,
-	// getSite().getShell().getDisplay());
-	// job.setUser(true);
-	// job.schedule();
-	// }
-	//
-	// private class RefreshJob extends PrivilegedJob {
-	// private TableViewer viewer;
-	// private String filter;
-	// private Display display;
-	//
-	// public RefreshJob(String filter, TableViewer viewer, Display display) {
-	// super("Get bundle list");
-	// this.filter = filter;
-	// this.viewer = viewer;
-	// this.display = display;
-	// }
-	//
-	// @Override
-	// protected IStatus doRun(IProgressMonitor progressMonitor) {
-	// try {
-	// ArgeoMonitor monitor = new EclipseArgeoMonitor(progressMonitor);
-	// monitor.beginTask("Filtering", -1);
-	// final List<Node> result = JcrUiUtils.nodeIteratorToList(
-	// listRelevantPersons(session, filter), 5);
-	//
-	// display.asyncExec(new Runnable() {
-	// public void run() {
-	// viewer.setInput(result);
-	// }
-	// });
-	// } catch (Exception e) {
-	// return new Status(IStatus.ERROR, RssUiPlugin.PLUGIN_ID,
-	// "Cannot get filtered list", e);
-	// }
-	// return Status.OK_STATUS;
-	// }
-	// }
-
 	/* DEPENDENCY INJECTION */
-	public void setRssService(RssService rssService) {
-		this.rssService = rssService;
-		// try {
-		// session = rssService.getRepository().login();
-		// } catch (RepositoryException e) {
-		// throw new RssException("Unable to initialize "
-		// + "session for view " + ID, e);
-		// }
+	public void setPeopleService(PeopleService peopleService) {
+		this.peopleService = peopleService;
+		try {
+			session = peopleService.getRepository().login();
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Unable to initialize "
+					+ "session for view " + ID, e);
+		}
 	}
 
 }

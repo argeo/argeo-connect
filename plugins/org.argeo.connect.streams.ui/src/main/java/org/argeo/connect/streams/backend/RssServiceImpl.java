@@ -1,4 +1,6 @@
-package org.argeo.connect.streams;
+package org.argeo.connect.streams.backend;
+
+import org.argeo.connect.streams.RssService;
 
 public class RssServiceImpl implements RssService {
 

@@ -1,21 +1,22 @@
-package org.argeo.connect.people.ui.editors;
+package org.argeo.connect.streams.ui.editors;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.PropertyType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.ui.providers.PersonOverviewLabelProvider;
-import org.argeo.connect.people.ui.toolkits.EntityPanelToolkit;
-import org.argeo.connect.people.ui.toolkits.ListPanelToolkit;
+import org.argeo.connect.people.ui.editors.AbstractEntityEditor;
+import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.streams.RssNames;
+import org.argeo.connect.streams.ui.RssUiPlugin;
+import org.argeo.connect.streams.ui.providers.RssListLabelProvider;
 import org.argeo.jcr.JcrUtils;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -39,51 +40,26 @@ import org.eclipse.ui.forms.AbstractFormPart;
  * Sample editor page that display reference controls and manage life cycle of a
  * given Node
  */
-public class PersonEditor extends AbstractEntityEditor {
-	final static Log log = LogFactory.getLog(PersonEditor.class);
+public class ChannelEditor extends AbstractEntityEditor implements RssNames {
+	final static Log log = LogFactory.getLog(ChannelEditor.class);
 
 	// local constants
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".personEditor";
+	public final static String ID = RssUiPlugin.PLUGIN_ID + ".chanelEditor";
 	// Main business Objects
-	private Node person;
+	private Node channel;
+
+	@Override
+	protected void populateTabFolder(CTabFolder tabFolder) {
+		// TODO Auto-generated method stub
+
+	}
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		person = getNode();
-		setPartName(JcrUtils.getStringPropertyQuietly(person,
-				PeopleNames.PEOPLE_LAST_NAME));
-	}
-
-	protected void populateTabFolder(CTabFolder folder) {
-		// Create usefull toolkits
-		EntityPanelToolkit entityPanelToolkit = new EntityPanelToolkit(toolkit,
-				getManagedForm());
-		ListPanelToolkit listPanelToolkit = new ListPanelToolkit(toolkit,
-				getManagedForm(), getPeopleServices(), getPeopleUiServices());
-
-		// Contact informations
-		String tooltip = "Contact information for "
-				+ JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
-		Composite innerPannel = addTabToFolder(folder, SWT.NO_FOCUS,
-				"Contact details", PeopleUiConstants.PANEL_CONTACT_DETAILS,
-				tooltip);
-		entityPanelToolkit.populateContactPanelWithNotes(innerPannel, person);
-
-		// Jobs panel
-		tooltip = "Organisations linked to "
-				+ JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
-		innerPannel = addTabToFolder(folder, SWT.NO_FOCUS, "Organisations",
-				PeopleUiConstants.PANEL_JOBS, tooltip);
-		listPanelToolkit.populateJobsPanel(innerPannel, person);
-
-		// Films panel
-		tooltip = "Films related to "
-				+ JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
-		innerPannel = addTabToFolder(folder, SWT.NO_FOCUS, "Films",
-				PeopleUiConstants.PANEL_PRODUCTIONS, tooltip);
-		listPanelToolkit.populateFilmsPanel(innerPannel, person);
-		folder.layout();
+		channel = getNode();
+		setPartName(JcrUtils.getStringPropertyQuietly(channel,
+				Property.JCR_TITLE));
 	}
 
 	@Override
@@ -97,13 +73,10 @@ public class PersonEditor extends AbstractEntityEditor {
 		readOnlyPanel.setData(RWT.CUSTOM_VARIANT,
 				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 		readOnlyPanel.setLayout(new GridLayout());
-
-		// Add a label with info provided by the OrgOverviewLabelProvider
 		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
 				SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		final ColumnLabelProvider personLP = new PersonOverviewLabelProvider(
-				false, getPeopleServices());
+		final ILabelProvider personLP = new RssListLabelProvider(false);
 
 		// EDIT
 		final Composite editPanel = toolkit.createComposite(switchingPanel,
@@ -118,37 +91,26 @@ public class PersonEditor extends AbstractEntityEditor {
 		editPanel.setLayout(rl);
 
 		// Create edit text
-		final Text salutationTxt = createText(editPanel, "Salutation",
-				"Mr, Mrs...", 40);
-		final Text titleTxt = createText(editPanel, "Title", "Doc., Sir...", 60);
-		final Text firstNameTxt = createText(editPanel, "First Name",
-				"Usual first name for this person", 100);
-		final Text lastNameTxt = createText(editPanel, "Last Name",
-				"Usual last name for this person", 100);
-		final Text suffixTxt = createText(editPanel, "Suffix",
-				"Junior, the third...", 80);
+		final Text titleTxt = createText(editPanel, "Title", "Rss feed title",
+				200);
+		final Text websiteTxt = createText(editPanel, "Website",
+				"This channel provider's website", 200);
+		final Text descTxt = createText(editPanel, "A Description", "", 100);
 
 		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
 			public void refresh() { // update display value
 				super.refresh();
 				// EDIT PART
-				refreshTextValue(salutationTxt, person,
-						PeopleNames.PEOPLE_SALUTATION);
-				refreshTextValue(firstNameTxt, person,
-						PeopleNames.PEOPLE_FIRST_NAME);
-				refreshTextValue(lastNameTxt, person,
-						PeopleNames.PEOPLE_LAST_NAME);
-				refreshTextValue(titleTxt, person,
-						PeopleNames.PEOPLE_PERSON_TITLE);
-				refreshTextValue(suffixTxt, person,
-						PeopleNames.PEOPLE_NAME_SUFFIX);
+				refreshTextValue(titleTxt, channel, Property.JCR_TITLE);
+				refreshTextValue(websiteTxt, channel, RSS_LINK);
+				refreshTextValue(descTxt, channel, Property.JCR_DESCRIPTION);
 
 				// READ ONLY PART
-				String roText = personLP.getText(person);
+				String roText = personLP.getText(channel);
 				readOnlyInfoLbl.setText(roText);
 
 				// Manage switch
-				if (CommonsJcrUtils.isNodeCheckedOutByMe(person))
+				if (CommonsJcrUtils.isNodeCheckedOutByMe(channel))
 					editPanel.moveAbove(readOnlyPanel);
 				else
 					editPanel.moveBelow(readOnlyPanel);
@@ -157,17 +119,12 @@ public class PersonEditor extends AbstractEntityEditor {
 		};
 
 		// Listeners
-		addTxtModifyListener(editPart, salutationTxt, person,
-				PeopleNames.PEOPLE_SALUTATION, PropertyType.STRING);
-		addTxtModifyListener(editPart, titleTxt, person,
-				PeopleNames.PEOPLE_PERSON_TITLE, PropertyType.STRING);
-		addTxtModifyListener(editPart, firstNameTxt, person,
-				PeopleNames.PEOPLE_FIRST_NAME, PropertyType.STRING);
-		addTxtModifyListener(editPart, lastNameTxt, person,
-				PeopleNames.PEOPLE_LAST_NAME, PropertyType.STRING);
-		addTxtModifyListener(editPart, suffixTxt, person,
-				PeopleNames.PEOPLE_NAME_SUFFIX, PropertyType.STRING);
-
+		addTxtModifyListener(editPart, titleTxt, channel, Property.JCR_TITLE,
+				PropertyType.STRING);
+		addTxtModifyListener(editPart, titleTxt, channel, RSS_LINK,
+				PropertyType.STRING);
+		addTxtModifyListener(editPart, descTxt, channel,
+				Property.JCR_DESCRIPTION, PropertyType.STRING);
 		getManagedForm().addPart(editPart);
 	}
 
@@ -201,4 +158,5 @@ public class PersonEditor extends AbstractEntityEditor {
 		text.setLayoutData(new RowData(width, SWT.DEFAULT));
 		return text;
 	}
+
 }

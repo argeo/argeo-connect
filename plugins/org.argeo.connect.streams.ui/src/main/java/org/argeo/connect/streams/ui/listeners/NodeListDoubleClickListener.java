@@ -5,7 +5,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.streams.RssService;
+import org.argeo.connect.people.PeopleService;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -15,7 +15,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
  */
 public class NodeListDoubleClickListener implements IDoubleClickListener {
 
-	private RssService rssService;
+	private PeopleService peopleService;
 	private String parentNodeType = null;
 	private String tableId = null;
 
@@ -23,19 +23,19 @@ public class NodeListDoubleClickListener implements IDoubleClickListener {
 	 * Set Rss service and table id to enable opening of the correct editor when
 	 * displaying list of references
 	 */
-	public NodeListDoubleClickListener(RssService rssService) {
-		this.rssService = rssService;
+	public NodeListDoubleClickListener(PeopleService peopleService) {
+		this.peopleService = peopleService;
 	}
 
-	public NodeListDoubleClickListener(RssService rssService,
+	public NodeListDoubleClickListener(PeopleService peopleService,
 			String parentNodeType) {
-		this.rssService = rssService;
+		this.peopleService = peopleService;
 		this.parentNodeType = parentNodeType;
 	}
 
-	public NodeListDoubleClickListener(RssService rssService,
+	public NodeListDoubleClickListener(PeopleService rssService,
 			String parentNodeType, String tableId) {
-		this.rssService = rssService;
+		this.peopleService = rssService;
 		this.parentNodeType = parentNodeType;
 		this.tableId = tableId;
 

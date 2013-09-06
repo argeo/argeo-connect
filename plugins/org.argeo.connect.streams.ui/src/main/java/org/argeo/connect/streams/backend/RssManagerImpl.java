@@ -118,6 +118,7 @@ public class RssManagerImpl implements RssNames {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void createChannel(Session session, SyndFeed feed, String url)
 			throws RepositoryException {
 		String nodeName = JcrUtils.replaceInvalidChars(feed.getTitle());
@@ -126,6 +127,13 @@ public class RssManagerImpl implements RssNames {
 		channelNode.setProperty(Property.JCR_TITLE, feed.getTitle());
 		channelNode.setProperty(RSS_URI, url);
 		channelNode.setProperty(RSS_LINK, feed.getLink());
+		List<String> categories = new ArrayList<String>();
+		for (SyndCategory syndCategory : (List<SyndCategory>) feed
+				.getCategories()) {
+			categories.add(syndCategory.getName());
+		}
+		channelNode.setProperty(RSS_CATEGORY,
+				categories.toArray(new String[categories.size()]));
 		if (log.isDebugEnabled())
 			log.debug("Registered channel: '" + feed.getTitle() + "' (" + url
 					+ ")");

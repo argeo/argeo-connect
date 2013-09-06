@@ -26,6 +26,7 @@
 							com.sun.syndication,
 							com.sun.syndication.feed.synd.impl,
 							com.sun.syndication.io.impl,
+							org.argeo.connect.people.core,
 						</Import-Package>
 					</instructions>
 				</configuration>

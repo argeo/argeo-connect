@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
 	<bean id="rssManager" class="org.argeo.connect.streams.backend.RssManagerImpl"
 		init-method="init" destroy-method="destroy">
@@ -29,6 +31,12 @@
 		<property name="bundleContext" ref="bundleContext" />
 	</bean>
 
+	<bean id="peopleService" class="org.argeo.connect.people.core.PeopleServiceImpl"
+		init-method="init" destroy-method="destroy">
+		<property name="repository" ref="repository" />
+		<property name="managedRoles" ref="managedRoles" />
+	</bean>
+
 	<!-- Execute initialization with a system authentication -->
 	<bean
 		class="org.argeo.security.core.AuthenticatedApplicationContextInitialization">
@@ -40,6 +48,15 @@
 			</list>
 		</property>
 	</bean>
+
+
+	<!-- Map of the roles used in the user interface - TODO merge with new role 
+		definition -->
+	<util:map id="managedRoles">
+		<entry key="0">
+			<value>ROLE_ADMIN</value>
+		</entry>
+	</util:map>
 
 
 </beans>
