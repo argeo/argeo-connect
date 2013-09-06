@@ -30,6 +30,8 @@ import org.argeo.connect.streams.RssNames;
 import org.argeo.connect.streams.RssTypes;
 import org.argeo.jcr.JcrUtils;
 import org.jdom.Element;
+import org.springframework.security.Authentication;
+import org.springframework.security.context.SecurityContextHolder;
 
 import com.sun.syndication.feed.synd.SyndCategory;
 import com.sun.syndication.feed.synd.SyndEnclosure;
@@ -78,7 +80,8 @@ public class RssManagerImpl implements RssNames, RssManager {
 
 			// Polling htread
 			if (pollingPeriod > 0) {
-				pollingThread = new PollingThread();
+				pollingThread = new PollingThread(SecurityContextHolder
+						.getContext().getAuthentication());
 				pollingThread.start();
 			}
 		} catch (RepositoryException e) {
@@ -272,11 +275,16 @@ public class RssManagerImpl implements RssNames, RssManager {
 	}
 
 	private class PollingThread extends Thread {
-		public PollingThread() {
+		private final Authentication authentication;
+
+		public PollingThread(Authentication authentication) {
 			super("RSS Polling");
+			this.authentication = authentication;
 		}
 
 		public void run() {
+			SecurityContextHolder.getContext()
+					.setAuthentication(authentication);
 			if (log.isDebugEnabled())
 				log.debug("Started " + getName() + " thread");
 			try {
