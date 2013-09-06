@@ -1,16 +1,13 @@
-###
-### TEMPORARILY MOVED TO PEOPLE
-###
-
 <rss = 'http://www.argeo.org/ns/rss'>
 
 [rss:channel] > nt:unstructured, mix:title, rss:tagable
-- rss:link (URL)
+- rss:uri (STRING) m
+- rss:link (STRING)
 
 [rss:item] > nt:unstructured, mix:title, rss:tagable
-- rss:link (URL) 
-- rss:pubDate (Date)
-- rss:updatedate (Date)
+- rss:link (STRING) 
+- rss:pubDate (DATE)
+- rss:updatedate (DATE)
 + rss:enclosure (nt:unstructured) *
 
 // 

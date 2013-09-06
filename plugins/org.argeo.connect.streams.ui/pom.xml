@@ -21,7 +21,11 @@
 						<Import-Package>
 							*,
 							org.argeo.eclipse.spring,
-							org.jdom
+							org.jdom,
+							org.argeo.connect.people,
+							com.sun.syndication,
+							com.sun.syndication.feed.synd.impl,
+							com.sun.syndication.io.impl,
 						</Import-Package>
 					</instructions>
 				</configuration>
