@@ -4,9 +4,9 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            class="org.argeo.connect.streams.ui.rssPerspective"
-            id="org.argeo.connect.streams.ui.trackingPerspective"
-            name="Tracking">
+            class="org.argeo.connect.streams.ui.RssPerspective"
+            id="org.argeo.connect.streams.ui.rssPerspective"
+            name="Streams">
       </perspective>
 	</extension>
    	<extension
@@ -20,7 +20,7 @@
       <view
             class="org.argeo.eclipse.spring.SpringExtensionFactory"
             id="org.argeo.connect.streams.ui.rssSearchView"
-            name="Rss Search"
+            name="Streams Search"
             restorable="true">
       </view>
    </extension>

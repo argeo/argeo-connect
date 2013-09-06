@@ -21,9 +21,7 @@
 						<Import-Package>
 							*,
 							org.argeo.eclipse.spring,
-							org.argeo.gis,
-							javax.jcr.nodetype,
-							org.jdom,
+							org.jdom
 						</Import-Package>
 					</instructions>
 				</configuration>
@@ -31,13 +29,6 @@
 		</plugins>
 	</build>
 	<dependencies>
-		<!-- TODO Remove this -->
-		<dependency>
-			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.ui</artifactId>
-			<version>2.1.1-SNAPSHOT</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.people.ui</artifactId>
@@ -67,6 +58,7 @@
 			<version>${version.argeo-commons}</version>
 		</dependency>
 
+		<!-- QA -->
 		<!-- RAP only dependency, needed at compile time -->
 		<dependency>
 			<groupId>org.argeo.commons.base</groupId>

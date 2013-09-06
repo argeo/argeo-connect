@@ -7,7 +7,9 @@
        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 	<reference id="repository" interface="javax.jcr.Repository"
-		filter="(argeo.jcr.repository.alias=connect)" />
-	
+		filter="(argeo.jcr.repository.alias=node)" />
+
+	<reference id="authenticationManager"
+		interface="org.springframework.security.AuthenticationManager" />
 
 </beans:beans>
