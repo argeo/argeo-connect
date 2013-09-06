@@ -1,5 +1,6 @@
 package org.argeo.connect.streams.backend;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -17,7 +18,9 @@ import javax.jcr.Property;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
@@ -25,8 +28,10 @@ import org.argeo.connect.streams.RssConstants;
 import org.argeo.connect.streams.RssNames;
 import org.argeo.connect.streams.RssTypes;
 import org.argeo.jcr.JcrUtils;
+import org.jdom.Element;
 
 import com.sun.syndication.feed.synd.SyndCategory;
+import com.sun.syndication.feed.synd.SyndEnclosure;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
@@ -183,13 +188,15 @@ public class RssManagerImpl implements RssNames {
 		}
 		itemNode.setProperty(RSS_LINK, entry.getLink());
 		itemNode.setProperty(Property.JCR_TITLE, entry.getTitle());
-		
+
 		String description = entry.getDescription().getValue();
 		itemNode.setProperty(Property.JCR_DESCRIPTION, description);
-		
+
 		itemNode.setProperty(RSS_PUB_DATE, publishedDate);
 		if (updatedDate != null)
 			itemNode.setProperty(RSS_UPDATE_DATE, updatedDate);
+
+		// Categories
 		List<String> categories = new ArrayList<String>();
 		for (SyndCategory syndCategory : (List<SyndCategory>) entry
 				.getCategories()) {
@@ -197,9 +204,57 @@ public class RssManagerImpl implements RssNames {
 		}
 		itemNode.setProperty(RSS_CATEGORY,
 				categories.toArray(new String[categories.size()]));
-
 		itemNode.getSession().save();
+
+		// MEDIAS
+
+		// Enclosure
+		for (SyndEnclosure enclosure : (List<SyndEnclosure>) entry
+				.getEnclosures()) {
+			// String type = enclosure.getType();
+			String url = enclosure.getUrl();
+			if (url != null)
+				addMedia(itemNode, url, null);
+		}
+
+		// Foreign markup
+		List<Element> foreignMarkup = (List<Element>) entry.getForeignMarkup();
+		String url = null;
+		String urlDesc = null;
+		for (Element element : foreignMarkup) {
+			if (element.getQualifiedName().equals("media:content")) {
+				url = element.getAttributeValue("url");
+			}
+			if (element.getQualifiedName().equals("media:description")) {
+				urlDesc = element.getText();
+			}
+		}
+		if (url != null)
+			addMedia(itemNode, url, urlDesc);
+
 		return true;
+	}
+
+	protected void addMedia(Node itemNode, String url, String description)
+			throws RepositoryException {
+		InputStream in = null;
+		try {
+			URL u = new URL(url);
+			in = u.openStream();
+			Node mediasNode = JcrUtils.getOrAdd(itemNode, RSS_MEDIAS);
+			String fileName = JcrUtils.lastPathElement(u.getPath());
+
+			Node fileNode = JcrUtils.copyStreamAsFile(mediasNode, fileName, in);
+			fileNode.addMixin(NodeType.MIX_TITLE);
+			fileNode.setProperty(Property.JCR_TITLE, fileName);
+			if (description != null)
+				fileNode.setProperty(Property.JCR_DESCRIPTION, fileName);
+			itemNode.getSession().save();
+		} catch (Exception e) {
+			log.error("Cannot add media " + url, e);
+		} finally {
+			IOUtils.closeQuietly(in);
+		}
 	}
 
 	public void setRepository(Repository repository) {

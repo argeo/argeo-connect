@@ -21,6 +21,7 @@
 						<Import-Package>
 							*,
 							org.argeo.eclipse.spring,
+							javax.jcr.nodetype,
 							org.jdom,
 							org.argeo.connect.people,
 							com.sun.syndication,

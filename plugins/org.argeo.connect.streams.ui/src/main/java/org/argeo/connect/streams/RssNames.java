@@ -14,7 +14,7 @@ public interface RssNames {
 	// ITEM
 	public final static String RSS_CATEGORY = "rss:category";
 	// Typically an image
-	public final static String RSS_ENCLOSURE = "rss:enclosure";
+	public final static String RSS_MEDIAS = "rss:medias";
 	public final static String RSS_PUB_DATE = "rss:pubDate";
 	public final static String RSS_UPDATE_DATE = " rss:updatedate";
 }
