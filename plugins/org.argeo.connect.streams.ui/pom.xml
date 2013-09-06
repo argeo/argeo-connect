@@ -36,23 +36,33 @@
 			<version>2.1.1-SNAPSHOT</version>
 		</dependency>
 
-		<!-- Connect GIS Utilities -->
-		<dependency>
-			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.gis.ui</artifactId>
-			<version>2.1.1-SNAPSHOT</version>
-		</dependency>
-
 		<!--  Feeds -->
 		<dependency>
 			<groupId>org.argeo.tp</groupId>
 			<artifactId>com.sun.syndication</artifactId>
 		</dependency>
 
-		<!-- RCP only dependency, needed at compile time -->
+		<!-- Commons -->
 		<dependency>
 			<groupId>org.argeo.commons.base</groupId>
-			<artifactId>org.argeo.eclipse.dep.rcp</artifactId>
+			<artifactId>org.argeo.util</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.commons.base</groupId>
+			<artifactId>org.argeo.eclipse.ui</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.commons.base</groupId>
+			<artifactId>org.argeo.eclipse.ui.jcr</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+
+		<!-- RAP only dependency, needed at compile time -->
+		<dependency>
+			<groupId>org.argeo.commons.base</groupId>
+			<artifactId>org.argeo.eclipse.dep.rap</artifactId>
 			<version>${version.argeo-commons}</version>
 			<scope>provided</scope>
 		</dependency>

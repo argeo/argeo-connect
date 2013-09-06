@@ -41,9 +41,6 @@ import org.argeo.connect.ConnectTypes;
 import org.argeo.eclipse.ui.Error;
 import org.argeo.gis.GisNames;
 import org.argeo.gis.GisTypes;
-import org.argeo.gis.ui.MapControlCreator;
-import org.argeo.gis.ui.MapViewer;
-import org.argeo.gis.ui.editors.MapFormPage;
 import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.ArgeoTypes;
 import org.argeo.jcr.JcrUtils;
@@ -58,12 +55,9 @@ import com.sun.syndication.feed.synd.SyndEntry;
 public class LinkEditor extends FormEditor {
 	private String linksBasePath = "/connect/links";
 
-	private MapControlCreator mapControlCreator;
-
 	private Node context;
 
 	private LinkBrowserPage linkBrowserPage;
-	private MapFormPage mapFormPage;
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -80,9 +74,6 @@ public class LinkEditor extends FormEditor {
 			linkBrowserPage = new LinkBrowserPage(this, "browser", "Browser",
 					lei);
 			addPage(linkBrowserPage);
-			mapFormPage = new MapFormPage(this, "map", "Map", lei.getContext(),
-					mapControlCreator);
-			addPage(mapFormPage);
 		} catch (PartInitException e) {
 			Error.show("Cannot initialize editor", e);
 		}
@@ -131,29 +122,6 @@ public class LinkEditor extends FormEditor {
 			}
 			linkBrowserPage.doSave(monitor);
 
-			// geographical features
-			MapViewer mapViewer = mapFormPage.getMapViewer();
-			for (NodeIterator nit = mapViewer.getSelectedFeatures(); nit
-					.hasNext();) {
-				Node featureNode = nit.nextNode();
-				Node relatedFeature;
-				if (linkNode.hasNode(featureNode.getName()))
-					relatedFeature = featureNode.getNode(featureNode.getName());
-				else
-					relatedFeature = linkNode.addNode(featureNode.getName(),
-							GisTypes.GIS_RELATED_FEATURE);
-				relatedFeature.setProperty(Property.JCR_PATH,
-						featureNode.getPath());
-				relatedFeature.setProperty(GisNames.GIS_SRS, featureNode
-						.getProperty(GisNames.GIS_SRS).getValue());
-				relatedFeature.setProperty(GisNames.GIS_BBOX, featureNode
-						.getProperty(GisNames.GIS_BBOX).getValue());
-				relatedFeature.setProperty(GisNames.GIS_CENTROID, featureNode
-						.getProperty(GisNames.GIS_CENTROID).getValue());
-
-			}
-			mapFormPage.doSave(monitor);
-
 			linkNode.getSession().save();
 			context = linkNode;
 			firePropertyChange(PROP_DIRTY);
@@ -171,9 +139,4 @@ public class LinkEditor extends FormEditor {
 	public boolean isSaveAsAllowed() {
 		return false;
 	}
-
-	public void setMapControlCreator(MapControlCreator mapControlCreator) {
-		this.mapControlCreator = mapControlCreator;
-	}
-
 }
