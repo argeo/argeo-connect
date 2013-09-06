@@ -29,6 +29,7 @@
 							com.sun.syndication.feed.synd.impl,
 							com.sun.syndication.io.impl,
 							org.argeo.connect.people.core,
+							org.argeo.security.ui.rap;resolution:=optional
 						</Import-Package>
 					</instructions>
 				</configuration>

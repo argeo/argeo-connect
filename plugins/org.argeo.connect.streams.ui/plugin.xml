@@ -5,6 +5,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="org.argeo.connect.streams.ui.RssPerspective"
+            icon="icons/rss.png"
             id="org.argeo.connect.streams.ui.rssPerspective"
             name="Streams">
       </perspective>
@@ -19,6 +20,7 @@
       </view> --> 
       <view
             class="org.argeo.eclipse.spring.SpringExtensionFactory"
+            icon="icons/rss.png"
             id="org.argeo.connect.streams.ui.rssSearchView"
             name="Streams Search"
             restorable="true">
@@ -28,10 +30,11 @@
          point="org.eclipse.ui.editors">
    
      <editor
-            class="org.argeo.eclipse.spring.SpringExtensionFactory"
-            default="false"
-            id="org.argeo.connect.streams.ui.channelEditor"
-            name="New...">
+           class="org.argeo.eclipse.spring.SpringExtensionFactory"
+           default="false"
+           icon="icons/rss.png"
+           id="org.argeo.connect.streams.ui.channelEditor"
+           name="New...">
       </editor>
    
    <!--    <editor
@@ -47,4 +50,40 @@
 	<extension
          point="org.eclipse.ui.menus">
 	</extension>
+	
+		<!-- Entry point for the RAP application --> 
+	<extension
+		point="org.eclipse.rap.ui.entrypoint">
+		<!-- Entry point for rap 2.0 and eclipse 4.2 with rap tooling --> 
+		<entrypoint
+			id="org.argeo.connect.streams.rap.entrypoint"
+			class="org.argeo.security.ui.rap.SecureEntryPoint"
+			path="/streams"
+			brandingId="org.argeo.connect.streams.rap.defaultBranding">
+		</entrypoint>
+	</extension>
+ 
+ 	<!-- BRANDING --> 
+	<extension
+		point="org.eclipse.rap.ui.branding">
+		<branding
+			id="org.argeo.connect.streams.rap.defaultBranding"
+			themeId="org.argeo.connect.streams.rap.defaultBaseTheme"
+			title="Connect Streams"
+			favicon="icons/rss.png">
+		</branding>
+	</extension>
+	
+	<!-- LOCAL THEMES --> 
+	<extension
+		point="org.eclipse.rap.ui.themes">
+		<theme
+			id="org.argeo.connect.streams.rap.defaultBaseTheme"
+			name="RAP Business Theme"
+			file="theme/defaultBase.css" />
+		<themeContribution
+			themeId="org.argeo.connect.streams.rap.defaultBaseTheme"
+			file="theme/defaultExt.css" />
+	</extension> 
+	
 </plugin>
