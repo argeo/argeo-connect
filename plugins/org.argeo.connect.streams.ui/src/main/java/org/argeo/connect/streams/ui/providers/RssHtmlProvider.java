@@ -8,6 +8,8 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -17,6 +19,8 @@ import org.argeo.connect.streams.RssNames;
 /** Some helper methods to generate html snippets */
 
 public class RssHtmlProvider implements RssNames {
+
+	private final static Log log = LogFactory.getLog(RssHtmlProvider.class);
 	private final static DateFormat df = new SimpleDateFormat(
 			"EEE, dd MMM yyyy");
 	private final static int SHORT_TITLE_LENGHT = 40;
@@ -38,7 +42,7 @@ public class RssHtmlProvider implements RssNames {
 		// }
 		return builder.toString();
 	}
-	
+
 	public static String getChannelMedium(Node node) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b>");
@@ -59,21 +63,33 @@ public class RssHtmlProvider implements RssNames {
 	public static String getItemShort(Node node) {
 		StringBuilder builder = new StringBuilder();
 		String link = CommonsJcrUtils.getStringValue(node, RSS_LINK);
-		builder.append("<span> <big> <a "
-				+ PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\"");
-		builder.append(link).append("\"").append(" target=\"_blank\" ")
-				.append(">");
-		builder.append(CommonsJcrUtils.getStringValue(node, Property.JCR_TITLE));
-		builder.append("</a></big>");
+
+		log.debug("\n" + link);
+		builder.append("<span> ");
+		builder.append("<a ");
+		// + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " "
+		builder.append("href=\"");
+		builder.append(shortenString(link, link.indexOf("&emc")));
+		builder.append("\"").append(" target=\"_blank\" ").append(">");
+		// builder.append("a link");
+		String title = CommonsJcrUtils.getStringValue(node, Property.JCR_TITLE);
+		builder.append(shortenString(title, 40));
+		builder.append("</a>");
+
 		builder.append("<br/>");
-		builder.append(RssHtmlProvider.getPubDate(node));
-		builder.append("<br/>");
+		// builder.append(RssHtmlProvider.getPubDate(node));
+		// builder.append("<br/>");
 		String desc = CommonsJcrUtils.getStringValue(node,
 				Property.JCR_DESCRIPTION);
 		if (desc != null) {
+			// TODO clean
+			// String sLegalName = legalName.replaceAll("[^a-zA-Z0-9]", "");
+			desc = desc.substring(0, desc.indexOf("<"));
+			// builder.append("<span>");
 			builder.append(desc);
 		}
 		builder.append("</span>");
+
 		return builder.toString();
 	}
 

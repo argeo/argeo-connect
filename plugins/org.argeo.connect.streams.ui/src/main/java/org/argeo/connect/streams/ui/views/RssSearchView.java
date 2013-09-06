@@ -10,12 +10,16 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.JcrUiUtils;
+import org.argeo.connect.people.ui.editors.EntityEditorInput;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.streams.RssTypes;
 import org.argeo.connect.streams.ui.RssUiPlugin;
+import org.argeo.connect.streams.ui.editors.ChannelEditor;
 import org.argeo.connect.streams.ui.listeners.NodeListDoubleClickListener;
 import org.argeo.connect.streams.ui.providers.RssListLabelProvider;
 import org.argeo.jcr.JcrUtils;
@@ -29,18 +33,21 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
 public class RssSearchView extends ViewPart {
 
-	// private final static Log log = LogFactory.getLog(QuickSearchView.class);
+	private final static Log log = LogFactory.getLog(RssSearchView.class);
 	public static final String ID = RssUiPlugin.PLUGIN_ID + ".rssSearchView";
 
 	/* DEPENDENCY INJECTION */
@@ -50,18 +57,21 @@ public class RssSearchView extends ViewPart {
 	// This page widgets
 	private TableViewer entityViewer;
 	private Text filterTxt;
+	private Text newFeedTxt;
 	private final static String FILTER_HELP_MSG = "Enter filter criterion";
+	private final static String NEW_FEED_MSG = "Register a Rss link...";
 
 	@Override
 	public void createPartControl(Composite parent) {
 		parent.setLayout(new GridLayout(1, false));
 
 		addHeaderPanel(parent);
+		addNewFeedPanel(parent);
 		addFilterPanel(parent);
 		entityViewer = createListPart(parent, new RssListLabelProvider());
 
 		// set data
-		// refreshFilteredList();
+		refreshFilteredList(RssTypes.RSS_ITEM);
 	}
 
 	public void addHeaderPanel(Composite parent) {
@@ -106,19 +116,52 @@ public class RssSearchView extends ViewPart {
 		});
 	}
 
-	private void openEditorForId(String entityType) {
-		// try {
-		// SearchEntityEditorInput eei = new SearchEntityEditorInput(
-		// entityType);
-		// PeopleUiPlugin.getDefault().getWorkbench()
-		// .getActiveWorkbenchWindow().getActivePage()
-		// .openEditor(eei, RssSearchEntityEditor.ID);
-		// } catch (PartInitException pie) {
-		// throw new PeopleException(
-		// "Unexpected PartInitException while opening entity editor",
-		// pie);
-		// }
+	private void openEditorForId(String uid) {
+		try {
+			EntityEditorInput eei = new EntityEditorInput(uid);
+			RssUiPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow()
+					.getActivePage().openEditor(eei, ChannelEditor.ID);
+		} catch (PartInitException pie) {
+			throw new ArgeoException(
+					"Unexpected PartInitException while opening entity editor",
+					pie);
+		}
 
+	}
+
+	public void addNewFeedPanel(Composite parent) {
+		Composite panel = new Composite(parent, SWT.FILL);
+		panel.setLayout(new GridLayout(2, false));
+		// Text Area for the filter
+		newFeedTxt = new Text(panel, SWT.BORDER | SWT.ICON_CANCEL | SWT.SINGLE);
+		newFeedTxt.setMessage(NEW_FEED_MSG);
+		GridData gd = new GridData(GridData.GRAB_HORIZONTAL
+				| GridData.HORIZONTAL_ALIGN_FILL);
+		gd.widthHint = 200;
+
+		// gd.grabExcessHorizontalSpace = true;
+		newFeedTxt.setLayoutData(gd);
+
+		Button okBtn = new Button(panel, SWT.PUSH);
+		okBtn.setText("Add");
+
+		okBtn.addSelectionListener(new SelectionListener() {
+			private static final long serialVersionUID = 5003010530960334977L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				registerRssLink(newFeedTxt.getText());
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+	}
+
+	private boolean registerRssLink(String sourceStr) {
+		log.debug("Implement here.");
+		return false;
 	}
 
 	public void addFilterPanel(Composite parent) {
