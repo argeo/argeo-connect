@@ -175,7 +175,7 @@ public class RssManagerImpl implements RssNames, RssManager {
 		}
 		// path
 		String datePath = JcrUtils.dateAsPath(publishedDate);
-		String nodeName = JcrUtils.replaceInvalidChars(entry.getTitle());
+		String nodeName = JcrUtils.replaceInvalidChars(entry.getTitle()).trim();
 		String relPath = datePath + nodeName;
 
 		Node itemNode;
