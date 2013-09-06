@@ -64,11 +64,11 @@ public class RssHtmlProvider implements RssNames {
 		StringBuilder builder = new StringBuilder();
 		String link = CommonsJcrUtils.getStringValue(node, RSS_LINK);
 
-		log.debug("\n" + link);
 		builder.append("<span> ");
 		builder.append("<a ");
 		// + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " "
 		builder.append("href=\"");
+		// String sLegalName = legalName.replaceAll("[^a-zA-Z0-9]", "");
 		builder.append(shortenString(link, link.indexOf("&emc")));
 		builder.append("\"").append(" target=\"_blank\" ").append(">");
 		// builder.append("a link");

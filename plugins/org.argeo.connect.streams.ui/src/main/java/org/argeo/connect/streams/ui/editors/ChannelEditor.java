@@ -12,6 +12,7 @@ import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.editors.AbstractEntityEditor;
 import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.streams.RssManager;
 import org.argeo.connect.streams.RssNames;
 import org.argeo.connect.streams.ui.RssUiPlugin;
 import org.argeo.connect.streams.ui.providers.RssListLabelProvider;
@@ -44,9 +45,11 @@ public class ChannelEditor extends AbstractEntityEditor implements RssNames {
 	final static Log log = LogFactory.getLog(ChannelEditor.class);
 
 	// local constants
-	public final static String ID = RssUiPlugin.PLUGIN_ID + ".chanelEditor";
+	public final static String ID = RssUiPlugin.PLUGIN_ID + ".channelEditor";
 	// Main business Objects
 	private Node channel;
+
+	private RssManager rssManager;
 
 	@Override
 	protected void populateTabFolder(CTabFolder tabFolder) {
@@ -157,6 +160,10 @@ public class ChannelEditor extends AbstractEntityEditor implements RssNames {
 		text.setToolTipText(toolTip);
 		text.setLayoutData(new RowData(width, SWT.DEFAULT));
 		return text;
+	}
+	
+	public void setRssManager(RssManager rssManager) {
+		this.rssManager = rssManager;
 	}
 
 }

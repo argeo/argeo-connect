@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
@@ -122,8 +123,8 @@ public class RssSearchView extends ViewPart {
 	private void openEditorForId(String uid) {
 		try {
 			EntityEditorInput eei = new EntityEditorInput(uid);
-			RssUiPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow()
-					.getActivePage().openEditor(eei, ChannelEditor.ID);
+			IWorkbenchWindow iww  = RssUiPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow();
+			iww.getActivePage().openEditor(eei, ChannelEditor.ID);
 		} catch (PartInitException pie) {
 			throw new ArgeoException(
 					"Unexpected PartInitException while opening entity editor",
