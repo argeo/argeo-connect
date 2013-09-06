@@ -1,16 +1,17 @@
 <rss = 'http://www.argeo.org/ns/rss'>
 
-[rss:channel] > nt:unstructured
-- rss:title (STRING) 
-- rss:link (URL) 
+[rss:channel] > nt:unstructured, mix:title, rss:tagable
+- rss:link (URL)
 
-
-[rss:item] > nt:unstructured, mix:title
-- rss:category
-// MIX TITLE
-// - rss:title
-// - rss:description
+[rss:item] > nt:unstructured, mix:title, rss:tagable
 - rss:link (URL) 
 - rss:pubDate (Date)
 - rss:updatedate (Date)
 + rss:enclosure (nt:unstructured) *
+
+// 
+// TAGABLE
+//
+[rss:tagable] 
+mixin
+- rss:category (STRING) *
