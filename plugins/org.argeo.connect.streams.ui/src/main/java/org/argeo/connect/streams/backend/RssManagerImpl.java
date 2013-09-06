@@ -113,7 +113,8 @@ public class RssManagerImpl implements RssNames, RssManager {
 			SyndFeed feed = input.build(new XmlReader(feedUrl));
 			String nodeName = JcrUtils.replaceInvalidChars(feed.getTitle());
 			Node channelNode = adminSession.getNode(
-					RssConstants.RSS_CHANNELS_BASE).addNode(nodeName);
+					RssConstants.RSS_CHANNELS_BASE).addNode(nodeName,
+					RssTypes.RSS_CHANNEL);
 			channelNode.setProperty(Property.JCR_TITLE, feed.getTitle());
 			channelNode.setProperty(RSS_URI, url);
 			channelNode.setProperty(RSS_LINK, feed.getLink());

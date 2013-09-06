@@ -11,6 +11,7 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.editors.AbstractEntityEditor;
 import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
+import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.streams.RssManager;
 import org.argeo.connect.streams.RssNames;
@@ -18,6 +19,7 @@ import org.argeo.connect.streams.ui.RssUiPlugin;
 import org.argeo.connect.streams.ui.providers.RssListLabelProvider;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -131,6 +133,32 @@ public class ChannelEditor extends AbstractEntityEditor implements RssNames {
 		getManagedForm().addPart(editPart);
 	}
 
+	private void populateFeedPanel(Composite panel, final Node item) {
+		TableViewer viewer = new TableViewer(panel, SWT.V_SCROLL);
+		// TableColumnLayout tableColumnLayout = createProductionsTableColumns(
+		// panel, viewer);
+		// panel.setLayout(tableColumnLayout);
+		PeopleUiUtils.setTableDefaultStyle(viewer, 60);
+
+		// compulsory content provider
+		viewer.setContentProvider(new BasicNodeListContentProvider());
+
+		// TableViewerColumn col = ViewerUtils.createTableViewerColumn(viewer,
+		// "", SWT.LEFT,
+		// 400);
+		// tableColumnLayout.setColumnData(col.getColumn(), new
+		// ColumnWeightData(
+		// 200, 80, true));
+		// viewer.setLabelProvider(labelProvider)col.setLabelProvider(new
+		// RssListLabelProvider(false));
+		//
+		// TODO Set input
+		// peopleService.getRelatedEntities(entity,
+		// PeopleTypes.PEOPLE_MEMBER, FilmTypes.FILM)
+		// viewer.setInput();
+
+	}
+
 	protected void addTxtModifyListener(final AbstractFormPart part,
 			final Text text, final Node entity, final String propName,
 			final int propType) {
@@ -161,7 +189,7 @@ public class ChannelEditor extends AbstractEntityEditor implements RssNames {
 		text.setLayoutData(new RowData(width, SWT.DEFAULT));
 		return text;
 	}
-	
+
 	public void setRssManager(RssManager rssManager) {
 		this.rssManager = rssManager;
 	}
