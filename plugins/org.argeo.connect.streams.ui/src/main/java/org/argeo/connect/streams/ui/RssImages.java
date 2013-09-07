@@ -24,18 +24,18 @@
  * combination shall include the source code for the parts of such software
  * which are used as well as that of the covered work.
  */
-package org.argeo.connect.people.ui;
+package org.argeo.connect.streams.ui;
 
 import org.eclipse.swt.graphics.Image;
 
 /** Shared icons. */
-public class PeopleImages {
-	public final static Image PERSON = PeopleUiPlugin.getImageDescriptor(
-			"icons/person.gif").createImage();
+public class RssImages {
+	// public final static Image PERSON = RssUiPlugin.getImageDescriptor(
+	// "icons/person.gif").createImage();
 
-	public final static Image LOGO = PeopleUiPlugin.getImageDescriptor(
+	public final static Image LOGO = RssUiPlugin.getImageDescriptor(
 			"icons/logo.gif").createImage();
 
-	public final static Image NO_PICTURE = PeopleUiPlugin.getImageDescriptor(
-			"icons/noPicture.gif").createImage();
+	// public final static Image NO_PICTURE = RssUiPlugin.getImageDescriptor(
+	// "icons/noPicture.gif").createImage();
 }

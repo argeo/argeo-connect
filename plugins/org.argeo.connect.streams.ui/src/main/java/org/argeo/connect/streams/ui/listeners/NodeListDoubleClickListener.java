@@ -67,7 +67,7 @@ public class NodeListDoubleClickListener implements IDoubleClickListener {
 		if (obj instanceof Node) {
 			try {
 				Node curNode = (Node) obj;
-				if (curNode.isNodeType(RssTypes.RSS_CHANNEL)) {
+				if (curNode.isNodeType(RssTypes.RSS_CHANNEL_INFO)) {
 					openNodeEditor(ChannelEditor.ID, curNode.getIdentifier());
 					// if (PeopleTypes.PEOPLE_PERSON.equals(parentNodeType)) {
 					// Node linkedOrg = peopleService.getEntityById(session,

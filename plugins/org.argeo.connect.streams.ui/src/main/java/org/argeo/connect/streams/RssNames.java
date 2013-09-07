@@ -1,15 +1,17 @@
 package org.argeo.connect.streams;
 
-import javax.jcr.Property;
-
 /** Property Names for streams concepts. */
 public interface RssNames {
 
-	//
-	public final static String RSS_TITLE = Property.JCR_TITLE;
-	public final static String RSS_DESCRIPTION = Property.JCR_DESCRIPTION;
+	// CHANNEL
 	public final static String RSS_LINK = "rss:link";
 	public final static String RSS_URI = "rss:uri";
+
+	// CHANNEL INFO - Path to the child that contains all versionable info
+	public final static String RSS_CHANNEL_INFO = "rss:channelInfo";
+
+	// public final static String RSS_TITLE = Property.JCR_TITLE;
+	// public final static String RSS_DESCRIPTION = Property.JCR_DESCRIPTION;
 
 	// ITEM
 	public final static String RSS_CATEGORY = "rss:category";

@@ -7,6 +7,6 @@
 	<bean id="org.argeo.connect.streams.ui.channelEditor" class="org.argeo.connect.streams.ui.editors.ChannelEditor"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
-		<property name="rssManager" ref="rssManager" />
+		<!-- <property name="rssManager" ref="rssManager" /> -->
 	</bean>
 </beans>

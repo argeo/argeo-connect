@@ -247,7 +247,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		GridData gd = new GridData();
 		gd.grabExcessHorizontalSpace = true;
 		gd.horizontalAlignment = SWT.FILL;
-		
+
 		// gd.grabExcessHorizontalSpace = true;
 		gd.verticalAlignment = SWT.FILL;
 		mainInfoComposite.setLayoutData(gd);
@@ -283,7 +283,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		GridLayout gl = new GridLayout();
 		gl.verticalSpacing = 0;
 		parent.setLayout(gl);
-		
+
 		Composite buttons = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
 		gd.grabExcessHorizontalSpace = true;
@@ -531,7 +531,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	}
 
 	protected boolean isCheckedOutByMe() {
-		return isCheckedOutByMe;
+		return CommonsJcrUtils.isNodeCheckedOutByMe(entityNode);
 	}
 
 	/** Manage check out state and corresponding refresh of the UI */

@@ -7,13 +7,13 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
+import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
-import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.streams.RssNames;
 
 /** Some helper methods to generate html snippets */
@@ -32,6 +32,8 @@ public class RssHtmlProvider implements RssNames {
 		builder.append(CommonsJcrUtils.getStringValue(node, Property.JCR_TITLE));
 		builder.append("</b>");
 		builder.append("<br/>");
+		builder.append(getLastUpdateSnippet(node));
+		builder.append("<br/>");
 		builder.append(RssHtmlProvider.getTags(node));
 		builder.append("<br/>");
 
@@ -43,15 +45,13 @@ public class RssHtmlProvider implements RssNames {
 		return builder.toString();
 	}
 
-	public static String getChannelMedium(Node node) {
+	public static String getChannelMedium(Node node) throws RepositoryException {
 		StringBuilder builder = new StringBuilder();
-		builder.append("<b>");
+		builder.append("<b><big>");
 		builder.append(CommonsJcrUtils.getStringValue(node, Property.JCR_TITLE));
-		builder.append("</b>");
-		builder.append("<br/>");
+		builder.append("</big></b><br/>");
 		builder.append(RssHtmlProvider.getTags(node));
 		builder.append("<br/>");
-
 		String desc = CommonsJcrUtils.getStringValue(node,
 				Property.JCR_DESCRIPTION);
 		if (desc != null) {
@@ -69,6 +69,8 @@ public class RssHtmlProvider implements RssNames {
 		// + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " "
 		builder.append("href=\"");
 		link = link.replaceAll("&", "&amp;");
+		builder.append(link);
+
 		// builder.append(shortenString(link, link.indexOf("&emc")));
 		builder.append("\"").append(" target=\"_blank\" ").append(">");
 		// builder.append("a link");
@@ -98,26 +100,40 @@ public class RssHtmlProvider implements RssNames {
 
 	public static String getItemMedium(Node node) {
 		StringBuilder builder = new StringBuilder();
-		String link = PeopleJcrUtils.getDefaultContactValue(node, RSS_LINK);
+		String link = CommonsJcrUtils.getStringValue(node, RSS_LINK);
 		// TODO add image management
-		builder.append("<span> <big> <a "
-				+ PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\"");
-		builder.append(link).append("\"").append(" target=\"_blank\" ")
-				.append(">");
-		builder.append(CommonsJcrUtils.getStringValue(node, Property.JCR_TITLE));
-		builder.append("</a></big> </span>");
-		builder.append("<br/>");
+		builder.append("<span> <big> <a ");
+		// builder.append(PeopleUiConstants.PEOPLE_CSS_URL_STYLE);
+		builder.append("href=\"");
+		link = link.replaceAll("&", "&amp;");
+		builder.append(link);
+
+		builder.append("\"").append(" target=\"_blank\" ").append(">");
+		String title = CommonsJcrUtils.getStringValue(node, Property.JCR_TITLE);
+		builder.append(title);
+		builder.append("</a>");
+		builder.append("</big> </span>");
 
 		// Add tags
 		builder.append(" Published on ");
 		builder.append(RssHtmlProvider.getPubDate(node));
 		builder.append("<br/>");
+		builder.append(RssHtmlProvider.getTags(node));
 
 		String desc = CommonsJcrUtils.getStringValue(node,
 				Property.JCR_DESCRIPTION);
 		if (desc != null) {
-			builder.append(shortenString(desc, SHORT_DESCRIPTION_LENGHT));
+			builder.append("<span style=\"float:left;padding:0px;white-space:pre-wrap;\" >");
+			int index = desc.indexOf("<");
+			if (index > 0)
+				desc = desc.substring(0, desc.indexOf("<"));
+
+			// builder.append(shortenString(desc, SHORT_DESCRIPTION_LENGHT));
+			builder.append(desc);
+			builder.append("</span>");
+
 		}
+		// System.out.println("\n\n" + builder.toString() + "\n\n");
 		return builder.toString();
 	}
 
@@ -126,10 +142,10 @@ public class RssHtmlProvider implements RssNames {
 		StringBuilder builder = new StringBuilder();
 		try {
 			if (entity.hasProperty(RSS_PUB_DATE)) {
-				builder.append("<small><i>");
+				// builder.append("<small><i>");
 				builder.append(df.format(entity.getProperty(RSS_PUB_DATE)
 						.getDate().getTime()));
-				builder.append("</i></small>");
+				// builder.append("</i></small>");
 			}
 			return builder.toString();
 		} catch (RepositoryException re) {
@@ -137,15 +153,39 @@ public class RssHtmlProvider implements RssNames {
 		}
 	}
 
+	/** shortcut to set form data while dealing with switching panel */
+	public static String getLastUpdateSnippet(Node entity) {
+		StringBuilder builder = new StringBuilder();
+		try {
+			if (entity.isNodeType(NodeType.MIX_VERSIONABLE)) {
+				builder.append("<small><i>").append(
+						"Last updated on ");
+				builder.append(df.format(entity
+						.getProperty(Property.JCR_LAST_MODIFIED).getDate()
+						.getTime()));
+				builder.append(", by ");
+				builder.append(entity
+						.getProperty(Property.JCR_LAST_MODIFIED_BY).getString());
+				builder.append("</i></small>");
+			}
+			return builder.toString();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Cannot create organizations content", re);
+		}
+	}
+	
 	/** a snippet to display tags that are linked to the current entity */
 	public static String getTags(Node entity) {
 		try {
 			StringBuilder tags = new StringBuilder();
-			if (entity.hasProperty("prop")) {
-				tags.append("<i>");
-				for (Value value : entity.getProperty(("proo")).getValues())
-					tags.append("#").append(value.getString()).append(" ");
-				tags.append("</i>");
+			if (entity.hasProperty(RSS_CATEGORY)) {
+				for (Value value : entity.getProperty(RSS_CATEGORY).getValues()) {
+					tags.append("<i>");
+					String currVal = value.getString().replaceAll("&", "&amp;");
+					tags.append("#").append(currVal).append(" ");
+					tags.append("</i>");
+				}
+
 			}
 			return tags.toString();
 		} catch (RepositoryException e) {

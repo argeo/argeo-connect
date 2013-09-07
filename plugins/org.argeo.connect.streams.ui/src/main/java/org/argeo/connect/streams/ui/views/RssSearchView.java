@@ -4,7 +4,6 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Constraint;
@@ -20,7 +19,9 @@ import org.argeo.connect.people.ui.editors.EntityEditorInput;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.streams.RssManager;
+import org.argeo.connect.streams.RssNames;
 import org.argeo.connect.streams.RssTypes;
+import org.argeo.connect.streams.ui.RssImages;
 import org.argeo.connect.streams.ui.RssUiPlugin;
 import org.argeo.connect.streams.ui.editors.ChannelEditor;
 import org.argeo.connect.streams.ui.listeners.NodeListDoubleClickListener;
@@ -41,6 +42,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -72,55 +74,72 @@ public class RssSearchView extends ViewPart {
 		parent.setLayout(new GridLayout(1, false));
 
 		addHeaderPanel(parent);
-		addNewFeedPanel(parent);
 		addFilterPanel(parent);
 		entityViewer = createListPart(parent, new RssListLabelProvider());
 
 		// set data
-		refreshFilteredList(RssTypes.RSS_CHANNEL);
+		refreshFilteredList(RssTypes.RSS_CHANNEL_INFO);
 	}
 
 	public void addHeaderPanel(Composite parent) {
-		parent.setLayout(new GridLayout());
-		// The logo
-		// Label image = new Label(parent, SWT.NONE);
-		// image.setBackground(parent.getBackground());
-		// image.setImage(DemoImages.DEMO_IMG_LOGO);
-		// image.setLayoutData(new GridData());
+		Composite mainPannel = new Composite(parent, SWT.NO_FOCUS);
+		GridData gd = new GridData();
+		// gd.widthHint = 180;
+		gd.grabExcessHorizontalSpace = true;
+		mainPannel.setLayoutData(gd);
 
-		Link link = new Link(parent, SWT.NONE);
-		link.setText("<a>Home</a>");
+		mainPannel.setLayout(new GridLayout(1, false));
+		// The logo
+		Label image = new Label(mainPannel, SWT.NO_FOCUS);
+		image.setBackground(parent.getBackground());
+		image.setImage(RssImages.LOGO);
+		image.setSize(120, 100);
+
+		Composite bottomPannel = new Composite(mainPannel, SWT.NONE);
+		bottomPannel.setLayout(new GridLayout(2, false));
+		gd = new GridData(SWT.RIGHT, SWT.TOP, true, true);
+		// gd.widthHint = 180;
+		gd.grabExcessHorizontalSpace = true;
+		bottomPannel.setLayoutData(gd);
+
+		bottomPannel.setLayout(new GridLayout(2, false));
+		Link link = new Link(bottomPannel, SWT.RIGHT);
+		link.setText("<a>My Feeds...</a>");
 		link.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
-				refreshFilteredList(RssTypes.RSS_CHANNEL);
+				refreshFilteredList(RssTypes.RSS_CHANNEL_INFO);
 				// CommandUtils.callCommand(OpenDefaultEditor.ID);
 			}
 		});
+		// gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
+		// link.setLayoutData(gd);
 
-		link = new Link(parent, SWT.NONE);
-		link.setText("<a>A few Chanels</a>");
-		link.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
+		addNewFeedPanel(bottomPannel);
 
-			@Override
-			public void widgetSelected(final SelectionEvent event) {
-				openEditorForId(RssTypes.RSS_CHANNEL);
-			}
-		});
-
-		link = new Link(parent, SWT.NONE);
-		link.setText("<a>23035 Feeds </a>");
-		link.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(final SelectionEvent event) {
-				openEditorForId(RssTypes.RSS_ITEM);
-			}
-		});
+		// link = new Link(parent, SWT.NONE);
+		// link.setText("<a>A few Chanels</a>");
+		// link.addSelectionListener(new SelectionAdapter() {
+		// private static final long serialVersionUID = 1L;
+		//
+		// @Override
+		// public void widgetSelected(final SelectionEvent event) {
+		// openEditorForId(RssTypes.RSS_CHANNEL);
+		// }
+		// });
+		//
+		// link = new Link(parent, SWT.NONE);
+		// link.setText("<a>23035 Feeds </a>");
+		// link.addSelectionListener(new SelectionAdapter() {
+		// private static final long serialVersionUID = 1L;
+		//
+		// @Override
+		// public void widgetSelected(final SelectionEvent event) {
+		// openEditorForId(RssTypes.RSS_ITEM);
+		// }
+		// });
 	}
 
 	private void openEditorForId(String uid) {
@@ -143,11 +162,9 @@ public class RssSearchView extends ViewPart {
 		// Text Area for the filter
 		newFeedTxt = new Text(panel, SWT.BORDER | SWT.ICON_CANCEL | SWT.SINGLE);
 		newFeedTxt.setMessage(NEW_FEED_MSG);
-		GridData gd = new GridData(GridData.GRAB_HORIZONTAL
-				| GridData.HORIZONTAL_ALIGN_FILL);
-		gd.widthHint = 200;
-
-		// gd.grabExcessHorizontalSpace = true;
+		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gd.widthHint = 180;
+		gd.grabExcessHorizontalSpace = true;
 		newFeedTxt.setLayoutData(gd);
 
 		Button okBtn = new Button(panel, SWT.PUSH);
@@ -169,14 +186,14 @@ public class RssSearchView extends ViewPart {
 
 	private boolean registerRssLink(String sourceStr) {
 		try {
-			Node channel = rssManager.getOrCreateChannel(session, sourceStr);
+			Node channelInfo = rssManager
+					.getOrCreateChannel(session, sourceStr).getNode(
+							RssNames.RSS_CHANNEL_INFO);
 			rssManager.retrieveItems();
-			channel.addMixin(NodeType.MIX_LAST_MODIFIED);
-			channel.addMixin(NodeType.MIX_VERSIONABLE);
-			CommonsJcrUtils.saveAndCheckin(channel);
-			channel.getSession().getWorkspace().getVersionManager()
-					.checkin(channel.getPath());
-			openEditorForId(channel.getIdentifier());
+			CommonsJcrUtils.saveAndCheckin(channelInfo);
+			channelInfo.getSession().getWorkspace().getVersionManager()
+					.checkin(channelInfo.getPath());
+			openEditorForId(channelInfo.getIdentifier());
 
 		} catch (RepositoryException e) {
 			throw new ArgeoException(

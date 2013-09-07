@@ -15,7 +15,7 @@ public class RssPerspective implements IPerspectiveFactory {
 		layout.setFixed(false);
 
 		IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT,
-				0.5f, editorArea);
+				0.3f, editorArea);
 		left.addView(RssSearchView.ID);
 	}
 }

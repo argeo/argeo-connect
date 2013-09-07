@@ -115,9 +115,15 @@ public class RssManagerImpl implements RssNames, RssManager {
 			Node channelNode = adminSession.getNode(
 					RssConstants.RSS_CHANNELS_BASE).addNode(nodeName,
 					RssTypes.RSS_CHANNEL);
-			channelNode.setProperty(Property.JCR_TITLE, feed.getTitle());
+
 			channelNode.setProperty(RSS_URI, url);
 			channelNode.setProperty(RSS_LINK, feed.getLink());
+
+			Node channelInfoNode = channelNode.getNode(RSS_CHANNEL_INFO);
+			channelInfoNode.setProperty(Property.JCR_TITLE, feed.getTitle());
+			channelInfoNode.setProperty(Property.JCR_DESCRIPTION,
+					feed.getDescription());
+
 			if (log.isDebugEnabled())
 				log.debug("Registered channel: '" + feed.getTitle() + "' ("
 						+ url + ")");
@@ -134,8 +140,8 @@ public class RssManagerImpl implements RssNames, RssManager {
 			for (NodeIterator nit = adminSession.getNode(
 					RssConstants.RSS_CHANNELS_BASE).getNodes(); nit.hasNext();) {
 				Node channelNode = nit.nextNode();
-				String title = channelNode.getProperty(Property.JCR_TITLE)
-						.getString();
+				String title = channelNode.getNode(RSS_CHANNEL_INFO)
+						.getProperty(Property.JCR_TITLE).getString();
 				String url = channelNode.getProperty(RSS_URI).getString();
 				try {
 					URL feedUrl = new URL(url);

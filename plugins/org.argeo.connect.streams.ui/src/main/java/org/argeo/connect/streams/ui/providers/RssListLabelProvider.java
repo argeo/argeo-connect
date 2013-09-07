@@ -35,7 +35,7 @@ public class RssListLabelProvider extends LabelProvider implements RssNames {
 					builder.append(RssHtmlProvider.getItemShort(node));
 				else
 					builder.append(RssHtmlProvider.getItemMedium(node));
-			} else if (node.isNodeType(RssTypes.RSS_CHANNEL)) {
+			} else if (node.isNodeType(RssTypes.RSS_CHANNEL_INFO)) {
 				if (smallList)
 					builder.append(RssHtmlProvider.getChannelShort(node));
 				else

@@ -28,7 +28,6 @@
    </extension>
    <extension
          point="org.eclipse.ui.editors">
-   
      <editor
            class="org.argeo.eclipse.spring.SpringExtensionFactory"
            default="false"
@@ -36,7 +35,6 @@
            id="org.argeo.connect.streams.ui.channelEditor"
            name="New...">
       </editor>
-   
    <!--    <editor
             class="org.argeo.eclipse.spring.SpringExtensionFactory"
             default="false"
@@ -44,13 +42,64 @@
             name="Link">
       </editor> --> 
    </extension>
-   	<extension
-         point="org.eclipse.ui.commands">		
-    </extension>
+   	<!-- COMMANDS -->	
+	<!-- Check in and out -->
+	<extension
+         point="org.eclipse.ui.commands">
+		<command
+      		id="org.argeo.connect.people.ui.checkOutItem"
+            name="checkOutItem">
+    	</command>
+    	<command
+      		id="org.argeo.connect.people.ui.cancelAndCheckInItem"
+            name="cancelAndcheckInItem">
+    	</command>
+   	</extension>
 	<extension
          point="org.eclipse.ui.menus">
 	</extension>
-	
+		<!-- SPECIFIC MANAGEMENT OF THE CHECK OUT ITEM -->
+	<extension
+		point="org.eclipse.ui.handlers">
+		<handler
+			class="org.argeo.connect.people.ui.commands.CheckOutItem"
+			commandId="org.argeo.connect.people.ui.checkOutItem">
+			<activeWhen>
+					<with
+						variable="org.argeo.connect.people.ui.checkOutState">
+						<equals value="notCheckedOut" />
+					</with>
+    			
+			</activeWhen>
+		</handler>
+		<handler
+			class="org.argeo.connect.people.ui.commands.CancelAndCheckInItem"
+			commandId="org.argeo.connect.people.ui.cancelAndCheckInItem">
+			<activeWhen>
+					<with
+						variable="org.argeo.connect.people.ui.checkOutState">
+						<equals value="checkedOut" />
+					</with>
+			</activeWhen>
+		</handler>
+	</extension>
+
+	<!-- Workbench listeners --> 
+	<extension point="org.eclipse.ui.startup">
+   		<startup class="org.argeo.connect.people.ui.listeners.PartStateChanged"/>
+	</extension>
+
+	<!-- Services -->
+	<extension
+      	point="org.eclipse.ui.services">
+	   	<sourceProvider
+	        provider="org.argeo.connect.people.ui.utils.CheckoutSourceProvider">
+	     	<variable
+	            name="org.argeo.connect.people.ui.checkOutState"
+	            priorityLevel="workbench">
+	      	</variable>
+	   	</sourceProvider>
+	</extension>
 		<!-- Entry point for the RAP application --> 
 	<extension
 		point="org.eclipse.rap.ui.entrypoint">
