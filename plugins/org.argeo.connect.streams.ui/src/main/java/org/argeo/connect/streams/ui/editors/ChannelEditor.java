@@ -61,8 +61,11 @@ import org.eclipse.ui.forms.IFormPart;
 // import org.eclipse.rap.rwt.RWT;
 
 /**
- * Sample editor page that display reference controls and manage life cycle of a
- * given Node
+ * Manage a single channel or a group:
+ * <ul>
+ * <li>enrich meta data for a given source.</li>
+ * <li>display corresponding items</li>
+ * </ul>
  */
 public class ChannelEditor extends AbstractEntityEditor implements RssNames {
 	final static Log log = LogFactory.getLog(ChannelEditor.class);
