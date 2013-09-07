@@ -187,7 +187,7 @@ public class ChannelEditor extends AbstractEntityEditor implements RssNames {
 		table.setHeaderVisible(false);
 		// Enable markups
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(75));
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(70));
 		v.setContentProvider(new BasicNodeListContentProvider());
 		// v.addDoubleClickListener(new
 		// NodeListDoubleClickListener(peopleService));
