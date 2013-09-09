@@ -68,14 +68,14 @@ public class RssHtmlProvider implements RssNames {
 		builder.append("<a ");
 		// + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " "
 		builder.append("href=\"");
-		link = link.replaceAll("&", "&amp;");
+		link = cleanString(link); // link.replaceAll("&", "&amp;");
 		builder.append(link);
 
 		// builder.append(shortenString(link, link.indexOf("&emc")));
 		builder.append("\"").append(" target=\"_blank\" ").append(">");
 		// builder.append("a link");
 		String title = CommonsJcrUtils.getStringValue(node, Property.JCR_TITLE);
-		builder.append(title);
+		builder.append(cleanString(title));
 		// builder.append(shortenString(title, 40));
 		builder.append("</a>");
 
@@ -91,10 +91,11 @@ public class RssHtmlProvider implements RssNames {
 			if (index > 0)
 				desc = desc.substring(0, desc.indexOf("<"));
 			// builder.append("<span>");
-			builder.append(desc);
+			builder.append(cleanString(desc));
 		}
 		builder.append("</span>");
 
+		System.out.println(builder.toString());
 		return builder.toString();
 	}
 
@@ -105,7 +106,7 @@ public class RssHtmlProvider implements RssNames {
 		builder.append("<span> <big> <a ");
 		// builder.append(PeopleUiConstants.PEOPLE_CSS_URL_STYLE);
 		builder.append("href=\"");
-		link = link.replaceAll("&", "&amp;");
+		link = cleanString(link); // link.replaceAll("&", "&amp;");
 		builder.append(link);
 
 		builder.append("\"").append(" target=\"_blank\" ").append(">");
@@ -158,8 +159,7 @@ public class RssHtmlProvider implements RssNames {
 		StringBuilder builder = new StringBuilder();
 		try {
 			if (entity.isNodeType(NodeType.MIX_VERSIONABLE)) {
-				builder.append("<small><i>").append(
-						"Last updated on ");
+				builder.append("<small><i>").append("Last updated on ");
 				builder.append(df.format(entity
 						.getProperty(Property.JCR_LAST_MODIFIED).getDate()
 						.getTime()));
@@ -173,7 +173,7 @@ public class RssHtmlProvider implements RssNames {
 			throw new PeopleException("Cannot create organizations content", re);
 		}
 	}
-	
+
 	/** a snippet to display tags that are linked to the current entity */
 	public static String getTags(Node entity) {
 		try {
@@ -191,6 +191,34 @@ public class RssHtmlProvider implements RssNames {
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Error while getting tags for entity", e);
 		}
+	}
+
+	public static String cleanString(String string) {
+		StringBuilder builder = new StringBuilder();
+
+		string = string.replaceAll("&nbsp;", " ");
+		string = string.replaceAll("’", "&#8217;");
+		string = string.replaceAll("border=\"0\"", "");
+			
+		String[] ss = string.split("&");
+		boolean notFirst = false;
+		for (String curr : ss) {
+			String clean;
+			int index = curr.indexOf(";");
+			if (curr.startsWith("rsquo;"))
+				clean = "&#8217;" + curr.substring(6);
+			else if (index > 0 && index < 6)
+				clean = "&" + curr;
+			else if (notFirst)
+				clean = "&amp;" + curr;
+			else
+				clean = curr;
+			notFirst = true;
+			builder.append(clean);
+			System.out.println(curr + " - " + clean);
+		}
+
+		return builder.toString();
 	}
 
 	private static String shortenString(String string, int lenght) {

@@ -1,7 +1,11 @@
 package org.argeo.connect.streams.ui.views;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.QueryManager;
@@ -12,6 +16,8 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.JcrUiUtils;
@@ -25,12 +31,14 @@ import org.argeo.connect.streams.ui.RssImages;
 import org.argeo.connect.streams.ui.RssUiPlugin;
 import org.argeo.connect.streams.ui.editors.ChannelEditor;
 import org.argeo.connect.streams.ui.listeners.NodeListDoubleClickListener;
+import org.argeo.connect.streams.ui.providers.RssHtmlProvider;
 import org.argeo.connect.streams.ui.providers.RssListLabelProvider;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -54,7 +62,7 @@ import org.eclipse.ui.part.ViewPart;
 /** Fisrt draft of a user friendly pannel to manage rss channels and feeds */
 public class RssSearchView extends ViewPart {
 
-	// private final static Log log = LogFactory.getLog(RssSearchView.class);
+	private final static Log log = LogFactory.getLog(RssSearchView.class);
 	public static final String ID = RssUiPlugin.PLUGIN_ID + ".rssSearchView";
 
 	/* DEPENDENCY INJECTION */
@@ -68,6 +76,9 @@ public class RssSearchView extends ViewPart {
 	private Text newFeedTxt;
 	private final static String FILTER_HELP_MSG = "Enter filter criterion";
 	private final static String NEW_FEED_MSG = "Register a Rss link...";
+
+	// A dummy label to test stroing cleaner
+	private Label toremove;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -94,6 +105,10 @@ public class RssSearchView extends ViewPart {
 		image.setBackground(parent.getBackground());
 		image.setImage(RssImages.LOGO);
 		image.setSize(120, 100);
+
+		// a dummy label to test string cleaner
+		toremove = new Label(mainPannel, SWT.NO_FOCUS);
+		toremove.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 
 		Composite bottomPannel = new Composite(mainPannel, SWT.NONE);
 		bottomPannel.setLayout(new GridLayout(2, false));
@@ -210,14 +225,50 @@ public class RssSearchView extends ViewPart {
 		filterTxt.setMessage(FILTER_HELP_MSG);
 		filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 				| GridData.HORIZONTAL_ALIGN_FILL));
+
+		final DropDown dd = new DropDown(filterTxt);
+		dd.setVisibleItemCount(5);
+		// dd.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+
+		// dd.show();
+		// dd.setVisible(true);
 		filterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 5003010530960334977L;
 
 			public void modifyText(ModifyEvent event) {
 				// might be better to use an asynchronous Refresh();
 				refreshFilteredList(RssTypes.RSS_ITEM);
+				
+				NodeIterator ni = doSearch(RssTypes.RSS_ITEM);
+				int i = 0;
+				List<String> results = new ArrayList<String>();
+				while (ni.hasNext() && i < 5) {
+					Node currNode = ni.nextNode();
+					String currStr = RssHtmlProvider.getItemShort(currNode);
+					// String currStr = CommonsJcrUtils.getStringValue(currNode,
+					// Property.JCR_TITLE);
+					if (CommonsJcrUtils.checkNotEmptyString(currStr)) {
+						results.add(currStr);
+					}
+					i++;
+				}
+
+				int lenght = results.size();
+
+				if (lenght == 0) {
+					dd.hide();
+					return;
+				} else {
+					dd.setVisibleItemCount(lenght);
+					dd.setItems(results.toArray(new String[lenght]));
+					dd.show();
+				}
+			
 			}
 		});
+
+		
+		
 	}
 
 	protected TableViewer createListPart(Composite parent,
@@ -261,6 +312,35 @@ public class RssSearchView extends ViewPart {
 	}
 
 	protected void refreshFilteredList(String nodeType) {
+		entityViewer.setInput(JcrUiUtils.nodeIteratorToList(doSearch(nodeType),
+				30));
+
+		try {
+			NodeIterator ni = doSearch(nodeType);
+			while (ni.hasNext()) {
+				Node currNode = ni.nextNode();
+				String name = currNode.getName();
+				try {
+					String desc = CommonsJcrUtils.getStringValue(currNode,
+							Property.JCR_DESCRIPTION);
+					String cdesc = RssHtmlProvider.cleanString(desc);
+					toremove.setText(cdesc);
+					// toremove.layout();
+				} catch (Exception e) {
+					log.error("Error while rendering node: " + name, e);
+
+				}
+
+			}
+		} catch (RepositoryException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		
+	}
+
+	protected NodeIterator doSearch(String nodeType) {
 		try {
 			String filter = filterTxt.getText();
 			QueryManager queryManager = session.getWorkspace()
@@ -295,7 +375,7 @@ public class RssSearchView extends ViewPart {
 
 			QueryResult result = query.execute();
 			NodeIterator ni = result.getNodes();
-			entityViewer.setInput(JcrUiUtils.nodeIteratorToList(ni, 30));
+			return ni;
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Unable to list " + nodeType, e);
 		}
