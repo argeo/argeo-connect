@@ -1,5 +1,7 @@
 package org.argeo.connect.streams.ui.providers;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -9,12 +11,19 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.streams.RssConstants;
 import org.argeo.connect.streams.RssNames;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.xml.sax.InputSource;
+
+import com.sun.syndication.io.SAXBuilder;
 
 /** Some helper methods to generate html snippets */
 
@@ -64,19 +73,13 @@ public class RssHtmlProvider implements RssNames {
 		StringBuilder builder = new StringBuilder();
 		String link = CommonsJcrUtils.getStringValue(node, RSS_LINK);
 
-		builder.append("<span> ");
-		builder.append("<a ");
-		// + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " "
+		builder.append("<span style=\"float:left;padding:0px;white-space:pre-wrap;\"> ");
+		builder.append("<a " + RssConstants.CSS_URL_STYLE + " ");
 		builder.append("href=\"");
-		link = cleanString(link); // link.replaceAll("&", "&amp;");
-		builder.append(link);
-
-		// builder.append(shortenString(link, link.indexOf("&emc")));
+		builder.append(cleanLink(link));
 		builder.append("\"").append(" target=\"_blank\" ").append(">");
-		// builder.append("a link");
 		String title = CommonsJcrUtils.getStringValue(node, Property.JCR_TITLE);
-		builder.append(cleanString(title));
-		// builder.append(shortenString(title, 40));
+		builder.append(title);
 		builder.append("</a>");
 
 		builder.append("<br/>");
@@ -87,29 +90,29 @@ public class RssHtmlProvider implements RssNames {
 		if (desc != null) {
 			// TODO clean
 			// String sLegalName = legalName.replaceAll("[^a-zA-Z0-9]", "");
-			int index = desc.indexOf("<");
-			if (index > 0)
-				desc = desc.substring(0, desc.indexOf("<"));
+			// int index = desc.indexOf("<");
+			// if (index > 0)
+			// desc = desc.substring(0, desc.indexOf("<"));
 			// builder.append("<span>");
-			builder.append(cleanString(desc));
+			builder.append(cleanDescription(desc));
 		}
 		builder.append("</span>");
-
-		System.out.println(builder.toString());
-		return builder.toString();
+		String result = builder.toString();
+		// result = cleanString(result);
+		log.debug("after: " + result);
+		return result;
 	}
 
 	public static String getItemMedium(Node node) {
 		StringBuilder builder = new StringBuilder();
 		String link = CommonsJcrUtils.getStringValue(node, RSS_LINK);
 		// TODO add image management
-		builder.append("<span> <big> <a ");
-		// builder.append(PeopleUiConstants.PEOPLE_CSS_URL_STYLE);
+		builder.append("<span> <big> <a ").append(RssConstants.CSS_URL_STYLE)
+				.append(" ");
 		builder.append("href=\"");
-		link = cleanString(link); // link.replaceAll("&", "&amp;");
-		builder.append(link);
-
+		builder.append(cleanLink(link));
 		builder.append("\"").append(" target=\"_blank\" ").append(">");
+
 		String title = CommonsJcrUtils.getStringValue(node, Property.JCR_TITLE);
 		builder.append(title);
 		builder.append("</a>");
@@ -193,32 +196,32 @@ public class RssHtmlProvider implements RssNames {
 		}
 	}
 
-	public static String cleanString(String string) {
-		StringBuilder builder = new StringBuilder();
+	// TODO clean this
+	private final static String XML_PREFIX = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><xml>";
+	private final static String XML_SUFFIX = "</xml>";
 
-		string = string.replaceAll("&nbsp;", " ");
-		string = string.replaceAll("’", "&#8217;");
-		string = string.replaceAll("border=\"0\"", "");
-			
-		String[] ss = string.split("&");
-		boolean notFirst = false;
-		for (String curr : ss) {
-			String clean;
-			int index = curr.indexOf(";");
-			if (curr.startsWith("rsquo;"))
-				clean = "&#8217;" + curr.substring(6);
-			else if (index > 0 && index < 6)
-				clean = "&" + curr;
-			else if (notFirst)
-				clean = "&amp;" + curr;
-			else
-				clean = curr;
-			notFirst = true;
-			builder.append(clean);
-			System.out.println(curr + " - " + clean);
+	public static String cleanLink(String string) {
+		string = StringEscapeUtils.escapeXml(string.trim());
+		return string;
+	}
+
+	public static String cleanDescription(String string) {
+		InputStream is = null;
+		try {
+			string = string.replaceAll("&(?![#a-zA-Z0-9]+;)", "&#38;");
+			string = string.replaceAll("&nbsp;", "&#160;");
+			string = XML_PREFIX + string + XML_SUFFIX;
+			SAXBuilder builder = new SAXBuilder(false);
+			is = new ByteArrayInputStream(string.getBytes("utf-8"));
+			Document doc = (Document) builder.build(new InputSource(is));
+			Element rootNode = doc.getRootElement();
+			String result = rootNode.getText();
+
+			result = StringEscapeUtils.escapeXml(result.trim());
+			return result;
+		} catch (Exception ex) {
+			throw new ArgeoException("Unable to parse and clean description");
 		}
-
-		return builder.toString();
 	}
 
 	private static String shortenString(String string, int lenght) {
@@ -227,5 +230,67 @@ public class RssHtmlProvider implements RssNames {
 		else
 			return string;
 	}
+
+	// public static String cleanString(String string) {
+	// InputStream is = null;
+	// try {
+	// string = string.replaceAll("&(?![#a-zA-Z0-9]+;)", "&#38;");
+	// string = string.replaceAll("&nbsp;", "&#160;");
+	// string = XML_PREFIX + string + XML_SUFFIX;
+	// // string = StringEscapeUtils.escapeXml(string.trim());
+	// SAXBuilder builder = new SAXBuilder(false);
+	// is = new ByteArrayInputStream(string.getBytes("utf-8"));
+	// Document doc = (Document) builder.build(new InputSource(is));
+	// Element rootNode = doc.getRootElement();
+	// Iterator<Element> imgs = rootNode.getChildren("img").iterator();
+	// while (imgs.hasNext()) {
+	// Element img = imgs.next();
+	// img.removeAttribute("name");
+	// img.removeAttribute("border");
+	// }
+	// ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	// XMLOutputter output = new XMLOutputter();
+	// output.output(doc, baos);
+	// string = baos.toString();
+	// // TODO clean this
+	// string = string.substring(XML_PREFIX.length() + 2, string.length()
+	// - XML_SUFFIX.length() - 2);
+	//
+	// // string = string.replaceAll("’", "&#8217;");
+	// // string = string.replaceAll("»", "&#187;");
+	// // string = string.replaceAll("«", "&#171;");
+	// // string = string.replaceAll("›", "&#8250;");
+	// // string = string.replaceAll("‹", "&#8249;");
+	// // string = string.replaceAll("", "&#171;");
+	// // string = string.replaceAll("", "&#171;");
+	// // string = string.replaceAll("", "&#171;");
+	//
+	// // string = string.replaceAll("border=\"0\"", "");
+	//
+	// // String[] ss = string.split("&");
+	// // boolean notFirst = false;
+	// // for (String curr : ss) {
+	// // String clean;
+	// // int index = curr.indexOf(";");
+	// // if (curr.startsWith("rsquo;"))
+	// // clean = "&#8217;" + curr.substring(6);
+	// // else if (index > 0 && index < 6)
+	// // clean = "&" + curr;
+	// // else if (notFirst)
+	// // clean = "&amp;" + curr;
+	// // else
+	// // clean = curr;
+	// // notFirst = true;
+	// // builder.append(clean);
+	// // System.out.println(curr + " - " + clean);
+	// // }
+	//
+	// // return builder.toString();
+	//
+	// return string;
+	// } catch (Exception ex) {
+	// throw new ArgeoException("Unable to clean string");
+	// }
+	// }
 
 }
