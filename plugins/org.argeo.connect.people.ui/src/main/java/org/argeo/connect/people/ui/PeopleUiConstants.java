@@ -9,7 +9,8 @@ public interface PeopleUiConstants {
 	public final static String PANEL_EMPLOYEES = "people:employees";
 	public final static String PANEL_PRODUCTIONS = "people:productions";
 	public final static String PANEL_MEMBERS = "people:members";
-	
+	public final static String PANEL_DESCRIPTION = "people:descriptions";
+
 	/* CUSTOM CSS TAGS */
 	// a composite used to put titles in various lists
 	public final static String PEOPLE_CSS_TITLE_COMPOSITE_FIRST = "peopleCss-titleCompositeFirst";

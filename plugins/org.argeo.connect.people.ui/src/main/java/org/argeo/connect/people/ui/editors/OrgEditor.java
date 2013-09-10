@@ -13,7 +13,7 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.providers.OrgOverviewLabelProvider;
-import org.argeo.connect.people.ui.toolkits.EntityPanelToolkit;
+import org.argeo.connect.people.ui.toolkits.EntityToolkit;
 import org.argeo.connect.people.ui.toolkits.ListPanelToolkit;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -44,6 +44,10 @@ public class OrgEditor extends AbstractEntityEditor {
 	// Main business Objects
 	private Node org;
 
+	// Toolkits
+	private EntityToolkit entityPanelToolkit;
+	private ListPanelToolkit listPanelToolkit;
+
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
@@ -58,13 +62,14 @@ public class OrgEditor extends AbstractEntityEditor {
 		}
 	}
 
-	protected void populateTabFolder(CTabFolder folder) {
-		// Create usefull toolkits
-		EntityPanelToolkit entityPanelToolkit = new EntityPanelToolkit(toolkit,
-				getManagedForm());
-		ListPanelToolkit listPanelToolkit = new ListPanelToolkit(toolkit,
-				getManagedForm(), getPeopleServices(), getPeopleUiServices());
+	@Override
+	protected void createToolkits() {
+		entityPanelToolkit = new EntityToolkit(toolkit, getManagedForm());
+		listPanelToolkit = new ListPanelToolkit(toolkit, getManagedForm(),
+				getPeopleServices(), getPeopleUiServices());
+	}
 
+	protected void populateTabFolder(CTabFolder folder) {
 		// Contact informations
 		String tooltip = "Contact information for "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);

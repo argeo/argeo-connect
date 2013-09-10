@@ -6,12 +6,11 @@ import javax.jcr.PropertyType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.providers.PersonOverviewLabelProvider;
-import org.argeo.connect.people.ui.toolkits.EntityPanelToolkit;
+import org.argeo.connect.people.ui.toolkits.EntityToolkit;
 import org.argeo.connect.people.ui.toolkits.ListPanelToolkit;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -19,11 +18,8 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -31,13 +27,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.AbstractFormPart;
-
-// import org.eclipse.rap.rwt.RWT;
 
 /**
- * Sample editor page that display reference controls and manage life cycle of a
- * given Node
+ * Default connect Person editor page
  */
 public class PersonEditor extends AbstractEntityEditor {
 	final static Log log = LogFactory.getLog(PersonEditor.class);
@@ -47,6 +39,10 @@ public class PersonEditor extends AbstractEntityEditor {
 	// Main business Objects
 	private Node person;
 
+	// Usefull toolkits
+	private EntityToolkit entityTK;
+	private ListPanelToolkit listTK;
+
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
@@ -54,35 +50,37 @@ public class PersonEditor extends AbstractEntityEditor {
 		setPartName(JcrUtils.getStringPropertyQuietly(person,
 				PeopleNames.PEOPLE_LAST_NAME));
 	}
+	
+	@Override
+	protected void createToolkits() {
+		entityTK = new EntityToolkit(toolkit, getManagedForm());
+		listTK = new ListPanelToolkit(toolkit, getManagedForm(),
+				getPeopleServices(), getPeopleUiServices());
+	}
 
 	protected void populateTabFolder(CTabFolder folder) {
-		// Create usefull toolkits
-		EntityPanelToolkit entityPanelToolkit = new EntityPanelToolkit(toolkit,
-				getManagedForm());
-		ListPanelToolkit listPanelToolkit = new ListPanelToolkit(toolkit,
-				getManagedForm(), getPeopleServices(), getPeopleUiServices());
-
 		// Contact informations
 		String tooltip = "Contact information for "
 				+ JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
 		Composite innerPannel = addTabToFolder(folder, SWT.NO_FOCUS,
 				"Contact details", PeopleUiConstants.PANEL_CONTACT_DETAILS,
 				tooltip);
-		entityPanelToolkit.populateContactPanelWithNotes(innerPannel, person);
+		entityTK.populateContactPanelWithNotes(innerPannel, person);
 
 		// Jobs panel
 		tooltip = "Organisations linked to "
 				+ JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
 		innerPannel = addTabToFolder(folder, SWT.NO_FOCUS, "Organisations",
 				PeopleUiConstants.PANEL_JOBS, tooltip);
-		listPanelToolkit.populateJobsPanel(innerPannel, person);
+		listTK.populateJobsPanel(innerPannel, person);
 
-		// Films panel
+		// Film participation panel
+		// TODO: move this in specific film project
 		tooltip = "Films related to "
 				+ JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
 		innerPannel = addTabToFolder(folder, SWT.NO_FOCUS, "Films",
 				PeopleUiConstants.PANEL_PRODUCTIONS, tooltip);
-		listPanelToolkit.populateFilmsPanel(innerPannel, person);
+		listTK.populateFilmsPanel(innerPannel, person);
 		folder.layout();
 	}
 
@@ -118,29 +116,30 @@ public class PersonEditor extends AbstractEntityEditor {
 		editPanel.setLayout(rl);
 
 		// Create edit text
-		final Text salutationTxt = createText(editPanel, "Salutation",
-				"Mr, Mrs...", 40);
-		final Text titleTxt = createText(editPanel, "Title", "Doc., Sir...", 60);
-		final Text firstNameTxt = createText(editPanel, "First Name",
+		final Text salutationTxt = entityTK.createText(editPanel, "Salutation",
+				"Mr, Mrs...", 60);
+		final Text titleTxt = entityTK.createText(editPanel, "Title",
+				"Doc., Sir...", 60);
+		final Text firstNameTxt = entityTK.createText(editPanel, "First Name",
 				"Usual first name for this person", 100);
-		final Text lastNameTxt = createText(editPanel, "Last Name",
+		final Text lastNameTxt = entityTK.createText(editPanel, "Last Name",
 				"Usual last name for this person", 100);
-		final Text suffixTxt = createText(editPanel, "Suffix",
+		final Text suffixTxt = entityTK.createText(editPanel, "Suffix",
 				"Junior, the third...", 80);
 
 		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
 			public void refresh() { // update display value
 				super.refresh();
 				// EDIT PART
-				refreshTextValue(salutationTxt, person,
+				entityTK.refreshTextValue(salutationTxt, person,
 						PeopleNames.PEOPLE_SALUTATION);
-				refreshTextValue(firstNameTxt, person,
+				entityTK.refreshTextValue(firstNameTxt, person,
 						PeopleNames.PEOPLE_FIRST_NAME);
-				refreshTextValue(lastNameTxt, person,
+				entityTK.refreshTextValue(lastNameTxt, person,
 						PeopleNames.PEOPLE_LAST_NAME);
-				refreshTextValue(titleTxt, person,
+				entityTK.refreshTextValue(titleTxt, person,
 						PeopleNames.PEOPLE_PERSON_TITLE);
-				refreshTextValue(suffixTxt, person,
+				entityTK.refreshTextValue(suffixTxt, person,
 						PeopleNames.PEOPLE_NAME_SUFFIX);
 
 				// READ ONLY PART
@@ -157,48 +156,17 @@ public class PersonEditor extends AbstractEntityEditor {
 		};
 
 		// Listeners
-		addTxtModifyListener(editPart, salutationTxt, person,
+		entityTK.addTxtModifyListener(editPart, salutationTxt, person,
 				PeopleNames.PEOPLE_SALUTATION, PropertyType.STRING);
-		addTxtModifyListener(editPart, titleTxt, person,
+		entityTK.addTxtModifyListener(editPart, titleTxt, person,
 				PeopleNames.PEOPLE_PERSON_TITLE, PropertyType.STRING);
-		addTxtModifyListener(editPart, firstNameTxt, person,
+		entityTK.addTxtModifyListener(editPart, firstNameTxt, person,
 				PeopleNames.PEOPLE_FIRST_NAME, PropertyType.STRING);
-		addTxtModifyListener(editPart, lastNameTxt, person,
+		entityTK.addTxtModifyListener(editPart, lastNameTxt, person,
 				PeopleNames.PEOPLE_LAST_NAME, PropertyType.STRING);
-		addTxtModifyListener(editPart, suffixTxt, person,
+		entityTK.addTxtModifyListener(editPart, suffixTxt, person,
 				PeopleNames.PEOPLE_NAME_SUFFIX, PropertyType.STRING);
 
 		getManagedForm().addPart(editPart);
-	}
-
-	protected void addTxtModifyListener(final AbstractFormPart part,
-			final Text text, final Node entity, final String propName,
-			final int propType) {
-		text.addModifyListener(new ModifyListener() {
-			private static final long serialVersionUID = 3940522217518729442L;
-
-			@Override
-			public void modifyText(ModifyEvent event) {
-				if (JcrUiUtils.setJcrProperty(entity, propName, propType,
-						text.getText()))
-					part.markDirty();
-			}
-		});
-	}
-
-	protected void refreshTextValue(Text text, Node entity, String propName) {
-		String tmpStr = CommonsJcrUtils.getStringValue(entity, propName);
-		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
-			text.setText(tmpStr);
-	}
-
-	protected Text createText(Composite parent, String msg, String toolTip,
-			int width) {
-		Text text = toolkit.createText(parent, "", SWT.BORDER | SWT.SINGLE
-				| SWT.LEFT);
-		text.setMessage(msg);
-		text.setToolTipText(toolTip);
-		text.setLayoutData(new RowData(width, SWT.DEFAULT));
-		return text;
 	}
 }

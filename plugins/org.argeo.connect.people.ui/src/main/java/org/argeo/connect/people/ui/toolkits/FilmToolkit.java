@@ -26,18 +26,54 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 /**
  * Centralize the creation of the different editors panels for films.
  */
-public class FilmPanelToolkit {
-	private final static Log log = LogFactory.getLog(FilmPanelToolkit.class);
+public class FilmToolkit {
+	private final static Log log = LogFactory.getLog(FilmToolkit.class);
 
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 
-	public FilmPanelToolkit(FormToolkit toolkit, IManagedForm form) {
+	public FilmToolkit(FormToolkit toolkit, IManagedForm form) {
 		// formToolkit
 		// managedForm
 		this.toolkit = toolkit;
 		this.form = form;
 	}
+
+	// /**
+	// *
+	// * @param panel
+	// * @param entity
+	// * @param descLabel
+	// * typically synopsis pour a film or Description for a
+	// * multilingual description
+	// * @param langs
+	// * an ordered list of the various languages that are to be
+	// * displayed, might comes must be first
+	// */
+	//
+	// public void populateDescPanel(Composite panel, final Node entity,
+	// String descLabel, List<String> langs) {
+	// try {
+	// panel.setLayout(new GridLayout());
+	//
+	// for (String lang : langs) {
+	// String langLabel = peopleSer
+	//
+	// toolkit.createLabel(panel, "German synopsis: ", SWT.NONE);
+	// final Text synopsisTxt = toolkit.createText(panel, "", SWT.BORDER
+	// | SWT.MULTI | SWT.WRAP);
+	// GridData gd = new GridData(GridData.FILL_BOTH);
+	// gd.widthHint = 200;
+	// gd.heightHint = 120;
+	// synopsisTxt.setLayoutData(gd);
+	// Node origSynopsisNode = FilmJcrUtils.getSynopsisNode(entity, "de");
+	// // force creation to avoid npe and ease form life cycle
+	// // if (origSynopsisNode == null)
+	// // origSynopsisNode = FilmJcrUtils.addOrUpdateSynopsisNode(entity,
+	// // null, null, "de");
+	// synopsisTxt.setData("LinkedNode", origSynopsisNode.getPath());
+	//
+	// }
 
 	public void populateSynopsisPanel(Composite panel, final Node entity) {
 		try {

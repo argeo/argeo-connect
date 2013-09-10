@@ -10,8 +10,6 @@ import javax.jcr.Session;
 import javax.jcr.version.VersionManager;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -65,8 +63,8 @@ import org.eclipse.ui.services.ISourceProviderService;
  */
 public abstract class AbstractEntityEditor extends EditorPart implements
 		IVersionedItemEditor {
-	private final static Log log = LogFactory
-			.getLog(AbstractEntityEditor.class);
+	// private final static Log log = LogFactory
+	// .getLog(AbstractEntityEditor.class);
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
@@ -95,7 +93,8 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	// Form and corresponding life cycle
 	private MyManagedForm mForm;
 	protected FormToolkit toolkit;
-	private boolean isCheckedOutByMe = false;
+
+	// private boolean isCheckedOutByMe = false;
 
 	// LIFE CYCLE
 	public void init(IEditorSite site, IEditorInput input)
@@ -169,9 +168,10 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		try {
-			CommonsJcrUtils.saveAndCheckin(entityNode);
+			saveAndCheckInItem();
 			mForm.commit(true);
-			setCheckOutState(false);
+			// notifyCheckOutStateChange();
+			// setCheckOutState(false);
 		} catch (Exception e) {
 			throw new ArgeoException("Error while saving jcr node.", e);
 		}
@@ -205,9 +205,10 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	/* CONTENT CREATION */
 	@Override
 	public void createPartControl(Composite parent) {
-		// mainComposite = parent;
 		mForm = new MyManagedForm(parent);
 		toolkit = mForm.getToolkit();
+		createToolkits();
+
 		Composite body = mForm.getForm().getBody();
 		body.setLayout(new GridLayout(1, false));
 		// Main Layout
@@ -224,6 +225,11 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		// refresh method of the various form parts.
 		// We must then insure the refresh is done before display.
 		forceRefresh();
+		notifyCheckOutStateChange();
+	}
+
+	/** Override to create specific toolkits relevant for the current editor */
+	protected void createToolkits() {
 	}
 
 	protected void createHeaderPart(final Composite header) {
@@ -335,7 +341,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try {
-					if (!canBeCheckedOutByMe()
+					if (isCheckedOutByMe()
 							&& entityNode.getSession().hasPendingChanges())
 						CommandUtils
 								.callCommand(IWorkbenchCommandConstants.FILE_SAVE);
@@ -366,7 +372,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (!canBeCheckedOutByMe())
+				if (isCheckedOutByMe())
 					CommandUtils.callCommand(CancelAndCheckInItem.ID);
 			}
 
@@ -378,15 +384,15 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
 			// Update values on refresh
 			public void refresh() {
-				super.refresh();
-				if (!canBeCheckedOutByMe())
+				// super.refresh();
+				if (isCheckedOutByMe())
 					editPanelCmp.moveAbove(roPanelCmp);
 				else
 					editPanelCmp.moveBelow(roPanelCmp);
 				roPanelCmp.getParent().layout();
 			}
 		};
-		editPart.refresh();
+		// editPart.refresh();
 		getManagedForm().addPart(editPart);
 	}
 
@@ -494,19 +500,6 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	}
 
 	/* UTILITES */
-
-	// Only to provide a basic content while developing
-	// TODO remove this
-	protected void createDummyItemContent(CTabItem item) {
-		if (item.getControl() == null) {
-			CTabFolder folder = item.getParent();
-			Composite body = toolkit.createComposite(folder);
-			body.setLayout(new GridLayout(1, false));
-			toolkit.createLabel(body, "Add content here.");
-			item.setControl(body);
-		}
-	}
-
 	protected TableViewerColumn createTableViewerColumn(TableViewer parent,
 			String name, int style, int width) {
 		TableViewerColumn tvc = new TableViewerColumn(parent, style);
@@ -521,23 +514,21 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	/** Checks whether the current user can edit the node */
 	@Override
 	public boolean canBeCheckedOutByMe() {
-		// FIXME add an error/warning message in the editor if the node has
+		// TODO add an error/warning message in the editor if the node has
 		// already been checked out by someone else.
-		if (isCheckedOutByMe)
+		// TODO add a check depending on current user rights
+		if (isCheckedOutByMe())
 			return false;
 		else
-			// TODO add a check depending on current user rights
 			return true; // getMsmBackend().isUserInRole(MsmConstants.ROLE_CONSULTANT);
 	}
 
-	protected boolean isCheckedOutByMe() {
+	public boolean isCheckedOutByMe() {
 		return CommonsJcrUtils.isNodeCheckedOutByMe(entityNode);
 	}
 
 	/** Manage check out state and corresponding refresh of the UI */
-	protected void setCheckOutState(boolean checkedOut) {
-		isCheckedOutByMe = checkedOut;
-		forceRefresh();
+	protected void notifyCheckOutStateChange() {
 		// update enable state of the check out button
 		IWorkbench iw = PeopleUiPlugin.getDefault().getWorkbench();
 		IWorkbenchWindow window = iw.getActiveWorkbenchWindow();
@@ -545,42 +536,42 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 				.getService(ISourceProviderService.class);
 		CheckoutSourceProvider csp = (CheckoutSourceProvider) sourceProviderService
 				.getSourceProvider(CheckoutSourceProvider.CHECKOUT_STATE);
-		csp.setIsCurrentItemCheckedOut(isCheckedOutByMe);
+		csp.setIsCurrentItemCheckedOut(isCheckedOutByMe());
+		forceRefresh();
 	}
 
 	@Override
 	public void checkoutItem() {
-		try {
-			boolean isCheckedOut = vm.isCheckedOut(entityNode.getPath());
-			if (isCheckedOut) {
-				// Do nothing, for the time being JCR implementation does not
-				// care about who has checked out the node.
-				if (log.isTraceEnabled())
-					log.trace("Current node "
-							+ " is already checked out. Nothing has been done.");
-			} else
-				vm.checkout(entityNode.getPath());
-			setCheckOutState(true);
-		} catch (RepositoryException re) {
-			throw new ArgeoException(
-					"Unexpected error while managing check out state", re);
-		}
+		if (isCheckedOutByMe())
+			// Do nothing
+			;
+		else
+			CommonsJcrUtils.checkout(entityNode);
+		notifyCheckOutStateChange();
+	}
+
+	@Override
+	public void saveAndCheckInItem() {
+		if (!isCheckedOutByMe()) // Do nothing
+			;
+		else
+			CommonsJcrUtils.saveAndCheckin(entityNode);
+		notifyCheckOutStateChange();
 	}
 
 	@Override
 	public void cancelAndCheckInItem() {
 		try {
-			boolean isCheckedOut = vm.isCheckedOut(entityNode.getPath());
+			boolean isCheckedOut = isCheckedOutByMe();
 			if (isCheckedOut) {
 				String path = entityNode.getPath();
 				JcrUtils.discardUnderlyingSessionQuietly(entityNode);
 				// if a newly created node has been discarded before the first
-				// save,
-				// corresponding node does not exists
+				// save, corresponding node does not exists
 				if (session.itemExists(path))
 					vm.checkin(path);
 			}
-			setCheckOutState(false);
+			notifyCheckOutStateChange();
 		} catch (RepositoryException re) {
 			throw new ArgeoException(
 					"Unexpected error while managing check out state", re);

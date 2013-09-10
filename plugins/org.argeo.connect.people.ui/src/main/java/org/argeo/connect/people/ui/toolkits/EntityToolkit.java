@@ -35,28 +35,60 @@ import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Hyperlink;
 
 /**
- * Centralize the creation of common panels for entity, to be used in various
- * forms.
+ * Centralize the creation of common controls (typically Text and composite
+ * widget) for entity, to be used in various forms.
  */
-public class EntityPanelToolkit {
+public class EntityToolkit {
 	// private final static Log log =
 	// LogFactory.getLog(EntityPanelToolkit.class);
 
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 
-	public EntityPanelToolkit(FormToolkit toolkit, IManagedForm form) {
-		// formToolkit
-		// managedForm
+	public EntityToolkit(FormToolkit toolkit, IManagedForm form) {
 		this.toolkit = toolkit;
 		this.form = form;
 	}
 
-	public void populateContactPanelWithNotes(Composite panel,
-			final Node entity) {
+	// ///////////////
+	// TEXT widgets
+	public void addTxtModifyListener(final AbstractFormPart part,
+			final Text text, final Node entity, final String propName,
+			final int propType) {
+		text.addModifyListener(new ModifyListener() {
+			private static final long serialVersionUID = 3940522217518729442L;
+
+			@Override
+			public void modifyText(ModifyEvent event) {
+				if (JcrUiUtils.setJcrProperty(entity, propName, propType,
+						text.getText()))
+					part.markDirty();
+			}
+		});
+	}
+
+	public void refreshTextValue(Text text, Node entity, String propName) {
+		String tmpStr = CommonsJcrUtils.getStringValue(entity, propName);
+		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+			text.setText(tmpStr);
+	}
+
+	public Text createText(Composite parent, String msg, String toolTip,
+			int width) {
+		Text text = toolkit.createText(parent, "", SWT.BORDER | SWT.SINGLE
+				| SWT.LEFT);
+		text.setMessage(msg);
+		text.setToolTipText(toolTip);
+		text.setLayoutData(new RowData(width, SWT.DEFAULT));
+		return text;
+	}
+
+	// ////////////////
+	// Various panels
+
+	public void populateContactPanelWithNotes(Composite panel, final Node entity) {
 		panel.setLayout(new GridLayout(2, false));
 		GridData gd;
 		final Composite contactListCmp = toolkit.createComposite(panel,
@@ -115,8 +147,8 @@ public class EntityPanelToolkit {
 	public void populateContactPanel(final Composite panel, final Node entity) {
 		panel.setLayout(new GridLayout());
 		GridData gd;
-		Hyperlink addNewMailLink = toolkit.createHyperlink(panel,
-				"Add a new contact address", SWT.NO_FOCUS);
+		// Hyperlink addNewMailLink = toolkit.createHyperlink(panel,
+		// "Add a new contact address", SWT.NO_FOCUS);
 
 		final Composite contactListCmp = toolkit.createComposite(panel,
 				SWT.NO_FOCUS);

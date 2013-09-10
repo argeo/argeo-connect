@@ -14,7 +14,7 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.providers.FilmOverviewLabelProvider;
-import org.argeo.connect.people.ui.toolkits.FilmPanelToolkit;
+import org.argeo.connect.people.ui.toolkits.FilmToolkit;
 import org.argeo.connect.people.ui.toolkits.ListPanelToolkit;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -44,6 +44,9 @@ public class FilmEditor extends AbstractEntityEditor {
 	// Main business Objects
 	private Node film;
 
+	private FilmToolkit filmPanelToolkit;
+	private ListPanelToolkit listPanelToolkit;
+
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
@@ -58,12 +61,15 @@ public class FilmEditor extends AbstractEntityEditor {
 		}
 	}
 
+	@Override
+	protected void createToolkits() {
+		filmPanelToolkit = new FilmToolkit(toolkit, getManagedForm());
+		listPanelToolkit = new ListPanelToolkit(toolkit, getManagedForm(),
+				getPeopleServices(), getPeopleUiServices());
+
+	}
+
 	protected void populateTabFolder(CTabFolder folder) {
-		// Create usefull toolkits
-		FilmPanelToolkit filmPanelToolkit = new FilmPanelToolkit(toolkit,
-				getManagedForm());
-		ListPanelToolkit listPanelToolkit = new ListPanelToolkit(toolkit,
-				getManagedForm(), getPeopleServices(), getPeopleUiServices());
 		// Synopses
 		String tooltip = "The synopses for film "
 				+ JcrUtils.get(film, FilmNames.FILM_ID);

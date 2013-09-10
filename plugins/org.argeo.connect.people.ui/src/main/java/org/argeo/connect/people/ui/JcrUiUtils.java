@@ -67,6 +67,15 @@ public class JcrUiUtils {
 					node.setProperty(propName, (Calendar) value);
 					return true;
 				}
+			case PropertyType.LONG:
+				if (node.hasProperty(propName)
+						&& node.getProperty(propName).getLong() == (Long) value)
+					// nothing changed yet
+					return false;
+				else {
+					node.setProperty(propName, (Long) value);
+					return true;
+				}
 
 			default:
 				throw new ArgeoException("Unimplemented property save");
@@ -76,6 +85,5 @@ public class JcrUiUtils {
 					re);
 		}
 	}
-	
-	
+
 }
