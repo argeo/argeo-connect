@@ -18,10 +18,10 @@ public interface PeopleService {
 	public Map<String, String> getMapValuesForProperty(String propertyName);
 
 	/**
-	 * Returns the corresponding entity or null if not found. id is
-	 * implementation specific and might but must not be a JCR Identifier
+	 * Returns the corresponding entity or null if not found. Uid is
+	 * implementation specific and is not a JCR Identifier
 	 * */
-	public Node getEntityById(Session session, String id);
+	public Node getEntityByUid(Session session, String uid);
 
 	/**
 	 * Returns all entities with the given NodeType related to this entity or

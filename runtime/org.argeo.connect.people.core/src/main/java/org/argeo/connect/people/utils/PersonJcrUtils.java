@@ -101,20 +101,20 @@ public class PersonJcrUtils implements PeopleNames {
 		return secondaryName == null ? "" : secondaryName;
 	}
 
-	@Deprecated
-	public static String getTags(Node person) {
-		try {
-			StringBuilder tags = new StringBuilder();
-			if (person.hasProperty(PEOPLE_TAGS)) {
-				for (Value value : person.getProperty(PEOPLE_TAGS).getValues())
-					tags.append("#").append(value.getString()).append(" ");
-			}
-			return tags.toString();
-		} catch (RepositoryException e) {
-			throw new PeopleException("Error while getting tags for node "
-					+ person, e);
-		}
-	}
+//	@Deprecated
+//	public static String getTags(Node person) {
+//		try {
+//			StringBuilder tags = new StringBuilder();
+//			if (person.hasProperty(PEOPLE_TAGS)) {
+//				for (Value value : person.getProperty(PEOPLE_TAGS).getValues())
+//					tags.append("#").append(value.getString()).append(" ");
+//			}
+//			return tags.toString();
+//		} catch (RepositoryException e) {
+//			throw new PeopleException("Error while getting tags for node "
+//					+ person, e);
+//		}
+//	}
 
 	/** Helper to retrieve a person given his last Name. Must be refined. */
 	public static Node getPersonWithLastName(Session session, String lastName)

@@ -75,7 +75,7 @@ public class NodeListDoubleClickListener implements IDoubleClickListener {
 				// Mapping for jobs
 				if (curNode.isNodeType(PeopleTypes.PEOPLE_JOB)) {
 					if (PeopleTypes.PEOPLE_PERSON.equals(parentNodeType)) {
-						Node linkedOrg = peopleService.getEntityById(session,
+						Node linkedOrg = peopleService.getEntityByUid(session,
 								curNode.getProperty(PeopleNames.PEOPLE_REF_UID)
 										.getString());
 						openNodeEditor(linkedOrg.getIdentifier(), OrgEditor.ID);

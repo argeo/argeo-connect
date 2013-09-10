@@ -39,7 +39,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 			else if (node.isNodeType(PeopleTypes.PEOPLE_JOB))
 				entity = node.getParent().getParent();
 			else if (node.isNodeType(PeopleTypes.PEOPLE_POSITION)) {
-				entity = peopleService.getEntityById(node.getSession(), node
+				entity = peopleService.getEntityByUid(node.getSession(), node
 						.getProperty(PEOPLE_REF_UID).getString());
 			} else
 				throw new PeopleException("Unvalid node type. "

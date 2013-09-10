@@ -40,7 +40,7 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 			if (node.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION))
 				orga = node;
 			else if (node.isNodeType(PeopleTypes.PEOPLE_JOB)) {
-				orga = peopleService.getEntityById(node.getSession(), node
+				orga = peopleService.getEntityByUid(node.getSession(), node
 						.getProperty(PeopleNames.PEOPLE_REF_UID).getString());
 			} else
 				throw new PeopleException("Unvalid node type. "

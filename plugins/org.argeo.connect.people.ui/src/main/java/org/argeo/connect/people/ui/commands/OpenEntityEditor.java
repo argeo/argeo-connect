@@ -37,7 +37,7 @@ public class OpenEntityEditor extends AbstractHandler {
 		Session session = null;
 		try {
 			session = peopleService.getRepository().login();
-			Node entity = peopleService.getEntityById(session, entityUid);
+			Node entity = peopleService.getEntityByUid(session, entityUid);
 			EntityEditorInput eei = new EntityEditorInput(
 					entity.getIdentifier());
 			PeopleUiPlugin

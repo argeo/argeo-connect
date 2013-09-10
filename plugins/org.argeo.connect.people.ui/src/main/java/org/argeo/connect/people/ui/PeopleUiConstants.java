@@ -27,7 +27,6 @@ public interface PeopleUiConstants {
 	public final static String PEOPLE_CSS_GENERALINFO_TAGS = "peopleCss-generalInfo-tags";
 
 	// CUSTOM STYLING
-
 	public final static String PEOPLE_CSS_URL_STYLE = "style='color:#383838; font-decoration:none;'";
 
 	// custom image for each item : set size

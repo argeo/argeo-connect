@@ -60,13 +60,13 @@ public class PeopleServiceImpl implements PeopleService {
 	}
 
 	@Override
-	public Node getEntityById(Session session, String id) {
+	public Node getEntityByUid(Session session, String uid) {
 		try {
-			return session.getNodeByIdentifier(id);
+			return session.getNodeByIdentifier(uid);
 		} catch (ItemNotFoundException infe) {
 			return null;
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrive entity of id: " + id,
+			throw new PeopleException("Unable to retrive entity of id: " + uid,
 					e);
 		}
 	}
