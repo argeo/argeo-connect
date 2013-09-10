@@ -220,7 +220,7 @@ public class RssHtmlProvider implements RssNames {
 			result = StringEscapeUtils.escapeXml(result.trim());
 			return result;
 		} catch (Exception ex) {
-			throw new ArgeoException("Unable to parse and clean description");
+			throw new ArgeoException("Unable to parse and clean description", ex);
 		}
 	}
 
