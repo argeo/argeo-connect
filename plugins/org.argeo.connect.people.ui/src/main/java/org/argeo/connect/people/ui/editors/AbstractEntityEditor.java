@@ -197,7 +197,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	}
 
 	// specific refresh
-	protected void forceRefresh() {
+	public void forceRefresh() {
 		for (IFormPart part : mForm.getParts())
 			part.refresh();
 	}
