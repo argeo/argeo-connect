@@ -11,7 +11,7 @@ import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.ui.toolkits.EntityToolkit;
-import org.argeo.connect.people.ui.toolkits.ListPanelToolkit;
+import org.argeo.connect.people.ui.toolkits.ListToolkit;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -41,7 +41,7 @@ public class PersonEditor extends AbstractEntityEditor {
 
 	// Usefull toolkits
 	private EntityToolkit entityTK;
-	private ListPanelToolkit listTK;
+	private ListToolkit listTK;
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -54,7 +54,7 @@ public class PersonEditor extends AbstractEntityEditor {
 	@Override
 	protected void createToolkits() {
 		entityTK = new EntityToolkit(toolkit, getManagedForm());
-		listTK = new ListPanelToolkit(toolkit, getManagedForm(),
+		listTK = new ListToolkit(toolkit, getManagedForm(),
 				getPeopleServices(), getPeopleUiServices());
 	}
 

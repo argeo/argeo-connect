@@ -15,7 +15,7 @@ import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.providers.FilmOverviewLabelProvider;
 import org.argeo.connect.people.ui.toolkits.FilmToolkit;
-import org.argeo.connect.people.ui.toolkits.ListPanelToolkit;
+import org.argeo.connect.people.ui.toolkits.ListToolkit;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
@@ -45,7 +45,7 @@ public class FilmEditor extends AbstractEntityEditor {
 	private Node film;
 
 	private FilmToolkit filmPanelToolkit;
-	private ListPanelToolkit listPanelToolkit;
+	private ListToolkit listPanelToolkit;
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -64,7 +64,7 @@ public class FilmEditor extends AbstractEntityEditor {
 	@Override
 	protected void createToolkits() {
 		filmPanelToolkit = new FilmToolkit(toolkit, getManagedForm());
-		listPanelToolkit = new ListPanelToolkit(toolkit, getManagedForm(),
+		listPanelToolkit = new ListToolkit(toolkit, getManagedForm(),
 				getPeopleServices(), getPeopleUiServices());
 
 	}

@@ -131,6 +131,23 @@ public class CommonsJcrUtils {
 	}
 
 	/**
+	 * Concisely get the string value of a property. Contrary to <code>CommonsJcrUtils.getStringValue()</code>, returns an empty String rather than null if this node doesn't
+	 * have this property or if the corresponding property is an empty string. Useful in the read only label providers.
+	 */
+	public static String get(Node node, String propertyName) {
+		try {
+			if (!node.hasProperty(propertyName))
+				return "";
+			else
+				return node.getProperty(propertyName).getString();
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Cannot get property " + propertyName
+					+ " of " + node, e);
+		}
+	}
+
+	
+	/**
 	 * Concisely get the value of a property or null if this node doesn't have
 	 * this property
 	 */

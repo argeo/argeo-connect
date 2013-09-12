@@ -7,8 +7,6 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.film.FilmTypes;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -35,20 +33,18 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 /**
  * Centralize the creation of the different form panels for lists.
  */
-public class ListPanelToolkit {
-	private final static Log log = LogFactory.getLog(ListPanelToolkit.class);
+public class ListToolkit {
+	// private final static Log log = LogFactory.getLog(ListToolkit.class);
 
-	private final FormToolkit toolkit;
-	private final IManagedForm form;
+	// private final FormToolkit toolkit;
+	// private final IManagedForm form;
 	private final PeopleService peopleService;
 	private final PeopleUiService peopleUiService;
 
-	public ListPanelToolkit(FormToolkit toolkit, IManagedForm form,
+	public ListToolkit(FormToolkit toolkit, IManagedForm form,
 			PeopleService peopleService, PeopleUiService peopleUiService) {
-		// formToolkit
-		// managedForm
-		this.toolkit = toolkit;
-		this.form = form;
+		// this.toolkit = toolkit;
+		// this.form = form;
 		this.peopleService = peopleService;
 		this.peopleUiService = peopleUiService;
 	}
