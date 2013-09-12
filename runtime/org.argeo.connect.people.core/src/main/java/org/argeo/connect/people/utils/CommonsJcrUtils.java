@@ -1,8 +1,15 @@
 package org.argeo.connect.people.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.jcr.Node;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.query.Row;
+import javax.jcr.query.RowIterator;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
@@ -10,6 +17,34 @@ import org.argeo.jcr.JcrUtils;
 
 /** Some static utils methods that might be factorized in a near future */
 public class CommonsJcrUtils {
+
+	/**
+	 * Call {@link Repository#login()} without exceptions (useful in super
+	 * constructors).
+	 */
+	public static Session login(Repository repository) {
+		try {
+			return repository.login();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to login", re);
+		}
+	}
+
+	/**
+	 * Convert a {@link rowIterator} to a list of {@link Node} given a selector
+	 * name. It relies on the <code>Row.getNode(String selectorName)</code>
+	 * method.
+	 */
+	public static List<Node> rowIteratorToList(RowIterator rowIterator,
+			String selectorName) throws RepositoryException {
+		List<Node> nodes = new ArrayList<Node>();
+		while (rowIterator.hasNext()) {
+			Row row = rowIterator.nextRow();
+			if (row.getNode(selectorName) != null)
+				nodes.add(row.getNode(selectorName));
+		}
+		return nodes;
+	}
 
 	/**
 	 * Check if a string is null or an empty string (a string with only spaces
@@ -131,8 +166,11 @@ public class CommonsJcrUtils {
 	}
 
 	/**
-	 * Concisely get the string value of a property. Contrary to <code>CommonsJcrUtils.getStringValue()</code>, returns an empty String rather than null if this node doesn't
-	 * have this property or if the corresponding property is an empty string. Useful in the read only label providers.
+	 * Concisely get the string value of a property. Contrary to
+	 * <code>CommonsJcrUtils.getStringValue()</code>, returns an empty String
+	 * rather than null if this node doesn't have this property or if the
+	 * corresponding property is an empty string. Useful in the read only label
+	 * providers.
 	 */
 	public static String get(Node node, String propertyName) {
 		try {
@@ -146,7 +184,6 @@ public class CommonsJcrUtils {
 		}
 	}
 
-	
 	/**
 	 * Concisely get the value of a property or null if this node doesn't have
 	 * this property
