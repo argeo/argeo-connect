@@ -9,19 +9,25 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
+import org.argeo.connect.film.FilmNames;
+import org.argeo.connect.film.core.FilmJcrUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.PeopleValueCatalogs;
 import org.argeo.connect.people.ui.JcrUiUtils;
+import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.argeo.jcr.JcrUtils;
+import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
@@ -31,6 +37,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.IManagedForm;
@@ -69,6 +76,52 @@ public class EntityToolkit {
 		});
 	}
 
+	public void addNbOnlyTxtModifyListener(final AbstractFormPart part,
+			final Text text, final Node entity, final String propName,
+			final int propType) {
+		final ControlDecoration decoration = new ControlDecoration(text,
+				SWT.TOP | SWT.LEFT);
+		decoration.setImage(PeopleUiPlugin.getDefault().getWorkbench()
+				.getSharedImages().getImage(ISharedImages.IMG_DEC_FIELD_ERROR));
+		decoration.hide();
+
+		text.addModifyListener(new ModifyListener() {
+			private static final long serialVersionUID = 1L;
+
+			public void modifyText(ModifyEvent event) {
+				String lengthStr = text.getText();
+				if (!isNumbers(lengthStr)) {
+					text.setBackground(new Color(text.getDisplay(), 250, 200,
+							150));
+					decoration.show();
+					decoration
+							.setDescriptionText("The lenght must only be a number: "
+									+ lengthStr);
+				} else {
+					text.setBackground(null);
+					decoration.hide();
+					Long length = null;
+					if (CommonsJcrUtils.checkNotEmptyString(lengthStr))
+						length = new Long(lengthStr);
+					if (JcrUiUtils.setJcrProperty(entity, propName, propType,
+							length))
+						part.markDirty();
+				}
+			}
+		});
+	}
+
+	private static boolean isNumbers(String content) {
+		int length = content.length();
+		for (int i = 0; i < length; i++) {
+			char ch = content.charAt(i);
+			if (!Character.isDigit(ch)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public void refreshTextValue(Text text, Node entity, String propName) {
 		String tmpStr = CommonsJcrUtils.getStringValue(entity, propName);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
@@ -82,6 +135,18 @@ public class EntityToolkit {
 		text.setMessage(msg);
 		text.setToolTipText(toolTip);
 		text.setLayoutData(new RowData(width, SWT.DEFAULT));
+		return text;
+	}
+
+	public Text createTextforGrid(Composite parent, String msg, String toolTip,
+			int widthHint, int style) {
+		Text text = toolkit.createText(parent, "", SWT.BORDER | SWT.SINGLE
+				| SWT.LEFT);
+		text.setMessage(msg);
+		text.setToolTipText(toolTip);
+		GridData gd = new GridData(style);
+		gd.widthHint = widthHint;
+		text.setLayoutData(gd);
 		return text;
 	}
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -13,6 +14,7 @@ import javax.jcr.query.RowIterator;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.jcr.JcrUtils;
 
 /** Some static utils methods that might be factorized in a near future */
@@ -208,6 +210,50 @@ public class CommonsJcrUtils {
 		else
 			dirNode = parent.addNode(dirName, NodeType.NT_UNSTRUCTURED);
 		return dirNode;
+	}
+
+	/**
+	 * Concisely get the node for the translation of a property given a language
+	 * and the rel path to corresponding alternative properties.
+	 */
+	public static Node getAltPropertyNode(Node parent, String relPath,
+			String lang) {
+		try {
+			if (!parent.hasNode(relPath))
+				return null;
+			else {
+				parent = parent.getNode(relPath);
+				if (parent.hasNode(lang))
+					return parent.getNode(lang);
+				else
+					return null;
+			}
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Cannot get alt property for " + lang, e);
+		}
+	}
+
+	/**
+	 * Returns the corresponding sub node for the given language. Create such a
+	 * Node if it does not yet exist. By default it is a nt:unstructured node
+	 * with mix:title mixin
+	 * */
+	public static Node getOrCreateAltLanguageNode(Node node, String lang) {
+		try {
+			Node child = JcrUtils.mkdirs(node.getSession(), node.getPath()
+					+ "/" + PeopleNames.PEOPLE_ALT_LANGS+ "/" + lang,
+					NodeType.NT_UNSTRUCTURED, NodeType.NT_UNSTRUCTURED, false);
+			child.addMixin(NodeType.MIX_TITLE);
+			child.addMixin(NodeType.MIX_LANGUAGE);
+			child.setProperty(Property.JCR_LANGUAGE, lang);
+			return child;
+		} catch (RepositoryException e) {
+			throw new PeopleException("Cannot create child for language "
+					+ lang, e);
+		}
+	}
+
+	private CommonsJcrUtils() {
 	}
 
 }

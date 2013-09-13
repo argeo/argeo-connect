@@ -25,4 +25,9 @@ public interface PeopleConstants {
 	/* CONTACT CATEGORIES */
 	public final static String PEOPLE_CONTACT_CATEGORY_WORK = "Work";
 
+	/* LANGUAGE CONSTANTS */
+	public final static String LANG_EN = "en";
+	public final static String LANG_DE = "de";
+	public final static String LANG_FR = "fr";
+
 }

@@ -1,6 +1,10 @@
 package org.argeo.connect.people.ui.toolkits;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
@@ -9,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.film.FilmNames;
 import org.argeo.connect.film.core.FilmJcrUtils;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -26,30 +31,115 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 /**
  * Centralize the creation of the different editors panels for films.
  */
-public class FilmToolkit {
+public class FilmToolkit extends EntityToolkit {
 	private final static Log log = LogFactory.getLog(FilmToolkit.class);
+
+	private final static String LANG_KEY = "lang";
+	private final static String DEFAULT_LANG_KEY = "default";
 
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 
 	public FilmToolkit(FormToolkit toolkit, IManagedForm form) {
+		super(toolkit, form);
 		// formToolkit
 		// managedForm
 		this.toolkit = toolkit;
 		this.form = form;
 	}
 
-	// /**
-	// *
-	// * @param panel
-	// * @param entity
-	// * @param descLabel
-	// * typically synopsis pour a film or Description for a
-	// * multilingual description
-	// * @param langs
-	// * an ordered list of the various languages that are to be
-	// * displayed, might comes must be first
-	// */
+	/**
+	 * 
+	 * @param panel
+	 * @param entity
+	 * @param descLabel
+	 *            typically synopsis pour a film or Description for a
+	 *            multilingual description
+	 * @param langs
+	 *            an ordered list of the various languages that are to be
+	 *            displayed, might comes must be first
+	 */
+
+	public void populateMultiLangDescPanel(Composite panel, final Node entity,
+			String descLabel, List<String> langs) {
+		final List<Text> texts = new ArrayList<Text>();
+
+		int style = GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL
+				| GridData.GRAB_VERTICAL;
+		panel.setLayout(new GridLayout());
+		// Original description
+		toolkit.createLabel(panel, descLabel, SWT.NONE);
+		Text descTxt = toolkit.createText(panel, "", SWT.BORDER | SWT.MULTI
+				| SWT.WRAP);
+		GridData gd = new GridData(style);
+		descTxt.setLayoutData(gd);
+		descTxt.setData(LANG_KEY, DEFAULT_LANG_KEY);
+		texts.add(descTxt);
+
+		// Alt description
+
+		for (String lang : langs) {
+			toolkit.createLabel(panel, descLabel + " " + lang.toUpperCase(),
+					SWT.NONE);
+			Text altDescTxt = toolkit.createText(panel, "", SWT.BORDER
+					| SWT.MULTI | SWT.WRAP);
+			altDescTxt.setLayoutData(new GridData(style));
+			altDescTxt.setData(LANG_KEY, lang);
+			texts.add(altDescTxt);
+		}
+
+		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
+			public void refresh() {
+				super.refresh();
+				for (Text text : texts) {
+					String key = (String) text.getData(LANG_KEY);
+					if (DEFAULT_LANG_KEY.equals(key))
+						refreshTextValue(text, entity, Property.JCR_DESCRIPTION);
+					else {
+						Node altDescNode = CommonsJcrUtils.getAltPropertyNode(
+								entity, PeopleNames.PEOPLE_ALT_LANGS, key);
+						if (altDescNode != null)
+							refreshTextValue(text, altDescNode,
+									Property.JCR_DESCRIPTION);
+					}
+					text.setEnabled(CommonsJcrUtils
+							.isNodeCheckedOutByMe(entity));
+				}
+			}
+		};
+
+		for (final Text text : texts) {
+			final String currLang = (String) text.getData(LANG_KEY);
+			if (DEFAULT_LANG_KEY.equals(currLang))
+				addTxtModifyListener(editPart, text, entity,
+						Property.JCR_DESCRIPTION, PropertyType.STRING);
+			else {
+				text.addModifyListener(new ModifyListener() {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void modifyText(ModifyEvent event) {
+						String altDesc = text.getText();
+						if (CommonsJcrUtils.getAltPropertyNode(entity,
+								PeopleNames.PEOPLE_ALT_LANGS, currLang) == null)
+							if (CommonsJcrUtils.checkNotEmptyString(altDesc))
+								CommonsJcrUtils.getOrCreateAltLanguageNode(
+										entity, currLang);// create node
+							else
+								return;
+						Node altTitle = CommonsJcrUtils.getAltPropertyNode(
+								entity, PeopleNames.PEOPLE_ALT_LANGS, currLang);
+						if (JcrUiUtils.setJcrProperty(altTitle,
+								Property.JCR_DESCRIPTION, PropertyType.STRING,
+								altDesc))
+							editPart.markDirty();
+					}
+				});
+			}
+		}
+		form.addPart(editPart);
+	}
+
 	//
 	// public void populateDescPanel(Composite panel, final Node entity,
 	// String descLabel, List<String> langs) {

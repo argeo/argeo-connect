@@ -30,7 +30,8 @@ public interface PeopleNames {
 	public final static String PEOPLE_TITLES = "people:titles";
 
 	public final static String PEOPLE_WORKFLOWS = "people:workflows";
-	public final static String PEOPLE_FILM_SELECTION_WFS = "people:filmSelectionWorkflows";
+	// public final static String PEOPLE_FILM_SELECTION_WFS =
+	// "people:filmSelectionWorkflows";
 
 	/* Common concept */
 	public final static String PEOPLE_PICTURE = "people:picture";
@@ -107,7 +108,12 @@ public interface PeopleNames {
 	/* MISCENELLANEOUS */
 
 	public final static String PEOPLE_LATIN_PHONETIC_SPELLING = "people:latinPhoneticSpelling";
-	public final static String PEOPLE_LANGUAGE = "people:language";
+
+	public final static String PEOPLE_LANG = "people:lang";
+	// public final static String PEOPLE_ALT_TITLES = "people:altTitles";
+	public final static String PEOPLE_ALT_LANGS = "people:altLangs";
+	// public final static String PEOPLE_ALT_DESCS = "people:altDescs";
+
 	// the iso code of a given resource
 	public final static String PEOPLE_ISO_CODE = "people:isoCode";
 

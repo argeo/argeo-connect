@@ -68,6 +68,11 @@ public class JcrUiUtils {
 					return true;
 				}
 			case PropertyType.LONG:
+				Long lgValue = (Long) value;
+
+				if (lgValue == null)
+					lgValue = 0L;
+
 				if (node.hasProperty(propName)
 						&& node.getProperty(propName).getLong() == (Long) value)
 					// nothing changed yet
