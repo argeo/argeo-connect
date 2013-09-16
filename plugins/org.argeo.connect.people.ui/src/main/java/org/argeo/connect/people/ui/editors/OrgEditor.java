@@ -2,13 +2,11 @@ package org.argeo.connect.people.ui.editors;
 
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
-import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
@@ -21,8 +19,6 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -45,8 +41,8 @@ public class OrgEditor extends AbstractEntityEditor {
 	private Node org;
 
 	// Toolkits
-	private EntityToolkit entityPanelToolkit;
-	private ListToolkit listPanelToolkit;
+	private EntityToolkit entityTK;
+	private ListToolkit listTK;
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -64,8 +60,8 @@ public class OrgEditor extends AbstractEntityEditor {
 
 	@Override
 	protected void createToolkits() {
-		entityPanelToolkit = new EntityToolkit(toolkit, getManagedForm());
-		listPanelToolkit = new ListToolkit(toolkit, getManagedForm(),
+		entityTK = new EntityToolkit(toolkit, getManagedForm());
+		listTK = new ListToolkit(toolkit, getManagedForm(),
 				getPeopleServices(), getPeopleUiServices());
 	}
 
@@ -76,20 +72,20 @@ public class OrgEditor extends AbstractEntityEditor {
 		Composite innerPannel = addTabToFolder(folder, SWT.NO_FOCUS,
 				"Org. details", PeopleUiConstants.PANEL_CONTACT_DETAILS,
 				tooltip);
-		entityPanelToolkit.populateContactPanelWithNotes(innerPannel, org);
+		entityTK.populateContactPanelWithNotes(innerPannel, org);
 
-		// Employes
-		tooltip = "Known employes of "
+		// Employees
+		tooltip = "Known employees of "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		innerPannel = addTabToFolder(folder, SWT.NO_FOCUS, "Employees",
 				PeopleUiConstants.PANEL_EMPLOYEES, tooltip);
-		listPanelToolkit.populateEmployeesPanel(innerPannel, org);
+		listTK.populateEmployeesPanel(innerPannel, org);
 	}
 
 	protected void populateMainInfoComposite(final Composite parent) {
 		try {
 			parent.setLayout(new FormLayout());
-			// READ ONLY PANEL
+			// READ ONLY
 			final Composite roPanelCmp = toolkit.createComposite(parent,
 					SWT.NO_FOCUS);
 			PeopleUiUtils.setSwitchingFormData(roPanelCmp);
@@ -104,7 +100,7 @@ public class OrgEditor extends AbstractEntityEditor {
 			final ColumnLabelProvider orgLP = new OrgOverviewLabelProvider(
 					false, getPeopleServices());
 
-			// EDIT PANEL
+			// EDIT
 			final Composite editPanelCmp = toolkit.createComposite(parent,
 					SWT.NONE);
 			PeopleUiUtils.setSwitchingFormData(editPanelCmp);
@@ -136,60 +132,32 @@ public class OrgEditor extends AbstractEntityEditor {
 					super.refresh();
 
 					// EDIT PART
-					legalNameTxt.setText(JcrUtils.get(org,
-							PeopleNames.PEOPLE_LEGAL_NAME));
-
-					String legalStatus = CommonsJcrUtils.getStringValue(org,
+					entityTK.refreshTextValue(legalNameTxt, org,
+							PeopleNames.PEOPLE_LEGAL_NAME);
+					entityTK.refreshTextValue(legalStatusTxt, org,
 							PeopleNames.PEOPLE_LEGAL_STATUS);
-					if (legalStatus != null)
-						legalStatusTxt.setText(legalStatus);
 
 					// READ ONLY PART
 					String roText = orgLP.getText(org);
 					orgInfoROLbl.setText(roText);
 
-					try {
-						if (org.isCheckedOut())
-							editPanelCmp.moveAbove(roPanelCmp);
-						else
-							editPanelCmp.moveBelow(roPanelCmp);
-					} catch (RepositoryException e) {
-						throw new PeopleException(
-								"Unable to get checked out status", e);
-					}
+					if (CommonsJcrUtils.isNodeCheckedOutByMe(org))
+						editPanelCmp.moveAbove(roPanelCmp);
+					else
+						editPanelCmp.moveBelow(roPanelCmp);
 					editPanelCmp.getParent().layout();
-					roPanelCmp.getParent().layout();
 				}
 			};
 
 			// Listeners
-			legalNameTxt.addModifyListener(new ModifyListener() {
-				private static final long serialVersionUID = 1L;
+			entityTK.addTxtModifyListener(editPart, legalNameTxt, org,
+					PeopleNames.PEOPLE_LEGAL_NAME, PropertyType.STRING);
+			entityTK.addTxtModifyListener(editPart, legalStatusTxt, org,
+					PeopleNames.PEOPLE_LEGAL_STATUS, PropertyType.STRING);
 
-				@Override
-				public void modifyText(ModifyEvent event) {
-					if (JcrUiUtils.setJcrProperty(org,
-							PeopleNames.PEOPLE_LEGAL_NAME, PropertyType.STRING,
-							legalNameTxt.getText()))
-						editPart.markDirty();
-				}
-			});
-
-			legalStatusTxt.addModifyListener(new ModifyListener() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void modifyText(ModifyEvent event) {
-					if (JcrUiUtils.setJcrProperty(org,
-							PeopleNames.PEOPLE_LEGAL_STATUS,
-							PropertyType.STRING, legalStatusTxt.getText()))
-						editPart.markDirty();
-				}
-			});
 			getManagedForm().addPart(editPart);
 		} catch (Exception e) {
 			throw new PeopleException("Cannot create main info section", e);
 		}
 	}
-
 }

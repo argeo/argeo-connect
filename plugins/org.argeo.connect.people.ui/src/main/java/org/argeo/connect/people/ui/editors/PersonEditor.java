@@ -96,7 +96,7 @@ public class PersonEditor extends AbstractEntityEditor {
 				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 		readOnlyPanel.setLayout(new GridLayout());
 
-		// Add a label with info provided by the OrgOverviewLabelProvider
+		// Add a label with info provided by the PersonOverviewLabelProvider
 		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
 				SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
