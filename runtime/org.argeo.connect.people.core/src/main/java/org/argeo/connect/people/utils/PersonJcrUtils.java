@@ -116,8 +116,8 @@ public class PersonJcrUtils implements PeopleNames {
 //		}
 //	}
 
-	/** Helper to retrieve a person given his last Name. Must be refined. */
-	public static Node getPersonWithLastName(Session session, String lastName)
+	/** Helper to retrieve a person given her first and last Name. Must be refined. */
+	public static Node getPersonWithLastName(Session session, String lastName, String firstName)
 			throws RepositoryException {
 		QueryObjectModelFactory factory = session.getWorkspace()
 				.getQueryManager().getQOMFactory();
@@ -126,10 +126,18 @@ public class PersonJcrUtils implements PeopleNames {
 				typeSelector);
 		DynamicOperand dynOp = factory.propertyValue(source.getSelectorName(),
 				PEOPLE_LAST_NAME);
+		DynamicOperand dynOp2 = factory.propertyValue(source.getSelectorName(),
+				PEOPLE_FIRST_NAME);
 		StaticOperand statOp = factory.literal(session.getValueFactory()
 				.createValue(lastName));
+		StaticOperand statOp2 = factory.literal(session.getValueFactory()
+				.createValue(firstName));
 		Constraint defaultC = factory.comparison(dynOp,
 				QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+		Constraint defaultC2 = factory.comparison(dynOp2,
+				QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp2);
+		defaultC = factory.and(defaultC, defaultC2);
+		
 		QueryObjectModel query = factory.createQuery(source, defaultC, null,
 				null);
 		QueryResult result = query.execute();
