@@ -6,6 +6,7 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.viewers.LabelProvider;
 
@@ -57,6 +58,7 @@ public class PersonListLabelProvider extends LabelProvider implements
 		} catch (RepositoryException re) {
 			// Cannot get the org, fail silently
 		}
-		return builder.toString();
+		String result = PeopleHtmlUtils.cleanHtmlString(builder.toString());
+		return result;
 	}
 }

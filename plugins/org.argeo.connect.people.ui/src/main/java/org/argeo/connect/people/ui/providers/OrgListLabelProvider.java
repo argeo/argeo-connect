@@ -3,6 +3,7 @@ package org.argeo.connect.people.ui.providers;
 import javax.jcr.Node;
 
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -38,7 +39,7 @@ public class OrgListLabelProvider extends LabelProvider implements PeopleNames {
 				builder.append(country);
 			builder.append("]");
 		}
-
-		return builder.toString();
+		String result = PeopleHtmlUtils.cleanHtmlString(builder.toString());
+		return result;
 	}
 }

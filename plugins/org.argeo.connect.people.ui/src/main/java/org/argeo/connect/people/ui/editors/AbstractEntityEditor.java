@@ -14,6 +14,7 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiService;
@@ -119,8 +120,8 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 							.getDisplay(), is);
 				}
 				// TODO repair this
-				// else
-				// itemPicture = PeopleImages.NO_PICTURE;
+				else
+					itemPicture = PeopleImages.NO_PICTURE;
 			} catch (Exception e) {
 				// No image found. silent
 			} finally {
@@ -144,8 +145,8 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 				vm.checkin(path);
 
 			// TODO clean default image management
-			if (itemPicture != null)
-				// && !itemPicture.equals(PeopleImages.NO_PICTURE))
+			if (itemPicture != null
+					&& !itemPicture.equals(PeopleImages.NO_PICTURE))
 				itemPicture.dispose(); // Free the resources.
 
 			// else
@@ -247,6 +248,19 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			gd.widthHint = 30;
 			image.setLayoutData(gd);
 		}
+
+		// Text testFileDrop = new Text(header, SWT.NONE);
+		//
+		// // Add drag and drop support to organize items
+		// int operations = DND.DROP_MOVE | DND.DROP_COPY;
+		// Transfer[] tt = new Transfer[] { FileTransfer.getInstance() };
+		// testFileDrop.addDropSupport(operations, tt, new ItemDropListener(
+		// itemsViewer, sPart));
+		//
+		// sPart.refresh();
+		// form.addPart(sPart);
+		//
+
 		// General information panel (on the right of the image)
 		final Composite mainInfoComposite = toolkit.createComposite(header,
 				SWT.NO_FOCUS);

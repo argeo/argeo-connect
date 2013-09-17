@@ -10,9 +10,9 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
@@ -141,8 +141,9 @@ public class SearchEntityEditor extends EditorPart {
 			query = factory.createQuery(source, defaultC, null, null);
 
 			QueryResult result = query.execute();
-			entityViewer.setInput(JcrUiUtils.nodeIteratorToList(
-					result.getNodes(), 30));
+			query.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
+			entityViewer
+					.setInput(JcrUtils.nodeIteratorToList(result.getNodes()));
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list entity", e);
 		}

@@ -94,8 +94,8 @@ public class FilmOverviewLabelProvider extends ColumnLabelProvider implements
 
 			builder.append("</span>");
 
-			return builder.toString();
-
+			String result = PeopleHtmlUtils.cleanHtmlString(builder.toString());
+			return result;
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot create organizations content", re);
 		}

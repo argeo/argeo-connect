@@ -4,6 +4,7 @@ import javax.jcr.Node;
 
 import org.argeo.connect.film.FilmNames;
 import org.argeo.connect.film.core.FilmJcrUtils;
+import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.viewers.LabelProvider;
 
@@ -33,6 +34,7 @@ public class FilmListLabelProvider extends LabelProvider {
 		builder.append(CommonsJcrUtils.getStringValue(film,
 				FilmNames.FILM_PROD_YEAR));
 		builder.append("]");
-		return builder.toString();
+		String result = PeopleHtmlUtils.cleanHtmlString(builder.toString());
+		return result;
 	}
 }

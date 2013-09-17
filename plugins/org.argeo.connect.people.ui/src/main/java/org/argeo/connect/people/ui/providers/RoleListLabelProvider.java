@@ -6,6 +6,7 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
@@ -34,13 +35,13 @@ public class RoleListLabelProvider extends ColumnLabelProvider implements
 			if (pos == null)
 				return "";
 			else {
-				StringBuilder sb = new StringBuilder();
-				sb.append("<b>");
+				StringBuilder builder = new StringBuilder();
+				builder.append("<b>");
 				for (String token : pos.split(","))
-					sb.append(token).append("<br/>");
-				sb.append("</b>");
-				return sb.toString();
-			}
+					builder.append(token).append("<br/>");
+				builder.append("</b>");
+				String result = PeopleHtmlUtils.cleanHtmlString(builder.toString());
+				return result;			}
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot create organizations content", re);
 		}

@@ -14,7 +14,6 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
-import org.argeo.jcr.JcrUtils;
 
 /** Some helper methods to generate html snippets */
 public class PeopleHtmlUtils {
@@ -44,16 +43,11 @@ public class PeopleHtmlUtils {
 
 	/** creates a full monty name snippet for overview panels */
 	public static String getFullMontyName(Node node) {
-		String salutation = removeNull(JcrUtils.get(node,
-				PeopleNames.PEOPLE_SALUTATION));
-		String firstName = removeNull(JcrUtils.get(node,
-				PeopleNames.PEOPLE_FIRST_NAME));
-		String lastName = removeNull(JcrUtils.get(node,
-				PeopleNames.PEOPLE_LAST_NAME));
-		String title = removeNull(JcrUtils.get(node,
-				PeopleNames.PEOPLE_PERSON_TITLE));
-		String suffix = removeNull(JcrUtils.get(node,
-				PeopleNames.PEOPLE_NAME_SUFFIX));
+		String salutation = getHtml(node, PeopleNames.PEOPLE_SALUTATION);
+		String firstName = getHtml(node, PeopleNames.PEOPLE_FIRST_NAME);
+		String lastName = getHtml(node, PeopleNames.PEOPLE_LAST_NAME);
+		String title = getHtml(node, PeopleNames.PEOPLE_PERSON_TITLE);
+		String suffix = getHtml(node, PeopleNames.PEOPLE_NAME_SUFFIX);
 
 		if (CommonsJcrUtils.checkNotEmptyString(salutation)
 				|| CommonsJcrUtils.checkNotEmptyString(title)
@@ -71,13 +65,6 @@ public class PeopleHtmlUtils {
 		} // useless otherwise
 		else
 			return "";
-	}
-
-	private static String removeNull(String value) {
-		if (value == null)
-			return "";
-		else
-			return value;
 	}
 
 	/** creates the localisation snippet */
@@ -107,7 +94,8 @@ public class PeopleHtmlUtils {
 				tags.append("<i>");
 				for (Value value : entity
 						.getProperty((PeopleNames.PEOPLE_TAGS)).getValues())
-					tags.append("#").append(value.getString()).append(" ");
+					tags.append("#").append(cleanHtmlString(value.getString()))
+							.append(" ");
 				tags.append("</i>");
 			}
 			return tags.toString();
@@ -128,7 +116,7 @@ public class PeopleHtmlUtils {
 				PeopleTypes.PEOPLE_PHONE);
 		if (tmpStr != null) {
 			builder.append("<span> ");
-			builder.append(tmpStr);
+			builder.append(cleanHtmlString(tmpStr));
 			builder.append(" </span> ~ ");
 		}
 
@@ -148,8 +136,8 @@ public class PeopleHtmlUtils {
 			builder.append("<span> <a "
 					+ PeopleUiConstants.PEOPLE_CSS_URL_STYLE
 					+ " href=\"http://");
-			builder.append(tmpStr).append("\"").append(" target=\"_blank\" ")
-					.append(">");
+			builder.append(cleanHtmlString(tmpStr)).append("\"")
+					.append(" target=\"_blank\" ").append(">");
 			builder.append(tmpStr);
 			builder.append("</a> </span> ~ ");
 		}
@@ -159,5 +147,27 @@ public class PeopleHtmlUtils {
 		if (!smallList)
 			builder.append("</small>");
 		return builder.toString();
+	}
+
+	/**
+	 * Calls <code>CommonsJcrUtils.get(Node node, String propName)</code> method
+	 * and replace any '&' by its html encoding '&amp;' to avoid
+	 * <code>IllegalArgumentException</code> while rendering html read only
+	 * snippets
+	 */
+	public static String getHtml(Node node, String propName) {
+		String value = CommonsJcrUtils.get(node, propName);
+		value = cleanHtmlString(value);
+		return value;
+	}
+
+	/**
+	 * Cleans a String by replacing any '&' by its html encoding '&#38;' to
+	 * avoid <code>IllegalArgumentException</code> while rendering html
+	 * read-only snippets
+	 */
+	public static String cleanHtmlString(String value) {
+		value = value.replaceAll("&(?![#a-zA-Z0-9]+;)", "&#38;");
+		return value;
 	}
 }
