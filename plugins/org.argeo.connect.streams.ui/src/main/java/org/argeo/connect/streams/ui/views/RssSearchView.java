@@ -12,8 +12,6 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.JcrUiUtils;
@@ -56,7 +54,7 @@ import org.eclipse.ui.part.ViewPart;
 /** Fisrt draft of a user friendly pannel to manage rss channels and feeds */
 public class RssSearchView extends ViewPart {
 
-	private final static Log log = LogFactory.getLog(RssSearchView.class);
+	// private final static Log log = LogFactory.getLog(RssSearchView.class);
 	public static final String ID = RssUiPlugin.PLUGIN_ID + ".rssSearchView";
 
 	/* DEPENDENCY INJECTION */
