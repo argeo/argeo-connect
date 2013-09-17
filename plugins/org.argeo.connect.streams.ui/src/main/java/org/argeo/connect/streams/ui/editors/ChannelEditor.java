@@ -197,7 +197,7 @@ public class ChannelEditor extends AbstractEntityEditor implements RssNames {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		channel = getNode();
+		channel = getEntity();
 		setPartName(JcrUtils.getStringPropertyQuietly(channel,
 				Property.JCR_TITLE));
 	}
