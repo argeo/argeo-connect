@@ -12,6 +12,8 @@ import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.film.FilmNames;
+import org.argeo.connect.film.FilmTypes;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -296,5 +298,128 @@ public class PeopleJcrUtils implements PeopleNames {
 		contentNode.setProperty(Property.JCR_DATA, binary);
 		contentNode.setProperty(Property.JCR_MIMETYPE, fileName.substring(
 				fileName.lastIndexOf("."), fileName.length()));
+	}
+
+	private final static String UNKNOWN_NAME = "?";
+
+	/**
+	 * Centralizes management of relPath creation for an entity given its type.
+	 * Returns null if the node hasn't the necessary property set and thus
+	 * cannot be inserted in the permanent repository (It then likely means that
+	 * it is a draft entity)
+	 */
+	public static String getRelPathForEntity(Node node) {
+		return getRelPathForEntity(node, null);
+	}
+
+	/**
+	 * workaround to generate rel path while importing existing data in the
+	 * repository
+	 */
+	public static String getRelPathForEntity(Node node, String nodeType) {
+		try {
+			String relPath = null;
+
+			if (node.isNodeType(PeopleTypes.PEOPLE_PERSON) || nodeType != null
+					&& PeopleTypes.PEOPLE_PERSON.equals(nodeType)) {
+				// init
+				String lastName = "";
+				String firstName = "";
+				// String displayName = "";
+				if (node.hasProperty(PEOPLE_LAST_NAME)) {
+					lastName = replaceInvalidChars(node
+							.getProperty(PEOPLE_LAST_NAME).getString().trim());
+					// remove space
+				}
+				if (node.hasProperty(PEOPLE_FIRST_NAME))
+					firstName = replaceInvalidChars(node
+							.getProperty(PEOPLE_FIRST_NAME).getString().trim());
+
+				// if (node.hasProperty(PEOPLE_DISPLAY_NAME))
+				// displayName = JcrUtils.replaceInvalidChars(node
+				// .getProperty(PEOPLE_DISPLAY_NAME).getString()
+				// .trim());
+
+				// Effective building of the rel path
+				if (lastName.length() > 1) {
+					relPath = JcrUtils.firstCharsToPath(lastName, 2) + "/"
+							+ lastName;
+				} else
+					relPath = UNKNOWN_NAME;
+				if (firstName.length() > 0)
+					relPath += "/" + firstName;
+				else
+					relPath += "/" + UNKNOWN_NAME;
+				// if (displayName.length() > 1)
+				// relPath = JcrUtils.firstCharsToPath(UNKNOWN_NAME, 2) + "/"
+				// + UNKNOWN_NAME + "/"
+				// + JcrUtils.firstCharsToPath(UNKNOWN_NAME, 2) + "/"
+				// + UNKNOWN_NAME + "/"
+				// + JcrUtils.firstCharsToPath(displayName, 2)
+				// + displayName;
+			} else if (node.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)
+					|| nodeType != null
+					&& PeopleTypes.PEOPLE_ORGANIZATION.equals(nodeType)) {
+				// init
+				String legalName = "";
+				String displayName = "";
+				if (node.hasProperty(PEOPLE_LEGAL_NAME))
+					legalName = replaceInvalidChars(node
+							.getProperty(PEOPLE_LEGAL_NAME).getString().trim());
+				if (node.hasProperty(PEOPLE_DISPLAY_NAME))
+					displayName = replaceInvalidChars(node
+							.getProperty(PEOPLE_DISPLAY_NAME).getString()
+							.trim());
+
+				// Effective building of the rel path
+				if (legalName.length() > 1)
+					relPath = JcrUtils.firstCharsToPath(legalName, 2) + "/"
+							+ legalName;
+				else if (displayName.length() > 1)
+					relPath = UNKNOWN_NAME + "/"
+							+ JcrUtils.firstCharsToPath(displayName, 2) + "/"
+							+ displayName;
+			} else if (node.isNodeType(FilmTypes.FILM) || nodeType != null
+					&& FilmTypes.FILM.equals(nodeType)) {
+				// init
+				String origTitle = "";
+				String origLatinTitle = "";
+				String displayName = "";
+				if (node.hasProperty(FilmNames.FILM_ORIGINAL_TITLE))
+					origTitle = replaceInvalidChars(node
+							.getProperty(FilmNames.FILM_ORIGINAL_TITLE)
+							.getString().trim());
+				if (node.hasProperty(FilmNames.FILM_ORIG_LATIN_TITLE))
+					origLatinTitle = replaceInvalidChars(node
+							.getProperty(FilmNames.FILM_ORIG_LATIN_TITLE)
+							.getString().trim());
+				if (node.hasProperty(PEOPLE_DISPLAY_NAME))
+					displayName = replaceInvalidChars(node
+							.getProperty(PEOPLE_DISPLAY_NAME).getString()
+							.trim());
+
+				// Effective building of the rel path
+				if (origTitle.length() > 1)
+					relPath = JcrUtils.firstCharsToPath(origTitle, 2) + "/"
+							+ origTitle;
+				else if (origLatinTitle.length() > 1)
+					relPath = UNKNOWN_NAME + "/"
+							+ JcrUtils.firstCharsToPath(origLatinTitle, 2)
+							+ "/" + origLatinTitle;
+				else if (displayName.length() > 1)
+					relPath = UNKNOWN_NAME + "/" + UNKNOWN_NAME + "/"
+							+ JcrUtils.firstCharsToPath(displayName, 2)
+							+ displayName;
+			}
+			return relPath;
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to get rel path for node", re);
+		}
+	}
+
+	/** Calls JcrUtils*/
+	public static String replaceInvalidChars(String string) {
+		string = JcrUtils.replaceInvalidChars(string);
+		return string.replace(' ', '_');
 	}
 }

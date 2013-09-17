@@ -74,6 +74,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	/* CONSTANTS */
 	// lenght for short strings (typically tab names)
 	protected final static int SHORT_NAME_LENGHT = 10;
+	protected final static int CTAB_COMP_STYLE = SWT.NO_FOCUS;
 
 	// We use a one session per editor pattern to secure various nodes and
 	// changes life cycle
@@ -211,6 +212,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	/* CONTENT CREATION */
 	@Override
 	public void createPartControl(Composite parent) {
+		
 		mForm = new MyManagedForm(parent);
 		toolkit = mForm.getToolkit();
 		createToolkits();
@@ -436,7 +438,8 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		item.setData(CTAB_INSTANCE_ID, id);
 		item.setText(label);
 		item.setToolTipText(tooltip);
-		Composite innerPannel = toolkit.createComposite(tabFolder, SWT.NONE);
+		Composite innerPannel = toolkit
+				.createComposite(tabFolder, SWT.V_SCROLL);
 		GridData gd = new GridData(SWT.FILL, SWT.TOP, true, true);
 		gd.grabExcessHorizontalSpace = true;
 		gd.grabExcessVerticalSpace = true;

@@ -62,7 +62,7 @@ public class PersonEditor extends AbstractEntityEditor {
 		// Contact informations
 		String tooltip = "Contact information for "
 				+ JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
-		Composite innerPannel = addTabToFolder(folder, SWT.NO_FOCUS,
+		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Contact details", PeopleUiConstants.PANEL_CONTACT_DETAILS,
 				tooltip);
 		entityTK.populateContactPanelWithNotes(innerPannel, person);
@@ -70,7 +70,7 @@ public class PersonEditor extends AbstractEntityEditor {
 		// Jobs panel
 		tooltip = "Organisations linked to "
 				+ JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
-		innerPannel = addTabToFolder(folder, SWT.NO_FOCUS, "Organisations",
+		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Organisations",
 				PeopleUiConstants.PANEL_JOBS, tooltip);
 		listTK.populateJobsPanel(innerPannel, person);
 
@@ -78,7 +78,7 @@ public class PersonEditor extends AbstractEntityEditor {
 		// TODO: move this in specific film project
 		tooltip = "Films related to "
 				+ JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
-		innerPannel = addTabToFolder(folder, SWT.NO_FOCUS, "Films",
+		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Films",
 				PeopleUiConstants.PANEL_PRODUCTIONS, tooltip);
 		listTK.populateFilmsPanel(innerPannel, person);
 		folder.layout();

@@ -73,13 +73,13 @@ public class FilmEditor extends AbstractEntityEditor {
 		// Synopses
 		String tooltip = "The synopses for film "
 				+ JcrUtils.get(film, FilmNames.FILM_ID);
-		Composite innerPannel = addTabToFolder(folder, SWT.NO_FOCUS,
+		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Synopsis", "msm:synopses", tooltip);
 		filmPanelToolkit.populateSynopsisPanel(innerPannel, film);
 
 		// Crew
 		tooltip = "Staff related to " + JcrUtils.get(film, FilmNames.FILM_ID);
-		innerPannel = addTabToFolder(folder, SWT.NO_FOCUS, "Crew",
+		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Crew",
 				PeopleUiConstants.PANEL_MEMBERS, tooltip);
 		listPanelToolkit.populateMembersPanel(innerPannel, film);
 

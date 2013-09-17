@@ -53,15 +53,15 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 
 			String currValue = null;
 			// first line
-			builder.append("<b><big> ").append(
-					CommonsJcrUtils.getStringValue(entity, PEOPLE_LAST_NAME));
-			currValue = CommonsJcrUtils.getStringValue(entity,
-					PEOPLE_FIRST_NAME);
-			if (currValue != null) {
+			builder.append("<b><big> ");
+			String lastName = CommonsJcrUtils.get(entity, PEOPLE_LAST_NAME);
+			String firstName = CommonsJcrUtils.get(entity, PEOPLE_FIRST_NAME);
+			builder.append(lastName);
+			if (CommonsJcrUtils.checkNotEmptyString(lastName)
+					&& CommonsJcrUtils.checkNotEmptyString(firstName)) {
 				builder.append(", ");
-				builder.append(currValue);
 			}
-
+			builder.append(firstName);
 			builder.append("</big> </b>");
 			String fmn = PeopleHtmlUtils.getFullMontyName(entity);
 			String local = PeopleHtmlUtils.getLocalisationInfo(entity);

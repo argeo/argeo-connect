@@ -69,7 +69,7 @@ public class OrgEditor extends AbstractEntityEditor {
 		// Contact informations
 		String tooltip = "Contact information for "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-		Composite innerPannel = addTabToFolder(folder, SWT.NO_FOCUS,
+		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Org. details", PeopleUiConstants.PANEL_CONTACT_DETAILS,
 				tooltip);
 		entityTK.populateContactPanelWithNotes(innerPannel, org);
@@ -77,7 +77,7 @@ public class OrgEditor extends AbstractEntityEditor {
 		// Employees
 		tooltip = "Known employees of "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-		innerPannel = addTabToFolder(folder, SWT.NO_FOCUS, "Employees",
+		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Employees",
 				PeopleUiConstants.PANEL_EMPLOYEES, tooltip);
 		listTK.populateEmployeesPanel(innerPannel, org);
 	}
