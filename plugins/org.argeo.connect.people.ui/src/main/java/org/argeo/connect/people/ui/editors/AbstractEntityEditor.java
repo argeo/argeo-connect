@@ -197,10 +197,15 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	public void setFocus() {
 	}
 
-	// specific refresh
+	/** Forces refresh of all form parts of the current editor */
 	public void forceRefresh() {
 		for (IFormPart part : mForm.getParts())
 			part.refresh();
+	}
+
+	/** Returns the entity Node that is bound to this editor */
+	public Node getEntity() {
+		return entityNode;
 	}
 
 	/* CONTENT CREATION */
@@ -503,10 +508,6 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 
 	protected Session getSession() {
 		return session;
-	}
-
-	protected Node getNode() {
-		return entityNode;
 	}
 
 	protected Image getPicture() {

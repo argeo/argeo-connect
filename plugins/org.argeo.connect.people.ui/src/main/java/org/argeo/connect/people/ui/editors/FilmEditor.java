@@ -50,7 +50,7 @@ public class FilmEditor extends AbstractEntityEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		film = getNode();
+		film = getEntity();
 
 		String shortName = FilmJcrUtils.getTitleForFilm(film);
 		if (shortName != null) {

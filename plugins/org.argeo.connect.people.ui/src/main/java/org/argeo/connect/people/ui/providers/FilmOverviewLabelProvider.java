@@ -52,41 +52,39 @@ public class FilmOverviewLabelProvider extends ColumnLabelProvider implements
 
 			// first line
 			builder.append("<b>");
-			builder.append(CommonsJcrUtils.getStringValue(film, FILM_ID));
+			builder.append(CommonsJcrUtils.get(film, FILM_ID));
 			builder.append(" ~ <big> ");
 			builder.append(FilmJcrUtils.getTitleForFilm(film));
 			builder.append("</big> </b> ");
 			// latinTitle
-			String latinTitle = CommonsJcrUtils.getStringValue(film,
-					FILM_ORIG_LATIN_TITLE);
-			if (latinTitle != null)
+			String latinTitle = CommonsJcrUtils
+					.get(film, FILM_ORIG_LATIN_TITLE);
+			if (CommonsJcrUtils.checkNotEmptyString(latinTitle))
 				builder.append("<i>").append(latinTitle).append("</i>");
 
 			builder.append("<br/>");
 
 			// english title
 			String enTitle = FilmJcrUtils.getAltTitle(film, "EN");
-			if (enTitle != null)
+			if (CommonsJcrUtils.checkNotEmptyString(enTitle))
 				builder.append(enTitle).append("<br/>");
 
 			// Production
 			builder.append(CommonsJcrUtils.getStringValue(film, FILM_DIRECTOR));
 			builder.append(" [");
-			builder.append(
-					CommonsJcrUtils.getStringValue(film, FILM_PROD_COUNTRY))
+			builder.append(CommonsJcrUtils.get(film, FILM_PROD_COUNTRY))
 					.append(", ");
-			builder.append(CommonsJcrUtils.getStringValue(film, FILM_PROD_YEAR));
+			builder.append(CommonsJcrUtils.get(film, FILM_PROD_YEAR));
 			builder.append("]");
 			builder.append("<br/>");
 
 			// original language & lenght
-			String origLang = CommonsJcrUtils.getStringValue(film,
-					FILM_ORIGINAL_LANGUAGE);
+			String origLang = CommonsJcrUtils.get(film, FILM_ORIGINAL_LANGUAGE);
 
 			builder.append("<i>");
-			if (origLang != null)
+			if (CommonsJcrUtils.checkNotEmptyString(origLang))
 				builder.append(origLang).append(", ");
-			builder.append(CommonsJcrUtils.getStringValue(film, FILM_LENGHT));
+			builder.append(CommonsJcrUtils.get(film, FILM_LENGHT));
 			builder.append("</i>");
 
 			if (!isSmallList)

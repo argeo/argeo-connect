@@ -27,11 +27,11 @@ public class PersonListLabelProvider extends LabelProvider implements
 		String currValue = null;
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b>");
-		builder.append(CommonsJcrUtils.getStringValue(person, PEOPLE_LAST_NAME));
+		builder.append(CommonsJcrUtils.get(person, PEOPLE_LAST_NAME));
 
-		currValue = CommonsJcrUtils.getStringValue(person, PEOPLE_FIRST_NAME);
+		currValue = CommonsJcrUtils.get(person, PEOPLE_FIRST_NAME);
 
-		if (currValue != null) {
+		if (CommonsJcrUtils.checkNotEmptyString(currValue)) {
 			builder.append(", ");
 			builder.append(currValue);
 		}
@@ -46,17 +46,17 @@ public class PersonListLabelProvider extends LabelProvider implements
 					Node org = person.getSession().getNodeByIdentifier(
 							currNode.getProperty(PEOPLE_REF_UID).getString());
 					builder.append(" [");
-					builder.append(CommonsJcrUtils.getStringValue(currNode,
+					builder.append(CommonsJcrUtils.get(currNode,
 							PEOPLE_ROLE));
 					builder.append(", ");
-					builder.append(CommonsJcrUtils.getStringValue(org,
+					builder.append(CommonsJcrUtils.get(org,
 							PEOPLE_LEGAL_NAME));
 					builder.append("]");
 				}
 			}
 
 		} catch (RepositoryException re) {
-			// Cannot get the org, fail silently
+			// Cannot get corresponding jobs, fail silently
 		}
 		String result = PeopleHtmlUtils.cleanHtmlString(builder.toString());
 		return result;

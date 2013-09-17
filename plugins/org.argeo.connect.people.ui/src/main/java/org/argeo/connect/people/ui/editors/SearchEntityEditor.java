@@ -139,9 +139,8 @@ public class SearchEntityEditor extends EditorPart {
 			}
 			QueryObjectModel query;
 			query = factory.createQuery(source, defaultC, null, null);
-
-			QueryResult result = query.execute();
 			query.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
+			QueryResult result = query.execute();
 			entityViewer
 					.setInput(JcrUtils.nodeIteratorToList(result.getNodes()));
 		} catch (RepositoryException e) {

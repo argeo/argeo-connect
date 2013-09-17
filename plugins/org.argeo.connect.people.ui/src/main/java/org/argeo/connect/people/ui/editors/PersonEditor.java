@@ -46,7 +46,7 @@ public class PersonEditor extends AbstractEntityEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		person = getNode();
+		person = getEntity();
 		setPartName(JcrUtils.getStringPropertyQuietly(person,
 				PeopleNames.PEOPLE_LAST_NAME));
 	}

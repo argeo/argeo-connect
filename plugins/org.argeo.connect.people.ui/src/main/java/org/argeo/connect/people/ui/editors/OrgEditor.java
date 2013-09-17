@@ -47,7 +47,7 @@ public class OrgEditor extends AbstractEntityEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		org = getNode();
+		org = getEntity();
 
 		String shortName = JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		if (shortName != null) {
@@ -114,7 +114,7 @@ public class OrgEditor extends AbstractEntityEditor {
 			final Text legalNameTxt = toolkit.createText(editPanelCmp, "",
 					SWT.BORDER | SWT.SINGLE | SWT.LEFT);
 			GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-			gd.widthHint = 250;
+			gd.widthHint = 220;
 			legalNameTxt.setLayoutData(gd);
 
 			// Legal Status
@@ -123,7 +123,7 @@ public class OrgEditor extends AbstractEntityEditor {
 			final Text legalStatusTxt = toolkit.createText(editPanelCmp, "",
 					SWT.BORDER | SWT.SINGLE | SWT.LEFT);
 			gd = new GridData(GridData.FILL_HORIZONTAL);
-			gd.widthHint = 250;
+			gd.widthHint = 220;
 			legalStatusTxt.setLayoutData(gd);
 
 			final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
