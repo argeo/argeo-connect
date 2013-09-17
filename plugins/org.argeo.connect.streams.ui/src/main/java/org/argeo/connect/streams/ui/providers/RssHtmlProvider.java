@@ -1,7 +1,5 @@
 package org.argeo.connect.streams.ui.providers;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -19,11 +17,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.streams.RssConstants;
 import org.argeo.connect.streams.RssNames;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.xml.sax.InputSource;
-
-import com.sun.syndication.io.SAXBuilder;
 
 /** Some helper methods to generate html snippets */
 
@@ -33,6 +26,7 @@ public class RssHtmlProvider implements RssNames {
 	private final static DateFormat df = new SimpleDateFormat(
 			"EEE, dd MMM yyyy");
 	private final static int SHORT_TITLE_LENGHT = 40;
+	@SuppressWarnings("unused")
 	private final static int SHORT_DESCRIPTION_LENGHT = 140;
 
 	public static String getChannelShort(Node node) {
@@ -197,7 +191,9 @@ public class RssHtmlProvider implements RssNames {
 	}
 
 	// TODO clean this
+	@SuppressWarnings("unused")
 	private final static String XML_PREFIX = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><xml>";
+	@SuppressWarnings("unused")
 	private final static String XML_SUFFIX = "</xml>";
 
 	public static String cleanLink(String string) {
@@ -206,24 +202,33 @@ public class RssHtmlProvider implements RssNames {
 	}
 
 	public static String cleanDescription(String string) {
-		InputStream is = null;
+		//InputStream is = null;
 		try {
+			int index = string.indexOf("<");
+			if (index > 0)
+				string = string.substring(0, index);
+
 			string = string.replaceAll("&(?![#a-zA-Z0-9]+;)", "&#38;");
 			string = string.replaceAll("&nbsp;", "&#160;");
-			string = XML_PREFIX + string + XML_SUFFIX;
-			SAXBuilder builder = new SAXBuilder(false);
-			is = new ByteArrayInputStream(string.getBytes("utf-8"));
-			Document doc = (Document) builder.build(new InputSource(is));
-			Element rootNode = doc.getRootElement();
-			String result = rootNode.getText();
+			// string = XML_PREFIX + string + XML_SUFFIX;
+			// SAXBuilder builder = new SAXBuilder(false);
+			// is = new ByteArrayInputStream(string.getBytes("utf-8"));
+			// Document doc = (Document) builder.build(new InputSource(is));
+			// Element rootNode = doc.getRootElement();
+			// String result = rootNode.getText();
+			// result = StringEscapeUtils.escapeXml(result.trim());
+			// return result;
 
-			result = StringEscapeUtils.escapeXml(result.trim());
-			return result;
+			string = StringEscapeUtils.escapeXml(string.trim());
+			return string;
+
 		} catch (Exception ex) {
-			throw new ArgeoException("Unable to parse and clean description", ex);
+			throw new ArgeoException("Unable to parse and clean description",
+					ex);
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private static String shortenString(String string, int lenght) {
 		if (string.length() > SHORT_TITLE_LENGHT)
 			return string.substring(0, lenght) + "...";
