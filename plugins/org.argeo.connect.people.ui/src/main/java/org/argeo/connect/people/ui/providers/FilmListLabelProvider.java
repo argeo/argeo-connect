@@ -27,13 +27,20 @@ public class FilmListLabelProvider extends LabelProvider {
 		builder.append("<b> ");
 		builder.append(FilmJcrUtils.getTitleForFilm(film));
 		builder.append(" </b>");
-		builder.append(" [");
-		builder.append(
-				CommonsJcrUtils.getStringValue(film,
-						FilmNames.FILM_PROD_COUNTRY)).append(", ");
-		builder.append(CommonsJcrUtils.getStringValue(film,
-				FilmNames.FILM_PROD_YEAR));
-		builder.append("]");
+
+		String prodCountry = CommonsJcrUtils.get(film,
+				FilmNames.FILM_PROD_COUNTRY);
+		String prodYear = CommonsJcrUtils.get(film, FilmNames.FILM_PROD_YEAR);
+		if (CommonsJcrUtils.checkNotEmptyString(prodCountry)
+				|| CommonsJcrUtils.checkNotEmptyString(prodYear)) {
+			builder.append(" [");
+			builder.append(prodCountry);
+			if (CommonsJcrUtils.checkNotEmptyString(prodCountry)
+					&& CommonsJcrUtils.checkNotEmptyString(prodYear))
+				builder.append(", ");
+			builder.append(prodYear);
+			builder.append("]");
+		}
 		String result = PeopleHtmlUtils.cleanHtmlString(builder.toString());
 		return result;
 	}

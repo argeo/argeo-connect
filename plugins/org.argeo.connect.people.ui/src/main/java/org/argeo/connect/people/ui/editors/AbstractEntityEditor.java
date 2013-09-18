@@ -212,7 +212,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	/* CONTENT CREATION */
 	@Override
 	public void createPartControl(Composite parent) {
-		
+
 		mForm = new MyManagedForm(parent);
 		toolkit = mForm.getToolkit();
 		createToolkits();
@@ -232,7 +232,6 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		// We delegate the feed of all widgets with corresponding texts to the
 		// refresh method of the various form parts.
 		// We must then insure the refresh is done before display.
-		forceRefresh();
 		notifyCheckOutStateChange();
 	}
 
@@ -286,12 +285,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		// The buttons
 		Composite buttonPanel = toolkit.createComposite(mainInfoComposite,
 				SWT.NO_FOCUS);
-		gd = new GridData();
-		gd.grabExcessHorizontalSpace = true;
-		gd.horizontalAlignment = SWT.FILL;
-		gd.verticalAlignment = SWT.TOP;
-
-		buttonPanel.setLayoutData(gd);
+		buttonPanel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		populateButtonsComposite(buttonPanel);
 
 		// Main info panel
@@ -362,10 +356,12 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try {
-					if (isCheckedOutByMe()
-							&& entityNode.getSession().hasPendingChanges())
-						CommandUtils
-								.callCommand(IWorkbenchCommandConstants.FILE_SAVE);
+					if (isCheckedOutByMe())
+						if (entityNode.getSession().hasPendingChanges())
+							CommandUtils
+									.callCommand(IWorkbenchCommandConstants.FILE_SAVE);
+						else
+							CommandUtils.callCommand(CancelAndCheckInItem.ID);
 				} catch (RepositoryException re) {
 					throw new PeopleException("Unable to save pending changes",
 							re);

@@ -117,7 +117,7 @@ public class PersonJcrUtils implements PeopleNames {
 //	}
 
 	/** Helper to retrieve a person given her first and last Name. Must be refined. */
-	public static Node getPersonWithLastName(Session session, String lastName, String firstName)
+	public static Node getPersonWithLastAndFirstName(Session session, String lastName, String firstName)
 			throws RepositoryException {
 		QueryObjectModelFactory factory = session.getWorkspace()
 				.getQueryManager().getQOMFactory();
