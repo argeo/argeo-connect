@@ -5,7 +5,7 @@ public interface PeopleUiConstants {
 
 	/* Default messages */
 	public final static String FILTER_HELP_MSG = "Enter filter criterion";
-
+	
 	/* IDs for the various panels */
 	public final static String PANEL_CONTACT_DETAILS = "people:contactDetails";
 	public final static String PANEL_JOBS = "people:jobs";

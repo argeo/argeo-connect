@@ -12,6 +12,8 @@ import javax.jcr.nodetype.NodeType;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.commands.EditEntityReference;
+import org.argeo.connect.people.ui.commands.RemoveEntityReference;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 
@@ -169,5 +171,53 @@ public class PeopleHtmlUtils {
 	public static String cleanHtmlString(String value) {
 		value = value.replaceAll("&(?![#a-zA-Z0-9]+;)", "&#38;");
 		return value;
+	}
+
+	/**
+	 * Create the text value of a link that enable calling the
+	 * <code>RemoveEntityReference</command> from a cell of a HTML list
+	 */
+	public static String getRemoveSnippetForLists(Node currNode,
+			Node parentVersionableNode) {
+		try {
+			String toRemoveJcrId = currNode.getIdentifier();
+			String versionableParJcrId = parentVersionableNode.getIdentifier();
+
+			String uri = RemoveEntityReference.ID + "/"
+					+ RemoveEntityReference.PARAM_VERSIONABLE_PARENT_JCR_ID
+					+ "=" + versionableParJcrId + "/"
+					+ RemoveEntityReference.PARAM_TOREMOVE_JCR_ID + "="
+					+ toRemoveJcrId;
+
+			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""
+					+ uri + "\" target=\"_rwt\">Delete</a>";
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Error getting remove snippet for list item", re);
+		}
+	}
+
+	/**
+	 * Create the text value of a link that enable calling the
+	 * <code>EditEntityReference</command> from a cell of a HTML list
+	 */
+	public static String getEditSnippetForLists(Node currNode,
+			Node parentVersionableNode) {
+		try {
+			String toEditJcrId = currNode.getIdentifier();
+			String versionableParJcrId = parentVersionableNode.getIdentifier();
+
+			String uri = EditEntityReference.ID + "/"
+					+ EditEntityReference.PARAM_VERSIONABLE_PARENT_JCR_ID + "="
+					+ versionableParJcrId + "/"
+					+ EditEntityReference.PARAM_TOEDIT_JCR_ID + "="
+					+ toEditJcrId;
+
+			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""
+					+ uri + "\" target=\"_rwt\">Edit</a>";
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Error getting remove snippet for list item", re);
+		}
 	}
 }

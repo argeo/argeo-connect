@@ -25,7 +25,8 @@ import org.eclipse.ui.PartInitException;
 public class NodeListDoubleClickListener implements IDoubleClickListener {
 
 	private PeopleService peopleService;
-	private String parentNodeType= null;
+	private String parentNodeType = null;
+
 	private String tableId = null;
 
 	/**
@@ -35,7 +36,7 @@ public class NodeListDoubleClickListener implements IDoubleClickListener {
 	public NodeListDoubleClickListener(PeopleService peopleService) {
 		this.peopleService = peopleService;
 	}
-	
+
 	public NodeListDoubleClickListener(PeopleService peopleService,
 			String parentNodeType) {
 		this.peopleService = peopleService;
@@ -46,8 +47,6 @@ public class NodeListDoubleClickListener implements IDoubleClickListener {
 			String parentNodeType, String tableId) {
 		this.peopleService = peopleService;
 		this.parentNodeType = parentNodeType;
-		this.tableId = tableId;
-
 	}
 
 	protected void openNodeEditor(String nodeId, String editorId) {
