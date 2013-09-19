@@ -22,7 +22,7 @@
             class="org.argeo.eclipse.spring.SpringExtensionFactory"
             icon="icons/rss.png"
             id="org.argeo.connect.streams.ui.rssSearchView"
-            name="Streams Search"
+            name="Connect Streams"
             restorable="true">
       </view>
    </extension>
@@ -106,7 +106,7 @@
 		<!-- Entry point for rap 2.0 and eclipse 4.2 with rap tooling --> 
 		<entrypoint
 			id="org.argeo.connect.streams.rap.entrypoint"
-			class="org.argeo.security.ui.rap.SecureEntryPoint"
+			class="org.argeo.connect.streams.ui.rap.RssSecureEntryPoint"
 			path="/streams"
 			brandingId="org.argeo.connect.streams.rap.defaultBranding">
 		</entrypoint>
