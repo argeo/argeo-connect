@@ -49,8 +49,9 @@ public class OrgEditor extends AbstractEntityEditor {
 		super.init(site, input);
 		org = getEntity();
 
-		String shortName = JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-		if (shortName != null) {
+		String shortName = CommonsJcrUtils.get(org,
+				PeopleNames.PEOPLE_LEGAL_NAME);
+		if (CommonsJcrUtils.checkNotEmptyString(shortName)) {
 			if (shortName.length() > SHORT_NAME_LENGHT)
 				shortName = shortName.substring(0, SHORT_NAME_LENGHT - 1)
 						+ "...";

@@ -125,7 +125,7 @@ mixin
 //
 [people:contactable] 
 mixin
-+ * (people:contact) *
++ people:contacts (nt:unstructured) =nt:unstructured m a 
 
 // 
 // CONTACTS

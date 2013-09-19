@@ -1,7 +1,9 @@
 package org.argeo.connect.people.ui.toolkits;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -12,20 +14,32 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.connect.people.ui.commands.AddEntityReferences;
+import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
+import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.ui.providers.FilmOverviewLabelProvider;
 import org.argeo.connect.people.ui.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.ui.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.ui.providers.RoleListLabelProvider;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -36,15 +50,15 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class ListToolkit {
 	// private final static Log log = LogFactory.getLog(ListToolkit.class);
 
-	// private final FormToolkit toolkit;
-	// private final IManagedForm form;
+	private final FormToolkit toolkit;
+	private final IManagedForm form;
 	private final PeopleService peopleService;
 	private final PeopleUiService peopleUiService;
 
 	public ListToolkit(FormToolkit toolkit, IManagedForm form,
 			PeopleService peopleService, PeopleUiService peopleUiService) {
-		// this.toolkit = toolkit;
-		// this.form = form;
+		this.toolkit = toolkit;
+		this.form = form;
 		this.peopleService = peopleService;
 		this.peopleUiService = peopleUiService;
 	}
@@ -85,10 +99,43 @@ public class ListToolkit {
 
 	public void populateEmployeesPanel(Composite panel, final Node entity) {
 		try {
-			TableViewer viewer = new TableViewer(panel);
+			panel.setLayout(new GridLayout());
+			final Button addBtn = toolkit.createButton(panel, "Add Employee",
+					SWT.PUSH);
+			String tooltip = "Add an employee for this organisation";
+			addBtn.setToolTipText(tooltip);
+			addBtn.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
+
+			addBtn.addSelectionListener(new SelectionListener() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					Map<String, String> params = new HashMap<String, String>();
+					try {
+						params.put(
+								AddEntityReferences.PARAM_TARGET_PARENT_JCR_ID,
+								entity.getIdentifier());
+						CommandUtils
+								.callCommand(AddEntityReferences.ID, params);
+					} catch (RepositoryException e1) {
+						throw new PeopleException(
+								"Unable to get parent Jcr identifier", e1);
+					}
+				}
+
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+			});
+
+			Composite tableComp = toolkit.createComposite(panel);
+			tableComp
+					.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			final TableViewer viewer = new TableViewer(tableComp);
 			TableColumnLayout tableColumnLayout = createEmployeesTableColumns(
-					panel, viewer);
-			panel.setLayout(tableColumnLayout);
+					tableComp, viewer);
+			tableComp.setLayout(tableColumnLayout);
 			PeopleUiUtils.setTableDefaultStyle(viewer, 70);
 
 			// compulsory content provider
@@ -98,8 +145,17 @@ public class ListToolkit {
 							.getPrimaryNodeType().getName(),
 							PeopleUiConstants.PANEL_EMPLOYEES));
 
-			viewer.setInput(peopleService.getRelatedEntities(entity,
-					PeopleTypes.PEOPLE_JOB, PeopleTypes.PEOPLE_PERSON));
+			// Add life cycle management
+			final EntityAbstractFormPart sPart = new EntityAbstractFormPart() {
+				public void refresh() {
+					super.refresh();
+					addBtn.setEnabled(CommonsJcrUtils
+							.isNodeCheckedOutByMe(entity));
+					viewer.setInput(peopleService.getRelatedEntities(entity,
+							PeopleTypes.PEOPLE_JOB, PeopleTypes.PEOPLE_PERSON));
+				}
+			};
+			form.addPart(sPart);
 
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot populate employee panel ", re);
@@ -179,7 +235,36 @@ public class ListToolkit {
 				peopleService));
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
 				200, 80, true));
+
+		// Edit & Remove links
+		viewer.getTable().addSelectionListener(new HtmlListRwtAdapter());
+		col = ViewerUtils.createTableViewerColumn(viewer, "Edit/Remove links",
+				SWT.NONE, 60);
+		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
+				80, 50, true));
+		col.setLabelProvider(new ColumnLabelProvider() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getText(Object element) {
+				try {
+					// get the corresponding person
+					Node link = (Node) element;
+					Node person = link.getParent().getParent();
+
+					return PeopleHtmlUtils.getEditSnippetForLists(link, person)
+							+ " <br />"
+							+ PeopleHtmlUtils.getRemoveSnippetForLists(link,
+									person);
+				} catch (RepositoryException e) {
+					throw new PeopleException(
+							"Error while getting versionable parent", e);
+				}
+
+			}
+		});
 		return tableColumnLayout;
+
 	}
 
 	private TableColumnLayout createJobsTableColumns(final Composite parent,

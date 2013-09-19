@@ -47,8 +47,14 @@ public class PersonEditor extends AbstractEntityEditor {
 			throws PartInitException {
 		super.init(site, input);
 		person = getEntity();
-		setPartName(JcrUtils.getStringPropertyQuietly(person,
-				PeopleNames.PEOPLE_LAST_NAME));
+		String shortName = CommonsJcrUtils.get(person,
+				PeopleNames.PEOPLE_LAST_NAME);
+		if (CommonsJcrUtils.checkNotEmptyString(shortName)) {
+			if (shortName.length() > SHORT_NAME_LENGHT)
+				shortName = shortName.substring(0, SHORT_NAME_LENGHT - 1)
+						+ "...";
+			setPartName(shortName);
+		}
 	}
 	
 	@Override

@@ -7,7 +7,6 @@ import javax.jcr.RepositoryException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.film.FilmNames;
-import org.argeo.connect.film.core.FilmJcrUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
@@ -16,6 +15,7 @@ import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.providers.FilmOverviewLabelProvider;
 import org.argeo.connect.people.ui.toolkits.FilmToolkit;
 import org.argeo.connect.people.ui.toolkits.ListToolkit;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
@@ -52,8 +52,10 @@ public class FilmEditor extends AbstractEntityEditor {
 		super.init(site, input);
 		film = getEntity();
 
-		String shortName = FilmJcrUtils.getTitleForFilm(film);
-		if (shortName != null) {
+		String shortName = CommonsJcrUtils.get(film,
+				FilmNames.FILM_ORIGINAL_TITLE);
+
+		if (CommonsJcrUtils.checkNotEmptyString(shortName)) {
 			if (shortName.length() > SHORT_NAME_LENGHT)
 				shortName = shortName.substring(0, SHORT_NAME_LENGHT - 1)
 						+ "...";

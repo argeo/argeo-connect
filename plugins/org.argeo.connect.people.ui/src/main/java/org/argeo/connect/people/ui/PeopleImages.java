@@ -38,4 +38,11 @@ public class PeopleImages {
 
 	public final static Image NO_PICTURE = PeopleUiPlugin.getImageDescriptor(
 			"icons/noPicture.gif").createImage();
+
+	// Check box icons
+	public final static Image CHECKED = PeopleUiPlugin.getImageDescriptor(
+			"icons/checked.gif").createImage();
+	public final static Image UNCHECKED = PeopleUiPlugin.getImageDescriptor(
+			"icons/unchecked.gif").createImage();
+
 }

@@ -129,6 +129,12 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 				IOUtils.closeQuietly(is);
 			}
 
+			// try to set a default part name for newly created entities
+			String name = CommonsJcrUtils.get(entityNode,
+					PeopleNames.PEOPLE_DISPLAY_NAME);
+			if (CommonsJcrUtils.checkNotEmptyString(name)) {
+				setPartName(name);
+			}
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Unable to create new session"
 					+ " to use with current editor", e);

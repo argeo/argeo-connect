@@ -20,13 +20,13 @@ import org.argeo.connect.people.utils.PeopleJcrUtils;
 /** Some helper methods to generate html snippets */
 public class PeopleHtmlUtils {
 	private final static DateFormat df = new SimpleDateFormat(
-			"EEE, dd MMM yyyy");
+			"EEE, dd MMM yyyy HH:mm");
 
 	/** shortcut to set form data while dealing with switching panel */
 	public static String getLastUpdateSnippet(Node entity) {
 		StringBuilder builder = new StringBuilder();
 		try {
-			if (entity.isNodeType(NodeType.MIX_VERSIONABLE)) {
+			if (entity.isNodeType(NodeType.MIX_LAST_MODIFIED)) {
 				builder.append("<br/><br/><small><i>").append(
 						"Last updated on ");
 				builder.append(df.format(entity
