@@ -1,8 +1,11 @@
 package org.argeo.connect.streams.backend;
 
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -19,6 +22,8 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -32,6 +37,9 @@ import org.argeo.jcr.JcrUtils;
 import org.jdom.Element;
 import org.springframework.security.Authentication;
 import org.springframework.security.context.SecurityContextHolder;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.helpers.DefaultHandler;
 
 import com.sun.syndication.feed.synd.SyndCategory;
 import com.sun.syndication.feed.synd.SyndEnclosure;
@@ -52,6 +60,8 @@ public class RssManagerImpl implements RssNames, RssManager {
 
 	private Integer pollingPeriod = 0;
 	private Thread pollingThread = null;
+
+	private SAXParser saxParser = createSAXParser();
 
 	public void init() {
 		try {
@@ -120,9 +130,10 @@ public class RssManagerImpl implements RssNames, RssManager {
 			channelNode.setProperty(RSS_LINK, feed.getLink());
 
 			Node channelInfoNode = channelNode.getNode(RSS_CHANNEL_INFO);
-			channelInfoNode.setProperty(Property.JCR_TITLE, feed.getTitle());
+			channelInfoNode.setProperty(Property.JCR_TITLE,
+					sanitize(feed.getTitle()));
 			channelInfoNode.setProperty(Property.JCR_DESCRIPTION,
-					feed.getDescription());
+					sanitize(feed.getDescription()));
 
 			if (log.isDebugEnabled())
 				log.debug("Registered channel: '" + feed.getTitle() + "' ("
@@ -198,10 +209,10 @@ public class RssManagerImpl implements RssNames, RssManager {
 			itemNode = channelNode.addNode(relPath, RssTypes.RSS_ITEM);
 		}
 		itemNode.setProperty(RSS_LINK, entry.getLink());
-		itemNode.setProperty(Property.JCR_TITLE, entry.getTitle());
+		itemNode.setProperty(Property.JCR_TITLE, sanitize(entry.getTitle()));
 
 		String description = entry.getDescription().getValue();
-		itemNode.setProperty(Property.JCR_DESCRIPTION, description);
+		itemNode.setProperty(Property.JCR_DESCRIPTION, sanitize(description));
 
 		itemNode.setProperty(RSS_PUB_DATE, publishedDate);
 		if (updatedDate != null)
@@ -268,6 +279,89 @@ public class RssManagerImpl implements RssNames, RssManager {
 		}
 	}
 
+	/** Clean up string or return the empty string if it can't. */
+	protected synchronized String sanitize(String original) {
+		if (original == null)
+			return null;
+		String clean = removeTags(original);
+		if (isTextValid(clean))
+			return clean;
+		else
+			return "";
+	}
+
+	protected synchronized Boolean isTextValid(String str) {
+		try {
+			StringBuilder markup = new StringBuilder();
+			markup.append("<html>");
+			markup.append(str);
+			markup.append("</html>");
+			InputSource inputSource = new InputSource(new StringReader(
+					markup.toString()));
+			saxParser.parse(inputSource, new MarkupHandler());
+			return true;
+		} catch (Exception e) {
+			log.error("Bad input (" + e + "):\n" + str + "\n");
+			return false;
+		}
+	}
+
+	protected String removeTags(String str) {
+		StringBuilder clean = new StringBuilder("");
+		boolean inTag = false;
+		boolean inEntity = false;
+		StringBuilder currEntity = null;
+		for (char c : str.toCharArray()) {
+			if (inTag) {// tags
+				if (c == '>')
+					inTag = false;
+			} else {// text
+				if (inEntity) {
+					currEntity.append(c);
+					if (c == ';') {
+						inEntity = false;
+						String entity = currEntity.toString();
+						if (entity.charAt(1) == '#' || entity.equals("&quot;")
+								|| entity.equals("&amp;")
+								|| entity.equals("&apos;")
+								|| entity.equals("&lt;")
+								|| entity.equals("&gt;"))
+							clean.append(entity);
+					} else if (c == ' ') {// was not an entity
+						inEntity = false;
+						String entity = currEntity.toString();
+						entity = entity.replace("&", "&amp;");
+						clean.append(entity);
+					} else {
+						currEntity.append(c);
+					}
+				} else {
+					if (c == '<')
+						inTag = true;
+					else if (c == '&') {
+						inEntity = true;
+						currEntity = new StringBuilder();
+						currEntity.append(c);
+					} else
+						clean.append(c);
+				}
+
+			}
+		}
+		return clean.toString();
+	}
+
+	private static SAXParser createSAXParser() {
+		SAXParser result = null;
+		SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+		try {
+			result = parserFactory.newSAXParser();
+		} catch (Exception exception) {
+			throw new RuntimeException("Failed to create SAX parser", exception);
+		}
+		return result;
+	}
+
 	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
@@ -310,4 +404,98 @@ public class RssManagerImpl implements RssNames, RssManager {
 			}
 		}
 	}
+
+	private static class MarkupHandler extends DefaultHandler {
+		private static final Map<String, String[]> SUPPORTED_ELEMENTS = createSupportedElementsMap();
+
+		@Override
+		public void startElement(String uri, String localName, String name,
+				Attributes attributes) {
+			checkSupportedElements(name, attributes);
+			checkSupportedAttributes(name, attributes);
+			checkMandatoryAttributes(name, attributes);
+		}
+
+		private static void checkSupportedElements(String elementName,
+				Attributes attributes) {
+			if (!SUPPORTED_ELEMENTS.containsKey(elementName)) {
+				throw new IllegalArgumentException(
+						"Unsupported element in markup text: " + elementName);
+			}
+		}
+
+		private static void checkSupportedAttributes(String elementName,
+				Attributes attributes) {
+			if (attributes.getLength() > 0) {
+				List<String> supportedAttributes = Arrays
+						.asList(SUPPORTED_ELEMENTS.get(elementName));
+				int index = 0;
+				String attributeName = attributes.getQName(index);
+				while (attributeName != null) {
+					if (!supportedAttributes.contains(attributeName)) {
+						String message = "Unsupported attribute \"{0}\" for element \"{1}\" in markup text";
+						message = MessageFormat.format(message, new Object[] {
+								attributeName, elementName });
+						throw new IllegalArgumentException(message);
+					}
+					index++;
+					attributeName = attributes.getQName(index);
+				}
+			}
+		}
+
+		private static void checkMandatoryAttributes(String elementName,
+				Attributes attributes) {
+			checkIntAttribute(elementName, attributes, "img", "width");
+			checkIntAttribute(elementName, attributes, "img", "height");
+		}
+
+		private static void checkIntAttribute(String elementName,
+				Attributes attributes, String checkedElementName,
+				String checkedAttributeName) {
+			if (checkedElementName.equals(elementName)) {
+				String attribute = attributes.getValue(checkedAttributeName);
+				try {
+					Integer.parseInt(attribute);
+				} catch (NumberFormatException exception) {
+					String message = "Mandatory attribute \"{0}\" for element \"{1}\" is missing or not a valid integer";
+					Object[] arguments = new Object[] { checkedAttributeName,
+							checkedElementName };
+					message = MessageFormat.format(message, arguments);
+					throw new IllegalArgumentException(message);
+				}
+			}
+		}
+
+		private static Map<String, String[]> createSupportedElementsMap() {
+			Map<String, String[]> result = new HashMap<String, String[]>();
+			result.put("html", new String[0]);
+			result.put("br", new String[0]);
+			result.put("b", new String[] { "style" });
+			result.put("strong", new String[] { "style" });
+			result.put("i", new String[] { "style" });
+			result.put("em", new String[] { "style" });
+			result.put("sub", new String[] { "style" });
+			result.put("sup", new String[] { "style" });
+			result.put("big", new String[] { "style" });
+			result.put("small", new String[] { "style" });
+			result.put("del", new String[] { "style" });
+			result.put("ins", new String[] { "style" });
+			result.put("code", new String[] { "style" });
+			result.put("samp", new String[] { "style" });
+			result.put("kbd", new String[] { "style" });
+			result.put("var", new String[] { "style" });
+			result.put("cite", new String[] { "style" });
+			result.put("dfn", new String[] { "style" });
+			result.put("q", new String[] { "style" });
+			result.put("abbr", new String[] { "style", "title" });
+			result.put("span", new String[] { "style" });
+			result.put("img", new String[] { "style", "src", "width", "height",
+					"title", "alt" });
+			result.put("a", new String[] { "style", "href", "target", "title" });
+			return result;
+		}
+
+	}
+
 }
