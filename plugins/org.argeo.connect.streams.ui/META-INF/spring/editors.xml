@@ -9,4 +9,8 @@
 		<property name="peopleService" ref="peopleService" />
 		<!-- <property name="rssManager" ref="rssManager" /> -->
 	</bean>
+	<bean id="org.argeo.connect.streams.ui.channelEditorNoCTab" class="org.argeo.connect.streams.ui.editors.ChannelEditorNoCTab"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+	</bean>
 </beans>

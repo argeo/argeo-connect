@@ -26,39 +26,90 @@
             restorable="true">
       </view>
    </extension>
-   <extension
-         point="org.eclipse.ui.editors">
-     <editor
-           class="org.argeo.eclipse.spring.SpringExtensionFactory"
-           default="false"
-           icon="icons/rss.png"
-           id="org.argeo.connect.streams.ui.channelEditor"
-           name="New...">
-      </editor>
+	<!-- EDITORS --> 
+	<extension
+		point="org.eclipse.ui.editors">
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			default="false"
+			icon="icons/rss.png"
+			id="org.argeo.connect.streams.ui.channelEditor"
+			name="New...">
+		</editor>
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			default="false"
+			icon="icons/rss.png"
+			id="org.argeo.connect.streams.ui.channelEditorNoCTab"
+			name="New...">
+		</editor>
    <!--    <editor
             class="org.argeo.eclipse.spring.SpringExtensionFactory"
             default="false"
             id="org.argeo.connect.streams.ui.linkEditor"
             name="Link">
       </editor> --> 
-   </extension>
+	</extension>
    	<!-- COMMANDS -->	
-	<!-- Check in and out -->
 	<extension
          point="org.eclipse.ui.commands">
 		<command
-      		id="org.argeo.connect.people.ui.checkOutItem"
-            name="checkOutItem">
-    	</command>
-    	<command
-      		id="org.argeo.connect.people.ui.cancelAndCheckInItem"
-            name="cancelAndcheckInItem">
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+        	id="org.argeo.connect.people.ui.deleteEntity"
+            name="deleteEntity">
+            <commandParameter
+         		id="param.removeParent"
+         		name="Remove Parent node or not">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.toRemoveJcrId"
+         		name="Jcr ID of the node to remove">
+  	 		</commandParameter>
     	</command>
    	</extension>
-	<extension
-         point="org.eclipse.ui.menus">
+    <extension point="org.eclipse.ui.menus">
+		<menuContribution locationURI="toolbar:org.argeo.connect.streams.ui.rssSearchView">
+				<!-- can also use org.argeo.connect.people.ui.doNothing -->
+				<command
+					commandId="org.argeo.security.ui.rap.userMenuCommand"
+					icon="icons/main.gif"
+					id="org.argeo.connect.streams.ui.userToolbar"
+					style="pulldown">
+				</command>
+		</menuContribution>
+		<menuContribution locationURI="menu:org.argeo.connect.streams.ui.userToolbar">
+			<command
+				commandId="org.argeo.security.ui.rap.openChangePasswordDialog"
+				icon="icons/password.gif"
+				label="Change password"/>
+			<separator
+				name="org.argeo.security.ui.rap.beforeFile"
+				visible="true">
+			</separator>
+			<command
+				commandId="org.eclipse.ui.file.closeAll"
+				icon="icons/closeAll.gif"/>
+			<command commandId="org.eclipse.ui.file.save"/>
+			<command commandId="org.eclipse.ui.file.saveAll"/>
+			<separator
+				name="org.argeo.security.ui.rap.beforeExit"
+				visible="true">
+			</separator>
+			<command commandId="org.eclipse.ui.views.showView"/>
+			<!--FIXME Do not permit this: no cool bar in Streams UI : we cannot come back! -->
+			<!--<command commandId="org.eclipse.ui.perspectives.showPerspective"/>-->
+			<command
+				commandId="org.eclipse.ui.file.exit"
+				icon="icons/exit.png"/>
+		</menuContribution>
+		<!-- Workaround: enable opening of other perspective for admin use --> 		 
+		 <menuContribution locationURI="menu:org.argeo.security.ui.rap.mainMenu?after=org.argeo.security.ui.rap.beforeExit">
+			<command commandId="org.eclipse.ui.perspectives.showPerspective"/>
+		</menuContribution>
+		
+		
 	</extension>
-		<!-- SPECIFIC MANAGEMENT OF THE CHECK OUT ITEM -->
+    <!-- SPECIFIC MANAGEMENT OF THE CHECK OUT ITEM -->
 	<extension
 		point="org.eclipse.ui.handlers">
 		<handler
@@ -108,6 +159,13 @@
 			id="org.argeo.connect.streams.rap.entrypoint"
 			class="org.argeo.connect.streams.ui.rap.RssSecureEntryPoint"
 			path="/streams"
+			brandingId="org.argeo.connect.streams.rap.defaultBranding">
+		</entrypoint>
+		<!-- Workaround: add toolbar for admin use --> 
+		<entrypoint
+			id="org.argeo.connect.streams.rap.adminentrypoint"
+			class="org.argeo.security.ui.rap.SecureEntryPoint"
+			path="/streamsAdmin"
 			brandingId="org.argeo.connect.streams.rap.defaultBranding">
 		</entrypoint>
 	</extension>

@@ -486,10 +486,11 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			super(parent);
 		}
 
+		/** <code>super.dirtyStateChanged()</code> does nothing */
 		public void dirtyStateChanged() {
-			AbstractEntityEditor.this.firePropertyChange(PROP_DIRTY);
+		 AbstractEntityEditor.this.firePropertyChange(PROP_DIRTY);
 		}
-
+		/** Enable clean management of the "dirty" status display in this part table */
 		public void commit(boolean onSave) {
 			super.commit(onSave);
 			if (onSave) {

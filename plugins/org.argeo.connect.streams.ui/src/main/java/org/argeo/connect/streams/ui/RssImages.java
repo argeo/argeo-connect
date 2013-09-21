@@ -37,6 +37,8 @@ public class RssImages {
 			"icons/logo.gif").createImage();
 	public final static Image LOGO_SMALL = RssUiPlugin.getImageDescriptor(
 			"icons/smallerOrnamentLogo.png").createImage();
+	public final static Image CLOSE = RssUiPlugin.getImageDescriptor(
+			"icons/close.png").createImage();
 
 	// public final static Image NO_PICTURE = RssUiPlugin.getImageDescriptor(
 	// "icons/noPicture.gif").createImage();

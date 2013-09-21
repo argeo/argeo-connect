@@ -7,6 +7,12 @@
   font: 12px Verdana, "Lucida Sans", Arial, Helvetica, sans-serif;
 } */
 
+/* Composite, .showBorder, Composite.showBorder{
+	border:1px solid fuchsia;
+}*/
+
+
+
 * {
   color: #333333;
   background-color: white;
@@ -37,7 +43,6 @@ TEXT[MULTI][BORDER]:focused {
 
 /************ RSS *******************/
 
-
 /** LOGO */
 .RSS-logoComposite {
   background-image: gradient(linear, left top, right top,
@@ -57,6 +62,49 @@ TEXT[MULTI][BORDER]:focused {
 }
 
 
+/** Workaround to display URL like internal links * /
+.uniqueCellTable,
+Table-RowOverlay.uniqueCellTable,
+Table-RowOverlay.uniqueCellTable:hover,
+Table-RowOverlay.uniqueCellTable:selected,
+Table-RowOverlay.uniqueCellTable:selected:unfocused,
+Table-RowOverlay.uniqueCellTable:linesvisible:even:hover,
+Table-RowOverlay.uniqueCellTable:linesvisible:even:selected,
+Table-RowOverlay.uniqueCellTable:linesvisible:even:selected:unfocused
+Table.uniqueCellTable,
+Table.uniqueCellTable:hover,
+Table.uniqueCellTable:selected,
+Table.uniqueCellTable:selected:unfocused,
+Table.uniqueCellTable:linesvisible:even:hover,
+Table.uniqueCellTable:linesvisible:even:selected,
+Table.uniqueCellTable:linesvisible:even:selected:unfocused
+*/
+
+TableColumn.uniqueCellTable,
+Table.uniqueCellTable,
+Table-RowOverlay.uniqueCellTable,
+TableItem.uniqueCellTable
+{
+  background-color: white;
+  color: #333333;
+}
+
+TableColumn.uniqueCellTable:hover,
+Table.uniqueCellTable:hover,
+Table-RowOverlay.uniqueCellTable:hover,
+TableItem.uniqueCellTable:hover
+{
+  background-color: white;
+  color: #333333;
+}
+
+.uniqueCellTable:hover
+{
+  background-color: white;
+  color: #333333;
+}
+
+
 /** Workaround to display URL like internal links */
 Table-RowOverlay.RSS-logoTable:hover,
 Table-RowOverlay.RSS-logoTable:selected,
@@ -68,12 +116,12 @@ Table-RowOverlay.RSS-logoTable:linesvisible:even:selected:unfocused
   background-color: transparent;
 }
 
-TableItem.RSS-logoTable{
+/* TableItem.RSS-logoTable{
   text-align: right;
 }
+*/
 
-
-Table.RSS-logoTable-RowOverlay {
+Table-RowOverlay.RSS-logoTable {
   background-color: transparent;
   color: inherit;
   background-image: none;
@@ -93,7 +141,7 @@ Table-RowOverlay {
 }
 
 Table-RowOverlay:hover {
-  background-color: #b1c1cd;
+  background-color: #f0eef0;
 }
 
 Table-RowOverlay:selected {
@@ -107,7 +155,7 @@ Table-RowOverlay:selected:unfocused {
 }
 
 Table-RowOverlay:linesvisible:even:hover {
-  background-color: #e1e1ef;
+  background-color: #f0eef0;
 }
 
 Table-RowOverlay:linesvisible:even:selected {
@@ -120,7 +168,6 @@ Table-RowOverlay:linesvisible:even:selected:unfocused {
   background-color: #dddddd;
   color:#333333;
 }
-
 
 
 /************ People ***************/
@@ -156,7 +203,4 @@ Table-RowOverlay:linesvisible:even:selected:unfocused {
 }
 
 
-.peopleCss-showBorder{
-	border:fuchsia;
-}
 

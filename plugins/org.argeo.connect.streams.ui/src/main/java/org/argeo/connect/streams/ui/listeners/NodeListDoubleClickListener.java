@@ -10,6 +10,7 @@ import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.EntityEditorInput;
 import org.argeo.connect.streams.RssTypes;
 import org.argeo.connect.streams.ui.editors.ChannelEditor;
+import org.argeo.connect.streams.ui.editors.ChannelEditorNoCTab;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -68,7 +69,11 @@ public class NodeListDoubleClickListener implements IDoubleClickListener {
 			try {
 				Node curNode = (Node) obj;
 				if (curNode.isNodeType(RssTypes.RSS_CHANNEL_INFO)) {
-					openNodeEditor(ChannelEditor.ID, curNode.getIdentifier());
+					openNodeEditor(ChannelEditorNoCTab.ID, curNode.getIdentifier());
+					//openNodeEditor(ChannelEditor.ID, curNode.getIdentifier());
+					
+					
+					
 					// if (PeopleTypes.PEOPLE_PERSON.equals(parentNodeType)) {
 					// Node linkedOrg = peopleService.getEntityById(session,
 					// curNode.getProperty(PeopleNames.PEOPLE_REF_UID)

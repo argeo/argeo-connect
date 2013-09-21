@@ -48,6 +48,19 @@ public class RssHtmlProvider implements RssNames {
 		return builder.toString();
 	}
 
+	public static String getChannelTitle(Node node) throws RepositoryException {
+		StringBuilder builder = new StringBuilder();
+		builder.append("<b><big>");
+		builder.append(CommonsJcrUtils.getStringValue(node, Property.JCR_TITLE));
+		builder.append("</big></b><br/>");
+		String desc = CommonsJcrUtils.getStringValue(node,
+				Property.JCR_DESCRIPTION);
+		if (desc != null) {
+			builder.append(desc);
+		}
+		return builder.toString();
+	}
+
 	public static String getChannelMedium(Node node) throws RepositoryException {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b><big>");
@@ -202,14 +215,14 @@ public class RssHtmlProvider implements RssNames {
 	}
 
 	public static String cleanDescription(String string) {
-		//InputStream is = null;
+		// InputStream is = null;
 		try {
-			int index = string.indexOf("<");
-			if (index > 0)
-				string = string.substring(0, index);
+			// int index = string.indexOf("<");
+			// if (index > 0)
+			// string = string.substring(0, index);
 
-			string = string.replaceAll("&(?![#a-zA-Z0-9]+;)", "&#38;");
-			string = string.replaceAll("&nbsp;", "&#160;");
+			// string = string.replaceAll("&(?![#a-zA-Z0-9]+;)", "&#38;");
+			// string = string.replaceAll("&nbsp;", "&#160;");
 			// string = XML_PREFIX + string + XML_SUFFIX;
 			// SAXBuilder builder = new SAXBuilder(false);
 			// is = new ByteArrayInputStream(string.getBytes("utf-8"));
@@ -219,7 +232,7 @@ public class RssHtmlProvider implements RssNames {
 			// result = StringEscapeUtils.escapeXml(result.trim());
 			// return result;
 
-			string = StringEscapeUtils.escapeXml(string.trim());
+			// string = StringEscapeUtils.escapeXml(string.trim());
 			return string;
 
 		} catch (Exception ex) {
