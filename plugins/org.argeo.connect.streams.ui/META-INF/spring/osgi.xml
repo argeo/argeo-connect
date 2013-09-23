@@ -22,4 +22,9 @@
 	<reference id="authenticationManager"
 		interface="org.springframework.security.AuthenticationManager" />
 
+	<!-- SERVICES -->
+	<service ref="peopleService" interface="org.argeo.connect.people.PeopleService" />  
+	<service ref="peopleUiService" interface="org.argeo.connect.people.ui.PeopleUiService" />  
+	
+
 </beans:beans>

@@ -82,8 +82,25 @@ public class SearchEntityEditor extends EditorPart {
 	public void createPartControl(Composite parent) {
 		parent.setLayout(new GridLayout());
 		createFilterPanel(parent);
-		createListPart(parent, new EntitySingleColumnLabelProvider());
+		createListPart(parent);
 		refreshFilteredList();
+	}
+
+	/**
+	 * Overwrite to provide a specific Label Provider
+	 * 
+	 * @return
+	 */
+	protected ILabelProvider getCurrentLabelProvider() {
+		return new EntitySingleColumnLabelProvider();
+	}
+
+	/**
+	 * Overwrite to set the correct row height
+	 * 
+	 */
+	protected int getCurrRowHeight() {
+		return 20;
 	}
 
 	@Override
@@ -148,7 +165,7 @@ public class SearchEntityEditor extends EditorPart {
 		}
 	}
 
-	protected void createListPart(Composite parent, ILabelProvider labelProvider) {
+	protected void createListPart(Composite parent) {
 		parent.setLayout(new GridLayout());
 
 		Composite tableComposite = new Composite(parent, SWT.NONE);
@@ -158,7 +175,7 @@ public class SearchEntityEditor extends EditorPart {
 		tableComposite.setLayoutData(gd);
 
 		TableViewer v = new TableViewer(tableComposite);
-		v.setLabelProvider(labelProvider);
+		v.setLabelProvider(getCurrentLabelProvider());
 
 		TableColumn singleColumn = new TableColumn(v.getTable(), SWT.V_SCROLL);
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
@@ -171,7 +188,8 @@ public class SearchEntityEditor extends EditorPart {
 		table.setHeaderVisible(false);
 		// Enable markups
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(20));
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT,
+				Integer.valueOf(getCurrRowHeight()));
 		v.setContentProvider(new BasicNodeListContentProvider());
 		v.addDoubleClickListener(peopleUiService
 				.getNewNodeListDoubleClickListener(peopleService));

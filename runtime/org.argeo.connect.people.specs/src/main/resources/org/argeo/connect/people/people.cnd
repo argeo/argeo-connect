@@ -3,20 +3,22 @@
 //
 // PARENT BASE TYPE
 //
-[people:entity] > nt:unstructured, mix:versionable
+[people:entity] > nt:unstructured, mix:versionable, mix:lastModified, mix:title
 // An implementation dependent UID for each entity
 - people:uid (String) m
 // Maps the FN value of a vCard
-- people:displayName (String) 
-- people:source (URI)
+// We rather use JCR_TITLE and JCR_DESCRIPTION
+// - people:displayName (String) 
 // A free text description of the current entity
-- people:description (STRING)
+// - people:description (STRING)
+- people:source (URI)
 + people:picture (nt:file) 
 
 //
 // PERSON
 //
 [people:person] > people:entity, people:contactable, people:tagable
+- people:useDefaultDisplayName (BOOLEAN) ='true' m a 
 - people:firstName (STRING) 
 - people:middleName (STRING)
 - people:lastName (STRING)

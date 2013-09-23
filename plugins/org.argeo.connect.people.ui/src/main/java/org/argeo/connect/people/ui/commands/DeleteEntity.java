@@ -38,7 +38,7 @@ public class DeleteEntity extends AbstractHandler {
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
-		String msg = "Your are about to definitively remove this entity.\n"
+		String msg = "You are about to definitively remove this entity.\n"
 				+ "Are you sure you want to proceed ?";
 
 		boolean result = MessageDialog.openConfirm(PeopleUiPlugin.getDefault()

@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Constraint;
@@ -23,6 +21,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.PeopleTypes;
 import org.argeo.jcr.JcrUtils;
 import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
@@ -63,11 +62,30 @@ public class PeopleServiceImpl implements PeopleService {
 	@Override
 	public Node getEntityByUid(Session session, String uid) {
 		try {
-			return session.getNodeByIdentifier(uid);
-		} catch (ItemNotFoundException infe) {
-			return null;
+			QueryManager queryManager = session.getWorkspace()
+					.getQueryManager();
+			QueryObjectModelFactory factory = queryManager.getQOMFactory();
+			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
+					"entities");
+			DynamicOperand dynOp = factory.propertyValue(
+					source.getSelectorName(), PeopleNames.PEOPLE_REF_UID);
+			StaticOperand statOp = factory.literal(session.getValueFactory()
+					.createValue(uid));
+			Constraint defaultC = factory.comparison(dynOp,
+					QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+			QueryObjectModel query = factory.createQuery(source, defaultC,
+					null, null);
+			QueryResult queryResult = query.execute();
+			NodeIterator ni = queryResult.getNodes();
+
+			if (ni.getSize() != 1) {
+				throw new PeopleException(
+						"Problem retrieving entity by UID, we found "
+								+ ni.getSize() + " correspnding entity(ies)");
+			} else
+				return ni.nextNode();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrive entity of id: " + uid,
+			throw new PeopleException("Unable to retrive entity of uid: " + uid,
 					e);
 		}
 	}

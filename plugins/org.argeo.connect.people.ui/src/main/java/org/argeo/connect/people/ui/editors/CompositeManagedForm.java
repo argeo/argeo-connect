@@ -64,13 +64,13 @@ class CompositeManagedForm implements IManagedForm {
 
 	public ScrolledForm getForm() {
 		throw new UnsupportedOperationException(
-				"Unsupported method: we use a Form rather than a scrolled form");
+				"Unsupported method: we use a Form rather than a ScrolledForm");
 	}
 
 	@Override
 	public IMessageManager getMessageManager() {
 		throw new UnsupportedOperationException(
-				"Unsupported method: we use a Form rather than a scrolled form");
+				"Unsupported method: we use a Form rather than a ScrolledForm");
 	}
 
 	/** Here is the magik */

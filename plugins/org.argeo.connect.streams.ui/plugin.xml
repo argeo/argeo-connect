@@ -43,6 +43,13 @@
 			id="org.argeo.connect.streams.ui.channelEditorNoCTab"
 			name="New...">
 		</editor>
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			default="false"
+			icon="icons/search.png"
+			id="org.argeo.connect.streams.ui.rssSearchPostEditor"
+			name="New...">
+		</editor>
    <!--    <editor
             class="org.argeo.eclipse.spring.SpringExtensionFactory"
             default="false"

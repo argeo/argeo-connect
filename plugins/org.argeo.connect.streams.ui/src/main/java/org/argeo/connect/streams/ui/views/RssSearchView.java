@@ -13,8 +13,13 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.ui.PeopleHtmlUtils;
+import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.EntityEditorInput;
+import org.argeo.connect.people.ui.editors.SearchEntityEditorInput;
+import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.streams.RssManager;
@@ -23,14 +28,18 @@ import org.argeo.connect.streams.RssTypes;
 import org.argeo.connect.streams.ui.RssImages;
 import org.argeo.connect.streams.ui.RssUiPlugin;
 import org.argeo.connect.streams.ui.editors.ChannelEditor;
+import org.argeo.connect.streams.ui.editors.RssSearchPostEditor;
 import org.argeo.connect.streams.ui.listeners.NodeListDoubleClickListener;
 import org.argeo.connect.streams.ui.providers.RssListLabelProvider;
 import org.argeo.eclipse.ui.utils.CommandUtils;
+import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -38,6 +47,8 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -76,6 +87,7 @@ public class RssSearchView extends ViewPart {
 
 	private final static String CMD_SHOW_SOURCES = "showSources";
 	private final static String CMD_SHOW_POSTS = "showPosts";
+	private final static String CMD_OPEN_ALL_POSTS_EDITOR = "openAllPostsEditor";
 	private final static String CMD_LOGOUT = "logout";
 
 	private final static String FILTER_HELP_MSG = "Enter filter criterion";
@@ -126,9 +138,9 @@ public class RssSearchView extends ViewPart {
 		table.setHeaderVisible(false);
 		table.setData(RWT.CUSTOM_VARIANT, "RSS-logoTable");
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(60));
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(70));
 
-		table.setLayoutData(createformData(65, 22, 95, 78));
+		table.setLayoutData(createformData(65, 21, 95, 79));
 		table.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
@@ -139,6 +151,21 @@ public class RssSearchView extends ViewPart {
 						postsCmp.moveAbove(sourcesCmp);
 					else if (CMD_SHOW_SOURCES.equals(event.text))
 						sourcesCmp.moveAbove(postsCmp);
+					else if (CMD_OPEN_ALL_POSTS_EDITOR.equals(event.text)) {
+						try {
+							SearchEntityEditorInput eei = new SearchEntityEditorInput(
+									RssTypes.RSS_ITEM);
+							PeopleUiPlugin.getDefault().getWorkbench()
+									.getActiveWorkbenchWindow().getActivePage()
+									.openEditor(eei, RssSearchPostEditor.ID);
+						} catch (PartInitException pie) {
+							throw new PeopleException(
+									"Unexpected PartInitException while opening entity editor",
+									pie);
+						}
+
+					}
+
 					else if (CMD_LOGOUT.equals(event.text))
 						CommandUtils.callCommand("org.eclipse.ui.file.exit");
 
@@ -157,6 +184,10 @@ public class RssSearchView extends ViewPart {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<a href=\"").append(CMD_SHOW_SOURCES).append("\" ");
 		builder.append(styleStr).append(" target=\"_rwt\">My Feeds</a>");
+		builder.append("<br/>");
+		builder.append("<a href=\"").append(CMD_OPEN_ALL_POSTS_EDITOR);
+		builder.append("\" ").append(styleStr);
+		builder.append(" target=\"_rwt\">All Posts</a>");
 		builder.append("<br/>");
 		builder.append("<a href=\"").append(CMD_SHOW_POSTS);
 		builder.append("\" ").append(styleStr);
@@ -193,11 +224,12 @@ public class RssSearchView extends ViewPart {
 		addFeedCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		addChannelPanel(addFeedCmp);
 
-		Text txt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
-				| SWT.ICON_CANCEL);
-		sourcesViewer = createListPart(parent, new RssListLabelProvider());
+		srcFilterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH
+				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+		sourcesViewer = createListPartWithRemove(parent);
 
-		initializeFilterPanel(txt, sourcesViewer, RssTypes.RSS_CHANNEL_INFO);
+		initializeFilterPanel(srcFilterTxt, sourcesViewer,
+				RssTypes.RSS_CHANNEL_INFO);
 		sourcesViewer.setInput(JcrUtils.nodeIteratorToList(doSearch(
 				RssTypes.RSS_CHANNEL_INFO, "")));
 	}
@@ -232,6 +264,15 @@ public class RssSearchView extends ViewPart {
 		newSourceTxt.setMessage(NEW_FEED_MSG);
 		newSourceTxt
 				.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
+		newSourceTxt.addTraverseListener(new TraverseListener() {
+			public void keyTraversed(TraverseEvent e) {
+				if (e.keyCode == SWT.CR) {
+					registerRssLink(newSourceTxt.getText());
+					e.doit = false;
+				}
+			}
+		});
 
 		Button okBtn = new Button(body, SWT.PUSH);
 		okBtn.setText(" Add ");
@@ -284,6 +325,68 @@ public class RssSearchView extends ViewPart {
 			}
 		});
 		return txt;
+	}
+
+	protected TableViewer createListPartWithRemove(Composite parent) {
+		parent.setLayout(new GridLayout());
+
+		Composite tableComposite = new Composite(parent, SWT.NONE);
+		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL
+				| GridData.GRAB_VERTICAL | GridData.VERTICAL_ALIGN_FILL
+				| GridData.GRAB_HORIZONTAL);
+		tableComposite.setLayoutData(gd);
+
+		TableViewer v = new TableViewer(tableComposite);
+		v.setLabelProvider(new RssListLabelProvider());
+
+		TableColumn singleColumn = new TableColumn(v.getTable(), SWT.LEFT);
+		TableColumnLayout tableColumnLayout = new TableColumnLayout();
+		tableColumnLayout.setColumnData(singleColumn, new ColumnWeightData(85));
+		tableComposite.setLayout(tableColumnLayout);
+
+		// Remove links
+		v.getTable().addSelectionListener(new HtmlListRwtAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (e.detail == RWT.HYPERLINK) {
+					super.widgetSelected(e);
+					String filter = srcFilterTxt.getText();
+					sourcesViewer.setInput(JcrUtils
+							.nodeIteratorToList(doSearch(
+									RssTypes.RSS_CHANNEL_INFO, filter)));
+				}
+			}
+
+		});
+
+		TableViewerColumn col = ViewerUtils.createTableViewerColumn(v,
+				"Edit/Remove links", SWT.NONE, 60);
+		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
+				20, 50, true));
+		col.setLabelProvider(new ColumnLabelProvider() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getText(Object element) {
+				return PeopleHtmlUtils.getRemoveSnippetForLists((Node) element,
+						true);
+			}
+		});
+
+		// Corresponding table & style
+		Table table = v.getTable();
+		table.setLinesVisible(false);
+		table.setHeaderVisible(false);
+
+		tableComposite.setLayout(tableColumnLayout);
+
+		// Enable markups
+		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(50));
+		v.setContentProvider(new BasicNodeListContentProvider());
+		v.addDoubleClickListener(new NodeListDoubleClickListener(peopleService));
+		return v;
 	}
 
 	protected TableViewer createListPart(Composite parent,

@@ -20,7 +20,7 @@ import org.argeo.connect.people.PeopleValueCatalogs;
 import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.ui.editors.AbstractEntityEditor;
+import org.argeo.connect.people.ui.editors.AbstractEntityCTabEditor_old;
 import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -67,7 +67,7 @@ import org.eclipse.ui.forms.IFormPart;
  * <li>display corresponding items</li>
  * </ul>
  */
-public class ChannelEditor extends AbstractEntityEditor implements RssNames {
+public class ChannelEditor extends AbstractEntityCTabEditor_old implements RssNames {
 	final static Log log = LogFactory.getLog(ChannelEditor.class);
 
 	// local constants

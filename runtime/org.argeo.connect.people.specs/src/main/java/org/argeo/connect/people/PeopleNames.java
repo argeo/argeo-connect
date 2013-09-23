@@ -35,7 +35,7 @@ public interface PeopleNames {
 
 	/* Common concept */
 	public final static String PEOPLE_PICTURE = "people:picture";
-	public final static String PEOPLE_DISPLAY_NAME = "people:displayName";
+	// public final static String PEOPLE_DISPLAY_NAME = "people:displayName";
 	// an implementation specific UID, might be a JCR node Identifier but it is
 	// not compulsory
 	public final static String PEOPLE_UID = "people:uid";
@@ -46,19 +46,20 @@ public interface PeopleNames {
 	public final static String PEOPLE_PREF = "people:pref";
 
 	/* PERSONS */
-	public final static String PEOPLE_LAST_NAME = "people:lastName";
 	public final static String PEOPLE_FIRST_NAME = "people:firstName";
+	public final static String PEOPLE_MIDDLE_NAME = "people:middleName";
+	public final static String PEOPLE_LAST_NAME = "people:lastName";
 	public final static String PEOPLE_PRIMARY_EMAIL = "people:primaryEmail";
 	public final static String PEOPLE_BIRTH_DATE = "people:birthDate";
-	public final static String PEOPLE_TAGS = "people:tags";
-
-	// Person names
 	public final static String PEOPLE_SALUTATION = "people:salutation";
+	public final static String PEOPLE_GENDER = "people:gender";
 	public final static String PEOPLE_PERSON_TITLE = "people:personTitle";
 	public final static String PEOPLE_NAME_SUFFIX = "people:nameSuffix";
 	public final static String PEOPLE_NICKNAME = "people:nickname";
 	public final static String PEOPLE_MAIDEN_NAME = "people:maidenName";
-	public final static String PEOPLE_PSEUDONYM = "people:pseudonym";
+	public final static String PEOPLE_USE_DEFAULT_DISPLAY_NAME = "people:useDefaultDisplayName";
+
+	// public final static String PEOPLE_PSEUDONYM = "people:pseudonym";
 
 	/* ORGANIZATIONS */
 	public final static String PEOPLE_LEGAL_NAME = "people:legalName";
@@ -108,6 +109,7 @@ public interface PeopleNames {
 	/* MISCENELLANEOUS */
 
 	public final static String PEOPLE_LATIN_PHONETIC_SPELLING = "people:latinPhoneticSpelling";
+	public final static String PEOPLE_TAGS = "people:tags";
 
 	public final static String PEOPLE_LANG = "people:lang";
 	// public final static String PEOPLE_ALT_TITLES = "people:altTitles";

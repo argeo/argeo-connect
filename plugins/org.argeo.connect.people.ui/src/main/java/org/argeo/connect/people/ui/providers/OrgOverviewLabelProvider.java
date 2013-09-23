@@ -1,6 +1,7 @@
 package org.argeo.connect.people.ui.providers;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.connect.people.PeopleException;
@@ -53,8 +54,7 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 			else
 				builder.append("<span style='font-size:15px;'>");
 			builder.append("<big><b>");
-			builder.append(CommonsJcrUtils.getStringValue(orga,
-					PeopleNames.PEOPLE_LEGAL_NAME));
+			builder.append(CommonsJcrUtils.get(orga, Property.JCR_TITLE));
 			builder.append("</b></big>");
 
 			String town = PeopleJcrUtils.getTownFromItem(orga);

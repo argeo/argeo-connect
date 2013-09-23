@@ -45,6 +45,10 @@
 		<property name="managedRoles" ref="managedRoles" />
 	</bean>
 
+	<bean id="peopleUiService" class="org.argeo.connect.people.ui.PeopleUiServiceImpl"
+		scope="prototype">
+	</bean>
+
 	<!-- Execute initialization with a system authentication -->
 	<bean
 		class="org.argeo.security.core.AuthenticatedApplicationContextInitialization">

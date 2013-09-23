@@ -231,8 +231,8 @@ public class ListToolkit {
 		// Person
 		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT,
 				bounds[1]);
-		col.setLabelProvider(new PersonOverviewLabelProvider(true,
-				peopleService));
+		col.setLabelProvider(new PersonOverviewLabelProvider(
+				PersonOverviewLabelProvider.LIST_TYPE_MEDIUM, peopleService));
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
 				200, 80, true));
 
@@ -254,8 +254,9 @@ public class ListToolkit {
 
 					return PeopleHtmlUtils.getEditSnippetForLists(link, person)
 							+ " <br />"
-							+ PeopleHtmlUtils.getRemoveSnippetForLists(link,
-									person);
+							+ PeopleHtmlUtils
+									.getRemoveReferenceSnippetForLists(link,
+											person);
 				} catch (RepositoryException e) {
 					throw new PeopleException(
 							"Error while getting versionable parent", e);
@@ -324,8 +325,8 @@ public class ListToolkit {
 		// Person
 		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT,
 				bounds[1]);
-		col.setLabelProvider(new PersonOverviewLabelProvider(true,
-				peopleService));
+		col.setLabelProvider(new PersonOverviewLabelProvider(
+				PersonOverviewLabelProvider.LIST_TYPE_MEDIUM, peopleService));
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
 				200, 80, true));
 		return tableColumnLayout;

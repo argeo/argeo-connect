@@ -12,6 +12,7 @@ import javax.jcr.nodetype.NodeType;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.commands.DeleteEntity;
 import org.argeo.connect.people.ui.commands.EditEntityReference;
 import org.argeo.connect.people.ui.commands.RemoveEntityReference;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -20,7 +21,7 @@ import org.argeo.connect.people.utils.PeopleJcrUtils;
 /** Some helper methods to generate html snippets */
 public class PeopleHtmlUtils {
 	private final static DateFormat df = new SimpleDateFormat(
-			"EEE, dd MMM yyyy HH:mm");
+			"EEE, dd MMM yyyy 'at' HH:mm");
 
 	/** shortcut to set form data while dealing with switching panel */
 	public static String getLastUpdateSnippet(Node entity) {
@@ -35,7 +36,7 @@ public class PeopleHtmlUtils {
 				builder.append(", by ");
 				builder.append(entity
 						.getProperty(Property.JCR_LAST_MODIFIED_BY).getString());
-				builder.append("</i></small>");
+				builder.append(". </i></small>");
 			}
 			return builder.toString();
 		} catch (RepositoryException re) {
@@ -177,7 +178,7 @@ public class PeopleHtmlUtils {
 	 * Create the text value of a link that enable calling the
 	 * <code>RemoveEntityReference</command> from a cell of a HTML list
 	 */
-	public static String getRemoveSnippetForLists(Node currNode,
+	public static String getRemoveReferenceSnippetForLists(Node currNode,
 			Node parentVersionableNode) {
 		try {
 			String toRemoveJcrId = currNode.getIdentifier();
@@ -188,6 +189,29 @@ public class PeopleHtmlUtils {
 					+ "=" + versionableParJcrId + "/"
 					+ RemoveEntityReference.PARAM_TOREMOVE_JCR_ID + "="
 					+ toRemoveJcrId;
+
+			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""
+					+ uri + "\" target=\"_rwt\">Delete</a>";
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Error getting remove snippet for list item", re);
+		}
+	}
+
+	/**
+	 * Create the text value of a link that enable calling the
+	 * <code>RemoveEntityReference</command> from a cell of a HTML list
+	 */
+	public static String getRemoveSnippetForLists(Node currNode,
+			boolean removeParent) {
+		try {
+			String toRemoveJcrId = currNode.getIdentifier();
+
+			String uri = DeleteEntity.ID + "/"
+					+ DeleteEntity.PARAM_TOREMOVE_JCR_ID
+					+ "=" + toRemoveJcrId + "/"
+					+ DeleteEntity.PARAM_REMOVE_ALSO_PARENT + "="
+					+ removeParent;
 
 			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""
 					+ uri + "\" target=\"_rwt\">Delete</a>";

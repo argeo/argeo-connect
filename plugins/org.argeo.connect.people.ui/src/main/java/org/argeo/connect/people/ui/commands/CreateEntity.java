@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.UUID;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
@@ -55,7 +56,7 @@ public class CreateEntity extends AbstractHandler {
 			Node newNode = parent.addNode(nodeType, nodeType);
 			newNode.setProperty(PeopleNames.PEOPLE_UID, UUID.randomUUID()
 					.toString());
-			newNode.setProperty(PeopleNames.PEOPLE_DISPLAY_NAME, "<new>");
+			newNode.setProperty(Property.JCR_TITLE, "<new>");
 			session.save();
 			String editorId = peopleUiService.getEditorIdFromNode(newNode);
 

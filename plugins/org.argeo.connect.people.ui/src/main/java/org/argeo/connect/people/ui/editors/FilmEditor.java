@@ -36,7 +36,7 @@ import org.eclipse.ui.PartInitException;
 /**
  * Editor page that display a film with corresponding details
  */
-public class FilmEditor extends AbstractEntityEditor {
+public class FilmEditor extends AbstractEntityCTabEditor_old {
 	final static Log log = LogFactory.getLog(FilmEditor.class);
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".filmEditor";

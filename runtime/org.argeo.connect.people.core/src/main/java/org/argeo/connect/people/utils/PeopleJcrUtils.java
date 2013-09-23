@@ -358,17 +358,17 @@ public class PeopleJcrUtils implements PeopleNames {
 				// + JcrUtils.firstCharsToPath(displayName, 2)
 				// + displayName;
 			} else if (node.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)
-					|| nodeType != null
-					&& PeopleTypes.PEOPLE_ORGANIZATION.equals(nodeType)) {
+					|| (nodeType != null
+					&& PeopleTypes.PEOPLE_ORGANIZATION.equals(nodeType))) {
 				// init
 				String legalName = "";
 				String displayName = "";
 				if (node.hasProperty(PEOPLE_LEGAL_NAME))
 					legalName = replaceInvalidChars(node
 							.getProperty(PEOPLE_LEGAL_NAME).getString().trim());
-				if (node.hasProperty(PEOPLE_DISPLAY_NAME))
+				if (node.hasProperty(Property.JCR_TITLE))
 					displayName = replaceInvalidChars(node
-							.getProperty(PEOPLE_DISPLAY_NAME).getString()
+							.getProperty(Property.JCR_TITLE).getString()
 							.trim());
 
 				// Effective building of the rel path
@@ -393,9 +393,9 @@ public class PeopleJcrUtils implements PeopleNames {
 					origLatinTitle = replaceInvalidChars(node
 							.getProperty(FilmNames.FILM_ORIG_LATIN_TITLE)
 							.getString().trim());
-				if (node.hasProperty(PEOPLE_DISPLAY_NAME))
+				if (node.hasProperty(Property.JCR_TITLE))
 					displayName = replaceInvalidChars(node
-							.getProperty(PEOPLE_DISPLAY_NAME).getString()
+							.getProperty(Property.JCR_TITLE).getString()
 							.trim());
 
 				// Effective building of the rel path

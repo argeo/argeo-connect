@@ -32,7 +32,7 @@ import org.eclipse.ui.PartInitException;
 /**
  * Editor page that display an organisation with corresponding details
  */
-public class OrgEditor extends AbstractEntityEditor {
+public class OrgEditor extends AbstractEntityCTabEditor_old {
 	final static Log log = LogFactory.getLog(OrgEditor.class);
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".orgEditor";

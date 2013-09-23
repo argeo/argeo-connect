@@ -4,6 +4,13 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+	<bean id="org.argeo.connect.people.ui.searchEntityEditor"
+		class="org.argeo.connect.people.ui.editors.SearchEntityEditor"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleUiService" ref="peopleUiService" />
+	</bean>
+
 	<!-- <bean id="importPeople" class="org.argeo.connect.people.ui.commands.ImportPeopleHandler" 
 		scope="prototype"> <property name="repository" ref="repository" /> </bean> -->
 </beans>

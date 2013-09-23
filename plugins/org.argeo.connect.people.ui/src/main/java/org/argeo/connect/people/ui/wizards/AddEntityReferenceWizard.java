@@ -12,7 +12,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.editors.AbstractEntityEditor;
+import org.argeo.connect.people.ui.editors.AbstractEntityCTabEditor_old;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.ui.providers.EntitySingleColumnLabelProvider;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -205,8 +205,8 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 					IEditorPart iep = PeopleUiPlugin.getDefault()
 							.getWorkbench().getActiveWorkbenchWindow()
 							.getActivePage().getActiveEditor();
-					if (iep != null && iep instanceof AbstractEntityEditor)
-						((AbstractEntityEditor) iep).forceRefresh();
+					if (iep != null && iep instanceof AbstractEntityCTabEditor_old)
+						((AbstractEntityCTabEditor_old) iep).forceRefresh();
 				}
 			});
 

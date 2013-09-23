@@ -23,7 +23,7 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.ui.editors.AbstractEntityTestScrollEditor;
+import org.argeo.connect.people.ui.editors.AbstractEntityEditor;
 import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -68,7 +68,7 @@ import org.eclipse.ui.forms.AbstractFormPart;
  * <li>display corresponding items</li>
  * </ul>
  */
-public class ChannelEditorNoCTab extends AbstractEntityTestScrollEditor
+public class ChannelEditorNoCTab extends AbstractEntityEditor
 		implements RssNames {
 	final static Log log = LogFactory.getLog(ChannelEditorNoCTab.class);
 	public final static String ID = RssUiPlugin.PLUGIN_ID

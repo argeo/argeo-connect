@@ -15,11 +15,16 @@
  */
 package org.argeo.connect.streams.ui.rap;
 
+import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.editors.SearchEntityEditorInput;
+import org.argeo.connect.streams.RssTypes;
+import org.argeo.connect.streams.ui.editors.RssSearchPostEditor;
 import org.argeo.security.ui.rap.RapWindowAdvisor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
@@ -60,7 +65,15 @@ public class RssRapWindowAdvisor extends RapWindowAdvisor {
 	@Override
 	public void postWindowOpen() {
 		super.postWindowOpen();
-		// TODO define a default editor.
-		// CommandUtils.callCommand(OpenDefaultEditor.ID);
+		try {
+			SearchEntityEditorInput eei = new SearchEntityEditorInput(
+					RssTypes.RSS_ITEM);
+			PeopleUiPlugin.getDefault().getWorkbench()
+					.getActiveWorkbenchWindow().getActivePage()
+					.openEditor(eei, RssSearchPostEditor.ID);
+		} catch (PartInitException e) {
+			e.printStackTrace();
+			// Silently fail
+		}
 	}
 }
