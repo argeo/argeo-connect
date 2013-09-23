@@ -115,15 +115,22 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			}
 
 			// try to set a default part name
-			String name = CommonsJcrUtils.get(entity, Property.JCR_TITLE);
-			if (CommonsJcrUtils.checkNotEmptyString(name)) {
-				if (name.length() > SHORT_NAME_LENGHT)
-					name = name.substring(0, SHORT_NAME_LENGHT - 1) + "...";
-				setPartName(name);
-			}
+			updatePartName();
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Unable to create new session"
 					+ " to use with current editor", e);
+		}
+	}
+
+	/**
+	 * Overwrite to provide a specific part Name
+	 */
+	protected void updatePartName() {
+		String name = CommonsJcrUtils.get(entity, Property.JCR_TITLE);
+		if (CommonsJcrUtils.checkNotEmptyString(name)) {
+			if (name.length() > SHORT_NAME_LENGHT)
+				name = name.substring(0, SHORT_NAME_LENGHT - 1) + "...";
+			setPartName(name);
 		}
 	}
 
@@ -377,6 +384,13 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			part.refresh();
 	}
 
+	/**
+	 * Overwrite to provide entity specific before save validation
+	 */
+	protected boolean canSave() {
+		return true;
+	}
+
 	protected TableViewerColumn createTableViewerColumn(TableViewer parent,
 			String name, int style, int width) {
 		TableViewerColumn tvc = new TableViewerColumn(parent, style);
@@ -477,10 +491,11 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		try {
-			saveAndCheckInItem();
-			mForm.commit(true);
-			// notifyCheckOutStateChange();
-			// setCheckOutState(false);
+			if (canSave()) {
+				saveAndCheckInItem();
+				mForm.commit(true);
+				updatePartName();
+			}
 		} catch (Exception e) {
 			throw new PeopleException("Error while saving JCR node.", e);
 		}

@@ -60,9 +60,6 @@ public class CreateEntity extends AbstractHandler {
 			session.save();
 			String editorId = peopleUiService.getEditorIdFromNode(newNode);
 
-			log.debug("draftPath - " + draftPath);
-			log.debug("datePath - " + datePath);
-
 			EntityEditorInput eei = new EntityEditorInput(
 					newNode.getIdentifier());
 			HandlerUtil.getActiveWorkbenchWindow(event).getActivePage()

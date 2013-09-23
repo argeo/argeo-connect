@@ -7,6 +7,7 @@ import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.JcrUiUtils;
@@ -18,8 +19,10 @@ import org.argeo.connect.people.ui.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.ui.toolkits.EntityToolkit;
 import org.argeo.connect.people.ui.toolkits.ListToolkit;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.PersonJcrUtils;
 import org.argeo.jcr.JcrUtils;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -59,7 +62,12 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 			throws PartInitException {
 		super.init(site, input);
 		person = getEntity();
-		String shortName = CommonsJcrUtils.get(person,
+
+	}
+
+	@Override
+	protected void updatePartName() {
+		String shortName = CommonsJcrUtils.get(getEntity(),
 				PeopleNames.PEOPLE_LAST_NAME);
 		if (CommonsJcrUtils.checkNotEmptyString(shortName)) {
 			if (shortName.length() > SHORT_NAME_LENGHT)
@@ -84,6 +92,39 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 	@Override
 	protected Boolean deleteParentOnRemove() {
 		return new Boolean(false);
+	}
+
+	@Override
+	protected boolean canSave() {
+		try {
+			String lastName = CommonsJcrUtils.get(person,
+					PeopleNames.PEOPLE_LAST_NAME);
+			String firstName = CommonsJcrUtils.get(person,
+					PeopleNames.PEOPLE_FIRST_NAME);
+			String displayName = CommonsJcrUtils
+					.get(person, Property.JCR_TITLE);
+			boolean useDefaultDisplay = person.getProperty(
+					PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME).getBoolean();
+
+			if (lastName.length() < 2 && firstName.length() < 2
+					&& (useDefaultDisplay || displayName.length() < 2)) {
+				String msg = "Please note that you must define a first name, a "
+						+ "last name or a display name that is at least 2 character long.";
+				MessageDialog.openError(PeopleUiPlugin.getDefault()
+						.getWorkbench().getDisplay().getActiveShell(),
+						"Non-valid information", msg);
+
+				return false;
+			} else {
+				PeopleJcrUtils.checkPathAndMoveIfNeeded(person,
+						PeopleConstants.PEOPLE_BASE_PATH + "/"
+								+ PeopleNames.PEOPLE_PERSONS);
+				return true;
+			}
+
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to determine savable status", re);
+		}
 	}
 
 	@Override

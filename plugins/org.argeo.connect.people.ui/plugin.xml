@@ -46,8 +46,34 @@
 		<command
 			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
 			id="org.argeo.connect.people.ui.importPeople"
-			name="Open Network Editor">
+			name="Import people">
 		</command>    
+		<command
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		id="org.argeo.connect.people.ui.removeEntityReference"
+            name="removeEntityReference">
+            <commandParameter
+         		id="param.versionableParentJcrId"
+         		name="Jcr ID of the nearest versionable ancestor">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.toRemoveJcrId"
+         		name="Jcr ID of the node to remove">
+  	 		</commandParameter>
+    	</command>
+    	<command
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		id="org.argeo.connect.people.ui.editEntityReference"
+            name="editEntityReference">
+            <commandParameter
+         		id="param.versionableParentJcrId"
+         		name="Jcr ID of the nearest versionable ancestor">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.toEditJcrId"
+         		name="Jcr ID of the node to edit">
+  	 		</commandParameter>
+    	</command>
 		<command
 			defaultHandler="org.argeo.connect.people.ui.commands.DoNothing"
 			id="org.argeo.connect.people.ui.doNothing"

@@ -4,6 +4,18 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+	<bean id="org.argeo.connect.people.ui.editEntityReference"
+		class="org.argeo.connect.people.ui.commands.EditEntityReference"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+	</bean>
+	<bean id="org.argeo.connect.people.ui.removeEntityReference"
+		class="org.argeo.connect.people.ui.commands.RemoveEntityReference"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+	</bean>
+
+
 	<!-- <bean id="org.argeo.connect.people.ui.openEntityEditor" class="org.argeo.connect.people.ui.commands.OpenEntityEditor" 
 		scope="prototype"> <property name="peopleService" ref="peopleService" /> 
 		<property name="peopleUiService" ref="peopleUiService" /> </bean> -->

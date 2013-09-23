@@ -38,12 +38,6 @@ public abstract class AbstractEntityCTabEditor extends AbstractEntityEditor
 	private CTabFolder folder;
 	protected String CTAB_INSTANCE_ID = "CTabId";
 
-	// LIFE CYCLE
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
-		super.init(site, input);
-	}
-
 	/* CONTENT CREATION */
 	protected void createMainLayout(Composite body) {
 		body.setLayout(gridLayoutNoBorder());

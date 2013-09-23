@@ -312,6 +312,21 @@ public class PeopleJcrUtils implements PeopleNames {
 		return getRelPathForEntity(node, null);
 	}
 
+	public static void checkPathAndMoveIfNeeded(Node node, String basePath) {
+		try {
+			String srcPath = node.getPath();
+			String destPath = basePath + "/" + getRelPathForEntity(node);
+			if (!destPath.equals(srcPath)) {
+				JcrUtils.mkdirs(node.getSession(),
+						JcrUtils.parentPath(destPath));
+				node.getSession().move(srcPath, destPath);
+			}
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to move node " + node
+					+ " before saving under basePath " + basePath, re);
+		}
+	}
+
 	/**
 	 * workaround to generate rel path while importing existing data in the
 	 * repository
@@ -358,8 +373,8 @@ public class PeopleJcrUtils implements PeopleNames {
 				// + JcrUtils.firstCharsToPath(displayName, 2)
 				// + displayName;
 			} else if (node.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)
-					|| (nodeType != null
-					&& PeopleTypes.PEOPLE_ORGANIZATION.equals(nodeType))) {
+					|| (nodeType != null && PeopleTypes.PEOPLE_ORGANIZATION
+							.equals(nodeType))) {
 				// init
 				String legalName = "";
 				String displayName = "";
@@ -368,8 +383,7 @@ public class PeopleJcrUtils implements PeopleNames {
 							.getProperty(PEOPLE_LEGAL_NAME).getString().trim());
 				if (node.hasProperty(Property.JCR_TITLE))
 					displayName = replaceInvalidChars(node
-							.getProperty(Property.JCR_TITLE).getString()
-							.trim());
+							.getProperty(Property.JCR_TITLE).getString().trim());
 
 				// Effective building of the rel path
 				if (legalName.length() > 1)
@@ -395,8 +409,7 @@ public class PeopleJcrUtils implements PeopleNames {
 							.getString().trim());
 				if (node.hasProperty(Property.JCR_TITLE))
 					displayName = replaceInvalidChars(node
-							.getProperty(Property.JCR_TITLE).getString()
-							.trim());
+							.getProperty(Property.JCR_TITLE).getString().trim());
 
 				// Effective building of the rel path
 				if (origTitle.length() > 1)
@@ -417,7 +430,7 @@ public class PeopleJcrUtils implements PeopleNames {
 		}
 	}
 
-	/** Calls JcrUtils*/
+	/** Calls JcrUtils */
 	public static String replaceInvalidChars(String string) {
 		string = JcrUtils.replaceInvalidChars(string);
 		return string.replace(' ', '_');

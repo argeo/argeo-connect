@@ -111,6 +111,7 @@ public class CommonsJcrUtils {
 	 * Wraps the versionMananger.checkedIn(path) method to adapt it to the
 	 * current check in / check out policy.
 	 * 
+	 * It also checked if the current entity has to be moved or not.
 	 * TODO : add management of check out by others.
 	 */
 	public static void saveAndCheckin(Node node) {
