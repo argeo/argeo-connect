@@ -86,15 +86,18 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		builder.append("</big></b>");
 		String fmn = PeopleHtmlUtils.getFullMontyName(person);
 		String local = PeopleHtmlUtils.getLocalisationInfo(person);
-
+		String primaryContacts = PeopleHtmlUtils.getPrimaryContacts(person,
+				false);
 		if (CommonsJcrUtils.checkNotEmptyString(fmn)
 				|| CommonsJcrUtils.checkNotEmptyString(local)) {
 			builder.append("<br/>").append(fmn);
 			if (CommonsJcrUtils.checkNotEmptyString(fmn)
 					&& CommonsJcrUtils.checkNotEmptyString(local))
-				builder.append(" ~ ");
+				builder.append("&#160;&#160; ");
 			builder.append(local);
 		}
+		if (CommonsJcrUtils.checkNotEmptyString(primaryContacts))
+			builder.append("<br/>").append(primaryContacts);
 		builder.append("</span>");
 		return builder.toString();
 	}
@@ -107,10 +110,6 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 				false);
 		if (CommonsJcrUtils.checkNotEmptyString(primaryContacts))
 			builder.append(primaryContacts).append("<br/>");
-
-		if (PeopleHtmlUtils.getTags(person) != null)
-			builder.append(PeopleHtmlUtils.getTags(person)).append("<br/>");
-
 		builder.append(PeopleHtmlUtils.getLastUpdateSnippet(person));
 
 		builder.append("</span>");
@@ -125,14 +124,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 
 		// first line
 		builder.append("<b><big> ");
-		String lastName = CommonsJcrUtils.get(person, PEOPLE_LAST_NAME);
-		String firstName = CommonsJcrUtils.get(person, PEOPLE_FIRST_NAME);
-		builder.append(lastName);
-		if (CommonsJcrUtils.checkNotEmptyString(lastName)
-				&& CommonsJcrUtils.checkNotEmptyString(firstName)) {
-			builder.append(", ");
-		}
-		builder.append(firstName);
+		builder.append(PersonJcrUtils.getPersonDisplayName(person));
 		builder.append("</big> </b>");
 		String fmn = PeopleHtmlUtils.getFullMontyName(person);
 		String local = PeopleHtmlUtils.getLocalisationInfo(person);
@@ -145,7 +137,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 				builder.append("<br/>").append(fmn);
 				if (CommonsJcrUtils.checkNotEmptyString(fmn)
 						&& CommonsJcrUtils.checkNotEmptyString(local))
-					builder.append(" ~ ");
+					builder.append("&#160;&#160; ");
 				builder.append(local);
 			}
 		}

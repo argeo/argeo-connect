@@ -16,7 +16,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleImages;
-import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.commands.CancelAndCheckInItem;
@@ -29,7 +28,6 @@ import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -175,20 +173,22 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 
 	protected void createHeaderPart(final Composite header) {
 		GridLayout gl = new GridLayout(2, false);
-		gl.horizontalSpacing = gl.marginHeight = gl.marginWidth = gl.verticalSpacing = 0;
+		gl.marginHeight = gl.verticalSpacing = 0;
+		gl.horizontalSpacing = 0;
+		gl.marginWidth = 10;
 		header.setLayout(gl);
 
 		Label image = toolkit.createLabel(header, "", SWT.NO_FOCUS);
-		image.setData(RWT.CUSTOM_VARIANT,
-				PeopleUiConstants.PEOPLE_CSS_ITEM_IMAGE);
 		image.setBackground(header.getBackground());
-		if (getPicture() != null)
+		GridData gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
+		if (getPicture() != null) {
 			image.setImage(getPicture());
-		else {
-			GridData gd = new GridData();
-			gd.widthHint = 20;
-			image.setLayoutData(gd);
+			gd.horizontalIndent = 5;
+			gd.verticalIndent = 5;
+		} else {
+			gd.widthHint = 10;
 		}
+		image.setLayoutData(gd);
 
 		// General information panel (Right of the image)
 		Composite mainInfoComposite = toolkit.createComposite(header,
@@ -254,7 +254,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		});
 		GridData gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
 		gd.grabExcessHorizontalSpace = true;
-		gd.widthHint = 70;
+		gd.widthHint = 60;
 		editBtn.setLayoutData(gd);
 
 		// EDIT PANEL
@@ -264,7 +264,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		editPanelCmp.setLayout(new RowLayout(SWT.HORIZONTAL));
 
 		Button saveBtn = toolkit.createButton(editPanelCmp, "Save", SWT.PUSH);
-		saveBtn.setLayoutData(new RowData(70, 20));
+		saveBtn.setLayoutData(new RowData(60, 20));
 		saveBtn.addSelectionListener(new SelectionListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -290,7 +290,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 
 		Button cancelBtn = toolkit.createButton(editPanelCmp, "Cancel",
 				SWT.PUSH);
-		cancelBtn.setLayoutData(new RowData(70, 20));
+		cancelBtn.setLayoutData(new RowData(60, 20));
 
 		cancelBtn.addSelectionListener(new SelectionListener() {
 			private static final long serialVersionUID = 1L;
@@ -308,7 +308,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 
 		Button deleteBtn = toolkit.createButton(editPanelCmp, "Delete",
 				SWT.PUSH);
-		deleteBtn.setLayoutData(new RowData(70, 20));
+		deleteBtn.setLayoutData(new RowData(60, 20));
 
 		deleteBtn.addSelectionListener(new SelectionListener() {
 			private static final long serialVersionUID = 1L;
@@ -344,6 +344,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			}
 		};
 		// editPart.refresh();
+		editPart.initialize(mForm);
 		mForm.addPart(editPart);
 	}
 

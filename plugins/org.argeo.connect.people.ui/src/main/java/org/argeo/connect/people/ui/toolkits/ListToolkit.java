@@ -155,6 +155,7 @@ public class ListToolkit {
 							PeopleTypes.PEOPLE_JOB, PeopleTypes.PEOPLE_PERSON));
 				}
 			};
+			sPart.initialize(form);
 			form.addPart(sPart);
 
 		} catch (RepositoryException re) {

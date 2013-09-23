@@ -6,6 +6,7 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.film.FilmTypes;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -20,10 +21,12 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 	private static final long serialVersionUID = 1L;
 
 	private OrgListLabelProvider orgLp = new OrgListLabelProvider();
-	private PersonListLabelProvider personLp = new PersonListLabelProvider();
+	private PersonListLabelProvider personLp;
 	private FilmListLabelProvider filmLp = new FilmListLabelProvider();
 
-	public EntitySingleColumnLabelProvider() {
+	public EntitySingleColumnLabelProvider(PeopleService peopleService) {
+		personLp = new PersonListLabelProvider(peopleService);
+
 	}
 
 	@Override
@@ -43,11 +46,11 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 					re);
 		}
 	}
-	
+
 	/** Overwrite this method to provide project specific images */
-	@Override 
+	@Override
 	public Image getImage(Object element) {
 		return null;
 	}
-	
+
 }

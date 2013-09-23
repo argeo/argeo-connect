@@ -92,7 +92,7 @@ public class SearchEntityEditor extends EditorPart {
 	 * @return
 	 */
 	protected ILabelProvider getCurrentLabelProvider() {
-		return new EntitySingleColumnLabelProvider();
+		return new EntitySingleColumnLabelProvider(peopleService);
 	}
 
 	/**

@@ -28,8 +28,7 @@ public class PeopleHtmlUtils {
 		StringBuilder builder = new StringBuilder();
 		try {
 			if (entity.isNodeType(NodeType.MIX_LAST_MODIFIED)) {
-				builder.append("<br/><br/><small><i>").append(
-						"Last updated on ");
+				builder.append("<small><i>").append("Last updated on ");
 				builder.append(df.format(entity
 						.getProperty(Property.JCR_LAST_MODIFIED).getDate()
 						.getTime()));
@@ -51,6 +50,9 @@ public class PeopleHtmlUtils {
 		String lastName = getHtml(node, PeopleNames.PEOPLE_LAST_NAME);
 		String title = getHtml(node, PeopleNames.PEOPLE_PERSON_TITLE);
 		String suffix = getHtml(node, PeopleNames.PEOPLE_NAME_SUFFIX);
+		String nickName = getHtml(node, PeopleNames.PEOPLE_NICKNAME);
+		String maidenName = getHtml(node, PeopleNames.PEOPLE_MAIDEN_NAME);
+		String middleName = getHtml(node, PeopleNames.PEOPLE_MIDDLE_NAME);
 
 		if (CommonsJcrUtils.checkNotEmptyString(salutation)
 				|| CommonsJcrUtils.checkNotEmptyString(title)
@@ -61,8 +63,24 @@ public class PeopleHtmlUtils {
 			if (CommonsJcrUtils.checkNotEmptyString(title))
 				builder.append(" ").append(title);
 			builder.append(" ").append(firstName);
+			if (CommonsJcrUtils.checkNotEmptyString(middleName))
+				builder.append(" \"").append(middleName).append("\" ");
 			builder.append(" ").append(lastName);
 			builder.append(" ").append(suffix);
+
+			if (CommonsJcrUtils.checkNotEmptyString(maidenName)
+					|| CommonsJcrUtils.checkNotEmptyString(nickName)) {
+				builder.append(" <i>(");
+				if (CommonsJcrUtils.checkNotEmptyString(maidenName))
+					builder.append("Born: ").append(maidenName);
+
+				if (CommonsJcrUtils.checkNotEmptyString(maidenName)
+						&& CommonsJcrUtils.checkNotEmptyString(nickName))
+					builder.append(", ");
+				if (CommonsJcrUtils.checkNotEmptyString(nickName))
+					builder.append("aka: ").append(nickName);
+				builder.append(")</i>");
+			}
 			// builder.append("</i>");
 			return builder.toString();
 		} // useless otherwise
@@ -208,9 +226,8 @@ public class PeopleHtmlUtils {
 			String toRemoveJcrId = currNode.getIdentifier();
 
 			String uri = DeleteEntity.ID + "/"
-					+ DeleteEntity.PARAM_TOREMOVE_JCR_ID
-					+ "=" + toRemoveJcrId + "/"
-					+ DeleteEntity.PARAM_REMOVE_ALSO_PARENT + "="
+					+ DeleteEntity.PARAM_TOREMOVE_JCR_ID + "=" + toRemoveJcrId
+					+ "/" + DeleteEntity.PARAM_REMOVE_ALSO_PARENT + "="
 					+ removeParent;
 
 			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""

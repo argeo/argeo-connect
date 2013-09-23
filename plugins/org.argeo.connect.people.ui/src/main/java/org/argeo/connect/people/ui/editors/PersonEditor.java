@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.JcrUiUtils;
+import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
@@ -120,8 +121,6 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		final Composite readOnlyPanel = toolkit.createComposite(parent,
 				SWT.NO_FOCUS);
 		PeopleUiUtils.setSwitchingFormData(readOnlyPanel);
-		readOnlyPanel.setData(RWT.CUSTOM_VARIANT,
-				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 		readOnlyPanel.setLayout(new GridLayout());
 
 		// Add a label with info provided by the PersonOverviewLabelProvider
@@ -370,88 +369,46 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void populateMainInfoDetails(final Composite parent) {
-		parent.setLayout(new FormLayout());
+		parent.setLayout(gridLayoutNoBorder());
 
-		// READ ONLY
-		final Composite readOnlyPanel = toolkit.createComposite(parent,
+		// Tag management.
+		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		tagsCmp.setLayout(gridLayoutNoBorder(2));
+
+		Composite leftCmp = toolkit.createComposite(tagsCmp, SWT.NO_FOCUS);
+		leftCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		entityTK.populateTagsROPanel(leftCmp, person);
+
+		Composite rightCmp = toolkit.createComposite(tagsCmp, SWT.NO_FOCUS);
+		rightCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
+		entityTK.populateAddTagComposite(rightCmp, person);
+
+		// last line : last update.
+		final Composite lastUpdateCmp = toolkit.createComposite(parent,
 				SWT.NO_FOCUS);
-		PeopleUiUtils.setSwitchingFormData(readOnlyPanel);
-		readOnlyPanel.setData(RWT.CUSTOM_VARIANT,
-				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
-		readOnlyPanel.setLayout(new GridLayout());
-
-		// Add a label with info provided by the PersonOverviewLabelProvider
-		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
+		lastUpdateCmp.setLayout(gridLayoutNoBorder());
+		final Label readOnlyInfoLbl = toolkit.createLabel(lastUpdateCmp, "",
 				SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		final ColumnLabelProvider personLP = new PersonOverviewLabelProvider(
-				PersonOverviewLabelProvider.LIST_TYPE_OVERVIEW_DETAIL,
-				getPeopleServices());
-
-		// EDIT
-		final Composite editPanel = toolkit.createComposite(parent,
-				SWT.NO_FOCUS);
-		PeopleUiUtils.setSwitchingFormData(editPanel);
-		editPanel.setData(RWT.CUSTOM_VARIANT,
-				PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
-
-		// intern layout
-		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
-		rl.wrap = true;
-		editPanel.setLayout(rl);
-
-		// Create edit text
-		final Text salutationTxt = entityTK.createText(editPanel, "Salutation",
-				"Mr, Mrs...", 60);
-		final Text titleTxt = entityTK.createText(editPanel, "Title",
-				"Doc., Sir...", 60);
-		final Text firstNameTxt = entityTK.createText(editPanel, "First Name",
-				"Usual first name for this person", 100);
-		final Text lastNameTxt = entityTK.createText(editPanel, "Last Name",
-				"Usual last name for this person", 100);
-		final Text suffixTxt = entityTK.createText(editPanel, "Suffix",
-				"Junior, the third...", 80);
+		final ColumnLabelProvider lastUpdateLP = new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				return PeopleHtmlUtils.getLastUpdateSnippet((Node) element);
+			}
+		};
 
 		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
 			public void refresh() { // update display value
 				super.refresh();
-				// EDIT PART
-				entityTK.refreshTextValue(salutationTxt, person,
-						PeopleNames.PEOPLE_SALUTATION);
-				entityTK.refreshTextValue(firstNameTxt, person,
-						PeopleNames.PEOPLE_FIRST_NAME);
-				entityTK.refreshTextValue(lastNameTxt, person,
-						PeopleNames.PEOPLE_LAST_NAME);
-				entityTK.refreshTextValue(titleTxt, person,
-						PeopleNames.PEOPLE_PERSON_TITLE);
-				entityTK.refreshTextValue(suffixTxt, person,
-						PeopleNames.PEOPLE_NAME_SUFFIX);
-
 				// READ ONLY PART
-				String roText = personLP.getText(person);
+				String roText = lastUpdateLP.getText(person);
 				readOnlyInfoLbl.setText(roText);
-
 				// Manage switch
-				if (CommonsJcrUtils.isNodeCheckedOutByMe(person))
-					editPanel.moveAbove(readOnlyPanel);
-				else
-					editPanel.moveBelow(readOnlyPanel);
-				editPanel.getParent().layout();
+				parent.layout();
 			}
 		};
-
-		// Listeners
-		entityTK.addTxtModifyListener(editPart, salutationTxt, person,
-				PeopleNames.PEOPLE_SALUTATION, PropertyType.STRING);
-		entityTK.addTxtModifyListener(editPart, titleTxt, person,
-				PeopleNames.PEOPLE_PERSON_TITLE, PropertyType.STRING);
-		entityTK.addTxtModifyListener(editPart, firstNameTxt, person,
-				PeopleNames.PEOPLE_FIRST_NAME, PropertyType.STRING);
-		entityTK.addTxtModifyListener(editPart, lastNameTxt, person,
-				PeopleNames.PEOPLE_LAST_NAME, PropertyType.STRING);
-		entityTK.addTxtModifyListener(editPart, suffixTxt, person,
-				PeopleNames.PEOPLE_NAME_SUFFIX, PropertyType.STRING);
-
+		editPart.initialize(getManagedForm());
 		getManagedForm().addPart(editPart);
 	}
 }

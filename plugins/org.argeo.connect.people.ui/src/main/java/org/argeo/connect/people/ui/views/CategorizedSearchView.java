@@ -83,11 +83,11 @@ public class CategorizedSearchView extends ViewPart {
 
 		// short result parts
 		personViewer = createListPart(parent, "Persons ",
-				new EntitySingleColumnLabelProvider(), false);
+				new EntitySingleColumnLabelProvider(peopleService), false);
 		orgViewer = createListPart(parent, "Organisations ",
-				new EntitySingleColumnLabelProvider(), false);
+				new EntitySingleColumnLabelProvider(peopleService), false);
 		filmViewer = createListPart(parent, "Films ",
-				new EntitySingleColumnLabelProvider(), false);
+				new EntitySingleColumnLabelProvider(peopleService), false);
 		// set data
 		refreshFilteredList();
 	}

@@ -1,6 +1,8 @@
 package org.argeo.connect.people.ui.toolkits;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
@@ -8,26 +10,37 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
+import javax.jcr.Value;
 
-import org.argeo.connect.film.FilmNames;
-import org.argeo.connect.film.core.FilmJcrUtils;
+import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.PeopleValueCatalogs;
 import org.argeo.connect.people.ui.JcrUiUtils;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
+import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
-import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
@@ -36,6 +49,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.forms.AbstractFormPart;
@@ -153,6 +168,207 @@ public class EntityToolkit {
 	// ////////////////
 	// Various panels
 
+	public void populateTagsROPanel(final Composite parent, final Node entity) {
+		parent.setLayout(new FormLayout());
+		// Show only TAGS for the time being, so it is the same for R/O & Edit
+		// mode
+		final Composite panel = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		PeopleUiUtils.setSwitchingFormData(panel);
+
+		TableColumnLayout tableColumnLayout = new TableColumnLayout();
+		panel.setLayout(tableColumnLayout);
+
+		int style = SWT.NO_SCROLL;
+		Table table = new Table(panel, style);
+		table.setLinesVisible(false);
+		table.setHeaderVisible(false);
+		// Enable markups
+		table.setData(RWT.CUSTOM_VARIANT,
+				PeopleUiConstants.CSS_STYLE_UNIQUE_CELL_TABLE);
+		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(40));
+
+		// Does not work: adding a tag within the <a> tag unvalid the
+		// target="_RWT" parameter
+		// ResourceManager resourceManager = RWT.getResourceManager();
+		// if (!resourceManager.isRegistered("icons/close.png")) {
+		// InputStream inputStream = this.getClass().getClassLoader()
+		// .getResourceAsStream("icons/close.png");
+		// try {
+		// resourceManager.register("icons/close.png", inputStream);
+		// } finally {
+		// IOUtils.closeQuietly(inputStream);
+		// }
+		// }
+		// final String src = RWT.getResourceManager().getLocation(
+		// "icons/close.png");
+
+		final TableViewer viewer = new TableViewer(table);
+		viewer.setLabelProvider(new LabelProvider() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getText(Object element) {
+				try {
+					Node node = (Node) element;
+					StringBuilder tags = new StringBuilder();
+					if (node.hasProperty(PeopleNames.PEOPLE_TAGS)) {
+						tags.append("<span style=\"font-size:15px;float:left;padding:0px;white-space:pre-wrap;text-decoration:none;\">");
+						Value[] values = entity.getProperty(
+								PeopleNames.PEOPLE_TAGS).getValues();
+						for (int i = 0; i < values.length; i++) {
+							String currStr = values[i].getString();
+							tags.append("<i>#");
+							tags.append(currStr).append("&#160;");
+							tags.append("<small><a style=\"text-decoration:none;\" href=\"");
+							tags.append(currStr);
+							tags.append("\" target=\"_rwt\">X</a></small></i>")
+									.append("&#160;&#160; ");
+						}
+						tags.append("</span>");
+					}
+					return tags.toString();
+				} catch (RepositoryException re) {
+					throw new PeopleException("unable to get tags", re);
+				}
+			}
+
+		});
+		viewer.setContentProvider(new BasicNodeListContentProvider());
+
+		TableColumn singleColumn = new TableColumn(table, SWT.LEFT);
+		singleColumn.setData(RWT.CUSTOM_VARIANT,
+				PeopleUiConstants.CSS_STYLE_UNIQUE_CELL_TABLE);
+
+		tableColumnLayout.setColumnData(singleColumn, new ColumnWeightData(90));
+
+		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
+			public void refresh() { // update display value
+				super.refresh();
+				List<Node> nodes = new ArrayList<Node>();
+				nodes.add(entity);
+				viewer.refresh();
+			}
+		};
+
+		table.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			public void widgetSelected(SelectionEvent event) {
+				if (event.detail == RWT.HYPERLINK) {
+					try {
+
+						String tagToRemove = event.text;
+						if (CommonsJcrUtils.checkNotEmptyString(tagToRemove)) {
+							List<String> tags = new ArrayList<String>();
+							if (entity.hasProperty(PeopleNames.PEOPLE_TAGS)) {
+								Value[] values = entity.getProperty(
+										PeopleNames.PEOPLE_TAGS).getValues();
+								for (int i = 0; i < values.length; i++) {
+									String curr = values[i].getString();
+									if (!tagToRemove.equals(curr))
+										tags.add(curr);
+								}
+							}
+							boolean wasCheckedout = CommonsJcrUtils
+									.isNodeCheckedOut(entity);
+							if (!wasCheckedout)
+								CommonsJcrUtils.checkout(entity);
+							entity.setProperty(PeopleNames.PEOPLE_TAGS,
+									tags.toArray(new String[tags.size()]));
+							if (!wasCheckedout)
+								CommonsJcrUtils.saveAndCheckin(entity);
+							else
+								form.dirtyStateChanged();
+						}
+						editPart.refresh();
+					} catch (RepositoryException re) {
+						throw new ArgeoException("Unable to set tags", re);
+					}
+				}
+			}
+		});
+		List<Node> nodes = new ArrayList<Node>();
+		nodes.add(entity);
+		viewer.setInput(nodes);
+
+		editPart.initialize(form);
+		form.addPart(editPart);
+	}
+
+	public void populateAddTagComposite(Composite parent, final Node entity) {
+		parent.setLayout(new RowLayout());
+		final Text tagTxt = new Text(parent, SWT.BORDER);
+		tagTxt.setMessage("Enter a new tag");
+		RowData rd = new RowData(200, SWT.DEFAULT);
+		tagTxt.setLayoutData(rd);
+
+		final Button validBtn = toolkit.createButton(parent, "Add", SWT.PUSH);
+		rd = new RowData(80, SWT.DEFAULT);
+		validBtn.setLayoutData(rd);
+
+		validBtn.addSelectionListener(new SelectionListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String newTag = tagTxt.getText();
+				addTag(entity, newTag);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+
+		tagTxt.addTraverseListener(new TraverseListener() {
+			private static final long serialVersionUID = 1L;
+
+			public void keyTraversed(TraverseEvent e) {
+				if (e.keyCode == SWT.CR) {
+					String newTag = tagTxt.getText();
+					addTag(entity, newTag);
+					e.doit = false;
+				}
+			}
+		});
+	}
+
+	private void addTag(Node tagable, String newTag) {
+		boolean wasCheckedout = CommonsJcrUtils.isNodeCheckedOut(tagable);
+		if (!wasCheckedout)
+			CommonsJcrUtils.checkout(tagable);
+		try {
+			Value[] values;
+			String[] valuesStr;
+			if (tagable.hasProperty(PeopleNames.PEOPLE_TAGS)) {
+				values = tagable.getProperty(PeopleNames.PEOPLE_TAGS)
+						.getValues();
+				valuesStr = new String[values.length + 1];
+				int i;
+				for (i = 0; i < values.length; i++) {
+					valuesStr[i] = values[i].getString();
+				}
+				valuesStr[i] = newTag;
+			} else {
+				valuesStr = new String[1];
+				valuesStr[0] = newTag;
+			}
+			tagable.setProperty(PeopleNames.PEOPLE_TAGS, valuesStr);
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Unable to set tags", re);
+		}
+		if (!wasCheckedout)
+			CommonsJcrUtils.saveAndCheckin(tagable);
+		else
+			form.dirtyStateChanged();
+
+		for (IFormPart part : form.getParts()) {
+			((AbstractFormPart) part).markStale();
+			part.refresh();
+		}
+	}
+
 	public void populateContactPanelWithNotes(Composite panel, final Node entity) {
 		panel.setLayout(new GridLayout(2, false));
 		GridData gd;
@@ -205,9 +421,11 @@ public class EntityToolkit {
 		// This must be moved in the called method.
 		contactListCmp.setLayout(new GridLayout(2, false));
 		refreshContactPanel(contactListCmp, entity, sPart);
-		form.addPart(sPart);
 		panel.layout();
-	}
+
+		sPart.initialize(form);
+		form.addPart(sPart);
+		}
 
 	public void populateContactPanel(final Composite panel, final Node entity) {
 		panel.setLayout(new GridLayout());
@@ -252,22 +470,13 @@ public class EntityToolkit {
 		};
 
 		populateAddContactPanel(newContactCmp, entity);
+		panel.layout();
 
 		// This must be moved in the called method.
 		contactListCmp.setLayout(new GridLayout(2, false));
 		refreshContactPanel(contactListCmp, entity, sPart);
+		sPart.initialize(form);
 		form.addPart(sPart);
-		panel.layout();
-
-		// addNewMailLink.addHyperlinkListener(new SimpleHyperlinkListener() {
-		// @Override
-		// public void linkActivated(HyperlinkEvent e) {
-		// PeopleJcrUtils.createEmail(entity, "test@mail.de", 100, "test",
-		// null);
-		// refreshContactPanel(contactComposite, entity, toolkit, sPart);
-		// sPart.markDirty();
-		// }
-		// });
 	}
 
 	public void populateNotePanel(final Composite rightPartComp,
@@ -311,6 +520,7 @@ public class EntityToolkit {
 					notePart.markDirty();
 			}
 		});
+		notePart.initialize(form);
 		form.addPart(notePart);
 	}
 
@@ -419,6 +629,8 @@ public class EntityToolkit {
 				addContactCmb.select(0);
 			}
 		};
+		
+		editPart.initialize(form);
 		form.addPart(editPart);
 		parent.layout();
 
