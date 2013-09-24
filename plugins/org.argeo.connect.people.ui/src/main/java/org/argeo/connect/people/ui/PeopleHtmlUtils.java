@@ -14,6 +14,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.commands.DeleteEntity;
 import org.argeo.connect.people.ui.commands.EditEntityReference;
+import org.argeo.connect.people.ui.commands.EditEntityReferenceWithPosition;
 import org.argeo.connect.people.ui.commands.RemoveEntityReference;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
@@ -254,6 +255,30 @@ public class PeopleHtmlUtils {
 					+ EditEntityReference.PARAM_TOEDIT_JCR_ID + "="
 					+ toEditJcrId;
 
+			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""
+					+ uri + "\" target=\"_rwt\">Edit</a>";
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Error getting remove snippet for list item", re);
+		}
+	}
+
+	/**
+	 * Create the text value of a link that enable calling the
+	 * <code>EditEntityReferenceWithPosition</command> from a cell of a HTML list
+	 */
+	public static String getEditWithPosSnippetForLists(Node linkNode,
+			boolean isBackward, String toSearchNodeType) {
+		try {
+			String toEditJcrId = linkNode.getIdentifier();
+
+			String uri = EditEntityReferenceWithPosition.ID + "/"
+					+ EditEntityReferenceWithPosition.PARAM_OLD_LINK_JCR_ID
+					+ "=" + toEditJcrId + "/"
+					+ EditEntityReferenceWithPosition.PARAM_IS_BACKWARD + "="
+					+ isBackward + "/"
+					+ EditEntityReferenceWithPosition.PARAM_TO_SEARCH_NODE_TYPE
+					+ "=" + toSearchNodeType;
 			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""
 					+ uri + "\" target=\"_rwt\">Edit</a>";
 		} catch (RepositoryException re) {

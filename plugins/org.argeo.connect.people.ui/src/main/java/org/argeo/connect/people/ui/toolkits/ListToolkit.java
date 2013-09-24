@@ -18,7 +18,7 @@ import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.ui.commands.AddEntityReferences;
+import org.argeo.connect.people.ui.commands.AddEntityReferenceWithPosition;
 import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
 import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
@@ -63,72 +63,81 @@ public class ListToolkit {
 		this.peopleUiService = peopleUiService;
 	}
 
-	public void populateJobsPanel(Composite panel, final Node entity) {
-		try {
-			TableViewer viewer = new TableViewer(panel);
-			TableColumnLayout tableColumnLayout = createJobsTableColumns(panel,
-					viewer);
-			panel.setLayout(tableColumnLayout);
-			PeopleUiUtils.setTableDefaultStyle(viewer, 60);
+	/**
+	 * The jobs for a person
+	 */
 
-			// compulsory content provider
-			viewer.setContentProvider(new BasicNodeListContentProvider());
+	public void populateJobsPanel(Composite panel, final Node entity) {
+		panel.setLayout(new GridLayout());
+		// Create new button
+		final Button addBtn = toolkit.createButton(panel, "Add job", SWT.PUSH);
+		configureAddReferenceButton(addBtn, entity, "Add a new job", false,
+				PeopleTypes.PEOPLE_ORGANIZATION);
+
+		// Corresponding list
+		Composite tableComp = toolkit.createComposite(panel);
+		tableComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		final TableViewer viewer = new TableViewer(tableComp);
+		TableColumnLayout tableColumnLayout = createJobsTableColumns(tableComp,
+				viewer);
+		tableComp.setLayout(tableColumnLayout);
+		PeopleUiUtils.setTableDefaultStyle(viewer, 60);
+
+		// compulsory content provider
+		viewer.setContentProvider(new BasicNodeListContentProvider());
+		try {
 			viewer.addDoubleClickListener(peopleUiService
 					.getNewNodeListDoubleClickListener(peopleService, entity
 							.getPrimaryNodeType().getName(),
 							PeopleUiConstants.PANEL_JOBS));
+		} catch (RepositoryException re) {
+			throw new PeopleException("Error adding double click on job list",
+					re);
+		}
 
-			List<Node> jobs = new ArrayList<Node>();
-			if (!entity.hasNode(PeopleNames.PEOPLE_JOBS)) // No job to display
-				return;
-			NodeIterator ni = entity.getNode(PeopleNames.PEOPLE_JOBS)
-					.getNodes();
-			while (ni.hasNext()) {
-				// Check if have the right type of node
-				Node currJob = ni.nextNode();
-				if (currJob.isNodeType(PeopleTypes.PEOPLE_JOB)) {
-					jobs.add(currJob);
+		// Add life cycle management
+		final EntityAbstractFormPart sPart = new EntityAbstractFormPart() {
+			public void refresh() {
+				super.refresh();
+				try {
+					addBtn.setEnabled(CommonsJcrUtils
+							.isNodeCheckedOutByMe(entity));
+
+					List<Node> jobs = new ArrayList<Node>();
+					if (!entity.hasNode(PeopleNames.PEOPLE_JOBS)) // No job to
+																	// display
+						return;
+					NodeIterator ni = entity.getNode(PeopleNames.PEOPLE_JOBS)
+							.getNodes();
+					while (ni.hasNext()) {
+						// Check if have the right type of node
+						Node currJob = ni.nextNode();
+						if (currJob.isNodeType(PeopleTypes.PEOPLE_JOB)) {
+							jobs.add(currJob);
+						}
+					}
+					viewer.setInput(jobs);
+				} catch (RepositoryException re) {
+					throw new PeopleException("Cannot refresh jobs list", re);
 				}
 			}
-			viewer.setInput(jobs);
-
-		} catch (RepositoryException re) {
-			throw new PeopleException("Cannot create organizations list", re);
-		}
+		};
+		sPart.initialize(form);
+		form.addPart(sPart);
 	}
 
 	public void populateEmployeesPanel(Composite panel, final Node entity) {
 		try {
 			panel.setLayout(new GridLayout());
+			// Create new button
 			final Button addBtn = toolkit.createButton(panel, "Add Employee",
 					SWT.PUSH);
-			String tooltip = "Add an employee for this organisation";
-			addBtn.setToolTipText(tooltip);
-			addBtn.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
+			configureAddReferenceButton(addBtn, entity,
+					"Add an employee for this organisation", true,
+					PeopleTypes.PEOPLE_PERSON);
 
-			addBtn.addSelectionListener(new SelectionListener() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					Map<String, String> params = new HashMap<String, String>();
-					try {
-						params.put(
-								AddEntityReferences.PARAM_TARGET_PARENT_JCR_ID,
-								entity.getIdentifier());
-						CommandUtils
-								.callCommand(AddEntityReferences.ID, params);
-					} catch (RepositoryException e1) {
-						throw new PeopleException(
-								"Unable to get parent Jcr identifier", e1);
-					}
-				}
-
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
-				}
-			});
-
+			// Corresponding list
 			Composite tableComp = toolkit.createComposite(panel);
 			tableComp
 					.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -157,7 +166,6 @@ public class ListToolkit {
 			};
 			sPart.initialize(form);
 			form.addPart(sPart);
-
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot populate employee panel ", re);
 		}
@@ -165,10 +173,21 @@ public class ListToolkit {
 
 	public void populateFilmsPanel(Composite panel, final Node entity) {
 		try {
-			TableViewer viewer = new TableViewer(panel, SWT.V_SCROLL);
+			panel.setLayout(new GridLayout());
+			// Create new button
+			final Button addBtn = toolkit.createButton(panel, "Add Film",
+					SWT.PUSH);
+			configureAddReferenceButton(addBtn, entity,
+					"Add a film participation", true, FilmTypes.FILM);
+
+			// Corresponding list
+			Composite tableComp = toolkit.createComposite(panel);
+			tableComp
+					.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			final TableViewer viewer = new TableViewer(tableComp, SWT.V_SCROLL);
 			TableColumnLayout tableColumnLayout = createProductionsTableColumns(
-					panel, viewer);
-			panel.setLayout(tableColumnLayout);
+					tableComp, viewer);
+			tableComp.setLayout(tableColumnLayout);
 			PeopleUiUtils.setTableDefaultStyle(viewer, 60);
 
 			// compulsory content provider
@@ -178,43 +197,134 @@ public class ListToolkit {
 							.getPrimaryNodeType().getName(),
 							PeopleUiConstants.PANEL_PRODUCTIONS));
 
-			viewer.setInput(peopleService.getRelatedEntities(entity,
-					PeopleTypes.PEOPLE_MEMBER, FilmTypes.FILM));
+			// Add life cycle management
+			final EntityAbstractFormPart sPart = new EntityAbstractFormPart() {
+				public void refresh() {
+					super.refresh();
+					addBtn.setEnabled(CommonsJcrUtils
+							.isNodeCheckedOutByMe(entity));
+					viewer.setInput(peopleService.getRelatedEntities(entity,
+							PeopleTypes.PEOPLE_MEMBER, FilmTypes.FILM));
+				}
+			};
+			sPart.initialize(form);
+			form.addPart(sPart);
+
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot create organizations list", re);
 		}
 	}
 
 	public void populateMembersPanel(Composite panel, final Node entity) {
-		try {
-			TableViewer viewer = new TableViewer(panel, SWT.V_SCROLL);
-			TableColumnLayout tableColumnLayout = createMembersTableColumns(
-					panel, viewer);
-			panel.setLayout(tableColumnLayout);
-			PeopleUiUtils.setTableDefaultStyle(viewer, 60);
+		panel.setLayout(new GridLayout());
+		// Create new button
+		final Button addBtn = toolkit.createButton(panel, "Add member",
+				SWT.PUSH);
+		configureAddReferenceButton(addBtn, entity, "Add a new group member",
+				false, PeopleTypes.PEOPLE_PERSON);
 
-			viewer.setContentProvider(new BasicNodeListContentProvider());
+		// Corresponding list
+		Composite tableComp = toolkit.createComposite(panel);
+		tableComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		final TableViewer viewer = new TableViewer(tableComp, SWT.V_SCROLL);
+		TableColumnLayout tableColumnLayout = createMembersTableColumns(
+				tableComp, viewer);
+		tableComp.setLayout(tableColumnLayout);
+		PeopleUiUtils.setTableDefaultStyle(viewer, 60);
+
+		viewer.setContentProvider(new BasicNodeListContentProvider());
+		try {
+
 			viewer.addDoubleClickListener(peopleUiService
 					.getNewNodeListDoubleClickListener(peopleService, entity
 							.getPrimaryNodeType().getName(),
 							PeopleUiConstants.PANEL_MEMBERS));
+		} catch (RepositoryException re) {
+			throw new PeopleException("Error adding double clic on the "
+					+ "film participation list", re);
+		}
 
-			List<Node> members = new ArrayList<Node>();
-			if (!entity.hasNode(PeopleNames.PEOPLE_MEMBERS))
-				return; // No member to display
-			NodeIterator ni = entity.getNode(PeopleNames.PEOPLE_MEMBERS)
-					.getNodes();
-			while (ni.hasNext()) {
-				// Check relevant nodeType
-				Node currMember = ni.nextNode();
-				if (currMember.isNodeType(PeopleTypes.PEOPLE_MEMBER)) {
-					members.add(currMember);
+		// Add life cycle management
+		final EntityAbstractFormPart sPart = new EntityAbstractFormPart() {
+			public void refresh() {
+				super.refresh();
+				try {
+					addBtn.setEnabled(CommonsJcrUtils
+							.isNodeCheckedOutByMe(entity));
+					List<Node> members = new ArrayList<Node>();
+					if (!entity.hasNode(PeopleNames.PEOPLE_MEMBERS))
+						return; // No member to display
+					NodeIterator ni = entity
+							.getNode(PeopleNames.PEOPLE_MEMBERS).getNodes();
+					while (ni.hasNext()) {
+						// Check relevant nodeType
+						Node currMember = ni.nextNode();
+						if (currMember.isNodeType(PeopleTypes.PEOPLE_MEMBER)) {
+							members.add(currMember);
+						}
+					}
+					viewer.setInput(members);
+				} catch (RepositoryException re) {
+					throw new PeopleException(
+							"Cannot refresh film participation list", re);
 				}
 			}
-			viewer.setInput(members);
-		} catch (RepositoryException re) {
-			throw new PeopleException("Cannot create organizations list", re);
-		}
+		};
+		sPart.initialize(form);
+		form.addPart(sPart);
+	}
+
+	private TableColumnLayout createJobsTableColumns(final Composite parent,
+			final TableViewer viewer) {
+		int[] bounds = { 150, 300 };
+		TableColumnLayout tableColumnLayout = new TableColumnLayout();
+
+		// Role
+		TableViewerColumn col = ViewerUtils.createTableViewerColumn(viewer, "",
+				SWT.LEFT, bounds[0]);
+		col.setLabelProvider(new RoleListLabelProvider());
+		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
+				80, 20, true));
+
+		// Company
+		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT,
+				bounds[1]);
+		col.setLabelProvider(new OrgOverviewLabelProvider(true, peopleService));
+		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
+				200, 80, true));
+
+		// Edit & Remove links
+		viewer.getTable().addSelectionListener(new HtmlListRwtAdapter());
+		col = ViewerUtils.createTableViewerColumn(viewer, "Edit/Remove links",
+				SWT.NONE, 60);
+		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
+				40, 40, true));
+		col.setLabelProvider(new ColumnLabelProvider() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getText(Object element) {
+				try {
+					// get the corresponding person
+					Node link = (Node) element;
+					Node person = link.getParent().getParent();
+
+					return PeopleHtmlUtils.getEditWithPosSnippetForLists(link,
+							false, PeopleTypes.PEOPLE_ORGANIZATION)
+							+ " <br />"
+							+ PeopleHtmlUtils
+									.getRemoveReferenceSnippetForLists(link,
+											person);
+				} catch (RepositoryException e) {
+					throw new PeopleException(
+							"Error while getting versionable parent", e);
+				}
+
+			}
+		});
+
+		return tableColumnLayout;
 	}
 
 	private TableColumnLayout createEmployeesTableColumns(
@@ -242,7 +352,7 @@ public class ListToolkit {
 		col = ViewerUtils.createTableViewerColumn(viewer, "Edit/Remove links",
 				SWT.NONE, 60);
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
-				80, 50, true));
+				40, 40, true));
 		col.setLabelProvider(new ColumnLabelProvider() {
 			private static final long serialVersionUID = 1L;
 
@@ -253,7 +363,8 @@ public class ListToolkit {
 					Node link = (Node) element;
 					Node person = link.getParent().getParent();
 
-					return PeopleHtmlUtils.getEditSnippetForLists(link, person)
+					return PeopleHtmlUtils.getEditWithPosSnippetForLists(link,
+							true, PeopleTypes.PEOPLE_PERSON)
 							+ " <br />"
 							+ PeopleHtmlUtils
 									.getRemoveReferenceSnippetForLists(link,
@@ -267,57 +378,6 @@ public class ListToolkit {
 		});
 		return tableColumnLayout;
 
-	}
-
-	private TableColumnLayout createJobsTableColumns(final Composite parent,
-			final TableViewer viewer) {
-		int[] bounds = { 150, 300 };
-		TableColumnLayout tableColumnLayout = new TableColumnLayout();
-
-		// Role
-		TableViewerColumn col = ViewerUtils.createTableViewerColumn(viewer, "",
-				SWT.LEFT, bounds[0]);
-		col.setLabelProvider(new RoleListLabelProvider());
-		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
-				80, 20, true));
-
-		// Company
-		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT,
-				bounds[1]);
-		col.setLabelProvider(new OrgOverviewLabelProvider(true, peopleService));
-		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
-				200, 80, true));
-
-		// Edit & Remove links
-		viewer.getTable().addSelectionListener(new HtmlListRwtAdapter());
-		col = ViewerUtils.createTableViewerColumn(viewer, "Edit/Remove links",
-				SWT.NONE, 60);
-		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
-				80, 50, true));
-		col.setLabelProvider(new ColumnLabelProvider() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public String getText(Object element) {
-				try {
-					// get the corresponding person
-					Node link = (Node) element;
-					Node person = link.getParent().getParent();
-
-					return PeopleHtmlUtils.getEditSnippetForLists(link, person)
-							+ " <br />"
-							+ PeopleHtmlUtils
-									.getRemoveReferenceSnippetForLists(link,
-											person);
-				} catch (RepositoryException e) {
-					throw new PeopleException(
-							"Error while getting versionable parent", e);
-				}
-
-			}
-		});
-
-		return tableColumnLayout;
 	}
 
 	private TableColumnLayout createProductionsTableColumns(Composite parent,
@@ -344,7 +404,7 @@ public class ListToolkit {
 		col = ViewerUtils.createTableViewerColumn(viewer, "Edit/Remove links",
 				SWT.NONE, 60);
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
-				80, 50, true));
+				40, 40, true));
 		col.setLabelProvider(new ColumnLabelProvider() {
 			private static final long serialVersionUID = 1L;
 
@@ -355,7 +415,8 @@ public class ListToolkit {
 					Node link = (Node) element;
 					Node person = link.getParent().getParent();
 
-					return PeopleHtmlUtils.getEditSnippetForLists(link, person)
+					return PeopleHtmlUtils.getEditWithPosSnippetForLists(link,
+							true, FilmTypes.FILM)
 							+ " <br />"
 							+ PeopleHtmlUtils
 									.getRemoveReferenceSnippetForLists(link,
@@ -396,7 +457,7 @@ public class ListToolkit {
 		col = ViewerUtils.createTableViewerColumn(viewer, "Edit/Remove links",
 				SWT.NONE, 60);
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
-				80, 50, true));
+				40, 40, true));
 		col.setLabelProvider(new ColumnLabelProvider() {
 			private static final long serialVersionUID = 1L;
 
@@ -407,7 +468,8 @@ public class ListToolkit {
 					Node link = (Node) element;
 					Node person = link.getParent().getParent();
 
-					return PeopleHtmlUtils.getEditSnippetForLists(link, person)
+					return PeopleHtmlUtils.getEditWithPosSnippetForLists(link,
+							false, PeopleTypes.PEOPLE_PERSON)
 							+ " <br />"
 							+ PeopleHtmlUtils
 									.getRemoveReferenceSnippetForLists(link,
@@ -421,6 +483,49 @@ public class ListToolkit {
 		});
 
 		return tableColumnLayout;
+	}
+
+	// ///////////////////////
+	// HELPERS
+
+	private void configureAddReferenceButton(Button button,
+			final Node targetNode, String tooltip, final boolean isBackward,
+			final String nodeTypeToSearch) {
+		button.setToolTipText(tooltip);
+		button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
+
+		button.addSelectionListener(new SelectionListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Map<String, String> params = new HashMap<String, String>();
+				try {
+					if (isBackward)
+						params.put(
+								AddEntityReferenceWithPosition.PARAM_REFERENCED_JCR_ID,
+								targetNode.getIdentifier());
+					else
+						params.put(
+								AddEntityReferenceWithPosition.PARAM_REFERENCING_JCR_ID,
+								targetNode.getIdentifier());
+					params.put(
+							AddEntityReferenceWithPosition.PARAM_TO_SEARCH_NODE_TYPE,
+							nodeTypeToSearch);
+
+					CommandUtils.callCommand(AddEntityReferenceWithPosition.ID,
+							params);
+				} catch (RepositoryException e1) {
+					throw new PeopleException(
+							"Unable to get parent Jcr identifier", e1);
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+
 	}
 
 }

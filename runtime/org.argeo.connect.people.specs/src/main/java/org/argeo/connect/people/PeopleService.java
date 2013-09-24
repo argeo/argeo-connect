@@ -24,6 +24,13 @@ public interface PeopleService {
 	public Node getEntityByUid(Session session, String uid);
 
 	/**
+	 * Creates and returns a model specific Node to store a reference, depending
+	 * on the two object we want to link togeteher
+	 * */
+	public Node createEntityReference(Node referencingNode,
+			Node referencedNode, String role);
+
+	/**
 	 * Returns all entities with the given NodeType related to this entity or
 	 * null if not has been found. Key for relation is implementation specific:
 	 * it might be a JCR Identifier but must not.

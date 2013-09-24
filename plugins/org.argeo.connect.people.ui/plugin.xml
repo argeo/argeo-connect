@@ -43,11 +43,15 @@
       		id="org.argeo.connect.people.ui.cancelAndCheckInItem"
             name="cancelAndcheckInItem">
     	</command>
+		
+		<!-- Legacy: import big data --> 
 		<command
 			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
 			id="org.argeo.connect.people.ui.importPeople"
 			name="Import people">
 		</command>    
+		
+		<!-- Entity References CRUD --> 
 		<command
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       		id="org.argeo.connect.people.ui.removeEntityReference"
@@ -72,6 +76,53 @@
             <commandParameter
          		id="param.toEditJcrId"
          		name="Jcr ID of the node to edit">
+  	 		</commandParameter>
+    	</command>
+    	<command
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		id="org.argeo.connect.people.ui.addEntityReferences"
+            name="Add Entity References">
+            <commandParameter
+         		id="param.referencingJcrId"
+         		name="Referencing node JCR identifier">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.referencedJcrId"
+         		name="Referenced node JCR identifier">
+  	 		</commandParameter>
+    	</command>
+    	<command
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		id="org.argeo.connect.people.ui.addEntityReferenceWithPosition"
+            name="Add Entity References With Position">
+            <commandParameter
+         		id="param.referencingJcrId"
+         		name="Referencing node JCR identifier">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.referencedJcrId"
+         		name="Referenced node JCR identifier">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.toSearchNodeType"
+         		name="type of node to search for">
+  	 		</commandParameter>
+    	</command>
+		<command
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		id="org.argeo.connect.people.ui.editEntityReferenceWithPosition"
+            name="Edit Entity References With Position">
+            <commandParameter
+         		id="param.oldLinkJcrId"
+         		name="Old link JCR identifier">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.isBackward"
+         		name="Direction of the link">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.toSearchNodeType"
+         		name="type of node to search for">
   	 		</commandParameter>
     	</command>
 		<command

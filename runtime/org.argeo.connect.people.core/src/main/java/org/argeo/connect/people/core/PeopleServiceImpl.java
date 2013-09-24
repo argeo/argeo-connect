@@ -18,10 +18,12 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.argeo.connect.film.FilmTypes;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
@@ -33,11 +35,12 @@ public class PeopleServiceImpl implements PeopleService {
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private Map<Integer, String> managedRoles;
+
 	// business catalogs maintained in file business catalogs of the specs
 	// bundle
-	private Map<String, Object> businessCatalogs;
+	// private Map<String, Object> businessCatalogs;
 
-	private Session adminSession = null;
+	// private Session adminSession = null;
 
 	/* Life cycle management */
 	/**
@@ -85,8 +88,61 @@ public class PeopleServiceImpl implements PeopleService {
 			} else
 				return ni.nextNode();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrive entity of uid: " + uid,
-					e);
+			throw new PeopleException(
+					"Unable to retrive entity of uid: " + uid, e);
+		}
+	}
+
+	/**
+	 * Creates and returns a model specific Node to store a reference, depending
+	 * on the two object we want to link togeteher. Overwrite to add some new
+	 * link type
+	 * */
+	@Override
+	public Node createEntityReference(Node referencingNode,
+			Node referencedNode, String role) {
+		try {
+			Node parentNode = null;
+			String linkNodeType = null;
+			if (referencingNode.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
+				if (referencedNode.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)) {
+					linkNodeType = PeopleTypes.PEOPLE_JOB;
+					parentNode = referencingNode
+							.getNode(PeopleNames.PEOPLE_JOBS);
+				}
+			} else if (referencingNode.isNodeType(FilmTypes.FILM)) {
+				if (referencedNode.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)
+						|| referencedNode.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
+					linkNodeType = PeopleTypes.PEOPLE_MEMBER;
+					parentNode = referencingNode
+							.getNode(PeopleNames.PEOPLE_MEMBERS);
+				}
+			}
+
+			if (parentNode == null || linkNodeType == null)
+				throw new PeopleException("Unsupported reference: from "
+						+ referencingNode + " to " + referencedNode);
+
+			// TODO manage duplicates
+			boolean wasCheckedout = CommonsJcrUtils
+					.isNodeCheckedOutByMe(referencingNode);
+			if (!wasCheckedout)
+				CommonsJcrUtils.checkout(referencingNode);
+
+			// add the corresponding node
+			Node link = parentNode.addNode(role, linkNodeType);
+			link.setProperty(PeopleNames.PEOPLE_ROLE, role);
+			link.setProperty(PeopleNames.PEOPLE_REF_UID, referencedNode
+					.getProperty(PeopleNames.PEOPLE_UID).getString());
+
+			if (!wasCheckedout)
+				CommonsJcrUtils.saveAndCheckin(referencingNode);
+			else
+				referencingNode.getSession().save();
+
+			return link;
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to retrieve related entities", e);
 		}
 	}
 
@@ -174,7 +230,7 @@ public class PeopleServiceImpl implements PeopleService {
 
 	// Inject a map with all business catalogs
 	public void setBusinessCatalogs(Map<String, Object> businessCatalogs) {
-		this.businessCatalogs = businessCatalogs;
+		// this.businessCatalogs = businessCatalogs;
 	}
 
 	public void setRepository(Repository repository) {

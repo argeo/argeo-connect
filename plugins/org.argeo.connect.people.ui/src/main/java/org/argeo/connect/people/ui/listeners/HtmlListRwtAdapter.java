@@ -17,8 +17,6 @@ public class HtmlListRwtAdapter extends SelectionAdapter {
 	public void widgetSelected(SelectionEvent event) {
 		if (event.detail == RWT.HYPERLINK) {
 			String string = event.text;
-			if (log.isTraceEnabled())
-				log.trace("RWT.HYPERLINK href: " + string);
 			String[] token = string.split("/");
 			if (token.length > 0) {
 				Map<String, String> params = new HashMap<String, String>();
@@ -30,8 +28,9 @@ public class HtmlListRwtAdapter extends SelectionAdapter {
 					CommandUtils.callCommand(token[0], params);
 				} catch (Exception nde) {
 					log.warn("Error while trying to call "
-							+ "a command using RWT.HYPERLINK href: \n"
-							+ nde.getCause().getMessage());
+							+ "a command using a RWT.HYPERLINK.\n Retrieved href:"
+							+ string + "\n" + nde.getCause().getMessage());
+					nde.printStackTrace();
 				}
 			}
 		}
