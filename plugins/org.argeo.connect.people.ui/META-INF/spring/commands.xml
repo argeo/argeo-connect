@@ -14,6 +14,11 @@
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 	</bean>
+	<bean id="org.argeo.connect.people.ui.deleteEntity"
+		class="org.argeo.connect.people.ui.commands.DeleteEntity"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+	</bean>
 
 
 	<!-- <bean id="org.argeo.connect.people.ui.openEntityEditor" class="org.argeo.connect.people.ui.commands.OpenEntityEditor" 

@@ -7,7 +7,7 @@ import javax.jcr.Session;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.editors.AbstractEntityCTabEditor_old;
+import org.argeo.connect.people.ui.editors.AbstractEntityCTabEditor;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -67,11 +67,11 @@ public class RemoveEntityReference extends AbstractHandler {
 				versionableParent.getSession().save();
 			else
 				CommonsJcrUtils.saveAndCheckin(versionableParent);
-			
+
 			IEditorPart iep = HandlerUtil.getActiveWorkbenchWindow(event)
 					.getActivePage().getActiveEditor();
-			if (iep != null && iep instanceof AbstractEntityCTabEditor_old)
-				((AbstractEntityCTabEditor_old) iep).forceRefresh();
+			if (iep != null && iep instanceof AbstractEntityCTabEditor)
+				((AbstractEntityCTabEditor) iep).forceRefresh();
 
 		} catch (RepositoryException e) {
 			throw new PeopleException("unexpected JCR error while opening "

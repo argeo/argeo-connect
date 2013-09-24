@@ -287,6 +287,36 @@ public class ListToolkit {
 		col.setLabelProvider(new OrgOverviewLabelProvider(true, peopleService));
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
 				200, 80, true));
+
+		// Edit & Remove links
+		viewer.getTable().addSelectionListener(new HtmlListRwtAdapter());
+		col = ViewerUtils.createTableViewerColumn(viewer, "Edit/Remove links",
+				SWT.NONE, 60);
+		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
+				80, 50, true));
+		col.setLabelProvider(new ColumnLabelProvider() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getText(Object element) {
+				try {
+					// get the corresponding person
+					Node link = (Node) element;
+					Node person = link.getParent().getParent();
+
+					return PeopleHtmlUtils.getEditSnippetForLists(link, person)
+							+ " <br />"
+							+ PeopleHtmlUtils
+									.getRemoveReferenceSnippetForLists(link,
+											person);
+				} catch (RepositoryException e) {
+					throw new PeopleException(
+							"Error while getting versionable parent", e);
+				}
+
+			}
+		});
+
 		return tableColumnLayout;
 	}
 
@@ -308,6 +338,36 @@ public class ListToolkit {
 		col.setLabelProvider(new FilmOverviewLabelProvider(true, peopleService));
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
 				200, 80, true));
+
+		// Edit & Remove links
+		viewer.getTable().addSelectionListener(new HtmlListRwtAdapter());
+		col = ViewerUtils.createTableViewerColumn(viewer, "Edit/Remove links",
+				SWT.NONE, 60);
+		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
+				80, 50, true));
+		col.setLabelProvider(new ColumnLabelProvider() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getText(Object element) {
+				try {
+					// get the corresponding person
+					Node link = (Node) element;
+					Node person = link.getParent().getParent();
+
+					return PeopleHtmlUtils.getEditSnippetForLists(link, person)
+							+ " <br />"
+							+ PeopleHtmlUtils
+									.getRemoveReferenceSnippetForLists(link,
+											person);
+				} catch (RepositoryException e) {
+					throw new PeopleException(
+							"Error while getting versionable parent", e);
+				}
+
+			}
+		});
+
 		return tableColumnLayout;
 	}
 
@@ -330,6 +390,36 @@ public class ListToolkit {
 				PersonOverviewLabelProvider.LIST_TYPE_MEDIUM, peopleService));
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
 				200, 80, true));
+
+		// Edit & Remove links
+		viewer.getTable().addSelectionListener(new HtmlListRwtAdapter());
+		col = ViewerUtils.createTableViewerColumn(viewer, "Edit/Remove links",
+				SWT.NONE, 60);
+		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
+				80, 50, true));
+		col.setLabelProvider(new ColumnLabelProvider() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getText(Object element) {
+				try {
+					// get the corresponding person
+					Node link = (Node) element;
+					Node person = link.getParent().getParent();
+
+					return PeopleHtmlUtils.getEditSnippetForLists(link, person)
+							+ " <br />"
+							+ PeopleHtmlUtils
+									.getRemoveReferenceSnippetForLists(link,
+											person);
+				} catch (RepositoryException e) {
+					throw new PeopleException(
+							"Error while getting versionable parent", e);
+				}
+
+			}
+		});
+
 		return tableColumnLayout;
 	}
 
