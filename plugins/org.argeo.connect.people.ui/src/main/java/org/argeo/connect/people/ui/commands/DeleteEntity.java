@@ -19,7 +19,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
  * Remove the reference to a given entity. Jcr Identifier of the reference node
- * to remove and the one of its nearest versionable ancestor must be passed as
+ * to remove and  a flag indicating if we should also remove its parent must be passed as
  * parameters.
  */
 public class DeleteEntity extends AbstractHandler {
@@ -29,7 +29,7 @@ public class DeleteEntity extends AbstractHandler {
 	public final static String PARAM_TOREMOVE_JCR_ID = "param.toRemoveJcrId";
 	/**
 	 * in many cases, edited node is the versionable child of a more generic
-	 * node Use this parameter to also remove it
+	 * node. Use this parameter to also remove it
 	 */
 	public final static String PARAM_REMOVE_ALSO_PARENT = "param.removeParent";
 
@@ -56,10 +56,8 @@ public class DeleteEntity extends AbstractHandler {
 
 		Session session = null;
 		try {
-
 			session = peopleService.getRepository().login();
 			Node toRemoveNode = session.getNodeByIdentifier(toRemoveJcrId);
-
 			boolean wasCheckedOut = CommonsJcrUtils
 					.isNodeCheckedOutByMe(toRemoveNode);
 			if (!wasCheckedOut)

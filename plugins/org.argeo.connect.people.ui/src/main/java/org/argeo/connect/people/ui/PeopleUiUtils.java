@@ -4,6 +4,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 
@@ -27,4 +28,23 @@ public class PeopleUiUtils {
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(customItemHeight));
 	}
+
+	/**
+	 * Shortcut to provide a gridlayout with no margin and no spacing (dafault
+	 * are normally 5 px)
+	 */
+	public static GridLayout gridLayoutNoBorder() {
+		return gridLayoutNoBorder(1);
+	}
+
+	/**
+	 * Shortcut to provide a gridlayout with no margin and no spacing (dafault
+	 * are normally 5 px) with the given column number (equals width is false).
+	 */
+	public static GridLayout gridLayoutNoBorder(int nbOfCol) {
+		GridLayout gl = new GridLayout(nbOfCol, false);
+		gl.marginWidth = gl.marginHeight = gl.horizontalSpacing = gl.verticalSpacing = 0;
+		return gl;
+	}
+
 }

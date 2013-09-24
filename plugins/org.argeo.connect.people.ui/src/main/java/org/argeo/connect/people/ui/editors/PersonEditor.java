@@ -85,11 +85,6 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 	}
 
 	@Override
-	protected void createBodyPart(Composite parent) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	protected Boolean deleteParentOnRemove() {
 		return new Boolean(false);
 	}

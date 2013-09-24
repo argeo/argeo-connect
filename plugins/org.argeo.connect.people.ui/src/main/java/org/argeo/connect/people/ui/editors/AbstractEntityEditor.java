@@ -245,7 +245,16 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 				SWT.NO_FOCUS);
 		PeopleUiUtils.setSwitchingFormData(roPanelCmp);
 		roPanelCmp.setLayout(gridLayoutNoBorder());
-		Button editBtn = toolkit.createButton(roPanelCmp, "Edit", SWT.PUSH);
+
+		// Add a level to right align the buttons
+		final Composite roSubPanelCmp = toolkit.createComposite(roPanelCmp,
+				SWT.NO_FOCUS | SWT.RIGHT);
+		roSubPanelCmp.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true,
+				false));
+		roSubPanelCmp.setLayout(new RowLayout(SWT.HORIZONTAL));
+
+		Button editBtn = toolkit.createButton(roSubPanelCmp, "Edit", SWT.PUSH);
+		editBtn.setLayoutData(new RowData(60, 20));
 		editBtn.addSelectionListener(new SelectionListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -259,10 +268,24 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-		GridData gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
-		gd.grabExcessHorizontalSpace = true;
-		gd.widthHint = 60;
-		editBtn.setLayoutData(gd);
+
+		// Add a refresh button to enable forcing refresh when having some UI
+		// glitches.
+		Button refreshBtn = toolkit.createButton(roSubPanelCmp, "Refresh",
+				SWT.PUSH);
+		refreshBtn.setLayoutData(new RowData(60, 20));
+		refreshBtn.addSelectionListener(new SelectionListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				forceRefresh();
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
 
 		// EDIT PANEL
 		final Composite editPanelCmp = toolkit.createComposite(buttons,
@@ -313,31 +336,35 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			}
 		});
 
-		Button deleteBtn = toolkit.createButton(editPanelCmp, "Delete",
-				SWT.PUSH);
-		deleteBtn.setLayoutData(new RowData(60, 20));
+		if (showDeleteButton()) {
+			Button deleteBtn = toolkit.createButton(editPanelCmp, "Delete",
+					SWT.PUSH);
+			deleteBtn.setLayoutData(new RowData(60, 20));
+			deleteBtn.addSelectionListener(new SelectionListener() {
+				private static final long serialVersionUID = 1L;
 
-		deleteBtn.addSelectionListener(new SelectionListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (isCheckedOutByMe()) {
-					Map<String, String> params = new HashMap<String, String>();
-					params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID,
-							CommonsJcrUtils.getIdentifierQuietly(entity));
-					params.put(DeleteEntity.PARAM_REMOVE_ALSO_PARENT,
-							deleteParentOnRemove().toString());
-					CommandUtils.callCommand(DeleteEntity.ID, params);
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					if (isCheckedOutByMe()) {
+						Map<String, String> params = new HashMap<String, String>();
+						params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID,
+								CommonsJcrUtils.getIdentifierQuietly(entity));
+						params.put(DeleteEntity.PARAM_REMOVE_ALSO_PARENT,
+								deleteParentOnRemove().toString());
+						CommandUtils.callCommand(DeleteEntity.ID, params);
+					}
 				}
-			}
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+			});
+		}
+
+		addEditButtons(editPanelCmp);
 
 		editPanelCmp.layout();
+		roPanelCmp.layout();
 
 		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
 			// Update values on refresh
@@ -353,6 +380,15 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		// editPart.refresh();
 		editPart.initialize(mForm);
 		mForm.addPart(editPart);
+	}
+
+	/** Overwrite this call back method to add buttons when in edit Mode */
+	protected void addEditButtons(Composite parent) {
+	}
+
+	/** Overwrite to hide the delete button */
+	protected boolean showDeleteButton() {
+		return true;
 	}
 
 	/* EXPOSES TO CHILDREN CLASSES */

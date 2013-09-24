@@ -194,7 +194,10 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 		Node targetNode = null;
 		try {
 			if (isBackward) {
-				srcNode = selectedItem;
+				if (selectedItem == null)
+					srcNode = oldReferencing;
+				else
+					srcNode = selectedItem;
 				targetNode = oldReferenced;
 				// First remove old entity reference
 				boolean wasCheckedOut = CommonsJcrUtils
@@ -210,15 +213,19 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 						positionTxt.getText());
 			} else {
 				// just edit current link
+				if (selectedItem == null)
+					targetNode = oldReferenced;
+				else
+					targetNode = selectedItem;
+
 				boolean wasCheckedOut = CommonsJcrUtils
 						.isNodeCheckedOutByMe(oldReferencing);
 				if (!wasCheckedOut)
 					CommonsJcrUtils.checkout(oldReferencing);
 				oldLinkNode.setProperty(PeopleNames.PEOPLE_ROLE,
 						positionTxt.getText());
-				oldLinkNode.setProperty(PeopleNames.PEOPLE_REF_UID,
-						selectedItem.getProperty(PeopleNames.PEOPLE_UID)
-								.getString());
+				oldLinkNode.setProperty(PeopleNames.PEOPLE_REF_UID, targetNode
+						.getProperty(PeopleNames.PEOPLE_UID).getString());
 				if (wasCheckedOut)
 					oldReferencing.getSession().save();
 				else

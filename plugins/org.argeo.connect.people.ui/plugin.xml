@@ -51,6 +51,21 @@
 			name="Import people">
 		</command>    
 		
+		<!-- Entity CRUD --> 
+		<command
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		id="org.argeo.connect.people.ui.deleteEntity"
+            name="deleteEntity">
+            <commandParameter
+         		id="param.toRemoveJcrId"
+         		name="Jcr ID of the node to remove">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.removeParent"
+         		name="Indicates whether parent node should also be deleted">
+  	 		</commandParameter>
+    	</command>
+		
 		<!-- Entity References CRUD --> 
 		<command
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
@@ -125,10 +140,12 @@
          		name="type of node to search for">
   	 		</commandParameter>
     	</command>
+    	
+    	<!-- Utility to provide sub menues when we don't want to define a default command for this menu -->
 		<command
 			defaultHandler="org.argeo.connect.people.ui.commands.DoNothing"
 			id="org.argeo.connect.people.ui.doNothing"
-			name="Utility to provide sub menues when we don't want to define a default command for this menu">
+			name="">
 		</command>    
 		<!-- <command
 			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"

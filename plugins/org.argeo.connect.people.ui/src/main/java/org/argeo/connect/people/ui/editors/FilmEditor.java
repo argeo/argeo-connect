@@ -36,7 +36,7 @@ import org.eclipse.ui.PartInitException;
 /**
  * Editor page that display a film with corresponding details
  */
-public class FilmEditor extends AbstractEntityCTabEditor_old {
+public class FilmEditor extends AbstractEntityCTabEditor {
 	final static Log log = LogFactory.getLog(FilmEditor.class);
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".filmEditor";
@@ -70,7 +70,8 @@ public class FilmEditor extends AbstractEntityCTabEditor_old {
 				getPeopleServices(), getPeopleUiServices());
 
 	}
-
+	
+	@Override
 	protected void populateTabFolder(CTabFolder folder) {
 		// Synopses
 		String tooltip = "The synopses for film "
@@ -87,7 +88,13 @@ public class FilmEditor extends AbstractEntityCTabEditor_old {
 
 	}
 
-	protected void populateMainInfoComposite(final Composite parent) {
+	@Override
+	protected void populateMainInfoDetails(Composite parent) {
+		// TODO Add specific film info details 
+	}
+
+	@Override
+	protected void populateTitleComposite(final Composite parent) {
 		try {
 			parent.setLayout(new FormLayout());
 
@@ -235,12 +242,14 @@ public class FilmEditor extends AbstractEntityCTabEditor_old {
 				}
 			});
 
+			editPart.initialize(getManagedForm());
 			getManagedForm().addPart(editPart);
-
 		} catch (Exception e) {
 			// } catch (RepositoryException e) {
 			throw new PeopleException("Cannot create main info section", e);
 		}
 	}
+
+	
 
 }

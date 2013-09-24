@@ -32,7 +32,7 @@ import org.eclipse.ui.PartInitException;
 /**
  * Editor page that display an organisation with corresponding details
  */
-public class OrgEditor extends AbstractEntityCTabEditor_old {
+public class OrgEditor extends AbstractEntityCTabEditor {
 	final static Log log = LogFactory.getLog(OrgEditor.class);
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".orgEditor";
@@ -83,7 +83,13 @@ public class OrgEditor extends AbstractEntityCTabEditor_old {
 		listTK.populateEmployeesPanel(innerPannel, org);
 	}
 
-	protected void populateMainInfoComposite(final Composite parent) {
+	@Override
+	protected void populateMainInfoDetails(Composite parent) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	protected void populateTitleComposite(final Composite parent) {
 		try {
 			parent.setLayout(new FormLayout());
 			// READ ONLY
@@ -156,6 +162,7 @@ public class OrgEditor extends AbstractEntityCTabEditor_old {
 			entityTK.addTxtModifyListener(editPart, legalStatusTxt, org,
 					PeopleNames.PEOPLE_LEGAL_STATUS, PropertyType.STRING);
 
+			editPart.initialize(getManagedForm());
 			getManagedForm().addPart(editPart);
 		} catch (Exception e) {
 			throw new PeopleException("Cannot create main info section", e);

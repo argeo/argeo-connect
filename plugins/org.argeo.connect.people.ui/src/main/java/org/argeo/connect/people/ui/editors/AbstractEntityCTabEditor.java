@@ -11,16 +11,13 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.PartInitException;
 
 /**
  * Extends the <code>AbstractEntityEditor</code> Form adding a
  * <code>CTabFolder</code> in the bottom part. Insures the presence of a
  * corresponding people services and manage a life cycle of the JCR session that
- * is bound to it. It provides a header with some meta informations and a to add
- * tabs with further details.
+ * is bound to it. It provides a header with some meta informations and a body
+ * to add tabs with further details.
  */
 public abstract class AbstractEntityCTabEditor extends AbstractEntityEditor
 		implements IVersionedItemEditor {
@@ -39,22 +36,33 @@ public abstract class AbstractEntityCTabEditor extends AbstractEntityEditor
 	protected String CTAB_INSTANCE_ID = "CTabId";
 
 	/* CONTENT CREATION */
-	protected void createMainLayout(Composite body) {
-		body.setLayout(gridLayoutNoBorder());
+	protected void createMainLayout(Composite parent) {
+		parent.setLayout(gridLayoutNoBorder());
 
-		Composite header = toolkit.createComposite(body, SWT.NO_FOCUS
+		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS
 				| SWT.NO_SCROLL | SWT.NO_TRIM);
 		header.setLayout(gridLayoutNoBorder());
 		header.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		createHeaderPart(header);
 
+		// Create a body that is a CTabFolder
+		createBodyPart(parent);
+	}
+
+	/**
+	 * Children class should not override this class or rather directly use the
+	 * AbstractEntityEditor
+	 */
+	@Override
+	protected final void createBodyPart(Composite parent) {
 		// NO_FOCUS to solve our "tab browsing" issue
-		folder = createCTabFolder(body, SWT.NO_FOCUS);
+		folder = createCTabFolder(parent, SWT.NO_FOCUS);
 		folder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		populateTabFolder(folder);
 		folder.setSelection(0);
 	}
 
+	/** Overwrite to populate the CTabFolder */
 	protected abstract void populateTabFolder(CTabFolder tabFolder);
 
 	/* MANAGE TAB FOLDER */
@@ -127,6 +135,12 @@ public abstract class AbstractEntityCTabEditor extends AbstractEntityEditor
 		column.setWidth(width);
 		column.setResizable(true);
 		return tvc;
+	}
+
+	/** Generic entity editors are normally directly the node to remove */
+	@Override
+	protected Boolean deleteParentOnRemove() {
+		return false;
 	}
 
 	/* DEPENDENCY INJECTION */
