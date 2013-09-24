@@ -212,11 +212,7 @@ public class ChannelEditorCTab extends AbstractEntityCTabEditor implements
 
 	}
 
-	@Override
-	protected void createBodyPart(Composite parent) {
-		// TODO Auto-generated method stub
 
-	}
 
 	@Override
 	protected Boolean deleteParentOnRemove() {
