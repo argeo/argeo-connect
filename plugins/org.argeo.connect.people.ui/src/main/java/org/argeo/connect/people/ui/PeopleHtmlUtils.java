@@ -29,14 +29,14 @@ public class PeopleHtmlUtils {
 		StringBuilder builder = new StringBuilder();
 		try {
 			if (entity.isNodeType(NodeType.MIX_LAST_MODIFIED)) {
-				builder.append("<small><i>").append("Last updated on ");
+				builder.append("<i>").append("Last updated on ");
 				builder.append(df.format(entity
 						.getProperty(Property.JCR_LAST_MODIFIED).getDate()
 						.getTime()));
 				builder.append(", by ");
 				builder.append(entity
 						.getProperty(Property.JCR_LAST_MODIFIED_BY).getString());
-				builder.append(". </i></small>");
+				builder.append(". </i>");
 			}
 			return builder.toString();
 		} catch (RepositoryException re) {

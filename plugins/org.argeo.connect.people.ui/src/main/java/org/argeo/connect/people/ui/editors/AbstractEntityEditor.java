@@ -15,6 +15,7 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
@@ -26,8 +27,10 @@ import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -138,9 +141,43 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	protected void createToolkits() {
 	}
 
-	/** Overwrite following methods to create a nice editor... */
-	protected abstract void populateMainInfoDetails(Composite parent);
+	/**
+	 * Displays by default only the last update snippet. Overwrite to adapt to
+	 * current object
+	 */
+	protected void populateMainInfoDetails(Composite parent) {
+		parent.setLayout(gridLayoutNoBorder());
 
+		final Composite lastUpdateCmp = toolkit.createComposite(parent,
+				SWT.NO_FOCUS);
+		lastUpdateCmp.setLayout(gridLayoutNoBorder());
+		lastUpdateCmp.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, false,
+				false));
+		final Label readOnlyInfoLbl = toolkit.createLabel(lastUpdateCmp, "",
+				SWT.WRAP);
+		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		final ColumnLabelProvider lastUpdateLP = new ColumnLabelProvider() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getText(Object element) {
+				return PeopleHtmlUtils.getLastUpdateSnippet((Node) element);
+			}
+		};
+
+		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
+			public void refresh() { // update display value
+				super.refresh();
+				// READ ONLY PART
+				String roText = lastUpdateLP.getText(entity);
+				readOnlyInfoLbl.setText(roText);
+			}
+		};
+		editPart.initialize(getManagedForm());
+		getManagedForm().addPart(editPart);
+	}
+
+	/** Overwrite following methods to create a nice editor... */
 	protected abstract void populateTitleComposite(Composite parent);;
 
 	protected abstract void createBodyPart(Composite parent);;

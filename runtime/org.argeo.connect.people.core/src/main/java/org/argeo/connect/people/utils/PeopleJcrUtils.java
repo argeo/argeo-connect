@@ -44,9 +44,11 @@ public class PeopleJcrUtils implements PeopleNames {
 
 		Node members = CommonsJcrUtils
 				.getOrCreateDirNode(group, PEOPLE_MEMBERS);
-		Node member = members.addNode(entity.getName(),
+		Node member = members.addNode(
+				CommonsJcrUtils.get(entity, Property.JCR_TITLE),
 				PeopleTypes.PEOPLE_MEMBER);
-		member.setProperty(PEOPLE_REF_UID, entity.getIdentifier());
+		member.setProperty(PEOPLE_REF_UID,
+				CommonsJcrUtils.get(entity, PEOPLE_UID));
 		member.setProperty(PEOPLE_ROLE, role);
 		if (CommonsJcrUtils.checkNotEmptyString(title))
 			member.setProperty(PEOPLE_TITLE, title);

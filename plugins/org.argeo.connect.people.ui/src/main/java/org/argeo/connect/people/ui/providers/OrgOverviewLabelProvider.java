@@ -112,8 +112,6 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 				builder.deleteCharAt(builder.lastIndexOf("~"));
 
 			builder.append("</small>");
-			if (!isSmallList)
-				builder.append(PeopleHtmlUtils.getLastUpdateSnippet(orga));
 			builder.append("</span>");
 			String result = PeopleHtmlUtils.cleanHtmlString(builder.toString());
 			return result;

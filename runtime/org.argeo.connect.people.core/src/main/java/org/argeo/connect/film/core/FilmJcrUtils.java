@@ -201,11 +201,8 @@ public class FilmJcrUtils implements FilmNames {
 		DynamicOperand legalNameDO = factory.propertyValue(
 				source.getSelectorName(), FilmNames.FILM_ID);
 
-		// TODO NOT RELIABLE
-		String sFilmId = filmId.replaceAll("[^a-zA-Z0-9-]", "");
-
 		StaticOperand so = factory.literal(session.getValueFactory()
-				.createValue(sFilmId));
+				.createValue(filmId));
 		Constraint defaultC = factory.comparison(legalNameDO,
 				QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, so);
 

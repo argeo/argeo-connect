@@ -84,11 +84,6 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 	}
 
 	@Override
-	protected void populateMainInfoDetails(Composite parent) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	protected void populateTitleComposite(final Composite parent) {
 		try {
 			parent.setLayout(new FormLayout());

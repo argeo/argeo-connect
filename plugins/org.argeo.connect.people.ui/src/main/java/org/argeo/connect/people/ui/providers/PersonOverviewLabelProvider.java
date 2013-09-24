@@ -126,21 +126,10 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		builder.append("<b><big> ");
 		builder.append(PersonJcrUtils.getPersonDisplayName(person));
 		builder.append("</big> </b>");
-		String fmn = PeopleHtmlUtils.getFullMontyName(person);
+		// String fmn = PeopleHtmlUtils.getFullMontyName(person);
 		String local = PeopleHtmlUtils.getLocalisationInfo(person);
-		if (isSmallList) {
 			if (CommonsJcrUtils.checkNotEmptyString(local))
 				builder.append("[").append(local).append("]");
-		} else {
-			if (CommonsJcrUtils.checkNotEmptyString(fmn)
-					|| CommonsJcrUtils.checkNotEmptyString(local)) {
-				builder.append("<br/>").append(fmn);
-				if (CommonsJcrUtils.checkNotEmptyString(fmn)
-						&& CommonsJcrUtils.checkNotEmptyString(local))
-					builder.append("&#160;&#160; ");
-				builder.append(local);
-			}
-		}
 		builder.append("<br/>");
 
 		// Contacts

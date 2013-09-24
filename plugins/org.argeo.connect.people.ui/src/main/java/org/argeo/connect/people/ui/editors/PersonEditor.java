@@ -11,7 +11,6 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.JcrUiUtils;
-import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
@@ -405,8 +404,6 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void populateMainInfoDetails(final Composite parent) {
-		parent.setLayout(gridLayoutNoBorder());
-
 		// Tag management.
 		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
@@ -420,31 +417,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		rightCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 		entityTK.populateAddTagComposite(rightCmp, person);
 
-		// last line : last update.
-		final Composite lastUpdateCmp = toolkit.createComposite(parent,
-				SWT.NO_FOCUS);
-		lastUpdateCmp.setLayout(gridLayoutNoBorder());
-		final Label readOnlyInfoLbl = toolkit.createLabel(lastUpdateCmp, "",
-				SWT.WRAP);
-		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		final ColumnLabelProvider lastUpdateLP = new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				return PeopleHtmlUtils.getLastUpdateSnippet((Node) element);
-			}
-		};
-
-		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
-			public void refresh() { // update display value
-				super.refresh();
-				// READ ONLY PART
-				String roText = lastUpdateLP.getText(person);
-				readOnlyInfoLbl.setText(roText);
-				// Manage switch
-				parent.layout();
-			}
-		};
-		editPart.initialize(getManagedForm());
-		getManagedForm().addPart(editPart);
+		// keep last update.
+		super.populateMainInfoDetails(parent);
 	}
 }

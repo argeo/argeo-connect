@@ -8,8 +8,6 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -30,7 +28,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * parameter.
  */
 public class CreateEntity extends AbstractHandler {
-	private final static Log log = LogFactory.getLog(CreateEntity.class);
+	// private final static Log log = LogFactory.getLog(CreateEntity.class);
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".createEntity";
 	public final static ImageDescriptor DEFAULT_IMG_DESCRIPTOR = PeopleUiPlugin
@@ -56,7 +54,7 @@ public class CreateEntity extends AbstractHandler {
 			Node newNode = parent.addNode(nodeType, nodeType);
 			newNode.setProperty(PeopleNames.PEOPLE_UID, UUID.randomUUID()
 					.toString());
-			newNode.setProperty(Property.JCR_TITLE, "<new>");
+			newNode.setProperty(Property.JCR_TITLE, "New...");
 			session.save();
 			String editorId = peopleUiService.getEditorIdFromNode(newNode);
 

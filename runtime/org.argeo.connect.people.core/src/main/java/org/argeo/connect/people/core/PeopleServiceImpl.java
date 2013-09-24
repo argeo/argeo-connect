@@ -71,7 +71,7 @@ public class PeopleServiceImpl implements PeopleService {
 			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
 					"entities");
 			DynamicOperand dynOp = factory.propertyValue(
-					source.getSelectorName(), PeopleNames.PEOPLE_REF_UID);
+					source.getSelectorName(), PeopleNames.PEOPLE_UID);
 			StaticOperand statOp = factory.literal(session.getValueFactory()
 					.createValue(uid));
 			Constraint defaultC = factory.comparison(dynOp,

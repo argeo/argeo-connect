@@ -84,12 +84,8 @@ public class FilmOverviewLabelProvider extends ColumnLabelProvider implements
 			builder.append("<i>");
 			if (CommonsJcrUtils.checkNotEmptyString(origLang))
 				builder.append(origLang).append(", ");
-			builder.append(CommonsJcrUtils.get(film, FILM_LENGHT));
+			builder.append(CommonsJcrUtils.get(film, FILM_LENGTH));
 			builder.append("</i>");
-
-			if (!isSmallList)
-				builder.append(PeopleHtmlUtils.getLastUpdateSnippet(film));
-
 			builder.append("</span>");
 
 			String result = PeopleHtmlUtils.cleanHtmlString(builder.toString());

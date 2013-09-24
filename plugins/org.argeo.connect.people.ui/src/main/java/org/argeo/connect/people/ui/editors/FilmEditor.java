@@ -70,7 +70,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 				getPeopleServices(), getPeopleUiServices());
 
 	}
-	
+
 	@Override
 	protected void populateTabFolder(CTabFolder folder) {
 		// Synopses
@@ -86,11 +86,6 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 				PeopleUiConstants.PANEL_MEMBERS, tooltip);
 		listPanelToolkit.populateMembersPanel(innerPannel, film);
 
-	}
-
-	@Override
-	protected void populateMainInfoDetails(Composite parent) {
-		// TODO Add specific film info details 
 	}
 
 	@Override
@@ -249,7 +244,5 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 			throw new PeopleException("Cannot create main info section", e);
 		}
 	}
-
-	
 
 }

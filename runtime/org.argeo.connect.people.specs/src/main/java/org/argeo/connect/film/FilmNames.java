@@ -1,17 +1,16 @@
 package org.argeo.connect.film;
 
-import org.argeo.connect.people.PeopleNames;
-
 /** JCR names managed by Connect Film. */
 public interface FilmNames {
 
 	/* FILMS */
-	public final static String FILM_ID = PeopleNames.PEOPLE_UID;
+	// specific business film ID
+	public final static String FILM_ID = "film:filmId";
 	public final static String FILM_PROD_YEAR = "film:productionYear";
 	public final static String FILM_PROD_COUNTRY = "film:productionCountry";
 	// The corresponding value to ease various searches
 	public final static String FILM_PROD_COUNTRY_STRING = "film:prodCountryString";
-	public final static String FILM_LENGHT = "film:lenght";
+	public final static String FILM_LENGTH = "film:length";
 	public final static String FILM_DIRECTOR = "film:director";
 	public final static String FILM_ORIGINAL_LANGUAGE = "film:originalLanguage";
 	// Main Title Management

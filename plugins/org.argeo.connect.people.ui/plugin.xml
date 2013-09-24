@@ -145,7 +145,7 @@
 		<command
 			defaultHandler="org.argeo.connect.people.ui.commands.DoNothing"
 			id="org.argeo.connect.people.ui.doNothing"
-			name="">
+			name="Open menu">
 		</command>    
 		<!-- <command
 			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
