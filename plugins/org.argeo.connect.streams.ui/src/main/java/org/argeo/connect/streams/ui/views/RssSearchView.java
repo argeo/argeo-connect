@@ -182,17 +182,17 @@ public class RssSearchView extends ViewPart {
 				+ "font-decoration:none;\"";
 
 		StringBuilder builder = new StringBuilder();
-		builder.append("<a href=\"").append(CMD_SHOW_SOURCES).append("\" ");
-		builder.append(styleStr).append(" target=\"_rwt\">My Feeds</a>");
-		builder.append("<br/>");
+		// builder.append("<a href=\"").append(CMD_SHOW_SOURCES).append("\" ");
+		// builder.append(styleStr).append(" target=\"_rwt\">My Feeds</a>");
+		// builder.append("<br/>");
 		builder.append("<a href=\"").append(CMD_OPEN_ALL_POSTS_EDITOR);
 		builder.append("\" ").append(styleStr);
 		builder.append(" target=\"_rwt\">All Posts</a>");
 		builder.append("<br/>");
-		builder.append("<a href=\"").append(CMD_SHOW_POSTS);
-		builder.append("\" ").append(styleStr);
-		builder.append(" target=\"_rwt\">Search Posts</a>");
-		builder.append("<br/>");
+		// builder.append("<a href=\"").append(CMD_SHOW_POSTS);
+		// builder.append("\" ").append(styleStr);
+		// builder.append(" target=\"_rwt\">Search Posts</a>");
+		// builder.append("<br/>");
 		builder.append("<a href=\"").append(CMD_LOGOUT);
 		builder.append("\" ").append(styleStr);
 		builder.append(" target=\"_rwt\">Logout</a>");
@@ -303,6 +303,7 @@ public class RssSearchView extends ViewPart {
 			String filter = srcFilterTxt.getText();
 			sourcesViewer.setInput(JcrUtils.nodeIteratorToList(doSearch(
 					RssTypes.RSS_CHANNEL_INFO, filter)));
+			newSourceTxt.setText("");
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Unable to create a Stream", e);
 		}
