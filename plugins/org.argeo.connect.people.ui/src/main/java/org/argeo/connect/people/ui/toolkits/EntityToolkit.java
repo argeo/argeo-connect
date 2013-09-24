@@ -281,7 +281,12 @@ public class EntityToolkit {
 							else
 								form.dirtyStateChanged();
 						}
-						editPart.refresh();
+						// Not enough we want to refresh the all form.
+						// editPart.refresh();
+						for (IFormPart part : form.getParts()) {
+							((AbstractFormPart) part).markStale();
+							part.refresh();
+						}
 					} catch (RepositoryException re) {
 						throw new ArgeoException("Unable to set tags", re);
 					}
@@ -314,6 +319,7 @@ public class EntityToolkit {
 			public void widgetSelected(SelectionEvent e) {
 				String newTag = tagTxt.getText();
 				addTag(entity, newTag);
+				tagTxt.setText("");
 			}
 
 			@Override
@@ -329,6 +335,7 @@ public class EntityToolkit {
 					String newTag = tagTxt.getText();
 					addTag(entity, newTag);
 					e.doit = false;
+					tagTxt.setText("");
 				}
 			}
 		});
