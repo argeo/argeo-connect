@@ -114,7 +114,7 @@ public class RssSearchView extends ViewPart {
 
 		// The BackGround
 		Composite logoCmp = new Composite(parent, SWT.NO_FOCUS);
-		FormData fdBg = createformData(0, 20, 100, 80);
+		FormData fdBg = createformData(0, 20, 100, 75);
 		// fdBg.height = 56; // superstition ?
 		logoCmp.setLayoutData(fdBg);
 		logoCmp.setData(RWT.CUSTOM_VARIANT, "RSS-logoComposite");
@@ -140,7 +140,7 @@ public class RssSearchView extends ViewPart {
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(70));
 
-		table.setLayoutData(createformData(65, 21, 95, 79));
+		table.setLayoutData(createformData(75, 25, 98, 73));
 		table.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
@@ -178,7 +178,7 @@ public class RssSearchView extends ViewPart {
 		// ViewerUtils.createColumn(table, "", SWT.RIGHT, 60);
 		TableItem item = new TableItem(table, SWT.RIGHT);
 		item.setData(RWT.CUSTOM_VARIANT, "RSS-logoTable");
-		String styleStr = "style=\"font: 9px; color:e7eff4; "
+		String styleStr = "style=\"font: 12px; color:e7eff4; "
 				+ "font-decoration:none;\"";
 
 		StringBuilder builder = new StringBuilder();
