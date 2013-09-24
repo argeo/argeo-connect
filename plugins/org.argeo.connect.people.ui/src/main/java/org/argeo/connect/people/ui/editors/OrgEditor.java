@@ -1,12 +1,14 @@
 package org.argeo.connect.people.ui.editors;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.PropertyType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
@@ -19,6 +21,8 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -152,8 +156,23 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 			};
 
 			// Listeners
-			entityTK.addTxtModifyListener(editPart, legalNameTxt, org,
-					PeopleNames.PEOPLE_LEGAL_NAME, PropertyType.STRING);
+			// entityTK.addTxtModifyListener(editPart, legalNameTxt, org,
+			// PeopleNames.PEOPLE_LEGAL_NAME, PropertyType.STRING);
+			// FIXME implement clean management of display name
+			legalNameTxt.addModifyListener(new ModifyListener() {
+				private static final long serialVersionUID = 1L;
+				@Override
+				public void modifyText(ModifyEvent event) {
+					if (JcrUiUtils.setJcrProperty(org,
+							PeopleNames.PEOPLE_LEGAL_NAME, PropertyType.STRING,
+							legalNameTxt.getText())) {
+						JcrUiUtils.setJcrProperty(org, Property.JCR_TITLE,
+								PropertyType.STRING, legalNameTxt.getText());
+						editPart.markDirty();
+					}
+				}
+			});
+
 			entityTK.addTxtModifyListener(editPart, legalStatusTxt, org,
 					PeopleNames.PEOPLE_LEGAL_STATUS, PropertyType.STRING);
 

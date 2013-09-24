@@ -2,6 +2,11 @@ package org.argeo.connect.people;
 
 /** JCR names managed by Connect People. */
 public interface PeopleNames {
+
+	// workaround to manage draft concept.
+	// TODO clean this
+	public static String PEOPLE_IS_DRAFT = "people:isDraft";
+
 	/** Distinguished names */
 	// public static String PEOPLE_DN = "people:dn";
 	/** Class 3 UUID of the distinguished name in UTF-8 */

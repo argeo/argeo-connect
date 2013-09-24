@@ -84,11 +84,6 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 	}
 
 	@Override
-	protected Boolean deleteParentOnRemove() {
-		return new Boolean(false);
-	}
-
-	@Override
 	protected boolean canSave() {
 		try {
 			String lastName = CommonsJcrUtils.get(person,

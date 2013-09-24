@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.film.FilmNames;
 import org.argeo.connect.film.core.FilmJcrUtils;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.JcrUiUtils;
@@ -137,6 +138,7 @@ public class FilmToolkit extends EntityToolkit {
 				});
 			}
 		}
+		editPart.initialize(form);
 		form.addPart(editPart);
 	}
 
@@ -178,9 +180,9 @@ public class FilmToolkit extends EntityToolkit {
 			synopsisTxt.setLayoutData(gd);
 			Node origSynopsisNode = FilmJcrUtils.getSynopsisNode(entity, "de");
 			// force creation to avoid npe and ease form life cycle
-			// if (origSynopsisNode == null)
-			// origSynopsisNode = FilmJcrUtils.addOrUpdateSynopsisNode(entity,
-			// null, null, "de");
+			if (origSynopsisNode == null)
+				origSynopsisNode = FilmJcrUtils.addOrUpdateSynopsisNode(entity,
+						null, null, PeopleConstants.LANG_DE);
 			synopsisTxt.setData("LinkedNode", origSynopsisNode.getPath());
 
 			// EN synopsis
@@ -193,9 +195,9 @@ public class FilmToolkit extends EntityToolkit {
 			enSynopsisTxt.setLayoutData(gd);
 			Node enSynopsisNode = FilmJcrUtils.getSynopsisNode(entity, "en");
 			// force creation to avoid npe and ease form life cycle
-			// if (enSynopsisNode == null)
-			// enSynopsisNode = FilmJcrUtils.addOrUpdateSynopsisNode(entity,
-			// null, null, "en");
+			if (enSynopsisNode == null)
+				enSynopsisNode = FilmJcrUtils.addOrUpdateSynopsisNode(entity,
+						null, null, PeopleConstants.LANG_EN);
 			enSynopsisTxt.setData("LinkedNode", enSynopsisNode.getPath());
 
 			final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
@@ -278,6 +280,7 @@ public class FilmToolkit extends EntityToolkit {
 				}
 			});
 
+			editPart.initialize(form);
 			form.addPart(editPart);
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to create " + "synopsis panel", e);

@@ -537,8 +537,24 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 
 	@Override
 	public void cancelAndCheckInItem() {
-		CommonsJcrUtils.cancelAndCheckin(entity);
-		notifyCheckOutStateChange();
+		// TODO best effort to keep a clean repository
+		try {
+			if (entity.hasProperty(PeopleNames.PEOPLE_IS_DRAFT)
+					&& entity.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
+							.getBoolean()) {
+				String path = entity.getPath();
+				session.removeItem(path);
+				session.save();
+			} else {
+				CommonsJcrUtils.cancelAndCheckin(entity);
+				notifyCheckOutStateChange();
+			}
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Unable to corrctly remove newly created node. Repo is probably corrupted",
+					re);
+		}
+
 	}
 
 	@Override
@@ -550,7 +566,9 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			if (itemPicture != null
 					&& !itemPicture.equals(PeopleImages.NO_PICTURE))
 				itemPicture.dispose();
-		} finally {
+		}
+
+		finally {
 			JcrUtils.logoutQuietly(session);
 		}
 		super.dispose();

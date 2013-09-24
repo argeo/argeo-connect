@@ -2,6 +2,7 @@ package org.argeo.connect.film.core;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
@@ -40,7 +41,10 @@ public class FilmJcrUtils implements FilmNames {
 	public static String getTitleForFilm(Node film) {
 		try {
 			String title = "";
-			title = film.getProperty(FILM_ORIGINAL_TITLE).getString();
+			if (film.hasProperty(FILM_ORIGINAL_TITLE))
+				title = film.getProperty(FILM_ORIGINAL_TITLE).getString();
+			else if (film.hasProperty(Property.JCR_TITLE))
+				title = film.getProperty(Property.JCR_TITLE).getString();
 			if (film.hasProperty(FILM_ORIG_TITLE_ARTICLE))
 				title += ", "
 						+ film.getProperty(FILM_ORIG_TITLE_ARTICLE).getString();

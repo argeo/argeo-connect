@@ -1,6 +1,7 @@
 package org.argeo.connect.people.ui.editors;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
@@ -154,21 +155,25 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 					super.refresh();
 
 					// EDIT PART
-					idTxt.setText(JcrUtils.get(film, FilmNames.FILM_ID));
+					String filmBusinessID = JcrUtils.get(film,
+							FilmNames.FILM_ID);
+
+					if (CommonsJcrUtils.checkNotEmptyString(filmBusinessID))
+						idTxt.setText(filmBusinessID);
 
 					String latinTitle = JcrUtils.get(film,
 							FilmNames.FILM_ORIG_LATIN_TITLE);
-					if (latinTitle != null)
+					if (CommonsJcrUtils.checkNotEmptyString(latinTitle))
 						latinTitleTxt.setText(latinTitle);
 
 					String origTitle = JcrUtils.get(film,
 							FilmNames.FILM_ORIGINAL_TITLE);
-					if (origTitle != null)
+					if (CommonsJcrUtils.checkNotEmptyString(origTitle))
 						origTitleTxt.setText(origTitle);
 
 					String origTitleArt = JcrUtils.get(film,
 							FilmNames.FILM_ORIG_TITLE_ARTICLE);
-					if (origTitleArt != null)
+					if (CommonsJcrUtils.checkNotEmptyString(origTitleArt))
 						origTitleArticleTxt.setText(origTitleArt);
 
 					// READ ONLY PART
@@ -184,12 +189,28 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 						throw new PeopleException(
 								"Unable to get checked out status", e);
 					}
-					editPanelCmp.getParent().layout();
+					// editPanelCmp.getParent().layout();
 					roPanelCmp.getParent().layout();
 				}
 			};
 
 			// Listeners
+			// FIXME implement clean management of display name.
+			origTitleTxt.addModifyListener(new ModifyListener() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void modifyText(ModifyEvent event) {
+					if (JcrUiUtils.setJcrProperty(film,
+							FilmNames.FILM_ORIGINAL_TITLE, PropertyType.STRING,
+							origTitleTxt.getText())) {
+						JcrUiUtils.setJcrProperty(film, Property.JCR_TITLE,
+								PropertyType.STRING, origTitleTxt.getText());
+						editPart.markDirty();
+					}
+				}
+			});
+
 			idTxt.addModifyListener(new ModifyListener() {
 				private static final long serialVersionUID = 1L;
 
@@ -209,18 +230,6 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 					if (JcrUiUtils.setJcrProperty(film,
 							FilmNames.FILM_ORIG_LATIN_TITLE,
 							PropertyType.STRING, latinTitleTxt.getText()))
-						editPart.markDirty();
-				}
-			});
-
-			origTitleTxt.addModifyListener(new ModifyListener() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void modifyText(ModifyEvent event) {
-					if (JcrUiUtils.setJcrProperty(film,
-							FilmNames.FILM_ORIGINAL_TITLE, PropertyType.STRING,
-							origTitleTxt.getText()))
 						editPart.markDirty();
 				}
 			});
