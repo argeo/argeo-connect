@@ -127,7 +127,7 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 		} catch (Exception e) {
 			throw new PeopleException("Unable to finish", e);
 		} finally {
-			JcrUtils.logoutQuietly(currSession);
+			// JcrUtils.logoutQuietly(currSession);
 		}
 		return true;
 	}
@@ -135,7 +135,7 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 	@Override
 	public boolean performCancel() {
 		// rollBack();
-		JcrUtils.logoutQuietly(currSession);
+		// JcrUtils.logoutQuietly(currSession);
 		return true;
 	}
 
@@ -147,6 +147,7 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 	@Override
 	public void dispose() {
 		super.dispose();
+		JcrUtils.logoutQuietly(currSession);
 	}
 
 	protected class SelectChildrenPage extends WizardPage {
@@ -156,7 +157,7 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 			super(pageName);
 			setMessage(getCurrDescription());
 			setDescription("HINT: Double clic on a given item "
-				+ "directly adds it without closing the current wizard.");
+					+ "directly adds it without closing the current wizard.");
 		}
 
 		public void createControl(Composite parent) {
@@ -205,7 +206,8 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 					IEditorPart iep = PeopleUiPlugin.getDefault()
 							.getWorkbench().getActiveWorkbenchWindow()
 							.getActivePage().getActiveEditor();
-					if (iep != null && iep instanceof AbstractEntityCTabEditor_old)
+					if (iep != null
+							&& iep instanceof AbstractEntityCTabEditor_old)
 						((AbstractEntityCTabEditor_old) iep).forceRefresh();
 				}
 			});
