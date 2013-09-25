@@ -10,6 +10,13 @@
 		<property name="peopleService" ref="peopleService" />
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
+	
+	<bean id="org.argeo.connect.people.ui.groupEditor"
+		class="org.argeo.connect.people.ui.editors.GroupEditor"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleUiService" ref="peopleUiService" />
+	</bean>
 
 	<!-- <bean id="importPeople" class="org.argeo.connect.people.ui.commands.ImportPeopleHandler" 
 		scope="prototype"> <property name="repository" ref="repository" /> </bean> -->

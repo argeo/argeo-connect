@@ -8,6 +8,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleHtmlUtils;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PersonJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -18,11 +19,6 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
  */
 public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		PeopleNames {
-
-	public final static int LIST_TYPE_OVERVIEW_TITLE = 0;
-	public final static int LIST_TYPE_OVERVIEW_DETAIL = 1;
-	public final static int LIST_TYPE_SMALL = 2;
-	public final static int LIST_TYPE_MEDIUM = 3;
 
 	private static final long serialVersionUID = 1L;
 
@@ -54,16 +50,16 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 						+ "Cannot display film information");
 			String result;
 			switch (listType) {
-			case LIST_TYPE_OVERVIEW_TITLE:
+			case PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE:
 				result = getOverviewTitle(entity);
 				break;
-			case LIST_TYPE_OVERVIEW_DETAIL:
+			case PeopleUiConstants.LIST_TYPE_OVERVIEW_DETAIL:
 				result = getOverviewDetails(entity);
 				break;
-			case LIST_TYPE_SMALL:
+			case PeopleUiConstants.LIST_TYPE_SMALL:
 				result = getOverviewForList(entity, true);
 				break;
-			case LIST_TYPE_MEDIUM:
+			case PeopleUiConstants.LIST_TYPE_MEDIUM:
 				result = getOverviewForList(entity, false);
 				break;
 			default:
@@ -77,7 +73,6 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 
 	private String getOverviewTitle(Node person) throws RepositoryException {
 		StringBuilder builder = new StringBuilder();
-
 		builder.append("<span style='font-size:15px;'>");
 		// first line
 		builder.append("<b><big> ");
@@ -128,8 +123,8 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		builder.append("</big> </b>");
 		// String fmn = PeopleHtmlUtils.getFullMontyName(person);
 		String local = PeopleHtmlUtils.getLocalisationInfo(person);
-			if (CommonsJcrUtils.checkNotEmptyString(local))
-				builder.append("[").append(local).append("]");
+		if (CommonsJcrUtils.checkNotEmptyString(local))
+			builder.append("[").append(local).append("]");
 		builder.append("<br/>");
 
 		// Contacts

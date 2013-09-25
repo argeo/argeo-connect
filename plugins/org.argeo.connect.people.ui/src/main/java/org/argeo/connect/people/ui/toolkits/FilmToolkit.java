@@ -7,6 +7,7 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -206,16 +207,19 @@ public class FilmToolkit extends EntityToolkit {
 					try {
 						String path = (String) enSynopsisTxt
 								.getData("LinkedNode");
-						Node enSynNode = entity.getSession().getNode(path);
-						if (enSynNode != null) {
+						Session session = entity.getSession();
+						if (session.nodeExists(path)) {
+							Node enSynNode = session.getNode(path);
 							String syn = JcrUtils.get(enSynNode,
 									FilmNames.SYNOPSIS_CONTENT);
 							if (!CommonsJcrUtils.isEmptyString(syn))
 								enSynopsisTxt.setText(syn);
 						}
+
 						path = (String) synopsisTxt.getData("LinkedNode");
-						Node origSynNode = entity.getSession().getNode(path);
-						if (origSynNode != null) {
+						if (session.nodeExists(path)) {
+							Node origSynNode = entity.getSession()
+									.getNode(path);
 							String syn = JcrUtils.get(origSynNode,
 									FilmNames.SYNOPSIS_CONTENT);
 							if (!CommonsJcrUtils.isEmptyString(syn))

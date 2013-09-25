@@ -8,6 +8,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.editors.FilmEditor;
+import org.argeo.connect.people.ui.editors.GroupEditor;
 import org.argeo.connect.people.ui.editors.OrgEditor;
 import org.argeo.connect.people.ui.editors.PersonEditor;
 import org.argeo.connect.people.ui.listeners.NodeListDoubleClickListener;
@@ -44,8 +45,10 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 				return PersonEditor.ID;
 			else if (curNode.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)) {
 				return OrgEditor.ID;
-			} else if (curNode.isNodeType(FilmTypes.FILM)) {
-				return FilmEditor.ID;
+			} else if (curNode.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST)) {
+				return GroupEditor.ID;
+			} else if (curNode.isNodeType(PeopleTypes.PEOPLE_GROUP)) {
+				return GroupEditor.ID;
 			} else
 				return null;
 		} catch (RepositoryException re) {

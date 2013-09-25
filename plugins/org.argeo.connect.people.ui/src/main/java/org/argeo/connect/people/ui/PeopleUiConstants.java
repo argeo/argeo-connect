@@ -14,6 +14,14 @@ public interface PeopleUiConstants {
 	public final static String PANEL_MEMBERS = "people:members";
 	public final static String PANEL_DESCRIPTION = "people:descriptions";
 
+	
+	// Various types for list label providers
+	public final static int LIST_TYPE_OVERVIEW_TITLE = 0;
+	public final static int LIST_TYPE_OVERVIEW_DETAIL = 1;
+	public final static int LIST_TYPE_SMALL = 2;
+	public final static int LIST_TYPE_MEDIUM = 3;
+
+	
 	/* CUSTOM STYLING */
 	// a composite used to put titles in various lists
 	public final static String PEOPLE_CSS_TITLE_COMPOSITE_FIRST = "peopleCss-titleCompositeFirst";

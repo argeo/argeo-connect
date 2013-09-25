@@ -23,6 +23,10 @@ public interface PeopleTypes {
 	/* ORGANIZATIONS */
 	public final static String PEOPLE_ORGANIZATION = "people:org";
 
+	/* GROUPS */
+	public final static String PEOPLE_GROUP = "people:group";
+	public final static String PEOPLE_MAILING_LIST = "people:mailingList";
+
 	/* MISCELLANEOUS */
 	// Enable links between nodes
 	public final static String PEOPLE_POSITION = "people:position";

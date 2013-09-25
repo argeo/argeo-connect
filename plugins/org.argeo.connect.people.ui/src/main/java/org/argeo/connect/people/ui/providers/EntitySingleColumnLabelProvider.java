@@ -8,6 +8,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
@@ -23,6 +24,8 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 	private OrgListLabelProvider orgLp = new OrgListLabelProvider();
 	private PersonListLabelProvider personLp;
 	private FilmListLabelProvider filmLp = new FilmListLabelProvider();
+	private GroupLabelProvider groupLp = new GroupLabelProvider(
+			PeopleUiConstants.LIST_TYPE_SMALL);
 
 	public EntitySingleColumnLabelProvider(PeopleService peopleService) {
 		personLp = new PersonListLabelProvider(peopleService);
@@ -39,6 +42,8 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 				return orgLp.getText(element);
 			else if (entity.isNodeType(FilmTypes.FILM))
 				return filmLp.getText(element);
+			else if (entity.isNodeType(PeopleTypes.PEOPLE_GROUP))
+				return groupLp.getText(element);
 			else
 				return "";
 		} catch (RepositoryException re) {

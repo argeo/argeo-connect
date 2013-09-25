@@ -158,7 +158,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		final ColumnLabelProvider personLP = new PersonOverviewLabelProvider(
-				PersonOverviewLabelProvider.LIST_TYPE_OVERVIEW_TITLE,
+				PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE,
 				getPeopleServices());
 
 		// EDIT

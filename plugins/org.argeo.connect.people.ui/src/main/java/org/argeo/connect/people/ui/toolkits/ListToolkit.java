@@ -343,7 +343,7 @@ public class ListToolkit {
 		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT,
 				bounds[1]);
 		col.setLabelProvider(new PersonOverviewLabelProvider(
-				PersonOverviewLabelProvider.LIST_TYPE_MEDIUM, peopleService));
+				PeopleUiConstants.LIST_TYPE_MEDIUM, peopleService));
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
 				200, 80, true));
 
@@ -448,7 +448,7 @@ public class ListToolkit {
 		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT,
 				bounds[1]);
 		col.setLabelProvider(new PersonOverviewLabelProvider(
-				PersonOverviewLabelProvider.LIST_TYPE_MEDIUM, peopleService));
+				PeopleUiConstants.LIST_TYPE_MEDIUM, peopleService));
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
 				200, 80, true));
 

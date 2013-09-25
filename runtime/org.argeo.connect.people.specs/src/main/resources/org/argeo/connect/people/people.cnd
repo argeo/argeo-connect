@@ -55,7 +55,7 @@
 // GROUP : base type for all groups of persons, organisations and/or other groups 
 //
 [people:group] > people:entity, people:tagable
-+ * (people:member) *
++ people:members (nt:unstructured) =nt:unstructured m a 
 
 
 // 

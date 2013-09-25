@@ -8,7 +8,9 @@ import javax.jcr.RepositoryException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.film.FilmNames;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
@@ -17,7 +19,9 @@ import org.argeo.connect.people.ui.providers.FilmOverviewLabelProvider;
 import org.argeo.connect.people.ui.toolkits.FilmToolkit;
 import org.argeo.connect.people.ui.toolkits.ListToolkit;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.jcr.JcrUtils;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -64,6 +68,25 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 		}
 	}
 
+	@Override
+	protected boolean canSave() {
+		String displayName = CommonsJcrUtils.get(film, FilmNames.FILM_ORIGINAL_TITLE);
+		if (displayName.length() < 2) {
+			String msg = "Please note that you must define an original title"
+					+ " that is at least 2 character long.";
+			MessageDialog.openError(PeopleUiPlugin.getDefault().getWorkbench()
+					.getDisplay().getActiveShell(), "Non-valid information",
+					msg);
+
+			return false;
+		} else {
+			PeopleJcrUtils.checkPathAndMoveIfNeeded(film,
+					PeopleConstants.PEOPLE_BASE_PATH + "/"
+							+ PeopleNames.PEOPLE_PERSONS);
+			return true;
+		}
+	}
+	
 	@Override
 	protected void createToolkits() {
 		filmPanelToolkit = new FilmToolkit(toolkit, getManagedForm());

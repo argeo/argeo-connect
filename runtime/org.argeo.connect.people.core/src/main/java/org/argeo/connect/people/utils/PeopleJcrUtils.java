@@ -187,7 +187,6 @@ public class PeopleJcrUtils implements PeopleNames {
 		} catch (RepositoryException re) {
 			throw new ArgeoException("Unable to add a new contact node", re);
 		}
-
 	}
 
 	/** Create a contact node and ass basic info */
@@ -322,6 +321,7 @@ public class PeopleJcrUtils implements PeopleNames {
 				JcrUtils.mkdirs(node.getSession(),
 						JcrUtils.parentPath(destPath));
 				node.getSession().move(srcPath, destPath);
+				node.setProperty(PEOPLE_IS_DRAFT, false);
 			}
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to move node " + node
@@ -425,6 +425,17 @@ public class PeopleJcrUtils implements PeopleNames {
 					relPath = UNKNOWN_NAME + "/" + UNKNOWN_NAME + "/"
 							+ JcrUtils.firstCharsToPath(displayName, 2)
 							+ displayName;
+			} else if (node.isNodeType(PeopleTypes.PEOPLE_GROUP)
+					|| (nodeType != null && PeopleTypes.PEOPLE_GROUP
+							.equals(nodeType))) {
+				// init
+				String title = "";
+				if (node.hasProperty(Property.JCR_TITLE))
+					title = replaceInvalidChars(node
+							.getProperty(Property.JCR_TITLE).getString().trim());
+
+				if (title.length() > 1)
+					relPath = JcrUtils.firstCharsToPath(title, 2) + "/" + title;
 			}
 			return relPath;
 		} catch (RepositoryException re) {
