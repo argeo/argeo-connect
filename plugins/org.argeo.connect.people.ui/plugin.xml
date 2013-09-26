@@ -16,9 +16,16 @@
 		point="org.eclipse.ui.views">
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/people.gif"
+			icon="icons/person.gif"
 			id="org.argeo.connect.people.ui.peopleBrowserView"
 			name="People Browser"
+			restorable="true">
+		</view>
+		<view
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/people.gif"
+			id="org.argeo.connect.people.ui.categorizedSearchView"
+			name="People Search"
 			restorable="true">
 		</view>
 	</extension>

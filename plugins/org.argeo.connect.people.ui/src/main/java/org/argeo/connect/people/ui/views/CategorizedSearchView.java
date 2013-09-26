@@ -84,12 +84,12 @@ public class CategorizedSearchView extends ViewPart {
 		// short result parts
 		personViewer = createListPart(parent, "Persons ",
 				new EntitySingleColumnLabelProvider(peopleService), false);
-		orgViewer = createListPart(parent, "Organisations ",
-				new EntitySingleColumnLabelProvider(peopleService), false);
-		filmViewer = createListPart(parent, "Films ",
-				new EntitySingleColumnLabelProvider(peopleService), false);
+//		orgViewer = createListPart(parent, "Organisations ",
+//				new EntitySingleColumnLabelProvider(peopleService), false);
+//		filmViewer = createListPart(parent, "Films ",
+//				new EntitySingleColumnLabelProvider(peopleService), false);
 		// set data
-		refreshFilteredList();
+		//refreshFilteredList();
 	}
 
 	public void createFilterHeader(Composite parent) {
@@ -194,16 +194,16 @@ public class CategorizedSearchView extends ViewPart {
 							PeopleNames.PEOPLE_PRIMARY_EMAIL), ROW_LIMIT);
 			personViewer.setInput(persons);
 
-			List<Node> orgs = JcrUiUtils.nodeIteratorToList(
-					doSearch(session, filterTxt.getText(),
-							PeopleTypes.PEOPLE_ORGANIZATION,
-							PeopleNames.PEOPLE_LEGAL_NAME, null), ROW_LIMIT);
-			orgViewer.setInput(orgs);
+//			List<Node> orgs = JcrUiUtils.nodeIteratorToList(
+//					doSearch(session, filterTxt.getText(),
+//							PeopleTypes.PEOPLE_ORGANIZATION,
+//							PeopleNames.PEOPLE_LEGAL_NAME, null), ROW_LIMIT);
+//			orgViewer.setInput(orgs);
 
-			List<Node> films = JcrUiUtils.nodeIteratorToList(
-					doSearch(session, filterTxt.getText(), FilmTypes.FILM,
-							FilmNames.FILM_ORIGINAL_TITLE, null), ROW_LIMIT);
-			filmViewer.setInput(films);
+//			List<Node> films = JcrUiUtils.nodeIteratorToList(
+//					doSearch(session, filterTxt.getText(), FilmTypes.FILM,
+//							FilmNames.FILM_ORIGINAL_TITLE, null), ROW_LIMIT);
+//			filmViewer.setInput(films);
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list persons", e);
 		}
@@ -224,9 +224,9 @@ public class CategorizedSearchView extends ViewPart {
 		// Parse the String
 		String[] strs = filter.trim().split(" ");
 		if (strs.length == 0) {
-			StaticOperand so = factory.literal(session.getValueFactory()
-					.createValue("*"));
-			defaultC = factory.fullTextSearch("selector", null, so);
+//			StaticOperand so = factory.literal(session.getValueFactory()
+//					.createValue("*"));
+//			defaultC = factory.fullTextSearch("selector", null, so);
 		} else {
 			for (String token : strs) {
 				StaticOperand so = factory.literal(session.getValueFactory()
@@ -316,7 +316,8 @@ public class CategorizedSearchView extends ViewPart {
 		}
 	}
 
-	public void setMsmUiService(PeopleUiService peopleUiService) {
+	public void setPeopleUiService(PeopleUiService peopleUiService) {
 		this.peopleUiService = peopleUiService;
 	}
+
 }
