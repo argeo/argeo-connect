@@ -32,8 +32,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.part.ViewPart;
 
 /** General people browser. */
-public class PeopleBrowserView extends ViewPart implements ArgeoNames,
-		PeopleNames {
+public class PeopleBrowserView extends ViewPart implements PeopleNames {
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".peopleBrowserView";
 
@@ -167,14 +166,14 @@ public class PeopleBrowserView extends ViewPart implements ArgeoNames,
 				if (node.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
 					switch (columnIndex) {
 					case 0:
-						return node.getProperty(ARGEO_LAST_NAME).getString()
+						return node.getProperty(PEOPLE_LAST_NAME).getString()
 								.toUpperCase();
 					case 1:
-						return node.getProperty(ARGEO_FIRST_NAME).getString();
+						return node.getProperty(PEOPLE_FIRST_NAME).getString();
 					case 2:
 						return PeopleUtils.computeAge(
-								node.getProperty(PEOPLE_DATE_OF_BIRTH)
-										.getDate()).toString();
+								node.getProperty(PEOPLE_BIRTH_DATE).getDate())
+								.toString();
 					}
 				} else if (columnIndex == 0) {
 					String label = node.isNodeType(NodeType.MIX_TITLE) ? node

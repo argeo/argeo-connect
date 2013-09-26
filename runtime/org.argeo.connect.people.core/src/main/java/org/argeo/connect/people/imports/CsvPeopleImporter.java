@@ -25,21 +25,20 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.util.CsvParserWithLinesAsMap;
 
 /** Imports a list of people from a CSV file */
-public class CsvPeopleImporter implements Runnable, PeopleNames, ArgeoNames {
+public class CsvPeopleImporter implements Runnable, PeopleNames {
 	private final static Log log = LogFactory.getLog(CsvPeopleImporter.class);
 	private final Charset UTF8_CHARSET = Charset.forName("UTF-8");
 
-	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
 	private String url;
 	private String base = PeopleConstants.PEOPLE_BASE_PATH;
 	private Repository repository;
-	
+
 	@Override
 	public void run() {
 		Session session = null;
@@ -47,6 +46,7 @@ public class CsvPeopleImporter implements Runnable, PeopleNames, ArgeoNames {
 		try {
 			session = repository.login();
 			PeopleParser peopleParser = new PeopleParser(session);
+			peopleParser.setStrictLineAsLongAsHeader(false);
 			in = new URL(url).openStream();
 			peopleParser.parse(in);
 		} catch (Exception e) {
@@ -83,12 +83,12 @@ public class CsvPeopleImporter implements Runnable, PeopleNames, ArgeoNames {
 		if (baseNode.hasNode(personUuidStr))
 			return;
 		Node personNode = baseNode.addNode(personUuidStr,
-				PeopleTypes.PEOPLE_ANONYMOUS_PERSON);
-		personNode.setProperty(PEOPLE_PERSON_UUID, personUuidStr);
-		personNode.setProperty(PEOPLE_DATE_OF_BIRTH, dateOfBirth);
+				PeopleTypes.PEOPLE_PERSON);
+		personNode.setProperty(PEOPLE_UID, personUuidStr);
+		personNode.setProperty(PEOPLE_BIRTH_DATE, dateOfBirth);
 		// personNode.setProperty(PEOPLE_DN, dn);
-		personNode.setProperty(ARGEO_LAST_NAME, lastName);
-		personNode.setProperty(ARGEO_FIRST_NAME, firstName);
+		personNode.setProperty(PEOPLE_LAST_NAME, lastName);
+		personNode.setProperty(PEOPLE_FIRST_NAME, firstName);
 		personNode.setProperty(Property.JCR_TITLE,
 				firstName + " " + lastName.toUpperCase());
 
@@ -128,6 +128,7 @@ public class CsvPeopleImporter implements Runnable, PeopleNames, ArgeoNames {
 
 		public PeopleParser(Session session) {
 			this.session = session;
+			setSeparator(';');
 		}
 
 		@Override
@@ -142,8 +143,9 @@ public class CsvPeopleImporter implements Runnable, PeopleNames, ArgeoNames {
 
 				if ((lineNumber % 100) == 0) {
 					if (log.isDebugEnabled())
-						log.debug("Processed line " + lineNumber);}
-			
+						log.debug("Processed line " + lineNumber);
+				}
+
 			} catch (Exception e) {
 				log.error("Line " + lineNumber + ": " + e.getMessage());
 				if (log.isDebugEnabled())

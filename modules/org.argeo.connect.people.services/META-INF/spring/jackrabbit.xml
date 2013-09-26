@@ -3,14 +3,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-	<!--  <bean id="peopleRepository" class="org.argeo.jackrabbit.JackrabbitWrapper"
+	<bean id="peopleRepository" class="org.argeo.jackrabbit.JackrabbitWrapper"
 		init-method="init" destroy-method="destroy">
 		<property name="cndFiles">
 			<list>
-				<value>/org/argeo/connect/people/argeo_people.cnd</value>
+				<value>/org/argeo/connect/people/people.cnd</value>
 			</list>
 		</property>
 		<property name="repository" ref="nodeRepository" />
 		<property name="bundleContext" ref="bundleContext" />
-	</bean> -->
+	</bean>
 </beans>
