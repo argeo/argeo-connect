@@ -13,6 +13,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
@@ -56,7 +57,6 @@ public class SearchEntityEditor extends EditorPart {
 	// This page widgets
 	private TableViewer entityViewer;
 	private Text filterTxt;
-	private final static String FILTER_HELP_MSG = "Enter filter criterion";
 
 	// Business Objects
 	private String entityType;
@@ -111,7 +111,7 @@ public class SearchEntityEditor extends EditorPart {
 		// Text Area for the filter
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
 				| SWT.ICON_CANCEL);
-		filterTxt.setMessage(FILTER_HELP_MSG);
+		filterTxt.setMessage(PeopleUiConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 				| GridData.HORIZONTAL_ALIGN_FILL));
 		filterTxt.addModifyListener(new ModifyListener() {

@@ -57,10 +57,17 @@
 [people:group] > people:entity, people:tagable
 + people:members (nt:unstructured) =nt:unstructured m a 
 
+//
+// MAILING LIST 
+//
+[people:mailingList] > people:group
+
 
 // 
-// LINKS Between entities
-//
+// GROUP MEMBERS
+// node with reference to corresponding entities 
+// and some more information if needed.
+
 [people:position] > nt:unstructured
 - people:role (STRING) 
 // OPTIONAL: the nature of the subject in this relation: 
@@ -71,6 +78,17 @@
 // enable to notify that a position is not relevant anymore in the case 
 // we don't know when it has ended 
 - people:isCurrent (BOOLEAN) ="true" a m
+
+
+// An item of a mailing list
+// Note that for the time being, we store the corresponding 
+// mail address in the people:role property
+[people:mailingListItem] > people:position
+// ONLY a person
+- people:refUid (STRING) m
+// An optional organisation
+- people:orgRefUid (STRING)
+
 
 // The job or position of a person in an organisation
 [people:job] > people:position

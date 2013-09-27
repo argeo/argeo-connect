@@ -28,11 +28,10 @@ public interface PeopleNames {
 	// path to parent node for various sub concepts
 	public final static String PEOPLE_BANK_ACCOUNTS = "people:bankAccounts";
 	public final static String PEOPLE_CONTACTS = "people:contacts";
-	public final static String PEOPLE_CREW = "people:crew";
-	public final static String PEOPLE_EMPLOYEE_OF = "people:employeeOf";
-	public final static String PEOPLE_FILM_DONE = "people:filmDone";
-	public final static String PEOPLE_SYNOPSES = "people:synopses";
 	public final static String PEOPLE_TITLES = "people:titles";
+	// for groups, job and mailing lists.
+	public final static String PEOPLE_MEMBERS = "people:members";
+	public final static String PEOPLE_JOBS = "people:jobs";
 
 	public final static String PEOPLE_WORKFLOWS = "people:workflows";
 	// public final static String PEOPLE_FILM_SELECTION_WFS =
@@ -128,28 +127,17 @@ public interface PeopleNames {
 	// public final static String PEOPLE_IS_PRIMARY = "people:isPrimary";
 
 	/* GROUP AND JOBS MANAGEMENT */
-	// parent node relpath
-	public final static String PEOPLE_MEMBERS = "people:members";
-	public final static String PEOPLE_JOBS = "people:jobs";
-
-	// public final static String PEOPLE_MEMBER_ID = "people:memberId";
-	// public final static String PEOPLE_ORG_ID = "people:orgId";
 	// An optional department within the org corresponding to the current
 	// position
 	public final static String PEOPLE_DEPARTMENT = "people:department";
-
 	// nature of the participation of the given entity in a group
 	public final static String PEOPLE_ROLE = "people:role";
 	public final static String PEOPLE_TITLE = "people:title";
 	public final static String PEOPLE_POSITION = "people:position";
 	public final static String PEOPLE_IS_CURRENT = "people:isCurrent";
-
-	// public final static String PEOPLE_LINKED_ITEM_REF =
-	// "people:linkedItemRef";
-	// public final static String PEOPLE_LINKED_ITEM_WEAKREF =
-	// "people:linkedItemWeakRef";
-	// public final static String PEOPLE_LINKED_ITEM_PATH =
-	// "people:linkedItemPath";
+	// An additional reference to an organisation when needed
+	// For instance for contacts or mailing list items
+	public final static String PEOPLE_ORG_REF_UID = "people:orgRefUid";
 
 	// Bank account
 	public final static String PEOPLE_BANK_NAME = "people:bankName";

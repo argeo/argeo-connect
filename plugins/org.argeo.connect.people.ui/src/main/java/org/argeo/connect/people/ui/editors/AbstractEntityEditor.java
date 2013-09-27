@@ -151,8 +151,8 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		final Composite lastUpdateCmp = toolkit.createComposite(parent,
 				SWT.NO_FOCUS);
 		lastUpdateCmp.setLayout(gridLayoutNoBorder());
-		lastUpdateCmp.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, false,
-				false));
+		lastUpdateCmp.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true,
+				true));
 		final Label readOnlyInfoLbl = toolkit.createLabel(lastUpdateCmp, "",
 				SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);

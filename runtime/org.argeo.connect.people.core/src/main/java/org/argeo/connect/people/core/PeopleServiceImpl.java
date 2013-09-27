@@ -93,9 +93,20 @@ public class PeopleServiceImpl implements PeopleService {
 		}
 	}
 
+	@Override
+	public Node getEntityFromNodeReference(Node node, String propName) {
+		try {
+			return getEntityByUid(node.getSession(), node.getProperty(propName)
+					.getString());
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"unable to get entity from reference node", re);
+		}
+	}
+
 	/**
 	 * Creates and returns a model specific Node to store a reference, depending
-	 * on the two object we want to link togeteher. Overwrite to add some new
+	 * on the two object we want to link together. Overwrite to add some new
 	 * link type
 	 * */
 	@Override
@@ -117,11 +128,32 @@ public class PeopleServiceImpl implements PeopleService {
 					parentNode = referencingNode
 							.getNode(PeopleNames.PEOPLE_MEMBERS);
 				}
+			} else if (referencingNode
+					.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST)) {
+				if (referencedNode.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
+					linkNodeType = PeopleTypes.PEOPLE_MAILING_LIST_ITEM;
+					parentNode = referencingNode
+							.getNode(PeopleNames.PEOPLE_MEMBERS);
+				}
+			} else if (referencingNode.isNodeType(PeopleTypes.PEOPLE_GROUP)
+					&& !referencingNode
+							.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST)) {
+				if (referencedNode.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)
+						|| referencedNode.isNodeType(PeopleTypes.PEOPLE_PERSON)
+						|| (referencedNode.isNodeType(PeopleTypes.PEOPLE_GROUP) && referencedNode
+								.getIdentifier() != referencingNode
+								.getIdentifier())) {
+					linkNodeType = PeopleTypes.PEOPLE_MEMBER;
+					parentNode = referencingNode
+							.getNode(PeopleNames.PEOPLE_MEMBERS);
+				}
 			}
-
 			if (parentNode == null || linkNodeType == null)
 				throw new PeopleException("Unsupported reference: from "
-						+ referencingNode + " to " + referencedNode);
+						+ referencingNode + "("
+						+ referencingNode.getPrimaryNodeType() + ")" + " to "
+						+ referencedNode + "("
+						+ referencedNode.getPrimaryNodeType() + ")");
 
 			// TODO manage duplicates
 			boolean wasCheckedout = CommonsJcrUtils

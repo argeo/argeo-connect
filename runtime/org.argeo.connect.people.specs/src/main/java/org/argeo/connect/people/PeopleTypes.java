@@ -27,8 +27,8 @@ public interface PeopleTypes {
 	public final static String PEOPLE_GROUP = "people:group";
 	public final static String PEOPLE_MAILING_LIST = "people:mailingList";
 
-	/* MISCELLANEOUS */
-	// Enable links between nodes
+	/* GROUP MEMBERS */
+	public final static String PEOPLE_MAILING_LIST_ITEM = "people:mailingListItem";
 	public final static String PEOPLE_POSITION = "people:position";
 	public final static String PEOPLE_JOB = "people:job";
 	public final static String PEOPLE_MEMBER = "people:member";

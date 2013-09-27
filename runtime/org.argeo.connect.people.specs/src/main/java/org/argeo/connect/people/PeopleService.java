@@ -24,6 +24,12 @@ public interface PeopleService {
 	public Node getEntityByUid(Session session, String uid);
 
 	/**
+	 * Returns the corresponding entity or null if not found using the UID that
+	 * is stored under propName.
+	 * */
+	public Node getEntityFromNodeReference(Node node, String propName);
+
+	/**
 	 * Creates and returns a model specific Node to store a reference, depending
 	 * on the two object we want to link togeteher
 	 * */
