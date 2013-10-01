@@ -3,11 +3,9 @@ package org.argeo.connect.people.ui;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.film.FilmTypes;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.editors.FilmEditor;
 import org.argeo.connect.people.ui.editors.GroupEditor;
 import org.argeo.connect.people.ui.editors.OrgEditor;
 import org.argeo.connect.people.ui.editors.PersonEditor;

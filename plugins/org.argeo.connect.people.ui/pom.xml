@@ -63,10 +63,23 @@
 			<version>${version.argeo-commons}</version>
 		</dependency>
 
+		<!-- Calc exports -->
+		<dependency>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>jxl</artifactId>
+		</dependency>
+
+		<!-- Base Argeo Eclipse Utilities -->
+		<dependency>
+			<groupId>org.argeo.commons.base</groupId>
+			<artifactId>org.argeo.eclipse.ui</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+
 		<!-- RAP only dependency, needed at compile time -->
 		<dependency>
 			<groupId>org.argeo.commons.base</groupId>
-			<artifactId>org.argeo.eclipse.dep.rap</artifactId>
+			<artifactId>org.argeo.eclipse.ui.rap</artifactId>
 			<version>${version.argeo-commons}</version>
 			<scope>provided</scope>
 		</dependency>

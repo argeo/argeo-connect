@@ -15,13 +15,16 @@
  */
 package org.argeo.connect.people.ui.wizards;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.jcr.Node;
-import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
+import javax.jcr.query.Row;
+import javax.jcr.query.RowIterator;
 import javax.jcr.query.qom.Constraint;
 import javax.jcr.query.qom.QueryObjectModel;
 import javax.jcr.query.qom.QueryObjectModelFactory;
@@ -31,72 +34,53 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
-import org.argeo.connect.people.ui.providers.EntitySingleColumnLabelProvider;
+import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.toolkits.MailingListToolkit;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.argeo.connect.people.utils.PersonJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
-import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.rap.rwt.RWT;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Dialog with a filtered list to create a new named linked reference. The trick
- * here is to pass either the Referencing node or the Reference node to be able
- * to manage where to put the link depending on the info we have.
+ * Dialog with a filtered list to add some members in a mailing list
  */
 public class AddMembersDialog extends TrayDialog {
 	private static final long serialVersionUID = 5641280645351822123L;
-	// The various field
-	private Text positionTxt;
-	private final String positionLbl = "Role";
-	private Text selectedItemTxt;
-	private Node selectedItem = null;
-	private final String chosenItemLbl = "Chosen item";
 
-	// The search list
-	private Text filterTxt;
+	// this page widgets and UI objects
 	private TableViewer entityViewer;
-
-	private String value;
 	private final String title;
+	private MailingListToolkit mlToolkit;
 
+	// business objects
+	private final List<Row> selectedItems = new ArrayList<Row>();
 	private Session session;
 	private Node referencingNode;
-	private Node referencedNode;
-	private String toSearchNodeType;
+	private String[] toSearchNodeTypes;
 	private PeopleService peopleService;
 
 	public AddMembersDialog(Shell parentShell, String title,
 			PeopleService peopleService, Node referencingNode,
-			Node referencedNode, String toSearchNodeType) {
+			String[] toSearchNodeTypes) {
 		super(parentShell);
+		this.mlToolkit = new MailingListToolkit();
 		this.title = title;
 		this.peopleService = peopleService;
-		this.referencedNode = referencedNode;
 		this.referencingNode = referencingNode;
-		this.toSearchNodeType = toSearchNodeType;
+		this.toSearchNodeTypes = toSearchNodeTypes;
 		session = CommonsJcrUtils.login(peopleService.getRepository());
 	}
 
@@ -107,67 +91,68 @@ public class AddMembersDialog extends TrayDialog {
 	protected Control createDialogArea(Composite parent) {
 		Composite dialogarea = (Composite) super.createDialogArea(parent);
 		dialogarea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		dialogarea.setLayout(new GridLayout());
 
-		// the text fields
-		Composite textFieldsCmp = new Composite(dialogarea, SWT.NONE);
-		textFieldsCmp.setLayout(new GridLayout(2, false));
-		textFieldsCmp
-				.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		positionTxt = createLT(textFieldsCmp, positionLbl);
-		selectedItemTxt = createLT(textFieldsCmp, chosenItemLbl);
-		selectedItemTxt.setEnabled(false);
-
-		// the filter
-		Composite filterCmp = new Composite(dialogarea, SWT.NONE);
-		filterCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-
-		addFilterPanel(filterCmp);
-		// the list
-		Composite listCmp = new Composite(dialogarea, SWT.NONE);
-		listCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		entityViewer = createListPart(listCmp,
-				new EntitySingleColumnLabelProvider(peopleService));
-		refreshFilteredList(toSearchNodeType);
-
+		// Add the filtered / selectable list
+		entityViewer = mlToolkit.createControl(dialogarea, selectedItems);
+		entityViewer.setContentProvider(new MyContentProvider());
+		// entityViewer
+		// .addDoubleClickListener(new mlToolkit.AddDoubleClickListener() {
+		// @Override
+		// protected void add(List<Node> nodes) {
+		// // String defaultMail = PeopleJcrUtils
+		// // .getDefaultContactValue(person,
+		// // PeopleTypes.PEOPLE_EMAIL);
+		// // if (CommonsJcrUtils.isEmptyString(defaultMail))
+		// // skippedPerson
+		// // .append(PersonJcrUtils
+		// // .getPersonDisplayName(person))
+		// // .append("; ");
+		// // else {
+		// // // Node createdNode =
+		// // peopleService.createEntityReference(
+		// // referencingNode, person, defaultMail);
+		// // }
+		// }
+		// });
 		parent.pack();
+		// initialize with no filter
+		entityViewer.setInput("");
 		return dialogarea;
 	}
 
-	/**
-	 * Override this to perform the real addition
-	 * 
-	 * @return
-	 */
 	protected boolean performFinish() {
-		String msg = null;
+		StringBuilder skippedPerson = new StringBuilder();
 
-		if (CommonsJcrUtils.isEmptyString(positionTxt.getText()))
-			msg = "Please enter a role for current position.";
-		else if (selectedItem == null)
-			msg = "Please select an entity.";
-
-		if (msg != null) {
-			MessageDialog.openError(getShell(), "Non valid information", msg);
-			return false;
-		} else {
-			// a small trick to manage links that have a direction
-			Node srcNode = null;
-			Node targetNode = null;
-
-			if (referencingNode == null) {
-				srcNode = selectedItem;
-				targetNode = referencedNode;
-			} else {
-				srcNode = referencingNode;
-				targetNode = selectedItem;
+		for (Row personRow : selectedItems) {
+			Node person;
+			try {
+				person = personRow.getNode(PeopleTypes.PEOPLE_PERSON);
+			} catch (RepositoryException e) {
+				throw new PeopleException("Unable to get person node from row",
+						e);
 			}
-
-			Node createdNode = peopleService.createEntityReference(srcNode,
-					targetNode, positionTxt.getText());
-			return true;
-
+			String defaultMail = PeopleJcrUtils.getDefaultContactValue(person,
+					PeopleTypes.PEOPLE_EMAIL);
+			if (CommonsJcrUtils.isEmptyString(defaultMail))
+				skippedPerson.append(
+						PersonJcrUtils.getPersonDisplayName(person)).append(
+						"; ");
+			else {
+				// Node createdNode =
+				peopleService.createEntityReference(referencingNode, person,
+						defaultMail);
+			}
 		}
+
+		if (skippedPerson.length() > 0) {
+			skippedPerson.substring(0, skippedPerson.length() - 2);
+			String msg = "Following persons have no defined mail adress, "
+					+ "they could not be added: ";
+
+			MessageDialog.openError(getShell(), "Non valid information", msg
+					+ skippedPerson.toString());
+		}
+		return true;
 	}
 
 	@Override
@@ -189,87 +174,12 @@ public class AddMembersDialog extends TrayDialog {
 		shell.setText(title);
 	}
 
-	public String getString() {
-		return value;
-	}
-
-	public void addFilterPanel(Composite parent) {
-		parent.setLayout(new GridLayout());
-		// Text Area for the filter
-		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
-				| SWT.ICON_CANCEL);
-		filterTxt.setMessage(PeopleUiConstants.FILTER_HELP_MSG);
-		filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
-				| GridData.HORIZONTAL_ALIGN_FILL));
-		filterTxt.addModifyListener(new ModifyListener() {
-			private static final long serialVersionUID = 5003010530960334977L;
-
-			public void modifyText(ModifyEvent event) {
-				// might be better to use an asynchronous Refresh();
-				refreshFilteredList(toSearchNodeType);
-			}
-		});
-	}
-
-	protected TableViewer createListPart(Composite parent,
-			ILabelProvider labelProvider) {
-		parent.setLayout(new FillLayout());
-
-		Composite tableComposite = new Composite(parent, SWT.NONE);
-		// GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL
-		// | GridData.GRAB_VERTICAL | GridData.VERTICAL_ALIGN_FILL
-		// | GridData.GRAB_HORIZONTAL);
-		// tableComposite.setLayoutData(gd);
-
-		TableViewer v = new TableViewer(tableComposite, SWT.V_SCROLL
-				| SWT.SINGLE);
-		v.setLabelProvider(labelProvider);
-
-		TableColumn singleColumn = new TableColumn(v.getTable(), SWT.LEFT);
-		TableColumnLayout tableColumnLayout = new TableColumnLayout();
-		tableColumnLayout.setColumnData(singleColumn, new ColumnWeightData(85));
-		tableComposite.setLayout(tableColumnLayout);
-
-		// Corresponding table & style
-		Table table = v.getTable();
-		table.setLinesVisible(true);
-		table.setHeaderVisible(false);
-		// Enable markups
-		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(20));
-
-		// Prtoviders and listeners
-		v.setContentProvider(new BasicNodeListContentProvider());
-		v.addSelectionChangedListener(new ISelectionChangedListener() {
-
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				try {
-					// Only single selection is enabled
-					Node selectedEntity = (Node) ((IStructuredSelection) event
-							.getSelection()).getFirstElement();
-					if (selectedEntity.isNodeType(NodeType.MIX_TITLE))
-						selectedItemTxt.setText(CommonsJcrUtils.get(
-								selectedEntity, Property.JCR_TITLE));
-					selectedItem = selectedEntity;
-				} catch (RepositoryException e) {
-					throw new PeopleException("Unable to manage selected item",
-							e);
-				}
-			}
-		});
-
-		return v;
-	}
-
-	protected void refreshFilteredList(String nodeType) {
+	protected RowIterator refreshFilteredList(String filter, String nodeType) {
 		try {
-			String filter = filterTxt.getText();
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
-
-			Selector source = factory.selector(nodeType, "selector");
+			Selector source = factory.selector(nodeType, nodeType);
 
 			// no Default Constraint
 			Constraint defaultC = null;
@@ -279,7 +189,8 @@ public class AddMembersDialog extends TrayDialog {
 			if (strs.length == 0) {
 				StaticOperand so = factory.literal(session.getValueFactory()
 						.createValue("*"));
-				defaultC = factory.fullTextSearch("selector", null, so);
+				defaultC = factory.fullTextSearch(source.getSelectorName(),
+						null, so);
 			} else {
 				for (String token : strs) {
 					StaticOperand so = factory.literal(session
@@ -297,8 +208,7 @@ public class AddMembersDialog extends TrayDialog {
 			query.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
 
 			QueryResult result = query.execute();
-			entityViewer
-					.setInput(JcrUtils.nodeIteratorToList(result.getNodes()));
+			return result.getRows();
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list entities", e);
 		}
@@ -310,4 +220,34 @@ public class AddMembersDialog extends TrayDialog {
 		return super.close();
 	}
 
+	/**
+	 * Specific content provider for this Part
+	 */
+	private class MyContentProvider implements IStructuredContentProvider {
+		private static final long serialVersionUID = 1L;
+		private String filter;
+
+		public void dispose() {
+		}
+
+		/** Expects a filter text as a new input */
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			filter = (String) newInput;
+			if (newInput != null)
+				viewer.refresh();
+		}
+
+		public Object[] getElements(Object arg0) {
+			// TODO support multiple node types.
+			RowIterator ri = refreshFilteredList(filter, toSearchNodeTypes[0]);
+			// FIXME will not work for big resultset
+			Object[] result = new Object[(int) ri.getSize()];
+			int i = 0;
+			while (ri.hasNext()) {
+				result[i] = ri.nextRow();
+				i++;
+			}
+			return result;
+		}
+	}
 }

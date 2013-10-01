@@ -1,209 +1,243 @@
 package org.argeo.connect.people.ui.toolkits;
 
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.PeopleUiService;
-import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.FormToolkit;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.jcr.Node;
+import javax.jcr.PropertyType;
+import javax.jcr.query.Row;
+
+import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.PeopleImages;
+import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.connect.people.ui.editors.AbstractEntityEditor;
+import org.argeo.connect.people.ui.providers.SimpleJcrRowLabelProvider;
+import org.argeo.connect.people.ui.utils.MailListComparator;
+import org.argeo.eclipse.ui.utils.ViewerUtils;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CheckboxCellEditor;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorPart;
 
 public class MailingListToolkit {
 
-	private final FormToolkit toolkit;
-	private final IManagedForm form;
-	private final PeopleService peopleService;
-	private final PeopleUiService peopleUiService;
+	// private final FormToolkit toolkit;
+	// private final IManagedForm form;
+	// private final PeopleService peopleService;
+	// private final PeopleUiService peopleUiService;
 
-	public MailingListToolkit(FormToolkit toolkit, IManagedForm form,
-			PeopleService peopleService, PeopleUiService peopleUiService) {
-		this.toolkit = toolkit;
-		this.form = form;
-		this.peopleService = peopleService;
-		this.peopleUiService = peopleUiService;
+	public MailingListToolkit() {
+		// (FormToolkit toolkit, IManagedForm form,
+		// PeopleService peopleService, PeopleUiService peopleUiService) {
+		// this.toolkit = toolkit;
+		// this.form = form;
+		// this.peopleService = peopleService;
+		// this.peopleUiService = peopleUiService;
 	}
 
-	// public void createControl(Composite parent) {
-	// parent.setLayout(new GridLayout(1, false));
-	// Composite composite = new Composite(parent, SWT.NONE);
-	// composite.setLayout(new GridLayout(1, false));
-	// composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-	// addFilterPanel(composite);
-	// createItemsViewer(composite);
-	//
-	// // Initialize the list
-	// refreshFilteredList();
-	// }
-	//
-	// private TableViewer createItemsViewer(Composite parent) {
-	// int style = SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL;
-	// Table table = new Table(parent, style);
-	// table.setLinesVisible(true);
-	//
-	// GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-	// // gd.heightHint = 250;
-	// table.setLayoutData(gd);
-	// table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-	// table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(20));
-	//
-	// TableViewer itemsViewer = new TableViewer(table);
-	// itemsViewer.setContentProvider(new BasicNodeListContentProvider());
-	//
-	// itemsViewer.addDoubleClickListener(new IDoubleClickListener() {
-	// @Override
-	// public void doubleClick(DoubleClickEvent event) {
-	// // same as itemsViewer
-	// Node selectedNode = (Node) ((IStructuredSelection) ((TableViewer) event
-	// .getSource()).getSelection()).getFirstElement();
-	// List<Node> nodes = new ArrayList<Node>();
-	// nodes.add(selectedNode);
-	// try {
-	// addChildren(nodes);
-	// } catch (RepositoryException re) {
-	// throw new PeopleException(
-	// "Unable to add node by double click");
-	// }
-	// IEditorPart iep = PeopleUiPlugin.getDefault().getWorkbench()
-	// .getActiveWorkbenchWindow().getActivePage()
-	// .getActiveEditor();
-	// if (iep != null && iep instanceof AbstractEntityCTabEditor_old)
-	// ((AbstractEntityCTabEditor_old) iep).forceRefresh();
-	// }
-	// });
-	//
-	// // The columns
-	// TableViewerColumn col = ViewerUtils.createTableViewerColumn(
-	// itemsViewer, "selected", SWT.NONE, 25);
-	// col.setEditingSupport(new SelectedEditingSupport(itemsViewer));
-	//
-	// col.setLabelProvider(new ColumnLabelProvider() {
-	// private static final long serialVersionUID = 1L;
-	//
-	// @Override
-	// public String getText(Object element) {
-	// return null;
-	// }
-	//
-	// @Override
-	// public Image getImage(Object element) {
-	// if (selectedItems.contains(element)) {
-	// return PeopleImages.CHECKED;
-	// } else {
-	// return PeopleImages.UNCHECKED;
-	// }
-	// }
-	// });
-	//
-	// col = ViewerUtils.createTableViewerColumn(itemsViewer, "Entities",
-	// SWT.NONE, 400);
-	// col.setLabelProvider(getCurrentLabelProvider());
-	//
-	// return itemsViewer;
-	// }
-	//
-	// private CellLabelProvider getCurrentLabelProvider() {
-	// return new ColumnLabelProvider() {
-	// private static final long serialVersionUID = 1L;
-	// private EntitySingleColumnLabelProvider entityLP = defineLabelProvider();
-	//
-	// @Override
-	// public String getText(Object element) {
-	// return entityLP.getText(element);
-	// }
-	//
-	// @Override
-	// public void dispose() {
-	// super.dispose();
-	// entityLP.dispose();
-	// }
-	// };
-	// }
-	//
-	// private class SelectedEditingSupport extends EditingSupport {
-	// private static final long serialVersionUID = 1L;
-	// private final TableViewer viewer;
-	//
-	// public SelectedEditingSupport(TableViewer viewer) {
-	// super(viewer);
-	// this.viewer = viewer;
-	// }
-	//
-	// @Override
-	// protected CellEditor getCellEditor(Object element) {
-	// return new CheckboxCellEditor(viewer.getTable());
-	// }
-	//
-	// @Override
-	// protected boolean canEdit(Object element) {
-	// return true;
-	// }
-	//
-	// @Override
-	// protected Object getValue(Object element) {
-	// return selectedItems.contains(element);
-	// }
-	//
-	// @Override
-	// protected void setValue(Object element, Object value) {
-	// if ((Boolean) value && !selectedItems.contains(element))
-	// selectedItems.add((Node) element);
-	// else if (!(Boolean) value && selectedItems.contains(element))
-	// selectedItems.remove((Node) element);
-	// viewer.update(element, null);
-	// }
-	// }
-	//
-	// public Text addFilterPanel(Composite parent) {
-	// // Text Area for the filter
-	// Text filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH
-	// | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
-	// filterTxt.setMessage(PeopleUiConstants.FILTER_HELP_MSG);
-	// filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
-	// | GridData.HORIZONTAL_ALIGN_FILL));
-	// filterTxt.addModifyListener(new ModifyListener() {
-	// private static final long serialVersionUID = 5003010530960334977L;
-	//
-	// public void modifyText(ModifyEvent event) {
-	// // might be better to use an asynchronous Refresh();
-	// refreshFilteredList();
-	// }
-	// });
-	// return filterTxt;
-	// }
-	//
-	// /**
-	// * Do the real addition
-	// */
-	// @Override
-	// protected boolean addChildren(List<Node> newChildren, Node entity)
-	// throws RepositoryException {
-	// boolean wasCheckedOut = CommonsJcrUtils
-	// .isNodeCheckedOutByMe(entity);
-	// if (!wasCheckedOut)
-	// CommonsJcrUtils.checkout(entity);
-	//
-	// for (Node selectedItem : newChildren) {
-	// if (targetParNode.hasNode(selectedItem.getName())) {
-	// // TODO manage duplication, we do nothing for the time being
-	// } else {
-	// Node selectedVenue = targetParNode.addNode(
-	// selectedItem.getName(), MsmTypes.MSM_SELECTED_VENUE);
-	// String entityUid = selectedItem.getProperty(
-	// PeopleNames.PEOPLE_UID).getString();
-	// selectedVenue
-	// .setProperty(PeopleNames.PEOPLE_REF_UID, entityUid);
-	// JcrUtils.updateLastModified(selectedVenue);
-	// CommonsJcrUtils.saveAndCheckin(selectedVenue);
-	// }
-	// }
-	//
-	// if (wasCheckedOut)
-	// entity.getSession().save(); // useless
-	// else
-	// CommonsJcrUtils.saveAndCheckin(entity);
-	// return true;
-	// }
-	//
-	// @Override
-	// protected void refreshFilteredList(String filter, String nodeType) {
-	// // TODO find a better way to insure all checked items are displayed
-	// getSelectedItems().clear();
-	// }
+	/**
+	 * create a table viewer with a column for selected items. Note that it is
+	 * caller responsability to set a contentprovider
+	 **/
+	public TableViewer createControl(Composite parent, List<Row> selectedItems) {
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+
+		// TODO clean this: we must 1st create the composite for the filter,
+		// then the table, then the filter itself
+		Composite filterCmp = new Composite(parent, SWT.NO_FOCUS);
+		filterCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		TableViewer viewer = createItemsViewer(parent, selectedItems);
+		addFilterPanel(filterCmp, viewer);
+		parent.layout();
+		return viewer;
+
+		// Initialize the list
+	}
+
+	private TableViewer createItemsViewer(Composite parent,
+			final List<Row> selectedItems) {
+		int style = SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL;
+		Table table = new Table(parent, style);
+		table.setLinesVisible(true);
+		table.setHeaderVisible(true);
+		MailListComparator comparator = new MailListComparator();
+
+		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		table.setLayoutData(gd);
+
+		TableViewer itemsViewer = new TableViewer(table);
+		// itemsViewer.setContentProvider(new BasicNodeListContentProvider());
+		// itemsViewer.addDoubleClickListener();
+
+		// The columns
+		TableViewerColumn col = ViewerUtils.createTableViewerColumn(
+				itemsViewer, "", SWT.NONE, 25);
+		col.setEditingSupport(new SelectedEditingSupport(itemsViewer,
+				selectedItems));
+		col.setLabelProvider(new ColumnLabelProvider() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getText(Object element) {
+				return null;
+			}
+
+			@Override
+			public Image getImage(Object element) {
+				if (selectedItems.contains(element)) {
+					return PeopleImages.CHECKED;
+				} else {
+					return PeopleImages.UNCHECKED;
+				}
+			}
+		});
+
+		col = ViewerUtils.createTableViewerColumn(itemsViewer, "Last Name",
+				SWT.NONE, 120);
+		col.setLabelProvider(new SimpleJcrRowLabelProvider(
+				PeopleTypes.PEOPLE_PERSON, PeopleNames.PEOPLE_LAST_NAME));
+		col.getColumn().addSelectionListener(
+				getSelectionAdapter(1, PropertyType.STRING,
+						PeopleTypes.PEOPLE_PERSON,
+						PeopleNames.PEOPLE_LAST_NAME, comparator, itemsViewer));
+
+		col = ViewerUtils.createTableViewerColumn(itemsViewer, "First Name",
+				SWT.NONE, 120);
+		col.setLabelProvider(new SimpleJcrRowLabelProvider(
+				PeopleTypes.PEOPLE_PERSON, PeopleNames.PEOPLE_FIRST_NAME));
+		col.getColumn()
+				.addSelectionListener(
+						getSelectionAdapter(1, PropertyType.STRING,
+								PeopleTypes.PEOPLE_PERSON,
+								PeopleNames.PEOPLE_FIRST_NAME, comparator,
+								itemsViewer));
+
+		// IMPORTANT: initialize comparator before setting it
+		comparator.setColumn(PropertyType.STRING, PeopleTypes.PEOPLE_PERSON,
+				PeopleNames.PEOPLE_LAST_NAME);
+		itemsViewer.setComparator(comparator);
+
+		return itemsViewer;
+	}
+
+	/** Extends to provide the correct add call back method */
+	public abstract class AddDoubleClickListener implements
+			IDoubleClickListener {
+		@Override
+		public void doubleClick(DoubleClickEvent event) {
+			// same as itemsViewer
+			Node selectedNode = (Node) ((IStructuredSelection) ((TableViewer) event
+					.getSource()).getSelection()).getFirstElement();
+			List<Node> nodes = new ArrayList<Node>();
+			nodes.add(selectedNode);
+			add(nodes);
+			IEditorPart iep = PeopleUiPlugin.getDefault().getWorkbench()
+					.getActiveWorkbenchWindow().getActivePage()
+					.getActiveEditor();
+			if (iep != null && iep instanceof AbstractEntityEditor)
+				((AbstractEntityEditor) iep).forceRefresh();
+		}
+
+		protected abstract void add(List<Node> nodes);
+	}
+
+	private class SelectedEditingSupport extends EditingSupport {
+		private static final long serialVersionUID = 1L;
+		private final TableViewer viewer;
+		private List<Row> selectedItems;
+
+		public SelectedEditingSupport(TableViewer viewer,
+				List<Row> selectedItems) {
+			super(viewer);
+			this.viewer = viewer;
+			this.selectedItems = selectedItems;
+		}
+
+		@Override
+		protected CellEditor getCellEditor(Object element) {
+			return new CheckboxCellEditor(viewer.getTable());
+		}
+
+		@Override
+		protected boolean canEdit(Object element) {
+			return true;
+		}
+
+		@Override
+		protected Object getValue(Object element) {
+			return selectedItems.contains(element);
+		}
+
+		@Override
+		protected void setValue(Object element, Object value) {
+			if ((Boolean) value && !selectedItems.contains(element))
+				selectedItems.add((Row) element);
+			else if (!(Boolean) value && selectedItems.contains(element))
+				selectedItems.remove((Node) element);
+			viewer.update(element, null);
+		}
+	}
+
+	public Text addFilterPanel(Composite parent, final TableViewer viewer) {
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		// Text Area for the filter
+		final Text filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH
+				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+		filterTxt.setMessage(PeopleUiConstants.FILTER_HELP_MSG);
+		filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
+				| GridData.HORIZONTAL_ALIGN_FILL));
+		filterTxt.addModifyListener(new ModifyListener() {
+			private static final long serialVersionUID = 5003010530960334977L;
+
+			public void modifyText(ModifyEvent event) {
+				// might be better to use an asynchronous Refresh();
+				viewer.setInput(filterTxt.getText());
+			}
+		});
+		return filterTxt;
+	}
+
+	private SelectionAdapter getSelectionAdapter(final int index,
+			final int propertyType, final String selectorName,
+			final String propertyName, final MailListComparator comparator,
+			final TableViewer viewer) {
+		SelectionAdapter selectionAdapter = new SelectionAdapter() {
+			private static final long serialVersionUID = -3452356616673385039L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Table table = viewer.getTable();
+				comparator.setColumn(propertyType, selectorName, propertyName);
+				int dir = table.getSortDirection();
+				if (table.getSortColumn() == table.getColumn(index)) {
+					dir = dir == SWT.UP ? SWT.DOWN : SWT.UP;
+				} else {
+					dir = SWT.DOWN;
+				}
+				table.setSortDirection(dir);
+				table.setSortColumn(table.getColumn(index));
+				viewer.refresh();
+			}
+		};
+		return selectionAdapter;
+	}
 }

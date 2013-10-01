@@ -17,38 +17,28 @@ package org.argeo.connect.people.ui.utils;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
-import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
+import javax.jcr.query.Row;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
-import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
-import org.argeo.eclipse.ui.GenericTableComparator;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 
-public class MailListComparator extends GenericTableComparator {
+public class MailListComparator extends ViewerComparator {
 	private static final long serialVersionUID = 7621278235801225428L;
 
-	private final static Log log = LogFactory.getLog(MailListComparator.class);
+	protected String propertyName;
+	protected String selectorName;
+	protected int propertyType;
+	public static final int ASCENDING = 0, DESCENDING = 1;
+	protected int direction = DESCENDING;
 
-	protected List<String> propertiesList;
-	protected List<Integer> propertyTypesList;
-	protected Integer propertyType;
-	protected String property;
-	private PeopleService peopleService;
-
-	public MailListComparator(int defaultColIndex, int defaultDirection,
-			PeopleService peopleService) {
-		super(defaultColIndex, defaultDirection);
-		this.propertyIndex = defaultColIndex;
-		this.peopleService = peopleService;
+	public MailListComparator() {
 	}
 
 	@Override
@@ -58,25 +48,16 @@ public class MailListComparator extends GenericTableComparator {
 
 		try {
 
-			Node n1 = (Node) e1;
-			Node n2 = (Node) e2;
-
-			if (property.equals(PeopleNames.PEOPLE_LAST_NAME)
-					|| property.equals(PeopleNames.PEOPLE_FIRST_NAME)) {
-				n1 = peopleService.getEntityFromNodeReference(n1,
-						PeopleNames.PEOPLE_REF_UID);
-				n2 = peopleService.getEntityFromNodeReference(n2,
-						PeopleNames.PEOPLE_REF_UID);
-			}
+			Node n1 = ((Row) e1).getNode(selectorName);
+			Node n2 = ((Row) e2).getNode(selectorName);
 
 			// TODO use rowIterator rather than node iterator
-
 			Value v1 = null;
 			Value v2 = null;
-			if (n1.hasProperty(property))
-				v1 = n1.getProperty(property).getValue();
-			if (n2.hasProperty(property))
-				v2 = n2.getProperty(property).getValue();
+			if (n1.hasProperty(propertyName))
+				v1 = n1.getProperty(propertyName).getValue();
+			if (n2.hasProperty(propertyName))
+				v2 = n2.getProperty(propertyName).getValue();
 
 			if (v2 == null && v1 == null)
 				return 0;
@@ -102,7 +83,8 @@ public class MailListComparator extends GenericTableComparator {
 				Calendar c1 = v1.getDate();
 				Calendar c2 = v2.getDate();
 				if (c1 == null || c2 == null)
-					log.trace("undefined date");
+					// log.trace("undefined date");
+					;
 				lc = c1.getTimeInMillis() - c2.getTimeInMillis();
 				if (lc < Integer.MIN_VALUE)
 					// rc = Integer.MIN_VALUE;
@@ -161,25 +143,27 @@ public class MailListComparator extends GenericTableComparator {
 		return rc;
 	}
 
-	@Override
-	public void setColumn(int column) {
-		if (column == this.propertyIndex && property != null) {
+	/**
+	 * @param propertyType
+	 *            Corresponding JCR type
+	 * @param selectorName
+	 *            for instance PEOPLE_PERSON
+	 * @param propertyName
+	 *            name of the property to use.
+	 */
+	public void setColumn(int propertyType, String selectorName,
+			String propertyName) {
+		if (this.selectorName != null && this.propertyName != null
+				&& this.selectorName.equals(selectorName)
+				&& this.propertyName.equals(propertyName)) {
 			// Same column as last sort; toggle the direction
 			direction = 1 - direction;
 		} else {
 			// New column; do a descending sort
-			this.propertyIndex = column;
-			this.propertyType = propertyTypesList.get(column);
-			this.property = propertiesList.get(column);
+			this.propertyType = propertyType;
+			this.propertyName = propertyName;
+			this.selectorName = selectorName;
 			direction = ASCENDING;
 		}
-	}
-
-	public void setPropertyList(List<String> propertiesList) {
-		this.propertiesList = propertiesList;
-	}
-
-	public void setPropertyTypeList(List<Integer> propertyTypesList) {
-		this.propertyTypesList = propertyTypesList;
 	}
 }

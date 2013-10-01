@@ -141,6 +141,10 @@
          		id="param.toSearchNodeType"
          		name="type of node to search for">
   	 		</commandParameter>
+            <commandParameter
+         		id="param.dialogId"
+         		name="ID of the corresponding dialog">
+  	 		</commandParameter>
     	</command>
 		<command
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
@@ -159,7 +163,17 @@
          		name="type of node to search for">
   	 		</commandParameter>
     	</command>
-    	
+
+    	<!-- Extract generation -->
+		<command
+			defaultHandler="org.argeo.connect.people.ui.commands.GetCalcExtract"
+      		id="org.argeo.connect.people.ui.getCalcExtract"
+            name="Generate a calc extract">
+            <commandParameter
+         		id="param.extractId"
+         		name="An extract ID">
+  	 		</commandParameter>
+    	</command>    	
     	<!-- Utility to provide sub menues when we don't want to define a default command for this menu -->
 		<command
 			defaultHandler="org.argeo.connect.people.ui.commands.DoNothing"

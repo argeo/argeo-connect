@@ -3,8 +3,17 @@ package org.argeo.connect.people.ui;
 /** Defines some constants that are used all across the user interface **/
 public interface PeopleUiConstants {
 
+	/* Default formats */
+	public final static String DEFAULT_DATE_FORMAT = "EEE, dd MMM yyyy";
+	public final static String DEFAULT_NUMBER_FORMAT = "#,##0.0";
+	
 	/* Default messages */
 	public final static String FILTER_HELP_MSG = "Enter filter criterion";
+	
+
+	/* IDs for the various dialogs */
+	public final static String DIALOG_ADD_ML_MEMBERs = "dialog:addMLMembers";
+	
 	
 	/* IDs for the various panels */
 	public final static String PANEL_CONTACT_DETAILS = "people:contactDetails";

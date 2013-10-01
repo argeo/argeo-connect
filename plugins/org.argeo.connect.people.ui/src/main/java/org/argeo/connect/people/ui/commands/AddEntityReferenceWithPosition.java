@@ -6,8 +6,11 @@ import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.AbstractEntityEditor;
+import org.argeo.connect.people.ui.wizards.AddMembersDialog;
 import org.argeo.connect.people.ui.wizards.CreateEntityRefWithPositionDialog;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -30,6 +33,7 @@ public class AddEntityReferenceWithPosition extends AbstractHandler {
 	public final static String PARAM_REFERENCING_JCR_ID = "param.referencingJcrId";
 	public final static String PARAM_REFERENCED_JCR_ID = "param.referencedJcrId";
 	public final static String PARAM_TO_SEARCH_NODE_TYPE = "param.toSearchNodeType";
+	public final static String PARAM_DIALOG_ID = "param.dialogId";
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
@@ -39,6 +43,7 @@ public class AddEntityReferenceWithPosition extends AbstractHandler {
 		String referencingJcrId = event.getParameter(PARAM_REFERENCING_JCR_ID);
 		String referencedJcrId = event.getParameter(PARAM_REFERENCED_JCR_ID);
 		String toSearchNodeType = event.getParameter(PARAM_TO_SEARCH_NODE_TYPE);
+		String dialogId = event.getParameter(PARAM_DIALOG_ID);
 
 		Session session = null;
 		try {
@@ -51,9 +56,18 @@ public class AddEntityReferenceWithPosition extends AbstractHandler {
 			if (referencedJcrId != null)
 				referenced = session.getNodeByIdentifier(referencedJcrId);
 
-			Dialog diag = new CreateEntityRefWithPositionDialog(
-					HandlerUtil.getActiveShell(event), "Create position",
-					peopleService, referencing, referenced, toSearchNodeType);
+			Dialog diag = null;
+
+			if (PeopleUiConstants.DIALOG_ADD_ML_MEMBERs.equals(dialogId))
+				diag = new AddMembersDialog(HandlerUtil.getActiveShell(event),
+						"Create position", peopleService, referencing,
+						new String[] { PeopleTypes.PEOPLE_PERSON });
+			else
+				diag = new CreateEntityRefWithPositionDialog(
+						HandlerUtil.getActiveShell(event), "Create position",
+						peopleService, referencing, referenced,
+						toSearchNodeType);
+
 			int result = diag.open();
 
 			if (result == Dialog.OK) {
