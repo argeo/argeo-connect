@@ -78,7 +78,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void createToolkits() {
-		entityTK = new EntityToolkit(toolkit, getManagedForm());
+		entityTK = new EntityToolkit(toolkit, getManagedForm(), this);
 		listTK = new ListToolkit(toolkit, getManagedForm(),
 				getPeopleServices(), getPeopleUiServices());
 	}
@@ -158,8 +158,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		final ColumnLabelProvider personLP = new PersonOverviewLabelProvider(
-				PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE,
-				getPeopleServices());
+				PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE, getPeopleServices());
 
 		// EDIT
 		final Composite editPanel = toolkit.createComposite(parent,
@@ -399,6 +398,11 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void populateMainInfoDetails(final Composite parent) {
+		// Mailing list management
+		Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		entityTK.populateGroupMembershipROPanel(mlCmp, person);
+
 		// Tag management.
 		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));

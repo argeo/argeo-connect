@@ -70,7 +70,8 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected boolean canSave() {
-		String displayName = CommonsJcrUtils.get(film, FilmNames.FILM_ORIGINAL_TITLE);
+		String displayName = CommonsJcrUtils.get(film,
+				FilmNames.FILM_ORIGINAL_TITLE);
 		if (displayName.length() < 2) {
 			String msg = "Please note that you must define an original title"
 					+ " that is at least 2 character long.";
@@ -86,7 +87,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 			return true;
 		}
 	}
-	
+
 	@Override
 	protected void createToolkits() {
 		filmPanelToolkit = new FilmToolkit(toolkit, getManagedForm());
@@ -101,7 +102,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 		String tooltip = "The synopses for film "
 				+ JcrUtils.get(film, FilmNames.FILM_ID);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
-				"Synopsis", "msm:synopses", tooltip);
+				"Synopsis", PeopleUiConstants.PANEL_SYNOPSES, tooltip);
 		filmPanelToolkit.populateSynopsisPanel(innerPannel, film);
 
 		// Crew

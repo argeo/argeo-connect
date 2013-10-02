@@ -6,11 +6,11 @@ import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.AbstractEntityEditor;
-import org.argeo.connect.people.ui.wizards.AddMembersDialog;
+import org.argeo.connect.people.ui.wizards.AddMLMembersDialog;
+import org.argeo.connect.people.ui.wizards.AddMLMembershipDialog;
 import org.argeo.connect.people.ui.wizards.CreateEntityRefWithPositionDialog;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -58,10 +58,17 @@ public class AddEntityReferenceWithPosition extends AbstractHandler {
 
 			Dialog diag = null;
 
-			if (PeopleUiConstants.DIALOG_ADD_ML_MEMBERs.equals(dialogId))
-				diag = new AddMembersDialog(HandlerUtil.getActiveShell(event),
-						"Create position", peopleService, referencing,
-						new String[] { PeopleTypes.PEOPLE_PERSON });
+			if (PeopleUiConstants.DIALOG_ADD_ML_MEMBERS.equals(dialogId))
+				diag = new AddMLMembersDialog(
+						HandlerUtil.getActiveShell(event),
+						"Add Mailing List Members...", peopleService,
+						referencing, new String[] { toSearchNodeType });
+			else if (PeopleUiConstants.DIALOG_ADD_ML_MEMBERSHIP
+					.equals(dialogId))
+				diag = new AddMLMembershipDialog(
+						HandlerUtil.getActiveShell(event),
+						"Add Mailing List membership", peopleService,
+						referenced, new String[] { toSearchNodeType });
 			else
 				diag = new CreateEntityRefWithPositionDialog(
 						HandlerUtil.getActiveShell(event), "Create position",

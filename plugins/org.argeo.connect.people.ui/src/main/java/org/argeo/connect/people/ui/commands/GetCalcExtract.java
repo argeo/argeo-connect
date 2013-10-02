@@ -11,6 +11,7 @@ import org.argeo.eclipse.ui.specific.FileHandler;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 
@@ -35,14 +36,9 @@ public class GetCalcExtract extends AbstractHandler {
 					.getActivePage().getActivePart();
 			if (iwp instanceof ICalcExtractProvider) {
 				File tmpFile = File.createTempFile("people-extract", ".xls");
-				// tmpFile.deleteOnExit();
+				tmpFile.deleteOnExit();
 				callCalcGenerator((ICalcExtractProvider) iwp, extractId,
 						tmpFile);
-				// UrlLauncher launcher = RWT.getClient().getService(
-				// UrlLauncher.class);
-				// launcher.openURL(RWT.getResourceManager().getLocation(
-				// tmpFile.getAbsolutePath()));
-
 				fileHandler.openFile(tmpFile.getName(),
 						tmpFile.getAbsolutePath());
 			} else
@@ -66,5 +62,14 @@ public class GetCalcExtract extends AbstractHandler {
 		writer.setColumnDefinition(provider.getColumnDefinition(extractId));
 		writer.writeTableFromRowIterator(file,
 				provider.getRowIterator(extractId));
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		// free the service handler of the file provider
+		RWT.getServiceManager().unregisterServiceHandler(
+				FileHandler.DOWNLOAD_SERVICE_NAME);
+
 	}
 }

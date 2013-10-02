@@ -36,9 +36,12 @@
 	</bean>
 
 
-	<!-- <bean id="org.argeo.connect.people.ui.openEntityEditor" class="org.argeo.connect.people.ui.commands.OpenEntityEditor" 
-		scope="prototype"> <property name="peopleService" ref="peopleService" /> 
-		<property name="peopleUiService" ref="peopleUiService" /> </bean> -->
+	<bean id="org.argeo.connect.people.ui.openEntityEditor" class="org.argeo.connect.people.ui.commands.OpenEntityEditor"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleUiService" ref="peopleUiService" />
+	</bean>
+
 	<bean id="importPeople"
 		class="org.argeo.connect.people.ui.commands.ImportPeopleHandler"
 		scope="prototype">

@@ -39,6 +39,12 @@ public class PeopleImages {
 	public final static Image NO_PICTURE = PeopleUiPlugin.getImageDescriptor(
 			"icons/noPicture.gif").createImage();
 
+	public final static Image DELETE_BTN = PeopleUiPlugin.getImageDescriptor(
+			"icons/delete.png").createImage();
+	
+	public final static Image ADD_BTN = PeopleUiPlugin.getImageDescriptor(
+			"icons/add.gif").createImage();
+
 	// Check box icons
 	public final static Image CHECKED = PeopleUiPlugin.getImageDescriptor(
 			"icons/checked.gif").createImage();

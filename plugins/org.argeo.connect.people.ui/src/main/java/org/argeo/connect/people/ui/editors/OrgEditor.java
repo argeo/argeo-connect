@@ -75,14 +75,14 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		String tooltip = "Contact information for "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
-				"Org. details", PeopleUiConstants.PANEL_CONTACT_DETAILS,
+				"Details", PeopleUiConstants.PANEL_CONTACT_DETAILS,
 				tooltip);
 		entityTK.populateContactPanelWithNotes(innerPannel, org);
 
 		// Employees
 		tooltip = "Known employees of "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Employees",
+		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Team",
 				PeopleUiConstants.PANEL_EMPLOYEES, tooltip);
 		listTK.populateEmployeesPanel(innerPannel, org);
 	}

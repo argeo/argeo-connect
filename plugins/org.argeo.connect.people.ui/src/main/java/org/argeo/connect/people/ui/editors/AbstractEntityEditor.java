@@ -548,6 +548,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			} else {
 				CommonsJcrUtils.cancelAndCheckin(entity);
 				notifyCheckOutStateChange();
+				firePropertyChange(PROP_DIRTY);
 			}
 		} catch (RepositoryException re) {
 			throw new PeopleException(

@@ -18,7 +18,6 @@ package org.argeo.connect.people.ui.wizards;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.QueryManager;
@@ -34,13 +33,10 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.toolkits.MailingListToolkit;
+import org.argeo.connect.people.ui.utils.ColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.PeopleJcrUtils;
-import org.argeo.connect.people.utils.PersonJcrUtils;
 import org.argeo.jcr.JcrUtils;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -55,31 +51,26 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Dialog with a filtered list to add some members in a mailing list
+ * Parent for a dialog with a filtered list to add some references
  */
-public class AddMembersDialog extends TrayDialog {
-	private static final long serialVersionUID = 5641280645351822123L;
+public abstract class AddReferenceDialog extends TrayDialog {
 
+	private static final long serialVersionUID = 8032393989247669006L;
 	// this page widgets and UI objects
 	private TableViewer entityViewer;
 	private final String title;
 	private MailingListToolkit mlToolkit;
 
 	// business objects
-	private final List<Row> selectedItems = new ArrayList<Row>();
+	private List<Row> selectedItems = new ArrayList<Row>();
 	private Session session;
-	private Node referencingNode;
 	private String[] toSearchNodeTypes;
-	private PeopleService peopleService;
 
-	public AddMembersDialog(Shell parentShell, String title,
-			PeopleService peopleService, Node referencingNode,
-			String[] toSearchNodeTypes) {
+	public AddReferenceDialog(Shell parentShell, String title,
+			PeopleService peopleService, String[] toSearchNodeTypes) {
 		super(parentShell);
 		this.mlToolkit = new MailingListToolkit();
 		this.title = title;
-		this.peopleService = peopleService;
-		this.referencingNode = referencingNode;
 		this.toSearchNodeTypes = toSearchNodeTypes;
 		session = CommonsJcrUtils.login(peopleService.getRepository());
 	}
@@ -89,70 +80,25 @@ public class AddMembersDialog extends TrayDialog {
 	}
 
 	protected Control createDialogArea(Composite parent) {
-		Composite dialogarea = (Composite) super.createDialogArea(parent);
-		dialogarea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		Composite dialogArea = (Composite) super.createDialogArea(parent);
+		dialogArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		// Add the filtered / selectable list
-		entityViewer = mlToolkit.createControl(dialogarea, selectedItems);
+		entityViewer = mlToolkit.createItemsViewerWithCheckBox(dialogArea,
+				selectedItems, getColumnsDef());
 		entityViewer.setContentProvider(new MyContentProvider());
-		// entityViewer
-		// .addDoubleClickListener(new mlToolkit.AddDoubleClickListener() {
-		// @Override
-		// protected void add(List<Node> nodes) {
-		// // String defaultMail = PeopleJcrUtils
-		// // .getDefaultContactValue(person,
-		// // PeopleTypes.PEOPLE_EMAIL);
-		// // if (CommonsJcrUtils.isEmptyString(defaultMail))
-		// // skippedPerson
-		// // .append(PersonJcrUtils
-		// // .getPersonDisplayName(person))
-		// // .append("; ");
-		// // else {
-		// // // Node createdNode =
-		// // peopleService.createEntityReference(
-		// // referencingNode, person, defaultMail);
-		// // }
-		// }
-		// });
 		parent.pack();
 		// initialize with no filter
 		entityViewer.setInput("");
-		return dialogarea;
+		return dialogArea;
 	}
 
-	protected boolean performFinish() {
-		StringBuilder skippedPerson = new StringBuilder();
+	protected abstract List<ColumnDefinition> getColumnsDef();
 
-		for (Row personRow : selectedItems) {
-			Node person;
-			try {
-				person = personRow.getNode(PeopleTypes.PEOPLE_PERSON);
-			} catch (RepositoryException e) {
-				throw new PeopleException("Unable to get person node from row",
-						e);
-			}
-			String defaultMail = PeopleJcrUtils.getDefaultContactValue(person,
-					PeopleTypes.PEOPLE_EMAIL);
-			if (CommonsJcrUtils.isEmptyString(defaultMail))
-				skippedPerson.append(
-						PersonJcrUtils.getPersonDisplayName(person)).append(
-						"; ");
-			else {
-				// Node createdNode =
-				peopleService.createEntityReference(referencingNode, person,
-						defaultMail);
-			}
-		}
+	protected abstract boolean performFinish();
 
-		if (skippedPerson.length() > 0) {
-			skippedPerson.substring(0, skippedPerson.length() - 2);
-			String msg = "Following persons have no defined mail adress, "
-					+ "they could not be added: ";
-
-			MessageDialog.openError(getShell(), "Non valid information", msg
-					+ skippedPerson.toString());
-		}
-		return true;
+	protected List<Row> getSelectedItems() {
+		return selectedItems;
 	}
 
 	@Override

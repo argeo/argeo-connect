@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.utils.ColumnDefinition;
 
 public class RowIteratorToCalcWriter {
 

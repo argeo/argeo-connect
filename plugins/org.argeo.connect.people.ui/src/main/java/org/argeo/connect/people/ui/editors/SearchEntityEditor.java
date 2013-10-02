@@ -68,8 +68,6 @@ public class SearchEntityEditor extends EditorPart {
 		setInput(input);
 		SearchEntityEditorInput sei = (SearchEntityEditorInput) getEditorInput();
 		entityType = sei.getName();
-
-		setPartName("Search");
 	}
 
 	@Override
@@ -194,6 +192,11 @@ public class SearchEntityEditor extends EditorPart {
 		v.addDoubleClickListener(peopleUiService
 				.getNewNodeListDoubleClickListener(peopleService));
 		entityViewer = v;
+	}
+
+	// Exposes to children classes
+	protected String getCurrNodeType() {
+		return entityType;
 	}
 
 	/* DEPENDENCY INJECTION */

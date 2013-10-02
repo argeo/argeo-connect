@@ -4,17 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Node;
-import javax.jcr.PropertyType;
 import javax.jcr.query.Row;
 
-import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.editors.AbstractEntityEditor;
 import org.argeo.connect.people.ui.providers.SimpleJcrRowLabelProvider;
+import org.argeo.connect.people.ui.utils.ColumnDefinition;
 import org.argeo.connect.people.ui.utils.MailListComparator;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.eclipse.jface.viewers.CellEditor;
@@ -58,14 +56,15 @@ public class MailingListToolkit {
 	 * create a table viewer with a column for selected items. Note that it is
 	 * caller responsability to set a contentprovider
 	 **/
-	public TableViewer createControl(Composite parent, List<Row> selectedItems) {
+	public TableViewer createItemsViewerWithCheckBox(Composite parent,
+			List<Row> selectedItems, List<ColumnDefinition> columns) {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
 		// TODO clean this: we must 1st create the composite for the filter,
 		// then the table, then the filter itself
 		Composite filterCmp = new Composite(parent, SWT.NO_FOCUS);
 		filterCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		TableViewer viewer = createItemsViewer(parent, selectedItems);
+		TableViewer viewer = createItemsViewer(parent, selectedItems, columns);
 		addFilterPanel(filterCmp, viewer);
 		parent.layout();
 		return viewer;
@@ -74,7 +73,7 @@ public class MailingListToolkit {
 	}
 
 	private TableViewer createItemsViewer(Composite parent,
-			final List<Row> selectedItems) {
+			final List<Row> selectedItems, List<ColumnDefinition> columns) {
 		int style = SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL;
 		Table table = new Table(parent, style);
 		table.setLinesVisible(true);
@@ -111,29 +110,23 @@ public class MailingListToolkit {
 			}
 		});
 
-		col = ViewerUtils.createTableViewerColumn(itemsViewer, "Last Name",
-				SWT.NONE, 120);
-		col.setLabelProvider(new SimpleJcrRowLabelProvider(
-				PeopleTypes.PEOPLE_PERSON, PeopleNames.PEOPLE_LAST_NAME));
-		col.getColumn().addSelectionListener(
-				getSelectionAdapter(1, PropertyType.STRING,
-						PeopleTypes.PEOPLE_PERSON,
-						PeopleNames.PEOPLE_LAST_NAME, comparator, itemsViewer));
+		int i = 1;
+		for (ColumnDefinition colDef : columns) {
+			col = ViewerUtils.createTableViewerColumn(itemsViewer,
+					colDef.headerLabel, SWT.NONE, colDef.columnSize);
+			col.setLabelProvider(new SimpleJcrRowLabelProvider(
+					colDef.selectorName, colDef.propertyName));
+			col.getColumn().addSelectionListener(
+					getSelectionAdapter(i, colDef.propertyType,
+							colDef.selectorName, colDef.propertyName,
+							comparator, itemsViewer));
+			i++;
+		}
 
-		col = ViewerUtils.createTableViewerColumn(itemsViewer, "First Name",
-				SWT.NONE, 120);
-		col.setLabelProvider(new SimpleJcrRowLabelProvider(
-				PeopleTypes.PEOPLE_PERSON, PeopleNames.PEOPLE_FIRST_NAME));
-		col.getColumn()
-				.addSelectionListener(
-						getSelectionAdapter(1, PropertyType.STRING,
-								PeopleTypes.PEOPLE_PERSON,
-								PeopleNames.PEOPLE_FIRST_NAME, comparator,
-								itemsViewer));
-
+		ColumnDefinition firstCol = columns.get(0);
 		// IMPORTANT: initialize comparator before setting it
-		comparator.setColumn(PropertyType.STRING, PeopleTypes.PEOPLE_PERSON,
-				PeopleNames.PEOPLE_LAST_NAME);
+		comparator.setColumn(firstCol.propertyType, firstCol.selectorName,
+				firstCol.propertyName);
 		itemsViewer.setComparator(comparator);
 
 		return itemsViewer;
@@ -192,7 +185,7 @@ public class MailingListToolkit {
 			if ((Boolean) value && !selectedItems.contains(element))
 				selectedItems.add((Row) element);
 			else if (!(Boolean) value && selectedItems.contains(element))
-				selectedItems.remove((Node) element);
+				selectedItems.remove((Row) element);
 			viewer.update(element, null);
 		}
 	}

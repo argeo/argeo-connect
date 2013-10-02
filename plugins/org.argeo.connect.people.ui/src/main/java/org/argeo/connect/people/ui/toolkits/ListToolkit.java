@@ -218,9 +218,9 @@ public class ListToolkit {
 	public void populateMembersPanel(Composite panel, final Node entity) {
 		panel.setLayout(new GridLayout());
 		// Create new button
-		final Button addBtn = toolkit.createButton(panel, "Add member",
+		final Button addBtn = toolkit.createButton(panel, "Add crew",
 				SWT.PUSH);
-		configureAddReferenceButton(addBtn, entity, "Add a new group member",
+		configureAddReferenceButton(addBtn, entity, "Add a new crew member",
 				false, PeopleTypes.PEOPLE_PERSON);
 
 		// Corresponding list

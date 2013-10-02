@@ -21,7 +21,6 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.Source;
 import javax.jcr.query.qom.StaticOperand;
 
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
@@ -30,11 +29,12 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.commands.AddEntityReferenceWithPosition;
-import org.argeo.connect.people.ui.extracts.ColumnDefinition;
+import org.argeo.connect.people.ui.commands.GetCalcExtract;
 import org.argeo.connect.people.ui.extracts.ExtractDefinition;
 import org.argeo.connect.people.ui.extracts.ICalcExtractProvider;
 import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.ui.providers.SimpleJcrRowLabelProvider;
+import org.argeo.connect.people.ui.utils.ColumnDefinition;
 import org.argeo.connect.people.ui.utils.MailListComparator;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -55,6 +55,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
@@ -72,7 +73,6 @@ public class MailingListEditor extends GroupEditor implements
 			+ ".mailingListEditor";
 
 	private TableViewer membersViewer;
-	private Text filterTxt;
 
 	// private GroupToolkit groupToolkit;
 
@@ -82,25 +82,75 @@ public class MailingListEditor extends GroupEditor implements
 		// getPeopleServices(), getPeopleUiServices());
 	}
 
-	protected void populateMainInfoDetails(Composite parent) {
+	// protected void populateMainInfoDetails(Composite parent) {
+	// super.populateMainInfoDetails(parent);
+	// }
+
+	private String getCurrentMail() {
+		StringBuilder builder = new StringBuilder();
+		try {
+			RowIterator ri = refreshFilteredList((String) membersViewer
+					.getInput());
+			while (ri.hasNext()) {
+				Row row = ri.nextRow();
+				Node node;
+				node = row.getNode(PeopleTypes.PEOPLE_MAILING_LIST_ITEM);
+				builder.append(
+						node.getProperty(PeopleNames.PEOPLE_ROLE).getString())
+						.append(",");
+			}
+			return builder.toString();
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to retrieved current mails ", e);
+		}
+	}
+
+	@Override
+	protected void populateTabFolder(CTabFolder folder) {
+		// The member list
+		String tooltip = "Members of mailing list"
+				+ JcrUtils.get(getEntity(), Property.JCR_TITLE);
+		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
+				"Members", PeopleUiConstants.PANEL_MEMBERS, tooltip);
+		membersViewer = createMembersList(innerPannel, getEntity());
+	}
+
+	@Override
+	public RowIterator getRowIterator(String extractId) {
+		return refreshFilteredList((String) membersViewer.getInput());
+	}
+
+	@Override
+	public List<ColumnDefinition> getColumnDefinition(String extractId) {
+		return ExtractDefinition.EXTRACT_SIMPLE_MAILING_LIST;
+	}
+
+	public TableViewer createMembersList(Composite parent, final Node entity) {
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		// The header buttons
+		Composite buttonsCmp = toolkit.createComposite(parent);
+		buttonsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		buttonsCmp.setLayout(new GridLayout(4, false));
+
+		Text text = createFilterText(buttonsCmp);
+		
+		Button addBtn = toolkit
+				.createButton(buttonsCmp, "Add member", SWT.PUSH);
+		configureAddMemberButton(addBtn, entity,
+				"Add new members to this mailing list",
+				PeopleTypes.PEOPLE_PERSON);
+
+		Button exportBtn = toolkit.createButton(buttonsCmp, "Export", SWT.PUSH);
+		configureCallExtractButton(exportBtn,
+				"Export current results as a tabular file.");
 
 		// Add a button that triggers a "mailto action" with the mail of all
-		// items that are currently displayed
-		// in the bottom table.
-
-		// TODO remove this just to remember the various patterns while offline.
-		// UrlLauncher launcher = RWT.getClient().getService( UrlLauncher.class
-		// );
-		// launcher.openURL( "http://www.eclipse.org/" );
-		// launcher.openURL( RWT.getResourceManager().getLocation( "my-doc.pdf"
-		// ) );
-		// launcher.openURL( "mailto:someone@nowhere.org?cc=other@nowhere.org"
-		// + "&subject=Hello%3F&body=RAP%20is%20awesome!" );
-		// launcher.openURL( "tel:555-123456" );
-
-		final Button button = toolkit.createButton(parent, "Send grouped mail",
+		// items that are currently displayed in the bottom table.
+		final Button button = toolkit.createButton(buttonsCmp, "Mail to",
 				SWT.PUSH);
-		// button.setToolTipText(tooltip);
+		button.setToolTipText("Open a mail client with the mails of all "
+				+ "members of this list that fit current search already set as BCC"
+				+ " target");
 		button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
 
 		button.addSelectionListener(new SelectionListener() {
@@ -117,103 +167,47 @@ public class MailingListEditor extends GroupEditor implements
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-		super.populateMainInfoDetails(parent);
-
-	}
-
-	private String getCurrentMail() {
-		StringBuilder builder = new StringBuilder();
-		try {
-
-			RowIterator ri = refreshFilteredList((String) membersViewer
-					.getInput());
-
-			while (ri.hasNext()) {
-				Row row = ri.nextRow();
-				Node node;
-				node = row.getNode(PeopleTypes.PEOPLE_MAILING_LIST_ITEM);
-				builder.append(
-						node.getProperty(PeopleNames.PEOPLE_ROLE).getString())
-						.append(",");
-			}
-
-			return builder.toString();
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrieved current mails ", e);
-		}
-
-	}
-
-	@Override
-	protected void populateTabFolder(CTabFolder folder) {
-		// The member list
-		String tooltip = "Members of mailing list"
-				+ JcrUtils.get(getEntity(), Property.JCR_TITLE);
-		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
-				"Members", PeopleUiConstants.PANEL_MEMBERS, tooltip);
-		createMembersPanel(innerPannel, getEntity());
-	}
-
-	public void createMembersPanel(Composite parent, final Node entity) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-		createFilterPanel(parent);
-		createMembersList(parent, entity);
-		parent.layout();
-	}
-
-	@Override
-	public RowIterator getRowIterator(String extractId) {
-		return refreshFilteredList((String) membersViewer.getInput());
-	}
-
-	@Override
-	public List<ColumnDefinition> getColumnDefinition(String extractId) {
-		return ExtractDefinition.EXTRACT_SIMPLE_MAILING_LIST;
-	}
-
-	public void createMembersList(Composite parent, final Node entity) {
-		// Maybe add more functionalities here
-		// Create new button
-		final Button addBtn = toolkit.createButton(parent, "Add member",
-				SWT.PUSH);
-		configureAddMemberButton(addBtn, entity,
-				"Add new members to this mailing list",
-				PeopleTypes.PEOPLE_PERSON);
 
 		// Corresponding list
 		Composite tableComp = toolkit.createComposite(parent);
 		tableComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		membersViewer = createTableViewer(tableComp);
-		membersViewer.setContentProvider(new MyContentProvider());
+		final TableViewer tableViewer = createTableViewer(tableComp);
+		tableViewer.setContentProvider(new MyContentProvider());
 
 		// Add life cycle management
 		final EntityAbstractFormPart sPart = new EntityAbstractFormPart() {
 			public void refresh() {
 				super.refresh();
 				// refreshFilteredList((String) membersViewer.getInput());
-				membersViewer.refresh();
+				tableViewer.refresh();
 			}
 		};
 		sPart.initialize(getManagedForm());
 		getManagedForm().addPart(sPart);
-		membersViewer.setInput("");
+		addFilterListener(text, tableViewer);
+		tableViewer.setInput("");
+		return tableViewer;
 	}
 
-	public void createFilterPanel(Composite parent) {
-		// Text Area for the filter
-		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
-				| SWT.ICON_CANCEL);
+	private Text createFilterText(Composite parent) {
+		Text filterTxt = toolkit.createText(parent, "", SWT.BORDER | SWT.SEARCH
+				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		filterTxt.setMessage(PeopleUiConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		return filterTxt;
+	}
+
+	private void addFilterListener(final Text filterTxt,
+			final TableViewer viewer) {
 		filterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 5003010530960334977L;
 
 			public void modifyText(ModifyEvent event) {
-				// might be better to use an asynchronous Refresh();
-				membersViewer.setInput(filterTxt.getText());
+				viewer.setInput(filterTxt.getText());
 			}
 		});
+
 	}
 
 	protected RowIterator refreshFilteredList(String filter) {
@@ -267,7 +261,7 @@ public class MailingListEditor extends GroupEditor implements
 			}
 			QueryObjectModel query;
 			query = factory.createQuery(jointSrc, defaultC, null, null);
-			query.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
+			// query.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
 			QueryResult result = query.execute();
 			return result.getRows();
 		} catch (RepositoryException e) {
@@ -451,17 +445,36 @@ public class MailingListEditor extends GroupEditor implements
 					params.put(
 							AddEntityReferenceWithPosition.PARAM_TO_SEARCH_NODE_TYPE,
 							nodeTypeToSearch);
-					params.put(
-							AddEntityReferenceWithPosition.PARAM_TO_SEARCH_NODE_TYPE,
-							nodeTypeToSearch);
 					params.put(AddEntityReferenceWithPosition.PARAM_DIALOG_ID,
-							PeopleUiConstants.DIALOG_ADD_ML_MEMBERs);
+							PeopleUiConstants.DIALOG_ADD_ML_MEMBERS);
 					CommandUtils.callCommand(AddEntityReferenceWithPosition.ID,
 							params);
 				} catch (RepositoryException e1) {
 					throw new PeopleException(
 							"Unable to get parent Jcr identifier", e1);
 				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+
+	}
+
+	private void configureCallExtractButton(Button button, String tooltip) {
+		button.setToolTipText(tooltip);
+		button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
+		button.addSelectionListener(new SelectionListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Map<String, String> params = new HashMap<String, String>();
+				// params.put(
+				// GetCalcExtract.PARAM_EXTACT_ID,
+				// "");
+				CommandUtils.callCommand(GetCalcExtract.ID, params);
 			}
 
 			@Override

@@ -5,8 +5,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 
-import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
@@ -52,7 +52,7 @@ public class SimpleJcrRowLabelProvider extends ColumnLabelProvider implements
 			Value value = null;
 			try {
 				value = currNode.getProperty(propertyName).getValue();
-			} catch (ItemNotFoundException infe) {
+			} catch (PathNotFoundException pnfe) {
 				return "";
 			}
 
