@@ -78,7 +78,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void createToolkits() {
-		entityTK = new EntityToolkit(toolkit, getManagedForm(), this);
+		entityTK = new EntityToolkit(toolkit, getManagedForm());
 		listTK = new ListToolkit(toolkit, getManagedForm(),
 				getPeopleServices(), getPeopleUiServices());
 	}
@@ -124,7 +124,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Contact details", PeopleUiConstants.PANEL_CONTACT_DETAILS,
 				tooltip);
-		entityTK.populateContactPanelWithNotes(innerPannel, person);
+		entityTK.createContactPanelWithNotes(innerPannel, person);
 
 		// Jobs panel
 		tooltip = "Organisations linked to "
@@ -401,7 +401,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		// Mailing list management
 		Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		entityTK.populateGroupMembershipROPanel(mlCmp, person);
+		entityTK.populateGroupMembershipPanel(mlCmp, person);
 
 		// Tag management.
 		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
@@ -410,7 +410,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 
 		Composite leftCmp = toolkit.createComposite(tagsCmp, SWT.NO_FOCUS);
 		leftCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		entityTK.populateTagsROPanel(leftCmp, person);
+		entityTK.populateTagsPanel(leftCmp, person);
 
 		Composite rightCmp = toolkit.createComposite(tagsCmp, SWT.NO_FOCUS);
 		rightCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));

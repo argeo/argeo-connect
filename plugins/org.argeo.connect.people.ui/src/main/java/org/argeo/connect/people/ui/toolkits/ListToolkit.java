@@ -89,8 +89,7 @@ public class ListToolkit {
 		try {
 			viewer.addDoubleClickListener(peopleUiService
 					.getNewNodeListDoubleClickListener(peopleService, entity
-							.getPrimaryNodeType().getName(),
-							PeopleUiConstants.PANEL_JOBS));
+							.getPrimaryNodeType().getName()));
 		} catch (RepositoryException re) {
 			throw new PeopleException("Error adding double click on job list",
 					re);
@@ -151,9 +150,7 @@ public class ListToolkit {
 			viewer.setContentProvider(new BasicNodeListContentProvider());
 			viewer.addDoubleClickListener(peopleUiService
 					.getNewNodeListDoubleClickListener(peopleService, entity
-							.getPrimaryNodeType().getName(),
-							PeopleUiConstants.PANEL_EMPLOYEES));
-
+							.getPrimaryNodeType().getName()));
 			// Add life cycle management
 			final EntityAbstractFormPart sPart = new EntityAbstractFormPart() {
 				public void refresh() {
@@ -194,9 +191,7 @@ public class ListToolkit {
 			viewer.setContentProvider(new BasicNodeListContentProvider());
 			viewer.addDoubleClickListener(peopleUiService
 					.getNewNodeListDoubleClickListener(peopleService, entity
-							.getPrimaryNodeType().getName(),
-							PeopleUiConstants.PANEL_PRODUCTIONS));
-
+							.getPrimaryNodeType().getName()));
 			// Add life cycle management
 			final EntityAbstractFormPart sPart = new EntityAbstractFormPart() {
 				public void refresh() {
@@ -218,8 +213,7 @@ public class ListToolkit {
 	public void populateMembersPanel(Composite panel, final Node entity) {
 		panel.setLayout(new GridLayout());
 		// Create new button
-		final Button addBtn = toolkit.createButton(panel, "Add crew",
-				SWT.PUSH);
+		final Button addBtn = toolkit.createButton(panel, "Add crew", SWT.PUSH);
 		configureAddReferenceButton(addBtn, entity, "Add a new crew member",
 				false, PeopleTypes.PEOPLE_PERSON);
 
@@ -238,8 +232,7 @@ public class ListToolkit {
 
 			viewer.addDoubleClickListener(peopleUiService
 					.getNewNodeListDoubleClickListener(peopleService, entity
-							.getPrimaryNodeType().getName(),
-							PeopleUiConstants.PANEL_MEMBERS));
+							.getPrimaryNodeType().getName()));
 		} catch (RepositoryException re) {
 			throw new PeopleException("Error adding double clic on the "
 					+ "film participation list", re);

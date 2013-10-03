@@ -27,7 +27,7 @@ public class NodeListDoubleClickListener implements IDoubleClickListener {
 	private PeopleService peopleService;
 	private String parentNodeType = null;
 
-	private String tableId = null;
+	// private String tableId = null;
 
 	/**
 	 * Set people service and table id to enable opening of the correct editor
@@ -43,11 +43,11 @@ public class NodeListDoubleClickListener implements IDoubleClickListener {
 		this.parentNodeType = parentNodeType;
 	}
 
-	public NodeListDoubleClickListener(PeopleService peopleService,
-			String parentNodeType, String tableId) {
-		this.peopleService = peopleService;
-		this.parentNodeType = parentNodeType;
-	}
+	// public NodeListDoubleClickListener(PeopleService peopleService,
+	// String parentNodeType, String tableId) {
+	// this.peopleService = peopleService;
+	// this.parentNodeType = parentNodeType;
+	// }
 
 	protected void openNodeEditor(String nodeId, String editorId) {
 		try {

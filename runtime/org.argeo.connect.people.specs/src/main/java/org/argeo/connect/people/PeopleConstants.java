@@ -23,7 +23,26 @@ public interface PeopleConstants {
 	public final static Integer ROLE_ADMIN = 2;
 
 	/* CONTACT CATEGORIES */
-	public final static String PEOPLE_CONTACT_CATEGORY_WORK = "Work";
+	public final static String CONTACT_CATEGORY_WORK = "Work";
+	public final static String CONTACT_CATEGORY_PRIVATE = "Private";
+	public final static String CONTACT_CATEGORY_OTHER = "Other";
+
+	// public final static String CONTACT_LABEL_PRIVATE = "Private";
+	public final static String CONTACT_LABEL_OTHER = "Other";
+
+	public final static String CONTACT_LABEL_FAX = "Fax";
+	public final static String CONTACT_LABEL_MOBILE = "Mobile";
+	public final static String CONTACT_LABEL_FIX = "Fix";
+	public final static String CONTACT_LABEL_DIRECT = "Direct";
+	public final static String CONTACT_LABEL_RECEPTION = "Reception";
+
+	public final static String CONTACT_CATEGORY_WEBSITE = "Website";
+	public final static String CONTACT_CATEGORY_SOCIALMEDIA = "Social Media";
+
+	public final static String CONTACT_LABEL_GOOGLEPLUS = "Google+";
+	public final static String CONTACT_LABEL_FACEBOOK = "Facebook";
+	public final static String CONTACT_LABEL_TWITTER = "Twitter";
+	public final static String CONTACT_LABEL_XING = "Xing";
 
 	/* LANGUAGE CONSTANTS */
 	public final static String LANG_EN = "en";

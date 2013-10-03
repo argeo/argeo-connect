@@ -152,6 +152,9 @@ mixin
 // 
 [people:contact] > nt:unstructured, people:orderable
 - people:contactValue (STRING) 
+// a shortcut to manage primary contact
+// should be refined
+- people:isPrimary (BOOLEAN) ='false' a 
 // work, home, other
 - people:contactCategory (STRING)
 // optional label 

@@ -18,9 +18,9 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
- * Opens the dialog to edit the reference node to a given entity. Jcr Identifier
- * of the reference node to edit and its nearest versionable ancestor must be
- * passed as parameters.
+ * Opens the dialog to edit reference to a given entity. Jcr Identifier of the
+ * reference node to edit and its nearest versionable ancestor must be passed as
+ * parameters.
  */
 public class EditEntityReference extends AbstractHandler {
 	// private final static Log log =
@@ -39,14 +39,14 @@ public class EditEntityReference extends AbstractHandler {
 
 		String versParentJcrId = event
 				.getParameter(PARAM_VERSIONABLE_PARENT_JCR_ID);
-		String toRemoveJcrId = event.getParameter(PARAM_TOEDIT_JCR_ID);
+		String toEditJcrId = event.getParameter(PARAM_TOEDIT_JCR_ID);
 
 		Session session = null;
 		try {
 			session = peopleService.getRepository().login();
 			Node versionableParent = session
 					.getNodeByIdentifier(versParentJcrId);
-			Node toRemoveNode = session.getNodeByIdentifier(toRemoveJcrId);
+			Node toEditNode = session.getNodeByIdentifier(toEditJcrId);
 
 			boolean wasCheckedOut = CommonsJcrUtils
 					.isNodeCheckedOutByMe(versionableParent);

@@ -88,8 +88,7 @@ public class GroupToolkit {
 		try {
 			viewer.addDoubleClickListener(peopleUiService
 					.getNewNodeListDoubleClickListener(peopleService, entity
-							.getPrimaryNodeType().getName(),
-							PeopleUiConstants.PANEL_JOBS));
+							.getPrimaryNodeType().getName()));
 		} catch (RepositoryException re) {
 			throw new PeopleException("Error adding double click on job list",
 					re);

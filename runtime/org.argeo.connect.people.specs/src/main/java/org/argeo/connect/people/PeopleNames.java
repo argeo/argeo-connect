@@ -10,9 +10,9 @@ public interface PeopleNames {
 	/** Distinguished names */
 	// public static String PEOPLE_DN = "people:dn";
 	/** Class 3 UUID of the distinguished name in UTF-8 */
-	//public static String PEOPLE_PERSON_UUID = "people:personUuid";
+	// public static String PEOPLE_PERSON_UUID = "people:personUuid";
 	/** Date of birth */
-	//public static String PEOPLE_DATE_OF_BIRTH = "people:dateOfBirth";
+	// public static String PEOPLE_DATE_OF_BIRTH = "people:dateOfBirth";
 	/** A number of people */
 	public static String PEOPLE_COUNT = "people:count";
 
@@ -47,7 +47,9 @@ public interface PeopleNames {
 	public final static String PEOPLE_REF_UID = "people:refUid";
 
 	// an integer to enable ordering, 1 is the most prefered
-	public final static String PEOPLE_PREF = "people:pref";
+	// public final static String PEOPLE_PREF = "people:pref";
+	// Flag a node as primary node in a set
+	public final static String PEOPLE_IS_PRIMARY = "people:isPrimary";
 
 	/* PERSONS */
 	public final static String PEOPLE_FIRST_NAME = "people:firstName";
@@ -122,9 +124,6 @@ public interface PeopleNames {
 
 	// the iso code of a given resource
 	public final static String PEOPLE_ISO_CODE = "people:isoCode";
-
-	// Flag a node as primary node in a set
-	// public final static String PEOPLE_IS_PRIMARY = "people:isPrimary";
 
 	/* GROUP AND JOBS MANAGEMENT */
 	// An optional department within the org corresponding to the current

@@ -82,7 +82,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			Node orga) throws RepositoryException {
 		if (!CommonsJcrUtils.isEmptyString(category)) {
 			contactNode.setProperty(PEOPLE_CONTACT_CATEGORY, category);
-			if (category.equals(PeopleConstants.PEOPLE_CONTACT_CATEGORY_WORK)
+			if (category.equals(PeopleConstants.CONTACT_CATEGORY_WORK)
 					&& orga != null)
 				contactNode.setProperty(PEOPLE_REF_UID, orga.getPath());
 		}
@@ -128,7 +128,10 @@ public class PeopleJcrUtils implements PeopleNames {
 		}
 	}
 
-	/** Return primary contact given a node type */
+	/**
+	 * Return primary contact given a node type. or null if none defined as
+	 * primary
+	 */
 	public static String getDefaultContactValue(Node item, String nodeType) {
 		try {
 			if (item.hasNode(PEOPLE_CONTACTS)) {
@@ -136,18 +139,13 @@ public class PeopleJcrUtils implements PeopleNames {
 				NodeIterator ni = contacts.getNodes();
 				while (ni.hasNext()) {
 					Node currNode = ni.nextNode();
-
-					if (currNode.isNodeType(nodeType))
-						return CommonsJcrUtils.getStringValue(currNode,
-								PEOPLE_CONTACT_VALUE);
-
-					// TODO take preference into account
-					// Boolean isPrimary = CommonsJcrUtils.getBooleanValue(
-					// currNode, PEOPLE_IS_PRIMARY);
-					// if (currNode.isNodeType(nodeType) && isPrimary != null
-					// && isPrimary.booleanValue())
-					// return CommonsJcrUtils.getStringValue(currNode,
-					// PEOPLE_CONTACT_VALUE);
+					if (currNode.isNodeType(nodeType)
+							&& currNode.hasProperty(PEOPLE_IS_PRIMARY)) {
+						if (currNode.getProperty(PEOPLE_IS_PRIMARY)
+								.getBoolean()) // && isPrimary.booleanValue())
+							return CommonsJcrUtils.getStringValue(currNode,
+									PEOPLE_CONTACT_VALUE);
+					}
 				}
 			}
 			return null;
@@ -189,23 +187,65 @@ public class PeopleJcrUtils implements PeopleNames {
 		}
 	}
 
-	/** Create a contact node and ass basic info */
+	// /** Create a contact node and add basic info */
+	// public static Node createContact(Node parentNode, String nodeType,
+	// String name, String value, int pref, String contactCategory,
+	// String contactType) {
+	// try {
+	// Node contacts = CommonsJcrUtils.getOrCreateDirNode(parentNode,
+	// PEOPLE_CONTACTS);
+	// Node contact = contacts.addNode(name, nodeType);
+	// contact.setProperty(PEOPLE_CONTACT_VALUE, value);
+	// contact.setProperty(PEOPLE_PREF, pref);
+	// setContactType(contact, contactType);
+	// setContactCategory(contact, contactCategory, null);
+	// return contact;
+	// } catch (RepositoryException re) {
+	// throw new ArgeoException("Unable to add a new contact node", re);
+	// }
+	// }
+
+	/**
+	 * if marking a contact as primary. All contact with same type for same
+	 * entity are then marked as NOT primary. if marking as not primary only the
+	 * flag for current contact is set to false.
+	 */
+	public static void markAsPrimary(Node primaryContact, boolean primary) {
+		try {
+			if (primary) {
+				Node parent = primaryContact.getParent();
+				String currNodeType = primaryContact.getPrimaryNodeType()
+						.getName();
+				NodeIterator ni = parent.getNodes();
+				while (ni.hasNext()) {
+					Node nextNode = ni.nextNode();
+					if (nextNode.isNodeType(currNodeType))
+						nextNode.setProperty(PeopleNames.PEOPLE_IS_PRIMARY,
+								false);
+				}
+			}
+			primaryContact.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, primary);
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Unable set primary flag", re);
+		}
+	}
+
+	/** Create a contact node and add basic info */
 	public static Node createContact(Node parentNode, String nodeType,
-			String name, String value, int pref, String contactCategory,
+			String name, String value, boolean primary, String contactCategory,
 			String contactType) {
 		try {
 			Node contacts = CommonsJcrUtils.getOrCreateDirNode(parentNode,
 					PEOPLE_CONTACTS);
 			Node contact = contacts.addNode(name, nodeType);
 			contact.setProperty(PEOPLE_CONTACT_VALUE, value);
-			contact.setProperty(PEOPLE_PREF, pref);
+			markAsPrimary(contact, primary);
 			setContactType(contact, contactType);
 			setContactCategory(contact, contactCategory, null);
 			return contact;
 		} catch (RepositoryException re) {
 			throw new ArgeoException("Unable to add a new contact node", re);
 		}
-
 	}
 
 	/**
@@ -219,9 +259,10 @@ public class PeopleJcrUtils implements PeopleNames {
 	 *            an optional label
 	 */
 	public static Node createEmail(Node parentNode, String emailAddress,
-			int pref, String contactCategory, String contactType) {
+			boolean primary, String contactCategory, String contactType) {
 		return createContact(parentNode, PeopleTypes.PEOPLE_EMAIL,
-				emailAddress, emailAddress, pref, contactCategory, contactType);
+				emailAddress, emailAddress, primary, contactCategory,
+				contactType);
 	}
 
 	/**
@@ -236,26 +277,27 @@ public class PeopleJcrUtils implements PeopleNames {
 	 *            an optional label
 	 */
 	public static Node createWebsite(Node parentNode, String urlString,
-			int pref, String contactCategory, String contactType) {
+			boolean primary, String contactCategory, String contactType) {
 		return createContact(parentNode, PeopleTypes.PEOPLE_URL,
-				urlString.replaceAll("[^a-zA-Z0-9]", ""), urlString, pref,
+				urlString.replaceAll("[^a-zA-Z0-9]", ""), urlString, primary,
 				contactCategory, contactType);
 	}
 
 	public static Node createPhone(Node parentNode, String phoneNumber,
-			int pref, String contactCategory, String contactType) {
-		return createContact(parentNode, PeopleTypes.PEOPLE_URL, "p"
+			boolean primary, String contactCategory, String contactType) {
+		return createContact(parentNode, PeopleTypes.PEOPLE_PHONE, "p"
 				+ phoneNumber.replaceAll("[^a-zA-Z0-9]", ""), phoneNumber,
-				pref, contactCategory, contactType);
+				primary, contactCategory, contactType);
 	}
 
 	public static Node createAddress(Node parentNode, String street1,
 			String street2, String zipCode, String city, String state,
-			String country, int pref, String contactCategory, String contactType) {
+			String country, boolean primary, String contactCategory,
+			String contactType) {
 		try {
 			Node address = createContact(parentNode,
 					PeopleTypes.PEOPLE_ADDRESS, PeopleTypes.PEOPLE_ADDRESS, "",
-					pref, contactCategory, contactType);
+					primary, contactCategory, contactType);
 			// set address fields
 			if (!CommonsJcrUtils.isEmptyString(street1))
 				address.setProperty(PEOPLE_STREET, street1);

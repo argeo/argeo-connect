@@ -27,14 +27,13 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 
 	}
 
-	@Override
-	public NodeListDoubleClickListener getNewNodeListDoubleClickListener(
-			PeopleService peopleService, String parentNodeType,
-			String currentTableId) {
-		return new NodeListDoubleClickListener(peopleService, parentNodeType,
-				currentTableId);
-
-	}
+//	@Override
+//	public NodeListDoubleClickListener getNewNodeListDoubleClickListener(
+//			PeopleService peopleService, String parentNodeType),
+//			String currentTableId) {
+//		return new NodeListDoubleClickListener(peopleService, parentNodeType);
+//
+//	}
 
 	@Override
 	public String getEditorIdFromNode(Node curNode) {

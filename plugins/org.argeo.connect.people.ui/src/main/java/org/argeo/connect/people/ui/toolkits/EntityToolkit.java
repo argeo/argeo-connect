@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.jcr.InvalidItemStateException;
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
@@ -23,18 +25,19 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.PeopleValueCatalogs;
 import org.argeo.connect.people.ui.JcrUiUtils;
+import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.commands.AddEntityReferenceWithPosition;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
-import org.argeo.connect.people.ui.editors.AbstractEntityEditor;
 import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -48,6 +51,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -56,6 +60,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -65,6 +70,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -76,8 +82,8 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
- * Centralize the creation of common controls (typically Text and composite
- * widget) for entity, to be used in various forms.
+ * Centralizes creation of common controls (typically Text and composite widget)
+ * for entity, to be used in various forms.
  */
 public class EntityToolkit {
 	// private final static Log log =
@@ -85,19 +91,20 @@ public class EntityToolkit {
 
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
-	private AbstractEntityEditor editor;
+
+	// private AbstractEntityEditor editor;
 
 	public EntityToolkit(FormToolkit toolkit, IManagedForm form) {
 		this.toolkit = toolkit;
 		this.form = form;
 	}
 
-	public EntityToolkit(FormToolkit toolkit, IManagedForm form,
-			AbstractEntityEditor editor) {
-		this.toolkit = toolkit;
-		this.form = form;
-		this.editor = editor;
-	}
+	// public EntityToolkit(FormToolkit toolkit, IManagedForm form,
+	// AbstractEntityEditor editor) {
+	// this.toolkit = toolkit;
+	// this.form = form;
+	// this.editor = editor;
+	// }
 
 	// ///////////////
 	// TEXT widgets
@@ -135,7 +142,7 @@ public class EntityToolkit {
 							150));
 					decoration.show();
 					decoration
-							.setDescriptionText("The lenght must only be a number: "
+							.setDescriptionText("Length can only be a number: "
 									+ lengthStr);
 				} else {
 					text.setBackground(null);
@@ -223,7 +230,7 @@ public class EntityToolkit {
 		}
 	}
 
-	public void populateGroupMembershipROPanel(final Composite parent,
+	public void populateGroupMembershipPanel(final Composite parent,
 			final Node entity) {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
 
@@ -263,8 +270,10 @@ public class EntityToolkit {
 						final Node parNode = node.getParent().getParent();
 						Link link = new Link(nlCmp, SWT.NONE);
 						link.setText("<a>"
-								+ CommonsJcrUtils.get(parNode,
-										Property.JCR_TITLE) + "</a>");
+								+ PeopleHtmlUtils
+										.cleanHtmlString(CommonsJcrUtils.get(
+												parNode, Property.JCR_TITLE))
+								+ "</a>");
 						link.setToolTipText(CommonsJcrUtils.get(parNode,
 								Property.JCR_DESCRIPTION));
 
@@ -288,10 +297,10 @@ public class EntityToolkit {
 						final Button deleteBtn = new Button(nlCmp, SWT.FLAT);
 						deleteBtn.setData(RWT.CUSTOM_VARIANT,
 								PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
-						deleteBtn.setImage(PeopleImages.DELETE_BTN);
+						deleteBtn.setImage(PeopleImages.DELETE_BTN_LEFT);
 						RowData rd = new RowData();
 						rd.height = 16;
-						rd.width = 16;
+						rd.width = 18;
 						deleteBtn.setLayoutData(rd);
 
 						deleteBtn.addSelectionListener(new SelectionAdapter() {
@@ -301,7 +310,6 @@ public class EntityToolkit {
 							public void widgetSelected(
 									final SelectionEvent event) {
 								try {
-
 									boolean wasCheckedOut = CommonsJcrUtils
 											.isNodeCheckedOutByMe(parNode);
 									if (!wasCheckedOut)
@@ -315,14 +323,16 @@ public class EntityToolkit {
 									throw new PeopleException(
 											"unable to initialise deletion", e);
 								}
-								// form.refresh();
-								// TODO : find a cleaner way to do that
-								if (editor != null)
-									editor.forceRefresh();
+								for (IFormPart part : form.getParts()) {
+									((AbstractFormPart) part).markStale();
+									part.refresh();
+								}
 							}
 						});
 
 					}
+					nlCmp.pack();
+					nlCmp.redraw();
 					nlCmp.layout();
 					parent.getParent().layout();
 				} catch (RepositoryException re) {
@@ -361,7 +371,7 @@ public class EntityToolkit {
 		form.addPart(editPart);
 	}
 
-	public void populateTagsROPanel(final Composite parent, final Node entity) {
+	public void populateTagsPanel(final Composite parent, final Node entity) {
 		parent.setLayout(new FormLayout());
 		// Show only TAGS for the time being, so it is the same for R/O & Edit
 		// mode
@@ -410,7 +420,9 @@ public class EntityToolkit {
 						Value[] values = entity.getProperty(
 								PeopleNames.PEOPLE_TAGS).getValues();
 						for (int i = 0; i < values.length; i++) {
-							String currStr = values[i].getString();
+							String currStr = PeopleHtmlUtils
+									.cleanHtmlString(values[i].getString());
+
 							tags.append("<i>#");
 							tags.append(currStr).append("&#160;");
 							tags.append("<small><a style=\"text-decoration:none;\" href=\"");
@@ -569,132 +581,402 @@ public class EntityToolkit {
 		}
 	}
 
-	public void populateContactPanelWithNotes(Composite panel, final Node entity) {
+	public void createContactPanelWithNotes(Composite panel, final Node entity) {
 		panel.setLayout(new GridLayout(2, false));
-		GridData gd;
-		final Composite contactListCmp = toolkit.createComposite(panel,
-				SWT.NO_FOCUS);
-		gd = new GridData(GridData.FILL_BOTH);
-		gd.grabExcessVerticalSpace = true;
-		gd.grabExcessHorizontalSpace = true;
-		contactListCmp.setLayoutData(gd);
+
+		final ScrolledComposite contactListCmp = new ScrolledComposite(panel,
+				SWT.NO_FOCUS | SWT.V_SCROLL | SWT.H_SCROLL);
+		contactListCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+				true));
+		contactListCmp.setLayout(new FillLayout());
+		final Composite innerCmp = new Composite(contactListCmp, SWT.NO_FOCUS);
+		// innerCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+		// true));
+		populateDisplayContactPanel(innerCmp, entity);
+		contactListCmp.setContent(innerCmp);
 
 		final Composite rightCmp = toolkit.createComposite(panel, SWT.NO_FOCUS);
-		gd = new GridData(GridData.FILL_BOTH);
-		gd.grabExcessVerticalSpace = true;
-		gd.grabExcessHorizontalSpace = true;
-		rightCmp.setLayoutData(gd);
-
+		rightCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		populateNotePanel(rightCmp, entity);
 
 		final Composite newContactCmp = toolkit.createComposite(panel,
 				SWT.NO_FOCUS);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.grabExcessHorizontalSpace = true;
+		GridData gd = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
 		gd.horizontalSpan = 2;
 		newContactCmp.setLayoutData(gd);
-
-		final EntityAbstractFormPart sPart = new EntityAbstractFormPart() {
-			public void refresh() {
-				try {
-					super.refresh();
-					refreshContactPanel(contactListCmp, entity, this);
-					for (String path : controls.keySet()) {
-						Text txt = controls.get(path);
-						Node currNode = entity.getSession().getNode(path);
-						String propName = (String) txt.getData("propName");
-						String value = CommonsJcrUtils.getStringValue(currNode,
-								propName);
-						if (value != null)
-							txt.setText(value);
-						txt.setEnabled(entity.isCheckedOut());
-					}
-				} catch (RepositoryException e) {
-					throw new PeopleException(
-							"Cannot refresh contact panel formPart", e);
-				}
-			}
-		};
-
 		populateAddContactPanel(newContactCmp, entity);
-
-		// This must be moved in the called method.
-		contactListCmp.setLayout(new GridLayout(2, false));
-		refreshContactPanel(contactListCmp, entity, sPart);
-		panel.layout();
-
-		sPart.initialize(form);
-		form.addPart(sPart);
 	}
 
-	public void populateContactPanel(final Composite panel, final Node entity) {
+	/**
+	 * @param panel
+	 * @param entity
+	 */
+	public void createContactPanel(final Composite panel, final Node entity) {
 		panel.setLayout(new GridLayout());
-		GridData gd;
-		// Hyperlink addNewMailLink = toolkit.createHyperlink(panel,
-		// "Add a new contact address", SWT.NO_FOCUS);
 
-		final Composite contactListCmp = toolkit.createComposite(panel,
-				SWT.NO_FOCUS);
-		gd = new GridData(GridData.FILL_BOTH);
-		gd.grabExcessVerticalSpace = true;
-		gd.grabExcessHorizontalSpace = true;
-		contactListCmp.setLayoutData(gd);
+		final ScrolledComposite contactListCmp = new ScrolledComposite(panel,
+				SWT.NO_FOCUS | SWT.V_SCROLL | SWT.H_SCROLL);
+		contactListCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+				true));
+		populateDisplayContactPanel(contactListCmp, entity);
 
 		final Composite newContactCmp = toolkit.createComposite(panel,
 				SWT.NO_FOCUS);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.grabExcessHorizontalSpace = true;
-		newContactCmp.setLayoutData(gd);
+		newContactCmp.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true,
+				false));
+		populateAddContactPanel(newContactCmp, entity);
+	}
 
-		final EntityAbstractFormPart sPart = new EntityAbstractFormPart() {
+	/** Manage display and update of existing contact Nodes */
+	private void populateDisplayContactPanel(final Composite panel,
+			final Node entity) {
+		panel.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+
+		final Map<String, Composite> contactCmps = new HashMap<String, Composite>();
+
+		final AbstractFormPart sPart = new AbstractFormPart() {
 			public void refresh() {
 				try {
 					super.refresh();
-					refreshContactPanel(contactListCmp, entity, this);
-					for (String path : controls.keySet()) {
-						Text txt = controls.get(path);
-						Node currNode = entity.getSession().getNode(path);
-						String propName = (String) txt.getData("propName");
-						String value = CommonsJcrUtils.getStringValue(currNode,
-								propName);
-						if (value != null)
-							txt.setText(value);
-						txt.setEnabled(entity.isCheckedOut());
+					// first: initialise composite for new contacts
+					Node contactsPar = entity
+							.getNode(PeopleNames.PEOPLE_CONTACTS);
+					NodeIterator ni = contactsPar.getNodes();
+					while (ni.hasNext()) {
+						Node currNode = ni.nextNode();
+						String currJcrId = currNode.getIdentifier();
+						if (!contactCmps.containsKey(currJcrId)) {
+							Composite currCmp = new Composite(panel,
+									SWT.NO_FOCUS);
+							contactCmps.put(currJcrId, currCmp);
+						}
 					}
-					panel.layout();
+
+					// then refresh or create all composites
+					Session session = contactsPar.getSession();
+					for (String jcrId : contactCmps.keySet()) {
+						Composite currCmp = contactCmps.get(jcrId);
+						Node currNode = null;
+						try {
+							currNode = session.getNodeByIdentifier(jcrId);
+						} catch (ItemNotFoundException infe) {
+							currCmp.dispose();
+						}
+						if (currNode != null) {
+							if (currCmp.getChildren().length == 0)
+								populateDisplayCmp(currCmp, currNode);
+							else {
+								refreshDisplayCmp(currCmp, currNode);
+							}
+						}
+					}
 				} catch (RepositoryException e) {
 					throw new PeopleException(
 							"Cannot refresh contact panel formPart", e);
 				}
+
+				panel.layout();
+				panel.redraw();
+				panel.pack();
+				panel.getParent().layout();
+				panel.getParent().redraw();
+				panel.getParent().pack();
 			}
 		};
 
-		populateAddContactPanel(newContactCmp, entity);
-		panel.layout();
-
-		// This must be moved in the called method.
-		contactListCmp.setLayout(new GridLayout(2, false));
-		refreshContactPanel(contactListCmp, entity, sPart);
 		sPart.initialize(form);
 		form.addPart(sPart);
+
+		// // Clean old controls
+		// for (Control ctl : panel.getChildren()) {
+		// ctl.dispose();
+		// }
+		//
+		// // FIXME work in progress
+		// final Map<String, Text> controls = new HashMap<String, Text>();
+		//
+		// NodeIterator ni;
+		// try {
+		// ni = entity.getNode(PeopleNames.PEOPLE_CONTACTS).getNodes();
+		// while (ni.hasNext()) {
+		// Node currNode = ni.nextNode();
+		// if (!currNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
+		// String type = CommonsJcrUtils.getStringValue(currNode,
+		// PeopleNames.PEOPLE_CONTACT_LABEL);
+		// if (type == null)
+		// type = CommonsJcrUtils.getStringValue(currNode,
+		// PeopleNames.PEOPLE_CONTACT_CATEGORY);
+		// if (type == null)
+		// type = PeopleJcrUtils.getContactTypeAsString(currNode);
+		// toolkit.createLabel(panel, type, SWT.NO_FOCUS);
+		// Text currCtl = toolkit.createText(panel, null, SWT.BORDER);
+		// GridData gd = new GridData();
+		// gd.widthHint = 200;
+		// gd.heightHint = 14;
+		// currCtl.setLayoutData(gd);
+		// currCtl.setData("propName",
+		// PeopleNames.PEOPLE_CONTACT_VALUE);
+		// controls.put(currNode.getPath(), currCtl);
+		// }
+		// }
+		//
+		// for (final String name : controls.keySet()) {
+		// final Text txt = controls.get(name);
+		// txt.addModifyListener(new ModifyListener() {
+		// private static final long serialVersionUID = 1L;
+		//
+		// @Override
+		// public void modifyText(ModifyEvent event) {
+		// String propName = (String) txt.getData("propName");
+		// try {
+		// Node currNode = entity.getSession().getNode(name);
+		// if (currNode.hasProperty(propName)
+		// && currNode.getProperty(propName)
+		// .getString().equals(txt.getText())) {
+		// // nothing changed yet
+		// } else {
+		// currNode.setProperty(propName, txt.getText());
+		// part.markDirty();
+		// }
+		// } catch (RepositoryException e) {
+		// throw new PeopleException(
+		// "Unexpected error in modify listener for property "
+		// + propName, e);
+		// }
+		// }
+		// });
+		// }
+		//
+		// } catch (RepositoryException e) {
+		// throw new PeopleException("Error while getting properties", e);
+		// }
+		// panel.redraw();
+		// panel.layout();
+		// // panel.pack(true);
+		// // panel.getParent().pack(true);
+		// panel.getParent().layout();
 	}
 
-	public void populateNotePanel(final Composite rightPartComp,
-			final Node entity) {
-		rightPartComp.setLayout(new GridLayout());
+	private void populateDisplayCmp(Composite parent, Node contactNode)
+			throws RepositoryException {
+
+		if (contactNode.isNodeType(PeopleTypes.PEOPLE_EMAIL)
+				|| contactNode.isNodeType(PeopleTypes.PEOPLE_PHONE)
+				|| contactNode.isNodeType(PeopleTypes.PEOPLE_IMPP)
+				|| contactNode.isNodeType(PeopleTypes.PEOPLE_URL))
+			populateEditableMailCmp(parent, contactNode, contactNode
+					.getParent().getParent());
+	}
+
+	private void populateEditableMailCmp(Composite parent,
+			final Node contactNode, final Node parVersionableNode) {
+		RowLayout rl = new RowLayout(SWT.WRAP);
+		rl.type = SWT.HORIZONTAL;
+		parent.setLayout(rl);
+		String type = CommonsJcrUtils.getStringValue(contactNode,
+				PeopleNames.PEOPLE_CONTACT_LABEL);
+		if (CommonsJcrUtils.checkNotEmptyString(type))
+			type = CommonsJcrUtils.get(contactNode,
+					PeopleNames.PEOPLE_CONTACT_CATEGORY);
+
+		final Button categoryBtn = createCategoryButton(parent, contactNode);
+		final Button primaryBtn = createPrimaryButton(parent);
+		final Button deleteBtn = createDeleteButton(parent);
+
+		final Text valueTxt = toolkit.createText(parent, null, SWT.BORDER);
+		RowData rd = new RowData();
+		rd.width = 200;
+		rd.height = 14;
+		valueTxt.setLayoutData(rd);
+		valueTxt.setData("propName", PeopleNames.PEOPLE_CONTACT_VALUE);
+
+		final AbstractFormPart sPart = new AbstractFormPart() {
+			public void refresh() {
+				super.refresh();
+				try {
+					// TODO clean this workaround to insure node has not been
+					// already removed.
+					valueTxt.setText(contactNode.getProperty(
+							PeopleNames.PEOPLE_CONTACT_VALUE).getString());
+					valueTxt.setEnabled(CommonsJcrUtils
+							.isNodeCheckedOutByMe(parVersionableNode));
+					boolean isPrimary = contactNode.getProperty(
+							PeopleNames.PEOPLE_IS_PRIMARY).getBoolean();
+					if (isPrimary)
+						primaryBtn.setImage(PeopleImages.PRIMARY_BTN);
+					else
+						primaryBtn.setImage(PeopleImages.PRIMARY_NOT_BTN);
+
+				} catch (Exception e) {
+					if (e instanceof InvalidItemStateException)
+						;
+					else
+						throw new PeopleException(
+								"unexpected error while refreshing", e);
+					// Node has already been removed, continue.
+				}
+			}
+		};
+
+		sPart.refresh();
+		sPart.initialize(form);
+		form.addPart(sPart);
+		configureDeleteButton(deleteBtn, contactNode, parVersionableNode);
+		configurePrimaryButton(primaryBtn, contactNode, parVersionableNode);
+	}
+
+	private Button createCategoryButton(Composite parent, Node contactNode) {
+		Button btn = new Button(parent, SWT.FLAT);
+		btn.setData(RWT.CUSTOM_VARIANT, PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+
+		try {
+
+			if (contactNode.isNodeType(PeopleTypes.PEOPLE_EMAIL))
+				btn.setImage(PeopleImages.MAIL);
+			else if (contactNode.isNodeType(PeopleTypes.PEOPLE_PHONE)) {
+				String label = CommonsJcrUtils.get(contactNode,
+						PeopleNames.PEOPLE_CONTACT_LABEL);
+				if (PeopleConstants.CONTACT_LABEL_FAX.equals(label))
+					btn.setImage(PeopleImages.FAX);
+				else if (PeopleConstants.CONTACT_LABEL_MOBILE.equals(label))
+					btn.setImage(PeopleImages.MOBILE);
+				else if (PeopleConstants.CONTACT_LABEL_RECEPTION.equals(label))
+					btn.setImage(PeopleImages.PHONE_DIRECT);
+				// else if (PeopleConstants.CONTACT_CATEGORY_WORK.equals(label))
+				// btn.setImage(PeopleImages.WORK);
+				// else if
+				// (PeopleConstants.CONTACT_CATEGORY_PRIVATE.equals(label))
+				// btn.setImage(PeopleImages.PHONE);
+
+			} else if (contactNode.isNodeType(PeopleTypes.PEOPLE_URL)) {
+				// String category = CommonsJcrUtils.get(contactNode,
+				// PeopleNames.PEOPLE_CONTACT_CATEGORY);
+				// TODO manage all possibilities.
+				btn.setImage(PeopleImages.WWW);
+			} else if (contactNode.isNodeType(PeopleTypes.PEOPLE_IMPP)) {
+
+			}
+
+			RowData rd = new RowData();
+			rd.height = 16;
+			rd.width = 16;
+			btn.setLayoutData(rd);
+			return btn;
+		} catch (RepositoryException re) {
+			throw new PeopleException("unable to get image for contact");
+		}
+	}
+
+	private Button createDeleteButton(Composite parent) {
+		Button btn = new Button(parent, SWT.FLAT);
+		btn.setData(RWT.CUSTOM_VARIANT, PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+		btn.setImage(PeopleImages.DELETE_BTN);
+		RowData rd = new RowData();
+		rd.height = 16;
+		rd.width = 16;
+		btn.setLayoutData(rd);
+		return btn;
+	}
+
+	private Button createPrimaryButton(Composite parent) {
+		Button btn = new Button(parent, SWT.FLAT);
+		btn.setData(RWT.CUSTOM_VARIANT, PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+		btn.setImage(PeopleImages.PRIMARY_NOT_BTN);
+		RowData rd = new RowData();
+		rd.height = 16;
+		rd.width = 16;
+		btn.setLayoutData(rd);
+		return btn;
+	}
+
+	private void configureDeleteButton(Button btn, final Node node,
+			final Node parNode) { // , final AbstractFormPart
+									// genericContactFormPart
+		btn.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent event) {
+				try {
+					boolean wasCheckedOut = CommonsJcrUtils
+							.isNodeCheckedOutByMe(parNode);
+					if (!wasCheckedOut)
+						CommonsJcrUtils.checkout(parNode);
+					node.remove();
+					if (wasCheckedOut)
+						parNode.getSession().save();
+					else
+						CommonsJcrUtils.saveAndCheckin(parNode);
+				} catch (RepositoryException e) {
+					throw new PeopleException("unable to initialise deletion",
+							e);
+				}
+				for (IFormPart part : form.getParts()) {
+					((AbstractFormPart) part).markStale();
+					part.refresh();
+				}
+			}
+		});
+
+	}
+
+	private void configurePrimaryButton(Button btn, final Node node,
+			final Node parNode) {
+		btn.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent event) {
+				try {
+					boolean wasCheckedOut = CommonsJcrUtils
+							.isNodeCheckedOutByMe(parNode);
+					if (!wasCheckedOut)
+						CommonsJcrUtils.checkout(parNode);
+					boolean wasPrimary = false;
+					if (node.hasProperty(PeopleNames.PEOPLE_IS_PRIMARY)
+							&& node.getProperty(PeopleNames.PEOPLE_IS_PRIMARY)
+									.getBoolean())
+						wasPrimary = true;
+					PeopleJcrUtils.markAsPrimary(node, !wasPrimary);
+					if (wasCheckedOut)
+						parNode.getSession().save();
+					else
+						CommonsJcrUtils.saveAndCheckin(parNode);
+					for (IFormPart part : form.getParts()) {
+						((AbstractFormPart) part).markStale();
+						part.refresh();
+					}
+				} catch (RepositoryException e) {
+					throw new PeopleException("unable to initialise deletion",
+							e);
+				}
+			}
+		});
+
+	}
+
+	private void refreshDisplayCmp(Composite parent, Node contactNode)
+			throws RepositoryException {
+		Control[] children = parent.getChildren();
+		for (Control control : children) {
+			if (control instanceof Label) {
+				((Label) control).setText("Updated label");
+			}
+		}
+	}
+
+	public void populateNotePanel(final Composite parent, final Node entity) {
+		parent.setLayout(new GridLayout());
+
+		parent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		toolkit.createLabel(parent, "Notes: ", SWT.NONE);
+
+		final Text notesTxt = toolkit.createText(parent, "", SWT.BORDER
+				| SWT.MULTI | SWT.WRAP);
 
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.grabExcessVerticalSpace = true;
-		rightPartComp.setLayoutData(gd);
-		toolkit.createLabel(rightPartComp, "Notes: ", SWT.NONE);
-
-		final Text notesTxt = toolkit.createText(rightPartComp, "", SWT.BORDER
-				| SWT.MULTI | SWT.WRAP);
-		gd = new GridData(GridData.FILL_BOTH | GridData.GRAB_VERTICAL
-				| GridData.GRAB_HORIZONTAL);
 		gd.widthHint = 200;
 		gd.minimumHeight = 200;
-		gd.grabExcessVerticalSpace = true;
 		notesTxt.setLayoutData(gd);
 
 		final EntityAbstractFormPart notePart = new EntityAbstractFormPart() {
@@ -706,7 +988,7 @@ public class EntityToolkit {
 					notesTxt.setText(desc);
 				notesTxt.setEnabled(CommonsJcrUtils
 						.isNodeCheckedOutByMe(entity));
-				rightPartComp.layout();
+				parent.layout();
 			}
 		};
 
@@ -722,81 +1004,6 @@ public class EntityToolkit {
 		});
 		notePart.initialize(form);
 		form.addPart(notePart);
-	}
-
-	/** Manage display and update of existing contact Nodes */
-	private void refreshContactPanel(Composite panel, final Node entity,
-			final EntityAbstractFormPart part) {
-
-		// Clean old controls
-		for (Control ctl : panel.getChildren()) {
-			ctl.dispose();
-		}
-
-		// FIXME work in progress
-		final Map<String, Text> controls = new HashMap<String, Text>();
-
-		NodeIterator ni;
-		try {
-			ni = entity.getNode(PeopleNames.PEOPLE_CONTACTS).getNodes();
-			while (ni.hasNext()) {
-				Node currNode = ni.nextNode();
-				if (!currNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
-					String type = CommonsJcrUtils.getStringValue(currNode,
-							PeopleNames.PEOPLE_CONTACT_LABEL);
-					if (type == null)
-						type = CommonsJcrUtils.getStringValue(currNode,
-								PeopleNames.PEOPLE_CONTACT_CATEGORY);
-					if (type == null)
-						type = PeopleJcrUtils.getContactTypeAsString(currNode);
-					toolkit.createLabel(panel, type, SWT.NO_FOCUS);
-					Text currCtl = toolkit.createText(panel, null, SWT.BORDER);
-					GridData gd = new GridData();
-					gd.widthHint = 200;
-					gd.heightHint = 14;
-					currCtl.setLayoutData(gd);
-					currCtl.setData("propName",
-							PeopleNames.PEOPLE_CONTACT_VALUE);
-					controls.put(currNode.getPath(), currCtl);
-				}
-			}
-
-			for (final String name : controls.keySet()) {
-				final Text txt = controls.get(name);
-				txt.addModifyListener(new ModifyListener() {
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public void modifyText(ModifyEvent event) {
-						String propName = (String) txt.getData("propName");
-						try {
-							Node currNode = entity.getSession().getNode(name);
-							if (currNode.hasProperty(propName)
-									&& currNode.getProperty(propName)
-											.getString().equals(txt.getText())) {
-								// nothing changed yet
-							} else {
-								currNode.setProperty(propName, txt.getText());
-								part.markDirty();
-							}
-						} catch (RepositoryException e) {
-							throw new PeopleException(
-									"Unexpected error in modify listener for property "
-											+ propName, e);
-						}
-					}
-				});
-			}
-
-		} catch (RepositoryException e) {
-			throw new PeopleException("Error while getting properties", e);
-		}
-		part.setTextControls(controls);
-		panel.redraw();
-		panel.layout();
-		// panel.pack(true);
-		// panel.getParent().pack(true);
-		panel.getParent().layout();
 	}
 
 	/** Populate a composite that enable addition of a new contact */
@@ -910,9 +1117,9 @@ public class EntityToolkit {
 							.isNodeCheckedOut(entity);
 					if (!wasCheckedout)
 						CommonsJcrUtils.checkout(entity);
-					PeopleJcrUtils
-							.createContact(entity, contactType, contactType,
-									value, isPrimary ? 1 : 100, cat, label);
+					PeopleJcrUtils.createContact(entity, contactType,
+							contactType, value, isPrimary, cat, label);
+
 					if (!wasCheckedout)
 						CommonsJcrUtils.saveAndCheckin(entity);
 					else

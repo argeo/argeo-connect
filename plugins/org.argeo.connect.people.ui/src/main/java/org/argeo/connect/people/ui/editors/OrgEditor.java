@@ -77,7 +77,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Details", PeopleUiConstants.PANEL_CONTACT_DETAILS,
 				tooltip);
-		entityTK.populateContactPanelWithNotes(innerPannel, org);
+		entityTK.createContactPanelWithNotes(innerPannel, org);
 
 		// Employees
 		tooltip = "Known employees of "

@@ -39,12 +39,50 @@ public class PeopleImages {
 	public final static Image NO_PICTURE = PeopleUiPlugin.getImageDescriptor(
 			"icons/noPicture.gif").createImage();
 
+//	public final static Image DELETE_BTN = PeopleUiPlugin.getImageDescriptor(
+//			"icons/delete.png").createImage();
+
 	public final static Image DELETE_BTN = PeopleUiPlugin.getImageDescriptor(
 			"icons/delete.png").createImage();
-	
+
+	public final static Image DELETE_BTN_LEFT = PeopleUiPlugin.getImageDescriptor(
+			"icons/deletebottomleft.png").createImage();
+
 	public final static Image ADD_BTN = PeopleUiPlugin.getImageDescriptor(
 			"icons/add.gif").createImage();
 
+	public final static Image PRIMARY_BTN = PeopleUiPlugin.getImageDescriptor(
+			"icons/primary.gif").createImage();
+
+	public final static Image PRIMARY_NOT_BTN = PeopleUiPlugin
+			.getImageDescriptor("icons/primaryNOT.gif").createImage();
+
+	// Contact icons 
+	public final static Image MAIL = PeopleUiPlugin
+			.getImageDescriptor("icons/mail_black.png").createImage();
+
+	public final static Image PHONE = PeopleUiPlugin
+			.getImageDescriptor("icons/phone_vintage.png").createImage();
+
+	public final static Image PHONE_DIRECT = PeopleUiPlugin
+			.getImageDescriptor("icons/telephone.png").createImage();
+
+	public final static Image FAX = PeopleUiPlugin
+			.getImageDescriptor("icons/fax.png").createImage();
+
+	public final static Image MOBILE = PeopleUiPlugin
+			.getImageDescriptor("icons/nokia_s60.png").createImage();
+
+	public final static Image WORK = PeopleUiPlugin
+			.getImageDescriptor("icons/company.png").createImage();
+
+	public final static Image WWW = PeopleUiPlugin
+			.getImageDescriptor("icons/house_link.png").createImage();
+
+	public final static Image IMPP = PeopleUiPlugin
+			.getImageDescriptor("icons/xing_16x16_01.png").createImage();
+	
+	
 	// Check box icons
 	public final static Image CHECKED = PeopleUiPlugin.getImageDescriptor(
 			"icons/checked.gif").createImage();

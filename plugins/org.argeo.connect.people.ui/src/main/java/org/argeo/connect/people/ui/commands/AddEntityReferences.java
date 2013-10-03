@@ -4,8 +4,6 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
@@ -30,7 +28,8 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * of the name of its parent.
  */
 public class AddEntityReferences extends AbstractHandler {
-	private final static Log log = LogFactory.getLog(AddEntityReferences.class);
+	// private final static Log log =
+	// LogFactory.getLog(AddEntityReferences.class);
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".addEntityReferences";
