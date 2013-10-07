@@ -44,6 +44,7 @@ import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -510,28 +511,29 @@ public class EntityToolkit {
 		parent.setLayout(new RowLayout());
 		final Text tagTxt = new Text(parent, SWT.BORDER);
 		tagTxt.setMessage("Enter a new tag");
-		RowData rd = new RowData(200, SWT.DEFAULT);
+		RowData rd = new RowData(120, SWT.DEFAULT);
 		tagTxt.setLayoutData(rd);
 
-		final Button validBtn = toolkit.createButton(parent, "Add", SWT.PUSH);
-		rd = new RowData(80, SWT.DEFAULT);
-		validBtn.setLayoutData(rd);
-
-		validBtn.addSelectionListener(new SelectionListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				String newTag = tagTxt.getText();
-				addTag(entity, newTag);
-				tagTxt.setText("");
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-
+		// final Button validBtn = toolkit.createButton(parent, "Add",
+		// SWT.PUSH);
+		// rd = new RowData(80, SWT.DEFAULT);
+		// validBtn.setLayoutData(rd);
+		//
+		// validBtn.addSelectionListener(new SelectionListener() {
+		// private static final long serialVersionUID = 1L;
+		//
+		// @Override
+		// public void widgetSelected(SelectionEvent e) {
+		// String newTag = tagTxt.getText();
+		// addTag(entity, newTag);
+		// tagTxt.setText("");
+		// }
+		//
+		// @Override
+		// public void widgetDefaultSelected(SelectionEvent e) {
+		// }
+		// });
+		//
 		tagTxt.addTraverseListener(new TraverseListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -547,15 +549,29 @@ public class EntityToolkit {
 	}
 
 	private void addTag(Node tagable, String newTag) {
-		boolean wasCheckedout = CommonsJcrUtils.isNodeCheckedOut(tagable);
-		if (!wasCheckedout)
-			CommonsJcrUtils.checkout(tagable);
 		try {
 			Value[] values;
 			String[] valuesStr;
+			String errMsg = null;
 			if (tagable.hasProperty(PeopleNames.PEOPLE_TAGS)) {
 				values = tagable.getProperty(PeopleNames.PEOPLE_TAGS)
 						.getValues();
+
+				// Check dupplicate
+				for (Value tag : values) {
+					String curTagUpperCase = tag.getString().toUpperCase()
+							.trim();
+					if (newTag.toUpperCase().trim().equals(curTagUpperCase)) {
+						errMsg = "This tag  \"" + newTag + "\" already exists as \""
+								+ tag.getString()
+								+ "\" and thus could not be added.";
+						MessageDialog.openError(PeopleUiPlugin.getDefault()
+								.getWorkbench().getActiveWorkbenchWindow()
+								.getShell(), "Dupplicates", errMsg);
+						return;
+					}
+				}
+
 				valuesStr = new String[values.length + 1];
 				int i;
 				for (i = 0; i < values.length; i++) {
@@ -566,19 +582,24 @@ public class EntityToolkit {
 				valuesStr = new String[1];
 				valuesStr[0] = newTag;
 			}
+
+			boolean wasCheckedout = CommonsJcrUtils.isNodeCheckedOut(tagable);
+			if (!wasCheckedout)
+				CommonsJcrUtils.checkout(tagable);
 			tagable.setProperty(PeopleNames.PEOPLE_TAGS, valuesStr);
+			if (!wasCheckedout)
+				CommonsJcrUtils.saveAndCheckin(tagable);
+			else
+				form.dirtyStateChanged();
+
+			for (IFormPart part : form.getParts()) {
+				((AbstractFormPart) part).markStale();
+				part.refresh();
+			}
 		} catch (RepositoryException re) {
 			throw new ArgeoException("Unable to set tags", re);
 		}
-		if (!wasCheckedout)
-			CommonsJcrUtils.saveAndCheckin(tagable);
-		else
-			form.dirtyStateChanged();
 
-		for (IFormPart part : form.getParts()) {
-			((AbstractFormPart) part).markStale();
-			part.refresh();
-		}
 	}
 
 	public void createContactPanelWithNotes(Composite panel, final Node entity) {
