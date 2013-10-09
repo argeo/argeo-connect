@@ -271,12 +271,11 @@ public class EntityToolkit {
 						final Node parNode = node.getParent().getParent();
 						Link link = new Link(nlCmp, SWT.NONE);
 						link.setText("<a>"
-								+ PeopleHtmlUtils
-										.cleanHtmlString(CommonsJcrUtils.get(
-												parNode, Property.JCR_TITLE))
-								+ "</a>");
+								+ CommonsJcrUtils.get(parNode,
+										Property.JCR_TITLE) + "</a>");
 						link.setToolTipText(CommonsJcrUtils.get(parNode,
 								Property.JCR_DESCRIPTION));
+						link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 
 						link.addSelectionListener(new SelectionAdapter() {
 							private static final long serialVersionUID = 1L;
@@ -562,8 +561,8 @@ public class EntityToolkit {
 					String curTagUpperCase = tag.getString().toUpperCase()
 							.trim();
 					if (newTag.toUpperCase().trim().equals(curTagUpperCase)) {
-						errMsg = "This tag  \"" + newTag + "\" already exists as \""
-								+ tag.getString()
+						errMsg = "This tag  \"" + newTag
+								+ "\" already exists as \"" + tag.getString()
 								+ "\" and thus could not be added.";
 						MessageDialog.openError(PeopleUiPlugin.getDefault()
 								.getWorkbench().getActiveWorkbenchWindow()
