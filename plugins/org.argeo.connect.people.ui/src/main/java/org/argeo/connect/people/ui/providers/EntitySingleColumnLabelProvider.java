@@ -8,6 +8,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -36,16 +37,18 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 	public String getText(Object element) {
 		try {
 			Node entity = (Node) element;
+			String result;
 			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
-				return personLp.getText(element);
+				result = personLp.getText(element);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION))
-				return orgLp.getText(element);
+				result = orgLp.getText(element);
 			else if (entity.isNodeType(FilmTypes.FILM))
-				return filmLp.getText(element);
+				result = filmLp.getText(element);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_GROUP))
-				return groupLp.getText(element);
+				result = groupLp.getText(element);
 			else
-				return "";
+				result = "";
+			return PeopleHtmlUtils.cleanHtmlString(result);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to get formatted value for node",
 					re);

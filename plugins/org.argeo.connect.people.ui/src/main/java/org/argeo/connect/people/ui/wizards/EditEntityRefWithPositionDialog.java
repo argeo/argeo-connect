@@ -113,6 +113,7 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 		this.peopleService = peopleService;
 		this.toSearchNodeType = toSearchNodeType;
 		this.oldLinkNode = oldLink;
+		this.isBackward = isBackward;
 
 		// Try to initiallize our shortcuts
 		try {
