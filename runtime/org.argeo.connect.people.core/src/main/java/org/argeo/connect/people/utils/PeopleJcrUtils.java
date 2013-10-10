@@ -14,10 +14,10 @@ import javax.jcr.nodetype.NodeType;
 import org.argeo.ArgeoException;
 import org.argeo.connect.film.FilmNames;
 import org.argeo.connect.film.FilmTypes;
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.PeopleValueCatalogs;
 import org.argeo.jcr.JcrUtils;
 
 /**
@@ -72,17 +72,23 @@ public class PeopleJcrUtils implements PeopleNames {
 		return addEntityToGroup(group, entity, role, null, null, null, null);
 	}
 
-	public static void setContactType(Node contactNode, String label)
+	public static void setContactLabel(Node contactNode, String label)
 			throws RepositoryException {
 		if (!CommonsJcrUtils.isEmptyString(label))
 			contactNode.setProperty(PEOPLE_CONTACT_LABEL, label);
 	}
 
-	public static void setContactCategory(Node contactNode, String category,
+	public static void setContactCategory(Node contactNode, String category)
+			throws RepositoryException {
+		if (!CommonsJcrUtils.isEmptyString(category))
+			contactNode.setProperty(PEOPLE_CONTACT_CATEGORY, category);
+	}
+
+	public static void setContactNature(Node contactNode, String category,
 			Node orga) throws RepositoryException {
 		if (!CommonsJcrUtils.isEmptyString(category)) {
-			contactNode.setProperty(PEOPLE_CONTACT_CATEGORY, category);
-			if (category.equals(PeopleConstants.CONTACT_CATEGORY_WORK)
+			contactNode.setProperty(PEOPLE_CONTACT_NATURE, category);
+			if (category.equals(PeopleValueCatalogs.CONTACT_NATURE_PRO)
 					&& orga != null)
 				contactNode.setProperty(PEOPLE_REF_UID, orga.getPath());
 		}
@@ -230,18 +236,63 @@ public class PeopleJcrUtils implements PeopleNames {
 		}
 	}
 
-	/** Create a contact node and add basic info */
+	/**
+	 * Create a contact node and add basic info
+	 * 
+	 * @param parentNode
+	 * @param nodeType
+	 * @param name
+	 * @param value
+	 * @param primary
+	 * @param nature
+	 *            pro or private
+	 * @param category
+	 *            business type of the current contact, for instance for social
+	 *            media, tweeter, linkedin, ... or other
+	 * @param label
+	 *            an optional label
+	 * @return
+	 */
+
 	public static Node createContact(Node parentNode, String nodeType,
-			String name, String value, boolean primary, String contactCategory,
-			String contactType) {
+			String name, String value, boolean primary, String nature,
+			String category, String label) {
+		return createContact(parentNode, nodeType, name, value, primary,
+				nature, null, category, label);
+	}
+
+	/**
+	 * Create a contact node and add basic info
+	 * 
+	 * @param parentNode
+	 * @param nodeType
+	 * @param name
+	 * @param value
+	 * @param primary
+	 * @param nature
+	 *            for a person related contact, pro or private
+	 * @param linkedOrg
+	 *            if nature = pro, then we can pass an optional organisation
+	 *            linked to this contact
+	 * @param category
+	 *            business type of the current contact, for instance for social
+	 *            media, tweeter, linkedin, ... or other
+	 * @param label
+	 *            an optional label
+	 * @return
+	 */
+	public static Node createContact(Node parentNode, String nodeType,
+			String name, String value, boolean primary, String nature,
+			Node linkedOrg, String category, String label) {
 		try {
 			Node contacts = CommonsJcrUtils.getOrCreateDirNode(parentNode,
 					PEOPLE_CONTACTS);
 			Node contact = contacts.addNode(name, nodeType);
 			contact.setProperty(PEOPLE_CONTACT_VALUE, value);
 			markAsPrimary(contact, primary);
-			setContactType(contact, contactType);
-			setContactCategory(contact, contactCategory, null);
+			setContactLabel(contact, label);
+			setContactCategory(contact, category);
+			setContactNature(contact, nature, linkedOrg);
 			return contact;
 		} catch (RepositoryException re) {
 			throw new ArgeoException("Unable to add a new contact node", re);
@@ -259,45 +310,117 @@ public class PeopleJcrUtils implements PeopleNames {
 	 *            an optional label
 	 */
 	public static Node createEmail(Node parentNode, String emailAddress,
-			boolean primary, String contactCategory, String contactType) {
+			boolean primary, String contactNature, String contactCategory,
+			String contactLabel) {
 		return createContact(parentNode, PeopleTypes.PEOPLE_EMAIL,
-				emailAddress, emailAddress, primary, contactCategory,
-				contactType);
+				emailAddress, emailAddress, primary, contactNature,
+				contactCategory, contactLabel);
 	}
 
 	/**
 	 * Create a web site URL node. Corresponding nodes are not saved
 	 * 
 	 * @param parentNode
-	 *            the parent item on which we want to add an address
+	 *            the parent item on which we want to add a contact
 	 * @param urlString
-	 *            the url
-	 * 
-	 * @param contactType
+	 * @param primary
+	 * @param nature
+	 *            optional: if parent node type is a person, then precise
+	 *            private or pro
+	 * @param label
 	 *            an optional label
+	 * 
+	 * @return
 	 */
 	public static Node createWebsite(Node parentNode, String urlString,
-			boolean primary, String contactCategory, String contactType) {
+			boolean primary, String nature, String label) {
 		return createContact(parentNode, PeopleTypes.PEOPLE_URL,
 				urlString.replaceAll("[^a-zA-Z0-9]", ""), urlString, primary,
-				contactCategory, contactType);
+				nature, null, label);
 	}
 
+	public static Node createSocialMedia(Node parentNode, String urlString,
+			boolean primary, String nature, String category, String label) {
+		return createContact(parentNode, PeopleTypes.PEOPLE_SOCIAL_MEDIA,
+				urlString.replaceAll("[^a-zA-Z0-9]", ""), urlString, primary,
+				nature, category, label);
+	}
+
+	/**
+	 * Create a phone number node for the current entity
+	 * 
+	 * @param parentNode
+	 * @param phoneNumber
+	 * @param primary
+	 * @param nature
+	 *            optional: if parent node type is a person, then precise
+	 *            private or pro
+	 * @param category
+	 * @param label
+	 *            an optional label
+	 * @return
+	 */
 	public static Node createPhone(Node parentNode, String phoneNumber,
-			boolean primary, String contactCategory, String contactType) {
+			boolean primary, String nature, String category, String label) {
 		return createContact(parentNode, PeopleTypes.PEOPLE_PHONE, "p"
 				+ phoneNumber.replaceAll("[^a-zA-Z0-9]", ""), phoneNumber,
-				primary, contactCategory, contactType);
+				primary, nature, category, label);
 	}
 
+	/**
+	 * Create an address for the current entity
+	 * 
+	 * @param parentNode
+	 * @param street1
+	 * @param street2
+	 * @param zipCode
+	 * @param city
+	 * @param state
+	 * @param country
+	 * @param primary
+	 * @param nature
+	 *            optional: if parent node type is a person, then precise
+	 *            private or pro
+	 * @param category
+	 * @param label
+	 *            an optional label
+	 * @return
+	 */
 	public static Node createAddress(Node parentNode, String street1,
 			String street2, String zipCode, String city, String state,
-			String country, boolean primary, String contactCategory,
-			String contactType) {
+			String country, boolean primary, String nature, String category,
+			String label) {
+		return createAddress(parentNode, street1, street2, zipCode, city,
+				state, country, null, primary, nature, category, label);
+	}
+
+	/**
+	 * Create an address with a geopoint for the current entity
+	 * 
+	 * @param parentNode
+	 * @param street1
+	 * @param street2
+	 * @param zipCode
+	 * @param city
+	 * @param state
+	 * @param country
+	 * @param primary
+	 * @param nature
+	 *            optional: if parent node type is a person, then precise
+	 *            private or pro
+	 * @param category
+	 * @param label
+	 *            an optional label
+	 * @return
+	 */
+	public static Node createAddress(Node parentNode, String street1,
+			String street2, String zipCode, String city, String state,
+			String country, String geopoint, boolean primary, String nature,
+			String category, String label) {
 		try {
 			Node address = createContact(parentNode,
 					PeopleTypes.PEOPLE_ADDRESS, PeopleTypes.PEOPLE_ADDRESS, "",
-					primary, contactCategory, contactType);
+					primary, nature, category, label);
 			// set address fields
 			if (!CommonsJcrUtils.isEmptyString(street1))
 				address.setProperty(PEOPLE_STREET, street1);

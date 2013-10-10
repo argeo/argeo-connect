@@ -205,17 +205,17 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				"Middle Name", "The second name if it exists", 100);
 		final Text lastNameTxt = entityTK.createText(secondCmp, "Last Name",
 				"Usual last name for this person", 100);
-		final Text nickNameTxt = entityTK.createText(secondCmp, "Nickame",
-				"A pseudonym...", 100);
-
-		final Text genderTxt = entityTK.createText(thirdCmp, "Gender", "...",
-				80);
-		final Text maidenNameTxt = entityTK.createText(thirdCmp, "Maiden Name",
-				"Birth Name before getting maried", 100);
+		final Text suffixTxt = entityTK.createText(secondCmp, "Suffix",
+				"Junior, the third...", 80);
+	
+//		final Text genderTxt = entityTK.createText(thirdCmp, "Gender", "...",
+//				80);
 		final Text titleTxt = entityTK.createText(thirdCmp, "Title",
 				"Doc., Sir...", 60);
-		final Text suffixTxt = entityTK.createText(thirdCmp, "Suffix",
-				"Junior, the third...", 80);
+		final Text maidenNameTxt = entityTK.createText(thirdCmp, "Maiden Name",
+				"Birth Name before getting maried", 100);
+		final Text nickNameTxt = entityTK.createText(thirdCmp, "Nickame",
+				"A pseudonym...", 100);
 		final Text latinPhoneticTxt = entityTK.createText(thirdCmp,
 				"Latin Phonetic",
 				"A helper to know how to pronounce this name", 100);
@@ -251,8 +251,8 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				entityTK.refreshTextValue(nickNameTxt, person,
 						PeopleNames.PEOPLE_NICKNAME);
 
-				entityTK.refreshTextValue(genderTxt, person,
-						PeopleNames.PEOPLE_GENDER);
+//				entityTK.refreshTextValue(genderTxt, person,
+//						PeopleNames.PEOPLE_GENDER);
 				entityTK.refreshTextValue(maidenNameTxt, person,
 						PeopleNames.PEOPLE_MAIDEN_NAME);
 				entityTK.refreshTextValue(titleTxt, person,
@@ -380,8 +380,8 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		entityTK.addTxtModifyListener(editPart, nickNameTxt, person,
 				PeopleNames.PEOPLE_NICKNAME, PropertyType.STRING);
 
-		entityTK.addTxtModifyListener(editPart, genderTxt, person,
-				PeopleNames.PEOPLE_GENDER, PropertyType.STRING);
+//		entityTK.addTxtModifyListener(editPart, genderTxt, person,
+//				PeopleNames.PEOPLE_GENDER, PropertyType.STRING);
 		entityTK.addTxtModifyListener(editPart, maidenNameTxt, person,
 				PeopleNames.PEOPLE_MAIDEN_NAME, PropertyType.STRING);
 		entityTK.addTxtModifyListener(editPart, titleTxt, person,
@@ -403,18 +403,10 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		entityTK.populateGroupMembershipPanel(mlCmp, person);
 
-		// Tag management.
+		// Tag Management
 		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		tagsCmp.setLayout(gridLayoutNoBorder(2));
-
-		Composite leftCmp = toolkit.createComposite(tagsCmp, SWT.NO_FOCUS);
-		leftCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		entityTK.populateTagsPanel(leftCmp, person);
-
-		Composite rightCmp = toolkit.createComposite(tagsCmp, SWT.NO_FOCUS);
-		rightCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
-		entityTK.populateAddTagComposite(rightCmp, person);
+		entityTK.populateTagPanel(tagsCmp, person);
 
 		// keep last update.
 		super.populateMainInfoDetails(parent);

@@ -39,7 +39,15 @@ public class JcrUiUtils {
 			// int propertyType = getPic().getProperty(propName).getType();
 			switch (propertyType) {
 			case PropertyType.STRING:
-				if (node.hasProperty(propName)
+				if ("".equals((String) value)
+						&& (!node.hasProperty(propName) || node
+								.hasProperty(propName)
+								&& "".equals(node.getProperty(propName)
+										.getString())))
+					// workaround the fact that the Text widget value cannot be
+					// set to null
+					return false;
+				else if (node.hasProperty(propName)
 						&& node.getProperty(propName).getString()
 								.equals((String) value))
 					// nothing changed yet
@@ -74,11 +82,11 @@ public class JcrUiUtils {
 					lgValue = 0L;
 
 				if (node.hasProperty(propName)
-						&& node.getProperty(propName).getLong() == (Long) value)
+						&& node.getProperty(propName).getLong() == lgValue)
 					// nothing changed yet
 					return false;
 				else {
-					node.setProperty(propName, (Long) value);
+					node.setProperty(propName, lgValue);
 					return true;
 				}
 
@@ -90,5 +98,4 @@ public class JcrUiUtils {
 					re);
 		}
 	}
-
 }

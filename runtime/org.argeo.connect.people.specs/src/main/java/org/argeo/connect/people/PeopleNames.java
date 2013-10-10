@@ -83,6 +83,8 @@ public interface PeopleNames {
 	/* CONTACTS */
 	// base properties for all contact type nodes
 	public final static String PEOPLE_CONTACT_VALUE = "people:contactValue";
+	// Pro or private
+	public final static String PEOPLE_CONTACT_NATURE = "people:contactNature";
 	public final static String PEOPLE_CONTACT_CATEGORY = "people:contactCategory";
 	public final static String PEOPLE_CONTACT_LABEL = "people:contactLabel";
 	// if contactCategory == work

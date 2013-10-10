@@ -135,7 +135,8 @@ mixin
 [people:orderable] 
 mixin
 // 1 is the most prefered
-- people:pref (LONG) ='100' m a
+- people:pref (LONG) 
+// ='100' m a
 
 
 /////// COMMUNICATION
@@ -155,14 +156,17 @@ mixin
 // a shortcut to manage primary contact
 // should be refined
 - people:isPrimary (BOOLEAN) ='false' a 
-// work, home, other
+// Only for person, Private or professional
+- people:contactNature (STRING)
+// Category for the given type : for instance a private phone can be:
+// Mobile, Home, Fax or other
 - people:contactCategory (STRING)
-// optional label 
+// an optional label 
 - people:contactLabel (STRING)
-// if contactCategory == work 
+// if contactNature == work 
 - people:refUid (STRING)
-// OPTIONNAL an URI translated from the contact type 
-// value to be used directly by the system.
+// OPTIONNAL an URI translated from the contact value 
+// to be used directly by the system.
 - people:contactUri (URI) 
 
 // TEL
@@ -180,6 +184,9 @@ mixin
 // WEBSITE
 [people:url] > people:contact 
 
+// Social Media
+[people:socialMedia] > people:contact 
+
 // ADDRESS
 [people:address] > people:contact 
 // Display address SHOULD be stored in the contactValue property
@@ -190,6 +197,9 @@ mixin
 - people:city (STRING)
 - people:state (STRING)
 - people:country (STRING)
+// An optionnal Geopoint. Should be refined
+- people:geoPoint (STRING)
+
 
 // BANK ACCOUNT
 [people:bankAccount] > people:address 

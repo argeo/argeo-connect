@@ -40,5 +40,6 @@ public interface PeopleTypes {
 	public final static String PEOPLE_EMAIL = "people:email";
 	public final static String PEOPLE_IMPP = "people:impp";
 	public final static String PEOPLE_URL = "people:url";
+	public final static String PEOPLE_SOCIAL_MEDIA = "people:socialMedia";
 	public final static String PEOPLE_ADDRESS = "people:address";
 }

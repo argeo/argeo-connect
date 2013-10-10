@@ -57,7 +57,10 @@ public class PeopleHtmlUtils {
 
 		if (CommonsJcrUtils.checkNotEmptyString(salutation)
 				|| CommonsJcrUtils.checkNotEmptyString(title)
-				|| CommonsJcrUtils.checkNotEmptyString(suffix)) {
+				|| CommonsJcrUtils.checkNotEmptyString(suffix)
+				|| CommonsJcrUtils.checkNotEmptyString(nickName)
+				|| CommonsJcrUtils.checkNotEmptyString(maidenName)
+				|| CommonsJcrUtils.checkNotEmptyString(middleName)) {
 			StringBuilder builder = new StringBuilder();
 			// builder.append("<i>");
 			builder.append(salutation);
@@ -127,7 +130,6 @@ public class PeopleHtmlUtils {
 	}
 
 	/** a snippet to display primary contact information for this entity */
-	// TODO: primary is not yet implemented
 	public static String getPrimaryContacts(Node entity, boolean smallList) {
 		StringBuilder builder = new StringBuilder();
 		// Small is too small for small lists
@@ -137,35 +139,30 @@ public class PeopleHtmlUtils {
 		String tmpStr = PeopleJcrUtils.getDefaultContactValue(entity,
 				PeopleTypes.PEOPLE_PHONE);
 		if (tmpStr != null) {
-			builder.append("<span> ");
+			builder.append("&#160;");
 			builder.append(cleanHtmlString(tmpStr));
-			builder.append(" </span> ~ ");
+			builder.append("&#160;&#160;");
 		}
 
 		tmpStr = PeopleJcrUtils.getDefaultContactValue(entity,
 				PeopleTypes.PEOPLE_EMAIL);
 		if (tmpStr != null) {
-			builder.append("<span> <a "
-					+ PeopleUiConstants.PEOPLE_CSS_URL_STYLE
+			builder.append("&#160;<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
 					+ " href=\"mailto:");
 			builder.append(tmpStr).append("\">");
 			builder.append(tmpStr);
-			builder.append("</a> </span> ~ ");
+			builder.append("</a>&#160;&#160;");
 		}
 		tmpStr = PeopleJcrUtils.getDefaultContactValue(entity,
 				PeopleTypes.PEOPLE_URL);
 		if (tmpStr != null) {
-			builder.append("<span> <a "
-					+ PeopleUiConstants.PEOPLE_CSS_URL_STYLE
+			builder.append("&#160;<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
 					+ " href=\"http://");
 			builder.append(cleanHtmlString(tmpStr)).append("\"")
 					.append(" target=\"_blank\" ").append(">");
 			builder.append(tmpStr);
-			builder.append("</a> </span> ~ ");
+			builder.append("</a>&#160;&#160;");
 		}
-
-		if (builder.lastIndexOf("~") > 0)
-			builder.deleteCharAt(builder.lastIndexOf("~"));
 		if (!smallList)
 			builder.append("</small>");
 		return builder.toString();

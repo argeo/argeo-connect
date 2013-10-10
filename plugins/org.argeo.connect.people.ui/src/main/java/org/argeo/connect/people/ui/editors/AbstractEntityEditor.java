@@ -271,7 +271,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		details.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		populateMainInfoDetails(details);
 
-		parent.layout();
+		// parent.layout();
 	}
 
 	protected void populateButtonsComposite(final Composite buttons) {

@@ -9,7 +9,6 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleHtmlUtils;
-import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -76,42 +75,10 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 			if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
 				builder.append("<i>").append(tmpStr).append("</i><br/>");
 
-			tmpStr = PeopleJcrUtils.getDefaultContactValue(orga,
-					PeopleTypes.PEOPLE_PHONE);
-			builder.append("<small>");
-
-			if (tmpStr != null) {
-				builder.append("<span> ");
+			tmpStr = PeopleHtmlUtils.getPrimaryContacts(orga, false);
+			if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
 				builder.append(tmpStr);
-				builder.append(" </span> ~ ");
 			}
-
-			tmpStr = PeopleJcrUtils.getDefaultContactValue(orga,
-					PeopleTypes.PEOPLE_EMAIL);
-			if (tmpStr != null) {
-				builder.append("<span> <a "
-						+ PeopleUiConstants.PEOPLE_CSS_URL_STYLE
-						+ " href=\"mailto:");
-				builder.append(tmpStr).append("\">");
-				builder.append(tmpStr);
-				builder.append("</a> </span> ~ ");
-			}
-			tmpStr = PeopleJcrUtils.getDefaultContactValue(orga,
-					PeopleTypes.PEOPLE_URL);
-			if (tmpStr != null) {
-				builder.append("<span> <a "
-						+ PeopleUiConstants.PEOPLE_CSS_URL_STYLE
-						+ " href=\"http://");
-				builder.append(tmpStr).append("\"")
-						.append(" target=\"_blank\" ").append(">");
-				builder.append(tmpStr);
-				builder.append("</a> </span> ~ ");
-			}
-
-			if (builder.lastIndexOf("~") > 0)
-				builder.deleteCharAt(builder.lastIndexOf("~"));
-
-			builder.append("</small>");
 			builder.append("</span>");
 			String result = PeopleHtmlUtils.cleanHtmlString(builder.toString());
 			return result;
