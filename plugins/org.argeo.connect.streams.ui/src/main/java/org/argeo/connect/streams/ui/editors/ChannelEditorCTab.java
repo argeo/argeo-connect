@@ -296,7 +296,7 @@ public class ChannelEditorCTab extends AbstractEntityCTabEditor implements
 		valueTxt.setLayoutData(rd);
 
 		final Combo addCatCmb = new Combo(parent, SWT.NONE);
-		addCatCmb.setItems(PeopleValueCatalogs.ARRAY_CONTACT_CATEGORIES);
+		//addCatCmb.setItems(PeopleValueCatalogs.ARRAY_CONTACT_CATEGORIES);
 		rd = new RowData(200, SWT.DEFAULT);
 		addCatCmb.setLayoutData(rd);
 		addCatCmb.select(0);
