@@ -61,6 +61,34 @@ public class PeopleValueCatalogs {
 	public final static String CONTACT_CAT_SIP = "SIP";
 	public final static String CONTACT_CAT_ICQ = "ICQ";
 
+	public static String[] getCategoryList(String entityType,
+			String contactType, String nature) {
+		if (PeopleTypes.PEOPLE_PHONE.equals(contactType)) {
+			if (entityType.equals(PeopleTypes.PEOPLE_PERSON)) {
+				if (CONTACT_NATURE_PRO.equals(nature))
+					return ARRAY_PERSON_PRO_PHONES;
+				else
+					return ARRAY_PERSON_PRIVATE_PHONES;
+			} else if (entityType.equals(PeopleTypes.PEOPLE_ORGANIZATION))
+				return ARRAY_ORG_PHONES;
+		}
+		// NO category for MAIL
+		// else if (PeopleTypes.PEOPLE_MAil.equals(contactType))
+		else if (PeopleTypes.PEOPLE_ADDRESS.equals(contactType)) {
+			if (entityType.equals(PeopleTypes.PEOPLE_PERSON))
+				return ARRAY_PERSON_ADDRESSES;
+			else if (entityType.equals(PeopleTypes.PEOPLE_ORGANIZATION))
+				return ARRAY_ORG_ADDRESSES;
+		}
+		// NO category for URL
+		// else if (PeopleTypes.PEOPLE_URL.equals(contactType))
+		else if (PeopleTypes.PEOPLE_SOCIAL_MEDIA.equals(contactType))
+			return ARRAY_SOCIAL_MEDIA;
+		else if (PeopleTypes.PEOPLE_IMPP.equals(contactType))
+			return ARRAY_IMPP;
+		return new String[0];
+	}
+
 	/* CONTACT TYPE */
 	// Contact categories: maps corresponding node types with a label
 	public static final Map<String, String> MAPS_CONTACT_TYPES;
@@ -76,12 +104,12 @@ public class PeopleValueCatalogs {
 	}
 
 	// corresponding array for various lists
-	public static final String[] ARRAY_CONTACT_CATEGORIES = {
-			CONTACT_NATURE_PRO, CONTACT_NATURE_PRIVATE };
+	public static final String[] ARRAY_CONTACT_NATURES = { CONTACT_NATURE_PRO,
+			CONTACT_NATURE_PRIVATE };
 
 	public static final String[] ARRAY_CONTACT_TYPES = { CONTACT_TYPE_EMAIL,
-			CONTACT_TYPE_PHONE, CONTACT_TYPE_ADDRESS, CONTACT_TYPE_URL,
-			CONTACT_TYPE_IMPP };
+			CONTACT_TYPE_PHONE, CONTACT_TYPE_ADDRESS,
+			CONTACT_TYPE_SOCIAL_MEDIA, CONTACT_TYPE_URL, CONTACT_TYPE_IMPP };
 
 	// person private phones
 	public static final String[] ARRAY_PERSON_PRIVATE_PHONES = {

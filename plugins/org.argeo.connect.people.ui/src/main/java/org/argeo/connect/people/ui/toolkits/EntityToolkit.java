@@ -24,6 +24,8 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -75,8 +77,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * for entity, to be used in various forms.
  */
 public class EntityToolkit {
-	// private final static Log log =
-	// LogFactory.getLog(EntityPanelToolkit.class);
+	private final static Log log = LogFactory.getLog(EntityToolkit.class);
 
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
@@ -716,7 +717,7 @@ public class EntityToolkit {
 		contactListCmp.setContent(innerCmp);
 
 		final Composite rightCmp = toolkit.createComposite(panel, SWT.NO_FOCUS);
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		GridData gd = new GridData(SWT.FILL, SWT.FILL, false, true);
 		gd.widthHint = 200;
 		gd.minimumWidth = 200;
 		rightCmp.setLayoutData(gd);
@@ -739,7 +740,7 @@ public class EntityToolkit {
 		panel.setLayout(new GridLayout());
 
 		final ScrolledComposite contactListCmp = new ScrolledComposite(panel,
-				SWT.NO_FOCUS | SWT.V_SCROLL | SWT.H_SCROLL);
+				SWT.NO_FOCUS | SWT.V_SCROLL);
 		contactListCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				true));
 		populateDisplayContactPanel(contactListCmp, entity);
@@ -772,7 +773,8 @@ public class EntityToolkit {
 						if (!contactCmps.containsKey(currJcrId)) {
 							Composite currCmp = new Composite(panel,
 									SWT.NO_FOCUS);
-							populateDisplayCmp(currCmp, currNode);
+							populateEditableMailCmp(currCmp, currNode, currNode
+									.getParent().getParent());
 							contactCmps.put(currJcrId, currCmp);
 						}
 					}
@@ -792,31 +794,12 @@ public class EntityToolkit {
 					throw new PeopleException(
 							"Cannot refresh contact panel formPart", e);
 				}
-
-				// Control[] children = panel.getParent().getParent()
-				// .getChildren();
-				// for (int i = 0; i < children.length; i++) {
-				// if (children[i] instanceof Composite) {
-				// Composite currCmp = (Composite) children[i];
-				// currCmp.pack();
-				// //currCmp.layout();
-				// }
-				// }
-
-				//
-				// panel.layout(
-				// contactCmps.values().toArray(
-				// new Composite[contactCmps.size()]), SWT.ALL
-				// | SWT.CHANGED);
-				panel.pack();
-				// panel.getParent().layout(true);
-				panel.getParent().getParent().layout(true);
-				// panel.getParent().getParent().pack();
 			}
 		};
 
 		sPart.initialize(form);
 		form.addPart(sPart);
+		// panel.getParent().getParent().layout(true);
 
 		// // Clean old controls
 		// for (Control ctl : panel.getChildren()) {
@@ -888,20 +871,9 @@ public class EntityToolkit {
 		// panel.getParent().layout();
 	}
 
-	private void populateDisplayCmp(Composite parent, Node contactNode)
+	private void populateEditableMailCmp(final Composite parent,
+			final Node contactNode, final Node parVersionableNode)
 			throws RepositoryException {
-
-		if (contactNode.isNodeType(PeopleTypes.PEOPLE_EMAIL)
-				|| contactNode.isNodeType(PeopleTypes.PEOPLE_PHONE)
-				|| contactNode.isNodeType(PeopleTypes.PEOPLE_IMPP)
-				|| contactNode.isNodeType(PeopleTypes.PEOPLE_URL)
-				|| contactNode.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA))
-			populateEditableMailCmp(parent, contactNode, contactNode
-					.getParent().getParent());
-	}
-
-	private void populateEditableMailCmp(Composite parent,
-			final Node contactNode, final Node parVersionableNode) {
 		RowLayout rl = new RowLayout(SWT.WRAP);
 		rl.type = SWT.HORIZONTAL;
 		parent.setLayout(rl);
@@ -916,27 +888,66 @@ public class EntityToolkit {
 		final Button primaryBtn = createPrimaryButton(parent);
 		final Button deleteBtn = createDeleteButton(parent);
 
-		final Text valueTxt = toolkit.createText(parent, null, SWT.BORDER);
-		RowData rd = new RowData();
-		rd.width = 200;
-		rd.height = 14;
-		valueTxt.setLayoutData(rd);
-		valueTxt.setData("propName", PeopleNames.PEOPLE_CONTACT_VALUE);
+		final Text valueTxt = createAddressTxt(
+				!contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS), parent,
+				"Value", 150);
+		final Text labelTxt = createAddressTxt(true, parent, "", 120);
 
 		final AbstractFormPart sPart = new AbstractFormPart() {
+
+			@Override
+			public void commit(boolean onSave) {
+				try {
+					if (onSave
+							&& contactNode
+									.isNodeType(PeopleTypes.PEOPLE_ADDRESS))
+						PeopleJcrUtils.updateDisplayAddress(contactNode);
+					super.commit(onSave);
+				} catch (RepositoryException e) {
+					throw new PeopleException(
+							"unable to update display address", e);
+				}
+			}
+
 			public void refresh() {
 				super.refresh();
 				try {
-					valueTxt.setText(contactNode.getProperty(
-							PeopleNames.PEOPLE_CONTACT_VALUE).getString());
-					valueTxt.setEnabled(CommonsJcrUtils
-							.isNodeCheckedOutByMe(parVersionableNode));
+					boolean isCheckedOut = CommonsJcrUtils
+							.isNodeCheckedOutByMe(parVersionableNode);
 					boolean isPrimary = contactNode.getProperty(
 							PeopleNames.PEOPLE_IS_PRIMARY).getBoolean();
 					if (isPrimary)
 						primaryBtn.setImage(PeopleImages.PRIMARY_BTN);
 					else
 						primaryBtn.setImage(PeopleImages.PRIMARY_NOT_BTN);
+
+					final AbstractFormPart afp = this;
+					if (contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
+						populateAdresseCmp(parent, contactNode, afp);
+					} else {
+
+						String label = CommonsJcrUtils.get(contactNode,
+								PeopleNames.PEOPLE_CONTACT_LABEL);
+						labelTxt.setText(label);
+						labelTxt.setEnabled(isCheckedOut);
+						labelTxt.setMessage(isCheckedOut ? "Label" : "");
+						valueTxt.setText(contactNode.getProperty(
+								PeopleNames.PEOPLE_CONTACT_VALUE).getString());
+						valueTxt.setEnabled(isCheckedOut);
+						String nature = CommonsJcrUtils.get(contactNode,
+								PeopleNames.PEOPLE_CONTACT_LABEL);
+						String category = CommonsJcrUtils.get(contactNode,
+								PeopleNames.PEOPLE_CONTACT_CATEGORY);
+						String toolTip = nature + " " + category;
+						if (CommonsJcrUtils.checkNotEmptyString(toolTip))
+							valueTxt.setToolTipText(toolTip);
+					}
+
+					// parent.pack();
+					Composite cmp2 = parent.getParent();
+					cmp2.pack();
+					cmp2.getParent().layout(true);
+					// parent.getParent().getParent().getParent().layout(true);
 
 				} catch (Exception e) {
 					if (e instanceof InvalidItemStateException)
@@ -950,11 +961,123 @@ public class EntityToolkit {
 			}
 		};
 
+		if (!contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS))
+			PeopleUiUtils.addTxtModifyListener(sPart, valueTxt, contactNode,
+					PeopleNames.PEOPLE_CONTACT_VALUE, PropertyType.STRING);
+
 		sPart.refresh();
 		sPart.initialize(form);
 		form.addPart(sPart);
 		configureDeleteButton(deleteBtn, contactNode, parVersionableNode);
 		configurePrimaryButton(primaryBtn, contactNode, parVersionableNode);
+	}
+
+	private void populateAdresseCmp(Composite parent, Node contactNode,
+			AbstractFormPart part) throws RepositoryException {
+		boolean isCheckedOut = CommonsJcrUtils
+				.isNodeCheckedOutByMe(contactNode);
+
+		for (Control control : parent.getChildren()) {
+			if (!(control instanceof Button))
+				control.dispose();
+		}
+
+		if (isCheckedOut) {
+			// specific for addresses
+			final Text streetTxt = createAddressTxt(
+					contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS), parent,
+					"Street", 0);
+			final Text street2Txt = createAddressTxt(
+					contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS), parent,
+					"Street Complement", 0);
+			final Text zipTxt = createAddressTxt(
+					contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS), parent,
+					"Zip code", 0);
+			final Text cityTxt = createAddressTxt(
+					contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS), parent,
+					"City", 0);
+			final Text stateTxt = createAddressTxt(
+					contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS), parent,
+					"State", 0);
+			final Text countryTxt = createAddressTxt(
+					contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS), parent,
+					"Country", 0);
+			final Text geoPointTxt = createAddressTxt(
+					contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS), parent,
+					"Geopoint", 0);
+
+			streetTxt.setText(CommonsJcrUtils.get(contactNode,
+					PeopleNames.PEOPLE_STREET));
+			streetTxt.setEnabled(isCheckedOut);
+			streetTxt.setMessage(isCheckedOut ? "Street" : "");
+			street2Txt.setText(CommonsJcrUtils.get(contactNode,
+					PeopleNames.PEOPLE_STREET_COMPLEMENT));
+			street2Txt.setEnabled(isCheckedOut);
+			street2Txt.setMessage(isCheckedOut ? "Street complement" : "");
+			zipTxt.setText(CommonsJcrUtils.get(contactNode,
+					PeopleNames.PEOPLE_ZIP_CODE));
+			zipTxt.setEnabled(isCheckedOut);
+			zipTxt.setMessage(isCheckedOut ? "Zip code" : "");
+			cityTxt.setText(CommonsJcrUtils.get(contactNode,
+					PeopleNames.PEOPLE_CITY));
+			cityTxt.setEnabled(isCheckedOut);
+			cityTxt.setMessage(isCheckedOut ? "City" : "");
+			stateTxt.setText(CommonsJcrUtils.get(contactNode,
+					PeopleNames.PEOPLE_STATE));
+			stateTxt.setEnabled(isCheckedOut);
+			stateTxt.setMessage(isCheckedOut ? "State" : "");
+			countryTxt.setText(CommonsJcrUtils.get(contactNode,
+					PeopleNames.PEOPLE_COUNTRY));
+			countryTxt.setEnabled(isCheckedOut);
+			countryTxt.setMessage(isCheckedOut ? "Country" : "");
+			geoPointTxt.setText(CommonsJcrUtils.get(contactNode,
+					PeopleNames.PEOPLE_GEOPOINT));
+			geoPointTxt.setEnabled(isCheckedOut);
+			geoPointTxt.setMessage(isCheckedOut ? "Geo point" : "");
+
+			addAddressTxtModifyListener(part, streetTxt, contactNode,
+					PeopleNames.PEOPLE_STREET, PropertyType.STRING);
+			addAddressTxtModifyListener(part, street2Txt, contactNode,
+					PeopleNames.PEOPLE_STREET_COMPLEMENT, PropertyType.STRING);
+			addAddressTxtModifyListener(part, zipTxt, contactNode,
+					PeopleNames.PEOPLE_ZIP_CODE, PropertyType.STRING);
+			addAddressTxtModifyListener(part, cityTxt, contactNode,
+					PeopleNames.PEOPLE_CITY, PropertyType.STRING);
+			addAddressTxtModifyListener(part, stateTxt, contactNode,
+					PeopleNames.PEOPLE_STATE, PropertyType.STRING);
+			addAddressTxtModifyListener(part, countryTxt, contactNode,
+					PeopleNames.PEOPLE_COUNTRY, PropertyType.STRING);
+			PeopleUiUtils.addTxtModifyListener(part, geoPointTxt, contactNode,
+					PeopleNames.PEOPLE_GEOPOINT, PropertyType.STRING);
+		} else {
+			// READ ONLY
+			Text text = toolkit.createText(parent, null, SWT.BORDER);
+			RowData rd = new RowData();
+			text.setLayoutData(rd);
+			text.setText(CommonsJcrUtils.get(contactNode,
+					PeopleNames.PEOPLE_CONTACT_VALUE));
+			text.setEnabled(false);
+			// text.pack();
+			// text.getParent().getParent().layout(true);
+		}
+		parent.layout();
+	}
+
+	private void addAddressTxtModifyListener(final AbstractFormPart part,
+			final Text text, final Node entity, final String propName,
+			final int propType) {
+		text.addModifyListener(new ModifyListener() {
+			private static final long serialVersionUID = 1549789407363632491L;
+
+			@Override
+			public void modifyText(ModifyEvent event) {
+				if (JcrUiUtils.setJcrProperty(entity, propName, propType,
+						text.getText())) {
+					part.markDirty();
+					PeopleJcrUtils.updateDisplayAddress(entity);
+				}
+			}
+		});
 	}
 
 	private Button createCategoryButton(Composite parent, Node contactNode) {
@@ -1055,7 +1178,6 @@ public class EntityToolkit {
 				}
 			}
 		});
-
 	}
 
 	private void configurePrimaryButton(Button btn, final Node node,
@@ -1090,7 +1212,6 @@ public class EntityToolkit {
 				}
 			}
 		});
-
 	}
 
 	public void populateNotePanel(final Composite parent, final Node entity) {
@@ -1103,7 +1224,7 @@ public class EntityToolkit {
 				| SWT.MULTI | SWT.WRAP);
 
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.widthHint = 200;
+		gd.minimumWidth = 200;
 		gd.minimumHeight = 200;
 		notesTxt.setLayoutData(gd);
 
@@ -1167,29 +1288,34 @@ public class EntityToolkit {
 
 		editPart.initialize(form);
 		form.addPart(editPart);
-		editPanel.pack();
-		parent.layout();
 		// show the edit new contact panel when selection change
 		addContactCmb.addSelectionListener(new SelectionListener() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				int index = addContactCmb.getSelectionIndex();
-				if (index == 0)
-					editPanel.setVisible(false);
-				else {
-					editPanel.setVisible(true);
-					String selected = addContactCmb.getItem(index);
-					Control first = populateEditableContactComposite(editPanel,
-							entity, PeopleValueCatalogs.getKeyByValue(
-									PeopleValueCatalogs.MAPS_CONTACT_TYPES,
-									selected));
-					editPanel.pack();
-					editPanel.getParent().layout();
-					if (first != null)
-						first.setFocus();
+				try {
+
+					int index = addContactCmb.getSelectionIndex();
+					if (index == 0)
+						editPanel.setVisible(false);
+					else {
+						editPanel.setVisible(true);
+						String selected = addContactCmb.getItem(index);
+						Control first;
+						first = populateEditableContactComposite(editPanel,
+								entity, PeopleValueCatalogs.getKeyByValue(
+										PeopleValueCatalogs.MAPS_CONTACT_TYPES,
+										selected));
+						if (first != null)
+							first.setFocus();
+					}
+				} catch (RepositoryException e1) {
+					throw new PeopleException(
+							"Unable to refresh add contact panel", e1);
 				}
+				editPanel.pack();
+				editPanel.getParent().getParent().layout();
 			}
 
 			@Override
@@ -1201,13 +1327,15 @@ public class EntityToolkit {
 
 	/** Populate an editable contact composite */
 	public Control populateEditableContactComposite(Composite parent,
-			final Node entity, final String contactType) {
-		Control first = null;
+			final Node entity, final String contactType)
+			throws RepositoryException {
+		RowData rd;
 
 		if (parent.getLayout() == null) {
 			RowLayout layout = new RowLayout();
 			// Optionally set layout fields.
 			layout.wrap = true;
+			layout.marginTop = 0;
 			// Set the layout into the composite.
 			parent.setLayout(layout);
 		}
@@ -1218,56 +1346,72 @@ public class EntityToolkit {
 		}
 
 		// Specific case of the post mail address
-		if (PeopleTypes.PEOPLE_ADDRESS.equals(contactType)) {
+		final Combo natureCmb = entity.isNodeType(PeopleTypes.PEOPLE_PERSON) ? new Combo(
+				parent, SWT.NONE) : null;
 
-		} else {
-			final Text valueTxt = new Text(parent, SWT.BORDER);
-			first = valueTxt;
-			valueTxt.setMessage("Value");
-			RowData rd = new RowData(200, SWT.DEFAULT);
-			valueTxt.setLayoutData(rd);
+		final Combo catCmb = !(contactType.equals(PeopleTypes.PEOPLE_URL) || contactType
+				.equals(PeopleTypes.PEOPLE_EMAIL)) ? new Combo(parent, SWT.NONE)
+				: null;
 
-			final Combo addCatCmb = new Combo(parent, SWT.NONE);
-			addCatCmb.setItems(PeopleValueCatalogs.ARRAY_CONTACT_CATEGORIES);
-			addCatCmb.select(0);
+		final Text labelTxt = new Text(parent, SWT.BORDER);
 
-			final Combo addLabelCmb = new Combo(parent, SWT.NONE);
-			if (PeopleTypes.PEOPLE_PHONE.equals(contactType))
-				addLabelCmb
-						.setItems(PeopleValueCatalogs.ARRAY_PERSON_PRO_PHONES);
-			addLabelCmb.select(0);
+		// For all contact
+		final Text valueTxt = createAddressTxt(
+				!contactType.equals(PeopleTypes.PEOPLE_ADDRESS), parent,
+				"Contact value", 200);
 
-			final Button primaryChk = toolkit.createButton(parent, "Primary",
-					SWT.CHECK);
+		// specific for addresses
+		final Text streetTxt = createAddressTxt(
+				contactType.equals(PeopleTypes.PEOPLE_ADDRESS), parent,
+				"Street", 150);
+		final Text street2Txt = createAddressTxt(
+				contactType.equals(PeopleTypes.PEOPLE_ADDRESS), parent,
+				"Street Complement", 150);
+		final Text zipTxt = createAddressTxt(
+				contactType.equals(PeopleTypes.PEOPLE_ADDRESS), parent,
+				"Zip code", 60);
+		final Text cityTxt = createAddressTxt(
+				contactType.equals(PeopleTypes.PEOPLE_ADDRESS), parent, "City",
+				150);
+		final Text stateTxt = createAddressTxt(
+				contactType.equals(PeopleTypes.PEOPLE_ADDRESS), parent,
+				"State", 150);
+		final Text countryTxt = createAddressTxt(
+				contactType.equals(PeopleTypes.PEOPLE_ADDRESS), parent,
+				"Country", 150);
+		final Text geoPointTxt = createAddressTxt(
+				contactType.equals(PeopleTypes.PEOPLE_ADDRESS), parent,
+				"Geopoint", 200);
 
-			final Button validBtn = toolkit.createButton(parent, "Save",
-					SWT.PUSH);
-			validBtn.addSelectionListener(new SelectionListener() {
+		labelTxt.setMessage("Label");
+		rd = new RowData(120, SWT.DEFAULT);
+		labelTxt.setLayoutData(rd);
+
+		final Button primaryChk = toolkit.createButton(parent, "Primary",
+				SWT.CHECK);
+
+		final Button validBtn = toolkit.createButton(parent, "Save", SWT.PUSH);
+
+		if (natureCmb != null) {
+			natureCmb.setItems(PeopleValueCatalogs.ARRAY_CONTACT_NATURES);
+			natureCmb.select(0);
+			natureCmb.addSelectionListener(new SelectionListener() {
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					String value = valueTxt.getText();
-					String cat = addCatCmb.getText();
-					String label = addLabelCmb.getText();
-					boolean isPrimary = primaryChk.getSelection();
-					// EntityPanelToolkit
-					boolean wasCheckedout = CommonsJcrUtils
-							.isNodeCheckedOut(entity);
-					if (!wasCheckedout)
-						CommonsJcrUtils.checkout(entity);
-					PeopleJcrUtils.createContact(entity, contactType,
-							contactType, value, isPrimary, cat, label, "");
-
-					if (!wasCheckedout)
-						CommonsJcrUtils.saveAndCheckin(entity);
-					else
-						form.dirtyStateChanged();
-					for (IFormPart part : form.getParts()) {
-						((AbstractFormPart) part).markStale();
-						part.refresh();
+					try {
+						if (catCmb != null) {
+							catCmb.setItems(PeopleValueCatalogs
+									.getCategoryList(entity
+											.getPrimaryNodeType().getName(),
+											contactType, natureCmb.getText()));
+							catCmb.select(0);
+						}
+					} catch (RepositoryException e1) {
+						throw new PeopleException(
+								"unable to retrieve category list", e1);
 					}
-					validBtn.getParent().setVisible(false);
 				}
 
 				@Override
@@ -1275,17 +1419,75 @@ public class EntityToolkit {
 				}
 			});
 		}
-		return first;
+
+		if (catCmb != null) {
+			catCmb.setItems(PeopleValueCatalogs.getCategoryList(entity
+					.getPrimaryNodeType().getName(), contactType, null));
+			catCmb.select(0);
+		}
+
+		validBtn.addSelectionListener(new SelectionListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+
+				String nature = natureCmb == null ? null : natureCmb.getText();
+				String value = valueTxt == null ? null : valueTxt.getText();
+				String cat = catCmb == null ? null : catCmb.getText();
+				String label = labelTxt.getText();
+				boolean isPrimary = primaryChk.getSelection();
+				// EntityPanelToolkit
+				boolean wasCheckedout = CommonsJcrUtils
+						.isNodeCheckedOut(entity);
+				if (!wasCheckedout)
+					CommonsJcrUtils.checkout(entity);
+				if (contactType.equals(PeopleTypes.PEOPLE_ADDRESS)) {
+					Node node = PeopleJcrUtils.createAddress(entity,
+							streetTxt.getText(), street2Txt.getText(),
+							zipTxt.getText(), cityTxt.getText(),
+							stateTxt.getText(), countryTxt.getText(),
+							geoPointTxt.getText(), isPrimary, nature, cat,
+							label);
+					PeopleJcrUtils.updateDisplayAddress(node);
+				} else
+					PeopleJcrUtils.createContact(entity, contactType,
+							contactType, value, isPrimary, nature, cat, label);
+
+				if (!wasCheckedout)
+					CommonsJcrUtils.saveAndCheckin(entity);
+				else
+					form.dirtyStateChanged();
+				for (IFormPart part : form.getParts()) {
+					((AbstractFormPart) part).markStale();
+					part.refresh();
+				}
+				validBtn.getParent().setVisible(false);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+
+		if (natureCmb != null)
+			return natureCmb;
+		else if (catCmb != null)
+			return catCmb;
+		else
+			return valueTxt;
 	}
 
-	private Control populateAddAdressComposite(Composite parent,
-			final Node entity, final String contactType) {
-		return null;
-	}
-
-	private Control populateAddPhoneComposite(Composite parent,
-			final Node entity, final String contactType) {
-		return null;
+	private Text createAddressTxt(boolean create, Composite parent, String msg,
+			int width) {
+		if (create) {
+			Text text = toolkit.createText(parent, null, SWT.BORDER);
+			text.setMessage(msg);
+			text.setLayoutData(width == 0 ? new RowData() : new RowData(width,
+					SWT.DEFAULT));
+			return text;
+		} else
+			return null;
 	}
 
 }

@@ -1,7 +1,9 @@
 package org.argeo.connect.people.utils;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.jcr.Binary;
 import javax.jcr.Node;
@@ -418,6 +420,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			String country, String geopoint, boolean primary, String nature,
 			String category, String label) {
 		try {
+
 			Node address = createContact(parentNode,
 					PeopleTypes.PEOPLE_ADDRESS, PeopleTypes.PEOPLE_ADDRESS, "",
 					primary, nature, category, label);
@@ -442,6 +445,39 @@ public class PeopleJcrUtils implements PeopleNames {
 			return address;
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to add a new address node", re);
+		}
+	}
+
+	public static void updateDisplayAddress(Node contactNode) {
+		try {
+			StringBuilder displayAddress = new StringBuilder();
+			List<String> pieces = new ArrayList<String>();
+
+			pieces.add(CommonsJcrUtils.get(contactNode,
+					PeopleNames.PEOPLE_STREET));
+			pieces.add(CommonsJcrUtils.get(contactNode,
+					PeopleNames.PEOPLE_STREET_COMPLEMENT));
+			pieces.add(CommonsJcrUtils.get(contactNode,
+					PeopleNames.PEOPLE_ZIP_CODE));
+			pieces.add(CommonsJcrUtils
+					.get(contactNode, PeopleNames.PEOPLE_CITY));
+			pieces.add(CommonsJcrUtils.get(contactNode,
+					PeopleNames.PEOPLE_STATE));
+			pieces.add(CommonsJcrUtils.get(contactNode,
+					PeopleNames.PEOPLE_COUNTRY));
+
+			for (String piece : pieces) {
+				if (CommonsJcrUtils.checkNotEmptyString(piece))
+					displayAddress.append(piece).append(", ");
+			}
+
+			String res = displayAddress.toString();
+			if (CommonsJcrUtils.checkNotEmptyString(res)) {
+				contactNode.setProperty(PeopleNames.PEOPLE_CONTACT_VALUE,
+						res.substring(0, res.lastIndexOf(", ")));
+			}
+		} catch (RepositoryException e) {
+			throw new PeopleException("unable to update display address", e);
 		}
 	}
 

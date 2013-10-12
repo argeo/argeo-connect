@@ -110,6 +110,7 @@ public interface PeopleNames {
 	public final static String PEOPLE_CITY = "people:city";
 	public final static String PEOPLE_STATE = "people:state";
 	public final static String PEOPLE_COUNTRY = "people:country";
+	public final static String PEOPLE_GEOPOINT = "people:geoPoint";
 	// A shortcut to store the displayed address
 	// public final static String PEOPLE_DISPLAY_ADDRESS =
 	// "people:displayAddress";
