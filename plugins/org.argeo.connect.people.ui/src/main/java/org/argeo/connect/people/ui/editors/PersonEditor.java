@@ -120,7 +120,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 	protected void populateTabFolder(CTabFolder folder) {
 		// Contact informations
 		String tooltip = "Contact information for "
-				+ JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
+				+ JcrUtils.get(person, Property.JCR_TITLE);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Contact details", PeopleUiConstants.PANEL_CONTACT_DETAILS,
 				tooltip);
@@ -128,7 +128,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 
 		// Jobs panel
 		tooltip = "Organisations linked to "
-				+ JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
+				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Organisations",
 				PeopleUiConstants.PANEL_JOBS, tooltip);
 		listTK.populateJobsPanel(innerPannel, person);
@@ -136,7 +136,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		// Film participation panel
 		// TODO: move this in specific film project
 		tooltip = "Films related to "
-				+ JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
+				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Films",
 				PeopleUiConstants.PANEL_PRODUCTIONS, tooltip);
 		listTK.populateFilmsPanel(innerPannel, person);
