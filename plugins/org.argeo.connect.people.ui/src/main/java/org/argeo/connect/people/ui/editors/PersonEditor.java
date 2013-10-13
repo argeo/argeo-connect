@@ -190,42 +190,44 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		thirdCmp.setLayout(rl);
 
 		// Create edit text
-		final Text displayNameTxt = entityTK.createText(firstCmp,
-				"Display name", "Default display name for this person", 300);
+		final Text displayNameTxt = PeopleUiUtils.createRDText(toolkit,
+				firstCmp, "Display name",
+				"Default display name for this person", 300);
 		final Button defaultDisplayBtn = toolkit.createButton(firstCmp,
 				"Use default display name", SWT.CHECK);
 		defaultDisplayBtn
 				.setToolTipText("Default is Firstname LASTNAMEMr, Mrs...");
 
-		final Text salutationTxt = entityTK.createText(secondCmp, "Salutation",
-				"Mr, Mrs...", 60);
-		final Text firstNameTxt = entityTK.createText(secondCmp, "First Name",
-				"Usual first name for this person", 100);
-		final Text middleNameTxt = entityTK.createText(secondCmp,
-				"Middle Name", "The second name if it exists", 100);
-		final Text lastNameTxt = entityTK.createText(secondCmp, "Last Name",
-				"Usual last name for this person", 100);
-		final Text suffixTxt = entityTK.createText(secondCmp, "Suffix",
-				"Junior, the third...", 80);
-	
-//		final Text genderTxt = entityTK.createText(thirdCmp, "Gender", "...",
-//				80);
-		final Text titleTxt = entityTK.createText(thirdCmp, "Title",
-				"Doc., Sir...", 60);
-		final Text maidenNameTxt = entityTK.createText(thirdCmp, "Maiden Name",
-				"Birth Name before getting maried", 100);
-		final Text nickNameTxt = entityTK.createText(thirdCmp, "Nickame",
-				"A pseudonym...", 100);
-		final Text latinPhoneticTxt = entityTK.createText(thirdCmp,
-				"Latin Phonetic",
+		final Text salutationTxt = PeopleUiUtils.createRDText(toolkit,
+				secondCmp, "Salutation", "Mr, Mrs...", 60);
+		final Text firstNameTxt = PeopleUiUtils.createRDText(toolkit,
+				secondCmp, "First Name", "Usual first name for this person",
+				100);
+		final Text middleNameTxt = PeopleUiUtils.createRDText(toolkit,
+				secondCmp, "Middle Name", "The second name if it exists", 100);
+		final Text lastNameTxt = PeopleUiUtils.createRDText(toolkit, secondCmp,
+				"Last Name", "Usual last name for this person", 100);
+		final Text suffixTxt = PeopleUiUtils.createRDText(toolkit, secondCmp,
+				"Suffix", "Junior, the third...", 80);
+
+		// final Text genderTxt = entityTK.createText(thirdCmp, "Gender", "...",
+		// 80);
+		final Text titleTxt = PeopleUiUtils.createRDText(toolkit, thirdCmp,
+				"Title", "Doc., Sir...", 60);
+		final Text maidenNameTxt = PeopleUiUtils.createRDText(toolkit,
+				thirdCmp, "Maiden Name", "Birth Name before getting maried",
+				100);
+		final Text nickNameTxt = PeopleUiUtils.createRDText(toolkit, thirdCmp,
+				"Nickame", "A pseudonym...", 100);
+		final Text latinPhoneticTxt = PeopleUiUtils.createRDText(toolkit,
+				thirdCmp, "Latin Phonetic",
 				"A helper to know how to pronounce this name", 100);
 
 		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
 			public void refresh() { // update display value
 				super.refresh();
 				// EDIT PART
-
-				entityTK.refreshTextValue(displayNameTxt, person,
+				PeopleUiUtils.refreshTextValue(displayNameTxt, person,
 						Property.JCR_TITLE);
 
 				try {
@@ -240,26 +242,25 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 							e);
 				}
 
-				entityTK.refreshTextValue(salutationTxt, person,
+				PeopleUiUtils.refreshTextValue(salutationTxt, person,
 						PeopleNames.PEOPLE_SALUTATION);
-				entityTK.refreshTextValue(firstNameTxt, person,
+				PeopleUiUtils.refreshTextValue(firstNameTxt, person,
 						PeopleNames.PEOPLE_FIRST_NAME);
-				entityTK.refreshTextValue(middleNameTxt, person,
+				PeopleUiUtils.refreshTextValue(middleNameTxt, person,
 						PeopleNames.PEOPLE_MIDDLE_NAME);
-				entityTK.refreshTextValue(lastNameTxt, person,
+				PeopleUiUtils.refreshTextValue(lastNameTxt, person,
 						PeopleNames.PEOPLE_LAST_NAME);
-				entityTK.refreshTextValue(nickNameTxt, person,
+				PeopleUiUtils.refreshTextValue(nickNameTxt, person,
 						PeopleNames.PEOPLE_NICKNAME);
-
-//				entityTK.refreshTextValue(genderTxt, person,
-//						PeopleNames.PEOPLE_GENDER);
-				entityTK.refreshTextValue(maidenNameTxt, person,
+				// PeopleUiUtils.refreshTextValue(genderTxt, person,
+				// PeopleNames.PEOPLE_GENDER);
+				PeopleUiUtils.refreshTextValue(maidenNameTxt, person,
 						PeopleNames.PEOPLE_MAIDEN_NAME);
-				entityTK.refreshTextValue(titleTxt, person,
+				PeopleUiUtils.refreshTextValue(titleTxt, person,
 						PeopleNames.PEOPLE_PERSON_TITLE);
-				entityTK.refreshTextValue(suffixTxt, person,
+				PeopleUiUtils.refreshTextValue(suffixTxt, person,
 						PeopleNames.PEOPLE_NAME_SUFFIX);
-				entityTK.refreshTextValue(latinPhoneticTxt, person,
+				PeopleUiUtils.refreshTextValue(latinPhoneticTxt, person,
 						PeopleNames.PEOPLE_LATIN_PHONETIC_SPELLING);
 
 				// READ ONLY PART
@@ -371,25 +372,26 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 			}
 		});
 
-		entityTK.addTxtModifyListener(editPart, salutationTxt, person,
+		PeopleUiUtils.addTxtModifyListener(editPart, salutationTxt, person,
 				PeopleNames.PEOPLE_SALUTATION, PropertyType.STRING);
-		entityTK.addTxtModifyListener(editPart, middleNameTxt, person,
+		PeopleUiUtils.addTxtModifyListener(editPart, middleNameTxt, person,
 				PeopleNames.PEOPLE_MIDDLE_NAME, PropertyType.STRING);
-		entityTK.addTxtModifyListener(editPart, lastNameTxt, person,
+		PeopleUiUtils.addTxtModifyListener(editPart, lastNameTxt, person,
 				PeopleNames.PEOPLE_LAST_NAME, PropertyType.STRING);
-		entityTK.addTxtModifyListener(editPart, nickNameTxt, person,
+		PeopleUiUtils.addTxtModifyListener(editPart, nickNameTxt, person,
 				PeopleNames.PEOPLE_NICKNAME, PropertyType.STRING);
-
-//		entityTK.addTxtModifyListener(editPart, genderTxt, person,
-//				PeopleNames.PEOPLE_GENDER, PropertyType.STRING);
-		entityTK.addTxtModifyListener(editPart, maidenNameTxt, person,
+		// entityTK.addTxtModifyListener(editPart, genderTxt, person,
+		// PeopleNames.PEOPLE_GENDER, PropertyType.STRING);
+		PeopleUiUtils.addTxtModifyListener(editPart, maidenNameTxt, person,
 				PeopleNames.PEOPLE_MAIDEN_NAME, PropertyType.STRING);
-		entityTK.addTxtModifyListener(editPart, titleTxt, person,
+		PeopleUiUtils.addTxtModifyListener(editPart, titleTxt, person,
 				PeopleNames.PEOPLE_PERSON_TITLE, PropertyType.STRING);
-		entityTK.addTxtModifyListener(editPart, suffixTxt, person,
+		PeopleUiUtils.addTxtModifyListener(editPart, suffixTxt, person,
 				PeopleNames.PEOPLE_NAME_SUFFIX, PropertyType.STRING);
-		entityTK.addTxtModifyListener(editPart, latinPhoneticTxt, person,
-				PeopleNames.PEOPLE_LATIN_PHONETIC_SPELLING, PropertyType.STRING);
+		PeopleUiUtils
+				.addTxtModifyListener(editPart, latinPhoneticTxt, person,
+						PeopleNames.PEOPLE_LATIN_PHONETIC_SPELLING,
+						PropertyType.STRING);
 
 		editPart.initialize(getManagedForm());
 		getManagedForm().addPart(editPart);

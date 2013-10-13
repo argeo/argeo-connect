@@ -649,4 +649,5 @@ public class PeopleJcrUtils implements PeopleNames {
 		string = JcrUtils.replaceInvalidChars(string);
 		return string.replace(' ', '_');
 	}
+	
 }

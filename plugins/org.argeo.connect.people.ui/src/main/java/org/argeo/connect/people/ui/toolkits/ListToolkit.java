@@ -191,7 +191,8 @@ public class ListToolkit {
 			viewer.setContentProvider(new BasicNodeListContentProvider());
 			viewer.addDoubleClickListener(peopleUiService
 					.getNewNodeListDoubleClickListener(peopleService, entity
-							.getPrimaryNodeType().getName()));
+							.getPrimaryNodeType().getName(),
+							PeopleUiConstants.PANEL_PRODUCTIONS));
 			// Add life cycle management
 			final EntityAbstractFormPart sPart = new EntityAbstractFormPart() {
 				public void refresh() {

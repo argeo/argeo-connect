@@ -24,8 +24,6 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -44,7 +42,6 @@ import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -55,7 +52,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
@@ -66,7 +62,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.IManagedForm;
@@ -77,7 +72,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * for entity, to be used in various forms.
  */
 public class EntityToolkit {
-	private final static Log log = LogFactory.getLog(EntityToolkit.class);
+	// private final static Log log = LogFactory.getLog(EntityToolkit.class);
 
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
@@ -87,106 +82,6 @@ public class EntityToolkit {
 	public EntityToolkit(FormToolkit toolkit, IManagedForm form) {
 		this.toolkit = toolkit;
 		this.form = form;
-	}
-
-	// public EntityToolkit(FormToolkit toolkit, IManagedForm form,
-	// AbstractEntityEditor editor) {
-	// this.toolkit = toolkit;
-	// this.form = form;
-	// this.editor = editor;
-	// }
-
-	// ///////////////
-	// TEXT widgets
-	public void addTxtModifyListener(final AbstractFormPart part,
-			final Text text, final Node entity, final String propName,
-			final int propType) {
-		text.addModifyListener(new ModifyListener() {
-			private static final long serialVersionUID = 3940522217518729442L;
-
-			@Override
-			public void modifyText(ModifyEvent event) {
-				if (JcrUiUtils.setJcrProperty(entity, propName, propType,
-						text.getText()))
-					part.markDirty();
-			}
-		});
-	}
-
-	public void addNbOnlyTxtModifyListener(final AbstractFormPart part,
-			final Text text, final Node entity, final String propName,
-			final int propType) {
-		final ControlDecoration decoration = new ControlDecoration(text,
-				SWT.TOP | SWT.LEFT);
-		decoration.setImage(PeopleUiPlugin.getDefault().getWorkbench()
-				.getSharedImages().getImage(ISharedImages.IMG_DEC_FIELD_ERROR));
-		decoration.hide();
-
-		text.addModifyListener(new ModifyListener() {
-			private static final long serialVersionUID = 1L;
-
-			public void modifyText(ModifyEvent event) {
-				String lengthStr = text.getText();
-				if (!isNumbers(lengthStr)) {
-					text.setBackground(new Color(text.getDisplay(), 250, 200,
-							150));
-					decoration.show();
-					decoration
-							.setDescriptionText("Length can only be a number: "
-									+ lengthStr);
-				} else {
-					text.setBackground(null);
-					decoration.hide();
-					Long length = null;
-					if (CommonsJcrUtils.checkNotEmptyString(lengthStr))
-						length = new Long(lengthStr);
-					if (JcrUiUtils.setJcrProperty(entity, propName, propType,
-							length))
-						part.markDirty();
-				}
-			}
-		});
-	}
-
-	private static boolean isNumbers(String content) {
-		int length = content.length();
-		for (int i = 0; i < length; i++) {
-			char ch = content.charAt(i);
-			if (!Character.isDigit(ch)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	public void refreshTextValue(Text text, Node entity, String propName) {
-		String tmpStr = CommonsJcrUtils.getStringValue(entity, propName);
-		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
-			text.setText(tmpStr);
-		else
-			text.setText("");
-	}
-
-	public Text createText(Composite parent, String msg, String toolTip,
-			int width) {
-		Text text = toolkit.createText(parent, "", SWT.BORDER | SWT.SINGLE
-				| SWT.LEFT);
-		text.setMessage(msg);
-		text.setToolTipText(toolTip);
-		text.setLayoutData(new RowData(width, SWT.DEFAULT));
-		return text;
-	}
-
-	public Text createTextforGrid(Composite parent, String msg, String toolTip,
-			int widthHint, int style) {
-		Text text = toolkit.createText(parent, "", SWT.BORDER | SWT.SINGLE
-				| SWT.LEFT);
-		text.setMessage(msg);
-		text.setToolTipText(toolTip);
-		GridData gd = new GridData(style);
-		gd.widthHint = widthHint;
-		text.setLayoutData(gd);
-		return text;
 	}
 
 	// ////////////////

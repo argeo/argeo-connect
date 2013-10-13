@@ -3,11 +3,13 @@ package org.argeo.connect.people.ui;
 import javax.jcr.Node;
 
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.GridData;
@@ -16,6 +18,7 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
@@ -77,7 +80,57 @@ public class PeopleUiUtils {
 	}
 
 	/**
-	 * Shortcut to provide a gridlayout with no margin and no spacing (dafault
+	 * Shortcut to add a Text Modifylistener that updates a LONG property on a
+	 * Node. Checks the input validity while the user is typing
+	 */
+	public static void addNbOnlyTxtModifyListener(final AbstractFormPart part,
+			final Text text, final Node entity, final String propName,
+			final int propType) {
+		final ControlDecoration decoration = new ControlDecoration(text,
+				SWT.TOP | SWT.LEFT);
+		decoration.setImage(PeopleUiPlugin.getDefault().getWorkbench()
+				.getSharedImages().getImage(ISharedImages.IMG_DEC_FIELD_ERROR));
+		decoration.hide();
+
+		text.addModifyListener(new ModifyListener() {
+			private static final long serialVersionUID = 1L;
+
+			public void modifyText(ModifyEvent event) {
+				String lengthStr = text.getText();
+				if (!isNumbers(lengthStr)) {
+					text.setBackground(new Color(text.getDisplay(), 250, 200,
+							150));
+					decoration.show();
+					decoration
+							.setDescriptionText("Length can only be a number: "
+									+ lengthStr);
+				} else {
+					text.setBackground(null);
+					decoration.hide();
+					Long length = null;
+					if (CommonsJcrUtils.checkNotEmptyString(lengthStr))
+						length = new Long(lengthStr);
+					if (JcrUiUtils.setJcrProperty(entity, propName, propType,
+							length))
+						part.markDirty();
+				}
+			}
+		});
+	}
+
+	private static boolean isNumbers(String content) {
+		int length = content.length();
+		for (int i = 0; i < length; i++) {
+			char ch = content.charAt(i);
+			if (!Character.isDigit(ch)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Shortcut to provide a gridlayout with no margin and no spacing (default
 	 * are normally 5 px) with the given column number (equals width is false).
 	 */
 	public static GridLayout gridLayoutNoBorder(int nbOfCol) {

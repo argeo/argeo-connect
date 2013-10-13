@@ -75,8 +75,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		String tooltip = "Contact information for "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
-				"Details", PeopleUiConstants.PANEL_CONTACT_DETAILS,
-				tooltip);
+				"Details", PeopleUiConstants.PANEL_CONTACT_DETAILS, tooltip);
 		entityTK.createContactPanelWithNotes(innerPannel, org);
 
 		// Employees
@@ -138,9 +137,9 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 					super.refresh();
 
 					// EDIT PART
-					entityTK.refreshTextValue(legalNameTxt, org,
+					PeopleUiUtils.refreshTextValue(legalNameTxt, org,
 							PeopleNames.PEOPLE_LEGAL_NAME);
-					entityTK.refreshTextValue(legalStatusTxt, org,
+					PeopleUiUtils.refreshTextValue(legalStatusTxt, org,
 							PeopleNames.PEOPLE_LEGAL_STATUS);
 
 					// READ ONLY PART
@@ -161,6 +160,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 			// FIXME implement clean management of display name
 			legalNameTxt.addModifyListener(new ModifyListener() {
 				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void modifyText(ModifyEvent event) {
 					if (JcrUiUtils.setJcrProperty(org,
@@ -173,7 +173,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				}
 			});
 
-			entityTK.addTxtModifyListener(editPart, legalStatusTxt, org,
+			PeopleUiUtils.addTxtModifyListener(editPart, legalStatusTxt, org,
 					PeopleNames.PEOPLE_LEGAL_STATUS, PropertyType.STRING);
 
 			editPart.initialize(getManagedForm());

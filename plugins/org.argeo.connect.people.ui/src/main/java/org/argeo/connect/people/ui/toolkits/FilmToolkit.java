@@ -17,6 +17,7 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.JcrUiUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -96,12 +97,13 @@ public class FilmToolkit extends EntityToolkit {
 				for (Text text : texts) {
 					String key = (String) text.getData(LANG_KEY);
 					if (DEFAULT_LANG_KEY.equals(key))
-						refreshTextValue(text, entity, Property.JCR_DESCRIPTION);
+						PeopleUiUtils.refreshTextValue(text, entity,
+								Property.JCR_DESCRIPTION);
 					else {
 						Node altDescNode = CommonsJcrUtils.getAltPropertyNode(
 								entity, PeopleNames.PEOPLE_ALT_LANGS, key);
 						if (altDescNode != null)
-							refreshTextValue(text, altDescNode,
+							PeopleUiUtils.refreshTextValue(text, altDescNode,
 									Property.JCR_DESCRIPTION);
 					}
 					text.setEnabled(CommonsJcrUtils
@@ -113,7 +115,7 @@ public class FilmToolkit extends EntityToolkit {
 		for (final Text text : texts) {
 			final String currLang = (String) text.getData(LANG_KEY);
 			if (DEFAULT_LANG_KEY.equals(currLang))
-				addTxtModifyListener(editPart, text, entity,
+				PeopleUiUtils.addTxtModifyListener(editPart, text, entity,
 						Property.JCR_DESCRIPTION, PropertyType.STRING);
 			else {
 				text.addModifyListener(new ModifyListener() {

@@ -43,11 +43,11 @@ public class NodeListDoubleClickListener implements IDoubleClickListener {
 		this.parentNodeType = parentNodeType;
 	}
 
-	// public NodeListDoubleClickListener(PeopleService peopleService,
-	// String parentNodeType, String tableId) {
-	// this.peopleService = peopleService;
-	// this.parentNodeType = parentNodeType;
-	// }
+	public NodeListDoubleClickListener(PeopleService peopleService,
+			String parentNodeType, String tableId) {
+		this.peopleService = peopleService;
+		this.parentNodeType = parentNodeType;
+	}
 
 	protected void openNodeEditor(String nodeId, String editorId) {
 		try {
