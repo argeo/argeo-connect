@@ -150,6 +150,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 						editPanelCmp.moveAbove(roPanelCmp);
 					else
 						editPanelCmp.moveBelow(roPanelCmp);
+					orgInfoROLbl.pack();
 					editPanelCmp.getParent().layout();
 				}
 			};

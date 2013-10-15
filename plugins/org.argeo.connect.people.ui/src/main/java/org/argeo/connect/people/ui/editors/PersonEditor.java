@@ -272,6 +272,8 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 					editPanel.moveAbove(readOnlyPanel);
 				else
 					editPanel.moveBelow(readOnlyPanel);
+				
+				readOnlyInfoLbl.pack();
 				editPanel.getParent().layout();
 			}
 		};
