@@ -307,8 +307,7 @@ public class EntityToolkit {
 						for (final Value value : values) {
 							Link link = new Link(nlCmp, SWT.NONE);
 							link.setData(RWT.CUSTOM_VARIANT, "tag");
-							link.setText("#"
-									+ value.getString() + "");
+							link.setText("#" + value.getString() + "");
 							link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 
 							final Button deleteBtn = new Button(nlCmp, SWT.FLAT);
@@ -777,11 +776,11 @@ public class EntityToolkit {
 		RowLayout rl = new RowLayout(SWT.WRAP);
 		rl.type = SWT.HORIZONTAL;
 		parent.setLayout(rl);
-		String type = CommonsJcrUtils.getStringValue(contactNode,
-				PeopleNames.PEOPLE_CONTACT_LABEL);
-		if (CommonsJcrUtils.checkNotEmptyString(type))
-			type = CommonsJcrUtils.get(contactNode,
-					PeopleNames.PEOPLE_CONTACT_CATEGORY);
+		// String type = CommonsJcrUtils.getStringValue(contactNode,
+		// PeopleNames.PEOPLE_CONTACT_LABEL);
+		// if (CommonsJcrUtils.checkNotEmptyString(type))
+		// type = CommonsJcrUtils.get(contactNode,
+		// PeopleNames.PEOPLE_CONTACT_CATEGORY);
 
 		// final Button categoryBtn =
 		createCategoryButton(parent, contactNode);
@@ -825,7 +824,6 @@ public class EntityToolkit {
 					if (contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
 						populateAdresseCmp(parent, contactNode, afp);
 					} else {
-
 						String label = CommonsJcrUtils.get(contactNode,
 								PeopleNames.PEOPLE_CONTACT_LABEL);
 						labelTxt.setText(label);
@@ -842,13 +840,9 @@ public class EntityToolkit {
 						if (CommonsJcrUtils.checkNotEmptyString(toolTip))
 							valueTxt.setToolTipText(toolTip);
 					}
-
-					// parent.pack();
 					Composite cmp2 = parent.getParent();
 					cmp2.pack();
 					cmp2.getParent().layout(true);
-					// parent.getParent().getParent().getParent().layout(true);
-
 				} catch (Exception e) {
 					if (e instanceof InvalidItemStateException)
 						// TODO clean: this exception normally means node
@@ -861,10 +855,12 @@ public class EntityToolkit {
 			}
 		};
 
-		if (!contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS))
+		if (!contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS)){
 			PeopleUiUtils.addTxtModifyListener(sPart, valueTxt, contactNode,
 					PeopleNames.PEOPLE_CONTACT_VALUE, PropertyType.STRING);
-
+			PeopleUiUtils.addTxtModifyListener(sPart, labelTxt, contactNode,
+					PeopleNames.PEOPLE_CONTACT_LABEL, PropertyType.STRING);
+		}
 		sPart.refresh();
 		sPart.initialize(form);
 		form.addPart(sPart);
@@ -1186,7 +1182,7 @@ public class EntityToolkit {
 						editPanel.setVisible(true);
 						String selected = addContactCmb.getItem(index);
 						Control first;
-						first = populateEditableContactComposite(
+						first = populateNewContactComposite(
 								editPanel,
 								entity,
 								ContactValueCatalogs
@@ -1212,7 +1208,7 @@ public class EntityToolkit {
 	}
 
 	/** Populate an editable contact composite */
-	public Control populateEditableContactComposite(Composite parent,
+	public Control populateNewContactComposite(Composite parent,
 			final Node entity, final String contactType)
 			throws RepositoryException {
 		RowData rd;
@@ -1231,10 +1227,11 @@ public class EntityToolkit {
 			ctl.dispose();
 		}
 
-		// Specific case of the post mail address
+		// Nature (work or private) is only for persons
 		final Combo natureCmb = entity.isNodeType(PeopleTypes.PEOPLE_PERSON) ? new Combo(
 				parent, SWT.NONE) : null;
 
+		// No category for emails and web sites.
 		final Combo catCmb = !(contactType.equals(PeopleTypes.PEOPLE_URL) || contactType
 				.equals(PeopleTypes.PEOPLE_EMAIL)) ? new Combo(parent, SWT.NONE)
 				: null;

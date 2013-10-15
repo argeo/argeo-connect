@@ -3,17 +3,14 @@ package org.argeo.connect.people.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.jcr.InvalidItemStateException;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
-import javax.jcr.version.VersionException;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
@@ -111,8 +108,8 @@ public class CommonsJcrUtils {
 	 * Wraps the versionMananger.checkedIn(path) method to adapt it to the
 	 * current check in / check out policy.
 	 * 
-	 * It also checked if the current entity has to be moved or not.
-	 * TODO : add management of check out by others.
+	 * It also checked if the current entity has to be moved or not. TODO : add
+	 * management of check out by others.
 	 */
 	public static void saveAndCheckin(Node node) {
 		try {
@@ -132,26 +129,16 @@ public class CommonsJcrUtils {
 	 * TODO : add management of check out by others.
 	 */
 	public static void cancelAndCheckin(Node node) {
-		// try {
-		JcrUtils.discardUnderlyingSessionQuietly(node);
 		try {
-			node.getSession().getWorkspace().getVersionManager()
-					.checkin(node.getPath());
-			// TODO find which one is called when a new node has been discarded
-			// and thus does not exist anymore. Catch it cleanly
-		} catch (VersionException e) {
-			e.printStackTrace();
-		} catch (UnsupportedRepositoryOperationException e) {
-			e.printStackTrace();
-		} catch (InvalidItemStateException e) {
-			e.printStackTrace();
-		} catch (RepositoryException e) {
-			e.printStackTrace();
+			String path = node.getPath();
+			Session session = node.getSession();
+			JcrUtils.discardUnderlyingSessionQuietly(node);
+			// if the node has never been saved, it does not exist anymore.
+			if (session.nodeExists(path))
+				session.getWorkspace().getVersionManager().checkin(path);
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to save and chek in node", re);
 		}
-
-		// } catch (RepositoryException re) {
-		// throw new PeopleException("Unable to save and chek in node", re);
-		// }
 	}
 
 	/**

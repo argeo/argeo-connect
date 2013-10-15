@@ -545,6 +545,11 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 				String path = entity.getPath();
 				session.removeItem(path);
 				session.save();
+				entity = null;
+				// close current editor
+				this.getSite().getWorkbenchWindow().getActivePage()
+						.closeEditor(this, false);
+
 			} else {
 				CommonsJcrUtils.cancelAndCheckin(entity);
 				notifyCheckOutStateChange();
@@ -561,7 +566,9 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	@Override
 	public void dispose() {
 		try {
-			CommonsJcrUtils.cancelAndCheckin(entity);
+			if (entity != null)
+				CommonsJcrUtils.cancelAndCheckin(entity);
+
 			// TODO clean default image management
 			// Free the resources.
 			if (itemPicture != null
