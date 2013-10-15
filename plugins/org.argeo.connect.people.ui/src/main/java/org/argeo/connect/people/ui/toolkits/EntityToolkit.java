@@ -25,10 +25,11 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.PeopleValueCatalogs;
+import org.argeo.connect.people.ui.ContactImages;
 import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
@@ -119,7 +120,9 @@ public class EntityToolkit {
 
 	public void populateGroupMembershipPanel(final Composite parent,
 			final Node entity) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
+		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder(2);
+		gl.marginBottom = 5;
+		parent.setLayout(gl);
 		// parent.setLayout(new GridLayout(2, false));
 
 		final Composite nlCmp = new Composite(parent, SWT.NO_FOCUS);
@@ -128,7 +131,7 @@ public class EntityToolkit {
 
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = true;
-		rl.marginLeft = 0;
+		rl.marginLeft = 5;
 		rl.marginRight = 0;
 		nlCmp.setLayout(rl);
 
@@ -264,7 +267,7 @@ public class EntityToolkit {
 		nlCmp.setLayoutData(gd);
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = true;
-		rl.marginLeft = 0;
+		rl.marginLeft = 5;
 		rl.marginRight = 0;
 		nlCmp.setLayout(rl);
 
@@ -303,7 +306,9 @@ public class EntityToolkit {
 								PeopleNames.PEOPLE_TAGS).getValues();
 						for (final Value value : values) {
 							Link link = new Link(nlCmp, SWT.NONE);
-							link.setText("<a> #" + value.getString() + "</a>");
+							link.setData(RWT.CUSTOM_VARIANT, "tag");
+							link.setText("#"
+									+ value.getString() + "");
 							link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 
 							final Button deleteBtn = new Button(nlCmp, SWT.FLAT);
@@ -984,34 +989,17 @@ public class EntityToolkit {
 			if (contactNode.hasProperty(PeopleNames.PEOPLE_CONTACT_CATEGORY))
 				category = CommonsJcrUtils.get(contactNode,
 						PeopleNames.PEOPLE_CONTACT_CATEGORY);
-			if (contactNode.isNodeType(PeopleTypes.PEOPLE_EMAIL))
-				btn.setImage(PeopleImages.MAIL);
-			else if (contactNode.isNodeType(PeopleTypes.PEOPLE_PHONE)) {
-				if (PeopleValueCatalogs.CONTACT_CAT_FAX.equals(category))
-					btn.setImage(PeopleImages.FAX);
-				else if (PeopleValueCatalogs.CONTACT_CAT_MOBILE
-						.equals(category))
-					btn.setImage(PeopleImages.MOBILE);
-				else if (PeopleValueCatalogs.CONTACT_CAT_PRO_RECEPTION
-						.equals(category))
-					btn.setImage(PeopleImages.PHONE_DIRECT);
-				// else if (PeopleConstants.CONTACT_CATEGORY_WORK.equals(label))
-				// btn.setImage(PeopleImages.WORK);
-				// else if
-				// (PeopleConstants.CONTACT_CATEGORY_PRIVATE.equals(label))
-				// btn.setImage(PeopleImages.PHONE);
+			String nature = null;
+			if (contactNode.hasProperty(PeopleNames.PEOPLE_CONTACT_NATURE))
+				nature = CommonsJcrUtils.get(contactNode,
+						PeopleNames.PEOPLE_CONTACT_NATURE);
 
-			} else if (contactNode.isNodeType(PeopleTypes.PEOPLE_URL)) {
-				// String category = CommonsJcrUtils.get(contactNode,
-				// PeopleNames.PEOPLE_CONTACT_CATEGORY);
-				// TODO manage all possibilities.
-				btn.setImage(PeopleImages.WWW);
-			} else if (contactNode.isNodeType(PeopleTypes.PEOPLE_IMPP)) {
+			String contactType = contactNode.getPrimaryNodeType().getName();
+			String entityType = contactNode.getParent().getParent()
+					.getPrimaryNodeType().getName();
 
-			} else if (contactNode.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA)) {
-				if (PeopleValueCatalogs.CONTACT_CAT_FACEBOOK.equals(category))
-					btn.setImage(PeopleImages.FACEBOOK);
-			}
+			btn.setImage(ContactImages.getImage(entityType, contactType,
+					nature, category));
 
 			RowData rd = new RowData();
 			rd.height = 16;
@@ -1159,7 +1147,7 @@ public class EntityToolkit {
 		GridData gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
 		gd.widthHint = 100;
 		addContactCmb.setLayoutData(gd);
-		addContactCmb.setItems(PeopleValueCatalogs.ARRAY_CONTACT_TYPES);
+		addContactCmb.setItems(ContactValueCatalogs.ARRAY_CONTACT_TYPES);
 		// Add a default value
 		addContactCmb.add("Add a contact", 0);
 		addContactCmb.select(0);
@@ -1198,10 +1186,13 @@ public class EntityToolkit {
 						editPanel.setVisible(true);
 						String selected = addContactCmb.getItem(index);
 						Control first;
-						first = populateEditableContactComposite(editPanel,
-								entity, PeopleValueCatalogs.getKeyByValue(
-										PeopleValueCatalogs.MAPS_CONTACT_TYPES,
-										selected));
+						first = populateEditableContactComposite(
+								editPanel,
+								entity,
+								ContactValueCatalogs
+										.getKeyByValue(
+												ContactValueCatalogs.MAPS_CONTACT_TYPES,
+												selected));
 						if (first != null)
 							first.setFocus();
 					}
@@ -1288,7 +1279,7 @@ public class EntityToolkit {
 		final Button validBtn = toolkit.createButton(parent, "Save", SWT.PUSH);
 
 		if (natureCmb != null) {
-			natureCmb.setItems(PeopleValueCatalogs.ARRAY_CONTACT_NATURES);
+			natureCmb.setItems(ContactValueCatalogs.ARRAY_CONTACT_NATURES);
 			natureCmb.select(0);
 			natureCmb.addSelectionListener(new SelectionListener() {
 				private static final long serialVersionUID = 1L;
@@ -1297,7 +1288,7 @@ public class EntityToolkit {
 				public void widgetSelected(SelectionEvent e) {
 					try {
 						if (catCmb != null) {
-							catCmb.setItems(PeopleValueCatalogs
+							catCmb.setItems(ContactValueCatalogs
 									.getCategoryList(entity
 											.getPrimaryNodeType().getName(),
 											contactType, natureCmb.getText()));
@@ -1316,7 +1307,7 @@ public class EntityToolkit {
 		}
 
 		if (catCmb != null) {
-			catCmb.setItems(PeopleValueCatalogs.getCategoryList(entity
+			catCmb.setItems(ContactValueCatalogs.getCategoryList(entity
 					.getPrimaryNodeType().getName(), contactType, null));
 			catCmb.select(0);
 		}

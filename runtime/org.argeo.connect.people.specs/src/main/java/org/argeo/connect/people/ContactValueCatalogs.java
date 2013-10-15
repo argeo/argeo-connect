@@ -10,7 +10,7 @@ import java.util.Map.Entry;
  * management of such an issue
  */
 
-public class PeopleValueCatalogs {
+public class ContactValueCatalogs {
 
 	// Labels
 	public final static String CONTACT_OTHER = "Other";

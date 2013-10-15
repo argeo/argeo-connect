@@ -139,29 +139,28 @@ public class PeopleHtmlUtils {
 		String tmpStr = PeopleJcrUtils.getDefaultContactValue(entity,
 				PeopleTypes.PEOPLE_PHONE);
 		if (tmpStr != null) {
-			builder.append("&#160;");
 			builder.append(cleanHtmlString(tmpStr));
-			builder.append("&#160;&#160;");
+			builder.append("&#160;&#160;&#160;");
 		}
 
 		tmpStr = PeopleJcrUtils.getDefaultContactValue(entity,
 				PeopleTypes.PEOPLE_EMAIL);
 		if (tmpStr != null) {
-			builder.append("&#160;<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
+			builder.append("<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
 					+ " href=\"mailto:");
 			builder.append(tmpStr).append("\">");
 			builder.append(tmpStr);
-			builder.append("</a>&#160;&#160;");
+			builder.append("</a>&#160;&#160;&#160;");
 		}
 		tmpStr = PeopleJcrUtils.getDefaultContactValue(entity,
 				PeopleTypes.PEOPLE_URL);
 		if (tmpStr != null) {
-			builder.append("&#160;<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
+			builder.append("<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
 					+ " href=\"http://");
 			builder.append(cleanHtmlString(tmpStr)).append("\"")
 					.append(" target=\"_blank\" ").append(">");
 			builder.append(tmpStr);
-			builder.append("</a>&#160;&#160;");
+			builder.append("</a>&#160;&#160;&#160;");
 		}
 		if (!smallList)
 			builder.append("</small>");

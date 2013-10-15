@@ -19,7 +19,7 @@ import org.argeo.connect.film.FilmTypes;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.PeopleValueCatalogs;
+import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.jcr.JcrUtils;
 
 /**
@@ -90,7 +90,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			Node orga) throws RepositoryException {
 		if (!CommonsJcrUtils.isEmptyString(category)) {
 			contactNode.setProperty(PEOPLE_CONTACT_NATURE, category);
-			if (category.equals(PeopleValueCatalogs.CONTACT_NATURE_PRO)
+			if (category.equals(ContactValueCatalogs.CONTACT_NATURE_PRO)
 					&& orga != null)
 				contactNode.setProperty(PEOPLE_REF_UID, orga.getPath());
 		}
