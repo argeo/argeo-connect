@@ -72,6 +72,7 @@ public class HistoryToolkit {
 					refreshHistory(styledText);
 				}
 			};
+			part.initialize(form);
 			form.addPart(part);
 		} catch (Exception e) {
 			throw new PeopleException(
