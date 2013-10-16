@@ -16,7 +16,6 @@ import javax.jcr.query.qom.Selector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
-import org.argeo.connect.people.PeopleValueCatalogs;
 import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
@@ -212,8 +211,6 @@ public class ChannelEditorCTab extends AbstractEntityCTabEditor implements
 
 	}
 
-
-
 	@Override
 	protected Boolean deleteParentOnRemove() {
 		// TODO Auto-generated method stub
@@ -296,7 +293,7 @@ public class ChannelEditorCTab extends AbstractEntityCTabEditor implements
 		valueTxt.setLayoutData(rd);
 
 		final Combo addCatCmb = new Combo(parent, SWT.NONE);
-		//addCatCmb.setItems(PeopleValueCatalogs.ARRAY_CONTACT_CATEGORIES);
+		// addCatCmb.setItems(PeopleValueCatalogs.ARRAY_CONTACT_CATEGORIES);
 		rd = new RowData(200, SWT.DEFAULT);
 		addCatCmb.setLayoutData(rd);
 		addCatCmb.select(0);
@@ -312,7 +309,8 @@ public class ChannelEditorCTab extends AbstractEntityCTabEditor implements
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				String value = valueTxt.getText();
-				String cat = addCatCmb.getText();
+				// String cat =
+				addCatCmb.getText();
 				boolean wasCheckedout = CommonsJcrUtils
 						.isNodeCheckedOut(channel);
 				if (!wasCheckedout)
