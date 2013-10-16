@@ -16,6 +16,7 @@ import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.ui.toolkits.EntityToolkit;
+import org.argeo.connect.people.ui.toolkits.HistoryToolkit;
 import org.argeo.connect.people.ui.toolkits.ListToolkit;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
@@ -56,6 +57,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 	// Usefull toolkits
 	private EntityToolkit entityTK;
 	private ListToolkit listTK;
+	private HistoryToolkit historyTK;
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -81,6 +83,8 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		entityTK = new EntityToolkit(toolkit, getManagedForm());
 		listTK = new ListToolkit(toolkit, getManagedForm(),
 				getPeopleServices(), getPeopleUiServices());
+		historyTK = new HistoryToolkit(getPeopleServices(), toolkit,
+				getManagedForm(), getEntity());
 	}
 
 	@Override
@@ -140,6 +144,15 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Films",
 				PeopleUiConstants.PANEL_PRODUCTIONS, tooltip);
 		listTK.populateFilmsPanel(innerPannel, person);
+		folder.layout();
+
+		// History panel
+		// TODO: make this dynamic
+		tooltip = "History of information about "
+				+ JcrUtils.get(person, Property.JCR_TITLE);
+		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "History",
+				PeopleUiConstants.PANEL_HISTORY, tooltip);
+		historyTK.populateHistoryPanel(innerPannel);
 		folder.layout();
 	}
 
@@ -272,7 +285,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 					editPanel.moveAbove(readOnlyPanel);
 				else
 					editPanel.moveBelow(readOnlyPanel);
-				
+
 				readOnlyInfoLbl.pack();
 				editPanel.getParent().layout();
 			}

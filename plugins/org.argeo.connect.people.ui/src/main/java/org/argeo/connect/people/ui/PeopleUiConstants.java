@@ -11,12 +11,12 @@ public interface PeopleUiConstants {
 
 	/* Default formats */
 	public final static String DEFAULT_DATE_FORMAT = "EEE, dd MMM yyyy";
+	public final static String DEFAULT_DATE_TIME_FORMAT = "EEE, dd MMM yyyy 'at' HH:mm";
 	public final static String DEFAULT_NUMBER_FORMAT = "#,##0.0";
 
 	// Default column size for various tables and extracts
 	public final static int DEFAULT_COLUMN_SIZE = 120;
 
-	
 	/* Default messages */
 	public final static String FILTER_HELP_MSG = "Enter filter criterion";
 
@@ -32,6 +32,8 @@ public interface PeopleUiConstants {
 	public final static String PANEL_MEMBERS = "people:members";
 	public final static String PANEL_DESCRIPTION = "people:descriptions";
 	public final static String PANEL_SYNOPSES = "msm:synopses";
+	public final static String PANEL_HISTORY = "msm:history";
+
 	// Various types for list label providers
 	public final static int LIST_TYPE_OVERVIEW_TITLE = 0;
 	public final static int LIST_TYPE_OVERVIEW_DETAIL = 1;
@@ -52,7 +54,7 @@ public interface PeopleUiConstants {
 	/* CUSTOM STYLING */
 	// a composite used to put titles in various lists
 	public final static String CSS_FLAT_IMG_BUTTON = "peopleCss-flatImgBtn";
-	
+
 	public final static String PEOPLE_CSS_TITLE_COMPOSITE_FIRST = "peopleCss-titleCompositeFirst";
 	public final static String PEOPLE_CSS_TITLE_COMPOSITE = "peopleCss-titleComposite";
 

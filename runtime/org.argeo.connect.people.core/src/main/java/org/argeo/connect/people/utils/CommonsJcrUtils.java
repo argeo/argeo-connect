@@ -2,12 +2,16 @@ package org.argeo.connect.people.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
@@ -16,6 +20,7 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.jcr.PropertyDiff;
 
 /** Some static utils methods that might be factorized in a near future */
 public class CommonsJcrUtils {
@@ -286,6 +291,120 @@ public class CommonsJcrUtils {
 	}
 
 	private CommonsJcrUtils() {
+	}
+
+	public static Map<String, PropertyDiff> diffProperties(Node reference,
+			Node observed) {
+		Map<String, PropertyDiff> diffs = new TreeMap<String, PropertyDiff>();
+		diffPropertiesLevel(diffs, null, reference, observed);
+		return diffs;
+	}
+
+	/**
+	 * Compare the properties of two nodes. Extends
+	 * <code>JcrUtils.diffPropertiesLevel</code> to also track differences in
+	 * multiple value properties and sub graph. No property is skipped (among
+	 * other all technical jcr:... properties) to be able to track jcr:title and
+	 * description properties, among other. Filtering must be applied afterwards
+	 * to only keep relevant properties.
+	 */
+	static void diffPropertiesLevel(Map<String, PropertyDiff> diffs,
+			String baseRelPath, Node reference, Node observed) {
+		try {
+			// check removed and modified
+			PropertyIterator pit = reference.getProperties();
+			props: while (pit.hasNext()) {
+				Property p = pit.nextProperty();
+				String name = p.getName();
+				// if (name.startsWith("jcr:"))
+				// continue props;
+
+				if (!observed.hasProperty(name)) {
+					String relPath = propertyRelPath(baseRelPath, name);
+					PropertyDiff pDiff = new PropertyDiff(PropertyDiff.REMOVED,
+							relPath, p.getValue(), null);
+					diffs.put(relPath, pDiff);
+				} else {
+					if (p.isMultiple()) {
+						int i = 0;
+
+						Value[] refValues = p.getValues();
+						Value[] newValues = observed.getProperty(name)
+								.getValues();
+						String relPath = propertyRelPath(baseRelPath, name);
+						refValues: for (Value refValue : refValues) {
+							for (Value newValue : newValues) {
+								if (refValue.equals(newValue))
+									continue refValues;
+							}
+							PropertyDiff pDiff = new PropertyDiff(
+									PropertyDiff.REMOVED, relPath, refValue,
+									null);
+							diffs.put(relPath + "_" + i++, pDiff);
+						}
+
+						newValues: for (Value newValue : newValues) {
+							for (Value refValue : refValues) {
+								if (refValue.equals(newValue))
+									continue newValues;
+							}
+							PropertyDiff pDiff = new PropertyDiff(
+									PropertyDiff.ADDED, relPath, null, newValue);
+							diffs.put(relPath + "_" + i++, pDiff);
+						}
+
+					} else {
+						Value referenceValue = p.getValue();
+						Value newValue = observed.getProperty(name).getValue();
+						if (!referenceValue.equals(newValue)) {
+							String relPath = propertyRelPath(baseRelPath, name);
+							PropertyDiff pDiff = new PropertyDiff(
+									PropertyDiff.MODIFIED, relPath,
+									referenceValue, newValue);
+							diffs.put(relPath, pDiff);
+						}
+					}
+				}
+			}
+			// check added
+			pit = observed.getProperties();
+			// props:
+			while (pit.hasNext()) {
+				Property p = pit.nextProperty();
+				String name = p.getName();
+				// if (name.startsWith("jcr:"))
+				// continue props;
+				if (!reference.hasProperty(name)) {
+					String relPath = propertyRelPath(baseRelPath, name);
+					if (p.isMultiple()) {
+						Value[] newValues = observed.getProperty(name)
+								.getValues();
+						int i = 0;
+						for (Value newValue : newValues) {
+							PropertyDiff pDiff = new PropertyDiff(
+									PropertyDiff.ADDED, relPath, null, newValue);
+							diffs.put(relPath + "_" + i++, pDiff);
+						}
+					} else {
+						PropertyDiff pDiff = new PropertyDiff(
+								PropertyDiff.ADDED, relPath, null, p.getValue());
+						diffs.put(relPath, pDiff);
+					}
+				}
+			}
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Cannot diff " + reference + " and "
+					+ observed, e);
+		}
+	}
+
+	/** Builds a property relPath to be used in the diff. */
+	private static String propertyRelPath(String baseRelPath,
+			String propertyName) {
+		if (baseRelPath == null)
+			return propertyName;
+		else
+			return baseRelPath + '/' + propertyName;
 	}
 
 }
