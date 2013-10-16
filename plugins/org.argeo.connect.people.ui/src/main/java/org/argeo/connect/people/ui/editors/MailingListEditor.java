@@ -33,6 +33,7 @@ import org.argeo.connect.people.ui.commands.GetCalcExtract;
 import org.argeo.connect.people.ui.extracts.ExtractDefinition;
 import org.argeo.connect.people.ui.extracts.ICalcExtractProvider;
 import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
+import org.argeo.connect.people.ui.listeners.RowViewerDoubleClickListener;
 import org.argeo.connect.people.ui.providers.SimpleJcrRowLabelProvider;
 import org.argeo.connect.people.ui.utils.ColumnDefinition;
 import org.argeo.connect.people.ui.utils.MailListComparator;
@@ -133,7 +134,7 @@ public class MailingListEditor extends GroupEditor implements
 		buttonsCmp.setLayout(new GridLayout(4, false));
 
 		Text text = createFilterText(buttonsCmp);
-		
+
 		Button addBtn = toolkit
 				.createButton(buttonsCmp, "Add member", SWT.PUSH);
 		configureAddMemberButton(addBtn, entity,
@@ -339,7 +340,10 @@ public class MailingListEditor extends GroupEditor implements
 		viewer.setComparator(comparator);
 
 		// Double click
-		// viewer.addDoubleClickListener(new DoubleClickListener());
+
+		RowViewerDoubleClickListener ndcl = new RowViewerDoubleClickListener(
+				getPeopleUiService(), PeopleTypes.PEOPLE_PERSON);
+		viewer.addDoubleClickListener(ndcl);
 		return viewer;
 	}
 

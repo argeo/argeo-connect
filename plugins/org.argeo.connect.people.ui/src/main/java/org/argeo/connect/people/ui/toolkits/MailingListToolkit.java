@@ -68,8 +68,6 @@ public class MailingListToolkit {
 		addFilterPanel(filterCmp, viewer);
 		parent.layout();
 		return viewer;
-
-		// Initialize the list
 	}
 
 	private TableViewer createItemsViewer(Composite parent,
@@ -84,9 +82,7 @@ public class MailingListToolkit {
 		table.setLayoutData(gd);
 
 		TableViewer itemsViewer = new TableViewer(table);
-		// itemsViewer.setContentProvider(new BasicNodeListContentProvider());
-		// itemsViewer.addDoubleClickListener();
-
+		
 		// The columns
 		TableViewerColumn col = ViewerUtils.createTableViewerColumn(
 				itemsViewer, "", SWT.NONE, 25);

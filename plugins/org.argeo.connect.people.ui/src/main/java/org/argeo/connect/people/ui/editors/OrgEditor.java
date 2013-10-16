@@ -67,7 +67,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 	protected void createToolkits() {
 		entityTK = new EntityToolkit(toolkit, getManagedForm());
 		listTK = new ListToolkit(toolkit, getManagedForm(),
-				getPeopleServices(), getPeopleUiServices());
+				getPeopleService(), getPeopleUiService());
 	}
 
 	protected void populateTabFolder(CTabFolder folder) {
@@ -103,7 +103,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 					SWT.WRAP);
 			orgInfoROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider orgLP = new OrgOverviewLabelProvider(
-					false, getPeopleServices());
+					false, getPeopleService());
 
 			// EDIT
 			final Composite editPanelCmp = toolkit.createComposite(parent,

@@ -122,7 +122,7 @@ public abstract class AbstractEntityCTabEditor extends AbstractEntityEditor
 	}
 
 	/* EXPOSES TO CHILDREN CLASSES */
-	protected PeopleUiService getPeopleUiServices() {
+	protected PeopleUiService getPeopleUiService() {
 		return peopleUiService;
 	}
 

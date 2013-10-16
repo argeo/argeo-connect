@@ -92,7 +92,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 	protected void createToolkits() {
 		filmPanelToolkit = new FilmToolkit(toolkit, getManagedForm());
 		listPanelToolkit = new ListToolkit(toolkit, getManagedForm(),
-				getPeopleServices(), getPeopleUiServices());
+				getPeopleService(), getPeopleUiService());
 
 	}
 
@@ -132,7 +132,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 					SWT.WRAP);
 			filmInfoROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider filmExtractLP = new FilmOverviewLabelProvider(
-					false, getPeopleServices());
+					false, getPeopleService());
 
 			// EDIT PANEL
 			final Composite editPanelCmp = toolkit.createComposite(parent,

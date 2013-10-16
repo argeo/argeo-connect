@@ -29,6 +29,7 @@
 			restorable="true">
 		</view>
 	</extension>
+	<!-- Editors -->
     <extension
 		point="org.eclipse.ui.editors">
 		<editor

@@ -82,8 +82,8 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 	protected void createToolkits() {
 		entityTK = new EntityToolkit(toolkit, getManagedForm());
 		listTK = new ListToolkit(toolkit, getManagedForm(),
-				getPeopleServices(), getPeopleUiServices());
-		historyTK = new HistoryToolkit(getPeopleServices(), toolkit,
+				getPeopleService(), getPeopleUiService());
+		historyTK = new HistoryToolkit(getPeopleService(), toolkit,
 				getManagedForm(), getEntity());
 	}
 
@@ -171,7 +171,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		final ColumnLabelProvider personLP = new PersonOverviewLabelProvider(
-				PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE, getPeopleServices());
+				PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE, getPeopleService());
 
 		// EDIT
 		final Composite editPanel = toolkit.createComposite(parent,

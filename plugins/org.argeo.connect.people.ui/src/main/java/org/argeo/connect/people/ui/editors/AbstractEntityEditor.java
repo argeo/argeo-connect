@@ -119,6 +119,13 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 
 			// try to set a default part name
 			updatePartName();
+
+			// update tooltip
+			String displayName = CommonsJcrUtils.get(getEntity(),
+					Property.JCR_TITLE);
+			if (CommonsJcrUtils.isEmptyString(displayName))
+				displayName = "current item";
+			setTitleToolTip("Display and edit information for " + displayName);
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Unable to create new session"
 					+ " to use with current editor", e);
@@ -438,7 +445,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		return mForm;
 	}
 
-	protected PeopleService getPeopleServices() {
+	protected PeopleService getPeopleService() {
 		return peopleService;
 	}
 

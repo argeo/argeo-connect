@@ -18,6 +18,7 @@ package org.argeo.connect.people.ui.wizards;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.QueryManager;
@@ -25,6 +26,7 @@ import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
 import javax.jcr.query.qom.Constraint;
+import javax.jcr.query.qom.Ordering;
 import javax.jcr.query.qom.QueryObjectModel;
 import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
@@ -38,7 +40,10 @@ import org.argeo.connect.people.ui.utils.ColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -87,7 +92,22 @@ public abstract class AddReferenceDialog extends TrayDialog {
 		entityViewer = mlToolkit.createItemsViewerWithCheckBox(dialogArea,
 				selectedItems, getColumnsDef());
 		entityViewer.setContentProvider(new MyContentProvider());
+		entityViewer.addDoubleClickListener(new IDoubleClickListener() {
+
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				Object obj = ((IStructuredSelection) event.getSelection())
+						.getFirstElement();
+				if (obj instanceof Row) {
+					List<Row> rows = new ArrayList<Row>();
+					rows.add((Row) obj);
+					performAddition(rows);
+				}
+			}
+		});
+
 		parent.pack();
+
 		// initialize with no filter
 		entityViewer.setInput("");
 		return dialogArea;
@@ -95,15 +115,15 @@ public abstract class AddReferenceDialog extends TrayDialog {
 
 	protected abstract List<ColumnDefinition> getColumnsDef();
 
-	protected abstract boolean performFinish();
+	protected abstract boolean performAddition(List<Row> items);
 
-	protected List<Row> getSelectedItems() {
+	private List<Row> getSelectedItems() {
 		return selectedItems;
 	}
 
 	@Override
 	protected void okPressed() {
-		if (performFinish())
+		if (performAddition(getSelectedItems()))
 			super.okPressed();
 	}
 
@@ -149,8 +169,17 @@ public abstract class AddReferenceDialog extends TrayDialog {
 						defaultC = factory.and(defaultC, currC);
 				}
 			}
+
+			// Order by default by JCR TITLE
+			// TODO check if node definition has MIX_TITLE mixin
+			// TODO Apparently case insensitive ordering is not implemented in
+			// current used JCR implementation
+			Ordering order = factory
+					.ascending(factory.upperCase(factory.propertyValue(
+							source.getSelectorName(), Property.JCR_TITLE)));
 			QueryObjectModel query;
-			query = factory.createQuery(source, defaultC, null, null);
+			query = factory.createQuery(source, defaultC,
+					new Ordering[] { order }, null);
 			query.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
 
 			QueryResult result = query.execute();

@@ -63,7 +63,7 @@ public class AddMLMembershipDialog extends AddReferenceDialog {
 		return columnDefs;
 	}
 
-	protected boolean performFinish() {
+	protected boolean performAddition(List<Row> selectedItems) {
 		StringBuilder duplicates = new StringBuilder();
 
 		String defaultMail = PeopleJcrUtils.getDefaultContactValue(
@@ -77,7 +77,7 @@ public class AddMLMembershipDialog extends AddReferenceDialog {
 		}
 
 		try {
-			for (Row mlRow : getSelectedItems()) {
+			for (Row mlRow : selectedItems) {
 				Node mailingList = mlRow
 						.getNode(PeopleTypes.PEOPLE_MAILING_LIST);
 				Node members = mailingList.getNode(PeopleNames.PEOPLE_MEMBERS);
