@@ -4,14 +4,12 @@ import java.util.List;
 
 import javax.jcr.query.RowIterator;
 
-import org.argeo.connect.people.ui.utils.ColumnDefinition;
-
 /**
  * Views and editors can implement this interface so that a call to
  * getCalcExtract command can generate an Openoffice Calc or MS Excel extract
  * corresponding to the displayed table
  */
-public interface ICalcExtractProvider {
+public interface ITableProvider {
 	/**
 	 * Returns the list to display in the spread sheet
 	 */

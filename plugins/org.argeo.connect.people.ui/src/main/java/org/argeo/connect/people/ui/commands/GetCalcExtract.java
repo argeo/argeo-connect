@@ -5,7 +5,7 @@ import java.io.File;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.extracts.CalcFileProvider;
-import org.argeo.connect.people.ui.extracts.ICalcExtractProvider;
+import org.argeo.connect.people.ui.extracts.ITableProvider;
 import org.argeo.connect.people.ui.extracts.RowIteratorToCalcWriter;
 import org.argeo.eclipse.ui.specific.FileHandler;
 import org.eclipse.core.commands.AbstractHandler;
@@ -34,10 +34,10 @@ public class GetCalcExtract extends AbstractHandler {
 		try {
 			IWorkbenchPart iwp = HandlerUtil.getActiveWorkbenchWindow(event)
 					.getActivePage().getActivePart();
-			if (iwp instanceof ICalcExtractProvider) {
+			if (iwp instanceof ITableProvider) {
 				File tmpFile = File.createTempFile("people-extract", ".xls");
 				tmpFile.deleteOnExit();
-				callCalcGenerator((ICalcExtractProvider) iwp, extractId,
+				callCalcGenerator((ITableProvider) iwp, extractId,
 						tmpFile);
 				fileHandler.openFile(tmpFile.getName(),
 						tmpFile.getAbsolutePath());
@@ -56,7 +56,7 @@ public class GetCalcExtract extends AbstractHandler {
 
 	/** Real call to spreadsheet generator. */
 	protected synchronized void callCalcGenerator(
-			ICalcExtractProvider provider, String extractId, File file)
+			ITableProvider provider, String extractId, File file)
 			throws Exception {
 		RowIteratorToCalcWriter writer = new RowIteratorToCalcWriter();
 		writer.setColumnDefinition(provider.getColumnDefinition(extractId));

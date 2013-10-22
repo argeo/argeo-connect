@@ -30,12 +30,12 @@ import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.commands.AddEntityReferenceWithPosition;
 import org.argeo.connect.people.ui.commands.GetCalcExtract;
+import org.argeo.connect.people.ui.extracts.ColumnDefinition;
 import org.argeo.connect.people.ui.extracts.ExtractDefinition;
-import org.argeo.connect.people.ui.extracts.ICalcExtractProvider;
+import org.argeo.connect.people.ui.extracts.ITableProvider;
 import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.ui.listeners.RowViewerDoubleClickListener;
 import org.argeo.connect.people.ui.providers.SimpleJcrRowLabelProvider;
-import org.argeo.connect.people.ui.utils.ColumnDefinition;
 import org.argeo.connect.people.ui.utils.MailListComparator;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -67,7 +67,7 @@ import org.eclipse.swt.widgets.Text;
  * TODO what specific should be added
  */
 public class MailingListEditor extends GroupEditor implements
-		ICalcExtractProvider {
+		ITableProvider {
 	// final static Log log = LogFactory.getLog(MailingListEditor.class);
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID

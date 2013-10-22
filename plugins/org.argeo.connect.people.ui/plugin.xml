@@ -257,7 +257,7 @@
 				tooltip="Generate an tabular extract for the current entity editor">
 				<visibleWhen>
 					<with variable="activePart">
-						<instanceof value="org.argeo.connect.people.ui.extracts.ICalcExtractProvider" />
+						<instanceof value="org.argeo.connect.people.ui.extracts.ITableProvider" />
 					</with>
 				</visibleWhen>
 			</command>

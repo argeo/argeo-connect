@@ -7,7 +7,6 @@ import javax.jcr.PropertyType;
 
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.utils.ColumnDefinition;
 
 public interface ExtractDefinition {
 
