@@ -151,8 +151,8 @@ public class RowIteratorToCalcWriter {
 			int currentRow = 0;
 			int i = 0;
 			for (ColumnDefinition currColDef : columnDefs) {
-				sheet.addCell(new Label(i++, currentRow,
-						currColDef.headerLabel, tableHeaderFormat));
+				sheet.addCell(new Label(i++, currentRow, currColDef
+						.getHeaderLabel(), tableHeaderFormat));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -178,22 +178,22 @@ public class RowIteratorToCalcWriter {
 	private int updateCell(int currRowIndex, int currColIndex,
 			WritableSheet sheet, Row row, ColumnDefinition currCol) {
 		try {
-			Node node = row.getNode(currCol.selectorName);
-			if (node.hasProperty(currCol.propertyName)) {
-				Property prop = node.getProperty(currCol.propertyName);
+			Node node = row.getNode(currCol.getSelectorName());
+			if (node.hasProperty(currCol.getPropertyName())) {
+				Property prop = node.getProperty(currCol.getPropertyName());
 				// String rawValueStr = prop.getString();
 
-				if (PropertyType.LONG == currCol.propertyType) {
+				if (PropertyType.LONG == currCol.getPropertyType()) {
 					sheet.addCell(new jxl.write.Number(currColIndex,
 							currRowIndex, prop.getLong(), tableBodyIntFormat));
 					return currColIndex + 1;
-				} else if (PropertyType.DECIMAL == currCol.propertyType
-						|| PropertyType.DOUBLE == currCol.propertyType) {
+				} else if (PropertyType.DECIMAL == currCol.getPropertyType()
+						|| PropertyType.DOUBLE == currCol.getPropertyType()) {
 					sheet.addCell(new jxl.write.Number(currColIndex,
 							currRowIndex, prop.getDouble(),
 							tableBodyFloatFormat));
 					return currColIndex + 1;
-				} else if (PropertyType.DATE == currCol.propertyType) {
+				} else if (PropertyType.DATE == currCol.getPropertyType()) {
 					sheet.addCell(new DateTime(currColIndex, currRowIndex, prop
 							.getDate().getTime(), tableBodyDateFormat));
 					return currColIndex + 1;
@@ -207,7 +207,7 @@ public class RowIteratorToCalcWriter {
 
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to get value for label: "
-					+ currCol.headerLabel, e);
+					+ currCol.getHeaderLabel(), e);
 		} catch (RowsExceededException e) {
 			throw new PeopleException("Two many rows", e);
 		} catch (WriteException e) {

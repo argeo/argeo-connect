@@ -138,7 +138,7 @@ public class MailListComparator extends ViewerComparator {
 
 		} catch (RepositoryException re) {
 			throw new ArgeoException("Unexpected error "
-					+ "while comparing nodes", re);
+					+ "while comparing rows", re);
 		}
 		return rc;
 	}

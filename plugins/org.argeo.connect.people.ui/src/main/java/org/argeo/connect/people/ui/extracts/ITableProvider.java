@@ -5,9 +5,9 @@ import java.util.List;
 import javax.jcr.query.RowIterator;
 
 /**
- * Views and editors can implement this interface so that a call to
- * getCalcExtract command can generate an Openoffice Calc or MS Excel extract
- * corresponding to the displayed table
+ * Views and editors can implement this interface so that one of the row list
+ * that is displayed in the part can be rebuild externally. Typically to
+ * generate csv or calc extract.
  */
 public interface ITableProvider {
 	/**

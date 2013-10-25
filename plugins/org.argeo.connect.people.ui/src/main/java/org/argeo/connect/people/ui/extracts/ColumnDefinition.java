@@ -7,11 +7,11 @@ package org.argeo.connect.people.ui.extracts;
 public class ColumnDefinition {
 	private final static int DEFAULT_COLUMN_SIZE = 120;
 
-	public final String selectorName;
-	public final String propertyName;
-	public final String headerLabel;
-	public final int propertyType;
-	public final int columnSize;
+	private String selectorName;
+	private String propertyName;
+	private String headerLabel;
+	private int propertyType;
+	private int columnSize = DEFAULT_COLUMN_SIZE;
 
 	/**
 	 * new column using default width
@@ -27,7 +27,6 @@ public class ColumnDefinition {
 		this.propertyName = propertyName;
 		this.propertyType = propertyType;
 		this.headerLabel = headerLabel;
-		this.columnSize = DEFAULT_COLUMN_SIZE;
 	}
 
 	/**
@@ -44,6 +43,46 @@ public class ColumnDefinition {
 		this.propertyName = propertyName;
 		this.propertyType = propertyType;
 		this.headerLabel = headerLabel;
+		this.columnSize = columnSize;
+	}
+
+	public String getSelectorName() {
+		return selectorName;
+	}
+
+	public void setSelectorName(String selectorName) {
+		this.selectorName = selectorName;
+	}
+
+	public String getPropertyName() {
+		return propertyName;
+	}
+
+	public void setPropertyName(String propertyName) {
+		this.propertyName = propertyName;
+	}
+
+	public String getHeaderLabel() {
+		return headerLabel;
+	}
+
+	public void setHeaderLabel(String headerLabel) {
+		this.headerLabel = headerLabel;
+	}
+
+	public int getPropertyType() {
+		return propertyType;
+	}
+
+	public void setPropertyType(int propertyType) {
+		this.propertyType = propertyType;
+	}
+
+	public int getColumnSize() {
+		return columnSize;
+	}
+
+	public void setColumnSize(int columnSize) {
 		this.columnSize = columnSize;
 	}
 }

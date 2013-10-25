@@ -82,7 +82,7 @@ public class MailingListToolkit {
 		table.setLayoutData(gd);
 
 		TableViewer itemsViewer = new TableViewer(table);
-		
+
 		// The columns
 		TableViewerColumn col = ViewerUtils.createTableViewerColumn(
 				itemsViewer, "", SWT.NONE, 25);
@@ -109,20 +109,20 @@ public class MailingListToolkit {
 		int i = 1;
 		for (ColumnDefinition colDef : columns) {
 			col = ViewerUtils.createTableViewerColumn(itemsViewer,
-					colDef.headerLabel, SWT.NONE, colDef.columnSize);
-			col.setLabelProvider(new SimpleJcrRowLabelProvider(
-					colDef.selectorName, colDef.propertyName));
+					colDef.getHeaderLabel(), SWT.NONE, colDef.getColumnSize());
+			col.setLabelProvider(new SimpleJcrRowLabelProvider(colDef
+					.getSelectorName(), colDef.getPropertyName()));
 			col.getColumn().addSelectionListener(
-					getSelectionAdapter(i, colDef.propertyType,
-							colDef.selectorName, colDef.propertyName,
+					getSelectionAdapter(i, colDef.getPropertyType(),
+							colDef.getSelectorName(), colDef.getPropertyName(),
 							comparator, itemsViewer));
 			i++;
 		}
 
 		ColumnDefinition firstCol = columns.get(0);
 		// IMPORTANT: initialize comparator before setting it
-		comparator.setColumn(firstCol.propertyType, firstCol.selectorName,
-				firstCol.propertyName);
+		comparator.setColumn(firstCol.getPropertyType(),
+				firstCol.getSelectorName(), firstCol.getPropertyName());
 		itemsViewer.setComparator(comparator);
 
 		return itemsViewer;
