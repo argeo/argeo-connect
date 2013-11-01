@@ -282,9 +282,9 @@
 						variable="org.argeo.connect.people.ui.checkOutState">
 						<equals value="notCheckedOut" />
 					</with>
-    				<reference
-                  		definitionId="com.mrschilling.manager.ui.correctActiveEditor">
-            		</reference>
+    				<with variable="activePart">
+						<instanceof value="org.argeo.connect.people.ui.editors.IVersionedItemEditor" />
+					</with>
 				</and>
 			</activeWhen>
 		</handler>
@@ -297,9 +297,9 @@
 						variable="org.argeo.connect.people.ui.checkOutState">
 						<equals value="checkedOut" />
 					</with>
-					<reference
-                  		definitionId="com.mrschilling.manager.ui.correctActiveEditor">
-            		</reference>
+					<with variable="activePart">
+						<instanceof value="org.argeo.connect.people.ui.editors.IVersionedItemEditor" />
+					</with>
 				</and>
 			</activeWhen>
 		</handler>
