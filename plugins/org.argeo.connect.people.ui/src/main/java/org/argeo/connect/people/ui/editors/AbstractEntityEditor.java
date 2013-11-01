@@ -11,6 +11,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -65,8 +67,8 @@ import org.eclipse.ui.services.ISourceProviderService;
  */
 public abstract class AbstractEntityEditor extends EditorPart implements
 		IVersionedItemEditor {
-	// private final static Log log = LogFactory
-	// .getLog(AbstractEntityEditor.class);
+	private final static Log log = LogFactory
+			.getLog(AbstractEntityEditor.class);
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
@@ -110,8 +112,8 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 							.getDisplay(), is);
 				} else
 					// No default image
-					// itemPicture = PeopleImages.NO_PICTURE;
-					itemPicture = null;
+					itemPicture = PeopleImages.NO_PICTURE;
+				// itemPicture = null;
 			} catch (Exception e) {
 			} finally {
 				IOUtils.closeQuietly(is);
@@ -241,6 +243,15 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		}
 		image.setLayoutData(gd);
 
+		// test
+//		int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
+//		Transfer[] tt = new Transfer[] { TextTransfer.getInstance(),
+//				FileTransfer.getInstance(), ImageTransfer.getInstance(),
+//				URLTransfer.getInstance() };
+//		DropTarget target = new DropTarget(image, operations);
+//		target.setTransfer(tt);
+//		target.addDropListener(new ImageDropListener());
+
 		// General information panel (Right of the image)
 		Composite mainInfoComposite = toolkit.createComposite(header,
 				SWT.NO_FOCUS);
@@ -248,6 +259,41 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 				false));
 		createMainInfoPanel(mainInfoComposite);
 	}
+
+	// Implementation of the Drop Listener
+	// private class ImageDropListener implements DropTargetListener {
+	//
+	// @Override
+	// public void dragEnter(DropTargetEvent event) {
+	// log.debug("drag enter ");
+	// }
+	//
+	// @Override
+	// public void dragLeave(DropTargetEvent event) {
+	// log.debug("drag leave");
+	// }
+	//
+	// @Override
+	// public void dragOperationChanged(DropTargetEvent event) {
+	// log.debug("drag OP change");
+	// }
+	//
+	// @Override
+	// public void dragOver(DropTargetEvent event) {
+	// log.debug("drag Over");
+	// }
+	//
+	// @Override
+	// public void drop(DropTargetEvent event) {
+	// log.debug("Dropped: " + event.data);
+	// }
+	//
+	// @Override
+	// public void dropAccept(DropTargetEvent event) {
+	// log.debug("drop accept");
+	//
+	// }
+	// }
 
 	protected void createMainInfoPanel(final Composite parent) {
 		parent.setLayout(gridLayoutNoBorder());
