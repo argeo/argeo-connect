@@ -30,18 +30,19 @@ import org.eclipse.swt.graphics.Image;
 
 /** Shared icons. */
 public class PeopleImages {
-	public final static Image PERSON = PeopleUiPlugin.getImageDescriptor(
-			"icons/person.gif").createImage();
 
 	public final static Image LOGO = PeopleUiPlugin.getImageDescriptor(
 			"icons/logo.gif").createImage();
 
+	public final static Image LOGO_SMALL = PeopleUiPlugin.getImageDescriptor(
+			"icons/smallerOrnamentLogo.png").createImage();
+	
 	public final static Image NO_PICTURE = PeopleUiPlugin.getImageDescriptor(
 			"icons/noPicture.gif").createImage();
 
-	// public final static Image DELETE_BTN = PeopleUiPlugin.getImageDescriptor(
-	// "icons/delete.png").createImage();
-
+	public final static Image PERSON = PeopleUiPlugin.getImageDescriptor(
+			"icons/person.gif").createImage();
+	
 	public final static Image DELETE_BTN = PeopleUiPlugin.getImageDescriptor(
 			"icons/delete.png").createImage();
 

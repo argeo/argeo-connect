@@ -4,20 +4,25 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="org.argeo.connect.people.ui.searchEntityEditor"
-		class="org.argeo.connect.people.ui.editors.SearchEntityEditor"
+	<bean id="searchEntityEditor" class="org.argeo.connect.people.ui.editors.SearchEntityEditor"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
-		<property name="peopleUiService" ref="peopleUiService" />
-	</bean>
-	
-	<bean id="org.argeo.connect.people.ui.groupEditor"
-		class="org.argeo.connect.people.ui.editors.GroupEditor"
-		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
+		<!--  <property name="peopleUiService" ref="localUiService" /> -->
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
 
-	<!-- <bean id="importPeople" class="org.argeo.connect.people.ui.commands.ImportPeopleHandler" 
-		scope="prototype"> <property name="repository" ref="repository" /> </bean> -->
+	<bean id="groupEditor" class="org.argeo.connect.people.ui.editors.GroupEditor"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+		<!--  <property name="peopleUiService" ref="localUiService" /> -->
+		<property name="peopleUiService" ref="peopleUiService" />
+	</bean>
+
+	<!-- DEFAULT PEOPLE EDITORS -->
+	<bean id="personEditor" class="org.argeo.connect.people.ui.editors.PersonEditor"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+		<!--  <property name="peopleUiService" ref="localUiService" /> -->
+		<property name="peopleUiService" ref="peopleUiService" />
+	</bean>
 </beans>

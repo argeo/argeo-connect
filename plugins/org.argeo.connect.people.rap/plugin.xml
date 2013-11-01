@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.6"?>
+<plugin>
+	<!-- Entry point for the RAP application --> 
+	<extension
+		point="org.eclipse.rap.ui.entrypoint">
+		<!-- Entry point for rap 2.0 and eclipse 4.2 with rap tooling --> 
+		<entrypoint
+			id="org.argeo.connect.people.rap.entrypoint"
+			class="org.argeo.connect.people.rap.PeopleSecureEntryPoint"
+			path="/people"
+			brandingId="org.argeo.connect.people.rap.defaultBranding">
+		</entrypoint>
+	</extension>
+ 
+ 	<!-- BRANDING --> 
+	<!-- The 2 following warnings are useless --> 
+	<extension
+		point="org.eclipse.rap.ui.branding">
+		<branding
+			id="org.argeo.connect.people.rap.defaultBranding"
+			themeId="org.eclipse.rap.rwt.theme.Default"
+			title="People"
+			favicon="branding/favicon.gif">
+		</branding>
+	</extension>
+	
+	<!-- LOCAL THEMES --> 
+	<extension
+		point="org.eclipse.rap.ui.themes">
+		<themeContribution
+			themeId="org.eclipse.rap.rwt.theme.Default"
+			file="theme/defaultExt.css" />
+	</extension> 
+</plugin>

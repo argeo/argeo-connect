@@ -1,7 +1,7 @@
 package org.argeo.connect.people.ui;
 
-import org.argeo.connect.people.ui.views.CategorizedSearchView;
 import org.argeo.connect.people.ui.views.PeopleBrowserView;
+import org.argeo.connect.people.ui.views.PeopleDefaultView;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
@@ -15,8 +15,8 @@ public class PeoplePerspective implements IPerspectiveFactory {
 		layout.setFixed(false);
 
 		IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT,
-				0.5f, editorArea);
+				0.3f, editorArea);
+		left.addView(PeopleDefaultView.ID);
 		left.addView(PeopleBrowserView.ID);
-		left.addView(CategorizedSearchView.ID);
 	}
 }

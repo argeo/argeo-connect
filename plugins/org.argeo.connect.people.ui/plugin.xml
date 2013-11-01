@@ -18,14 +18,14 @@
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/person.gif"
 			id="org.argeo.connect.people.ui.peopleBrowserView"
-			name="People Browser"
+			name="Browser"
 			restorable="true">
 		</view>
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/people.gif"
-			id="org.argeo.connect.people.ui.categorizedSearchView"
-			name="People Search"
+			id="org.argeo.connect.people.ui.peopleDefaultView"
+			name="Search"
 			restorable="true">
 		</view>
 	</extension>
@@ -37,6 +37,12 @@
 			icon="icons/search.png"
 			id="org.argeo.connect.people.ui.searchEntityEditor"
 			name="Search">
+		</editor>
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/person.gif"
+			id="org.argeo.connect.people.ui.personEditor"
+			name="Person editor">
 		</editor>
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
@@ -316,9 +322,7 @@
 	   	</sourceProvider>
 	</extension>
 	
-	
-	
-	<extension
+	<!-- <extension
 		point="org.eclipse.ui.activities">
 		<activity
               description="Only for admins"
@@ -337,5 +341,5 @@
               isEqualityPattern="true"
               pattern="org.argeo.connect.people.ui/org.argeo.connect.people.ui.peoplePerspective">
         </activityPatternBinding>
-     </extension>
+     </extension> -->
 </plugin>

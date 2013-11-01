@@ -19,13 +19,15 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleImages;
-import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiService;
+import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.connect.people.ui.editors.SearchEntityEditor;
+import org.argeo.connect.people.ui.editors.SearchEntityEditorInput;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.ui.providers.EntitySingleColumnLabelProvider;
+import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -35,30 +37,30 @@ import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
-/**
- * Legacy, will be deleted soon. Still kept for a while as a sample for showing
- * various types in a single view
- */
-@Deprecated
-public class CategorizedSearchView extends ViewPart {
-
+/** Basic view that display a list of entities with a quick search field. */
+public class PeopleDefaultView extends ViewPart {
 	// private final static Log log = LogFactory.getLog(QuickSearchView.class);
-	public static final String ID = PeopleUiPlugin.PLUGIN_ID
-			+ ".categorizedSearchView";
 
-	private final static Integer ROW_LIMIT = 5;
-	// private final static Integer ROW_HEIGHT = 20;
-	private final static Integer HEIGHT_HINT = 105;
+	public static final String ID = PeopleUiPlugin.PLUGIN_ID
+			+ ".peopleDefaultView";
+
+	private final static Integer ROW_LIMIT = 100;
 
 	/* DEPENDENCY INJECTION */
 	private Session session;
@@ -68,94 +70,131 @@ public class CategorizedSearchView extends ViewPart {
 	// This page widgets
 	private TableViewer personViewer;
 	private Text filterTxt;
-	private final static String FILTER_HELP_MSG = "Enter filter criterion";
+	private final static String FILTER_HELP_MSG = "Search...";
 
-	// enable to set a big padding only on the first subtitle
-	private boolean alreadyGotAList = false;
+	private final static String CMD_SEARCH_PERSON_EDITOR = "openSearchPersonEditor";
+	private final static String CMD_LOGOUT = "logout";
 
 	@Override
 	public void createPartControl(Composite parent) {
-		// MainLayout
-		parent.setLayout(new GridLayout(1, false));
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
 		// Header
-		createFilterHeader(parent);
+		Composite cmp = new Composite(parent, SWT.NO_FOCUS);
+		cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		createHeaderPart(cmp);
+		// Filter
+		cmp = new Composite(parent, SWT.NO_FOCUS);
+		cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		createFilterPart(cmp);
 
-		// short result parts
-		personViewer = createListPart(parent, "Persons ",
-				new EntitySingleColumnLabelProvider(peopleService), false);
-		// set data
-		// refreshFilteredList();
+		// Table
+		cmp = new Composite(parent, SWT.NO_FOCUS);
+		cmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		personViewer = createListPart(cmp, new EntitySingleColumnLabelProvider(
+				peopleService));
+
+		refreshFilteredList();
 	}
 
-	public void createFilterHeader(Composite parent) {
-		// The logo
-		Label image = new Label(parent, SWT.NONE);
-		image.setBackground(parent.getBackground());
-		image.setImage(PeopleImages.LOGO);
-		image.setLayoutData(new GridData());
+	private void createHeaderPart(Composite parent) {
+		parent.setLayout(new FormLayout());
 
+		// The BackGround
+		Composite logoCmp = new Composite(parent, SWT.NO_FOCUS);
+		FormData fdBg = PeopleUiUtils.createformData(0, 20, 100, 75);
+		logoCmp.setLayoutData(fdBg);
+		logoCmp.setData(RWT.CUSTOM_VARIANT, "people-logoComposite");
+
+		// The Image
+		Label logoLbl = new Label(parent, SWT.NO_FOCUS);
+		logoLbl.setImage(PeopleImages.LOGO_SMALL);
+		logoLbl.setData(RWT.CUSTOM_VARIANT, "people-logo");
+		logoLbl.setSize(130, 131);
+		FormData fdImg = new FormData();
+		fdImg.top = new FormAttachment(0, 0);
+		fdImg.bottom = new FormAttachment(100, 0);
+		fdImg.left = new FormAttachment(2, 0);
+		logoLbl.setLayoutData(fdImg);
+
+		// The links
+		Composite linksCmp = new Composite(parent, SWT.NO_FOCUS);
+		linksCmp.setLayoutData(PeopleUiUtils.createformData(75, 25, 98, 73));
+		linksCmp.setData(RWT.CUSTOM_VARIANT, "people-logoTable");
+		linksCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+
+		addLink(linksCmp, "Search Persons",
+				"Open an editor to narrow you search", CMD_SEARCH_PERSON_EDITOR);
+		addLink(linksCmp, "Logout", "Log out from connect", CMD_LOGOUT);
+
+		// Order layouts
+		logoLbl.moveAbove(logoCmp);
+		linksCmp.moveAbove(logoLbl);
+	}
+
+	private void callCommand(String commandId) {
+		if (CMD_SEARCH_PERSON_EDITOR.equals(commandId)) {
+			try {
+				SearchEntityEditorInput eei = new SearchEntityEditorInput(
+						PeopleTypes.PEOPLE_PERSON);
+				PeopleUiPlugin.getDefault().getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage()
+						.openEditor(eei, SearchEntityEditor.ID);
+			} catch (PartInitException pie) {
+				throw new PeopleException(
+						"Unexpected PartInitException while opening entity editor",
+						pie);
+			}
+
+		} else if (CMD_LOGOUT.equals(commandId))
+			CommandUtils.callCommand("org.eclipse.ui.file.exit");
+	}
+
+	private Link addLink(Composite parent, String label, String tooltip,
+			final String commandId) {
+		Link link = new Link(parent, SWT.NONE);
+		link.setText("<a>" + label + "</a>");
+		if (tooltip != null)
+			link.setToolTipText(tooltip);
+		link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		link.setData(RWT.CUSTOM_VARIANT, "people-logoTable");
+
+		link.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent event) {
+				callCommand(commandId);
+			}
+		});
+		return link;
+	}
+
+	private void createFilterPart(Composite parent) {
+		parent.setLayout(new GridLayout());
 		// Text Area for the filter
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
 				| SWT.ICON_CANCEL);
 		filterTxt.setMessage(FILTER_HELP_MSG);
-		filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
-				| GridData.HORIZONTAL_ALIGN_FILL));
+		filterTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		filterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 5003010530960334977L;
 
 			public void modifyText(ModifyEvent event) {
-				// might be better to use an asynchronous Refresh();
 				refreshFilteredList();
 			}
 		});
 	}
 
-	protected TableViewer createListPart(Composite parent, String title,
-			ILabelProvider labelProvider, boolean isLastList) {
-		// SUBTITLE : name of the current list
-		Composite titleComposite = new Composite(parent, SWT.NONE);
-		// special padding only for the first list
-		if (!alreadyGotAList) {
-			titleComposite.setData(RWT.CUSTOM_VARIANT,
-					PeopleUiConstants.PEOPLE_CSS_TITLE_COMPOSITE_FIRST);
-			alreadyGotAList = true;
-		} else
-			titleComposite.setData(RWT.CUSTOM_VARIANT,
-					PeopleUiConstants.PEOPLE_CSS_TITLE_COMPOSITE);
-		titleComposite.setLayoutData(new GridData(
-				GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
-		titleComposite.setLayout(new FillLayout());
-		Label lbl = new Label(titleComposite, SWT.NONE);
-		lbl.setText(title);
-		lbl.setData(RWT.CUSTOM_VARIANT,
-				PeopleUiConstants.PEOPLE_CSS_LIST_SUBTITLE);
-
-		// Create an intermediate composite to enable single column to occupy
-		// the full width
-		// int style = SWT.SINGLE | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL
-		// | SWT.FULL_SELECTION;
-		Composite tableComposite = new Composite(parent, SWT.NONE);
-
-		GridData gd = null;
-		if (isLastList)
-			gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL
-					| GridData.GRAB_VERTICAL | GridData.VERTICAL_ALIGN_FILL
-					| GridData.GRAB_HORIZONTAL);
-		else {
-			gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL
-					| GridData.VERTICAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
-			gd.heightHint = HEIGHT_HINT;
-		}
-		tableComposite.setLayoutData(gd);
-
-		TableViewer v = new TableViewer(tableComposite);
+	protected TableViewer createListPart(Composite parent,
+			ILabelProvider labelProvider) {
+		TableViewer v = new TableViewer(parent);
 		v.setLabelProvider(labelProvider);
 
 		TableColumn singleColumn = new TableColumn(v.getTable(), SWT.V_SCROLL);
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 		tableColumnLayout.setColumnData(singleColumn, new ColumnWeightData(85));
-		tableComposite.setLayout(tableColumnLayout);
+		parent.setLayout(tableColumnLayout);
 
 		// Corresponding table & style
 		Table table = v.getTable();
@@ -183,23 +222,11 @@ public class CategorizedSearchView extends ViewPart {
 
 	protected void refreshFilteredList() {
 		try {
-			List<Node> persons = JcrUiUtils.nodeIteratorToList(
-					doSearch(session, filterTxt.getText(),
-							PeopleTypes.PEOPLE_PERSON,
-							PeopleNames.PEOPLE_LAST_NAME,
-							PeopleNames.PEOPLE_PRIMARY_EMAIL), ROW_LIMIT);
+			List<Node> persons = JcrUtils.nodeIteratorToList(doSearch(session,
+					filterTxt.getText(), PeopleTypes.PEOPLE_PERSON,
+					PeopleNames.PEOPLE_LAST_NAME,
+					PeopleNames.PEOPLE_PRIMARY_EMAIL));
 			personViewer.setInput(persons);
-
-			// List<Node> orgs = JcrUiUtils.nodeIteratorToList(
-			// doSearch(session, filterTxt.getText(),
-			// PeopleTypes.PEOPLE_ORGANIZATION,
-			// PeopleNames.PEOPLE_LEGAL_NAME, null), ROW_LIMIT);
-			// orgViewer.setInput(orgs);
-
-			// List<Node> films = JcrUiUtils.nodeIteratorToList(
-			// doSearch(session, filterTxt.getText(), FilmTypes.FILM,
-			// FilmNames.FILM_ORIGINAL_TITLE, null), ROW_LIMIT);
-			// filmViewer.setInput(films);
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list persons", e);
 		}
@@ -212,7 +239,7 @@ public class CategorizedSearchView extends ViewPart {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
 		QueryObjectModelFactory factory = queryManager.getQOMFactory();
 
-		Selector source = factory.selector(typeName, "selector");
+		Selector source = factory.selector(typeName, typeName);
 
 		// no Default Constraint
 		Constraint defaultC = null;
@@ -256,50 +283,10 @@ public class CategorizedSearchView extends ViewPart {
 				query = factory.createQuery(source, defaultC, new Ordering[] {
 						order, order2 }, null);
 		}
-
+		query.setLimit(ROW_LIMIT.longValue());
 		QueryResult result = query.execute();
 		return result.getNodes();
 	}
-
-	// private void asynchronousRefresh() {
-	// RefreshJob job = new RefreshJob(filterTxt.getText(), personViewer,
-	// getSite().getShell().getDisplay());
-	// job.setUser(true);
-	// job.schedule();
-	// }
-	//
-	// private class RefreshJob extends PrivilegedJob {
-	// private TableViewer viewer;
-	// private String filter;
-	// private Display display;
-	//
-	// public RefreshJob(String filter, TableViewer viewer, Display display) {
-	// super("Get bundle list");
-	// this.filter = filter;
-	// this.viewer = viewer;
-	// this.display = display;
-	// }
-	//
-	// @Override
-	// protected IStatus doRun(IProgressMonitor progressMonitor) {
-	// try {
-	// ArgeoMonitor monitor = new EclipseArgeoMonitor(progressMonitor);
-	// monitor.beginTask("Filtering", -1);
-	// final List<Node> result = JcrUiUtils.nodeIteratorToList(
-	// listRelevantPersons(session, filter), 5);
-	//
-	// display.asyncExec(new Runnable() {
-	// public void run() {
-	// viewer.setInput(result);
-	// }
-	// });
-	// } catch (Exception e) {
-	// return new Status(IStatus.ERROR, MsmUiPlugin.PLUGIN_ID,
-	// "Cannot get filtered list", e);
-	// }
-	// return Status.OK_STATUS;
-	// }
-	// }
 
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService msmService) {
@@ -315,5 +302,4 @@ public class CategorizedSearchView extends ViewPart {
 	public void setPeopleUiService(PeopleUiService peopleUiService) {
 		this.peopleUiService = peopleUiService;
 	}
-
 }

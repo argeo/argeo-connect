@@ -16,7 +16,6 @@ import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.utils.PeopleUtils;
 import org.argeo.eclipse.ui.jcr.JcrImages;
-import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -57,13 +56,13 @@ public class PeopleBrowserView extends ViewPart implements PeopleNames {
 		TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
 		column1.setAlignment(SWT.LEFT);
 		column1.setText("Name");
-		column1.setWidth(300);
+		column1.setWidth(200);
 		TreeColumn column2 = new TreeColumn(tree, SWT.RIGHT);
 		column2.setAlignment(SWT.LEFT);
 		column2.setText("First Name");
-		column2.setWidth(200);
+		column2.setWidth(120);
 		TreeColumn column3 = new TreeColumn(tree, SWT.RIGHT);
-		column3.setAlignment(SWT.LEFT);
+		column3.setAlignment(SWT.RIGHT);
 		column3.setText("Age");
 		column3.setWidth(35);
 

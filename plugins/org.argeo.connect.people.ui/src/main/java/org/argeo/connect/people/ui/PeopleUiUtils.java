@@ -164,4 +164,23 @@ public class PeopleUiUtils {
 		return text;
 	}
 
+	/**
+	 * Shortcut to quickly get a FormData object with configured FormAttachment
+	 * 
+	 * @param left
+	 * @param top
+	 * @param right
+	 * @param bottom
+	 * @return
+	 */
+	public static FormData createformData(int left, int top, int right,
+			int bottom) {
+		FormData formData = new FormData();
+		formData.left = new FormAttachment(left, 0);
+		formData.top = new FormAttachment(top, 0);
+		formData.right = new FormAttachment(right, 0);
+		formData.bottom = new FormAttachment(bottom, 0);
+		return formData;
+	}
+
 }

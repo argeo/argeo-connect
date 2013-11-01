@@ -10,6 +10,12 @@
 		scope="prototype">
 		<property name="repository" ref="repository" />
 	</bean>
+	<bean id="peopleDefaultView" class="org.argeo.connect.people.ui.views.PeopleDefaultView"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleUiService" ref="localUiService" />
+	</bean>
+
 	<bean id="categorizedSearchView" class="org.argeo.connect.people.ui.views.CategorizedSearchView"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
