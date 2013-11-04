@@ -43,13 +43,14 @@
 // ORGANISATION
 //
 [people:org] > people:entity, people:contactable, people:tagable
+- people:useDefaultDisplayName (BOOLEAN) ='true' m a 
 - people:legalName (STRING)
 - people:legalForm (STRING)
 - people:vatIdNb (STRING)
 // Departments or organisational units
 + * (people:org) *
 // tag like multivalued properties to add an organisation to a given branch
-- people:orgBranche (STRING) *
+- people:orgBranches (STRING) *
 
 //
 // GROUP : base type for all groups of persons, organisations and/or other groups 
@@ -107,7 +108,7 @@
 //
 [people:tagable] 
 mixin
-- people:tag (STRING) *
+- people:tags (STRING) *
 
 
 //

@@ -259,7 +259,7 @@ public class EntityToolkit {
 		form.addPart(editPart);
 	}
 
-	public void populateTagPanel(final Composite parent, final Node entity) {
+	public void populateTagPanel(final Composite parent, final Node entity, final String tagPropName, final String newTagMsg) {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
 
 		final Composite nlCmp = new Composite(parent, SWT.NO_FOCUS);
@@ -272,7 +272,7 @@ public class EntityToolkit {
 		nlCmp.setLayout(rl);
 
 		final Text tagTxt = new Text(parent, SWT.BORDER);
-		tagTxt.setMessage("Enter a new tag");
+		tagTxt.setMessage(newTagMsg);
 		gd = new GridData(SWT.CENTER, SWT.TOP, false, false);
 		gd.minimumWidth = 120;
 		gd.widthHint = 130;
@@ -284,7 +284,7 @@ public class EntityToolkit {
 			public void keyTraversed(TraverseEvent e) {
 				if (e.keyCode == SWT.CR) {
 					String newTag = tagTxt.getText();
-					addTag(entity, newTag);
+					addTag(entity, tagPropName, newTag);
 					e.doit = false;
 					tagTxt.setText("");
 				}
@@ -301,9 +301,9 @@ public class EntityToolkit {
 					child.dispose();
 
 				try {
-					if (entity.hasProperty(PeopleNames.PEOPLE_TAGS)) {
+					if (entity.hasProperty(tagPropName)) {
 						Value[] values = entity.getProperty(
-								PeopleNames.PEOPLE_TAGS).getValues();
+								tagPropName).getValues();
 						for (final Value value : values) {
 							Link link = new Link(nlCmp, SWT.NONE);
 							link.setData(RWT.CUSTOM_VARIANT, "tag");
@@ -333,7 +333,7 @@ public class EntityToolkit {
 												List<String> tags = new ArrayList<String>();
 												Value[] values = entity
 														.getProperty(
-																PeopleNames.PEOPLE_TAGS)
+																tagPropName)
 														.getValues();
 												for (int i = 0; i < values.length; i++) {
 													String curr = values[i]
@@ -349,7 +349,7 @@ public class EntityToolkit {
 													CommonsJcrUtils
 															.checkout(entity);
 												entity.setProperty(
-														PeopleNames.PEOPLE_TAGS,
+														tagPropName,
 														tags.toArray(new String[tags
 																.size()]));
 												if (wasCheckedOut)
@@ -389,171 +389,15 @@ public class EntityToolkit {
 		form.addPart(editPart);
 	}
 
-	// public void populateTagsPanel(final Composite parent, final Node entity)
-	// {
-	// parent.setLayout(new FormLayout());
-	// // Show only TAGS for the time being, so it is the same for R/O & Edit
-	// // mode
-	// final Composite panel = toolkit.createComposite(parent, SWT.NO_FOCUS);
-	// PeopleUiUtils.setSwitchingFormData(panel);
-	//
-	// TableColumnLayout tableColumnLayout = new TableColumnLayout();
-	// panel.setLayout(tableColumnLayout);
-	//
-	// int style = SWT.NO_SCROLL;
-	// Table table = new Table(panel, style);
-	// table.setLinesVisible(false);
-	// table.setHeaderVisible(false);
-	// // Enable markups
-	// table.setData(RWT.CUSTOM_VARIANT,
-	// PeopleUiConstants.CSS_STYLE_UNIQUE_CELL_TABLE);
-	// table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-	// table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(40));
-	//
-	// // Does not work: adding a tag within the <a> tag unvalid the
-	// // target="_RWT" parameter
-	// // ResourceManager resourceManager = RWT.getResourceManager();
-	// // if (!resourceManager.isRegistered("icons/close.png")) {
-	// // InputStream inputStream = this.getClass().getClassLoader()
-	// // .getResourceAsStream("icons/close.png");
-	// // try {
-	// // resourceManager.register("icons/close.png", inputStream);
-	// // } finally {
-	// // IOUtils.closeQuietly(inputStream);
-	// // }
-	// // }
-	// // final String src = RWT.getResourceManager().getLocation(
-	// // "icons/close.png");
-	//
-	// final TableViewer viewer = new TableViewer(table);
-	// viewer.setLabelProvider(new LabelProvider() {
-	// private static final long serialVersionUID = 1L;
-	//
-	// @Override
-	// public String getText(Object element) {
-	// try {
-	// Node node = (Node) element;
-	// StringBuilder tags = new StringBuilder();
-	// if (node.hasProperty(PeopleNames.PEOPLE_TAGS)) {
-	// tags.append("<span style=\"font-size:15px;float:left;padding:0px;white-space:pre-wrap;text-decoration:none;\">");
-	// Value[] values = entity.getProperty(
-	// PeopleNames.PEOPLE_TAGS).getValues();
-	// for (int i = 0; i < values.length; i++) {
-	// String currStr = PeopleHtmlUtils
-	// .cleanHtmlString(values[i].getString());
-	//
-	// tags.append("<i>#");
-	// tags.append(currStr).append("&#160;");
-	// tags.append("<small><a style=\"text-decoration:none;\" href=\"");
-	// tags.append(currStr);
-	// tags.append("\" target=\"_rwt\">X</a></small></i>")
-	// .append("&#160;&#160; ");
-	// }
-	// tags.append("</span>");
-	// }
-	// return tags.toString();
-	// } catch (RepositoryException re) {
-	// throw new PeopleException("unable to get tags", re);
-	// }
-	// }
-	//
-	// });
-	// viewer.setContentProvider(new BasicNodeListContentProvider());
-	//
-	// TableColumn singleColumn = new TableColumn(table, SWT.LEFT);
-	// singleColumn.setData(RWT.CUSTOM_VARIANT,
-	// PeopleUiConstants.CSS_STYLE_UNIQUE_CELL_TABLE);
-	//
-	// tableColumnLayout.setColumnData(singleColumn, new ColumnWeightData(90));
-	//
-	// final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
-	// public void refresh() { // update display value
-	// super.refresh();
-	// List<Node> nodes = new ArrayList<Node>();
-	// nodes.add(entity);
-	// viewer.refresh();
-	// }
-	// };
-	//
-	// table.addSelectionListener(new SelectionAdapter() {
-	// private static final long serialVersionUID = 1L;
-	//
-	// public void widgetSelected(SelectionEvent event) {
-	// if (event.detail == RWT.HYPERLINK) {
-	// try {
-	//
-	// String tagToRemove = event.text;
-	// if (CommonsJcrUtils.checkNotEmptyString(tagToRemove)) {
-	// List<String> tags = new ArrayList<String>();
-	// if (entity.hasProperty(PeopleNames.PEOPLE_TAGS)) {
-	// Value[] values = entity.getProperty(
-	// PeopleNames.PEOPLE_TAGS).getValues();
-	// for (int i = 0; i < values.length; i++) {
-	// String curr = values[i].getString();
-	// if (!tagToRemove.equals(curr))
-	// tags.add(curr);
-	// }
-	// }
-	// boolean wasCheckedout = CommonsJcrUtils
-	// .isNodeCheckedOut(entity);
-	// if (!wasCheckedout)
-	// CommonsJcrUtils.checkout(entity);
-	// entity.setProperty(PeopleNames.PEOPLE_TAGS,
-	// tags.toArray(new String[tags.size()]));
-	// if (!wasCheckedout)
-	// CommonsJcrUtils.saveAndCheckin(entity);
-	// else
-	// form.dirtyStateChanged();
-	// }
-	// // Not enough we want to refresh the all form.
-	// // editPart.refresh();
-	// for (IFormPart part : form.getParts()) {
-	// ((AbstractFormPart) part).markStale();
-	// part.refresh();
-	// }
-	// } catch (RepositoryException re) {
-	// throw new ArgeoException("Unable to set tags", re);
-	// }
-	// }
-	// }
-	// });
-	// List<Node> nodes = new ArrayList<Node>();
-	// nodes.add(entity);
-	// viewer.setInput(nodes);
-	//
-	// editPart.initialize(form);
-	// form.addPart(editPart);
-	// }
+	
 
-	// public void populateAddTagComposite(Composite parent, final Node entity)
-	// {
-	// parent.setLayout(new RowLayout());
-	// final Text tagTxt = new Text(parent, SWT.BORDER);
-	// tagTxt.setMessage("Enter a new tag");
-	// RowData rd = new RowData(120, SWT.DEFAULT);
-	// tagTxt.setLayoutData(rd);
-	//
-	// tagTxt.addTraverseListener(new TraverseListener() {
-	// private static final long serialVersionUID = 1L;
-	//
-	// public void keyTraversed(TraverseEvent e) {
-	// if (e.keyCode == SWT.CR) {
-	// String newTag = tagTxt.getText();
-	// addTag(entity, newTag);
-	// e.doit = false;
-	// tagTxt.setText("");
-	// }
-	// }
-	// });
-	// }
-
-	private void addTag(Node tagable, String newTag) {
+	private void addTag(Node tagable, String tagPropName, String newTag) {
 		try {
 			Value[] values;
 			String[] valuesStr;
 			String errMsg = null;
-			if (tagable.hasProperty(PeopleNames.PEOPLE_TAGS)) {
-				values = tagable.getProperty(PeopleNames.PEOPLE_TAGS)
+			if (tagable.hasProperty(tagPropName)) {
+				values = tagable.getProperty(tagPropName)
 						.getValues();
 
 				// Check dupplicate
@@ -585,7 +429,7 @@ public class EntityToolkit {
 			boolean wasCheckedout = CommonsJcrUtils.isNodeCheckedOut(tagable);
 			if (!wasCheckedout)
 				CommonsJcrUtils.checkout(tagable);
-			tagable.setProperty(PeopleNames.PEOPLE_TAGS, valuesStr);
+			tagable.setProperty(tagPropName, valuesStr);
 			if (!wasCheckedout)
 				CommonsJcrUtils.saveAndCheckin(tagable);
 			else
@@ -698,76 +542,6 @@ public class EntityToolkit {
 
 		sPart.initialize(form);
 		form.addPart(sPart);
-		// panel.getParent().getParent().layout(true);
-
-		// // Clean old controls
-		// for (Control ctl : panel.getChildren()) {
-		// ctl.dispose();
-		// }
-		//
-		// // FIXME work in progress
-		// final Map<String, Text> controls = new HashMap<String, Text>();
-		//
-		// NodeIterator ni;
-		// try {
-		// ni = entity.getNode(PeopleNames.PEOPLE_CONTACTS).getNodes();
-		// while (ni.hasNext()) {
-		// Node currNode = ni.nextNode();
-		// if (!currNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
-		// String type = CommonsJcrUtils.getStringValue(currNode,
-		// PeopleNames.PEOPLE_CONTACT_LABEL);
-		// if (type == null)
-		// type = CommonsJcrUtils.getStringValue(currNode,
-		// PeopleNames.PEOPLE_CONTACT_CATEGORY);
-		// if (type == null)
-		// type = PeopleJcrUtils.getContactTypeAsString(currNode);
-		// toolkit.createLabel(panel, type, SWT.NO_FOCUS);
-		// Text currCtl = toolkit.createText(panel, null, SWT.BORDER);
-		// GridData gd = new GridData();
-		// gd.widthHint = 200;
-		// gd.heightHint = 14;
-		// currCtl.setLayoutData(gd);
-		// currCtl.setData("propName",
-		// PeopleNames.PEOPLE_CONTACT_VALUE);
-		// controls.put(currNode.getPath(), currCtl);
-		// }
-		// }
-		//
-		// for (final String name : controls.keySet()) {
-		// final Text txt = controls.get(name);
-		// txt.addModifyListener(new ModifyListener() {
-		// private static final long serialVersionUID = 1L;
-		//
-		// @Override
-		// public void modifyText(ModifyEvent event) {
-		// String propName = (String) txt.getData("propName");
-		// try {
-		// Node currNode = entity.getSession().getNode(name);
-		// if (currNode.hasProperty(propName)
-		// && currNode.getProperty(propName)
-		// .getString().equals(txt.getText())) {
-		// // nothing changed yet
-		// } else {
-		// currNode.setProperty(propName, txt.getText());
-		// part.markDirty();
-		// }
-		// } catch (RepositoryException e) {
-		// throw new PeopleException(
-		// "Unexpected error in modify listener for property "
-		// + propName, e);
-		// }
-		// }
-		// });
-		// }
-		//
-		// } catch (RepositoryException e) {
-		// throw new PeopleException("Error while getting properties", e);
-		// }
-		// panel.redraw();
-		// panel.layout();
-		// // panel.pack(true);
-		// // panel.getParent().pack(true);
-		// panel.getParent().layout();
 	}
 
 	private void populateEditableMailCmp(final Composite parent,
@@ -1373,4 +1147,162 @@ public class EntityToolkit {
 			return null;
 	}
 
+	// public void populateTagsPanel(final Composite parent, final Node entity)
+		// {
+		// parent.setLayout(new FormLayout());
+		// // Show only TAGS for the time being, so it is the same for R/O & Edit
+		// // mode
+		// final Composite panel = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		// PeopleUiUtils.setSwitchingFormData(panel);
+		//
+		// TableColumnLayout tableColumnLayout = new TableColumnLayout();
+		// panel.setLayout(tableColumnLayout);
+		//
+		// int style = SWT.NO_SCROLL;
+		// Table table = new Table(panel, style);
+		// table.setLinesVisible(false);
+		// table.setHeaderVisible(false);
+		// // Enable markups
+		// table.setData(RWT.CUSTOM_VARIANT,
+		// PeopleUiConstants.CSS_STYLE_UNIQUE_CELL_TABLE);
+		// table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		// table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(40));
+		//
+		// // Does not work: adding a tag within the <a> tag unvalid the
+		// // target="_RWT" parameter
+		// // ResourceManager resourceManager = RWT.getResourceManager();
+		// // if (!resourceManager.isRegistered("icons/close.png")) {
+		// // InputStream inputStream = this.getClass().getClassLoader()
+		// // .getResourceAsStream("icons/close.png");
+		// // try {
+		// // resourceManager.register("icons/close.png", inputStream);
+		// // } finally {
+		// // IOUtils.closeQuietly(inputStream);
+		// // }
+		// // }
+		// // final String src = RWT.getResourceManager().getLocation(
+		// // "icons/close.png");
+		//
+		// final TableViewer viewer = new TableViewer(table);
+		// viewer.setLabelProvider(new LabelProvider() {
+		// private static final long serialVersionUID = 1L;
+		//
+		// @Override
+		// public String getText(Object element) {
+		// try {
+		// Node node = (Node) element;
+		// StringBuilder tags = new StringBuilder();
+		// if (node.hasProperty(PeopleNames.PEOPLE_TAGS)) {
+		// tags.append("<span style=\"font-size:15px;float:left;padding:0px;white-space:pre-wrap;text-decoration:none;\">");
+		// Value[] values = entity.getProperty(
+		// PeopleNames.PEOPLE_TAGS).getValues();
+		// for (int i = 0; i < values.length; i++) {
+		// String currStr = PeopleHtmlUtils
+		// .cleanHtmlString(values[i].getString());
+		//
+		// tags.append("<i>#");
+		// tags.append(currStr).append("&#160;");
+		// tags.append("<small><a style=\"text-decoration:none;\" href=\"");
+		// tags.append(currStr);
+		// tags.append("\" target=\"_rwt\">X</a></small></i>")
+		// .append("&#160;&#160; ");
+		// }
+		// tags.append("</span>");
+		// }
+		// return tags.toString();
+		// } catch (RepositoryException re) {
+		// throw new PeopleException("unable to get tags", re);
+		// }
+		// }
+		//
+		// });
+		// viewer.setContentProvider(new BasicNodeListContentProvider());
+		//
+		// TableColumn singleColumn = new TableColumn(table, SWT.LEFT);
+		// singleColumn.setData(RWT.CUSTOM_VARIANT,
+		// PeopleUiConstants.CSS_STYLE_UNIQUE_CELL_TABLE);
+		//
+		// tableColumnLayout.setColumnData(singleColumn, new ColumnWeightData(90));
+		//
+		// final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
+		// public void refresh() { // update display value
+		// super.refresh();
+		// List<Node> nodes = new ArrayList<Node>();
+		// nodes.add(entity);
+		// viewer.refresh();
+		// }
+		// };
+		//
+		// table.addSelectionListener(new SelectionAdapter() {
+		// private static final long serialVersionUID = 1L;
+		//
+		// public void widgetSelected(SelectionEvent event) {
+		// if (event.detail == RWT.HYPERLINK) {
+		// try {
+		//
+		// String tagToRemove = event.text;
+		// if (CommonsJcrUtils.checkNotEmptyString(tagToRemove)) {
+		// List<String> tags = new ArrayList<String>();
+		// if (entity.hasProperty(PeopleNames.PEOPLE_TAGS)) {
+		// Value[] values = entity.getProperty(
+		// PeopleNames.PEOPLE_TAGS).getValues();
+		// for (int i = 0; i < values.length; i++) {
+		// String curr = values[i].getString();
+		// if (!tagToRemove.equals(curr))
+		// tags.add(curr);
+		// }
+		// }
+		// boolean wasCheckedout = CommonsJcrUtils
+		// .isNodeCheckedOut(entity);
+		// if (!wasCheckedout)
+		// CommonsJcrUtils.checkout(entity);
+		// entity.setProperty(PeopleNames.PEOPLE_TAGS,
+		// tags.toArray(new String[tags.size()]));
+		// if (!wasCheckedout)
+		// CommonsJcrUtils.saveAndCheckin(entity);
+		// else
+		// form.dirtyStateChanged();
+		// }
+		// // Not enough we want to refresh the all form.
+		// // editPart.refresh();
+		// for (IFormPart part : form.getParts()) {
+		// ((AbstractFormPart) part).markStale();
+		// part.refresh();
+		// }
+		// } catch (RepositoryException re) {
+		// throw new ArgeoException("Unable to set tags", re);
+		// }
+		// }
+		// }
+		// });
+		// List<Node> nodes = new ArrayList<Node>();
+		// nodes.add(entity);
+		// viewer.setInput(nodes);
+		//
+		// editPart.initialize(form);
+		// form.addPart(editPart);
+		// }
+
+		// public void populateAddTagComposite(Composite parent, final Node entity)
+		// {
+		// parent.setLayout(new RowLayout());
+		// final Text tagTxt = new Text(parent, SWT.BORDER);
+		// tagTxt.setMessage("Enter a new tag");
+		// RowData rd = new RowData(120, SWT.DEFAULT);
+		// tagTxt.setLayoutData(rd);
+		//
+		// tagTxt.addTraverseListener(new TraverseListener() {
+		// private static final long serialVersionUID = 1L;
+		//
+		// public void keyTraversed(TraverseEvent e) {
+		// if (e.keyCode == SWT.CR) {
+		// String newTag = tagTxt.getText();
+		// addTag(entity, newTag);
+		// e.doit = false;
+		// tagTxt.setText("");
+		// }
+		// }
+		// });
+		// }
+	
 }

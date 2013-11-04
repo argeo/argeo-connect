@@ -29,8 +29,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -81,8 +81,8 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 	@Override
 	protected void createToolkits() {
 		entityTK = new EntityToolkit(toolkit, getManagedForm());
-		listTK = new ListToolkit(toolkit, getManagedForm(),
-				getPeopleService(), getPeopleUiService());
+		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
+				getPeopleUiService());
 		historyTK = new HistoryToolkit(getPeopleService(), toolkit,
 				getManagedForm(), getEntity());
 	}
@@ -208,8 +208,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				"Default display name for this person", 300);
 		final Button defaultDisplayBtn = toolkit.createButton(firstCmp,
 				"Use default display name", SWT.CHECK);
-		defaultDisplayBtn
-				.setToolTipText("Default is Firstname LASTNAMEMr, Mrs...");
+		defaultDisplayBtn.setToolTipText("Default is \"Firstname LASTNAME\"");
 
 		final Text salutationTxt = PeopleUiUtils.createRDText(toolkit,
 				secondCmp, "Salutation", "Mr, Mrs...", 60);
@@ -359,7 +358,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 			}
 		});
 
-		defaultDisplayBtn.addSelectionListener(new SelectionListener() {
+		defaultDisplayBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -380,10 +379,6 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 
 				}
 				editPart.markDirty();
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
 
@@ -423,7 +418,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		// Tag Management
 		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		entityTK.populateTagPanel(tagsCmp, person);
+		entityTK.populateTagPanel(tagsCmp, person, PeopleNames.PEOPLE_TAGS, "Enter a new tag");
 
 		// keep last update.
 		super.populateMainInfoDetails(parent);

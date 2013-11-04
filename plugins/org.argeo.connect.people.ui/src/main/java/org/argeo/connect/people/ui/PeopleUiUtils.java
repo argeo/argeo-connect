@@ -1,7 +1,10 @@
 package org.argeo.connect.people.ui;
 
 import javax.jcr.Node;
+import javax.jcr.PropertyType;
+import javax.jcr.RepositoryException;
 
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.viewers.TableViewer;
@@ -15,6 +18,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
@@ -47,10 +51,63 @@ public class PeopleUiUtils {
 	 * Shortcut to refresh the value of a <code>Text</code> given a Node and a
 	 * property Name
 	 */
-	public static void refreshTextValue(Text text, Node entity, String propName) {
+	public static String refreshTextValue(Text text, Node entity,
+			String propName) {
 		String tmpStr = CommonsJcrUtils.getStringValue(entity, propName);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
 			text.setText(tmpStr);
+		return tmpStr;
+	}
+
+	/**
+	 * Shortcut to refresh a <code>Text</code> widget given a Node in a form and
+	 * a property Name. Also manages its enable state
+	 */
+	public static String refreshFormTextWidget(Text text, Node entity,
+			String propName) {
+		String tmpStr = CommonsJcrUtils.get(entity, propName);
+		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+			text.setText(tmpStr);
+		text.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
+		return tmpStr;
+	}
+
+	/**
+	 * Shortcut to refresh a Check box <code>Button</code> widget given a Node
+	 * in a form and a property Name.
+	 */
+	public static boolean refreshCheckBoxWidget(Button button, Node entity,
+			String propName) {
+		Boolean tmp = null;
+		try {
+			if (entity.hasProperty(propName)) {
+				tmp = entity.getProperty(propName).getBoolean();
+				button.setSelection(tmp);
+			}
+		} catch (RepositoryException re) {
+			throw new PeopleException("unable get boolean value for property "
+					+ propName);
+		}
+		return tmp;
+	}
+
+	/**
+	 * Shortcut to add a default modify listeners to a <code>Text</code> widget
+	 * that is bound a JCR String Property. Any change in the text is
+	 * immediately stored in the active session, but no save is done.
+	 */
+	public static void addModifyListener(final Text text, final Node node,
+			final String propName, final AbstractFormPart part) {
+		text.addModifyListener(new ModifyListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void modifyText(ModifyEvent event) {
+				if (JcrUiUtils.setJcrProperty(node, propName,
+						PropertyType.STRING, text.getText()))
+					part.markDirty();
+			}
+		});
 	}
 
 	/**
@@ -150,7 +207,17 @@ public class PeopleUiUtils {
 		return text;
 	}
 
-	/** Creates a text widget with GridData already set */
+	/**
+	 * Creates a text widget with GridData already set
+	 * 
+	 * @param toolkit
+	 * @param parent
+	 * @param msg
+	 * @param toolTip
+	 * @param width
+	 * @param colSpan
+	 * @return
+	 */
 	public static Text createGDText(FormToolkit toolkit, Composite parent,
 			String msg, String toolTip, int width, int colSpan) {
 		Text text = toolkit.createText(parent, "", SWT.BORDER | SWT.SINGLE

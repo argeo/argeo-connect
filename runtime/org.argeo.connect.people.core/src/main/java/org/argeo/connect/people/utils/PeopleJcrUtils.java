@@ -165,8 +165,8 @@ public class PeopleJcrUtils implements PeopleNames {
 	public static String getBranches(Node orga) {
 		try {
 			StringBuilder tags = new StringBuilder();
-			if (orga.hasProperty(PEOPLE_ORG_BRANCHE)) {
-				for (Value value : orga.getProperty(PEOPLE_ORG_BRANCHE)
+			if (orga.hasProperty(PEOPLE_ORG_BRANCHES)) {
+				for (Value value : orga.getProperty(PEOPLE_ORG_BRANCHES)
 						.getValues())
 					tags.append(value.getString()).append(", ");
 			}

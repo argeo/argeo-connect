@@ -71,9 +71,12 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 			}
 			builder.append("<br/>");
 
-			String tmpStr = PeopleJcrUtils.getBranches(orga);
-			if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
-				builder.append("<i>").append(tmpStr).append("</i><br/>");
+			String tmpStr;
+			if (isSmallList) {
+				tmpStr = PeopleJcrUtils.getBranches(orga);
+				if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+					builder.append("<i>").append(tmpStr).append("</i><br/>");
+			}
 
 			tmpStr = PeopleHtmlUtils.getPrimaryContacts(orga, false);
 			if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {

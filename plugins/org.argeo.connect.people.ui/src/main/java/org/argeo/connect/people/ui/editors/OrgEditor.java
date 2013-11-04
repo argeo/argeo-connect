@@ -14,6 +14,7 @@ import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.ui.toolkits.EntityToolkit;
+import org.argeo.connect.people.ui.toolkits.LegalInfoToolkit;
 import org.argeo.connect.people.ui.toolkits.ListToolkit;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -21,11 +22,12 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -47,6 +49,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 	// Toolkits
 	private EntityToolkit entityTK;
 	private ListToolkit listTK;
+	private LegalInfoToolkit legalTK;
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -66,8 +69,9 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 	@Override
 	protected void createToolkits() {
 		entityTK = new EntityToolkit(toolkit, getManagedForm());
-		listTK = new ListToolkit(toolkit, getManagedForm(),
-				getPeopleService(), getPeopleUiService());
+		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
+				getPeopleUiService());
+		legalTK = new LegalInfoToolkit(toolkit, getManagedForm(), org);
 	}
 
 	protected void populateTabFolder(CTabFolder folder) {
@@ -78,6 +82,13 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				"Details", PeopleUiConstants.PANEL_CONTACT_DETAILS, tooltip);
 		entityTK.createContactPanelWithNotes(innerPannel, org);
 
+		// Legal informations
+		tooltip = "Legal information for "
+				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
+		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Admin.",
+				PeopleUiConstants.PANEL_LEGAL_INFO, tooltip);
+		legalTK.populateLegalInfoPanel(innerPannel);
+
 		// Employees
 		tooltip = "Known employees of "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
@@ -86,6 +97,17 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		listTK.populateEmployeesPanel(innerPannel, org);
 	}
 
+	@Override
+	protected void populateMainInfoDetails(final Composite parent) {
+		// Branche Management
+		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		entityTK.populateTagPanel(tagsCmp, org, PeopleNames.PEOPLE_ORG_BRANCHES, "Enter a new branche");
+
+		// keep last update.
+		super.populateMainInfoDetails(parent);
+	}
+	
 	@Override
 	protected void populateTitleComposite(final Composite parent) {
 		try {
@@ -113,23 +135,13 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 					PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 			editPanelCmp.setLayout(new GridLayout(2, false));
 
-			// Legal Name
-			Label lbl = toolkit.createLabel(editPanelCmp, "Name", SWT.NONE);
-			lbl.setLayoutData(new GridData());
-			final Text legalNameTxt = toolkit.createText(editPanelCmp, "",
-					SWT.BORDER | SWT.SINGLE | SWT.LEFT);
-			GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-			gd.widthHint = 220;
-			legalNameTxt.setLayoutData(gd);
-
-			// Legal Status
-			lbl = toolkit.createLabel(editPanelCmp, "Legal Status", SWT.NONE);
-			lbl.setLayoutData(new GridData());
-			final Text legalStatusTxt = toolkit.createText(editPanelCmp, "",
-					SWT.BORDER | SWT.SINGLE | SWT.LEFT);
-			gd = new GridData(GridData.FILL_HORIZONTAL);
-			gd.widthHint = 220;
-			legalStatusTxt.setLayoutData(gd);
+			// Create edit text
+			final Text displayNameTxt = PeopleUiUtils.createGDText(toolkit,
+					editPanelCmp, "Display name",
+					"Default display name for this organisation", 300, 1);
+			final Button defaultDisplayBtn = toolkit.createButton(editPanelCmp,
+					"Use default display name", SWT.CHECK);
+			defaultDisplayBtn.setToolTipText("Use Legal name by default");
 
 			final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
 				// Update values on refresh
@@ -137,11 +149,19 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 					super.refresh();
 
 					// EDIT PART
-					PeopleUiUtils.refreshTextValue(legalNameTxt, org,
-							PeopleNames.PEOPLE_LEGAL_NAME);
-					PeopleUiUtils.refreshTextValue(legalStatusTxt, org,
-							PeopleNames.PEOPLE_LEGAL_STATUS);
+					boolean useDefault = PeopleUiUtils.refreshCheckBoxWidget(
+							defaultDisplayBtn, org,
+							PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME);
 
+					if (useDefault) {
+						PeopleUiUtils.refreshTextValue(displayNameTxt, org,
+								PeopleNames.PEOPLE_LEGAL_NAME);
+						displayNameTxt.setEnabled(false);
+					} else {
+						PeopleUiUtils.refreshTextValue(displayNameTxt, org,
+								Property.JCR_TITLE);
+						displayNameTxt.setEnabled(true);
+					}
 					// READ ONLY PART
 					String roText = orgLP.getText(org);
 					orgInfoROLbl.setText(roText);
@@ -155,27 +175,31 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				}
 			};
 
-			// Listeners
-			// entityTK.addTxtModifyListener(editPart, legalNameTxt, org,
-			// PeopleNames.PEOPLE_LEGAL_NAME, PropertyType.STRING);
-			// FIXME implement clean management of display name
-			legalNameTxt.addModifyListener(new ModifyListener() {
+			PeopleUiUtils.addModifyListener(displayNameTxt, org,
+					Property.JCR_TITLE, editPart);
+
+			defaultDisplayBtn.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;
 
 				@Override
-				public void modifyText(ModifyEvent event) {
+				public void widgetSelected(SelectionEvent e) {
+					boolean useDefault = defaultDisplayBtn.getSelection();
 					if (JcrUiUtils.setJcrProperty(org,
-							PeopleNames.PEOPLE_LEGAL_NAME, PropertyType.STRING,
-							legalNameTxt.getText())) {
-						JcrUiUtils.setJcrProperty(org, Property.JCR_TITLE,
-								PropertyType.STRING, legalNameTxt.getText());
-						editPart.markDirty();
+							PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME,
+							PropertyType.BOOLEAN, useDefault)) {
+						if (useDefault) {
+							String displayName = CommonsJcrUtils.get(org,
+									PeopleNames.PEOPLE_LEGAL_NAME);
+							JcrUiUtils.setJcrProperty(org, Property.JCR_TITLE,
+									PropertyType.STRING, displayName);
+							displayNameTxt.setText(displayName);
+							displayNameTxt.setEnabled(false);
+						} else
+							displayNameTxt.setEnabled(true);
 					}
+					editPart.markDirty();
 				}
 			});
-
-			PeopleUiUtils.addTxtModifyListener(editPart, legalStatusTxt, org,
-					PeopleNames.PEOPLE_LEGAL_STATUS, PropertyType.STRING);
 
 			editPart.initialize(getManagedForm());
 			getManagedForm().addPart(editPart);

@@ -69,9 +69,9 @@ public interface PeopleNames {
 
 	/* ORGANIZATIONS */
 	public final static String PEOPLE_LEGAL_NAME = "people:legalName";
-	public final static String PEOPLE_ORG_BRANCHE = "people:orgBranche";
 	public final static String PEOPLE_LEGAL_STATUS = "people:legalStatus";
 	public final static String PEOPLE_VAT_ID_NB = "people:vatIdNb";
+	public final static String PEOPLE_ORG_BRANCHES = "people:orgBranches";
 
 	/* WORKFLOWS */
 	public final static String PEOPLE_DATE_BEGIN = "people:dateBegin";
