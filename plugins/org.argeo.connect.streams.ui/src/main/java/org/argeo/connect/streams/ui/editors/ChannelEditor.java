@@ -27,6 +27,7 @@ import org.argeo.connect.people.ui.editors.AbstractEntityEditor;
 import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+
 import org.argeo.connect.streams.RssNames;
 import org.argeo.connect.streams.RssTypes;
 import org.argeo.connect.streams.ui.RssUiPlugin;
@@ -86,7 +87,7 @@ public class ChannelEditor extends AbstractEntityEditor implements RssNames {
 	 * Overwrite default main ppanel creation to spare some space.
 	 */
 	protected void createMainInfoPanel(final Composite parent) {
-		parent.setLayout(gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
 		// First row: Title + Buttons.
 		Composite firstRow = toolkit.createComposite(parent, SWT.NO_FOCUS);
@@ -126,7 +127,7 @@ public class ChannelEditor extends AbstractEntityEditor implements RssNames {
 		final Composite readOnlyPanel = toolkit.createComposite(parent,
 				SWT.NO_FOCUS);
 		PeopleUiUtils.setSwitchingFormData(readOnlyPanel);
-		readOnlyPanel.setLayout(gridLayoutNoBorder());
+		readOnlyPanel.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
 				SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
@@ -199,7 +200,7 @@ public class ChannelEditor extends AbstractEntityEditor implements RssNames {
 
 	@Override
 	protected void populateMainInfoDetails(Composite parent) {
-		parent.setLayout(gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 		// Details
 		Composite details = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		details.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -214,7 +215,7 @@ public class ChannelEditor extends AbstractEntityEditor implements RssNames {
 
 	@Override
 	protected void createBodyPart(Composite parent) {
-		parent.setLayout(gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 		// 1st line: Search + Buttons.
 		// Composite buttons = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		// buttons.setLayout(gridLayoutNoBorder());
