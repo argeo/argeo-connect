@@ -26,7 +26,7 @@ public interface PeopleNames {
 	public final static String PEOPLE_PROJECTS = "people:projects";
 
 	// path to parent node for various sub concepts
-	public final static String PEOPLE_BANK_ACCOUNTS = "people:bankAccounts";
+	public final static String PEOPLE_PAYMENT_ACCOUNTS = "people:paymentAccounts";
 	public final static String PEOPLE_CONTACTS = "people:contacts";
 	public final static String PEOPLE_TITLES = "people:titles";
 	// for groups, job and mailing lists.
@@ -145,9 +145,9 @@ public interface PeopleNames {
 	public final static String PEOPLE_BANK_NAME = "people:bankName";
 	public final static String PEOPLE_CURRENCY = "people:currency";
 	// To be used while passing transaction orders
-	public final static String PEOPLE_ACCOUNT_OWNER_LABEL = "people:accountOwnerLbl";
+	public final static String PEOPLE_ACCOUNT_HOLDER = "people:accountHolder";
 	public final static String PEOPLE_ACCOUNT_NB = "people:accountNb";
-	public final static String PEOPLE_BANK_CODE = "people:bankCode";
+	public final static String PEOPLE_BANK_NB = "people:bankNb";
 	public final static String PEOPLE_IBAN = "people:iban";
 	public final static String PEOPLE_BIC = "people:bic";
 }

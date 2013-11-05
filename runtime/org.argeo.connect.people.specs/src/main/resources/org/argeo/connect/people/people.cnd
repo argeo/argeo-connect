@@ -51,6 +51,9 @@
 + * (people:org) *
 // tag like multivalued properties to add an organisation to a given branch
 - people:orgBranches (STRING) *
+// Subnode for all bank accounts owned by this org
++ people:paymentAccounts (nt:unstructured)
+
 
 //
 // GROUP : base type for all groups of persons, organisations and/or other groups 
@@ -202,13 +205,17 @@ mixin
 - people:geoPoint (STRING)
 
 
-// BANK ACCOUNT
-[people:bankAccount] > people:address 
-- people:bankName m
+// PARENT PAYMENT ACCOUNT TYPE 
+// To enable future storing of alternative payment means (bitcoins or internet payment providers...)
+[people:paymentAccount] > people:address, mix:title 
 - people:currency (STRING)
+
+// BANK ACCOUNT
+[people:bankAccount] > people:paymentAccount 
+- people:bankName 
 // To be used while passing transaction orders
-- people:accountOwnerLbl (STRING)
+- people:accountHolder (STRING)
 - people:accountNb (STRING)
-- people:bankCode (STRING)
+- people:bankNb (STRING)
 - people:iban (STRING)
 - people:bic (STRING)

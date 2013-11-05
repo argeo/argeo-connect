@@ -16,10 +16,10 @@ import javax.jcr.nodetype.NodeType;
 import org.argeo.ArgeoException;
 import org.argeo.connect.film.FilmNames;
 import org.argeo.connect.film.FilmTypes;
+import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.jcr.JcrUtils;
 
 /**
@@ -73,6 +73,9 @@ public class PeopleJcrUtils implements PeopleNames {
 			throws RepositoryException {
 		return addEntityToGroup(group, entity, role, null, null, null, null);
 	}
+
+	// /////////////////////////
+	// / CONTACTS
 
 	public static void setContactLabel(Node contactNode, String label)
 			throws RepositoryException {
@@ -159,6 +162,37 @@ public class PeopleJcrUtils implements PeopleNames {
 			return null;
 		} catch (RepositoryException re) {
 			throw new ArgeoException("Unable to get city for item", re);
+		}
+	}
+
+	// ///////////////////////////
+	// PAYMENT MANAGEMENT
+	public static NodeIterator getPaymentAccounts(Node entity) {
+		try {
+			if (entity.hasNode(PEOPLE_PAYMENT_ACCOUNTS))
+				return entity.getNode(PEOPLE_PAYMENT_ACCOUNTS).getNodes();
+			else
+				return null;
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"Error while getting payment accounts for node " + entity,
+					e);
+		}
+	}
+
+	public static Node createPaymentAccount(Node entity, String nodeType,
+			String name) {
+		try {
+			Node accounts = null;
+			if (entity.hasNode(PEOPLE_PAYMENT_ACCOUNTS))
+				accounts = entity.getNode(PEOPLE_PAYMENT_ACCOUNTS);
+			else
+				accounts = entity.addNode(PEOPLE_PAYMENT_ACCOUNTS);
+			return accounts.addNode(name, nodeType);
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"Error while creating new payment account for node "
+							+ entity, e);
 		}
 	}
 
@@ -649,5 +683,5 @@ public class PeopleJcrUtils implements PeopleNames {
 		string = JcrUtils.replaceInvalidChars(string);
 		return string.replace(' ', '_');
 	}
-	
+
 }
