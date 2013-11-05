@@ -41,6 +41,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.ManagedForm;
@@ -151,7 +152,7 @@ public abstract class AbstractEntityEditorNoCTab extends EditorPart implements
 
 		ScrolledForm bodySForm = toolkit.createScrolledForm(main);
 
-		Composite body = bodySForm.getBody(); 
+		Composite body = bodySForm.getBody();
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		createBodyPart(body);
 
@@ -165,7 +166,7 @@ public abstract class AbstractEntityEditorNoCTab extends EditorPart implements
 	protected void createHeaderPart(final Composite header) {
 		header.setLayout(new GridLayout());
 		toolkit.createLabel(header, "Le header ira là");
-		
+
 		// header.setLayout(new GridLayout(2, false));
 		//
 		// // We leave the place for an image
@@ -303,7 +304,7 @@ public abstract class AbstractEntityEditorNoCTab extends EditorPart implements
 			}
 		});
 
-		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
+		AbstractFormPart editPart = new AbstractFormPart() {
 			// Update values on refresh
 			public void refresh() {
 				// super.refresh();

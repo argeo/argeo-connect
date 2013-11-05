@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.forms.AbstractFormPart;
 
 /**
  * Editor page that display a group with corresponding details
@@ -116,7 +117,7 @@ public class GroupEditor extends AbstractEntityCTabEditor {
 			final Text descTxt = PeopleUiUtils.createGDText(toolkit, editPanel,
 					"A Description", "", 400, 1);
 
-			final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
+			AbstractFormPart editPart = new AbstractFormPart() {
 				public void refresh() {
 					super.refresh();
 					// EDIT PART

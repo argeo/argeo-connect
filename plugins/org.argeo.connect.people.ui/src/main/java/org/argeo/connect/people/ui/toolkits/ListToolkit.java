@@ -19,7 +19,6 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.commands.AddEntityReferenceWithPosition;
-import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
 import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.ui.providers.FilmOverviewLabelProvider;
@@ -41,6 +40,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
@@ -96,7 +96,7 @@ public class ListToolkit {
 		}
 
 		// Add life cycle management
-		final EntityAbstractFormPart sPart = new EntityAbstractFormPart() {
+		AbstractFormPart sPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
 				try {
@@ -152,7 +152,7 @@ public class ListToolkit {
 					.getNewNodeListDoubleClickListener(peopleService, entity
 							.getPrimaryNodeType().getName()));
 			// Add life cycle management
-			final EntityAbstractFormPart sPart = new EntityAbstractFormPart() {
+			AbstractFormPart sPart = new AbstractFormPart() {
 				public void refresh() {
 					super.refresh();
 					addBtn.setEnabled(CommonsJcrUtils
@@ -194,7 +194,7 @@ public class ListToolkit {
 							.getPrimaryNodeType().getName(),
 							PeopleUiConstants.PANEL_PRODUCTIONS));
 			// Add life cycle management
-			final EntityAbstractFormPart sPart = new EntityAbstractFormPart() {
+			AbstractFormPart sPart = new AbstractFormPart() {
 				public void refresh() {
 					super.refresh();
 					addBtn.setEnabled(CommonsJcrUtils
@@ -240,7 +240,7 @@ public class ListToolkit {
 		}
 
 		// Add life cycle management
-		final EntityAbstractFormPart sPart = new EntityAbstractFormPart() {
+		AbstractFormPart sPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
 				try {

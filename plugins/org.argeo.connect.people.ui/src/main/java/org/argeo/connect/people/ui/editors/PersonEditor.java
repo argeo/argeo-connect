@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.forms.AbstractFormPart;
 
 /**
  * Default connect Person editor page
@@ -179,7 +180,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		PeopleUiUtils.setSwitchingFormData(editPanel);
 		// editPanel.setData(RWT.CUSTOM_VARIANT,
 		// PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
-		editPanel.setLayout(gridLayoutNoBorder());
+		editPanel.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
 		// First Line - display Name management
 		Composite firstCmp = toolkit.createComposite(editPanel, SWT.NO_FOCUS);
@@ -235,7 +236,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				thirdCmp, "Latin Phonetic",
 				"A helper to know how to pronounce this name", 100);
 
-		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
+		final AbstractFormPart editPart = new AbstractFormPart() {
 			public void refresh() { // update display value
 				super.refresh();
 				// EDIT PART
@@ -418,7 +419,8 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		// Tag Management
 		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		entityTK.populateTagPanel(tagsCmp, person, PeopleNames.PEOPLE_TAGS, "Enter a new tag");
+		entityTK.populateTagPanel(tagsCmp, person, PeopleNames.PEOPLE_TAGS,
+				"Enter a new tag");
 
 		// keep last update.
 		super.populateMainInfoDetails(parent);

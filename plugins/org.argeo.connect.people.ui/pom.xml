@@ -31,6 +31,14 @@
 	</build>
 	<dependencies>
 
+		<!-- RCP / RAP Specific bundles - Provided by the target plateform at runtime -->
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.people.rap</artifactId>
+			<version>2.1.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<!-- CONNECT -->
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
@@ -44,8 +52,8 @@
 			<artifactId>org.argeo.connect.people.core</artifactId>
 			<version>2.1.1-SNAPSHOT</version>
 		</dependency>
-		
-		<!-- COMMONS  -->
+
+		<!-- COMMONS -->
 		<!-- Base Argeo Eclipse Utilities -->
 		<dependency>
 			<groupId>org.argeo.commons.base</groupId>
@@ -73,7 +81,7 @@
 			<version>${version.argeo-commons}</version>
 		</dependency>
 
-		<!--  THIRD PARTIES -->
+		<!-- THIRD PARTIES -->
 		<!-- Calc exports -->
 		<dependency>
 			<groupId>org.argeo.tp</groupId>

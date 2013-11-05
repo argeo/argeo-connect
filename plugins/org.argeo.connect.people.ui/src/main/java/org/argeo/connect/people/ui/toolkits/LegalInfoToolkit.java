@@ -12,7 +12,6 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.composites.BankAccountComposite;
-import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.eclipse.swt.SWT;
@@ -24,6 +23,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
@@ -57,6 +57,11 @@ public class LegalInfoToolkit {
 		Composite payAccCmp = toolkit.createComposite(parent);
 		payAccCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		populateBankAccountGroup(payAccCmp);
+
+		Composite testContactCmp = toolkit.createComposite(parent);
+		testContactCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		ContactToolkit contactTK = new ContactToolkit(toolkit, form);
+		contactTK.populateDisplayContactPanel(testContactCmp, entity);
 	}
 
 	private void populateAdminInfoCmp(Composite parent) {
@@ -79,7 +84,7 @@ public class LegalInfoToolkit {
 		final Text vatIDTxt = toolkit.createText(parent, "", SWT.BORDER);
 		vatIDTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		final EntityAbstractFormPart notePart = new EntityAbstractFormPart() {
+		final AbstractFormPart notePart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
 				PeopleUiUtils.refreshFormTextWidget(legalNameTxt, entity,
@@ -135,13 +140,13 @@ public class LegalInfoToolkit {
 		group.setText("Payment accounts");
 		group.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
-		final EntityAbstractFormPart notePart = new EntityAbstractFormPart() {
+		AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {
 				// TODO add "create account button"
 				super.refresh();
 				try {
 					if (!entity.hasNode(PeopleNames.PEOPLE_PAYMENT_ACCOUNTS)
-							&& CommonsJcrUtils.isNodeCheckedOutByMe(entity)){
+							&& CommonsJcrUtils.isNodeCheckedOutByMe(entity)) {
 						PeopleJcrUtils.createPaymentAccount(entity,
 								PeopleTypes.PEOPLE_BANK_ACCOUNT, "new");
 						entity.getSession().save();
@@ -158,15 +163,17 @@ public class LegalInfoToolkit {
 
 				NodeIterator ni = PeopleJcrUtils.getPaymentAccounts(entity);
 				while (ni != null && ni.hasNext()) {
-					Composite cmp = new BankAccountComposite(group, 0, toolkit, form, ni.nextNode());
-					cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+					Composite cmp = new BankAccountComposite(group, 0, toolkit,
+							form, ni.nextNode());
+					cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
+							false));
 				}
 				group.layout();
 			}
 		};
 		// notePart.refresh();
 		parent.layout();
-		notePart.initialize(form);
-		form.addPart(notePart);
+		formPart.initialize(form);
+		form.addPart(formPart);
 	}
 }

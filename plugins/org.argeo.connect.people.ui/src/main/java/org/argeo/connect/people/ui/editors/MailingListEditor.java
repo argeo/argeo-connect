@@ -61,13 +61,13 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.forms.AbstractFormPart;
 
 /**
  * Editor page that display a mailing list, roughly based on the group editor
  * TODO what specific should be added
  */
-public class MailingListEditor extends GroupEditor implements
-		ITableProvider {
+public class MailingListEditor extends GroupEditor implements ITableProvider {
 	// final static Log log = LogFactory.getLog(MailingListEditor.class);
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
@@ -177,7 +177,7 @@ public class MailingListEditor extends GroupEditor implements
 		tableViewer.setContentProvider(new MyContentProvider());
 
 		// Add life cycle management
-		final EntityAbstractFormPart sPart = new EntityAbstractFormPart() {
+		AbstractFormPart sPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
 				// refreshFilteredList((String) membersViewer.getInput());

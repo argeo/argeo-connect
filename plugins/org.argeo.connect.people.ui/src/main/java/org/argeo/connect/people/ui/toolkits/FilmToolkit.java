@@ -18,7 +18,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;
@@ -28,6 +27,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
@@ -91,7 +91,7 @@ public class FilmToolkit extends EntityToolkit {
 			texts.add(altDescTxt);
 		}
 
-		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
+		final AbstractFormPart editPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
 				for (Text text : texts) {
@@ -203,7 +203,7 @@ public class FilmToolkit extends EntityToolkit {
 						null, null, PeopleConstants.LANG_EN);
 			enSynopsisTxt.setData("LinkedNode", enSynopsisNode.getPath());
 
-			final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
+			final AbstractFormPart editPart = new AbstractFormPart() {
 				public void refresh() {
 					super.refresh();
 					try {

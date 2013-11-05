@@ -1,8 +1,6 @@
 package org.argeo.connect.people.ui.toolkits;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.jcr.InvalidItemStateException;
@@ -13,18 +11,7 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.Value;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.DynamicOperand;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelConstants;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
-import javax.jcr.query.qom.StaticOperand;
 
-import org.argeo.ArgeoException;
 import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -33,15 +20,10 @@ import org.argeo.connect.people.ui.ContactImages;
 import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.ui.commands.AddEntityReferenceWithPosition;
-import org.argeo.connect.people.ui.commands.OpenEntityEditor;
+import org.argeo.connect.people.ui.composites.ContactComposite;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
-import org.argeo.eclipse.ui.utils.CommandUtils;
-import org.argeo.jcr.JcrUtils;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -50,8 +32,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
@@ -60,7 +40,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IFormPart;
@@ -68,378 +47,17 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
- * Centralizes creation of common controls (typically Text and composite widget)
- * for entity, to be used in various forms.
+ * Centralizes creation of commonly used people contact controls (typically Text
+ * and composite widget) to be used in various forms.
  */
-public class EntityToolkit {
-	// private final static Log log = LogFactory.getLog(EntityToolkit.class);
+public class ContactToolkit {
 
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 
-	// private AbstractEntityEditor editor;
-
-	public EntityToolkit(FormToolkit toolkit, IManagedForm form) {
+	public ContactToolkit(FormToolkit toolkit, IManagedForm form) {
 		this.toolkit = toolkit;
 		this.form = form;
-	}
-
-	// ////////////////
-	// Various panels
-
-	private List<Node> getNodeReferencing(Node entity) {
-		try {
-			Session session = entity.getSession();
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
-			QueryObjectModelFactory qomFactory = queryManager.getQOMFactory();
-
-			Selector source = qomFactory.selector(
-					PeopleTypes.PEOPLE_MAILING_LIST_ITEM,
-					PeopleTypes.PEOPLE_MAILING_LIST_ITEM);
-
-			// Parse the String
-			StaticOperand so = qomFactory.literal(entity.getProperty(
-					PeopleNames.PEOPLE_UID).getValue());
-			DynamicOperand dop = qomFactory.propertyValue(
-					source.getSelectorName(), PeopleNames.PEOPLE_REF_UID);
-			Constraint defaultC = qomFactory.comparison(dop,
-					QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
-
-			QueryObjectModel query;
-			query = qomFactory.createQuery(source, defaultC, null, null);
-			QueryResult result = query.execute();
-			NodeIterator ni = result.getNodes();
-
-			return JcrUtils.nodeIteratorToList(ni);
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to list entities", e);
-		}
-	}
-
-	public void populateGroupMembershipPanel(final Composite parent,
-			final Node entity) {
-		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder(2);
-		gl.marginBottom = 5;
-		parent.setLayout(gl);
-		// parent.setLayout(new GridLayout(2, false));
-
-		final Composite nlCmp = new Composite(parent, SWT.NO_FOCUS);
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
-		nlCmp.setLayoutData(gd);
-
-		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
-		rl.wrap = true;
-		rl.marginLeft = 5;
-		rl.marginRight = 0;
-		nlCmp.setLayout(rl);
-
-		final Button addBtn = new Button(parent, SWT.PUSH);
-		addBtn.setText("Add new mailing list(s)");
-		gd = new GridData(SWT.CENTER, SWT.TOP, false, false);
-		gd.widthHint = 135;
-		// gd.heightHint = 16;
-		// gd.widthHint = 28;
-		addBtn.setLayoutData(gd);
-
-		AbstractFormPart editPart = new AbstractFormPart() {
-			public void refresh() {
-				super.refresh();
-				// We redraw the full control at each refresh, might be a more
-				// efficient way to do
-				Control[] oldChildren = nlCmp.getChildren();
-				for (Control child : oldChildren)
-					child.dispose();
-
-				try {
-					List<Node> referencings = getNodeReferencing(entity);
-
-					for (final Node node : referencings) {
-						final Node parNode = node.getParent().getParent();
-						Link link = new Link(nlCmp, SWT.NONE);
-						link.setText("<a>"
-								+ CommonsJcrUtils.get(parNode,
-										Property.JCR_TITLE) + "</a>");
-						link.setToolTipText(CommonsJcrUtils.get(parNode,
-								Property.JCR_DESCRIPTION));
-						link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-
-						link.addSelectionListener(new SelectionAdapter() {
-							private static final long serialVersionUID = 1L;
-
-							@Override
-							public void widgetSelected(
-									final SelectionEvent event) {
-								Map<String, String> params = new HashMap<String, String>();
-								params.put(OpenEntityEditor.PARAM_ENTITY_TYPE,
-										PeopleTypes.PEOPLE_MAILING_LIST);
-								params.put(OpenEntityEditor.PARAM_ENTITY_UID,
-										CommonsJcrUtils.get(parNode,
-												PeopleNames.PEOPLE_UID));
-								CommandUtils.callCommand(OpenEntityEditor.ID,
-										params);
-							}
-						});
-
-						final Button deleteBtn = new Button(nlCmp, SWT.FLAT);
-						deleteBtn.setData(RWT.CUSTOM_VARIANT,
-								PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
-						deleteBtn.setImage(PeopleImages.DELETE_BTN_LEFT);
-						RowData rd = new RowData();
-						rd.height = 16;
-						rd.width = 18;
-						deleteBtn.setLayoutData(rd);
-
-						deleteBtn.addSelectionListener(new SelectionAdapter() {
-							private static final long serialVersionUID = 1L;
-
-							@Override
-							public void widgetSelected(
-									final SelectionEvent event) {
-								try {
-									boolean wasCheckedOut = CommonsJcrUtils
-											.isNodeCheckedOutByMe(parNode);
-									if (!wasCheckedOut)
-										CommonsJcrUtils.checkout(parNode);
-									node.remove();
-									if (wasCheckedOut)
-										parNode.getSession().save();
-									else
-										CommonsJcrUtils.saveAndCheckin(parNode);
-								} catch (RepositoryException e) {
-									throw new PeopleException(
-											"unable to initialise deletion", e);
-								}
-								for (IFormPart part : form.getParts()) {
-									((AbstractFormPart) part).markStale();
-									part.refresh();
-								}
-							}
-						});
-
-					}
-					// nlCmp.pack();
-					nlCmp.layout(false);
-					// parent.getParent().pack();
-					parent.getParent().layout();
-				} catch (RepositoryException re) {
-					throw new PeopleException(
-							"Error while refreshing mailing list appartenance",
-							re);
-				}
-			}
-		};
-
-		addBtn.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(final SelectionEvent event) {
-				Map<String, String> params = new HashMap<String, String>();
-				try {
-					params.put(
-							AddEntityReferenceWithPosition.PARAM_REFERENCED_JCR_ID,
-							entity.getIdentifier());
-					params.put(
-							AddEntityReferenceWithPosition.PARAM_TO_SEARCH_NODE_TYPE,
-							PeopleTypes.PEOPLE_MAILING_LIST);
-					params.put(AddEntityReferenceWithPosition.PARAM_DIALOG_ID,
-							PeopleUiConstants.DIALOG_ADD_ML_MEMBERSHIP);
-					CommandUtils.callCommand(AddEntityReferenceWithPosition.ID,
-							params);
-				} catch (RepositoryException e1) {
-					throw new PeopleException(
-							"Unable to get parent Jcr identifier", e1);
-				}
-			}
-		});
-
-		editPart.initialize(form);
-		form.addPart(editPart);
-	}
-
-	public void populateTagPanel(final Composite parent, final Node entity,
-			final String tagPropName, final String newTagMsg) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
-
-		final Composite nlCmp = new Composite(parent, SWT.NO_FOCUS);
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
-		nlCmp.setLayoutData(gd);
-		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
-		rl.wrap = true;
-		rl.marginLeft = 5;
-		rl.marginRight = 0;
-		nlCmp.setLayout(rl);
-
-		final Text tagTxt = new Text(parent, SWT.BORDER);
-		tagTxt.setMessage(newTagMsg);
-		gd = new GridData(SWT.CENTER, SWT.TOP, false, false);
-		gd.minimumWidth = 120;
-		gd.widthHint = 130;
-		tagTxt.setLayoutData(gd);
-
-		tagTxt.addTraverseListener(new TraverseListener() {
-			private static final long serialVersionUID = 1L;
-
-			public void keyTraversed(TraverseEvent e) {
-				if (e.keyCode == SWT.CR) {
-					String newTag = tagTxt.getText();
-					addTag(entity, tagPropName, newTag);
-					e.doit = false;
-					tagTxt.setText("");
-				}
-			}
-		});
-
-		AbstractFormPart editPart = new AbstractFormPart() {
-			public void refresh() {
-				super.refresh();
-				// We redraw the full control at each refresh, might be a more
-				// efficient way to do
-				Control[] oldChildren = nlCmp.getChildren();
-				for (Control child : oldChildren)
-					child.dispose();
-
-				try {
-					if (entity.hasProperty(tagPropName)) {
-						Value[] values = entity.getProperty(tagPropName)
-								.getValues();
-						for (final Value value : values) {
-							Link link = new Link(nlCmp, SWT.NONE);
-							link.setData(RWT.CUSTOM_VARIANT, "tag");
-							link.setText("#" + value.getString() + "");
-							link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-
-							final Button deleteBtn = new Button(nlCmp, SWT.FLAT);
-							deleteBtn.setData(RWT.CUSTOM_VARIANT,
-									PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
-							deleteBtn.setImage(PeopleImages.DELETE_BTN_LEFT);
-							RowData rd = new RowData();
-							rd.height = 16;
-							rd.width = 18;
-							deleteBtn.setLayoutData(rd);
-
-							deleteBtn
-									.addSelectionListener(new SelectionAdapter() {
-										private static final long serialVersionUID = 1L;
-
-										@Override
-										public void widgetSelected(
-												final SelectionEvent event) {
-											try {
-
-												String tagToRemove = value
-														.getString();
-												List<String> tags = new ArrayList<String>();
-												Value[] values = entity
-														.getProperty(
-																tagPropName)
-														.getValues();
-												for (int i = 0; i < values.length; i++) {
-													String curr = values[i]
-															.getString();
-													if (!tagToRemove
-															.equals(curr))
-														tags.add(curr);
-												}
-
-												boolean wasCheckedOut = CommonsJcrUtils
-														.isNodeCheckedOutByMe(entity);
-												if (!wasCheckedOut)
-													CommonsJcrUtils
-															.checkout(entity);
-												entity.setProperty(
-														tagPropName,
-														tags.toArray(new String[tags
-																.size()]));
-												if (wasCheckedOut)
-													form.dirtyStateChanged();
-												else
-													CommonsJcrUtils
-															.saveAndCheckin(entity);
-											} catch (RepositoryException e) {
-												throw new PeopleException(
-														"unable to initialise deletion",
-														e);
-											}
-											for (IFormPart part : form
-													.getParts()) {
-												((AbstractFormPart) part)
-														.markStale();
-												part.refresh();
-											}
-										}
-									});
-
-						}
-						// nlCmp.pack();
-						nlCmp.layout(false);
-						// parent.getParent().pack();
-						parent.getParent().layout();
-					}
-				} catch (RepositoryException re) {
-					throw new PeopleException(
-							"Error while refreshing mailing list appartenance",
-							re);
-				}
-			}
-		};
-
-		editPart.initialize(form);
-		form.addPart(editPart);
-	}
-
-	private void addTag(Node tagable, String tagPropName, String newTag) {
-		try {
-			Value[] values;
-			String[] valuesStr;
-			String errMsg = null;
-			if (tagable.hasProperty(tagPropName)) {
-				values = tagable.getProperty(tagPropName).getValues();
-
-				// Check dupplicate
-				for (Value tag : values) {
-					String curTagUpperCase = tag.getString().toUpperCase()
-							.trim();
-					if (newTag.toUpperCase().trim().equals(curTagUpperCase)) {
-						errMsg = "This tag  \"" + newTag
-								+ "\" already exists as \"" + tag.getString()
-								+ "\" and thus could not be added.";
-						MessageDialog.openError(PeopleUiPlugin.getDefault()
-								.getWorkbench().getActiveWorkbenchWindow()
-								.getShell(), "Dupplicates", errMsg);
-						return;
-					}
-				}
-
-				valuesStr = new String[values.length + 1];
-				int i;
-				for (i = 0; i < values.length; i++) {
-					valuesStr[i] = values[i].getString();
-				}
-				valuesStr[i] = newTag;
-			} else {
-				valuesStr = new String[1];
-				valuesStr[0] = newTag;
-			}
-
-			boolean wasCheckedout = CommonsJcrUtils.isNodeCheckedOut(tagable);
-			if (!wasCheckedout)
-				CommonsJcrUtils.checkout(tagable);
-			tagable.setProperty(tagPropName, valuesStr);
-			if (!wasCheckedout)
-				CommonsJcrUtils.saveAndCheckin(tagable);
-			else
-				form.dirtyStateChanged();
-
-			for (IFormPart part : form.getParts()) {
-				((AbstractFormPart) part).markStale();
-				part.refresh();
-			}
-		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to set tags", re);
-		}
-
 	}
 
 	public void createContactPanelWithNotes(Composite panel, final Node entity) {
@@ -493,13 +111,11 @@ public class EntityToolkit {
 	}
 
 	/** Manage display and update of existing contact Nodes */
-	private void populateDisplayContactPanel(final Composite panel,
+	public void populateDisplayContactPanel(final Composite panel,
 			final Node entity) {
 		panel.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-
 		final Map<String, Composite> contactCmps = new HashMap<String, Composite>();
-
-		final AbstractFormPart sPart = new AbstractFormPart() {
+		AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {
 				try {
 					super.refresh();
@@ -511,10 +127,9 @@ public class EntityToolkit {
 						Node currNode = ni.nextNode();
 						String currJcrId = currNode.getIdentifier();
 						if (!contactCmps.containsKey(currJcrId)) {
-							Composite currCmp = new Composite(panel,
-									SWT.NO_FOCUS);
-							populateEditableMailCmp(currCmp, currNode, currNode
-									.getParent().getParent());
+							Composite currCmp = new ContactComposite(panel,
+									SWT.NO_FOCUS, toolkit, form, currNode,
+									entity);
 							contactCmps.put(currJcrId, currCmp);
 						}
 					}
@@ -530,15 +145,16 @@ public class EntityToolkit {
 							currCmp.dispose();
 						}
 					}
+					panel.layout();
 				} catch (RepositoryException e) {
 					throw new PeopleException(
 							"Cannot refresh contact panel formPart", e);
 				}
 			}
 		};
-
-		sPart.initialize(form);
-		form.addPart(sPart);
+		formPart.refresh();
+		formPart.initialize(form);
+		form.addPart(formPart);
 	}
 
 	private void populateEditableMailCmp(final Composite parent,
@@ -1136,163 +752,5 @@ public class EntityToolkit {
 		} else
 			return null;
 	}
-
-	// public void populateTagsPanel(final Composite parent, final Node entity)
-	// {
-	// parent.setLayout(new FormLayout());
-	// // Show only TAGS for the time being, so it is the same for R/O & Edit
-	// // mode
-	// final Composite panel = toolkit.createComposite(parent, SWT.NO_FOCUS);
-	// PeopleUiUtils.setSwitchingFormData(panel);
-	//
-	// TableColumnLayout tableColumnLayout = new TableColumnLayout();
-	// panel.setLayout(tableColumnLayout);
-	//
-	// int style = SWT.NO_SCROLL;
-	// Table table = new Table(panel, style);
-	// table.setLinesVisible(false);
-	// table.setHeaderVisible(false);
-	// // Enable markups
-	// table.setData(RWT.CUSTOM_VARIANT,
-	// PeopleUiConstants.CSS_STYLE_UNIQUE_CELL_TABLE);
-	// table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-	// table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(40));
-	//
-	// // Does not work: adding a tag within the <a> tag unvalid the
-	// // target="_RWT" parameter
-	// // ResourceManager resourceManager = RWT.getResourceManager();
-	// // if (!resourceManager.isRegistered("icons/close.png")) {
-	// // InputStream inputStream = this.getClass().getClassLoader()
-	// // .getResourceAsStream("icons/close.png");
-	// // try {
-	// // resourceManager.register("icons/close.png", inputStream);
-	// // } finally {
-	// // IOUtils.closeQuietly(inputStream);
-	// // }
-	// // }
-	// // final String src = RWT.getResourceManager().getLocation(
-	// // "icons/close.png");
-	//
-	// final TableViewer viewer = new TableViewer(table);
-	// viewer.setLabelProvider(new LabelProvider() {
-	// private static final long serialVersionUID = 1L;
-	//
-	// @Override
-	// public String getText(Object element) {
-	// try {
-	// Node node = (Node) element;
-	// StringBuilder tags = new StringBuilder();
-	// if (node.hasProperty(PeopleNames.PEOPLE_TAGS)) {
-	// tags.append("<span style=\"font-size:15px;float:left;padding:0px;white-space:pre-wrap;text-decoration:none;\">");
-	// Value[] values = entity.getProperty(
-	// PeopleNames.PEOPLE_TAGS).getValues();
-	// for (int i = 0; i < values.length; i++) {
-	// String currStr = PeopleHtmlUtils
-	// .cleanHtmlString(values[i].getString());
-	//
-	// tags.append("<i>#");
-	// tags.append(currStr).append("&#160;");
-	// tags.append("<small><a style=\"text-decoration:none;\" href=\"");
-	// tags.append(currStr);
-	// tags.append("\" target=\"_rwt\">X</a></small></i>")
-	// .append("&#160;&#160; ");
-	// }
-	// tags.append("</span>");
-	// }
-	// return tags.toString();
-	// } catch (RepositoryException re) {
-	// throw new PeopleException("unable to get tags", re);
-	// }
-	// }
-	//
-	// });
-	// viewer.setContentProvider(new BasicNodeListContentProvider());
-	//
-	// TableColumn singleColumn = new TableColumn(table, SWT.LEFT);
-	// singleColumn.setData(RWT.CUSTOM_VARIANT,
-	// PeopleUiConstants.CSS_STYLE_UNIQUE_CELL_TABLE);
-	//
-	// tableColumnLayout.setColumnData(singleColumn, new ColumnWeightData(90));
-	//
-	// final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
-	// public void refresh() { // update display value
-	// super.refresh();
-	// List<Node> nodes = new ArrayList<Node>();
-	// nodes.add(entity);
-	// viewer.refresh();
-	// }
-	// };
-	//
-	// table.addSelectionListener(new SelectionAdapter() {
-	// private static final long serialVersionUID = 1L;
-	//
-	// public void widgetSelected(SelectionEvent event) {
-	// if (event.detail == RWT.HYPERLINK) {
-	// try {
-	//
-	// String tagToRemove = event.text;
-	// if (CommonsJcrUtils.checkNotEmptyString(tagToRemove)) {
-	// List<String> tags = new ArrayList<String>();
-	// if (entity.hasProperty(PeopleNames.PEOPLE_TAGS)) {
-	// Value[] values = entity.getProperty(
-	// PeopleNames.PEOPLE_TAGS).getValues();
-	// for (int i = 0; i < values.length; i++) {
-	// String curr = values[i].getString();
-	// if (!tagToRemove.equals(curr))
-	// tags.add(curr);
-	// }
-	// }
-	// boolean wasCheckedout = CommonsJcrUtils
-	// .isNodeCheckedOut(entity);
-	// if (!wasCheckedout)
-	// CommonsJcrUtils.checkout(entity);
-	// entity.setProperty(PeopleNames.PEOPLE_TAGS,
-	// tags.toArray(new String[tags.size()]));
-	// if (!wasCheckedout)
-	// CommonsJcrUtils.saveAndCheckin(entity);
-	// else
-	// form.dirtyStateChanged();
-	// }
-	// // Not enough we want to refresh the all form.
-	// // editPart.refresh();
-	// for (IFormPart part : form.getParts()) {
-	// ((AbstractFormPart) part).markStale();
-	// part.refresh();
-	// }
-	// } catch (RepositoryException re) {
-	// throw new ArgeoException("Unable to set tags", re);
-	// }
-	// }
-	// }
-	// });
-	// List<Node> nodes = new ArrayList<Node>();
-	// nodes.add(entity);
-	// viewer.setInput(nodes);
-	//
-	// editPart.initialize(form);
-	// form.addPart(editPart);
-	// }
-
-	// public void populateAddTagComposite(Composite parent, final Node entity)
-	// {
-	// parent.setLayout(new RowLayout());
-	// final Text tagTxt = new Text(parent, SWT.BORDER);
-	// tagTxt.setMessage("Enter a new tag");
-	// RowData rd = new RowData(120, SWT.DEFAULT);
-	// tagTxt.setLayoutData(rd);
-	//
-	// tagTxt.addTraverseListener(new TraverseListener() {
-	// private static final long serialVersionUID = 1L;
-	//
-	// public void keyTraversed(TraverseEvent e) {
-	// if (e.keyCode == SWT.CR) {
-	// String newTag = tagTxt.getText();
-	// addTag(entity, newTag);
-	// e.doit = false;
-	// tagTxt.setText("");
-	// }
-	// }
-	// });
-	// }
 
 }

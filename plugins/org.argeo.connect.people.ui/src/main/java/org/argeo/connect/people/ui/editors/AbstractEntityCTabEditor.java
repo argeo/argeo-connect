@@ -1,6 +1,7 @@
 package org.argeo.connect.people.ui.editors;
 
 import org.argeo.connect.people.ui.PeopleUiService;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -37,11 +38,11 @@ public abstract class AbstractEntityCTabEditor extends AbstractEntityEditor
 
 	/* CONTENT CREATION */
 	protected void createMainLayout(Composite parent) {
-		parent.setLayout(gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
 		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS
 				| SWT.NO_SCROLL | SWT.NO_TRIM);
-		header.setLayout(gridLayoutNoBorder());
+		header.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 		header.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		createHeaderPart(header);
 

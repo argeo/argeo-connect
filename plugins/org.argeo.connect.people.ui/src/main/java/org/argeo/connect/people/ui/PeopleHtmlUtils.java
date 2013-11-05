@@ -92,6 +92,124 @@ public class PeopleHtmlUtils {
 			return "";
 	}
 
+	/** creates the display ReadOnly HTML snippet for various contacts */
+	public static String getContactDisplaySnippet(Node node, Node entity) {
+		try {
+			StringBuilder builder = new StringBuilder();
+
+			String nature = null;
+			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
+				nature = cleanHtmlString(CommonsJcrUtils.get(node,
+						PeopleNames.PEOPLE_CONTACT_NATURE));
+			String category = cleanHtmlString(CommonsJcrUtils.get(node,
+					PeopleNames.PEOPLE_CONTACT_CATEGORY));
+			String label = cleanHtmlString(CommonsJcrUtils.get(node,
+					PeopleNames.PEOPLE_CONTACT_LABEL));
+
+			if (node.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
+				builder.append(cleanHtmlString(getAddressDisplayValue(node)));
+			} else {
+				String value = cleanHtmlString(CommonsJcrUtils.get(node,
+						PeopleNames.PEOPLE_CONTACT_VALUE));
+				if (node.isNodeType(PeopleTypes.PEOPLE_URL)
+						|| node.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA)) {
+					builder.append("<a ")
+							.append(PeopleUiConstants.PEOPLE_CSS_URL_STYLE)
+							.append(" href=\"http://");
+					builder.append(value + "\" target=\"_blank\" >" + value
+							+ "</a>");
+				} else if (node.isNodeType(PeopleTypes.PEOPLE_EMAIL)) {
+					builder.append("<a "
+							+ PeopleUiConstants.PEOPLE_CSS_URL_STYLE);
+					builder.append(" href=\"mailto:" + value + "\">" + value
+							+ " </a>");
+				} else if (node.isNodeType(PeopleTypes.PEOPLE_IMPP)
+						|| node.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA)
+						|| node.isNodeType(PeopleTypes.PEOPLE_PHONE)) {
+					builder.append(value);
+				}
+			}
+
+			if (CommonsJcrUtils.checkNotEmptyString(nature)
+					|| CommonsJcrUtils.checkNotEmptyString(category)
+					|| CommonsJcrUtils.checkNotEmptyString(label)) {
+				builder.append("&#160;&#160;[");
+
+				if (CommonsJcrUtils.checkNotEmptyString(nature)) {
+					builder.append(nature).append(" ");
+				}
+				if (CommonsJcrUtils.checkNotEmptyString(category)) {
+					builder.append(category);
+				}
+
+				if (CommonsJcrUtils.checkNotEmptyString(label)) {
+					if (CommonsJcrUtils.checkNotEmptyString(nature)
+							|| CommonsJcrUtils.checkNotEmptyString(category))
+						builder.append(", ");
+					builder.append(label);
+				}
+				builder.append("]");
+			}
+
+			return builder.toString();
+
+		} catch (RepositoryException re) {
+			throw new PeopleException("Error while generating contact "
+					+ "display HTML snippet ", re);
+		}
+	}
+
+	/** creates an address Display value */
+	public static String getAddressDisplayValue(Node node) {
+
+		String street = CommonsJcrUtils.get(node, PeopleNames.PEOPLE_STREET);
+		String street2 = CommonsJcrUtils.get(node,
+				PeopleNames.PEOPLE_STREET_COMPLEMENT);
+		String zip = CommonsJcrUtils.get(node, PeopleNames.PEOPLE_ZIP_CODE);
+		String city = CommonsJcrUtils.get(node, PeopleNames.PEOPLE_CITY);
+		String state = CommonsJcrUtils.get(node, PeopleNames.PEOPLE_STATE);
+		String country = CommonsJcrUtils.get(node, PeopleNames.PEOPLE_COUNTRY);
+
+		StringBuilder builder = new StringBuilder();
+
+		if (CommonsJcrUtils.checkNotEmptyString(street))
+			builder.append(street);
+
+		if (CommonsJcrUtils.checkNotEmptyString(street2)) {
+			if (builder.length() > 0)
+				builder.append(", ");
+			builder.append(street2);
+		}
+
+		if (CommonsJcrUtils.checkNotEmptyString(zip)) {
+			if (builder.length() > 0)
+				builder.append(", ");
+			builder.append(zip);
+		}
+
+		if (CommonsJcrUtils.checkNotEmptyString(city)) {
+			if (builder.length() > 0)
+				if (CommonsJcrUtils.checkNotEmptyString(zip))
+					builder.append(" ");
+				else
+					builder.append(", ");
+			builder.append(city);
+		}
+
+		if (CommonsJcrUtils.checkNotEmptyString(state)) {
+			if (builder.length() > 0)
+				builder.append(", ");
+			builder.append(state);
+		}
+
+		if (CommonsJcrUtils.checkNotEmptyString(country)) {
+			if (builder.length() > 0)
+				builder.append(", ");
+			builder.append(country.toUpperCase());
+		}
+		return builder.toString();
+	}
+
 	/** creates the localisation snippet */
 	public static String getLocalisationInfo(Node entity) {
 		String town = PeopleJcrUtils.getTownFromItem(entity);

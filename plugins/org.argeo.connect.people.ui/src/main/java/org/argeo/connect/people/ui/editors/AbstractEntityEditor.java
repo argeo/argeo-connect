@@ -11,8 +11,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -52,6 +50,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.Form;
@@ -67,8 +66,8 @@ import org.eclipse.ui.services.ISourceProviderService;
  */
 public abstract class AbstractEntityEditor extends EditorPart implements
 		IVersionedItemEditor {
-	private final static Log log = LogFactory
-			.getLog(AbstractEntityEditor.class);
+	// private final static Log log = LogFactory
+	// .getLog(AbstractEntityEditor.class);
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
@@ -155,11 +154,11 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	 * current object
 	 */
 	protected void populateMainInfoDetails(Composite parent) {
-		parent.setLayout(gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
 		final Composite lastUpdateCmp = toolkit.createComposite(parent,
 				SWT.NO_FOCUS);
-		lastUpdateCmp.setLayout(gridLayoutNoBorder());
+		lastUpdateCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 		lastUpdateCmp.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true,
 				true));
 		final Label readOnlyInfoLbl = toolkit.createLabel(lastUpdateCmp, "",
@@ -174,7 +173,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			}
 		};
 
-		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
+		AbstractFormPart editPart = new AbstractFormPart() {
 			public void refresh() { // update display value
 				super.refresh();
 				// READ ONLY PART
@@ -209,16 +208,16 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	}
 
 	protected void createMainLayout(Composite parent) {
-		parent.setLayout(gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 		// Internal main Layout
 		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS
 				| SWT.NO_SCROLL | SWT.NO_TRIM);
-		header.setLayout(gridLayoutNoBorder());
+		header.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 		header.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		createHeaderPart(header);
 
 		Composite body = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		body.setLayout(gridLayoutNoBorder());
+		body.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		createBodyPart(body);
 
@@ -244,13 +243,13 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		image.setLayoutData(gd);
 
 		// test
-//		int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
-//		Transfer[] tt = new Transfer[] { TextTransfer.getInstance(),
-//				FileTransfer.getInstance(), ImageTransfer.getInstance(),
-//				URLTransfer.getInstance() };
-//		DropTarget target = new DropTarget(image, operations);
-//		target.setTransfer(tt);
-//		target.addDropListener(new ImageDropListener());
+		// int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
+		// Transfer[] tt = new Transfer[] { TextTransfer.getInstance(),
+		// FileTransfer.getInstance(), ImageTransfer.getInstance(),
+		// URLTransfer.getInstance() };
+		// DropTarget target = new DropTarget(image, operations);
+		// target.setTransfer(tt);
+		// target.addDropListener(new ImageDropListener());
 
 		// General information panel (Right of the image)
 		Composite mainInfoComposite = toolkit.createComposite(header,
@@ -296,7 +295,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	// }
 
 	protected void createMainInfoPanel(final Composite parent) {
-		parent.setLayout(gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
 		// First row: Title + Buttons.
 		Composite firstRow = toolkit.createComposite(parent, SWT.NO_FOCUS);
@@ -334,7 +333,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		final Composite roPanelCmp = toolkit.createComposite(buttons,
 				SWT.NO_FOCUS);
 		PeopleUiUtils.setSwitchingFormData(roPanelCmp);
-		roPanelCmp.setLayout(gridLayoutNoBorder());
+		roPanelCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
 		// Add a level to right align the buttons
 		final Composite roSubPanelCmp = toolkit.createComposite(roPanelCmp,
@@ -456,7 +455,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		editPanelCmp.layout();
 		roPanelCmp.layout();
 
-		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
+		AbstractFormPart editPart = new AbstractFormPart() {
 			// Update values on refresh
 			public void refresh() {
 				// super.refresh();
@@ -527,9 +526,9 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		return tvc;
 	}
 
-	protected GridLayout gridLayoutNoBorder() {
-		return gridLayoutNoBorder(1);
-	}
+	// protected GridLayout gridLayoutNoBorder() {
+	// return gridLayoutNoBorder(1);
+	// }
 
 	protected GridLayout gridLayoutNoBorder(int nbOfCol) {
 		GridLayout gl = new GridLayout(nbOfCol, false);

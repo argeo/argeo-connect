@@ -18,7 +18,6 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.commands.AddEntityReferenceWithPosition;
-import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
 import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.ui.providers.PersonOverviewLabelProvider;
@@ -38,11 +37,13 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
- * Centralizes the creation of the different form composites and controls to manage people groups.
+ * Centralizes the creation of the different form composites and controls to
+ * manage people groups.
  */
 public class GroupToolkit {
 	// private final static Log log = LogFactory.getLog(ListToolkit.class);
@@ -66,20 +67,21 @@ public class GroupToolkit {
 
 	public void createMemberList(Composite parent, final Node entity) {
 		parent.setLayout(new GridLayout());
-		
+
 		// Maybe add more functionalities here
 		// Create new button
-		final Button addBtn = toolkit.createButton(parent, "Add member", SWT.PUSH);
-		configureAddMemberButton(addBtn, entity, "Add a new member to this group", 
-				PeopleTypes.PEOPLE_PERSON);
+		final Button addBtn = toolkit.createButton(parent, "Add member",
+				SWT.PUSH);
+		configureAddMemberButton(addBtn, entity,
+				"Add a new member to this group", PeopleTypes.PEOPLE_PERSON);
 
 		// Corresponding list
 		Composite tableComp = toolkit.createComposite(parent);
 		tableComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		final TableViewer viewer = new TableViewer(tableComp);
-		TableColumnLayout tableColumnLayout = createMembersTableColumns(tableComp,
-				viewer);
+		TableColumnLayout tableColumnLayout = createMembersTableColumns(
+				tableComp, viewer);
 		tableComp.setLayout(tableColumnLayout);
 		PeopleUiUtils.setTableDefaultStyle(viewer, 60);
 
@@ -95,7 +97,7 @@ public class GroupToolkit {
 		}
 
 		// Add life cycle management
-		final EntityAbstractFormPart sPart = new EntityAbstractFormPart() {
+		AbstractFormPart sPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
 				try {
@@ -104,8 +106,8 @@ public class GroupToolkit {
 					List<Node> members = new ArrayList<Node>();
 					if (!entity.hasNode(PeopleNames.PEOPLE_MEMBERS))
 						return;
-					NodeIterator ni = entity.getNode(PeopleNames.PEOPLE_MEMBERS)
-							.getNodes();
+					NodeIterator ni = entity
+							.getNode(PeopleNames.PEOPLE_MEMBERS).getNodes();
 					while (ni.hasNext()) {
 						// Check if have the right type of node
 						Node currMember = ni.nextNode();
@@ -123,7 +125,6 @@ public class GroupToolkit {
 		form.addPart(sPart);
 	}
 
-	
 	private TableColumnLayout createMembersTableColumns(Composite parent,
 			TableViewer viewer) {
 		int[] bounds = { 150, 300 };
@@ -180,9 +181,8 @@ public class GroupToolkit {
 	// ///////////////////////
 	// HELPERS
 
-	private void configureAddMemberButton(Button button,
-			final Node targetNode, String tooltip,
-			final String nodeTypeToSearch) {
+	private void configureAddMemberButton(Button button, final Node targetNode,
+			String tooltip, final String nodeTypeToSearch) {
 		button.setToolTipText(tooltip);
 		button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
 
@@ -194,8 +194,8 @@ public class GroupToolkit {
 				Map<String, String> params = new HashMap<String, String>();
 				try {
 					params.put(
-								AddEntityReferenceWithPosition.PARAM_REFERENCING_JCR_ID,
-								targetNode.getIdentifier());
+							AddEntityReferenceWithPosition.PARAM_REFERENCING_JCR_ID,
+							targetNode.getIdentifier());
 					params.put(
 							AddEntityReferenceWithPosition.PARAM_TO_SEARCH_NODE_TYPE,
 							nodeTypeToSearch);

@@ -4,12 +4,12 @@ import javax.jcr.Node;
 
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
@@ -20,7 +20,7 @@ public class BankAccountComposite extends Composite {
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 	// Don't forget to unregister on dispose
-	private EntityAbstractFormPart formPart;
+	private AbstractFormPart formPart;
 
 	public BankAccountComposite(Composite parent, int style,
 			FormToolkit toolkit, IManagedForm form, Node bankAccount) {
@@ -48,7 +48,7 @@ public class BankAccountComposite extends Composite {
 		final Text bankNameTxt = toolkit.createText(parent, "", SWT.BORDER);
 		bankNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		toolkit.createLabel(parent, "Cur.");
+		toolkit.createLabel(parent, "Currency");
 		final Text currencyTxt = toolkit.createText(parent, "", SWT.BORDER);
 		GridData gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
 		gd.widthHint = 50;
@@ -73,30 +73,31 @@ public class BankAccountComposite extends Composite {
 		final Text ibanTxt = toolkit.createText(parent, "", SWT.BORDER);
 		ibanTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
-		formPart = new EntityAbstractFormPart() {
+		formPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
-				
-				if (!holderTxt.isDisposed()){
-				PeopleUiUtils.refreshFormTextWidget(holderTxt, currAccount,
-						PeopleNames.PEOPLE_ACCOUNT_HOLDER);
-				PeopleUiUtils.refreshFormTextWidget(bankNameTxt, currAccount,
-						PeopleNames.PEOPLE_BANK_NAME);
-				PeopleUiUtils.refreshFormTextWidget(currencyTxt, currAccount,
-						PeopleNames.PEOPLE_CURRENCY);
-				PeopleUiUtils.refreshFormTextWidget(accNbTxt, currAccount,
-						PeopleNames.PEOPLE_ACCOUNT_NB);
-				PeopleUiUtils.refreshFormTextWidget(bankNbTxt, currAccount,
-						PeopleNames.PEOPLE_BANK_NB);
-				PeopleUiUtils.refreshFormTextWidget(bicTxt, currAccount,
-						PeopleNames.PEOPLE_BIC);
-				PeopleUiUtils.refreshFormTextWidget(ibanTxt, currAccount,
-						PeopleNames.PEOPLE_IBAN);}
+
+				if (!holderTxt.isDisposed()) {
+					PeopleUiUtils.refreshFormTextWidget(holderTxt, currAccount,
+							PeopleNames.PEOPLE_ACCOUNT_HOLDER);
+					PeopleUiUtils.refreshFormTextWidget(bankNameTxt,
+							currAccount, PeopleNames.PEOPLE_BANK_NAME);
+					PeopleUiUtils.refreshFormTextWidget(currencyTxt,
+							currAccount, PeopleNames.PEOPLE_CURRENCY);
+					PeopleUiUtils.refreshFormTextWidget(accNbTxt, currAccount,
+							PeopleNames.PEOPLE_ACCOUNT_NB);
+					PeopleUiUtils.refreshFormTextWidget(bankNbTxt, currAccount,
+							PeopleNames.PEOPLE_BANK_NB);
+					PeopleUiUtils.refreshFormTextWidget(bicTxt, currAccount,
+							PeopleNames.PEOPLE_BIC);
+					PeopleUiUtils.refreshFormTextWidget(ibanTxt, currAccount,
+							PeopleNames.PEOPLE_IBAN);
+				}
 			}
 		};
 
 		formPart.refresh();
-		
+
 		PeopleUiUtils.addModifyListener(holderTxt, currAccount,
 				PeopleNames.PEOPLE_ACCOUNT_HOLDER, formPart);
 		PeopleUiUtils.addModifyListener(bankNameTxt, currAccount,

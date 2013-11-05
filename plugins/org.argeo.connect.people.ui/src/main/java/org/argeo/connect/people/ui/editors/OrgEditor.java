@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.forms.AbstractFormPart;
 
 /**
  * Editor page that display an organisation with corresponding details
@@ -102,12 +103,13 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		// Branche Management
 		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		entityTK.populateTagPanel(tagsCmp, org, PeopleNames.PEOPLE_ORG_BRANCHES, "Enter a new branche");
+		entityTK.populateTagPanel(tagsCmp, org,
+				PeopleNames.PEOPLE_ORG_BRANCHES, "Enter a new branche");
 
 		// keep last update.
 		super.populateMainInfoDetails(parent);
 	}
-	
+
 	@Override
 	protected void populateTitleComposite(final Composite parent) {
 		try {
@@ -143,7 +145,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 					"Use default display name", SWT.CHECK);
 			defaultDisplayBtn.setToolTipText("Use Legal name by default");
 
-			final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
+			final AbstractFormPart editPart = new AbstractFormPart() {
 				// Update values on refresh
 				public void refresh() {
 					super.refresh();

@@ -21,12 +21,13 @@ public class FilmOverviewLabelProvider extends ColumnLabelProvider implements
 
 	private static final long serialVersionUID = 1L;
 	private boolean isSmallList;
-	private PeopleService peopleService;
+
+	// private PeopleService peopleService;
 
 	public FilmOverviewLabelProvider(boolean isSmallList,
 			PeopleService peopleService) {
 		this.isSmallList = isSmallList;
-		this.peopleService = peopleService;
+		// this.peopleService = peopleService;
 	}
 
 	@Override

@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.forms.AbstractFormPart;
 
 /**
  * Editor page that display a film with corresponding details
@@ -173,7 +174,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 			latinTitleTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 					| GridData.FILL_HORIZONTAL));
 
-			final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
+			final AbstractFormPart editPart = new AbstractFormPart() {
 				// Update values on refresh
 				public void refresh() {
 					super.refresh();

@@ -62,6 +62,7 @@ import org.eclipse.ui.services.ISourceProviderService;
  * is bound to it. It provides a header with some meta informations and a
  * <code>CTabFolder</code> to add tabs with further details.
  */
+@Deprecated
 public abstract class AbstractEntityCTabEditor_old extends EditorPart implements
 		IVersionedItemEditor {
 	// private final static Log log = LogFactory
