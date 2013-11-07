@@ -16,13 +16,6 @@
 		point="org.eclipse.ui.views">
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/person.gif"
-			id="org.argeo.connect.people.ui.peopleBrowserView"
-			name="Browser"
-			restorable="true">
-		</view>
-		<view
-			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/people.gif"
 			id="org.argeo.connect.people.ui.peopleDefaultView"
 			name="Search"
@@ -71,11 +64,6 @@
     	</command>
 		
 		<!-- Legacy: import big data --> 
-		<command
-			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
-			id="org.argeo.connect.people.ui.importPeople"
-			name="Import people">
-		</command>    
 		
 		<!-- Entity CRUD --> 
 		<command
@@ -216,15 +204,6 @@
 		point="org.eclipse.ui.menus">
 		<!-- Popup Menu for NetworkBrowserView-->
 		<!-- View Specific Menus --> 
-		<menuContribution
-        	locationURI="toolbar:org.argeo.connect.people.ui.peopleBrowserView">
-            <command
-            	commandId="org.argeo.connect.people.ui.importPeople"
-                icon="icons/people.gif"
-                label="Import"
-                tooltip="Import People">
-            </command>
-        </menuContribution>
 		<!-- Generic commands provided by the people app --> 
 		<menuContribution
 			locationURI="toolbar:org.argeo.security.ui.rap.userToolbar?after=org.eclipse.ui.file.saveAll"> 

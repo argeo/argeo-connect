@@ -37,7 +37,8 @@
 // Some free-form text comments might be added after a semicolon separator
 - people:gender (STRING)
 // Positions in the various organisations this person is attached to
-+ people:jobs (nt:unstructured) = nt:unstructured m a
++ people:jobs (nt:unstructured)
+//+ people:jobs (nt:unstructured) = nt:unstructured m a
 
 //
 // ORGANISATION
@@ -150,7 +151,8 @@ mixin
 //
 [people:contactable] 
 mixin
-+ people:contacts (nt:unstructured) =nt:unstructured m a 
++ people:contacts (nt:unstructured)
+//+ people:contacts (nt:unstructured) =nt:unstructured m a 
 
 // 
 // CONTACTS
