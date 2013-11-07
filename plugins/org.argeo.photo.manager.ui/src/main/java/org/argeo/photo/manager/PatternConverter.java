@@ -15,9 +15,11 @@ public class PatternConverter implements PathConverter {
 		conversionPatterns = new Vector<Patterns>();
 		// TODO: add comparator for pattern priorities
 		conversionPatterns.add(new Patterns("dsc_{1,number,integer}.nef",
-				"{0}-{1,number,000}.nef"));
+				"nef/{0}-{1,number,000}.nef"));
 		conversionPatterns.add(new Patterns("dsc_{1,number,integer}.jpg",
 				"jpeg/{0}-{1,number,000}.jpg"));
+		conversionPatterns.add(new Patterns("dsc_{1,number,integer}.mov",
+				"mov/{0}-{1,number,000}.mov"));
 	}
 
 	public PathConverterResult convert(Set<String> paths) {
