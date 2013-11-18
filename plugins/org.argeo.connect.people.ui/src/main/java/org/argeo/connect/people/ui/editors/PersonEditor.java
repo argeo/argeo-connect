@@ -15,6 +15,7 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.providers.PersonOverviewLabelProvider;
+import org.argeo.connect.people.ui.toolkits.ContactToolkit;
 import org.argeo.connect.people.ui.toolkits.EntityToolkit;
 import org.argeo.connect.people.ui.toolkits.HistoryToolkit;
 import org.argeo.connect.people.ui.toolkits.ListToolkit;
@@ -57,6 +58,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 
 	// Usefull toolkits
 	private EntityToolkit entityTK;
+	private ContactToolkit contactTK;
 	private ListToolkit listTK;
 	private HistoryToolkit historyTK;
 
@@ -82,6 +84,8 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 	@Override
 	protected void createToolkits() {
 		entityTK = new EntityToolkit(toolkit, getManagedForm());
+		contactTK = new ContactToolkit(toolkit, getManagedForm());
+
 		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
 				getPeopleUiService());
 		historyTK = new HistoryToolkit(getPeopleService(), toolkit,
@@ -129,7 +133,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Contact details", PeopleUiConstants.PANEL_CONTACT_DETAILS,
 				tooltip);
-		entityTK.createContactPanelWithNotes(innerPannel, person);
+		contactTK.createContactPanelWithNotes(innerPannel, person);
 
 		// Jobs panel
 		tooltip = "Organisations linked to "

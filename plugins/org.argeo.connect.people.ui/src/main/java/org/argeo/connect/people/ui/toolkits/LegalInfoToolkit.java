@@ -58,10 +58,6 @@ public class LegalInfoToolkit {
 		payAccCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		populateBankAccountGroup(payAccCmp);
 
-		Composite testContactCmp = toolkit.createComposite(parent);
-		testContactCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		ContactToolkit contactTK = new ContactToolkit(toolkit, form);
-		contactTK.populateDisplayContactPanel(testContactCmp, entity);
 	}
 
 	private void populateAdminInfoCmp(Composite parent) {

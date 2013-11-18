@@ -12,7 +12,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
@@ -55,9 +54,11 @@ public class ContactAddressComposite extends ContactComposite {
 				if (CommonsJcrUtils.nodeStillExists(contactNode)) {
 					final AbstractFormPart afp = this;
 					populateAdresseCmp(parent, contactNode, afp);
-					Composite cmp2 = parent.getParent();
-					cmp2.pack();
-					cmp2.getParent().layout(true);
+//					Composite cmp2 = parent.getParent();
+//					cmp2.pack();
+//					cmp2.layout(true);
+//					cmp2.getParent().layout(true);
+//					cmp2.getParent().getParent().layout(true);
 				}
 			}
 		};
@@ -73,8 +74,7 @@ public class ContactAddressComposite extends ContactComposite {
 				.isNodeCheckedOutByMe(contactNode);
 
 		for (Control control : parent.getChildren()) {
-			if (!(control instanceof Button))
-				control.dispose();
+			control.dispose();
 		}
 
 		if (isCheckedOut) {
@@ -134,7 +134,7 @@ public class ContactAddressComposite extends ContactComposite {
 			PeopleUiUtils.addTxtModifyListener(part, geoPointTxt, contactNode,
 					PeopleNames.PEOPLE_GEOPOINT, PropertyType.STRING);
 		}
-		parent.layout();
+		parent.pack(true);
 	}
 
 	private void addAddressTxtModifyListener(final AbstractFormPart part,

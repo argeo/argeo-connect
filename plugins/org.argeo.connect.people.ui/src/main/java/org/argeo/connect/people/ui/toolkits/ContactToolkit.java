@@ -51,34 +51,40 @@ public class ContactToolkit {
 		this.form = form;
 	}
 
-	public void createContactPanelWithNotes(Composite panel, final Node entity) {
-		panel.setLayout(new GridLayout(2, true));
+	public void createContactPanelWithNotes(Composite parent, final Node entity) {
+		parent.setLayout(new GridLayout(2, true));
 
-		final ScrolledComposite contactListCmp = new ScrolledComposite(panel,
-				SWT.NO_FOCUS | SWT.V_SCROLL | SWT.H_SCROLL);
+		// Scrolled list of existing contacts
+		ScrolledComposite contactListCmp = new ScrolledComposite(parent,
+				SWT.NO_FOCUS | SWT.H_SCROLL | SWT.V_SCROLL);
 		contactListCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				true));
+		contactListCmp.setMinSize(350, 100);
+		contactListCmp.setExpandHorizontal(true);
+		contactListCmp.setExpandVertical(true);
 		contactListCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-
-		final Composite innerCmp = new Composite(contactListCmp, SWT.NO_FOCUS);
+		Composite innerCmp = new Composite(contactListCmp, SWT.NO_FOCUS);
 		innerCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		populateDisplayContactPanel(innerCmp, entity);
 		contactListCmp.setContent(innerCmp);
 
-		final Composite rightCmp = toolkit.createComposite(panel, SWT.NO_FOCUS);
+		// notes about current contact
+		Composite rightCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, false, true);
 		gd.widthHint = 200;
 		gd.minimumWidth = 200;
 		rightCmp.setLayoutData(gd);
-
 		populateNotePanel(rightCmp, entity);
 
-		final Composite newContactCmp = toolkit.createComposite(panel,
+		// Add contact tool bar.
+		final Composite newContactCmp = toolkit.createComposite(parent,
 				SWT.NO_FOCUS);
 		gd = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
 		gd.horizontalSpan = 2;
 		newContactCmp.setLayoutData(gd);
 		populateAddContactPanel(newContactCmp, entity);
+
+		parent.layout();
 	}
 
 	/**
@@ -102,9 +108,10 @@ public class ContactToolkit {
 	}
 
 	/** Manage display and update of existing contact Nodes */
-	public void populateDisplayContactPanel(final Composite panel,
+	public void populateDisplayContactPanel(final Composite parent,
 			final Node entity) {
-		panel.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+
 		final Map<String, Composite> contactCmps = new HashMap<String, Composite>();
 		AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {
@@ -121,11 +128,11 @@ public class ContactToolkit {
 							Composite currCmp = null;
 							if (CommonsJcrUtils.isNodeType(currNode,
 									PeopleTypes.PEOPLE_ADDRESS))
-								currCmp = new ContactAddressComposite(panel,
+								currCmp = new ContactAddressComposite(parent,
 										SWT.NO_FOCUS, toolkit, form, currNode,
 										entity);
 							else
-								currCmp = new ContactComposite(panel,
+								currCmp = new ContactComposite(parent,
 										SWT.NO_FOCUS, toolkit, form, currNode,
 										entity);
 							contactCmps.put(currJcrId, currCmp);
@@ -143,7 +150,11 @@ public class ContactToolkit {
 							currCmp.dispose();
 						}
 					}
-					panel.layout();
+					parent.pack(true);
+					parent.getParent().pack(true);
+					parent.layout();
+					parent.getParent().layout();
+
 				} catch (RepositoryException e) {
 					throw new PeopleException(
 							"Cannot refresh contact panel formPart", e);
@@ -201,7 +212,6 @@ public class ContactToolkit {
 		addContactCmb.setItems(ContactValueCatalogs.ARRAY_CONTACT_TYPES);
 		// Add a default value
 		addContactCmb.add("Add a contact", 0);
-		addContactCmb.select(0);
 
 		final Composite editPanel = toolkit.createComposite(parent,
 				SWT.NO_FOCUS);
@@ -210,6 +220,15 @@ public class ContactToolkit {
 		editPanel.setLayoutData(gd);
 
 		editPanel.setVisible(false);
+
+		if (editPanel.getLayout() == null) {
+			RowLayout layout = new RowLayout();
+			// Optionally set layout fields.
+			layout.wrap = true;
+			layout.marginTop = 0;
+			// Set the layout into the composite.
+			editPanel.setLayout(layout);
+		}
 
 		AbstractFormPart editPart = new AbstractFormPart() {
 			// Update values on refresh
@@ -231,9 +250,14 @@ public class ContactToolkit {
 				try {
 
 					int index = addContactCmb.getSelectionIndex();
-					if (index == 0)
+					if (index == 0) {
 						editPanel.setVisible(false);
-					else {
+						// remove all controls
+						for (Control ctl : editPanel.getChildren()) {
+							ctl.dispose();
+						}
+						toolkit.createLabel(editPanel, "");
+					} else {
 						editPanel.setVisible(true);
 						String selected = addContactCmb.getItem(index);
 						Control first;
@@ -252,6 +276,7 @@ public class ContactToolkit {
 							"Unable to refresh add contact panel", e1);
 				}
 				editPanel.pack();
+				editPanel.layout(true);
 				editPanel.getParent().getParent().layout();
 			}
 
@@ -259,6 +284,9 @@ public class ContactToolkit {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
+
+		// set default selection after everything is initialized to ease layout
+		addContactCmb.select(0);
 
 	}
 
@@ -268,14 +296,14 @@ public class ContactToolkit {
 			throws RepositoryException {
 		RowData rd;
 
-		if (parent.getLayout() == null) {
-			RowLayout layout = new RowLayout();
-			// Optionally set layout fields.
-			layout.wrap = true;
-			layout.marginTop = 0;
-			// Set the layout into the composite.
-			parent.setLayout(layout);
-		}
+		// if (parent.getLayout() == null) {
+		// RowLayout layout = new RowLayout();
+		// // Optionally set layout fields.
+		// layout.wrap = true;
+		// layout.marginTop = 0;
+		// // Set the layout into the composite.
+		// parent.setLayout(layout);
+		// }
 
 		// remove all controls
 		for (Control ctl : parent.getChildren()) {

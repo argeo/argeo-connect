@@ -69,6 +69,8 @@ public class ContactComposite extends Composite {
 
 		// buttons
 		Composite buttCmp = toolkit.createComposite(parent);
+		buttCmp.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
+
 		RowLayout rl = new RowLayout(SWT.WRAP);
 		rl.type = SWT.HORIZONTAL;
 		buttCmp.setLayout(rl);
