@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.jcr.InvalidItemStateException;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
@@ -34,6 +35,18 @@ public class CommonsJcrUtils {
 			return repository.login();
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to login", re);
+		}
+	}
+
+	/**
+	 * Call {@link Node#isNodetype(String nodeTypeName)} without exceptions
+	 */
+	public static boolean isNodeType(Node node, String nodeTypeName) {
+		try {
+			return node.isNodeType(nodeTypeName);
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to test NodeType " + nodeTypeName
+					+ " for node " + node, re);
 		}
 	}
 
@@ -92,6 +105,24 @@ public class CommonsJcrUtils {
 	 */
 	public static boolean isNodeCheckedOutByMe(Node node) {
 		return isNodeCheckedOut(node);
+	}
+
+	/**
+	 * works around missing method to test if a node has been removed from
+	 * existing session
+	 * 
+	 * @param node
+	 * @return
+	 */
+	public static boolean nodeStillExists(Node node) {
+		try {
+			node.getPath();
+		} catch (InvalidItemStateException iise) {
+			return false;
+		} catch (RepositoryException re) {
+			throw new PeopleException("Error while testing node existence", re);
+		}
+		return true;
 	}
 
 	/**

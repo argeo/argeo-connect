@@ -13,6 +13,10 @@ import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
+/**
+ * Simple composite widget to display and edit information about a bank account
+ * 
+ */
 public class BankAccountComposite extends Composite {
 	private static final long serialVersionUID = -3303030374442774568L;
 

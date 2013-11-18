@@ -18,6 +18,8 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.film.FilmTypes;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -31,6 +33,7 @@ import org.springframework.security.context.SecurityContextHolder;
 
 /** Concrete access to people services */
 public class PeopleServiceImpl implements PeopleService {
+	private final static Log log = LogFactory.getLog(PeopleServiceImpl.class);
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
@@ -49,6 +52,7 @@ public class PeopleServiceImpl implements PeopleService {
 	 */
 	public void init() {
 		// Do nothing
+		log.info("People's backend has been initialized");
 	}
 
 	/** Clean shutdown of the backend. */

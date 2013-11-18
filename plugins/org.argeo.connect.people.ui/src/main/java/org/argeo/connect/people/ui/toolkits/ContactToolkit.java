@@ -3,12 +3,10 @@ package org.argeo.connect.people.ui.toolkits;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.jcr.InvalidItemStateException;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
-import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
@@ -16,20 +14,13 @@ import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.ContactImages;
-import org.argeo.connect.people.ui.JcrUiUtils;
-import org.argeo.connect.people.ui.PeopleImages;
-import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.connect.people.ui.composites.ContactAddressComposite;
 import org.argeo.connect.people.ui.composites.ContactComposite;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -127,9 +118,16 @@ public class ContactToolkit {
 						Node currNode = ni.nextNode();
 						String currJcrId = currNode.getIdentifier();
 						if (!contactCmps.containsKey(currJcrId)) {
-							Composite currCmp = new ContactComposite(panel,
-									SWT.NO_FOCUS, toolkit, form, currNode,
-									entity);
+							Composite currCmp = null;
+							if (CommonsJcrUtils.isNodeType(currNode,
+									PeopleTypes.PEOPLE_ADDRESS))
+								currCmp = new ContactAddressComposite(panel,
+										SWT.NO_FOCUS, toolkit, form, currNode,
+										entity);
+							else
+								currCmp = new ContactComposite(panel,
+										SWT.NO_FOCUS, toolkit, form, currNode,
+										entity);
 							contactCmps.put(currJcrId, currCmp);
 						}
 					}
@@ -155,329 +153,6 @@ public class ContactToolkit {
 		formPart.refresh();
 		formPart.initialize(form);
 		form.addPart(formPart);
-	}
-
-	private void populateEditableMailCmp(final Composite parent,
-			final Node contactNode, final Node parVersionableNode)
-			throws RepositoryException {
-		RowLayout rl = new RowLayout(SWT.WRAP);
-		rl.type = SWT.HORIZONTAL;
-		parent.setLayout(rl);
-		// String type = CommonsJcrUtils.getStringValue(contactNode,
-		// PeopleNames.PEOPLE_CONTACT_LABEL);
-		// if (CommonsJcrUtils.checkNotEmptyString(type))
-		// type = CommonsJcrUtils.get(contactNode,
-		// PeopleNames.PEOPLE_CONTACT_CATEGORY);
-
-		// final Button categoryBtn =
-		createCategoryButton(parent, contactNode);
-		final Button primaryBtn = createPrimaryButton(parent);
-		final Button deleteBtn = createDeleteButton(parent);
-
-		final Text valueTxt = createAddressTxt(
-				!contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS), parent,
-				"Value", 150);
-		final Text labelTxt = createAddressTxt(true, parent, "", 120);
-
-		final AbstractFormPart sPart = new AbstractFormPart() {
-
-			@Override
-			public void commit(boolean onSave) {
-				try {
-					if (onSave
-							&& contactNode
-									.isNodeType(PeopleTypes.PEOPLE_ADDRESS))
-						PeopleJcrUtils.updateDisplayAddress(contactNode);
-					super.commit(onSave);
-				} catch (RepositoryException e) {
-					throw new PeopleException(
-							"unable to update display address", e);
-				}
-			}
-
-			public void refresh() {
-				super.refresh();
-				try {
-					boolean isCheckedOut = CommonsJcrUtils
-							.isNodeCheckedOutByMe(parVersionableNode);
-					boolean isPrimary = contactNode.getProperty(
-							PeopleNames.PEOPLE_IS_PRIMARY).getBoolean();
-					if (isPrimary)
-						primaryBtn.setImage(PeopleImages.PRIMARY_BTN);
-					else
-						primaryBtn.setImage(PeopleImages.PRIMARY_NOT_BTN);
-
-					final AbstractFormPart afp = this;
-					if (contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
-						populateAdresseCmp(parent, contactNode, afp);
-					} else {
-						String label = CommonsJcrUtils.get(contactNode,
-								PeopleNames.PEOPLE_CONTACT_LABEL);
-						labelTxt.setText(label);
-						labelTxt.setEnabled(isCheckedOut);
-						labelTxt.setMessage(isCheckedOut ? "Label" : "");
-						valueTxt.setText(contactNode.getProperty(
-								PeopleNames.PEOPLE_CONTACT_VALUE).getString());
-						valueTxt.setEnabled(isCheckedOut);
-						String nature = CommonsJcrUtils.get(contactNode,
-								PeopleNames.PEOPLE_CONTACT_LABEL);
-						String category = CommonsJcrUtils.get(contactNode,
-								PeopleNames.PEOPLE_CONTACT_CATEGORY);
-						String toolTip = nature + " " + category;
-						if (CommonsJcrUtils.checkNotEmptyString(toolTip))
-							valueTxt.setToolTipText(toolTip);
-					}
-					Composite cmp2 = parent.getParent();
-					cmp2.pack();
-					cmp2.getParent().layout(true);
-				} catch (Exception e) {
-					if (e instanceof InvalidItemStateException)
-						// TODO clean: this exception normally means node
-						// has already been removed.
-						;
-					else
-						throw new PeopleException(
-								"unexpected error while refreshing", e);
-				}
-			}
-		};
-
-		if (!contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
-			PeopleUiUtils.addTxtModifyListener(sPart, valueTxt, contactNode,
-					PeopleNames.PEOPLE_CONTACT_VALUE, PropertyType.STRING);
-			PeopleUiUtils.addTxtModifyListener(sPart, labelTxt, contactNode,
-					PeopleNames.PEOPLE_CONTACT_LABEL, PropertyType.STRING);
-		}
-		sPart.refresh();
-		sPart.initialize(form);
-		form.addPart(sPart);
-		configureDeleteButton(deleteBtn, contactNode, parVersionableNode);
-		configurePrimaryButton(primaryBtn, contactNode, parVersionableNode);
-	}
-
-	private void populateAdresseCmp(Composite parent, Node contactNode,
-			AbstractFormPart part) throws RepositoryException {
-		boolean isCheckedOut = CommonsJcrUtils
-				.isNodeCheckedOutByMe(contactNode);
-
-		for (Control control : parent.getChildren()) {
-			if (!(control instanceof Button))
-				control.dispose();
-		}
-
-		if (isCheckedOut) {
-			// specific for addresses
-			final Text streetTxt = createAddressTxt(
-					contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS), parent,
-					"Street", 0);
-			final Text street2Txt = createAddressTxt(
-					contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS), parent,
-					"Street Complement", 0);
-			final Text zipTxt = createAddressTxt(
-					contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS), parent,
-					"Zip code", 0);
-			final Text cityTxt = createAddressTxt(
-					contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS), parent,
-					"City", 0);
-			final Text stateTxt = createAddressTxt(
-					contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS), parent,
-					"State", 0);
-			final Text countryTxt = createAddressTxt(
-					contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS), parent,
-					"Country", 0);
-			final Text geoPointTxt = createAddressTxt(
-					contactNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS), parent,
-					"Geopoint", 0);
-
-			streetTxt.setText(CommonsJcrUtils.get(contactNode,
-					PeopleNames.PEOPLE_STREET));
-			streetTxt.setEnabled(isCheckedOut);
-			streetTxt.setMessage(isCheckedOut ? "Street" : "");
-			street2Txt.setText(CommonsJcrUtils.get(contactNode,
-					PeopleNames.PEOPLE_STREET_COMPLEMENT));
-			street2Txt.setEnabled(isCheckedOut);
-			street2Txt.setMessage(isCheckedOut ? "Street complement" : "");
-			zipTxt.setText(CommonsJcrUtils.get(contactNode,
-					PeopleNames.PEOPLE_ZIP_CODE));
-			zipTxt.setEnabled(isCheckedOut);
-			zipTxt.setMessage(isCheckedOut ? "Zip code" : "");
-			cityTxt.setText(CommonsJcrUtils.get(contactNode,
-					PeopleNames.PEOPLE_CITY));
-			cityTxt.setEnabled(isCheckedOut);
-			cityTxt.setMessage(isCheckedOut ? "City" : "");
-			stateTxt.setText(CommonsJcrUtils.get(contactNode,
-					PeopleNames.PEOPLE_STATE));
-			stateTxt.setEnabled(isCheckedOut);
-			stateTxt.setMessage(isCheckedOut ? "State" : "");
-			countryTxt.setText(CommonsJcrUtils.get(contactNode,
-					PeopleNames.PEOPLE_COUNTRY));
-			countryTxt.setEnabled(isCheckedOut);
-			countryTxt.setMessage(isCheckedOut ? "Country" : "");
-			geoPointTxt.setText(CommonsJcrUtils.get(contactNode,
-					PeopleNames.PEOPLE_GEOPOINT));
-			geoPointTxt.setEnabled(isCheckedOut);
-			geoPointTxt.setMessage(isCheckedOut ? "Geo point" : "");
-
-			addAddressTxtModifyListener(part, streetTxt, contactNode,
-					PeopleNames.PEOPLE_STREET, PropertyType.STRING);
-			addAddressTxtModifyListener(part, street2Txt, contactNode,
-					PeopleNames.PEOPLE_STREET_COMPLEMENT, PropertyType.STRING);
-			addAddressTxtModifyListener(part, zipTxt, contactNode,
-					PeopleNames.PEOPLE_ZIP_CODE, PropertyType.STRING);
-			addAddressTxtModifyListener(part, cityTxt, contactNode,
-					PeopleNames.PEOPLE_CITY, PropertyType.STRING);
-			addAddressTxtModifyListener(part, stateTxt, contactNode,
-					PeopleNames.PEOPLE_STATE, PropertyType.STRING);
-			addAddressTxtModifyListener(part, countryTxt, contactNode,
-					PeopleNames.PEOPLE_COUNTRY, PropertyType.STRING);
-			PeopleUiUtils.addTxtModifyListener(part, geoPointTxt, contactNode,
-					PeopleNames.PEOPLE_GEOPOINT, PropertyType.STRING);
-		} else {
-			// READ ONLY
-			Text text = toolkit.createText(parent, null, SWT.BORDER);
-			RowData rd = new RowData();
-			text.setLayoutData(rd);
-			text.setText(CommonsJcrUtils.get(contactNode,
-					PeopleNames.PEOPLE_CONTACT_VALUE));
-			text.setEnabled(false);
-			// text.pack();
-			// text.getParent().getParent().layout(true);
-		}
-		parent.layout();
-	}
-
-	private void addAddressTxtModifyListener(final AbstractFormPart part,
-			final Text text, final Node entity, final String propName,
-			final int propType) {
-		text.addModifyListener(new ModifyListener() {
-			private static final long serialVersionUID = 1549789407363632491L;
-
-			@Override
-			public void modifyText(ModifyEvent event) {
-				if (JcrUiUtils.setJcrProperty(entity, propName, propType,
-						text.getText())) {
-					part.markDirty();
-					PeopleJcrUtils.updateDisplayAddress(entity);
-				}
-			}
-		});
-	}
-
-	private Button createCategoryButton(Composite parent, Node contactNode) {
-		Button btn = new Button(parent, SWT.FLAT);
-		btn.setData(RWT.CUSTOM_VARIANT, PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
-
-		try {
-			String category = null;
-			if (contactNode.hasProperty(PeopleNames.PEOPLE_CONTACT_CATEGORY))
-				category = CommonsJcrUtils.get(contactNode,
-						PeopleNames.PEOPLE_CONTACT_CATEGORY);
-			String nature = null;
-			if (contactNode.hasProperty(PeopleNames.PEOPLE_CONTACT_NATURE))
-				nature = CommonsJcrUtils.get(contactNode,
-						PeopleNames.PEOPLE_CONTACT_NATURE);
-
-			String contactType = contactNode.getPrimaryNodeType().getName();
-			String entityType = contactNode.getParent().getParent()
-					.getPrimaryNodeType().getName();
-
-			btn.setImage(ContactImages.getImage(entityType, contactType,
-					nature, category));
-
-			RowData rd = new RowData();
-			rd.height = 16;
-			rd.width = 16;
-			btn.setLayoutData(rd);
-			return btn;
-		} catch (RepositoryException re) {
-			throw new PeopleException("unable to get image for contact");
-		}
-	}
-
-	private Button createDeleteButton(Composite parent) {
-		Button btn = new Button(parent, SWT.FLAT);
-		btn.setData(RWT.CUSTOM_VARIANT, PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
-		btn.setImage(PeopleImages.DELETE_BTN);
-		RowData rd = new RowData();
-		rd.height = 16;
-		rd.width = 16;
-		btn.setLayoutData(rd);
-		return btn;
-	}
-
-	private Button createPrimaryButton(Composite parent) {
-		Button btn = new Button(parent, SWT.FLAT);
-		btn.setData(RWT.CUSTOM_VARIANT, PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
-		btn.setImage(PeopleImages.PRIMARY_NOT_BTN);
-		RowData rd = new RowData();
-		rd.height = 16;
-		rd.width = 16;
-		btn.setLayoutData(rd);
-		return btn;
-	}
-
-	private void configureDeleteButton(Button btn, final Node node,
-			final Node parNode) { // , final AbstractFormPart
-									// genericContactFormPart
-		btn.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(final SelectionEvent event) {
-				try {
-					boolean wasCheckedOut = CommonsJcrUtils
-							.isNodeCheckedOutByMe(parNode);
-					if (!wasCheckedOut)
-						CommonsJcrUtils.checkout(parNode);
-					node.remove();
-					if (wasCheckedOut)
-						parNode.getSession().save();
-					else
-						CommonsJcrUtils.saveAndCheckin(parNode);
-				} catch (RepositoryException e) {
-					throw new PeopleException("unable to initialise deletion",
-							e);
-				}
-				for (IFormPart part : form.getParts()) {
-					((AbstractFormPart) part).markStale();
-					part.refresh();
-				}
-			}
-		});
-	}
-
-	private void configurePrimaryButton(Button btn, final Node node,
-			final Node parNode) {
-		btn.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(final SelectionEvent event) {
-				try {
-					boolean wasCheckedOut = CommonsJcrUtils
-							.isNodeCheckedOutByMe(parNode);
-					if (!wasCheckedOut)
-						CommonsJcrUtils.checkout(parNode);
-					boolean wasPrimary = false;
-					if (node.hasProperty(PeopleNames.PEOPLE_IS_PRIMARY)
-							&& node.getProperty(PeopleNames.PEOPLE_IS_PRIMARY)
-									.getBoolean())
-						wasPrimary = true;
-					PeopleJcrUtils.markAsPrimary(node, !wasPrimary);
-					if (wasCheckedOut)
-						parNode.getSession().save();
-					else
-						CommonsJcrUtils.saveAndCheckin(parNode);
-					for (IFormPart part : form.getParts()) {
-						((AbstractFormPart) part).markStale();
-						part.refresh();
-					}
-				} catch (RepositoryException e) {
-					throw new PeopleException("unable to initialise deletion",
-							e);
-				}
-			}
-		});
 	}
 
 	public void populateNotePanel(final Composite parent, final Node entity) {
