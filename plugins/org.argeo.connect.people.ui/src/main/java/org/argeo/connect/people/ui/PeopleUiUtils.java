@@ -51,7 +51,7 @@ public class PeopleUiUtils {
 	 * Shortcut to refresh the value of a <code>Text</code> given a Node and a
 	 * property Name
 	 */
-	public static String refreshTextValue(Text text, Node entity,
+	public static String refreshTextWidgetValue(Text text, Node entity,
 			String propName) {
 		String tmpStr = CommonsJcrUtils.getStringValue(entity, propName);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
@@ -69,6 +69,20 @@ public class PeopleUiUtils {
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
 			text.setText(tmpStr);
 		text.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
+		return tmpStr;
+	}
+
+	/**
+	 * Shortcut to refresh a <code>Text</code> widget given a Node in a form and
+	 * a property Name. Also manages its enable state and set a default message
+	 * if corresponding Text value is empty
+	 */
+	public static String refreshFormTextWidget(Text text, Node entity,
+			String propName, String defaultMsg) {
+		String tmpStr = refreshFormTextWidget(text, entity, propName);
+		if (CommonsJcrUtils.isEmptyString(tmpStr)
+				&& CommonsJcrUtils.checkNotEmptyString(defaultMsg))
+			text.setMessage(defaultMsg);
 		return tmpStr;
 	}
 
@@ -203,7 +217,8 @@ public class PeopleUiUtils {
 				| SWT.LEFT);
 		text.setMessage(msg);
 		text.setToolTipText(toolTip);
-		text.setLayoutData(new RowData(width, SWT.DEFAULT));
+		text.setLayoutData(width == 0 ? new RowData() : new RowData(width,
+				SWT.DEFAULT));
 		return text;
 	}
 

@@ -156,11 +156,11 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 							PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME);
 
 					if (useDefault) {
-						PeopleUiUtils.refreshTextValue(displayNameTxt, org,
+						PeopleUiUtils.refreshTextWidgetValue(displayNameTxt, org,
 								PeopleNames.PEOPLE_LEGAL_NAME);
 						displayNameTxt.setEnabled(false);
 					} else {
-						PeopleUiUtils.refreshTextValue(displayNameTxt, org,
+						PeopleUiUtils.refreshTextWidgetValue(displayNameTxt, org,
 								Property.JCR_TITLE);
 						displayNameTxt.setEnabled(true);
 					}

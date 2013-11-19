@@ -244,7 +244,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 			public void refresh() { // update display value
 				super.refresh();
 				// EDIT PART
-				PeopleUiUtils.refreshTextValue(displayNameTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(displayNameTxt, person,
 						Property.JCR_TITLE);
 
 				try {
@@ -259,25 +259,25 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 							e);
 				}
 
-				PeopleUiUtils.refreshTextValue(salutationTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(salutationTxt, person,
 						PeopleNames.PEOPLE_SALUTATION);
-				PeopleUiUtils.refreshTextValue(firstNameTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(firstNameTxt, person,
 						PeopleNames.PEOPLE_FIRST_NAME);
-				PeopleUiUtils.refreshTextValue(middleNameTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(middleNameTxt, person,
 						PeopleNames.PEOPLE_MIDDLE_NAME);
-				PeopleUiUtils.refreshTextValue(lastNameTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(lastNameTxt, person,
 						PeopleNames.PEOPLE_LAST_NAME);
-				PeopleUiUtils.refreshTextValue(nickNameTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(nickNameTxt, person,
 						PeopleNames.PEOPLE_NICKNAME);
 				// PeopleUiUtils.refreshTextValue(genderTxt, person,
 				// PeopleNames.PEOPLE_GENDER);
-				PeopleUiUtils.refreshTextValue(maidenNameTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(maidenNameTxt, person,
 						PeopleNames.PEOPLE_MAIDEN_NAME);
-				PeopleUiUtils.refreshTextValue(titleTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(titleTxt, person,
 						PeopleNames.PEOPLE_PERSON_TITLE);
-				PeopleUiUtils.refreshTextValue(suffixTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(suffixTxt, person,
 						PeopleNames.PEOPLE_NAME_SUFFIX);
-				PeopleUiUtils.refreshTextValue(latinPhoneticTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(latinPhoneticTxt, person,
 						PeopleNames.PEOPLE_LATIN_PHONETIC_SPELLING);
 
 				// READ ONLY PART

@@ -121,9 +121,9 @@ public class GroupEditor extends AbstractEntityCTabEditor {
 				public void refresh() {
 					super.refresh();
 					// EDIT PART
-					PeopleUiUtils.refreshTextValue(titleTxt, group,
+					PeopleUiUtils.refreshTextWidgetValue(titleTxt, group,
 							Property.JCR_TITLE);
-					PeopleUiUtils.refreshTextValue(descTxt, group,
+					PeopleUiUtils.refreshTextWidgetValue(descTxt, group,
 							Property.JCR_DESCRIPTION);
 
 					// READ ONLY PART

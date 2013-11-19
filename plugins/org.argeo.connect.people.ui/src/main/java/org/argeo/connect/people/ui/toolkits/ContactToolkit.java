@@ -21,6 +21,7 @@ import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -59,9 +60,9 @@ public class ContactToolkit {
 				SWT.NO_FOCUS | SWT.H_SCROLL | SWT.V_SCROLL);
 		contactListCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				true));
-		contactListCmp.setMinSize(350, 100);
-		contactListCmp.setExpandHorizontal(true);
-		contactListCmp.setExpandVertical(true);
+		// contactListCmp.setMinSize(350, 100);
+		contactListCmp.setExpandHorizontal(false);
+		contactListCmp.setExpandVertical(false);
 		contactListCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 		Composite innerCmp = new Composite(contactListCmp, SWT.NO_FOCUS);
 		innerCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -152,7 +153,7 @@ public class ContactToolkit {
 					}
 					parent.pack(true);
 					parent.getParent().pack(true);
-					parent.layout();
+					// parent.layout();
 					parent.getParent().layout();
 
 				} catch (RepositoryException e) {
@@ -202,33 +203,37 @@ public class ContactToolkit {
 
 	/** Populate a composite that enable addition of a new contact */
 	public void populateAddContactPanel(Composite parent, final Node entity) {
-		parent.setLayout(new GridLayout(2, false));
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder(2)); // new
+																// GridLayout(2,
+																// false));
 
 		final Combo addContactCmb = new Combo(parent, SWT.NONE | SWT.READ_ONLY
 				| SWT.NO_FOCUS);
-		GridData gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
+		GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		gd.widthHint = 100;
 		addContactCmb.setLayoutData(gd);
 		addContactCmb.setItems(ContactValueCatalogs.ARRAY_CONTACT_TYPES);
-		// Add a default value
+		// default value
 		addContactCmb.add("Add a contact", 0);
+
+		// Nature (work or private) is only for persons
+		final Combo natureCmb = CommonsJcrUtils.isNodeType(entity,
+				PeopleTypes.PEOPLE_PERSON) ? new Combo(parent, SWT.NONE) : null;
 
 		final Composite editPanel = toolkit.createComposite(parent,
 				SWT.NO_FOCUS);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.grabExcessHorizontalSpace = true;
-		editPanel.setLayoutData(gd);
+		editPanel
+				.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		// editPanel.setVisible(false);
 
-		editPanel.setVisible(false);
-
-		if (editPanel.getLayout() == null) {
-			RowLayout layout = new RowLayout();
-			// Optionally set layout fields.
-			layout.wrap = true;
-			layout.marginTop = 0;
-			// Set the layout into the composite.
-			editPanel.setLayout(layout);
-		}
+		// if (editPanel.getLayout() == null) {
+		RowLayout layout = new RowLayout();
+		// Optionally set layout fields.
+		layout.wrap = true;
+		layout.marginTop = layout.marginBottom = 0;
+		// Set the layout into the composite.
+		editPanel.setLayout(layout);
+		// }
 
 		AbstractFormPart editPart = new AbstractFormPart() {
 			// Update values on refresh
@@ -241,78 +246,91 @@ public class ContactToolkit {
 
 		editPart.initialize(form);
 		form.addPart(editPart);
-		// show the edit new contact panel when selection change
-		addContactCmb.addSelectionListener(new SelectionListener() {
-			private static final long serialVersionUID = 1L;
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try {
+		// Listeners
+		addContactCmb.addSelectionListener(new MySelectionAdapter(entity,
+				editPanel, addContactCmb, natureCmb));
 
-					int index = addContactCmb.getSelectionIndex();
-					if (index == 0) {
-						editPanel.setVisible(false);
-						// remove all controls
-						for (Control ctl : editPanel.getChildren()) {
-							ctl.dispose();
-						}
-						toolkit.createLabel(editPanel, "");
-					} else {
-						editPanel.setVisible(true);
-						String selected = addContactCmb.getItem(index);
-						Control first;
-						first = populateNewContactComposite(
-								editPanel,
-								entity,
-								ContactValueCatalogs
-										.getKeyByValue(
-												ContactValueCatalogs.MAPS_CONTACT_TYPES,
-												selected));
-						if (first != null)
-							first.setFocus();
-					}
-				} catch (RepositoryException e1) {
-					throw new PeopleException(
-							"Unable to refresh add contact panel", e1);
+		if (natureCmb != null) {
+			natureCmb.setItems(ContactValueCatalogs.ARRAY_CONTACT_NATURES);
+			natureCmb.select(0);
+			natureCmb.addSelectionListener(new MySelectionAdapter(entity,
+					editPanel, addContactCmb, natureCmb));
+		}
+
+		//
+		// // set default selection after everything is initialized to ease
+		// layout
+		resetAddContactEditPanel(editPanel, addContactCmb);
+	}
+
+	private class MySelectionAdapter extends SelectionAdapter {
+		private static final long serialVersionUID = 1L;
+		private final Node entity;
+		private final Composite editPanel;
+		private final Combo addContactCmb;
+		private final Combo natureCmb;
+
+		public MySelectionAdapter(Node entity, Composite editPanel,
+				Combo addContactCmb, Combo natureCmb) {
+			this.entity = entity;
+			this.editPanel = editPanel;
+			this.addContactCmb = addContactCmb;
+			this.natureCmb = natureCmb;
+		}
+
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			try {
+				int index = addContactCmb.getSelectionIndex();
+				if (index == 0) {
+					resetAddContactEditPanel(editPanel, addContactCmb);
+				} else {
+					editPanel.setVisible(true);
+					String type = ContactValueCatalogs.getKeyByValue(
+							ContactValueCatalogs.MAPS_CONTACT_TYPES,
+							addContactCmb.getItem(index));
+
+					String nature = natureCmb == null ? null
+							: ContactValueCatalogs.ARRAY_CONTACT_NATURES[natureCmb
+									.getSelectionIndex()];
+					Control first = populateNewContactComposite(editPanel,
+							entity, type, nature);
+					if (first != null)
+						first.setFocus();
 				}
-				editPanel.pack();
-				editPanel.layout(true);
-				editPanel.getParent().getParent().layout();
+			} catch (RepositoryException e1) {
+				throw new PeopleException(
+						"Unable to refresh add contact panel", e1);
 			}
+			editPanel.pack();
+			editPanel.layout(true);
+			editPanel.getParent().getParent().layout();
+		}
+	}
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-
-		// set default selection after everything is initialized to ease layout
-		addContactCmb.select(0);
-
+	private void resetAddContactEditPanel(Composite editPanel,
+			Combo chooseTypeCmb) {
+		if (chooseTypeCmb.getSelectionIndex() != 0)
+			chooseTypeCmb.select(0);
+		editPanel.setVisible(false);
+		// remove all controls
+		for (Control ctl : editPanel.getChildren()) {
+			ctl.dispose();
+		}
+		toolkit.createLabel(editPanel, "");
 	}
 
 	/** Populate an editable contact composite */
 	public Control populateNewContactComposite(Composite parent,
-			final Node entity, final String contactType)
+			final Node entity, final String contactType, final String nature)
 			throws RepositoryException {
 		RowData rd;
-
-		// if (parent.getLayout() == null) {
-		// RowLayout layout = new RowLayout();
-		// // Optionally set layout fields.
-		// layout.wrap = true;
-		// layout.marginTop = 0;
-		// // Set the layout into the composite.
-		// parent.setLayout(layout);
-		// }
 
 		// remove all controls
 		for (Control ctl : parent.getChildren()) {
 			ctl.dispose();
 		}
-
-		// Nature (work or private) is only for persons
-		final Combo natureCmb = entity.isNodeType(PeopleTypes.PEOPLE_PERSON) ? new Combo(
-				parent, SWT.NONE) : null;
 
 		// No category for emails and web sites.
 		final Combo catCmb = !(contactType.equals(PeopleTypes.PEOPLE_URL) || contactType
@@ -320,6 +338,9 @@ public class ContactToolkit {
 				: null;
 
 		final Text labelTxt = new Text(parent, SWT.BORDER);
+		labelTxt.setMessage("Label");
+		rd = new RowData(120, SWT.DEFAULT);
+		labelTxt.setLayoutData(rd);
 
 		// For all contact
 		final Text valueTxt = createAddressTxt(
@@ -349,42 +370,10 @@ public class ContactToolkit {
 				contactType.equals(PeopleTypes.PEOPLE_ADDRESS), parent,
 				"Geopoint", 200);
 
-		labelTxt.setMessage("Label");
-		rd = new RowData(120, SWT.DEFAULT);
-		labelTxt.setLayoutData(rd);
-
 		final Button primaryChk = toolkit.createButton(parent, "Primary",
 				SWT.CHECK);
 
 		final Button validBtn = toolkit.createButton(parent, "Save", SWT.PUSH);
-
-		if (natureCmb != null) {
-			natureCmb.setItems(ContactValueCatalogs.ARRAY_CONTACT_NATURES);
-			natureCmb.select(0);
-			natureCmb.addSelectionListener(new SelectionListener() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					try {
-						if (catCmb != null) {
-							catCmb.setItems(ContactValueCatalogs
-									.getCategoryList(entity
-											.getPrimaryNodeType().getName(),
-											contactType, natureCmb.getText()));
-							catCmb.select(0);
-						}
-					} catch (RepositoryException e1) {
-						throw new PeopleException(
-								"unable to retrieve category list", e1);
-					}
-				}
-
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
-				}
-			});
-		}
 
 		if (catCmb != null) {
 			catCmb.setItems(ContactValueCatalogs.getCategoryList(entity
@@ -398,7 +387,6 @@ public class ContactToolkit {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 
-				String nature = natureCmb == null ? null : natureCmb.getText();
 				String value = valueTxt == null ? null : valueTxt.getText();
 				String cat = catCmb == null ? null : catCmb.getText();
 				String label = labelTxt.getText();
@@ -436,9 +424,7 @@ public class ContactToolkit {
 			}
 		});
 
-		if (natureCmb != null)
-			return natureCmb;
-		else if (catCmb != null)
+		if (catCmb != null)
 			return catCmb;
 		else
 			return valueTxt;

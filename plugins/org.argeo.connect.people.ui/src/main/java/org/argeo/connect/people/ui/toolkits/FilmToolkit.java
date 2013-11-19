@@ -97,13 +97,13 @@ public class FilmToolkit extends EntityToolkit {
 				for (Text text : texts) {
 					String key = (String) text.getData(LANG_KEY);
 					if (DEFAULT_LANG_KEY.equals(key))
-						PeopleUiUtils.refreshTextValue(text, entity,
+						PeopleUiUtils.refreshTextWidgetValue(text, entity,
 								Property.JCR_DESCRIPTION);
 					else {
 						Node altDescNode = CommonsJcrUtils.getAltPropertyNode(
 								entity, PeopleNames.PEOPLE_ALT_LANGS, key);
 						if (altDescNode != null)
-							PeopleUiUtils.refreshTextValue(text, altDescNode,
+							PeopleUiUtils.refreshTextWidgetValue(text, altDescNode,
 									Property.JCR_DESCRIPTION);
 					}
 					text.setEnabled(CommonsJcrUtils
