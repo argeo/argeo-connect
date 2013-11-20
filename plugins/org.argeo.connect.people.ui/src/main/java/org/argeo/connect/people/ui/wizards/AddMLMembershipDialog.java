@@ -21,18 +21,11 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
-import javax.jcr.RepositoryException;
 import javax.jcr.query.Row;
 
-import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.extracts.ColumnDefinition;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.PeopleJcrUtils;
-import org.argeo.connect.people.utils.PersonJcrUtils;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -55,54 +48,53 @@ public class AddMLMembershipDialog extends AddReferenceDialog {
 
 	protected List<ColumnDefinition> getColumnsDef() {
 		List<ColumnDefinition> columnDefs = new ArrayList<ColumnDefinition>();
-		columnDefs.add(new ColumnDefinition(PeopleTypes.PEOPLE_MAILING_LIST,
-				Property.JCR_TITLE, PropertyType.STRING, "Title", 100));
-		columnDefs.add(new ColumnDefinition(PeopleTypes.PEOPLE_MAILING_LIST,
-				Property.JCR_DESCRIPTION, PropertyType.STRING, "Description",
-				300));
+		columnDefs.add(new ColumnDefinition(PeopleTypes.PEOPLE_ORGANIZATION,
+				Property.JCR_TITLE, PropertyType.STRING, "Title", 200));
 		return columnDefs;
 	}
 
 	protected boolean performAddition(List<Row> selectedItems) {
 		StringBuilder duplicates = new StringBuilder();
 
-		String defaultMail = PeopleJcrUtils.getDefaultContactValue(
-				referencedNode, PeopleTypes.PEOPLE_EMAIL);
-
-		if (CommonsJcrUtils.isEmptyString(defaultMail)) {
-			String msg = "Current person has no defined primary mail adress, "
-					+ "he could not be added to any mailing list";
-			MessageDialog.openError(getShell(), "Non valid information", msg);
-			return true;
-		}
-
-		try {
-			for (Row mlRow : selectedItems) {
-				Node mailingList = mlRow
-						.getNode(PeopleTypes.PEOPLE_MAILING_LIST);
-				Node members = mailingList.getNode(PeopleNames.PEOPLE_MEMBERS);
-
-				if (members.hasNode(defaultMail)) {
-					duplicates
-							.append(PersonJcrUtils
-									.getPersonDisplayName(referencedNode))
-							.append("(" + defaultMail + "); ");
-				} else {
-					// Node createdNode =
-					peopleService.createEntityReference(mailingList,
-							referencedNode, defaultMail);
-				}
-			}
-
-			if (duplicates.length() > 0) {
-				String msg = "Following persons are already part of the list, "
-						+ "they could not be added: \n"
-						+ duplicates.substring(0, duplicates.length() - 2);
-				MessageDialog.openError(getShell(), "Dupplicates", msg);
-			}
-			return true;
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to get person node from row", e);
-		}
+		System.out.println("PERFORM ADDITION");
+		return true;
+		// String defaultMail = PeopleJcrUtils.getDefaultContactValue(
+		// referencedNode, PeopleTypes.PEOPLE_EMAIL);
+		//
+		// if (CommonsJcrUtils.isEmptyString(defaultMail)) {
+		// String msg = "Current person has no defined primary mail adress, "
+		// + "he could not be added to any mailing list";
+		// MessageDialog.openError(getShell(), "Non valid information", msg);
+		// return true;
+		// }
+		//
+		// try {
+		// for (Row mlRow : selectedItems) {
+		// Node mailingList = mlRow
+		// .getNode(PeopleTypes.PEOPLE_MAILING_LIST);
+		// Node members = mailingList.getNode(PeopleNames.PEOPLE_MEMBERS);
+		//
+		// if (members.hasNode(defaultMail)) {
+		// duplicates
+		// .append(PersonJcrUtils
+		// .getPersonDisplayName(referencedNode))
+		// .append("(" + defaultMail + "); ");
+		// } else {
+		// // Node createdNode =
+		// peopleService.createEntityReference(mailingList,
+		// referencedNode, defaultMail);
+		// }
+		// }
+		//
+		// if (duplicates.length() > 0) {
+		// String msg = "Following persons are already part of the list, "
+		// + "they could not be added: \n"
+		// + duplicates.substring(0, duplicates.length() - 2);
+		// MessageDialog.openError(getShell(), "Dupplicates", msg);
+		// }
+		// return true;
+		// } catch (RepositoryException e) {
+		// throw new PeopleException("Unable to get person node from row", e);
+		// }
 	}
 }

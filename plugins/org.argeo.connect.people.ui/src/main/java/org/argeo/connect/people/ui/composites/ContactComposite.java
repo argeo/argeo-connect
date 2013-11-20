@@ -3,9 +3,12 @@ package org.argeo.connect.people.ui.composites;
 import javax.jcr.InvalidItemStateException;
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
+import javax.jcr.RepositoryException;
 
+import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -16,6 +19,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -32,10 +36,10 @@ public class ContactComposite extends Composite {
 
 	private static final long serialVersionUID = -789885142022513273L;
 
-	protected final Node contactNode;
-	protected final Node parentVersionableNode;
-	protected final FormToolkit toolkit;
-	protected final IManagedForm form;
+	private final Node contactNode;
+	private final Node parentVersionableNode;
+	private final FormToolkit toolkit;
+	private final IManagedForm form;
 
 	// Don't forget to unregister on dispose
 	private AbstractFormPart formPart;
@@ -120,7 +124,7 @@ public class ContactComposite extends Composite {
 	protected void populateReadOnlyPanel(final Composite readOnlyPanel) {
 		readOnlyPanel.setLayout(new GridLayout());
 
-		// TODO rap specific refactor
+		// TODO RAP specific, refactor.
 		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
 				SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
@@ -129,9 +133,10 @@ public class ContactComposite extends Composite {
 			public void refresh() {
 				super.refresh();
 				if (CommonsJcrUtils.nodeStillExists(contactNode)) {
-					readOnlyInfoLbl.setText(PeopleHtmlUtils
+					String addressHtml = PeopleHtmlUtils
 							.getContactDisplaySnippet(contactNode,
-									parentVersionableNode));
+									parentVersionableNode);
+					readOnlyInfoLbl.setText(addressHtml);
 					readOnlyInfoLbl.pack(true);
 					readOnlyPanel.pack(true);
 				}
@@ -167,30 +172,43 @@ public class ContactComposite extends Composite {
 		rl.marginWidth = 0;
 		parent.setLayout(rl);
 
+		boolean hasCat = !(CommonsJcrUtils.isNodeType(contactNode,
+				PeopleTypes.PEOPLE_URL) || CommonsJcrUtils.isNodeType(
+				contactNode, PeopleTypes.PEOPLE_EMAIL));
+
+		// The widgets
 		final Text valueTxt = createAddressTxt(true, parent, "Value", 150);
+		final Combo catCmb = hasCat ? new Combo(parent, SWT.NONE) : null;
 		final Text labelTxt = createAddressTxt(true, parent, "", 120);
+
+		if (catCmb != null) {
+			try {
+				String nature = CommonsJcrUtils.get(contactNode,
+						PeopleNames.PEOPLE_CONTACT_NATURE);
+				catCmb.setItems(ContactValueCatalogs.getCategoryList(
+						parentVersionableNode.getPrimaryNodeType().getName(),
+						contactNode.getPrimaryNodeType().getName(), nature));
+			} catch (RepositoryException e1) {
+				throw new PeopleException(
+						"unable to get initialise category list for contact",
+						e1);
+			}
+			catCmb.select(0);
+		}
 
 		AbstractFormPart sPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
 				if (CommonsJcrUtils.nodeStillExists(contactNode)) {
-					boolean isCheckedOut = CommonsJcrUtils
-							.isNodeCheckedOutByMe(parentVersionableNode);
-					String label = CommonsJcrUtils.get(contactNode,
-							PeopleNames.PEOPLE_CONTACT_LABEL);
-					labelTxt.setText(label);
-					labelTxt.setEnabled(isCheckedOut);
-					labelTxt.setMessage(isCheckedOut ? "Label" : "");
-					valueTxt.setText(CommonsJcrUtils.get(contactNode,
-							PeopleNames.PEOPLE_CONTACT_VALUE));
-					valueTxt.setEnabled(isCheckedOut);
-					String nature = CommonsJcrUtils.get(contactNode,
-							PeopleNames.PEOPLE_CONTACT_LABEL);
-					String category = CommonsJcrUtils.get(contactNode,
-							PeopleNames.PEOPLE_CONTACT_CATEGORY);
-					String toolTip = nature + " " + category;
-					if (CommonsJcrUtils.checkNotEmptyString(toolTip))
-						valueTxt.setToolTipText(toolTip);
+
+					PeopleUiUtils.refreshFormTextWidget(labelTxt, contactNode,
+							PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
+					PeopleUiUtils.refreshFormTextWidget(valueTxt, contactNode,
+							PeopleNames.PEOPLE_CONTACT_VALUE, "Value");
+					if (catCmb != null)
+						PeopleUiUtils.refreshFormComboValue(catCmb,
+								contactNode,
+								PeopleNames.PEOPLE_CONTACT_CATEGORY);
 					Composite cmp2 = parent.getParent();
 					cmp2.pack();
 					cmp2.getParent().layout(true);
@@ -198,10 +216,15 @@ public class ContactComposite extends Composite {
 			}
 		};
 
+		// Listeners
 		PeopleUiUtils.addTxtModifyListener(sPart, valueTxt, contactNode,
 				PeopleNames.PEOPLE_CONTACT_VALUE, PropertyType.STRING);
 		PeopleUiUtils.addTxtModifyListener(sPart, labelTxt, contactNode,
 				PeopleNames.PEOPLE_CONTACT_LABEL, PropertyType.STRING);
+		if (catCmb != null)
+			PeopleUiUtils.addComboSelectionListener(sPart, catCmb, contactNode,
+					PeopleNames.PEOPLE_CONTACT_CATEGORY, PropertyType.STRING);
+
 		sPart.refresh();
 		sPart.initialize(form);
 		form.addPart(sPart);

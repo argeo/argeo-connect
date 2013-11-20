@@ -10,8 +10,17 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+import javax.jcr.query.qom.Constraint;
+import javax.jcr.query.qom.DynamicOperand;
+import javax.jcr.query.qom.QueryObjectModel;
+import javax.jcr.query.qom.QueryObjectModelFactory;
+import javax.jcr.query.qom.Selector;
+import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.film.FilmNames;
@@ -99,38 +108,55 @@ public class PeopleJcrUtils implements PeopleNames {
 		}
 	}
 
-	public static String getTownFromItem(Node item) {
-		try {
-			if (item.hasNode(PEOPLE_CONTACTS)) {
-				Node contacts = item.getNode(PEOPLE_CONTACTS);
-				NodeIterator ni = contacts.getNodes();
-				while (ni.hasNext()) {
-					Node currNode = ni.nextNode();
-					if (currNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS)
-							&& CommonsJcrUtils.getStringValue(currNode,
-									PEOPLE_CITY) != null)
-						return CommonsJcrUtils.getStringValue(currNode,
-								PEOPLE_CITY);
-				}
-			}
-			return null;
-		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to get city for item", re);
+	/** Compute the country of an entity using primary addresses */
+	public static String getCountryFromItem(Node item) {
+		Node node = getPrimaryContact(item, PeopleTypes.PEOPLE_ADDRESS);
+		if (node != null
+				&& CommonsJcrUtils.isNodeType(node,
+						PeopleTypes.PEOPLE_CONTACT_REF)) {
+			// retrieve primary address for the referenced Node
+			Node referenced = getEntityFromNodeReference(node, PEOPLE_REF_UID);
+			if (referenced != null)
+				node = getPrimaryContact(referenced, PeopleTypes.PEOPLE_ADDRESS);
 		}
+		if (node != null)
+			return CommonsJcrUtils.get(node, PEOPLE_COUNTRY);
+		return null;
 	}
 
-	public static String getCountryFromItem(Node item) {
+	/** Compute the town of an entity using primary addresses */
+	public static String getTownFromItem(Node item) {
+		Node node = getPrimaryContact(item, PeopleTypes.PEOPLE_ADDRESS);
+		if (node != null
+				&& CommonsJcrUtils.isNodeType(node,
+						PeopleTypes.PEOPLE_CONTACT_REF)) {
+			// retrieve primary address for the referenced Node
+			Node referenced = getEntityFromNodeReference(node, PEOPLE_REF_UID);
+			if (referenced != null)
+				node = getPrimaryContact(referenced, PeopleTypes.PEOPLE_ADDRESS);
+		}
+		if (node != null)
+			return CommonsJcrUtils.get(node, PEOPLE_CITY);
+		return null;
+	}
+
+	/**
+	 * Return primary contact given a node type. or null if none defined as
+	 * primary
+	 */
+	public static Node getPrimaryContact(Node item, String nodeType) {
 		try {
 			if (item.hasNode(PEOPLE_CONTACTS)) {
 				Node contacts = item.getNode(PEOPLE_CONTACTS);
 				NodeIterator ni = contacts.getNodes();
 				while (ni.hasNext()) {
 					Node currNode = ni.nextNode();
-					if (currNode.isNodeType(PeopleTypes.PEOPLE_ADDRESS)
-							&& CommonsJcrUtils.getStringValue(currNode,
-									PEOPLE_COUNTRY) != null)
-						return CommonsJcrUtils.getStringValue(currNode,
-								PEOPLE_COUNTRY);
+					if (currNode.isNodeType(nodeType)
+							&& currNode.hasProperty(PEOPLE_IS_PRIMARY)) {
+						if (currNode.getProperty(PEOPLE_IS_PRIMARY)
+								.getBoolean()) // && isPrimary.booleanValue())
+							return currNode;
+					}
 				}
 			}
 			return null;
@@ -143,26 +169,13 @@ public class PeopleJcrUtils implements PeopleNames {
 	 * Return primary contact given a node type. or null if none defined as
 	 * primary
 	 */
-	public static String getDefaultContactValue(Node item, String nodeType) {
-		try {
-			if (item.hasNode(PEOPLE_CONTACTS)) {
-				Node contacts = item.getNode(PEOPLE_CONTACTS);
-				NodeIterator ni = contacts.getNodes();
-				while (ni.hasNext()) {
-					Node currNode = ni.nextNode();
-					if (currNode.isNodeType(nodeType)
-							&& currNode.hasProperty(PEOPLE_IS_PRIMARY)) {
-						if (currNode.getProperty(PEOPLE_IS_PRIMARY)
-								.getBoolean()) // && isPrimary.booleanValue())
-							return CommonsJcrUtils.getStringValue(currNode,
-									PEOPLE_CONTACT_VALUE);
-					}
-				}
-			}
-			return null;
-		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to get city for item", re);
-		}
+	public static String getPrimaryContactValue(Node item, String nodeType) {
+		Node primary = getPrimaryContact(item, nodeType);
+		if (primary != null)
+			return CommonsJcrUtils
+					.getStringValue(primary, PEOPLE_CONTACT_VALUE);
+		else
+			return "";
 	}
 
 	// ///////////////////////////
@@ -267,6 +280,7 @@ public class PeopleJcrUtils implements PeopleNames {
 				}
 			}
 			primaryContact.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, primary);
+			// TODO update primary town and country if address
 		} catch (RepositoryException re) {
 			throw new ArgeoException("Unable set primary flag", re);
 		}
@@ -449,6 +463,45 @@ public class PeopleJcrUtils implements PeopleNames {
 	 *            an optional label
 	 * @return
 	 */
+	public static Node createWorkAddress(Node parentNode, Node referencedOrg,
+			boolean primary, String category, String label) {
+		try {
+			Node address = createContact(parentNode,
+					PeopleTypes.PEOPLE_ADDRESS, PeopleTypes.PEOPLE_ADDRESS, "",
+					primary, ContactValueCatalogs.CONTACT_NATURE_PRO, category,
+					label);
+			address.addMixin(PeopleTypes.PEOPLE_CONTACT_REF);
+			// set reference field
+			if (referencedOrg != null)
+				address.setProperty(PEOPLE_REF_UID,
+						referencedOrg.getProperty(PEOPLE_UID).getString());
+
+			return address;
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to add a new address node", re);
+		}
+	}
+
+	/**
+	 * Create an address with a geopoint for the current entity
+	 * 
+	 * @param parentNode
+	 * @param street1
+	 * @param street2
+	 * @param zipCode
+	 * @param city
+	 * @param state
+	 * @param country
+	 * @param primary
+	 * @param nature
+	 *            optional: if parent node type is a person, then precise
+	 *            private or pro
+	 * @param category
+	 * @param label
+	 *            an optional label
+	 * @return
+	 */
+	@Deprecated
 	public static Node createAddress(Node parentNode, String street1,
 			String street2, String zipCode, String city, String state,
 			String country, String geopoint, boolean primary, String nature,
@@ -682,6 +735,63 @@ public class PeopleJcrUtils implements PeopleNames {
 	public static String replaceInvalidChars(String string) {
 		string = JcrUtils.replaceInvalidChars(string);
 		return string.replace(' ', '_');
+	}
+
+	/**
+	 * insure user to retrieve at most one single node in the current
+	 * repository, independently of the implementation of the model
+	 */
+	public static Node getEntityByUid(Session session, String uid) {
+		try {
+			QueryManager queryManager = session.getWorkspace()
+					.getQueryManager();
+			QueryObjectModelFactory factory = queryManager.getQOMFactory();
+			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
+					PeopleTypes.PEOPLE_ENTITY);
+			DynamicOperand dynOp = factory.propertyValue(
+					source.getSelectorName(), PeopleNames.PEOPLE_UID);
+			StaticOperand statOp = factory.literal(session.getValueFactory()
+					.createValue(uid));
+			Constraint defaultC = factory.comparison(dynOp,
+					QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+			QueryObjectModel query = factory.createQuery(source, defaultC,
+					null, null);
+			QueryResult queryResult = query.execute();
+			NodeIterator ni = queryResult.getNodes();
+
+			if (ni.getSize() == 0)
+				return null;
+			else if (ni.getSize() > 1) {
+				throw new PeopleException(
+						"Problem retrieving entity by UID, we found "
+								+ ni.getSize() + " correspnding entity(ies)");
+			} else
+				return ni.nextNode();
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"Unable to retrive entity of uid: " + uid, e);
+		}
+	}
+
+	/**
+	 * insure user to retrieve at most one single node in the current
+	 * repository, independently of the implementation of the model
+	 * 
+	 * 
+	 * @param node
+	 * @param propName
+	 *            the name of the property that contains the reference usually
+	 *            we use <code>PeopleName.PEOPLE_REF_UID</code>
+	 * @return
+	 */
+	public static Node getEntityFromNodeReference(Node node, String propName) {
+		try {
+			return getEntityByUid(node.getSession(), node.getProperty(propName)
+					.getString());
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"unable to get entity from reference node", re);
+		}
 	}
 
 }

@@ -42,4 +42,10 @@ public interface PeopleTypes {
 	public final static String PEOPLE_URL = "people:url";
 	public final static String PEOPLE_SOCIAL_MEDIA = "people:socialMedia";
 	public final static String PEOPLE_ADDRESS = "people:address";
+
+	// contact with this mixing will use value(s) of the primary contact of the
+	// given type
+	// of the referenced entity if such a contact exists.
+	// Used among other for persons professional addresses
+	public final static String PEOPLE_CONTACT_REF = "people:contactRef";
 }

@@ -169,11 +169,13 @@ mixin
 - people:contactCategory (STRING)
 // an optional label 
 - people:contactLabel (STRING)
-// if contactNature == work 
-- people:refUid (STRING)
 // OPTIONNAL an URI translated from the contact value 
 // to be used directly by the system.
 - people:contactUri (URI) 
+
+// if contactNature == work - people:refUid (STRING)
+// Rather use people:contactRef mixin
+
 
 // TEL
 [people:phone] > people:contact 
@@ -205,6 +207,15 @@ mixin
 - people:country (STRING)
 // An optionnal Geopoint. Should be refined
 - people:geoPoint (STRING)
+
+
+// CONTACT REFERENCE
+// this contact will be the primary contact of the given type of the referenced entity if such a contact exists.
+// Used among other for persons professional addresses
+[people:contactRef]  
+mixin
+- people:refUid (STRING)
+
 
 
 // PARENT PAYMENT ACCOUNT TYPE 

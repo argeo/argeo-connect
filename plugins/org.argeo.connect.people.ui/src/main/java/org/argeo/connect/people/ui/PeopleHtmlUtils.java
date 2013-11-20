@@ -97,15 +97,6 @@ public class PeopleHtmlUtils {
 		try {
 			StringBuilder builder = new StringBuilder();
 
-			String nature = null;
-			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
-				nature = cleanHtmlString(CommonsJcrUtils.get(node,
-						PeopleNames.PEOPLE_CONTACT_NATURE));
-			String category = cleanHtmlString(CommonsJcrUtils.get(node,
-					PeopleNames.PEOPLE_CONTACT_CATEGORY));
-			String label = cleanHtmlString(CommonsJcrUtils.get(node,
-					PeopleNames.PEOPLE_CONTACT_LABEL));
-
 			if (node.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
 				builder.append(cleanHtmlString(getAddressDisplayValue(node)));
 			} else {
@@ -129,28 +120,7 @@ public class PeopleHtmlUtils {
 					builder.append(value);
 				}
 			}
-
-			if (CommonsJcrUtils.checkNotEmptyString(nature)
-					|| CommonsJcrUtils.checkNotEmptyString(category)
-					|| CommonsJcrUtils.checkNotEmptyString(label)) {
-				builder.append("&#160;&#160;[");
-
-				if (CommonsJcrUtils.checkNotEmptyString(nature)) {
-					builder.append(nature).append(" ");
-				}
-				if (CommonsJcrUtils.checkNotEmptyString(category)) {
-					builder.append(category);
-				}
-
-				if (CommonsJcrUtils.checkNotEmptyString(label)) {
-					if (CommonsJcrUtils.checkNotEmptyString(nature)
-							|| CommonsJcrUtils.checkNotEmptyString(category))
-						builder.append(", ");
-					builder.append(label);
-				}
-				builder.append("]");
-			}
-
+			builder.append(getContactMetaData(node));
 			return builder.toString();
 
 		} catch (RepositoryException re) {
@@ -159,9 +129,66 @@ public class PeopleHtmlUtils {
 		}
 	}
 
+	/** creates the display ReadOnly HTML snippet for a work address */
+	public static String getWorkAddressDisplaySnippet(Node contactNode,
+			Node referencedEntity) {
+		StringBuilder builder = new StringBuilder();
+		// the referenced org
+		if (referencedEntity != null)
+			builder.append(CommonsJcrUtils.get(referencedEntity,
+					Property.JCR_TITLE));
+		// current contact meta data
+		builder.append(getContactMetaData(contactNode));
+		// Referenced org primary address
+		if (referencedEntity != null) {
+			Node primaryAddress = PeopleJcrUtils.getPrimaryContact(
+					referencedEntity, PeopleTypes.PEOPLE_ADDRESS);
+			if (primaryAddress != null) {
+				builder.append("<br />");
+				builder.append(cleanHtmlString(getAddressDisplayValue(primaryAddress)));
+			}
+		}
+		return builder.toString();
+	}
+
+	/** creates the display ReadOnly HTML snippet for various contact metadata */
+	public static String getContactMetaData(Node node) {
+		StringBuilder builder = new StringBuilder();
+
+		String nature = cleanHtmlString(CommonsJcrUtils.get(node,
+				PeopleNames.PEOPLE_CONTACT_NATURE));
+		String category = cleanHtmlString(CommonsJcrUtils.get(node,
+				PeopleNames.PEOPLE_CONTACT_CATEGORY));
+		String label = cleanHtmlString(CommonsJcrUtils.get(node,
+				PeopleNames.PEOPLE_CONTACT_LABEL));
+
+		if (CommonsJcrUtils.checkNotEmptyString(nature)
+				|| CommonsJcrUtils.checkNotEmptyString(category)
+				|| CommonsJcrUtils.checkNotEmptyString(label)) {
+			builder.append("&#160;&#160;[");
+
+			if (CommonsJcrUtils.checkNotEmptyString(nature)) {
+				builder.append(nature).append(
+						CommonsJcrUtils.checkNotEmptyString(category) ? " "
+								: "");
+			}
+			if (CommonsJcrUtils.checkNotEmptyString(category)) {
+				builder.append(category);
+			}
+
+			if (CommonsJcrUtils.checkNotEmptyString(label)) {
+				if (CommonsJcrUtils.checkNotEmptyString(nature)
+						|| CommonsJcrUtils.checkNotEmptyString(category))
+					builder.append(", ");
+				builder.append(label);
+			}
+			builder.append("]");
+		}
+		return builder.toString();
+	}
+
 	/** creates an address Display value */
 	public static String getAddressDisplayValue(Node node) {
-
 		String street = CommonsJcrUtils.get(node, PeopleNames.PEOPLE_STREET);
 		String street2 = CommonsJcrUtils.get(node,
 				PeopleNames.PEOPLE_STREET_COMPLEMENT);
@@ -217,6 +244,7 @@ public class PeopleHtmlUtils {
 		if (CommonsJcrUtils.checkNotEmptyString(town)
 				|| CommonsJcrUtils.checkNotEmptyString(country)) {
 			StringBuilder builder = new StringBuilder();
+			builder.append("[");
 			if (CommonsJcrUtils.checkNotEmptyString(town)) {
 				builder.append(town);
 				if (!CommonsJcrUtils.isEmptyString(country))
@@ -224,6 +252,7 @@ public class PeopleHtmlUtils {
 			}
 			if (!CommonsJcrUtils.isEmptyString(country))
 				builder.append(country);
+			builder.append("]");
 			return builder.toString();
 		} else
 			return "";
@@ -254,14 +283,14 @@ public class PeopleHtmlUtils {
 		if (!smallList)
 			builder.append("<small>");
 
-		String tmpStr = PeopleJcrUtils.getDefaultContactValue(entity,
+		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_PHONE);
 		if (tmpStr != null) {
 			builder.append(cleanHtmlString(tmpStr));
 			builder.append("&#160;&#160;&#160;");
 		}
 
-		tmpStr = PeopleJcrUtils.getDefaultContactValue(entity,
+		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_EMAIL);
 		if (tmpStr != null) {
 			builder.append("<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
@@ -270,7 +299,7 @@ public class PeopleHtmlUtils {
 			builder.append(tmpStr);
 			builder.append("</a>&#160;&#160;&#160;");
 		}
-		tmpStr = PeopleJcrUtils.getDefaultContactValue(entity,
+		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_URL);
 		if (tmpStr != null) {
 			builder.append("<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
@@ -400,4 +429,5 @@ public class PeopleHtmlUtils {
 					"Error getting remove snippet for list item", re);
 		}
 	}
+
 }

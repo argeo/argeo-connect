@@ -91,7 +91,8 @@ public class ContactButtonsComposite extends Composite {
 
 		configureDeleteButton(deleteBtn, contactNode, parentVersionableNode);
 		configurePrimaryButton(primaryBtn, contactNode, parentVersionableNode);
-		// formPart.refresh();
+		// To force update of primary button on creation
+		formPart.refresh();
 		formPart.initialize(form);
 		form.addPart(formPart);
 	}

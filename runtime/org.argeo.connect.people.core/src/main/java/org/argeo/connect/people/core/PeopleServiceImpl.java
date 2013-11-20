@@ -85,7 +85,9 @@ public class PeopleServiceImpl implements PeopleService {
 			QueryResult queryResult = query.execute();
 			NodeIterator ni = queryResult.getNodes();
 
-			if (ni.getSize() != 1) {
+			if (ni.getSize() == 0)
+				return null;
+			else if (ni.getSize() > 1) {
 				throw new PeopleException(
 						"Problem retrieving entity by UID, we found "
 								+ ni.getSize() + " correspnding entity(ies)");

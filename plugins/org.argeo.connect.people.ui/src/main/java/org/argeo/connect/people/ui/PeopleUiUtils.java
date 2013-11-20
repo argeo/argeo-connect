@@ -12,6 +12,8 @@ import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -19,6 +21,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
@@ -87,6 +90,18 @@ public class PeopleUiUtils {
 	}
 
 	/**
+	 * Shortcut to select an item of a <code>Combo</code> widget given a Node in
+	 * a form, a property NameAlso manages its enable state and set a default
+	 * message if corresponding Text value is empty
+	 */
+	public static void refreshFormComboValue(Combo combo, Node entity,
+			String propName) {
+		String currValue = CommonsJcrUtils.get(entity, propName);
+		if (CommonsJcrUtils.checkNotEmptyString(currValue))
+			combo.select(combo.indexOf(currValue));
+	}
+
+	/**
 	 * Shortcut to refresh a Check box <code>Button</code> widget given a Node
 	 * in a form and a property Name.
 	 */
@@ -146,6 +161,30 @@ public class PeopleUiUtils {
 				if (JcrUiUtils.setJcrProperty(entity, propName, propType,
 						text.getText()))
 					part.markDirty();
+			}
+		});
+	}
+
+	/**
+	 * Shortcut to add a SelectionListener on a combo that updates a property on
+	 * a Node
+	 */
+	public static void addComboSelectionListener(final AbstractFormPart part,
+			final Combo combo, final Node entity, final String propName,
+			final int propType) {
+		combo.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				int index = combo.getSelectionIndex();
+				if (index != -1) {
+					String selectedCategory = combo.getItem(index);
+					if (JcrUiUtils.setJcrProperty(entity, propName, propType,
+							selectedCategory))
+						part.markDirty();
+				}
+
 			}
 		});
 	}

@@ -39,6 +39,18 @@ public class CommonsJcrUtils {
 	}
 
 	/**
+	 * Call {@link Node#getSession()} without exceptions
+	 */
+	public static Session getSession(Node node) {
+		try {
+			return node.getSession();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to retrieve session for node "
+					+ node, re);
+		}
+	}
+
+	/**
 	 * Call {@link Node#isNodetype(String nodeTypeName)} without exceptions
 	 */
 	public static boolean isNodeType(Node node, String nodeTypeName) {

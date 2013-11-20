@@ -79,7 +79,7 @@ public class AddMLMembersDialog extends AddReferenceDialog {
 
 			for (Row personRow : selectedItems) {
 				Node person = personRow.getNode(PeopleTypes.PEOPLE_PERSON);
-				String defaultMail = PeopleJcrUtils.getDefaultContactValue(
+				String defaultMail = PeopleJcrUtils.getPrimaryContactValue(
 						person, PeopleTypes.PEOPLE_EMAIL);
 				if (CommonsJcrUtils.isEmptyString(defaultMail))
 					skippedPerson.append(

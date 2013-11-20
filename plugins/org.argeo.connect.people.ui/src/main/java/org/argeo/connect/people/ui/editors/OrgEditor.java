@@ -13,6 +13,7 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.providers.OrgOverviewLabelProvider;
+import org.argeo.connect.people.ui.toolkits.ContactToolkit;
 import org.argeo.connect.people.ui.toolkits.EntityToolkit;
 import org.argeo.connect.people.ui.toolkits.LegalInfoToolkit;
 import org.argeo.connect.people.ui.toolkits.ListToolkit;
@@ -49,6 +50,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 
 	// Toolkits
 	private EntityToolkit entityTK;
+	private ContactToolkit contactTK;
 	private ListToolkit listTK;
 	private LegalInfoToolkit legalTK;
 
@@ -70,6 +72,9 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 	@Override
 	protected void createToolkits() {
 		entityTK = new EntityToolkit(toolkit, getManagedForm());
+		contactTK = new ContactToolkit(toolkit, getManagedForm(),
+				getPeopleService());
+
 		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
 				getPeopleUiService());
 		legalTK = new LegalInfoToolkit(toolkit, getManagedForm(), org);
@@ -81,7 +86,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Details", PeopleUiConstants.PANEL_CONTACT_DETAILS, tooltip);
-		entityTK.createContactPanelWithNotes(innerPannel, org);
+		contactTK.createContactPanelWithNotes(innerPannel, org);
 
 		// Legal informations
 		tooltip = "Legal information for "
@@ -156,12 +161,12 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 							PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME);
 
 					if (useDefault) {
-						PeopleUiUtils.refreshTextWidgetValue(displayNameTxt, org,
-								PeopleNames.PEOPLE_LEGAL_NAME);
+						PeopleUiUtils.refreshTextWidgetValue(displayNameTxt,
+								org, PeopleNames.PEOPLE_LEGAL_NAME);
 						displayNameTxt.setEnabled(false);
 					} else {
-						PeopleUiUtils.refreshTextWidgetValue(displayNameTxt, org,
-								Property.JCR_TITLE);
+						PeopleUiUtils.refreshTextWidgetValue(displayNameTxt,
+								org, Property.JCR_TITLE);
 						displayNameTxt.setEnabled(true);
 					}
 					// READ ONLY PART
