@@ -12,6 +12,7 @@ import javax.jcr.Session;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Constraint;
+import javax.jcr.query.qom.DynamicOperand;
 import javax.jcr.query.qom.Ordering;
 import javax.jcr.query.qom.QueryObjectModel;
 import javax.jcr.query.qom.QueryObjectModelFactory;
@@ -19,12 +20,14 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.connect.people.ui.utils.BaseJcrNodeLabelProvider;
+import org.argeo.connect.people.ui.utils.NodeViewerComparator;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
-import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
-import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.ArgeoNames;
@@ -41,96 +44,96 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.forms.widgets.Section;
 
-/** Almost canonic implementation of a table that display enities */
-public class EntityTableComposite extends Composite implements ArgeoNames {
-	// private final static Log log =
-	// LogFactory.getLog(UserTableComposite.class);
+/** Almost canonic implementation of a table that display persons */
+public class PersonTableComposite extends Composite implements ArgeoNames {
 	private static final long serialVersionUID = 1262369448445021926L;
 
-	private TableViewer entityViewer;
+	private TableViewer personViewer;
 	private Text filterTxt;
+
+	private Text tagTxt;
+
 	private final static String FILTER_HELP_MSG = "Type filter criterion "
 			+ "separated by a space";
 	private Session session;
 
 	private int tableStyle;
 
-	private boolean hasFilter = false;
+	private boolean hasFilter = true;
+	private boolean hasStaticFilter = true;
 	private boolean hasSelectionColumn = false;
 	private List<ColumnDefinition> colDefs = new ArrayList<ColumnDefinition>();
-	{ // By default, it displays only title
-		colDefs.add(new ColumnDefinition(null, Property.JCR_TITLE,
-				PropertyType.STRING, "Name", 300));
+	{
+		colDefs.add(new ColumnDefinition(PeopleTypes.PEOPLE_PERSON,
+				Property.JCR_TITLE, PropertyType.STRING, "Display Name", 300));
+		colDefs.add(new ColumnDefinition(PeopleTypes.PEOPLE_PERSON,
+				PeopleNames.PEOPLE_LAST_NAME, PropertyType.STRING, "Last name",
+				120));
+		colDefs.add(new ColumnDefinition(PeopleTypes.PEOPLE_PERSON,
+				PeopleNames.PEOPLE_FIRST_NAME, PropertyType.STRING,
+				"First name", 120));
+		colDefs.add(new ColumnDefinition(PeopleTypes.PEOPLE_PERSON,
+				PeopleNames.PEOPLE_TAGS, PropertyType.STRING, "Tags", 200));
 	};
-	private String nodeType = PeopleTypes.PEOPLE_ENTITY;
 
 	public List<ColumnDefinition> getColumnsDef() {
 		return colDefs;
+	}
+
+	/** Static FILTER */
+	private void createStaticFilterPart(Composite parent) {
+		// MainLayout
+		Section headerSection = new Section(parent, Section.TITLE_BAR
+				| Section.TWISTIE); // Section.DESCRIPTION
+		headerSection.setText("Show more filters");
+		headerSection.setExpanded(false);
+		Composite body = new Composite(headerSection, SWT.NONE);
+		body.setLayout(new RowLayout(SWT.HORIZONTAL));
+
+		tagTxt = new Text(body, SWT.BORDER);
+		tagTxt.setMessage("Filter by tag");
+		tagTxt.setLayoutData(new RowData(120, SWT.DEFAULT));
+
+		Button goBtn = new Button(body, SWT.PUSH);
+		goBtn.setText("Search");
+		goBtn.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				refreshFilteredList();
+			}
+
+		});
+
+		headerSection.setClient(body);
 	}
 
 	// CONSTRUCTORS
 
 	/**
 	 * Default table with no filter and no selection column that only display
-	 * JCR_TITLES
+	 * base info
 	 * 
-	 * Default selector is people:entity
+	 * Default selector is people:person
 	 * 
 	 * @param parent
 	 * @param style
 	 *            the style of the table
 	 * @param session
 	 */
-	public EntityTableComposite(Composite parent, int style, Session session) {
-		super(parent, SWT.NONE);
-		this.tableStyle = style;
-		colDefs = new ArrayList<ColumnDefinition>();
-		// By default, it displays only title
-		colDefs.add(new ColumnDefinition(null, Property.JCR_TITLE,
-				PropertyType.STRING, "Name", 300));
-		this.session = session;
-		populate();
-	}
-
-	/**
-	 * Default table that only display JCR_TITLES of an entity table. Caller can
-	 * choose to add a filter and a selection column
-	 * 
-	 * @param parent
-	 * @param style
-	 *            the style of the table
-	 * @param session
-	 * @param addFilter
-	 * @param addSelection
-	 */
-	public EntityTableComposite(Composite parent, int style, Session session,
-			boolean addFilter, boolean addSelection) {
+	public PersonTableComposite(Composite parent, int style, Session session) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.session = session;
-		this.hasFilter = addFilter;
-		this.hasSelectionColumn = addSelection;
-		populate();
-	}
-
-	/**
-	 * 
-	 * @param parent
-	 * @param style
-	 *            the style of the table
-	 * @param session
-	 * @param colDefs
-	 */
-	public EntityTableComposite(Composite parent, int style, Session session,
-			List<ColumnDefinition> colDefs) {
-		super(parent, SWT.NONE);
-		this.tableStyle = style;
-		this.session = session;
-		this.colDefs = colDefs;
 		populate();
 	}
 
@@ -146,16 +149,14 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 	 * @param addFilter
 	 * @param addSelection
 	 */
-	public EntityTableComposite(Composite parent, int style, Session session,
-			String nodeType, List<ColumnDefinition> colDefs, boolean addFilter,
+	public PersonTableComposite(Composite parent, int style, Session session,
+			List<ColumnDefinition> colDefs, boolean addFilter,
 			boolean addSelection) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.session = session;
 		if (colDefs != null)
 			this.colDefs = colDefs;
-		if (nodeType != null)
-			this.nodeType = nodeType;
 		this.hasFilter = addFilter;
 		this.hasSelectionColumn = addSelection;
 		populate();
@@ -166,17 +167,19 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 		Composite parent = this;
 		// Main Layout
 		this.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		if (hasStaticFilter)
+			createStaticFilterPart(parent);
 		if (hasFilter)
 			createFilterPart(parent);
-		entityViewer = createTableViewer(parent);
-		EclipseUiSpecificUtils.enableToolTipSupport(entityViewer);
-		entityViewer.setContentProvider(new MyTableContentProvider());
+		personViewer = createTableViewer(parent);
+		EclipseUiSpecificUtils.enableToolTipSupport(personViewer);
+		personViewer.setContentProvider(new MyTableContentProvider());
 		refreshFilteredList();
 	}
 
 	public List<Node> getSelectedUsers() {
 		if (hasSelectionColumn) {
-			Object[] elements = ((CheckboxTableViewer) entityViewer)
+			Object[] elements = ((CheckboxTableViewer) personViewer)
 					.getCheckedElements();
 
 			List<Node> result = new ArrayList<Node>();
@@ -191,7 +194,7 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 
 	/** Returns the User table viewer, typically to add doubleclick listener */
 	public TableViewer getTableViewer() {
-		return entityViewer;
+		return personViewer;
 	}
 
 	private TableViewer createTableViewer(final Composite parent) {
@@ -230,7 +233,7 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					allSelected = !allSelected;
-					((CheckboxTableViewer) entityViewer)
+					((CheckboxTableViewer) personViewer)
 							.setAllChecked(allSelected);
 				}
 			};
@@ -259,7 +262,7 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 		return viewer;
 	}
 
-	private class CLProvider extends SimpleJcrNodeLabelProvider {
+	private class CLProvider extends BaseJcrNodeLabelProvider {
 		private static final long serialVersionUID = 1L;
 
 		public CLProvider(String propertyName) {
@@ -293,7 +296,7 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 
 	@Override
 	public boolean setFocus() {
-		entityViewer.getTable().setFocus();
+		personViewer.getTable().setFocus();
 		return true;
 	}
 
@@ -346,7 +349,7 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 		try {
 			nodes = JcrUtils.nodeIteratorToList(listFilteredElements(session,
 					hasFilter ? filterTxt.getText() : null));
-			entityViewer.setInput(nodes.toArray());
+			personViewer.setInput(nodes.toArray());
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Unable to list users", e);
 		}
@@ -361,7 +364,8 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
 		QueryObjectModelFactory factory = queryManager.getQOMFactory();
 
-		Selector source = factory.selector(nodeType, nodeType);
+		Selector source = factory.selector(PeopleTypes.PEOPLE_PERSON,
+				PeopleTypes.PEOPLE_PERSON);
 
 		Constraint defaultC = null;
 
@@ -379,6 +383,20 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 				else
 					defaultC = factory.and(defaultC, currC);
 			}
+		}
+
+		String tagStr = tagTxt.getText();
+		if (CommonsJcrUtils.checkNotEmptyString(tagStr)) {
+			DynamicOperand dynOp = factory.propertyValue(
+					source.getSelectorName(), PeopleNames.PEOPLE_TAGS);
+			StaticOperand statOp = factory.literal(session.getValueFactory()
+					.createValue("%" + tagStr + "%"));
+			Constraint c2 = factory.comparison(dynOp,
+					QueryObjectModelFactory.JCR_OPERATOR_LIKE, statOp);
+			if (defaultC == null)
+				defaultC = c2;
+			else
+				defaultC = factory.and(defaultC, c2);
 		}
 
 		Ordering[] orderings = null;

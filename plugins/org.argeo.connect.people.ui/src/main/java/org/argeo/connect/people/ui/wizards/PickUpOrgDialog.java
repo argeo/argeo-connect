@@ -18,6 +18,7 @@ package org.argeo.connect.people.ui.wizards;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
+import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.composites.EntityTableComposite;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -66,8 +67,8 @@ public class PickUpOrgDialog extends TrayDialog {
 		seeAllChk.setText("See all organisation");
 
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-		tableCmp = new EntityTableComposite(dialogArea, style, session, true,
-				false);
+		tableCmp = new EntityTableComposite(dialogArea, style, session,
+				PeopleTypes.PEOPLE_ORGANIZATION, null, true, false);
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		// Add listeners

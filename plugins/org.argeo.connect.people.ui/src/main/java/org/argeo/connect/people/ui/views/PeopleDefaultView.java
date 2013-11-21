@@ -23,8 +23,8 @@ import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.ui.editors.SearchEntityEditor;
 import org.argeo.connect.people.ui.editors.SearchEntityEditorInput;
+import org.argeo.connect.people.ui.editors.StaticSearchEntityEditor;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.ui.providers.EntitySingleColumnLabelProvider;
 import org.argeo.eclipse.ui.utils.CommandUtils;
@@ -139,7 +139,7 @@ public class PeopleDefaultView extends ViewPart {
 						PeopleTypes.PEOPLE_PERSON);
 				PeopleUiPlugin.getDefault().getWorkbench()
 						.getActiveWorkbenchWindow().getActivePage()
-						.openEditor(eei, SearchEntityEditor.ID);
+						.openEditor(eei, StaticSearchEntityEditor.ID);
 			} catch (PartInitException pie) {
 				throw new PeopleException(
 						"Unexpected PartInitException while opening entity editor",
