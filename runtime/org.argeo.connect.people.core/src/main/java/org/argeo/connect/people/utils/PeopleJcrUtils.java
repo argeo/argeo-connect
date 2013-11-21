@@ -242,24 +242,6 @@ public class PeopleJcrUtils implements PeopleNames {
 		}
 	}
 
-	// /** Create a contact node and add basic info */
-	// public static Node createContact(Node parentNode, String nodeType,
-	// String name, String value, int pref, String contactCategory,
-	// String contactType) {
-	// try {
-	// Node contacts = CommonsJcrUtils.getOrCreateDirNode(parentNode,
-	// PEOPLE_CONTACTS);
-	// Node contact = contacts.addNode(name, nodeType);
-	// contact.setProperty(PEOPLE_CONTACT_VALUE, value);
-	// contact.setProperty(PEOPLE_PREF, pref);
-	// setContactType(contact, contactType);
-	// setContactCategory(contact, contactCategory, null);
-	// return contact;
-	// } catch (RepositoryException re) {
-	// throw new ArgeoException("Unable to add a new contact node", re);
-	// }
-	// }
-
 	/**
 	 * if marking a contact as primary. All contact with same type for same
 	 * entity are then marked as NOT primary. if marking as not primary only the

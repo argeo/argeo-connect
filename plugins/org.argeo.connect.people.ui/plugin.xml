@@ -183,6 +183,21 @@
          		name="An extract ID">
   	 		</commandParameter>
     	</command>    	
+    	<!-- Utility command to simply open an URL --> 
+    	<command
+			defaultHandler="org.argeo.connect.people.ui.commands.OpenUrl"
+			id="org.argeo.connect.people.ui.openUrl"
+			name="Open an URL in the end user browser">
+			<commandParameter
+     			id="param.urlValue"
+     			name="The url">
+ 			</commandParameter>
+			<commandParameter
+     			id="param.urlType"
+     			name="The type of the url">
+ 			</commandParameter>
+  		</command>
+  		
     	<!-- Utility to provide sub menues when we don't want to define a default command for this menu -->
 		<command
 			defaultHandler="org.argeo.connect.people.ui.commands.DoNothing"
