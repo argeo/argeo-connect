@@ -20,6 +20,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
  */
 public class BaseJcrNodeLabelProvider extends ColumnLabelProvider {
 
+	private static final long serialVersionUID = -1831352348649330101L;
 	private final static String DEFAULT_DATE_FORMAT = "EEE, dd MMM yyyy";
 	private final static String DEFAULT_NUMBER_FORMAT = "#,##0.0";
 

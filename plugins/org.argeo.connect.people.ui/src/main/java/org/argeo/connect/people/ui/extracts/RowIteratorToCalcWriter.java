@@ -9,6 +9,7 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
+import javax.jcr.Value;
 import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
 
@@ -41,6 +42,8 @@ public class RowIteratorToCalcWriter {
 
 	private final static Log log = LogFactory
 			.getLog(RowIteratorToCalcWriter.class);
+
+	private final static String SEPARATOR = "; ";
 
 	// Must be set first
 	private List<ColumnDefinition> columnDefs;
@@ -183,7 +186,19 @@ public class RowIteratorToCalcWriter {
 				Property prop = node.getProperty(currCol.getPropertyName());
 				// String rawValueStr = prop.getString();
 
-				if (PropertyType.LONG == currCol.getPropertyType()) {
+				if (prop.isMultiple()) {
+					// best effort
+					StringBuilder builder = new StringBuilder();
+					for (Value value : prop.getValues()) {
+						builder.append(value.getString()).append(SEPARATOR);
+					}
+					if (builder.lastIndexOf(SEPARATOR) > 0) {
+						builder.delete(builder.length() - 2, builder.length());
+					}
+					sheet.addCell(new Label(currColIndex, currRowIndex, builder
+							.toString(), tableBodyStringFormat));
+					return currColIndex + 1;
+				} else if (PropertyType.LONG == currCol.getPropertyType()) {
 					sheet.addCell(new jxl.write.Number(currColIndex,
 							currRowIndex, prop.getLong(), tableBodyIntFormat));
 					return currColIndex + 1;

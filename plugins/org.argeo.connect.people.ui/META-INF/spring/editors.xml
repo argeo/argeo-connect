@@ -4,24 +4,25 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="staticSearchEntityEditor" class="org.argeo.connect.people.ui.editors.StaticSearchEntityEditor"
+	<bean id="staticSearchEntityEditor"
+		class="org.argeo.connect.people.ui.editors.StaticSearchEntityEditor"
 		scope="prototype">
-		<!--  <property name="peopleService" ref="peopleService" />-->
-		<!--  <property name="peopleUiService" ref="localUiService" /> -->
-		<!--  <property name="peopleUiService" ref="peopleUiService" />-->
+		<property name="repository" ref="repository" />
+		<!-- <property name="peopleUiService" ref="localUiService" /> -->
+		<!-- <property name="peopleUiService" ref="peopleUiService" /> -->
 	</bean>
-	<!--  REMOVE THE FOLLOWING -->
+	<!-- REMOVE THE FOLLOWING -->
 	<bean id="searchEntityEditor" class="org.argeo.connect.people.ui.editors.SearchEntityEditor"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
-		<!--  <property name="peopleUiService" ref="localUiService" /> -->
+		<!-- <property name="peopleUiService" ref="localUiService" /> -->
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
 
 	<bean id="groupEditor" class="org.argeo.connect.people.ui.editors.GroupEditor"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
-		<!--  <property name="peopleUiService" ref="localUiService" /> -->
+		<!-- <property name="peopleUiService" ref="localUiService" /> -->
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
 
@@ -29,7 +30,7 @@
 	<bean id="personEditor" class="org.argeo.connect.people.ui.editors.PersonEditor"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
-		<!--  <property name="peopleUiService" ref="localUiService" /> -->
+		<!-- <property name="peopleUiService" ref="localUiService" /> -->
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
 </beans>

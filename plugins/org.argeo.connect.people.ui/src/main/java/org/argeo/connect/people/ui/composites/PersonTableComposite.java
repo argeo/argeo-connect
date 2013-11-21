@@ -11,6 +11,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
+import javax.jcr.query.RowIterator;
 import javax.jcr.query.qom.Constraint;
 import javax.jcr.query.qom.DynamicOperand;
 import javax.jcr.query.qom.Ordering;
@@ -20,9 +21,11 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.connect.people.ui.extracts.ITableProvider;
 import org.argeo.connect.people.ui.utils.BaseJcrNodeLabelProvider;
 import org.argeo.connect.people.ui.utils.NodeViewerComparator;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -53,7 +56,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.Section;
 
 /** Almost canonic implementation of a table that display persons */
-public class PersonTableComposite extends Composite implements ArgeoNames {
+public class PersonTableComposite extends Composite implements ArgeoNames,
+		ITableProvider {
 	private static final long serialVersionUID = 1262369448445021926L;
 
 	private TableViewer personViewer;
@@ -406,5 +410,81 @@ public class PersonTableComposite extends Composite implements ArgeoNames {
 
 		QueryResult result = query.execute();
 		return result.getNodes();
+	}
+
+	// TODO first PoC Clean this
+
+	@Override
+	public RowIterator getRowIterator(String extractId) {
+		try {
+			String filter = hasFilter ? filterTxt.getText() : null;
+			QueryManager queryManager = session.getWorkspace()
+					.getQueryManager();
+			QueryObjectModelFactory factory = queryManager.getQOMFactory();
+
+			Selector source = factory.selector(PeopleTypes.PEOPLE_PERSON,
+					PeopleTypes.PEOPLE_PERSON);
+
+			Constraint defaultC = null;
+
+			// Build constraints based the textArea filter content
+			if (filter != null && !"".equals(filter.trim())) {
+				// Parse the String
+				String[] strs = filter.trim().split(" ");
+				for (String token : strs) {
+					StaticOperand so = factory.literal(session
+							.getValueFactory().createValue("*" + token + "*"));
+					Constraint currC = factory.fullTextSearch(
+							source.getSelectorName(), null, so);
+					if (defaultC == null)
+						defaultC = currC;
+					else
+						defaultC = factory.and(defaultC, currC);
+				}
+			}
+
+			String tagStr = tagTxt.getText();
+			if (CommonsJcrUtils.checkNotEmptyString(tagStr)) {
+				DynamicOperand dynOp = factory.propertyValue(
+						source.getSelectorName(), PeopleNames.PEOPLE_TAGS);
+				StaticOperand statOp = factory.literal(session
+						.getValueFactory().createValue("%" + tagStr + "%"));
+				Constraint c2 = factory.comparison(dynOp,
+						QueryObjectModelFactory.JCR_OPERATOR_LIKE, statOp);
+				if (defaultC == null)
+					defaultC = c2;
+				else
+					defaultC = factory.and(defaultC, c2);
+			}
+
+			Ordering[] orderings = null;
+
+			QueryObjectModel query = factory.createQuery(source, defaultC,
+					orderings, null);
+
+			QueryResult result = query.execute();
+			return result.getRows();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to get rows for the extract", re);
+		}
+	}
+
+	@Override
+	public List<org.argeo.connect.people.ui.extracts.ColumnDefinition> getColumnDefinition(
+			String extractId) {
+		List<org.argeo.connect.people.ui.extracts.ColumnDefinition> colDefs = new ArrayList<org.argeo.connect.people.ui.extracts.ColumnDefinition>();
+		colDefs.add(new org.argeo.connect.people.ui.extracts.ColumnDefinition(
+				PeopleTypes.PEOPLE_PERSON, Property.JCR_TITLE,
+				PropertyType.STRING, "Display Name", 300));
+		colDefs.add(new org.argeo.connect.people.ui.extracts.ColumnDefinition(
+				PeopleTypes.PEOPLE_PERSON, PeopleNames.PEOPLE_LAST_NAME,
+				PropertyType.STRING, "Last name", 120));
+		colDefs.add(new org.argeo.connect.people.ui.extracts.ColumnDefinition(
+				PeopleTypes.PEOPLE_PERSON, PeopleNames.PEOPLE_FIRST_NAME,
+				PropertyType.STRING, "First name", 120));
+		colDefs.add(new org.argeo.connect.people.ui.extracts.ColumnDefinition(
+				PeopleTypes.PEOPLE_PERSON, PeopleNames.PEOPLE_TAGS,
+				PropertyType.STRING, "Tags", 200));
+		return colDefs;
 	}
 }
