@@ -31,18 +31,36 @@ import org.eclipse.swt.graphics.Image;
 /** Shared icons. */
 public class PeopleImages {
 
+	// order images in various folder to ease their management
+	final private static String BASE_PATH = "icons/";
+	final private static String ENTITY_PATH = BASE_PATH + "entities/";
+	final private static String MISC_PATH = BASE_PATH + "miscellaneous/";
+
+	// Entities
+	public final static Image ICON_PERSON = PeopleUiPlugin.getImageDescriptor(
+			ENTITY_PATH + "person.png").createImage();
+	public final static Image ICON_ORG = PeopleUiPlugin.getImageDescriptor(
+			ENTITY_PATH + "company.png").createImage();
+	public final static Image ICON_FILM = PeopleUiPlugin.getImageDescriptor(
+			ENTITY_PATH + "film.png").createImage();
+	public final static Image ICON_MAILING_LIST = PeopleUiPlugin
+			.getImageDescriptor(ENTITY_PATH + "mailingList.gif").createImage();
+	public final static Image ICON_GROUP = PeopleUiPlugin.getImageDescriptor(
+			ENTITY_PATH + "group.gif").createImage();
+
+	// Miscellaneous
 	public final static Image LOGO = PeopleUiPlugin.getImageDescriptor(
 			"icons/logo.gif").createImage();
 
 	public final static Image LOGO_SMALL = PeopleUiPlugin.getImageDescriptor(
 			"icons/smallerOrnamentLogo.png").createImage();
-	
+
 	public final static Image NO_PICTURE = PeopleUiPlugin.getImageDescriptor(
 			"icons/noPicture.gif").createImage();
 
 	public final static Image PERSON = PeopleUiPlugin.getImageDescriptor(
 			"icons/person.gif").createImage();
-	
+
 	public final static Image DELETE_BTN = PeopleUiPlugin.getImageDescriptor(
 			"icons/delete.png").createImage();
 

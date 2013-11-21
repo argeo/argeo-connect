@@ -26,8 +26,6 @@
  */
 package org.argeo.connect.people.ui;
 
-import org.argeo.connect.people.ContactValueCatalogs;
-import org.argeo.connect.people.PeopleTypes;
 import org.eclipse.swt.graphics.Image;
 
 /** Shared icons. */
@@ -80,72 +78,9 @@ public class ContactImages {
 			PREFIX + "facebook.png").createImage();
 
 	public final static Image XING = PeopleUiPlugin.getImageDescriptor(
-			PREFIX + "xing"
-					+ ".png").createImage();
+			PREFIX + "xing" + ".png").createImage();
 
 	// IMPP
 	public final static Image DEFAULT_IMPP = PeopleUiPlugin.getImageDescriptor(
 			PREFIX + "impp.png").createImage();
-
-	/**
-	 * Return the corresponding image if found or default one depending only on
-	 * the contact type
-	 */
-	public static Image getImage(String entityNType, String contactNType,
-			String nature, String category) {
-
-		// EMAIL
-		if (PeopleTypes.PEOPLE_EMAIL.equals(contactNType)) {
-			return DEFAULT_MAIL;
-		}
-		// PHONE
-		else if (PeopleTypes.PEOPLE_PHONE.equals(contactNType)) {
-			 if (ContactValueCatalogs.CONTACT_CAT_FAX.equals(category))
-					return FAX;
-			 else 
-			if (ContactValueCatalogs.CONTACT_CAT_MOBILE.equals(category))
-				return MOBILE;
-			if (entityNType.equals(PeopleTypes.PEOPLE_PERSON)) {
-				if (ContactValueCatalogs.CONTACT_CAT_PRO_DIRECT.equals(category))
-					return PHONE_DIRECT;
-				else if (ContactValueCatalogs.CONTACT_NATURE_PRO.equals(nature))
-					return WORK;
-			} else if (entityNType.equals(PeopleTypes.PEOPLE_ORGANIZATION))
-				if (ContactValueCatalogs.CONTACT_CAT_PRO_RECEPTION
-						.equals(category))
-					return PHONE_DIRECT;
-			return DEFAULT_PHONE;
-		}
-		// ADDRESS
-		else if (PeopleTypes.PEOPLE_ADDRESS.equals(contactNType)) {
-			if (entityNType.equals(PeopleTypes.PEOPLE_PERSON) && ContactValueCatalogs.CONTACT_NATURE_PRIVATE.equals(nature))
-				return DEFAULT_ADDRESS;
-			return WORK;
-		}
-		// URL
-		else if (PeopleTypes.PEOPLE_URL.equals(contactNType)) {
-			if (entityNType.equals(PeopleTypes.PEOPLE_PERSON)
-					&& ContactValueCatalogs.CONTACT_NATURE_PRIVATE
-							.equals(nature))
-				return PRIVATE_HOME_PAGE;
-			return DEFAULT_URL;
-		}
-		// SOCIAL MEDIA
-		else if (PeopleTypes.PEOPLE_SOCIAL_MEDIA.equals(contactNType)) {
-			if (ContactValueCatalogs.CONTACT_CAT_GOOGLEPLUS.equals(category))
-				return GOOGLEPLUS;
-			else if (ContactValueCatalogs.CONTACT_CAT_FACEBOOK.equals(category))
-				return FACEBOOK;
-			else if (ContactValueCatalogs.CONTACT_CAT_LINKEDIN.equals(category))
-				return LINKEDIN;
-			else if (ContactValueCatalogs.CONTACT_CAT_XING.equals(category))
-				return XING;
-			return DEFAULT_SOCIAL_MEDIA;
-		}
-		// IMPP
-		else if (PeopleTypes.PEOPLE_IMPP.equals(contactNType)) {
-			return DEFAULT_IMPP;
-		}
-		return null;
-	}
 }

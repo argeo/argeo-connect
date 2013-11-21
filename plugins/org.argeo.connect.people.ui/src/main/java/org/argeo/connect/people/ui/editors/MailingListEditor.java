@@ -28,15 +28,18 @@ import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.ui.commands.AddEntityReferenceWithPosition;
+import org.argeo.connect.people.ui.commands.AddEntityReference;
 import org.argeo.connect.people.ui.commands.GetCalcExtract;
 import org.argeo.connect.people.ui.extracts.ColumnDefinition;
 import org.argeo.connect.people.ui.extracts.ExtractDefinition;
 import org.argeo.connect.people.ui.extracts.ITableProvider;
 import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.ui.listeners.RowViewerDoubleClickListener;
+import org.argeo.connect.people.ui.providers.PeopleImageProvider;
 import org.argeo.connect.people.ui.providers.SimpleJcrRowLabelProvider;
 import org.argeo.connect.people.ui.utils.MailListComparator;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrUtils;
@@ -54,6 +57,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -75,19 +79,11 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 
 	private TableViewer membersViewer;
 
-	// private GroupToolkit groupToolkit;
-
 	@Override
 	protected void createToolkits() {
-		// groupToolkit = new GroupToolkit(toolkit, getManagedForm(),
-		// getPeopleServices(), getPeopleUiServices());
 	}
 
-	// protected void populateMainInfoDetails(Composite parent) {
-	// super.populateMainInfoDetails(parent);
-	// }
-
-	private String getCurrentMail() {
+	private String getCurrentMails() {
 		StringBuilder builder = new StringBuilder();
 		try {
 			RowIterator ri = refreshFilteredList((String) membersViewer
@@ -95,10 +91,11 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 			while (ri.hasNext()) {
 				Row row = ri.nextRow();
 				Node node;
-				node = row.getNode(PeopleTypes.PEOPLE_MAILING_LIST_ITEM);
-				builder.append(
-						node.getProperty(PeopleNames.PEOPLE_ROLE).getString())
-						.append(",");
+				node = row.getNode(PeopleTypes.PEOPLE_ENTITY);
+				String mailValue = PeopleJcrUtils.getPrimaryContactValue(node,
+						PeopleTypes.PEOPLE_EMAIL);
+				if (CommonsJcrUtils.checkNotEmptyString(mailValue))
+					builder.append(mailValue).append(",");
 			}
 			return builder.toString();
 		} catch (RepositoryException e) {
@@ -139,7 +136,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 				.createButton(buttonsCmp, "Add member", SWT.PUSH);
 		configureAddMemberButton(addBtn, entity,
 				"Add new members to this mailing list",
-				PeopleTypes.PEOPLE_PERSON);
+				PeopleTypes.PEOPLE_CONTACTABLE);
 
 		Button exportBtn = toolkit.createButton(buttonsCmp, "Export", SWT.PUSH);
 		configureCallExtractButton(exportBtn,
@@ -154,18 +151,14 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 				+ " target");
 		button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
 
-		button.addSelectionListener(new SelectionListener() {
+		button.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				UrlLauncher launcher = RWT.getClient().getService(
 						UrlLauncher.class);
-				launcher.openURL("mailto:?bcc=" + getCurrentMail());
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
+				launcher.openURL("mailto:?bcc=" + getCurrentMails());
 			}
 		});
 
@@ -218,8 +211,8 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 					.getQueryManager();
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
 
-			Selector mainSlct = factory.selector(PeopleTypes.PEOPLE_PERSON,
-					PeopleTypes.PEOPLE_PERSON);
+			Selector mainSlct = factory.selector(PeopleTypes.PEOPLE_ENTITY,
+					PeopleTypes.PEOPLE_ENTITY);
 			Selector refSlct = factory.selector(
 					PeopleTypes.PEOPLE_MAILING_LIST_ITEM,
 					PeopleTypes.PEOPLE_MAILING_LIST_ITEM);
@@ -253,7 +246,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 					StaticOperand so = factory.literal(getSession()
 							.getValueFactory().createValue("*" + token + "*"));
 					Constraint currC = factory.fullTextSearch(
-							refSlct.getSelectorName(), null, so);
+							mainSlct.getSelectorName(), null, so);
 					if (defaultC == null)
 						defaultC = currC;
 					else
@@ -270,6 +263,14 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 		}
 	}
 
+	/** Recursively retrieve the parent Mailing list **/
+	private Node getParentMailingList(Node node) throws RepositoryException {
+		if (node.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST))
+			return node;
+		else
+			return getParentMailingList(node.getParent());
+	}
+
 	private TableViewer createTableViewer(Composite parent) {
 		parent.setLayout(new FillLayout());
 		MailListComparator comparator = new MailListComparator();
@@ -282,35 +283,71 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 		table.setLinesVisible(true);
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 
-		// Last Name
-		TableViewerColumn col = ViewerUtils.createTableViewerColumn(viewer,
-				"Last Name", SWT.NONE, 120);
-		col.setLabelProvider(new SimpleJcrRowLabelProvider(
-				PeopleTypes.PEOPLE_PERSON, PeopleNames.PEOPLE_LAST_NAME));
-		col.getColumn().addSelectionListener(
-				getSelectionAdapter(0, PropertyType.STRING,
-						PeopleTypes.PEOPLE_PERSON,
-						PeopleNames.PEOPLE_LAST_NAME, comparator, viewer));
+		// Entity Type Icon
+		TableViewerColumn col = ViewerUtils.createTableViewerColumn(viewer, "",
+				SWT.NONE, 25);
+		// column.setEditingSupport(new SelectedEditingSupport(viewer));
+		col.setLabelProvider(new ColumnLabelProvider() {
+			private static final long serialVersionUID = 1L;
+			private PeopleImageProvider imageProvider = new PeopleImageProvider();
 
-		// First Name
-		col = ViewerUtils.createTableViewerColumn(viewer, "First Name",
-				SWT.NONE, 120);
+			@Override
+			public String getText(Object element) {
+				return null;
+			}
+
+			@Override
+			public Image getImage(Object element) {
+				try {
+					Row currRow = (Row) element;
+					Node currNode = currRow.getNode(PeopleTypes.PEOPLE_ENTITY);
+					return imageProvider.getDefaultIconByType(currNode);
+				} catch (RepositoryException re) {
+					// Error while retrieving image, silent
+				}
+				return null;
+			}
+
+		});
+
+		// Display Name
+		col = ViewerUtils.createTableViewerColumn(viewer, "Display Name",
+				SWT.NONE, 180);
 		col.setLabelProvider(new SimpleJcrRowLabelProvider(
-				PeopleTypes.PEOPLE_PERSON, PeopleNames.PEOPLE_FIRST_NAME));
+				PeopleTypes.PEOPLE_ENTITY, Property.JCR_TITLE));
 		col.getColumn().addSelectionListener(
 				getSelectionAdapter(1, PropertyType.STRING,
-						PeopleTypes.PEOPLE_PERSON,
-						PeopleNames.PEOPLE_FIRST_NAME, comparator, viewer));
+						PeopleTypes.PEOPLE_ENTITY, Property.JCR_TITLE,
+						comparator, viewer));
 
-		// default mail
-		col = ViewerUtils.createTableViewerColumn(viewer, "Address", SWT.NONE,
-				200);
-		col.setLabelProvider(new SimpleJcrRowLabelProvider(
-				PeopleTypes.PEOPLE_MAILING_LIST_ITEM, PeopleNames.PEOPLE_ROLE));
-		col.getColumn().addSelectionListener(
-				getSelectionAdapter(2, PropertyType.STRING,
-						PeopleTypes.PEOPLE_MAILING_LIST_ITEM,
-						PeopleNames.PEOPLE_ROLE, comparator, viewer));
+		// Primary mail address
+		col = ViewerUtils.createTableViewerColumn(viewer, "Primary mail",
+				SWT.NONE, 300);
+		col.setLabelProvider(new ColumnLabelProvider() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getText(Object element) {
+				String text = null;
+				try {
+					Row currRow = (Row) element;
+					Node currNode = currRow.getNode(PeopleTypes.PEOPLE_ENTITY);
+					text = PeopleJcrUtils.getPrimaryContactValue(currNode,
+							PeopleTypes.PEOPLE_EMAIL);
+				} catch (RepositoryException re) {
+					throw new PeopleException(
+							"unable to retrieve primary mail value for row "
+									+ element, re);
+				}
+				return text == null ? "" : text;
+			}
+
+			@Override
+			public Image getImage(Object element) {
+				return null;
+			}
+
+		});
 
 		// Remove links
 		table.addSelectionListener(new HtmlListRwtAdapter());
@@ -324,7 +361,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 					Node link = ((Row) element)
 							.getNode(PeopleTypes.PEOPLE_MAILING_LIST_ITEM);
 					// get the corresponding group
-					Node person = link.getParent().getParent();
+					Node person = getParentMailingList(link);
 					return PeopleHtmlUtils.getRemoveReferenceSnippetForLists(
 							link, person);
 				} catch (RepositoryException e) {
@@ -335,14 +372,13 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 		});
 
 		// IMPORTANT: initialize comparator before setting it
-		comparator.setColumn(PropertyType.STRING, PeopleTypes.PEOPLE_PERSON,
-				PeopleNames.PEOPLE_LAST_NAME);
+		comparator.setColumn(PropertyType.STRING, PeopleTypes.PEOPLE_ENTITY,
+				Property.JCR_TITLE);
 		viewer.setComparator(comparator);
 
 		// Double click
-
 		RowViewerDoubleClickListener ndcl = new RowViewerDoubleClickListener(
-				getPeopleUiService(), PeopleTypes.PEOPLE_PERSON);
+				getPeopleUiService(), PeopleTypes.PEOPLE_ENTITY);
 		viewer.addDoubleClickListener(ndcl);
 		return viewer;
 	}
@@ -443,16 +479,13 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 			public void widgetSelected(SelectionEvent e) {
 				Map<String, String> params = new HashMap<String, String>();
 				try {
-					params.put(
-							AddEntityReferenceWithPosition.PARAM_REFERENCING_JCR_ID,
+					params.put(AddEntityReference.PARAM_REFERENCING_JCR_ID,
 							targetNode.getIdentifier());
-					params.put(
-							AddEntityReferenceWithPosition.PARAM_TO_SEARCH_NODE_TYPE,
+					params.put(AddEntityReference.PARAM_TO_SEARCH_NODE_TYPE,
 							nodeTypeToSearch);
-					params.put(AddEntityReferenceWithPosition.PARAM_DIALOG_ID,
+					params.put(AddEntityReference.PARAM_DIALOG_ID,
 							PeopleUiConstants.DIALOG_ADD_ML_MEMBERS);
-					CommandUtils.callCommand(AddEntityReferenceWithPosition.ID,
-							params);
+					CommandUtils.callCommand(AddEntityReference.ID, params);
 				} catch (RepositoryException e1) {
 					throw new PeopleException(
 							"Unable to get parent Jcr identifier", e1);

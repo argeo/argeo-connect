@@ -1,6 +1,7 @@
 package org.argeo.connect.people.ui.toolkits;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.jcr.ItemNotFoundException;
@@ -9,18 +10,34 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+import javax.jcr.query.qom.Constraint;
+import javax.jcr.query.qom.DynamicOperand;
+import javax.jcr.query.qom.QueryObjectModel;
+import javax.jcr.query.qom.QueryObjectModelConstants;
+import javax.jcr.query.qom.QueryObjectModelFactory;
+import javax.jcr.query.qom.Selector;
+import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.PeopleImages;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.connect.people.ui.commands.AddEntityReference;
+import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.composites.ContactAddressComposite;
 import org.argeo.connect.people.ui.composites.ContactComposite;
 import org.argeo.connect.people.ui.wizards.PickUpOrgDialog;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.argeo.eclipse.ui.utils.CommandUtils;
+import org.argeo.jcr.JcrUtils;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -56,6 +73,178 @@ public class ContactToolkit {
 		this.toolkit = toolkit;
 		this.form = form;
 		this.peopleService = peopleService;
+	}
+
+	public void populateMailingListMembershipPanel(final Composite parent,
+			final Node entity) {
+		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder(2);
+		gl.marginBottom = 5;
+		parent.setLayout(gl);
+		// parent.setLayout(new GridLayout(2, false));
+
+		final Composite nlCmp = new Composite(parent, SWT.NO_FOCUS);
+		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+		nlCmp.setLayoutData(gd);
+
+		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
+		rl.wrap = true;
+		rl.marginLeft = 5;
+		rl.marginRight = 0;
+		nlCmp.setLayout(rl);
+
+		final Button addBtn = new Button(parent, SWT.PUSH);
+		addBtn.setText("Add new mailing list(s)");
+		gd = new GridData(SWT.CENTER, SWT.TOP, false, false);
+		gd.widthHint = 135;
+		addBtn.setLayoutData(gd);
+
+		AbstractFormPart editPart = new AbstractFormPart() {
+			public void refresh() {
+				super.refresh();
+				// We redraw the full control at each refresh, might be a more
+				// efficient way to do
+				Control[] oldChildren = nlCmp.getChildren();
+				for (Control child : oldChildren)
+					child.dispose();
+
+				try {
+					List<Node> referencings = getNodeReferencing(entity);
+
+					for (final Node node : referencings) {
+						final Node parNode = getParentMailingList(node);
+						Link link = new Link(nlCmp, SWT.NONE);
+						link.setText("<a>"
+								+ CommonsJcrUtils.get(parNode,
+										Property.JCR_TITLE) + "</a>");
+						link.setToolTipText(CommonsJcrUtils.get(parNode,
+								Property.JCR_DESCRIPTION));
+						link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+
+						link.addSelectionListener(new SelectionAdapter() {
+							private static final long serialVersionUID = 1L;
+
+							@Override
+							public void widgetSelected(
+									final SelectionEvent event) {
+								Map<String, String> params = new HashMap<String, String>();
+								params.put(OpenEntityEditor.PARAM_ENTITY_TYPE,
+										PeopleTypes.PEOPLE_MAILING_LIST);
+								params.put(OpenEntityEditor.PARAM_ENTITY_UID,
+										CommonsJcrUtils.get(parNode,
+												PeopleNames.PEOPLE_UID));
+								CommandUtils.callCommand(OpenEntityEditor.ID,
+										params);
+							}
+						});
+
+						final Button deleteBtn = new Button(nlCmp, SWT.FLAT);
+						deleteBtn.setData(RWT.CUSTOM_VARIANT,
+								PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+						deleteBtn.setImage(PeopleImages.DELETE_BTN_LEFT);
+						RowData rd = new RowData();
+						rd.height = 16;
+						rd.width = 18;
+						deleteBtn.setLayoutData(rd);
+
+						deleteBtn.addSelectionListener(new SelectionAdapter() {
+							private static final long serialVersionUID = 1L;
+
+							@Override
+							public void widgetSelected(
+									final SelectionEvent event) {
+								try {
+									boolean wasCheckedOut = CommonsJcrUtils
+											.isNodeCheckedOutByMe(parNode);
+									if (!wasCheckedOut)
+										CommonsJcrUtils.checkout(parNode);
+									node.remove();
+									if (wasCheckedOut)
+										parNode.getSession().save();
+									else
+										CommonsJcrUtils.saveAndCheckin(parNode);
+								} catch (RepositoryException e) {
+									throw new PeopleException(
+											"unable to initialise deletion", e);
+								}
+								for (IFormPart part : form.getParts()) {
+									((AbstractFormPart) part).markStale();
+									part.refresh();
+								}
+							}
+						});
+
+					}
+					nlCmp.layout(false);
+					parent.getParent().layout();
+				} catch (RepositoryException re) {
+					throw new PeopleException(
+							"Error while refreshing mailing list appartenance",
+							re);
+				}
+			}
+		};
+
+		addBtn.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent event) {
+				Map<String, String> params = new HashMap<String, String>();
+				try {
+					params.put(AddEntityReference.PARAM_REFERENCED_JCR_ID,
+							entity.getIdentifier());
+					params.put(AddEntityReference.PARAM_TO_SEARCH_NODE_TYPE,
+							PeopleTypes.PEOPLE_MAILING_LIST);
+					params.put(AddEntityReference.PARAM_DIALOG_ID,
+							PeopleUiConstants.DIALOG_ADD_ML_MEMBERSHIP);
+					CommandUtils.callCommand(AddEntityReference.ID, params);
+				} catch (RepositoryException e1) {
+					throw new PeopleException(
+							"Unable to get parent Jcr identifier", e1);
+				}
+			}
+		});
+
+		editPart.initialize(form);
+		form.addPart(editPart);
+	}
+
+	/** Recursively retrieve the parent Mailing list **/
+	private Node getParentMailingList(Node node) throws RepositoryException {
+		if (node.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST))
+			return node;
+		else
+			return getParentMailingList(node.getParent());
+	}
+
+	private List<Node> getNodeReferencing(Node entity) {
+		try {
+			Session session = entity.getSession();
+			QueryManager queryManager = session.getWorkspace()
+					.getQueryManager();
+			QueryObjectModelFactory qomFactory = queryManager.getQOMFactory();
+
+			Selector source = qomFactory.selector(
+					PeopleTypes.PEOPLE_MAILING_LIST_ITEM,
+					PeopleTypes.PEOPLE_MAILING_LIST_ITEM);
+
+			// Parse the String
+			StaticOperand so = qomFactory.literal(entity.getProperty(
+					PeopleNames.PEOPLE_UID).getValue());
+			DynamicOperand dop = qomFactory.propertyValue(
+					source.getSelectorName(), PeopleNames.PEOPLE_REF_UID);
+			Constraint defaultC = qomFactory.comparison(dop,
+					QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
+
+			QueryObjectModel query;
+			query = qomFactory.createQuery(source, defaultC, null, null);
+			QueryResult result = query.execute();
+			NodeIterator ni = result.getNodes();
+
+			return JcrUtils.nodeIteratorToList(ni);
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to list entities", e);
+		}
 	}
 
 	public void createContactPanelWithNotes(Composite parent, final Node entity) {
@@ -125,29 +314,31 @@ public class ContactToolkit {
 				try {
 					super.refresh();
 					// first: initialise composite for new contacts
-					Node contactsPar = entity
-							.getNode(PeopleNames.PEOPLE_CONTACTS);
-					NodeIterator ni = contactsPar.getNodes();
-					while (ni.hasNext()) {
-						Node currNode = ni.nextNode();
-						String currJcrId = currNode.getIdentifier();
-						if (!contactCmps.containsKey(currJcrId)) {
-							Composite currCmp = null;
-							if (CommonsJcrUtils.isNodeType(currNode,
-									PeopleTypes.PEOPLE_ADDRESS))
-								currCmp = new ContactAddressComposite(parent,
-										SWT.NO_FOCUS, toolkit, form,
-										peopleService, currNode, entity);
-							else
-								currCmp = new ContactComposite(parent,
-										SWT.NO_FOCUS, toolkit, form, currNode,
-										entity);
-							contactCmps.put(currJcrId, currCmp);
+					if (entity.hasNode(PeopleNames.PEOPLE_CONTACTS)) {
+						Node contactsPar = entity
+								.getNode(PeopleNames.PEOPLE_CONTACTS);
+						NodeIterator ni = contactsPar.getNodes();
+						while (ni.hasNext()) {
+							Node currNode = ni.nextNode();
+							String currJcrId = currNode.getIdentifier();
+							if (!contactCmps.containsKey(currJcrId)) {
+								Composite currCmp = null;
+								if (CommonsJcrUtils.isNodeType(currNode,
+										PeopleTypes.PEOPLE_ADDRESS))
+									currCmp = new ContactAddressComposite(
+											parent, SWT.NO_FOCUS, toolkit,
+											form, peopleService, currNode,
+											entity);
+								else
+									currCmp = new ContactComposite(parent,
+											SWT.NO_FOCUS, toolkit, form,
+											currNode, entity);
+								contactCmps.put(currJcrId, currCmp);
+							}
 						}
 					}
-
 					// then remove necessary composites
-					Session session = contactsPar.getSession();
+					Session session = entity.getSession();
 					for (String jcrId : contactCmps.keySet()) {
 						// TODO: enhance this
 						Composite currCmp = contactCmps.get(jcrId);

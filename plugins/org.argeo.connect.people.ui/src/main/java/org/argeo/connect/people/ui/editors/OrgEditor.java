@@ -105,6 +105,11 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void populateMainInfoDetails(final Composite parent) {
+		// Mailing list management
+		Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		contactTK.populateMailingListMembershipPanel(mlCmp, org);
+
 		// Branche Management
 		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));

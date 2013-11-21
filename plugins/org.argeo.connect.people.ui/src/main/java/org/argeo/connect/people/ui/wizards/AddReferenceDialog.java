@@ -117,6 +117,10 @@ public abstract class AddReferenceDialog extends TrayDialog {
 
 	protected abstract boolean performAddition(List<Row> items);
 
+	protected Session getSession() {
+		return session;
+	}
+
 	private List<Row> getSelectedItems() {
 		return selectedItems;
 	}

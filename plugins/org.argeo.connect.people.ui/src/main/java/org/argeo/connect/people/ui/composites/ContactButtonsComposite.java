@@ -6,9 +6,9 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.ui.ContactImages;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.providers.PeopleImageProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.eclipse.rap.rwt.RWT;
@@ -31,10 +31,12 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class ContactButtonsComposite extends Composite {
 	private static final long serialVersionUID = 2331713954300845292L;
 
-	protected final Node contactNode;
-	protected final Node parentVersionableNode;
-	protected final FormToolkit toolkit;
-	protected final IManagedForm form;
+	private final Node contactNode;
+	private final Node parentVersionableNode;
+	// private final FormToolkit toolkit;
+	private final IManagedForm form;
+
+	private final PeopleImageProvider imageProvider = new PeopleImageProvider();
 
 	// Don't forget to unregister on dispose
 	private AbstractFormPart formPart;
@@ -44,7 +46,7 @@ public class ContactButtonsComposite extends Composite {
 			Node parentVersionableNode) {
 		super(parent, style);
 		this.contactNode = contactNode;
-		this.toolkit = toolkit;
+		// this.toolkit = toolkit;
 		this.form = form;
 		this.parentVersionableNode = parentVersionableNode;
 		populate();
@@ -114,7 +116,7 @@ public class ContactButtonsComposite extends Composite {
 			String entityType = contactNode.getParent().getParent()
 					.getPrimaryNodeType().getName();
 
-			btn.setImage(ContactImages.getImage(entityType, contactType,
+			btn.setImage(imageProvider.getContactIcon(entityType, contactType,
 					nature, category));
 
 			RowData rd = new RowData();

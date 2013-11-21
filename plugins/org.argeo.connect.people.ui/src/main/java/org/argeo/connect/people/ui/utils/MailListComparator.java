@@ -47,7 +47,6 @@ public class MailListComparator extends ViewerComparator {
 		long lc = 0;
 
 		try {
-
 			Node n1 = ((Row) e1).getNode(selectorName);
 			Node n2 = ((Row) e2).getNode(selectorName);
 

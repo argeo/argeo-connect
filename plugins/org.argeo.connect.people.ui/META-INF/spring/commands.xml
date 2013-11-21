@@ -5,6 +5,13 @@
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<!-- Entity References CRUD -->
+	<bean id="org.argeo.connect.people.ui.addEntityReference" class="org.argeo.connect.people.ui.commands.AddEntityReference"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+	</bean>
+
+	<!-- Remove 2 following commands -->
+
 	<bean id="org.argeo.connect.people.ui.addEntityReferences"
 		class="org.argeo.connect.people.ui.commands.AddEntityReferences"
 		scope="prototype">
@@ -15,6 +22,11 @@
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 	</bean>
+
+	<!-- until there -->
+
+
+
 	<bean id="org.argeo.connect.people.ui.editEntityReferenceWithPosition"
 		class="org.argeo.connect.people.ui.commands.EditEntityReferenceWithPosition"
 		scope="prototype">

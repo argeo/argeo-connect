@@ -83,6 +83,8 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 
 	// Business Objects
 	private Node entity;
+	// Enable mangement of new entities
+	private boolean isDraft = false;
 	// A corresponding picture that must be explicitly disposed
 	protected Image itemPicture = null;
 
@@ -99,6 +101,10 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			session = repository.login();
 			EntityEditorInput sei = (EntityEditorInput) getEditorInput();
 			entity = getSession().getNodeByIdentifier(sei.getUid());
+
+			if (entity.hasProperty(PeopleNames.PEOPLE_IS_DRAFT))
+				isDraft = entity.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
+						.getBoolean();
 
 			InputStream is = null;
 			try {
@@ -142,7 +148,8 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			if (name.length() > SHORT_NAME_LENGHT)
 				name = name.substring(0, SHORT_NAME_LENGHT - 1) + "...";
 			setPartName(name);
-		}
+		} else if (isDraft)
+			setPartName("New...");
 	}
 
 	/** Override to create specific toolkits relevant for the current editor */

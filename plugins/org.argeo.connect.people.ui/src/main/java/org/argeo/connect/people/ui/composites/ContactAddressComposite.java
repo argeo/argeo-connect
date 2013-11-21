@@ -220,7 +220,7 @@ public class ContactAddressComposite extends Composite {
 
 			final Link chooseOrgLk = new Link(parent, SWT.NONE);
 			toolkit.adapt(chooseOrgLk, false, false);
-			chooseOrgLk.setText("<a>Pick up an Organisation</a>");
+			chooseOrgLk.setText("<a>Pick up an Org.</a>");
 			final PickUpOrgDialog diag = new PickUpOrgDialog(
 					chooseOrgLk.getShell(), "Choose an organisation",
 					contactNode.getSession(), contactNode.getParent()
@@ -233,9 +233,6 @@ public class ContactAddressComposite extends Composite {
 			// REFRESH VALUES
 			PeopleUiUtils.refreshFormTextWidget(labelTxt, contactNode,
 					PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
-			PeopleUiUtils.refreshFormTextWidget(valueTxt, contactNode,
-					PeopleNames.PEOPLE_CONTACT_VALUE, "Value");
-
 			String nature = CommonsJcrUtils.get(contactNode,
 					PeopleNames.PEOPLE_CONTACT_NATURE);
 			catCmb.setItems(ContactValueCatalogs.getCategoryList(
@@ -244,6 +241,16 @@ public class ContactAddressComposite extends Composite {
 			catCmb.select(0);
 			PeopleUiUtils.refreshFormComboValue(catCmb, contactNode,
 					PeopleNames.PEOPLE_CONTACT_CATEGORY);
+
+			if (contactNode.hasProperty(PeopleNames.PEOPLE_REF_UID)) {
+				Node linkedOrg = PeopleJcrUtils.getEntityByUid(contactNode
+						.getSession(),
+						contactNode.getProperty(PeopleNames.PEOPLE_REF_UID)
+								.getString());
+				if (linkedOrg != null)
+					valueTxt.setText(CommonsJcrUtils.get(linkedOrg,
+							Property.JCR_TITLE));
+			}
 
 			// Listeners
 			PeopleUiUtils.addTxtModifyListener(editFormPart, valueTxt,

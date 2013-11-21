@@ -622,11 +622,6 @@ public class PeopleJcrUtils implements PeopleNames {
 					firstName = replaceInvalidChars(node
 							.getProperty(PEOPLE_FIRST_NAME).getString().trim());
 
-				// if (node.hasProperty(PEOPLE_DISPLAY_NAME))
-				// displayName = JcrUtils.replaceInvalidChars(node
-				// .getProperty(PEOPLE_DISPLAY_NAME).getString()
-				// .trim());
-
 				// Effective building of the rel path
 				if (lastName.length() > 1) {
 					relPath = JcrUtils.firstCharsToPath(lastName, 2) + "/"
@@ -637,13 +632,7 @@ public class PeopleJcrUtils implements PeopleNames {
 					relPath += "/" + firstName;
 				else
 					relPath += "/" + UNKNOWN_NAME;
-				// if (displayName.length() > 1)
-				// relPath = JcrUtils.firstCharsToPath(UNKNOWN_NAME, 2) + "/"
-				// + UNKNOWN_NAME + "/"
-				// + JcrUtils.firstCharsToPath(UNKNOWN_NAME, 2) + "/"
-				// + UNKNOWN_NAME + "/"
-				// + JcrUtils.firstCharsToPath(displayName, 2)
-				// + displayName;
+
 			} else if (node.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)
 					|| (nodeType != null && PeopleTypes.PEOPLE_ORGANIZATION
 							.equals(nodeType))) {

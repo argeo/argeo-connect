@@ -108,6 +108,7 @@
          		name="Jcr ID of the node to remove">
   	 		</commandParameter>
     	</command>
+    	
     	<command
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       		id="org.argeo.connect.people.ui.editEntityReference"
@@ -121,6 +122,28 @@
          		name="Jcr ID of the node to edit">
   	 		</commandParameter>
     	</command>
+    	<command
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		id="org.argeo.connect.people.ui.addEntityReference"
+            name="Add a link between 2 entities">
+            <commandParameter
+         		id="param.referencingJcrId"
+         		name="Referencing node JCR identifier">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.referencedJcrId"
+         		name="Referenced node JCR identifier">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.toSearchNodeType"
+         		name="The type of node to search for">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.dialogId"
+         		name="ID of the corresponding dialog">
+  	 		</commandParameter>
+    	</command>
+<!-- TODO remove the 2 following commands --> 
     	<command
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       		id="org.argeo.connect.people.ui.addEntityReferences"
@@ -155,6 +178,7 @@
          		name="ID of the corresponding dialog">
   	 		</commandParameter>
     	</command>
+    	<!-- Until there --> 
 		<command
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       		id="org.argeo.connect.people.ui.editEntityReferenceWithPosition"
