@@ -53,7 +53,7 @@ public class GroupEditor extends AbstractEntityCTabEditor {
 	@Override
 	protected void createToolkits() {
 		groupToolkit = new GroupToolkit(toolkit, getManagedForm(),
-				getPeopleService(), getPeopleUiService());
+				getPeopleService());
 		// listToolkit = new ListToolkit(toolkit, getManagedForm(),
 		// getPeopleServices(), getPeopleUiServices());
 	}

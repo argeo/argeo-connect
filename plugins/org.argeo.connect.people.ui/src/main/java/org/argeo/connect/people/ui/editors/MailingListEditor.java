@@ -34,7 +34,7 @@ import org.argeo.connect.people.ui.extracts.ColumnDefinition;
 import org.argeo.connect.people.ui.extracts.ExtractDefinition;
 import org.argeo.connect.people.ui.extracts.ITableProvider;
 import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
-import org.argeo.connect.people.ui.listeners.RowViewerDoubleClickListener;
+import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.ui.providers.PeopleImageProvider;
 import org.argeo.connect.people.ui.providers.SimpleJcrRowLabelProvider;
 import org.argeo.connect.people.ui.utils.MailListComparator;
@@ -72,7 +72,6 @@ import org.eclipse.ui.forms.AbstractFormPart;
  * TODO what specific should be added
  */
 public class MailingListEditor extends GroupEditor implements ITableProvider {
-	// final static Log log = LogFactory.getLog(MailingListEditor.class);
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".mailingListEditor";
@@ -111,6 +110,16 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Members", PeopleUiConstants.PANEL_MEMBERS, tooltip);
 		membersViewer = createMembersList(innerPannel, getEntity());
+
+		// Double click
+		PeopleJcrViewerDClickListener ndcl = new PeopleJcrViewerDClickListener(
+				PeopleTypes.PEOPLE_ENTITY) {
+			@Override
+			protected String getOpenEditorCommandId() {
+				return MailingListEditor.this.getOpenEditorCommandId();
+			}
+		};
+		membersViewer.addDoubleClickListener(ndcl);
 	}
 
 	@Override
@@ -375,11 +384,6 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 		comparator.setColumn(PropertyType.STRING, PeopleTypes.PEOPLE_ENTITY,
 				Property.JCR_TITLE);
 		viewer.setComparator(comparator);
-
-		// Double click
-		RowViewerDoubleClickListener ndcl = new RowViewerDoubleClickListener(
-				getPeopleUiService(), PeopleTypes.PEOPLE_ENTITY);
-		viewer.addDoubleClickListener(ndcl);
 		return viewer;
 	}
 

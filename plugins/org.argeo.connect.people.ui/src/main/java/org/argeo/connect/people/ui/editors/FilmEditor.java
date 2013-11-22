@@ -15,14 +15,18 @@ import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.connect.people.ui.commands.OpenEntityEditor;
+import org.argeo.connect.people.ui.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.ui.providers.FilmOverviewLabelProvider;
 import org.argeo.connect.people.ui.toolkits.FilmToolkit;
 import org.argeo.connect.people.ui.toolkits.ListToolkit;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -93,7 +97,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 	protected void createToolkits() {
 		filmPanelToolkit = new FilmToolkit(toolkit, getManagedForm());
 		listPanelToolkit = new ListToolkit(toolkit, getManagedForm(),
-				getPeopleService(), getPeopleUiService());
+				getPeopleService());
 
 	}
 
@@ -110,7 +114,23 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 		tooltip = "Staff related to " + JcrUtils.get(film, FilmNames.FILM_ID);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Crew",
 				PeopleUiConstants.PANEL_MEMBERS, tooltip);
-		listPanelToolkit.populateMembersPanel(innerPannel, film);
+		TableViewer viewer = listPanelToolkit.populateMembersPanel(innerPannel,
+				film);
+
+		viewer.addDoubleClickListener(new PeopleDoubleClickAdapter() {
+
+			@Override
+			protected void processDoubleClick(Object obj) {
+				// Here we have PeopleMembers, we want to display linked
+				// entities on double click
+				if (obj instanceof Node) {
+					Node link = (Node) obj;
+					CommandUtils.callCommand(getOpenEditorCommandId(),
+							OpenEntityEditor.PARAM_ENTITY_UID, CommonsJcrUtils
+									.get(link, PeopleNames.PEOPLE_REF_UID));
+				}
+			}
+		});
 
 	}
 

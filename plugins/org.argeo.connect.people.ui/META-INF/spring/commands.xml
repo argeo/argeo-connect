@@ -51,7 +51,7 @@
 	<bean id="org.argeo.connect.people.ui.openEntityEditor" class="org.argeo.connect.people.ui.commands.OpenEntityEditor"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
-		<property name="peopleUiService" ref="peopleUiService" />
+		<property name="repository" ref="repository" />
 	</bean>
 
 	<bean id="importPeople"

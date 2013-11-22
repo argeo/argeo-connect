@@ -15,7 +15,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.ui.providers.EntitySingleColumnLabelProvider;
 import org.argeo.jcr.JcrUtils;
@@ -51,7 +50,6 @@ public class SearchEntityEditor extends EditorPart {
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
-	private PeopleUiService peopleUiService;
 	private Session session;
 
 	// This page widgets
@@ -189,29 +187,14 @@ public class SearchEntityEditor extends EditorPart {
 		table.setData(RWT.CUSTOM_ITEM_HEIGHT,
 				Integer.valueOf(getCurrRowHeight()));
 		v.setContentProvider(new BasicNodeListContentProvider());
-		v.addDoubleClickListener(peopleUiService
-				.getNewNodeListDoubleClickListener(peopleService));
+		// v.addDoubleClickListener(peopleUiService
+		// .getNewNodeListDoubleClickListener(peopleService));
 		entityViewer = v;
 	}
 
 	// Exposes to children classes
 	protected String getCurrNodeType() {
 		return entityType;
-	}
-
-	/* DEPENDENCY INJECTION */
-	public void setPeopleService(PeopleService peopleService) {
-		this.peopleService = peopleService;
-		try {
-			session = peopleService.getRepository().login();
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to initialize "
-					+ "session for view " + ID, e);
-		}
-	}
-
-	public void setPeopleUiService(PeopleUiService peopleUiService) {
-		this.peopleUiService = peopleUiService;
 	}
 
 	@Override
@@ -231,4 +214,16 @@ public class SearchEntityEditor extends EditorPart {
 	public boolean isSaveAsAllowed() {
 		return false;
 	}
+
+	/* DEPENDENCY INJECTION */
+	public void setPeopleService(PeopleService peopleService) {
+		this.peopleService = peopleService;
+		try {
+			session = peopleService.getRepository().login();
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to initialize "
+					+ "session for view " + ID, e);
+		}
+	}
+
 }

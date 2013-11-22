@@ -15,7 +15,6 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.commands.AddEntityReferenceWithPosition;
 import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
@@ -51,20 +50,17 @@ public class GroupToolkit {
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 	private final PeopleService peopleService;
-	private final PeopleUiService peopleUiService;
 
 	public GroupToolkit(FormToolkit toolkit, IManagedForm form,
-			PeopleService peopleService, PeopleUiService peopleUiService) {
+			PeopleService peopleService) {
 		this.toolkit = toolkit;
 		this.form = form;
 		this.peopleService = peopleService;
-		this.peopleUiService = peopleUiService;
 	}
 
 	/**
 	 * The jobs for a person
 	 */
-
 	public void createMemberList(Composite parent, final Node entity) {
 		parent.setLayout(new GridLayout());
 
@@ -87,14 +83,14 @@ public class GroupToolkit {
 
 		// compulsory content provider
 		viewer.setContentProvider(new BasicNodeListContentProvider());
-		try {
-			viewer.addDoubleClickListener(peopleUiService
-					.getNewNodeListDoubleClickListener(peopleService, entity
-							.getPrimaryNodeType().getName()));
-		} catch (RepositoryException re) {
-			throw new PeopleException("Error adding double click on job list",
-					re);
-		}
+		// try {
+		// viewer.addDoubleClickListener(peopleUiService
+		// .getNewNodeListDoubleClickListener(peopleService, entity
+		// .getPrimaryNodeType().getName()));
+		// } catch (RepositoryException re) {
+		// throw new PeopleException("Error adding double click on job list",
+		// re);
+		// }
 
 		// Add life cycle management
 		AbstractFormPart sPart = new AbstractFormPart() {

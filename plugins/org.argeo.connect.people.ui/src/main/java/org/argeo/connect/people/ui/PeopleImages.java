@@ -34,6 +34,7 @@ public class PeopleImages {
 	// order images in various folder to ease their management
 	final private static String BASE_PATH = "icons/";
 	final private static String ENTITY_PATH = BASE_PATH + "entities/";
+	@SuppressWarnings("unused")
 	final private static String MISC_PATH = BASE_PATH + "miscellaneous/";
 
 	// Entities

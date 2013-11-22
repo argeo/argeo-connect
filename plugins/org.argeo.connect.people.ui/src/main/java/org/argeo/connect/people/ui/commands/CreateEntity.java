@@ -4,23 +4,19 @@ import java.util.Calendar;
 import java.util.UUID;
 
 import javax.jcr.Node;
-import javax.jcr.Property;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.PeopleUiService;
-import org.argeo.connect.people.ui.editors.EntityEditorInput;
+import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
  * Create a new entity under draft path of the current repository and opens the
@@ -37,8 +33,15 @@ public class CreateEntity extends AbstractHandler {
 	public final static String PARAM_TARGET_NODE_TYPE = "param.targetNodeType";
 
 	/* DEPENDENCY INJECTION */
-	private PeopleService peopleService;
-	private PeopleUiService peopleUiService;
+	private Repository repository;
+
+	/**
+	 * Overwrite to provide a plugin specific open editor command and thus be
+	 * able to open plugin specific editors
+	 */
+	protected String getOpenEditorCommandId() {
+		return OpenEntityEditor.ID;
+	}
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
@@ -46,30 +49,22 @@ public class CreateEntity extends AbstractHandler {
 
 		Session session = null;
 		try {
-			session = peopleService.getRepository().login();
+			session = repository.login();
 			String draftPath = getDraftBasePath(nodeType);
 			String datePath = JcrUtils.dateAsPath(Calendar.getInstance(), true);
 
 			Node parent = JcrUtils.mkdirs(session, draftPath + "/" + datePath);
 			Node newNode = parent.addNode(nodeType, nodeType);
-			newNode.setProperty(PeopleNames.PEOPLE_UID, UUID.randomUUID()
-					.toString());
+
+			String uuid = UUID.randomUUID().toString();
+			newNode.setProperty(PeopleNames.PEOPLE_UID, uuid);
 			// TODO find a cleaner way to keep a clean referential
 			newNode.setProperty(PeopleNames.PEOPLE_IS_DRAFT, true);
 
-
-			
-			
 			session.save();
-			String editorId = peopleUiService.getEditorIdFromNode(newNode);
 
-			EntityEditorInput eei = new EntityEditorInput(
-					newNode.getIdentifier());
-			HandlerUtil.getActiveWorkbenchWindow(event).getActivePage()
-					.openEditor(eei, editorId);
-		} catch (PartInitException pie) {
-			throw new PeopleException("Error while opening editor for the "
-					+ "draft entity (NodeType: " + nodeType + ")", pie);
+			CommandUtils.callCommand(getOpenEditorCommandId(),
+					OpenEntityEditor.PARAM_ENTITY_UID, uuid);
 		} catch (RepositoryException e) {
 			throw new PeopleException("unexpected JCR error while opening "
 					+ "editor for newly created programm", e);
@@ -90,11 +85,7 @@ public class CreateEntity extends AbstractHandler {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setPeopleService(PeopleService peopleService) {
-		this.peopleService = peopleService;
-	}
-
-	public void setPeopleUiService(PeopleUiService peopleUiService) {
-		this.peopleUiService = peopleUiService;
+	public void setRepository(Repository repository) {
+		this.repository = repository;
 	}
 }

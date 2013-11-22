@@ -13,14 +13,12 @@
 	<bean id="peopleDefaultView" class="org.argeo.connect.people.ui.views.PeopleDefaultView"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
-		<property name="peopleUiService" ref="localUiService" />
+		<property name="repository" ref="repository" />
 	</bean>
 
 	<bean id="categorizedSearchView" class="org.argeo.connect.people.ui.views.CategorizedSearchView"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
-		<property name="peopleUiService" ref="localUiService" />
+		<property name="repository" ref="repository" />
 	</bean>
-
-	<bean name="localUiService" class="org.argeo.connect.people.ui.PeopleUiServiceImpl"></bean>
 </beans>

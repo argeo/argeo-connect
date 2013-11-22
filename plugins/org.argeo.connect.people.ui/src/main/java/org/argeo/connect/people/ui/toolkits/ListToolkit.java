@@ -16,7 +16,6 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.commands.AddEntityReferenceWithPosition;
 import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
@@ -53,21 +52,21 @@ public class ListToolkit {
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 	private final PeopleService peopleService;
-	private final PeopleUiService peopleUiService;
 
 	public ListToolkit(FormToolkit toolkit, IManagedForm form,
-			PeopleService peopleService, PeopleUiService peopleUiService) {
+			PeopleService peopleService) {
 		this.toolkit = toolkit;
 		this.form = form;
 		this.peopleService = peopleService;
-		this.peopleUiService = peopleUiService;
 	}
 
 	/**
 	 * The jobs for a person
+	 * 
+	 * It is caller responsability to add corresponding double click listener on
+	 * the returned viewer
 	 */
-
-	public void populateJobsPanel(Composite panel, final Node entity) {
+	public TableViewer populateJobsPanel(Composite panel, final Node entity) {
 		panel.setLayout(new GridLayout());
 		// Create new button
 		final Button addBtn = toolkit.createButton(panel, "Add job", SWT.PUSH);
@@ -86,14 +85,14 @@ public class ListToolkit {
 
 		// compulsory content provider
 		viewer.setContentProvider(new BasicNodeListContentProvider());
-		try {
-			viewer.addDoubleClickListener(peopleUiService
-					.getNewNodeListDoubleClickListener(peopleService, entity
-							.getPrimaryNodeType().getName()));
-		} catch (RepositoryException re) {
-			throw new PeopleException("Error adding double click on job list",
-					re);
-		}
+		// try {
+		// viewer.addDoubleClickListener(peopleUiService
+		// .getNewNodeListDoubleClickListener(peopleService, entity
+		// .getPrimaryNodeType().getName()));
+		// } catch (RepositoryException re) {
+		// throw new PeopleException("Error adding double click on job list",
+		// re);
+		// }
 
 		// Add life cycle management
 		AbstractFormPart sPart = new AbstractFormPart() {
@@ -124,94 +123,102 @@ public class ListToolkit {
 		};
 		sPart.initialize(form);
 		form.addPart(sPart);
+
+		return viewer;
+
 	}
 
-	public void populateEmployeesPanel(Composite panel, final Node entity) {
-		try {
-			panel.setLayout(new GridLayout());
-			// Create new button
-			final Button addBtn = toolkit.createButton(panel, "Add Employee",
-					SWT.PUSH);
-			configureAddReferenceButton(addBtn, entity,
-					"Add an employee for this organisation", true,
-					PeopleTypes.PEOPLE_PERSON);
+	/**
+	 * The employees of an organisation It is caller responsability to add
+	 * corresponding double click listener on the returned viewer
+	 */
+	public TableViewer populateEmployeesPanel(Composite panel, final Node entity) {
+		// try {
+		panel.setLayout(new GridLayout());
+		// Create new button
+		final Button addBtn = toolkit.createButton(panel, "Add Employee",
+				SWT.PUSH);
+		configureAddReferenceButton(addBtn, entity,
+				"Add an employee for this organisation", true,
+				PeopleTypes.PEOPLE_PERSON);
 
-			// Corresponding list
-			Composite tableComp = toolkit.createComposite(panel);
-			tableComp
-					.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			final TableViewer viewer = new TableViewer(tableComp);
-			TableColumnLayout tableColumnLayout = createEmployeesTableColumns(
-					tableComp, viewer);
-			tableComp.setLayout(tableColumnLayout);
-			PeopleUiUtils.setTableDefaultStyle(viewer, 70);
+		// Corresponding list
+		Composite tableComp = toolkit.createComposite(panel);
+		tableComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		final TableViewer viewer = new TableViewer(tableComp);
+		TableColumnLayout tableColumnLayout = createEmployeesTableColumns(
+				tableComp, viewer);
+		tableComp.setLayout(tableColumnLayout);
+		PeopleUiUtils.setTableDefaultStyle(viewer, 70);
 
-			// compulsory content provider
-			viewer.setContentProvider(new BasicNodeListContentProvider());
-			viewer.addDoubleClickListener(peopleUiService
-					.getNewNodeListDoubleClickListener(peopleService, entity
-							.getPrimaryNodeType().getName()));
-			// Add life cycle management
-			AbstractFormPart sPart = new AbstractFormPart() {
-				public void refresh() {
-					super.refresh();
-					addBtn.setEnabled(CommonsJcrUtils
-							.isNodeCheckedOutByMe(entity));
-					viewer.setInput(peopleService.getRelatedEntities(entity,
-							PeopleTypes.PEOPLE_JOB, PeopleTypes.PEOPLE_PERSON));
-				}
-			};
-			sPart.initialize(form);
-			form.addPart(sPart);
-		} catch (RepositoryException re) {
-			throw new PeopleException("Cannot populate employee panel ", re);
-		}
+		// compulsory content provider
+		viewer.setContentProvider(new BasicNodeListContentProvider());
+		// viewer.addDoubleClickListener(peopleUiService
+		// .getNewNodeListDoubleClickListener(peopleService, entity
+		// .getPrimaryNodeType().getName()));
+		// Add life cycle management
+		AbstractFormPart sPart = new AbstractFormPart() {
+			public void refresh() {
+				super.refresh();
+				addBtn.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
+				viewer.setInput(peopleService.getRelatedEntities(entity,
+						PeopleTypes.PEOPLE_JOB, PeopleTypes.PEOPLE_PERSON));
+			}
+		};
+		sPart.initialize(form);
+		form.addPart(sPart);
+		// } catch (RepositoryException re) {
+		// throw new PeopleException("Cannot populate employee panel ", re);
+		// }
+		return viewer;
+
 	}
 
-	public void populateFilmsPanel(Composite panel, final Node entity) {
-		try {
-			panel.setLayout(new GridLayout());
-			// Create new button
-			final Button addBtn = toolkit.createButton(panel, "Add Film",
-					SWT.PUSH);
-			configureAddReferenceButton(addBtn, entity,
-					"Add a film participation", true, FilmTypes.FILM);
+	/**
+	 * Film participation of a given person or organisation It is caller
+	 * responsability to add corresponding double click listener on the returned
+	 * viewer
+	 */
+	public TableViewer populateFilmsPanel(Composite panel, final Node entity) {
+		panel.setLayout(new GridLayout());
+		// Create new button
+		final Button addBtn = toolkit.createButton(panel, "Add Film", SWT.PUSH);
+		configureAddReferenceButton(addBtn, entity, "Add a film participation",
+				true, FilmTypes.FILM);
 
-			// Corresponding list
-			Composite tableComp = toolkit.createComposite(panel);
-			tableComp
-					.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			final TableViewer viewer = new TableViewer(tableComp, SWT.V_SCROLL);
-			TableColumnLayout tableColumnLayout = createProductionsTableColumns(
-					tableComp, viewer);
-			tableComp.setLayout(tableColumnLayout);
-			PeopleUiUtils.setTableDefaultStyle(viewer, 60);
+		// Corresponding list
+		Composite tableComp = toolkit.createComposite(panel);
+		tableComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		final TableViewer viewer = new TableViewer(tableComp, SWT.V_SCROLL);
+		TableColumnLayout tableColumnLayout = createProductionsTableColumns(
+				tableComp, viewer);
+		tableComp.setLayout(tableColumnLayout);
+		PeopleUiUtils.setTableDefaultStyle(viewer, 60);
 
-			// compulsory content provider
-			viewer.setContentProvider(new BasicNodeListContentProvider());
-			viewer.addDoubleClickListener(peopleUiService
-					.getNewNodeListDoubleClickListener(peopleService, entity
-							.getPrimaryNodeType().getName(),
-							PeopleUiConstants.PANEL_PRODUCTIONS));
-			// Add life cycle management
-			AbstractFormPart sPart = new AbstractFormPart() {
-				public void refresh() {
-					super.refresh();
-					addBtn.setEnabled(CommonsJcrUtils
-							.isNodeCheckedOutByMe(entity));
-					viewer.setInput(peopleService.getRelatedEntities(entity,
-							PeopleTypes.PEOPLE_MEMBER, FilmTypes.FILM));
-				}
-			};
-			sPart.initialize(form);
-			form.addPart(sPart);
+		// compulsory content provider
+		viewer.setContentProvider(new BasicNodeListContentProvider());
 
-		} catch (RepositoryException re) {
-			throw new PeopleException("Cannot create organizations list", re);
-		}
+		// Add life cycle management
+		AbstractFormPart sPart = new AbstractFormPart() {
+			public void refresh() {
+				super.refresh();
+				addBtn.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
+				viewer.setInput(peopleService.getRelatedEntities(entity,
+						PeopleTypes.PEOPLE_MEMBER, FilmTypes.FILM));
+			}
+		};
+		sPart.initialize(form);
+		form.addPart(sPart);
+
+		return viewer;
 	}
 
-	public void populateMembersPanel(Composite panel, final Node entity) {
+	/**
+	 * List of all person or organisation that participate in making this film.
+	 * It is caller responsability to add corresponding double click listener on
+	 * the returned viewer
+	 */
+	public TableViewer populateMembersPanel(Composite panel, final Node entity) {
 		panel.setLayout(new GridLayout());
 		// Create new button
 		final Button addBtn = toolkit.createButton(panel, "Add crew", SWT.PUSH);
@@ -229,15 +236,6 @@ public class ListToolkit {
 		PeopleUiUtils.setTableDefaultStyle(viewer, 60);
 
 		viewer.setContentProvider(new BasicNodeListContentProvider());
-		try {
-
-			viewer.addDoubleClickListener(peopleUiService
-					.getNewNodeListDoubleClickListener(peopleService, entity
-							.getPrimaryNodeType().getName()));
-		} catch (RepositoryException re) {
-			throw new PeopleException("Error adding double clic on the "
-					+ "film participation list", re);
-		}
 
 		// Add life cycle management
 		AbstractFormPart sPart = new AbstractFormPart() {
@@ -267,6 +265,8 @@ public class ListToolkit {
 		};
 		sPart.initialize(form);
 		form.addPart(sPart);
+
+		return viewer;
 	}
 
 	private TableColumnLayout createJobsTableColumns(final Composite parent,

@@ -3,6 +3,7 @@ package org.argeo.connect.people.ui.editors;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
+import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,14 +13,18 @@ import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.connect.people.ui.commands.OpenEntityEditor;
+import org.argeo.connect.people.ui.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.ui.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.ui.toolkits.ContactToolkit;
 import org.argeo.connect.people.ui.toolkits.EntityToolkit;
 import org.argeo.connect.people.ui.toolkits.LegalInfoToolkit;
 import org.argeo.connect.people.ui.toolkits.ListToolkit;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -75,8 +80,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		contactTK = new ContactToolkit(toolkit, getManagedForm(),
 				getPeopleService());
 
-		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
-				getPeopleUiService());
+		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService());
 		legalTK = new LegalInfoToolkit(toolkit, getManagedForm(), org);
 	}
 
@@ -100,7 +104,29 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Team",
 				PeopleUiConstants.PANEL_EMPLOYEES, tooltip);
-		listTK.populateEmployeesPanel(innerPannel, org);
+		TableViewer viewer = listTK.populateEmployeesPanel(innerPannel, org);
+		viewer.addDoubleClickListener(new PeopleDoubleClickAdapter() {
+
+			@Override
+			protected void processDoubleClick(Object obj) {
+				// Here we have a list of staff membership item. We want to open
+				// editor for the parent
+				// person
+				try {
+					if (obj instanceof Node) {
+						Node link = ((Node) obj).getParent().getParent();
+						CommandUtils.callCommand(getOpenEditorCommandId(),
+								OpenEntityEditor.PARAM_ENTITY_UID,
+								CommonsJcrUtils.get(link,
+										PeopleNames.PEOPLE_UID));
+					}
+				} catch (RepositoryException e) {
+					throw new PeopleException("unable to get related "
+							+ "person for organisation " + obj, e);
+				}
+
+			}
+		});
 	}
 
 	@Override

@@ -1,14 +1,21 @@
 package org.argeo.connect.people.ui.commands;
 
 import javax.jcr.Node;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.editors.EntityEditorInput;
+import org.argeo.connect.people.ui.editors.GroupEditor;
+import org.argeo.connect.people.ui.editors.OrgEditor;
+import org.argeo.connect.people.ui.editors.PersonEditor;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -16,37 +23,45 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.PartInitException;
 
 /**
- * Open the corresponding editor given a node. Centralize here mapping between a node type and an editor
+ * Open the corresponding editor given a node. Centralize here mapping between a
+ * node type and an editor
  */
 public class OpenEntityEditor extends AbstractHandler {
+	private final static Log log = LogFactory.getLog(OpenEntityEditor.class);
+
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".openEntityEditor";
 
 	/* DEPENDENCY INJECTION */
+	private Repository repository;
 	private PeopleService peopleService;
-	private PeopleUiService peopleUiService;
 
-	// public final static String PARAM_ENTITY_TYPE = "param.entityType";
 	public final static String PARAM_ENTITY_UID = "param.entityUid";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
-		// String entityType = event.getParameter(PARAM_ENTITY_TYPE);
 		String entityUid = event.getParameter(PARAM_ENTITY_UID);
+		if (CommonsJcrUtils.isEmptyString(entityUid)) {
+			if (log.isTraceEnabled())
+				log.warn("Cannot open an editor with no UID");
+			return null;
+		}
 
 		Session session = null;
 		try {
-			session = peopleService.getRepository().login();
+			session = repository.login();
 			Node entity = peopleService.getEntityByUid(session, entityUid);
+
+			if (entity == null) {
+				if (log.isTraceEnabled())
+					log.warn("No entity found for entity Uid " + entityUid);
+				return null;
+			}
 			EntityEditorInput eei = new EntityEditorInput(
 					entity.getIdentifier());
-			PeopleUiPlugin
-					.getDefault()
-					.getWorkbench()
-					.getActiveWorkbenchWindow()
-					.getActivePage()
-					.openEditor(eei,
-							peopleUiService.getEditorIdFromNode(entity));
+			PeopleUiPlugin.getDefault().getWorkbench()
+					.getActiveWorkbenchWindow().getActivePage()
+					.openEditor(eei, getEditorIdFromNode(entity));
 		} catch (PartInitException pie) {
 			throw new PeopleException(
 					"Unexpected PartInitException while opening entity editor",
@@ -60,12 +75,37 @@ public class OpenEntityEditor extends AbstractHandler {
 		return null;
 	}
 
+	/**
+	 * 
+	 * Overwrite to open application specific editors depending on a given node
+	 * type.
+	 * 
+	 * @param curNode
+	 * @return
+	 */
+	protected String getEditorIdFromNode(Node curNode) {
+		try {
+			if (curNode.isNodeType(PeopleTypes.PEOPLE_PERSON))
+				return PersonEditor.ID;
+			else if (curNode.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)) {
+				return OrgEditor.ID;
+			} else if (curNode.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST)) {
+				return GroupEditor.ID;
+			} else if (curNode.isNodeType(PeopleTypes.PEOPLE_GROUP)) {
+				return GroupEditor.ID;
+			} else
+				return null;
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to open editor for node", re);
+		}
+	}
+
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleUiService(PeopleUiService peopleUiService) {
-		this.peopleUiService = peopleUiService;
+	public void setRepository(Repository repository) {
+		this.repository = repository;
 	}
 }

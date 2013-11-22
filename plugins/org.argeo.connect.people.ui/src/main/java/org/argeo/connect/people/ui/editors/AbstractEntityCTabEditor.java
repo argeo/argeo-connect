@@ -1,6 +1,5 @@
 package org.argeo.connect.people.ui.editors;
 
-import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -26,7 +25,7 @@ public abstract class AbstractEntityCTabEditor extends AbstractEntityEditor
 	// .getLog(AbstractEntityEditor.class);
 
 	/* DEPENDENCY INJECTION */
-	private PeopleUiService peopleUiService;
+	// private PeopleUiService peopleUiService;
 
 	/* CONSTANTS */
 	protected final static int CTAB_COMP_STYLE = SWT.NO_FOCUS;
@@ -123,9 +122,9 @@ public abstract class AbstractEntityCTabEditor extends AbstractEntityEditor
 	}
 
 	/* EXPOSES TO CHILDREN CLASSES */
-	protected PeopleUiService getPeopleUiService() {
-		return peopleUiService;
-	}
+//	protected PeopleUiService getPeopleUiService() {
+//		return peopleUiService;
+//	}
 
 	/* UTILITES */
 	protected TableViewerColumn createTableViewerColumn(TableViewer parent,
@@ -145,7 +144,7 @@ public abstract class AbstractEntityCTabEditor extends AbstractEntityEditor
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setPeopleUiService(PeopleUiService peopleUiService) {
-		this.peopleUiService = peopleUiService;
-	}
+	// public void setPeopleUiService(PeopleUiService peopleUiService) {
+	// this.peopleUiService = peopleUiService;
+	// }
 }

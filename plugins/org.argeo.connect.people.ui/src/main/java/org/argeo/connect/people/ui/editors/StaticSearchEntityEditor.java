@@ -50,6 +50,10 @@ public class StaticSearchEntityEditor extends EditorPart implements
 	// This page widgets
 	private ITableProvider currTableProvider;
 
+	/**
+	 * Overwrite to provide a plugin specific open editor command and thus be
+	 * able to open plugin specific editors
+	 */
 	protected String getOpenEditorCommandId() {
 		return OpenEntityEditor.ID;
 	}
@@ -178,9 +182,11 @@ public class StaticSearchEntityEditor extends EditorPart implements
 					currNode = curRow.getNode(selectorName);
 				} else
 					return;
-				CommandUtils.callCommand(OpenEntityEditor.ID,
-						OpenEntityEditor.PARAM_ENTITY_UID,
-						CommonsJcrUtils.get(currNode, PeopleNames.PEOPLE_UID));
+
+				String entityUid = CommonsJcrUtils.get(currNode,
+						PeopleNames.PEOPLE_UID);
+				CommandUtils.callCommand(getOpenEditorCommandId(),
+						OpenEntityEditor.PARAM_ENTITY_UID, entityUid);
 			} catch (RepositoryException re) {
 				throw new PeopleException("Unable to open editor for node", re);
 			}

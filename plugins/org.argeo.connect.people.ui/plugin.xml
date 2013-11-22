@@ -91,11 +91,7 @@
 			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
 			id="org.argeo.connect.people.ui.openEntityEditor"
 			name="Open Network Editor">
-			 <commandParameter
-         		id="param.entityType"
-         		name="Entity Node Type">
-  	 		</commandParameter>
-			 <commandParameter
+			<commandParameter
          		id="param.entityUid"
          		name="The Model Specific Entity Uid">
   	 		</commandParameter>

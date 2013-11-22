@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.QueryManager;
@@ -21,10 +22,10 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.editors.SearchEntityEditorInput;
 import org.argeo.connect.people.ui.editors.StaticSearchEntityEditor;
+import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.ui.providers.EntitySingleColumnLabelProvider;
 import org.argeo.eclipse.ui.utils.CommandUtils;
@@ -65,7 +66,6 @@ public class PeopleDefaultView extends ViewPart {
 	/* DEPENDENCY INJECTION */
 	private Session session;
 	private PeopleService peopleService;
-	private PeopleUiService peopleUiService;
 
 	// This page widgets
 	private TableViewer personViewer;
@@ -205,8 +205,7 @@ public class PeopleDefaultView extends ViewPart {
 		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(20));
 
 		v.setContentProvider(new BasicNodeListContentProvider());
-		v.addDoubleClickListener(peopleUiService
-				.getNewNodeListDoubleClickListener(peopleService, null));
+		v.addDoubleClickListener(new PeopleJcrViewerDClickListener(null));
 		return v;
 	}
 
@@ -289,17 +288,16 @@ public class PeopleDefaultView extends ViewPart {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setPeopleService(PeopleService msmService) {
-		this.peopleService = msmService;
+	public void setPeopleService(PeopleService peopleService) {
+		this.peopleService = peopleService;
+	}
+
+	public void setRepository(Repository repository) {
 		try {
-			session = msmService.getRepository().login();
+			session = repository.login();
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to initialize "
 					+ "session for view " + ID, e);
 		}
-	}
-
-	public void setPeopleUiService(PeopleUiService peopleUiService) {
-		this.peopleUiService = peopleUiService;
 	}
 }

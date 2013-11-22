@@ -22,6 +22,7 @@ import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.commands.CancelAndCheckInItem;
 import org.argeo.connect.people.ui.commands.CheckOutItem;
 import org.argeo.connect.people.ui.commands.DeleteEntity;
+import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.utils.CheckoutSourceProvider;
 import org.argeo.connect.people.ui.utils.Refreshable;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -92,10 +93,10 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	// Form and corresponding life cycle
 	private IManagedForm mForm;
 	protected FormToolkit toolkit;
-	
+
 	// The body composite for the current editor
 	private Composite main;
-	
+
 	// LIFE CYCLE
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -156,8 +157,16 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			setPartName("New...");
 	}
 
-	/** Override to create specific toolkits relevant for the current editor */
+	/** Overwrite to create specific toolkits relevant for the current editor */
 	protected void createToolkits() {
+	}
+
+	/**
+	 * Overwrite to provide a plugin specific open editor command and thus be
+	 * able to open plugin specific editors
+	 */
+	protected String getOpenEditorCommandId() {
+		return OpenEntityEditor.ID;
 	}
 
 	/**
@@ -712,6 +721,9 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
-		repository = peopleService.getRepository();
+	}
+
+	public void setRepository(Repository repository) {
+		this.repository = repository;
 	}
 }
