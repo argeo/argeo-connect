@@ -16,7 +16,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.PartInitException;
 
 /**
- * Discard all pending changes of the current item and check it in.
+ * Open the corresponding editor given a node. Centralize here mapping between a node type and an editor
  */
 public class OpenEntityEditor extends AbstractHandler {
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
@@ -26,12 +26,12 @@ public class OpenEntityEditor extends AbstractHandler {
 	private PeopleService peopleService;
 	private PeopleUiService peopleUiService;
 
-	public final static String PARAM_ENTITY_TYPE = "param.entityType";
+	// public final static String PARAM_ENTITY_TYPE = "param.entityType";
 	public final static String PARAM_ENTITY_UID = "param.entityUid";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
-		String entityType = event.getParameter(PARAM_ENTITY_TYPE);
+		// String entityType = event.getParameter(PARAM_ENTITY_TYPE);
 		String entityUid = event.getParameter(PARAM_ENTITY_UID);
 
 		Session session = null;
@@ -52,8 +52,8 @@ public class OpenEntityEditor extends AbstractHandler {
 					"Unexpected PartInitException while opening entity editor",
 					pie);
 		} catch (RepositoryException e) {
-			throw new PeopleException("unexpected JCR error while opening "
-					+ entityType + " editor", e);
+			throw new PeopleException(
+					"unexpected JCR error while opening editor", e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}

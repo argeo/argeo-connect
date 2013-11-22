@@ -150,8 +150,9 @@
          		id="param.dialogId"
          		name="ID of the corresponding dialog">
   	 		</commandParameter>
-    	</command>
-<!-- TODO remove the 2 following commands --> 
+		</command>
+
+		<!-- TODO remove the 2 following commands --> 
     	<command
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       		id="org.argeo.connect.people.ui.addEntityReferences"
@@ -228,6 +229,13 @@
      			id="param.urlType"
      			name="The type of the url">
  			</commandParameter>
+  		</command>
+  		
+  		<!-- Utility to provide sub menues when we don't want to define a default command for this menu -->
+		<command
+			defaultHandler="org.argeo.connect.people.ui.commands.ForceRefresh"
+			id="org.argeo.connect.people.ui.forceRefresh"
+			name="Force refresh of the current active part if such an action is possible">
   		</command>
   		
     	<!-- Utility to provide sub menues when we don't want to define a default command for this menu -->

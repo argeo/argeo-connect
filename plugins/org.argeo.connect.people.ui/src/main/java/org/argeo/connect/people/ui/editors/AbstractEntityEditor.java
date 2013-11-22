@@ -23,6 +23,7 @@ import org.argeo.connect.people.ui.commands.CancelAndCheckInItem;
 import org.argeo.connect.people.ui.commands.CheckOutItem;
 import org.argeo.connect.people.ui.commands.DeleteEntity;
 import org.argeo.connect.people.ui.utils.CheckoutSourceProvider;
+import org.argeo.connect.people.ui.utils.Refreshable;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
@@ -65,7 +66,7 @@ import org.eclipse.ui.services.ISourceProviderService;
  * with some buttons and a filter.
  */
 public abstract class AbstractEntityEditor extends EditorPart implements
-		IVersionedItemEditor {
+		IVersionedItemEditor, Refreshable {
 	// private final static Log log = LogFactory
 	// .getLog(AbstractEntityEditor.class);
 
@@ -91,7 +92,10 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	// Form and corresponding life cycle
 	private IManagedForm mForm;
 	protected FormToolkit toolkit;
-
+	
+	// The body composite for the current editor
+	private Composite main;
+	
 	// LIFE CYCLE
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -207,11 +211,10 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		Form form = toolkit.createForm(parent);
 		mForm = new MyManagedForm(parent, toolkit);
 		createToolkits();
-		Composite main = form.getBody();
+		main = form.getBody();
 		createMainLayout(main);
 
 		forceRefresh();
-		mForm.reflow(true);
 	}
 
 	protected void createMainLayout(Composite parent) {
@@ -511,9 +514,15 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 
 	/* UTILITES */
 	/** Forces refresh of all form parts of the current editor */
-	public void forceRefresh() {
+	public void forceRefresh(Object object) {
 		for (IFormPart part : mForm.getParts())
 			part.refresh();
+		main.layout(true);
+		mForm.reflow(true);
+	}
+
+	public void forceRefresh() {
+		forceRefresh(null);
 	}
 
 	/**

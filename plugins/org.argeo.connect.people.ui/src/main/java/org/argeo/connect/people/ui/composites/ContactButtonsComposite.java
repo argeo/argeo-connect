@@ -8,9 +8,11 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.commands.ForceRefresh;
 import org.argeo.connect.people.ui.providers.PeopleImageProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -20,7 +22,6 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
@@ -55,10 +56,6 @@ public class ContactButtonsComposite extends Composite {
 	private void populate() {
 		// Initialization
 		Composite buttCmp = this;
-
-		// buttCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false,
-		// false));
-
 		RowLayout rl = new RowLayout(SWT.WRAP);
 		rl.marginWidth = 0;
 		rl.type = SWT.HORIZONTAL;
@@ -151,7 +148,7 @@ public class ContactButtonsComposite extends Composite {
 		return btn;
 	}
 
-	private void configureDeleteButton(Button btn, final Node node,
+	private void configureDeleteButton(final Button btn, final Node node,
 			final Node parNode) { // , final AbstractFormPart
 									// genericContactFormPart
 		btn.addSelectionListener(new SelectionAdapter() {
@@ -173,17 +170,13 @@ public class ContactButtonsComposite extends Composite {
 					throw new PeopleException("unable to initialise deletion",
 							e);
 				}
-				for (IFormPart part : form.getParts()) {
-					if (part != formPart) {
-						((AbstractFormPart) part).markStale();
-						part.refresh();
-					}
-				}
+
+				CommandUtils.callCommand(ForceRefresh.ID);
 			}
 		});
 	}
 
-	private void configurePrimaryButton(Button btn, final Node node,
+	private void configurePrimaryButton(final Button btn, final Node node,
 			final Node parNode) {
 		btn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
@@ -205,13 +198,11 @@ public class ContactButtonsComposite extends Composite {
 						parNode.getSession().save();
 					else
 						CommonsJcrUtils.saveAndCheckin(parNode);
-					for (IFormPart part : form.getParts()) {
-						((AbstractFormPart) part).markStale();
-						part.refresh();
-					}
+
+					CommandUtils.callCommand(ForceRefresh.ID);
 				} catch (RepositoryException e) {
-					throw new PeopleException("unable to initialise deletion",
-							e);
+					throw new PeopleException(
+							"unable to change primary contact", e);
 				}
 			}
 		});

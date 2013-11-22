@@ -483,7 +483,6 @@ public class PeopleJcrUtils implements PeopleNames {
 	 *            an optional label
 	 * @return
 	 */
-	@Deprecated
 	public static Node createAddress(Node parentNode, String street1,
 			String street2, String zipCode, String city, String state,
 			String country, String geopoint, boolean primary, String nature,
@@ -757,8 +756,11 @@ public class PeopleJcrUtils implements PeopleNames {
 	 */
 	public static Node getEntityFromNodeReference(Node node, String propName) {
 		try {
-			return getEntityByUid(node.getSession(), node.getProperty(propName)
-					.getString());
+			if (node.hasProperty(propName))
+				return getEntityByUid(node.getSession(),
+						node.getProperty(propName).getString());
+			else
+				return null;
 		} catch (RepositoryException re) {
 			throw new PeopleException(
 					"unable to get entity from reference node", re);

@@ -2,19 +2,30 @@ package org.argeo.connect.people.ui.editors;
 
 import java.util.List;
 
+import javax.jcr.Node;
 import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
 
+import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.composites.EntityTableComposite;
 import org.argeo.connect.people.ui.composites.PersonTableComposite;
 import org.argeo.connect.people.ui.extracts.ColumnDefinition;
 import org.argeo.connect.people.ui.extracts.ITableProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -38,6 +49,10 @@ public class StaticSearchEntityEditor extends EditorPart implements
 
 	// This page widgets
 	private ITableProvider currTableProvider;
+
+	protected String getOpenEditorCommandId() {
+		return OpenEntityEditor.ID;
+	}
 
 	// Business Objects
 	private String entityType;
@@ -63,16 +78,23 @@ public class StaticSearchEntityEditor extends EditorPart implements
 		parent.setLayout(new GridLayout());
 
 		Composite table = null;
+		TableViewer viewer = null;
 
 		if (PeopleTypes.PEOPLE_PERSON.equals(entityType)) {
 			PersonTableComposite tmpCmp = new PersonTableComposite(parent,
 					SWT.MULTI, session);
 			currTableProvider = tmpCmp;
+			viewer = tmpCmp.getTableViewer();
 			table = tmpCmp;
-		} else
-			table = new EntityTableComposite(parent, SWT.MULTI, session,
-					entityType, null, true, false);
+		} else {
+			EntityTableComposite tmpCmp = new EntityTableComposite(parent,
+					SWT.MULTI, session, entityType, null, true, false);
+			viewer = tmpCmp.getTableViewer();
+			table = tmpCmp;
+		}
 		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		viewer.addDoubleClickListener(new MyRowViewerDoubleClickListener(
+				entityType));
 		// createFilterPanel(parent);
 		// createListPart(parent);
 		// refreshFilteredList();
@@ -132,4 +154,38 @@ public class StaticSearchEntityEditor extends EditorPart implements
 			return currTableProvider.getColumnDefinition(extractId);
 		return null;
 	}
+
+	private class MyRowViewerDoubleClickListener implements
+			IDoubleClickListener {
+
+		private final String selectorName;
+
+		public MyRowViewerDoubleClickListener(String selectorName) {
+			this.selectorName = selectorName;
+		}
+
+		public void doubleClick(DoubleClickEvent event) {
+			if (event.getSelection() == null || event.getSelection().isEmpty())
+				return;
+			Object obj = ((IStructuredSelection) event.getSelection())
+					.getFirstElement();
+			try {
+				Node currNode;
+				if (obj instanceof Node)
+					currNode = (Node) obj;
+				else if (obj instanceof Row) {
+					Row curRow = (Row) obj;
+					currNode = curRow.getNode(selectorName);
+				} else
+					return;
+				CommandUtils.callCommand(OpenEntityEditor.ID,
+						OpenEntityEditor.PARAM_ENTITY_UID,
+						CommonsJcrUtils.get(currNode, PeopleNames.PEOPLE_UID));
+			} catch (RepositoryException re) {
+				throw new PeopleException("Unable to open editor for node", re);
+			}
+		}
+
+	}
+
 }

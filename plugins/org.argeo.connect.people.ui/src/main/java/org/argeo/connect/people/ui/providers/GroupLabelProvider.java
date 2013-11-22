@@ -1,11 +1,15 @@
 package org.argeo.connect.people.ui.providers;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -17,6 +21,8 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 public class GroupLabelProvider extends ColumnLabelProvider implements
 		PeopleNames {
 	private static final long serialVersionUID = 9156065705311297011L;
+
+	private final static Log log = LogFactory.getLog(GroupLabelProvider.class);
 
 	private final int listType;
 
@@ -58,12 +64,11 @@ public class GroupLabelProvider extends ColumnLabelProvider implements
 			builder.append(CommonsJcrUtils.get(entity, Property.JCR_TITLE));
 			builder.append("</big></b>");
 
-			// Nb of members
-			if (entity.hasNode(PEOPLE_MEMBERS))
-				builder.append("<i>(")
-						.append(entity.getNode(PEOPLE_MEMBERS).getNodes()
-								.getSize()).append(" members)</i>");
-
+			if (entity.hasNode(PEOPLE_MEMBERS)) { // Nb of members
+				int membersNb = countMembers(entity.getNode(PEOPLE_MEMBERS), 0);
+				builder.append("<i>(").append(membersNb)
+						.append(" members)</i>");
+			}
 			// Description
 			String desc = CommonsJcrUtils.get(entity, Property.JCR_DESCRIPTION);
 			if (CommonsJcrUtils.checkNotEmptyString(desc))
@@ -76,6 +81,24 @@ public class GroupLabelProvider extends ColumnLabelProvider implements
 
 	}
 
+	/** recursivly count members in the sub tree */
+	private int countMembers(Node node, int currCount) {
+		try {
+			NodeIterator ni = node.getNodes();
+			while (ni.hasNext()) {
+				currCount = countMembers(ni.nextNode(), currCount);
+			}
+			if (CommonsJcrUtils.isNodeType(node,
+					PeopleTypes.PEOPLE_MAILING_LIST_ITEM)) {
+				currCount++;
+			}
+			return currCount;
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to count members for node "
+					+ node, re);
+		}
+	}
+
 	private String getOneLineLabel(Node entity) {
 		try {
 			StringBuilder builder = new StringBuilder();
@@ -84,10 +107,11 @@ public class GroupLabelProvider extends ColumnLabelProvider implements
 			builder.append("</b>");
 
 			// Nb of members
-			if (entity.hasNode(PEOPLE_MEMBERS))
-				builder.append("<i>(")
-						.append(entity.getNode(PEOPLE_MEMBERS).getNodes()
-								.getSize()).append(" members)</i>");
+			if (entity.hasNode(PEOPLE_MEMBERS)) {
+				int membersNb = countMembers(entity.getNode(PEOPLE_MEMBERS), 0);
+				builder.append("<i>(").append(membersNb)
+						.append(" members)</i>");
+			}
 			return builder.toString();
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to get small text for link", e);

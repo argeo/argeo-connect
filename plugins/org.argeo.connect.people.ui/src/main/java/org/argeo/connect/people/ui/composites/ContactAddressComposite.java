@@ -73,7 +73,7 @@ public class ContactAddressComposite extends Composite {
 
 	private void populate() {
 		// Initialization
-		Composite parent = this;
+		final Composite parent = this;
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
 
 		// BUTTONS
@@ -127,6 +127,11 @@ public class ContactAddressComposite extends Composite {
 						throw new PeopleException(
 								"unexpected error while refreshing", e);
 				}
+				Composite cmp = parent.getParent(); // Scroll cmp body
+				cmp = parent.getParent(); // the scollable composite
+				cmp = cmp.getParent(); // the fullTab
+				cmp.pack(true);
+				cmp.layout(true);
 			}
 		};
 
@@ -284,13 +289,6 @@ public class ContactAddressComposite extends Composite {
 				}
 			});
 
-			parent.pack(true);
-			parent.layout();
-			parent = parent.getParent(); // the switching panel
-			parent = parent.getParent(); // One line of contacts
-			parent = parent.getParent(); // body for scrollable composite
-			parent = parent.getParent(); // the scollable composite
-			parent = parent.getParent(); // the fullTab
 			parent.pack(true);
 			parent.layout();
 		} catch (RepositoryException e1) {

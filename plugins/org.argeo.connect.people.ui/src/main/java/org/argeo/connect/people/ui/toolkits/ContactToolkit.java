@@ -29,6 +29,7 @@ import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.commands.AddEntityReference;
+import org.argeo.connect.people.ui.commands.ForceRefresh;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.composites.ContactAddressComposite;
 import org.argeo.connect.people.ui.composites.ContactComposite;
@@ -43,6 +44,8 @@ import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
@@ -75,6 +78,13 @@ public class ContactToolkit {
 		this.peopleService = peopleService;
 	}
 
+	/**
+	 * Populate a parent composite with controls to manage mailing list
+	 * membership of an organisation or a person
+	 * 
+	 * @param parent
+	 * @param entity
+	 */
 	public void populateMailingListMembershipPanel(final Composite parent,
 			final Node entity) {
 		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder(2);
@@ -127,8 +137,8 @@ public class ContactToolkit {
 							public void widgetSelected(
 									final SelectionEvent event) {
 								Map<String, String> params = new HashMap<String, String>();
-								params.put(OpenEntityEditor.PARAM_ENTITY_TYPE,
-										PeopleTypes.PEOPLE_MAILING_LIST);
+								// params.put(OpenEntityEditor.PARAM_ENTITY_TYPE,
+								// PeopleTypes.PEOPLE_MAILING_LIST);
 								params.put(OpenEntityEditor.PARAM_ENTITY_UID,
 										CommonsJcrUtils.get(parNode,
 												PeopleNames.PEOPLE_UID));
@@ -209,7 +219,7 @@ public class ContactToolkit {
 		form.addPart(editPart);
 	}
 
-	/** Recursively retrieve the parent Mailing list **/
+	/** Recursively retrieves the parent Mailing list **/
 	private Node getParentMailingList(Node node) throws RepositoryException {
 		if (node.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST))
 			return node;
@@ -560,7 +570,7 @@ public class ContactToolkit {
 
 		final Button validBtn = toolkit.createButton(parent, "Save", SWT.PUSH);
 
-		validBtn.addSelectionListener(new SelectionListener() {
+		validBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -573,11 +583,22 @@ public class ContactToolkit {
 				savePreservingState(entity, contactType, contactType, value,
 						isPrimary, nature, null, label, addContactCombo);
 			}
+		});
+
+		valueTxt.addTraverseListener(new TraverseListener() {
+			private static final long serialVersionUID = 9192624317905937169L;
 
 			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
+			public void keyTraversed(TraverseEvent e) {
+				String value = valueTxt.getText();
+				String label = labelTxt.getText();
+				boolean isPrimary = primaryChk.getSelection();
+				// EntityPanelToolkit
+				savePreservingState(entity, contactType, contactType, value,
+						isPrimary, nature, null, label, addContactCombo);
 			}
 		});
+
 		return labelTxt;
 	}
 
@@ -625,6 +646,23 @@ public class ContactToolkit {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
+
+		valueTxt.addTraverseListener(new TraverseListener() {
+			private static final long serialVersionUID = 9192624317905937169L;
+
+			@Override
+			public void keyTraversed(TraverseEvent e) {
+				String value = valueTxt.getText();
+				String label = labelTxt.getText();
+				String cat = catCmb.getText();
+
+				boolean isPrimary = primaryChk.getSelection();
+				// EntityPanelToolkit
+				savePreservingState(entity, contactType, contactType, value,
+						isPrimary, nature, cat, label, addContactCombo);
+			}
+		});
+
 		return catCmb;
 	}
 
@@ -642,10 +680,8 @@ public class ContactToolkit {
 			CommonsJcrUtils.saveAndCheckin(entity);
 		else
 			form.dirtyStateChanged();
-		for (IFormPart part : form.getParts()) {
-			((AbstractFormPart) part).markStale();
-			part.refresh();
-		}
+
+		CommandUtils.callCommand(ForceRefresh.ID);
 		addContactCmb.select(0);
 	}
 
@@ -692,7 +728,8 @@ public class ContactToolkit {
 
 		final Button validBtn = toolkit.createButton(parent, "Save", SWT.PUSH);
 
-		validBtn.addSelectionListener(new SelectionListener() {
+		validBtn.addSelectionListener(new SelectionAdapter() {
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -716,21 +753,16 @@ public class ContactToolkit {
 					CommonsJcrUtils.saveAndCheckin(entity);
 				else
 					form.dirtyStateChanged();
-				for (IFormPart part : form.getParts()) {
-					((AbstractFormPart) part).markStale();
-					part.refresh();
-				}
+
+				CommandUtils.callCommand(ForceRefresh.ID);
 				validBtn.getParent().setVisible(false);
 			}
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
 		});
 		return catCmb;
 	}
 
-	private Control createWorkAddressWidgets(Composite parent,
+	private Control createWorkAddressWidgets(final Composite parent,
 			final Node entity, final String contactType, final String nature,
 			final Combo addContactCombo) {
 		try {
@@ -742,7 +774,7 @@ public class ContactToolkit {
 
 			final Text labelTxt = createAddressTxt(true, parent, "Label", 120);
 
-			final Link chooseOrgLk = new Link(parent, SWT.NONE);
+			final Link chooseOrgLk = new Link(parent, SWT.BOTTOM);
 			toolkit.adapt(chooseOrgLk, false, false);
 			chooseOrgLk.setText("<a>Pick up an Organisation</a>");
 			final PickUpOrgDialog diag = new PickUpOrgDialog(
@@ -776,7 +808,7 @@ public class ContactToolkit {
 			final Button validBtn = toolkit.createButton(parent, "Save",
 					SWT.PUSH);
 
-			validBtn.addSelectionListener(new SelectionListener() {
+			validBtn.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;
 
 				@Override
@@ -799,16 +831,10 @@ public class ContactToolkit {
 						CommonsJcrUtils.saveAndCheckin(entity);
 					else
 						form.dirtyStateChanged();
-					for (IFormPart part : form.getParts()) {
-						((AbstractFormPart) part).markStale();
-						part.refresh();
-					}
 					validBtn.getParent().setVisible(false);
+					CommandUtils.callCommand(ForceRefresh.ID);
 				}
 
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
-				}
 			});
 			return catCmb;
 		} catch (RepositoryException e1) {
