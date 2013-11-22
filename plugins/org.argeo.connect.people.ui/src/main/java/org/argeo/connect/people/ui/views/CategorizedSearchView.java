@@ -20,7 +20,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.JcrUiUtils;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
@@ -57,7 +56,7 @@ public class CategorizedSearchView extends ViewPart {
 	public static final String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".categorizedSearchView";
 
-	private final static Integer ROW_LIMIT = 5;
+	// private final static Integer ROW_LIMIT = 5;
 	// private final static Integer ROW_HEIGHT = 20;
 	private final static Integer HEIGHT_HINT = 105;
 
@@ -182,11 +181,10 @@ public class CategorizedSearchView extends ViewPart {
 
 	protected void refreshFilteredList() {
 		try {
-			List<Node> persons = JcrUiUtils.nodeIteratorToList(
-					doSearch(session, filterTxt.getText(),
-							PeopleTypes.PEOPLE_PERSON,
-							PeopleNames.PEOPLE_LAST_NAME,
-							PeopleNames.PEOPLE_PRIMARY_EMAIL), ROW_LIMIT);
+			List<Node> persons = JcrUtils.nodeIteratorToList(doSearch(session,
+					filterTxt.getText(), PeopleTypes.PEOPLE_PERSON,
+					PeopleNames.PEOPLE_LAST_NAME,
+					PeopleNames.PEOPLE_PRIMARY_EMAIL));
 			personViewer.setInput(persons);
 
 			// List<Node> orgs = JcrUiUtils.nodeIteratorToList(

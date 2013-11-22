@@ -4,7 +4,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.people.ui.PeopleHtmlUtils;
+import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.commands.DeleteEntity;
 import org.argeo.connect.streams.RssNames;
 import org.argeo.connect.streams.RssTypes;

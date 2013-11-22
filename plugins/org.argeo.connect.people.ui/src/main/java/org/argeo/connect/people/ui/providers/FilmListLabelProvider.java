@@ -4,7 +4,7 @@ import javax.jcr.Node;
 
 import org.argeo.connect.film.FilmNames;
 import org.argeo.connect.film.core.FilmJcrUtils;
-import org.argeo.connect.people.ui.PeopleHtmlUtils;
+import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.viewers.LabelProvider;
 

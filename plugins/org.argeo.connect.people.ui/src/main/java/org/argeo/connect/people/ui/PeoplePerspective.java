@@ -5,6 +5,7 @@ import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 
+/** Base default perspective for the Connect People app */
 public class PeoplePerspective implements IPerspectiveFactory {
 
 	@Override

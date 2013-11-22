@@ -10,7 +10,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.PartInitException;
 
 /**
- * Discard all pending changes of the current item and check it in.
+ * Open an editor that display a filtered table for a given JCR Node type
  */
 public class OpenSearchEntityEditor extends AbstractHandler {
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID

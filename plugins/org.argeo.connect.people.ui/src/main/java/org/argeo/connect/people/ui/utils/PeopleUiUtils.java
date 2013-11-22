@@ -1,10 +1,11 @@
-package org.argeo.connect.people.ui;
+package org.argeo.connect.people.ui.utils;
 
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.viewers.TableViewer;

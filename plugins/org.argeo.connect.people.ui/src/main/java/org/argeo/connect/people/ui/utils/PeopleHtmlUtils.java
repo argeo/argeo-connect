@@ -1,4 +1,4 @@
-package org.argeo.connect.people.ui;
+package org.argeo.connect.people.ui.utils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -12,6 +12,7 @@ import javax.jcr.nodetype.NodeType;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.commands.DeleteEntity;
 import org.argeo.connect.people.ui.commands.EditEntityReference;
 import org.argeo.connect.people.ui.commands.EditEntityReferenceWithPosition;

@@ -11,7 +11,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.PlatformUI;
 
 /**
- * Open various predefine URL on the web to ease end user understanding of the
+ * Opens various predefine URL on the web to ease end user understanding of the
  * app.
  */
 public class OpenUrl extends AbstractHandler {

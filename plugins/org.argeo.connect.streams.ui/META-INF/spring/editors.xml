@@ -4,14 +4,15 @@
 	xsi:schemaLocation="
 		http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
-	<bean id="org.argeo.connect.streams.ui.channelEditor" class="org.argeo.connect.streams.ui.editors.ChannelEditor"
+	<bean id="channelEditor" class="org.argeo.connect.streams.ui.editors.ChannelEditor"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
+		<property name="repository" ref="nodeRepository" />
 	</bean>
-	<bean id="org.argeo.connect.streams.ui.rssSearchPostEditor"
+	<bean id="rssSearchPostEditor"
 		class="org.argeo.connect.streams.ui.editors.RssSearchPostEditor"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
-		<property name="peopleUiService" ref="peopleUiService" />
+		<property name="repository" ref="nodeRepository" />
 	</bean>
 </beans>

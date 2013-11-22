@@ -2,6 +2,7 @@ package org.argeo.connect.streams.ui.views;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.QueryManager;
@@ -14,13 +15,12 @@ import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.EntityEditorInput;
 import org.argeo.connect.people.ui.editors.SearchEntityEditorInput;
 import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
+import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.streams.RssManager;
 import org.argeo.connect.streams.RssNames;
@@ -72,7 +72,6 @@ public class RssSearchView extends ViewPart {
 
 	/* DEPENDENCY INJECTION */
 	private Session session;
-	private PeopleService peopleService;
 	private RssManager rssManager;
 
 	// This page widgets
@@ -82,6 +81,7 @@ public class RssSearchView extends ViewPart {
 	private Composite sourcesCmp;
 
 	private TableViewer postsViewer;
+	@SuppressWarnings("unused")
 	private Text postsFilterTxt;
 	private Composite postsCmp;
 
@@ -266,6 +266,8 @@ public class RssSearchView extends ViewPart {
 				.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		newSourceTxt.addTraverseListener(new TraverseListener() {
+			private static final long serialVersionUID = 3928817201882691948L;
+
 			public void keyTraversed(TraverseEvent e) {
 				if (e.keyCode == SWT.CR) {
 					registerRssLink(newSourceTxt.getText());
@@ -347,6 +349,7 @@ public class RssSearchView extends ViewPart {
 
 		// Remove links
 		v.getTable().addSelectionListener(new HtmlListRwtAdapter() {
+			private static final long serialVersionUID = -1633530879653353403L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -386,7 +389,7 @@ public class RssSearchView extends ViewPart {
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(50));
 		v.setContentProvider(new BasicNodeListContentProvider());
-		v.addDoubleClickListener(new NodeListDoubleClickListener(peopleService));
+		v.addDoubleClickListener(new NodeListDoubleClickListener());
 		return v;
 	}
 
@@ -416,7 +419,7 @@ public class RssSearchView extends ViewPart {
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(50));
 		v.setContentProvider(new BasicNodeListContentProvider());
-		v.addDoubleClickListener(new NodeListDoubleClickListener(peopleService));
+		v.addDoubleClickListener(new NodeListDoubleClickListener());
 		return v;
 	}
 
@@ -504,10 +507,9 @@ public class RssSearchView extends ViewPart {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setPeopleService(PeopleService peopleService) {
-		this.peopleService = peopleService;
+	public void setRepository(Repository repository) {
 		try {
-			session = peopleService.getRepository().login();
+			session = repository.login();
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Unable to initialize "
 					+ "session for view " + ID, e);

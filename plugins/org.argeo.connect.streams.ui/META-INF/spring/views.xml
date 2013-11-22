@@ -6,7 +6,7 @@
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 	<bean id="org.argeo.connect.streams.ui.rssSearchView" class="org.argeo.connect.streams.ui.views.RssSearchView"
 		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
+		<property name="repository" ref="nodeRepository" />
 		<property name="rssManager" ref="rssManager" />
 	</bean>
 </beans>

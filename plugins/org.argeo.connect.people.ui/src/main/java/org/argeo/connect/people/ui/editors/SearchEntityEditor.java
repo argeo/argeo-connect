@@ -1,5 +1,6 @@
 package org.argeo.connect.people.ui.editors;
 
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.QueryManager;
@@ -218,12 +219,16 @@ public class SearchEntityEditor extends EditorPart {
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
+	}
+
+	public void setRepository(Repository repository) {
 		try {
-			session = peopleService.getRepository().login();
+			session = repository.login();
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to initialize "
-					+ "session for view " + ID, e);
+					+ "session for editor " + ID, e);
 		}
+
 	}
 
 }

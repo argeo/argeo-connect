@@ -21,13 +21,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.ui.JcrUiUtils;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.editors.AbstractEntityEditor;
-import org.argeo.connect.people.ui.editors.EntityAbstractFormPart;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
+import org.argeo.connect.people.ui.utils.JcrUiUtils;
+import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-
 import org.argeo.connect.streams.RssNames;
 import org.argeo.connect.streams.RssTypes;
 import org.argeo.connect.streams.ui.RssUiPlugin;
@@ -151,7 +149,7 @@ public class ChannelEditor extends AbstractEntityEditor implements RssNames {
 
 		editPanel.layout();
 
-		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
+		final AbstractFormPart editPart = new AbstractFormPart() {
 			public void refresh() { // update display value
 				try {
 					super.refresh();
@@ -306,7 +304,7 @@ public class ChannelEditor extends AbstractEntityEditor implements RssNames {
 
 		tableColumnLayout.setColumnData(singleColumn, new ColumnWeightData(90));
 
-		final EntityAbstractFormPart editPart = new EntityAbstractFormPart() {
+		final AbstractFormPart editPart = new AbstractFormPart() {
 			public void refresh() { // update display value
 				super.refresh();
 				List<Node> nodes = new ArrayList<Node>();

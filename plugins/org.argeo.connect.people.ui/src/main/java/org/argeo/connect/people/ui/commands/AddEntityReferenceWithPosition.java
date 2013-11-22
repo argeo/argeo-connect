@@ -24,6 +24,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 /**
  * Opens a dialog to add a reference with position between two entities.
  */
+@Deprecated
 public class AddEntityReferenceWithPosition extends AbstractHandler {
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".addEntityReferenceWithPosition";

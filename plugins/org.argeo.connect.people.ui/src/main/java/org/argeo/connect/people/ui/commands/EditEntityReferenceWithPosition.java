@@ -19,7 +19,8 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
- * Opens a dialog to add a reference with position between two entities.
+ * Opens a dialog to edit an existing reference with position between two
+ * entities.
  */
 public class EditEntityReferenceWithPosition extends AbstractHandler {
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID

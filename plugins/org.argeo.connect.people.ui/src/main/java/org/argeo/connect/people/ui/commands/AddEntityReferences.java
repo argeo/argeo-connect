@@ -27,6 +27,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * object that can then added depend either of the node type referencing node or
  * of the name of its parent.
  */
+@Deprecated
 public class AddEntityReferences extends AbstractHandler {
 	// private final static Log log =
 	// LogFactory.getLog(AddEntityReferences.class);

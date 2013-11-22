@@ -28,7 +28,7 @@ package org.argeo.connect.people.ui;
 
 import org.eclipse.swt.graphics.Image;
 
-/** Shared icons. */
+/** Shared icons used for contact management */
 public class ContactImages {
 
 	private final static String PREFIX = "icons/contacts/";

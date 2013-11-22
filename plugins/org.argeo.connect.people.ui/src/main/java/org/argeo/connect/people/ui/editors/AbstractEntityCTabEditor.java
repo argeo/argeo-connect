@@ -1,6 +1,6 @@
 package org.argeo.connect.people.ui.editors;
 
-import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;

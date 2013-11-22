@@ -1,11 +1,8 @@
-package org.argeo.connect.people.ui;
+package org.argeo.connect.people.ui.utils;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
@@ -13,18 +10,6 @@ import org.argeo.ArgeoException;
 
 /** Some static utils methods that might be factorized in a near future */
 public class JcrUiUtils {
-
-	/** Convert a {@link NodeIterator} to a list of {@link Node} */
-	public static List<Node> nodeIteratorToList(NodeIterator nodeIterator,
-			int limit) {
-		List<Node> nodes = new ArrayList<Node>();
-		int i = 0;
-		while (nodeIterator.hasNext() && i < limit) {
-			nodes.add(nodeIterator.nextNode());
-			i++;
-		}
-		return nodes;
-	}
 
 	/**
 	 * Centralizes management of updating property value. Among other to avoid
