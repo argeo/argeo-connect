@@ -19,7 +19,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 /**
- * Create a new entity under draft path of the current repository and opens the
+ * Creates a new entity under draft path of the current repository and opens the
  * corresponding editor. The Node type of the relevant entity must be passed as
  * parameter.
  */
