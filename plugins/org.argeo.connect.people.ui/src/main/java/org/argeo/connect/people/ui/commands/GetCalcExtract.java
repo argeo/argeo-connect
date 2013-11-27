@@ -1,17 +1,18 @@
 package org.argeo.connect.people.ui.commands;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.extracts.CalcFileProvider;
 import org.argeo.connect.people.ui.extracts.ITableProvider;
 import org.argeo.connect.people.ui.extracts.RowIteratorToCalcWriter;
-import org.argeo.eclipse.ui.specific.FileHandler;
+import org.argeo.connect.people.ui.specific.commands.OpenFile;
+import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 
@@ -25,8 +26,8 @@ public class GetCalcExtract extends AbstractHandler {
 			+ ".getCalcExtract";
 	public final static String PARAM_EXTACT_ID = "param.extractId";
 
-	private CalcFileProvider efp = new CalcFileProvider();
-	private FileHandler fileHandler = new FileHandler(efp);
+	// private CalcFileProvider efp = new CalcFileProvider();
+	// private FileHandler fileHandler = new FileHandler(efp);
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		String extractId = event.getParameter(PARAM_EXTACT_ID);
@@ -37,10 +38,13 @@ public class GetCalcExtract extends AbstractHandler {
 			if (iwp instanceof ITableProvider) {
 				File tmpFile = File.createTempFile("people-extract", ".xls");
 				tmpFile.deleteOnExit();
-				callCalcGenerator((ITableProvider) iwp, extractId,
-						tmpFile);
-				fileHandler.openFile(tmpFile.getName(),
-						tmpFile.getAbsolutePath());
+				callCalcGenerator((ITableProvider) iwp, extractId, tmpFile);
+
+				Map<String, String> params = new HashMap<String, String>();
+				params.put(OpenFile.PARAM_FILE_NAME, tmpFile.getName());
+				params.put(OpenFile.PARAM_FILE_PATH, tmpFile.getAbsolutePath());
+				CommandUtils.callCommand(OpenFile.ID, params);
+
 			} else
 				throw new PeopleException(iwp.toString()
 						+ " is not an instance of "
@@ -55,21 +59,11 @@ public class GetCalcExtract extends AbstractHandler {
 	}
 
 	/** Real call to spreadsheet generator. */
-	protected synchronized void callCalcGenerator(
-			ITableProvider provider, String extractId, File file)
-			throws Exception {
+	protected synchronized void callCalcGenerator(ITableProvider provider,
+			String extractId, File file) throws Exception {
 		RowIteratorToCalcWriter writer = new RowIteratorToCalcWriter();
 		writer.setColumnDefinition(provider.getColumnDefinition(extractId));
 		writer.writeTableFromRowIterator(file,
 				provider.getRowIterator(extractId));
-	}
-
-	@Override
-	public void dispose() {
-		super.dispose();
-		// free the service handler of the file provider
-		RWT.getServiceManager().unregisterServiceHandler(
-				FileHandler.DOWNLOAD_SERVICE_NAME);
-
 	}
 }

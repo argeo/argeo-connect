@@ -41,8 +41,8 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.extracts.ColumnDefinition;
 import org.argeo.connect.people.utils.ContactJcrUtils;
+import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 

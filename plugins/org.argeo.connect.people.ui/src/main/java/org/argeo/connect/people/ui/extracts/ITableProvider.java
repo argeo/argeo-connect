@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.jcr.query.RowIterator;
 
+import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
+
 /**
  * Views and editors can implement this interface so that one of the row list
  * that is displayed in the part can be rebuild externally. Typically to

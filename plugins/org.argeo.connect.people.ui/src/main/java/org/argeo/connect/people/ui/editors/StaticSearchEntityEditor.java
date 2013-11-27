@@ -16,9 +16,9 @@ import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.composites.EntityTableComposite;
 import org.argeo.connect.people.ui.composites.PersonTableComposite;
-import org.argeo.connect.people.ui.extracts.ColumnDefinition;
 import org.argeo.connect.people.ui.extracts.ITableProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -121,6 +121,22 @@ public class StaticSearchEntityEditor extends EditorPart implements
 		return entityType;
 	}
 
+	// Configure calc extracts
+	@Override
+	public RowIterator getRowIterator(String extractId) {
+		if (currTableProvider != null)
+			return currTableProvider.getRowIterator(extractId);
+
+		return null;
+	}
+
+	@Override
+	public List<ColumnDefinition> getColumnDefinition(String extractId) {
+		if (currTableProvider != null)
+			return currTableProvider.getColumnDefinition(extractId);
+		return null;
+	}
+
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 	}
@@ -137,26 +153,6 @@ public class StaticSearchEntityEditor extends EditorPart implements
 	@Override
 	public boolean isSaveAsAllowed() {
 		return false;
-	}
-
-	/* DEPENDENCY INJECTION */
-	public void setRepository(Repository repository) {
-		session = CommonsJcrUtils.login(repository);
-	}
-
-	@Override
-	public RowIterator getRowIterator(String extractId) {
-		if (currTableProvider != null)
-			return currTableProvider.getRowIterator(extractId);
-
-		return null;
-	}
-
-	@Override
-	public List<ColumnDefinition> getColumnDefinition(String extractId) {
-		if (currTableProvider != null)
-			return currTableProvider.getColumnDefinition(extractId);
-		return null;
 	}
 
 	private class MyRowViewerDoubleClickListener implements
@@ -192,6 +188,11 @@ public class StaticSearchEntityEditor extends EditorPart implements
 			}
 		}
 
+	}
+
+	/* DEPENDENCY INJECTION */
+	public void setRepository(Repository repository) {
+		session = CommonsJcrUtils.login(repository);
 	}
 
 }

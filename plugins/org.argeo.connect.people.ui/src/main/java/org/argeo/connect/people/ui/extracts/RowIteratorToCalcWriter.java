@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 
 public class RowIteratorToCalcWriter {
 
@@ -244,7 +245,9 @@ public class RowIteratorToCalcWriter {
 		}
 	}
 
-	/** Initialise calc generation, to be called prior to any extract génération */
+	/**
+	 * Initialises calc generation, to be called prior to any extract generation
+	 */
 	public void setColumnDefinition(List<ColumnDefinition> columnDefinition) {
 		this.columnDefs = columnDefinition;
 	}

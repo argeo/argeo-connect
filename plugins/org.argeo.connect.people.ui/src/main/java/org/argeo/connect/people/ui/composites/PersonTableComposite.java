@@ -470,21 +470,18 @@ public class PersonTableComposite extends Composite implements ArgeoNames,
 	}
 
 	@Override
-	public List<org.argeo.connect.people.ui.extracts.ColumnDefinition> getColumnDefinition(
-			String extractId) {
-		List<org.argeo.connect.people.ui.extracts.ColumnDefinition> colDefs = new ArrayList<org.argeo.connect.people.ui.extracts.ColumnDefinition>();
-		colDefs.add(new org.argeo.connect.people.ui.extracts.ColumnDefinition(
-				PeopleTypes.PEOPLE_PERSON, Property.JCR_TITLE,
-				PropertyType.STRING, "Display Name", 300));
-		colDefs.add(new org.argeo.connect.people.ui.extracts.ColumnDefinition(
-				PeopleTypes.PEOPLE_PERSON, PeopleNames.PEOPLE_LAST_NAME,
-				PropertyType.STRING, "Last name", 120));
-		colDefs.add(new org.argeo.connect.people.ui.extracts.ColumnDefinition(
-				PeopleTypes.PEOPLE_PERSON, PeopleNames.PEOPLE_FIRST_NAME,
-				PropertyType.STRING, "First name", 120));
-		colDefs.add(new org.argeo.connect.people.ui.extracts.ColumnDefinition(
-				PeopleTypes.PEOPLE_PERSON, PeopleNames.PEOPLE_TAGS,
-				PropertyType.STRING, "Tags", 200));
+	public List<ColumnDefinition> getColumnDefinition(String extractId) {
+		List<ColumnDefinition> colDefs = new ArrayList<ColumnDefinition>();
+		colDefs.add(new ColumnDefinition(PeopleTypes.PEOPLE_PERSON,
+				Property.JCR_TITLE, PropertyType.STRING, "Display Name", 300));
+		colDefs.add(new ColumnDefinition(PeopleTypes.PEOPLE_PERSON,
+				PeopleNames.PEOPLE_LAST_NAME, PropertyType.STRING, "Last name",
+				120));
+		colDefs.add(new ColumnDefinition(PeopleTypes.PEOPLE_PERSON,
+				PeopleNames.PEOPLE_FIRST_NAME, PropertyType.STRING,
+				"First name", 120));
+		colDefs.add(new ColumnDefinition(PeopleTypes.PEOPLE_PERSON,
+				PeopleNames.PEOPLE_TAGS, PropertyType.STRING, "Tags", 200));
 		return colDefs;
 	}
 }

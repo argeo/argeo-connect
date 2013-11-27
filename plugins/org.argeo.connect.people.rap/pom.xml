@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.argeo.connect</groupId>
@@ -36,6 +37,11 @@
 				<artifactId>maven-bundle-plugin</artifactId>
 				<configuration>
 					<instructions>
+						<Bundle-Activator>org.argeo.connect.people.rap.PeopleRapPlugin</Bundle-Activator>
+						<Require-Bundle>
+							org.eclipse.rap.ui,
+							org.eclipse.rap.ui.workbench
+						</Require-Bundle>
 						<Import-Package>
 							org.argeo.eclipse.spring,
 							*
@@ -47,6 +53,14 @@
 
 	</build>
 	<dependencies>
+		<!--  RAP specific dependencies -->
+		<dependency>
+			<groupId>org.argeo.commons.base</groupId>
+			<artifactId>org.argeo.eclipse.ui.rap</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+		
+		<!--  Base RAP distibution -->
 		<dependency>
 			<groupId>org.argeo.commons.security</groupId>
 			<artifactId>org.argeo.security.dep.node.rap</artifactId>

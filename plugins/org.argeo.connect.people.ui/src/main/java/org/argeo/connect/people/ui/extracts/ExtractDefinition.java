@@ -7,6 +7,7 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 
 public interface ExtractDefinition {
 
@@ -16,13 +17,6 @@ public interface ExtractDefinition {
 		{
 			add(new ColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
 					Property.JCR_TITLE, PropertyType.STRING, "Display name"));
-
-			// add(new ColumnDefinition(PeopleTypes.PEOPLE_PERSON,
-			// PeopleNames.PEOPLE_LAST_NAME, PropertyType.STRING,
-			// "Last name"));
-			// add(new ColumnDefinition(PeopleTypes.PEOPLE_PERSON,
-			// PeopleNames.PEOPLE_FIRST_NAME, PropertyType.STRING,
-			// "First name"));
 		}
 	};
 

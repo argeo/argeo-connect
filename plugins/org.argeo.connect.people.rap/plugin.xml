@@ -12,6 +12,22 @@
 			brandingId="org.argeo.connect.people.rap.defaultBranding">
 		</entrypoint>
 	</extension>
+ 	<extension
+		point="org.eclipse.ui.commands">
+		<command
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+			id="org.argeo.connect.people.ui.specific.openFile"
+			name="removeEntityReference">
+			<commandParameter
+         		id="param.fileName"
+         		name="The name of the file to open">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.filePath"
+         		name="The absolute path of this file on the server file system">
+  	 		</commandParameter>
+		</command>
+ 	</extension>
  
  	<!-- BRANDING --> 
 	<!-- The 2 following warnings are useless --> 
@@ -24,7 +40,16 @@
 			favicon="branding/favicon.gif">
 		</branding>
 	</extension>
-	
+
+
+	<!-- SERVICE HANDLERS --> 
+	<extension point="org.eclipse.rap.ui.serviceHandler">
+		<serviceHandler
+            class="org.argeo.eclipse.ui.specific.FileDownloadServiceHandler"
+            id="org.argeo.connect.people.ui.specific.fileDownloadServiceHandler">
+      </serviceHandler>
+   </extension>
+
 	<!-- LOCAL THEMES --> 
 	<extension
 		point="org.eclipse.rap.ui.themes">
