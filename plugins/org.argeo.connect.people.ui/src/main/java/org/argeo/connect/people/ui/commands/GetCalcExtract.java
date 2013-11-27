@@ -36,15 +36,20 @@ public class GetCalcExtract extends AbstractHandler {
 			IWorkbenchPart iwp = HandlerUtil.getActiveWorkbenchWindow(event)
 					.getActivePage().getActivePart();
 			if (iwp instanceof ITableProvider) {
-				File tmpFile = File.createTempFile("people-extract", ".xls");
-				tmpFile.deleteOnExit();
-				callCalcGenerator((ITableProvider) iwp, extractId, tmpFile);
+				if (((ITableProvider) iwp).getColumnDefinition(extractId) == null)
+					return null;
+				else {
+					File tmpFile = File
+							.createTempFile("people-extract", ".xls");
+					tmpFile.deleteOnExit();
+					callCalcGenerator((ITableProvider) iwp, extractId, tmpFile);
 
-				Map<String, String> params = new HashMap<String, String>();
-				params.put(OpenFile.PARAM_FILE_NAME, tmpFile.getName());
-				params.put(OpenFile.PARAM_FILE_PATH, tmpFile.getAbsolutePath());
-				CommandUtils.callCommand(OpenFile.ID, params);
-
+					Map<String, String> params = new HashMap<String, String>();
+					params.put(OpenFile.PARAM_FILE_NAME, tmpFile.getName());
+					params.put(OpenFile.PARAM_FILE_PATH,
+							tmpFile.getAbsolutePath());
+					CommandUtils.callCommand(OpenFile.ID, params);
+				}
 			} else
 				throw new PeopleException(iwp.toString()
 						+ " is not an instance of "
@@ -61,6 +66,7 @@ public class GetCalcExtract extends AbstractHandler {
 	/** Real call to spreadsheet generator. */
 	protected synchronized void callCalcGenerator(ITableProvider provider,
 			String extractId, File file) throws Exception {
+
 		RowIteratorToCalcWriter writer = new RowIteratorToCalcWriter();
 		writer.setColumnDefinition(provider.getColumnDefinition(extractId));
 		writer.writeTableFromRowIterator(file,

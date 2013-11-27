@@ -18,6 +18,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
  * Base implementation of a label provider for widgets that display JCR Rows
  * that handle multiple value properties. Must be factorized in a near future.
  */
+@Deprecated
 public class BaseJcrNodeLabelProvider extends ColumnLabelProvider {
 
 	private static final long serialVersionUID = -1831352348649330101L;

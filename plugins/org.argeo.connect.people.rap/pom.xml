@@ -44,6 +44,7 @@
 						</Require-Bundle>
 						<Import-Package>
 							org.argeo.eclipse.spring,
+							org.argeo.eclipse.ui.specific,
 							*
 						</Import-Package>
 					</instructions>

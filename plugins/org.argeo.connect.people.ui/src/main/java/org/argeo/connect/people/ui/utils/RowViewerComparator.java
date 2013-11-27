@@ -4,22 +4,25 @@ import javax.jcr.Node;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
+import javax.jcr.query.Row;
 
 import org.argeo.connect.people.PeopleException;
 import org.eclipse.jface.viewers.Viewer;
 
 /**
- * Extends basic node comparator adding an experimental implementation to
- * compare to multiple valued String properties
+ * Extends canonical row comparator adding an experimental implementation to
+ * enable comparison of multiple value String properties
  */
+public class RowViewerComparator extends
+		org.argeo.eclipse.ui.jcr.lists.RowViewerComparator {
 
-public class NodeViewerComparator extends
-		org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator {
+	private static final long serialVersionUID = 5409706129676092059L;
 
-	private static final long serialVersionUID = 5916940615038882583L;
+	public RowViewerComparator() {
+	}
 
 	/**
-	 * e1 and e2 must both be Jcr nodes.
+	 * e1 and e2 must both be Jcr rows.
 	 * 
 	 * @param viewer
 	 * @param e1
@@ -30,8 +33,8 @@ public class NodeViewerComparator extends
 	public int compare(Viewer viewer, Object e1, Object e2) {
 		try {
 
-			Node n1 = (Node) e1;
-			Node n2 = (Node) e2;
+			Node n1 = ((Row) e1).getNode(selectorName);
+			Node n2 = ((Row) e2).getNode(selectorName);
 
 			if (n1.hasProperty(propertyName)
 					&& n1.getProperty(propertyName).isMultiple())
@@ -51,9 +54,15 @@ public class NodeViewerComparator extends
 				return super.compare(viewer, e1, e2);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unexpected error "
-					+ "while comparing nodes", re);
+					+ "while comparing rows", re);
 		}
-		// return rc;
+	}
+
+	private String getString(Value[] values) throws RepositoryException {
+		StringBuilder builder = new StringBuilder();
+		for (Value value : values)
+			builder.append(value.getString());
+		return builder.toString();
 	}
 
 	private int compareMultipleStrings(Node n1, Node n2)
@@ -75,12 +84,4 @@ public class NodeViewerComparator extends
 		}
 		return rc;
 	}
-
-	private String getString(Value[] values) throws RepositoryException {
-		StringBuilder builder = new StringBuilder();
-		for (Value value : values)
-			builder.append(value.getString());
-		return builder.toString();
-	}
-
 }

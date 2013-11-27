@@ -45,7 +45,7 @@
 	<!-- SERVICE HANDLERS --> 
 	<extension point="org.eclipse.rap.ui.serviceHandler">
 		<serviceHandler
-            class="org.argeo.eclipse.ui.specific.FileDownloadServiceHandler"
+            class="org.argeo.eclipse.ui.specific.FileDownloadService"
             id="org.argeo.connect.people.ui.specific.fileDownloadServiceHandler">
       </serviceHandler>
    </extension>
