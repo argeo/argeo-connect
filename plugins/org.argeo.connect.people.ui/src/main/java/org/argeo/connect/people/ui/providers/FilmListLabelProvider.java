@@ -28,8 +28,7 @@ public class FilmListLabelProvider extends LabelProvider {
 		builder.append(FilmJcrUtils.getTitleForFilm(film));
 		builder.append(" </b>");
 
-		String prodCountry = CommonsJcrUtils.get(film,
-				FilmNames.FILM_PROD_COUNTRY);
+		String prodCountry = CommonsJcrUtils.getMultiAsString(film, FilmNames.FILM_PROD_COUNTRY, ", ");
 		String prodYear = CommonsJcrUtils.get(film, FilmNames.FILM_PROD_YEAR);
 		if (CommonsJcrUtils.checkNotEmptyString(prodCountry)
 				|| CommonsJcrUtils.checkNotEmptyString(prodYear)) {

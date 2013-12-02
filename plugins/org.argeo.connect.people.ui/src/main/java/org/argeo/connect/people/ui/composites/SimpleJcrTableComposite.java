@@ -9,6 +9,7 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Constraint;
@@ -19,7 +20,6 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
@@ -45,13 +45,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
-/** Almost canonic implementation of a table that display entities */
-public class EntityTableComposite extends Composite implements ArgeoNames {
-	// private final static Log log =
-	// LogFactory.getLog(EntityTableComposite.class);
-	private static final long serialVersionUID = 1262369448445021926L;
+/** Canonical implementation of a table that display Jcr nodes */
 
-	private TableViewer entityViewer;
+public class SimpleJcrTableComposite extends Composite implements ArgeoNames {
+
+	private static final long serialVersionUID = 3476100511651849356L;
+	private TableViewer tableViewer;
 	private Text filterTxt;
 	private final static String FILTER_HELP_MSG = "Type filter criterion "
 			+ "separated by a space";
@@ -61,12 +60,14 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 
 	private boolean hasFilter = false;
 	private boolean hasSelectionColumn = false;
+
 	private List<ColumnDefinition> colDefs = new ArrayList<ColumnDefinition>();
 	{ // By default, it displays only title
 		colDefs.add(new ColumnDefinition(null, Property.JCR_TITLE,
 				PropertyType.STRING, "Name", 300));
 	};
-	private String nodeType = PeopleTypes.PEOPLE_ENTITY;
+	private String nodeType = NodeType.NT_UNSTRUCTURED;
+	private String parentPath = "/";
 
 	public List<ColumnDefinition> getColumnsDef() {
 		return colDefs;
@@ -76,61 +77,28 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 
 	/**
 	 * Default table with no filter and no selection column that only display
-	 * JCR_TITLES
+	 * JCR_TITLE.
 	 * 
-	 * Default selector is people:entity
+	 * Default selector is NodeType.NT_UNSTRUCTURED, default parent path is the root path
 	 * 
 	 * @param parent
 	 * @param style
 	 *            the style of the table
 	 * @param session
 	 */
-	public EntityTableComposite(Composite parent, int style, Session session) {
+	public SimpleJcrTableComposite(Composite parent, int style, Session session) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
+		colDefs = new ArrayList<ColumnDefinition>();
 		this.session = session;
-		populate();
-	}
-
-	/**
-	 * Default table that only display JCR_TITLES of an entity table. Caller can
-	 * choose to add a filter and a selection column
-	 * 
-	 * @param parent
-	 * @param style
-	 *            the style of the table
-	 * @param session
-	 * @param addFilter
-	 * @param addSelection
-	 */
-	public EntityTableComposite(Composite parent, int style, Session session,
-			boolean addFilter, boolean addSelection) {
-		super(parent, SWT.NONE);
-		this.tableStyle = style;
-		this.session = session;
-		this.hasFilter = addFilter;
-		this.hasSelectionColumn = addSelection;
 		populate();
 	}
 
 	/**
 	 * 
-	 * @param parent
-	 * @param style
-	 *            the style of the table
-	 * @param session
-	 * @param colDefs
-	 */
-	public EntityTableComposite(Composite parent, int style, Session session,
-			List<ColumnDefinition> colDefs) {
-		super(parent, SWT.NONE);
-		this.tableStyle = style;
-		this.session = session;
-		this.colDefs = colDefs;
-		populate();
-	}
-
-	/**
+	 * Caller might define column that are displayed, choose to add a filter and
+	 * a selection column, define a parent path and/or a type for nodes that has
+	 * to be listed
 	 * 
 	 * if some parameters are null, we use default values instead
 	 * 
@@ -142,9 +110,9 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 	 * @param addFilter
 	 * @param addSelection
 	 */
-	public EntityTableComposite(Composite parent, int style, Session session,
-			String nodeType, List<ColumnDefinition> colDefs, boolean addFilter,
-			boolean addSelection) {
+	public SimpleJcrTableComposite(Composite parent, int style,
+			Session session, String parentPath, String nodeType, List<ColumnDefinition> colDefs,
+			boolean addFilter, boolean addSelection) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.session = session;
@@ -152,6 +120,9 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 			this.colDefs = colDefs;
 		if (nodeType != null)
 			this.nodeType = nodeType;
+		if (parentPath != null)
+			this.parentPath = parentPath;
+		
 		this.hasFilter = addFilter;
 		this.hasSelectionColumn = addSelection;
 		populate();
@@ -164,15 +135,15 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 		this.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 		if (hasFilter)
 			createFilterPart(parent);
-		entityViewer = createTableViewer(parent);
-		EclipseUiSpecificUtils.enableToolTipSupport(entityViewer);
-		entityViewer.setContentProvider(new MyTableContentProvider());
+		tableViewer = createTableViewer(parent);
+		EclipseUiSpecificUtils.enableToolTipSupport(tableViewer);
+		tableViewer.setContentProvider(new MyTableContentProvider());
 		refreshFilteredList();
 	}
 
-	public List<Node> getSelectedEntities() {
+	public List<Node> getSelectedNodes() {
 		if (hasSelectionColumn) {
-			Object[] elements = ((CheckboxTableViewer) entityViewer)
+			Object[] elements = ((CheckboxTableViewer) tableViewer)
 					.getCheckedElements();
 
 			List<Node> result = new ArrayList<Node>();
@@ -187,7 +158,7 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 
 	/** Returns the User table viewer, typically to add doubleclick listener */
 	public TableViewer getTableViewer() {
-		return entityViewer;
+		return tableViewer;
 	}
 
 	private TableViewer createTableViewer(final Composite parent) {
@@ -226,7 +197,7 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					allSelected = !allSelected;
-					((CheckboxTableViewer) entityViewer)
+					((CheckboxTableViewer) tableViewer)
 							.setAllChecked(allSelected);
 				}
 			};
@@ -265,31 +236,11 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 		public String getToolTipText(Object element) {
 			return getText(element);
 		}
-
-		// @Override
-		// public Font getFont(Object elem) {
-		// // self
-		// String username = getProperty(elem, ARGEO_USER_ID);
-		// if (username.equals(session.getUserID()))
-		// return bold;
-		//
-		// // disabled
-		// try {
-		// Node userProfile = (Node) elem;
-		// // Node userProfile = userHome.getNode(ARGEO_PROFILE);
-		// if (!userProfile.getProperty(ARGEO_ENABLED).getBoolean())
-		// return italic;
-		// else
-		// return null;
-		// } catch (RepositoryException e) {
-		// throw new ArgeoException("Cannot get font for " + username, e);
-		// }
-		// }
 	}
 
 	@Override
 	public boolean setFocus() {
-		entityViewer.getTable().setFocus();
+		tableViewer.getTable().setFocus();
 		return true;
 	}
 
@@ -303,7 +254,7 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 	}
 
 	private class MyTableContentProvider implements IStructuredContentProvider {
-		private static final long serialVersionUID = 7164029504991808317L;
+		private static final long serialVersionUID = 5933809732799991342L;
 
 		public Object[] getElements(Object inputElement) {
 			return (Object[]) inputElement;
@@ -342,7 +293,7 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 		try {
 			nodes = JcrUtils.nodeIteratorToList(listFilteredElements(session,
 					hasFilter ? filterTxt.getText() : null));
-			entityViewer.setInput(nodes.toArray());
+			tableViewer.setInput(nodes.toArray());
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Unable to list users", e);
 		}
@@ -359,7 +310,7 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 
 		Selector source = factory.selector(nodeType, nodeType);
 
-		Constraint defaultC = null;
+		Constraint defaultC = factory.descendantNode(source.getSelectorName(), parentPath);
 
 		// Build constraints based the textArea filter content
 		if (filter != null && !"".equals(filter.trim())) {

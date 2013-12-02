@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.argeo.connect.people.ui.wizards;
+package org.argeo.connect.people.ui.dialogs;
 
 import javax.jcr.Node;
 import javax.jcr.Property;

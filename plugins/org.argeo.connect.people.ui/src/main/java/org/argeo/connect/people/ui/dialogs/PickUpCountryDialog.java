@@ -13,13 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.argeo.connect.people.ui.wizards;
+package org.argeo.connect.people.ui.dialogs;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
+import javax.jcr.PropertyType;
 import javax.jcr.Session;
 
+import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.composites.EntityTableComposite;
+import org.argeo.connect.people.ui.composites.SimpleJcrTableComposite;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -29,27 +38,34 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * Dialog with a filtered list to add some members in a mailing list
+ * Dialog with a filtered list to choose a country
  */
-public class PickUpOrgDialog extends TrayDialog {
-	private static final long serialVersionUID = -2526572299370624808L;
+public class PickUpCountryDialog extends TrayDialog {
+	private static final long serialVersionUID = 3766899676609659573L;
 
 	// Business objects
 	private final Session session;
 	private Node selectedNode;
 
 	// this page widgets and UI objects
-	private EntityTableComposite tableCmp;
+	private SimpleJcrTableComposite tableCmp;
 	private final String title;
 
-	public PickUpOrgDialog(Shell parentShell, String title, Session session,
-			Node referencingNode) {
+	private List<ColumnDefinition> colDefs = new ArrayList<ColumnDefinition>();
+	{ // By default, it displays only title
+		colDefs.add(new ColumnDefinition(null, PeopleNames.PEOPLE_ISO_CODE,
+				PropertyType.STRING, "Iso Code", 100));
+		colDefs.add(new ColumnDefinition(null, Property.JCR_TITLE,
+				PropertyType.STRING, "Label", 300));
+	};
+
+	public PickUpCountryDialog(Shell parentShell, String title,
+			Session session, Node referencingNode) {
 		super(parentShell);
 		this.title = title;
 		// this.referencingNode = referencingNode;
@@ -57,18 +73,16 @@ public class PickUpOrgDialog extends TrayDialog {
 	}
 
 	protected Point getInitialSize() {
-		return new Point(800, 600);
+		return new Point(600, 400);
 	}
 
 	protected Control createDialogArea(Composite parent) {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
-		final Button seeAllChk = new Button(dialogArea, SWT.CHECK);
-		seeAllChk.setText("See all organisation");
-
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-		tableCmp = new EntityTableComposite(dialogArea, style, session,
-				PeopleTypes.PEOPLE_ORGANIZATION, null, true, false);
+		tableCmp = new SimpleJcrTableComposite(dialogArea, style, session,
+				PeopleConstants.PEOPLE_COUNTRIES_BASE_PATH,
+				PeopleTypes.PEOPLE_ISO_COUNTRY, colDefs, true, false);
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		// Add listeners
@@ -81,8 +95,12 @@ public class PickUpOrgDialog extends TrayDialog {
 		return dialogArea;
 	}
 
-	public Node getSelected() {
-		return selectedNode;
+	public String getSelected() {
+		if (selectedNode != null)
+			return CommonsJcrUtils.get(selectedNode,
+					PeopleNames.PEOPLE_ISO_CODE);
+		else
+			return null;
 	}
 
 	protected void configureShell(Shell shell) {

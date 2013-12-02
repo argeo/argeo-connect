@@ -163,7 +163,7 @@ public class FilmJcrUtils implements FilmNames {
 	}
 
 	/**
-	 * Add or update the a synopsis Node given a film and a Language Short
+	 * Add or update the a synopsis node given a film and a language. Short
 	 * synopsis is optional
 	 * */
 	public static Node addOrUpdateSynopsisNode(Node film, String synopsis,

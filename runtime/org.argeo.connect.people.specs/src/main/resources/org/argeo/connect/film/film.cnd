@@ -6,22 +6,45 @@
 [film:film] > people:group
 // a business specific film ID
 - film:filmId (STRING) 
-- film:productionYear (LONG) *
+
+- film:productionYear (LONG)
+// A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
+- film:originalLanguage (STRING) *
 // A list of countries as defined in ISO 3166-1
+// primary prodcountry is first of the list
 - film:productionCountry (STRING) *
 // The corresponding english values to ease search and rendering 
 - film:prodCountryString  (STRING) *
-- film:length (String)
 - film:director (String)
-// A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
-- film:originalLanguage (STRING) *
+// exactRunningTime hh:mm:ss
+- film:length (String)
+- film:lengthInMinutes (LONG)
+
+- film:category (String)
+// only if category == animation
+- film:animationTechnique
+- film:genre
+
 - film:origTitle (STRING)
 - film:origTitleArticle (STRING)
 // Helper to be able to read the original title when it is in a foreign alphabet
 - film:origLatinTitle (STRING)
-// The crew for this film inherited from people:group
-// + * (people:member) *
 
+// Subnode with alternative title
++ film:altTitles (nt:unstructured) 
+
+// Subnode with synopses title
++ film:synopses (nt:unstructured)
+
+// film crew is inherited from people:group
+
+// maybe too specific
+- film:isFeature (BOOLEAN)
+- film:isPremiere (BOOLEAN)
+- film:isStudentProject (BOOLEAN)
+- film:isDebutFilm (BOOLEAN)
+// why not use a contact ?
+- film:website
 
 // Alternative titles
 [film:altTitle] > nt:unstructured

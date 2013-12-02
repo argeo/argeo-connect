@@ -2,6 +2,7 @@ package org.argeo.connect.people.ui.providers;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.Value;
 
 import org.argeo.connect.film.FilmNames;
 import org.argeo.connect.film.FilmTypes;
@@ -73,18 +74,19 @@ public class FilmOverviewLabelProvider extends ColumnLabelProvider implements
 			// Production
 			builder.append(CommonsJcrUtils.getStringValue(film, FILM_DIRECTOR));
 			builder.append(" [");
-			builder.append(CommonsJcrUtils.get(film, FILM_PROD_COUNTRY))
+			builder.append(CommonsJcrUtils.getMultiAsString(film, FILM_PROD_COUNTRY, ", "))
 					.append(", ");
 			builder.append(CommonsJcrUtils.get(film, FILM_PROD_YEAR));
 			builder.append("]");
 			builder.append("<br/>");
 
-			// original language & lenght
-			String origLang = CommonsJcrUtils.get(film, FILM_ORIGINAL_LANGUAGE);
-
+			String origLang	= CommonsJcrUtils.getMultiAsString(film, FILM_ORIGINAL_LANGUAGE, ", ");
+			String length = CommonsJcrUtils.get(film, FILM_LENGTH);
 			builder.append("<i>");
 			if (CommonsJcrUtils.checkNotEmptyString(origLang))
-				builder.append(origLang).append(", ");
+				builder.append(origLang.toUpperCase());
+			if (CommonsJcrUtils.checkNotEmptyString(origLang) && CommonsJcrUtils.checkNotEmptyString(length))
+				builder.append(", ");
 			builder.append(CommonsJcrUtils.get(film, FILM_LENGTH));
 			builder.append("</i>");
 			builder.append("</span>");

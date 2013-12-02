@@ -103,11 +103,19 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void populateTabFolder(CTabFolder folder) {
-		// Synopses
-		String tooltip = "The synopses for film "
+
+		// Film Details
+		String tooltip = "Details for film "
 				+ JcrUtils.get(film, FilmNames.FILM_ID);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
-				"Synopsis", PeopleUiConstants.PANEL_SYNOPSES, tooltip);
+				"Details", PeopleUiConstants.PANEL_FILM_INFO, tooltip);
+		filmPanelToolkit.populateFilmDetailsPanel(innerPannel, film);
+
+		// Synopses
+		tooltip = "The synopses for film "
+				+ JcrUtils.get(film, FilmNames.FILM_ID);
+		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Synopsis",
+				PeopleUiConstants.PANEL_SYNOPSES, tooltip);
 		filmPanelToolkit.populateSynopsisPanel(innerPannel, film);
 
 		// Crew

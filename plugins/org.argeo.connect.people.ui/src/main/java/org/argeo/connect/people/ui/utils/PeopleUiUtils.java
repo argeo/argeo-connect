@@ -113,12 +113,36 @@ public class PeopleUiUtils {
 			if (entity.hasProperty(propName)) {
 				tmp = entity.getProperty(propName).getBoolean();
 				button.setSelection(tmp);
-			}
+			} else
+				tmp = false;
+			button.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
 		} catch (RepositoryException re) {
 			throw new PeopleException("unable get boolean value for property "
 					+ propName);
 		}
 		return tmp;
+	}
+
+	/**
+	 * Shortcut to add a default selection listener to a Check Box
+	 * <code>Button</code> widget that is bound a JCR boolean property. Any
+	 * change in the selection is immediately stored in the active session, but
+	 * not saved
+	 */
+	public static void addCheckBoxListener(final Button button,
+			final Node node, final String propName, final AbstractFormPart part) {
+		button.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				boolean useDefault = button.getSelection();
+				if (JcrUiUtils.setJcrProperty(node, propName,
+						PropertyType.BOOLEAN, useDefault)) {
+					part.markDirty();
+				}
+			}
+		});
 	}
 
 	/**

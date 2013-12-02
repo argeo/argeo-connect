@@ -255,8 +255,43 @@ public class CommonsJcrUtils {
 	}
 
 	/**
-	 * Concisely get the value of a property or null if this node doesn't have
-	 * this property
+	 * Concisely get a string that concat values of a multi-valued String
+	 * property. returns an empty String rather than null if this node doesn't
+	 * have this property or if the corresponding property is an empty string.
+	 * Useful in the read only label providers. Caller might define a
+	 * concatenation sign, otherwise a semi-colon and a space are used
+	 */
+	public static String getMultiAsString(Node node, String propertyName,
+			String separator) {
+		try {
+
+			if (separator == null)
+				separator = "; ";
+			// original language & lenght
+			if (!node.hasProperty(propertyName))
+				return "";
+			else {
+				Value[] langs = node.getProperty(propertyName).getValues();
+				StringBuilder builder = new StringBuilder();
+				for (Value val : langs) {
+					String currStr = val.getString();
+					if (CommonsJcrUtils.checkNotEmptyString(currStr))
+						builder.append(currStr).append(separator);
+				}
+				if (builder.lastIndexOf(separator) >= 0)
+					return builder.substring(0, builder.length() - 2);
+				else
+					return builder.toString();
+			}
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Cannot get multi valued property " + propertyName
+					+ " of " + node, e);
+		}
+	}
+
+	/**
+	 * Concisely get the value of a boolean property or null if this node
+	 * doesn't have this property
 	 */
 	public static Boolean getBooleanValue(Node node, String propertyName) {
 		try {
