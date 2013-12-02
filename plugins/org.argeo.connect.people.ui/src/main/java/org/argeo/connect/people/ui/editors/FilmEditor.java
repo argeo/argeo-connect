@@ -16,6 +16,7 @@ import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.ui.providers.FilmOverviewLabelProvider;
+import org.argeo.connect.people.ui.toolkits.EntityToolkit;
 import org.argeo.connect.people.ui.toolkits.FilmToolkit;
 import org.argeo.connect.people.ui.toolkits.ListToolkit;
 import org.argeo.connect.people.ui.utils.JcrUiUtils;
@@ -56,6 +57,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 
 	private FilmToolkit filmPanelToolkit;
 	private ListToolkit listPanelToolkit;
+	private EntityToolkit entityTk;
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -96,6 +98,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 	@Override
 	protected void createToolkits() {
 		filmPanelToolkit = new FilmToolkit(toolkit, getManagedForm());
+		entityTk = new EntityToolkit(toolkit, getManagedForm());
 		listPanelToolkit = new ListToolkit(toolkit, getManagedForm(),
 				getPeopleService());
 
@@ -142,6 +145,18 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 
 	}
 
+	@Override
+	protected void populateMainInfoDetails(final Composite parent) {
+		// Tag Management
+		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		entityTk.populateTagPanel(tagsCmp, film,
+				PeopleNames.PEOPLE_ORG_BRANCHES, "Enter a new tag");
+
+		// keep last update.
+		super.populateMainInfoDetails(parent);
+	}
+	
 	@Override
 	protected void populateTitleComposite(final Composite parent) {
 		try {
