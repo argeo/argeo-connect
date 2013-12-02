@@ -110,7 +110,7 @@ public class EntityToolkit {
 									PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
 							deleteBtn.setImage(PeopleImages.DELETE_BTN_LEFT);
 							RowData rd = new RowData();
-							rd.height = 16;
+							rd.height = 18;
 							rd.width = 18;
 							deleteBtn.setLayoutData(rd);
 
