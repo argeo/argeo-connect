@@ -423,7 +423,8 @@ public class ContactToolkit {
 
 		// NATURE(work or private) is only for persons
 		final Combo natureCmb = CommonsJcrUtils.isNodeType(entity,
-				PeopleTypes.PEOPLE_PERSON) ? new Combo(parent, SWT.NONE) : null;
+				PeopleTypes.PEOPLE_PERSON) ? new Combo(parent, SWT.READ_ONLY)
+				: null;
 		if (natureCmb != null) {
 			gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
 			gd.widthHint = 100;
@@ -606,7 +607,7 @@ public class ContactToolkit {
 			final String contactType, final String nature,
 			final Combo addContactCombo) {
 
-		final Combo catCmb = new Combo(parent, SWT.NONE);
+		final Combo catCmb = new Combo(parent, SWT.READ_ONLY);
 		try {
 			catCmb.setItems(ContactValueCatalogs.getCategoryList(entity
 					.getPrimaryNodeType().getName(), contactType, nature));

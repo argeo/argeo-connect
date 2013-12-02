@@ -178,7 +178,7 @@ public class ContactComposite extends Composite {
 
 		// The widgets
 		final Text valueTxt = createAddressTxt(true, parent, "Value", 150);
-		final Combo catCmb = hasCat ? new Combo(parent, SWT.NONE) : null;
+		final Combo catCmb = hasCat ? new Combo(parent, SWT.READ_ONLY) : null;
 		final Text labelTxt = createAddressTxt(true, parent, "", 120);
 
 		if (catCmb != null) {
