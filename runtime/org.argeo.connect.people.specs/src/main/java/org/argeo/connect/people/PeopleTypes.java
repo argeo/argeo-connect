@@ -34,6 +34,24 @@ public interface PeopleTypes {
 	public final static String PEOPLE_MEMBER = "people:member";
 	public final static String PEOPLE_BANK_ACCOUNT = "people:bankAccount";
 
+	/* TASKS AND ACTIVITIES */
+	public final static String PEOPLE_TASK = "people:people:task";
+
+	public final static String PEOPLE_ACTIVITY = "people:activity";
+
+	public final static String PEOPLE_NOTE = "people:note";
+	public final static String PEOPLE_SENT_MAIL = "people:sntEmail";
+	public final static String PEOPLE_CALL = "people:call";
+	public final static String PEOPLE_MEETING = "people:meeting";
+	public final static String PEOPLE_POST_MAIL = "people:postMail";
+	public final static String PEOPLE_SENT_FAX = "people:sentMail";
+	public final static String PEOPLE_PAYMENT = "people:payment";
+
+	public final static String PEOPLE_REVIEW = "people:review";
+	public final static String PEOPLE_CHAT = "people:chat";
+	public final static String PEOPLE_TWEET = "people:tweet";
+	public final static String PEOPLE_BLOG = "people:blog";
+
 	/* CONTACT */
 	public final static String PEOPLE_CONTACT = "people:contact";
 	public final static String PEOPLE_PHONE = "people:phone";

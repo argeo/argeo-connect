@@ -114,6 +114,63 @@
 mixin
 - people:tags (STRING) *
 
+//
+// TASKS AND ACTIVITIES
+//
+
+// Activities
+[people:activity] > nt:unstructured, mix:versionable, mix:lastModified, mix:title
++ people:attachments (nt:unstructured) 
+// a list of related entities like persons, orgs or groups (for instance films)
+- people:relatedTo (REFERENCE) * 
+
+// Various activity types, we use mixin to be able to later enrich the model
+[people:note]
+mixin 
+
+[people:sentEmail] 
+mixin  
+
+[people:call]
+mixin 
+
+[people:meeting]
+mixin 
+
+[people:postMail]
+mixin 
+
+[people:sentFax]
+mixin 
+
+[people:payment]
+mixin 
+
+[people:review]
+mixin 
+
+[people:chat]
+mixin 
+
+[people:tweet]
+mixin 
+
+[people:blog]
+mixin 
+
+// Tasks 
+[people:task] > nt:unstructured, mix:versionable, mix:lastModified, mix:title
+// reference to a group
+- people:assignedTo (REFERENCE) 
+- people:taskStatus (String) ="NEW" a m
+- people:relatedTo (REFERENCE) * 
+- people:dueDate (DATE) 
+- people:closeDate (DATE) 
+- people:wakeUpDate (DATE) 
+//various sub nodes
+- people:dependsOn (REFERENCE) *
++ people:childTasks (nt:unstructured)
++ people:activities (nt:unstructured)
 
 //
 // LANGUAGES AND COUNTRIES
@@ -142,6 +199,8 @@ mixin
 // 1 is the most prefered
 - people:pref (LONG) 
 // ='100' m a
+
+
 
 
 /////// COMMUNICATION

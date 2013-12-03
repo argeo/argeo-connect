@@ -73,13 +73,26 @@ public interface PeopleNames {
 	public final static String PEOPLE_VAT_ID_NB = "people:vatIdNb";
 	public final static String PEOPLE_ORG_BRANCHES = "people:orgBranches";
 
-	/* WORKFLOWS */
+	/* TASKS AND ACTIVITIES  */
 	public final static String PEOPLE_DATE_BEGIN = "people:dateBegin";
 	public final static String PEOPLE_DATE_END = "people:dateEnd";
 	public final static String PEOPLE_WF_VERSION = "people:wfVersion";
 	public final static String PEOPLE_WF_VERSION_ID = "people:wfId";
 	public final static String PEOPLE_WF_STATUS = "people:wfStatus";
 
+	public final static String PEOPLE_ATTACHEMENTS =   "people:attachments";
+	public final static String PEOPLE_RELATED_TO = "people:relatedTo";
+	
+	// Tasks 
+	public final static String PEOPLE_ASSIGNED_TO = "people:assignedTo";
+	public final static String PEOPLE_TASK_STATUS = "people:taskStatus";
+	public final static String PEOPLE_DUE_DATE = "people:dueDate";
+	public final static String PEOPLE_CLOSE_DATE = "people:closeDate";
+	public final static String PEOPLE_WAKE_UP_DATE = "people:wakeUpDate";
+	public final static String PEOPLE_DEPENDS_ON = "people:dependsOn";
+	public final static String PEOPLE_CHILD_TASKS = "people:childTasks";
+	public final static String PEOPLE_ACTIVITIES = "people:activities";
+	
 	/* CONTACTS */
 	// base properties for all contact type nodes
 	public final static String PEOPLE_CONTACT_VALUE = "people:contactValue";
@@ -87,21 +100,10 @@ public interface PeopleNames {
 	public final static String PEOPLE_CONTACT_NATURE = "people:contactNature";
 	public final static String PEOPLE_CONTACT_CATEGORY = "people:contactCategory";
 	public final static String PEOPLE_CONTACT_LABEL = "people:contactLabel";
-	// if contactCategory == work
-	// Rather use PEOPLE_REF_UID
-	// public final static String PEOPLE_REL_ORG_ID = "people:relatedOrgId";
 	public final static String PEOPLE_CONTACT_URI = "people:contactUri";
 
-	// tel
-	// public final static String PEOPLE_PHONE_NUMBER = "people:phoneNumber";
-	// to display current time for this timezone
+	// tel: enable display of current time for this timezone
 	public final static String PEOPLE_TIME_ZONE = "people:timeZone";
-
-	// email
-	// public final static String PEOPLE_EMAIL_ADDRESS = "people:emailAddress";
-
-	// a site URL
-	// public final static String PEOPLE_WEBSITE_URL = "people:websiteUrl";
 
 	// post mail
 	public final static String PEOPLE_STREET = "people:street";
