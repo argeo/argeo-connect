@@ -78,8 +78,8 @@ public class ListToolkit {
 		tableComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		final TableViewer viewer = new TableViewer(tableComp);
-		TableColumnLayout tableColumnLayout = createJobsTableColumns(tableComp,
-				viewer);
+		TableColumnLayout tableColumnLayout = createJobsTableColumns(entity,
+				tableComp, viewer);
 		tableComp.setLayout(tableColumnLayout);
 		PeopleUiUtils.setTableDefaultStyle(viewer, 60);
 
@@ -99,7 +99,7 @@ public class ListToolkit {
 			public void refresh() {
 				super.refresh();
 				try {
-					addBtn.setEnabled(CommonsJcrUtils
+					addBtn.setVisible(CommonsJcrUtils
 							.isNodeCheckedOutByMe(entity));
 
 					List<Node> jobs = new ArrayList<Node>();
@@ -147,7 +147,7 @@ public class ListToolkit {
 		tableComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		final TableViewer viewer = new TableViewer(tableComp);
 		TableColumnLayout tableColumnLayout = createEmployeesTableColumns(
-				tableComp, viewer);
+				entity, tableComp, viewer);
 		tableComp.setLayout(tableColumnLayout);
 		PeopleUiUtils.setTableDefaultStyle(viewer, 70);
 
@@ -160,7 +160,7 @@ public class ListToolkit {
 		AbstractFormPart sPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
-				addBtn.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
+				addBtn.setVisible(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
 				viewer.setInput(peopleService.getRelatedEntities(entity,
 						PeopleTypes.PEOPLE_JOB, PeopleTypes.PEOPLE_PERSON));
 			}
@@ -191,7 +191,7 @@ public class ListToolkit {
 		tableComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		final TableViewer viewer = new TableViewer(tableComp, SWT.V_SCROLL);
 		TableColumnLayout tableColumnLayout = createProductionsTableColumns(
-				tableComp, viewer);
+				entity, tableComp, viewer);
 		tableComp.setLayout(tableColumnLayout);
 		PeopleUiUtils.setTableDefaultStyle(viewer, 60);
 
@@ -202,7 +202,7 @@ public class ListToolkit {
 		AbstractFormPart sPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
-				addBtn.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
+				addBtn.setVisible(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
 				viewer.setInput(peopleService.getRelatedEntities(entity,
 						PeopleTypes.PEOPLE_MEMBER, FilmTypes.FILM));
 			}
@@ -230,7 +230,7 @@ public class ListToolkit {
 		tableComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		final TableViewer viewer = new TableViewer(tableComp, SWT.V_SCROLL);
-		TableColumnLayout tableColumnLayout = createMembersTableColumns(
+		TableColumnLayout tableColumnLayout = createMembersTableColumns(entity,
 				tableComp, viewer);
 		tableComp.setLayout(tableColumnLayout);
 		PeopleUiUtils.setTableDefaultStyle(viewer, 60);
@@ -242,7 +242,7 @@ public class ListToolkit {
 			public void refresh() {
 				super.refresh();
 				try {
-					addBtn.setEnabled(CommonsJcrUtils
+					addBtn.setVisible(CommonsJcrUtils
 							.isNodeCheckedOutByMe(entity));
 					List<Node> members = new ArrayList<Node>();
 					if (!entity.hasNode(PeopleNames.PEOPLE_MEMBERS))
@@ -269,8 +269,8 @@ public class ListToolkit {
 		return viewer;
 	}
 
-	private TableColumnLayout createJobsTableColumns(final Composite parent,
-			final TableViewer viewer) {
+	private TableColumnLayout createJobsTableColumns(final Node entity,
+			final Composite parent, final TableViewer viewer) {
 		int[] bounds = { 150, 300 };
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 
@@ -303,13 +303,16 @@ public class ListToolkit {
 					// get the corresponding person
 					Node link = (Node) element;
 					Node person = link.getParent().getParent();
+					if (CommonsJcrUtils.isNodeCheckedOutByMe(entity))
+						return PeopleHtmlUtils.getEditWithPosSnippetForLists(
+								link, false, PeopleTypes.PEOPLE_ORGANIZATION)
+								+ " <br />"
+								+ PeopleHtmlUtils
+										.getRemoveReferenceSnippetForLists(
+												link, person);
+					else
+						return "";
 
-					return PeopleHtmlUtils.getEditWithPosSnippetForLists(link,
-							false, PeopleTypes.PEOPLE_ORGANIZATION)
-							+ " <br />"
-							+ PeopleHtmlUtils
-									.getRemoveReferenceSnippetForLists(link,
-											person);
 				} catch (RepositoryException e) {
 					throw new PeopleException(
 							"Error while getting versionable parent", e);
@@ -321,7 +324,7 @@ public class ListToolkit {
 		return tableColumnLayout;
 	}
 
-	private TableColumnLayout createEmployeesTableColumns(
+	private TableColumnLayout createEmployeesTableColumns(final Node entity,
 			final Composite parent, final TableViewer viewer) {
 		int[] bounds = { 150, 300 };
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
@@ -357,12 +360,15 @@ public class ListToolkit {
 					Node link = (Node) element;
 					Node person = link.getParent().getParent();
 
-					return PeopleHtmlUtils.getEditWithPosSnippetForLists(link,
-							true, PeopleTypes.PEOPLE_PERSON)
-							+ " <br />"
-							+ PeopleHtmlUtils
-									.getRemoveReferenceSnippetForLists(link,
-											person);
+					if (CommonsJcrUtils.isNodeCheckedOutByMe(entity))
+						return PeopleHtmlUtils.getEditWithPosSnippetForLists(
+								link, true, PeopleTypes.PEOPLE_PERSON)
+								+ " <br />"
+								+ PeopleHtmlUtils
+										.getRemoveReferenceSnippetForLists(
+												link, person);
+					else
+						return "";
 				} catch (RepositoryException e) {
 					throw new PeopleException(
 							"Error while getting versionable parent", e);
@@ -374,8 +380,8 @@ public class ListToolkit {
 
 	}
 
-	private TableColumnLayout createProductionsTableColumns(Composite parent,
-			TableViewer viewer) {
+	private TableColumnLayout createProductionsTableColumns(final Node entity,
+			Composite parent, TableViewer viewer) {
 		int[] bounds = { 150, 300 };
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 
@@ -409,12 +415,16 @@ public class ListToolkit {
 					Node link = (Node) element;
 					Node person = link.getParent().getParent();
 
-					return PeopleHtmlUtils.getEditWithPosSnippetForLists(link,
-							true, FilmTypes.FILM)
-							+ " <br />"
-							+ PeopleHtmlUtils
-									.getRemoveReferenceSnippetForLists(link,
-											person);
+					if (CommonsJcrUtils.isNodeCheckedOutByMe(entity))
+						return PeopleHtmlUtils.getEditWithPosSnippetForLists(
+								link, true, FilmTypes.FILM)
+								+ " <br />"
+								+ PeopleHtmlUtils
+										.getRemoveReferenceSnippetForLists(
+												link, person);
+					else
+						return "";
+
 				} catch (RepositoryException e) {
 					throw new PeopleException(
 							"Error while getting versionable parent", e);
@@ -426,8 +436,8 @@ public class ListToolkit {
 		return tableColumnLayout;
 	}
 
-	private TableColumnLayout createMembersTableColumns(Composite parent,
-			TableViewer viewer) {
+	private TableColumnLayout createMembersTableColumns(final Node entity,
+			Composite parent, TableViewer viewer) {
 		int[] bounds = { 150, 300 };
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 
@@ -462,12 +472,15 @@ public class ListToolkit {
 					Node link = (Node) element;
 					Node person = link.getParent().getParent();
 
-					return PeopleHtmlUtils.getEditWithPosSnippetForLists(link,
-							false, PeopleTypes.PEOPLE_PERSON)
-							+ " <br />"
-							+ PeopleHtmlUtils
-									.getRemoveReferenceSnippetForLists(link,
-											person);
+					if (CommonsJcrUtils.isNodeCheckedOutByMe(entity))
+						return PeopleHtmlUtils.getEditWithPosSnippetForLists(
+								link, false, PeopleTypes.PEOPLE_PERSON)
+								+ " <br />"
+								+ PeopleHtmlUtils
+										.getRemoveReferenceSnippetForLists(
+												link, person);
+					else
+						return "";
 				} catch (RepositoryException e) {
 					throw new PeopleException(
 							"Error while getting versionable parent", e);

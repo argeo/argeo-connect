@@ -89,7 +89,6 @@ public class ContactToolkit {
 		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder(2);
 		gl.marginBottom = 5;
 		parent.setLayout(gl);
-		// parent.setLayout(new GridLayout(2, false));
 
 		final Composite nlCmp = new Composite(parent, SWT.NO_FOCUS);
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
@@ -97,6 +96,7 @@ public class ContactToolkit {
 
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = true;
+		rl.marginHeight = 0;
 		rl.marginLeft = 5;
 		rl.marginRight = 0;
 		nlCmp.setLayout(rl);
@@ -121,7 +121,11 @@ public class ContactToolkit {
 
 					for (final Node node : referencings) {
 						final Node parNode = getParentMailingList(node);
-						Link link = new Link(nlCmp, SWT.NONE);
+						Composite tagCmp = toolkit.createComposite(nlCmp,
+								SWT.NO_FOCUS);
+						tagCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
+
+						Link link = new Link(tagCmp, SWT.NONE);
 						link.setText("<a>"
 								+ CommonsJcrUtils.get(parNode,
 										Property.JCR_TITLE) + "</a>");
@@ -137,8 +141,6 @@ public class ContactToolkit {
 							public void widgetSelected(
 									final SelectionEvent event) {
 								Map<String, String> params = new HashMap<String, String>();
-								// params.put(OpenEntityEditor.PARAM_ENTITY_TYPE,
-								// PeopleTypes.PEOPLE_MAILING_LIST);
 								params.put(OpenEntityEditor.PARAM_ENTITY_UID,
 										CommonsJcrUtils.get(parNode,
 												PeopleNames.PEOPLE_UID));
@@ -147,43 +149,49 @@ public class ContactToolkit {
 							}
 						});
 
-						final Button deleteBtn = new Button(nlCmp, SWT.FLAT);
-						deleteBtn.setData(PeopleUiConstants.CUSTOM_VARIANT,
-								PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
-						deleteBtn.setImage(PeopleImages.DELETE_BTN_LEFT);
-						RowData rd = new RowData();
-						rd.height = 16;
-						rd.width = 18;
-						deleteBtn.setLayoutData(rd);
+						if (CommonsJcrUtils.isNodeCheckedOutByMe(entity)) {
+							final Button deleteBtn = new Button(tagCmp,
+									SWT.FLAT);
+							deleteBtn.setData(PeopleUiConstants.CUSTOM_VARIANT,
+									PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+							deleteBtn.setImage(PeopleImages.DELETE_BTN_LEFT);
 
-						deleteBtn.addSelectionListener(new SelectionAdapter() {
-							private static final long serialVersionUID = 1L;
+							deleteBtn
+									.addSelectionListener(new SelectionAdapter() {
+										private static final long serialVersionUID = 1L;
 
-							@Override
-							public void widgetSelected(
-									final SelectionEvent event) {
-								try {
-									boolean wasCheckedOut = CommonsJcrUtils
-											.isNodeCheckedOutByMe(parNode);
-									if (!wasCheckedOut)
-										CommonsJcrUtils.checkout(parNode);
-									node.remove();
-									if (wasCheckedOut)
-										parNode.getSession().save();
-									else
-										CommonsJcrUtils.saveAndCheckin(parNode);
-								} catch (RepositoryException e) {
-									throw new PeopleException(
-											"unable to initialise deletion", e);
-								}
-								for (IFormPart part : form.getParts()) {
-									((AbstractFormPart) part).markStale();
-									part.refresh();
-								}
-							}
-						});
-
+										@Override
+										public void widgetSelected(
+												final SelectionEvent event) {
+											try {
+												boolean wasCheckedOut = CommonsJcrUtils
+														.isNodeCheckedOutByMe(parNode);
+												if (!wasCheckedOut)
+													CommonsJcrUtils
+															.checkout(parNode);
+												node.remove();
+												if (wasCheckedOut)
+													parNode.getSession().save();
+												else
+													CommonsJcrUtils
+															.saveAndCheckin(parNode);
+											} catch (RepositoryException e) {
+												throw new PeopleException(
+														"unable to initialise deletion",
+														e);
+											}
+											for (IFormPart part : form
+													.getParts()) {
+												((AbstractFormPart) part)
+														.markStale();
+												part.refresh();
+											}
+										}
+									});
+						}
 					}
+					addBtn.setVisible(CommonsJcrUtils
+							.isNodeCheckedOutByMe(entity));
 					nlCmp.layout(false);
 					parent.getParent().layout();
 				} catch (RepositoryException re) {
@@ -447,10 +455,16 @@ public class ContactToolkit {
 			public void refresh() {
 				super.refresh();
 				editPanel.setVisible(false);
-				addContactCmb.select(0);
-				if (natureCmb != null)
-					natureCmb.select(0);
 
+				boolean ischeckedOut = CommonsJcrUtils
+						.isNodeCheckedOutByMe(entity);
+				addContactCmb.setVisible(ischeckedOut);
+				addContactCmb.select(0);
+				if (natureCmb != null) {
+					natureCmb.select(0);
+					// unvisible while no contact selected
+					natureCmb.setVisible(false);
+				}
 			}
 		};
 
@@ -491,6 +505,9 @@ public class ContactToolkit {
 		public void widgetSelected(SelectionEvent e) {
 			try {
 				int index = addContactCmb.getSelectionIndex();
+				if (natureCmb != null) {
+					natureCmb.setVisible(index != 0);
+				}
 				if (index == 0) {
 					resetAddContactEditPanel(editPanel, addContactCmb);
 				} else {

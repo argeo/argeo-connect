@@ -10,14 +10,15 @@ import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.commands.ForceRefresh;
 import org.argeo.connect.people.ui.providers.PeopleImageProvider;
+import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.RowData;
-import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.AbstractFormPart;
@@ -55,10 +56,8 @@ public class ContactButtonsComposite extends Composite {
 	private void populate() {
 		// Initialization
 		Composite buttCmp = this;
-		RowLayout rl = new RowLayout(SWT.WRAP);
-		rl.marginWidth = 0;
-		rl.type = SWT.HORIZONTAL;
-		buttCmp.setLayout(rl);
+		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder(3);
+		buttCmp.setLayout(gl);
 
 		// final Button categoryBtn =
 		createCategoryButton(buttCmp, contactNode);
@@ -76,6 +75,11 @@ public class ContactButtonsComposite extends Composite {
 						primaryBtn.setImage(PeopleImages.PRIMARY_BTN);
 					else
 						primaryBtn.setImage(PeopleImages.PRIMARY_NOT_BTN);
+					boolean checkedOut = CommonsJcrUtils
+							.isNodeCheckedOutByMe(parentVersionableNode);
+					primaryBtn.setEnabled(checkedOut);
+					primaryBtn.setGrayed(false);
+					deleteBtn.setVisible(checkedOut);
 				} catch (Exception e) {
 					if (e instanceof InvalidItemStateException) {
 						// TODO clean: this exception normally means node
@@ -97,7 +101,8 @@ public class ContactButtonsComposite extends Composite {
 
 	private Button createCategoryButton(Composite parent, Node contactNode) {
 		Button btn = new Button(parent, SWT.FLAT);
-		btn.setData(PeopleUiConstants.CUSTOM_VARIANT, PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+		btn.setData(PeopleUiConstants.CUSTOM_VARIANT,
+				PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
 		try {
 			String category = null;
 			if (contactNode.hasProperty(PeopleNames.PEOPLE_CONTACT_CATEGORY))
@@ -115,10 +120,10 @@ public class ContactButtonsComposite extends Composite {
 			btn.setImage(imageProvider.getContactIcon(entityType, contactType,
 					nature, category));
 
-			RowData rd = new RowData();
-			rd.height = 16;
-			rd.width = 16;
-			btn.setLayoutData(rd);
+			GridData gd = new GridData();
+			gd.widthHint = 16;
+			gd.heightHint = 16;
+			btn.setLayoutData(gd);
 			return btn;
 		} catch (RepositoryException re) {
 			throw new PeopleException("unable to get image for contact");
@@ -126,24 +131,26 @@ public class ContactButtonsComposite extends Composite {
 	}
 
 	private Button createDeleteButton(Composite parent) {
-		Button btn = new Button(parent, SWT.FLAT);
-		btn.setData(PeopleUiConstants.CUSTOM_VARIANT, PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+		Button btn = new Button(parent, SWT.FLAT | SWT.BOTTOM);
+		btn.setData(PeopleUiConstants.CUSTOM_VARIANT,
+				PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
 		btn.setImage(PeopleImages.DELETE_BTN);
-		RowData rd = new RowData();
-		rd.height = 16;
-		rd.width = 16;
-		btn.setLayoutData(rd);
+		GridData gd = new GridData();
+		gd.widthHint = 16;
+		gd.heightHint = 16;
+		btn.setLayoutData(gd);
 		return btn;
 	}
 
 	private Button createPrimaryButton(Composite parent) {
 		Button btn = new Button(parent, SWT.FLAT);
-		btn.setData(PeopleUiConstants.CUSTOM_VARIANT, PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+		btn.setData(PeopleUiConstants.CUSTOM_VARIANT,
+				PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
 		btn.setImage(PeopleImages.PRIMARY_NOT_BTN);
-		RowData rd = new RowData();
-		rd.height = 16;
-		rd.width = 16;
-		btn.setLayoutData(rd);
+		GridData gd = new GridData();
+		gd.widthHint = 16;
+		gd.heightHint = 16;
+		btn.setLayoutData(gd);
 		return btn;
 	}
 
