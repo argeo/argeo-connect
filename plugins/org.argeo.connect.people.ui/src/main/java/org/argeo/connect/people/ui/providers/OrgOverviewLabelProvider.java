@@ -73,9 +73,9 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 
 			String tmpStr;
 			if (isSmallList) {
-				tmpStr = PeopleJcrUtils.getBranches(orga);
+				tmpStr = PeopleHtmlUtils.getBranches(orga);
 				if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
-					builder.append("<i>").append(tmpStr).append("</i><br/>");
+					builder.append(tmpStr).append("<br/>");
 			}
 
 			tmpStr = PeopleHtmlUtils.getPrimaryContacts(orga, false);

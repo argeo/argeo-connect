@@ -264,16 +264,30 @@ public class PeopleHtmlUtils {
 		try {
 			StringBuilder tags = new StringBuilder();
 			if (entity.hasProperty(PeopleNames.PEOPLE_TAGS)) {
-				tags.append("<i>");
 				for (Value value : entity
 						.getProperty((PeopleNames.PEOPLE_TAGS)).getValues())
 					tags.append("#").append(cleanHtmlString(value.getString()))
 							.append(" ");
-				tags.append("</i>");
 			}
-			return tags.toString();
+			return PeopleHtmlUtils.cleanHtmlString(tags.toString());
 		} catch (RepositoryException e) {
 			throw new PeopleException("Error while getting tags for entity", e);
+		}
+	}
+
+	public static String getBranches(Node orga) {
+		try {
+			StringBuilder tags = new StringBuilder();
+			if (orga.hasProperty(PeopleNames.PEOPLE_ORG_BRANCHES)) {
+				for (Value value : orga.getProperty(
+						PeopleNames.PEOPLE_ORG_BRANCHES).getValues())
+					tags.append("#").append(cleanHtmlString(value.getString()))
+							.append(" ");
+			}
+			return PeopleHtmlUtils.cleanHtmlString(tags.toString());
+		} catch (RepositoryException e) {
+			throw new PeopleException("Error while getting branches for node "
+					+ orga, e);
 		}
 	}
 
