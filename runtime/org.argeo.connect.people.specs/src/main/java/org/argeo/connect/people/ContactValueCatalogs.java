@@ -16,8 +16,8 @@ public class ContactValueCatalogs {
 	public final static String CONTACT_OTHER = "Other";
 
 	/* CONTACT NATURE */
-	public final static String CONTACT_NATURE_PRO = "Professional";
-	public final static String CONTACT_NATURE_PRIVATE = "Private";
+	public final static String CONTACT_NATURE_PRO = "Work";
+	public final static String CONTACT_NATURE_PRIVATE = "Home";
 
 	/* CONTACT TYPE */
 	public final static String CONTACT_TYPE_EMAIL = "Email";
@@ -105,7 +105,7 @@ public class ContactValueCatalogs {
 
 	// corresponding array for various lists
 	public static final String[] ARRAY_CONTACT_NATURES = { CONTACT_NATURE_PRO,
-			CONTACT_NATURE_PRIVATE };
+			CONTACT_NATURE_PRIVATE, CONTACT_OTHER };
 
 	public static final String[] ARRAY_CONTACT_TYPES = { CONTACT_TYPE_EMAIL,
 			CONTACT_TYPE_PHONE, CONTACT_TYPE_ADDRESS,
