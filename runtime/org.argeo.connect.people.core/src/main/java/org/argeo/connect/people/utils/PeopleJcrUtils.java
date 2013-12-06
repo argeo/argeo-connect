@@ -209,23 +209,6 @@ public class PeopleJcrUtils implements PeopleNames {
 		}
 	}
 
-	public static String getBranches(Node orga) {
-		try {
-			StringBuilder tags = new StringBuilder();
-			if (orga.hasProperty(PEOPLE_ORG_BRANCHES)) {
-				for (Value value : orga.getProperty(PEOPLE_ORG_BRANCHES)
-						.getValues())
-					tags.append(value.getString()).append(", ");
-			}
-			if (tags.lastIndexOf(", ") > 0)
-				tags.delete(tags.lastIndexOf(", "), tags.length());
-			return tags.toString();
-		} catch (RepositoryException e) {
-			throw new PeopleException("Error while getting tags for node "
-					+ orga, e);
-		}
-	}
-
 	public static String getContactTypeAsString(Node contact) {
 		try {
 			if (contact.isNodeType(PeopleTypes.PEOPLE_EMAIL))
