@@ -122,8 +122,8 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 							.getDisplay(), is);
 				} else
 					// No default image
-					itemPicture = PeopleImages.NO_PICTURE;
-				// itemPicture = null;
+					// itemPicture = PeopleImages.NO_PICTURE;
+					itemPicture = null;
 			} catch (Exception e) {
 			} finally {
 				IOUtils.closeQuietly(is);
@@ -178,7 +178,9 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 
 		final Composite lastUpdateCmp = toolkit.createComposite(parent,
 				SWT.NO_FOCUS);
-		lastUpdateCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder();
+		gl.marginTop = 8;
+		lastUpdateCmp.setLayout(gl);
 		lastUpdateCmp.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true,
 				true));
 		final Label readOnlyInfoLbl = toolkit.createLabel(lastUpdateCmp, "",
@@ -244,9 +246,10 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 
 	protected void createHeaderPart(final Composite header) {
 		GridLayout gl = new GridLayout(2, false);
-		gl.marginHeight = gl.verticalSpacing = 0;
+		gl.marginTop = gl.verticalSpacing = 0;
 		gl.horizontalSpacing = 0;
 		gl.marginWidth = 10;
+		gl.marginBottom = 8;
 		header.setLayout(gl);
 
 		Label image = toolkit.createLabel(header, "", SWT.NO_FOCUS);

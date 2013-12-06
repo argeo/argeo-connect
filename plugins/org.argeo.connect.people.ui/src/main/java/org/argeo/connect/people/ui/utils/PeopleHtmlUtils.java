@@ -286,14 +286,14 @@ public class PeopleHtmlUtils {
 
 		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_PHONE);
-		if (tmpStr != null) {
+		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
 			builder.append(cleanHtmlString(tmpStr));
 			builder.append("&#160;&#160;&#160;");
 		}
 
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_EMAIL);
-		if (tmpStr != null) {
+		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
 			builder.append("<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
 					+ " href=\"mailto:");
 			builder.append(tmpStr).append("\">");
@@ -302,7 +302,7 @@ public class PeopleHtmlUtils {
 		}
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_URL);
-		if (tmpStr != null) {
+		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
 			builder.append("<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
 					+ " href=\"http://");
 			builder.append(cleanHtmlString(tmpStr)).append("\"")
