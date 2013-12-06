@@ -15,7 +15,6 @@ import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -101,12 +100,14 @@ public class EntityToolkit {
 								.getValues();
 						for (final Value value : values) {
 							Link link = new Link(nlCmp, SWT.NONE);
-							link.setData(RWT.CUSTOM_VARIANT, "tag");
+							link.setData(PeopleUiConstants.CUSTOM_VARIANT,
+									"tag");
 							link.setText("#" + value.getString() + "");
-							link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+							link.setData(PeopleUiConstants.MARKUP_ENABLED,
+									Boolean.TRUE);
 
 							final Button deleteBtn = new Button(nlCmp, SWT.FLAT);
-							deleteBtn.setData(RWT.CUSTOM_VARIANT,
+							deleteBtn.setData(PeopleUiConstants.CUSTOM_VARIANT,
 									PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
 							deleteBtn.setImage(PeopleImages.DELETE_BTN_LEFT);
 							RowData rd = new RowData();

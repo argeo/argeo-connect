@@ -31,7 +31,6 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -116,18 +115,18 @@ public class CategorizedSearchView extends ViewPart {
 		Composite titleComposite = new Composite(parent, SWT.NONE);
 		// special padding only for the first list
 		if (!alreadyGotAList) {
-			titleComposite.setData(RWT.CUSTOM_VARIANT,
+			titleComposite.setData(PeopleUiConstants.CUSTOM_VARIANT,
 					PeopleUiConstants.PEOPLE_CSS_TITLE_COMPOSITE_FIRST);
 			alreadyGotAList = true;
 		} else
-			titleComposite.setData(RWT.CUSTOM_VARIANT,
+			titleComposite.setData(PeopleUiConstants.CUSTOM_VARIANT,
 					PeopleUiConstants.PEOPLE_CSS_TITLE_COMPOSITE);
 		titleComposite.setLayoutData(new GridData(
 				GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
 		titleComposite.setLayout(new FillLayout());
 		Label lbl = new Label(titleComposite, SWT.NONE);
 		lbl.setText(title);
-		lbl.setData(RWT.CUSTOM_VARIANT,
+		lbl.setData(PeopleUiConstants.CUSTOM_VARIANT,
 				PeopleUiConstants.PEOPLE_CSS_LIST_SUBTITLE);
 
 		// Create an intermediate composite to enable single column to occupy
@@ -161,8 +160,8 @@ public class CategorizedSearchView extends ViewPart {
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
 		// Enable markups
-		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(20));
+		table.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
+		table.setData(PeopleUiConstants.CUSTOM_ITEM_HEIGHT, Integer.valueOf(20));
 
 		v.setContentProvider(new BasicNodeListContentProvider());
 		v.addDoubleClickListener(new PeopleJcrViewerDClickListener(null));

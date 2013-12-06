@@ -24,7 +24,6 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -184,8 +183,8 @@ public class SearchEntityEditor extends EditorPart {
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
 		// Enable markups
-		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT,
+		table.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
+		table.setData(PeopleUiConstants.CUSTOM_ITEM_HEIGHT,
 				Integer.valueOf(getCurrRowHeight()));
 		v.setContentProvider(new BasicNodeListContentProvider());
 		// v.addDoubleClickListener(peopleUiService

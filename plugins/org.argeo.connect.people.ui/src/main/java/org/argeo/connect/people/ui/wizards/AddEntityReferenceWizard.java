@@ -29,7 +29,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -183,8 +182,9 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 			GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 			gd.heightHint = 250;
 			table.setLayoutData(gd);
-			table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-			table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(20));
+			table.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
+			table.setData(PeopleUiConstants.CUSTOM_ITEM_HEIGHT,
+					Integer.valueOf(20));
 
 			itemsViewer = new TableViewer(table);
 			itemsViewer.setContentProvider(new BasicNodeListContentProvider());

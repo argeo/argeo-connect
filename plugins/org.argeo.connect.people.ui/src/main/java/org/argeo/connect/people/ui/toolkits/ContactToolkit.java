@@ -38,7 +38,6 @@ import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -128,7 +127,8 @@ public class ContactToolkit {
 										Property.JCR_TITLE) + "</a>");
 						link.setToolTipText(CommonsJcrUtils.get(parNode,
 								Property.JCR_DESCRIPTION));
-						link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+						link.setData(PeopleUiConstants.MARKUP_ENABLED,
+								Boolean.TRUE);
 
 						link.addSelectionListener(new SelectionAdapter() {
 							private static final long serialVersionUID = 1L;
@@ -148,7 +148,7 @@ public class ContactToolkit {
 						});
 
 						final Button deleteBtn = new Button(nlCmp, SWT.FLAT);
-						deleteBtn.setData(RWT.CUSTOM_VARIANT,
+						deleteBtn.setData(PeopleUiConstants.CUSTOM_VARIANT,
 								PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
 						deleteBtn.setImage(PeopleImages.DELETE_BTN_LEFT);
 						RowData rd = new RowData();

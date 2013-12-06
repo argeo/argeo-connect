@@ -57,6 +57,14 @@ public interface PeopleUiConstants {
 	// a composite used to put titles in various lists
 	public final static String CSS_FLAT_IMG_BUTTON = "peopleCss-flatImgBtn";
 
+	// FIXME workaround to work on fixing RAP/RCP single sourcing for people
+	// Caches name of RWT.MARKUP_ENABLED property
+	public final static String MARKUP_ENABLED = "org.eclipse.rap.rwt.markupEnabled";
+	// Caches name of RWT.CUSTOM_ITEM_HEIGHT property
+	public final static String CUSTOM_ITEM_HEIGHT = "org.eclipse.rap.rwt.customItemHeight";
+	// Caches name of RWT.CUSTOM_VARIANT property
+	public static final String CUSTOM_VARIANT = "org.eclipse.rap.rwt.customVariant";
+	
 	public final static String PEOPLE_CSS_TITLE_COMPOSITE_FIRST = "peopleCss-titleCompositeFirst";
 	public final static String PEOPLE_CSS_TITLE_COMPOSITE = "peopleCss-titleComposite";
 

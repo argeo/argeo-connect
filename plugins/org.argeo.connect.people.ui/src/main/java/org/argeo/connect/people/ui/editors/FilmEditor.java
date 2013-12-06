@@ -1,5 +1,8 @@
 package org.argeo.connect.people.ui.editors;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
@@ -28,7 +31,6 @@ import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.ModifyEvent;
@@ -119,7 +121,10 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(film, FilmNames.FILM_ID);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Synopsis",
 				PeopleUiConstants.PANEL_SYNOPSES, tooltip);
-		filmPanelToolkit.populateSynopsisPanel(innerPannel, film);
+		List<String> isoLangs = new ArrayList<String>();
+		isoLangs.add(PeopleConstants.LANG_DE); 
+		isoLangs.add(PeopleConstants.LANG_EN);
+		filmPanelToolkit.populateSynopsisPanel(innerPannel, film, isoLangs);
 
 		// Crew
 		tooltip = "Staff related to " + JcrUtils.get(film, FilmNames.FILM_ID);
@@ -166,15 +171,15 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 			final Composite roPanelCmp = toolkit.createComposite(parent,
 					SWT.NO_FOCUS);
 			PeopleUiUtils.setSwitchingFormData(roPanelCmp);
-			roPanelCmp.setData(RWT.CUSTOM_VARIANT,
-					PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
+//			roPanelCmp.setData(RWT.CUSTOM_VARIANT,
+//					PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 
 			roPanelCmp.setLayout(new GridLayout());
 
 			// Add a label with info provided by the FilmOverviewLabelProvider
 			final Label filmInfoROLbl = toolkit.createLabel(roPanelCmp, "",
 					SWT.WRAP);
-			filmInfoROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+			filmInfoROLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider filmExtractLP = new FilmOverviewLabelProvider(
 					false, getPeopleService());
 
@@ -182,8 +187,8 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 			final Composite editPanelCmp = toolkit.createComposite(parent,
 					SWT.NONE);
 			PeopleUiUtils.setSwitchingFormData(editPanelCmp);
-			editPanelCmp.setData(RWT.CUSTOM_VARIANT,
-					PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
+			// editPanelCmp.setData(RWT.CUSTOM_VARIANT,
+			// PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 			editPanelCmp.setLayout(new GridLayout(4, false));
 
 			// Film ID

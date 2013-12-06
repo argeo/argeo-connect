@@ -13,7 +13,6 @@ import org.argeo.connect.people.ui.providers.PeopleImageProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -98,7 +97,7 @@ public class ContactButtonsComposite extends Composite {
 
 	private Button createCategoryButton(Composite parent, Node contactNode) {
 		Button btn = new Button(parent, SWT.FLAT);
-		btn.setData(RWT.CUSTOM_VARIANT, PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+		btn.setData(PeopleUiConstants.CUSTOM_VARIANT, PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
 		try {
 			String category = null;
 			if (contactNode.hasProperty(PeopleNames.PEOPLE_CONTACT_CATEGORY))
@@ -128,7 +127,7 @@ public class ContactButtonsComposite extends Composite {
 
 	private Button createDeleteButton(Composite parent) {
 		Button btn = new Button(parent, SWT.FLAT);
-		btn.setData(RWT.CUSTOM_VARIANT, PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+		btn.setData(PeopleUiConstants.CUSTOM_VARIANT, PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
 		btn.setImage(PeopleImages.DELETE_BTN);
 		RowData rd = new RowData();
 		rd.height = 16;
@@ -139,7 +138,7 @@ public class ContactButtonsComposite extends Composite {
 
 	private Button createPrimaryButton(Composite parent) {
 		Button btn = new Button(parent, SWT.FLAT);
-		btn.setData(RWT.CUSTOM_VARIANT, PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+		btn.setData(PeopleUiConstants.CUSTOM_VARIANT, PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
 		btn.setImage(PeopleImages.PRIMARY_NOT_BTN);
 		RowData rd = new RowData();
 		rd.height = 16;

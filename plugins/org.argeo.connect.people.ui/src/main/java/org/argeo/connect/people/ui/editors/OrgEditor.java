@@ -25,7 +25,6 @@ import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -154,14 +153,14 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 			final Composite roPanelCmp = toolkit.createComposite(parent,
 					SWT.NO_FOCUS);
 			PeopleUiUtils.setSwitchingFormData(roPanelCmp);
-			roPanelCmp.setData(RWT.CUSTOM_VARIANT,
-					PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
+//			roPanelCmp.setData(RWT.CUSTOM_VARIANT,
+//					PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 			roPanelCmp.setLayout(new GridLayout());
 
 			// Add a label with info provided by the OrgOverviewLabelProvider
 			final Label orgInfoROLbl = toolkit.createLabel(roPanelCmp, "",
 					SWT.WRAP);
-			orgInfoROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+			orgInfoROLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider orgLP = new OrgOverviewLabelProvider(
 					false, getPeopleService());
 
@@ -169,8 +168,8 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 			final Composite editPanelCmp = toolkit.createComposite(parent,
 					SWT.NONE);
 			PeopleUiUtils.setSwitchingFormData(editPanelCmp);
-			editPanelCmp.setData(RWT.CUSTOM_VARIANT,
-					PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
+			// editPanelCmp.setData(RWT.CUSTOM_VARIANT,
+			// PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 			editPanelCmp.setLayout(new GridLayout(2, false));
 
 			// Create edit text

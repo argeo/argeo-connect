@@ -4,35 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Node;
-import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import javax.jcr.Value;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.film.FilmNames;
 import org.argeo.connect.film.core.FilmJcrUtils;
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.dialogs.PickUpCountryDialog;
 import org.argeo.connect.people.ui.dialogs.PickUpLangDialog;
-import org.argeo.connect.people.ui.utils.JcrUiUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
-import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -40,7 +29,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -55,10 +43,10 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * Centralize the creation of the different editors panels for films.
  */
 public class FilmToolkit extends EntityToolkit implements FilmNames {
-	private final static Log log = LogFactory.getLog(FilmToolkit.class);
+	// private final static Log log = LogFactory.getLog(FilmToolkit.class);
 
-	private final static String LANG_KEY = "lang";
-	private final static String DEFAULT_LANG_KEY = "default";
+	// private final static String LANG_KEY = "lang";
+	// private final static String DEFAULT_LANG_KEY = "default";
 
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
@@ -71,223 +59,74 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		this.form = form;
 	}
 
-	/**
-	 * 
-	 * @param panel
-	 * @param entity
-	 * @param descLabel
-	 *            typically synopsis pour a film or Description for a
-	 *            multilingual description
-	 * @param langs
-	 *            an ordered list of the various languages that are to be
-	 *            displayed
-	 */
-
-	public void populateMultiLangDescPanel(Composite panel, final Node entity,
-			String descLabel, List<String> langs) {
-		final List<Text> texts = new ArrayList<Text>();
-
-		int style = GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL
-				| GridData.GRAB_VERTICAL;
-		panel.setLayout(new GridLayout());
-		// Original description
-		toolkit.createLabel(panel, descLabel, SWT.NONE);
-		Text descTxt = toolkit.createText(panel, "", SWT.BORDER | SWT.MULTI
-				| SWT.WRAP);
-		GridData gd = new GridData(style);
-		descTxt.setLayoutData(gd);
-		descTxt.setData(LANG_KEY, DEFAULT_LANG_KEY);
-		texts.add(descTxt);
-
-		// Alt description
-
-		for (String lang : langs) {
-			toolkit.createLabel(panel, descLabel + " " + lang.toUpperCase(),
-					SWT.NONE);
-			Text altDescTxt = toolkit.createText(panel, "", SWT.BORDER
-					| SWT.MULTI | SWT.WRAP);
-			altDescTxt.setLayoutData(new GridData(style));
-			altDescTxt.setData(LANG_KEY, lang);
-			texts.add(altDescTxt);
+	/** Populate a panel with a list synopsis. */
+	public void populateSynopsisPanel(Composite panel, final Node entity,
+			List<String> langIsos) {
+		panel.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		try {
+			for (String iso : langIsos) {
+				Node currNode = FilmJcrUtils.getSynopsisNode(entity, iso);
+				// force creation to avoid npe and ease form life cycle
+				if (currNode == null)
+					currNode = FilmJcrUtils.addOrUpdateSynopsisNode(entity,
+							null, null, iso);
+				Composite composite = toolkit.createComposite(panel);
+				composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+						true));
+				populateSingleSynopsisCmp(
+						composite,
+						currNode,
+						ResourcesJcrUtils.getLangEnLabelFromIso(
+								entity.getSession(), iso));
+			}
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to create " + "synopsis panel", e);
 		}
+	}
+
+	/** Populate a synopsis composite. */
+	private void populateSingleSynopsisCmp(Composite panel,
+			final Node synopsisNode, String titleLabel) {
+		panel.setLayout(new GridLayout());
+
+		Group group = new Group(panel, 0);
+		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		group.setText(titleLabel);
+		group.setLayout(new GridLayout());
+
+		// Short synopsis
+		final Text shortSynTxt = toolkit.createText(group, "", SWT.BORDER
+				| SWT.MULTI | SWT.WRAP);
+		GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
+		gd.heightHint = 50;
+		shortSynTxt.setLayoutData(gd);
+		shortSynTxt
+				.setToolTipText("Enter a short " + titleLabel + " synopsis.");
+
+		// Long synopsis
+		final Text synopsisTxt = toolkit.createText(group, "", SWT.BORDER
+				| SWT.MULTI | SWT.WRAP);
+		synopsisTxt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		synopsisTxt.setToolTipText("Enter the full length " + titleLabel
+				+ " synopsis.");
 
 		final AbstractFormPart editPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
-				for (Text text : texts) {
-					String key = (String) text.getData(LANG_KEY);
-					if (DEFAULT_LANG_KEY.equals(key))
-						PeopleUiUtils.refreshTextWidgetValue(text, entity,
-								Property.JCR_DESCRIPTION);
-					else {
-						Node altDescNode = CommonsJcrUtils.getAltPropertyNode(
-								entity, PeopleNames.PEOPLE_ALT_LANGS, key);
-						if (altDescNode != null)
-							PeopleUiUtils.refreshTextWidgetValue(text,
-									altDescNode, Property.JCR_DESCRIPTION);
-					}
-					text.setEnabled(CommonsJcrUtils
-							.isNodeCheckedOutByMe(entity));
-				}
+				PeopleUiUtils.refreshFormTextWidget(shortSynTxt, synopsisNode,
+						SYNOPSIS_CONTENT_SHORT, "Enter a short synopsis");
+				PeopleUiUtils.refreshFormTextWidget(synopsisTxt, synopsisNode,
+						SYNOPSIS_CONTENT, "Enter the full synopsis");
 			}
 		};
 
-		for (final Text text : texts) {
-			final String currLang = (String) text.getData(LANG_KEY);
-			if (DEFAULT_LANG_KEY.equals(currLang))
-				PeopleUiUtils.addTxtModifyListener(editPart, text, entity,
-						Property.JCR_DESCRIPTION, PropertyType.STRING);
-			else {
-				text.addModifyListener(new ModifyListener() {
-					private static final long serialVersionUID = 1L;
+		PeopleUiUtils.addTxtModifyListener(editPart, shortSynTxt, synopsisNode,
+				SYNOPSIS_CONTENT_SHORT, PropertyType.STRING);
+		PeopleUiUtils.addTxtModifyListener(editPart, synopsisTxt, synopsisNode,
+				SYNOPSIS_CONTENT, PropertyType.STRING);
 
-					@Override
-					public void modifyText(ModifyEvent event) {
-						String altDesc = text.getText();
-						if (CommonsJcrUtils.getAltPropertyNode(entity,
-								PeopleNames.PEOPLE_ALT_LANGS, currLang) == null)
-							if (CommonsJcrUtils.checkNotEmptyString(altDesc))
-								CommonsJcrUtils.getOrCreateAltLanguageNode(
-										entity, currLang);// create node
-							else
-								return;
-						Node altTitle = CommonsJcrUtils.getAltPropertyNode(
-								entity, PeopleNames.PEOPLE_ALT_LANGS, currLang);
-						if (JcrUiUtils.setJcrProperty(altTitle,
-								Property.JCR_DESCRIPTION, PropertyType.STRING,
-								altDesc))
-							editPart.markDirty();
-					}
-				});
-			}
-		}
 		editPart.initialize(form);
 		form.addPart(editPart);
-	}
-
-	/** Populate a panel with a german and an english synopsis. */
-	// TODO clean this
-	public void populateSynopsisPanel(Composite panel, final Node entity) {
-		try {
-			panel.setLayout(new GridLayout());
-			// Original synopsis
-			toolkit.createLabel(panel, "German synopsis: ", SWT.NONE);
-			final Text synopsisTxt = toolkit.createText(panel, "", SWT.BORDER
-					| SWT.MULTI | SWT.WRAP);
-			GridData gd = new GridData(GridData.FILL_BOTH);
-			gd.widthHint = 200;
-			gd.heightHint = 120;
-			synopsisTxt.setLayoutData(gd);
-			Node origSynopsisNode = FilmJcrUtils.getSynopsisNode(entity,
-					PeopleConstants.LANG_DE);
-			// force creation to avoid npe and ease form life cycle
-			if (origSynopsisNode == null)
-				origSynopsisNode = FilmJcrUtils.addOrUpdateSynopsisNode(entity,
-						null, null, PeopleConstants.LANG_DE);
-			synopsisTxt.setData("LinkedNode", origSynopsisNode.getPath());
-
-			// EN synopsis
-			toolkit.createLabel(panel, "English synopsis: ", SWT.NONE);
-			final Text enSynopsisTxt = toolkit.createText(panel, "", SWT.BORDER
-					| SWT.MULTI | SWT.WRAP);
-			gd = new GridData(GridData.FILL_BOTH);
-			gd.widthHint = 200;
-			gd.heightHint = 120;
-			enSynopsisTxt.setLayoutData(gd);
-			Node enSynopsisNode = FilmJcrUtils.getSynopsisNode(entity, "en");
-			// force creation to avoid npe and ease form life cycle
-			if (enSynopsisNode == null)
-				enSynopsisNode = FilmJcrUtils.addOrUpdateSynopsisNode(entity,
-						null, null, PeopleConstants.LANG_EN);
-			enSynopsisTxt.setData("LinkedNode", enSynopsisNode.getPath());
-
-			final AbstractFormPart editPart = new AbstractFormPart() {
-				public void refresh() {
-					super.refresh();
-					try {
-						String path = (String) enSynopsisTxt
-								.getData("LinkedNode");
-						Session session = entity.getSession();
-						if (session.nodeExists(path)) {
-							Node enSynNode = session.getNode(path);
-							String syn = JcrUtils.get(enSynNode,
-									SYNOPSIS_CONTENT);
-							if (!CommonsJcrUtils.isEmptyString(syn))
-								enSynopsisTxt.setText(syn);
-						}
-
-						path = (String) synopsisTxt.getData("LinkedNode");
-						if (session.nodeExists(path)) {
-							Node origSynNode = entity.getSession()
-									.getNode(path);
-							String syn = JcrUtils.get(origSynNode,
-									SYNOPSIS_CONTENT);
-							if (!CommonsJcrUtils.isEmptyString(syn))
-								synopsisTxt.setText(syn);
-						} else
-							log.debug("no node");
-
-						boolean isCheckouted = entity.isCheckedOut();
-						synopsisTxt.setEnabled(isCheckouted);
-						enSynopsisTxt.setEnabled(isCheckouted);
-					} catch (RepositoryException e) {
-						throw new PeopleException(
-								"Cannot get synopsis node from widget", e);
-					}
-				}
-			};
-
-			synopsisTxt.addModifyListener(new ModifyListener() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void modifyText(ModifyEvent event) {
-					try {
-						String path = (String) synopsisTxt
-								.getData("LinkedNode");
-
-						Node synopsisNode = entity.getSession().getNode(path);
-						if (synopsisNode != null) {
-							if (JcrUiUtils.setJcrProperty(synopsisNode,
-									SYNOPSIS_CONTENT, PropertyType.STRING,
-									synopsisTxt.getText()))
-								editPart.markDirty();
-						}
-					} catch (RepositoryException e) {
-						throw new PeopleException(
-								"Cannot get synopsis node from widget", e);
-					}
-
-				}
-			});
-
-			enSynopsisTxt.addModifyListener(new ModifyListener() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void modifyText(ModifyEvent event) {
-					try {
-						String path = (String) enSynopsisTxt
-								.getData("LinkedNode");
-						Node enSynopsisNode = entity.getSession().getNode(path);
-						if (enSynopsisNode != null) {
-							if (JcrUiUtils.setJcrProperty(enSynopsisNode,
-									SYNOPSIS_CONTENT, PropertyType.STRING,
-									enSynopsisTxt.getText()))
-								editPart.markDirty();
-						}
-					} catch (RepositoryException e) {
-						throw new PeopleException(
-								"Cannot get synopsis node from widget", e);
-					}
-				}
-			});
-
-			editPart.initialize(form);
-			form.addPart(editPart);
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to create " + "synopsis panel", e);
-		}
 	}
 
 	public void populateFilmDetailsPanel(Composite parent, final Node entity) {
@@ -317,75 +156,70 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 	}
 
 	private void populateMainInfoCmp(Composite parent, final Node film) {
-		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder(4);
-		gl.horizontalSpacing = 10;
-		gl.verticalSpacing = 5;
-		parent.setLayout(gl);
+		GridLayout layout = PeopleUiUtils.gridLayoutNoBorder(2);
+		layout.horizontalSpacing = layout.verticalSpacing = 5;
+		parent.setLayout(layout);
 
-		// Production year
-		toolkit.createLabel(parent, "Production year");
-		final Text prodYearTxt = toolkit.createText(parent, "", SWT.BORDER);
-		prodYearTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		// 1st line
+		final Text prodYearTxt = createLT(parent, "Production year:");
+		final Text directorTxt = createLT(parent, "Director:");
 
-		// Director
-		toolkit.createLabel(parent, "Director");
-		final Text directorTxt = toolkit.createText(parent, "", SWT.BORDER);
-		directorTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		// 2nd Line
+		final Text lengthTxt = createLT(parent, "Exact length (hh:mm:ss):");
+		final Text lengthInMinTxt = createLT(parent, "Length in minutes:");
 
-		// Exact length
-		toolkit.createLabel(parent, "Exact length (hh:mm:ss)");
-		final Text lengthTxt = toolkit.createText(parent, "", SWT.BORDER);
-		lengthTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		// 3rd Line
+		final Text genreTxt = createLT(parent, "Genre:");
+		toolkit.createLabel(parent, "", SWT.NONE);
 
-		// Length in minutes
-		toolkit.createLabel(parent, "Length in minutes");
-		final Text lengthInMinTxt = toolkit.createText(parent, "", SWT.BORDER);
-		lengthInMinTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
-				false));
-
-		// Category
-		toolkit.createLabel(parent, "Category");
-		final Combo catCmb = new Combo(parent, SWT.READ_ONLY);
-		toolkit.adapt(catCmb, false, false);
-		catCmb.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		catCmb.setEnabled(false);
-
+		// 4th Line
+		final Text categoryTxt = createLT(parent, "Category:");
+		final Text animTechTxt = createLT(parent, "Animation technique:");
+		// // Category
+		// toolkit.createLabel(parent, );
+		// final Combo catCmb = new Combo(parent, SWT.READ_ONLY);
+		// toolkit.adapt(catCmb, false, false);
+		// catCmb.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		// catCmb.setEnabled(false);
 		// Animation Technique
-		toolkit.createLabel(parent, "Animation technique");
-		final Combo animTechCmb = new Combo(parent, SWT.READ_ONLY);
-		toolkit.adapt(animTechCmb, false, false);
-		animTechCmb.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		animTechCmb.setEnabled(false);
+		// toolkit.createLabel(parent, "Animation technique");
+		// final Combo animTechCmb = new Combo(parent, SWT.READ_ONLY);
+		// toolkit.adapt(animTechCmb, false, false);
+		// animTechCmb.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
+		// false));
+		// animTechCmb.setEnabled(false);
 
-		// Genre
-		toolkit.createLabel(parent, "Genre");
-		final Text genreTxt = toolkit.createText(parent, "", SWT.BORDER);
-		genreTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3,
-				1));
+		// 5th Line : Flags
+		Composite flagCmp = toolkit.createComposite(parent);
+		flagCmp.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 2, 1));
+		flagCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder(4));
 
-		// Website
-		toolkit.createLabel(parent, "Website");
-		final Text websiteTxt = toolkit.createText(parent, "", SWT.BORDER);
-		websiteTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,
-				3, 1));
-
-		// Flags
-		final Button isFeatureBtn = toolkit.createButton(parent,
+		final Button isFeatureBtn = toolkit.createButton(flagCmp,
 				"Feature film", SWT.CHECK | SWT.LEFT);
 		isFeatureBtn
 				.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
-		final Button isPremiereBtn = toolkit.createButton(parent, "Premiere",
+		final Button isPremiereBtn = toolkit.createButton(flagCmp, "Premiere",
 				SWT.CHECK);
 		isPremiereBtn.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false,
 				false));
-		final Button isStudentProjBtn = toolkit.createButton(parent,
+		final Button isStudentProjBtn = toolkit.createButton(flagCmp,
 				"Student Project", SWT.CHECK);
 		isStudentProjBtn.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false,
 				false));
-		final Button isDebutFilmBtn = toolkit.createButton(parent,
+		final Button isDebutFilmBtn = toolkit.createButton(flagCmp,
 				"Debut film", SWT.CHECK);
 		isDebutFilmBtn.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false,
 				false));
+
+		// 6th line
+		Composite websiteCmp = toolkit.createComposite(parent);
+		websiteCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,
+				2, 1));
+		websiteCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
+
+		toolkit.createLabel(websiteCmp, "Official homepage:");
+		final Text websiteTxt = toolkit.createText(websiteCmp, "", SWT.BORDER);
+		websiteTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		final AbstractFormPart notePart = new AbstractFormPart() {
 			public void refresh() {
@@ -399,6 +233,11 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 				PeopleUiUtils.refreshFormTextWidget(lengthInMinTxt, film,
 						FILM_LENGTH_IN_MIN);
 				PeopleUiUtils.refreshFormTextWidget(genreTxt, film, FILM_GENRE);
+				PeopleUiUtils.refreshFormTextWidget(categoryTxt, film,
+						FILM_CATEGORY);
+				PeopleUiUtils.refreshFormTextWidget(animTechTxt, film,
+						FILM_ANIMATION_TECHNIQUE);
+
 				PeopleUiUtils.refreshFormTextWidget(websiteTxt, film,
 						FILM_WEBSITE);
 
@@ -422,6 +261,11 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		PeopleUiUtils.addModifyListener(lengthInMinTxt, film,
 				FILM_LENGTH_IN_MIN, notePart);
 		PeopleUiUtils.addModifyListener(genreTxt, film, FILM_GENRE, notePart);
+		PeopleUiUtils.addModifyListener(categoryTxt, film, FILM_CATEGORY,
+				notePart);
+		PeopleUiUtils.addModifyListener(animTechTxt, film,
+				FILM_ANIMATION_TECHNIQUE, notePart);
+
 		PeopleUiUtils.addModifyListener(websiteTxt, film, FILM_WEBSITE,
 				notePart);
 
@@ -438,6 +282,19 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 
 		notePart.initialize(form);
 		form.addPart(notePart);
+	}
+
+	private Text createLT(Composite parent, String label) {
+		Composite cmp = toolkit.createComposite(parent);
+		cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		GridLayout gl = new GridLayout(2, false);
+		gl.marginWidth = gl.verticalSpacing = gl.marginHeight = 0;
+		gl.horizontalSpacing = 5;
+		cmp.setLayout(gl);
+		toolkit.createLabel(cmp, label);
+		Text txt = toolkit.createText(cmp, "", SWT.BORDER);
+		txt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		return txt;
 	}
 
 	private void populateAltTitleGroup(Composite parent) {
@@ -556,7 +413,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 											valueStr);
 							toolkit.createLabel(valuesCmp, labelStr, SWT.BOTTOM);
 							Button deleteBtn = new Button(valuesCmp, SWT.FLAT);
-							deleteBtn.setData(RWT.CUSTOM_VARIANT,
+							deleteBtn.setData(PeopleUiConstants.CUSTOM_VARIANT,
 									PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
 							deleteBtn.setImage(PeopleImages.DELETE_BTN);
 							RowData rd = new RowData();
@@ -666,7 +523,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 							toolkit.createLabel(nlCmp, labelStr, SWT.BOTTOM);
 
 							Button deleteBtn = new Button(nlCmp, SWT.FLAT);
-							deleteBtn.setData(RWT.CUSTOM_VARIANT,
+							deleteBtn.setData(PeopleUiConstants.CUSTOM_VARIANT,
 									PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
 							deleteBtn.setImage(PeopleImages.DELETE_BTN);
 							RowData rd = new RowData();

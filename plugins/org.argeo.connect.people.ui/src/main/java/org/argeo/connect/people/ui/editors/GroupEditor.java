@@ -19,7 +19,6 @@ import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.layout.FormLayout;
@@ -101,7 +100,7 @@ public class GroupEditor extends AbstractEntityCTabEditor {
 			// Add a label with info provided by the FilmOverviewLabelProvider
 			final Label titleROLbl = toolkit.createLabel(roPanelCmp, "",
 					SWT.WRAP);
-			titleROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+			titleROLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider groupTitleLP = new GroupLabelProvider(
 					PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE);
 

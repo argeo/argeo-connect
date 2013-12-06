@@ -290,7 +290,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 		final Table table = viewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		table.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
 
 		// Entity Type Icon
 		TableViewerColumn col = ViewerUtils.createTableViewerColumn(viewer, "",
