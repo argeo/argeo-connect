@@ -257,7 +257,7 @@
 		<!-- View Specific Menus --> 
 		<!-- Generic commands provided by the people app --> 
 		<menuContribution
-			locationURI="toolbar:org.argeo.security.ui.rap.userToolbar?after=org.eclipse.ui.file.saveAll"> 
+			locationURI="toolbar:org.argeo.ui.userToolbar?after=org.eclipse.ui.file.saveAll"> 
 			<!-- Check in and out management --> 
  			<command
 				commandId="org.argeo.connect.people.ui.checkOutItem"
