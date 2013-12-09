@@ -2,6 +2,7 @@ package org.argeo.connect.people.ui.providers;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.connect.people.PeopleNames;
@@ -42,9 +43,10 @@ public class PersonListLabelProvider extends LabelProvider implements
 							person.getSession(),
 							currNode.getProperty(PEOPLE_REF_UID).getString());
 					builder.append(" [");
-					builder.append(CommonsJcrUtils.get(currNode, PEOPLE_ROLE));
-					builder.append(", ");
-					builder.append(CommonsJcrUtils.get(org, PEOPLE_LEGAL_NAME));
+					String role = CommonsJcrUtils.get(currNode, PEOPLE_ROLE);
+					if (CommonsJcrUtils.checkNotEmptyString(role))
+						builder.append(role).append(", ");
+					builder.append(CommonsJcrUtils.get(org, Property.JCR_TITLE));
 					builder.append("]");
 				}
 			}
