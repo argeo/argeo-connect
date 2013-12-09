@@ -47,6 +47,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -167,7 +168,9 @@ public class PersonTableComposite extends Composite implements ArgeoNames,
 		// initialization
 		Composite parent = this;
 		// Main Layout
-		this.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		GridLayout layout = PeopleUiUtils.gridLayoutNoBorder();
+		layout.verticalSpacing = 5;
+		this.setLayout(layout);
 		if (hasStaticFilter)
 			createStaticFilterPart(parent);
 		if (hasFilter)
