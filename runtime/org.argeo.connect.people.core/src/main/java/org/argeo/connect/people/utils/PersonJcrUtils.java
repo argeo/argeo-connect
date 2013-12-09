@@ -171,14 +171,18 @@ public class PersonJcrUtils implements PeopleNames {
 	 *            OPTIONAL: the nature of the subject in this relation, for
 	 *            instance "Actor" or "Engineer"
 	 * */
-	public static Node addJob(Node person, Node org, String role, String title,
-			Calendar dateBegin, Calendar dateEnd, Boolean isCurrent)
-			throws RepositoryException {
+	public static Node addJob(Node person, Node org, String department,
+			String role, String title, boolean isPrimary, Calendar dateBegin,
+			Calendar dateEnd, Boolean isCurrent) throws RepositoryException {
 
 		Node jobs = CommonsJcrUtils.getOrCreateDirNode(person, PEOPLE_JOBS);
 		Node job = jobs.addNode(org.getName(), PeopleTypes.PEOPLE_JOB);
 		job.setProperty(PEOPLE_REF_UID, org.getProperty(PEOPLE_UID).getString());
-		job.setProperty(PEOPLE_ROLE, role);
+
+		if (CommonsJcrUtils.checkNotEmptyString(role))
+			job.setProperty(PEOPLE_ROLE, role);
+		if (CommonsJcrUtils.checkNotEmptyString(department))
+			job.setProperty(PEOPLE_DEPARTMENT, department);
 		if (CommonsJcrUtils.checkNotEmptyString(title))
 			job.setProperty(PEOPLE_TITLE, title);
 		if (dateBegin != null)
@@ -187,6 +191,9 @@ public class PersonJcrUtils implements PeopleNames {
 			job.setProperty(PEOPLE_DATE_END, dateEnd);
 		if (isCurrent != null)
 			job.setProperty(PEOPLE_IS_CURRENT, isCurrent);
+
+		// TODO manage primary concept
+
 		return job;
 	}
 
@@ -196,9 +203,22 @@ public class PersonJcrUtils implements PeopleNames {
 	 * @param role
 	 *            the role of the given entity in this group. Cannot be null
 	 * */
-	public static Node addJob(Node person, Node org, String role)
-			throws RepositoryException {
-		return addJob(person, org, role, null, null, null, null);
+	public static Node addJob(Node person, Node org, String department,
+			String role, boolean isPrimary) throws RepositoryException {
+		return addJob(person, org, department, role, null, isPrimary, null,
+				null, null);
+	}
+
+	/**
+	 * Shortcut to add a job for a given person using default values
+	 * 
+	 * @param role
+	 *            the role of the given entity in this group. Cannot be null
+	 * */
+	public static Node addJob(Node person, Node org, String role,
+			boolean isPrimary) throws RepositoryException {
+		return addJob(person, org, null, role, null, isPrimary, null, null,
+				null);
 	}
 
 }

@@ -11,7 +11,6 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
@@ -359,8 +358,8 @@ public class PeopleJcrUtils implements PeopleNames {
 		return createContact(parentNode, PeopleTypes.PEOPLE_SOCIAL_MEDIA,
 				urlString.replaceAll("[^a-zA-Z0-9]", ""), urlString, primary,
 				nature, category, label);
-	}	
-	
+	}
+
 	public static Node createImpp(Node parentNode, String urlString,
 			boolean primary, String nature, String category, String label) {
 		return createContact(parentNode, PeopleTypes.PEOPLE_IMPP,

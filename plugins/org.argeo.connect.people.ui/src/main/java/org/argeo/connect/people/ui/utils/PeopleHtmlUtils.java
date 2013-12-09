@@ -136,8 +136,8 @@ public class PeopleHtmlUtils {
 		StringBuilder builder = new StringBuilder();
 		// the referenced org
 		if (referencedEntity != null)
-			builder.append(CommonsJcrUtils.get(referencedEntity,
-					Property.JCR_TITLE));
+			builder.append(cleanHtmlString(CommonsJcrUtils.get(
+					referencedEntity, Property.JCR_TITLE)));
 		// current contact meta data
 		builder.append(getContactMetaData(contactNode));
 		// Referenced org primary address

@@ -13,6 +13,7 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 
@@ -28,8 +29,8 @@ public class OrgJcrUtils {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
 		QueryObjectModelFactory factory = queryManager.getQOMFactory();
 		final String typeSelector = "website";
-		Selector source = factory.selector(PeopleTypes.PEOPLE_URL,
-				typeSelector);
+		Selector source = factory
+				.selector(PeopleTypes.PEOPLE_URL, typeSelector);
 		DynamicOperand dynOp = factory.propertyValue(source.getSelectorName(),
 				PeopleNames.PEOPLE_CONTACT_VALUE);
 		StaticOperand statOp = factory.literal(session.getValueFactory()
@@ -44,5 +45,35 @@ public class OrgJcrUtils {
 		if (ni.hasNext())
 			orga = ni.nextNode().getParent().getParent();
 		return orga;
+	}
+
+	public static Node getOrgByName(Session session, String name)
+			throws RepositoryException {
+		QueryManager queryManager = session.getWorkspace().getQueryManager();
+		QueryObjectModelFactory factory = queryManager.getQOMFactory();
+		Selector source = factory.selector(PeopleTypes.PEOPLE_ORGANIZATION,
+				PeopleTypes.PEOPLE_ORGANIZATION);
+
+		DynamicOperand dynOp = factory.propertyValue(source.getSelectorName(),
+				PeopleNames.PEOPLE_LEGAL_NAME);
+		StaticOperand statOp = factory.literal(session.getValueFactory()
+				.createValue(name));
+		Constraint defaultC = factory.comparison(dynOp,
+				QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+
+		QueryObjectModel query = factory.createQuery(source, defaultC, null,
+				null);
+		QueryResult result = query.execute();
+		NodeIterator ni = result.getNodes();
+
+		long resultNb = ni.getSize();
+
+		if (resultNb == 0)
+			return null;
+		else if (resultNb == 1)
+			return ni.nextNode();
+		else
+			throw new PeopleException("More than 1 org with name " + name
+					+ " has been found.");
 	}
 }

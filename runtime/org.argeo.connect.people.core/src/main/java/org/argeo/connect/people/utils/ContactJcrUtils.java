@@ -1,7 +1,10 @@
 package org.argeo.connect.people.utils;
 
+import java.util.UUID;
+
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
@@ -55,7 +58,8 @@ public class ContactJcrUtils {
 			Node parentNode = referencingNode
 					.getNode(PeopleNames.PEOPLE_MEMBERS);
 
-			String relPath = "/"+  PeopleJcrUtils.getRelPathForEntity(referencedNode);
+			String relPath = "/"
+					+ PeopleJcrUtils.getRelPathForEntity(referencedNode);
 			String absPath = parentNode.getPath() + relPath;
 			if (session.nodeExists(absPath))
 				return session.getNode(absPath);
@@ -70,8 +74,9 @@ public class ContactJcrUtils {
 					JcrUtils.parentPath(relPath), NodeType.NT_UNSTRUCTURED);
 			Node link = parlink.addNode(JcrUtils.lastPathElement(relPath),
 					linkNodeType);
-			link.setProperty(PeopleNames.PEOPLE_REF_UID, referencedNode
-					.getProperty(PeopleNames.PEOPLE_UID).getString());
+			String uid = referencedNode.getProperty(PeopleNames.PEOPLE_UID)
+					.getString();
+			link.setProperty(PeopleNames.PEOPLE_REF_UID, uid);
 			if (!wasCheckedout)
 				CommonsJcrUtils.saveAndCheckin(referencingNode);
 			else
@@ -81,6 +86,22 @@ public class ContactJcrUtils {
 			throw new PeopleException("Unable to add " + referencedNode
 					+ " to mailing list " + referencingNode, e);
 		}
+	}
+
+	public static Node createMailingList(Node parentNode, String name)
+			throws RepositoryException {
+		String relPath = null;
+		if (name.length() > 1)
+			relPath = JcrUtils.firstCharsToPath(name, 2) + "/" + name;
+		else
+			throw new PeopleException(
+					"Mailing list name must be at least 2 valid characters long");
+		Node ml = JcrUtils.mkdirs(parentNode, relPath,
+				PeopleTypes.PEOPLE_MAILING_LIST, NodeType.NT_UNSTRUCTURED);
+		ml.setProperty(PeopleNames.PEOPLE_UID, UUID.randomUUID().toString());
+		ml.setProperty(Property.JCR_TITLE, name);
+		CommonsJcrUtils.saveAndCheckin(ml);
+		return ml;
 	}
 
 	/**
@@ -129,6 +150,36 @@ public class ContactJcrUtils {
 			throw new PeopleException("Unable to add " + referencedNode
 					+ " to mailing list " + referencingNode, e);
 		}
+	}
+
+	public static Node getMailingListByName(Session session, String name)
+			throws RepositoryException {
+		QueryManager queryManager = session.getWorkspace().getQueryManager();
+		QueryObjectModelFactory factory = queryManager.getQOMFactory();
+		Selector source = factory.selector(PeopleTypes.PEOPLE_MAILING_LIST,
+				PeopleTypes.PEOPLE_MAILING_LIST);
+
+		DynamicOperand dynOp = factory.propertyValue(source.getSelectorName(),
+				Property.JCR_TITLE);
+		StaticOperand statOp = factory.literal(session.getValueFactory()
+				.createValue(name.toLowerCase()));
+		Constraint defaultC = factory.comparison(factory.lowerCase(dynOp),
+				QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+
+		QueryObjectModel query = factory.createQuery(source, defaultC, null,
+				null);
+		QueryResult result = query.execute();
+		NodeIterator ni = result.getNodes();
+
+		long resultNb = ni.getSize();
+
+		if (resultNb == 0)
+			return null;
+		else if (resultNb == 1)
+			return ni.nextNode();
+		else
+			throw new PeopleException("More than one mailing list with name "
+					+ name + " has been found.");
 	}
 
 }

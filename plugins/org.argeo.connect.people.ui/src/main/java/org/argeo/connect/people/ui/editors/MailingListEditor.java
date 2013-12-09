@@ -444,30 +444,6 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 		}
 	}
 
-	// private void setLabelProvider(TableViewerColumn col, final String
-	// propName,
-	// final boolean getFromRef) {
-	// col.setLabelProvider( {
-	// private static final long serialVersionUID = -1600422863655068949L;
-	//
-	// @Override
-	// public String getText(Object element) {
-	// try {
-	// Node node = (Node) element;
-	// if (getFromRef) {
-	// node = getPeopleServices().getEntityByUid(
-	// node.getSession(),
-	// node.getProperty(PeopleNames.PEOPLE_REF_UID)
-	// .getString());
-	// }
-	// return CommonsJcrUtils.get(node, propName);
-	// } catch (RepositoryException re) {
-	// throw new PeopleException("unable to get text for node", re);
-	// }
-	// }
-	// });
-	// }
-
 	// ///////////////////////
 	// HELPERS
 
@@ -500,7 +476,6 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-
 	}
 
 	private void configureCallExtractButton(Button button, String tooltip) {
@@ -512,9 +487,6 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Map<String, String> params = new HashMap<String, String>();
-				// params.put(
-				// GetCalcExtract.PARAM_EXTACT_ID,
-				// "");
 				CommandUtils.callCommand(GetCalcExtract.ID, params);
 			}
 
@@ -522,6 +494,5 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-
 	}
 }

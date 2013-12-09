@@ -11,6 +11,7 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.AbstractEntityEditor;
 import org.argeo.connect.people.ui.utils.MailListComparator;
+import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
@@ -110,7 +111,7 @@ public class MailingListToolkit {
 		for (ColumnDefinition colDef : columns) {
 			col = ViewerUtils.createTableViewerColumn(itemsViewer,
 					colDef.getHeaderLabel(), SWT.NONE, colDef.getColumnSize());
-			col.setLabelProvider(new SimpleJcrRowLabelProvider(colDef
+			col.setLabelProvider(new HtmlJcrRowLabelProvider(colDef
 					.getSelectorName(), colDef.getPropertyName()));
 			col.getColumn().addSelectionListener(
 					getSelectionAdapter(i, colDef.getPropertyType(),
@@ -126,6 +127,22 @@ public class MailingListToolkit {
 		itemsViewer.setComparator(comparator);
 
 		return itemsViewer;
+	}
+
+	/** Override to remove "&" character */
+	private class HtmlJcrRowLabelProvider extends SimpleJcrRowLabelProvider {
+		private static final long serialVersionUID = -7758839225650525190L;
+
+		public HtmlJcrRowLabelProvider(String selectorName, String propertyName) {
+			super(selectorName, propertyName);
+		}
+
+		@Override
+		public String getText(Object element) {
+			String text = super.getText(element);
+			return PeopleHtmlUtils.cleanHtmlString(text);
+		}
+
 	}
 
 	/** Extends to provide the correct add call back method */
