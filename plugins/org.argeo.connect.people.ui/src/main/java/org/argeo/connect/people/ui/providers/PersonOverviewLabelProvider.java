@@ -124,7 +124,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		// String fmn = PeopleHtmlUtils.getFullMontyName(person);
 		String local = PeopleHtmlUtils.getLocalisationInfo(person);
 		if (CommonsJcrUtils.checkNotEmptyString(local))
-			builder.append("[").append(local).append("]");
+			builder.append(local);
 		builder.append("<br/>");
 
 		// Contacts

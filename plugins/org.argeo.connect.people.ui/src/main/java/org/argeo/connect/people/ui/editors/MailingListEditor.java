@@ -322,7 +322,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 		// Display Name
 		col = ViewerUtils.createTableViewerColumn(viewer, "Display Name",
 				SWT.NONE, 180);
-		col.setLabelProvider(new SimpleJcrRowLabelProvider(
+		col.setLabelProvider(new HtmlJcrRowLabelProvider(
 				PeopleTypes.PEOPLE_ENTITY, Property.JCR_TITLE));
 		col.getColumn().addSelectionListener(
 				getSelectionAdapter(1, PropertyType.STRING,
@@ -388,6 +388,22 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 	}
 
 	/* LOCAL CLASSES */
+	/** Override to remove "&" character */
+	private class HtmlJcrRowLabelProvider extends SimpleJcrRowLabelProvider {
+		private static final long serialVersionUID = -7758839225650525190L;
+
+		public HtmlJcrRowLabelProvider(String selectorName, String propertyName) {
+			super(selectorName, propertyName);
+		}
+
+		@Override
+		public String getText(Object element) {
+			String text = super.getText(element);
+			return PeopleHtmlUtils.cleanHtmlString(text);
+		}
+
+	}
+
 	private SelectionAdapter getSelectionAdapter(final int index,
 			final int propertyType, final String selectorName,
 			final String propertyName, final MailListComparator comparator,

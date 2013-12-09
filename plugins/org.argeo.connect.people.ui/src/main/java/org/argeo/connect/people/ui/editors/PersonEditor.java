@@ -458,7 +458,8 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		// Mailing list management
 		Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		contactTK.populateMailingListMembershipPanel(mlCmp, person);
+		contactTK.populateMailingListMembershipPanel(mlCmp, person,
+				getOpenEditorCommandId());
 
 		// Tag Management
 		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);

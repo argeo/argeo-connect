@@ -85,7 +85,7 @@ public class ContactToolkit {
 	 * @param entity
 	 */
 	public void populateMailingListMembershipPanel(final Composite parent,
-			final Node entity) {
+			final Node entity, final String openEditorCmdId) {
 		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder(2);
 		gl.marginBottom = 5;
 		parent.setLayout(gl);
@@ -144,7 +144,7 @@ public class ContactToolkit {
 								params.put(OpenEntityEditor.PARAM_ENTITY_UID,
 										CommonsJcrUtils.get(parNode,
 												PeopleNames.PEOPLE_UID));
-								CommandUtils.callCommand(OpenEntityEditor.ID,
+								CommandUtils.callCommand(openEditorCmdId,
 										params);
 							}
 						});
