@@ -90,9 +90,11 @@ public class ContactJcrUtils {
 
 	public static Node createMailingList(Node parentNode, String name)
 			throws RepositoryException {
+		String cleanedName = JcrUtils.replaceInvalidChars(name);
+
 		String relPath = null;
-		if (name.length() > 1)
-			relPath = JcrUtils.firstCharsToPath(name, 2) + "/" + name;
+		if (cleanedName .length() > 1)
+			relPath = JcrUtils.firstCharsToPath(cleanedName , 2) + "/" + cleanedName;
 		else
 			throw new PeopleException(
 					"Mailing list name must be at least 2 valid characters long");
