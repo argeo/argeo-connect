@@ -28,10 +28,12 @@ public interface FilmNames {
 	public final static String FILM_ORIG_TITLE_ARTICLE = "film:origTitleArticle";
 	public final static String FILM_ORIG_LATIN_TITLE = "film:origLatinTitle";
 	
-	// A sub node with alternative titles (for various country / languages)
-	public final static String FILM_ALT_TITLES = "film:altTitles";
+	// A sub node with various titles (for various country / languages)
+	public final static String FILM_TITLES = "film:titles";
 	public final static String FILM_TITLE = "film:title";
 	public final static String FILM_TITLE_ARTICLE = "film:titleArticle";
+	public final static String FILM_TITLE_LATIN_PRONUNCIATION = "film:titleLatinPronunciation";
+	public final static String FILM_TITLE_IS_ORIG = "film:titleIsOrig";
 
 	// maybe too specific
 	public final static String FILM_IS_FEATURE = "film:isFeature";

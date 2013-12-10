@@ -31,7 +31,7 @@
 - film:origLatinTitle (STRING)
 
 // Subnode with alternative title
-+ film:altTitles (nt:unstructured) 
++ film:titles (nt:unstructured) 
 
 // Subnode with synopses title
 + film:synopses (nt:unstructured)
@@ -50,6 +50,8 @@
 [film:altTitle] > nt:unstructured
 - film:title (STRING)
 - film:titleArticle (STRING)
+- film:titleLatinPronunciation (STRING)
+- film:titleIsOrig (BOOLEAN)
 // A single language tag, as defined in http://tools.ietf.org/html/rfc5646
 - film:lang (STRING)
 

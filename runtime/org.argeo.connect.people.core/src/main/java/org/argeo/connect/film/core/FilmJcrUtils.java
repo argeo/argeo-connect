@@ -18,6 +18,7 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.film.FilmNames;
 import org.argeo.connect.film.FilmTypes;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 
@@ -25,17 +26,6 @@ import org.argeo.jcr.JcrUtils;
  * static utils methods to manage film concepts. See what can be factorized
  */
 public class FilmJcrUtils implements FilmNames {
-
-	@Deprecated
-	protected static Node getOrCreateDirNode(Node parent, String dirName)
-			throws RepositoryException {
-		Node dirNode;
-		if (parent.hasNode(dirName))
-			dirNode = parent.getNode(dirName);
-		else
-			dirNode = parent.addNode(dirName, NodeType.NT_UNSTRUCTURED);
-		return dirNode;
-	}
 
 	/** Return a display string for the original title of the given film */
 	public static String getTitleForFilm(Node film) {
@@ -97,8 +87,8 @@ public class FilmJcrUtils implements FilmNames {
 	 */
 	public static Node getAltTitleNode(Node film, String lang) {
 		try {
-			if (film.hasNode(FILM_ALT_TITLES) && lang != null) {
-				NodeIterator ni = film.getNode(FILM_ALT_TITLES).getNodes();
+			if (film.hasNode(FILM_TITLES) && lang != null) {
+				NodeIterator ni = film.getNode(FILM_TITLES).getNodes();
 				while (ni.hasNext()) {
 					Node currNode = ni.nextNode();
 					if (currNode.hasProperty(FilmNames.FILM_LANG)
@@ -114,25 +104,45 @@ public class FilmJcrUtils implements FilmNames {
 	}
 
 	/**
+	 * Shortcut to add a title for a given language using default values: no
+	 * latin pronunciation, not primary neither original
+	 * 
+	 * @param language
+	 *            a String corresponding to this language as defined in
+	 *            http://tools.ietf.org/html/rfc5646. Must not be null
+	 * */
+	public static Node addTitle(Node film, String title, String article,
+			String language) {
+		return addTitle(film, title, article, null, language, false, false);
+	}
+
+	/**
 	 * Add an alternative title for a given language
 	 * 
 	 * @param language
 	 *            a String corresponding to this language as defined in
 	 *            http://tools.ietf.org/html/rfc5646. Must not be null
 	 * */
-	public static Node addAltTitle(Node film, String title, String article,
-			String language) {
+	public static Node addTitle(Node film, String title, String article,
+			String latinPronunciation, String language, boolean isOriginal,
+			boolean isPrimary) {
 		if (language == null || language.trim().equals(""))
 			throw new PeopleException(
 					"Language must not be null or an empty String");
 		try {
-			Node titles = getOrCreateDirNode(film, FILM_ALT_TITLES);
+			Node titles = CommonsJcrUtils.getOrCreateDirNode(film, FILM_TITLES);
 			// TODO Check for duplicates
 			Node tNode = titles.addNode(language, FilmTypes.FILM_TITLE);
 			tNode.setProperty(FILM_TITLE, title);
-			if (!CommonsJcrUtils.isEmptyString(article))
+			if (CommonsJcrUtils.checkNotEmptyString(article))
 				tNode.setProperty(FILM_TITLE_ARTICLE, article);
-			tNode.setProperty(FILM_LANG, language);
+			if (CommonsJcrUtils.checkNotEmptyString(latinPronunciation))
+				tNode.setProperty(FILM_TITLE_LATIN_PRONUNCIATION,
+						latinPronunciation);
+			tNode.setProperty(PeopleNames.PEOPLE_LANG, language);
+			tNode.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, isPrimary);
+			tNode.setProperty(FILM_TITLE_IS_ORIG, isOriginal);
+
 			return tNode;
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to add a new Title node", re);

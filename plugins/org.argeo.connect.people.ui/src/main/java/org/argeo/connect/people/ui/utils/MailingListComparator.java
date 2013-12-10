@@ -29,7 +29,7 @@ import org.argeo.ArgeoException;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 
-public class MailListComparator extends ViewerComparator {
+public class MailingListComparator extends ViewerComparator {
 	private static final long serialVersionUID = 7621278235801225428L;
 
 	protected String propertyName;
@@ -38,7 +38,7 @@ public class MailListComparator extends ViewerComparator {
 	public static final int ASCENDING = 0, DESCENDING = 1;
 	protected int direction = DESCENDING;
 
-	public MailListComparator() {
+	public MailingListComparator() {
 	}
 
 	@Override

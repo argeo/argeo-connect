@@ -8,22 +8,46 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.film.FilmNames;
+import org.argeo.connect.film.FilmTypes;
 import org.argeo.connect.film.core.FilmJcrUtils;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.dialogs.NewTitleDialog;
 import org.argeo.connect.people.ui.dialogs.PickUpCountryDialog;
 import org.argeo.connect.people.ui.dialogs.PickUpLangDialog;
+import org.argeo.connect.people.ui.utils.JcrUiUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
+import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
+import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
+import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
+import org.argeo.eclipse.ui.utils.ViewerUtils;
+import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CheckboxCellEditor;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
@@ -33,6 +57,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IFormPart;
@@ -43,44 +68,48 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * Centralize the creation of the different editors panels for films.
  */
 public class FilmToolkit extends EntityToolkit implements FilmNames {
-	// private final static Log log = LogFactory.getLog(FilmToolkit.class);
+	private final static Log log = LogFactory.getLog(FilmToolkit.class);
 
 	// private final static String LANG_KEY = "lang";
 	// private final static String DEFAULT_LANG_KEY = "default";
 
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
+	private final Node film;
 
-	public FilmToolkit(FormToolkit toolkit, IManagedForm form) {
+	public FilmToolkit(FormToolkit toolkit, IManagedForm form, Node film) {
 		super(toolkit, form);
 		// formToolkit
 		// managedForm
 		this.toolkit = toolkit;
 		this.form = form;
+		this.film = film;
 	}
 
 	/** Populate a panel with a list synopsis. */
-	public void populateSynopsisPanel(Composite panel, final Node entity,
-			List<String> langIsos) {
+	public void populateSynopsisPanel(Composite panel, List<String> langIsos) {
 		panel.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 		try {
 			for (String iso : langIsos) {
-				Node currNode = FilmJcrUtils.getSynopsisNode(entity, iso);
+				Node currNode = FilmJcrUtils.getSynopsisNode(film, iso);
 				// force creation to avoid npe and ease form life cycle
-				if (currNode == null)
-					currNode = FilmJcrUtils.addOrUpdateSynopsisNode(entity,
-							null, null, iso);
-				Composite composite = toolkit.createComposite(panel);
-				composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-						true));
-				populateSingleSynopsisCmp(
-						composite,
-						currNode,
-						ResourcesJcrUtils.getLangEnLabelFromIso(
-								entity.getSession(), iso));
+				if (currNode == null
+						&& CommonsJcrUtils.isNodeCheckedOutByMe(film))
+					currNode = FilmJcrUtils.addOrUpdateSynopsisNode(film, null,
+							null, iso);
+				if (currNode != null) {
+					Composite composite = toolkit.createComposite(panel);
+					composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
+							true, true));
+					populateSingleSynopsisCmp(
+							composite,
+							currNode,
+							ResourcesJcrUtils.getLangEnLabelFromIso(
+									film.getSession(), iso));
+				}
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to create " + "synopsis panel", e);
+			throw new PeopleException("Unable to create synopsis panel", e);
 		}
 	}
 
@@ -129,33 +158,31 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		form.addPart(editPart);
 	}
 
-	public void populateFilmDetailsPanel(Composite parent, final Node entity) {
+	public void populateFilmDetailsPanel(Composite parent) {
 		parent.setLayout(new GridLayout());
 
 		Composite origLanCmp = toolkit.createComposite(parent);
 		origLanCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		origLanCmp.setLayout(new GridLayout());
-		populateLangPanel(origLanCmp, entity, FILM_ORIGINAL_LANGUAGE, "Add...");
+		populateLangPanel(origLanCmp, FILM_ORIGINAL_LANGUAGE, "Add...");
 
 		Composite prodCountryCmp = toolkit.createComposite(parent);
 		prodCountryCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
 				false));
 		prodCountryCmp.setLayout(new GridLayout());
-		populateProdCountryPanel(prodCountryCmp, entity, FILM_PROD_COUNTRY,
-				"Add...");
+		populateProdCountryPanel(prodCountryCmp, FILM_PROD_COUNTRY, "Add...");
 
-		Composite adminInfoCmp = toolkit.createComposite(parent);
-		adminInfoCmp
-				.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		populateMainInfoCmp(adminInfoCmp, entity);
+		Composite mainInfoCmp = toolkit.createComposite(parent);
+		mainInfoCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		populateMainInfoCmp(mainInfoCmp);
 
-		Composite payAccCmp = toolkit.createComposite(parent);
-		payAccCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		populateAltTitleGroup(payAccCmp);
+		Composite altTitleCmp = toolkit.createComposite(parent);
+		altTitleCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		populateAltTitleGroup(altTitleCmp);
 
 	}
 
-	private void populateMainInfoCmp(Composite parent, final Node film) {
+	private void populateMainInfoCmp(Composite parent) {
 		GridLayout layout = PeopleUiUtils.gridLayoutNoBorder(2);
 		layout.horizontalSpacing = layout.verticalSpacing = 5;
 		parent.setLayout(layout);
@@ -304,41 +331,346 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		group.setText("Alternative Titles");
 		group.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
+		//
+		final Button addBtn = toolkit
+				.createButton(group, "Add title", SWT.PUSH);
+
+		final TableViewer viewer = createAltTitleViewer(group);
+
 		AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {
-				// TODO add "create account button"
 				super.refresh();
-				// try {
-				// if (!entity.hasNode(PeopleNames.PEOPLE_PAYMENT_ACCOUNTS)
-				// && CommonsJcrUtils.isNodeCheckedOutByMe(entity)) {
-				// PeopleJcrUtils.createPaymentAccount(entity,
-				// PeopleTypes.PEOPLE_BANK_ACCOUNT, "new");
-				// entity.getSession().save();
-				// }
-				// } catch (RepositoryException e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
-				// }
-
-				// Control[] children = group.getChildren();
-				// for (Control child : children) {
-				// child.dispose();
-				// }
-				//
-				// NodeIterator ni = PeopleJcrUtils.getPaymentAccounts(entity);
-				// while (ni != null && ni.hasNext()) {
-				// Composite cmp = new BankAccountComposite(group, 0, toolkit,
-				// form, ni.nextNode());
-				// cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
-				// false));
-				// }
+				boolean checkedOut = CommonsJcrUtils.isNodeCheckedOutByMe(film);
+				addBtn.setVisible(checkedOut);
+				try {
+					if (film.hasNode(FilmNames.FILM_TITLES)) {
+						List<Node> titles = JcrUtils.nodeIteratorToList(film
+								.getNode(FilmNames.FILM_TITLES).getNodes());
+						viewer.setInput(titles.toArray(new Node[titles.size()]));
+					}
+				} catch (RepositoryException e) {
+					throw new PeopleException(
+							"unexpected error whil gettin film titles ", e);
+				}
 				group.layout();
 			}
 		};
-		// notePart.refresh();
+
+		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
+		columns.add(new ColumnDefinition(FilmTypes.FILM_TITLE,
+				FilmNames.FILM_TITLE, PropertyType.STRING, "Title", 150));
+		columns.add(new ColumnDefinition(FilmTypes.FILM_TITLE,
+				FilmNames.FILM_TITLE_ARTICLE, PropertyType.STRING, "Article",
+				60));
+		columns.add(new ColumnDefinition(FilmTypes.FILM_TITLE,
+				FilmNames.FILM_TITLE_LATIN_PRONUNCIATION, PropertyType.STRING,
+				"Latin pronun.", 150));
+		configureAltTitleViewer(viewer, formPart, columns);
+
+		viewer.setContentProvider(new MyTableContentProvider());
+
+		configureAddTitleButton(formPart, addBtn, film,
+				"Add a new title for current film");
+
 		parent.layout();
 		formPart.initialize(form);
 		form.addPart(formPart);
+	}
+
+	private class MyTableContentProvider implements IStructuredContentProvider {
+		private static final long serialVersionUID = 7164029504991808317L;
+
+		public Object[] getElements(Object inputElement) {
+			return (Object[]) inputElement;
+		}
+
+		public void dispose() {
+		}
+
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		}
+	}
+
+	private void configureAddTitleButton(final AbstractFormPart part,
+			final Button button, final Node film, String tooltip) {
+		button.setToolTipText(tooltip);
+		button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
+
+		button.addSelectionListener(new SelectionListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				NewTitleDialog dialog = new NewTitleDialog(button.getShell(),
+						"Add a new title", film);
+				int res = dialog.open();
+
+				if (res == org.eclipse.jface.dialogs.Dialog.OK)
+					part.markDirty();
+
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+
+	}
+
+	private TableViewer createAltTitleViewer(Composite parent) {
+		// Table control creation
+		int style = SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL;
+		Table table = new Table(parent, style);
+		table.setLinesVisible(true);
+		table.setHeaderVisible(true);
+		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		table.setLayoutData(gd);
+		TableViewer itemsViewer = new TableViewer(table);
+		itemsViewer.setContentProvider(new MyTableContentProvider());
+		return itemsViewer;
+	}
+
+	private void configureAltTitleViewer(TableViewer itemsViewer,
+			AbstractFormPart part, List<ColumnDefinition> columns) {
+
+		NodeViewerComparator comparator = new NodeViewerComparator();
+
+		itemsViewer.getTable().setData(PeopleUiConstants.MARKUP_ENABLED,
+				Boolean.TRUE);
+
+		// The columns
+		TableViewerColumn col;
+		EditingSupport editingSupport;
+
+		// original title
+		col = ViewerUtils.createTableViewerColumn(itemsViewer, "", SWT.CENTER,
+				25);
+		editingSupport = new BooleanEditingSupport(itemsViewer, part,
+				FilmNames.FILM_TITLE_IS_ORIG);
+		col.setEditingSupport(editingSupport);
+		col.setLabelProvider(new BooleanFlagLabelProvider(
+				FilmNames.FILM_TITLE_IS_ORIG, PeopleImages.ORIGINAL_BTN, null));
+
+		// primary item
+		col = ViewerUtils.createTableViewerColumn(itemsViewer, "", SWT.CENTER,
+				25);
+		editingSupport = new BooleanEditingSupport(itemsViewer, part,
+				PeopleNames.PEOPLE_IS_PRIMARY);
+		col.setEditingSupport(editingSupport);
+		col.setLabelProvider(new BooleanFlagLabelProvider(
+				PeopleNames.PEOPLE_IS_PRIMARY, PeopleImages.PRIMARY_BTN,
+				PeopleImages.PRIMARY_NOT_BTN));
+
+		// the language
+		col = ViewerUtils.createTableViewerColumn(itemsViewer, "lang.",
+				SWT.NONE, 40);
+		col.setLabelProvider(new LangLabelProvider());
+
+		col.getColumn().addSelectionListener(
+				PeopleUiUtils.getSelectionAdapter(2, PropertyType.STRING,
+						PeopleNames.PEOPLE_LANG, comparator, itemsViewer));
+		col.getColumn().addSelectionListener(new LangListRwtAdapter());
+
+		int i = 3;
+		for (ColumnDefinition colDef : columns) {
+			col = ViewerUtils.createTableViewerColumn(itemsViewer,
+					colDef.getHeaderLabel(), SWT.NONE, colDef.getColumnSize());
+			col.setLabelProvider(new SimpleJcrNodeLabelProvider(colDef
+					.getPropertyName()));
+			col.setEditingSupport(new TextEditingSupport(itemsViewer, part,
+					colDef.getPropertyName()));
+
+			col.getColumn().addSelectionListener(
+					PeopleUiUtils.getSelectionAdapter(i,
+							colDef.getPropertyType(), colDef.getPropertyName(),
+							comparator, itemsViewer));
+			i++;
+		}
+
+		ColumnDefinition firstCol = columns.get(0);
+		// IMPORTANT: initialize comparator before setting it
+		comparator.setColumn(firstCol.getPropertyType(),
+				firstCol.getPropertyName());
+		itemsViewer.setComparator(comparator);
+	}
+
+	private class LangListRwtAdapter extends SelectionAdapter {
+		private static final long serialVersionUID = -3867410418907732579L;
+
+		public void widgetSelected(SelectionEvent event) {
+			if (event.detail == RWT.HYPERLINK) {
+				String string = event.text;
+				log.warn("Got an ID: " + string);
+			}
+		}
+	}
+
+	private class LangLabelProvider extends ColumnLabelProvider {
+		private static final long serialVersionUID = -4185990064274214740L;
+
+		@Override
+		public String getText(Object element) {
+			Node node = (Node) element;
+			String currValue = CommonsJcrUtils.get(node,
+					PeopleNames.PEOPLE_LANG);
+			if (!CommonsJcrUtils.isNodeCheckedOutByMe(film)) {
+				return currValue;
+			} else {
+				try {
+
+					String uri = node.getIdentifier();
+					return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
+							+ " href=\"" + uri + "\" target=\"_rwt\">"
+							+ currValue + "</a>";
+				} catch (RepositoryException e) {
+					throw new PeopleException(
+							"Error while preparing lang edition link for node "
+									+ element, e);
+				}
+			}
+		}
+	}
+
+	private class BooleanFlagLabelProvider extends ColumnLabelProvider {
+		private static final long serialVersionUID = 1L;
+
+		private final String propertyName; // = PeopleNames.PEOPLE_IS_PRIMARY;
+		private final Image imgTrue; // = PeopleImages.PRIMARY_BTN;
+		private final Image imgFalse; // = PeopleImages.PRIMARY_NOT_BTN;
+
+		public BooleanFlagLabelProvider(String propertyName, Image imgTrue,
+				Image imgFalse) {
+			this.propertyName = propertyName;
+			this.imgTrue = imgTrue;
+			this.imgFalse = imgFalse;
+		}
+
+		@Override
+		public String getText(Object element) {
+			return null;
+		}
+
+		@Override
+		public Image getImage(Object element) {
+			boolean isPrimary = false;
+			try {
+				Node currNode = ((Node) element);
+				if (currNode.hasProperty(propertyName)
+						&& currNode.getProperty(propertyName).getValue()
+								.getType() == PropertyType.BOOLEAN)
+					isPrimary = currNode.getProperty(propertyName).getBoolean();
+			} catch (RepositoryException e) {
+				throw new PeopleException("Unable to get " + propertyName
+						+ " value for node " + element, e);
+			}
+
+			if (isPrimary) {
+				return imgTrue;
+			} else {
+				return imgFalse;
+			}
+		}
+	}
+
+	private class BooleanEditingSupport extends EditingSupport {
+		private static final long serialVersionUID = 1L;
+		private final TableViewer viewer;
+		private final String propertyName;
+		private final AbstractFormPart part;
+
+		public BooleanEditingSupport(TableViewer viewer, AbstractFormPart part,
+				String propertyName) {
+			super(viewer);
+			this.viewer = viewer;
+			this.propertyName = propertyName;
+			this.part = part;
+		}
+
+		@Override
+		protected CellEditor getCellEditor(Object element) {
+			return new CheckboxCellEditor(viewer.getTable());
+		}
+
+		@Override
+		protected boolean canEdit(Object element) {
+			return CommonsJcrUtils.isNodeCheckedOutByMe(film);
+		}
+
+		@Override
+		protected Object getValue(Object element) {
+			// check if current row display a primary title
+			try {
+				Node currNode = (Node) element;
+				if (currNode.hasProperty(propertyName)
+						&& currNode.getProperty(propertyName).getValue()
+								.getType() == PropertyType.BOOLEAN)
+					return currNode.getProperty(propertyName).getBoolean();
+			} catch (RepositoryException e) {
+				throw new PeopleException("Unable to get " + propertyName
+						+ " value for node " + element, e);
+			}
+			return false;
+		}
+
+		@Override
+		protected void setValue(Object element, Object value) {
+			Node currNode = (Node) element;
+			PeopleJcrUtils.markAsPrimary(currNode, (Boolean) value);
+			viewer.update(element, null);
+			part.markDirty();
+		}
+	}
+
+	private class TextEditingSupport extends EditingSupport {
+		private static final long serialVersionUID = 1L;
+		private final TableViewer viewer;
+		private final String propertyName;
+		private final AbstractFormPart part;
+
+		public TextEditingSupport(TableViewer viewer, AbstractFormPart part,
+				String propertyName) {
+			super(viewer);
+			this.viewer = viewer;
+			this.propertyName = propertyName;
+			this.part = part;
+		}
+
+		@Override
+		protected CellEditor getCellEditor(Object element) {
+			return new TextCellEditor(viewer.getTable());
+		}
+
+		@Override
+		protected boolean canEdit(Object element) {
+			return CommonsJcrUtils.isNodeCheckedOutByMe(film);
+		}
+
+		@Override
+		protected Object getValue(Object element) {
+			// check if current row display a primary title
+			try {
+				Node currNode = (Node) element;
+				if (currNode.hasProperty(propertyName)
+						&& currNode.getProperty(propertyName).getValue()
+								.getType() == PropertyType.STRING)
+					return currNode.getProperty(propertyName).getString();
+			} catch (RepositoryException e) {
+				throw new PeopleException("Unable to get " + propertyName
+						+ " value for node " + element, e);
+			}
+			return "";
+		}
+
+		@Override
+		protected void setValue(Object element, Object value) {
+			Node currNode = (Node) element;
+			if (JcrUiUtils.setJcrProperty(currNode, propertyName,
+					PropertyType.STRING, (String) value)) {
+				part.markDirty();
+				viewer.update(element, null);
+				part.markDirty();
+			}
+		}
 	}
 
 	/**
@@ -349,7 +681,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 	 * @param property
 	 *            the multi-valued property we want to update
 	 */
-	public void populateLangPanel(final Composite parent, final Node entity,
+	public void populateLangPanel(final Composite parent,
 			final String tagPropName, final String newTagMsg) {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder(3));
 		toolkit.createLabel(parent, "Original language(s):");
@@ -376,11 +708,11 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 			public void widgetSelected(final SelectionEvent event) {
 				try {
 					PickUpLangDialog diag = new PickUpLangDialog(chooseLangLk
-							.getShell(), newTagMsg, entity.getSession(), entity);
+							.getShell(), newTagMsg, film.getSession());
 					diag.open();
 					String lang = diag.getSelected();
 					if (CommonsJcrUtils.checkNotEmptyString(lang))
-						addMultiPropertyValue(entity, tagPropName, lang);
+						addMultiPropertyValue(film, tagPropName, lang);
 				} catch (RepositoryException e) {
 					throw new PeopleException("Unable to add language", e);
 				}
@@ -392,7 +724,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 			public void refresh() {
 				super.refresh();
 
-				boolean isCO = CommonsJcrUtils.isNodeCheckedOutByMe(entity);
+				boolean isCO = CommonsJcrUtils.isNodeCheckedOutByMe(film);
 				// show add button only in edit mode
 				chooseLangLk.setVisible(isCO);
 
@@ -403,13 +735,13 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 					child.dispose();
 
 				try {
-					if (entity.hasProperty(tagPropName)) {
-						Value[] values = entity.getProperty(tagPropName)
+					if (film.hasProperty(tagPropName)) {
+						Value[] values = film.getProperty(tagPropName)
 								.getValues();
 						for (final Value value : values) {
 							final String valueStr = value.getString();
 							String labelStr = ResourcesJcrUtils
-									.getLangEnLabelFromIso(entity.getSession(),
+									.getLangEnLabelFromIso(film.getSession(),
 											valueStr);
 							toolkit.createLabel(valuesCmp, labelStr, SWT.BOTTOM);
 							Button deleteBtn = new Button(valuesCmp, SWT.FLAT);
@@ -428,7 +760,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 										@Override
 										public void widgetSelected(
 												final SelectionEvent event) {
-											removeMultiPropertyValue(entity,
+											removeMultiPropertyValue(film,
 													tagPropName, valueStr);
 											for (IFormPart part : form
 													.getParts()) {
@@ -460,7 +792,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 	 * Populate a parent composite with controls to manage tag like countries
 	 */
 	public void populateProdCountryPanel(final Composite parent,
-			final Node entity, final String tagPropName, final String newTagMsg) {
+			final String tagPropName, final String newTagMsg) {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder(3));
 		toolkit.createLabel(parent, "Production country(ies):");
 		// The tag composite
@@ -485,12 +817,12 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 			public void widgetSelected(final SelectionEvent event) {
 				try {
 					PickUpCountryDialog diag = new PickUpCountryDialog(
-							chooseLangLk.getShell(), newTagMsg, entity
-									.getSession(), entity);
+							chooseLangLk.getShell(), newTagMsg, film
+									.getSession(), film);
 					diag.open();
 					String lang = diag.getSelected();
 					if (CommonsJcrUtils.checkNotEmptyString(lang))
-						addMultiPropertyValue(entity, tagPropName, lang);
+						addMultiPropertyValue(film, tagPropName, lang);
 				} catch (RepositoryException e) {
 					throw new PeopleException("Unable to add language", e);
 				}
@@ -501,7 +833,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		final AbstractFormPart editPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
-				boolean isCO = CommonsJcrUtils.isNodeCheckedOutByMe(entity);
+				boolean isCO = CommonsJcrUtils.isNodeCheckedOutByMe(film);
 				// show add button only in edit mode
 				chooseLangLk.setVisible(isCO);
 
@@ -512,14 +844,14 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 					child.dispose();
 
 				try {
-					if (entity.hasProperty(tagPropName)) {
-						Value[] values = entity.getProperty(tagPropName)
+					if (film.hasProperty(tagPropName)) {
+						Value[] values = film.getProperty(tagPropName)
 								.getValues();
 						for (final Value value : values) {
 							final String valueStr = value.getString();
 							String labelStr = ResourcesJcrUtils
 									.getCountryEnLabelFromIso(
-											entity.getSession(), valueStr);
+											film.getSession(), valueStr);
 							toolkit.createLabel(nlCmp, labelStr, SWT.BOTTOM);
 
 							Button deleteBtn = new Button(nlCmp, SWT.FLAT);
@@ -538,7 +870,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 										@Override
 										public void widgetSelected(
 												final SelectionEvent event) {
-											removeMultiPropertyValue(entity,
+											removeMultiPropertyValue(film,
 													tagPropName, valueStr);
 											for (IFormPart part : form
 													.getParts()) {

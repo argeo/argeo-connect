@@ -8,6 +8,8 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
+import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -328,6 +330,79 @@ public class PeopleUiUtils {
 		formData.right = new FormAttachment(right, 0);
 		formData.bottom = new FormAttachment(bottom, 0);
 		return formData;
+	}
+
+	/**
+	 * Creates a new selection adapter in order to provide sort abilities to a
+	 * table that displays JCR Rows
+	 * 
+	 * @param index
+	 * @param propertyType
+	 * @param selectorName
+	 * @param propertyName
+	 * @param comparator
+	 * @param viewer
+	 * @return
+	 */
+	public static SelectionAdapter getSelectionAdapter(final int index,
+			final int propertyType, final String selectorName,
+			final String propertyName, final RowViewerComparator comparator,
+			final TableViewer viewer) {
+		SelectionAdapter selectionAdapter = new SelectionAdapter() {
+			private static final long serialVersionUID = -3452356616673385039L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Table table = viewer.getTable();
+				comparator.setColumn(propertyType, selectorName, propertyName);
+				int dir = table.getSortDirection();
+				if (table.getSortColumn() == table.getColumn(index)) {
+					dir = dir == SWT.UP ? SWT.DOWN : SWT.UP;
+				} else {
+					dir = SWT.DOWN;
+				}
+				table.setSortDirection(dir);
+				table.setSortColumn(table.getColumn(index));
+				viewer.refresh();
+			}
+		};
+		return selectionAdapter;
+	}
+
+	/**
+	 * Creates a new selection adapter in order to provide sort abilities to a
+	 * table that displays JCR nodes
+	 * 
+	 * @param index
+	 * @param propertyType
+	 * @param selectorName
+	 * @param propertyName
+	 * @param comparator
+	 * @param viewer
+	 * @return
+	 */
+	public static SelectionAdapter getSelectionAdapter(final int index,
+			final int propertyType, final String propertyName,
+			final NodeViewerComparator comparator, final TableViewer viewer) {
+		SelectionAdapter selectionAdapter = new SelectionAdapter() {
+			private static final long serialVersionUID = -3452356616673385039L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Table table = viewer.getTable();
+				comparator.setColumn(propertyType, propertyName);
+				int dir = table.getSortDirection();
+				if (table.getSortColumn() == table.getColumn(index)) {
+					dir = dir == SWT.UP ? SWT.DOWN : SWT.UP;
+				} else {
+					dir = SWT.DOWN;
+				}
+				table.setSortDirection(dir);
+				table.setSortColumn(table.getColumn(index));
+				viewer.refresh();
+			}
+		};
+		return selectionAdapter;
 	}
 
 }

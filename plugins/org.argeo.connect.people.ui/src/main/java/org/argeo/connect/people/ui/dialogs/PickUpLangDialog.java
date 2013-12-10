@@ -64,11 +64,9 @@ public class PickUpLangDialog extends TrayDialog {
 				PropertyType.STRING, "Label", 300));
 	};
 
-	public PickUpLangDialog(Shell parentShell, String title, Session session,
-			Node referencingNode) {
+	public PickUpLangDialog(Shell parentShell, String title, Session session) {
 		super(parentShell);
 		this.title = title;
-		// this.referencingNode = referencingNode;
 		this.session = session;
 	}
 
@@ -80,7 +78,8 @@ public class PickUpLangDialog extends TrayDialog {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-		tableCmp = new SimpleJcrTableComposite(dialogArea, style, session, PeopleConstants.PEOPLE_LANGS_BASE_PATH,
+		tableCmp = new SimpleJcrTableComposite(dialogArea, style, session,
+				PeopleConstants.PEOPLE_LANGS_BASE_PATH,
 				PeopleTypes.PEOPLE_ISO_LANGUAGE, colDefs, true, false);
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 

@@ -99,7 +99,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void createToolkits() {
-		filmPanelToolkit = new FilmToolkit(toolkit, getManagedForm());
+		filmPanelToolkit = new FilmToolkit(toolkit, getManagedForm(), film);
 		entityTk = new EntityToolkit(toolkit, getManagedForm());
 		listPanelToolkit = new ListToolkit(toolkit, getManagedForm(),
 				getPeopleService());
@@ -114,7 +114,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(film, FilmNames.FILM_ID);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Details", PeopleUiConstants.PANEL_FILM_INFO, tooltip);
-		filmPanelToolkit.populateFilmDetailsPanel(innerPannel, film);
+		filmPanelToolkit.populateFilmDetailsPanel(innerPannel);
 
 		// Synopses
 		tooltip = "The synopses for film "
@@ -122,9 +122,9 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Synopsis",
 				PeopleUiConstants.PANEL_SYNOPSES, tooltip);
 		List<String> isoLangs = new ArrayList<String>();
-		isoLangs.add(PeopleConstants.LANG_DE); 
+		isoLangs.add(PeopleConstants.LANG_DE);
 		isoLangs.add(PeopleConstants.LANG_EN);
-		filmPanelToolkit.populateSynopsisPanel(innerPannel, film, isoLangs);
+		filmPanelToolkit.populateSynopsisPanel(innerPannel, isoLangs);
 
 		// Crew
 		tooltip = "Staff related to " + JcrUtils.get(film, FilmNames.FILM_ID);
@@ -161,7 +161,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 		// keep last update.
 		super.populateMainInfoDetails(parent);
 	}
-	
+
 	@Override
 	protected void populateTitleComposite(final Composite parent) {
 		try {
@@ -171,15 +171,16 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 			final Composite roPanelCmp = toolkit.createComposite(parent,
 					SWT.NO_FOCUS);
 			PeopleUiUtils.setSwitchingFormData(roPanelCmp);
-//			roPanelCmp.setData(RWT.CUSTOM_VARIANT,
-//					PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
+			// roPanelCmp.setData(RWT.CUSTOM_VARIANT,
+			// PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 
 			roPanelCmp.setLayout(new GridLayout());
 
 			// Add a label with info provided by the FilmOverviewLabelProvider
 			final Label filmInfoROLbl = toolkit.createLabel(roPanelCmp, "",
 					SWT.WRAP);
-			filmInfoROLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
+			filmInfoROLbl.setData(PeopleUiConstants.MARKUP_ENABLED,
+					Boolean.TRUE);
 			final ColumnLabelProvider filmExtractLP = new FilmOverviewLabelProvider(
 					false, getPeopleService());
 

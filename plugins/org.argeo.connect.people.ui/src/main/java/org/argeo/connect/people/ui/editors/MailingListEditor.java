@@ -33,9 +33,9 @@ import org.argeo.connect.people.ui.extracts.ITableProvider;
 import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.ui.providers.PeopleImageProvider;
-import org.argeo.connect.people.ui.utils.MailListComparator;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
+import org.argeo.connect.people.ui.utils.RowViewerComparator;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
@@ -282,7 +282,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 
 	private TableViewer createTableViewer(Composite parent) {
 		parent.setLayout(new FillLayout());
-		MailListComparator comparator = new MailListComparator();
+		RowViewerComparator comparator = new RowViewerComparator();
 		// Define the TableViewer
 		TableViewer viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
@@ -406,7 +406,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 
 	private SelectionAdapter getSelectionAdapter(final int index,
 			final int propertyType, final String selectorName,
-			final String propertyName, final MailListComparator comparator,
+			final String propertyName, final RowViewerComparator comparator,
 			final TableViewer viewer) {
 		SelectionAdapter selectionAdapter = new SelectionAdapter() {
 			private static final long serialVersionUID = -3452356616673385039L;

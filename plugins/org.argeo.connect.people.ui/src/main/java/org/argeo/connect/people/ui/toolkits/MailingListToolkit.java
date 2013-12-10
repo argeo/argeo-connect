@@ -10,10 +10,10 @@ import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.AbstractEntityEditor;
-import org.argeo.connect.people.ui.utils.MailListComparator;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
+import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.eclipse.jface.viewers.CellEditor;
@@ -28,8 +28,6 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -77,7 +75,7 @@ public class MailingListToolkit {
 		Table table = new Table(parent, style);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
-		MailListComparator comparator = new MailListComparator();
+		RowViewerComparator comparator = new RowViewerComparator();
 
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		table.setLayoutData(gd);
@@ -86,7 +84,7 @@ public class MailingListToolkit {
 
 		// The columns
 		TableViewerColumn col = ViewerUtils.createTableViewerColumn(
-				itemsViewer, "", SWT.NONE, 25);
+				itemsViewer, "", SWT.CENTER, 25);
 		col.setEditingSupport(new SelectedEditingSupport(itemsViewer,
 				selectedItems));
 		col.setLabelProvider(new ColumnLabelProvider() {
@@ -114,9 +112,9 @@ public class MailingListToolkit {
 			col.setLabelProvider(new HtmlJcrRowLabelProvider(colDef
 					.getSelectorName(), colDef.getPropertyName()));
 			col.getColumn().addSelectionListener(
-					getSelectionAdapter(i, colDef.getPropertyType(),
-							colDef.getSelectorName(), colDef.getPropertyName(),
-							comparator, itemsViewer));
+					PeopleUiUtils.getSelectionAdapter(i,
+							colDef.getPropertyType(), colDef.getSelectorName(),
+							colDef.getPropertyName(), comparator, itemsViewer));
 			i++;
 		}
 
@@ -222,28 +220,4 @@ public class MailingListToolkit {
 		return filterTxt;
 	}
 
-	private SelectionAdapter getSelectionAdapter(final int index,
-			final int propertyType, final String selectorName,
-			final String propertyName, final MailListComparator comparator,
-			final TableViewer viewer) {
-		SelectionAdapter selectionAdapter = new SelectionAdapter() {
-			private static final long serialVersionUID = -3452356616673385039L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Table table = viewer.getTable();
-				comparator.setColumn(propertyType, selectorName, propertyName);
-				int dir = table.getSortDirection();
-				if (table.getSortColumn() == table.getColumn(index)) {
-					dir = dir == SWT.UP ? SWT.DOWN : SWT.UP;
-				} else {
-					dir = SWT.DOWN;
-				}
-				table.setSortDirection(dir);
-				table.setSortColumn(table.getColumn(index));
-				viewer.refresh();
-			}
-		};
-		return selectionAdapter;
-	}
 }
