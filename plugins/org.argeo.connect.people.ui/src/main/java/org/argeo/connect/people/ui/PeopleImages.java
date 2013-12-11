@@ -78,9 +78,8 @@ public class PeopleImages {
 			.getImageDescriptor("icons/primaryNOT.gif").createImage();
 
 	public final static Image ORIGINAL_BTN = PeopleUiPlugin.getImageDescriptor(
-			"icons/first.png").createImage();
+			"icons/search.png").createImage();
 
-	
 	// Check box icons
 	public final static Image CHECKED = PeopleUiPlugin.getImageDescriptor(
 			"icons/checked.gif").createImage();

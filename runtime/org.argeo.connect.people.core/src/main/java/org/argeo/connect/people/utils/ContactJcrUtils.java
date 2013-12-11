@@ -93,8 +93,9 @@ public class ContactJcrUtils {
 		String cleanedName = JcrUtils.replaceInvalidChars(name);
 
 		String relPath = null;
-		if (cleanedName .length() > 1)
-			relPath = JcrUtils.firstCharsToPath(cleanedName , 2) + "/" + cleanedName;
+		if (cleanedName.length() > 1)
+			relPath = JcrUtils.firstCharsToPath(cleanedName, 2) + "/"
+					+ cleanedName;
 		else
 			throw new PeopleException(
 					"Mailing list name must be at least 2 valid characters long");
@@ -154,12 +155,15 @@ public class ContactJcrUtils {
 		}
 	}
 
-	public static Node getMailingListByName(Session session, String name)
-			throws RepositoryException {
+	public static Node getMailingListByName(Session session, String name,
+			String basePath) throws RepositoryException {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
 		QueryObjectModelFactory factory = queryManager.getQOMFactory();
 		Selector source = factory.selector(PeopleTypes.PEOPLE_MAILING_LIST,
 				PeopleTypes.PEOPLE_MAILING_LIST);
+
+		Constraint constraint = factory.descendantNode(
+				source.getSelectorName(), basePath);
 
 		DynamicOperand dynOp = factory.propertyValue(source.getSelectorName(),
 				Property.JCR_TITLE);
@@ -168,8 +172,8 @@ public class ContactJcrUtils {
 		Constraint defaultC = factory.comparison(factory.lowerCase(dynOp),
 				QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
 
-		QueryObjectModel query = factory.createQuery(source, defaultC, null,
-				null);
+		QueryObjectModel query = factory.createQuery(source,
+				factory.and(constraint, defaultC), null, null);
 		QueryResult result = query.execute();
 		NodeIterator ni = result.getNodes();
 
