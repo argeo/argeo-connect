@@ -2,11 +2,11 @@ package org.argeo.connect.people.ui.providers;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.jcr.Value;
 
 import org.argeo.connect.film.FilmNames;
 import org.argeo.connect.film.FilmTypes;
 import org.argeo.connect.film.core.FilmJcrUtils;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
@@ -62,30 +62,47 @@ public class FilmOverviewLabelProvider extends ColumnLabelProvider implements
 			String latinTitle = CommonsJcrUtils
 					.get(film, FILM_ORIG_LATIN_TITLE);
 			if (CommonsJcrUtils.checkNotEmptyString(latinTitle))
-				builder.append("<i>").append(latinTitle).append("</i>");
+				builder.append("<i>").append(latinTitle).append("</i>&#160;");
 
 			builder.append("<br/>");
 
 			// english title
-			String enTitle = FilmJcrUtils.getAltTitle(film, "EN");
+			String enTitle = FilmJcrUtils.getAltTitle(film, PeopleConstants.LANG_EN);
 			if (CommonsJcrUtils.checkNotEmptyString(enTitle))
 				builder.append(enTitle).append("<br/>");
 
 			// Production
-			builder.append(CommonsJcrUtils.getStringValue(film, FILM_DIRECTOR));
-			builder.append(" [");
-			builder.append(CommonsJcrUtils.getMultiAsString(film, FILM_PROD_COUNTRY, ", "))
-					.append(", ");
-			builder.append(CommonsJcrUtils.get(film, FILM_PROD_YEAR));
-			builder.append("]");
-			builder.append("<br/>");
-
-			String origLang	= CommonsJcrUtils.getMultiAsString(film, FILM_ORIGINAL_LANGUAGE, ", ");
+			StringBuilder currLine = new StringBuilder();
+		
+			String director = CommonsJcrUtils.get(film, FILM_DIRECTOR); 
+			currLine.append(director);
+			
+			String countries = CommonsJcrUtils.getMultiAsString(film, FILM_PROD_COUNTRY, ", ");
+			String year = CommonsJcrUtils.get(film, FILM_PROD_YEAR);
+			
+			boolean hasCountries = CommonsJcrUtils.checkNotEmptyString(countries);
+			boolean hasYear = CommonsJcrUtils.checkNotEmptyString(year);
+			
+			if (hasCountries || hasYear){
+				currLine.append(" [");
+				currLine.append(countries);
+				if (hasCountries && hasYear)
+					currLine.append(", ");
+				currLine.append(year);
+				currLine.append("]");
+			}
+	
+			if (currLine.length() > 0)
+				builder.append(currLine.toString()).append("<br/>");
+			
+			String origLang = CommonsJcrUtils.getMultiAsString(film,
+					FILM_ORIGINAL_LANGUAGE, ", ");
 			String length = CommonsJcrUtils.get(film, FILM_LENGTH);
 			builder.append("<i>");
 			if (CommonsJcrUtils.checkNotEmptyString(origLang))
 				builder.append(origLang.toUpperCase());
-			if (CommonsJcrUtils.checkNotEmptyString(origLang) && CommonsJcrUtils.checkNotEmptyString(length))
+			if (CommonsJcrUtils.checkNotEmptyString(origLang)
+					&& CommonsJcrUtils.checkNotEmptyString(length))
 				builder.append(", ");
 			builder.append(CommonsJcrUtils.get(film, FILM_LENGTH));
 			builder.append("</i>");

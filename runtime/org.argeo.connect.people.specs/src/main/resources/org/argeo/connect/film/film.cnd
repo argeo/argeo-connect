@@ -36,6 +36,12 @@
 // Subnode with synopses title
 + film:synopses (nt:unstructured)
 
+// Subnode with time stamps and awards
++ film:timestamps (nt:unstructured)
+
+// Subnode with film prints
++ film:prints (nt:unstructured)
+
 // film crew is inherited from people:group
 
 // maybe too specific
@@ -61,4 +67,27 @@
 // an optional short synopsis
 - film:synopsisContentShort (STRING)
 // A single language tag, as defined in http://tools.ietf.org/html/rfc5646
-- film:lang (STRING)
+- people:lang (STRING)
+
+
+// Time stamp
+[film:timestamp] > nt:unstructured, mix:title
+- film:timestampValue (DATE)
+
+// Awards 
+[film:award] > film:timestamp
+- film:awardCountryIso (STRING)
+
+//
+// FILM PRINT
+//
+[film:print] > nt:unstructured, mix:title 
+- film:printType
+- film:printFormat
+- film:printRatio
+- film:printSoundFormat
+- film:printLanguageVersion
+- film:printFee
+- film:printFeeInfo
+- film:printSourceContact
+- film:printReturnContact

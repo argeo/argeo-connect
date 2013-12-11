@@ -27,6 +27,16 @@ import org.argeo.jcr.JcrUtils;
  */
 public class FilmJcrUtils implements FilmNames {
 
+	public static boolean markAsOriginalTitle(Node currNode, boolean value) {
+		// TODO implement this
+		return true;
+	}
+
+	public static boolean markAsPrimaryTitle(Node currNode, boolean value) {
+		// TODO implement this
+		return true;
+	}
+
 	/** Return a display string for the original title of the given film */
 	public static String getTitleForFilm(Node film) {
 		try {
@@ -68,10 +78,10 @@ public class FilmJcrUtils implements FilmNames {
 			String title = null;
 			Node altTitle = getAltTitleNode(film, lang);
 			if (altTitle != null) {
-				title = film.getProperty(FILM_TITLE).getString();
-				if (film.hasProperty(FILM_TITLE_ARTICLE))
+				title = altTitle.getProperty(FILM_TITLE).getString();
+				if (altTitle.hasProperty(FILM_TITLE_ARTICLE))
 					title += ", "
-							+ film.getProperty(FILM_ORIG_TITLE_ARTICLE)
+							+ altTitle.getProperty(FILM_TITLE_ARTICLE)
 									.getString();
 			}
 			return title;
@@ -82,8 +92,8 @@ public class FilmJcrUtils implements FilmNames {
 	}
 
 	/**
-	 * Return the alternative title node, given a film and a language or null if
-	 * the title is not defined for this language
+	 * Return a title node, given a film and a language or null if the title is
+	 * not defined for this language
 	 */
 	public static Node getAltTitleNode(Node film, String lang) {
 		try {
@@ -91,9 +101,9 @@ public class FilmJcrUtils implements FilmNames {
 				NodeIterator ni = film.getNode(FILM_TITLES).getNodes();
 				while (ni.hasNext()) {
 					Node currNode = ni.nextNode();
-					if (currNode.hasProperty(FilmNames.FILM_LANG)
+					if (currNode.hasProperty(PeopleNames.PEOPLE_LANG)
 							&& lang.equals(currNode.getProperty(
-									FilmNames.FILM_LANG).getString()))
+									PeopleNames.PEOPLE_LANG).getString()))
 						return currNode;
 				}
 			}
@@ -150,8 +160,8 @@ public class FilmJcrUtils implements FilmNames {
 	}
 
 	/**
-	 * Return the alternative title node, given a film and a language or null if
-	 * the title is not defined for this language
+	 * Return the alternative synopsis node, given a film and a language or null
+	 * if the synopsis is not defined for this language
 	 */
 	public static Node getSynopsisNode(Node film, String lang) {
 		try {
@@ -159,9 +169,9 @@ public class FilmJcrUtils implements FilmNames {
 				NodeIterator ni = film.getNode(FILM_SYNOPSES).getNodes();
 				while (ni.hasNext()) {
 					Node currNode = ni.nextNode();
-					if (currNode.hasProperty(FilmNames.FILM_LANG)
+					if (currNode.hasProperty(PeopleNames.PEOPLE_LANG)
 							&& lang.equals(currNode.getProperty(
-									FilmNames.FILM_LANG).getString()))
+									PeopleNames.PEOPLE_LANG).getString()))
 						return currNode;
 				}
 			}
@@ -169,6 +179,23 @@ public class FilmJcrUtils implements FilmNames {
 		} catch (RepositoryException re) {
 			throw new ArgeoException(
 					"Unable to get synopse node for film with lang " + lang, re);
+		}
+	}
+
+	/**
+	 * Create a new film print node. TODO manage a better naming mechanism
+	 * 
+	 * @param film
+	 * @return
+	 */
+	public static Node createFilmPrint(Node film) {
+		try {
+			Node prints = CommonsJcrUtils.getOrCreateDirNode(film, FILM_PRINTS);
+			Node print = prints.addNode(FilmTypes.FILM_PRINT,
+					FilmTypes.FILM_PRINT);
+			return print;
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to add a new film print node", re);
 		}
 	}
 

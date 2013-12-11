@@ -57,8 +57,8 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 	// Main business Objects
 	private Node film;
 
-	private FilmToolkit filmPanelToolkit;
-	private ListToolkit listPanelToolkit;
+	private FilmToolkit filmTk;
+	private ListToolkit listTk;
 	private EntityToolkit entityTk;
 
 	public void init(IEditorSite site, IEditorInput input)
@@ -99,10 +99,9 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void createToolkits() {
-		filmPanelToolkit = new FilmToolkit(toolkit, getManagedForm(), film);
+		filmTk = new FilmToolkit(toolkit, getManagedForm(), film);
 		entityTk = new EntityToolkit(toolkit, getManagedForm());
-		listPanelToolkit = new ListToolkit(toolkit, getManagedForm(),
-				getPeopleService());
+		listTk = new ListToolkit(toolkit, getManagedForm(), getPeopleService());
 
 	}
 
@@ -114,7 +113,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(film, FilmNames.FILM_ID);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Details", PeopleUiConstants.PANEL_FILM_INFO, tooltip);
-		filmPanelToolkit.populateFilmDetailsPanel(innerPannel);
+		filmTk.populateFilmDetailsPanel(innerPannel);
 
 		// Synopses
 		tooltip = "The synopses for film "
@@ -124,14 +123,20 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 		List<String> isoLangs = new ArrayList<String>();
 		isoLangs.add(PeopleConstants.LANG_DE);
 		isoLangs.add(PeopleConstants.LANG_EN);
-		filmPanelToolkit.populateSynopsisPanel(innerPannel, isoLangs);
+		filmTk.populateSynopsisPanel(innerPannel, isoLangs);
+
+		// film prints
+		tooltip = "Registered film prints for "
+				+ JcrUtils.get(film, FilmNames.FILM_ID);
+		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Film prints",
+				PeopleUiConstants.PANEL_SYNOPSES, tooltip);
+		filmTk.populateFilmPrintListCmp(innerPannel);
 
 		// Crew
 		tooltip = "Staff related to " + JcrUtils.get(film, FilmNames.FILM_ID);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Crew",
 				PeopleUiConstants.PANEL_MEMBERS, tooltip);
-		TableViewer viewer = listPanelToolkit.populateMembersPanel(innerPannel,
-				film);
+		TableViewer viewer = listTk.populateMembersPanel(innerPannel, film);
 
 		viewer.addDoubleClickListener(new PeopleDoubleClickAdapter() {
 
@@ -171,12 +176,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 			final Composite roPanelCmp = toolkit.createComposite(parent,
 					SWT.NO_FOCUS);
 			PeopleUiUtils.setSwitchingFormData(roPanelCmp);
-			// roPanelCmp.setData(RWT.CUSTOM_VARIANT,
-			// PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
-
 			roPanelCmp.setLayout(new GridLayout());
-
-			// Add a label with info provided by the FilmOverviewLabelProvider
 			final Label filmInfoROLbl = toolkit.createLabel(roPanelCmp, "",
 					SWT.WRAP);
 			filmInfoROLbl.setData(PeopleUiConstants.MARKUP_ENABLED,
@@ -188,8 +188,6 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 			final Composite editPanelCmp = toolkit.createComposite(parent,
 					SWT.NONE);
 			PeopleUiUtils.setSwitchingFormData(editPanelCmp);
-			// editPanelCmp.setData(RWT.CUSTOM_VARIANT,
-			// PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 			editPanelCmp.setLayout(new GridLayout(4, false));
 
 			// Film ID

@@ -34,6 +34,7 @@ public interface PeopleUiConstants {
 	public final static String PANEL_DESCRIPTION = "people:descriptions";
 	public final static String PANEL_SYNOPSES = "people:synopses";
 	public final static String PANEL_FILM_INFO = "people:filmInfo";
+	public final static String PANEL_FILM_PRINTS = "people:filmPrints";
 	public final static String PANEL_HISTORY = "people:history";
 
 	// Various types for list label providers

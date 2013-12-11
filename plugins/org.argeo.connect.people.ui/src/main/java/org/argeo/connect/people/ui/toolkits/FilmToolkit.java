@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.Value;
 
 import org.apache.commons.logging.Log;
@@ -19,13 +22,13 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.composites.FilmPrintComposite;
 import org.argeo.connect.people.ui.dialogs.NewTitleDialog;
 import org.argeo.connect.people.ui.dialogs.PickUpCountryDialog;
 import org.argeo.connect.people.ui.dialogs.PickUpLangDialog;
 import org.argeo.connect.people.ui.utils.JcrUiUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
@@ -44,9 +47,9 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -158,27 +161,116 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		form.addPart(editPart);
 	}
 
-	public void populateFilmDetailsPanel(Composite parent) {
+	/**
+	 * Populate a composite that display the list of the film prints for a given
+	 * film.
+	 */
+	public void populateFilmPrintListCmp(Composite parent) {
 		parent.setLayout(new GridLayout());
 
+		// Create new button
+		final Button addBtn = toolkit.createButton(parent, "Add film print",
+				SWT.PUSH);
+
+		// A scrollable composite with the list
+		ScrolledComposite filmPrintScrollableCmp = new ScrolledComposite(
+				parent, SWT.H_SCROLL | SWT.V_SCROLL);
+		filmPrintScrollableCmp.setLayout(new GridLayout(1, false));
+		filmPrintScrollableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
+				true, true));
+		filmPrintScrollableCmp.setExpandHorizontal(true);
+		filmPrintScrollableCmp.setExpandVertical(false);
+		final Composite body = toolkit.createComposite(filmPrintScrollableCmp,
+				SWT.NONE);
+		body.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, false, true));
+		body.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		filmPrintScrollableCmp.setContent(body);
+
+		// Add life cycle management
+		AbstractFormPart sPart = new AbstractFormPart() {
+			public void refresh() {
+				super.refresh();
+				try {
+					addBtn.setVisible(CommonsJcrUtils
+							.isNodeCheckedOutByMe(film));
+					// We redraw the full control at each refresh, might be a
+					// more
+					// efficient way to do
+					Control[] oldChildren = body.getChildren();
+					for (Control child : oldChildren)
+						child.dispose();
+
+					if (!film.hasNode(FILM_PRINTS)) // No film print to display
+						return;
+
+					NodeIterator ni = film.getNode(FILM_PRINTS).getNodes();
+					while (ni.hasNext()) {
+						Node currNode = ni.nextNode();
+						Composite currCmp = new FilmPrintComposite(body,
+								SWT.NO_FOCUS, toolkit, form, currNode);
+						currCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP,
+								true, false));
+					}
+				} catch (RepositoryException re) {
+					throw new PeopleException(
+							"Cannot refresh film prints list", re);
+				}
+				// IMPORTANT otherwise the scrolled composite is blank
+				body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+				body.pack();
+				body.getParent().layout(true, true);
+			}
+		};
+
+		sPart.initialize(form);
+		form.addPart(sPart);
+		configureAddFilmPrintButton(sPart, addBtn, "Register a new film print");
+	}
+
+	private void configureAddFilmPrintButton(final AbstractFormPart part,
+			final Button button, String tooltip) {
+		button.setToolTipText(tooltip);
+		button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
+		button.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				FilmJcrUtils.createFilmPrint(film);
+				part.refresh();
+				part.markDirty();
+			}
+		});
+	}
+
+	public void populateFilmDetailsPanel(Composite parent) {
+		parent.setLayout(new GridLayout(2, false));
+
 		Composite origLanCmp = toolkit.createComposite(parent);
-		origLanCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		origLanCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,
+				2, 1));
 		origLanCmp.setLayout(new GridLayout());
 		populateLangPanel(origLanCmp, FILM_ORIGINAL_LANGUAGE, "Add...");
 
 		Composite prodCountryCmp = toolkit.createComposite(parent);
 		prodCountryCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
-				false));
+				false, 2, 1));
 		prodCountryCmp.setLayout(new GridLayout());
 		populateProdCountryPanel(prodCountryCmp, FILM_PROD_COUNTRY, "Add...");
 
 		Composite mainInfoCmp = toolkit.createComposite(parent);
-		mainInfoCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		mainInfoCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,
+				2, 1));
 		populateMainInfoCmp(mainInfoCmp);
 
 		Composite altTitleCmp = toolkit.createComposite(parent);
 		altTitleCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		populateAltTitleGroup(altTitleCmp);
+
+		Composite timeStampsCmp = toolkit.createComposite(parent);
+		timeStampsCmp
+				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		populateTimeStampsGroup(timeStampsCmp);
 
 	}
 
@@ -311,42 +403,29 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		form.addPart(notePart);
 	}
 
-	private Text createLT(Composite parent, String label) {
-		Composite cmp = toolkit.createComposite(parent);
-		cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		GridLayout gl = new GridLayout(2, false);
-		gl.marginWidth = gl.verticalSpacing = gl.marginHeight = 0;
-		gl.horizontalSpacing = 5;
-		cmp.setLayout(gl);
-		toolkit.createLabel(cmp, label);
-		Text txt = toolkit.createText(cmp, "", SWT.BORDER);
-		txt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		return txt;
-	}
-
-	private void populateAltTitleGroup(Composite parent) {
+	private void populateTimeStampsGroup(Composite parent) {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 		final Group group = new Group(parent, 0);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		group.setText("Alternative Titles");
+		group.setText("Awards and noteworthy dates");
 		group.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
-		//
-		final Button addBtn = toolkit
-				.createButton(group, "Add title", SWT.PUSH);
+		final TableViewer viewer = createItemViewer(group);
 
-		final TableViewer viewer = createAltTitleViewer(group);
+		final Button addBtn = toolkit.createButton(group, "Add new date",
+				SWT.PUSH);
 
 		AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
 				boolean checkedOut = CommonsJcrUtils.isNodeCheckedOutByMe(film);
 				addBtn.setVisible(checkedOut);
+
 				try {
-					if (film.hasNode(FilmNames.FILM_TITLES)) {
-						List<Node> titles = JcrUtils.nodeIteratorToList(film
-								.getNode(FilmNames.FILM_TITLES).getNodes());
-						viewer.setInput(titles.toArray(new Node[titles.size()]));
+					if (film.hasNode(FilmNames.FILM_TIMESTAMPS)) {
+						List<Node> stamps = JcrUtils.nodeIteratorToList(film
+								.getNode(FilmNames.FILM_TIMESTAMPS).getNodes());
+						viewer.setInput(stamps.toArray(new Node[stamps.size()]));
 					}
 				} catch (RepositoryException e) {
 					throw new PeopleException(
@@ -356,6 +435,140 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 			}
 		};
 
+		configureTimestampsViewer(viewer, formPart);
+		viewer.setContentProvider(new MyTableContentProvider());
+		configureAddTimestampButton(formPart, addBtn, film,
+				"Add a new title for current film");
+
+		parent.layout();
+		formPart.initialize(form);
+		form.addPart(formPart);
+	}
+
+	private void configureTimestampsViewer(TableViewer itemsViewer,
+			AbstractFormPart part) {
+		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
+		columns.add(new ColumnDefinition(null, FilmNames.FILM_TIMESTAMP_VALUE,
+				PropertyType.DATE, "Date", 60));
+		columns.add(new ColumnDefinition(null,
+				FilmNames.FILM_AWARD_COUNTRY_ISO, PropertyType.STRING,
+				"Country", 60));
+		columns.add(new ColumnDefinition(null, Property.JCR_TITLE,
+				PropertyType.STRING, "Title", 120));
+		columns.add(new ColumnDefinition(null, Property.JCR_DESCRIPTION,
+				PropertyType.STRING, "Description", 160));
+
+		NodeViewerComparator comparator = new NodeViewerComparator();
+
+		itemsViewer.getTable().setData(PeopleUiConstants.MARKUP_ENABLED,
+				Boolean.TRUE);
+
+		// The columns
+		TableViewerColumn col;
+
+		int i = 0;
+		for (ColumnDefinition colDef : columns) {
+			col = ViewerUtils.createTableViewerColumn(itemsViewer,
+					colDef.getHeaderLabel(), SWT.NONE, colDef.getColumnSize());
+			col.setLabelProvider(new SimpleJcrNodeLabelProvider(colDef
+					.getPropertyName()));
+			col.setEditingSupport(new TextEditingSupport(itemsViewer, part,
+					colDef.getPropertyName()));
+
+			col.getColumn().addSelectionListener(
+					PeopleUiUtils.getSelectionAdapter(i,
+							colDef.getPropertyType(), colDef.getPropertyName(),
+							comparator, itemsViewer));
+			i++;
+		}
+
+		ColumnDefinition firstCol = columns.get(0);
+		// IMPORTANT: initialize comparator before setting it
+		comparator.setColumn(firstCol.getPropertyType(),
+				firstCol.getPropertyName());
+		itemsViewer.setComparator(comparator);
+	}
+
+	private void configureAddTimestampButton(final AbstractFormPart part,
+			final Button button, final Node film, String tooltip) {
+		button.setToolTipText(tooltip);
+		button.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, false, false));
+		button.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// NewTitleDialog dialog = new NewTitleDialog(button.getShell(),
+				// "Add a new title", film);
+				// int res = dialog.open();
+				// if (res == org.eclipse.jface.dialogs.Dialog.OK)
+				// part.markDirty();
+			}
+		});
+	}
+
+	private void populateAltTitleGroup(Composite parent) {
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		final Group group = new Group(parent, 0);
+		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		group.setText("Film titles");
+		group.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+
+		final TableViewer viewer = createItemViewer(group);
+		final Button addBtn = toolkit
+				.createButton(group, "Add title", SWT.PUSH);
+
+		AbstractFormPart formPart = new AbstractFormPart() {
+			public void refresh() {
+				super.refresh();
+				boolean checkedOut = CommonsJcrUtils.isNodeCheckedOutByMe(film);
+				addBtn.setVisible(checkedOut);
+
+				try {
+					if (film.hasNode(FilmNames.FILM_TITLES)) {
+						List<Node> titles = JcrUtils.nodeIteratorToList(film
+								.getNode(FilmNames.FILM_TITLES).getNodes());
+						viewer.setInput(titles.toArray(new Node[titles.size()]));
+						viewer.refresh();
+					}
+				} catch (RepositoryException e) {
+					throw new PeopleException(
+							"unexpected error whil gettin film titles ", e);
+				}
+				group.layout();
+			}
+		};
+
+		configureAltTitleViewer(viewer, formPart);
+		viewer.setContentProvider(new MyTableContentProvider());
+		configureAddTitleButton(formPart, addBtn, film,
+				"Add a new title for current film");
+
+		parent.layout();
+		formPart.initialize(form);
+		form.addPart(formPart);
+	}
+
+	private void configureAddTitleButton(final AbstractFormPart part,
+			final Button button, final Node film, String tooltip) {
+		button.setToolTipText(tooltip);
+		button.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, false, false));
+		button.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				NewTitleDialog dialog = new NewTitleDialog(button.getShell(),
+						"Add a new title", film);
+				int res = dialog.open();
+				if (res == org.eclipse.jface.dialogs.Dialog.OK)
+					part.markDirty();
+			}
+		});
+	}
+
+	private void configureAltTitleViewer(TableViewer itemsViewer,
+			AbstractFormPart part) {
 		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 		columns.add(new ColumnDefinition(FilmTypes.FILM_TITLE,
 				FilmNames.FILM_TITLE, PropertyType.STRING, "Title", 150));
@@ -365,78 +578,14 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		columns.add(new ColumnDefinition(FilmTypes.FILM_TITLE,
 				FilmNames.FILM_TITLE_LATIN_PRONUNCIATION, PropertyType.STRING,
 				"Latin pronun.", 150));
-		configureAltTitleViewer(viewer, formPart, columns);
-
-		viewer.setContentProvider(new MyTableContentProvider());
-
-		configureAddTitleButton(formPart, addBtn, film,
-				"Add a new title for current film");
-
-		parent.layout();
-		formPart.initialize(form);
-		form.addPart(formPart);
-	}
-
-	private class MyTableContentProvider implements IStructuredContentProvider {
-		private static final long serialVersionUID = 7164029504991808317L;
-
-		public Object[] getElements(Object inputElement) {
-			return (Object[]) inputElement;
-		}
-
-		public void dispose() {
-		}
-
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		}
-	}
-
-	private void configureAddTitleButton(final AbstractFormPart part,
-			final Button button, final Node film, String tooltip) {
-		button.setToolTipText(tooltip);
-		button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
-
-		button.addSelectionListener(new SelectionListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				NewTitleDialog dialog = new NewTitleDialog(button.getShell(),
-						"Add a new title", film);
-				int res = dialog.open();
-
-				if (res == org.eclipse.jface.dialogs.Dialog.OK)
-					part.markDirty();
-
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-
-	}
-
-	private TableViewer createAltTitleViewer(Composite parent) {
-		// Table control creation
-		int style = SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL;
-		Table table = new Table(parent, style);
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		table.setLayoutData(gd);
-		TableViewer itemsViewer = new TableViewer(table);
-		itemsViewer.setContentProvider(new MyTableContentProvider());
-		return itemsViewer;
-	}
-
-	private void configureAltTitleViewer(TableViewer itemsViewer,
-			AbstractFormPart part, List<ColumnDefinition> columns) {
 
 		NodeViewerComparator comparator = new NodeViewerComparator();
 
+		// RAP SPECIFIC, enable adding link
 		itemsViewer.getTable().setData(PeopleUiConstants.MARKUP_ENABLED,
 				Boolean.TRUE);
+		itemsViewer.getTable().addSelectionListener(
+				new LangListRwtAdapter(part, itemsViewer));
 
 		// The columns
 		TableViewerColumn col;
@@ -445,7 +594,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		// original title
 		col = ViewerUtils.createTableViewerColumn(itemsViewer, "", SWT.CENTER,
 				25);
-		editingSupport = new BooleanEditingSupport(itemsViewer, part,
+		editingSupport = new OriginalEditingSupport(itemsViewer, part,
 				FilmNames.FILM_TITLE_IS_ORIG);
 		col.setEditingSupport(editingSupport);
 		col.setLabelProvider(new BooleanFlagLabelProvider(
@@ -454,7 +603,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		// primary item
 		col = ViewerUtils.createTableViewerColumn(itemsViewer, "", SWT.CENTER,
 				25);
-		editingSupport = new BooleanEditingSupport(itemsViewer, part,
+		editingSupport = new PrimaryEditingSupport(itemsViewer, part,
 				PeopleNames.PEOPLE_IS_PRIMARY);
 		col.setEditingSupport(editingSupport);
 		col.setLabelProvider(new BooleanFlagLabelProvider(
@@ -469,7 +618,6 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		col.getColumn().addSelectionListener(
 				PeopleUiUtils.getSelectionAdapter(2, PropertyType.STRING,
 						PeopleNames.PEOPLE_LANG, comparator, itemsViewer));
-		col.getColumn().addSelectionListener(new LangListRwtAdapter());
 
 		int i = 3;
 		for (ColumnDefinition colDef : columns) {
@@ -494,13 +642,74 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		itemsViewer.setComparator(comparator);
 	}
 
+	// //////////////////////////////////
+	// Table viewers helpers
+
+	private TableViewer createItemViewer(Composite parent) {
+		// Table control creation
+		int style = SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL;
+		Table table = new Table(parent, style);
+		table.setLinesVisible(true);
+		table.setHeaderVisible(true);
+		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		table.setLayoutData(gd);
+		TableViewer itemsViewer = new TableViewer(table);
+		itemsViewer.setContentProvider(new MyTableContentProvider());
+		return itemsViewer;
+	}
+
+	private class MyTableContentProvider implements IStructuredContentProvider {
+		private static final long serialVersionUID = 7164029504991808317L;
+
+		public Object[] getElements(Object inputElement) {
+			return (Object[]) inputElement;
+		}
+
+		public void dispose() {
+		}
+
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			viewer.refresh();
+		}
+	}
+
 	private class LangListRwtAdapter extends SelectionAdapter {
 		private static final long serialVersionUID = -3867410418907732579L;
+		private final AbstractFormPart part;
+
+		private final TableViewer viewer;
+
+		public LangListRwtAdapter(AbstractFormPart part, TableViewer viewer) {
+			super();
+			this.part = part;
+			this.viewer = viewer;
+		}
 
 		public void widgetSelected(SelectionEvent event) {
-			if (event.detail == RWT.HYPERLINK) {
-				String string = event.text;
-				log.warn("Got an ID: " + string);
+			try {
+				if (event.detail == RWT.HYPERLINK) {
+
+					String uid = event.text;
+					Session session = film.getSession();
+
+					PickUpLangDialog diag = new PickUpLangDialog(
+							event.display.getActiveShell(),
+							"Choose a language", session);
+					diag.open();
+					String lang = diag.getSelected();
+					if (CommonsJcrUtils.checkNotEmptyString(lang)) {
+						Node node = session.getNodeByIdentifier(uid);
+						if (JcrUiUtils.setJcrProperty(node,
+								PeopleNames.PEOPLE_LANG, PropertyType.STRING,
+								lang)) {
+							part.refresh();
+							part.markDirty();
+						}
+					}
+				}
+			} catch (RepositoryException re) {
+				throw new PeopleException("Unable to set new lang for title",
+						re);
 			}
 		}
 	}
@@ -572,18 +781,55 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		}
 	}
 
-	private class BooleanEditingSupport extends EditingSupport {
+	private class PrimaryEditingSupport extends BooleanEditingSupport {
+		private static final long serialVersionUID = 7142181193364269102L;
+		private final AbstractFormPart part;
+
+		public PrimaryEditingSupport(TableViewer viewer, AbstractFormPart part,
+				String propertyName) {
+			super(viewer, propertyName);
+			this.part = part;
+		}
+
+		@Override
+		protected void setValue(Object element, Object value) {
+			Node currNode = (Node) element;
+			if (FilmJcrUtils.markAsPrimaryTitle(currNode, (Boolean) value)) {
+				part.refresh();
+				part.markDirty();
+			}
+		}
+	}
+
+	private class OriginalEditingSupport extends BooleanEditingSupport {
+		private static final long serialVersionUID = 8386010388202750285L;
+		private final AbstractFormPart part;
+
+		public OriginalEditingSupport(TableViewer viewer,
+				AbstractFormPart part, String propertyName) {
+			super(viewer, propertyName);
+			this.part = part;
+		}
+
+		@Override
+		protected void setValue(Object element, Object value) {
+			Node currNode = (Node) element;
+			if (FilmJcrUtils.markAsOriginalTitle(currNode, (Boolean) value)) {
+				part.refresh();
+				part.markDirty();
+			}
+		}
+	}
+
+	private abstract class BooleanEditingSupport extends EditingSupport {
 		private static final long serialVersionUID = 1L;
 		private final TableViewer viewer;
 		private final String propertyName;
-		private final AbstractFormPart part;
 
-		public BooleanEditingSupport(TableViewer viewer, AbstractFormPart part,
-				String propertyName) {
+		public BooleanEditingSupport(TableViewer viewer, String propertyName) {
 			super(viewer);
 			this.viewer = viewer;
 			this.propertyName = propertyName;
-			this.part = part;
 		}
 
 		@Override
@@ -610,14 +856,6 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 						+ " value for node " + element, e);
 			}
 			return false;
-		}
-
-		@Override
-		protected void setValue(Object element, Object value) {
-			Node currNode = (Node) element;
-			PeopleJcrUtils.markAsPrimary(currNode, (Boolean) value);
-			viewer.update(element, null);
-			part.markDirty();
 		}
 	}
 
@@ -895,6 +1133,19 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 
 		editPart.initialize(form);
 		form.addPart(editPart);
+	}
+
+	private Text createLT(Composite parent, String label) {
+		Composite cmp = toolkit.createComposite(parent);
+		cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		GridLayout gl = new GridLayout(2, false);
+		gl.marginWidth = gl.verticalSpacing = gl.marginHeight = 0;
+		gl.horizontalSpacing = 5;
+		cmp.setLayout(gl);
+		toolkit.createLabel(cmp, label);
+		Text txt = toolkit.createText(cmp, "", SWT.BORDER);
+		txt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		return txt;
 	}
 
 	private void removeMultiPropertyValue(Node entity, String propName,
