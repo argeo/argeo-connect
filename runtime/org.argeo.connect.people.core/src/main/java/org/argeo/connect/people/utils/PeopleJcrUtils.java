@@ -208,21 +208,22 @@ public class PeopleJcrUtils implements PeopleNames {
 		}
 	}
 
-	public static String getContactTypeAsString(Node contact) {
-		try {
-			if (contact.isNodeType(PeopleTypes.PEOPLE_EMAIL))
-				return "E-Mail";
-			else if (contact.isNodeType(PeopleTypes.PEOPLE_URL))
-				return "Site";
-			else if (contact.isNodeType(PeopleTypes.PEOPLE_PHONE))
-				return "Phone";
-			else if (contact.isNodeType(PeopleTypes.PEOPLE_ADDRESS))
-				return "Address";
-			return "Other";
-		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to add a new contact node", re);
-		}
-	}
+	//
+	// public static String getContactTypeAsString(Node contact) {
+	// try {
+	// if (contact.isNodeType(PeopleTypes.PEOPLE_EMAIL))
+	// return "E-Mail";
+	// else if (contact.isNodeType(PeopleTypes.PEOPLE_URL))
+	// return "Site";
+	// else if (contact.isNodeType(PeopleTypes.PEOPLE_PHONE))
+	// return "Phone";
+	// else if (contact.isNodeType(PeopleTypes.PEOPLE_ADDRESS))
+	// return "Address";
+	// return "Other";
+	// } catch (RepositoryException re) {
+	// throw new ArgeoException("Unable to add a new contact node", re);
+	// }
+	// }
 
 	/**
 	 * if marking a contact as primary. All contact with same type for same
@@ -327,7 +328,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			boolean primary, String contactNature, String contactCategory,
 			String contactLabel) {
 		return createContact(parentNode, PeopleTypes.PEOPLE_EMAIL,
-				emailAddress, emailAddress, primary, contactNature,
+				JcrUtils.replaceInvalidChars(emailAddress), emailAddress, primary, contactNature,
 				contactCategory, contactLabel);
 	}
 
@@ -349,21 +350,21 @@ public class PeopleJcrUtils implements PeopleNames {
 	public static Node createWebsite(Node parentNode, String urlString,
 			boolean primary, String nature, String label) {
 		return createContact(parentNode, PeopleTypes.PEOPLE_URL,
-				urlString.replaceAll("[^a-zA-Z0-9]", ""), urlString, primary,
+				JcrUtils.replaceInvalidChars(urlString), urlString, primary,
 				nature, null, label);
 	}
 
 	public static Node createSocialMedia(Node parentNode, String urlString,
 			boolean primary, String nature, String category, String label) {
 		return createContact(parentNode, PeopleTypes.PEOPLE_SOCIAL_MEDIA,
-				urlString.replaceAll("[^a-zA-Z0-9]", ""), urlString, primary,
+				JcrUtils.replaceInvalidChars(urlString), urlString, primary,
 				nature, category, label);
 	}
 
 	public static Node createImpp(Node parentNode, String urlString,
 			boolean primary, String nature, String category, String label) {
 		return createContact(parentNode, PeopleTypes.PEOPLE_IMPP,
-				urlString.replaceAll("[^a-zA-Z0-9]", ""), urlString, primary,
+				JcrUtils.replaceInvalidChars(urlString), urlString, primary,
 				nature, category, label);
 	}
 
@@ -383,8 +384,8 @@ public class PeopleJcrUtils implements PeopleNames {
 	 */
 	public static Node createPhone(Node parentNode, String phoneNumber,
 			boolean primary, String nature, String category, String label) {
-		return createContact(parentNode, PeopleTypes.PEOPLE_PHONE, "p"
-				+ phoneNumber.replaceAll("[^a-zA-Z0-9]", ""), phoneNumber,
+		return createContact(parentNode, PeopleTypes.PEOPLE_PHONE, 
+				JcrUtils.replaceInvalidChars(phoneNumber), phoneNumber,
 				primary, nature, category, label);
 	}
 

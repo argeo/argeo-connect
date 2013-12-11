@@ -90,8 +90,21 @@ public class ContactJcrUtils {
 
 	public static Node createMailingList(Node parentNode, String name)
 			throws RepositoryException {
-		String cleanedName = JcrUtils.replaceInvalidChars(name);
+		String relPath = getMailingListRelPath(name);
+		Node ml = JcrUtils.mkdirs(parentNode, relPath,
+				PeopleTypes.PEOPLE_MAILING_LIST, NodeType.NT_UNSTRUCTURED);
+		ml.setProperty(PeopleNames.PEOPLE_UID, UUID.randomUUID().toString());
+		ml.setProperty(Property.JCR_TITLE, name);
+		
+		// leave it checked out on creation to fasten import process 
+		// CommonsJcrUtils.saveAndCheckin(ml);
+		ml.getSession().save();
+		return ml;
+	}
 
+	/** Returns the relativ path of a mailing list given its name */
+	public static String getMailingListRelPath(String name) {
+		String cleanedName = JcrUtils.replaceInvalidChars(name);
 		String relPath = null;
 		if (cleanedName.length() > 1)
 			relPath = JcrUtils.firstCharsToPath(cleanedName, 2) + "/"
@@ -99,12 +112,7 @@ public class ContactJcrUtils {
 		else
 			throw new PeopleException(
 					"Mailing list name must be at least 2 valid characters long");
-		Node ml = JcrUtils.mkdirs(parentNode, relPath,
-				PeopleTypes.PEOPLE_MAILING_LIST, NodeType.NT_UNSTRUCTURED);
-		ml.setProperty(PeopleNames.PEOPLE_UID, UUID.randomUUID().toString());
-		ml.setProperty(Property.JCR_TITLE, name);
-		CommonsJcrUtils.saveAndCheckin(ml);
-		return ml;
+		return relPath;
 	}
 
 	/**
@@ -155,37 +163,37 @@ public class ContactJcrUtils {
 		}
 	}
 
-	public static Node getMailingListByName(Session session, String name,
-			String basePath) throws RepositoryException {
-		QueryManager queryManager = session.getWorkspace().getQueryManager();
-		QueryObjectModelFactory factory = queryManager.getQOMFactory();
-		Selector source = factory.selector(PeopleTypes.PEOPLE_MAILING_LIST,
-				PeopleTypes.PEOPLE_MAILING_LIST);
-
-		Constraint constraint = factory.descendantNode(
-				source.getSelectorName(), basePath);
-
-		DynamicOperand dynOp = factory.propertyValue(source.getSelectorName(),
-				Property.JCR_TITLE);
-		StaticOperand statOp = factory.literal(session.getValueFactory()
-				.createValue(name.toLowerCase()));
-		Constraint defaultC = factory.comparison(factory.lowerCase(dynOp),
-				QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
-
-		QueryObjectModel query = factory.createQuery(source,
-				factory.and(constraint, defaultC), null, null);
-		QueryResult result = query.execute();
-		NodeIterator ni = result.getNodes();
-
-		long resultNb = ni.getSize();
-
-		if (resultNb == 0)
-			return null;
-		else if (resultNb == 1)
-			return ni.nextNode();
-		else
-			throw new PeopleException("More than one mailing list with name "
-					+ name + " has been found.");
-	}
+	// public static Node getMailingListByName(Session session, String name,
+	// String basePath) throws RepositoryException {
+	// QueryManager queryManager = session.getWorkspace().getQueryManager();
+	// QueryObjectModelFactory factory = queryManager.getQOMFactory();
+	// Selector source = factory.selector(PeopleTypes.PEOPLE_MAILING_LIST,
+	// PeopleTypes.PEOPLE_MAILING_LIST);
+	//
+	// Constraint constraint = factory.descendantNode(
+	// source.getSelectorName(), basePath);
+	//
+	// DynamicOperand dynOp = factory.propertyValue(source.getSelectorName(),
+	// Property.JCR_TITLE);
+	// StaticOperand statOp = factory.literal(session.getValueFactory()
+	// .createValue(name.toLowerCase()));
+	// Constraint defaultC = factory.comparison(factory.lowerCase(dynOp),
+	// QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+	//
+	// QueryObjectModel query = factory.createQuery(source,
+	// factory.and(constraint, defaultC), null, null);
+	// QueryResult result = query.execute();
+	// NodeIterator ni = result.getNodes();
+	//
+	// long resultNb = ni.getSize();
+	//
+	// if (resultNb == 0)
+	// return null;
+	// else if (resultNb == 1)
+	// return ni.nextNode();
+	// else
+	// throw new PeopleException("More than one mailing list with name "
+	// + name + " has been found.");
+	// }
 
 }
