@@ -328,10 +328,12 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 				SWT.NONE, 180);
 		col.setLabelProvider(new HtmlJcrRowLabelProvider(
 				PeopleTypes.PEOPLE_ENTITY, Property.JCR_TITLE));
-		col.getColumn().addSelectionListener(
-				getSelectionAdapter(1, PropertyType.STRING,
-						PeopleTypes.PEOPLE_ENTITY, Property.JCR_TITLE,
-						comparator, viewer));
+	
+		// FIXME: does not work with virtual table
+		// col.getColumn().addSelectionListener(
+		// getSelectionAdapter(1, PropertyType.STRING,
+		// PeopleTypes.PEOPLE_ENTITY, Property.JCR_TITLE,
+		// comparator, viewer));
 
 		// Primary mail address
 		col = ViewerUtils.createTableViewerColumn(viewer, "Primary mail",
