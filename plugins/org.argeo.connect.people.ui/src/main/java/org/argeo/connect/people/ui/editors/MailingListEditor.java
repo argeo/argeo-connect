@@ -21,6 +21,7 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.Source;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
@@ -215,7 +216,6 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 
 	protected RowIterator refreshFilteredList(String filter) {
 		try {
-			// TODO manage duplicates
 			QueryManager queryManager = getSession().getWorkspace()
 					.getQueryManager();
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
@@ -227,11 +227,9 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 					PeopleTypes.PEOPLE_MAILING_LIST_ITEM);
 
 			EquiJoinCondition joinCond = factory.equiJoinCondition(
-					mainSlct.getSelectorName(), PeopleNames.PEOPLE_UID,
-					refSlct.getSelectorName(), PeopleNames.PEOPLE_REF_UID);
-			Source jointSrc = factory.join(mainSlct, refSlct,
-					QueryObjectModelConstants.JCR_JOIN_TYPE_LEFT_OUTER,
-					joinCond);
+					refSlct.getSelectorName(), PeopleNames.PEOPLE_REF_UID, mainSlct.getSelectorName(), PeopleNames.PEOPLE_UID);
+			Source jointSrc = factory.join(refSlct,mainSlct,
+					QueryObjectModelConstants.JCR_JOIN_TYPE_INNER, joinCond);
 
 			// Only show items for this list
 			Constraint defaultC = factory.descendantNode(
@@ -348,7 +346,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 							"unable to retrieve primary mail value for row "
 									+ element, re);
 				}
-				return text == null ? "" : text;
+				return text == null ? "" : PeopleHtmlUtils.cleanHtmlString(text);
 			}
 
 			@Override
