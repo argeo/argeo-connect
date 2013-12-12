@@ -1,5 +1,7 @@
 package org.argeo.connect.film.core;
 
+import java.util.Calendar;
+
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
@@ -194,6 +196,55 @@ public class FilmJcrUtils implements FilmNames {
 			Node print = prints.addNode(FilmTypes.FILM_PRINT,
 					FilmTypes.FILM_PRINT);
 			return print;
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to add a new film print node", re);
+		}
+	}
+
+	/**
+	 * Create a new film timestamp.
+	 * 
+	 * @param film
+	 * @return
+	 */
+	public static Node createTimestamp(Node film, Calendar date, String title,
+			String description) {
+		try {
+			Node timestamps = CommonsJcrUtils.getOrCreateDirNode(film,
+					FILM_TIMESTAMPS);
+			String name = date.get(Calendar.YEAR) + "-"
+					+ (date.get(Calendar.MONTH) + 1) + "-"
+					+ date.get(Calendar.DAY_OF_MONTH);
+			Node timestamp = timestamps.addNode(name, FilmTypes.FILM_TIMESTAMP);
+			timestamp.setProperty(Property.JCR_TITLE, title);
+			timestamp.setProperty(Property.JCR_DESCRIPTION, description);
+			timestamp.setProperty(FILM_TIMESTAMP_VALUE, date);
+			return timestamp;
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to add a new film print node", re);
+		}
+	}
+
+	/**
+	 * Create a new film award.
+	 * 
+	 * @param film
+	 * @return
+	 */
+	public static Node createAward(Node film, Calendar date, String isoCountry,
+			String title, String description) {
+		try {
+			Node timestamps = CommonsJcrUtils.getOrCreateDirNode(film,
+					FILM_TIMESTAMPS);
+			String name = date.get(Calendar.YEAR) + "-"
+					+ (date.get(Calendar.MONTH) + 1) + "-"
+					+ date.get(Calendar.DAY_OF_MONTH);
+			Node award = timestamps.addNode(name, FilmTypes.FILM_AWARD);
+			award.setProperty(Property.JCR_TITLE, title);
+			award.setProperty(Property.JCR_DESCRIPTION, description);
+			award.setProperty(FILM_TIMESTAMP_VALUE, date);
+			award.setProperty(FILM_AWARD_COUNTRY_ISO, isoCountry);
+			return award;
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to add a new film print node", re);
 		}

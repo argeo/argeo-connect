@@ -15,12 +15,17 @@
  */
 package org.argeo.connect.people.ui.dialogs;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
 import org.argeo.connect.film.core.FilmJcrUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
@@ -32,33 +37,40 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Enable creation of a film title
+ * Enable creation of a time stamp: an award or a simple time stamp
  */
-public class NewTitleDialog extends TrayDialog {
+public class NewTimeStampDialog extends TrayDialog {
 	private static final long serialVersionUID = 3766899676609659573L;
 	// misc
 	private String title;
 
 	// this page widget
-	private Button isOriginal;
-	private Button isPrimary;
-	private Text langTxt;
+	private DateTime dateTimeCtl;
+	private Button isAward;
+	private Text countryTxt;
+	private String countryIso;
 	private Text titleTxt;
-	private Text articleTxt;
-	private Text latinTxt;
+	private Text descTxt;
 
 	// Business objects
 	private Node filmNode;
+	private Session session;
 
-	public NewTitleDialog(Shell parentShell, String title, Node filmNode) {
+	public NewTimeStampDialog(Shell parentShell, String title, Node filmNode) {
 		super(parentShell);
 		this.filmNode = filmNode;
+		try {
+			this.session = filmNode.getSession();
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to get session", e);
+		}
 		this.title = title;
 	}
 
@@ -72,47 +84,64 @@ public class NewTitleDialog extends TrayDialog {
 		dialogArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		dialogArea.setLayout(new GridLayout(3, false));
 
-		// Check boxes
-		isOriginal = new Button(dialogArea, SWT.CHECK);
-		isOriginal.setText("Original Title");
-		isOriginal.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false,
-				3, 1));
-		isPrimary = new Button(dialogArea, SWT.CHECK);
-		isPrimary.setText("Primary Title");
-		isPrimary.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false,
-				3, 1));
+		// DATE
+		new Label(dialogArea, SWT.NONE).setText("Date");
+		dateTimeCtl = new DateTime(dialogArea, SWT.DATE | SWT.MEDIUM
+				| SWT.DROP_DOWN);
+		dateTimeCtl.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,
+				2, 1));
 
-		langTxt = createLT(dialogArea, "Language", 1);
-		// Choose a given language
-		final Link chooseLangLk = new Link(dialogArea, SWT.BOTTOM);
-		chooseLangLk.setText("<a>Pick up a language</a>");
-		chooseLangLk.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = -7118320199160680131L;
+		// AWARD
+		isAward = new Button(dialogArea, SWT.CHECK);
+		isAward.setText("Is award ?");
+		isAward.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
+
+		// Countries for awards
+		countryTxt = new Text(dialogArea, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
+		countryTxt.setMessage("Country");
+		countryTxt.setEnabled(false);
+		countryTxt.setVisible(false);
+		countryTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
+		final Link chooseCountryLk = new Link(dialogArea, SWT.BOTTOM);
+		chooseCountryLk.setText("<a>Choose a country</a>");
+		chooseCountryLk.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 7876174121605550407L;
 
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				try {
-					PickUpLangDialog diag = new PickUpLangDialog(chooseLangLk
-							.getShell(), "Choose a language", filmNode
-							.getSession());
+					PickUpCountryDialog diag = new PickUpCountryDialog(
+							chooseCountryLk.getShell(), "Choose a country",
+							filmNode.getSession());
 					diag.open();
-					String lang = diag.getSelected();
-					if (CommonsJcrUtils.checkNotEmptyString(lang))
-						langTxt.setText(lang);
+					countryIso = diag.getSelected();
+					if (CommonsJcrUtils.checkNotEmptyString(countryIso)) {
+						String country = ResourcesJcrUtils
+								.getCountryEnLabelFromIso(session, countryIso);
+						countryTxt.setText(country);
+					}
 				} catch (RepositoryException e) {
-					throw new PeopleException("Unable to add language", e);
+					throw new PeopleException("Unable to add a country", e);
 				}
+			}
+		});
+		chooseCountryLk.setVisible(false);
 
+		isAward.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 2623945938776438301L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				boolean flag = isAward.getSelection();
+				countryTxt.setVisible(flag);
+				chooseCountryLk.setVisible(flag);
 			}
 		});
 
-		// Values
+		// Title and description
 		titleTxt = createLT(dialogArea, "Title", 2);
-		articleTxt = createLT(dialogArea, "Title article", 2);
-		latinTxt = createLT(dialogArea, "Latin pronunciation", 2);
-		latinTxt.setToolTipText("Fill a latin pronunciation for a "
-				+ "given language title if necessary");
-
+		descTxt = createLT(dialogArea, "Description", 2);
 		parent.pack();
 		return dialogArea;
 	}
@@ -121,34 +150,32 @@ public class NewTitleDialog extends TrayDialog {
 	protected Text createLT(Composite parent, String label, int horizontalSpan) {
 		new Label(parent, SWT.NONE).setText(label);
 		Text text = new Text(parent, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
-		text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true,
+		text.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,
 				horizontalSpan, 1));
 		return text;
 	}
 
 	@Override
 	protected void okPressed() {
-		String title = titleTxt.getText(), article = articleTxt.getText(), lang = langTxt
-				.getText(), latin = latinTxt.getText();
-		boolean orig = isOriginal.getSelection(), prim = isPrimary
-				.getSelection();
+		String title = titleTxt.getText(), desc = descTxt.getText();
+		boolean award = isAward.getSelection();
+
+		Calendar cal = GregorianCalendar.getInstance();
+		cal.set(dateTimeCtl.getYear(), dateTimeCtl.getMonth(),
+				dateTimeCtl.getDay(), 12, 0);
 
 		String errMmsg = null;
 		if (CommonsJcrUtils.isEmptyString(title))
 			errMmsg = "Please enter a non empty title";
-		else if (CommonsJcrUtils.isEmptyString(lang))
-			errMmsg = "Please choose a language";
 
 		if (errMmsg != null) {
 			MessageDialog.openError(getShell(), "Invalid data", errMmsg);
 			return;
 		}
-
-		// real addition
-		FilmJcrUtils
-				.addTitle(filmNode, title, article, latin, lang, orig, prim);
-		// will throw an error if the corresponding film is not checked out,
-		// that is what we expect.
+		if (award)
+			FilmJcrUtils.createAward(filmNode, cal, countryIso, title, desc);
+		else
+			FilmJcrUtils.createTimestamp(filmNode, cal, title, desc);
 		super.okPressed();
 	}
 

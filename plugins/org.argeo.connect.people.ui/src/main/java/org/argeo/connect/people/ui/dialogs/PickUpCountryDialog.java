@@ -64,11 +64,9 @@ public class PickUpCountryDialog extends TrayDialog {
 				PropertyType.STRING, "Label", 300));
 	};
 
-	public PickUpCountryDialog(Shell parentShell, String title,
-			Session session, Node referencingNode) {
+	public PickUpCountryDialog(Shell parentShell, String title, Session session) {
 		super(parentShell);
 		this.title = title;
-		// this.referencingNode = referencingNode;
 		this.session = session;
 	}
 

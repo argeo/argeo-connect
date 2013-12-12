@@ -10,8 +10,8 @@ import org.argeo.connect.people.PeopleTypes;
 public interface PeopleUiConstants {
 
 	/* Default formats */
-	public final static String DEFAULT_DATE_FORMAT = "EEE, dd MMM yyyy";
-	public final static String DEFAULT_DATE_TIME_FORMAT = "EEE, dd MMM yyyy 'at' HH:mm";
+	public final static String DEFAULT_DATE_FORMAT = "MMM, dd yyyy";
+	public final static String DEFAULT_DATE_TIME_FORMAT = "MMM, dd yyyy 'at' HH:mm";
 	public final static String DEFAULT_NUMBER_FORMAT = "#,##0.0";
 
 	// Default column size for various tables and extracts

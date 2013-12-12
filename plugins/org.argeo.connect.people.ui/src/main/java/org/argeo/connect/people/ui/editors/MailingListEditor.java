@@ -46,7 +46,6 @@ import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILazyContentProvider;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -400,7 +399,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 		// private boolean isScrollable;
 		private RowIterator ri;
 
-		private List<Object> buffer;
+		private List<Object> buffer = new ArrayList<Object>();
 		private int pageSize = 50;
 
 		public LazyJcrContentProvider(TableViewer viewer) {
@@ -418,11 +417,11 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
 			if (newInput == null)
 				return;
-			ri = (RowIterator) newInput;
 			
-			buffer = new ArrayList<Object>();
+			ri = (RowIterator) newInput;
 			TableViewer viewer = (TableViewer) v;
-
+			buffer.clear();
+			
 			int i = 0;
 			while (ri.hasNext() && i < pageSize) {
 				buffer.add(ri.nextRow());
@@ -489,36 +488,37 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 		return selectionAdapter;
 	}
 
-	/**
-	 * Specific content provider for this Part
-	 */
-	private class MyContentProvider implements IStructuredContentProvider {
-		private static final long serialVersionUID = 1L;
-		private String filter;
-
-		public void dispose() {
-		}
-
-		/** Expects a filter text as a new input */
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			filter = (String) newInput;
-			if (newInput != null)
-				viewer.refresh();
-		}
-
-		public Object[] getElements(Object arg0) {
-			// TODO support multiple node types.
-			RowIterator ri = refreshFilteredList(filter);
-			// FIXME will not work for big resultset
-			Object[] result = new Object[(int) ri.getSize()];
-			int i = 0;
-			while (ri.hasNext()) {
-				result[i] = ri.nextRow();
-				i++;
-			}
-			return result;
-		}
-	}
+	// /**
+	// * Specific content provider for this Part
+	// */
+	// private class MyContentProvider implements IStructuredContentProvider {
+	// private static final long serialVersionUID = 1L;
+	// private String filter;
+	//
+	// public void dispose() {
+	// }
+	//
+	// /** Expects a filter text as a new input */
+	// public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
+	// {
+	// filter = (String) newInput;
+	// if (newInput != null)
+	// viewer.refresh();
+	// }
+	//
+	// public Object[] getElements(Object arg0) {
+	// // TODO support multiple node types.
+	// RowIterator ri = refreshFilteredList(filter);
+	// // FIXME will not work for big resultset
+	// Object[] result = new Object[(int) ri.getSize()];
+	// int i = 0;
+	// while (ri.hasNext()) {
+	// result[i] = ri.nextRow();
+	// i++;
+	// }
+	// return result;
+	// }
+	// }
 
 	// ///////////////////////
 	// HELPERS

@@ -1,6 +1,9 @@
 package org.argeo.connect.people.ui.toolkits;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -21,8 +24,10 @@ import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.composites.FilmPrintComposite;
+import org.argeo.connect.people.ui.dialogs.NewTimeStampDialog;
 import org.argeo.connect.people.ui.dialogs.NewTitleDialog;
 import org.argeo.connect.people.ui.dialogs.PickUpCountryDialog;
+import org.argeo.connect.people.ui.dialogs.PickUpDateDialog;
 import org.argeo.connect.people.ui.dialogs.PickUpLangDialog;
 import org.argeo.connect.people.ui.utils.JcrUiUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
@@ -398,16 +403,16 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		group.setText("Awards and noteworthy dates");
 		group.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
-		final TableViewer viewer = createItemViewer(group);
+		final Link addLk = new Link(group, SWT.CENTER);
+		addLk.setText("<a>Add new date</a>");
 
-		final Button addBtn = toolkit.createButton(group, "Add new date",
-				SWT.PUSH);
+		final TableViewer viewer = createItemViewer(group);
 
 		AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
 				boolean checkedOut = CommonsJcrUtils.isNodeCheckedOutByMe(film);
-				addBtn.setVisible(checkedOut);
+				addLk.setVisible(checkedOut);
 
 				try {
 					if (film.hasNode(FilmNames.FILM_TIMESTAMPS)) {
@@ -425,7 +430,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 
 		configureTimestampsViewer(viewer, formPart);
 		viewer.setContentProvider(new MyTableContentProvider());
-		configureAddTimestampButton(formPart, addBtn, film,
+		configureAddTimestampLink(formPart, addLk, film,
 				"Add a new title for current film");
 
 		parent.layout();
@@ -436,25 +441,39 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 	private void configureTimestampsViewer(TableViewer itemsViewer,
 			AbstractFormPart part) {
 		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
-		columns.add(new ColumnDefinition(null, FilmNames.FILM_TIMESTAMP_VALUE,
-				PropertyType.DATE, "Date", 60));
-		columns.add(new ColumnDefinition(null,
-				FilmNames.FILM_AWARD_COUNTRY_ISO, PropertyType.STRING,
-				"Country", 60));
+
 		columns.add(new ColumnDefinition(null, Property.JCR_TITLE,
 				PropertyType.STRING, "Title", 120));
 		columns.add(new ColumnDefinition(null, Property.JCR_DESCRIPTION,
-				PropertyType.STRING, "Description", 160));
+				PropertyType.STRING, "Description", 180));
 
 		NodeViewerComparator comparator = new NodeViewerComparator();
 
+		// RAP SPECIFIC, enable adding link
 		itemsViewer.getTable().setData(PeopleUiConstants.MARKUP_ENABLED,
 				Boolean.TRUE);
+		itemsViewer.getTable().addSelectionListener(
+				new TimestampRwtAdapter(part));
 
 		// The columns
 		TableViewerColumn col;
 
-		int i = 0;
+		// specific columns
+		col = ViewerUtils.createTableViewerColumn(itemsViewer, "Date",
+				SWT.NONE, 80);
+		col.setLabelProvider(new DateLabelProvider());
+		col.getColumn().addSelectionListener(
+				PeopleUiUtils.getSelectionAdapter(0, PropertyType.DATE,
+						FILM_TIMESTAMP_VALUE, comparator, itemsViewer));
+
+		col = ViewerUtils.createTableViewerColumn(itemsViewer, "Country",
+				SWT.NONE, 80);
+		col.setLabelProvider(new CountryLabelProvider());
+		col.getColumn().addSelectionListener(
+				PeopleUiUtils.getSelectionAdapter(1, PropertyType.STRING,
+						FILM_AWARD_COUNTRY_ISO, comparator, itemsViewer));
+
+		int i = 2;
 		for (ColumnDefinition colDef : columns) {
 			col = ViewerUtils.createTableViewerColumn(itemsViewer,
 					colDef.getHeaderLabel(), SWT.NONE, colDef.getColumnSize());
@@ -477,20 +496,22 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		itemsViewer.setComparator(comparator);
 	}
 
-	private void configureAddTimestampButton(final AbstractFormPart part,
-			final Button button, final Node film, String tooltip) {
-		button.setToolTipText(tooltip);
-		button.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, false, false));
-		button.addSelectionListener(new SelectionAdapter() {
+	private void configureAddTimestampLink(final AbstractFormPart part,
+			final Link link, final Node film, String tooltip) {
+		link.setToolTipText(tooltip);
+		link.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		link.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// NewTitleDialog dialog = new NewTitleDialog(button.getShell(),
-				// "Add a new title", film);
-				// int res = dialog.open();
-				// if (res == org.eclipse.jface.dialogs.Dialog.OK)
-				// part.markDirty();
+				NewTimeStampDialog dialog = new NewTimeStampDialog(link
+						.getShell(), "Add a new timestamp", film);
+				int res = dialog.open();
+				if (res == org.eclipse.jface.dialogs.Dialog.OK) {
+					part.refresh();
+					part.markDirty();
+				}
 			}
 		});
 	}
@@ -502,15 +523,18 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		group.setText("Film titles");
 		group.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
+		final Link addLk = new Link(group, SWT.BOTTOM);
+		addLk.setText("<a>Add title</a>");
+
 		final TableViewer viewer = createItemViewer(group);
-		final Button addBtn = toolkit
-				.createButton(group, "Add title", SWT.PUSH);
+		// final Button addBtn = toolkit
+		// .createButton(group, "", SWT.PUSH);
 
 		AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
 				boolean checkedOut = CommonsJcrUtils.isNodeCheckedOutByMe(film);
-				addBtn.setVisible(checkedOut);
+				addLk.setVisible(checkedOut);
 
 				try {
 					if (film.hasNode(FilmNames.FILM_TITLES)) {
@@ -529,7 +553,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 
 		configureAltTitleViewer(viewer, formPart);
 		viewer.setContentProvider(new MyTableContentProvider());
-		configureAddTitleButton(formPart, addBtn, film,
+		configureAddTitleLink(formPart, addLk, film,
 				"Add a new title for current film");
 
 		parent.layout();
@@ -537,8 +561,8 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		form.addPart(formPart);
 	}
 
-	private void configureAddTitleButton(final AbstractFormPart part,
-			final Button button, final Node film, String tooltip) {
+	private void configureAddTitleLink(final AbstractFormPart part,
+			final Link button, final Node film, String tooltip) {
 		button.setToolTipText(tooltip);
 		button.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, false, false));
 		button.addSelectionListener(new SelectionAdapter() {
@@ -663,6 +687,153 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		}
 	}
 
+	private final String DATE_TYPE = "date";
+	private final String COUNTRY_TYPE = "country";
+
+	class TimestampRwtAdapter extends SelectionAdapter {
+		private static final long serialVersionUID = -2031967921306265218L;
+
+		private final AbstractFormPart part;
+
+		public TimestampRwtAdapter(AbstractFormPart part) {
+			super();
+			this.part = part;
+		}
+
+		public void widgetSelected(SelectionEvent event) {
+			String type = "";
+			try {
+				if (event.detail == RWT.HYPERLINK) {
+					String[] command = event.text.split("/");
+					type = command[0];
+					String uid = command[1];
+					Session session = film.getSession();
+
+					if (DATE_TYPE.equals(type)) {
+						PickUpDateDialog diag = new PickUpDateDialog(
+								event.display.getActiveShell(), "Choose a date");
+						diag.open();
+						Calendar cal = diag.getSelected();
+						Node node = session.getNodeByIdentifier(uid);
+						if (JcrUiUtils.setJcrProperty(node,
+								FilmNames.FILM_TIMESTAMP_VALUE,
+								PropertyType.DATE, cal)) {
+							part.refresh();
+							part.markDirty();
+						}
+					} else if (COUNTRY_TYPE.equals(type)) {
+						PickUpCountryDialog diag = new PickUpCountryDialog(
+								event.display.getActiveShell(),
+								"Choose a country", session);
+						diag.open();
+						String countryIso = diag.getSelected();
+						if (CommonsJcrUtils.checkNotEmptyString(countryIso)) {
+							Node node = session.getNodeByIdentifier(uid);
+							if (JcrUiUtils.setJcrProperty(node,
+									FilmNames.FILM_AWARD_COUNTRY_ISO,
+									PropertyType.STRING, countryIso)) {
+								part.refresh();
+								part.markDirty();
+							}
+						}
+					}
+				}
+			} catch (RepositoryException re) {
+				throw new PeopleException("Unable to update timestamp " + type
+						+ " value", re);
+			}
+		}
+	}
+
+	private class DateLabelProvider extends ColumnLabelProvider {
+		private static final long serialVersionUID = -3585657671575195850L;
+
+		private DateFormat dateFormat = new SimpleDateFormat(
+				PeopleUiConstants.DEFAULT_DATE_FORMAT);
+
+		@Override
+		public String getText(Object element) {
+			try {
+				Node currNode = (Node) element;
+				if (currNode.hasProperty(FILM_TIMESTAMP_VALUE)) {
+					String formattedDate = dateFormat.format(currNode
+							.getProperty(FILM_TIMESTAMP_VALUE).getDate()
+							.getTime());
+
+					if (!CommonsJcrUtils.isNodeCheckedOutByMe(film)) {
+						return formattedDate;
+					} else {
+						String uri = DATE_TYPE + "/" + currNode.getIdentifier();
+						return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
+								+ " href=\"" + uri + "\" target=\"_rwt\">"
+								+ formattedDate + "</a>";
+					}
+				}
+				return "";
+			} catch (RepositoryException re) {
+				throw new ArgeoException("Unable to get text from row", re);
+			}
+		}
+	}
+
+	private class CountryLabelProvider extends ColumnLabelProvider {
+		private static final long serialVersionUID = 5901879216975700264L;
+
+		@Override
+		public String getText(Object element) {
+			try {
+				Node node = (Node) element;
+				String countryIso = CommonsJcrUtils.get(node,
+						FILM_AWARD_COUNTRY_ISO);
+				String countryLbl = ResourcesJcrUtils.getCountryEnLabelFromIso(
+						film.getSession(), countryIso);
+
+				if (!CommonsJcrUtils.isNodeCheckedOutByMe(film)) {
+					return countryLbl;
+				} else {
+					String uri = COUNTRY_TYPE + "/" + node.getIdentifier();
+					return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
+							+ " href=\"" + uri + "\" target=\"_rwt\">"
+							+ countryLbl + "</a>";
+				}
+			} catch (RepositoryException e) {
+				throw new PeopleException(
+						"Error while preparing lang edition link for node "
+								+ element, e);
+			}
+
+		}
+	}
+
+	//
+	// private class DateLabelProvider extends ColumnLabelProvider {
+	//
+	// @Override
+	// public String getText(Object element) {
+	// try {
+	// Node node = (Node) element;
+	// String countryIso = CommonsJcrUtils.get(node,
+	// FILM_AWARD_COUNTRY_ISO);
+	// String countryLbl = ResourcesJcrUtils.getCountryEnLabelFromIso(
+	// film.getSession(), countryIso);
+	//
+	// if (!CommonsJcrUtils.isNodeCheckedOutByMe(film)) {
+	// return countryLbl;
+	// } else {
+	// String uri = COUNTRY_TYPE + "/" + node.getIdentifier();
+	// return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
+	// + " href=\"" + uri + "\" target=\"_rwt\">"
+	// + countryLbl + "</a>";
+	// }
+	// } catch (RepositoryException e) {
+	// throw new PeopleException(
+	// "Error while preparing lang edition link for node "
+	// + element, e);
+	// }
+	//
+	// }
+	// }
+
 	private class LangListRwtAdapter extends SelectionAdapter {
 		private static final long serialVersionUID = -3867410418907732579L;
 		private final AbstractFormPart part;
@@ -675,7 +846,6 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		public void widgetSelected(SelectionEvent event) {
 			try {
 				if (event.detail == RWT.HYPERLINK) {
-
 					String uid = event.text;
 					Session session = film.getSession();
 
@@ -713,7 +883,6 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 				return currValue;
 			} else {
 				try {
-
 					String uri = node.getIdentifier();
 					return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
 							+ " href=\"" + uri + "\" target=\"_rwt\">"
@@ -1043,7 +1212,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 				try {
 					PickUpCountryDialog diag = new PickUpCountryDialog(
 							chooseLangLk.getShell(), newTagMsg, film
-									.getSession(), film);
+									.getSession());
 					diag.open();
 					String lang = diag.getSelected();
 					if (CommonsJcrUtils.checkNotEmptyString(lang))
