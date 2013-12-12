@@ -141,9 +141,10 @@ public class CreateEntityRefWithPositionDialog extends TrayDialog {
 	protected boolean performFinish() {
 		String msg = null;
 
-		if (CommonsJcrUtils.isEmptyString(positionTxt.getText()))
-			msg = "Please enter a role for current position.";
-		else if (selectedItem == null)
+//		if (CommonsJcrUtils.isEmptyString(positionTxt.getText()))
+//			msg = "Please enter a role for current position.";
+//		else 
+		if (selectedItem == null)
 			msg = "Please select an entity.";
 
 		if (msg != null) {

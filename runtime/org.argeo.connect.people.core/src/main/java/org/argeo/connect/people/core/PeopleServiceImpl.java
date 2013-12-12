@@ -168,8 +168,12 @@ public class PeopleServiceImpl implements PeopleService {
 				CommonsJcrUtils.checkout(referencingNode);
 
 			// add the corresponding node
-			Node link = parentNode.addNode(role, linkNodeType);
-			link.setProperty(PeopleNames.PEOPLE_ROLE, role);
+
+			Node link = parentNode.addNode(CommonsJcrUtils
+					.checkNotEmptyString(role) ? role : "Unnamed_role",
+					linkNodeType);
+			if (CommonsJcrUtils.checkNotEmptyString(role))
+				link.setProperty(PeopleNames.PEOPLE_ROLE, role);
 			link.setProperty(PeopleNames.PEOPLE_REF_UID, referencedNode
 					.getProperty(PeopleNames.PEOPLE_UID).getString());
 

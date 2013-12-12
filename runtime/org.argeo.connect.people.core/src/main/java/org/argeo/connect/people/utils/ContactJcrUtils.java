@@ -61,8 +61,21 @@ public class ContactJcrUtils {
 			String relPath = "/"
 					+ PeopleJcrUtils.getRelPathForEntity(referencedNode);
 			String absPath = parentNode.getPath() + relPath;
-			if (session.nodeExists(absPath))
-				return session.getNode(absPath);
+
+			if (session.nodeExists(JcrUtils.parentPath(absPath))) {
+				// Insure it's the same entity and not an entity with the same
+				// name.
+				Node parent = session.getNode(JcrUtils.parentPath(absPath));
+				NodeIterator ni = parent.getNodes();
+				String referencedUid = CommonsJcrUtils.get(referencedNode,
+						PeopleNames.PEOPLE_UID);
+				while (ni.hasNext()) {
+					Node currNode = ni.nextNode();
+					if (referencedUid.equals(CommonsJcrUtils.get(currNode,
+							PeopleNames.PEOPLE_REF_UID)))
+						return currNode;
+				}
+			}
 
 			boolean wasCheckedout = CommonsJcrUtils
 					.isNodeCheckedOutByMe(referencingNode);
@@ -95,8 +108,8 @@ public class ContactJcrUtils {
 				PeopleTypes.PEOPLE_MAILING_LIST, NodeType.NT_UNSTRUCTURED);
 		ml.setProperty(PeopleNames.PEOPLE_UID, UUID.randomUUID().toString());
 		ml.setProperty(Property.JCR_TITLE, name);
-		
-		// leave it checked out on creation to fasten import process 
+
+		// leave it checked out on creation to fasten import process
 		// CommonsJcrUtils.saveAndCheckin(ml);
 		ml.getSession().save();
 		return ml;

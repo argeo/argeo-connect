@@ -42,7 +42,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.GridData;
@@ -608,12 +607,17 @@ public class ContactToolkit {
 
 			@Override
 			public void keyTraversed(TraverseEvent e) {
-				String value = valueTxt.getText();
-				String label = labelTxt.getText();
-				boolean isPrimary = primaryChk.getSelection();
-				// EntityPanelToolkit
-				savePreservingState(entity, contactType, contactType, value,
-						isPrimary, nature, null, label, addContactCombo);
+				if (e.keyCode == SWT.CR) {
+					e.doit = false;
+
+					String value = valueTxt.getText();
+					String label = labelTxt.getText();
+					boolean isPrimary = primaryChk.getSelection();
+					// EntityPanelToolkit
+					savePreservingState(entity, contactType, contactType,
+							value, isPrimary, nature, null, label,
+							addContactCombo);
+				}
 			}
 		});
 
@@ -644,7 +648,7 @@ public class ContactToolkit {
 
 		final Button validBtn = toolkit.createButton(parent, "Save", SWT.PUSH);
 
-		validBtn.addSelectionListener(new SelectionListener() {
+		validBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -659,10 +663,6 @@ public class ContactToolkit {
 				savePreservingState(entity, contactType, contactType, value,
 						isPrimary, nature, cat, label, addContactCombo);
 			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
 		});
 
 		valueTxt.addTraverseListener(new TraverseListener() {
@@ -670,14 +670,18 @@ public class ContactToolkit {
 
 			@Override
 			public void keyTraversed(TraverseEvent e) {
-				String value = valueTxt.getText();
-				String label = labelTxt.getText();
-				String cat = catCmb.getText();
+				if (e.keyCode == SWT.CR) {
+					e.doit = false;
 
-				boolean isPrimary = primaryChk.getSelection();
-				// EntityPanelToolkit
-				savePreservingState(entity, contactType, contactType, value,
-						isPrimary, nature, cat, label, addContactCombo);
+					String value = valueTxt.getText();
+					String label = labelTxt.getText();
+					String cat = catCmb.getText();
+					boolean isPrimary = primaryChk.getSelection();
+					// EntityPanelToolkit
+					savePreservingState(entity, contactType, contactType,
+							value, isPrimary, nature, cat, label,
+							addContactCombo);
+				}
 			}
 		});
 
