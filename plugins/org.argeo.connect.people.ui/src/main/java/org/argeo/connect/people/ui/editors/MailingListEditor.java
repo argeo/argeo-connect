@@ -1,5 +1,6 @@
 package org.argeo.connect.people.ui.editors;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,6 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.Source;
 import javax.jcr.query.qom.StaticOperand;
 
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
@@ -45,6 +45,7 @@ import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -79,6 +80,8 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 
 	private TableViewer membersViewer;
 
+	private Text filterTxt;
+	
 	@Override
 	protected void createToolkits() {
 	}
@@ -86,8 +89,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 	private String getCurrentMails() {
 		StringBuilder builder = new StringBuilder();
 		try {
-			RowIterator ri = refreshFilteredList((String) membersViewer
-					.getInput());
+			RowIterator ri = refreshFilteredList(filterTxt.getText());
 			while (ri.hasNext()) {
 				Row row = ri.nextRow();
 				Node node;
@@ -125,7 +127,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 
 	@Override
 	public RowIterator getRowIterator(String extractId) {
-		return refreshFilteredList((String) membersViewer.getInput());
+		return refreshFilteredList(filterTxt.getText());
 	}
 
 	@Override
@@ -140,7 +142,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 		buttonsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		buttonsCmp.setLayout(new GridLayout(4, false));
 
-		Text text = createFilterText(buttonsCmp);
+		filterTxt = createFilterText(buttonsCmp);
 
 		Button addBtn = toolkit
 				.createButton(buttonsCmp, "Add member", SWT.PUSH);
@@ -177,7 +179,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 		tableComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		final TableViewer tableViewer = createTableViewer(tableComp);
-		tableViewer.setContentProvider(new MyContentProvider());
+		tableViewer.setContentProvider(new LazyJcrContentProvider(tableViewer));
 
 		// Add life cycle management
 		AbstractFormPart sPart = new AbstractFormPart() {
@@ -189,8 +191,8 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 		};
 		sPart.initialize(getManagedForm());
 		getManagedForm().addPart(sPart);
-		addFilterListener(text, tableViewer);
-		tableViewer.setInput("");
+		addFilterListener(filterTxt, tableViewer);
+		tableViewer.setInput(refreshFilteredList(""));
 		return tableViewer;
 	}
 
@@ -208,7 +210,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 			private static final long serialVersionUID = 5003010530960334977L;
 
 			public void modifyText(ModifyEvent event) {
-				viewer.setInput(filterTxt.getText());
+				viewer.setInput(refreshFilteredList(filterTxt.getText()));
 			}
 		});
 
@@ -227,8 +229,9 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 					PeopleTypes.PEOPLE_MAILING_LIST_ITEM);
 
 			EquiJoinCondition joinCond = factory.equiJoinCondition(
-					refSlct.getSelectorName(), PeopleNames.PEOPLE_REF_UID, mainSlct.getSelectorName(), PeopleNames.PEOPLE_UID);
-			Source jointSrc = factory.join(refSlct,mainSlct,
+					refSlct.getSelectorName(), PeopleNames.PEOPLE_REF_UID,
+					mainSlct.getSelectorName(), PeopleNames.PEOPLE_UID);
+			Source jointSrc = factory.join(refSlct, mainSlct,
 					QueryObjectModelConstants.JCR_JOIN_TYPE_INNER, joinCond);
 
 			// Only show items for this list
@@ -282,10 +285,14 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 		parent.setLayout(new FillLayout());
 		RowViewerComparator comparator = new RowViewerComparator();
 		// Define the TableViewer
-		TableViewer viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
+		final Table table = toolkit.createTable(parent, SWT.VIRTUAL);
 
-		final Table table = viewer.getTable();
+		TableViewer viewer = new TableViewer(table);
+
+		// new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
+		// | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
+		// final Table table = viewer.getTable();
+
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		table.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
@@ -346,7 +353,8 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 							"unable to retrieve primary mail value for row "
 									+ element, re);
 				}
-				return text == null ? "" : PeopleHtmlUtils.cleanHtmlString(text);
+				return text == null ? "" : PeopleHtmlUtils
+						.cleanHtmlString(text);
 			}
 
 			@Override
@@ -383,6 +391,60 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 				Property.JCR_TITLE);
 		viewer.setComparator(comparator);
 		return viewer;
+	}
+
+	private class LazyJcrContentProvider implements ILazyContentProvider {
+
+		private static final long serialVersionUID = 2329346740515876042L;
+		private TableViewer viewer;
+		// private boolean isScrollable;
+		private RowIterator ri;
+
+		private List<Object> buffer;
+		private int pageSize = 50;
+
+		public LazyJcrContentProvider(TableViewer viewer) {
+			this.viewer = viewer;
+		}
+
+		public void dispose() {
+			// try {
+			// // resultSet.close();
+			// } catch (SQLException e) {
+			// // silent
+			// }
+		}
+
+		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
+			if (newInput == null)
+				return;
+			ri = (RowIterator) newInput;
+			
+			buffer = new ArrayList<Object>();
+			TableViewer viewer = (TableViewer) v;
+
+			int i = 0;
+			while (ri.hasNext() && i < pageSize) {
+				buffer.add(ri.nextRow());
+				i++;
+			}
+			viewer.setItemCount(buffer.size());
+		}
+
+		public void updateElement(int index) {
+			int itemCount = viewer.getTable().getItemCount();
+			if (index == (itemCount - 1) && ri.hasNext()) {
+
+				int i = 0;
+				// Update
+				while (i < pageSize && ri.hasNext()) {
+					buffer.add(ri.nextRow());
+					i++;
+				}
+				viewer.setItemCount(itemCount + i);
+			}
+			viewer.replace(buffer.get(index), index);
+		}
 	}
 
 	/* LOCAL CLASSES */

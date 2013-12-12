@@ -5,6 +5,8 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
@@ -18,8 +20,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
  */
 public class GroupLabelProvider extends ColumnLabelProvider implements
 		PeopleNames {
-	// private final static Log log =
-	// LogFactory.getLog(GroupLabelProvider.class);
+	private final static Log log = LogFactory.getLog(GroupLabelProvider.class);
 
 	private static final long serialVersionUID = 9156065705311297011L;
 	private final int listType;
@@ -63,7 +64,15 @@ public class GroupLabelProvider extends ColumnLabelProvider implements
 			builder.append("</big></b>");
 
 			if (entity.hasNode(PEOPLE_MEMBERS)) { // Nb of members
+
+				long start = System.currentTimeMillis();
 				int membersNb = countMembers(entity.getNode(PEOPLE_MEMBERS), 0);
+				long end = System.currentTimeMillis();
+
+				if (log.isDebugEnabled())
+					log.debug("Counted " + membersNb + " members in "
+							+ (end - start) + " ms");
+
 				builder.append("<i>(").append(membersNb)
 						.append(" members)</i>");
 			}
