@@ -148,7 +148,7 @@ public class FilmPrintComposite extends Composite {
 	}
 
 	private Text createLT(Composite parent, String label, int colspan) {
-		Composite cmp = toolkit.createComposite(parent);
+		Composite cmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, colspan,
 				1));
 		GridLayout gl = new GridLayout(2, false);

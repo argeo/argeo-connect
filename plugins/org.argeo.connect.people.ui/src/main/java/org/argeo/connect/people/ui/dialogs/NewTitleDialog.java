@@ -21,6 +21,7 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.film.core.FilmJcrUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
@@ -49,6 +50,7 @@ public class NewTitleDialog extends TrayDialog {
 	private Button isOriginal;
 	private Button isPrimary;
 	private Text langTxt;
+	private String langIso;
 	private Text titleTxt;
 	private Text articleTxt;
 	private Text latinTxt;
@@ -83,6 +85,7 @@ public class NewTitleDialog extends TrayDialog {
 				3, 1));
 
 		langTxt = createLT(dialogArea, "Language", 1);
+		langTxt.setEditable(false);
 		// Choose a given language
 		final Link chooseLangLk = new Link(dialogArea, SWT.BOTTOM);
 		chooseLangLk.setText("<a>Pick up a language</a>");
@@ -96,9 +99,10 @@ public class NewTitleDialog extends TrayDialog {
 							.getShell(), "Choose a language", filmNode
 							.getSession());
 					diag.open();
-					String lang = diag.getSelected();
-					if (CommonsJcrUtils.checkNotEmptyString(lang))
-						langTxt.setText(lang);
+					langIso = diag.getSelected();
+					if (CommonsJcrUtils.checkNotEmptyString(langIso)){
+						langTxt.setText(ResourcesJcrUtils.getLangEnLabelFromIso(filmNode.getSession(), langIso));
+					}
 				} catch (RepositoryException e) {
 					throw new PeopleException("Unable to add language", e);
 				}
@@ -128,15 +132,14 @@ public class NewTitleDialog extends TrayDialog {
 
 	@Override
 	protected void okPressed() {
-		String title = titleTxt.getText(), article = articleTxt.getText(), lang = langTxt
-				.getText(), latin = latinTxt.getText();
+		String title = titleTxt.getText(), article = articleTxt.getText(), latin = latinTxt.getText();
 		boolean orig = isOriginal.getSelection(), prim = isPrimary
 				.getSelection();
 
 		String errMmsg = null;
 		if (CommonsJcrUtils.isEmptyString(title))
 			errMmsg = "Please enter a non empty title";
-		else if (CommonsJcrUtils.isEmptyString(lang))
+		else if (CommonsJcrUtils.isEmptyString(langIso))
 			errMmsg = "Please choose a language";
 
 		if (errMmsg != null) {
@@ -146,7 +149,7 @@ public class NewTitleDialog extends TrayDialog {
 
 		// real addition
 		FilmJcrUtils
-				.addTitle(filmNode, title, article, latin, lang, orig, prim);
+				.addTitle(filmNode, title, article, latin, langIso, orig, prim);
 		// will throw an error if the corresponding film is not checked out,
 		// that is what we expect.
 		super.okPressed();
