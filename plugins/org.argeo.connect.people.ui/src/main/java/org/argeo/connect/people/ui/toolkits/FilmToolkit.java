@@ -11,8 +11,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.film.FilmNames;
 import org.argeo.connect.film.FilmTypes;
@@ -71,7 +69,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * Centralize the creation of the different editors panels for films.
  */
 public class FilmToolkit extends EntityToolkit implements FilmNames {
-	private final static Log log = LogFactory.getLog(FilmToolkit.class);
+	// private final static Log log = LogFactory.getLog(FilmToolkit.class);
 
 	// private final static String LANG_KEY = "lang";
 	// private final static String DEFAULT_LANG_KEY = "default";
@@ -289,7 +287,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 
 		// 3rd Line
 		final Text genreTxt = createLT(parent, "Genre:");
-		toolkit.createLabel(parent, "", SWT.NONE);
+		final Text websiteTxt = createLT(parent, "Official homepage:");
 
 		// 4th Line
 		final Text categoryTxt = createLT(parent, "Category:");
@@ -309,7 +307,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		// animTechCmb.setEnabled(false);
 
 		// 5th Line : Flags
-		Composite flagCmp = toolkit.createComposite(parent);
+		Composite flagCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		flagCmp.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 2, 1));
 		flagCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder(4));
 
@@ -329,16 +327,6 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 				"Debut film", SWT.CHECK);
 		isDebutFilmBtn.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false,
 				false));
-
-		// 6th line
-		Composite websiteCmp = toolkit.createComposite(parent);
-		websiteCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,
-				2, 1));
-		websiteCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
-
-		toolkit.createLabel(websiteCmp, "Official homepage:");
-		final Text websiteTxt = toolkit.createText(websiteCmp, "", SWT.BORDER);
-		websiteTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		final AbstractFormPart notePart = new AbstractFormPart() {
 			public void refresh() {
@@ -561,8 +549,10 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 				NewTitleDialog dialog = new NewTitleDialog(button.getShell(),
 						"Add a new title", film);
 				int res = dialog.open();
-				if (res == org.eclipse.jface.dialogs.Dialog.OK)
+				if (res == org.eclipse.jface.dialogs.Dialog.OK) {
+					part.refresh();
 					part.markDirty();
+				}
 			}
 		});
 	}
@@ -585,7 +575,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		itemsViewer.getTable().setData(PeopleUiConstants.MARKUP_ENABLED,
 				Boolean.TRUE);
 		itemsViewer.getTable().addSelectionListener(
-				new LangListRwtAdapter(part, itemsViewer));
+				new LangListRwtAdapter(part));
 
 		// The columns
 		TableViewerColumn col;
@@ -677,12 +667,9 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		private static final long serialVersionUID = -3867410418907732579L;
 		private final AbstractFormPart part;
 
-		private final TableViewer viewer;
-
-		public LangListRwtAdapter(AbstractFormPart part, TableViewer viewer) {
+		public LangListRwtAdapter(AbstractFormPart part) {
 			super();
 			this.part = part;
-			this.viewer = viewer;
 		}
 
 		public void widgetSelected(SelectionEvent event) {
@@ -1136,7 +1123,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 	}
 
 	private Text createLT(Composite parent, String label) {
-		Composite cmp = toolkit.createComposite(parent);
+		Composite cmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		GridLayout gl = new GridLayout(2, false);
 		gl.marginWidth = gl.verticalSpacing = gl.marginHeight = 0;
