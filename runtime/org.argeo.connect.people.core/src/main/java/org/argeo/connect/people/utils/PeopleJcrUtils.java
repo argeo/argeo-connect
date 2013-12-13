@@ -302,7 +302,7 @@ public class PeopleJcrUtils implements PeopleNames {
 		try {
 			Node contacts = CommonsJcrUtils.getOrCreateDirNode(parentNode,
 					PEOPLE_CONTACTS);
-			Node contact = contacts.addNode(name, nodeType);
+			Node contact = contacts.addNode(name.trim(), nodeType);
 			contact.setProperty(PEOPLE_CONTACT_VALUE, value);
 			markAsPrimary(contact, primary);
 			setContactLabel(contact, label);
