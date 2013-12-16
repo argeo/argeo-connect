@@ -117,14 +117,20 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 										.addOrUpdateSynopsisNode(film, null,
 												null, iso);
 							if (currNode != null) {
-								Composite composite = toolkit
-										.createComposite(panel, SWT.NO_FOCUS);
+								Composite composite = toolkit.createComposite(
+										panel, SWT.NO_FOCUS);
 								composite.setLayoutData(new GridData(SWT.FILL,
 										SWT.FILL, true, true));
-								populateSingleSynopsisCmp(composite, currNode,
+								AbstractFormPart part = populateSingleSynopsisCmp(composite, currNode,
 										ResourcesJcrUtils
 												.getLangEnLabelFromIso(
 														film.getSession(), iso));
+								
+								// FIXME
+								// children form part is usually added before current, and thus refreshed before current.
+								// force refresh to be sure.
+								part.refresh();
+														
 							}
 						}
 						panel.layout();
@@ -141,7 +147,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 	}
 
 	/** Populate a synopsis composite. */
-	private void populateSingleSynopsisCmp(Composite panel,
+	private AbstractFormPart populateSingleSynopsisCmp(Composite panel,
 			final Node synopsisNode, String titleLabel) {
 		panel.setLayout(new GridLayout());
 
@@ -187,6 +193,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 
 		editPart.initialize(form);
 		form.addPart(editPart);
+		return editPart;
 	}
 
 	/**
