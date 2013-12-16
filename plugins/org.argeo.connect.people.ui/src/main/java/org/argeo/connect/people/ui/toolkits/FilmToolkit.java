@@ -125,7 +125,6 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 										ResourcesJcrUtils
 												.getLangEnLabelFromIso(
 														film.getSession(), iso));
-								
 								// FIXME
 								// children form part is usually added before current, and thus refreshed before current.
 								// force refresh to be sure.
