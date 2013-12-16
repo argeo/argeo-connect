@@ -93,30 +93,51 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 	}
 
 	/** Populate a panel with a list synopsis. */
-	public void populateSynopsisPanel(Composite panel, List<String> langIsos) {
+	public void populateSynopsisPanel(final Composite panel,
+			final List<String> langIsos) {
 		panel.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-		try {
-			for (String iso : langIsos) {
-				Node currNode = FilmJcrUtils.getSynopsisNode(film, iso);
-				// force creation to avoid npe and ease form life cycle
-				if (currNode == null
-						&& CommonsJcrUtils.isNodeCheckedOutByMe(film))
-					currNode = FilmJcrUtils.addOrUpdateSynopsisNode(film, null,
-							null, iso);
-				if (currNode != null) {
-					Composite composite = toolkit.createComposite(panel);
-					composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
-							true, true));
-					populateSingleSynopsisCmp(
-							composite,
-							currNode,
-							ResourcesJcrUtils.getLangEnLabelFromIso(
-									film.getSession(), iso));
+
+		final AbstractFormPart editPart = new AbstractFormPart() {
+			public void refresh() {
+				super.refresh();
+
+				// Fix me. only try to add panel the first time it is legal.
+				Control[] oldChildren = panel.getChildren();
+				if (oldChildren.length == 0) {
+					try {
+						for (String iso : langIsos) {
+							Node currNode = FilmJcrUtils.getSynopsisNode(film,
+									iso);
+							// force creation to avoid npe and ease form life
+							// cycle
+							if (currNode == null
+									&& CommonsJcrUtils
+											.isNodeCheckedOutByMe(film))
+								currNode = FilmJcrUtils
+										.addOrUpdateSynopsisNode(film, null,
+												null, iso);
+							if (currNode != null) {
+								Composite composite = toolkit
+										.createComposite(panel, SWT.NO_FOCUS);
+								composite.setLayoutData(new GridData(SWT.FILL,
+										SWT.FILL, true, true));
+								populateSingleSynopsisCmp(composite, currNode,
+										ResourcesJcrUtils
+												.getLangEnLabelFromIso(
+														film.getSession(), iso));
+							}
+						}
+						panel.layout();
+					} catch (RepositoryException e) {
+						throw new PeopleException(
+								"Unable to populate synopsis panel", e);
+					}
 				}
 			}
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to create synopsis panel", e);
-		}
+		};
+
+		editPart.initialize(form);
+		form.addPart(editPart);
 	}
 
 	/** Populate a synopsis composite. */
@@ -148,10 +169,14 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		final AbstractFormPart editPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
-				PeopleUiUtils.refreshFormTextWidget(shortSynTxt, synopsisNode,
-						SYNOPSIS_CONTENT_SHORT, "Enter a short synopsis");
-				PeopleUiUtils.refreshFormTextWidget(synopsisTxt, synopsisNode,
-						SYNOPSIS_CONTENT, "Enter the full synopsis");
+				if (!shortSynTxt.isDisposed()) {
+					PeopleUiUtils.refreshFormTextWidget(shortSynTxt,
+							synopsisNode, SYNOPSIS_CONTENT_SHORT,
+							"Enter a short synopsis");
+					PeopleUiUtils.refreshFormTextWidget(synopsisTxt,
+							synopsisNode, SYNOPSIS_CONTENT,
+							"Enter the full synopsis");
+				}
 			}
 		};
 

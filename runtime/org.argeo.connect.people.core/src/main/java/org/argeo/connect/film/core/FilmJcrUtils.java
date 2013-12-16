@@ -273,7 +273,7 @@ public class FilmJcrUtils implements FilmNames {
 				sNode.setProperty(SYNOPSIS_CONTENT, synopsis);
 				if (CommonsJcrUtils.checkNotEmptyString(synopsisShort))
 					sNode.setProperty(SYNOPSIS_CONTENT_SHORT, synopsisShort);
-				sNode.setProperty(FILM_LANG, lang);
+				sNode.setProperty(PeopleNames.PEOPLE_LANG, lang);
 				return sNode;
 			}
 			return null;
