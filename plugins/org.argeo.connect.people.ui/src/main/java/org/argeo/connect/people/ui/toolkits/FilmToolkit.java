@@ -616,7 +616,7 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 			AbstractFormPart part) {
 		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 		columns.add(new ColumnDefinition(FilmTypes.FILM_TITLE,
-				FilmNames.FILM_TITLE, PropertyType.STRING, "Title", 150));
+				FilmNames.FILM_TITLE_VALUE, PropertyType.STRING, "Title", 150));
 		columns.add(new ColumnDefinition(FilmTypes.FILM_TITLE,
 				FilmNames.FILM_TITLE_ARTICLE, PropertyType.STRING, "Article",
 				60));

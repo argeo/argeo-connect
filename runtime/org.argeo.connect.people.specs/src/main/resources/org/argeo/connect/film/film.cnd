@@ -53,21 +53,17 @@
 - film:website
 
 // Alternative titles
-[film:altTitle] > nt:unstructured
-- film:title (STRING)
+[film:title] > nt:unstructured, people:language, people:orderable
+- film:titleValue (STRING)
 - film:titleArticle (STRING)
 - film:titleLatinPronunciation (STRING)
 - film:titleIsOrig (BOOLEAN)
-// A single language tag, as defined in http://tools.ietf.org/html/rfc5646
-- film:lang (STRING)
 
 // Synopsis
-[film:synopsis] > nt:unstructured
+[film:synopsis] > nt:unstructured, people:language
 - film:synopsisContent (STRING)
 // an optional short synopsis
 - film:synopsisContentShort (STRING)
-// A single language tag, as defined in http://tools.ietf.org/html/rfc5646
-- people:lang (STRING)
 
 
 // Time stamp
@@ -81,13 +77,13 @@
 //
 // FILM PRINT
 //
-[film:print] > nt:unstructured, mix:title 
-- film:printType
-- film:printFormat
-- film:printRatio
-- film:printSoundFormat
-- film:printLanguageVersion
-- film:printFee
-- film:printFeeInfo
-- film:printSourceContact
-- film:printReturnContact
+[film:print] > nt:unstructured, mix:title, people:orderable
+- film:printType (STRING)
+- film:printFormat (STRING)
+- film:printRatio (STRING)
+- film:printSoundFormat (STRING)
+- film:printLanguageVersion (STRING)
+- film:printFee (STRING)
+- film:printFeeInfo (STRING)
+- film:printSourceContact (STRING)
+- film:printReturnContact (STRING)

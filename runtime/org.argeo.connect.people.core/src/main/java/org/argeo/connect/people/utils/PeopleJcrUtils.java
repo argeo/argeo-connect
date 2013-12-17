@@ -120,7 +120,7 @@ public class PeopleJcrUtils implements PeopleNames {
 		}
 		if (node != null)
 			return CommonsJcrUtils.get(node, PEOPLE_COUNTRY);
-		return null;
+		return "";
 	}
 
 	/** Compute the town of an entity using primary addresses */
@@ -136,7 +136,7 @@ public class PeopleJcrUtils implements PeopleNames {
 		}
 		if (node != null)
 			return CommonsJcrUtils.get(node, PEOPLE_CITY);
-		return null;
+		return "";
 	}
 
 	/**
@@ -208,46 +208,172 @@ public class PeopleJcrUtils implements PeopleNames {
 		}
 	}
 
-	//
-	// public static String getContactTypeAsString(Node contact) {
-	// try {
-	// if (contact.isNodeType(PeopleTypes.PEOPLE_EMAIL))
-	// return "E-Mail";
-	// else if (contact.isNodeType(PeopleTypes.PEOPLE_URL))
-	// return "Site";
-	// else if (contact.isNodeType(PeopleTypes.PEOPLE_PHONE))
-	// return "Phone";
-	// else if (contact.isNodeType(PeopleTypes.PEOPLE_ADDRESS))
-	// return "Address";
-	// return "Other";
-	// } catch (RepositoryException re) {
-	// throw new ArgeoException("Unable to add a new contact node", re);
-	// }
-	// }
-
 	/**
-	 * if marking a contact as primary. All contact with same type for same
-	 * entity are then marked as NOT primary. if marking as not primary only the
-	 * flag for current contact is set to false.
+	 * Marks the given node as primary using people specific mechanism, that is
+	 * 
+	 * <ul>
+	 * <li>it moves the corresponding node as first childnode of this node's
+	 * parent</li>
+	 * <li>if this node has people:orderable mixin, it sets the isPrimary flag
+	 * to true for this node and to false for all siblings that have the same
+	 * node type</li>
+	 * <li>it returns true only if some changes have been performed.</li>
+	 * </ul>
 	 */
-	public static void markAsPrimary(Node primaryContact, boolean primary) {
+	public static boolean markAsPrimary(Node parentNode, Node primaryChild) {
 		try {
-			if (primary) {
-				Node parent = primaryContact.getParent();
-				String currNodeType = primaryContact.getPrimaryNodeType()
-						.getName();
-				NodeIterator ni = parent.getNodes();
+			Node parent = primaryChild.getParent();
+			String thisNodeType = primaryChild.getPrimaryNodeType().getName();
+
+			if (isPrimary(parentNode, primaryChild))
+				return false;
+
+			NodeIterator ni = parent.getNodes();
+			Node firstNode = ni.nextNode();
+			// update primary flag if needed
+			if (primaryChild.isNodeType(PeopleTypes.PEOPLE_ORDERABLE)) {
+				ni = parent.getNodes();
 				while (ni.hasNext()) {
 					Node nextNode = ni.nextNode();
-					if (nextNode.isNodeType(currNodeType))
+					if (nextNode.isNodeType(thisNodeType)
+							&& !primaryChild.getIdentifier().equals(
+									nextNode.getIdentifier()))
 						nextNode.setProperty(PeopleNames.PEOPLE_IS_PRIMARY,
 								false);
 				}
+				primaryChild.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, true);
 			}
-			primaryContact.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, primary);
-			// TODO update primary town and country if address
+
+			// move first
+			parent.orderBefore(
+					JcrUtils.lastPathElement(primaryChild.getPath()),
+					JcrUtils.lastPathElement(firstNode.getPath()));
+
+			updatePrimaryCache(parentNode, primaryChild, true);
+			return true;
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable set primary flag", re);
+			throw new ArgeoException("Unable to mark " + primaryChild
+					+ " as primary", re);
+		}
+	}
+
+	/** Check if current child is primary */
+	public static boolean isPrimary(Node parentNode, Node primaryChild) {
+		try {
+
+			if (primaryChild.hasProperty(PEOPLE_IS_PRIMARY)
+					&& primaryChild.getProperty(PEOPLE_IS_PRIMARY).getBoolean())
+				return true;
+
+			return false;
+
+			// TODO use also nodes order in the future
+
+			// init
+			// Node parent = primaryChild.getParent();
+			// String thisNodeType =
+			// primaryChild.getPrimaryNodeType().getName();
+
+			// // Check if something must change
+			// NodeIterator ni = parent.getNodes();
+			// while (ni.hasNext()) {
+			// Node nextNode = ni.nextNode();
+			// if (primaryChild.getIdentifier().equals(
+			// nextNode.getIdentifier()))
+			// return true;
+			// else if (nextNode.isNodeType(thisNodeType))
+			// return false;
+			// }
+			//
+			// throw new PeopleException("We should have found current "
+			// + "node and never reach this point");
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Unable to mark " + primaryChild
+					+ " as primary", re);
+		}
+	}
+
+	/**
+	 * After setting a given node as primary, it tries to update parent node
+	 * corresponding cache properties. This properties are mainly used to enable
+	 * full text search with no join.
+	 * 
+	 * If isPrimary = false e.g. corresponding child will be deleted,
+	 * corresponding properties are removed.
+	 * 
+	 * Updated cache properties depend on the primary node type
+	 * */
+	public static void updatePrimaryCache(Node parentNode, Node primaryChild,
+			boolean isPrimary) {
+		try {
+			if (primaryChild.isNodeType(PeopleTypes.PEOPLE_PHONE)) {
+				if (isPrimary) {
+					parentNode.setProperty(PEOPLE_CACHE_PPHONE, CommonsJcrUtils
+							.get(primaryChild, PEOPLE_CONTACT_VALUE));
+				} else {
+					if (parentNode.hasProperty(PEOPLE_CACHE_PPHONE))
+						parentNode.setProperty(PEOPLE_CACHE_PPHONE, "");
+				}
+			} else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_EMAIL)) {
+				if (isPrimary) {
+					parentNode.setProperty(PEOPLE_CACHE_PMAIL, CommonsJcrUtils
+							.get(primaryChild, PEOPLE_CONTACT_VALUE));
+				} else {
+					if (parentNode.hasProperty(PEOPLE_CACHE_PMAIL))
+						parentNode.setProperty(PEOPLE_CACHE_PMAIL, "");
+				}
+			} else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_URL)) {
+				if (isPrimary) {
+					parentNode.setProperty(PEOPLE_CACHE_PWeb, CommonsJcrUtils
+							.get(primaryChild, PEOPLE_CONTACT_VALUE));
+				} else {
+					if (parentNode.hasProperty(PEOPLE_CACHE_PWeb))
+						parentNode.setProperty(PEOPLE_CACHE_PWeb, "");
+				}
+			} else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
+				if (isPrimary) {
+					String cityStr = "", countryStr = "";
+
+					if (primaryChild.isNodeType(PeopleTypes.PEOPLE_CONTACT_REF)) {
+						Node linkedOrg = PeopleJcrUtils
+								.getEntityFromNodeReference(primaryChild,
+										PEOPLE_REF_UID);
+						if (linkedOrg != null) {
+							cityStr = getTownFromItem(linkedOrg);
+							countryStr = getCountryFromItem(linkedOrg);
+						}
+					} else {
+						cityStr = CommonsJcrUtils
+								.get(primaryChild, PEOPLE_CITY);
+						countryStr = CommonsJcrUtils.get(primaryChild,
+								PEOPLE_COUNTRY);
+					}
+
+					parentNode.setProperty(PEOPLE_CACHE_PCITY, cityStr);
+					parentNode.setProperty(PEOPLE_CACHE_PCOUNTRY, countryStr);
+				} else {
+					if (parentNode.hasProperty(PEOPLE_CACHE_PCITY))
+						parentNode.setProperty(PEOPLE_CACHE_PCITY, "");
+					if (parentNode.hasProperty(PEOPLE_CACHE_PCOUNTRY))
+						parentNode.setProperty(PEOPLE_CACHE_PCOUNTRY, "");
+				}
+			} else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_JOB)) {
+				if (isPrimary) {
+					Node linkedOrg = PeopleJcrUtils.getEntityFromNodeReference(
+							primaryChild, PEOPLE_REF_UID);
+					if (linkedOrg != null) {
+						parentNode.setProperty(PEOPLE_CACHE_PORG,
+								CommonsJcrUtils.get(linkedOrg,
+										Property.JCR_TITLE));
+					}
+				} else {
+					if (parentNode.hasProperty(PEOPLE_CACHE_PORG))
+						parentNode.setProperty(PEOPLE_CACHE_PORG, "");
+				}
+			}
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Unable to mark " + primaryChild
+					+ " as primary", re);
 		}
 	}
 
@@ -304,7 +430,8 @@ public class PeopleJcrUtils implements PeopleNames {
 					PEOPLE_CONTACTS);
 			Node contact = contacts.addNode(name.trim(), nodeType);
 			contact.setProperty(PEOPLE_CONTACT_VALUE, value);
-			markAsPrimary(contact, primary);
+			if (primary)
+				markAsPrimary(parentNode, contact);
 			setContactLabel(contact, label);
 			setContactCategory(contact, category);
 			setContactNature(contact, nature, linkedOrg);
@@ -328,8 +455,8 @@ public class PeopleJcrUtils implements PeopleNames {
 			boolean primary, String contactNature, String contactCategory,
 			String contactLabel) {
 		return createContact(parentNode, PeopleTypes.PEOPLE_EMAIL,
-				JcrUtils.replaceInvalidChars(emailAddress), emailAddress, primary, contactNature,
-				contactCategory, contactLabel);
+				JcrUtils.replaceInvalidChars(emailAddress), emailAddress,
+				primary, contactNature, contactCategory, contactLabel);
 	}
 
 	/**
@@ -384,7 +511,7 @@ public class PeopleJcrUtils implements PeopleNames {
 	 */
 	public static Node createPhone(Node parentNode, String phoneNumber,
 			boolean primary, String nature, String category, String label) {
-		return createContact(parentNode, PeopleTypes.PEOPLE_PHONE, 
+		return createContact(parentNode, PeopleTypes.PEOPLE_PHONE,
 				JcrUtils.replaceInvalidChars(phoneNumber), phoneNumber,
 				primary, nature, category, label);
 	}
@@ -440,13 +567,16 @@ public class PeopleJcrUtils implements PeopleNames {
 		try {
 			Node address = createContact(parentNode,
 					PeopleTypes.PEOPLE_ADDRESS, PeopleTypes.PEOPLE_ADDRESS, "",
-					primary, ContactValueCatalogs.CONTACT_NATURE_PRO, category,
+					false, ContactValueCatalogs.CONTACT_NATURE_PRO, category,
 					label);
 			address.addMixin(PeopleTypes.PEOPLE_CONTACT_REF);
 			// set reference field
 			if (referencedOrg != null)
 				address.setProperty(PEOPLE_REF_UID,
 						referencedOrg.getProperty(PEOPLE_UID).getString());
+
+			if (primary)
+				markAsPrimary(parentNode, address);
 
 			return address;
 		} catch (RepositoryException re) {
@@ -479,9 +609,10 @@ public class PeopleJcrUtils implements PeopleNames {
 			String category, String label) {
 		try {
 
+			// postpone primary flag management
 			Node address = createContact(parentNode,
 					PeopleTypes.PEOPLE_ADDRESS, PeopleTypes.PEOPLE_ADDRESS, "",
-					primary, nature, category, label);
+					false, nature, category, label);
 			// set address fields
 			if (!CommonsJcrUtils.isEmptyString(street1))
 				address.setProperty(PEOPLE_STREET, street1);
@@ -500,6 +631,11 @@ public class PeopleJcrUtils implements PeopleNames {
 
 			if (!CommonsJcrUtils.isEmptyString(country))
 				address.setProperty(PEOPLE_COUNTRY, country);
+
+			// update primary flag after contact creation
+			if (primary)
+				markAsPrimary(parentNode, address);
+
 			return address;
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to add a new address node", re);

@@ -80,7 +80,7 @@ public class FilmJcrUtils implements FilmNames {
 			String title = null;
 			Node altTitle = getAltTitleNode(film, lang);
 			if (altTitle != null) {
-				title = altTitle.getProperty(FILM_TITLE).getString();
+				title = altTitle.getProperty(FILM_TITLE_VALUE).getString();
 				if (altTitle.hasProperty(FILM_TITLE_ARTICLE))
 					title += ", "
 							+ altTitle.getProperty(FILM_TITLE_ARTICLE)
@@ -145,7 +145,7 @@ public class FilmJcrUtils implements FilmNames {
 			Node titles = CommonsJcrUtils.getOrCreateDirNode(film, FILM_TITLES);
 			// TODO Check for duplicates
 			Node tNode = titles.addNode(language, FilmTypes.FILM_TITLE);
-			tNode.setProperty(FILM_TITLE, title);
+			tNode.setProperty(FILM_TITLE_VALUE, title);
 			if (CommonsJcrUtils.checkNotEmptyString(article))
 				tNode.setProperty(FILM_TITLE_ARTICLE, article);
 			if (CommonsJcrUtils.checkNotEmptyString(latinPronunciation))

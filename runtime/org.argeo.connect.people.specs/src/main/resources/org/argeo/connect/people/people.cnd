@@ -41,6 +41,14 @@
 + people:jobs (nt:unstructured)
 //+ people:jobs (nt:unstructured) = nt:unstructured m a
 
+// cache to ease full text search 
+- people:cachePCity  (STRING) IGNORE
+- people:cachePCountry (STRING) IGNORE
+- people:cachePOrg (STRING) IGNORE
+- people:cachePPhone (STRING) IGNORE
+- people:cachePMail (STRING) IGNORE
+- people:cachePWeb (STRING) IGNORE
+
 //
 // ORGANISATION
 //
@@ -55,6 +63,13 @@
 - people:orgBranches (STRING) *
 // Subnode for all bank accounts owned by this org
 + people:paymentAccounts (nt:unstructured)
+
+// cache to ease full text search 
+- people:cachePCity  (STRING) IGNORE
+- people:cachePCountry (STRING) IGNORE
+- people:cachePPhone (STRING) IGNORE
+- people:cachePMail (STRING) IGNORE
+- people:cachePWeb (STRING) IGNORE
 
 
 //
@@ -74,7 +89,7 @@
 // node with reference to corresponding entities 
 // and some more information if needed.
 
-[people:position] > nt:unstructured
+[people:position] > nt:unstructured, people:orderable
 - people:role (STRING) 
 // OPTIONAL: the nature of the subject in this relation: 
 // For instance "Actor" or "Engineer" 
@@ -90,23 +105,20 @@
 // Note that for the time being, we store the corresponding 
 // mail address in the people:role property
 [people:mailingListItem] > people:position
-// ONLY a person
-- people:refUid (STRING) m
-// An optional organisation
-- people:orgRefUid (STRING)
-
+// an entity that can provide a primary contact (person, org, group...)
+- people:refUid (STRING) m nofulltext
 
 // The job or position of a person in an organisation
 [people:job] > people:position
 // ONLY an organisation
-- people:refUid (STRING) m
+- people:refUid (STRING) m nofulltext
 // An optional department within the org corresponding to the current position
 - people:department (STRING)
 
 // Membership in a group
 [people:member] > people:position
 // MIGHT BE a person, an organisation or another group
-- people:refUid (STRING) m
+- people:refUid (STRING) m nofulltext
 
 // 
 // TAGABLE
@@ -178,11 +190,16 @@ mixin
 //
 [people:multiLang]
 mixin
-+ * (people:language) *
+// we use nt:unstructured to insure the fact that nodes are orderable
++ * (nt:unstructured, people:language) *
 
-[people:language] > nt:unstructured, people:orderable
+[people:language] 
+mixin
 // A single language tag, as defined in http://tools.ietf.org/html/rfc5646
 - people:lang (STRING) ='en' m a
+// NOTE: we don't use mix:language for the time being because constraints on the 
+// jcr:language properties are implementation specific
+
 
 // a reference for a given language
 [people:isoLanguage] > nt:unstructured, mix:title
@@ -195,11 +212,13 @@ mixin
 // 
 // ORDERABLE
 //
+// Connect specific mixin to enable definition of order and primary items 
+// when the orderable node mechanism provided by JCR is not enough
 [people:orderable] 
 mixin
 // 1 is the most prefered
 - people:pref (LONG) 
-// ='100' m a
+- people:isPrimary (BOOLEAN) 
 
 
 
@@ -221,7 +240,6 @@ mixin
 - people:contactValue (STRING) 
 // a shortcut to manage primary contact
 // should be refined
-- people:isPrimary (BOOLEAN) ='false' a 
 // Only for person, Private or professional
 - people:contactNature (STRING)
 // Category for the given type : for instance a private phone can be:

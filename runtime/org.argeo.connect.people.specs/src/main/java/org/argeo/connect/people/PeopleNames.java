@@ -73,17 +73,17 @@ public interface PeopleNames {
 	public final static String PEOPLE_VAT_ID_NB = "people:vatIdNb";
 	public final static String PEOPLE_ORG_BRANCHES = "people:orgBranches";
 
-	/* TASKS AND ACTIVITIES  */
+	/* TASKS AND ACTIVITIES */
 	public final static String PEOPLE_DATE_BEGIN = "people:dateBegin";
 	public final static String PEOPLE_DATE_END = "people:dateEnd";
 	public final static String PEOPLE_WF_VERSION = "people:wfVersion";
 	public final static String PEOPLE_WF_VERSION_ID = "people:wfId";
 	public final static String PEOPLE_WF_STATUS = "people:wfStatus";
 
-	public final static String PEOPLE_ATTACHEMENTS =   "people:attachments";
+	public final static String PEOPLE_ATTACHEMENTS = "people:attachments";
 	public final static String PEOPLE_RELATED_TO = "people:relatedTo";
-	
-	// Tasks 
+
+	// Tasks
 	public final static String PEOPLE_ASSIGNED_TO = "people:assignedTo";
 	public final static String PEOPLE_TASK_STATUS = "people:taskStatus";
 	public final static String PEOPLE_DUE_DATE = "people:dueDate";
@@ -92,7 +92,7 @@ public interface PeopleNames {
 	public final static String PEOPLE_DEPENDS_ON = "people:dependsOn";
 	public final static String PEOPLE_CHILD_TASKS = "people:childTasks";
 	public final static String PEOPLE_ACTIVITIES = "people:activities";
-	
+
 	/* CONTACTS */
 	// base properties for all contact type nodes
 	public final static String PEOPLE_CONTACT_VALUE = "people:contactValue";
@@ -116,6 +116,17 @@ public interface PeopleNames {
 	// A shortcut to store the displayed address
 	// public final static String PEOPLE_DISPLAY_ADDRESS =
 	// "people:displayAddress";
+
+	/* CACHE */
+	// following properties are all "on parent version" ignore and are used to
+	// store primary
+	// information to fasten fulltextsearch
+	public final static String PEOPLE_CACHE_PCITY = "people:cachePCity";
+	public final static String PEOPLE_CACHE_PCOUNTRY = "people:cachePCountry";
+	public final static String PEOPLE_CACHE_PORG = "people:cachePOrg";
+	public final static String PEOPLE_CACHE_PPHONE = "people:cachePPhone";
+	public final static String PEOPLE_CACHE_PMAIL = "people:cachePMail";
+	public final static String PEOPLE_CACHE_PWeb = "people:cachePWeb";
 
 	/* MISCENELLANEOUS */
 

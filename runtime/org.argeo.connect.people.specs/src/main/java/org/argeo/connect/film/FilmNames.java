@@ -29,7 +29,7 @@ public interface FilmNames {
 
 	// A sub node with various titles (for various country / languages)
 	public final static String FILM_TITLES = "film:titles";
-	public final static String FILM_TITLE = "film:title";
+	public final static String FILM_TITLE_VALUE = "film:titleValue";
 	public final static String FILM_TITLE_ARTICLE = "film:titleArticle";
 	public final static String FILM_TITLE_LATIN_PRONUNCIATION = "film:titleLatinPronunciation";
 	public final static String FILM_TITLE_IS_ORIG = "film:titleIsOrig";

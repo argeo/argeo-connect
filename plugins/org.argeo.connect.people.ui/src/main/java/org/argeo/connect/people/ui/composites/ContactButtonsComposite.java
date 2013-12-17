@@ -69,8 +69,10 @@ public class ContactButtonsComposite extends Composite {
 				super.refresh();
 				try {
 					// refresh buttons
-					boolean isPrimary = contactNode.getProperty(
-							PeopleNames.PEOPLE_IS_PRIMARY).getBoolean();
+					boolean isPrimary = (contactNode
+							.hasProperty(PeopleNames.PEOPLE_IS_PRIMARY) && contactNode
+							.getProperty(PeopleNames.PEOPLE_IS_PRIMARY)
+							.getBoolean());
 					if (isPrimary)
 						primaryBtn.setImage(PeopleImages.PRIMARY_BTN);
 					else
@@ -163,21 +165,26 @@ public class ContactButtonsComposite extends Composite {
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				try {
+					// update primary cache
+					if (PeopleJcrUtils.isPrimary(parNode, node))
+						PeopleJcrUtils.updatePrimaryCache(parNode, node, false);
+
 					boolean wasCheckedOut = CommonsJcrUtils
 							.isNodeCheckedOutByMe(parNode);
+
 					if (!wasCheckedOut)
 						CommonsJcrUtils.checkout(parNode);
 					node.remove();
+
 					if (wasCheckedOut)
-						parNode.getSession().save();
+						formPart.markDirty();
 					else
 						CommonsJcrUtils.saveAndCheckin(parNode);
+					CommandUtils.callCommand(ForceRefresh.ID);
 				} catch (RepositoryException e) {
 					throw new PeopleException("unable to initialise deletion",
 							e);
 				}
-
-				CommandUtils.callCommand(ForceRefresh.ID);
 			}
 		});
 	}
@@ -189,27 +196,22 @@ public class ContactButtonsComposite extends Composite {
 
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
-				try {
-					boolean wasCheckedOut = CommonsJcrUtils
-							.isNodeCheckedOutByMe(parNode);
-					if (!wasCheckedOut)
-						CommonsJcrUtils.checkout(parNode);
-					boolean wasPrimary = false;
-					if (node.hasProperty(PeopleNames.PEOPLE_IS_PRIMARY)
-							&& node.getProperty(PeopleNames.PEOPLE_IS_PRIMARY)
-									.getBoolean())
-						wasPrimary = true;
-					PeopleJcrUtils.markAsPrimary(node, !wasPrimary);
+				boolean wasCheckedOut = CommonsJcrUtils
+						.isNodeCheckedOutByMe(parNode);
+				if (!wasCheckedOut)
+					CommonsJcrUtils.checkout(parNode);
+
+				boolean hasChanged = PeopleJcrUtils
+						.markAsPrimary(parNode, node);
+
+				if (hasChanged) {
 					if (wasCheckedOut)
-						parNode.getSession().save();
+						formPart.markDirty();
 					else
 						CommonsJcrUtils.saveAndCheckin(parNode);
-
 					CommandUtils.callCommand(ForceRefresh.ID);
-				} catch (RepositoryException e) {
-					throw new PeopleException(
-							"unable to change primary contact", e);
-				}
+				} else if (!wasCheckedOut)
+					CommonsJcrUtils.cancelAndCheckin(parNode);
 			}
 		});
 	}
