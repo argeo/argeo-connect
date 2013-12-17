@@ -17,6 +17,8 @@ import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiConstants;
@@ -33,6 +35,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 public class HistoryToolkit {
+	private final static Log log = LogFactory.getLog(HistoryToolkit.class);
 
 	// private List<String> relevantAttributeList;
 	private final FormToolkit toolkit;
@@ -181,9 +184,20 @@ public class HistoryToolkit {
 					.getVersionHistory(entity.getPath());
 
 			VersionIterator vit = versionHistory.getAllLinearVersions();
+			boolean first = true;
 			while (vit.hasNext()) {
 				Version version = vit.nextVersion();
 				Node node = version.getFrozenNode();
+
+				if (first && node != null && log.isTraceEnabled()) {
+					// FIXME helper to easily find the path of the technical
+					// node under jcr:system/jcr:versionStorage that
+					// manage versioning
+					log.trace("Retrieving history using frozenNode of path: "
+							+ node.getPath());
+					first = false;
+				}
+
 				Version predecessor = null;
 				try {
 					predecessor = version.getLinearPredecessor();

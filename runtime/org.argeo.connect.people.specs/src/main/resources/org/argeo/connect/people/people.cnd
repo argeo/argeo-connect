@@ -5,7 +5,8 @@
 //
 [people:entity] > nt:unstructured, mix:versionable, mix:lastModified, mix:title
 // An implementation dependent UID for each entity
-- people:uid (String) m
+// We remove this technical property from the full text search mechanism
+- people:uid (String) m nofulltext
 // Maps the FN value of a vCard
 // We rather use JCR_TITLE and JCR_DESCRIPTION
 // - people:displayName (String) 
