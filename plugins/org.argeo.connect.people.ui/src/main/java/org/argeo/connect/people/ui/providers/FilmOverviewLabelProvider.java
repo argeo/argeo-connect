@@ -52,25 +52,35 @@ public class FilmOverviewLabelProvider extends ColumnLabelProvider implements
 			else
 				builder.append("<span style='font-size:15px;'>");
 
+			
+			// TODO clean this:
+			// Must retrieve primary title
+			// Must display corresponding latin prononciation if needed
+			// Must display EN title if primary != EN && EN != null
+			
 			// first line
 			builder.append("<b>");
-			builder.append(CommonsJcrUtils.get(film, FILM_ID));
-			builder.append(" ~ <big> ");
+			String idStr = CommonsJcrUtils.get(film, FilmNames.FILM_ID);
+			if (CommonsJcrUtils.checkNotEmptyString(idStr))
+				builder.append(idStr).append(" ~ ");
+			builder.append("<big> ");
 			builder.append(FilmJcrUtils.getTitleForFilm(film));
 			builder.append("</big> </b> ");
+			
 			// latinTitle
 			String latinTitle = CommonsJcrUtils
 					.get(film, FILM_ORIG_LATIN_TITLE);
 			if (CommonsJcrUtils.checkNotEmptyString(latinTitle))
 				builder.append("<i>").append(latinTitle).append("</i>&#160;");
 
-			builder.append("<br/>");
-
 			// english title
 			String enTitle = FilmJcrUtils.getAltTitle(film, PeopleConstants.LANG_EN);
 			if (CommonsJcrUtils.checkNotEmptyString(enTitle))
-				builder.append(enTitle).append("<br/>");
+				builder.append(enTitle);
 
+			builder.append("<br/>");
+
+			
 			// Production
 			StringBuilder currLine = new StringBuilder();
 		
