@@ -352,7 +352,7 @@
 	   	</sourceProvider>
 	</extension>
 	
-	<!-- <extension
+	<extension
 		point="org.eclipse.ui.activities">
 		<activity
               description="Only for admins"
@@ -361,7 +361,7 @@
 		  <enabledWhen>
 		    <with variable="roles">
 		      <iterate ifEmpty="false" operator="or">
-		        <equals value="ROLE_PEOPLE_ADMIN" />
+		        <equals value="ROLE_ADMIN" />
 		      </iterate>
 		    </with>
 		  </enabledWhen>
@@ -371,5 +371,5 @@
               isEqualityPattern="true"
               pattern="org.argeo.connect.people.ui/org.argeo.connect.people.ui.peoplePerspective">
         </activityPatternBinding>
-     </extension> -->
+     </extension>
 </plugin>
