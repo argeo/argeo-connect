@@ -13,4 +13,5 @@
 		<property name="repository" ref="nodeRepository" />
 		<property name="bundleContext" ref="bundleContext" />
 	</bean>
+
 </beans>

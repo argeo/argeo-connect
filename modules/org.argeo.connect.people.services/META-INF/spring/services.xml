@@ -9,7 +9,6 @@
 	<bean id="peopleService" class="org.argeo.connect.people.core.PeopleServiceImpl"
 		init-method="init" destroy-method="destroy">
 		<property name="repository" ref="peopleRepository" />
-		<property name="managedRoles" ref="managedRoles" />
 	</bean>
 	<bean
 		class="org.argeo.security.core.AuthenticatedApplicationContextInitialization">

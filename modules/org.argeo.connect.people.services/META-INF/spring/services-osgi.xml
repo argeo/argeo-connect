@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns="http://www.springframework.org/schema/osgi"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/osgi  
        http://www.springframework.org/schema/osgi/spring-osgi-1.1.xsd
        http://www.springframework.org/schema/beans   
-       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
 	<!-- LABEL -->
 	<beans:bean class="org.argeo.security.core.OsgiModuleLabel">
@@ -16,6 +19,7 @@
 		filter="(argeo.jcr.repository.alias=node)" />
 	<reference id="authenticationManager"
 		interface="org.springframework.security.AuthenticationManager" />
+
 	<!-- SERVICES -->
 	<service ref="peopleService" interface="org.argeo.connect.people.PeopleService" />
 	<service ref="peopleRepository" interface="javax.jcr.Repository">
@@ -23,11 +27,45 @@
 			<beans:entry key="argeo.jcr.repository.alias" value="people" />
 		</service-properties>
 	</service>
+
 	<!-- ROLES -->
-	<!-- <reference id="userAdminService" interface="org.argeo.security.UserAdminService" 
-		/> -->
-	<!-- <beans:bean class="org.argeo.security.core.SimpleRoleRegistration" -->
-	<!-- init-method="run"> -->
-	<!-- <beans:property name="userAdminService" ref="userAdminService" /> -->
-	<!-- </beans:bean> -->
+	<reference id="userAdminService" interface="org.argeo.security.UserAdminService" />
+
+	<!-- ROLE_USER: A role that has been granted JCR_ALL rights on the workspace, 
+		admin activities are filtered out in the UI code. TODO refine this -->
+	<beans:bean class="org.argeo.security.core.SimpleRoleRegistration"
+		init-method="run">
+		<beans:property name="role" value="ROLE_MEMBER" />
+		<beans:property name="userAdminService" ref="userAdminService" />
+	</beans:bean>
+
+	<!-- ROLE_GUEST: A role that has been granted JCR_READ rights on the workspace -->
+	<beans:bean class="org.argeo.security.core.SimpleRoleRegistration"
+		init-method="run">
+		<beans:property name="role" value="ROLE_GUEST" />
+		<beans:property name="userAdminService" ref="userAdminService" />
+	</beans:bean>
+
+	<!-- Effective attribution of privileges. -->
+	<beans:bean parent="template.jcrAuthorizations">
+		<beans:property name="principalPrivileges">
+			<util:map>
+				<beans:entry key="jcr:read" value="ROLE_GUEST" />
+				<beans:entry key="jcr:all" value="ROLE_MEMBER" />
+				<!-- <beans:entry key="jcr:all"> -->
+				<!-- <beans:value>ROLE_MEMBER</beans:value> -->
+				<!-- <util:constant -->
+				<!-- static-field="org.argeo.connect.people.PeopleConstants.ROLE_MEMBER" 
+					/> -->
+				<!-- </beans:entry> -->
+			</util:map>
+		</beans:property>
+	</beans:bean>
+
+	<beans:bean id="template.jcrAuthorizations" abstract="true"
+		class="org.argeo.jackrabbit.JackrabbitAuthorizations" init-method="run">
+		<beans:property name="workspace" value="*" />
+		<beans:property name="repository" ref="peopleRepository" />
+	</beans:bean>
+
 </beans:beans>

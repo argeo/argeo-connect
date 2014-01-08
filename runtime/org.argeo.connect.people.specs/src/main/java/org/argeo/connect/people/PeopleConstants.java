@@ -22,9 +22,8 @@ public interface PeopleConstants {
 	/*
 	 * USER ROLES
 	 */
-	public final static Integer ROLE_CONSULTANT = 0;
-	public final static Integer ROLE_MANAGER = 1;
-	public final static Integer ROLE_ADMIN = 2;
+	public final static String ROLE_GUEST = "ROLE_GUEST";
+	public final static String ROLE_MEMBER = "ROLE_MEMBER";
 
 	/* LANGUAGE CONSTANTS */
 	public final static String LANG_EN = "en";

@@ -37,7 +37,8 @@ public class PeopleServiceImpl implements PeopleService {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private Map<Integer, String> managedRoles;
+
+	// private Map<Integer, String> managedRoles;
 
 	// business catalogs maintained in file business catalogs of the specs
 	// bundle
@@ -235,8 +236,7 @@ public class PeopleServiceImpl implements PeopleService {
 
 	/* USER MANAGEMENT */
 	/** returns true if the current user is in the specified role */
-	public boolean isUserInRole(Integer userRole) {
-		String role = managedRoles.get(userRole);
+	public boolean isUserInRole(String role) {
 		Authentication authen = SecurityContextHolder.getContext()
 				.getAuthentication();
 		for (GrantedAuthority ga : authen.getAuthorities()) {
@@ -266,9 +266,9 @@ public class PeopleServiceImpl implements PeopleService {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setManagedRoles(Map<Integer, String> managedRoles) {
-		this.managedRoles = managedRoles;
-	}
+	// public void setManagedRoles(Map<Integer, String> managedRoles) {
+	// this.managedRoles = managedRoles;
+	// }
 
 	// Inject a map with all business catalogs
 	public void setBusinessCatalogs(Map<String, Object> businessCatalogs) {

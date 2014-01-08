@@ -50,7 +50,7 @@ public interface PeopleService {
 
 	/* USERS */
 	/** returns true if the current user is in the specified role */
-	public boolean isUserInRole(Integer userRole);
+	public boolean isUserInRole(String userRole);
 
 	/** returns the current user ID **/
 	public String getCurrentUserId();
