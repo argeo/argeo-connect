@@ -57,6 +57,19 @@
 			id="org.argeo.connect.people.ui.mailingListEditor"
 			name="Mailing List">
 		</editor>
+		<!-- ACTIVITIES -->
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/activities/todo.gif"
+			id="org.argeo.connect.people.ui.activityEditor"
+			name="Activity editor">
+		</editor>
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/activities/todo.gif"
+			id="org.argeo.connect.people.ui.taskEditor"
+			name="Task editor">
+		</editor>
 	</extension>
 	<!-- Commands -->
 	<extension
@@ -90,11 +103,15 @@
     	<command
 			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
 			id="org.argeo.connect.people.ui.openEntityEditor"
-			name="Open Network Editor">
+			name="Open Editor">
 			<commandParameter
          		id="param.entityUid"
          		name="The Model Specific Entity Uid">
   	 		</commandParameter>
+			<commandParameter
+         		id="param.jcrId"
+         		name="The jcr identifier">
+         	</commandParameter>
 		</command>    
     	
 		

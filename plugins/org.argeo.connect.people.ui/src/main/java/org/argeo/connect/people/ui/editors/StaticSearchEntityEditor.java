@@ -187,7 +187,6 @@ public class StaticSearchEntityEditor extends EditorPart implements
 				throw new PeopleException("Unable to open editor for node", re);
 			}
 		}
-
 	}
 
 	/* DEPENDENCY INJECTION */

@@ -11,6 +11,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.editors.ActivityEditor;
 import org.argeo.connect.people.ui.editors.EntityEditorInput;
 import org.argeo.connect.people.ui.editors.GroupEditor;
 import org.argeo.connect.people.ui.editors.OrgEditor;
@@ -24,7 +25,8 @@ import org.eclipse.ui.PartInitException;
 
 /**
  * Open the corresponding editor given a node. Centralize here mapping between a
- * node type and an editor
+ * node type and an editor Corresponding node can be retrieved either using the
+ * JCR ID or a business defined UID
  */
 public class OpenEntityEditor extends AbstractHandler {
 	private final static Log log = LogFactory.getLog(OpenEntityEditor.class);
@@ -37,28 +39,36 @@ public class OpenEntityEditor extends AbstractHandler {
 	private PeopleService peopleService;
 
 	public final static String PARAM_ENTITY_UID = "param.entityUid";
+	public final static String PARAM_JCR_ID = "param.jcrId";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
-		String entityUid = event.getParameter(PARAM_ENTITY_UID);
-		if (CommonsJcrUtils.isEmptyString(entityUid)) {
-			if (log.isTraceEnabled())
-				log.warn("Cannot open an editor with no UID");
-			return null;
-		}
-
+		EntityEditorInput eei = null;
+		Node entity = null;
 		Session session = null;
+
+		String jcrId = event.getParameter(PARAM_JCR_ID);
 		try {
 			session = repository.login();
-			Node entity = peopleService.getEntityByUid(session, entityUid);
-
-			if (entity == null) {
-				if (log.isTraceEnabled())
-					log.warn("No entity found for entity Uid " + entityUid);
-				return null;
+			if (jcrId != null) {
+				entity = session.getNodeByIdentifier(jcrId);
+				eei = new EntityEditorInput(jcrId);
+			} else {
+				String entityUid = event.getParameter(PARAM_ENTITY_UID);
+				if (CommonsJcrUtils.isEmptyString(entityUid)) {
+					if (log.isTraceEnabled())
+						log.warn("Cannot open an editor with no UID");
+					return null;
+				}
+				entity = peopleService.getEntityByUid(session, entityUid);
+				if (entity == null) {
+					if (log.isTraceEnabled())
+						log.warn("No entity found for entity UID " + entityUid);
+					return null;
+				}
+				eei = new EntityEditorInput(entity.getIdentifier());
 			}
-			EntityEditorInput eei = new EntityEditorInput(
-					entity.getIdentifier());
+
 			PeopleUiPlugin.getDefault().getWorkbench()
 					.getActiveWorkbenchWindow().getActivePage()
 					.openEditor(eei, getEditorIdFromNode(entity));
@@ -85,7 +95,9 @@ public class OpenEntityEditor extends AbstractHandler {
 	 */
 	protected String getEditorIdFromNode(Node curNode) {
 		try {
-			if (curNode.isNodeType(PeopleTypes.PEOPLE_PERSON))
+			if (curNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
+				return ActivityEditor.ID;
+			else if (curNode.isNodeType(PeopleTypes.PEOPLE_PERSON))
 				return PersonEditor.ID;
 			else if (curNode.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)) {
 				return OrgEditor.ID;

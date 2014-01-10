@@ -148,7 +148,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
 				PeopleUiConstants.PANEL_ACTIVITY_LOG, tooltip);
-		activityTK.populateActivityLogPanel(innerPannel, person, null);
+		activityTK.populateActivityLogPanel(innerPannel, person, getOpenEditorCommandId());
 
 		// Jobs panel
 		tooltip = "Organisations linked to "

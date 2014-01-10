@@ -21,9 +21,14 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.composites.ActivityTableComposite;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
+import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -48,7 +53,6 @@ public class ActivityToolkit {
 	// private final static Log log = LogFactory.getLog(ActivityToolkit.class);
 
 	private final FormToolkit toolkit;
-	@SuppressWarnings("unused")
 	private final IManagedForm form;
 	@SuppressWarnings("unused")
 	private final PeopleService peopleService;
@@ -74,7 +78,7 @@ public class ActivityToolkit {
 
 			// Activity type
 			final Combo addContactCmb = new Combo(addActivityBar, SWT.NONE
-					| SWT.READ_ONLY );
+					| SWT.READ_ONLY);
 			GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 			gd.widthHint = 100;
 			addContactCmb.setLayoutData(gd);
@@ -126,7 +130,8 @@ public class ActivityToolkit {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					createActivity(entity, addContactCmb, titleTxt, descTxt, tmpCmp);
+					createActivity(entity, addContactCmb, titleTxt, descTxt,
+							tmpCmp);
 				}
 			});
 
@@ -137,7 +142,8 @@ public class ActivityToolkit {
 				public void keyTraversed(TraverseEvent e) {
 					if (e.keyCode == SWT.CR) {
 						e.doit = false;
-						createActivity(entity, addContactCmb, titleTxt, descTxt, tmpCmp);
+						createActivity(entity, addContactCmb, titleTxt,
+								descTxt, tmpCmp);
 					}
 				}
 			});
@@ -149,10 +155,16 @@ public class ActivityToolkit {
 				public void keyTraversed(TraverseEvent e) {
 					if (e.keyCode == SWT.CR) {
 						e.doit = false;
-						createActivity(entity, addContactCmb, titleTxt, descTxt, tmpCmp);
+						createActivity(entity, addContactCmb, titleTxt,
+								descTxt, tmpCmp);
 					}
 				}
 			});
+
+			// Doubleclick listener
+			tmpCmp.getTableViewer().addDoubleClickListener(
+					new ActivityTableDCL(openEditorCmdId));
+
 		} catch (RepositoryException re) {
 			throw new PeopleException("unable to create activity log", re);
 		}
@@ -160,6 +172,35 @@ public class ActivityToolkit {
 
 	// ///////////////////////
 	// HELPERS
+
+	private class ActivityTableDCL implements IDoubleClickListener {
+
+		private String openEditorCmdId;
+
+		public ActivityTableDCL(String openEditorCmdId) {
+			this.openEditorCmdId = openEditorCmdId;
+		}
+
+		public void doubleClick(DoubleClickEvent event) {
+			if (event.getSelection() == null || event.getSelection().isEmpty())
+				return;
+			Object obj = ((IStructuredSelection) event.getSelection())
+					.getFirstElement();
+			try {
+				Node currNode;
+				if (obj instanceof Node)
+					currNode = (Node) obj;
+				else
+					return;
+				String jcrId = currNode.getIdentifier();
+				CommandUtils.callCommand(openEditorCmdId,
+						OpenEntityEditor.PARAM_JCR_ID, jcrId);
+			} catch (RepositoryException re) {
+				throw new PeopleException("Unable to open editor for node", re);
+			}
+		}
+	}
+
 	private class MyActivityTableCmp extends ActivityTableComposite {
 		private static final long serialVersionUID = 1L;
 		private Node entity;
@@ -195,7 +236,7 @@ public class ActivityToolkit {
 		String type = ActivityValueCatalogs.getKeyByValue(
 				ActivityValueCatalogs.MAPS_ACTIVITY_TYPES, typeLbl);
 		Node activity = createActivity(entity, type, title, desc);
-		if (activity != null){
+		if (activity != null) {
 			table.refresh();
 			typeLbCmb.select(0);
 			titleTxt.setText("");

@@ -27,4 +27,17 @@
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
 	</bean>
+
+	<!-- DEFAULT ACTIVITIES EDITORS -->
+	<bean id="activityEditor" class="org.argeo.connect.people.ui.editors.ActivityEditor"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+		<property name="repository" ref="repository" />
+	</bean>
+
+	<bean id="taskEditor" class="org.argeo.connect.people.ui.editors.TaskEditor"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+		<property name="repository" ref="repository" />
+	</bean>
 </beans>
