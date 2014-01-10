@@ -73,25 +73,30 @@ public interface PeopleNames {
 	public final static String PEOPLE_VAT_ID_NB = "people:vatIdNb";
 	public final static String PEOPLE_ORG_BRANCHES = "people:orgBranches";
 
-	/* TASKS AND ACTIVITIES */
+	/* ACTIVITIES AND TASKS */
+	public final static String PEOPLE_MANAGER = "people:manager";
+	public final static String PEOPLE_RELATED_TO = "people:relatedTo";
+	public final static String PEOPLE_BOUND_ACTIVITIES = "people:boundActivities";
+	public final static String PEOPLE_ATTACHEMENTS = "people:attachments";
+
+	// Tasks
+	public final static String PEOPLE_TASK_STATUS = "people:taskStatus";
+	public final static String PEOPLE_ASSIGNED_TO = "people:assignedTo";
+	public final static String PEOPLE_DUE_DATE = "people:dueDate";
+	public final static String PEOPLE_CLOSE_DATE = "people:closeDate";
+	public final static String PEOPLE_WAKE_UP_DATE = "people:wakeUpDate";
+	public final static String PEOPLE_DEPENDS_ON = "people:dependsOn";
+	public final static String PEOPLE_CHILD_TASKS = "people:childTasks";
+
+	
+	// Workflow specific
 	public final static String PEOPLE_DATE_BEGIN = "people:dateBegin";
 	public final static String PEOPLE_DATE_END = "people:dateEnd";
 	public final static String PEOPLE_WF_VERSION = "people:wfVersion";
 	public final static String PEOPLE_WF_VERSION_ID = "people:wfId";
 	public final static String PEOPLE_WF_STATUS = "people:wfStatus";
 
-	public final static String PEOPLE_ATTACHEMENTS = "people:attachments";
-	public final static String PEOPLE_RELATED_TO = "people:relatedTo";
 
-	// Tasks
-	public final static String PEOPLE_ASSIGNED_TO = "people:assignedTo";
-	public final static String PEOPLE_TASK_STATUS = "people:taskStatus";
-	public final static String PEOPLE_DUE_DATE = "people:dueDate";
-	public final static String PEOPLE_CLOSE_DATE = "people:closeDate";
-	public final static String PEOPLE_WAKE_UP_DATE = "people:wakeUpDate";
-	public final static String PEOPLE_DEPENDS_ON = "people:dependsOn";
-	public final static String PEOPLE_CHILD_TASKS = "people:childTasks";
-	public final static String PEOPLE_ACTIVITIES = "people:activities";
 
 	/* CONTACTS */
 	// base properties for all contact type nodes

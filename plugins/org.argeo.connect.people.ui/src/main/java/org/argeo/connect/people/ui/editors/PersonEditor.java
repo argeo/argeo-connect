@@ -15,6 +15,7 @@ import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.ui.providers.PersonOverviewLabelProvider;
+import org.argeo.connect.people.ui.toolkits.ActivityToolkit;
 import org.argeo.connect.people.ui.toolkits.ContactToolkit;
 import org.argeo.connect.people.ui.toolkits.EntityToolkit;
 import org.argeo.connect.people.ui.toolkits.HistoryToolkit;
@@ -62,6 +63,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 	// Usefull toolkits
 	private EntityToolkit entityTK;
 	private ContactToolkit contactTK;
+	private ActivityToolkit activityTK;
 	private ListToolkit listTK;
 	private HistoryToolkit historyTK;
 
@@ -88,6 +90,9 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 	protected void createToolkits() {
 		entityTK = new EntityToolkit(toolkit, getManagedForm());
 		contactTK = new ContactToolkit(toolkit, getManagedForm(),
+				getPeopleService());
+
+		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
 				getPeopleService());
 
 		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService());
@@ -137,6 +142,13 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				"Contact details", PeopleUiConstants.PANEL_CONTACT_DETAILS,
 				tooltip);
 		contactTK.createContactPanelWithNotes(innerPannel, person);
+
+		// Activities and tasks
+		tooltip = "Activities and tasks related to "
+				+ JcrUtils.get(person, Property.JCR_TITLE);
+		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
+				PeopleUiConstants.PANEL_ACTIVITY_LOG, tooltip);
+		activityTK.populateActivityLogPanel(innerPannel, person, null);
 
 		// Jobs panel
 		tooltip = "Organisations linked to "

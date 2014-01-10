@@ -26,6 +26,7 @@ public interface PeopleUiConstants {
 
 	/* IDs for the various panels */
 	public final static String PANEL_CONTACT_DETAILS = "people:contactDetails";
+	public final static String PANEL_ACTIVITY_LOG = "people:activityLog";
 	public final static String PANEL_JOBS = "people:jobs";
 	public final static String PANEL_LEGAL_INFO = "people:legalInfo";
 	public final static String PANEL_EMPLOYEES = "people:employees";

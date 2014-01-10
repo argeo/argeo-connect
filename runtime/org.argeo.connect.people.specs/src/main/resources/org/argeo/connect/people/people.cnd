@@ -128,14 +128,19 @@ mixin
 - people:tags (STRING) *
 
 //
-// TASKS AND ACTIVITIES
+// ACTIVITIES AND TASKS
 //
 
 // Activities
-[people:activity] > nt:unstructured, mix:versionable, mix:lastModified, mix:title
-+ people:attachments (nt:unstructured) 
-// a list of related entities like persons, orgs or groups (for instance films)
+[people:activity] > nt:unstructured, mix:versionable, mix:created, mix:lastModified, mix:title
+// reference the user that has created this activity. Might be redundant with jcr:createdBy property ?
+- people:manager (REFERENCE) m
+// a list of related entities like persons, orgs or ...
 - people:relatedTo (REFERENCE) * 
+// an optional list of related documents
++ people:attachments (nt:unstructured) 
+// Enable linking activities together, especially enable referencement of related tasks and workflow.
+- people:boundActivities (REFERENCE) *
 
 // Various activity types, we use mixin to be able to later enrich the model
 [people:note]
@@ -150,7 +155,7 @@ mixin
 [people:meeting]
 mixin 
 
-[people:postMail]
+[people:sentPostMail]
 mixin 
 
 [people:sentFax]
@@ -172,18 +177,18 @@ mixin
 mixin 
 
 // Tasks 
-[people:task] > nt:unstructured, mix:versionable, mix:lastModified, mix:title
-// reference to a group
-- people:assignedTo (REFERENCE) 
+[people:task] > people:activity
 - people:taskStatus (String) ="NEW" a m
-- people:relatedTo (REFERENCE) * 
+// reference to a group
+- people:assignedTo (REFERENCE) * 
+// - people:relatedTo (REFERENCE) * 
 - people:dueDate (DATE) 
 - people:closeDate (DATE) 
 - people:wakeUpDate (DATE) 
 //various sub nodes
 - people:dependsOn (REFERENCE) *
 + people:childTasks (nt:unstructured)
-+ people:activities (nt:unstructured)
+// + people:activities (nt:unstructured)
 
 //
 // LANGUAGES AND COUNTRIES

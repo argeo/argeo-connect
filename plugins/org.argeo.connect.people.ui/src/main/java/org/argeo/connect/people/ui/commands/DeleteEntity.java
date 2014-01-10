@@ -1,9 +1,12 @@
 package org.argeo.connect.people.ui.commands;
 
 import javax.jcr.Node;
+import javax.jcr.ReferentialIntegrityException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
@@ -13,16 +16,18 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
  * Remove the reference to a given entity. Jcr Identifier of the reference node
- * to remove and  a flag indicating if we should also remove its parent must be passed as
- * parameters.
+ * to remove and a flag indicating if we should also remove its parent must be
+ * passed as parameters.
  */
 public class DeleteEntity extends AbstractHandler {
+	private final static Log log = LogFactory.getLog(DeleteEntity.class);
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".deleteEntity";
 	public final static String DEFAULT_LABEL = "Delete";
@@ -41,8 +46,9 @@ public class DeleteEntity extends AbstractHandler {
 		String msg = "You are about to definitively remove this entity.\n"
 				+ "Are you sure you want to proceed ?";
 
-		boolean result = MessageDialog.openConfirm(PeopleUiPlugin.getDefault()
-				.getWorkbench().getDisplay().getActiveShell(),
+		Shell activeShell = HandlerUtil.getActiveWorkbenchWindow(event)
+				.getShell();
+		boolean result = MessageDialog.openConfirm(activeShell,
 				"Confirm Deletion", msg);
 
 		if (!result)
@@ -77,6 +83,12 @@ public class DeleteEntity extends AbstractHandler {
 			else
 				toRemoveNode.remove();
 			session.save();
+		} catch (ReferentialIntegrityException e) {
+			MessageDialog
+					.openError(activeShell, "Delete impossible",
+							"Current entity cannot be removed, it is still being referenced");
+			if (log.isDebugEnabled())
+				e.printStackTrace();
 		} catch (RepositoryException e) {
 			throw new PeopleException("unexpected JCR error while opening "
 					+ "editor for newly created programm", e);
