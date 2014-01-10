@@ -196,9 +196,9 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		};
 
 		AbstractFormPart editPart = new AbstractFormPart() {
-			public void refresh() { // update display value
+			public void refresh() { 
 				super.refresh();
-				// READ ONLY PART
+				// update display value
 				String roText = lastUpdateLP.getText(entity);
 				readOnlyInfoLbl.setText(roText);
 			}

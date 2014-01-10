@@ -64,10 +64,10 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.session = session;
-		populate();
 	}
 
-	protected void populate() {
+	/** Must be called immediately after creation */
+	public void populate() {
 		Composite parent = this;
 		GridLayout layout = PeopleUiUtils.gridLayoutNoBorder();
 		layout.verticalSpacing = 5;
@@ -95,8 +95,7 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 
 		// Activity type: mail, note... todo or task
 		// TODO add icon to display activity type :
-		column = ViewerUtils.createTableViewerColumn(viewer, "Type",
-				SWT.NONE, 30);
+		column = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE, 22);
 		column.setLabelProvider(new TypeLabelProvider());
 
 		// Manager
@@ -111,12 +110,12 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 
 		// Title / description
 		column = ViewerUtils.createTableViewerColumn(viewer, "Content",
-				SWT.NONE, 260);
+				SWT.NONE, 360);
 		column.setLabelProvider(new TitleDescLabelProvider());
 
 		// Date
 		column = ViewerUtils.createTableViewerColumn(viewer, "Date", SWT.NONE,
-				60);
+				80);
 		column.setLabelProvider(new DateLabelProvider());
 		return viewer;
 	}
@@ -188,25 +187,25 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_SENT_EMAIL)) {
 					return ActivitiesImages.SENT_MAIL;
 				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_CALL)) {
-						return ActivitiesImages.PHONE_CALL;
+					return ActivitiesImages.PHONE_CALL;
 				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_SENT_FAX)) {
-							return ActivitiesImages.SENT_FAX;
-				} else return null; 
-				
+					return ActivitiesImages.SENT_FAX;
+				} else
+					return null;
+
 				// TODO implement all types.
 			} catch (RepositoryException re) {
 				throw new ArgeoException("Unable to get date from node "
 						+ element, re);
 			}
 		}
-		
+
 		@Override
 		public String getText(Object element) {
 			return "";
 		}
 	}
 
-	
 	private class ManagerLabelProvider extends ColumnLabelProvider {
 		private static final long serialVersionUID = 1L;
 
@@ -222,7 +221,7 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
 					referencedManager = currNode.getProperty(
 							PeopleNames.PEOPLE_MANAGER).getNode();
-					return referencedManager.getName();
+					return referencedManager.getParent().getName();
 				}
 				return "";
 			} catch (RepositoryException re) {
@@ -245,9 +244,10 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 							PeopleNames.PEOPLE_RELATED_TO).getValues();
 					for (Value value : refs) {
 						String id = value.getString();
+						Node currReferenced = session.getNodeByIdentifier(id);
 						builder.append(
-								session.getNodeByIdentifier(id).getName())
-								.append(", ");
+								CommonsJcrUtils.get(currReferenced,
+										Property.JCR_TITLE)).append(", ");
 					}
 					return builder.toString();
 				}
@@ -314,7 +314,6 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 		}
 	}
 
-	
 	private class MyTableContentProvider implements IStructuredContentProvider {
 		private static final long serialVersionUID = 7164029504991808317L;
 

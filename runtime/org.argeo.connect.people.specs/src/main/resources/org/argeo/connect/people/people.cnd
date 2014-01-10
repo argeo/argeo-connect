@@ -3,6 +3,13 @@
 //
 // PARENT BASE TYPE
 //
+[people:base] > nt:unstructured, mix:versionable, mix:created, mix:lastModified, mix:title
+
+
+//
+// ENTITY TYPE: it is the parent of all people CRM business types.
+//
+// should be a direct child of people:base type.
 [people:entity] > nt:unstructured, mix:versionable, mix:lastModified, mix:title
 // An implementation dependent UID for each entity
 // We remove this technical property from the full text search mechanism
@@ -132,7 +139,7 @@ mixin
 //
 
 // Activities
-[people:activity] > nt:unstructured, mix:versionable, mix:created, mix:lastModified, mix:title
+[people:activity] > people:base
 // reference the user that has created this activity. Might be redundant with jcr:createdBy property ?
 - people:manager (REFERENCE) m
 // a list of related entities like persons, orgs or ...

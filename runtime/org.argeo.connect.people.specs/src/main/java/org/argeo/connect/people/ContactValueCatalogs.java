@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Workaround class to define used maps before we implement a more clean
+ * Workaround class to define used maps before we implement a cleaner
  * management of such an issue
  */
 
@@ -156,5 +156,4 @@ public class ContactValueCatalogs {
 		}
 		return null;
 	}
-
 }
