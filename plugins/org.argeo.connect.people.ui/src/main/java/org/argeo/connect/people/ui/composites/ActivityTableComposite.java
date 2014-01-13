@@ -25,6 +25,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.ActivitiesImages;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
+import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -219,9 +220,8 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 					// TODO implement getting "assigned to group" for tasks
 					return "";
 				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-					referencedManager = currNode.getProperty(
-							PeopleNames.PEOPLE_MANAGER).getNode();
-					return referencedManager.getParent().getName();
+					return ActivityJcrUtils
+							.getActivityManagerDisplayName(currNode);
 				}
 				return "";
 			} catch (RepositoryException re) {
@@ -295,7 +295,6 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 			try {
 				Node currNode = (Node) element;
 				Calendar dateToDisplay = null;
-
 				if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
 					dateToDisplay = currNode.getProperty(Property.JCR_CREATED)
 							.getDate();
