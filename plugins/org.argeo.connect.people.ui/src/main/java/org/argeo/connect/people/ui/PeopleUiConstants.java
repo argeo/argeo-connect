@@ -10,6 +10,7 @@ import org.argeo.connect.people.PeopleTypes;
 public interface PeopleUiConstants {
 
 	/* Default formats */
+	public final static String DEFAULT_SHORT_DATE_FORMAT = "dd/MM/yyyy";
 	public final static String DEFAULT_DATE_FORMAT = "MMM, dd yyyy";
 	public final static String DEFAULT_DATE_TIME_FORMAT = "MMM, dd yyyy 'at' HH:mm";
 	public final static String DEFAULT_NUMBER_FORMAT = "#,##0.0";

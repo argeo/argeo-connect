@@ -26,6 +26,7 @@
  */
 package org.argeo.connect.people.ui;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 
 /** Shared icons used for activity and task management */
@@ -69,4 +70,7 @@ public class ActivitiesImages {
 
 	public final static Image TODO = PeopleUiPlugin.getImageDescriptor(
 			PREFIX + "todo.gif").createImage();
+
+	public final static ImageDescriptor TODO_IMGDESC = PeopleUiPlugin.getImageDescriptor(
+			PREFIX + "todo.gif");
 }

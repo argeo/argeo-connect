@@ -19,7 +19,6 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.ui.dialogs.PickUpRelatedDialog;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.ActivityJcrUtils;
@@ -81,8 +80,9 @@ public class ActivityEditor extends AbstractPeopleEditor {
 	}
 
 	private void populateActivityMainCmp(Composite parent) {
-		GridLayout layout = PeopleUiUtils.gridLayoutNoBorder(3);
-		layout.horizontalSpacing = layout.verticalSpacing = 5;
+		GridLayout layout = new GridLayout(3, false);
+		// PeopleUiUtils.gridLayoutNoBorder(3);
+		// layout.horizontalSpacing = layout.verticalSpacing = 5;
 		parent.setLayout(layout);
 
 		// 1st line
@@ -119,12 +119,13 @@ public class ActivityEditor extends AbstractPeopleEditor {
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				try {
-					PickUpRelatedDialog diag = new PickUpRelatedDialog(addRelatedLk
-							.getShell(), "Choose an entity", activity
-							.getSession(), activity);
+					PickUpRelatedDialog diag = new PickUpRelatedDialog(
+							addRelatedLk.getShell(), "Choose an entity",
+							activity.getSession(), activity);
 					diag.open();
 					Node node = diag.getSelected();
-					addMultiPropertyValue(activity, PeopleNames.PEOPLE_RELATED_TO,node.getIdentifier());
+					addMultiPropertyValue(activity,
+							PeopleNames.PEOPLE_RELATED_TO, node.getIdentifier());
 					if (node != null)
 						log.debug("Node chosen");
 				} catch (RepositoryException e) {
@@ -261,6 +262,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		getManagedForm().addPart(formPart);
 	}
 
+	// TODO factorize this in CommonsJcrUtils
 	private void removeMultiPropertyValue(Node entity, String propName,
 			String tagToRemove) {
 		try {
@@ -298,7 +300,9 @@ public class ActivityEditor extends AbstractPeopleEditor {
 				for (Value jcrId : values) {
 					String currRef = jcrId.getString();
 					if (value.equals(currRef)) {
-						errMsg = value
+						errMsg = CommonsJcrUtils
+								.get(getSession().getNodeByIdentifier(value),
+										Property.JCR_TITLE)
 								+ " is already in the list and thus could not be added.";
 						MessageDialog.openError(PeopleUiPlugin.getDefault()
 								.getWorkbench().getActiveWorkbenchWindow()

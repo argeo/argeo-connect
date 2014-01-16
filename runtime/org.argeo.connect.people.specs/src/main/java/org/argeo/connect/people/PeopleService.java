@@ -62,4 +62,7 @@ public interface PeopleService {
 
 	/** Returns the JCR repository used by this service */
 	public Repository getRepository();
+	
+	/** Returns the corresponding {@link ActivityService}  */
+	public ActivityService getActivityService();
 }

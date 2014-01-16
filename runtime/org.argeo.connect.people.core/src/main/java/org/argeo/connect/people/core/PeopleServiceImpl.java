@@ -21,6 +21,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.film.FilmTypes;
+import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -37,6 +38,9 @@ public class PeopleServiceImpl implements PeopleService {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
+	
+	/* Other services */
+	private ActivityService activityService = new ActivityServiceImpl();
 
 	// private Map<Integer, String> managedRoles;
 
@@ -277,5 +281,10 @@ public class PeopleServiceImpl implements PeopleService {
 
 	public void setRepository(Repository repository) {
 		this.repository = repository;
+	}
+
+	@Override
+	public ActivityService getActivityService() {
+		return activityService;
 	}
 }

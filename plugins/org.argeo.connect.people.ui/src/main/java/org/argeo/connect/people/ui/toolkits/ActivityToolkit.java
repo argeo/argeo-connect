@@ -1,8 +1,6 @@
 package org.argeo.connect.people.ui.toolkits;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -15,8 +13,8 @@ import javax.jcr.Value;
 import javax.jcr.ValueFactory;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ActivityValueCatalogs;
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -24,11 +22,13 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.composites.ActivityTableComposite;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
+import org.argeo.connect.people.ui.wizards.CreateSimpleTaskWizard;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
@@ -54,14 +55,15 @@ public class ActivityToolkit {
 
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
-	@SuppressWarnings("unused")
 	private final PeopleService peopleService;
+	private final ActivityService activityService;
 
 	public ActivityToolkit(FormToolkit toolkit, IManagedForm form,
 			PeopleService peopleService) {
 		this.toolkit = toolkit;
 		this.form = form;
 		this.peopleService = peopleService;
+		this.activityService = peopleService.getActivityService();
 	}
 
 	public void populateActivityLogPanel(final Composite parent,
@@ -104,8 +106,8 @@ public class ActivityToolkit {
 			toolkit.createLabel(addActivityBar, " OR ", SWT.NONE);
 
 			// TODO implement add task
-			Link addTaskLk = new Link(addActivityBar, SWT.NONE);
-			addTaskLk.setText("Add a task");
+			final Link addTaskLk = new Link(addActivityBar, SWT.NONE);
+			addTaskLk.setText("<a>Add a task</a>");
 
 			// The Table that displays corresponding activities
 			final MyActivityTableCmp tmpCmp = new MyActivityTableCmp(parent,
@@ -158,6 +160,15 @@ public class ActivityToolkit {
 						createActivity(entity, addContactCmb, titleTxt,
 								descTxt, tmpCmp);
 					}
+				}
+			});
+
+			addTaskLk.addSelectionListener(new SelectionAdapter() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					createTask(addTaskLk.getShell(), entity);
 				}
 			});
 
@@ -246,22 +257,42 @@ public class ActivityToolkit {
 		return activity;
 	}
 
+	// TODO enhance this
+	private void createTask(Shell shell, Node relatedEntity) {
+		Session session = null;
+		try {
+			// Create an independent session.
+			session = relatedEntity.getSession().getRepository().login();
+			Node parent = JcrUtils.mkdirs(session,
+					activityService.getActivityParentCanonicalPath(session));
+			// FIXME corresponding parent node is always created.
+			session.save();
+
+			CreateSimpleTaskWizard wizard = new CreateSimpleTaskWizard(
+					peopleService, parent);
+
+			WizardDialog dialog = new WizardDialog(shell, wizard);
+			int result = dialog.open();
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to create activity node", e);
+		} finally {
+			JcrUtils.logoutQuietly(session);
+		}
+	}
+
 	private Node createActivity(Node relatedEntity, String type, String title,
 			String desc) {
 		Session session = null;
 		try {
 			// Create an independent session.
 			session = relatedEntity.getSession().getRepository().login();
-			String currentUser = session.getUserID();
-			Node userProfile = getUserById(session, currentUser);
-			Calendar currentTime = GregorianCalendar.getInstance();
-			String path = PeopleConstants.PEOPLE_ACTIVITIES_BASE_PATH + "/"
-					+ JcrUtils.dateAsPath(currentTime, true) + currentUser;
-			Node parent = JcrUtils.mkdirs(session, path);
+			Node parent = JcrUtils.mkdirs(session,
+					activityService.getActivityParentCanonicalPath(session));
 			Node activity = parent.addNode(type, PeopleTypes.PEOPLE_ACTIVITY);
 			activity.addMixin(type);
 
 			// updateCreated(activity);
+			Node userProfile = getUserById(session, session.getUserID());
 			activity.setProperty(PeopleNames.PEOPLE_MANAGER, userProfile);
 
 			// related to
@@ -285,6 +316,7 @@ public class ActivityToolkit {
 		}
 	}
 
+	// TODO refactor this in the group / user management service
 	private Node getUserById(Session session, String userId)
 			throws RepositoryException {
 		String currentUser = session.getUserID();
@@ -296,25 +328,4 @@ public class ActivityToolkit {
 		userProfile = session.getNode(path);
 		return userProfile;
 	}
-
-	// private void configureAddActivityButton(Button button,
-	// final Node targetNode, String tooltip, final Node entity) {
-	// button.setToolTipText(tooltip);
-	// button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
-	//
-	// button.addSelectionListener(new SelectionAdapter() {
-	// private static final long serialVersionUID = 1L;
-	//
-	// @Override
-	// public void widgetSelected(SelectionEvent e) {
-	// try {
-	// createActivity(entity.getSession(), entity);
-	// } catch (RepositoryException re) {
-	// throw new PeopleException(
-	// "Unable to create activity for entity " + entity,
-	// re);
-	// }
-	// }
-	// });
-	// }
 }

@@ -17,7 +17,7 @@
 		<command
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
 			id="org.argeo.connect.people.ui.specific.openFile"
-			name="removeEntityReference">
+			name="People OpenFile">
 			<commandParameter
          		id="param.fileName"
          		name="The name of the file to open">
