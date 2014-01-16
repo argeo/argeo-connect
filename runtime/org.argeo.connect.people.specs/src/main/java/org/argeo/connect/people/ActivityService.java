@@ -26,8 +26,13 @@ public interface ActivityService {
 	 * **/
 	public String getActivityParentCanonicalPath(Session session);
 
-	/* TASKS */
+	/**
+	 * Creates a new simple activity using the default path
+	 */
+	public Node createActivity(Session session, String type, String title,
+			String desc, List<Node> relatedTo);
 
+	/* TASKS */
 	/**
 	 * Creates a new task given some information. If no parent node is provided,
 	 * the task is created using the same path policy as all other activity

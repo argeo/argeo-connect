@@ -9,10 +9,12 @@ import javax.jcr.InvalidItemStateException;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
+import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
+import javax.jcr.ValueFactory;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
@@ -254,6 +256,8 @@ public class CommonsJcrUtils {
 		}
 	}
 
+	/* MULTIPLE VALUES MANAGEMENT */
+
 	/**
 	 * Concisely get a string that concat values of a multi-valued String
 	 * property. returns an empty String rather than null if this node doesn't
@@ -284,9 +288,27 @@ public class CommonsJcrUtils {
 					return builder.toString();
 			}
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get multi valued property " + propertyName
-					+ " of " + node, e);
+			throw new ArgeoException("Cannot get multi valued property "
+					+ propertyName + " of " + node, e);
 		}
+	}
+
+	/**
+	 * Sets a property of type REFERENCE that is multiple. Overrides any already
+	 * defined value of this property
+	 */
+	public static void setMultipleReferences(Node node, String propertyName,
+			List<Node> nodes) throws RepositoryException {
+		ValueFactory vFactory = node.getSession().getValueFactory();
+		int size = nodes.size();
+		Value[] values = new Value[size];
+		int i = 0;
+		for (Node currNode : nodes) {
+			Value val = vFactory.createValue(currNode.getIdentifier(),
+					PropertyType.REFERENCE);
+			values[i++] = val;
+		}
+		node.setProperty(propertyName, values);
 	}
 
 	/**

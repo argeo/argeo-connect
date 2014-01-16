@@ -6,17 +6,13 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
-import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.Value;
-import javax.jcr.ValueFactory;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ActivityValueCatalogs;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
@@ -286,28 +282,11 @@ public class ActivityToolkit {
 		try {
 			// Create an independent session.
 			session = relatedEntity.getSession().getRepository().login();
-			Node parent = JcrUtils.mkdirs(session,
-					activityService.getActivityParentCanonicalPath(session));
-			Node activity = parent.addNode(type, PeopleTypes.PEOPLE_ACTIVITY);
-			activity.addMixin(type);
-
-			// updateCreated(activity);
-			Node userProfile = getUserById(session, session.getUserID());
-			activity.setProperty(PeopleNames.PEOPLE_MANAGER, userProfile);
-
-			// related to
-			ValueFactory vFactory = session.getValueFactory();
-			Value val = vFactory.createValue(relatedEntity.getIdentifier(),
-					PropertyType.REFERENCE);
-			Value[] related = new Value[1];
-			related[0] = val;
-			activity.setProperty(PeopleNames.PEOPLE_RELATED_TO, related);
-
-			// Content
-			activity.setProperty(Property.JCR_TITLE, title);
-			activity.setProperty(Property.JCR_DESCRIPTION, desc);
-			JcrUtils.updateLastModified(activity);
-			activity.getSession().save();
+			List<Node> relatedTo = new ArrayList<Node>();
+			relatedTo.add(relatedEntity);
+			Node activity = activityService.createActivity(session, type,
+					title, desc, relatedTo);
+			session.save();
 			return activity;
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to create activity node", e);
@@ -316,16 +295,4 @@ public class ActivityToolkit {
 		}
 	}
 
-	// TODO refactor this in the group / user management service
-	private Node getUserById(Session session, String userId)
-			throws RepositoryException {
-		String currentUser = session.getUserID();
-
-		String path = "/argeo:system/argeo:people/"
-				+ JcrUtils.firstCharsToPath(currentUser, 2) + "/" + currentUser
-				+ "/argeo:profile";
-		Node userProfile = null;
-		userProfile = session.getNode(path);
-		return userProfile;
-	}
 }

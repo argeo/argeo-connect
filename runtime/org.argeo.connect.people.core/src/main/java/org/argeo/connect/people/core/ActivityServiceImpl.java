@@ -29,6 +29,46 @@ public class ActivityServiceImpl implements ActivityService {
 		return path;
 	}
 
+	@Override
+	public Node createActivity(Session session, String type, String title,
+			String desc, List<Node> relatedTo) {
+		try {
+			Node parent = JcrUtils.mkdirs(session,
+					getActivityParentCanonicalPath(session));
+			Node activity = parent.addNode(type, PeopleTypes.PEOPLE_ACTIVITY);
+			activity.addMixin(type);
+
+			Node userProfile = getUserById(session, session.getUserID());
+			activity.setProperty(PeopleNames.PEOPLE_MANAGER, userProfile);
+
+			// related to
+			if (relatedTo != null && !relatedTo.isEmpty())
+				CommonsJcrUtils.setMultipleReferences(activity,
+						PeopleNames.PEOPLE_RELATED_TO, relatedTo);
+
+			// Content
+			activity.setProperty(Property.JCR_TITLE, title);
+			activity.setProperty(Property.JCR_DESCRIPTION, desc);
+			JcrUtils.updateLastModified(activity);
+			return activity;
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to create activity node", e);
+		}
+	}
+
+	// TODO refactor this in the group / user management service
+	private Node getUserById(Session session, String userId)
+			throws RepositoryException {
+		String currentUser = session.getUserID();
+
+		String path = "/argeo:system/argeo:people/"
+				+ JcrUtils.firstCharsToPath(currentUser, 2) + "/" + currentUser
+				+ "/argeo:profile";
+		Node userProfile = null;
+		userProfile = session.getNode(path);
+		return userProfile;
+	}
+
 	/* TASKS */
 	@Override
 	public Node createTask(Session session, Node parentNode, String title,
@@ -60,16 +100,9 @@ public class ActivityServiceImpl implements ActivityService {
 			if (assignedTo != null)
 				taskNode.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO, assignedTo);
 
-			if (relatedTo != null && !relatedTo.isEmpty()) {
-				// TODO enhence this
-				int size = relatedTo.size();
-				String[] nodeIds = new String[size];
-				int i = 0;
-				for (Node node : relatedTo) {
-					nodeIds[i++] = node.getIdentifier();
-				}
-				taskNode.setProperty(PeopleNames.PEOPLE_RELATED_TO, nodeIds);
-			}
+			if (relatedTo != null && !relatedTo.isEmpty())
+				CommonsJcrUtils.setMultipleReferences(taskNode,
+						PeopleNames.PEOPLE_RELATED_TO, relatedTo);
 
 			if (dueDate != null) {
 				taskNode.setProperty(PeopleNames.PEOPLE_DUE_DATE, dueDate);
