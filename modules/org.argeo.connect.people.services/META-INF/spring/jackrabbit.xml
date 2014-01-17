@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/util   
+       	http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
 	<bean id="peopleRepository" class="org.argeo.jackrabbit.JackrabbitWrapper"
 		init-method="init" destroy-method="destroy">
@@ -14,4 +17,46 @@
 		<property name="bundleContext" ref="bundleContext" />
 	</bean>
 
+	<!-- People specific roles declaration -->
+
+	<!-- ROLE_BUSINESS_ADMIN: A role that has JCR_ALL rights on the workspace. 
+		 Sees people specific admin perspectives -->
+	<bean class="org.argeo.security.core.SimpleRoleRegistration"
+		init-method="run">
+		<property name="role" value="ROLE_BUSINESS_ADMIN" />
+		<property name="userAdminService" ref="userAdminService" />
+	</bean>
+
+	
+	<!-- ROLE_MEMBER: A role that has JCR_ALL rights on the workspace. 
+		 Sees less perspectives as the Business or the technical admin. -->
+	<bean class="org.argeo.security.core.SimpleRoleRegistration"
+		init-method="run">
+		<property name="role" value="ROLE_MEMBER" />
+		<property name="userAdminService" ref="userAdminService" />
+	</bean>
+
+	<!-- ROLE_GUEST: A role that has been granted JCR_READ rights on the workspace -->
+	<bean class="org.argeo.security.core.SimpleRoleRegistration"
+		init-method="run">
+		<property name="role" value="ROLE_GUEST" />
+		<property name="userAdminService" ref="userAdminService" />
+	</bean>
+
+	<!-- Effective attribution of privileges. -->
+	<bean parent="template.jcrAuthorizations">
+		<property name="principalPrivileges">
+			<util:map>
+				<entry key="jcr:all" value="ROLE_BUSINESS_ADMIN" />
+				<entry key="jcr:all" value="ROLE_MEMBER" />
+				<entry key="jcr:read" value="ROLE_GUEST" />
+			</util:map>
+		</property>
+	</bean>
+
+	<bean id="template.jcrAuthorizations" abstract="true"
+		class="org.argeo.jackrabbit.JackrabbitAuthorizations" init-method="run">
+		<property name="workspace" value="*" />
+		<property name="repository" ref="peopleRepository" />
+	</bean>
 </beans>

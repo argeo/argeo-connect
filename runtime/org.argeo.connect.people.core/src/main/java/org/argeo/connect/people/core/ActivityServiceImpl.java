@@ -97,6 +97,9 @@ public class ActivityServiceImpl implements ActivityService {
 			if (CommonsJcrUtils.checkNotEmptyString(description))
 				taskNode.setProperty(Property.JCR_DESCRIPTION, description);
 
+			Node userProfile = getUserById(session, session.getUserID());
+			taskNode.setProperty(PeopleNames.PEOPLE_MANAGER, userProfile);
+
 			if (assignedTo != null)
 				taskNode.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO, assignedTo);
 

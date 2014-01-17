@@ -253,24 +253,23 @@ public class ActivityToolkit {
 		return activity;
 	}
 
-	// TODO enhance this
 	private void createTask(Shell shell, Node relatedEntity) {
 		Session session = null;
 		try {
 			// Create an independent session.
 			session = relatedEntity.getSession().getRepository().login();
-			Node parent = JcrUtils.mkdirs(session,
-					activityService.getActivityParentCanonicalPath(session));
-			// FIXME corresponding parent node is always created.
-			session.save();
-
-			CreateSimpleTaskWizard wizard = new CreateSimpleTaskWizard(
-					peopleService, parent);
-
+			CreateSimpleTaskWizard wizard = new CreateSimpleTaskWizard(session,
+					activityService);
+			List<Node> relatedTo = new ArrayList<Node>();
+			relatedTo.add(relatedEntity);
+			wizard.setRelatedTo(relatedTo);
 			WizardDialog dialog = new WizardDialog(shell, wizard);
-			int result = dialog.open();
+			dialog.open();
+			// int result = dialog.open();
+			// Node createdTask = wizard.getCreatedTask();
+			session.save();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to create activity node", e);
+			throw new PeopleException("Unable to create task node", e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}

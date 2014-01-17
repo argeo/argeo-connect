@@ -9,6 +9,13 @@
 			icon="icons/people.gif"
             id="org.argeo.connect.people.ui.peoplePerspective"
             name="People">
+		</perspective>
+		<!-- People specific business admin perspective -->  
+		<perspective
+			class="org.argeo.connect.people.ui.BusinessAdminPerspective"
+			icon="icons/people.gif"
+            id="org.argeo.connect.people.ui.businessAdminPerspective"
+            name="User management">
       </perspective>
    </extension>
     <!-- Views -->
@@ -368,7 +375,27 @@
 	      	</variable>
 	   	</sourceProvider>
 	</extension>
-	
+
+	<extension
+		point="org.eclipse.ui.activities">
+		<activity
+              description="Business admin activities"
+              id="org.argeo.connect.people.ui.businessAdminActivity"
+              name="People Business Admin">
+		  <enabledWhen>
+		    <with variable="roles">
+		      <iterate ifEmpty="false" operator="or">
+		        <equals value="ROLE_BUSINESS_ADMIN" />
+		      </iterate>
+		    </with>
+		  </enabledWhen>
+        </activity>
+        <activityPatternBinding
+              activityId="org.argeo.connect.people.ui.businessAdminActivity"
+              isEqualityPattern="true"
+              pattern="org.argeo.connect.people.ui/org.argeo.connect.people.ui.businessAdminPerspective">
+        </activityPatternBinding>
+     </extension>
 	<extension
 		point="org.eclipse.ui.activities">
 		<activity

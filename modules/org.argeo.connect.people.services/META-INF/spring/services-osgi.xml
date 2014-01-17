@@ -20,6 +20,8 @@
 	<reference id="authenticationManager"
 		interface="org.springframework.security.AuthenticationManager" />
 
+	<reference id="userAdminService" interface="org.argeo.security.UserAdminService" />
+
 	<!-- SERVICES -->
 	<service ref="peopleService" interface="org.argeo.connect.people.PeopleService" />
 	<service ref="peopleRepository" interface="javax.jcr.Repository">
@@ -27,45 +29,5 @@
 			<beans:entry key="argeo.jcr.repository.alias" value="people" />
 		</service-properties>
 	</service>
-
-	<!-- ROLES -->
-	<reference id="userAdminService" interface="org.argeo.security.UserAdminService" />
-
-	<!-- ROLE_USER: A role that has been granted JCR_ALL rights on the workspace, 
-		admin activities are filtered out in the UI code. TODO refine this -->
-	<beans:bean class="org.argeo.security.core.SimpleRoleRegistration"
-		init-method="run">
-		<beans:property name="role" value="ROLE_MEMBER" />
-		<beans:property name="userAdminService" ref="userAdminService" />
-	</beans:bean>
-
-	<!-- ROLE_GUEST: A role that has been granted JCR_READ rights on the workspace -->
-	<beans:bean class="org.argeo.security.core.SimpleRoleRegistration"
-		init-method="run">
-		<beans:property name="role" value="ROLE_GUEST" />
-		<beans:property name="userAdminService" ref="userAdminService" />
-	</beans:bean>
-
-	<!-- Effective attribution of privileges. -->
-	<beans:bean parent="template.jcrAuthorizations">
-		<beans:property name="principalPrivileges">
-			<util:map>
-				<beans:entry key="jcr:read" value="ROLE_GUEST" />
-				<beans:entry key="jcr:all" value="ROLE_MEMBER" />
-				<!-- <beans:entry key="jcr:all"> -->
-				<!-- <beans:value>ROLE_MEMBER</beans:value> -->
-				<!-- <util:constant -->
-				<!-- static-field="org.argeo.connect.people.PeopleConstants.ROLE_MEMBER" 
-					/> -->
-				<!-- </beans:entry> -->
-			</util:map>
-		</beans:property>
-	</beans:bean>
-
-	<beans:bean id="template.jcrAuthorizations" abstract="true"
-		class="org.argeo.jackrabbit.JackrabbitAuthorizations" init-method="run">
-		<beans:property name="workspace" value="*" />
-		<beans:property name="repository" ref="peopleRepository" />
-	</beans:bean>
-
+	
 </beans:beans>
