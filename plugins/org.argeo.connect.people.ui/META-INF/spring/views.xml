@@ -15,6 +15,11 @@
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
 	</bean>
+	
+	<bean id="userGroupsView" class="org.argeo.connect.people.ui.views.UserGroupsView"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+	</bean>
 
 	<bean id="categorizedSearchView" class="org.argeo.connect.people.ui.views.CategorizedSearchView"
 		scope="prototype">

@@ -34,6 +34,10 @@ public interface PeopleTypes {
 	public final static String PEOPLE_MEMBER = "people:member";
 	public final static String PEOPLE_BANK_ACCOUNT = "people:bankAccount";
 
+	/* USER MANAGEMENT */
+	public final static String PEOPLE_PROFILE = "people:profile";
+	public final static String PEOPLE_USER_GROUP = "people:userGroup";
+	
 	/* TASKS AND ACTIVITIES */
 	public final static String PEOPLE_ACTIVITY = "people:activity";
 	public final static String PEOPLE_TASK = "people:task";

@@ -28,6 +28,13 @@
 			name="Search"
 			restorable="true">
 		</view>
+		<view
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/people.gif"
+			id="org.argeo.connect.people.ui.userGroupsView"
+			name="Groups"
+			restorable="true">
+		</view>
 	</extension>
 	<!-- Editors -->
     <extension

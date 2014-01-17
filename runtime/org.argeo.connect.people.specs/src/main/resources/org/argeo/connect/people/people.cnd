@@ -10,7 +10,7 @@
 // ENTITY TYPE: it is the parent of all people CRM business types.
 //
 // should be a direct child of people:base type.
-[people:entity] > nt:unstructured, mix:versionable, mix:lastModified, mix:title
+[people:entity] > people:base
 // An implementation dependent UID for each entity
 // We remove this technical property from the full text search mechanism
 - people:uid (String) m nofulltext
@@ -133,6 +133,17 @@
 [people:tagable] 
 mixin
 - people:tags (STRING) *
+
+//
+// USER MANAGEMENT 
+//
+[people:profile] > nt:unstructured, mix:versionable, mix:lastModified
+- people:relatedPersons (REFERENCE) * // towards people:person types 
+- people:userGroups (REFERENCE) *  // towards people:userGroup types 
+
+[people:userGroup] > nt:unstructured, mix:title, mix:versionable, mix:lastModified 
+- people:relatedPersons (REFERENCE) * // towards people:person types 
+- people:userGroups (REFERENCE) *  // towards people:userGroup types
 
 //
 // ACTIVITIES AND TASKS

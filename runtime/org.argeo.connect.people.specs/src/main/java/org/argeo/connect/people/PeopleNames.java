@@ -73,6 +73,11 @@ public interface PeopleNames {
 	public final static String PEOPLE_VAT_ID_NB = "people:vatIdNb";
 	public final static String PEOPLE_ORG_BRANCHES = "people:orgBranches";
 
+	
+	/* USER MANAGEMENT */
+	public final static String PEOPLE_RELATED_PERSON = "people:relatedPersons"; //REFERENCE * towards people:person types 
+	public final static String PEOPLE_USER_GROUPS= "people:userGroups";//REFERENCE * towards people:userGroup types 
+	
 	/* ACTIVITIES AND TASKS */
 	public final static String PEOPLE_MANAGER = "people:manager";
 	public final static String PEOPLE_RELATED_TO = "people:relatedTo";
@@ -88,7 +93,6 @@ public interface PeopleNames {
 	public final static String PEOPLE_DEPENDS_ON = "people:dependsOn";
 	public final static String PEOPLE_CHILD_TASKS = "people:childTasks";
 
-	
 	// Workflow specific
 	public final static String PEOPLE_DATE_BEGIN = "people:dateBegin";
 	public final static String PEOPLE_DATE_END = "people:dateEnd";
