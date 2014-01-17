@@ -29,6 +29,7 @@
 							org.argeo.connect.people.core,
 							org.argeo.connect.people.ui.utils,
 							org.argeo.connect.people.ui.listeners,
+							org.argeo.connect.people.ui.editors,
 							org.argeo.security.ui.rap;resolution:=optional,
 							org.xml.sax;resolution:=optional,
 							org.xml.sax.helpers;resolution:=optional,
