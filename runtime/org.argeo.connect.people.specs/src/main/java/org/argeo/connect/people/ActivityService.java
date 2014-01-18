@@ -7,9 +7,9 @@ import javax.jcr.Node;
 import javax.jcr.Session;
 
 /**
- * Provides method interfaces to activity and tasks concept in a people
- * repository Implementing applications should extend and/or override the
- * canonical implementation in order to provide business specific behavioours.
+ * Provides method interfaces to manage activity and tasks concept in a people
+ * repository. Implementing applications should extend and/or override the
+ * canonical implementation in order to provide business specific behaviours.
  * 
  * The correct instance of this interface is usually acquired through the
  * peopleService.

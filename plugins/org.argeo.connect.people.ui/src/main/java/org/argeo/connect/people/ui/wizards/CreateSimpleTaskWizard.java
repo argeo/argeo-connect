@@ -165,7 +165,7 @@ public class CreateSimpleTaskWizard extends Wizard {
 					try {
 						PickUpByNodeTypeDialog diag = new PickUpByNodeTypeDialog(
 								assignedToTxt.getShell(), "Choose a group",
-								currSession, PeopleTypes.PEOPLE_GROUP);
+								currSession, PeopleTypes.PEOPLE_USER_GROUP);
 						diag.open();
 						assignedToGroupNode = diag.getSelected();
 						// TODO use correct group name

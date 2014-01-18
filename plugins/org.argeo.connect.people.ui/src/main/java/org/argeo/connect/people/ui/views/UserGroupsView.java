@@ -24,6 +24,7 @@ import javax.jcr.observation.EventListener;
 
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.composites.UserGroupTableComposite;
+import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.ArgeoJcrConstants;
 import org.argeo.jcr.ArgeoTypes;
@@ -58,7 +59,7 @@ public class UserGroupsView extends ViewPart {
 
 		// Configure
 		userTableCmp.getTableViewer().addDoubleClickListener(
-				new ViewDoubleClickListener());
+				new PeopleJcrViewerDClickListener());
 		getViewSite().setSelectionProvider(userTableCmp.getTableViewer());
 
 		// Add listener to refresh the list when something changes

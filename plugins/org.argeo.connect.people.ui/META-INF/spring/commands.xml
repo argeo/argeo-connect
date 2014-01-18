@@ -54,6 +54,13 @@
 		<property name="repository" ref="repository" />
 	</bean>
 
+	<bean id="newUserGroup" class="org.argeo.connect.people.ui.commands.NewUserGroup"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="peopleService" ref="peopleService" />
+	</bean>
+
+
 	<bean id="importPeople"
 		class="org.argeo.connect.people.ui.commands.ImportPeopleHandler"
 		scope="prototype">

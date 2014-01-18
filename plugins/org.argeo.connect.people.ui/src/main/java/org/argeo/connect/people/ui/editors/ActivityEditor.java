@@ -2,9 +2,7 @@ package org.argeo.connect.people.ui.editors;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -13,7 +11,6 @@ import javax.jcr.Value;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleImages;
@@ -124,10 +121,13 @@ public class ActivityEditor extends AbstractPeopleEditor {
 							activity.getSession(), activity);
 					diag.open();
 					Node node = diag.getSelected();
-					addMultiPropertyValue(activity,
-							PeopleNames.PEOPLE_RELATED_TO, node.getIdentifier());
-					if (node != null)
-						log.debug("Node chosen");
+					String errMsg = CommonsJcrUtils.addRefToMultiValuedProp(
+							activity, PeopleNames.PEOPLE_RELATED_TO, node);
+					if (errMsg != null)
+						MessageDialog.openError(PeopleUiPlugin.getDefault()
+								.getWorkbench().getActiveWorkbenchWindow()
+								.getShell(), "Dupplicates", errMsg);
+
 				} catch (RepositoryException e) {
 					throw new PeopleException(
 							"Unable to link chosen node to current activity "
@@ -222,10 +222,11 @@ public class ActivityEditor extends AbstractPeopleEditor {
 										@Override
 										public void widgetSelected(
 												final SelectionEvent event) {
-											removeMultiPropertyValue(
-													activity,
-													PeopleNames.PEOPLE_RELATED_TO,
-													valueStr);
+											CommonsJcrUtils
+													.removeRefFromMultiValuedProp(
+															activity,
+															PeopleNames.PEOPLE_RELATED_TO,
+															valueStr);
 											for (IFormPart part : getManagedForm()
 													.getParts()) {
 												((AbstractFormPart) part)
@@ -260,84 +261,6 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		parent.layout();
 		formPart.initialize(getManagedForm());
 		getManagedForm().addPart(formPart);
-	}
-
-	// TODO factorize this in CommonsJcrUtils
-	private void removeMultiPropertyValue(Node entity, String propName,
-			String tagToRemove) {
-		try {
-			List<String> tags = new ArrayList<String>();
-			Value[] values = entity.getProperty(propName).getValues();
-			for (int i = 0; i < values.length; i++) {
-				String curr = values[i].getString();
-				if (!tagToRemove.equals(curr))
-					tags.add(curr);
-			}
-
-			boolean wasCheckedOut = CommonsJcrUtils
-					.isNodeCheckedOutByMe(entity);
-			if (!wasCheckedOut)
-				CommonsJcrUtils.checkout(entity);
-			entity.setProperty(propName, tags.toArray(new String[tags.size()]));
-			if (wasCheckedOut)
-				getManagedForm().dirtyStateChanged();
-			else
-				CommonsJcrUtils.saveAndCheckin(entity);
-		} catch (RepositoryException e) {
-			throw new PeopleException("unable to initialise deletion", e);
-		}
-	}
-
-	private void addMultiPropertyValue(Node node, String propName, String value) {
-		try {
-			Value[] values;
-			String[] valuesStr;
-			String errMsg = null;
-			if (node.hasProperty(propName)) {
-				values = node.getProperty(propName).getValues();
-
-				// Check dupplicate
-				for (Value jcrId : values) {
-					String currRef = jcrId.getString();
-					if (value.equals(currRef)) {
-						errMsg = CommonsJcrUtils
-								.get(getSession().getNodeByIdentifier(value),
-										Property.JCR_TITLE)
-								+ " is already in the list and thus could not be added.";
-						MessageDialog.openError(PeopleUiPlugin.getDefault()
-								.getWorkbench().getActiveWorkbenchWindow()
-								.getShell(), "Dupplicates", errMsg);
-						return;
-					}
-				}
-
-				valuesStr = new String[values.length + 1];
-				int i;
-				for (i = 0; i < values.length; i++) {
-					valuesStr[i] = values[i].getString();
-				}
-				valuesStr[i] = value;
-			} else {
-				valuesStr = new String[1];
-				valuesStr[0] = value;
-			}
-
-			boolean wasCheckedout = CommonsJcrUtils.isNodeCheckedOut(node);
-			if (!wasCheckedout)
-				CommonsJcrUtils.checkout(node);
-			node.setProperty(propName, valuesStr);
-			if (!wasCheckedout)
-				CommonsJcrUtils.saveAndCheckin(node);
-			else
-				getManagedForm().dirtyStateChanged();
-
-			for (IFormPart part : getManagedForm().getParts()) {
-				((AbstractFormPart) part).markStale();
-				part.refresh();
-			}
-		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to set tags", re);
-		}
 	}
 
 	private Text createLT(Composite parent, String label) {

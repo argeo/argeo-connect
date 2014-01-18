@@ -311,6 +311,95 @@ public class CommonsJcrUtils {
 		node.setProperty(propertyName, values);
 	}
 
+	/** Remove a Reference from a multi valued property */
+	public static void removeRefFromMultiValuedProp(Node node, String propName,
+			String identifier) {
+		try {
+			Session session = node.getSession();
+			List<Node> nodes = new ArrayList<Node>();
+			Value[] values = node.getProperty(propName).getValues();
+			for (int i = 0; i < values.length; i++) {
+				String curr = values[i].getString();
+				if (!identifier.equals(curr))
+					nodes.add(session.getNodeByIdentifier(curr));
+			}
+			setMultipleReferences(node, propName, nodes);
+			node.setProperty(propName, nodes.toArray(new String[0]));
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"Unable to remove reference from property " + propName
+							+ " of Node " + node, e);
+		}
+	}
+
+	public static String addRefToMultiValuedProp(Node node, String propName,
+			Node nodeToReference) {
+		try {
+			Session session = node.getSession();
+			Value[] values;
+			List<Node> nodes = new ArrayList<Node>();
+			String errMsg = null;
+			if (node.hasProperty(propName)) {
+				values = node.getProperty(propName).getValues();
+
+				// Check dupplicate
+				for (Value currValue : values) {
+					String jcrId = currValue.getString();
+					if (nodeToReference.getIdentifier().equals(jcrId)) {
+						errMsg = CommonsJcrUtils.get(nodeToReference,
+								Property.JCR_TITLE)
+								+ " is already in the list and thus could not be added.";
+						return errMsg;
+					} else
+						nodes.add(session.getNodeByIdentifier(jcrId));
+				}
+			}
+			nodes.add(nodeToReference);
+			setMultipleReferences(node, propName, nodes);
+			return null;
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Unable to add reference ", re);
+		}
+	}
+
+	public static String addStringToMultiValuedProp(Node node, String propName,
+			String value) {
+		try {
+			Value[] values;
+			String[] valuesStr;
+			String errMsg = null;
+			if (node.hasProperty(propName)) {
+				values = node.getProperty(propName).getValues();
+
+				// Check dupplicate
+				for (Value jcrId : values) {
+					String currRef = jcrId.getString();
+					if (value.equals(currRef)) {
+						errMsg = CommonsJcrUtils
+								.get(node.getSession().getNodeByIdentifier(
+										value), Property.JCR_TITLE)
+								+ " is already in the list and thus could not be added.";
+						return errMsg;
+					}
+				}
+
+				valuesStr = new String[values.length + 1];
+				int i;
+				for (i = 0; i < values.length; i++) {
+					valuesStr[i] = values[i].getString();
+				}
+				valuesStr[i] = value;
+			} else {
+				valuesStr = new String[1];
+				valuesStr[0] = value;
+			}
+			node.setProperty(propName, valuesStr);
+			return null;
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Unable to set tags", re);
+		}
+	}
+
 	/**
 	 * Concisely get the value of a boolean property or null if this node
 	 * doesn't have this property

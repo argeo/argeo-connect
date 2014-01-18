@@ -26,6 +26,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.springframework.security.Authentication;
@@ -38,9 +39,10 @@ public class PeopleServiceImpl implements PeopleService {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	
+
 	/* Other services */
 	private ActivityService activityService = new ActivityServiceImpl();
+	private UserManagementService userManagementService = new UserManagementServiceImpl();
 
 	// private Map<Integer, String> managedRoles;
 
@@ -286,5 +288,10 @@ public class PeopleServiceImpl implements PeopleService {
 	@Override
 	public ActivityService getActivityService() {
 		return activityService;
+	}
+
+	@Override
+	public UserManagementService getUserManagementService() {
+		return userManagementService;
 	}
 }

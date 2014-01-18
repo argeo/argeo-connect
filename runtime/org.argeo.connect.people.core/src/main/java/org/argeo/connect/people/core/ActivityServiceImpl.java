@@ -24,7 +24,7 @@ public class ActivityServiceImpl implements ActivityService {
 	public String getActivityParentCanonicalPath(Session session) {
 		String currentUser = session.getUserID();
 		Calendar currentTime = GregorianCalendar.getInstance();
-		String path = PeopleConstants.PEOPLE_TASKS_BASE_PATH + "/"
+		String path = PeopleConstants.PEOPLE_ACTIVITIES_BASE_PATH + "/"
 				+ JcrUtils.dateAsPath(currentTime, true) + currentUser;
 		return path;
 	}

@@ -10,6 +10,9 @@ public interface PeopleConstants {
 	public final static String PEOPLE_TASKS_BASE_PATH = PEOPLE_BASE_PATH
 			+ "/people:tasks";
 
+	public final static String PEOPLE_USER_GROUPS_BASE_PATH = PEOPLE_BASE_PATH
+			+ "/people:userGroups";
+
 	// People resources, typically language and country lists
 	public final static String PEOPLE_RESOURCES_PATH = PEOPLE_BASE_PATH
 			+ "/people:resources";

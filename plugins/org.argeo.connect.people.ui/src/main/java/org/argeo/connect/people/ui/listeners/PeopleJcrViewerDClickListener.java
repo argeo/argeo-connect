@@ -54,10 +54,19 @@ public class PeopleJcrViewerDClickListener implements IDoubleClickListener {
 			} else if (obj instanceof Node)
 				currNode = (Node) obj;
 
-			if (currNode != null)
-				CommandUtils.callCommand(getOpenEditorCommandId(),
-						OpenEntityEditor.PARAM_ENTITY_UID,
-						CommonsJcrUtils.get(currNode, PeopleNames.PEOPLE_UID));
+			if (currNode != null) {
+
+				String uid = CommonsJcrUtils.get(currNode,
+						PeopleNames.PEOPLE_UID);
+
+				if (CommonsJcrUtils.isEmptyString(uid))
+					CommandUtils.callCommand(getOpenEditorCommandId(),
+							OpenEntityEditor.PARAM_JCR_ID,
+							currNode.getIdentifier());
+				else
+					CommandUtils.callCommand(getOpenEditorCommandId(),
+							OpenEntityEditor.PARAM_ENTITY_UID, uid);
+			}
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to open editor for node", re);
 		}

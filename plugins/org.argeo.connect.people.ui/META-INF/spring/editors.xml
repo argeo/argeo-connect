@@ -21,6 +21,12 @@
 		<property name="repository" ref="repository" />
 	</bean>
 
+	<bean id="userGroupEditor" class="org.argeo.connect.people.ui.editors.UserGroupEditor"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+		<property name="repository" ref="repository" />
+	</bean>
+
 	<!-- DEFAULT PEOPLE EDITORS -->
 	<bean id="personEditor" class="org.argeo.connect.people.ui.editors.PersonEditor"
 		scope="prototype">
