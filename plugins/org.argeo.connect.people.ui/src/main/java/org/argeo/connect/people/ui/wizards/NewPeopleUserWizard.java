@@ -15,6 +15,7 @@
  */
 package org.argeo.connect.people.ui.wizards;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -23,6 +24,8 @@ import javax.jcr.Session;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.connect.people.UserManagementService;
+import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.composites.UserGroupTableComposite;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.jcr.JcrUtils;
@@ -33,12 +36,23 @@ import org.argeo.security.jcr.JcrUserDetails;
 import org.eclipse.jface.dialogs.IPageChangeProvider;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.dialogs.PageChangedEvent;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CheckboxCellEditor;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.IWizardContainer;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.springframework.security.GrantedAuthority;
 
 /** Wizard to create a new user in a connect People application. */
@@ -48,15 +62,22 @@ public class NewPeopleUserWizard extends Wizard {
 	private UserAdminService userAdminService;
 	private JcrSecurityModel jcrSecurityModel;
 
+	private UserManagementService userManagementService;
+
 	// pages
 	private MainUserInfoWizardPage mainUserInfo;
 	private ChooseGroupsPage chooseGroupsPage;
+	private UserRolesPage userRolesPage;
 
 	public NewPeopleUserWizard(Session session,
-			UserAdminService userAdminService, JcrSecurityModel jcrSecurityModel) {
+			UserAdminService userAdminService,
+			JcrSecurityModel jcrSecurityModel,
+			UserManagementService userManagementService) {
 		this.session = session;
 		this.userAdminService = userAdminService;
 		this.jcrSecurityModel = jcrSecurityModel;
+		this.userManagementService = userManagementService;
+
 	}
 
 	@Override
@@ -66,10 +87,18 @@ public class NewPeopleUserWizard extends Wizard {
 
 		chooseGroupsPage = new ChooseGroupsPage(session);
 		addPage(chooseGroupsPage);
+
+		userRolesPage = new UserRolesPage(userAdminService);
+		addPage(userRolesPage);
 	}
 
 	@Override
 	public boolean performFinish() {
+
+		// FIXME clean this
+		if (!mainUserInfo.canFlipToNextPage())
+			return false;
+
 		if (!canFinish())
 			return false;
 
@@ -82,13 +111,25 @@ public class NewPeopleUserWizard extends Wizard {
 					.checkout(userProfile.getPath());
 			mainUserInfo.mapToProfileNode(userProfile);
 			String password = mainUserInfo.getPassword();
-			// TODO add roles
+
 			JcrUserDetails jcrUserDetails = new JcrUserDetails(userProfile,
 					password, new GrantedAuthority[0]);
+			// TODO add roles
+			if (!userRolesPage.getRoles().isEmpty())
+				jcrUserDetails = jcrUserDetails.cloneWithNewRoles(userRolesPage
+						.getRoles());
+
 			session.save();
 			session.getWorkspace().getVersionManager()
 					.checkin(userProfile.getPath());
+
 			userAdminService.createUser(jcrUserDetails);
+
+			userManagementService.createDefaultGroupForUser(session,
+					userProfile);
+			userManagementService.addGroupsToUser(userProfile,
+					chooseGroupsPage.getSelectedGroups());
+
 			return true;
 		} catch (Exception e) {
 			JcrUtils.discardQuietly(session);
@@ -154,8 +195,8 @@ public class NewPeopleUserWizard extends Wizard {
 			}
 		}
 
-		protected List<Node> getSelectedUsers() {
-			return userTableCmp.getSelectedUsers();
+		protected List<Node> getSelectedGroups() {
+			return userTableCmp.getSelectedGroups();
 		}
 
 		// private class MyUserTableCmp extends UserTableComposite {
@@ -190,4 +231,152 @@ public class NewPeopleUserWizard extends Wizard {
 		// }
 	}
 
+	protected class UserRolesPage extends WizardPage {
+		private static final long serialVersionUID = 1L;
+		private TableViewer rolesViewer;
+		private UserAdminService userAdminService;
+		private List<String> roles = new ArrayList<String>();
+
+		public UserRolesPage(UserAdminService userAdminService) {
+			super("Choose roles");
+			this.userAdminService = userAdminService;
+			setTitle("Assign some roles to the user");
+		}
+
+		@Override
+		public void createControl(Composite parent) {
+			Composite container = new Composite(parent, SWT.NONE);
+			container.setLayout(new FillLayout());
+			createRolesPart(container);
+			setControl(container);
+			rolesViewer
+					.setInput(userAdminService.listEditableRoles().toArray());
+			rolesViewer.refresh();
+		}
+
+		/** Creates the role section */
+		protected void createRolesPart(Composite parent) {
+			Table table = new Table(parent, SWT.MULTI | SWT.H_SCROLL
+					| SWT.V_SCROLL);
+			table.setLinesVisible(true);
+			table.setHeaderVisible(false);
+			rolesViewer = new TableViewer(table);
+
+			// check column
+			TableViewerColumn column = createTableViewerColumn(rolesViewer,
+					"checked", 20);
+			column.setLabelProvider(new ColumnLabelProvider() {
+				private static final long serialVersionUID = 1L;
+
+				public String getText(Object element) {
+					return null;
+				}
+
+				public Image getImage(Object element) {
+					String role = element.toString();
+					if (roles.contains(role)) {
+						return PeopleImages.ROLE_CHECKED;
+					} else {
+						return null;
+					}
+				}
+			});
+			column.setEditingSupport(new RoleEditingSupport(rolesViewer));
+
+			// role column
+			column = createTableViewerColumn(rolesViewer, "Role", 200);
+			column.setLabelProvider(new ColumnLabelProvider() {
+				private static final long serialVersionUID = 1L;
+
+				public String getText(Object element) {
+					return element.toString();
+				}
+
+				public Image getImage(Object element) {
+					return null;
+				}
+			});
+			rolesViewer.setContentProvider(new RolesContentProvider());
+		}
+
+		protected TableViewerColumn createTableViewerColumn(TableViewer viewer,
+				String title, int bound) {
+			final TableViewerColumn viewerColumn = new TableViewerColumn(
+					viewer, SWT.NONE);
+			final TableColumn column = viewerColumn.getColumn();
+			column.setText(title);
+			column.setWidth(bound);
+			column.setResizable(true);
+			column.setMoveable(true);
+			return viewerColumn;
+
+		}
+
+		public List<String> getRoles() {
+			return roles;
+		}
+
+		public void refresh() {
+			rolesViewer.refresh();
+		}
+
+		private class RolesContentProvider implements
+				IStructuredContentProvider {
+			private static final long serialVersionUID = 1L;
+
+			public Object[] getElements(Object inputElement) {
+				return userAdminService.listEditableRoles().toArray();
+			}
+
+			public void dispose() {
+			}
+
+			public void inputChanged(Viewer viewer, Object oldInput,
+					Object newInput) {
+			}
+		}
+
+		/** Select the columns by editing the checkbox in the first column */
+		class RoleEditingSupport extends EditingSupport {
+			private static final long serialVersionUID = 1L;
+			private final TableViewer viewer;
+
+			// private final AbstractFormPart formPart;
+
+			public RoleEditingSupport(TableViewer viewer) {
+				super(viewer);
+				this.viewer = viewer;
+				// this.formPart = formPart;
+			}
+
+			@Override
+			protected CellEditor getCellEditor(Object element) {
+				return new CheckboxCellEditor(null, SWT.CHECK | SWT.READ_ONLY);
+			}
+
+			@Override
+			protected boolean canEdit(Object element) {
+				return true;
+			}
+
+			@Override
+			protected Object getValue(Object element) {
+				String role = element.toString();
+				return roles.contains(role);
+			}
+
+			@Override
+			protected void setValue(Object element, Object value) {
+				Boolean inRole = (Boolean) value;
+				String role = element.toString();
+				if (inRole && !roles.contains(role)) {
+					roles.add(role);
+				} else if (!inRole && roles.contains(role)) {
+					roles.remove(role);
+				}
+				viewer.refresh();
+			}
+		}
+
+	}
 }

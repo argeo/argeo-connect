@@ -27,21 +27,19 @@ import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.UserJcrUtils;
 import org.argeo.security.UserAdminService;
 import org.argeo.security.jcr.JcrUserDetails;
-import org.argeo.security.ui.admin.SecurityAdminPlugin;
 import org.argeo.security.ui.admin.editors.ArgeoUserEditorInput;
 import org.argeo.security.ui.admin.editors.DefaultUserMainPage;
 import org.argeo.security.ui.admin.editors.UserRolesPage;
-import org.argeo.security.ui.admin.views.UsersView;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.springframework.security.GrantedAuthority;
 
 /** People specific user Editor. Adds among other group management. */
 public class UserEditor extends FormEditor {
+	// private final static Log log = LogFactory.getLog(UserEditor.class);
 	private static final long serialVersionUID = 270486756895365730L;
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".userEditor";
@@ -50,6 +48,10 @@ public class UserEditor extends FormEditor {
 	private Node userProfile;
 	private UserAdminService userAdminService;
 	private Session session;
+
+	// Pages
+	private DefaultUserMainPage defaultUserMainPage;
+	private UserRolesPage userRolesPage;
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -78,8 +80,11 @@ public class UserEditor extends FormEditor {
 
 	protected void addPages() {
 		try {
-			addPage(new DefaultUserMainPage(this, userProfile));
-			addPage(new UserRolesPage(this, userDetails, userAdminService));
+			defaultUserMainPage = new DefaultUserMainPage(this, userProfile);
+			addPage(defaultUserMainPage);
+			userRolesPage = new UserRolesPage(this, userDetails,
+					userAdminService);
+			addPage(userRolesPage);
 		} catch (Exception e) {
 			throw new ArgeoException("Cannot add pages", e);
 		}
@@ -88,42 +93,25 @@ public class UserEditor extends FormEditor {
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		// list pages
-		// TODO: make it more generic
-		// DefaultUserMainPage defaultUserMainPage = (DefaultUserMainPage)
-		// findPage(DefaultUserMainPage.ID);
-		// if (defaultUserMainPage.isDirty()) {
-		// defaultUserMainPage.doSave(monitor);
-		// String newPassword = defaultUserMainPage.getNewPassword();
-		// defaultUserMainPage.resetNewPassword();
-		// if (newPassword != null)
-		// userDetails = userDetails.cloneWithNewPassword(newPassword);
-		// }
-		//
-		// UserRolesPage userRolesPage = (UserRolesPage)
-		// findPage(UserRolesPage.ID);
-		// if (userRolesPage.isDirty()) {
-		// userRolesPage.doSave(monitor);
-		// userDetails = userDetails.cloneWithNewRoles(userRolesPage
-		// .getRoles());
-		// }
+
+		if (defaultUserMainPage.isDirty()) {
+			defaultUserMainPage.doSave(monitor);
+			String newPassword = defaultUserMainPage.getNewPassword();
+			defaultUserMainPage.resetNewPassword();
+			if (newPassword != null)
+				userDetails = userDetails.cloneWithNewPassword(newPassword);
+		}
+
+		if (userRolesPage.isDirty()) {
+			userRolesPage.doSave(monitor);
+			userDetails = userDetails.cloneWithNewRoles(userRolesPage
+					.getRoles());
+		}
 
 		userAdminService.updateUser(userDetails);
-
-		// if (userAdminService.userExists(user.getUsername()))
-		// userAdminService.updateUser(user);
-		// else {
-		// userAdminService.newUser(user);
-		// setPartName(user.getUsername());
-		// }
 		firePropertyChange(PROP_DIRTY);
 
-		// userRolesPage.setUserDetails(userDetails);
-
-		// refresh users view
-		IWorkbench iw = SecurityAdminPlugin.getDefault().getWorkbench();
-		UsersView usersView = (UsersView) iw.getActiveWorkbenchWindow()
-				.getActivePage().findView(UsersView.ID);
-		usersView.refresh();
+		userRolesPage.setUserDetails(userDetails);
 	}
 
 	@Override
@@ -136,9 +124,7 @@ public class UserEditor extends FormEditor {
 	}
 
 	public void refresh() {
-		// UserRolesPage userRolesPage = (UserRolesPage)
-		// findPage(UserRolesPage.ID);
-		// userRolesPage.refresh();
+		userRolesPage.refresh();
 	}
 
 	@Override

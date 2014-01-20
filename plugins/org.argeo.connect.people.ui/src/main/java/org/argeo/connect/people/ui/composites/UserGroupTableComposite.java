@@ -109,7 +109,7 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 		refreshFilteredList();
 	}
 
-	public List<Node> getSelectedUsers() {
+	public List<Node> getSelectedGroups() {
 		if (hasSelectionColumn) {
 			Object[] elements = ((CheckboxTableViewer) userGroupViewer)
 					.getCheckedElements();

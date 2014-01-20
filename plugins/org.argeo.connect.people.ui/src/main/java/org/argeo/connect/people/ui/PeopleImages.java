@@ -86,4 +86,8 @@ public class PeopleImages {
 	public final static Image UNCHECKED = PeopleUiPlugin.getImageDescriptor(
 			"icons/unchecked.gif").createImage();
 
+	// User Management
+	public final static Image ROLE_CHECKED = PeopleUiPlugin.getImageDescriptor(
+			"icons/security.gif").createImage();
+
 }

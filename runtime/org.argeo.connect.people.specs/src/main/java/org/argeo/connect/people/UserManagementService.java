@@ -49,7 +49,15 @@ public interface UserManagementService {
 	/** Get Corresponding users with their IDs */
 	public String addUsersToGroup(Node userGroup, List<Node> userProfiles);
 
-	public String addGroupsToUser(Node peopleProfile, List<Node> groups);
+	/**
+	 * Session is saved and userprofile checked in after addition.
+	 * 
+	 * @param userProfile
+	 *            JCR Node of the profile in the Argeo Security model.
+	 * @param groups
+	 * @return
+	 */
+	public String addGroupsToUser(Node userProfile, List<Node> groups);
 
 	/* MISCELLANEOUS */
 }

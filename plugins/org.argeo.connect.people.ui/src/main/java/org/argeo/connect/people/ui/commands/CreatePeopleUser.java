@@ -18,6 +18,8 @@ package org.argeo.connect.people.ui.commands;
 import javax.jcr.Repository;
 import javax.jcr.Session;
 
+import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.ui.wizards.NewPeopleUserWizard;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.security.UserAdminService;
@@ -34,16 +36,20 @@ import org.eclipse.ui.handlers.HandlerUtil;
  */
 
 public class CreatePeopleUser extends AbstractHandler {
+	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private UserAdminService userAdminService;
 	private JcrSecurityModel jcrSecurityModel;
+	// People specific service
+	private UserManagementService userManagementService;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		Session session = null;
 		try {
 			session = repository.login();
 			NewPeopleUserWizard newUserWizard = new NewPeopleUserWizard(
-					session, userAdminService, jcrSecurityModel);
+					session, userAdminService, jcrSecurityModel,
+					userManagementService);
 			WizardDialog dialog = new WizardDialog(
 					HandlerUtil.getActiveShell(event), newUserWizard);
 			dialog.open();
@@ -67,4 +73,7 @@ public class CreatePeopleUser extends AbstractHandler {
 		this.jcrSecurityModel = jcrSecurityModel;
 	}
 
+	public void setPeopleService(PeopleService peopleService) {
+		this.userManagementService = peopleService.getUserManagementService();
+	}
 }

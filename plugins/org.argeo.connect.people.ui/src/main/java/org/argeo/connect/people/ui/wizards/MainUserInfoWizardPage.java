@@ -47,7 +47,13 @@ public class MainUserInfoWizardPage extends WizardPage implements
 	}
 
 	@Override
+	public boolean canFlipToNextPage() {
+		return checkComplete() == null;
+	}
+
+	@Override
 	public void createControl(Composite parent) {
+		
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout(2, false));
 		username = EclipseUiUtils.createGridLT(composite, "Username", this);
@@ -60,8 +66,8 @@ public class MainUserInfoWizardPage extends WizardPage implements
 		setControl(composite);
 
 		// Initialize buttons
-		setPageComplete(false);
-		getContainer().updateButtons();
+		// setPageComplete(false);
+		// getContainer().updateButtons();
 	}
 
 	@Override
@@ -71,7 +77,7 @@ public class MainUserInfoWizardPage extends WizardPage implements
 			setMessage(message, WizardPage.ERROR);
 			setPageComplete(false);
 		} else {
-			setMessage("Complete", WizardPage.INFORMATION);
+			setMessage("Main user info comple, switch to next page.", WizardPage.INFORMATION);
 			setPageComplete(true);
 		}
 		getContainer().updateButtons();
