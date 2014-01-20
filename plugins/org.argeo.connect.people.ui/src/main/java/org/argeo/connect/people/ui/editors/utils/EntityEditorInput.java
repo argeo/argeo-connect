@@ -1,4 +1,4 @@
-package org.argeo.connect.people.ui.editors;
+package org.argeo.connect.people.ui.editors.utils;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;

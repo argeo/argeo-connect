@@ -6,7 +6,7 @@ import javax.jcr.RepositoryException;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.editors.EntityEditorInput;
+import org.argeo.connect.people.ui.editors.utils.EntityEditorInput;
 import org.argeo.connect.streams.RssTypes;
 import org.argeo.connect.streams.ui.editors.ChannelEditor;
 import org.eclipse.jface.viewers.DoubleClickEvent;

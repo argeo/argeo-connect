@@ -9,7 +9,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.dialogs.CreateEntityRefWithPositionDialog;
-import org.argeo.connect.people.ui.editors.AbstractEntityEditor;
+import org.argeo.connect.people.ui.editors.utils.AbstractEntityEditor;
 import org.argeo.connect.people.ui.wizards.AddEntityReferenceWizard;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;

@@ -1,4 +1,4 @@
-package org.argeo.connect.people.ui.editors;
+package org.argeo.connect.people.ui.editors.utils;
 
 /** Enable centralisation of versioned items check-out and in management */
 public interface IVersionedItemEditor {

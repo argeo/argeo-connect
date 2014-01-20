@@ -15,6 +15,15 @@
 		<property name="peopleService" ref="peopleService" />
 	</bean>
 
+
+<!-- User and groups -->
+
+	<bean id="userEditor" class="org.argeo.connect.people.ui.editors.UserEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="userAdminService" ref="userAdminService" />
+	</bean>
+
 	<bean id="groupEditor" class="org.argeo.connect.people.ui.editors.GroupEditor"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />

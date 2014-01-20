@@ -15,8 +15,8 @@
  */
 package org.argeo.connect.people.ui;
 
+import org.argeo.connect.people.ui.views.AdminUsersView;
 import org.argeo.connect.people.ui.views.UserGroupsView;
-import org.argeo.security.ui.admin.views.UsersView;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
@@ -29,7 +29,7 @@ public class BusinessAdminPerspective implements IPerspectiveFactory {
 
 		IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT,
 				0.3f, editorArea);
-		left.addView(UsersView.ID);
+		left.addView(AdminUsersView.ID);
 		left.addView(UserGroupsView.ID);
 	}
 }

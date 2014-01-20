@@ -35,6 +35,13 @@
 			name="Groups"
 			restorable="true">
 		</view>
+		<view
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/people.gif"
+			id="org.argeo.connect.people.ui.adminUsersView"
+			name="Users"
+			restorable="true">
+		</view>
 	</extension>
 	<!-- Editors -->
     <extension
@@ -67,15 +74,22 @@
 		</editor>
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/mailingList.gif"
+			id="org.argeo.connect.people.ui.mailingListEditor"
+			name="Mailing List">
+		</editor>
+		<!-- USER AND GROUPS -->  
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/group.gif"
 			id="org.argeo.connect.people.ui.userGroupEditor"
 			name="User Group">
 		</editor>
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/mailingList.gif"
-			id="org.argeo.connect.people.ui.mailingListEditor"
-			name="Mailing List">
+			icon="icons/person.gif"
+			id="org.argeo.connect.people.ui.userEditor"
+			name="User Management">
 		</editor>
 		<!-- ACTIVITIES -->
 		<editor
@@ -110,7 +124,15 @@
       		id="org.argeo.connect.people.ui.newUserGroup"
             name="New User Group">
     	</command>
-		
+		<command
+      		defaultHandler="org.argeo.connect.people.ui.commands.OpenPeopleUserEditor"
+      		id="org.argeo.connect.people.ui.openPeopleUserEditor"
+            name="Open user editor">
+            <commandParameter
+         		id="param.username"
+         		name="the username">
+  	 		</commandParameter>
+    	</command>
 		<!-- Legacy: import big data --> 
 		
 		<!-- Entity CRUD --> 
@@ -310,7 +332,7 @@
 				tooltip="Check Out item for edit">
 				<visibleWhen>
 					<with variable="activePart">
-						<instanceof value="org.argeo.connect.people.ui.editors.IVersionedItemEditor" />
+						<instanceof value="org.argeo.connect.people.ui.editors.utils.IVersionedItemEditor" />
 					</with>
 				</visibleWhen>
 			</command>
@@ -322,7 +344,7 @@
 				tooltip="Abandon changes and check back in">
 				<visibleWhen>
 					<with variable="activePart">
-						<instanceof value="org.argeo.connect.people.ui.editors.IVersionedItemEditor" />
+						<instanceof value="org.argeo.connect.people.ui.editors.utils.IVersionedItemEditor" />
 					</with>
 				</visibleWhen>
 			</command>
@@ -367,7 +389,7 @@
 						<equals value="notCheckedOut" />
 					</with>
     				<with variable="activePart">
-						<instanceof value="org.argeo.connect.people.ui.editors.IVersionedItemEditor" />
+						<instanceof value="org.argeo.connect.people.ui.editors.utils.IVersionedItemEditor" />
 					</with>
 				</and>
 			</activeWhen>
@@ -382,7 +404,7 @@
 						<equals value="checkedOut" />
 					</with>
 					<with variable="activePart">
-						<instanceof value="org.argeo.connect.people.ui.editors.IVersionedItemEditor" />
+						<instanceof value="org.argeo.connect.people.ui.editors.utils.IVersionedItemEditor" />
 					</with>
 				</and>
 			</activeWhen>

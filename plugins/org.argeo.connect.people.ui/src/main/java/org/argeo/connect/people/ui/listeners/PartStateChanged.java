@@ -3,7 +3,7 @@ package org.argeo.connect.people.ui.listeners;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.ui.editors.IVersionedItemEditor;
+import org.argeo.connect.people.ui.editors.utils.IVersionedItemEditor;
 import org.argeo.connect.people.ui.utils.CheckoutSourceProvider;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPartListener;

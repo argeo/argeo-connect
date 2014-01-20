@@ -1,4 +1,4 @@
-package org.argeo.connect.people.ui.editors;
+package org.argeo.connect.people.ui.editors.utils;
 
 import java.util.ArrayList;
 import java.util.List;

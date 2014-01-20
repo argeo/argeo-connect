@@ -16,7 +16,7 @@
 package org.argeo.connect.streams.ui.rap;
 
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.editors.SearchEntityEditorInput;
+import org.argeo.connect.people.ui.editors.utils.SearchEntityEditorInput;
 import org.argeo.connect.streams.RssTypes;
 import org.argeo.connect.streams.ui.editors.RssSearchPostEditor;
 import org.argeo.security.ui.rap.RapWindowAdvisor;

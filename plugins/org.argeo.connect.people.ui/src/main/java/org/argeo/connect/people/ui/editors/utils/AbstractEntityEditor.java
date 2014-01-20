@@ -1,5 +1,6 @@
-package org.argeo.connect.people.ui.editors;
+package org.argeo.connect.people.ui.editors.utils;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,31 +10,42 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.apache.commons.io.IOUtils;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.ui.PeopleImages;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.commands.CancelAndCheckInItem;
 import org.argeo.connect.people.ui.commands.CheckOutItem;
 import org.argeo.connect.people.ui.commands.DeleteEntity;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.utils.CheckoutSourceProvider;
+import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.ui.utils.Refreshable;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbench;
@@ -49,13 +61,15 @@ import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.services.ISourceProviderService;
 
 /**
- * Parent Abstract Form editor for all nodes that derive from people:base.
- * Insure the presence of a corresponding people services and manage a life
- * cycle of the JCR session that is bound to it. It provides no UI layout except
- * from the header with some buttons.
+ * Parent Abstract Form editor for a given entity. Insure the presence of a
+ * corresponding people services and manage a life cycle of the JCR session that
+ * is bound to it. It provides a header with some meta informations and a body
+ * with some buttons and a filter.
  */
-public abstract class AbstractPeopleEditor extends EditorPart implements
+public abstract class AbstractEntityEditor extends EditorPart implements
 		IVersionedItemEditor, Refreshable {
+	// private final static Log log = LogFactory
+	// .getLog(AbstractEntityEditor.class);
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
@@ -70,9 +84,11 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	private Session session;
 
 	// Business Objects
-	private Node node;
+	private Node entity;
 	// Enable mangement of new entities
 	private boolean isDraft = false;
+	// A corresponding picture that must be explicitly disposed
+	protected Image itemPicture = null;
 
 	// Form and corresponding life cycle
 	private IManagedForm mForm;
@@ -89,17 +105,36 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		try {
 			session = repository.login();
 			EntityEditorInput sei = (EntityEditorInput) getEditorInput();
-			node = getSession().getNodeByIdentifier(sei.getUid());
+			entity = getSession().getNodeByIdentifier(sei.getUid());
 
-			if (node.hasProperty(PeopleNames.PEOPLE_IS_DRAFT))
-				isDraft = node.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
+			if (entity.hasProperty(PeopleNames.PEOPLE_IS_DRAFT))
+				isDraft = entity.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
 						.getBoolean();
+
+			InputStream is = null;
+			try {
+				if (entity.hasNode(PeopleNames.PEOPLE_PICTURE)) {
+					Node imageNode = entity.getNode(PeopleNames.PEOPLE_PICTURE)
+							.getNode(Node.JCR_CONTENT);
+					is = imageNode.getProperty(Property.JCR_DATA).getBinary()
+							.getStream();
+					itemPicture = new Image(this.getSite().getShell()
+							.getDisplay(), is);
+				} else
+					// No default image
+					// itemPicture = PeopleImages.NO_PICTURE;
+					itemPicture = null;
+			} catch (Exception e) {
+			} finally {
+				IOUtils.closeQuietly(is);
+			}
 
 			// try to set a default part name
 			updatePartName();
 
 			// update tooltip
-			String displayName = CommonsJcrUtils.get(node, Property.JCR_TITLE);
+			String displayName = CommonsJcrUtils.get(getEntity(),
+					Property.JCR_TITLE);
 			if (CommonsJcrUtils.isEmptyString(displayName))
 				displayName = "current item";
 			setTitleToolTip("Display and edit information for " + displayName);
@@ -109,44 +144,11 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		}
 	}
 
-	/* CONTENT CREATION */
-	@Override
-	public void createPartControl(Composite parent) {
-		// Initialize main UI objects
-		toolkit = new FormToolkit(parent.getDisplay());
-		Form form = toolkit.createForm(parent);
-		mForm = new MyManagedForm(parent, toolkit);
-		createToolkits();
-		main = form.getBody();
-		createMainLayout(main);
-		forceRefresh();
-	}
-
-	protected void createMainLayout(Composite parent) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-		// Internal main Layout
-		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS
-				| SWT.NO_SCROLL | SWT.NO_TRIM);
-		header.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-		header.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
-		// // Right: buttons
-		// Composite buttons = toolkit.createComposite(firstRow, SWT.NO_FOCUS);
-		// GridData gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
-		// gd.heightHint = 30;
-		// buttons.setLayoutData(gd);
-		populateButtonsComposite(header);
-
-		Composite body = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		body.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		createBodyPart(body);
-	}
-
 	/**
 	 * Overwrite to provide a specific part Name
 	 */
 	protected void updatePartName() {
-		String name = CommonsJcrUtils.get(node, Property.JCR_TITLE);
+		String name = CommonsJcrUtils.get(entity, Property.JCR_TITLE);
 		if (CommonsJcrUtils.checkNotEmptyString(name)) {
 			if (name.length() > SHORT_NAME_LENGHT)
 				name = name.substring(0, SHORT_NAME_LENGHT - 1) + "...";
@@ -159,8 +161,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	protected void createToolkits() {
 	}
 
-	protected abstract Boolean deleteParentOnRemove();
-
 	/**
 	 * Overwrite to provide a plugin specific open editor command and thus be
 	 * able to open plugin specific editors
@@ -169,8 +169,184 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		return OpenEntityEditor.ID;
 	}
 
+	/**
+	 * Displays by default only the last update snippet. Overwrite to adapt to
+	 * current object
+	 */
+	protected void populateMainInfoDetails(Composite parent) {
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+
+		final Composite lastUpdateCmp = toolkit.createComposite(parent,
+				SWT.NO_FOCUS);
+		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder();
+		gl.marginTop = 8;
+		lastUpdateCmp.setLayout(gl);
+		lastUpdateCmp.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true,
+				true));
+		final Label readOnlyInfoLbl = toolkit.createLabel(lastUpdateCmp, "",
+				SWT.WRAP);
+		readOnlyInfoLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
+		final ColumnLabelProvider lastUpdateLP = new ColumnLabelProvider() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getText(Object element) {
+				return PeopleHtmlUtils.getLastUpdateSnippet((Node) element);
+			}
+		};
+
+		AbstractFormPart editPart = new AbstractFormPart() {
+			public void refresh() { 
+				super.refresh();
+				// update display value
+				String roText = lastUpdateLP.getText(entity);
+				readOnlyInfoLbl.setText(roText);
+			}
+		};
+		editPart.initialize(getManagedForm());
+		getManagedForm().addPart(editPart);
+	}
+
 	/** Overwrite following methods to create a nice editor... */
+	protected abstract void populateTitleComposite(Composite parent);;
+
 	protected abstract void createBodyPart(Composite parent);;
+
+	protected abstract Boolean deleteParentOnRemove();
+
+	/* CONTENT CREATION */
+	@Override
+	public void createPartControl(Composite parent) {
+		// Initialize main UI objects
+		toolkit = new FormToolkit(parent.getDisplay());
+		Form form = toolkit.createForm(parent);
+		mForm = new MyManagedForm(parent, toolkit);
+		createToolkits();
+		main = form.getBody();
+		createMainLayout(main);
+
+		forceRefresh();
+	}
+
+	protected void createMainLayout(Composite parent) {
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		// Internal main Layout
+		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS
+				| SWT.NO_SCROLL | SWT.NO_TRIM);
+		header.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		header.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		createHeaderPart(header);
+
+		Composite body = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		body.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		createBodyPart(body);
+
+	}
+
+	protected void createHeaderPart(final Composite header) {
+		GridLayout gl = new GridLayout(2, false);
+		gl.marginTop = gl.verticalSpacing = 0;
+		gl.horizontalSpacing = 0;
+		gl.marginWidth = 10;
+		gl.marginBottom = 8;
+		header.setLayout(gl);
+
+		Label image = toolkit.createLabel(header, "", SWT.NO_FOCUS);
+		image.setBackground(header.getBackground());
+		GridData gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
+		if (getPicture() != null) {
+			image.setImage(getPicture());
+			gd.horizontalIndent = 5;
+			gd.verticalIndent = 5;
+		} else {
+			gd.widthHint = 10;
+		}
+		image.setLayoutData(gd);
+
+		// test
+		// int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
+		// Transfer[] tt = new Transfer[] { TextTransfer.getInstance(),
+		// FileTransfer.getInstance(), ImageTransfer.getInstance(),
+		// URLTransfer.getInstance() };
+		// DropTarget target = new DropTarget(image, operations);
+		// target.setTransfer(tt);
+		// target.addDropListener(new ImageDropListener());
+
+		// General information panel (Right of the image)
+		Composite mainInfoComposite = toolkit.createComposite(header,
+				SWT.NO_FOCUS);
+		mainInfoComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+				false));
+		createMainInfoPanel(mainInfoComposite);
+	}
+
+	// Implementation of the Drop Listener
+	// private class ImageDropListener implements DropTargetListener {
+	//
+	// @Override
+	// public void dragEnter(DropTargetEvent event) {
+	// log.debug("drag enter ");
+	// }
+	//
+	// @Override
+	// public void dragLeave(DropTargetEvent event) {
+	// log.debug("drag leave");
+	// }
+	//
+	// @Override
+	// public void dragOperationChanged(DropTargetEvent event) {
+	// log.debug("drag OP change");
+	// }
+	//
+	// @Override
+	// public void dragOver(DropTargetEvent event) {
+	// log.debug("drag Over");
+	// }
+	//
+	// @Override
+	// public void drop(DropTargetEvent event) {
+	// log.debug("Dropped: " + event.data);
+	// }
+	//
+	// @Override
+	// public void dropAccept(DropTargetEvent event) {
+	// log.debug("drop accept");
+	//
+	// }
+	// }
+
+	protected void createMainInfoPanel(final Composite parent) {
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+
+		// First row: Title + Buttons.
+		Composite firstRow = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		firstRow.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		GridLayout gl = new GridLayout(2, false);
+		gl.marginLeft = 5;
+		gl.marginRight = 5;
+		gl.marginTop = 5;
+		firstRow.setLayout(gl);
+
+		// left: title
+		Composite title = toolkit.createComposite(firstRow, SWT.NO_FOCUS);
+		title.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		populateTitleComposite(title);
+
+		// Right: buttons
+		Composite buttons = toolkit.createComposite(firstRow, SWT.NO_FOCUS);
+		GridData gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
+		gd.heightHint = 30;
+		buttons.setLayoutData(gd);
+		populateButtonsComposite(buttons);
+
+		// 2nd line: Main Info Details
+		Composite details = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		details.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		populateMainInfoDetails(details);
+
+		// parent.layout();
+	}
 
 	protected void populateButtonsComposite(final Composite buttons) {
 		buttons.setLayout(new FormLayout());
@@ -237,7 +413,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			public void widgetSelected(SelectionEvent e) {
 				try {
 					if (isCheckedOutByMe())
-						if (node.getSession().hasPendingChanges())
+						if (entity.getSession().hasPendingChanges())
 							CommandUtils
 									.callCommand(IWorkbenchCommandConstants.FILE_SAVE);
 						else
@@ -283,7 +459,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 					if (isCheckedOutByMe()) {
 						Map<String, String> params = new HashMap<String, String>();
 						params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID,
-								CommonsJcrUtils.getIdentifierQuietly(node));
+								CommonsJcrUtils.getIdentifierQuietly(entity));
 						params.put(DeleteEntity.PARAM_REMOVE_ALSO_PARENT,
 								deleteParentOnRemove().toString());
 						CommandUtils.callCommand(DeleteEntity.ID, params);
@@ -328,8 +504,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	/* EXPOSES TO CHILDREN CLASSES */
 	/** Returns the entity Node that is bound to this editor */
-	public Node getNode() {
-		return node;
+	public Node getEntity() {
+		return entity;
 	}
 
 	protected IManagedForm getManagedForm() {
@@ -342,6 +518,10 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	protected Session getSession() {
 		return session;
+	}
+
+	protected Image getPicture() {
+		return itemPicture;
 	}
 
 	/* UTILITES */
@@ -364,11 +544,31 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		return true;
 	}
 
+	protected TableViewerColumn createTableViewerColumn(TableViewer parent,
+			String name, int style, int width) {
+		TableViewerColumn tvc = new TableViewerColumn(parent, style);
+		final TableColumn column = tvc.getColumn();
+		column.setText(name);
+		column.setWidth(width);
+		column.setResizable(true);
+		return tvc;
+	}
+
+	// protected GridLayout gridLayoutNoBorder() {
+	// return gridLayoutNoBorder(1);
+	// }
+
+	protected GridLayout gridLayoutNoBorder(int nbOfCol) {
+		GridLayout gl = new GridLayout(nbOfCol, false);
+		gl.marginWidth = gl.marginHeight = gl.horizontalSpacing = gl.verticalSpacing = 0;
+		return gl;
+	}
+
 	// ///////////////////////////////////////////
 	// LIFE CYCLE (among other check out policies)
 
 	public boolean isCheckedOutByMe() {
-		return CommonsJcrUtils.isNodeCheckedOutByMe(node);
+		return CommonsJcrUtils.isNodeCheckedOutByMe(entity);
 	}
 
 	/** Manage check out state and corresponding refresh of the UI */
@@ -390,7 +590,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			// Do nothing
 			;
 		else
-			CommonsJcrUtils.checkout(node);
+			CommonsJcrUtils.checkout(entity);
 		notifyCheckOutStateChange();
 	}
 
@@ -411,7 +611,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		if (!isCheckedOutByMe()) // Do nothing
 			;
 		else
-			CommonsJcrUtils.saveAndCheckin(node);
+			CommonsJcrUtils.saveAndCheckin(entity);
 		notifyCheckOutStateChange();
 	}
 
@@ -419,19 +619,19 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	public void cancelAndCheckInItem() {
 		// TODO best effort to keep a clean repository
 		try {
-			if (node.hasProperty(PeopleNames.PEOPLE_IS_DRAFT)
-					&& node.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
+			if (entity.hasProperty(PeopleNames.PEOPLE_IS_DRAFT)
+					&& entity.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
 							.getBoolean()) {
-				String path = node.getPath();
+				String path = entity.getPath();
 				session.removeItem(path);
 				session.save();
-				node = null;
+				entity = null;
 				// close current editor
 				this.getSite().getWorkbenchWindow().getActivePage()
 						.closeEditor(this, false);
 
 			} else {
-				CommonsJcrUtils.cancelAndCheckin(node);
+				CommonsJcrUtils.cancelAndCheckin(entity);
 				notifyCheckOutStateChange();
 				firePropertyChange(PROP_DIRTY);
 			}
@@ -446,9 +646,17 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	@Override
 	public void dispose() {
 		try {
-			if (node != null)
-				CommonsJcrUtils.cancelAndCheckin(node);
-		} finally {
+			if (entity != null)
+				CommonsJcrUtils.cancelAndCheckin(entity);
+
+			// TODO clean default image management
+			// Free the resources.
+			if (itemPicture != null
+					&& !itemPicture.equals(PeopleImages.NO_PICTURE))
+				itemPicture.dispose();
+		}
+
+		finally {
 			JcrUtils.logoutQuietly(session);
 		}
 		super.dispose();
@@ -498,7 +706,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 		/** <code>super.dirtyStateChanged()</code> does nothing */
 		public void dirtyStateChanged() {
-			AbstractPeopleEditor.this.firePropertyChange(PROP_DIRTY);
+			AbstractEntityEditor.this.firePropertyChange(PROP_DIRTY);
 		}
 
 		/**
@@ -508,7 +716,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		public void commit(boolean onSave) {
 			super.commit(onSave);
 			if (onSave) {
-				AbstractPeopleEditor.this.firePropertyChange(PROP_DIRTY);
+				AbstractEntityEditor.this.firePropertyChange(PROP_DIRTY);
 			}
 		}
 	}

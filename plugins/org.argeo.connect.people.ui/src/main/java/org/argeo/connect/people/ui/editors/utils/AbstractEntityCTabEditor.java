@@ -1,4 +1,4 @@
-package org.argeo.connect.people.ui.editors;
+package org.argeo.connect.people.ui.editors.utils;
 
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.eclipse.jface.viewers.TableViewer;

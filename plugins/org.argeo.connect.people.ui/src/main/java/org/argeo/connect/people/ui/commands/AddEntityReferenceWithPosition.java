@@ -11,7 +11,7 @@ import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.dialogs.AddMLMembersDialog;
 import org.argeo.connect.people.ui.dialogs.AddMLMembershipDialog;
 import org.argeo.connect.people.ui.dialogs.CreateEntityRefWithPositionDialog;
-import org.argeo.connect.people.ui.editors.AbstractEntityEditor;
+import org.argeo.connect.people.ui.editors.utils.AbstractEntityEditor;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;

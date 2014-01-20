@@ -2,8 +2,8 @@ package org.argeo.connect.people.ui.commands;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.editors.SearchEntityEditorInput;
 import org.argeo.connect.people.ui.editors.StaticSearchEntityEditor;
+import org.argeo.connect.people.ui.editors.utils.SearchEntityEditorInput;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;

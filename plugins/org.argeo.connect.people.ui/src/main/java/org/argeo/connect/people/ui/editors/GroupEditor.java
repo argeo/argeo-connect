@@ -11,6 +11,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.ui.providers.GroupLabelProvider;
 import org.argeo.connect.people.ui.toolkits.GroupToolkit;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;

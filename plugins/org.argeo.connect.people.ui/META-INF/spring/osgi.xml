@@ -9,8 +9,12 @@
 	osgi:default-timeout="30000">
 
 	<beans:description>People UI</beans:description>
-	<reference id="peopleService" interface="org.argeo.connect.people.PeopleService" />
+
 	<!-- REFERENCES -->
 	<reference id="repository" interface="javax.jcr.Repository"
 		filter="(argeo.jcr.repository.alias=people)" cardinality="0..1" />
+
+	<reference id="userAdminService" interface="org.argeo.security.UserAdminService" />
+
+	<reference id="peopleService" interface="org.argeo.connect.people.PeopleService" />
 </beans:beans>

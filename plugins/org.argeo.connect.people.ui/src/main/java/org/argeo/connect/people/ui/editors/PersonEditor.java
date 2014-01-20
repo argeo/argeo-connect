@@ -13,6 +13,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
+import org.argeo.connect.people.ui.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.ui.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.ui.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.ui.toolkits.ActivityToolkit;
@@ -50,7 +51,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
 
 /**
- * Default connect Person editor page
+ * Editor page that display a person with corresponding details
  */
 public class PersonEditor extends AbstractEntityCTabEditor {
 	final static Log log = LogFactory.getLog(PersonEditor.class);
