@@ -4,62 +4,55 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+	<!-- Centralizes the intelligence to open the correct editor depending on 
+		the node type -->
+	<bean id="openEntityEditor" class="org.argeo.connect.people.ui.commands.OpenEntityEditor"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+		<property name="repository" ref="repository" />
+	</bean>
+
 	<!-- Entity References CRUD -->
-	<bean id="org.argeo.connect.people.ui.addEntityReference" class="org.argeo.connect.people.ui.commands.AddEntityReference"
+	<bean id="addEntityReference" class="org.argeo.connect.people.ui.commands.AddEntityReference"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 	</bean>
 
-	<!-- Remove 2 following commands -->
-
-	<bean id="org.argeo.connect.people.ui.addEntityReferences"
-		class="org.argeo.connect.people.ui.commands.AddEntityReferences"
-		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
-	</bean>
-	<bean id="org.argeo.connect.people.ui.addEntityReferenceWithPosition"
-		class="org.argeo.connect.people.ui.commands.AddEntityReferenceWithPosition"
-		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
-	</bean>
-
-	<!-- until there -->
-
-
-
-	<bean id="org.argeo.connect.people.ui.editEntityReferenceWithPosition"
-		class="org.argeo.connect.people.ui.commands.EditEntityReferenceWithPosition"
-		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
-	</bean>
-	<bean id="org.argeo.connect.people.ui.editEntityReference"
+	<bean id="editEntityReference"
 		class="org.argeo.connect.people.ui.commands.EditEntityReference"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 	</bean>
-	<bean id="org.argeo.connect.people.ui.removeEntityReference"
+
+	<bean id="editEntityReferenceWithPosition"
+		class="org.argeo.connect.people.ui.commands.EditEntityReferenceWithPosition"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+	</bean>
+
+	<bean id="removeEntityReference"
 		class="org.argeo.connect.people.ui.commands.RemoveEntityReference"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 	</bean>
-	<bean id="org.argeo.connect.people.ui.deleteEntity" class="org.argeo.connect.people.ui.commands.DeleteEntity"
+
+	<bean id="deleteEntity" class="org.argeo.connect.people.ui.commands.DeleteEntity"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 	</bean>
 
-
-	<bean id="org.argeo.connect.people.ui.openEntityEditor" class="org.argeo.connect.people.ui.commands.OpenEntityEditor"
-		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
-		<property name="repository" ref="repository" />
-	</bean>
-
-	<bean id="newUserGroup" class="org.argeo.connect.people.ui.commands.NewUserGroup"
+	<!-- USER MANAGEMENT -->
+	<bean id="createUserGroup" class="org.argeo.connect.people.ui.commands.CreateUserGroup"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
 	</bean>
-
+	<bean id="createPeopleUser" class="org.argeo.connect.people.ui.commands.CreatePeopleUser"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="jcrSecurityModel" ref="jcrSecurityModel" />
+	</bean>
 
 	<bean id="importPeople"
 		class="org.argeo.connect.people.ui.commands.ImportPeopleHandler"

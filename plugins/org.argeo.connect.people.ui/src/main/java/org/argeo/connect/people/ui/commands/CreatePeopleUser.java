@@ -18,26 +18,32 @@ package org.argeo.connect.people.ui.commands;
 import javax.jcr.Repository;
 import javax.jcr.Session;
 
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.wizards.NewUserGroupWizard;
+import org.argeo.connect.people.ui.wizards.NewPeopleUserWizard;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.security.UserAdminService;
+import org.argeo.security.jcr.JcrSecurityModel;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-/** Launch a wizard that enables creation of a new user group. */
-public class NewUserGroup extends AbstractHandler {
+/**
+ * Launch a wizard that enables creation of a new People user, enable among
+ * other group assignation.
+ */
+
+public class CreatePeopleUser extends AbstractHandler {
 	private Repository repository;
-	private PeopleService peopleService;
+	private UserAdminService userAdminService;
+	private JcrSecurityModel jcrSecurityModel;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		Session session = null;
 		try {
 			session = repository.login();
-			NewUserGroupWizard newUserWizard = new NewUserGroupWizard(session,
-					peopleService);
+			NewPeopleUserWizard newUserWizard = new NewPeopleUserWizard(
+					session, userAdminService, jcrSecurityModel);
 			WizardDialog dialog = new WizardDialog(
 					HandlerUtil.getActiveShell(event), newUserWizard);
 			dialog.open();
@@ -53,7 +59,12 @@ public class NewUserGroup extends AbstractHandler {
 		this.repository = repository;
 	}
 
-	public void setPeopleService(PeopleService peopleService) {
-		this.peopleService = peopleService;
+	public void setUserAdminService(UserAdminService userAdminService) {
+		this.userAdminService = userAdminService;
 	}
+
+	public void setJcrSecurityModel(JcrSecurityModel jcrSecurityModel) {
+		this.jcrSecurityModel = jcrSecurityModel;
+	}
+
 }

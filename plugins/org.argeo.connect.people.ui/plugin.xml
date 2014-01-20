@@ -4,21 +4,24 @@
 	<!-- Perspective --> 
 	<extension
     	point="org.eclipse.ui.perspectives">
-		<perspective
-			class="org.argeo.connect.people.ui.PeoplePerspective"
-			icon="icons/people.gif"
-            id="org.argeo.connect.people.ui.peoplePerspective"
-            name="People">
-		</perspective>
 		<!-- People specific business admin perspective -->  
 		<perspective
 			class="org.argeo.connect.people.ui.BusinessAdminPerspective"
 			icon="icons/people.gif"
             id="org.argeo.connect.people.ui.businessAdminPerspective"
             name="User management">
-      </perspective>
-   </extension>
-    <!-- Views -->
+		</perspective>
+      
+		<!-- Draft perspective for people standalone application --> 
+		<perspective
+			class="org.argeo.connect.people.ui.PeoplePerspective"
+			icon="icons/people.gif"
+            id="org.argeo.connect.people.ui.peoplePerspective"
+            name="People">
+		</perspective>
+	</extension>
+
+    <!-- VIEWS -->
     <extension
 		point="org.eclipse.ui.views">
 		<view
@@ -28,6 +31,8 @@
 			name="Search"
 			restorable="true">
 		</view>
+		
+		<!-- User Management -->
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/people.gif"
@@ -43,10 +48,12 @@
 			restorable="true">
 		</view>
 	</extension>
-	<!-- Editors -->
+	
+	<!-- EDITORS -->
     <extension
 		point="org.eclipse.ui.editors">
-		<!-- SEARCH -->
+		
+		<!-- Search -->
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/search.png"
@@ -59,7 +66,8 @@
 			id="org.argeo.connect.people.ui.searchEntityEditor"
 			name="Search">
 		</editor>
-		<!-- ENTITIES -->
+		
+		<!-- Entities -->
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/person.gif"
@@ -78,7 +86,8 @@
 			id="org.argeo.connect.people.ui.mailingListEditor"
 			name="Mailing List">
 		</editor>
-		<!-- USER AND GROUPS -->  
+		
+		<!-- Users and groups -->  
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/group.gif"
@@ -91,7 +100,8 @@
 			id="org.argeo.connect.people.ui.userEditor"
 			name="User Management">
 		</editor>
-		<!-- ACTIVITIES -->
+		
+		<!-- Activities -->
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/activities/todo.gif"
@@ -105,7 +115,8 @@
 			name="Task editor">
 		</editor>
 	</extension>
-	<!-- Commands -->
+	
+	<!-- COMMANDS -->
 	<extension
 		point="org.eclipse.ui.commands">
 		<!-- Generic Check in and out introduced by people -->
@@ -121,7 +132,12 @@
 		<!-- Users and Groups Management --> 
 		<command
       		defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
-      		id="org.argeo.connect.people.ui.newUserGroup"
+      		id="org.argeo.connect.people.ui.createPeopleUser"
+            name="New User Group">
+    	</command>
+		<command
+      		defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		id="org.argeo.connect.people.ui.createUserGroup"
             name="New User Group">
     	</command>
 		<command
@@ -214,42 +230,6 @@
   	 		</commandParameter>
 		</command>
 
-		<!-- TODO remove the 2 following commands --> 
-    	<command
-			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
-      		id="org.argeo.connect.people.ui.addEntityReferences"
-            name="Add Entity References">
-            <commandParameter
-         		id="param.referencingJcrId"
-         		name="Referencing node JCR identifier">
-  	 		</commandParameter>
-            <commandParameter
-         		id="param.referencedJcrId"
-         		name="Referenced node JCR identifier">
-  	 		</commandParameter>
-    	</command>
-    	<command
-			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
-      		id="org.argeo.connect.people.ui.addEntityReferenceWithPosition"
-            name="Add Entity References With Position">
-            <commandParameter
-         		id="param.referencingJcrId"
-         		name="Referencing node JCR identifier">
-  	 		</commandParameter>
-            <commandParameter
-         		id="param.referencedJcrId"
-         		name="Referenced node JCR identifier">
-  	 		</commandParameter>
-            <commandParameter
-         		id="param.toSearchNodeType"
-         		name="type of node to search for">
-  	 		</commandParameter>
-            <commandParameter
-         		id="param.dialogId"
-         		name="ID of the corresponding dialog">
-  	 		</commandParameter>
-    	</command>
-    	<!-- Until there --> 
 		<command
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       		id="org.argeo.connect.people.ui.editEntityReferenceWithPosition"
@@ -315,6 +295,8 @@
   	 		</commandParameter>
 		</command> -->   
 	</extension>		
+	
+	
 	<!-- Menus -->
 	<extension
 		point="org.eclipse.ui.menus">
@@ -364,11 +346,40 @@
 			</command>
 		</menuContribution>
 		
-		<!-- UserGroupView --> 
+		<!-- PeopleUserAdminView toolbar menu --> 
+		<menuContribution
+            locationURI="toolbar:org.argeo.connect.people.ui.adminUsersView">
+			<command
+                  commandId="org.argeo.security.ui.admin.refreshUsersList"
+                  icon="icons/refresh.png"
+                  label="Refresh list"
+                  tooltip="Force the full refresh of the user list">
+            </command>
+            <command
+                  commandId="org.argeo.security.ui.admin.deleteUser"
+                  icon="icons/remove.gif"
+                  label="Delete User"
+                  tooltip="Delete selected users">
+            </command>
+            <command
+                  commandId="org.argeo.connect.people.ui.createPeopleUser"
+                  icon="icons/newGroup.gif"
+                  label="Add User"
+                  tooltip="Add new user">
+            </command>
+            <command
+                  commandId="org.argeo.security.ui.admin.userBatchUpdate"
+                  icon="icons/batch.gif"
+                  label="Update users"
+                  tooltip="Perform maintenance activities on a list of chosen users">
+            </command>
+        </menuContribution>
+		
+		<!-- UserGroupView tool bar menu --> 
 		<menuContribution
             locationURI="toolbar:org.argeo.connect.people.ui.userGroupsView">
             <command
-                  commandId="org.argeo.connect.people.ui.newUserGroup"
+                  commandId="org.argeo.connect.people.ui.createUserGroup"
                   icon="icons/newGroup.gif"
                   label="Add Group"
                   tooltip="Add a new user group">
@@ -430,6 +441,7 @@
 
 	<extension
 		point="org.eclipse.ui.activities">
+		<!-- Business admin activities --> 
 		<activity
               description="Business admin activities"
               id="org.argeo.connect.people.ui.businessAdminActivity"
@@ -447,9 +459,8 @@
               isEqualityPattern="true"
               pattern="org.argeo.connect.people.ui/org.argeo.connect.people.ui.businessAdminPerspective">
         </activityPatternBinding>
-     </extension>
-	<extension
-		point="org.eclipse.ui.activities">
+        
+		<!-- Technical admin activities --> 
 		<activity
               description="Only for admins"
               id="org.argeo.connect.people.ui.adminActivity"
@@ -462,6 +473,8 @@
 		    </with>
 		  </enabledWhen>
         </activity>
+        <!-- FIXME: we hide for the time being the people stand alone perspective 
+        to all people that are not in role technical admin --> 
         <activityPatternBinding
               activityId="org.argeo.connect.people.ui.adminActivity"
               isEqualityPattern="true"

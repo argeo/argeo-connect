@@ -30,4 +30,7 @@
 		</service-properties>
 	</service>
 	
+	<service ref="jcrSecurityModel" interface="org.argeo.security.jcr.JcrSecurityModel" />
+	
+	
 </beans:beans>

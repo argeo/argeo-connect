@@ -18,7 +18,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.composites.ActivityTableComposite;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
-import org.argeo.connect.people.ui.wizards.CreateSimpleTaskWizard;
+import org.argeo.connect.people.ui.wizards.NewSimpleTaskWizard;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -258,7 +258,7 @@ public class ActivityToolkit {
 		try {
 			// Create an independent session.
 			session = relatedEntity.getSession().getRepository().login();
-			CreateSimpleTaskWizard wizard = new CreateSimpleTaskWizard(session,
+			NewSimpleTaskWizard wizard = new NewSimpleTaskWizard(session,
 					activityService);
 			List<Node> relatedTo = new ArrayList<Node>();
 			relatedTo.add(relatedEntity);

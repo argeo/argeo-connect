@@ -36,7 +36,7 @@ import org.eclipse.swt.widgets.Text;
  * SWT.OK Corresponding session is not saved.
  */
 
-public class CreateSimpleTaskWizard extends Wizard {
+public class NewSimpleTaskWizard extends Wizard {
 	// private final static Log log = LogFactory
 	// .getLog(CreateSimpleTaskWizard.class);
 
@@ -65,7 +65,7 @@ public class CreateSimpleTaskWizard extends Wizard {
 
 	protected TableViewer itemsViewer;
 
-	public CreateSimpleTaskWizard(Session session,
+	public NewSimpleTaskWizard(Session session,
 			ActivityService activityService) {
 		this.activityService = activityService;
 		this.currSession = session;
