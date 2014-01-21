@@ -78,6 +78,8 @@ public class NewPeopleUserWizard extends Wizard {
 		this.jcrSecurityModel = jcrSecurityModel;
 		this.userManagementService = userManagementService;
 
+		setWindowTitle("People user creation");
+		setNeedsProgressMonitor(true);
 	}
 
 	@Override
@@ -104,7 +106,7 @@ public class NewPeopleUserWizard extends Wizard {
 
 		return super.canFinish();
 	}
-	
+
 	@Override
 	public boolean performFinish() {
 		if (!canFinish())

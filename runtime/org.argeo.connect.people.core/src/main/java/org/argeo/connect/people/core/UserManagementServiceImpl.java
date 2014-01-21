@@ -28,6 +28,11 @@ public class UserManagementServiceImpl implements UserManagementService {
 	@Override
 	public Node createGroup(Session session, String groupId, String title,
 			String description) {
+		return createGroup(session, groupId, title, description, false);
+	}
+
+	private Node createGroup(Session session, String groupId, String title,
+			String description, boolean isUserGroup) {
 		try {
 			String relPath = JcrUtils.firstCharsToPath(groupId, 2);
 			String fullPath = getUserGroupParentPath() + "/" + relPath + "/"
@@ -41,6 +46,11 @@ public class UserManagementServiceImpl implements UserManagementService {
 					newGroup.setProperty(Property.JCR_TITLE, title);
 				if (CommonsJcrUtils.checkNotEmptyString(description))
 					newGroup.setProperty(Property.JCR_DESCRIPTION, description);
+
+				if (isUserGroup) {
+					newGroup.setProperty(
+							PeopleNames.PEOPLE_IS_SINGLE_USER_GROUP, true);
+				}
 				CommonsJcrUtils.saveAndCheckin(newGroup);
 				return newGroup;
 			}
@@ -154,7 +164,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 		String currId = CommonsJcrUtils.get(userProfile,
 				ArgeoNames.ARGEO_USER_ID);
 		Node userGp = createGroup(session, currId, currId,
-				"Default group for user " + currId);
+				"Default group for user " + currId, true);
 		List<Node> groups = new ArrayList<Node>();
 		groups.add(userGp);
 		addGroupsToUser(userProfile, groups);

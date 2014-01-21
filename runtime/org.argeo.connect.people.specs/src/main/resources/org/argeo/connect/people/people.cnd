@@ -142,8 +142,8 @@ mixin
 - people:userGroups (REFERENCE) *  // towards people:userGroup types 
 
 [people:userGroup] > nt:unstructured, mix:title, mix:versionable, mix:lastModified 
-- people:relatedPersons (REFERENCE) * // towards people:person types 
-- people:userGroups (REFERENCE) *  // towards people:userGroup types
+// only set when creating the default group for a single user 
+- people:isSingleUserGroup (BOOLEAN) 
 
 //
 // ACTIVITIES AND TASKS

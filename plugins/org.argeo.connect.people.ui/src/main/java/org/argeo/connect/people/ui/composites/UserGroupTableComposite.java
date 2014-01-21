@@ -19,7 +19,9 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
@@ -56,8 +58,7 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 	private Text filterTxt;
 	private Button displayUserChk;
 
-	private final static String FILTER_HELP_MSG = "Type filter criterion "
-			+ "separated by a space";
+	private final static String FILTER_HELP_MSG = "Search groups";
 	private Session session;
 
 	private boolean hasFilter;
@@ -257,14 +258,30 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 	/* MANAGE FILTER */
 	private void createFilterPart(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NO_FOCUS);
-		composite.setLayout(new GridLayout(2, false));
+		composite.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
+		composite
+				.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+		displayUserChk = new Button(composite, SWT.CHECK);
+		displayUserChk.setText("Display Users");
+
+		displayUserChk.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				refreshFilteredList();
+			}
+		});
 
 		// Text Area for the filter
-		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
-				| SWT.ICON_CANCEL);
+		filterTxt = new Text(composite, SWT.BORDER | SWT.SEARCH
+				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		filterTxt.setMessage(FILTER_HELP_MSG);
-		filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
-				| GridData.HORIZONTAL_ALIGN_FILL));
+		GridData gd = new GridData(GridData.GRAB_HORIZONTAL
+				| GridData.HORIZONTAL_ALIGN_FILL);
+		gd.horizontalIndent = 10;
+		filterTxt.setLayoutData(gd);
 		filterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -294,8 +311,8 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 	 * Build repository request : caller might overwrite in order to display a
 	 * subset of all groups
 	 */
-	protected NodeIterator listFilteredElements(Session session, String filter)
-			throws RepositoryException {
+	protected final NodeIterator listFilteredElements(Session session,
+			String filter) throws RepositoryException {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
 		QueryObjectModelFactory factory = queryManager.getQOMFactory();
 
@@ -316,6 +333,17 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 				else
 					defaultC = factory.and(defaultC, currC);
 			}
+		}
+
+		if (displayUserChk != null && !displayUserChk.getSelection()) {
+			Constraint constraint = factory.propertyExistence(
+					source.getSelectorName(),
+					PeopleNames.PEOPLE_IS_SINGLE_USER_GROUP);
+			constraint = factory.not(constraint);
+			if (defaultC == null)
+				defaultC = constraint;
+			else
+				defaultC = factory.and(defaultC, constraint);
 		}
 
 		Ordering order = factory.ascending(factory.propertyValue(

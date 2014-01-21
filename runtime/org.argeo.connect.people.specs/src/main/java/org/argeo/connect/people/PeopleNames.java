@@ -77,6 +77,7 @@ public interface PeopleNames {
 	/* USER MANAGEMENT */
 	public final static String PEOPLE_RELATED_PERSON = "people:relatedPersons"; //REFERENCE * towards people:person types 
 	public final static String PEOPLE_USER_GROUPS= "people:userGroups";//REFERENCE * towards people:userGroup types 
+	public final static String PEOPLE_IS_SINGLE_USER_GROUP= "people:isSingleUserGroup";
 	
 	/* ACTIVITIES AND TASKS */
 	public final static String PEOPLE_MANAGER = "people:manager";

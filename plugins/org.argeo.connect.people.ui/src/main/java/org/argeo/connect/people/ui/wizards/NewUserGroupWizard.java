@@ -64,6 +64,9 @@ public class NewUserGroupWizard extends Wizard {
 		addPage(userListPage);
 		validatePage = new ValidateAndLaunchWizardPage(session);
 		addPage(validatePage);
+		
+		setWindowTitle("Group creation");
+		setNeedsProgressMonitor(true);
 	}
 
 	@Override
@@ -97,8 +100,10 @@ public class NewUserGroupWizard extends Wizard {
 		private Text descTxt;
 
 		public MainInfoPage() {
-			super("Enter a name and a description for the group to create.");
+			super("Main Information");
 			setTitle("Main Information");
+			setMessage("Enter a name and a description for the group to create.");
+			
 		}
 
 		@Override
@@ -111,7 +116,11 @@ public class NewUserGroupWizard extends Wizard {
 			titleTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 					false));
 
-			descTxt = createLP(container, "Description", "");
+			Label lbl = new Label(container, SWT.NONE);
+			lbl.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
+			lbl.setText("Description");
+			descTxt = new Text(container, SWT.BORDER | SWT.MULTI | SWT.WRAP);
+			// descTxt.setText(value);
 			GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 			gd.heightHint = 100;
 			descTxt.setLayoutData(gd);
