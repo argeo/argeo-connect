@@ -59,5 +59,7 @@ public interface UserManagementService {
 	 */
 	public String addGroupsToUser(Node userProfile, List<Node> groups);
 
+	public List<Node> getUserGroups(Node userProfile);
+
 	/* MISCELLANEOUS */
 }

@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.Property;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -28,8 +30,12 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserManagementService;
+import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.composites.UserGroupTableComposite;
+import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.UserJcrUtils;
@@ -42,15 +48,20 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IEditorInput;
@@ -62,7 +73,6 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.springframework.security.GrantedAuthority;
-import org.springframework.security.userdetails.UserDetails;
 
 /** People specific user Editor. Adds among other group management. */
 public class UserEditor extends FormEditor {
@@ -71,11 +81,14 @@ public class UserEditor extends FormEditor {
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".userEditor";
 
-	private JcrUserDetails userDetails;
-	private Node userProfile;
+	/* DEPENDENCY INJECTION */
 	private UserAdminService userAdminService;
 	private UserManagementService userManagementService;
 	private Session session;
+
+	// Local instance of the user model
+	private Node userProfile;
+	private JcrUserDetails userDetails;
 
 	// Pages
 	private DefaultUserMainPage defaultUserMainPage;
@@ -87,6 +100,8 @@ public class UserEditor extends FormEditor {
 		super.init(site, input);
 		String username = "";
 
+		// TODO simplify this: user is created using a wizard and always exists
+		// on editor opening.
 		username = ((ArgeoUserEditorInput) getEditorInput()).getUsername();
 		userProfile = UserJcrUtils.getUserProfile(session, username);
 
@@ -102,7 +117,6 @@ public class UserEditor extends FormEditor {
 				throw new ArgeoException("Cannot retrieve disabled JCR profile");
 			}
 		}
-
 		this.setPartProperty("name", username != null ? username : "<new user>");
 		setPartName(username != null ? username : "<new user>");
 	}
@@ -112,8 +126,8 @@ public class UserEditor extends FormEditor {
 			defaultUserMainPage = new DefaultUserMainPage(this, userProfile);
 			addPage(defaultUserMainPage);
 
-			userGroupsPage = new UserGroupsPage(this, userDetails,
-					userManagementService);
+			userGroupsPage = new UserGroupsPage(this, userManagementService,
+					userProfile);
 			addPage(userGroupsPage);
 
 			userRolesPage = new UserRolesPage(this, userDetails,
@@ -128,7 +142,6 @@ public class UserEditor extends FormEditor {
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		// list pages
-
 		if (defaultUserMainPage.isDirty()) {
 			defaultUserMainPage.doSave(monitor);
 			String newPassword = defaultUserMainPage.getNewPassword();
@@ -144,9 +157,16 @@ public class UserEditor extends FormEditor {
 		}
 
 		userAdminService.updateUser(userDetails);
-		firePropertyChange(PROP_DIRTY);
 
+		if (userGroupsPage.isDirty()) {
+			userGroupsPage.doSave(monitor);
+			userManagementService.addGroupsToUser(userProfile,
+					userGroupsPage.selectedGroups);
+		}
+
+		firePropertyChange(PROP_DIRTY);
 		userRolesPage.setUserDetails(userDetails);
+
 	}
 
 	@Override
@@ -162,100 +182,158 @@ public class UserEditor extends FormEditor {
 		userRolesPage.refresh();
 	}
 
-	@Override
-	public void dispose() {
-		JcrUtils.logoutQuietly(session);
-		super.dispose();
-	}
-
 	/* Local classes */
 	private class UserGroupsPage extends FormPage implements ArgeoNames {
 		private final Log log = LogFactory.getLog(UserGroupsPage.class);
 
-		private TableViewer rolesViewer;
+		// This UI Objects
+		private TableViewer groupsViewer;
+		private AbstractFormPart part;
 		private UserManagementService userManagementService;
-		private List<String> roles;
 
-		public UserGroupsPage(FormEditor editor, UserDetails userDetails,
-				UserManagementService userManagementService) {
-			super(editor, ID, "Roles");
+		// Business objects
+		private Node argeoProfile;
+		private List<Node> selectedGroups;
+		// Keep a local cache for upper table
+		private List<Node> displayedGroups = new ArrayList<Node>();
+
+		public UserGroupsPage(FormEditor editor,
+				UserManagementService userManagementService, Node argeoProfile) {
+			super(editor, ID, "Groups");
 			this.userManagementService = userManagementService;
-		}
-
-		public void setUserDetails(UserDetails userDetails) {
-			this.roles = new ArrayList<String>();
-			for (GrantedAuthority ga : userDetails.getAuthorities())
-				roles.add(ga.getAuthority());
-			if (rolesViewer != null)
-				rolesViewer.refresh();
+			this.argeoProfile = argeoProfile;
 		}
 
 		protected void createFormContent(final IManagedForm mf) {
 			ScrolledForm form = mf.getForm();
-			form.setText("Roles");
-			FillLayout mainLayout = new FillLayout();
-			// ColumnLayout mainLayout = new ColumnLayout();
-			// mainLayout.minNumColumns = 1;
-			// mainLayout.maxNumColumns = 4;
-			// mainLayout.topMargin = 0;
-			// mainLayout.bottomMargin = 5;
-			// mainLayout.leftMargin = mainLayout.rightMargin =
-			// mainLayout.horizontalSpacing = mainLayout.verticalSpacing = 10;
-			form.getBody().setLayout(mainLayout);
-			createRolesPart(form.getBody());
+			form.setText("Group Management");
+			Composite body = form.getBody();
+			body.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+
+			Label lbl = new Label(body, SWT.NONE);
+			lbl.setFont(EclipseUiUtils.getBoldFont(body));
+			lbl.setText("Already assigned group");
+			GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+			gd.horizontalIndent = 20;
+			lbl.setLayoutData(gd);
+
+			Composite top = new Composite(body, SWT.NO_FOCUS);
+			top.setLayout(new FillLayout());
+			createSelectedGroupsPart(top);
+			refresh();
+			top.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+			lbl = new Label(body, SWT.NONE);
+			lbl.setFont(EclipseUiUtils.getBoldFont(body));
+			lbl.setText("Pick up some new group (by double click)");
+			gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+			gd.verticalIndent = 10;
+			gd.horizontalIndent = 20;
+			lbl.setLayoutData(gd);
+
+			final UserGroupTableComposite allGroupsCmp = new MyGroupTableComposite(
+					body, SWT.NO_FOCUS, session);
+			allGroupsCmp.populate(true, false);
+			gd = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
+			gd.heightHint = 250;
+			allGroupsCmp.setLayoutData(gd);
+
+			allGroupsCmp.getTableViewer().addDoubleClickListener(
+					new IDoubleClickListener() {
+
+						@Override
+						public void doubleClick(DoubleClickEvent event) {
+							if (event.getSelection().isEmpty())
+								return;
+							Object obj = ((IStructuredSelection) event
+									.getSelection()).getFirstElement();
+							if (obj instanceof Node) {
+								selectNewGroup((Node) obj);
+								allGroupsCmp.refresh();
+							}
+						}
+					});
+		}
+
+		private class MyGroupTableComposite extends UserGroupTableComposite {
+			private static final long serialVersionUID = 1L;
+
+			public MyGroupTableComposite(Composite parent, int style,
+					Session session) {
+				super(parent, style, session);
+			}
+
+			protected void refreshFilteredList() {
+				List<Node> nodes = new ArrayList<Node>();
+				try {
+					NodeIterator nit = listFilteredElements(session,
+							getFilterString());
+
+					while (nit.hasNext()) {
+						Node currNode = nit.nextNode();
+						if (!contain(selectedGroups, currNode))
+							nodes.add(currNode);
+					}
+					getTableViewer().setInput(nodes.toArray());
+				} catch (RepositoryException e) {
+					throw new ArgeoException("Unable to list users", e);
+				}
+			}
 		}
 
 		/** Creates the role section */
-		protected void createRolesPart(Composite parent) {
+		protected void createSelectedGroupsPart(Composite parent) {
 			Table table = new Table(parent, SWT.MULTI | SWT.H_SCROLL
 					| SWT.V_SCROLL);
-
-			AbstractFormPart part = new AbstractFormPart() {
+			part = new AbstractFormPart() {
 				public void commit(boolean onSave) {
-					// roles have already been modified in editing
 					super.commit(onSave);
 					if (log.isTraceEnabled())
-						log.trace("Role part committed");
+						log.trace("Group part committed");
 				}
 			};
 			getManagedForm().addPart(part);
 
-			// GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-			// gridData.verticalSpan = 20;
-			// table.setLayoutData(gridData);
 			table.setLinesVisible(true);
 			table.setHeaderVisible(false);
-			rolesViewer = new TableViewer(table);
+			groupsViewer = new TableViewer(table);
 
 			// check column
-			TableViewerColumn column = createTableViewerColumn(rolesViewer,
+			TableViewerColumn column = createTableViewerColumn(groupsViewer,
 					"checked", 20);
 			column.setLabelProvider(new ColumnLabelProvider() {
+				private static final long serialVersionUID = 1L;
+
 				public String getText(Object element) {
 					return null;
 				}
 
 				public Image getImage(Object element) {
-					String role = element.toString();
-					return null;
+					Node currNode = (Node) element;
 
+					if (selectedGroups.contains(currNode))
+						return PeopleImages.ROLE_CHECKED;
+					else
+						return null;
 				}
 			});
-			column.setEditingSupport(new RoleEditingSupport(rolesViewer, part));
+			column.setEditingSupport(new GroupEditingSupport(groupsViewer, part));
 
 			// role column
-			column = createTableViewerColumn(rolesViewer, "Role", 200);
+			column = createTableViewerColumn(groupsViewer, "Role", 200);
 			column.setLabelProvider(new ColumnLabelProvider() {
+				private static final long serialVersionUID = 1L;
+
 				public String getText(Object element) {
-					return element.toString();
+					return CommonsJcrUtils.get((Node) element,
+							Property.JCR_TITLE);
 				}
 
 				public Image getImage(Object element) {
 					return null;
 				}
 			});
-			rolesViewer.setContentProvider(new RolesContentProvider());
-			rolesViewer.setInput(getEditorSite());
+			groupsViewer.setContentProvider(new BasicContentProvider());
 		}
 
 		protected TableViewerColumn createTableViewerColumn(TableViewer viewer,
@@ -271,35 +349,49 @@ public class UserEditor extends FormEditor {
 
 		}
 
-		public List<String> getRoles() {
-			return roles;
+		public List<Node> getSelectedGroups() {
+			return selectedGroups;
 		}
 
 		public void refresh() {
-			rolesViewer.refresh();
+			selectedGroups = userManagementService.getUserGroups(argeoProfile);
+			displayedGroups.clear();
+			displayedGroups.addAll(selectedGroups);
+			groupsViewer.setInput(displayedGroups.toArray());
+			groupsViewer.refresh();
 		}
 
-		private class RolesContentProvider implements
-				IStructuredContentProvider {
-			public Object[] getElements(Object inputElement) {
-				return userAdminService.listEditableRoles().toArray();
+		public void selectNewGroup(Node newGroup) {
+			if (!contain(selectedGroups, newGroup)) {
+				selectedGroups.add(newGroup);
+				part.markDirty();
 			}
+			if (!contain(displayedGroups, newGroup))
+				displayedGroups.add(newGroup);
+			groupsViewer.setInput(displayedGroups.toArray());
+		}
 
-			public void dispose() {
-			}
-
-			public void inputChanged(Viewer viewer, Object oldInput,
-					Object newInput) {
+		private boolean contain(List<Node> list, Node node) {
+			try {
+				String path = node.getPath();
+				for (Node currNode : list) {
+					if (currNode.getPath().equals(path))
+						return true;
+				}
+				return false;
+			} catch (RepositoryException e) {
+				throw new ArgeoException("Unable to check inclusion", e);
 			}
 		}
 
 		/** Select the columns by editing the checkbox in the first column */
-		class RoleEditingSupport extends EditingSupport {
+		class GroupEditingSupport extends EditingSupport {
+			private static final long serialVersionUID = 1L;
 
 			private final TableViewer viewer;
 			private final AbstractFormPart formPart;
 
-			public RoleEditingSupport(TableViewer viewer,
+			public GroupEditingSupport(TableViewer viewer,
 					AbstractFormPart formPart) {
 				super(viewer);
 				this.viewer = viewer;
@@ -319,23 +411,37 @@ public class UserEditor extends FormEditor {
 
 			@Override
 			protected Object getValue(Object element) {
-				String role = element.toString();
-				return roles.contains(role);
-
+				return selectedGroups.contains((Node) element);
 			}
 
 			@Override
 			protected void setValue(Object element, Object value) {
-				Boolean inRole = (Boolean) value;
-				String role = element.toString();
-				if (inRole && !roles.contains(role)) {
-					roles.add(role);
+				Boolean inGroup = (Boolean) value;
+				Node group = (Node) element;
+				if (inGroup && !selectedGroups.contains(group)) {
+					selectedGroups.add(group);
 					formPart.markDirty();
-				} else if (!inRole && roles.contains(role)) {
-					roles.remove(role);
+				} else if (!inGroup && selectedGroups.contains(group)) {
+					selectedGroups.remove(group);
 					formPart.markDirty();
 				}
 				viewer.refresh();
+			}
+		}
+
+		private class BasicContentProvider implements
+				IStructuredContentProvider {
+			private static final long serialVersionUID = 1L;
+
+			public Object[] getElements(Object inputElement) {
+				return (Object[]) inputElement;
+			}
+
+			public void dispose() {
+			}
+
+			public void inputChanged(Viewer viewer, Object oldInput,
+					Object newInput) {
 			}
 		}
 	}
@@ -347,6 +453,12 @@ public class UserEditor extends FormEditor {
 
 	public void setRepository(Repository repository) {
 		this.session = CommonsJcrUtils.login(repository);
+	}
+
+	@Override
+	public void dispose() {
+		JcrUtils.logoutQuietly(session);
+		super.dispose();
 	}
 
 	public void setPeopleService(PeopleService peopleService) {

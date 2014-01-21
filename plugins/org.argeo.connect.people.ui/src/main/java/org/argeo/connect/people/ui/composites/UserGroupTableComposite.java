@@ -41,6 +41,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
@@ -53,6 +54,8 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 
 	private TableViewer userGroupViewer;
 	private Text filterTxt;
+	private Button displayUserChk;
+
 	private final static String FILTER_HELP_MSG = "Type filter criterion "
 			+ "separated by a space";
 	private Session session;
@@ -253,6 +256,9 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 
 	/* MANAGE FILTER */
 	private void createFilterPart(Composite parent) {
+		Composite composite = new Composite(parent, SWT.NO_FOCUS);
+		composite.setLayout(new GridLayout(2, false));
+
 		// Text Area for the filter
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
 				| SWT.ICON_CANCEL);
@@ -269,8 +275,9 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 	}
 
 	/**
-	 * Refresh the user list: caller might overwrite in order to display a
-	 * subset of all users, typically to remove current user from the list
+	 * Refresh the group list: caller might overwrite in order to display a
+	 * subset of all groups, typically removing allready assigned groups to a
+	 * given user
 	 */
 	protected void refreshFilteredList() {
 		List<Node> nodes;
@@ -285,7 +292,7 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 
 	/**
 	 * Build repository request : caller might overwrite in order to display a
-	 * subset of all users
+	 * subset of all groups
 	 */
 	protected NodeIterator listFilteredElements(Session session, String filter)
 			throws RepositoryException {

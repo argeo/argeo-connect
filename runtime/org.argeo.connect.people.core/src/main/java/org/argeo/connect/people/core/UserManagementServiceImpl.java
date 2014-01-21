@@ -7,6 +7,7 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.Value;
 
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
@@ -62,6 +63,9 @@ public class UserManagementServiceImpl implements UserManagementService {
 		// Do nothing
 	}
 
+	//
+	// USER MANAGEMENT
+	//
 	@Override
 	public String addUsersToGroup(Node userGroup, List<Node> userProfiles) {
 		try {
@@ -116,6 +120,33 @@ public class UserManagementServiceImpl implements UserManagementService {
 					+ userProfile, re);
 		}
 		return null;
+	}
+
+	@Override
+	public List<Node> getUserGroups(Node userProfile) {
+		List<Node> groups = new ArrayList<Node>();
+		try {
+			Session session = userProfile.getSession();
+			// Initialisation
+			Node parent = userProfile.getParent();
+			if (!parent.hasNode(PeopleTypes.PEOPLE_PROFILE))
+				return groups;
+			Node peopleProfile = parent.getNode(PeopleTypes.PEOPLE_PROFILE);
+			if (!peopleProfile.hasProperty(PeopleNames.PEOPLE_USER_GROUPS))
+				return groups;
+
+			Value[] values = peopleProfile.getProperty(
+					PeopleNames.PEOPLE_USER_GROUPS).getValues();
+
+			for (Value val : values) {
+				Node currNode = session.getNodeByIdentifier(val.getString());
+				groups.add(currNode);
+			}
+		} catch (RepositoryException re) {
+			throw new PeopleException("unable to get groups for user "
+					+ userProfile, re);
+		}
+		return groups;
 	}
 
 	@Override
