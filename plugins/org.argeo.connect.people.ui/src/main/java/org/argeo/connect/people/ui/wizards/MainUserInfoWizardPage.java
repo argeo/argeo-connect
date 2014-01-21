@@ -77,7 +77,7 @@ public class MainUserInfoWizardPage extends WizardPage implements
 			setMessage(message, WizardPage.ERROR);
 			setPageComplete(false);
 		} else {
-			setMessage("Main user info comple, switch to next page.", WizardPage.INFORMATION);
+			setMessage("Main user info complete. Switch to next page.", WizardPage.INFORMATION);
 			setPageComplete(true);
 		}
 		getContainer().updateButtons();

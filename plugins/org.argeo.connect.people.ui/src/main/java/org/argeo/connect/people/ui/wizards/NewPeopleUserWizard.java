@@ -93,12 +93,20 @@ public class NewPeopleUserWizard extends Wizard {
 	}
 
 	@Override
-	public boolean performFinish() {
-
-		// FIXME clean this
+	public boolean canFinish() {
+		// TODO clean this
 		if (!mainUserInfo.canFlipToNextPage())
 			return false;
 
+		// Check if we are on the last page.
+		if (getContainer().getCurrentPage().canFlipToNextPage())
+			return false;
+
+		return super.canFinish();
+	}
+	
+	@Override
+	public boolean performFinish() {
 		if (!canFinish())
 			return false;
 
@@ -114,7 +122,7 @@ public class NewPeopleUserWizard extends Wizard {
 
 			JcrUserDetails jcrUserDetails = new JcrUserDetails(userProfile,
 					password, new GrantedAuthority[0]);
-			// TODO add roles
+			// Add roles. might exist a cleaner way to do.
 			if (!userRolesPage.getRoles().isEmpty())
 				jcrUserDetails = jcrUserDetails.cloneWithNewRoles(userRolesPage
 						.getRoles());
