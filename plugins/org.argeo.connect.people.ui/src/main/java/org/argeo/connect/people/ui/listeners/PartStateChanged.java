@@ -5,7 +5,9 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.editors.utils.IVersionedItemEditor;
 import org.argeo.connect.people.ui.utils.CheckoutSourceProvider;
+import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.IWorkbenchPart;
@@ -60,6 +62,11 @@ public class PartStateChanged implements IPartListener, IStartup {
 			// Processing the ability to checkout is delegated to the editor
 			boolean canBeCheckoutedByMe = editor.canBeCheckedOutByMe();
 			esp.setIsCurrentItemCheckedOut(!canBeCheckoutedByMe);
+
+			IStatusLineManager manager = ((IEditorPart) editor).getEditorSite()
+					.getActionBars().getStatusLineManager();
+			manager.setMessage("Information for the status line");
+
 		} else {// force button to be disabled if another part has the focus.
 			esp.setIsCurrentItemCheckedOut(true);
 		}
