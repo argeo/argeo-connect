@@ -3,6 +3,7 @@ package org.argeo.connect.people.ui.composites;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -183,7 +184,9 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 		public Image getImage(Object element) {
 			try {
 				Node currNode = (Node) element;
-				if (currNode.isNodeType(PeopleTypes.PEOPLE_NOTE)) {
+				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
+					return ActivitiesImages.TODO;
+				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_NOTE)) {
 					return ActivitiesImages.NOTE;
 				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_SENT_EMAIL)) {
 					return ActivitiesImages.SENT_MAIL;
@@ -193,7 +196,6 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 					return ActivitiesImages.SENT_FAX;
 				} else
 					return null;
-
 				// TODO implement all types.
 			} catch (RepositoryException re) {
 				throw new ArgeoException("Unable to get date from node "
@@ -214,11 +216,8 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 		public String getText(Object element) {
 			try {
 				Node currNode = (Node) element;
-				Node referencedManager = null;
-
 				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
-					// TODO implement getting "assigned to group" for tasks
-					return "";
+					return ActivityJcrUtils.getAssignedToDisplayName(currNode);
 				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
 					return ActivityJcrUtils
 							.getActivityManagerDisplayName(currNode);
@@ -295,14 +294,33 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 			try {
 				Node currNode = (Node) element;
 				Calendar dateToDisplay = null;
-				if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
+				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
+					if (currNode.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE))
+						dateToDisplay = currNode.getProperty(
+								PeopleNames.PEOPLE_CLOSE_DATE).getDate();
+					else if (currNode.hasProperty(PeopleNames.PEOPLE_DUE_DATE))
+						dateToDisplay = currNode.getProperty(
+								PeopleNames.PEOPLE_DUE_DATE).getDate();
+					else
+						dateToDisplay = currNode.getProperty(
+								Property.JCR_CREATED).getDate();
+				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
 					dateToDisplay = currNode.getProperty(Property.JCR_CREATED)
 							.getDate();
 				}
-				// TODO implement getting date for tasks
 
 				if (dateToDisplay == null)
 					return "";
+
+				Calendar now = GregorianCalendar.getInstance();
+				if (dateToDisplay.get(Calendar.YEAR) == now.get(Calendar.YEAR)
+						&& dateToDisplay.get(Calendar.MONTH) == now
+								.get(Calendar.MONTH))
+					if (dateToDisplay.get(Calendar.DAY_OF_MONTH) == now
+							.get(Calendar.DAY_OF_MONTH))
+						return todayFormat.format(dateToDisplay.getTime());
+					else
+						return inMonthFormat.format(dateToDisplay.getTime());
 				else
 					return dateFormat.format(dateToDisplay.getTime());
 

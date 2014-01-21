@@ -1,6 +1,7 @@
 package org.argeo.connect.people.utils;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.connect.people.ActivityValueCatalogs;
@@ -36,6 +37,22 @@ public class ActivityJcrUtils {
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to get type for activity "
 					+ activityNode, e);
+		}
+	}
+
+	/**
+	 * Get the display name of the assigned to group for this task
+	 * 
+	 * @return
+	 */
+	public static String getAssignedToDisplayName(Node taskNode) {
+		try {
+			Node referencedManager = taskNode.getProperty(
+					PeopleNames.PEOPLE_ASSIGNED_TO).getNode();
+			return CommonsJcrUtils.get(referencedManager, Property.JCR_TITLE);
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"Unable to get name of group assigned to " + taskNode, e);
 		}
 	}
 

@@ -51,14 +51,14 @@ public class ActivityToolkit {
 
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
-	private final PeopleService peopleService;
+	// private final PeopleService peopleService;
 	private final ActivityService activityService;
 
 	public ActivityToolkit(FormToolkit toolkit, IManagedForm form,
 			PeopleService peopleService) {
 		this.toolkit = toolkit;
 		this.form = form;
-		this.peopleService = peopleService;
+		// this.peopleService = peopleService;
 		this.activityService = peopleService.getActivityService();
 	}
 
@@ -101,22 +101,22 @@ public class ActivityToolkit {
 
 			toolkit.createLabel(addActivityBar, " OR ", SWT.NONE);
 
-			// TODO implement add task
 			final Link addTaskLk = new Link(addActivityBar, SWT.NONE);
 			addTaskLk.setText("<a>Add a task</a>");
 
 			// The Table that displays corresponding activities
-			final MyActivityTableCmp tmpCmp = new MyActivityTableCmp(parent,
-					SWT.MULTI, entity);
-			tmpCmp.populate();
+			final MyActivityTableCmp activityTable = new MyActivityTableCmp(
+					parent, SWT.MULTI, entity);
+			activityTable.populate();
 			// TableViewer viewer = tmpCmp.getTableViewer();
-			tmpCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			activityTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+					true));
 
 			// Life cycle management
-			AbstractFormPart sPart = new AbstractFormPart() {
+			final AbstractFormPart sPart = new AbstractFormPart() {
 				public void refresh() {
 					super.refresh();
-					tmpCmp.refresh();
+					activityTable.refresh();
 				}
 			};
 			sPart.initialize(form);
@@ -129,7 +129,7 @@ public class ActivityToolkit {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					createActivity(entity, addContactCmb, titleTxt, descTxt,
-							tmpCmp);
+							activityTable);
 				}
 			});
 
@@ -141,7 +141,7 @@ public class ActivityToolkit {
 					if (e.keyCode == SWT.CR) {
 						e.doit = false;
 						createActivity(entity, addContactCmb, titleTxt,
-								descTxt, tmpCmp);
+								descTxt, activityTable);
 					}
 				}
 			});
@@ -154,7 +154,7 @@ public class ActivityToolkit {
 					if (e.keyCode == SWT.CR) {
 						e.doit = false;
 						createActivity(entity, addContactCmb, titleTxt,
-								descTxt, tmpCmp);
+								descTxt, activityTable);
 					}
 				}
 			});
@@ -165,11 +165,12 @@ public class ActivityToolkit {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					createTask(addTaskLk.getShell(), entity);
+					sPart.refresh();
 				}
 			});
 
 			// Doubleclick listener
-			tmpCmp.getTableViewer().addDoubleClickListener(
+			activityTable.getTableViewer().addDoubleClickListener(
 					new ActivityTableDCL(openEditorCmdId));
 
 		} catch (RepositoryException re) {
