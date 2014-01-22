@@ -41,9 +41,9 @@ public class PeopleServiceImpl implements PeopleService {
 	private Repository repository;
 
 	/* Other services */
-	private ActivityService activityService = new ActivityServiceImpl();
 	private UserManagementService userManagementService = new UserManagementServiceImpl();
-
+	private ActivityService activityService = new ActivityServiceImpl(userManagementService);
+	
 	// private Map<Integer, String> managedRoles;
 
 	// business catalogs maintained in file business catalogs of the specs

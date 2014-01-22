@@ -55,5 +55,21 @@ public interface ActivityService {
 			String description, Node assignedTo, List<Node> relatedTo,
 			Calendar dueDate, Calendar awakeDate);
 
+	/**
+	 * Retrieves tasks assigned to one of the group that contain the username
+	 * retrieved from the current session
+	 */
+	public List<Node> getMyTasks(Session session, boolean onlyOpenTasks);
+
+	/** Retrieves tasks assigned to one of the group that contain this username */
+	public List<Node> getTasksForUser(Session session, String username,
+			boolean onlyOpenTasks);
+
+	/**
+	 * Determines wether a task has been done. Application should override or
+	 * extends this to provide specific behaviour
+	 */
+	public boolean isTaskDone(Node taskNode);
+
 	/* MISCELLANEOUS */
 }

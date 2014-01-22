@@ -16,6 +16,11 @@ import javax.jcr.Session;
 public interface UserManagementService {
 
 	/* USERS */
+	/**
+	 * Returns the Node that will store all people specific information on a
+	 * end-user using its username as a deterministic key
+	 */
+	public Node getPeopleProfile(Session session, String username);
 
 	/* GROUPS */
 	// /**
@@ -51,9 +56,11 @@ public interface UserManagementService {
 	 * 
 	 * @param userGroup
 	 * @param usernames
-	 * @return an error message listing the username where the reference was already there
+	 * @return an error message listing the username where the reference was
+	 *         already there
 	 */
-	public String addUsersToGroup(Session session, Node userGroup, List<String> usernames);
+	public String addUsersToGroup(Session session, Node userGroup,
+			List<String> usernames);
 
 	/**
 	 * Session is saved and userprofile checked in after addition.

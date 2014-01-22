@@ -22,12 +22,14 @@ import javax.jcr.observation.Event;
 import javax.jcr.observation.EventIterator;
 import javax.jcr.observation.EventListener;
 
+import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.composites.UserGroupTableComposite;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
+import org.argeo.connect.people.ui.utils.Refreshable;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.ArgeoJcrConstants;
-import org.argeo.jcr.ArgeoTypes;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -39,7 +41,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
 
 /** List all users with filter. */
-public class UserGroupsView extends ViewPart {
+public class UserGroupsView extends ViewPart implements Refreshable {
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".userGroupsView";
 
@@ -66,14 +68,14 @@ public class UserGroupsView extends ViewPart {
 		userStructureListener = new JcrUserListener(getSite().getShell()
 				.getDisplay());
 		JcrUtils.addListener(session, userStructureListener, Event.NODE_ADDED
-				| Event.NODE_REMOVED, ArgeoJcrConstants.PEOPLE_BASE_PATH, null);
+				| Event.NODE_REMOVED, getGroupsBasePath(), null);
+
 		userPropertiesListener = new JcrUserListener(getSite().getShell()
 				.getDisplay());
 		JcrUtils.addListener(session, userStructureListener,
 				Event.PROPERTY_CHANGED | Event.PROPERTY_ADDED
-						| Event.PROPERTY_REMOVED,
-				ArgeoJcrConstants.PEOPLE_BASE_PATH,
-				ArgeoTypes.ARGEO_USER_PROFILE);
+						| Event.PROPERTY_REMOVED, getGroupsBasePath(),
+				PeopleTypes.PEOPLE_USER_GROUP);
 	}
 
 	@Override
@@ -87,6 +89,11 @@ public class UserGroupsView extends ViewPart {
 		JcrUtils.removeListenerQuietly(session, userPropertiesListener);
 		JcrUtils.logoutQuietly(session);
 		super.dispose();
+	}
+
+	@Override
+	public void forceRefresh(Object object) {
+		refresh();
 	}
 
 	public void refresh() {
@@ -139,6 +146,20 @@ public class UserGroupsView extends ViewPart {
 		}
 	}
 
+	/**
+	 * Overwrite to provide an application specific base path for the user
+	 * groups
+	 * 
+	 * @return
+	 */
+	protected String getGroupsBasePath() {
+		return ArgeoJcrConstants.PEOPLE_BASE_PATH;
+	}
+
+	protected String getOpenEditorCommandId() {
+		return OpenEntityEditor.ID;
+	}
+	
 	public void setRepository(Repository repository) {
 		this.session = CommonsJcrUtils.login(repository);
 	}

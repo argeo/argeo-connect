@@ -205,6 +205,10 @@ public class NewUserGroupWizard extends Wizard {
 			return usernames;
 		}
 
+		protected List<Node> getSelectedUserNodes() {
+			return userTableCmp.getSelectedUsers();
+		}
+
 		// private class MyUserTableCmp extends UserTableComposite {
 		//
 		// private static final long serialVersionUID = 1L;
@@ -274,7 +278,7 @@ public class NewUserGroupWizard extends Wizard {
 			if (event.getSelectedPage() == this) {
 				@SuppressWarnings({ "unchecked", "rawtypes" })
 				Object[] values = ((ArrayList) userListPage
-						.getSelectedUserNames()).toArray(new Object[0]);
+						.getSelectedUserNodes()).toArray(new Object[0]);
 				// .toArray(new Object[userListPage.getSelectedUsers()
 				// .size()]);
 				userTableCmp.getTableViewer().setInput(values);

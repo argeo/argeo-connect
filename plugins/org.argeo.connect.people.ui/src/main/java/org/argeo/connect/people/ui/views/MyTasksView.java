@@ -128,56 +128,8 @@ public class MyTasksView extends ViewPart implements Refreshable {
 	 * all nodes
 	 */
 	protected void refreshFilteredList() {
-		try {
-
-			// TODO implement getting my tasks only
-
-			List<Node> nodes = JcrUtils
-					.nodeIteratorToList(listFilteredElements(session, null));
-			tableViewer.setInput(nodes.toArray());
-
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Unable to list activities", e);
-		}
-	}
-
-	/**
-	 * Build repository request : caller might overwrite in order to display a
-	 * subset
-	 */
-	protected NodeIterator listFilteredElements(Session session, String filter)
-			throws RepositoryException {
-		QueryManager queryManager = session.getWorkspace().getQueryManager();
-		QueryObjectModelFactory factory = queryManager.getQOMFactory();
-
-		Selector source = factory.selector(PeopleTypes.PEOPLE_TASK,
-				PeopleTypes.PEOPLE_ACTIVITY);
-
-		Constraint defaultC = null;
-
-		// Build constraints based the textArea filter content
-		if (filter != null && !"".equals(filter.trim())) {
-			// Parse the String
-			String[] strs = filter.trim().split(" ");
-			for (String token : strs) {
-				StaticOperand so = factory.literal(session.getValueFactory()
-						.createValue("*" + token + "*"));
-				Constraint currC = factory.fullTextSearch(
-						source.getSelectorName(), null, so);
-				if (defaultC == null)
-					defaultC = currC;
-				else
-					defaultC = factory.and(defaultC, currC);
-			}
-		}
-
-		Ordering[] orderings = null;
-
-		QueryObjectModel query = factory.createQuery(source, defaultC,
-				orderings, null);
-
-		QueryResult result = query.execute();
-		return result.getNodes();
+			List<Node> tasks = activityService.getMyTasks(session, true);
+			tableViewer.setInput(tasks.toArray());
 	}
 
 	private class RelatedToLabelProvider extends ColumnLabelProvider {

@@ -396,6 +396,15 @@
                   label="Add Group"
                   tooltip="Add a new user group">
             </command>
+             <command
+				commandId="org.argeo.connect.people.ui.forceRefresh"
+                icon="icons/refresh.png"
+				label="Refresh"
+				tooltip="User group list refresh">
+				<parameter
+					name="param.viewId"
+					value="org.argeo.connect.people.ui.userGroupsView" />
+            </command>
         </menuContribution>
 
 		<!-- MyTasksView tool bar menu --> 

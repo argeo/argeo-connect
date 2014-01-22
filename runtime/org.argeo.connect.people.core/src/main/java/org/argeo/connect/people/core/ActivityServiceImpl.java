@@ -1,11 +1,13 @@
 package org.argeo.connect.people.core;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
@@ -14,11 +16,31 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.UserJcrUtils;
 
 public class ActivityServiceImpl implements ActivityService {
+	/* DEPENDENCY INJECTION */
+	private UserManagementService userManagementService;
+
+	/**
+	 * Default constructor, caller must then inject a relevant
+	 * {@link userManagementService}
+	 */
+	public ActivityServiceImpl() {
+	}
+
+	/**
+	 * Shortcut to create an activity service directly with a user management
+	 * service
+	 * 
+	 * @param userManagementService
+	 */
+	public ActivityServiceImpl(UserManagementService userManagementService) {
+		setUserManagementService(userManagementService);
+	}
 
 	/* ACTIVITIES */
 	@Override
@@ -84,49 +106,57 @@ public class ActivityServiceImpl implements ActivityService {
 		}
 	}
 
-	// TODO refactor this in the UserManagementService
-	private Node getMyPeopleProfile(Session session) throws RepositoryException {
-		String currentUserId = session.getUserID();
-		Node argeoProfile = UserJcrUtils.getUserProfile(session, currentUserId);
-		if (argeoProfile == null)
-			return null;
-
-		Node parent = argeoProfile.getParent();
-		if (parent.hasNode(PeopleTypes.PEOPLE_PROFILE))
-			return parent.getNode(PeopleTypes.PEOPLE_PROFILE);
-		else
-			// FIXME should we create it ?
-			return null;
+	@Override
+	public List<Node> getMyTasks(Session session, boolean onlyOpenTasks) {
+		return getTasksForUser(session, session.getUserID(), onlyOpenTasks);
 	}
 
-	// @ Override
-	public List<Node> getMyTasks(Session session, boolean onlyOpenTasks) {
+	/**
+	 * 
+	 * @param session
+	 * @param username
+	 * @param onlyOpenTasks
+	 * @return an empty list if none were found
+	 */
+	@Override
+	public List<Node> getTasksForUser(Session session, String username,
+			boolean onlyOpenTasks) {
 		try {
-			Node myProfile = getMyPeopleProfile(session);
-			return getTasksForUser(myProfile, onlyOpenTasks);
-		} catch (RepositoryException re) {
-			throw new PeopleException("unable to get my tasks", re);
+			List<Node> groups = userManagementService.getUserGroups(session,
+					username);
+			List<Node> tasks = new ArrayList<Node>();
+			for (Node group : groups) {
+				PropertyIterator pit = group
+						.getReferences(PeopleNames.PEOPLE_ASSIGNED_TO);
+				while (pit.hasNext()) {
+					Property currProp = pit.nextProperty();
+					Node currNode = currProp.getParent();
+					if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
+						if (onlyOpenTasks) {
+							if (!isTaskDone(currNode))
+								tasks.add(currNode);
+						} else
+							tasks.add(currNode);
+					}
+				}
+			}
+			return tasks;
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to get tasks for user "
+					+ username);
 		}
 	}
 
-	public List<Node> getTasksForUser(Node peopleProfile, boolean onlyOpenTasks) {
-		
-		
-		return null;
+	@Override
+	public boolean isTaskDone(Node taskNode) {
+		try {
+			// TODO enhence this
+			return taskNode.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE);
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to get done status for task "
+					+ taskNode, re);
+		}
 	}
-
-	// TODO refactor this in the group / user management service
-	// private Node getUserById(Session session, String userId)
-	// throws RepositoryException {
-	// String currentUser = session.getUserID();
-	//
-	// String path = "/argeo:system/argeo:people/"
-	// + JcrUtils.firstCharsToPath(currentUser, 2) + "/" + currentUser
-	// + "/argeo:profile";
-	// Node userProfile = null;
-	// userProfile = session.getNode(path);
-	// return userProfile;
-	// }
 
 	/* TASKS */
 	@Override
@@ -179,6 +209,12 @@ public class ActivityServiceImpl implements ActivityService {
 			throw new PeopleException("Unable to create the new task " + title,
 					e);
 		}
+	}
+
+	/* DEPENDENCY INJECTION */
+	public void setUserManagementService(
+			UserManagementService userManagementService) {
+		this.userManagementService = userManagementService;
 	}
 
 }

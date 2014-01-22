@@ -84,6 +84,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 	 * @param username
 	 * @return a peopleprofile node or null if the userprofile is not found
 	 */
+	@Override
 	public Node getPeopleProfile(Session session, String username) {
 		Node userProfile = UserJcrUtils.getUserProfile(session, username);
 		if (userProfile == null)
