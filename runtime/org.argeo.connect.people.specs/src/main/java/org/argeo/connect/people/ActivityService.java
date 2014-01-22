@@ -32,6 +32,15 @@ public interface ActivityService {
 	public Node createActivity(Session session, String type, String title,
 			String desc, List<Node> relatedTo);
 
+	/**
+	 * Try to retrieve a date to display depending on the node type.
+	 * 
+	 * @param activityNode
+	 *            an activity or a task
+	 * @return
+	 */
+	public Calendar getActivityRelevantDate(Node activityNode);
+
 	/* TASKS */
 	/**
 	 * Creates a new task given some information. If no parent node is provided,

@@ -1,4 +1,4 @@
-package org.argeo.connect.people.ui.composites;
+package org.argeo.connect.people.ui.views;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -9,6 +9,7 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
@@ -24,14 +25,13 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.ActivitiesImages;
+import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
-import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
-import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -39,49 +39,43 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.ui.part.ViewPart;
 
-/** Basic implementation of a table that displays both activities and tasks */
-public class ActivityTableComposite extends Composite implements ArgeoNames {
-	private static final long serialVersionUID = 1L;
+public class MyTasksView extends ViewPart {
+	public static final String ID = PeopleUiPlugin.PLUGIN_ID + ".myTasksView";
 
-	private TableViewer tableViewer;
+	/* DEPENDENCY INJECTION */
+	// private PeopleService peopleService;
 	private Session session;
-	private int tableStyle;
 	private ActivityService activityService;
 
-	// CONSTRUCTORS
+	private TableViewer tableViewer;
 
-	/**
-	 * Default table with a filter
-	 * 
-	 * @param parent
-	 * @param style
-	 *            the style of the table
-	 * @param session
-	 */
-	public ActivityTableComposite(Composite parent, int style, Session session,
-			ActivityService activityService) {
-		super(parent, SWT.NONE);
-		this.tableStyle = style;
-		this.session = session;
-		this.activityService = activityService;
-	}
-
-	/** Must be called immediately after creation */
-	public void populate() {
-		Composite parent = this;
+	@Override
+	public void createPartControl(Composite parent) {
 		GridLayout layout = PeopleUiUtils.gridLayoutNoBorder();
 		layout.verticalSpacing = 5;
-		this.setLayout(layout);
+		parent.setLayout(layout);
 		tableViewer = createTableViewer(parent);
 		EclipseUiSpecificUtils.enableToolTipSupport(tableViewer);
 		tableViewer.setContentProvider(new MyTableContentProvider());
 		refreshFilteredList();
+	}
+
+	@Override
+	public void setFocus() {
+		// TODO Auto-generated method stub
+
+	}
+	
+	@Override
+	public void dispose() {
+		JcrUtils.logoutQuietly(session);
+		super.dispose();
 	}
 
 	/** Returns the User table viewer, typically to add doubleclick listener */
@@ -90,6 +84,7 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 	}
 
 	private TableViewer createTableViewer(final Composite parent) {
+		int tableStyle = SWT.SINGLE;
 		Table table = new Table(parent, tableStyle);
 		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
@@ -99,30 +94,26 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 
 		TableViewerColumn column;
 
-		// Activity type: mail, note... todo or task
-		// TODO add icon to display activity type :
-		column = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE, 22);
-		column.setLabelProvider(new TypeLabelProvider());
+		// TODO : add an icon depending on the task type and/or status ??
+		// column = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE,
+		// 22);
+		// column.setLabelProvider(new TypeLabelProvider());
 
-		// Manager
-		column = ViewerUtils.createTableViewerColumn(viewer, "Manager",
-				SWT.NONE, 100);
-		column.setLabelProvider(new ManagerLabelProvider());
+		// Date
+		column = ViewerUtils.createTableViewerColumn(viewer, "Due Date", SWT.RIGHT,
+				65);
+		column.setLabelProvider(new DateLabelProvider());
+
+		// Title / description
+		column = ViewerUtils.createTableViewerColumn(viewer, "What", SWT.NONE,
+				360);
+		column.setLabelProvider(new TitleDescLabelProvider());
 
 		// Related to
 		column = ViewerUtils.createTableViewerColumn(viewer, "Related to",
 				SWT.NONE, 140);
 		column.setLabelProvider(new RelatedToLabelProvider());
 
-		// Title / description
-		column = ViewerUtils.createTableViewerColumn(viewer, "Content",
-				SWT.NONE, 360);
-		column.setLabelProvider(new TitleDescLabelProvider());
-
-		// Date
-		column = ViewerUtils.createTableViewerColumn(viewer, "Date", SWT.NONE,
-				80);
-		column.setLabelProvider(new DateLabelProvider());
 		return viewer;
 	}
 
@@ -132,9 +123,13 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 	 */
 	protected void refreshFilteredList() {
 		try {
+
+			// TODO implement getting my tasks only
+
 			List<Node> nodes = JcrUtils
 					.nodeIteratorToList(listFilteredElements(session, null));
 			tableViewer.setInput(nodes.toArray());
+
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Unable to list activities", e);
 		}
@@ -149,7 +144,7 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
 		QueryObjectModelFactory factory = queryManager.getQOMFactory();
 
-		Selector source = factory.selector(PeopleTypes.PEOPLE_ACTIVITY,
+		Selector source = factory.selector(PeopleTypes.PEOPLE_TASK,
 				PeopleTypes.PEOPLE_ACTIVITY);
 
 		Constraint defaultC = null;
@@ -177,61 +172,6 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 
 		QueryResult result = query.execute();
 		return result.getNodes();
-	}
-
-	// /////////////////////////
-	// LOCAL CLASSES
-	private class TypeLabelProvider extends ColumnLabelProvider {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public Image getImage(Object element) {
-			try {
-				Node currNode = (Node) element;
-				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
-					return ActivitiesImages.TODO;
-				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_NOTE)) {
-					return ActivitiesImages.NOTE;
-				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_SENT_EMAIL)) {
-					return ActivitiesImages.SENT_MAIL;
-				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_CALL)) {
-					return ActivitiesImages.PHONE_CALL;
-				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_SENT_FAX)) {
-					return ActivitiesImages.SENT_FAX;
-				} else
-					return null;
-				// TODO implement all types.
-			} catch (RepositoryException re) {
-				throw new ArgeoException("Unable to get date from node "
-						+ element, re);
-			}
-		}
-
-		@Override
-		public String getText(Object element) {
-			return "";
-		}
-	}
-
-	private class ManagerLabelProvider extends ColumnLabelProvider {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public String getText(Object element) {
-			try {
-				Node currNode = (Node) element;
-				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
-					return ActivityJcrUtils.getAssignedToDisplayName(currNode);
-				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-					return ActivityJcrUtils
-							.getActivityManagerDisplayName(currNode);
-				}
-				return "";
-			} catch (RepositoryException re) {
-				throw new ArgeoException("Unable to get date from node "
-						+ element, re);
-			}
-		}
 	}
 
 	private class RelatedToLabelProvider extends ColumnLabelProvider {
@@ -270,7 +210,7 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 			try {
 				Node currNode = (Node) element;
 
-				if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
+				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
 					String desc = CommonsJcrUtils.get(currNode,
 							Property.JCR_TITLE)
 							+ " - "
@@ -330,20 +270,13 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 		}
 	}
 
-	// //////////////////////
-	// Life cycle management
-	@Override
-	public boolean setFocus() {
-		tableViewer.getTable().setFocus();
-		return true;
+	/* DEPENDENCY INJECTION */
+	public void setPeopleService(PeopleService peopleService) {
+		this.activityService = peopleService.getActivityService();
 	}
 
-	@Override
-	public void dispose() {
-		super.dispose();
+	public void setRepository(Repository repository) {
+		this.session = CommonsJcrUtils.login(repository);
 	}
 
-	public void refresh() {
-		refreshFilteredList();
-	}
 }

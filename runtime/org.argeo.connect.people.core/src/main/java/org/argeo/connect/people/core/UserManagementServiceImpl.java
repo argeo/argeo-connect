@@ -76,6 +76,12 @@ public class UserManagementServiceImpl implements UserManagementService {
 	//
 	// USER MANAGEMENT
 	//
+	// TODO implement this
+	public Node getMyPeopleProfile(Session session){
+	return null;	
+	}
+	
+	
 	@Override
 	public String addUsersToGroup(Node userGroup, List<Node> userProfiles) {
 		try {

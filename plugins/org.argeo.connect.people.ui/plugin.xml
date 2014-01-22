@@ -32,7 +32,7 @@
 			restorable="true">
 		</view>
 		
-		<!-- User Management -->
+		<!-- Users and tasks Management -->
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/people.gif"
@@ -45,6 +45,13 @@
 			icon="icons/people.gif"
 			id="org.argeo.connect.people.ui.adminUsersView"
 			name="Users"
+			restorable="true">
+		</view>
+		<view
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/activities/todo.gif"
+			id="org.argeo.connect.people.ui.myTasksView"
+			name="My tasks"
 			restorable="true">
 		</view>
 	</extension>

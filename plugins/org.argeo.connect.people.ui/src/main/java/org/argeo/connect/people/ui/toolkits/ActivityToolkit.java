@@ -215,7 +215,7 @@ public class ActivityToolkit {
 
 		public MyActivityTableCmp(Composite parent, int style, Node entity)
 				throws RepositoryException {
-			super(parent, style, entity.getSession());
+			super(parent, style, entity.getSession(), activityService);
 			this.entity = entity;
 		}
 

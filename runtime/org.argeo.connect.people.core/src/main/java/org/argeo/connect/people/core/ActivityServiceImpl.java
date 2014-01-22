@@ -16,6 +16,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.jcr.UserJcrUtils;
 
 public class ActivityServiceImpl implements ActivityService {
 
@@ -38,7 +39,8 @@ public class ActivityServiceImpl implements ActivityService {
 			Node activity = parent.addNode(type, PeopleTypes.PEOPLE_ACTIVITY);
 			activity.addMixin(type);
 
-			Node userProfile = getUserById(session, session.getUserID());
+			Node userProfile = UserJcrUtils.getUserProfile(session,
+					session.getUserID());
 			activity.setProperty(PeopleNames.PEOPLE_MANAGER, userProfile);
 
 			// related to
@@ -56,18 +58,73 @@ public class ActivityServiceImpl implements ActivityService {
 		}
 	}
 
-	// TODO refactor this in the group / user management service
-	private Node getUserById(Session session, String userId)
-			throws RepositoryException {
-		String currentUser = session.getUserID();
-
-		String path = "/argeo:system/argeo:people/"
-				+ JcrUtils.firstCharsToPath(currentUser, 2) + "/" + currentUser
-				+ "/argeo:profile";
-		Node userProfile = null;
-		userProfile = session.getNode(path);
-		return userProfile;
+	@Override
+	public Calendar getActivityRelevantDate(Node activityNode) {
+		try {
+			Calendar dateToDisplay = null;
+			if (activityNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
+				if (activityNode.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE))
+					dateToDisplay = activityNode.getProperty(
+							PeopleNames.PEOPLE_CLOSE_DATE).getDate();
+				else if (activityNode.hasProperty(PeopleNames.PEOPLE_DUE_DATE))
+					dateToDisplay = activityNode.getProperty(
+							PeopleNames.PEOPLE_DUE_DATE).getDate();
+				else
+					dateToDisplay = activityNode.getProperty(
+							Property.JCR_CREATED).getDate();
+			} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
+				dateToDisplay = activityNode.getProperty(Property.JCR_CREATED)
+						.getDate();
+			}
+			return dateToDisplay;
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"unable to get relevant date for activity " + activityNode,
+					re);
+		}
 	}
+
+	// TODO refactor this in the UserManagementService
+	private Node getMyPeopleProfile(Session session) throws RepositoryException {
+		String currentUserId = session.getUserID();
+		Node argeoProfile = UserJcrUtils.getUserProfile(session, currentUserId);
+		if (argeoProfile == null)
+			return null;
+
+		Node parent = argeoProfile.getParent();
+		if (parent.hasNode(PeopleTypes.PEOPLE_PROFILE))
+			return parent.getNode(PeopleTypes.PEOPLE_PROFILE);
+		else
+			// FIXME should we create it ?
+			return null;
+	}
+
+	// @ Override
+	public List<Node> getMyTasks(Session session, boolean onlyOpenTasks) {
+		try {
+			Node myProfile = getMyPeopleProfile(session);
+			return getTasksForUser(myProfile, onlyOpenTasks);
+		} catch (RepositoryException re) {
+			throw new PeopleException("unable to get my tasks", re);
+		}
+	}
+
+	public List<Node> getTasksForUser(Node peopleProfile, boolean onlyOpenTasks) {
+		return null;
+	}
+
+	// TODO refactor this in the group / user management service
+	// private Node getUserById(Session session, String userId)
+	// throws RepositoryException {
+	// String currentUser = session.getUserID();
+	//
+	// String path = "/argeo:system/argeo:people/"
+	// + JcrUtils.firstCharsToPath(currentUser, 2) + "/" + currentUser
+	// + "/argeo:profile";
+	// Node userProfile = null;
+	// userProfile = session.getNode(path);
+	// return userProfile;
+	// }
 
 	/* TASKS */
 	@Override
@@ -97,7 +154,8 @@ public class ActivityServiceImpl implements ActivityService {
 			if (CommonsJcrUtils.checkNotEmptyString(description))
 				taskNode.setProperty(Property.JCR_DESCRIPTION, description);
 
-			Node userProfile = getUserById(session, session.getUserID());
+			Node userProfile = UserJcrUtils.getUserProfile(session,
+					session.getUserID());
 			taskNode.setProperty(PeopleNames.PEOPLE_MANAGER, userProfile);
 
 			if (assignedTo != null)
