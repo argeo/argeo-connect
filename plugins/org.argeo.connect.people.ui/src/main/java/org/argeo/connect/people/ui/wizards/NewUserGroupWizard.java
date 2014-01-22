@@ -23,6 +23,8 @@ import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserManagementService;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.jcr.ArgeoNames;
 import org.argeo.security.ui.admin.UserTableComposite;
 import org.eclipse.jface.dialogs.IPageChangeProvider;
 import org.eclipse.jface.dialogs.IPageChangedListener;
@@ -64,7 +66,7 @@ public class NewUserGroupWizard extends Wizard {
 		addPage(userListPage);
 		validatePage = new ValidateAndLaunchWizardPage(session);
 		addPage(validatePage);
-		
+
 		setWindowTitle("Group creation");
 		setNeedsProgressMonitor(true);
 	}
@@ -78,8 +80,8 @@ public class NewUserGroupWizard extends Wizard {
 				chooseCommandPage.getTitleValue(),
 				chooseCommandPage.getDescValue());
 
-		userManagementService.addUsersToGroup(userGroup,
-				userListPage.getSelectedUsers());
+		userManagementService.addUsersToGroup(session, userGroup,
+				userListPage.getSelectedUserNames());
 
 		return true;
 	}
@@ -103,7 +105,7 @@ public class NewUserGroupWizard extends Wizard {
 			super("Main Information");
 			setTitle("Main Information");
 			setMessage("Enter a name and a description for the group to create.");
-			
+
 		}
 
 		@Override
@@ -189,8 +191,18 @@ public class NewUserGroupWizard extends Wizard {
 			}
 		}
 
-		protected List<Node> getSelectedUsers() {
-			return userTableCmp.getSelectedUsers();
+		protected List<String> getSelectedUserNames() {
+			List<Node> selectedNodes = userTableCmp.getSelectedUsers();
+
+			if (selectedNodes.isEmpty())
+				return null;
+
+			List<String> usernames = new ArrayList<String>();
+			for (Node currNode : selectedNodes) {
+				usernames.add(CommonsJcrUtils.get(currNode,
+						ArgeoNames.ARGEO_USER_ID));
+			}
+			return usernames;
 		}
 
 		// private class MyUserTableCmp extends UserTableComposite {
@@ -261,8 +273,8 @@ public class NewUserGroupWizard extends Wizard {
 		public void pageChanged(PageChangedEvent event) {
 			if (event.getSelectedPage() == this) {
 				@SuppressWarnings({ "unchecked", "rawtypes" })
-				Object[] values = ((ArrayList) userListPage.getSelectedUsers())
-						.toArray(new Object[0]);
+				Object[] values = ((ArrayList) userListPage
+						.getSelectedUserNames()).toArray(new Object[0]);
 				// .toArray(new Object[userListPage.getSelectedUsers()
 				// .size()]);
 				userTableCmp.getTableViewer().setInput(values);

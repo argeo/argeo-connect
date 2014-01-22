@@ -29,6 +29,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
+import org.argeo.connect.people.ui.utils.Refreshable;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -45,7 +46,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.part.ViewPart;
 
-public class MyTasksView extends ViewPart {
+public class MyTasksView extends ViewPart implements Refreshable {
 	public static final String ID = PeopleUiPlugin.PLUGIN_ID + ".myTasksView";
 
 	/* DEPENDENCY INJECTION */
@@ -78,6 +79,11 @@ public class MyTasksView extends ViewPart {
 		super.dispose();
 	}
 
+	@Override
+	public void forceRefresh(Object object) {
+		refreshFilteredList();
+	}
+	
 	/** Returns the User table viewer, typically to add doubleclick listener */
 	public TableViewer getTableViewer() {
 		return tableViewer;

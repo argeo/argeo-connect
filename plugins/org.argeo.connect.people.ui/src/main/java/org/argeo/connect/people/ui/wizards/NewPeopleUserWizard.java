@@ -135,9 +135,8 @@ public class NewPeopleUserWizard extends Wizard {
 
 			userAdminService.createUser(jcrUserDetails);
 
-			userManagementService.createDefaultGroupForUser(session,
-					userProfile);
-			userManagementService.addGroupsToUser(userProfile,
+			userManagementService.createDefaultGroupForUser(session, username);
+			userManagementService.addGroupsToUser(session, username,
 					chooseGroupsPage.getSelectedGroups());
 
 			return true;

@@ -89,6 +89,7 @@ public class UserEditor extends FormEditor {
 	// Local instance of the user model
 	private Node userProfile;
 	private JcrUserDetails userDetails;
+	private String username;
 
 	// Pages
 	private DefaultUserMainPage defaultUserMainPage;
@@ -98,7 +99,7 @@ public class UserEditor extends FormEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		String username = "";
+		username = "";
 
 		// TODO simplify this: user is created using a wizard and always exists
 		// on editor opening.
@@ -160,7 +161,7 @@ public class UserEditor extends FormEditor {
 
 		if (userGroupsPage.isDirty()) {
 			userGroupsPage.doSave(monitor);
-			userManagementService.addGroupsToUser(userProfile,
+			userManagementService.addGroupsToUser(session, username,
 					userGroupsPage.selectedGroups);
 		}
 
@@ -354,7 +355,8 @@ public class UserEditor extends FormEditor {
 		}
 
 		public void refresh() {
-			selectedGroups = userManagementService.getUserGroups(argeoProfile);
+			selectedGroups = userManagementService.getUserGroups(session,
+					username);
 			displayedGroups.clear();
 			displayedGroups.addAll(selectedGroups);
 			groupsViewer.setInput(displayedGroups.toArray());

@@ -110,6 +110,8 @@ public class ActivityServiceImpl implements ActivityService {
 	}
 
 	public List<Node> getTasksForUser(Node peopleProfile, boolean onlyOpenTasks) {
+		
+		
 		return null;
 	}
 

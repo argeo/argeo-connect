@@ -5,6 +5,8 @@ import org.argeo.connect.people.ui.utils.Refreshable;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 
@@ -15,13 +17,24 @@ import org.eclipse.ui.handlers.HandlerUtil;
 public class ForceRefresh extends AbstractHandler {
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".forceRefresh";
+	public final static String PARAM_VIEW_ID = "param.viewId";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+		String partId = event.getParameter(PARAM_VIEW_ID);
 
-		IWorkbenchPart part = HandlerUtil.getActiveWorkbenchWindow(event)
-				.getActivePage().getActivePart();
-		if (part instanceof Refreshable)
-			((Refreshable) part).forceRefresh(null);
+		IWorkbenchPage activePage = HandlerUtil.getActiveWorkbenchWindow(event)
+				.getActivePage();
+
+		if (partId != null) {
+			IViewPart viewPart = activePage.findView(partId);
+			if (viewPart != null && viewPart instanceof Refreshable)
+				((Refreshable) viewPart).forceRefresh(null);
+		} else {
+			IWorkbenchPart part = activePage.getActivePart();
+			if (part instanceof Refreshable)
+				((Refreshable) part).forceRefresh(null);
+		}
+
 		return null;
 	}
 }

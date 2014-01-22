@@ -15,8 +15,8 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.jcr.UserJcrUtils;
 
 /** Canonical implementation of the people {@link UserManagementService} */
 public class UserManagementServiceImpl implements UserManagementService {
@@ -76,32 +76,76 @@ public class UserManagementServiceImpl implements UserManagementService {
 	//
 	// USER MANAGEMENT
 	//
-	// TODO implement this
-	public Node getMyPeopleProfile(Session session){
-	return null;	
-	}
-	
-	
-	@Override
-	public String addUsersToGroup(Node userGroup, List<Node> userProfiles) {
+	/**
+	 * If a userprofile exists but no peopleprofile, it creates, saves and
+	 * checks-in the corresponding Node in a distinct session
+	 * 
+	 * @param session
+	 * @param username
+	 * @return a peopleprofile node or null if the userprofile is not found
+	 */
+	public Node getPeopleProfile(Session session, String username) {
+		Node userProfile = UserJcrUtils.getUserProfile(session, username);
+		if (userProfile == null)
+			return null;
 		try {
-			StringBuilder builder = new StringBuilder();
-			for (Node currProfile : userProfiles) {
-				Node parent = currProfile.getParent();
-				Node peopleProfile;
-				if (!parent.hasNode(PeopleTypes.PEOPLE_PROFILE))
-					peopleProfile = parent.addNode(PeopleTypes.PEOPLE_PROFILE,
+			Node parent = userProfile.getParent();
+			Node peopleProfile;
+			if (!parent.hasNode(PeopleTypes.PEOPLE_PROFILE)) {
+				Session tmpSession = null;
+				try {
+					String tmpParentPath = parent.getPath();
+					tmpSession = session.getRepository().login();
+					Node tmpParent = tmpSession.getNode(tmpParentPath);
+					Node tmpProfile = tmpParent.addNode(
+							PeopleTypes.PEOPLE_PROFILE,
 							PeopleTypes.PEOPLE_PROFILE);
-				else {
-					peopleProfile = parent.getNode(PeopleTypes.PEOPLE_PROFILE);
-					CommonsJcrUtils.checkout(peopleProfile);
+					tmpSession.save();
+
+					String newPath = tmpProfile.getPath();
+					tmpSession.getWorkspace().getVersionManager()
+							.checkin(newPath);
+					peopleProfile = session.getNode(newPath);
+				} catch (RepositoryException re) {
+					throw new PeopleException(
+							"Unable to create people profile node for username "
+									+ username, re);
+				} finally {
+					JcrUtils.logoutQuietly(tmpSession);
 				}
+			} else {
+				peopleProfile = parent.getNode(PeopleTypes.PEOPLE_PROFILE);
+			}
+			return peopleProfile;
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Unable to get people profile node for username "
+							+ username, re);
+		}
+	}
+
+	public Node getMyPeopleProfile(Session session) {
+		return getPeopleProfile(session, session.getUserID());
+	}
+
+	@Override
+	public String addUsersToGroup(Session session, Node userGroup,
+			List<String> usernames) {
+		Session tmpSession = null;
+		try {
+			tmpSession = session.getRepository().login();
+			StringBuilder builder = new StringBuilder();
+			for (String currUserName : usernames) {
+				Node peopleProfile = getPeopleProfile(tmpSession, currUserName);
+				CommonsJcrUtils.checkout(peopleProfile);
 				String msg = CommonsJcrUtils.addRefToMultiValuedProp(
 						peopleProfile, PeopleNames.PEOPLE_USER_GROUPS,
 						userGroup);
-				if (msg != null)
+				if (msg != null) {
 					builder.append(msg).append("\n");
-				CommonsJcrUtils.saveAndCheckin(peopleProfile);
+					CommonsJcrUtils.cancelAndCheckin(peopleProfile);
+				} else
+					CommonsJcrUtils.saveAndCheckin(peopleProfile);
 			}
 
 			if (builder.length() > 0)
@@ -109,23 +153,18 @@ public class UserManagementServiceImpl implements UserManagementService {
 		} catch (RepositoryException re) {
 			throw new PeopleException("unable to add users to group "
 					+ userGroup, re);
+		} finally {
+			JcrUtils.logoutQuietly(tmpSession);
 		}
 		return null;
 	}
 
 	@Override
-	public String addGroupsToUser(Node userProfile, List<Node> groups) {
+	public String addGroupsToUser(Session session, String username,
+			List<Node> groups) {
 		try {
-			Node parent = userProfile.getParent();
-			Node peopleProfile;
-			if (!parent.hasNode(PeopleTypes.PEOPLE_PROFILE))
-				peopleProfile = parent.addNode(PeopleTypes.PEOPLE_PROFILE,
-						PeopleTypes.PEOPLE_PROFILE);
-			else {
-				peopleProfile = parent.getNode(PeopleTypes.PEOPLE_PROFILE);
-				CommonsJcrUtils.checkout(peopleProfile);
-			}
-
+			Node peopleProfile = getPeopleProfile(session, username);
+			CommonsJcrUtils.checkout(peopleProfile);
 			// FIXME it overrides all values at each time.
 			CommonsJcrUtils.setMultipleReferences(peopleProfile,
 					PeopleNames.PEOPLE_USER_GROUPS, groups);
@@ -133,21 +172,20 @@ public class UserManagementServiceImpl implements UserManagementService {
 
 		} catch (RepositoryException re) {
 			throw new PeopleException("unable to add groups to user "
-					+ userProfile, re);
+					+ username, re);
 		}
 		return null;
 	}
 
 	@Override
-	public List<Node> getUserGroups(Node userProfile) {
+	public List<Node> getUserGroups(Session session, String username) {
 		List<Node> groups = new ArrayList<Node>();
 		try {
-			Session session = userProfile.getSession();
-			// Initialisation
-			Node parent = userProfile.getParent();
-			if (!parent.hasNode(PeopleTypes.PEOPLE_PROFILE))
+			Node peopleProfile = getPeopleProfile(session, username);
+
+			if (peopleProfile == null)
 				return groups;
-			Node peopleProfile = parent.getNode(PeopleTypes.PEOPLE_PROFILE);
+
 			if (!peopleProfile.hasProperty(PeopleNames.PEOPLE_USER_GROUPS))
 				return groups;
 
@@ -160,20 +198,18 @@ public class UserManagementServiceImpl implements UserManagementService {
 			}
 		} catch (RepositoryException re) {
 			throw new PeopleException("unable to get groups for user "
-					+ userProfile, re);
+					+ username, re);
 		}
 		return groups;
 	}
 
 	@Override
-	public Node createDefaultGroupForUser(Session session, Node userProfile) {
-		String currId = CommonsJcrUtils.get(userProfile,
-				ArgeoNames.ARGEO_USER_ID);
-		Node userGp = createGroup(session, currId, currId,
-				"Default group for user " + currId, true);
+	public Node createDefaultGroupForUser(Session session, String username) {
+		Node userGp = createGroup(session, username, username,
+				"Default group for user " + username, true);
 		List<Node> groups = new ArrayList<Node>();
 		groups.add(userGp);
-		addGroupsToUser(userProfile, groups);
+		addGroupsToUser(session, username, groups);
 		return userGp;
 	}
 

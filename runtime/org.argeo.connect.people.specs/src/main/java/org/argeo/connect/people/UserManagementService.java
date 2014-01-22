@@ -44,10 +44,16 @@ public interface UserManagementService {
 	 * @param groupId
 	 * @return
 	 */
-	public Node createDefaultGroupForUser(Session session, Node userProfile);
+	public Node createDefaultGroupForUser(Session session, String username);
 
-	/** Get Corresponding users with their IDs */
-	public String addUsersToGroup(Node userGroup, List<Node> userProfiles);
+	/**
+	 * Add a reference to the group to each user listed by its username.
+	 * 
+	 * @param userGroup
+	 * @param usernames
+	 * @return an error message listing the username where the reference was already there
+	 */
+	public String addUsersToGroup(Session session, Node userGroup, List<String> usernames);
 
 	/**
 	 * Session is saved and userprofile checked in after addition.
@@ -57,9 +63,10 @@ public interface UserManagementService {
 	 * @param groups
 	 * @return
 	 */
-	public String addGroupsToUser(Node userProfile, List<Node> groups);
+	public String addGroupsToUser(Session session, String username,
+			List<Node> groups);
 
-	public List<Node> getUserGroups(Node userProfile);
+	public List<Node> getUserGroups(Session session, String username);
 
 	/* MISCELLANEOUS */
 }
