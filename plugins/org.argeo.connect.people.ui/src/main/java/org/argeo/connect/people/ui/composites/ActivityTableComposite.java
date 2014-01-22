@@ -4,11 +4,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
+import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
@@ -26,9 +29,11 @@ import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.ActivitiesImages;
+import org.argeo.connect.people.ui.utils.ActivityViewerComparator;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.ArgeoNames;
@@ -99,30 +104,65 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 
 		TableViewerColumn column;
 
+		Map<String, ColumnLabelProvider> lpMap = new HashMap<String, ColumnLabelProvider>();
+		lpMap.put(PeopleNames.PEOPLE_ASSIGNED_TO, new ManagerLabelProvider());
+		lpMap.put(PeopleNames.PEOPLE_RELATED_TO, new RelatedToLabelProvider());
+
+		ActivityViewerComparator comparator = new ActivityViewerComparator(
+				activityService, lpMap);
+
 		// Activity type: mail, note... todo or task
 		// TODO add icon to display activity type :
 		column = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE, 22);
 		column.setLabelProvider(new TypeLabelProvider());
 
+		int colIndex = 1; // eases change of below columns order
+
+		// Date
+		column = ViewerUtils.createTableViewerColumn(viewer, "Date", SWT.RIGHT,
+				75);
+		column.setLabelProvider(new DateLabelProvider());
+		column.getColumn().addSelectionListener(
+				JcrUiUtils.getNodeSelectionAdapter(colIndex++,
+						PropertyType.DATE,
+						ActivityViewerComparator.RELEVANT_DATE, comparator,
+						viewer));
+
 		// Manager
 		column = ViewerUtils.createTableViewerColumn(viewer, "Manager",
 				SWT.NONE, 100);
 		column.setLabelProvider(new ManagerLabelProvider());
+		column.getColumn().addSelectionListener(
+				JcrUiUtils.getNodeSelectionAdapter(colIndex++,
+						PropertyType.STRING, PeopleNames.PEOPLE_ASSIGNED_TO,
+						comparator, viewer));
 
 		// Related to
 		column = ViewerUtils.createTableViewerColumn(viewer, "Related to",
 				SWT.NONE, 140);
 		column.setLabelProvider(new RelatedToLabelProvider());
+		column.getColumn().addSelectionListener(
+				JcrUiUtils.getNodeSelectionAdapter(colIndex++,
+						PropertyType.STRING, PeopleNames.PEOPLE_RELATED_TO,
+						comparator, viewer));
 
 		// Title / description
 		column = ViewerUtils.createTableViewerColumn(viewer, "Content",
 				SWT.NONE, 360);
 		column.setLabelProvider(new TitleDescLabelProvider());
+		column.getColumn().addSelectionListener(
+				JcrUiUtils.getNodeSelectionAdapter(colIndex++,
+						PropertyType.STRING, Property.JCR_TITLE, comparator,
+						viewer));
 
-		// Date
-		column = ViewerUtils.createTableViewerColumn(viewer, "Date", SWT.NONE,
-				80);
-		column.setLabelProvider(new DateLabelProvider());
+		// IMPORTANT: initialize comparator before setting it
+		comparator.setColumn(PropertyType.DATE,
+				ActivityViewerComparator.RELEVANT_DATE);
+		// 2 times to force descending
+		comparator.setColumn(PropertyType.DATE,
+				ActivityViewerComparator.RELEVANT_DATE);
+		viewer.setComparator(comparator);
+
 		return viewer;
 	}
 

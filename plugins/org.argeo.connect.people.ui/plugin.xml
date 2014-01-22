@@ -156,7 +156,15 @@
          		name="the username">
   	 		</commandParameter>
     	</command>
-		<!-- Legacy: import big data --> 
+    	
+    	<!-- Activities and tasks management --> 
+    	<command
+      		defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		id="org.argeo.connect.people.ui.createSimpleTask"
+            name="Create simple task">
+        </command>
+    	
+    	<!-- Legacy: import big data --> 
 		
 		<!-- Entity CRUD --> 
 		<command

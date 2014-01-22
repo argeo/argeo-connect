@@ -15,6 +15,7 @@ import org.argeo.connect.people.ui.editors.ActivityEditor;
 import org.argeo.connect.people.ui.editors.GroupEditor;
 import org.argeo.connect.people.ui.editors.OrgEditor;
 import org.argeo.connect.people.ui.editors.PersonEditor;
+import org.argeo.connect.people.ui.editors.TaskEditor;
 import org.argeo.connect.people.ui.editors.UserGroupEditor;
 import org.argeo.connect.people.ui.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -99,7 +100,7 @@ public class OpenEntityEditor extends AbstractHandler {
 			if (curNode.isNodeType(PeopleTypes.PEOPLE_USER_GROUP))
 				return UserGroupEditor.ID;
 			else if (curNode.isNodeType(PeopleTypes.PEOPLE_TASK))
-				return ActivityEditor.ID;
+				return TaskEditor.ID;
 			else if (curNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
 				return ActivityEditor.ID;
 			else if (curNode.isNodeType(PeopleTypes.PEOPLE_PERSON))

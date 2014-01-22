@@ -90,10 +90,11 @@ public class AdminUsersView extends ViewPart implements ArgeoNames {
 	public void dispose() {
 		JcrUtils.removeListenerQuietly(session, userStructureListener);
 		JcrUtils.removeListenerQuietly(session, userPropertiesListener);
+		JcrUtils.logoutQuietly(session);
 		super.dispose();
 	}
 
-	public void setSession(Session session) {
+	private void setSession(Session session) {
 		this.session = session;
 	}
 
