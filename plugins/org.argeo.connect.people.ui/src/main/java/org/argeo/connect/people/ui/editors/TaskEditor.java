@@ -33,6 +33,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -55,6 +56,10 @@ public class TaskEditor extends AbstractPeopleEditor {
 	private DateFormat dateFormat = new SimpleDateFormat(
 			PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
+	// TODO implement this cleanly
+	private static final String[] ARRAY_TASK_STATUS = { "New", "Done",
+			"Sleeping", "Canceled" };
+
 	// Main business Objects
 	private Node task;
 
@@ -73,26 +78,19 @@ public class TaskEditor extends AbstractPeopleEditor {
 		return new Boolean(false);
 	}
 
-	@Override
-	protected void populateBody(Composite parent) {
-		parent.setLayout(new GridLayout());
-		toolkit.createLabel(parent, "Implement the task editor", SWT.NONE);
-	}
-
-	@Override
 	protected void populateHeader(Composite parent) {
-		parent.setLayout(new GridLayout());
-		toolkit.createLabel(parent, "Implement Header", SWT.NONE);
-	}
-
-	private void populateTaskMainCmp(Composite parent) {
 		GridLayout layout = new GridLayout(3, false);
 		// PeopleUiUtils.gridLayoutNoBorder(3);
 		// layout.horizontalSpacing = layout.verticalSpacing = 5;
 		parent.setLayout(layout);
 
 		// 1st line
-		final Text typeTxt = createLT(parent, "Type:");
+		// final Text typeTxt = createLT(parent, "Type:");
+
+		final Combo statusCmb = new Combo(parent, SWT.NONE);
+		statusCmb.setItems(ARRAY_TASK_STATUS);
+		statusCmb.select(0);
+
 		final Text managerTxt = createLT(parent, "Manager:");
 		final Text dateTxt = createLT(parent, "Date:");
 
@@ -119,62 +117,10 @@ public class TaskEditor extends AbstractPeopleEditor {
 		toolkit.adapt(addRelatedLk, false, false);
 		addRelatedLk.setText("<a>Add...</a>");
 
-		addRelatedLk.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = -7118320199160680131L;
-
-			@Override
-			public void widgetSelected(final SelectionEvent event) {
-				try {
-					PickUpRelatedDialog diag = new PickUpRelatedDialog(
-							addRelatedLk.getShell(), "Choose an entity", task
-									.getSession(), task);
-					diag.open();
-					Node node = diag.getSelected();
-					addMultiPropertyValue(task, PeopleNames.PEOPLE_RELATED_TO,
-							node.getIdentifier());
-					if (node != null)
-						log.debug("Node chosen");
-				} catch (RepositoryException e) {
-					throw new PeopleException(
-							"Unable to link chosen node to current activity "
-									+ task, e);
-				}
-
-			}
-		});
-
-		// 3rd line: title
-		Group titleGrp = new Group(parent, 0);
-		gd = new GridData(SWT.FILL, SWT.TOP, true, false);
-		gd.heightHint = 60;
-		gd.horizontalSpan = 3;
-		titleGrp.setLayoutData(gd);
-		titleGrp.setText("Title");
-		titleGrp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-		final Text titleTxt = toolkit.createText(titleGrp, "", SWT.BORDER
-				| SWT.MULTI | SWT.WRAP);
-		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		titleTxt.setLayoutData(gd);
-
-		// Bottom part: description
-		Group descGrp = new Group(parent, 0);
-		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.horizontalSpan = 3;
-		descGrp.setLayoutData(gd);
-		descGrp.setText("Description");
-		descGrp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-		final Text descTxt = toolkit.createText(descGrp, "", SWT.BORDER
-				| SWT.MULTI | SWT.WRAP);
-		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		descTxt.setLayoutData(gd);
-
 		final AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {
 				try {
 					super.refresh();
-
-					typeTxt.setText(ActivityJcrUtils.getActivityTypeLbl(task));
-					typeTxt.setEnabled(false);
 
 					String manager = ActivityJcrUtils
 							.getActivityManagerDisplayName(task);
@@ -226,10 +172,11 @@ public class TaskEditor extends AbstractPeopleEditor {
 										@Override
 										public void widgetSelected(
 												final SelectionEvent event) {
-											removeMultiPropertyValue(
-													task,
-													PeopleNames.PEOPLE_RELATED_TO,
-													valueStr);
+											CommonsJcrUtils
+													.removeRefFromMultiValuedProp(
+															task,
+															PeopleNames.PEOPLE_RELATED_TO,
+															valueStr);
 											for (IFormPart part : getManagedForm()
 													.getParts()) {
 												((AbstractFormPart) part)
@@ -243,16 +190,83 @@ public class TaskEditor extends AbstractPeopleEditor {
 						relatedCmp.layout(false);
 						relatedCmp.getParent().getParent().layout();
 					}
-
-					PeopleUiUtils.refreshFormTextWidget(titleTxt, task,
-							Property.JCR_TITLE);
-					PeopleUiUtils.refreshFormTextWidget(descTxt, task,
-							Property.JCR_DESCRIPTION);
 				} catch (RepositoryException re) {
 					throw new PeopleException(
 							"Unable to refresh form part for activity " + task,
 							re);
 				}
+			}
+		};
+		parent.layout();
+		formPart.initialize(getManagedForm());
+		getManagedForm().addPart(formPart);
+
+		addRelatedLk.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = -7118320199160680131L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent event) {
+				try {
+					PickUpRelatedDialog diag = new PickUpRelatedDialog(
+							addRelatedLk.getShell(), "Choose an entity", task
+									.getSession(), task);
+					diag.open();
+					Node node = diag.getSelected();
+					String errMsg = CommonsJcrUtils.addRefToMultiValuedProp(
+							task, PeopleNames.PEOPLE_RELATED_TO, node);
+					if (errMsg != null)
+						MessageDialog.openError(PeopleUiPlugin.getDefault()
+								.getWorkbench().getActiveWorkbenchWindow()
+								.getShell(), "Dupplicates", errMsg);
+					else {
+						formPart.refresh();
+						formPart.markDirty();
+					}
+				} catch (RepositoryException e) {
+					throw new PeopleException(
+							"Unable to link chosen node to current activity "
+									+ task, e);
+				}
+
+			}
+		});
+
+	}
+
+	@Override
+	protected void populateBody(Composite parent) {
+		// 3rd line: title
+		Group titleGrp = new Group(parent, 0);
+		GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
+		gd.heightHint = 60;
+		gd.horizontalSpan = 3;
+		titleGrp.setLayoutData(gd);
+		titleGrp.setText("Title");
+		titleGrp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		final Text titleTxt = toolkit.createText(titleGrp, "", SWT.BORDER
+				| SWT.MULTI | SWT.WRAP);
+		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		titleTxt.setLayoutData(gd);
+
+		// Bottom part: description
+		Group descGrp = new Group(parent, 0);
+		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gd.horizontalSpan = 3;
+		descGrp.setLayoutData(gd);
+		descGrp.setText("Description");
+		descGrp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		final Text descTxt = toolkit.createText(descGrp, "", SWT.BORDER
+				| SWT.MULTI | SWT.WRAP);
+		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		descTxt.setLayoutData(gd);
+
+		final AbstractFormPart formPart = new AbstractFormPart() {
+			public void refresh() {
+				super.refresh();
+				PeopleUiUtils.refreshFormTextWidget(titleTxt, task,
+						Property.JCR_TITLE);
+				PeopleUiUtils.refreshFormTextWidget(descTxt, task,
+						Property.JCR_DESCRIPTION);
 			}
 		};
 

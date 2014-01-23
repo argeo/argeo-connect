@@ -72,11 +72,6 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		return new Boolean(false);
 	}
 
-	// @Override
-	// protected void populateBody(Composite parent) {
-	// populateActivityMainCmp(parent);
-	// }
-
 	protected void populateHeader(Composite parent) {
 		GridLayout layout = new GridLayout(3, false);
 		// PeopleUiUtils.gridLayoutNoBorder(3);
@@ -110,33 +105,6 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		final Link addRelatedLk = new Link(parent, SWT.BOTTOM);
 		toolkit.adapt(addRelatedLk, false, false);
 		addRelatedLk.setText("<a>Add...</a>");
-
-		addRelatedLk.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = -7118320199160680131L;
-
-			@Override
-			public void widgetSelected(final SelectionEvent event) {
-				try {
-					PickUpRelatedDialog diag = new PickUpRelatedDialog(
-							addRelatedLk.getShell(), "Choose an entity",
-							activity.getSession(), activity);
-					diag.open();
-					Node node = diag.getSelected();
-					String errMsg = CommonsJcrUtils.addRefToMultiValuedProp(
-							activity, PeopleNames.PEOPLE_RELATED_TO, node);
-					if (errMsg != null)
-						MessageDialog.openError(PeopleUiPlugin.getDefault()
-								.getWorkbench().getActiveWorkbenchWindow()
-								.getShell(), "Dupplicates", errMsg);
-
-				} catch (RepositoryException e) {
-					throw new PeopleException(
-							"Unable to link chosen node to current activity "
-									+ activity, e);
-				}
-
-			}
-		});
 
 		final AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {
@@ -226,6 +194,36 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		parent.layout();
 		formPart.initialize(getManagedForm());
 		getManagedForm().addPart(formPart);
+
+		addRelatedLk.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = -7118320199160680131L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent event) {
+				try {
+					PickUpRelatedDialog diag = new PickUpRelatedDialog(
+							addRelatedLk.getShell(), "Choose an entity",
+							activity.getSession(), activity);
+					diag.open();
+					Node node = diag.getSelected();
+					String errMsg = CommonsJcrUtils.addRefToMultiValuedProp(
+							activity, PeopleNames.PEOPLE_RELATED_TO, node);
+					if (errMsg != null)
+						MessageDialog.openError(PeopleUiPlugin.getDefault()
+								.getWorkbench().getActiveWorkbenchWindow()
+								.getShell(), "Dupplicates", errMsg);
+					else{
+						formPart.refresh();
+						formPart.markDirty();
+					}
+				} catch (RepositoryException e) {
+					throw new PeopleException(
+							"Unable to link chosen node to current activity "
+									+ activity, e);
+				}
+
+			}
+		});
 	}
 
 	@Override
