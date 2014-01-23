@@ -71,13 +71,13 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		person = getEntity();
+		person = getNode();
 
 	}
 
 	@Override
 	protected void updatePartName() {
-		String shortName = CommonsJcrUtils.get(getEntity(),
+		String shortName = CommonsJcrUtils.get(getNode(),
 				PeopleNames.PEOPLE_LAST_NAME);
 		if (CommonsJcrUtils.checkNotEmptyString(shortName)) {
 			if (shortName.length() > SHORT_NAME_LENGHT)
@@ -98,7 +98,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 
 		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService());
 		historyTK = new HistoryToolkit(getPeopleService(), toolkit,
-				getManagedForm(), getEntity());
+				getManagedForm(), person);
 	}
 
 	@Override
@@ -135,6 +135,27 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 	}
 
 	@Override
+	protected void populateHeader(Composite parent) {
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+
+		Composite titleCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		titleCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		populateTitleComposite(titleCmp);
+
+		// Tag Management
+		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		entityTK.populateTagPanel(tagsCmp, person, PeopleNames.PEOPLE_TAGS,
+				"Enter a new tag");
+
+		// Mailing list management
+		Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		contactTK.populateMailingListMembershipPanel(mlCmp, person,
+				getOpenEntityEditorCmdId());
+	}
+
+	@Override
 	protected void populateTabFolder(CTabFolder folder) {
 		// Contact informations
 		String tooltip = "Contact information for "
@@ -149,7 +170,8 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
 				PeopleUiConstants.PANEL_ACTIVITY_LOG, tooltip);
-		activityTK.populateActivityLogPanel(innerPannel, person, getOpenEntityEditorCmdId());
+		activityTK.populateActivityLogPanel(innerPannel, person,
+				getOpenEntityEditorCmdId());
 
 		// Jobs panel
 		tooltip = "Organisations linked to "
@@ -214,7 +236,6 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		folder.layout();
 	}
 
-	@Override
 	protected void populateTitleComposite(Composite parent) {
 		parent.setLayout(new FormLayout());
 
@@ -464,23 +485,5 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		editPart.initialize(getManagedForm());
 		getManagedForm().addPart(editPart);
 
-	}
-
-	@Override
-	protected void populateMainInfoDetails(final Composite parent) {
-		// Mailing list management
-		Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		contactTK.populateMailingListMembershipPanel(mlCmp, person,
-				getOpenEntityEditorCmdId());
-
-		// Tag Management
-		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		entityTK.populateTagPanel(tagsCmp, person, PeopleNames.PEOPLE_TAGS,
-				"Enter a new tag");
-
-		// keep last update.
-		super.populateMainInfoDetails(parent);
 	}
 }

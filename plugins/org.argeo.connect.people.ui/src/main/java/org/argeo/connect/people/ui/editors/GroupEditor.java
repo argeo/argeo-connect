@@ -47,7 +47,7 @@ public class GroupEditor extends AbstractEntityCTabEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		group = getEntity();
+		group = getNode();
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public class GroupEditor extends AbstractEntityCTabEditor {
 	}
 
 	@Override
-	protected void populateTitleComposite(final Composite parent) {
+	protected void populateHeader(final Composite parent) {
 		try {
 			parent.setLayout(new FormLayout());
 

@@ -72,12 +72,12 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		return new Boolean(false);
 	}
 
-	@Override
-	protected void createBodyPart(Composite parent) {
-		populateActivityMainCmp(parent);
-	}
+	// @Override
+	// protected void populateBody(Composite parent) {
+	// populateActivityMainCmp(parent);
+	// }
 
-	private void populateActivityMainCmp(Composite parent) {
+	protected void populateHeader(Composite parent) {
 		GridLayout layout = new GridLayout(3, false);
 		// PeopleUiUtils.gridLayoutNoBorder(3);
 		// layout.horizontalSpacing = layout.verticalSpacing = 5;
@@ -137,31 +137,6 @@ public class ActivityEditor extends AbstractPeopleEditor {
 
 			}
 		});
-
-		// 3rd line: title
-		Group titleGrp = new Group(parent, 0);
-		gd = new GridData(SWT.FILL, SWT.TOP, true, false);
-		gd.heightHint = 60;
-		gd.horizontalSpan = 3;
-		titleGrp.setLayoutData(gd);
-		titleGrp.setText("Title");
-		titleGrp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-		final Text titleTxt = toolkit.createText(titleGrp, "", SWT.BORDER
-				| SWT.MULTI | SWT.WRAP);
-		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		titleTxt.setLayoutData(gd);
-
-		// Bottom part: description
-		Group descGrp = new Group(parent, 0);
-		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.horizontalSpan = 3;
-		descGrp.setLayoutData(gd);
-		descGrp.setText("Description");
-		descGrp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-		final Text descTxt = toolkit.createText(descGrp, "", SWT.BORDER
-				| SWT.MULTI | SWT.WRAP);
-		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		descTxt.setLayoutData(gd);
 
 		final AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {
@@ -241,16 +216,52 @@ public class ActivityEditor extends AbstractPeopleEditor {
 						relatedCmp.layout(false);
 						relatedCmp.getParent().getParent().layout();
 					}
-
-					PeopleUiUtils.refreshFormTextWidget(titleTxt, activity,
-							Property.JCR_TITLE);
-					PeopleUiUtils.refreshFormTextWidget(descTxt, activity,
-							Property.JCR_DESCRIPTION);
 				} catch (RepositoryException re) {
 					throw new PeopleException(
 							"Unable to refresh form part for activity "
 									+ activity, re);
 				}
+			}
+		};
+		parent.layout();
+		formPart.initialize(getManagedForm());
+		getManagedForm().addPart(formPart);
+	}
+
+	@Override
+	protected void populateBody(Composite parent) {
+		// 3rd line: title
+		Group titleGrp = new Group(parent, 0);
+		GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
+		gd.heightHint = 60;
+		gd.horizontalSpan = 3;
+		titleGrp.setLayoutData(gd);
+		titleGrp.setText("Title");
+		titleGrp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		final Text titleTxt = toolkit.createText(titleGrp, "", SWT.BORDER
+				| SWT.MULTI | SWT.WRAP);
+		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		titleTxt.setLayoutData(gd);
+
+		// Bottom part: description
+		Group descGrp = new Group(parent, 0);
+		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gd.horizontalSpan = 3;
+		descGrp.setLayoutData(gd);
+		descGrp.setText("Description");
+		descGrp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		final Text descTxt = toolkit.createText(descGrp, "", SWT.BORDER
+				| SWT.MULTI | SWT.WRAP);
+		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		descTxt.setLayoutData(gd);
+
+		final AbstractFormPart formPart = new AbstractFormPart() {
+			public void refresh() {
+				super.refresh();
+				PeopleUiUtils.refreshFormTextWidget(titleTxt, activity,
+						Property.JCR_TITLE);
+				PeopleUiUtils.refreshFormTextWidget(descTxt, activity,
+						Property.JCR_DESCRIPTION);
 			}
 		};
 

@@ -74,9 +74,15 @@ public class TaskEditor extends AbstractPeopleEditor {
 	}
 
 	@Override
-	protected void createBodyPart(Composite parent) {
+	protected void populateBody(Composite parent) {
 		parent.setLayout(new GridLayout());
 		toolkit.createLabel(parent, "Implement the task editor", SWT.NONE);
+	}
+
+	@Override
+	protected void populateHeader(Composite parent) {
+		parent.setLayout(new GridLayout());
+		toolkit.createLabel(parent, "Implement Header", SWT.NONE);
 	}
 
 	private void populateTaskMainCmp(Composite parent) {

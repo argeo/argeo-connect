@@ -521,4 +521,9 @@ public class ChannelEditor extends AbstractEntityEditor implements RssNames {
 		text.setLayoutData(gd);
 		return text;
 	}
+	
+	public String getlastUpdateMessage(){
+		return "";
+	}
+		
 }

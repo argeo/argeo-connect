@@ -62,7 +62,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		org = getEntity();
+		org = getNode();
 
 		String shortName = CommonsJcrUtils.get(org,
 				PeopleNames.PEOPLE_LEGAL_NAME);
@@ -82,6 +82,28 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 
 		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService());
 		legalTK = new LegalInfoToolkit(toolkit, getManagedForm(), org);
+	}
+
+	@Override
+	protected void populateHeader(Composite parent) {
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+
+		Composite titleCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		titleCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		populateTitleComposite(titleCmp);
+
+		// Branche Management
+		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		entityTK.populateTagPanel(tagsCmp, org,
+				PeopleNames.PEOPLE_ORG_BRANCHES, "Enter a new branche");
+
+		// Mailing list management
+		Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		contactTK.populateMailingListMembershipPanel(mlCmp, org,
+				getOpenEntityEditorCmdId());
+
 	}
 
 	protected void populateTabFolder(CTabFolder folder) {
@@ -129,24 +151,6 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		});
 	}
 
-	@Override
-	protected void populateMainInfoDetails(final Composite parent) {
-		// Mailing list management
-		Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		contactTK.populateMailingListMembershipPanel(mlCmp, org, getOpenEntityEditorCmdId());
-
-		// Branche Management
-		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		entityTK.populateTagPanel(tagsCmp, org,
-				PeopleNames.PEOPLE_ORG_BRANCHES, "Enter a new branche");
-
-		// keep last update.
-		super.populateMainInfoDetails(parent);
-	}
-
-	@Override
 	protected void populateTitleComposite(final Composite parent) {
 		try {
 			parent.setLayout(new FormLayout());
@@ -154,14 +158,15 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 			final Composite roPanelCmp = toolkit.createComposite(parent,
 					SWT.NO_FOCUS);
 			PeopleUiUtils.setSwitchingFormData(roPanelCmp);
-//			roPanelCmp.setData(RWT.CUSTOM_VARIANT,
-//					PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
+			// roPanelCmp.setData(RWT.CUSTOM_VARIANT,
+			// PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 			roPanelCmp.setLayout(new GridLayout());
 
 			// Add a label with info provided by the OrgOverviewLabelProvider
 			final Label orgInfoROLbl = toolkit.createLabel(roPanelCmp, "",
 					SWT.WRAP);
-			orgInfoROLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
+			orgInfoROLbl
+					.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider orgLP = new OrgOverviewLabelProvider(
 					false, getPeopleService());
 

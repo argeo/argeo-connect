@@ -1,5 +1,7 @@
 package org.argeo.connect.people.ui.editors.utils;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,11 +10,13 @@ import javax.jcr.Property;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.commands.CancelAndCheckInItem;
 import org.argeo.connect.people.ui.commands.CheckOutItem;
@@ -30,6 +34,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -59,6 +64,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
+	private String openEntityEditorCmdId = OpenEntityEditor.ID;
 
 	/* CONSTANTS */
 	// length for short strings (typically tab names)
@@ -124,22 +130,37 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	protected void createMainLayout(Composite parent) {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+
 		// Internal main Layout
+		// The header
 		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS
 				| SWT.NO_SCROLL | SWT.NO_TRIM);
-		header.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-		header.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
-		// // Right: buttons
-		// Composite buttons = toolkit.createComposite(firstRow, SWT.NO_FOCUS);
-		// GridData gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
-		// gd.heightHint = 30;
-		// buttons.setLayoutData(gd);
-		populateButtonsComposite(header);
+		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder(2);
+		// So that the buttons are not too close to the right border of the
+		// composite.
+		gl.marginRight = 5;
+		header.setLayout(gl);
+		header.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
+		// header content
+		Composite left = toolkit.createComposite(header, SWT.NO_FOCUS
+				| SWT.NO_SCROLL | SWT.NO_TRIM);
+		left.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		populateHeader(left);
+
+		// header buttons
+		Composite right = toolkit.createComposite(header, SWT.NO_FOCUS
+				| SWT.NO_SCROLL | SWT.NO_TRIM);
+		GridData gd = new GridData(SWT.CENTER, SWT.TOP, false, false);
+		gd.verticalIndent = 5;
+		right.setLayoutData(gd);
+		populateButtonsComposite(right);
+
+		// the body
 		Composite body = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		body.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		createBodyPart(body);
+		populateBody(body);
 	}
 
 	/**
@@ -170,7 +191,10 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	}
 
 	/** Overwrite following methods to create a nice editor... */
-	protected abstract void createBodyPart(Composite parent);;
+	protected abstract void populateBody(Composite parent);;
+
+	/** Overwrite following methods to create a nice editor... */
+	protected abstract void populateHeader(Composite parent);;
 
 	protected void populateButtonsComposite(final Composite buttons) {
 		buttons.setLayout(new FormLayout());
@@ -179,16 +203,9 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		final Composite roPanelCmp = toolkit.createComposite(buttons,
 				SWT.NO_FOCUS);
 		PeopleUiUtils.setSwitchingFormData(roPanelCmp);
-		roPanelCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		roPanelCmp.setLayout(new RowLayout(SWT.VERTICAL));
 
-		// Add a level to right align the buttons
-		final Composite roSubPanelCmp = toolkit.createComposite(roPanelCmp,
-				SWT.NO_FOCUS | SWT.RIGHT);
-		roSubPanelCmp.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true,
-				false));
-		roSubPanelCmp.setLayout(new RowLayout(SWT.HORIZONTAL));
-
-		Button editBtn = toolkit.createButton(roSubPanelCmp, "Edit", SWT.PUSH);
+		Button editBtn = toolkit.createButton(roPanelCmp, "Edit", SWT.PUSH);
 		editBtn.setLayoutData(new RowData(60, 20));
 		editBtn.addSelectionListener(new SelectionListener() {
 			private static final long serialVersionUID = 1L;
@@ -206,7 +223,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 		// Add a refresh button to enable forcing refresh when having some UI
 		// glitches.
-		Button refreshBtn = toolkit.createButton(roSubPanelCmp, "Refresh",
+		Button refreshBtn = toolkit.createButton(roPanelCmp, "Refresh",
 				SWT.PUSH);
 		refreshBtn.setLayoutData(new RowData(60, 20));
 		refreshBtn.addSelectionListener(new SelectionListener() {
@@ -226,7 +243,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		final Composite editPanelCmp = toolkit.createComposite(buttons,
 				SWT.NONE);
 		PeopleUiUtils.setSwitchingFormData(editPanelCmp);
-		editPanelCmp.setLayout(new RowLayout(SWT.HORIZONTAL));
+		editPanelCmp.setLayout(new RowLayout(SWT.VERTICAL));
 
 		Button saveBtn = toolkit.createButton(editPanelCmp, "Save", SWT.PUSH);
 		saveBtn.setLayoutData(new RowData(60, 20));
@@ -364,8 +381,20 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		return true;
 	}
 
-	// ///////////////////////////////////////////
-	// LIFE CYCLE (among other check out policies)
+	// ////////////////////////////
+	// IVersionedItemEditor methods
+
+	/** Checks whether the current user can edit the node */
+	@Override
+	public boolean canBeCheckedOutByMe() {
+		// TODO add an error/warning message in the editor if the node has
+		// already been checked out by someone else.
+		// TODO add a check depending on current user rights
+		if (isCheckedOutByMe())
+			return false;
+		else
+			return true; // getMsmBackend().isUserInRole(MsmConstants.ROLE_CONSULTANT);
+	}
 
 	public boolean isCheckedOutByMe() {
 		return CommonsJcrUtils.isNodeCheckedOutByMe(node);
@@ -394,18 +423,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		notifyCheckOutStateChange();
 	}
 
-	/** Checks whether the current user can edit the node */
-	@Override
-	public boolean canBeCheckedOutByMe() {
-		// TODO add an error/warning message in the editor if the node has
-		// already been checked out by someone else.
-		// TODO add a check depending on current user rights
-		if (isCheckedOutByMe())
-			return false;
-		else
-			return true; // getMsmBackend().isUserInRole(MsmConstants.ROLE_CONSULTANT);
-	}
-
 	@Override
 	public void saveAndCheckInItem() {
 		if (!isCheckedOutByMe()) // Do nothing
@@ -418,11 +435,12 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	@Override
 	public void cancelAndCheckInItem() {
 		// TODO best effort to keep a clean repository
+		String path = null;
 		try {
 			if (node.hasProperty(PeopleNames.PEOPLE_IS_DRAFT)
 					&& node.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
 							.getBoolean()) {
-				String path = node.getPath();
+				path = node.getPath();
 				session.removeItem(path);
 				session.save();
 				node = null;
@@ -436,12 +454,46 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 				firePropertyChange(PROP_DIRTY);
 			}
 		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"Unable to corrctly remove newly created node. Repo is probably corrupted",
-					re);
+			throw new PeopleException("Unable to correctly remove newly "
+					+ "created node at path " + path
+					+ " The Jcr repository is probably corrupted", re);
 		}
 
 	}
+
+	private final static DateFormat df = new SimpleDateFormat(
+			PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
+
+	@Override
+	public String getlastUpdateMessage() {
+		Node currNode = getNode();
+		StringBuilder builder = new StringBuilder();
+		try {
+			if (currNode.isNodeType(NodeType.MIX_TITLE)) {
+				builder.append(
+						CommonsJcrUtils.get(currNode, Property.JCR_TITLE))
+						.append(" - ");
+			}
+
+			if (currNode.isNodeType(NodeType.MIX_LAST_MODIFIED)) {
+				// .append("<i>")
+				builder.append("Last updated on ");
+				builder.append(df.format(currNode
+						.getProperty(Property.JCR_LAST_MODIFIED).getDate()
+						.getTime()));
+				builder.append(", by ");
+				builder.append(currNode.getProperty(
+						Property.JCR_LAST_MODIFIED_BY).getString());
+				builder.append(". "); // </i>
+			}
+			return builder.toString();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Cannot create organizations content", re);
+		}
+	}
+
+	// ///////////////////////////////
+	// // EDITOR life cycle management
 
 	@Override
 	public void dispose() {
@@ -513,6 +565,14 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		}
 	}
 
+	/**
+	 * Exposes the id of the openEntityEditor command. By default it is
+	 * {@code OpenEntityEditor.ID} but might be changed by injection
+	 */
+	final protected String getOpenEntityEditorCmdId() {
+		return openEntityEditorCmdId;
+	}
+
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
@@ -520,5 +580,9 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	public void setRepository(Repository repository) {
 		this.repository = repository;
+	}
+
+	public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
+		this.openEntityEditorCmdId = openEntityEditorCmdId;
 	}
 }

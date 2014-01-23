@@ -16,4 +16,12 @@ public interface IVersionedItemEditor {
 
 	/** Cancel pending changes and check back in */
 	public void saveAndCheckInItem();
+
+	/**
+	 * Retrieves the "last updated" by information
+	 * 
+	 * @return a message that should look like
+	 *         "Paul Durand, last updated on Wed, 22 Jan at 17:24 by demo."
+	 */
+	public String getlastUpdateMessage();
 }

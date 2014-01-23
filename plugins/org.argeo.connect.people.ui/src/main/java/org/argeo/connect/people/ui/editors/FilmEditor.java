@@ -65,7 +65,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		film = getEntity();
+		film = getNode();
 
 		String shortName = CommonsJcrUtils.get(film,
 				FilmNames.FILM_ORIGINAL_TITLE);
@@ -157,18 +157,19 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 	}
 
 	@Override
-	protected void populateMainInfoDetails(final Composite parent) {
-		// Tag Management
+	protected void populateHeader(Composite parent) {
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+
+		Composite titleCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		titleCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		populateTitleComposite(titleCmp);
+
 		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		entityTk.populateTagPanel(tagsCmp, film,
 				PeopleNames.PEOPLE_ORG_BRANCHES, "Enter a new tag");
-
-		// keep last update.
-		super.populateMainInfoDetails(parent);
 	}
 
-	@Override
 	protected void populateTitleComposite(final Composite parent) {
 		try {
 			parent.setLayout(new FormLayout());

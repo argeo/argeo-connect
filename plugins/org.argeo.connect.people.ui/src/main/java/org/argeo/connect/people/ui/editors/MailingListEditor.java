@@ -108,10 +108,10 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 	protected void populateTabFolder(CTabFolder folder) {
 		// The member list
 		String tooltip = "Members of mailing list"
-				+ JcrUtils.get(getEntity(), Property.JCR_TITLE);
+				+ JcrUtils.get(getNode(), Property.JCR_TITLE);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Members", PeopleUiConstants.PANEL_MEMBERS, tooltip);
-		membersViewer = createMembersList(innerPannel, getEntity());
+		membersViewer = createMembersList(innerPannel, getNode());
 
 		// Double click
 		PeopleJcrViewerDClickListener ndcl = new PeopleJcrViewerDClickListener(
@@ -231,7 +231,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 			// Only show items for this list
 			Constraint defaultC = factory.descendantNode(
 					refSlct.getSelectorName(),
-					getEntity().getNode(PeopleNames.PEOPLE_MEMBERS).getPath());
+					getNode().getNode(PeopleNames.PEOPLE_MEMBERS).getPath());
 
 			// TODO clean this
 			if (filter == null)

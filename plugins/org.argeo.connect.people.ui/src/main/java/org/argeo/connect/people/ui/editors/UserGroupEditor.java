@@ -37,7 +37,7 @@ public class UserGroupEditor extends GroupEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		group = getEntity();
+		group = getNode();
 	}
 
 	@Override

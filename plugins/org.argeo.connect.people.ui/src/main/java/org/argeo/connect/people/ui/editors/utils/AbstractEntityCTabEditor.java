@@ -1,8 +1,5 @@
 package org.argeo.connect.people.ui.editors.utils;
 
-import org.argeo.connect.people.ui.utils.PeopleUiUtils;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -10,7 +7,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.TableColumn;
 
 /**
  * Extends the <code>AbstractEntityEditor</code> Form adding a
@@ -19,51 +15,47 @@ import org.eclipse.swt.widgets.TableColumn;
  * is bound to it. It provides a header with some meta informations and a body
  * to add tabs with further details.
  */
-public abstract class AbstractEntityCTabEditor extends AbstractEntityEditor
+public abstract class AbstractEntityCTabEditor extends AbstractPeopleEditor
 		implements IVersionedItemEditor {
 	// private final static Log log = LogFactory
 	// .getLog(AbstractEntityEditor.class);
-
-	/* DEPENDENCY INJECTION */
-	// private PeopleUiService peopleUiService;
 
 	/* CONSTANTS */
 	protected final static int CTAB_COMP_STYLE = SWT.NO_FOCUS;
 
 	// Manage tab Folder
-	// We rather use CTabFolder to enable further customization
 	private CTabFolder folder;
 	protected String CTAB_INSTANCE_ID = "CTabId";
 
+	/** Overwrite to populate the CTabFolder */
+	protected abstract void populateTabFolder(CTabFolder tabFolder);
+
 	/* CONTENT CREATION */
-	protected void createMainLayout(Composite parent) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-
-		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS
-				| SWT.NO_SCROLL | SWT.NO_TRIM);
-		header.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-		header.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		createHeaderPart(header);
-
-		// Create a body that is a CTabFolder
-		createBodyPart(parent);
-	}
+	// protected void createMainLayout(Composite parent) {
+	// parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+	//
+	// Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS
+	// | SWT.NO_SCROLL | SWT.NO_TRIM);
+	// header.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+	// header.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+	// populateHeader(header);
+	//
+	// // Create a body that is a CTabFolder
+	// createBodyPart(parent);
+	// }
 
 	/**
 	 * Children class should not override this class or rather directly use the
 	 * AbstractEntityEditor
 	 */
 	@Override
-	protected final void createBodyPart(Composite parent) {
+	protected final void populateBody(Composite parent) {
 		// NO_FOCUS to solve our "tab browsing" issue
 		folder = createCTabFolder(parent, SWT.NO_FOCUS);
 		folder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		populateTabFolder(folder);
 		folder.setSelection(0);
 	}
-
-	/** Overwrite to populate the CTabFolder */
-	protected abstract void populateTabFolder(CTabFolder tabFolder);
 
 	/* MANAGE TAB FOLDER */
 	protected CTabFolder createCTabFolder(Composite parent, int style) {
@@ -117,34 +109,17 @@ public abstract class AbstractEntityCTabEditor extends AbstractEntityEditor
 		folder.setSelection(item);
 	}
 
-	protected boolean checkControl(Control control) {
-		return control != null && !control.isDisposed();
-	}
-
-	/* EXPOSES TO CHILDREN CLASSES */
-//	protected PeopleUiService getPeopleUiService() {
-//		return peopleUiService;
-//	}
-
 	/* UTILITES */
-	protected TableViewerColumn createTableViewerColumn(TableViewer parent,
-			String name, int style, int width) {
-		TableViewerColumn tvc = new TableViewerColumn(parent, style);
-		final TableColumn column = tvc.getColumn();
-		column.setText(name);
-		column.setWidth(width);
-		column.setResizable(true);
-		return tvc;
-	}
-
-	/** Generic entity editors are normally directly the node to remove */
+	/**
+	 * Generally, generic entity editors displays the *business* node. Yet
+	 * sometimes parent node should also be removed on delete.
+	 */
 	@Override
 	protected Boolean deleteParentOnRemove() {
 		return false;
 	}
 
-	/* DEPENDENCY INJECTION */
-	// public void setPeopleUiService(PeopleUiService peopleUiService) {
-	// this.peopleUiService = peopleUiService;
-	// }
+	protected boolean checkControl(Control control) {
+		return control != null && !control.isDisposed();
+	}
 }

@@ -65,7 +65,7 @@ public class PartStateChanged implements IPartListener, IStartup {
 
 			IStatusLineManager manager = ((IEditorPart) editor).getEditorSite()
 					.getActionBars().getStatusLineManager();
-			manager.setMessage("Information for the status line");
+			manager.setMessage(editor.getlastUpdateMessage());
 
 		} else {// force button to be disabled if another part has the focus.
 			esp.setIsCurrentItemCheckedOut(true);
