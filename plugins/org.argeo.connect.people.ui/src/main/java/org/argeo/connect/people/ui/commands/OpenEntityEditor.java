@@ -71,9 +71,11 @@ public class OpenEntityEditor extends AbstractHandler {
 				eei = new EntityEditorInput(entity.getIdentifier());
 			}
 
-			PeopleUiPlugin.getDefault().getWorkbench()
-					.getActiveWorkbenchWindow().getActivePage()
-					.openEditor(eei, getEditorIdFromNode(entity));
+			String editorId = getEditorIdFromNode(entity);
+			if (editorId != null)
+				PeopleUiPlugin.getDefault().getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage()
+						.openEditor(eei, editorId);
 		} catch (PartInitException pie) {
 			throw new PeopleException(
 					"Unexpected PartInitException while opening entity editor",

@@ -22,7 +22,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
- * Opens a dialog to add a link between two entities, optionaly with some meta
+ * Opens a dialog to add a link between two entities, optionally with some meta
  * data.
  * 
  */

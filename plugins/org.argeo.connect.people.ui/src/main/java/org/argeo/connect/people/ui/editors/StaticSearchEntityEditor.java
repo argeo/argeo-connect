@@ -18,6 +18,7 @@ import org.argeo.connect.people.ui.composites.EntityTableComposite;
 import org.argeo.connect.people.ui.composites.PersonTableComposite;
 import org.argeo.connect.people.ui.editors.utils.SearchEntityEditorInput;
 import org.argeo.connect.people.ui.extracts.ITableProvider;
+import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.utils.CommandUtils;
@@ -47,7 +48,8 @@ public class StaticSearchEntityEditor extends EditorPart implements
 
 	/* DEPENDENCY INJECTION */
 	private Session session;
-
+	private String openEntityEditorCmdId = OpenEntityEditor.ID;
+	
 	// This page widgets
 	private ITableProvider currTableProvider;
 
@@ -55,8 +57,8 @@ public class StaticSearchEntityEditor extends EditorPart implements
 	 * Overwrite to provide a plugin specific open editor command and thus be
 	 * able to open plugin specific editors
 	 */
-	protected String getOpenEditorCommandId() {
-		return OpenEntityEditor.ID;
+	protected String getOpenEntityEditorCmdId() {
+		return openEntityEditorCmdId;
 	}
 
 	// Business Objects
@@ -98,11 +100,8 @@ public class StaticSearchEntityEditor extends EditorPart implements
 			table = tmpCmp;
 		}
 		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		viewer.addDoubleClickListener(new MyRowViewerDoubleClickListener(
-				entityType));
-		// createFilterPanel(parent);
-		// createListPart(parent);
-		// refreshFilteredList();
+		viewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
+				entityType, getOpenEntityEditorCmdId()));
 	}
 
 	/**
@@ -156,43 +155,13 @@ public class StaticSearchEntityEditor extends EditorPart implements
 		return false;
 	}
 
-	private class MyRowViewerDoubleClickListener implements
-			IDoubleClickListener {
-
-		private final String selectorName;
-
-		public MyRowViewerDoubleClickListener(String selectorName) {
-			this.selectorName = selectorName;
-		}
-
-		public void doubleClick(DoubleClickEvent event) {
-			if (event.getSelection() == null || event.getSelection().isEmpty())
-				return;
-			Object obj = ((IStructuredSelection) event.getSelection())
-					.getFirstElement();
-			try {
-				Node currNode;
-				if (obj instanceof Node)
-					currNode = (Node) obj;
-				else if (obj instanceof Row) {
-					Row curRow = (Row) obj;
-					currNode = curRow.getNode(selectorName);
-				} else
-					return;
-
-				String entityUid = CommonsJcrUtils.get(currNode,
-						PeopleNames.PEOPLE_UID);
-				CommandUtils.callCommand(getOpenEditorCommandId(),
-						OpenEntityEditor.PARAM_ENTITY_UID, entityUid);
-			} catch (RepositoryException re) {
-				throw new PeopleException("Unable to open editor for node", re);
-			}
-		}
-	}
-
 	/* DEPENDENCY INJECTION */
 	public void setRepository(Repository repository) {
 		session = CommonsJcrUtils.login(repository);
 	}
 
+	public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
+		this.openEntityEditorCmdId = openEntityEditorCmdId;
+	}
+	
 }

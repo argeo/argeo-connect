@@ -73,6 +73,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
+	private String openEntityEditorCmdId = OpenEntityEditor.ID;
 
 	/* CONSTANTS */
 	// length for short strings (typically tab names)
@@ -162,11 +163,11 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	}
 
 	/**
-	 * Overwrite to provide a plugin specific open editor command and thus be
-	 * able to open plugin specific editors
+	 * Exposes the id of the openEntityEditor command. By default it is
+	 * {@code OpenEntityEditor.ID} but might be changed by injection
 	 */
-	protected String getOpenEditorCommandId() {
-		return OpenEntityEditor.ID;
+	final protected String getOpenEntityEditorCmdId() {
+		return openEntityEditorCmdId;
 	}
 
 	/**
@@ -196,7 +197,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		};
 
 		AbstractFormPart editPart = new AbstractFormPart() {
-			public void refresh() { 
+			public void refresh() {
 				super.refresh();
 				// update display value
 				String roText = lastUpdateLP.getText(entity);
@@ -728,5 +729,9 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 
 	public void setRepository(Repository repository) {
 		this.repository = repository;
+	}
+
+	public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
+		this.openEntityEditorCmdId = openEntityEditorCmdId;
 	}
 }

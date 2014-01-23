@@ -26,7 +26,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 /** Command handler to set visible or open a People specific user editor. */
 public class OpenPeopleUserEditor extends AbstractHandler {
-	public final static String COMMAND_ID = PeopleUiPlugin.PLUGIN_ID
+	public final static String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".openPeopleUserEditor";
 	public final static String PARAM_USERNAME = "param.username";
 

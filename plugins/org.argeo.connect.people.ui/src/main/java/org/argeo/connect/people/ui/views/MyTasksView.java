@@ -55,6 +55,8 @@ public class MyTasksView extends ViewPart implements Refreshable {
 	// private PeopleService peopleService;
 	private Session session;
 	private ActivityService activityService;
+	private String openEntityEditorCmdId = OpenEntityEditor.ID;
+
 
 	private TableViewer tableViewer;
 
@@ -309,7 +311,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 	}
 
 	protected String getOpenEditorCommandId() {
-		return OpenEntityEditor.ID;
+		return openEntityEditorCmdId;
 	}
 
 	/* DEPENDENCY INJECTION */
@@ -319,6 +321,10 @@ public class MyTasksView extends ViewPart implements Refreshable {
 
 	public void setRepository(Repository repository) {
 		this.session = CommonsJcrUtils.login(repository);
+	}
+	
+	public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
+		this.openEntityEditorCmdId = openEntityEditorCmdId;
 	}
 
 }

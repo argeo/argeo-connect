@@ -115,7 +115,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				try {
 					if (obj instanceof Node) {
 						Node link = ((Node) obj).getParent().getParent();
-						CommandUtils.callCommand(getOpenEditorCommandId(),
+						CommandUtils.callCommand(getOpenEntityEditorCmdId(),
 								OpenEntityEditor.PARAM_ENTITY_UID,
 								CommonsJcrUtils.get(link,
 										PeopleNames.PEOPLE_UID));
@@ -134,7 +134,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		// Mailing list management
 		Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		contactTK.populateMailingListMembershipPanel(mlCmp, org, getOpenEditorCommandId());
+		contactTK.populateMailingListMembershipPanel(mlCmp, org, getOpenEntityEditorCmdId());
 
 		// Branche Management
 		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);

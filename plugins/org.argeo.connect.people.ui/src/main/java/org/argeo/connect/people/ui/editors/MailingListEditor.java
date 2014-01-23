@@ -80,7 +80,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 	private TableViewer membersViewer;
 
 	private Text filterTxt;
-	
+
 	@Override
 	protected void createToolkits() {
 	}
@@ -115,12 +115,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 
 		// Double click
 		PeopleJcrViewerDClickListener ndcl = new PeopleJcrViewerDClickListener(
-				PeopleTypes.PEOPLE_ENTITY) {
-			@Override
-			protected String getOpenEditorCommandId() {
-				return MailingListEditor.this.getOpenEditorCommandId();
-			}
-		};
+				PeopleTypes.PEOPLE_ENTITY, getOpenEntityEditorCmdId());
 		membersViewer.addDoubleClickListener(ndcl);
 	}
 
@@ -328,7 +323,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 				SWT.NONE, 180);
 		col.setLabelProvider(new HtmlJcrRowLabelProvider(
 				PeopleTypes.PEOPLE_ENTITY, Property.JCR_TITLE));
-	
+
 		// FIXME: does not work with virtual table
 		// col.getColumn().addSelectionListener(
 		// getSelectionAdapter(1, PropertyType.STRING,
@@ -419,11 +414,11 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
 			if (newInput == null)
 				return;
-			
+
 			ri = (RowIterator) newInput;
 			TableViewer viewer = (TableViewer) v;
 			buffer.clear();
-			
+
 			int i = 0;
 			while (ri.hasNext() && i < pageSize) {
 				buffer.add(ri.nextRow());
@@ -464,63 +459,6 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 		}
 
 	}
-
-	private SelectionAdapter getSelectionAdapter(final int index,
-			final int propertyType, final String selectorName,
-			final String propertyName, final RowViewerComparator comparator,
-			final TableViewer viewer) {
-		SelectionAdapter selectionAdapter = new SelectionAdapter() {
-			private static final long serialVersionUID = -3452356616673385039L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Table table = viewer.getTable();
-				comparator.setColumn(propertyType, selectorName, propertyName);
-				int dir = table.getSortDirection();
-				if (table.getSortColumn() == table.getColumn(index)) {
-					dir = dir == SWT.UP ? SWT.DOWN : SWT.UP;
-				} else {
-					dir = SWT.DOWN;
-				}
-				table.setSortDirection(dir);
-				table.setSortColumn(table.getColumn(index));
-				viewer.refresh();
-			}
-		};
-		return selectionAdapter;
-	}
-
-	// /**
-	// * Specific content provider for this Part
-	// */
-	// private class MyContentProvider implements IStructuredContentProvider {
-	// private static final long serialVersionUID = 1L;
-	// private String filter;
-	//
-	// public void dispose() {
-	// }
-	//
-	// /** Expects a filter text as a new input */
-	// public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
-	// {
-	// filter = (String) newInput;
-	// if (newInput != null)
-	// viewer.refresh();
-	// }
-	//
-	// public Object[] getElements(Object arg0) {
-	// // TODO support multiple node types.
-	// RowIterator ri = refreshFilteredList(filter);
-	// // FIXME will not work for big resultset
-	// Object[] result = new Object[(int) ri.getSize()];
-	// int i = 0;
-	// while (ri.hasNext()) {
-	// result[i] = ri.nextRow();
-	// i++;
-	// }
-	// return result;
-	// }
-	// }
 
 	// ///////////////////////
 	// HELPERS

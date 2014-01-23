@@ -28,12 +28,14 @@ public class CreateSimpleTask extends AbstractHandler {
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private ActivityService activityService;
+	private String openEntityEditorCmdId = OpenEntityEditor.ID;
+
 
 	/**
 	 * Overwrite to provide a plugin specific open editor command and thus be
 	 * able to open plugin specific editors
 	 */
-	protected String getOpenEditorCommandId() {
+	protected String getOpenEntityEditorCmdId() {
 		return OpenEntityEditor.ID;
 	}
 
@@ -57,7 +59,7 @@ public class CreateSimpleTask extends AbstractHandler {
 			JcrUtils.logoutQuietly(session);
 		}
 		if (uuid != null)
-			CommandUtils.callCommand(getOpenEditorCommandId(),
+			CommandUtils.callCommand(getOpenEntityEditorCmdId(),
 					OpenEntityEditor.PARAM_ENTITY_UID, uuid);
 		return null;
 	}
@@ -69,6 +71,10 @@ public class CreateSimpleTask extends AbstractHandler {
 
 	public void setPeopleService(PeopleService peopleService) {
 		this.activityService = peopleService.getActivityService();
+	}
+	
+	public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
+		this.openEntityEditorCmdId = openEntityEditorCmdId;
 	}
 
 }

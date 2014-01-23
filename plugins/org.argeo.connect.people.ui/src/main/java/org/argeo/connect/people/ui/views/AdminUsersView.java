@@ -141,7 +141,7 @@ public class AdminUsersView extends ViewPart implements ArgeoNames {
 				try {
 					String username = ((Node) obj).getProperty(ARGEO_USER_ID)
 							.getString();
-					String commandId = OpenPeopleUserEditor.COMMAND_ID;
+					String commandId = OpenPeopleUserEditor.ID;
 					String paramName = OpenPeopleUserEditor.PARAM_USERNAME;
 					CommandUtils.callCommand(commandId, paramName, username);
 				} catch (RepositoryException e) {

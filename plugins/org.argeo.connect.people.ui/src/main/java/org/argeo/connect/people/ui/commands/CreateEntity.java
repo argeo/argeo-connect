@@ -34,13 +34,11 @@ public class CreateEntity extends AbstractHandler {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
+	private String openEntityEditorCmdId = OpenEntityEditor.ID;
 
-	/**
-	 * Overwrite to provide a plugin specific open editor command and thus be
-	 * able to open plugin specific editors
-	 */
-	protected String getOpenEditorCommandId() {
-		return OpenEntityEditor.ID;
+
+	protected String getOpenEntityEditorCmdId() {
+		return openEntityEditorCmdId;
 	}
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
@@ -63,7 +61,7 @@ public class CreateEntity extends AbstractHandler {
 
 			session.save();
 
-			CommandUtils.callCommand(getOpenEditorCommandId(),
+			CommandUtils.callCommand(getOpenEntityEditorCmdId(),
 					OpenEntityEditor.PARAM_ENTITY_UID, uuid);
 		} catch (RepositoryException e) {
 			throw new PeopleException("unexpected JCR error while opening "
@@ -87,5 +85,9 @@ public class CreateEntity extends AbstractHandler {
 	/* DEPENDENCY INJECTION */
 	public void setRepository(Repository repository) {
 		this.repository = repository;
+	}
+	
+	public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
+		this.openEntityEditorCmdId = openEntityEditorCmdId;
 	}
 }

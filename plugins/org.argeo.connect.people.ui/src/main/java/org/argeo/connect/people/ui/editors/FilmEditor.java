@@ -147,7 +147,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 				// entities on double click
 				if (obj instanceof Node) {
 					Node link = (Node) obj;
-					CommandUtils.callCommand(getOpenEditorCommandId(),
+					CommandUtils.callCommand(getOpenEntityEditorCmdId(),
 							OpenEntityEditor.PARAM_ENTITY_UID, CommonsJcrUtils
 									.get(link, PeopleNames.PEOPLE_REF_UID));
 				}

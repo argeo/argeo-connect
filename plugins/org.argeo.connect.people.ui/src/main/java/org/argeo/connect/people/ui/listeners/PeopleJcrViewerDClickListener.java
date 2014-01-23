@@ -20,25 +20,21 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 public class PeopleJcrViewerDClickListener implements IDoubleClickListener {
 
 	private final String selectorName;
+	private final String openEntityEditorCmdId;
 
-	public PeopleJcrViewerDClickListener(String selectorName) {
+	public PeopleJcrViewerDClickListener(String selectorName,
+			String openEntityEditorCmdId) {
 		this.selectorName = selectorName;
+		this.openEntityEditorCmdId = openEntityEditorCmdId;
 	}
 
 	/**
 	 * Double click listener for NODES only, to manage JCR row use
 	 * PeopleJcrViewerDClickListener(String selectorName)
 	 **/
-	public PeopleJcrViewerDClickListener() {
+	public PeopleJcrViewerDClickListener(String openEntityEditorCmdId) {
 		selectorName = null;
-	}
-
-	/**
-	 * Overwrite to provide a plugin specific open editor command and thus be
-	 * able to open plugin specific editors
-	 */
-	protected String getOpenEditorCommandId() {
-		return OpenEntityEditor.ID;
+		this.openEntityEditorCmdId = openEntityEditorCmdId;
 	}
 
 	public void doubleClick(DoubleClickEvent event) {
@@ -48,7 +44,7 @@ public class PeopleJcrViewerDClickListener implements IDoubleClickListener {
 				.getFirstElement();
 		Node currNode = null;
 		try {
-			if (obj instanceof Row) {
+			if (obj instanceof Row && selectorName != null) {
 				Row curRow = (Row) obj;
 				currNode = curRow.getNode(selectorName);
 			} else if (obj instanceof Node)
@@ -60,11 +56,11 @@ public class PeopleJcrViewerDClickListener implements IDoubleClickListener {
 						PeopleNames.PEOPLE_UID);
 
 				if (CommonsJcrUtils.isEmptyString(uid))
-					CommandUtils.callCommand(getOpenEditorCommandId(),
+					CommandUtils.callCommand(openEntityEditorCmdId,
 							OpenEntityEditor.PARAM_JCR_ID,
 							currNode.getIdentifier());
 				else
-					CommandUtils.callCommand(getOpenEditorCommandId(),
+					CommandUtils.callCommand(openEntityEditorCmdId,
 							OpenEntityEditor.PARAM_ENTITY_UID, uid);
 			}
 		} catch (RepositoryException re) {

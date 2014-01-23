@@ -149,7 +149,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
 				PeopleUiConstants.PANEL_ACTIVITY_LOG, tooltip);
-		activityTK.populateActivityLogPanel(innerPannel, person, getOpenEditorCommandId());
+		activityTK.populateActivityLogPanel(innerPannel, person, getOpenEntityEditorCmdId());
 
 		// Jobs panel
 		tooltip = "Organisations linked to "
@@ -166,7 +166,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				// entities on double click
 				if (obj instanceof Node) {
 					Node link = (Node) obj;
-					CommandUtils.callCommand(getOpenEditorCommandId(),
+					CommandUtils.callCommand(getOpenEntityEditorCmdId(),
 							OpenEntityEditor.PARAM_ENTITY_UID, CommonsJcrUtils
 									.get(link, PeopleNames.PEOPLE_REF_UID));
 				}
@@ -189,7 +189,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				try {
 					if (obj instanceof Node) {
 						Node link = ((Node) obj).getParent().getParent();
-						CommandUtils.callCommand(getOpenEditorCommandId(),
+						CommandUtils.callCommand(getOpenEntityEditorCmdId(),
 								OpenEntityEditor.PARAM_ENTITY_UID,
 								CommonsJcrUtils.get(link,
 										PeopleNames.PEOPLE_UID));
@@ -472,7 +472,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		contactTK.populateMailingListMembershipPanel(mlCmp, person,
-				getOpenEditorCommandId());
+				getOpenEntityEditorCmdId());
 
 		// Tag Management
 		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);

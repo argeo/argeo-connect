@@ -15,7 +15,6 @@
  */
 package org.argeo.connect.people.ui.views;
 
-import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.Session;
 import javax.jcr.observation.Event;
@@ -31,19 +30,17 @@ import org.argeo.connect.people.ui.utils.Refreshable;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.ArgeoJcrConstants;
 import org.argeo.jcr.JcrUtils;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
 
-/** List all users with filter. */
+/** Display a filtered table with user groups. */
 public class UserGroupsView extends ViewPart implements Refreshable {
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".userGroupsView";
+	private String openEntityEditorCmdId = OpenEntityEditor.ID;
 
 	private UserGroupTableComposite userTableCmp;
 	private Session session;
@@ -61,7 +58,7 @@ public class UserGroupsView extends ViewPart implements Refreshable {
 
 		// Configure
 		userTableCmp.getTableViewer().addDoubleClickListener(
-				new PeopleJcrViewerDClickListener());
+				new PeopleJcrViewerDClickListener(getOpenEntityEditorCmdId()));
 		getViewSite().setSelectionProvider(userTableCmp.getTableViewer());
 
 		// Add listener to refresh the list when something changes
@@ -124,28 +121,6 @@ public class UserGroupsView extends ViewPart implements Refreshable {
 		}
 	}
 
-	class ViewDoubleClickListener implements IDoubleClickListener {
-		public void doubleClick(DoubleClickEvent evt) {
-			if (evt.getSelection().isEmpty())
-				return;
-
-			Object obj = ((IStructuredSelection) evt.getSelection())
-					.getFirstElement();
-			if (obj instanceof Node) {
-				// try {
-				// TODO open corresponding editor
-				// String username = ((Node) obj).getProperty(ARGEO_USER_ID)
-				// .getString();
-				// String commandId = OpenArgeoUserEditor.COMMAND_ID;
-				// String paramName = OpenArgeoUserEditor.PARAM_USERNAME;
-				// CommandUtils.callCommand(commandId, paramName, username);
-				// } catch (RepositoryException e) {
-				// throw new ArgeoException("Cannot open user editor", e);
-				// }
-			}
-		}
-	}
-
 	/**
 	 * Overwrite to provide an application specific base path for the user
 	 * groups
@@ -156,11 +131,17 @@ public class UserGroupsView extends ViewPart implements Refreshable {
 		return ArgeoJcrConstants.PEOPLE_BASE_PATH;
 	}
 
-	protected String getOpenEditorCommandId() {
-		return OpenEntityEditor.ID;
+	protected String getOpenEntityEditorCmdId() {
+		return openEntityEditorCmdId;
 	}
+
+	/** DEPENDENCY INJECTION */ 
 	
 	public void setRepository(Repository repository) {
 		this.session = CommonsJcrUtils.login(repository);
+	}
+	
+	public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
+		this.openEntityEditorCmdId = openEntityEditorCmdId;
 	}
 }
