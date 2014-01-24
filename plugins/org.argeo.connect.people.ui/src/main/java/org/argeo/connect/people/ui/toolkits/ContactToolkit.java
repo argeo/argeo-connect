@@ -265,37 +265,39 @@ public class ContactToolkit {
 	}
 
 	public void createContactPanelWithNotes(Composite parent, final Node entity) {
-		parent.setLayout(new GridLayout(2, true));
+		parent.setLayout(new GridLayout());
 
-		// Scrolled list of existing contacts
-		ScrolledComposite contactListCmp = new ScrolledComposite(parent,
-				SWT.NO_FOCUS | SWT.H_SCROLL | SWT.V_SCROLL);
-		contactListCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				true));
-		// contactListCmp.setMinSize(350, 100);
-		contactListCmp.setExpandHorizontal(false);
-		contactListCmp.setExpandVertical(false);
-		contactListCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-		Composite innerCmp = new Composite(contactListCmp, SWT.NO_FOCUS);
-		innerCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		populateDisplayContactPanel(innerCmp, entity);
-		contactListCmp.setContent(innerCmp);
-
-		// notes about current contact
-		Composite rightCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, false, true);
-		gd.widthHint = 200;
-		gd.minimumWidth = 200;
-		rightCmp.setLayoutData(gd);
-		populateNotePanel(rightCmp, entity);
+		// Add a scrolled conatiner
+		// ScrolledComposite contactListCmp = new ScrolledComposite(parent,
+		// SWT.NO_FOCUS | SWT.H_SCROLL | SWT.V_SCROLL);
+		// contactListCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+		// true));
+		// // contactListCmp.setMinSize(350, 100);
+		// contactListCmp.setExpandHorizontal(false);
+		// contactListCmp.setExpandVertical(false);
+		// contactListCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		// Composite innerCmp = new Composite(contactListCmp, SWT.NO_FOCUS);
+		// innerCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		// populateDisplayContactPanel(innerCmp, entity);
+		// contactListCmp.setContent(innerCmp);
 
 		// Add contact tool bar.
-		final Composite newContactCmp = toolkit.createComposite(parent,
-				SWT.NO_FOCUS);
-		gd = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
-		gd.horizontalSpan = 2;
+		Composite newContactCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		newContactCmp.setLayoutData(gd);
 		populateAddContactPanel(newContactCmp, entity);
+
+		Composite contactListCmp = new Composite(parent, SWT.NO_FOCUS);
+		contactListCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+				true));
+		populateDisplayContactPanel(contactListCmp, entity);
+
+		// notes about current contact
+		Composite noteCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		gd = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
+		gd.minimumHeight = 60;
+		noteCmp.setLayoutData(gd);
+		populateNotePanel(noteCmp, entity);
 
 		parent.layout();
 	}
@@ -382,7 +384,7 @@ public class ContactToolkit {
 	}
 
 	public void populateNotePanel(final Composite parent, final Node entity) {
-		parent.setLayout(new GridLayout());
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
 		parent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		toolkit.createLabel(parent, "Notes: ", SWT.NONE);

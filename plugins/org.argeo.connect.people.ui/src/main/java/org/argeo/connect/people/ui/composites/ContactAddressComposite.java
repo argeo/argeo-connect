@@ -127,10 +127,10 @@ public class ContactAddressComposite extends Composite {
 						throw new PeopleException(
 								"unexpected error while refreshing", e);
 				}
-				Composite cmp = parent.getParent(); // Scroll cmp body
-				cmp = parent.getParent(); // the scollable composite
-				cmp = cmp.getParent(); // the fullTab
-				cmp.pack(true);
+				// Removed scroll cmp
+				// Composite cmp = parent.getParent(); // Scroll cmp body
+				// cmp = parent.getParent(); // the scollable composite
+				Composite cmp = parent.getParent(); // the fullTab
 				cmp.layout(true);
 			}
 		};

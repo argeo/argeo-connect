@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Control;
  * is bound to it. It provides a header with some meta informations and a body
  * to add tabs with further details.
  */
-public abstract class AbstractEntityCTabEditor extends AbstractPeopleEditor
+public abstract class AbstractEntityCTabEditor extends AbstractPeopleWithImgEditor
 		implements IVersionedItemEditor {
 	// private final static Log log = LogFactory
 	// .getLog(AbstractEntityEditor.class);
@@ -30,22 +30,8 @@ public abstract class AbstractEntityCTabEditor extends AbstractPeopleEditor
 	/** Overwrite to populate the CTabFolder */
 	protected abstract void populateTabFolder(CTabFolder tabFolder);
 
-	/* CONTENT CREATION */
-	// protected void createMainLayout(Composite parent) {
-	// parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-	//
-	// Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS
-	// | SWT.NO_SCROLL | SWT.NO_TRIM);
-	// header.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-	// header.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-	// populateHeader(header);
-	//
-	// // Create a body that is a CTabFolder
-	// createBodyPart(parent);
-	// }
-
 	/**
-	 * Children class should not override this class or rather directly use the
+	 * Children class must not override this class or rather directly use the
 	 * AbstractEntityEditor
 	 */
 	@Override

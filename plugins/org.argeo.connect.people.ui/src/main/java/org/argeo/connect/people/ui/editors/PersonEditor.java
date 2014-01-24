@@ -79,6 +79,9 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 	protected void updatePartName() {
 		String shortName = CommonsJcrUtils.get(getNode(),
 				PeopleNames.PEOPLE_LAST_NAME);
+		if (CommonsJcrUtils.isEmptyString(shortName)) {
+			shortName = CommonsJcrUtils.get(getNode(), Property.JCR_TITLE);
+		}
 		if (CommonsJcrUtils.checkNotEmptyString(shortName)) {
 			if (shortName.length() > SHORT_NAME_LENGHT)
 				shortName = shortName.substring(0, SHORT_NAME_LENGHT - 1)
