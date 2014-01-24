@@ -27,9 +27,7 @@ import javax.jcr.query.Row;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.ContactJcrUtils;
-import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.PersonJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -63,15 +61,14 @@ public class AddMLMembershipDialog extends AddReferenceDialog {
 	protected boolean performAddition(List<Row> selectedItems) {
 		StringBuilder duplicates = new StringBuilder();
 
-		String defaultMail = PeopleJcrUtils.getPrimaryContactValue(
-				referencedNode, PeopleTypes.PEOPLE_EMAIL);
-
-		if (CommonsJcrUtils.isEmptyString(defaultMail)) {
-			String msg = "Current person has no defined primary mail adress, "
-					+ "he could not be added to any mailing list";
-			MessageDialog.openError(getShell(), "Non valid information", msg);
-			return true;
-		}
+		// String defaultMail = PeopleJcrUtils.getPrimaryContactValue(
+		// referencedNode, PeopleTypes.PEOPLE_EMAIL);
+		// if (CommonsJcrUtils.isEmptyString(defaultMail)) {
+		// String msg = "Current person has no defined primary mail adress, "
+		// + "he could not be added to any mailing list";
+		// MessageDialog.openError(getShell(), "Non valid information", msg);
+		// return true;
+		// }
 
 		try {
 			for (Row mlRow : selectedItems) {
@@ -83,7 +80,8 @@ public class AddMLMembershipDialog extends AddReferenceDialog {
 					duplicates
 							.append(PersonJcrUtils
 									.getPersonDisplayName(referencedNode))
-							.append("(" + defaultMail + "); ");
+							.append("; ");
+							// .append("(" + defaultMail + "); ");
 				} else {
 					ContactJcrUtils.addToMailingList(mailingList,
 							referencedNode);

@@ -1,6 +1,5 @@
 package org.argeo.connect.people.ui.composites;
 
-import javax.jcr.InvalidItemStateException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
@@ -8,12 +7,10 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.commands.ForceRefresh;
 import org.argeo.connect.people.ui.providers.PeopleImageProvider;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
-import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -22,7 +19,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
@@ -33,23 +29,21 @@ public class ContactButtonsComposite extends Composite {
 	private static final long serialVersionUID = 2331713954300845292L;
 
 	private final Node contactNode;
+	private final boolean isCheckedOut;
 	private final Node parentVersionableNode;
-	// private final FormToolkit toolkit;
-	private final IManagedForm form;
+	private final AbstractFormPart formPart;
 
 	private final PeopleImageProvider imageProvider = new PeopleImageProvider();
 
-	// Don't forget to unregister on dispose
-	private AbstractFormPart formPart;
-
 	public ContactButtonsComposite(Composite parent, int style,
-			FormToolkit toolkit, IManagedForm form, Node contactNode,
+			FormToolkit toolkit, AbstractFormPart formPart, Node contactNode,
 			Node parentVersionableNode) {
 		super(parent, style);
 		this.contactNode = contactNode;
-		// this.toolkit = toolkit;
-		this.form = form;
 		this.parentVersionableNode = parentVersionableNode;
+		this.formPart = formPart;
+		this.isCheckedOut = CommonsJcrUtils
+				.isNodeCheckedOutByMe(parentVersionableNode);
 		populate();
 	}
 
@@ -60,48 +54,20 @@ public class ContactButtonsComposite extends Composite {
 		buttCmp.setLayout(gl);
 
 		// final Button categoryBtn =
-		createCategoryButton(buttCmp, contactNode);
-		final Button primaryBtn = createPrimaryButton(buttCmp);
-		final Button deleteBtn = createDeleteButton(buttCmp);
+		createCategoryButton(buttCmp);
 
-		formPart = new AbstractFormPart() {
-			public void refresh() {
-				super.refresh();
-				try {
-					// refresh buttons
-					boolean isPrimary = (contactNode
-							.hasProperty(PeopleNames.PEOPLE_IS_PRIMARY) && contactNode
-							.getProperty(PeopleNames.PEOPLE_IS_PRIMARY)
-							.getBoolean());
-					if (isPrimary)
-						primaryBtn.setImage(PeopleImages.PRIMARY_BTN);
-					else
-						primaryBtn.setImage(PeopleImages.PRIMARY_NOT_BTN);
-					boolean checkedOut = CommonsJcrUtils
-							.isNodeCheckedOutByMe(parentVersionableNode);
-					primaryBtn.setEnabled(checkedOut);
-					primaryBtn.setGrayed(false);
-					deleteBtn.setVisible(checkedOut);
-				} catch (Exception e) {
-					if (e instanceof InvalidItemStateException) {
-						// TODO clean: this exception normally means node
-						// has already been removed.
-					} else
-						throw new PeopleException(
-								"unexpected error while refreshing", e);
-				}
-			}
-		};
+		// Primary management
+		Button primaryBtn = createPrimaryButton(buttCmp);
+		configurePrimaryButton(primaryBtn);
 
-		configureDeleteButton(deleteBtn, contactNode, parentVersionableNode);
-		configurePrimaryButton(primaryBtn, contactNode, parentVersionableNode);
-		// To force update of primary button on creation
-		formPart.refresh();
-		formPart.initialize(form);
-		form.addPart(formPart);
+		// Deletion
+		if (isCheckedOut) {
+			Button deleteBtn = createDeleteButton(buttCmp);
+			configureDeleteButton(deleteBtn);
+		}
 	}
 
-	private Button createCategoryButton(Composite parent, Node contactNode) {
+	private Button createCategoryButton(Composite parent) {
 		Button btn = new Button(parent, SWT.FLAT);
 		btn.setData(PeopleUiConstants.CUSTOM_VARIANT,
 				PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
@@ -145,20 +111,35 @@ public class ContactButtonsComposite extends Composite {
 	}
 
 	private Button createPrimaryButton(Composite parent) {
-		Button btn = new Button(parent, SWT.FLAT);
-		btn.setData(PeopleUiConstants.CUSTOM_VARIANT,
-				PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
-		btn.setImage(PeopleImages.PRIMARY_NOT_BTN);
-		GridData gd = new GridData();
-		gd.widthHint = 16;
-		gd.heightHint = 16;
-		btn.setLayoutData(gd);
-		return btn;
+		try {
+			Button btn = new Button(parent, SWT.FLAT);
+			btn.setData(PeopleUiConstants.CUSTOM_VARIANT,
+					PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+
+			// update image
+			boolean isPrimary = (contactNode
+					.hasProperty(PeopleNames.PEOPLE_IS_PRIMARY) && contactNode
+					.getProperty(PeopleNames.PEOPLE_IS_PRIMARY).getBoolean());
+			if (isPrimary)
+				btn.setImage(PeopleImages.PRIMARY_BTN);
+			else
+				btn.setImage(PeopleImages.PRIMARY_NOT_BTN);
+			btn.setEnabled(isCheckedOut);
+			// primaryBtn.setGrayed(false);
+
+			GridData gd = new GridData();
+			gd.widthHint = 16;
+			gd.heightHint = 16;
+			btn.setLayoutData(gd);
+			return btn;
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Unable to create primary button for node " + contactNode,
+					re);
+		}
 	}
 
-	private void configureDeleteButton(final Button btn, final Node node,
-			final Node parNode) { // , final AbstractFormPart
-									// genericContactFormPart
+	private void configureDeleteButton(final Button btn) {
 		btn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
@@ -166,21 +147,14 @@ public class ContactButtonsComposite extends Composite {
 			public void widgetSelected(final SelectionEvent event) {
 				try {
 					// update primary cache
-					if (PeopleJcrUtils.isPrimary(parNode, node))
-						PeopleJcrUtils.updatePrimaryCache(parNode, node, false);
+					if (PeopleJcrUtils.isPrimary(parentVersionableNode,
+							contactNode))
+						PeopleJcrUtils.updatePrimaryCache(
+								parentVersionableNode, contactNode, false);
 
-					boolean wasCheckedOut = CommonsJcrUtils
-							.isNodeCheckedOutByMe(parNode);
-
-					if (!wasCheckedOut)
-						CommonsJcrUtils.checkout(parNode);
-					node.remove();
-
-					if (wasCheckedOut)
-						formPart.markDirty();
-					else
-						CommonsJcrUtils.saveAndCheckin(parNode);
-					CommandUtils.callCommand(ForceRefresh.ID);
+					contactNode.remove();
+					formPart.markDirty();
+					formPart.refresh();
 				} catch (RepositoryException e) {
 					throw new PeopleException("unable to initialise deletion",
 							e);
@@ -189,29 +163,19 @@ public class ContactButtonsComposite extends Composite {
 		});
 	}
 
-	private void configurePrimaryButton(final Button btn, final Node node,
-			final Node parNode) {
+	private void configurePrimaryButton(final Button btn) {
 		btn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
-				boolean wasCheckedOut = CommonsJcrUtils
-						.isNodeCheckedOutByMe(parNode);
-				if (!wasCheckedOut)
-					CommonsJcrUtils.checkout(parNode);
-
-				boolean hasChanged = PeopleJcrUtils
-						.markAsPrimary(parNode, node);
+				boolean hasChanged = PeopleJcrUtils.markAsPrimary(
+						parentVersionableNode, contactNode);
 
 				if (hasChanged) {
-					if (wasCheckedOut)
-						formPart.markDirty();
-					else
-						CommonsJcrUtils.saveAndCheckin(parNode);
-					CommandUtils.callCommand(ForceRefresh.ID);
-				} else if (!wasCheckedOut)
-					CommonsJcrUtils.cancelAndCheckin(parNode);
+					formPart.markDirty();
+					formPart.refresh();
+				}
 			}
 		});
 	}
@@ -221,16 +185,4 @@ public class ContactButtonsComposite extends Composite {
 		return true;
 	}
 
-	protected void disposePart(AbstractFormPart part) {
-		if (part != null) {
-			form.removePart(part);
-			part.dispose();
-		}
-	}
-
-	@Override
-	public void dispose() {
-		disposePart(formPart);
-		super.dispose();
-	}
 }

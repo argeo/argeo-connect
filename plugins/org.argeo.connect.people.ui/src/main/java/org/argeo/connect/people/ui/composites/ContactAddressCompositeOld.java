@@ -1,5 +1,6 @@
 package org.argeo.connect.people.ui.composites;
 
+import javax.jcr.InvalidItemStateException;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
@@ -22,6 +23,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -32,6 +34,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
+import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
@@ -39,29 +42,32 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * address information.
  * 
  */
-public class ContactAddressComposite extends Composite {
+public class ContactAddressCompositeOld extends Composite {
 
 	private static final long serialVersionUID = 4475049051062923873L;
 
 	private final PeopleService peopleService;
 	private final Node contactNode;
 	private final Node parentVersionableNode;
-	private final AbstractFormPart formPart;
 	private final FormToolkit toolkit;
-	private final boolean isCheckedOut;
+	private final IManagedForm form;
 
-	public ContactAddressComposite(Composite parent, int style,
-			FormToolkit toolkit, AbstractFormPart formPart,
+	// Don't forget to unregister on dispose
+	private AbstractFormPart formPart;
+	private AbstractFormPart roFormPart;
+	private AbstractFormPart editFormPart;
+
+	public ContactAddressCompositeOld(Composite parent, int style,
+			FormToolkit toolkit, IManagedForm form,
 			PeopleService peopleService, Node contactNode,
 			Node parentVersionableNode) {
 		super(parent, style);
 		this.peopleService = peopleService;
 		this.contactNode = contactNode;
 		this.toolkit = toolkit;
-		this.formPart = formPart;
+		this.form = form;
 		this.parentVersionableNode = parentVersionableNode;
-		this.isCheckedOut = CommonsJcrUtils
-				.isNodeCheckedOutByMe(parentVersionableNode);
+
 		populate();
 	}
 
@@ -71,19 +77,67 @@ public class ContactAddressComposite extends Composite {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
 
 		// BUTTONS
-		Composite buttCmp = new ContactButtonsComposite(parent, SWT.NONE,
-				toolkit, formPart, contactNode, parentVersionableNode);
+		Composite buttCmp = new ContactButtonsCompositeOld(parent, SWT.NONE,
+				toolkit, form, contactNode, parentVersionableNode);
 		toolkit.adapt(buttCmp, false, false);
 		buttCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
 		// DATA
 		Composite dataCmp = toolkit.createComposite(parent);
 		dataCmp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		dataCmp.setLayout(new FormLayout());
+		// READ ONLY
+		final Composite readOnlyPanel = toolkit.createComposite(dataCmp,
+				SWT.NO_FOCUS);
+		PeopleUiUtils.setSwitchingFormData(readOnlyPanel);
+		populateReadOnlyPanel(readOnlyPanel);
 
-		if (!isCheckedOut) // READ ONLY
-			populateReadOnlyPanel(dataCmp);
-		else
-			populateEditPanel(dataCmp);
+		// EDIT
+		final Composite editPanel = toolkit.createComposite(dataCmp,
+				SWT.NO_FOCUS);
+		PeopleUiUtils.setSwitchingFormData(editPanel);
+		populateEditPanel(editPanel);
+
+		formPart = new AbstractFormPart() {
+			public void refresh() {
+				super.refresh();
+				try {
+					// Workaround: form part list has already been retrieved
+					// when the Contact composite is disposed
+					if (editPanel.isDisposed())
+						return;
+
+					boolean checkedOut = CommonsJcrUtils
+							.isNodeCheckedOutByMe(parentVersionableNode);
+
+					// Manage switch
+					editPanel.pack(true);
+					editPanel.setVisible(checkedOut);
+					readOnlyPanel.setVisible(!checkedOut);
+					if (checkedOut) {
+						editPanel.moveAbove(readOnlyPanel);
+					} else {
+						editPanel.moveBelow(readOnlyPanel);
+					}
+				} catch (Exception e) {
+					if (e instanceof InvalidItemStateException) {
+						// TODO clean: this exception normally means node
+						// has already been removed.
+					} else
+						throw new PeopleException(
+								"unexpected error while refreshing", e);
+				}
+				// Removed scroll cmp
+				// Composite cmp = parent.getParent(); // Scroll cmp body
+				// cmp = parent.getParent(); // the scollable composite
+				Composite cmp = parent.getParent(); // the fullTab
+				cmp.layout(true);
+			}
+		};
+
+		formPart.refresh();
+		formPart.initialize(form);
+		form.addPart(formPart);
 	}
 
 	protected void populateReadOnlyPanel(final Composite readOnlyPanel) {
@@ -92,29 +146,74 @@ public class ContactAddressComposite extends Composite {
 		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
 				SWT.WRAP);
 		readOnlyInfoLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
-		String addressHtml = "";
-		if (CommonsJcrUtils.isNodeType(contactNode,
-				PeopleTypes.PEOPLE_CONTACT_REF)) {
-			Node referencedEntity = peopleService.getEntityByUid(
-					CommonsJcrUtils.getSession(contactNode), CommonsJcrUtils
-							.get(contactNode, PeopleNames.PEOPLE_REF_UID));
-			addressHtml = PeopleHtmlUtils.getWorkAddressDisplaySnippet(
-					contactNode, referencedEntity);
-		} else
-			addressHtml = PeopleHtmlUtils.getContactDisplaySnippet(contactNode,
-					parentVersionableNode);
-		readOnlyInfoLbl.setText(addressHtml);
+
+		roFormPart = new AbstractFormPart() {
+			public void refresh() {
+				super.refresh();
+				String addressHtml = "";
+				if (CommonsJcrUtils.nodeStillExists(contactNode)
+						&& !CommonsJcrUtils
+								.isNodeCheckedOutByMe(parentVersionableNode)) {
+					if (CommonsJcrUtils.isNodeType(contactNode,
+							PeopleTypes.PEOPLE_CONTACT_REF)) {
+
+						Node referencedEntity = peopleService.getEntityByUid(
+								CommonsJcrUtils.getSession(contactNode),
+								CommonsJcrUtils.get(contactNode,
+										PeopleNames.PEOPLE_REF_UID));
+						addressHtml = PeopleHtmlUtils
+								.getWorkAddressDisplaySnippet(contactNode,
+										referencedEntity);
+					} else
+						addressHtml = PeopleHtmlUtils.getContactDisplaySnippet(
+								contactNode, parentVersionableNode);
+					readOnlyInfoLbl.setText(addressHtml);
+					readOnlyInfoLbl.pack(true);
+					readOnlyPanel.pack(true);
+				}
+			}
+		};
+
+		roFormPart.refresh();
+		roFormPart.initialize(form);
+		form.addPart(roFormPart);
 	}
 
-	protected void populateEditPanel(Composite parent) {
+	protected void populateEditPanel(final Composite parent) {
 		RowLayout rl = new RowLayout(SWT.WRAP);
 		rl.type = SWT.HORIZONTAL;
 		parent.setLayout(rl);
-		if (CommonsJcrUtils.isNodeType(contactNode,
-				PeopleTypes.PEOPLE_CONTACT_REF))
-			populateWorkAdresseCmp(parent, contactNode);
-		else
-			populateAdresseCmp(parent, contactNode);
+
+		editFormPart = new AbstractFormPart() {
+
+			@Override
+			public void commit(boolean onSave) {
+				if (onSave)
+					PeopleJcrUtils.updateDisplayAddress(contactNode);
+				super.commit(onSave);
+			}
+
+			public void refresh() {
+				super.refresh();
+				if (CommonsJcrUtils.nodeStillExists(contactNode)) {
+					for (Control control : parent.getChildren()) {
+						control.dispose();
+					}
+					if (!CommonsJcrUtils.isNodeCheckedOutByMe(contactNode))
+						return;
+
+					if (CommonsJcrUtils.isNodeType(contactNode,
+							PeopleTypes.PEOPLE_CONTACT_REF))
+						populateWorkAdresseCmp(parent, contactNode);
+					else
+						populateAdresseCmp(parent, contactNode);
+				}
+			}
+		};
+
+		editFormPart.refresh();
+		editFormPart.initialize(form);
+		form.addPart(editFormPart);
 	}
 
 	private void populateWorkAdresseCmp(Composite parent, final Node contactNode) {
@@ -159,12 +258,14 @@ public class ContactAddressComposite extends Composite {
 			}
 
 			// Listeners
-			PeopleUiUtils.addTxtModifyListener(formPart, valueTxt, contactNode,
-					PeopleNames.PEOPLE_CONTACT_VALUE, PropertyType.STRING);
-			PeopleUiUtils.addTxtModifyListener(formPart, labelTxt, contactNode,
-					PeopleNames.PEOPLE_CONTACT_LABEL, PropertyType.STRING);
+			PeopleUiUtils.addTxtModifyListener(editFormPart, valueTxt,
+					contactNode, PeopleNames.PEOPLE_CONTACT_VALUE,
+					PropertyType.STRING);
+			PeopleUiUtils.addTxtModifyListener(editFormPart, labelTxt,
+					contactNode, PeopleNames.PEOPLE_CONTACT_LABEL,
+					PropertyType.STRING);
 			if (catCmb != null)
-				PeopleUiUtils.addComboSelectionListener(formPart, catCmb,
+				PeopleUiUtils.addComboSelectionListener(editFormPart, catCmb,
 						contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY,
 						PropertyType.STRING);
 
@@ -183,7 +284,7 @@ public class ContactAddressComposite extends Composite {
 						if (JcrUiUtils.setJcrProperty(contactNode,
 								PeopleNames.PEOPLE_REF_UID,
 								PropertyType.STRING, uid))
-							formPart.markDirty();
+							editFormPart.markDirty();
 					}
 				}
 			});
@@ -238,31 +339,46 @@ public class ContactAddressComposite extends Composite {
 					PeopleNames.PEOPLE_GEOPOINT, "Geo point");
 
 			// add listeners
-			addAddressTxtModifyListener(formPart, streetTxt, contactNode,
+			addAddressTxtModifyListener(editFormPart, streetTxt, contactNode,
 					PeopleNames.PEOPLE_STREET, PropertyType.STRING);
-			addAddressTxtModifyListener(formPart, street2Txt, contactNode,
+			addAddressTxtModifyListener(editFormPart, street2Txt, contactNode,
 					PeopleNames.PEOPLE_STREET_COMPLEMENT, PropertyType.STRING);
-			addAddressTxtModifyListener(formPart, zipTxt, contactNode,
+			addAddressTxtModifyListener(editFormPart, zipTxt, contactNode,
 					PeopleNames.PEOPLE_ZIP_CODE, PropertyType.STRING);
-			addAddressTxtModifyListener(formPart, cityTxt, contactNode,
+			addAddressTxtModifyListener(editFormPart, cityTxt, contactNode,
 					PeopleNames.PEOPLE_CITY, PropertyType.STRING);
-			addAddressTxtModifyListener(formPart, stateTxt, contactNode,
+			addAddressTxtModifyListener(editFormPart, stateTxt, contactNode,
 					PeopleNames.PEOPLE_STATE, PropertyType.STRING);
-			addAddressTxtModifyListener(formPart, countryTxt, contactNode,
+			addAddressTxtModifyListener(editFormPart, countryTxt, contactNode,
 					PeopleNames.PEOPLE_COUNTRY, PropertyType.STRING);
-			PeopleUiUtils.addTxtModifyListener(formPart, geoPointTxt,
+			PeopleUiUtils.addTxtModifyListener(editFormPart, geoPointTxt,
 					contactNode, PeopleNames.PEOPLE_GEOPOINT,
 					PropertyType.STRING);
 		}
-		// parent.pack(true);
-		// parent.layout();
-		// parent = parent.getParent(); // the switching panel
-		// parent = parent.getParent(); // One line of contacts
-		// parent = parent.getParent(); // body for scrollable composite
-		// parent = parent.getParent(); // the scollable composite
-		// parent = parent.getParent(); // the fullTab
-		// parent.pack(true);
-		// parent.layout();
+		parent.pack(true);
+		parent.layout();
+		parent = parent.getParent(); // the switching panel
+		parent = parent.getParent(); // One line of contacts
+		parent = parent.getParent(); // body for scrollable composite
+		parent = parent.getParent(); // the scollable composite
+		parent = parent.getParent(); // the fullTab
+		parent.pack(true);
+		parent.layout();
+	}
+
+	protected void disposePart(AbstractFormPart part) {
+		if (part != null) {
+			form.removePart(part);
+			part.dispose();
+		}
+	}
+
+	@Override
+	public void dispose() {
+		disposePart(formPart);
+		disposePart(editFormPart);
+		disposePart(roFormPart);
+		super.dispose();
 	}
 
 	private void addAddressTxtModifyListener(final AbstractFormPart part,

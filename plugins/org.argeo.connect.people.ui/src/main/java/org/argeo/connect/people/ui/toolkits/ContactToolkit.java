@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.jcr.ItemNotFoundException;
+import javax.jcr.InvalidItemStateException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
@@ -30,7 +30,7 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.commands.AddEntityReference;
 import org.argeo.connect.people.ui.commands.ForceRefresh;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
-import org.argeo.connect.people.ui.composites.ContactAddressComposite;
+import org.argeo.connect.people.ui.composites.ContactAddressCompositeOld;
 import org.argeo.connect.people.ui.composites.ContactComposite;
 import org.argeo.connect.people.ui.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
@@ -265,173 +265,220 @@ public class ContactToolkit {
 	}
 
 	public void createContactPanelWithNotes(Composite parent, final Node entity) {
-		parent.setLayout(new GridLayout());
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
-		// Add a scrolled conatiner
-		// ScrolledComposite contactListCmp = new ScrolledComposite(parent,
-		// SWT.NO_FOCUS | SWT.H_SCROLL | SWT.V_SCROLL);
-		// contactListCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-		// true));
-		// // contactListCmp.setMinSize(350, 100);
-		// contactListCmp.setExpandHorizontal(false);
-		// contactListCmp.setExpandVertical(false);
-		// contactListCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-		// Composite innerCmp = new Composite(contactListCmp, SWT.NO_FOCUS);
-		// innerCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		// populateDisplayContactPanel(innerCmp, entity);
-		// contactListCmp.setContent(innerCmp);
+		// Add a scrolled container
+		ScrolledComposite container = new ScrolledComposite(parent,
+				SWT.NO_FOCUS | SWT.H_SCROLL | SWT.V_SCROLL);
+		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		container.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		Composite innerCmp = new Composite(container, SWT.NO_FOCUS);
+		innerCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		innerCmp.setLayout(new GridLayout());
+		container.setContent(innerCmp);
 
-		// Add contact tool bar.
-		Composite newContactCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		newContactCmp.setLayoutData(gd);
-		populateAddContactPanel(newContactCmp, entity);
-
-		Composite contactListCmp = new Composite(parent, SWT.NO_FOCUS);
-		contactListCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				true));
-		populateDisplayContactPanel(contactListCmp, entity);
-
-		// notes about current contact
-		Composite noteCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		gd = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
-		gd.minimumHeight = 60;
-		noteCmp.setLayoutData(gd);
-		populateNotePanel(noteCmp, entity);
-
-		parent.layout();
+		ContactFormPart formPart = new ContactFormPart(entity, innerCmp);
+		// formPart.refresh();
+		formPart.initialize(form);
+		form.addPart(formPart);
+		// parent.layout();
 	}
 
-	/**
-	 * @param panel
-	 * @param entity
-	 */
-	public void createContactPanel(final Composite panel, final Node entity) {
-		panel.setLayout(new GridLayout());
+	private class ContactFormPart extends AbstractFormPart {
+		final private Node entity;
+		final private Composite parent;
 
-		final ScrolledComposite contactListCmp = new ScrolledComposite(panel,
-				SWT.NO_FOCUS | SWT.V_SCROLL);
-		contactListCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				true));
-		populateDisplayContactPanel(contactListCmp, entity);
+		public ContactFormPart(Node entity, Composite parent) {
+			this.entity = entity;
+			this.parent = parent;
+		}
+		
+		// TODO update display address
+				// @Override
+				// public void commit(boolean onSave) {
+				// if (onSave)
+				// PeopleJcrUtils.updateDisplayAddress(contactNode);
+				// super.commit(onSave);
+				// }
+		
 
-		final Composite newContactCmp = toolkit.createComposite(panel,
-				SWT.NO_FOCUS);
-		newContactCmp.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true,
-				false));
-		populateAddContactPanel(newContactCmp, entity);
+		public void refresh() {
+			super.refresh();
+			try {
+				if (parent.isDisposed())
+					return;
+
+				// We redraw the full part at each refresh
+				Control[] oldChildren = parent.getChildren();
+				for (Control child : oldChildren)
+					child.dispose();
+
+				boolean checkedOut = CommonsJcrUtils
+						.isNodeCheckedOutByMe(entity);
+				GridData gd;
+				Composite newContactCmp = null;
+
+				// Add contact tool bar.
+				if (checkedOut) {
+					newContactCmp = toolkit.createComposite(parent,
+							SWT.NO_FOCUS);
+					// gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
+					// newContactCmp.setLayoutData(gd);
+					populateAddContactPanel(ContactFormPart.this,
+							newContactCmp, entity);
+				}
+
+				// list existing contacts
+				Composite contactListCmp = new Composite(parent, SWT.NO_FOCUS);
+				// contactListCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
+				// true, true));
+				populateDisplayContactPanel(ContactFormPart.this,
+						contactListCmp, entity, checkedOut);
+
+				// notes about current contact
+				Composite noteCmp = toolkit.createComposite(parent,
+						SWT.NO_FOCUS);
+				// gd = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
+				// gd.minimumHeight = 60;
+				// noteCmp.setLayoutData(gd);
+				populateNotePanel(ContactFormPart.this, noteCmp, entity);
+				// parent.layout(true);
+				parent.pack();
+
+				if (checkedOut) {
+					gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
+					newContactCmp.setLayoutData(gd);
+					newContactCmp.layout(true);
+
+				}
+				contactListCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
+						true, true));
+				gd = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
+				gd.minimumHeight = 60;
+				noteCmp.setLayoutData(gd);
+				parent.layout(true);
+				parent.getParent().getParent().getParent().layout(true);
+
+			} catch (Exception e) {
+				if (e instanceof InvalidItemStateException) {
+					// TODO clean: this exception normally means node
+					// has already been removed.
+				} else
+					throw new PeopleException(
+							"unexpected error while refreshing", e);
+			}
+		}
 	}
 
 	/** Manage display and update of existing contact Nodes */
-	public void populateDisplayContactPanel(final Composite parent,
-			final Node entity) {
+	public void populateDisplayContactPanel(AbstractFormPart part,
+			final Composite parent, final Node entity, boolean isCheckedOut) {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
-		final Map<String, Composite> contactCmps = new HashMap<String, Composite>();
-		AbstractFormPart formPart = new AbstractFormPart() {
-			public void refresh() {
-				try {
-					super.refresh();
-					// first: initialise composite for new contacts
-					if (entity.hasNode(PeopleNames.PEOPLE_CONTACTS)) {
-						Node contactsPar = entity
-								.getNode(PeopleNames.PEOPLE_CONTACTS);
-						NodeIterator ni = contactsPar.getNodes();
-						while (ni.hasNext()) {
-							Node currNode = ni.nextNode();
-							String currJcrId = currNode.getIdentifier();
-							if (!contactCmps.containsKey(currJcrId)) {
-								Composite currCmp = null;
-								if (CommonsJcrUtils.isNodeType(currNode,
-										PeopleTypes.PEOPLE_ADDRESS))
-									currCmp = new ContactAddressComposite(
-											parent, SWT.NO_FOCUS, toolkit,
-											form, peopleService, currNode,
-											entity);
-								else
-									currCmp = new ContactComposite(parent,
-											SWT.NO_FOCUS, toolkit, form,
-											currNode, entity);
-								contactCmps.put(currJcrId, currCmp);
-							}
-						}
-					}
-					// then remove necessary composites
-					Session session = entity.getSession();
-					for (String jcrId : contactCmps.keySet()) {
-						// TODO: enhance this
-						Composite currCmp = contactCmps.get(jcrId);
-						try {
-							session.getNodeByIdentifier(jcrId);
-						} catch (ItemNotFoundException infe) {
-							currCmp.dispose();
-						}
-					}
-					parent.pack(true);
-					parent.getParent().pack(true);
-					// parent.layout();
-					parent.getParent().layout();
-
-				} catch (RepositoryException e) {
-					throw new PeopleException(
-							"Cannot refresh contact panel formPart", e);
+		try {
+			if (entity.hasNode(PeopleNames.PEOPLE_CONTACTS)) {
+				Node contactsPar = entity.getNode(PeopleNames.PEOPLE_CONTACTS);
+				NodeIterator ni = contactsPar.getNodes();
+				while (ni.hasNext()) {
+					Node currNode = ni.nextNode();
+					if (CommonsJcrUtils.isNodeType(currNode,
+							PeopleTypes.PEOPLE_ADDRESS))
+						new ContactAddressCompositeOld(parent, SWT.NO_FOCUS,
+								toolkit, form, peopleService, currNode, entity);
+					else
+						new ContactComposite(parent, SWT.NO_FOCUS, toolkit,
+								part, currNode, entity);
 				}
 			}
-		};
-		formPart.refresh();
-		formPart.initialize(form);
-		form.addPart(formPart);
+
+		} catch (RepositoryException e) {
+			throw new PeopleException("Cannot refresh contact panel formPart",
+					e);
+		}
+
+		// AbstractFormPart formPart = new AbstractFormPart() {
+		// public void refresh() {
+		// try {
+		// super.refresh();
+		// // first: initialise composite for new contacts
+		// if (entity.hasNode(PeopleNames.PEOPLE_CONTACTS)) {
+		// Node contactsPar = entity
+		// .getNode(PeopleNames.PEOPLE_CONTACTS);
+		// NodeIterator ni = contactsPar.getNodes();
+		// while (ni.hasNext()) {
+		// Node currNode = ni.nextNode();
+		// String currJcrId = currNode.getIdentifier();
+		// if (!contactCmps.containsKey(currJcrId)) {
+		// Composite currCmp = null;
+		// if (CommonsJcrUtils.isNodeType(currNode,
+		// PeopleTypes.PEOPLE_ADDRESS))
+		// currCmp = new ContactAddressComposite(
+		// parent, SWT.NO_FOCUS, toolkit,
+		// form, peopleService, currNode,
+		// entity);
+		// else
+		// currCmp = new ContactComposite(parent,
+		// SWT.NO_FOCUS, toolkit, form,
+		// currNode, entity);
+		// contactCmps.put(currJcrId, currCmp);
+		// }
+		// }
+		// }
+		// // then remove necessary composites
+		// Session session = entity.getSession();
+		// for (String jcrId : contactCmps.keySet()) {
+		// // TODO: enhance this
+		// Composite currCmp = contactCmps.get(jcrId);
+		// try {
+		// session.getNodeByIdentifier(jcrId);
+		// } catch (ItemNotFoundException infe) {
+		// currCmp.dispose();
+		// }
+		// }
+		// parent.pack(true);
+		// // parent.getParent().pack(true);
+		// // parent.layout();
+		// parent.getParent().layout();
+		//
+		// } catch (RepositoryException e) {
+		// throw new PeopleException(
+		// "Cannot refresh contact panel formPart", e);
+		// }
+		// }
+		// };
+		// formPart.refresh();
+		// formPart.initialize(form);
+		// form.addPart(formPart);
 	}
 
-	public void populateNotePanel(final Composite parent, final Node entity) {
+	public void populateNotePanel(AbstractFormPart part,
+			final Composite parent, final Node entity) {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-
-		parent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		toolkit.createLabel(parent, "Notes: ", SWT.NONE);
-
-		final Text notesTxt = toolkit.createText(parent, "", SWT.BORDER
-				| SWT.MULTI | SWT.WRAP);
-
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.minimumWidth = 200;
-		gd.minimumHeight = 200;
-		notesTxt.setLayoutData(gd);
-
-		AbstractFormPart notePart = new AbstractFormPart() {
-			public void refresh() {
-				super.refresh();
-				String desc = CommonsJcrUtils.getStringValue(entity,
-						Property.JCR_DESCRIPTION);
-				if (desc != null)
-					notesTxt.setText(desc);
-				notesTxt.setEnabled(CommonsJcrUtils
-						.isNodeCheckedOutByMe(entity));
-				parent.layout();
-			}
-		};
-
-		PeopleUiUtils.addModifyListener(notesTxt, entity,
-				Property.JCR_DESCRIPTION, notePart);
-
-		notePart.initialize(form);
-		form.addPart(notePart);
+		Text notesTxt = toolkit.createText(parent, "", SWT.BORDER | SWT.MULTI
+				| SWT.WRAP);
+		notesTxt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		PeopleUiUtils.refreshFormTextWidget(notesTxt, entity,
+				Property.JCR_DESCRIPTION);
 	}
 
 	/** Populate a composite that enable addition of a new contact */
-	public void populateAddContactPanel(Composite parent, final Node entity) {
+	public void populateAddContactPanel(AbstractFormPart part,
+			Composite parent, Node entity) {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder(3));
 
 		// ADD CONTACT
-		final Combo addContactCmb = new Combo(parent, SWT.NONE | SWT.READ_ONLY
+		Combo addContactCmb = new Combo(parent, SWT.NONE | SWT.READ_ONLY
 				| SWT.NO_FOCUS);
 		GridData gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
 		gd.widthHint = 100;
 		addContactCmb.setLayoutData(gd);
 		addContactCmb.setItems(ContactValueCatalogs.ARRAY_CONTACT_TYPES);
 		addContactCmb.add("Add a contact", 0);
+		addContactCmb.select(0);
 
 		// NATURE(work or private) is only for persons
-		final Combo natureCmb = CommonsJcrUtils.isNodeType(entity,
+		Combo natureCmb = CommonsJcrUtils.isNodeType(entity,
 				PeopleTypes.PEOPLE_PERSON) ? new Combo(parent, SWT.READ_ONLY)
 				: null;
 		if (natureCmb != null) {
@@ -442,35 +489,13 @@ public class ContactToolkit {
 		}
 
 		// NEW CONTACT info composite
-		final Composite editPanel = toolkit.createComposite(parent,
-				SWT.NO_FOCUS);
+		Composite editPanel = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		editPanel
 				.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		RowLayout layout = new RowLayout();
 		layout.wrap = true;
 		layout.marginTop = layout.marginBottom = 0;
 		editPanel.setLayout(layout);
-
-		AbstractFormPart editPart = new AbstractFormPart() {
-			// Update values on refresh
-			public void refresh() {
-				super.refresh();
-				editPanel.setVisible(false);
-
-				boolean ischeckedOut = CommonsJcrUtils
-						.isNodeCheckedOutByMe(entity);
-				addContactCmb.setVisible(ischeckedOut);
-				addContactCmb.select(0);
-				if (natureCmb != null) {
-					natureCmb.select(0);
-					// unvisible while no contact selected
-					natureCmb.setVisible(false);
-				}
-			}
-		};
-
-		editPart.initialize(form);
-		form.addPart(editPart);
 
 		// Listeners
 		addContactCmb.addSelectionListener(new MySelectionAdapter(entity,
@@ -517,9 +542,14 @@ public class ContactToolkit {
 							ContactValueCatalogs.MAPS_CONTACT_TYPES,
 							addContactCmb.getItem(index));
 
-					String nature = natureCmb == null ? null
-							: ContactValueCatalogs.ARRAY_CONTACT_NATURES[natureCmb
-									.getSelectionIndex()];
+					String nature = null;
+					int natureIndex = -1;
+
+					if (natureCmb != null)
+						natureIndex = natureCmb.getSelectionIndex();
+					if (natureIndex != -1)
+						nature = ContactValueCatalogs.ARRAY_CONTACT_NATURES[natureIndex];
+
 					Control first = populateNewContactComposite(editPanel,
 							entity, type, nature, addContactCmb);
 					if (first != null)
@@ -529,7 +559,6 @@ public class ContactToolkit {
 				throw new PeopleException(
 						"Unable to refresh add contact panel", e1);
 			}
-			// editPanel.pack();
 			editPanel.layout(true);
 			editPanel.getParent().getParent().layout();
 		}
@@ -600,7 +629,7 @@ public class ContactToolkit {
 				boolean isPrimary = primaryChk.getSelection();
 				// EntityPanelToolkit
 				savePreservingState(entity, contactType, contactType, value,
-						isPrimary, nature, null, label, addContactCombo);
+						isPrimary, nature, null, label);
 			}
 		});
 
@@ -617,8 +646,7 @@ public class ContactToolkit {
 					boolean isPrimary = primaryChk.getSelection();
 					// EntityPanelToolkit
 					savePreservingState(entity, contactType, contactType,
-							value, isPrimary, nature, null, label,
-							addContactCombo);
+							value, isPrimary, nature, null, label);
 				}
 			}
 		});
@@ -663,7 +691,7 @@ public class ContactToolkit {
 				boolean isPrimary = primaryChk.getSelection();
 				// EntityPanelToolkit
 				savePreservingState(entity, contactType, contactType, value,
-						isPrimary, nature, cat, label, addContactCombo);
+						isPrimary, nature, cat, label);
 			}
 		});
 
@@ -681,8 +709,7 @@ public class ContactToolkit {
 					boolean isPrimary = primaryChk.getSelection();
 					// EntityPanelToolkit
 					savePreservingState(entity, contactType, contactType,
-							value, isPrimary, nature, cat, label,
-							addContactCombo);
+							value, isPrimary, nature, cat, label);
 				}
 			}
 		});
@@ -692,7 +719,7 @@ public class ContactToolkit {
 
 	private void savePreservingState(Node entity, String contactType,
 			String name, String value, boolean isPrimary, String nature,
-			String category, String label, Combo addContactCmb) {
+			String category, String label) {
 		boolean wasCheckedout = CommonsJcrUtils.isNodeCheckedOut(entity);
 		if (!wasCheckedout)
 			CommonsJcrUtils.checkout(entity);
@@ -706,7 +733,6 @@ public class ContactToolkit {
 			form.dirtyStateChanged();
 
 		CommandUtils.callCommand(ForceRefresh.ID);
-		addContactCmb.select(0);
 	}
 
 	private Control createAddressWidgets(Composite parent, final Node entity,
