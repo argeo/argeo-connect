@@ -112,6 +112,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Details", PeopleUiConstants.PANEL_CONTACT_DETAILS, tooltip);
+		// innerPannel.setLayoutData(layoutData);
 		contactTK.createContactPanelWithNotes(innerPannel, org);
 
 		// Legal informations

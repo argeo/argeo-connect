@@ -189,7 +189,7 @@ public class ContactAddressComposite extends Composite {
 			});
 
 			parent.pack(true);
-			parent.layout();
+			// parent.layout();
 		} catch (RepositoryException e1) {
 			throw new PeopleException(
 					"unable to refresh edit work address panel ", e1);

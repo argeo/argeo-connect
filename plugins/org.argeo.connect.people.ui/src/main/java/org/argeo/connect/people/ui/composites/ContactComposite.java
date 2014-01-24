@@ -30,8 +30,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * 
  */
 public class ContactComposite extends Composite {
-	// private final static Log log = LogFactory.getLog(ContactComposite.class);
-
 	private static final long serialVersionUID = -789885142022513273L;
 
 	private final Node contactNode;
@@ -59,19 +57,18 @@ public class ContactComposite extends Composite {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
 
 		// buttons
-		Composite buttCmp = new ContactButtonsComposite(parent, SWT.NONE,
+		Composite buttCmp = new ContactButtonsComposite(parent, SWT.NO_FOCUS,
 				toolkit, formPart, contactNode, parentVersionableNode);
 		toolkit.adapt(buttCmp, false, false);
 		buttCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
-		Composite dataCmp = toolkit.createComposite(parent);
+		Composite dataCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		dataCmp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		if (!isCheckedOut) // READ ONLY
 			populateReadOnlyPanel(dataCmp);
 		else
 			populateEditPanel(dataCmp);
-
 	}
 
 	protected void populateReadOnlyPanel(final Composite readOnlyPanel) {
@@ -84,24 +81,6 @@ public class ContactComposite extends Composite {
 		String addressHtml = PeopleHtmlUtils.getContactDisplaySnippet(
 				contactNode, parentVersionableNode);
 		readOnlyInfoLbl.setText(addressHtml);
-
-		// Some tries to provide a copy/paste mechanism
-		// TODO dig this to see what can be done.
-		// Context menu kept here as a reminder
-
-		// MenuManager menuManager = new MenuManager();
-		// @SuppressWarnings("unused")
-		// Menu menu = menuManager.createContextMenu(readOnlyInfoLbl);
-		// menuManager.addMenuListener(new IMenuListener() {
-		// private static final long serialVersionUID = 1L;
-		//
-		// public void menuAboutToShow(IMenuManager manager) {
-		// contextMenuAboutToShow(manager);
-		// }
-		// });
-		// menuManager.setRemoveAllWhenShown(true);
-		// Uncomment the following to activate the menu
-		// readOnlyInfoLbl.setMenu(menu);
 	}
 
 	protected void populateEditPanel(final Composite parent) {
@@ -115,9 +94,9 @@ public class ContactComposite extends Composite {
 				contactNode, PeopleTypes.PEOPLE_EMAIL));
 
 		// The widgets
-		final Text valueTxt = createAddressTxt(true, parent, "Value", 150);
+		final Text labelTxt = createAddressTxt(parent, "", 120);
+		final Text valueTxt = createAddressTxt(parent, "Value", 150);
 		final Combo catCmb = hasCat ? new Combo(parent, SWT.READ_ONLY) : null;
-		final Text labelTxt = createAddressTxt(true, parent, "", 120);
 
 		if (catCmb != null) {
 			try {
@@ -153,40 +132,16 @@ public class ContactComposite extends Composite {
 					PropertyType.STRING);
 	}
 
-	protected Text createAddressTxt(boolean create, Composite parent,
-			String msg, int width) {
-		if (create) {
-			Text text = toolkit.createText(parent, null, SWT.BORDER);
-			text.setMessage(msg);
-			text.setLayoutData(width == 0 ? new RowData() : new RowData(width,
-					SWT.DEFAULT));
-			return text;
-		} else
-			return null;
+	protected Text createAddressTxt(Composite parent, String msg, int width) {
+		Text text = toolkit.createText(parent, null, SWT.BORDER);
+		text.setMessage(msg);
+		text.setLayoutData(width == 0 ? new RowData() : new RowData(width,
+				SWT.DEFAULT));
+		return text;
 	}
 
 	@Override
 	public boolean setFocus() {
 		return true;
 	}
-
-	// protected void contextMenuAboutToShow(IMenuManager menuManager) {
-	// // IWorkbenchWindow window = PeopleUiPlugin.getDefault().getWorkbench()
-	// // .getActiveWorkbenchWindow();
-	//
-	// // Effective Refresh
-	// // CommandUtils.refreshCommand(menuManager, window, CheckOutItem.ID,
-	// // "Test", null, true);
-	//
-	// // Test to be removed
-	// // If you use this pattern, do not forget to call
-	// // menuManager.setRemoveAllWhenShown(true);
-	// // when creating the menuManager
-	//
-	// // menuManager.add(new Action("Copy value") {
-	// // public void run() {
-	// // log.debug("do something");
-	// // }
-	// // });
-	// }
 }

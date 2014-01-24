@@ -38,7 +38,6 @@ public abstract class AbstractEntityCTabEditor extends AbstractPeopleWithImgEdit
 	protected final void populateBody(Composite parent) {
 		// NO_FOCUS to solve our "tab browsing" issue
 		folder = createCTabFolder(parent, SWT.NO_FOCUS);
-		folder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		populateTabFolder(folder);
 		folder.setSelection(0);
 	}
@@ -46,9 +45,8 @@ public abstract class AbstractEntityCTabEditor extends AbstractPeopleWithImgEdit
 	/* MANAGE TAB FOLDER */
 	protected CTabFolder createCTabFolder(Composite parent, int style) {
 		CTabFolder tabFolder = new CTabFolder(parent, style);
-		GridData gd = new GridData(GridData.FILL_BOTH | GridData.GRAB_VERTICAL
-				| GridData.GRAB_HORIZONTAL);
-		gd.grabExcessVerticalSpace = true;
+		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		// gd.grabExcessVerticalSpace = true;
 		tabFolder.setLayoutData(gd);
 		return tabFolder;
 	}
@@ -61,10 +59,8 @@ public abstract class AbstractEntityCTabEditor extends AbstractPeopleWithImgEdit
 		item.setToolTipText(tooltip);
 		Composite innerPannel = toolkit
 				.createComposite(tabFolder, SWT.V_SCROLL);
-		GridData gd = new GridData(SWT.FILL, SWT.TOP, true, true);
-		gd.grabExcessHorizontalSpace = true;
-		gd.grabExcessVerticalSpace = true;
-		innerPannel.setLayoutData(gd);
+		// GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		// innerPannel.setLayoutData(gd);
 		// must set control
 		item.setControl(innerPannel);
 		return innerPannel;
