@@ -211,6 +211,15 @@ public class ActivityServiceImpl implements ActivityService {
 		}
 	}
 
+	// TODO implement this cleanly
+	private static final String[] ARRAY_TASK_STATUS = { "New", "Done",
+			"Sleeping", "Canceled" };
+
+	@Override
+	public String[] getStatusList(Node task) {
+		return ARRAY_TASK_STATUS;
+	}
+
 	/* DEPENDENCY INJECTION */
 	public void setUserManagementService(
 			UserManagementService userManagementService) {

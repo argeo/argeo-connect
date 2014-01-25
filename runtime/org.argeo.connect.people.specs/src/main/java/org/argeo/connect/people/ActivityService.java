@@ -71,5 +71,12 @@ public interface ActivityService {
 	 */
 	public boolean isTaskDone(Node taskNode);
 
+	
+	/**
+	 * Retrieves valid possible status for a given task
+	 */
+	public String[] getStatusList(Node task);
+
+	
 	/* MISCELLANEOUS */
 }

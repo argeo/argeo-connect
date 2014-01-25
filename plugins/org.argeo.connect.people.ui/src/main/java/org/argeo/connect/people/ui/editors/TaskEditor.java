@@ -24,6 +24,7 @@ import org.argeo.connect.people.ui.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -36,7 +37,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
@@ -55,10 +58,6 @@ public class TaskEditor extends AbstractPeopleEditor {
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".taskEditor";
 	private DateFormat dateFormat = new SimpleDateFormat(
 			PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
-
-	// TODO implement this cleanly
-	private static final String[] ARRAY_TASK_STATUS = { "New", "Done",
-			"Sleeping", "Canceled" };
 
 	// Main business Objects
 	private Node task;
@@ -80,19 +79,37 @@ public class TaskEditor extends AbstractPeopleEditor {
 
 	protected void populateHeader(Composite parent) {
 		GridLayout layout = new GridLayout(3, false);
-		// PeopleUiUtils.gridLayoutNoBorder(3);
-		// layout.horizontalSpacing = layout.verticalSpacing = 5;
 		parent.setLayout(layout);
 
 		// 1st line
-		// final Text typeTxt = createLT(parent, "Type:");
-
 		final Combo statusCmb = new Combo(parent, SWT.NONE);
-		statusCmb.setItems(ARRAY_TASK_STATUS);
+		statusCmb.setItems(getPeopleService().getActivityService()
+				.getStatusList(task));
 		statusCmb.select(0);
 
-		final Text managerTxt = createLT(parent, "Manager:");
-		final Text dateTxt = createLT(parent, "Date:");
+		// TODO add some more status management, like priority
+		statusCmb.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false,
+				false, 3, 1));
+
+		final Text managerTxt = createLT(parent, "Assigned to");
+		// TODO add labels
+		// DUE DATE
+		// Label label = new Label(parent, SWT.RIGHT | SWT.CENTER);
+		// label.setText(""Due Date"");
+
+		final DateTime dueDateDt = new DateTime(parent, SWT.RIGHT | SWT.DATE
+				| SWT.MEDIUM | SWT.DROP_DOWN);
+		dueDateDt
+				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		// WAKE UP DATE
+		// Label label = new Label(parent, SWT.RIGHT | SWT.CENTER);
+		// label.setText("Wake up date");
+
+		// "Wake-up Date"
+		final DateTime wakeUpDateDt = new DateTime(parent, SWT.RIGHT | SWT.DATE
+				| SWT.MEDIUM | SWT.DROP_DOWN);
+
+		// false));
 
 		// 2nd line
 		Composite secLineCmp = new Composite(parent, SWT.NO_FOCUS);
@@ -100,7 +117,8 @@ public class TaskEditor extends AbstractPeopleEditor {
 		gd.horizontalSpan = 3;
 		secLineCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder(3));
 
-		toolkit.createLabel(secLineCmp, "Related entities:");
+		Label lbl = toolkit.createLabel(secLineCmp, "Related entities");
+		lbl.setFont(EclipseUiUtils.getBoldFont(secLineCmp));
 
 		// Parent composite with related entities and add link
 		final Composite relatedCmp = new Composite(parent, SWT.NO_FOCUS);
@@ -115,7 +133,7 @@ public class TaskEditor extends AbstractPeopleEditor {
 		// The add button
 		final Link addRelatedLk = new Link(parent, SWT.BOTTOM);
 		toolkit.adapt(addRelatedLk, false, false);
-		addRelatedLk.setText("<a>Add...</a>");
+		addRelatedLk.setText("<a>Add</a>");
 
 		final AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {
@@ -130,9 +148,17 @@ public class TaskEditor extends AbstractPeopleEditor {
 
 					Calendar dateToDisplay = task.getProperty(
 							Property.JCR_CREATED).getDate();
-					dateTxt.setText(dateFormat.format(dateToDisplay.getTime()));
-					dateTxt.setEnabled(false);
+					dueDateDt.setDate(dateToDisplay.YEAR, dateToDisplay.MONTH, dateToDisplay.DAY_OF_MONTH);
+					
+					// dateTxt.setText(dateFormat.format(dateToDisplay.getTime()));
+					// dateTxt.setEnabled(false);
 
+					// dateToDisplay = task.getProperty(
+					// Property.JCR_CREATED).getDate();
+					// dueDateDt.setDate(dateToDisplay.YEAR,
+					// dateToDisplay.MONTH, dateToDisplay.DAY_OF_MONTH);
+					
+					
 					boolean isCO = CommonsJcrUtils.isNodeCheckedOutByMe(task);
 					// show add button only in edit mode
 					addRelatedLk.setVisible(isCO);
@@ -235,11 +261,12 @@ public class TaskEditor extends AbstractPeopleEditor {
 
 	@Override
 	protected void populateBody(Composite parent) {
-		// 3rd line: title
+		parent.setLayout(new GridLayout());
+
+		// Title
 		Group titleGrp = new Group(parent, 0);
 		GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
 		gd.heightHint = 60;
-		gd.horizontalSpan = 3;
 		titleGrp.setLayoutData(gd);
 		titleGrp.setText("Title");
 		titleGrp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
@@ -248,10 +275,9 @@ public class TaskEditor extends AbstractPeopleEditor {
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		titleTxt.setLayoutData(gd);
 
-		// Bottom part: description
+		// Description
 		Group descGrp = new Group(parent, 0);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.horizontalSpan = 3;
 		descGrp.setLayoutData(gd);
 		descGrp.setText("Description");
 		descGrp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
@@ -358,12 +384,14 @@ public class TaskEditor extends AbstractPeopleEditor {
 
 	private Text createLT(Composite parent, String label) {
 		Composite cmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		cmp.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
+		cmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		GridLayout gl = new GridLayout(2, false);
-		gl.marginWidth = gl.verticalSpacing = gl.marginHeight = 0;
+		gl.marginHeight = gl.verticalSpacing = 0;
 		gl.horizontalSpacing = 5;
+		gl.marginWidth = 2;
 		cmp.setLayout(gl);
-		toolkit.createLabel(cmp, label);
+		Label lbl = toolkit.createLabel(cmp, label, SWT.RIGHT);
+		lbl.setFont(EclipseUiUtils.getBoldFont(cmp));
 		Text txt = toolkit.createText(cmp, "", SWT.BORDER);
 		txt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		return txt;
