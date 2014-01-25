@@ -70,9 +70,9 @@ public class ContactPanelComposite extends Composite {
 
 		// Add a scrolled container
 		ScrolledComposite container = new ScrolledComposite(parent,
-				SWT.NO_FOCUS | SWT.H_SCROLL | SWT.V_SCROLL);
+				SWT.NO_FOCUS | SWT.V_SCROLL); // SWT.H_SCROLL |
 		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
+		container.setAlwaysShowScrollBars(true);
 		innerCmp = new Composite(container, SWT.NO_FOCUS);
 		innerCmp.setLayout(new GridLayout());
 		formPart = new ContactFormPart();
@@ -122,7 +122,7 @@ public class ContactPanelComposite extends Composite {
 				contactListCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
 						true, true));
 				populateDisplayContactPanel(contactListCmp, checkedOut);
-				contactListCmp.pack(true);
+				contactListCmp.layout(true);
 
 				// notes about current contact
 				Composite noteCmp = toolkit.createComposite(innerCmp,

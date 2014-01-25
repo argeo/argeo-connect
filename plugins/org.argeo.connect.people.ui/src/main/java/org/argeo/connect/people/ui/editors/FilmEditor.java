@@ -68,7 +68,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 		film = getNode();
 
 		String shortName = CommonsJcrUtils.get(film,
-				FilmNames.FILM_ORIGINAL_TITLE);
+				FilmNames.FILM_CACHE_OTITLE);
 
 		if (CommonsJcrUtils.checkNotEmptyString(shortName)) {
 			if (shortName.length() > SHORT_NAME_LENGHT)
@@ -81,7 +81,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 	@Override
 	protected boolean canSave() {
 		String displayName = CommonsJcrUtils.get(film,
-				FilmNames.FILM_ORIGINAL_TITLE);
+				FilmNames.FILM_CACHE_OTITLE);
 		if (displayName.length() < 2) {
 			String msg = "Please note that you must define an original title"
 					+ " that is at least 2 character long.";
@@ -236,17 +236,17 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 						idTxt.setText(filmBusinessID);
 
 					String latinTitle = JcrUtils.get(film,
-							FilmNames.FILM_ORIG_LATIN_TITLE);
+							FilmNames.FILM_CACHE_OTITLE_LATIN);
 					if (CommonsJcrUtils.checkNotEmptyString(latinTitle))
 						latinTitleTxt.setText(latinTitle);
 
 					String origTitle = JcrUtils.get(film,
-							FilmNames.FILM_ORIGINAL_TITLE);
+							FilmNames.FILM_CACHE_OTITLE);
 					if (CommonsJcrUtils.checkNotEmptyString(origTitle))
 						origTitleTxt.setText(origTitle);
 
 					String origTitleArt = JcrUtils.get(film,
-							FilmNames.FILM_ORIG_TITLE_ARTICLE);
+							FilmNames.FILM_CACHE_OTITLE_ARTICLE);
 					if (CommonsJcrUtils.checkNotEmptyString(origTitleArt))
 						origTitleArticleTxt.setText(origTitleArt);
 
@@ -276,7 +276,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 				@Override
 				public void modifyText(ModifyEvent event) {
 					if (JcrUiUtils.setJcrProperty(film,
-							FilmNames.FILM_ORIGINAL_TITLE, PropertyType.STRING,
+							FilmNames.FILM_CACHE_OTITLE, PropertyType.STRING,
 							origTitleTxt.getText())) {
 						JcrUiUtils.setJcrProperty(film, Property.JCR_TITLE,
 								PropertyType.STRING, origTitleTxt.getText());
@@ -302,7 +302,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 				@Override
 				public void modifyText(ModifyEvent event) {
 					if (JcrUiUtils.setJcrProperty(film,
-							FilmNames.FILM_ORIG_LATIN_TITLE,
+							FilmNames.FILM_CACHE_OTITLE_LATIN,
 							PropertyType.STRING, latinTitleTxt.getText()))
 						editPart.markDirty();
 				}
@@ -314,7 +314,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 				@Override
 				public void modifyText(ModifyEvent event) {
 					if (JcrUiUtils.setJcrProperty(film,
-							FilmNames.FILM_ORIG_TITLE_ARTICLE,
+							FilmNames.FILM_CACHE_OTITLE_ARTICLE,
 							PropertyType.STRING, origTitleArticleTxt.getText()))
 						editPart.markDirty();
 				}

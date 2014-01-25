@@ -983,7 +983,8 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		@Override
 		protected void setValue(Object element, Object value) {
 			Node currNode = (Node) element;
-			if (FilmJcrUtils.markAsPrimaryTitle(currNode, (Boolean) value)) {
+			if (((Boolean) value).booleanValue()
+					&& FilmJcrUtils.updatePrimaryTitle(film, currNode)) {
 				part.refresh();
 				part.markDirty();
 			}
@@ -1003,7 +1004,8 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 		@Override
 		protected void setValue(Object element, Object value) {
 			Node currNode = (Node) element;
-			if (FilmJcrUtils.markAsOriginalTitle(currNode, (Boolean) value)) {
+			if (FilmJcrUtils.markAsOriginalTitle(film, currNode,
+					(Boolean) value)) {
 				part.refresh();
 				part.markDirty();
 			}

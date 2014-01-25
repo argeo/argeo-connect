@@ -69,7 +69,7 @@ public class FilmOverviewLabelProvider extends ColumnLabelProvider implements
 			
 			// latinTitle
 			String latinTitle = CommonsJcrUtils
-					.get(film, FILM_ORIG_LATIN_TITLE);
+					.get(film, FILM_CACHE_OTITLE_LATIN);
 			if (CommonsJcrUtils.checkNotEmptyString(latinTitle))
 				builder.append("<i>").append(latinTitle).append("</i>&#160;");
 

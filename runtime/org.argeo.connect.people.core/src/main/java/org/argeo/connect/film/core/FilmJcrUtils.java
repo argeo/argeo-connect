@@ -29,27 +29,91 @@ import org.argeo.jcr.JcrUtils;
  */
 public class FilmJcrUtils implements FilmNames {
 
-	public static boolean markAsOriginalTitle(Node currNode, boolean value) {
-		// TODO implement this
-		return true;
+	public static boolean markAsOriginalTitle(Node parentNode,
+			Node primaryChild, boolean isOriginal) {
+		
+		// TODO: remove primary from other
+		// put first 
+		
+		try {
+			// check if changed:
+			if (((!isOriginal) && !primaryChild.hasProperty(FILM_TITLE_IS_ORIG))
+					|| isOriginal
+					&& primaryChild.hasProperty(FILM_TITLE_IS_ORIG)
+					&& primaryChild.getProperty(FILM_TITLE_IS_ORIG)
+							.getBoolean())
+				return false;
+
+			if (isOriginal) {
+				String titleStr = CommonsJcrUtils.get(primaryChild,
+						FILM_TITLE_VALUE);
+				String artStr = CommonsJcrUtils.get(primaryChild,
+						FILM_TITLE_ARTICLE);
+				String latinStr = CommonsJcrUtils.get(primaryChild,
+						FILM_TITLE_LATIN_PRONUNCIATION);
+				if (CommonsJcrUtils.checkNotEmptyString(titleStr))
+					parentNode.setProperty(FILM_CACHE_OTITLE, titleStr);
+				if (CommonsJcrUtils.checkNotEmptyString(artStr))
+					parentNode.setProperty(FILM_CACHE_OTITLE_ARTICLE, artStr);
+				if (CommonsJcrUtils.checkNotEmptyString(latinStr))
+					parentNode.setProperty(FILM_CACHE_OTITLE_LATIN, latinStr);
+			} else {
+				if (parentNode.hasProperty(FILM_CACHE_OTITLE))
+					parentNode.setProperty(FILM_CACHE_OTITLE, "");
+				if (parentNode.hasProperty(FILM_CACHE_OTITLE_ARTICLE))
+					parentNode.setProperty(FILM_CACHE_OTITLE_ARTICLE, "");
+				if (parentNode.hasProperty(FILM_CACHE_OTITLE_LATIN))
+					parentNode.setProperty(FILM_CACHE_OTITLE_LATIN, "");
+			}
+			primaryChild.setProperty(FILM_TITLE_IS_ORIG, isOriginal);
+			return true;
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Unable to mark " + primaryChild
+					+ " as primary", re);
+		}
 	}
 
-	public static boolean markAsPrimaryTitle(Node currNode, boolean value) {
-		// TODO implement this
-		return true;
+	public static boolean updatePrimaryTitle(Node parentNode, Node primaryChild) {
+		try {
+			if (primaryChild.hasProperty(PeopleNames.PEOPLE_IS_PRIMARY)
+					&& primaryChild.getProperty(PeopleNames.PEOPLE_IS_PRIMARY)
+							.getBoolean())
+				return false; // already primary, nothing to do
+
+			String titleStr = CommonsJcrUtils.get(primaryChild,
+					FILM_TITLE_VALUE);
+			String artStr = CommonsJcrUtils.get(primaryChild,
+					FILM_TITLE_ARTICLE);
+			if (CommonsJcrUtils.isEmptyString(titleStr))
+				throw new PeopleException("Unable to set as primary "
+						+ "a title with an empty value");
+			else {
+				primaryChild.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, true);
+				if (CommonsJcrUtils.checkNotEmptyString(artStr))
+					titleStr += ", " + artStr;
+				parentNode.setProperty(Property.JCR_TITLE, titleStr);
+			}
+			return true;
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Unable to mark " + primaryChild
+					+ " as primary", re);
+		}
 	}
 
 	/** Return a display string for the original title of the given film */
 	public static String getTitleForFilm(Node film) {
 		try {
+			if (film.hasProperty(Property.JCR_TITLE))
+				return film.getProperty(Property.JCR_TITLE).getString();
+
+			// should never be used remove.
 			String title = "";
-			if (film.hasProperty(FILM_ORIGINAL_TITLE))
-				title = film.getProperty(FILM_ORIGINAL_TITLE).getString();
-			else if (film.hasProperty(Property.JCR_TITLE))
-				title = film.getProperty(Property.JCR_TITLE).getString();
-			if (film.hasProperty(FILM_ORIG_TITLE_ARTICLE))
+			if (film.hasProperty(FILM_CACHE_OTITLE))
+				title = film.getProperty(FILM_CACHE_OTITLE).getString();
+			if (film.hasProperty(FILM_CACHE_OTITLE_ARTICLE))
 				title += ", "
-						+ film.getProperty(FILM_ORIG_TITLE_ARTICLE).getString();
+						+ film.getProperty(FILM_CACHE_OTITLE_ARTICLE)
+								.getString();
 			return title;
 		} catch (RepositoryException re) {
 			throw new ArgeoException("Unable to get title for film", re);
@@ -57,18 +121,21 @@ public class FilmJcrUtils implements FilmNames {
 	}
 
 	/** Return a display string for the original title of the given film */
+	@Deprecated
 	public static void setOriginalTitle(Node film, String origTitle,
 			String origTitleArticle, String origLatinTitle) {
-		try {
-			film.setProperty(FILM_ORIGINAL_TITLE, origTitle);
-			if (CommonsJcrUtils.checkNotEmptyString(origTitleArticle))
-				film.setProperty(FILM_ORIG_TITLE_ARTICLE, origTitleArticle);
-			if (CommonsJcrUtils.checkNotEmptyString(origLatinTitle))
-				film.setProperty(FILM_ORIG_LATIN_TITLE, origLatinTitle);
-		} catch (RepositoryException re) {
-			throw new ArgeoException(
-					"Unable to set original title on film node", re);
-		}
+		addTitle(film, origTitle, origTitleArticle, origLatinTitle, null, true,
+				true);
+		// try {
+		// film.setProperty(FILM_ORIGINAL_TITLE, origTitle);
+		// if (CommonsJcrUtils.checkNotEmptyString(origTitleArticle))
+		// film.setProperty(FILM_ORIG_TITLE_ARTICLE, origTitleArticle);
+		// if (CommonsJcrUtils.checkNotEmptyString(origLatinTitle))
+		// film.setProperty(FILM_ORIG_LATIN_TITLE, origLatinTitle);
+		// } catch (RepositoryException re) {
+		// throw new ArgeoException(
+		// "Unable to set original title on film node", re);
+		// }
 	}
 
 	/**
@@ -152,8 +219,11 @@ public class FilmJcrUtils implements FilmNames {
 				tNode.setProperty(FILM_TITLE_LATIN_PRONUNCIATION,
 						latinPronunciation);
 			tNode.setProperty(PeopleNames.PEOPLE_LANG, language);
-			tNode.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, isPrimary);
-			tNode.setProperty(FILM_TITLE_IS_ORIG, isOriginal);
+			if (isOriginal)
+				markAsOriginalTitle(film, tNode, true);
+
+			if (isPrimary)
+				updatePrimaryTitle(film, tNode);
 
 			return tNode;
 		} catch (RepositoryException re) {

@@ -22,10 +22,19 @@ public interface FilmNames {
 	public final static String FILM_ANIMATION_TECHNIQUE = "film:animationTechnique";
 	public final static String FILM_GENRE = "film:genre";
 
-	// Main Title Management
-	public final static String FILM_ORIGINAL_TITLE = "film:origTitle";
-	public final static String FILM_ORIG_TITLE_ARTICLE = "film:origTitleArticle";
-	public final static String FILM_ORIG_LATIN_TITLE = "film:origLatinTitle";
+	// Cache to ease full text search
+	// following properties are all "on parent version" ignore and are used to
+	// store primary information and thus fasten fulltextsearch
+	public final static String PEOPLE_CACHE_PCITY = "people:cachePCity";
+	public final static String PEOPLE_CACHE_PCOUNTRY = "people:cachePCountry";
+	public final static String PEOPLE_CACHE_PORG = "people:cachePOrg";
+	public final static String PEOPLE_CACHE_PPHONE = "people:cachePPhone";
+	public final static String PEOPLE_CACHE_PMAIL = "people:cachePMail";
+	public final static String PEOPLE_CACHE_PWeb = "people:cachePWeb";
+
+	public final static String FILM_CACHE_OTITLE = "film:cacheOTitle";
+	public final static String FILM_CACHE_OTITLE_ARTICLE = "film:cacheOTitleArticle";
+	public final static String FILM_CACHE_OTITLE_LATIN = "film:cacheOTitleLatin";
 
 	// A sub node with various titles (for various country / languages)
 	public final static String FILM_TITLES = "film:titles";

@@ -25,10 +25,10 @@
 - film:animationTechnique
 - film:genre
 
-- film:origTitle (STRING)
-- film:origTitleArticle (STRING)
-// Helper to be able to read the original title when it is in a foreign alphabet
-- film:origLatinTitle (STRING)
+// cache to ease full text search 
+- film:cacheOTitle (STRING) IGNORE
+- film:cacheOTitleArticle (STRING) IGNORE
+- film:cacheOTitleLatin (STRING) IGNORE
 
 // Subnode with alternative title
 + film:titles (nt:unstructured) 
@@ -56,6 +56,7 @@
 [film:title] > nt:unstructured, people:language, people:orderable
 - film:titleValue (STRING)
 - film:titleArticle (STRING)
+// Helper to be able to read the original title when it is in a foreign alphabet
 - film:titleLatinPronunciation (STRING)
 - film:titleIsOrig (BOOLEAN)
 

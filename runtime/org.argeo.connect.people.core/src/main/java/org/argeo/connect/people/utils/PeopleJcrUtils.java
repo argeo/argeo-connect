@@ -785,13 +785,13 @@ public class PeopleJcrUtils implements PeopleNames {
 				String origTitle = "";
 				String origLatinTitle = "";
 				String displayName = "";
-				if (node.hasProperty(FilmNames.FILM_ORIGINAL_TITLE))
+				if (node.hasProperty(FilmNames.FILM_CACHE_OTITLE))
 					origTitle = replaceInvalidChars(node
-							.getProperty(FilmNames.FILM_ORIGINAL_TITLE)
+							.getProperty(FilmNames.FILM_CACHE_OTITLE)
 							.getString().trim());
-				if (node.hasProperty(FilmNames.FILM_ORIG_LATIN_TITLE))
+				if (node.hasProperty(FilmNames.FILM_CACHE_OTITLE_LATIN))
 					origLatinTitle = replaceInvalidChars(node
-							.getProperty(FilmNames.FILM_ORIG_LATIN_TITLE)
+							.getProperty(FilmNames.FILM_CACHE_OTITLE_LATIN)
 							.getString().trim());
 				if (node.hasProperty(Property.JCR_TITLE))
 					displayName = replaceInvalidChars(node
