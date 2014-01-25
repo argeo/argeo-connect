@@ -324,7 +324,6 @@ public class CommonsJcrUtils {
 					nodes.add(session.getNodeByIdentifier(curr));
 			}
 			setMultipleReferences(node, propName, nodes);
-			node.setProperty(propName, nodes.toArray(new String[0]));
 		} catch (RepositoryException e) {
 			throw new PeopleException(
 					"Unable to remove reference from property " + propName

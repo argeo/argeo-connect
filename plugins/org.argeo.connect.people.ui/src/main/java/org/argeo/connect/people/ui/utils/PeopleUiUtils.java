@@ -1,5 +1,8 @@
 package org.argeo.connect.people.ui.utils;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
@@ -26,6 +29,7 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
@@ -67,6 +71,34 @@ public class PeopleUiUtils {
 	}
 
 	/**
+	 * Shortcut to refresh a <code>DateTime</code> widget given a Node in a form
+	 * and a property Name. Also manages its enable state. Note that, by
+	 * default, we force setting of the time to noon. Might be later enhanced.
+	 * 
+	 * If the property does not yet exits, it is not created and the
+	 */
+	public static void refreshFormDateTimeWidget(DateTime dateTime, Node node,
+			String propName) {
+		try {
+			Calendar dateToDisplay = null;
+			if (node.hasProperty(propName))
+				dateToDisplay = node.getProperty(propName).getDate();
+			else
+				dateToDisplay = GregorianCalendar.getInstance();
+
+			dateTime.setDate(dateToDisplay.get(Calendar.YEAR),
+					dateToDisplay.get(Calendar.MONTH),
+					dateToDisplay.get(Calendar.DAY_OF_MONTH));
+			dateTime.setTime(12, 0, 0);
+			dateTime.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(node));
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"unable to refresh DateTime widget for node " + node
+							+ " and property " + propName, re);
+		}
+	}
+
+	/**
 	 * Shortcut to refresh a <code>Text</code> widget given a Node in a form and
 	 * a property Name. Also manages its enable state
 	 */
@@ -103,6 +135,7 @@ public class PeopleUiUtils {
 		String currValue = CommonsJcrUtils.get(entity, propName);
 		if (CommonsJcrUtils.checkNotEmptyString(currValue))
 			combo.select(combo.indexOf(currValue));
+		combo.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
 	}
 
 	/**
@@ -127,6 +160,30 @@ public class PeopleUiUtils {
 	}
 
 	/**
+	 * Shortcut to add a default modify listeners to a <code>DateTime</code>
+	 * widget that is bound a JCR String Property. Any change in the text is
+	 * immediately stored in the active session, but no save is done.
+	 */
+	public static void addSelectionListener(final DateTime dateTime,
+			final Node node, final String propName, final AbstractFormPart part) {
+		dateTime.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Calendar value = GregorianCalendar.getInstance();
+				value.set(dateTime.getYear(), dateTime.getMonth(),
+						dateTime.getDay(), dateTime.getHours(),
+						dateTime.getMinutes());
+				if (JcrUiUtils.setJcrProperty(node, propName,
+						PropertyType.DATE, value)) {
+					part.markDirty();
+				}
+			}
+		});
+	}
+
+	/**
 	 * Shortcut to add a default selection listener to a Check Box
 	 * <code>Button</code> widget that is bound a JCR boolean property. Any
 	 * change in the selection is immediately stored in the active session, but
@@ -139,9 +196,9 @@ public class PeopleUiUtils {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				boolean useDefault = button.getSelection();
+				boolean value = button.getSelection();
 				if (JcrUiUtils.setJcrProperty(node, propName,
-						PropertyType.BOOLEAN, useDefault)) {
+						PropertyType.BOOLEAN, value)) {
 					part.markDirty();
 				}
 			}
