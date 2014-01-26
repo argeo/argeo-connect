@@ -142,7 +142,7 @@ public class ContactPanelComposite extends Composite {
 	}
 
 	/** Manage display and update of existing contact Nodes */
-	public void populateDisplayContactPanel(final Composite parent,
+	private void populateDisplayContactPanel(final Composite parent,
 			boolean isCheckedOut) {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 		try {
@@ -168,7 +168,7 @@ public class ContactPanelComposite extends Composite {
 		}
 	}
 
-	public void populateNotePanel(Composite parent) {
+	private void populateNotePanel(Composite parent) {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
 		toolkit.createLabel(parent, "Notes: ", SWT.TOP);
 		Text notesTxt = toolkit.createText(parent, "", SWT.BORDER | SWT.MULTI
@@ -282,15 +282,13 @@ public class ContactPanelComposite extends Composite {
 		// reset combo
 		if (chooseTypeCmb.getSelectionIndex() != 0)
 			chooseTypeCmb.select(0);
-
 		if (chooseNatureCmb != null)
 			chooseNatureCmb.setVisible(false);
-
 		removeOtherChildren(editPanel, chooseTypeCmb, chooseNatureCmb);
 	}
 
 	/** Populate an editable contact composite */
-	public Control populateNewContactComposite(Composite parent,
+	private Control populateNewContactComposite(Composite parent,
 			final Node entity, final String contactType, final String nature,
 			Combo addContactCombo) throws RepositoryException {
 
@@ -553,5 +551,4 @@ public class ContactPanelComposite extends Composite {
 				SWT.DEFAULT));
 		return text;
 	}
-
 }
