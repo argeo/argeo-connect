@@ -32,7 +32,7 @@ public class FilmJcrUtils implements FilmNames {
 	public static boolean markAsOriginalTitle(Node parentNode,
 			Node primaryChild, boolean isOriginal) {
 		
-		// TODO: remove primary from other
+		// TODO: remove original from other
 		// put first 
 		
 		try {
@@ -74,6 +74,8 @@ public class FilmJcrUtils implements FilmNames {
 	}
 
 	public static boolean updatePrimaryTitle(Node parentNode, Node primaryChild) {
+		// TODO: remove primary from other
+		// put first 
 		try {
 			if (primaryChild.hasProperty(PeopleNames.PEOPLE_IS_PRIMARY)
 					&& primaryChild.getProperty(PeopleNames.PEOPLE_IS_PRIMARY)
