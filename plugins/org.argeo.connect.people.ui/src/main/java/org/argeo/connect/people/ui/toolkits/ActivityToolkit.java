@@ -12,6 +12,7 @@ import javax.jcr.Session;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ActivityValueCatalogs;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
@@ -51,14 +52,14 @@ public class ActivityToolkit {
 
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
-	// private final PeopleService peopleService;
+	private final PeopleService peopleService;
 	private final ActivityService activityService;
 
 	public ActivityToolkit(FormToolkit toolkit, IManagedForm form,
 			PeopleService peopleService) {
 		this.toolkit = toolkit;
 		this.form = form;
-		// this.peopleService = peopleService;
+		this.peopleService = peopleService;
 		this.activityService = peopleService.getActivityService();
 	}
 
@@ -66,43 +67,14 @@ public class ActivityToolkit {
 			final Node entity, final String openEditorCmdId) {
 		parent.setLayout(new GridLayout()); // .gridLayoutNoBorder());
 		try {
-			// The Activity bar
-			Composite addActivityBar = toolkit.createComposite(parent);
-			addActivityBar.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
-					false));
-			GridLayout gl = new GridLayout(7, false);
-			gl.marginHeight = gl.marginWidth = 0;
-			addActivityBar.setLayout(gl);
+			Composite addCmp = null;
 
-			// Activity type
-			final Combo addContactCmb = new Combo(addActivityBar, SWT.NONE
-					| SWT.READ_ONLY);
-			GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-			gd.widthHint = 100;
-			addContactCmb.setLayoutData(gd);
-			addContactCmb.setItems(ActivityValueCatalogs
-					.getActivityTypeLabels());
-			addContactCmb.select(0);
-
-			toolkit.adapt(addContactCmb, true, true);
-
-			// Title
-			final Text titleTxt = PeopleUiUtils.createGDText(toolkit,
-					addActivityBar, "Title",
-					"Enter a short title for the activity to create", 150, 1);
-
-			// Description
-			final Text descTxt = PeopleUiUtils.createGDText(toolkit,
-					addActivityBar, "Description",
-					"Enter a description for the activity to create", 300, 1);
-
-			Button validBtn = toolkit.createButton(addActivityBar,
-					"Add activity", SWT.PUSH);
-
-			toolkit.createLabel(addActivityBar, " OR ", SWT.NONE);
-
-			final Link addTaskLk = new Link(addActivityBar, SWT.NONE);
-			addTaskLk.setText("<a>Add a task</a>");
+			if (peopleService.getUserManagementService().isUserInRole(
+					PeopleConstants.ROLE_MEMBER)) {
+				addCmp = toolkit.createComposite(parent);
+				addCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
+						false));
+			}
 
 			// The Table that displays corresponding activities
 			final MyActivityTableCmp activityTable = new MyActivityTableCmp(
@@ -122,60 +94,107 @@ public class ActivityToolkit {
 			sPart.initialize(form);
 			form.addPart(sPart);
 
-			// Selection and traverse listeners
-			validBtn.addSelectionListener(new SelectionAdapter() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					createActivity(entity, addContactCmb, titleTxt, descTxt,
-							activityTable);
-				}
-			});
-
-			titleTxt.addTraverseListener(new TraverseListener() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void keyTraversed(TraverseEvent e) {
-					if (e.keyCode == SWT.CR) {
-						e.doit = false;
-						createActivity(entity, addContactCmb, titleTxt,
-								descTxt, activityTable);
-					}
-				}
-			});
-
-			descTxt.addTraverseListener(new TraverseListener() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void keyTraversed(TraverseEvent e) {
-					if (e.keyCode == SWT.CR) {
-						e.doit = false;
-						createActivity(entity, addContactCmb, titleTxt,
-								descTxt, activityTable);
-					}
-				}
-			});
-
-			addTaskLk.addSelectionListener(new SelectionAdapter() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					createTask(addTaskLk.getShell(), entity);
-					sPart.refresh();
-				}
-			});
+			if (addCmp != null)
+				addNewActivityPanel(addCmp, entity, openEditorCmdId,
+						activityTable);
 
 			// Doubleclick listener
 			activityTable.getTableViewer().addDoubleClickListener(
 					new ActivityTableDCL(openEditorCmdId));
-
 		} catch (RepositoryException re) {
 			throw new PeopleException("unable to create activity log", re);
 		}
+
+	}
+
+	private void addNewActivityPanel(final Composite addActivityBar,
+			final Node entity, final String openEditorCmdId,
+			final MyActivityTableCmp activityTable) {
+		// The Add Activity bar
+
+		// parent.setLayout(new GridLayout()); // .gridLayoutNoBorder());
+		// Composite addActivityBar = toolkit.createComposite(parent);
+		addActivityBar.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
+				false));
+		GridLayout gl = new GridLayout(7, false);
+		gl.marginHeight = gl.marginWidth = 0;
+		addActivityBar.setLayout(gl);
+
+		// Activity type
+		final Combo typeCmb = new Combo(addActivityBar, SWT.NONE
+				| SWT.READ_ONLY);
+		GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		gd.widthHint = 100;
+		typeCmb.setLayoutData(gd);
+		typeCmb.setItems(ActivityValueCatalogs.getActivityTypeLabels());
+		typeCmb.select(0);
+
+		toolkit.adapt(typeCmb, true, true);
+
+		// Title
+		final Text titleTxt = PeopleUiUtils.createGDText(toolkit,
+				addActivityBar, "Title",
+				"Enter a short title for the activity to create", 150, 1);
+
+		// Description
+		final Text descTxt = PeopleUiUtils.createGDText(toolkit,
+				addActivityBar, "Description",
+				"Enter a description for the activity to create", 300, 1);
+
+		Button validBtn = toolkit.createButton(addActivityBar, "Add activity",
+				SWT.PUSH);
+
+		toolkit.createLabel(addActivityBar, " OR ", SWT.NONE);
+
+		final Link addTaskLk = new Link(addActivityBar, SWT.NONE);
+		addTaskLk.setText("<a>Add a task</a>");
+
+		// Selection and traverse listeners
+		validBtn.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				createActivity(entity, typeCmb, titleTxt, descTxt,
+						activityTable);
+			}
+		});
+
+		titleTxt.addTraverseListener(new TraverseListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void keyTraversed(TraverseEvent e) {
+				if (e.keyCode == SWT.CR) {
+					e.doit = false;
+					createActivity(entity, typeCmb, titleTxt, descTxt,
+							activityTable);
+				}
+			}
+		});
+
+		descTxt.addTraverseListener(new TraverseListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void keyTraversed(TraverseEvent e) {
+				if (e.keyCode == SWT.CR) {
+					e.doit = false;
+					createActivity(entity, typeCmb, titleTxt, descTxt,
+							activityTable);
+				}
+			}
+		});
+
+		addTaskLk.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				createTask(addTaskLk.getShell(), entity);
+				activityTable.refresh();
+			}
+		});
 	}
 
 	// ///////////////////////
