@@ -20,7 +20,6 @@ import org.argeo.connect.people.ui.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -57,9 +56,8 @@ public class TaskEditor extends AbstractPeopleEditor {
 	// private DateFormat dateFormat = new SimpleDateFormat(
 	// PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
-	private Node assignedToNode;
-
 	// Main business Objects
+	private Node assignedToNode;
 	private Node task;
 
 	// Form parts must be explicitly disposed
@@ -87,8 +85,8 @@ public class TaskEditor extends AbstractPeopleEditor {
 		layout = new GridLayout(4, false);
 		parent.setLayout(layout);
 
-		// 1st line (define the layout...)
-		createBoldLabel(parent, "Status");
+		// 1st line (NOTE: it defines the grid data layout of this part)
+		PeopleUiUtils.createBoldLabel(toolkit, parent, "Status");
 		final Combo statusCmb = new Combo(parent, SWT.NONE);
 		statusCmb.setItems(getPeopleService().getActivityService()
 				.getStatusList(task));
@@ -98,28 +96,32 @@ public class TaskEditor extends AbstractPeopleEditor {
 		statusCmb.setLayoutData(gd);
 
 		// DUE DATE
-		createBoldLabel(parent, "Due date");
+		PeopleUiUtils.createBoldLabel(toolkit, parent, "Due date");
 		final DateTime dueDateDt = new DateTime(parent, SWT.RIGHT | SWT.DATE
 				| SWT.MEDIUM | SWT.DROP_DOWN);
 		dueDateDt
 				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
 
 		// ASSIGNED TO
-		createBoldLabel(parent, "Assigned to");
+		PeopleUiUtils.createBoldLabel(toolkit, parent, "Assigned to");
 		final Link changeAssignationLk = new Link(parent, SWT.NONE);
 		changeAssignationLk.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER,
 				false, false));
 
 		// WAKE UP DATE
-		createBoldLabel(parent, "Wake up date");
+		PeopleUiUtils.createBoldLabel(toolkit, parent, "Wake up date");
 		final DateTime wakeUpDateDt = new DateTime(parent, SWT.RIGHT | SWT.DATE
 				| SWT.MEDIUM | SWT.DROP_DOWN);
 		wakeUpDateDt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false,
 				false));
 
 		// RELATED ENTITIES
-		Label label = createBoldLabel(parent, "Related entities");
-		label.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
+		Label label = PeopleUiUtils.createBoldLabel(toolkit, parent,
+				"Related entities");
+		
+		gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
+		gd.verticalIndent = 4;
+		label.setLayoutData(gd);
 
 		Composite relEntitiesCmp = toolkit
 				.createComposite(parent, SWT.NO_FOCUS);
@@ -157,7 +159,6 @@ public class TaskEditor extends AbstractPeopleEditor {
 
 					if (isCO)
 						manager += " ~ <a>Change</a>";
-
 					changeAssignationLk.setText(manager);
 
 					// We redraw the full related to composite at each refresh,
@@ -355,10 +356,4 @@ public class TaskEditor extends AbstractPeopleEditor {
 		getManagedForm().addPart(formPart);
 	}
 
-	private Label createBoldLabel(Composite parent, String value) {
-		Label label = toolkit.createLabel(parent, value, SWT.RIGHT);
-		label.setFont(EclipseUiUtils.getBoldFont(parent));
-		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-		return label;
-	}
 }

@@ -204,6 +204,8 @@ public class ActivityServiceImpl implements ActivityService {
 				taskNode.setProperty(PeopleNames.PEOPLE_WAKE_UP_DATE,
 						wakeUpDate);
 			}
+			
+			// CommonsJcrUtils.saveAndCheckin(taskNode);
 			return taskNode;
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to create the new task " + title,

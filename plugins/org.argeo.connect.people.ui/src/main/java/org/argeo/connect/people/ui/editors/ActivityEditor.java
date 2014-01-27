@@ -25,6 +25,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
@@ -33,13 +34,14 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.IFormPart;
 
 /**
  * Default connect activity editor
@@ -50,12 +52,14 @@ public class ActivityEditor extends AbstractPeopleEditor {
 	// local constants
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".activityEditor";
+	private DateFormat dateFormat = new SimpleDateFormat(
+			PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
 	// Main business Objects
 	private Node activity;
 
-	private DateFormat dateFormat = new SimpleDateFormat(
-			PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
+	// Form parts must be explicitly disposed
+	private AbstractFormPart headerPart;
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -73,27 +77,37 @@ public class ActivityEditor extends AbstractPeopleEditor {
 	}
 
 	protected void populateHeader(Composite parent) {
-		GridLayout layout = new GridLayout(3, false);
-		// PeopleUiUtils.gridLayoutNoBorder(3);
-		// layout.horizontalSpacing = layout.verticalSpacing = 5;
+		GridLayout layout;
+		GridData gd;
+
+		layout = new GridLayout(6, false);
 		parent.setLayout(layout);
 
-		// 1st line
-		final Text typeTxt = createLT(parent, "Type:");
-		final Text managerTxt = createLT(parent, "Manager:");
-		final Text dateTxt = createLT(parent, "Date:");
+		// 1st line (NOTE: it defines the grid data layout of this part)
+		PeopleUiUtils.createBoldLabel(toolkit, parent, "Type");
+		final Label typeLbl = toolkit.createLabel(parent, "");
+		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false);
+		typeLbl.setLayoutData(gd);
 
-		// 2nd line
-		Composite secLineCmp = new Composite(parent, SWT.NO_FOCUS);
-		GridData gd = new GridData(SWT.FILL, SWT.TOP, false, false);
-		gd.horizontalSpan = 3;
-		secLineCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder(3));
+		PeopleUiUtils.createBoldLabel(toolkit, parent, "Manager");
+		final Label managerLbl = toolkit.createLabel(parent, "");
+		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false);
+		managerLbl.setLayoutData(gd);
 
-		toolkit.createLabel(secLineCmp, "Related entities:");
+		// DATE
+		PeopleUiUtils.createBoldLabel(toolkit, parent, "Date");
+		final Label dateLbl = toolkit.createLabel(parent, "");
+		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false);
+		dateLbl.setLayoutData(gd);
 
-		// Parent composite with related entities and add link
-		final Composite relatedCmp = new Composite(parent, SWT.NO_FOCUS);
-		gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
+		// 2nd line - RELATED ENTITIES
+		Label label = PeopleUiUtils.createBoldLabel(toolkit, parent,
+				"Related entities");
+		label.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
+
+		final Composite relatedCmp = toolkit.createComposite(parent,
+				SWT.NO_FOCUS);
+		gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 5, 1);
 		relatedCmp.setLayoutData(gd);
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = true;
@@ -101,36 +115,51 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		rl.marginRight = 0;
 		relatedCmp.setLayout(rl);
 
-		// The add button
-		final Link addRelatedLk = new Link(parent, SWT.BOTTOM);
-		toolkit.adapt(addRelatedLk, false, false);
-		addRelatedLk.setText("<a>Add...</a>");
+		// Composite secLineCmp = new Composite(parent, SWT.NO_FOCUS);
+		// gd = new GridData(SWT.FILL, SWT.TOP, false, false);
+		// gd.horizontalSpan = 3;
+		// secLineCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder(3));
+		//
+		// toolkit.createLabel(secLineCmp, "Related entities:");
+		//
+		// // Parent composite with related entities and add link
+		// final Composite relatedCmp = new Composite(parent, SWT.NO_FOCUS);
+		// gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
+		// relatedCmp.setLayoutData(gd);
+		// RowLayout rl = new RowLayout(SWT.HORIZONTAL);
+		// rl.wrap = true;
+		// rl.marginLeft = 5;
+		// rl.marginRight = 0;
+		// relatedCmp.setLayout(rl);
+		//
+		// // The add button
+		// final Link addRelatedLk = new Link(parent, SWT.BOTTOM);
+		// toolkit.adapt(addRelatedLk, false, false);
+		// addRelatedLk.setText("<a>Add...</a>");
 
-		final AbstractFormPart formPart = new AbstractFormPart() {
+		headerPart = new AbstractFormPart() {
 			public void refresh() {
 				try {
 					super.refresh();
 
-					typeTxt.setText(ActivityJcrUtils
+					typeLbl.setText(ActivityJcrUtils
 							.getActivityTypeLbl(activity));
-					typeTxt.setEnabled(false);
 
+					// TODO display correct display name instead of ID
 					String manager = ActivityJcrUtils
 							.getActivityManagerDisplayName(activity);
+					// peopleService.getUserManagementService()
+					// .getUserDisplayName(lst.get(i).getUserId())
+
 					if (CommonsJcrUtils.checkNotEmptyString(manager))
-						managerTxt.setText(manager);
-					managerTxt.setEnabled(false);
+						managerLbl.setText(manager);
 
 					Calendar dateToDisplay = activity.getProperty(
 							Property.JCR_CREATED).getDate();
-					dateTxt.setText(dateFormat.format(dateToDisplay.getTime()));
-					dateTxt.setEnabled(false);
+					dateLbl.setText(dateFormat.format(dateToDisplay.getTime()));
 
 					boolean isCO = CommonsJcrUtils
 							.isNodeCheckedOutByMe(activity);
-					// show add button only in edit mode
-					addRelatedLk.setVisible(isCO);
-
 					// We redraw the full control at each refresh, might be a
 					// more efficient way to do
 					Control[] oldChildren = relatedCmp.getChildren();
@@ -171,18 +200,25 @@ public class ActivityEditor extends AbstractPeopleEditor {
 															activity,
 															PeopleNames.PEOPLE_RELATED_TO,
 															valueStr);
-											for (IFormPart part : getManagedForm()
-													.getParts()) {
-												((AbstractFormPart) part)
-														.markStale();
-												part.refresh();
-											}
+											headerPart.refresh();
+											headerPart.markDirty();
 										}
 									});
 							deleteBtn.setVisible(isCO);
 						}
 						relatedCmp.layout(false);
 						relatedCmp.getParent().getParent().layout();
+
+					}
+					// The add link
+					if (isCO) {
+						final Link addRelatedLk = new Link(relatedCmp,
+								SWT.CENTER);
+						toolkit.adapt(addRelatedLk, false, false);
+						addRelatedLk.setText("<a>Add</a>");
+						addRelatedLk
+								.addSelectionListener(getAddRelatedSelList(relatedCmp
+										.getShell()));
 					}
 				} catch (RepositoryException re) {
 					throw new PeopleException(
@@ -192,18 +228,19 @@ public class ActivityEditor extends AbstractPeopleEditor {
 			}
 		};
 		parent.layout();
-		formPart.initialize(getManagedForm());
-		getManagedForm().addPart(formPart);
+		headerPart.initialize(getManagedForm());
+		getManagedForm().addPart(headerPart);
+	}
 
-		addRelatedLk.addSelectionListener(new SelectionAdapter() {
+	private SelectionListener getAddRelatedSelList(final Shell shell) {
+		return new SelectionAdapter() {
 			private static final long serialVersionUID = -7118320199160680131L;
 
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				try {
-					PickUpRelatedDialog diag = new PickUpRelatedDialog(
-							addRelatedLk.getShell(), "Choose an entity",
-							activity.getSession(), activity);
+					PickUpRelatedDialog diag = new PickUpRelatedDialog(shell,
+							"Choose an entity", activity.getSession(), activity);
 					diag.open();
 					Node node = diag.getSelected();
 					String errMsg = CommonsJcrUtils.addRefToMultiValuedProp(
@@ -212,9 +249,9 @@ public class ActivityEditor extends AbstractPeopleEditor {
 						MessageDialog.openError(PeopleUiPlugin.getDefault()
 								.getWorkbench().getActiveWorkbenchWindow()
 								.getShell(), "Dupplicates", errMsg);
-					else{
-						formPart.refresh();
-						formPart.markDirty();
+					else {
+						headerPart.refresh();
+						headerPart.markDirty();
 					}
 				} catch (RepositoryException e) {
 					throw new PeopleException(
@@ -223,7 +260,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 				}
 
 			}
-		});
+		};
 	}
 
 	@Override
@@ -273,16 +310,4 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		getManagedForm().addPart(formPart);
 	}
 
-	private Text createLT(Composite parent, String label) {
-		Composite cmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		cmp.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
-		GridLayout gl = new GridLayout(2, false);
-		gl.marginWidth = gl.verticalSpacing = gl.marginHeight = 0;
-		gl.horizontalSpacing = 5;
-		cmp.setLayout(gl);
-		toolkit.createLabel(cmp, label);
-		Text txt = toolkit.createText(cmp, "", SWT.BORDER);
-		txt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-		return txt;
-	}
 }

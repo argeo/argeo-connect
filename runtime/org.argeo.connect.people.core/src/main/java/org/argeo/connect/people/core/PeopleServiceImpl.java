@@ -241,31 +241,8 @@ public class PeopleServiceImpl implements PeopleService {
 	/* Persons */
 
 	/* USER MANAGEMENT */
-	/** returns true if the current user is in the specified role */
-	public boolean isUserInRole(String role) {
-		Authentication authen = SecurityContextHolder.getContext()
-				.getAuthentication();
-		for (GrantedAuthority ga : authen.getAuthorities()) {
-			if (ga.getAuthority().equals(role))
-				return true;
-		}
-		return false;
-		// return currentUserService.getCurrentUser().getRoles().contains(role);
-	}
-
-	/** returns the current user ID **/
-	public String getCurrentUserId() {
-		Authentication authen = SecurityContextHolder.getContext()
-				.getAuthentication();
-		return authen.getName();
-	}
-
-	/** Returns a human readable display name using the user ID **/
-	public String getUserDisplayName(String userId) {
-		// FIXME Must use a commons utils
-		return userId;
-	}
-
+	//TODO move this to user management service
+	
 	/** Expose injected repository */
 	public Repository getRepository() {
 		return repository;

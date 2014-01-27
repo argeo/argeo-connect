@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.jcr.AccessDeniedException;
 import javax.jcr.InvalidItemStateException;
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -19,6 +20,8 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -27,6 +30,7 @@ import org.argeo.jcr.PropertyDiff;
 
 /** Some static utils methods that might be factorized in a near future */
 public class CommonsJcrUtils {
+	private final static Log log = LogFactory.getLog(CommonsJcrUtils.class);
 
 	/**
 	 * Call {@link Repository#login()} without exceptions (useful in super
@@ -184,8 +188,24 @@ public class CommonsJcrUtils {
 			Session session = node.getSession();
 			JcrUtils.discardUnderlyingSessionQuietly(node);
 			// if the node has never been saved, it does not exist anymore.
-			if (session.nodeExists(path))
-				session.getWorkspace().getVersionManager().checkin(path);
+			if (session.nodeExists(path)
+					&& session.getWorkspace().getVersionManager()
+							.isCheckedOut(path))
+
+				try {
+					session.getWorkspace().getVersionManager().checkin(path);
+
+				} catch (AccessDeniedException re) {
+					log.warn(
+							"Error while trying to cancel and check in node "
+									+ node
+									+ " with user "
+									+ session.getUserID()
+									+ "\nIt usually happens when a user that has read only rights"
+									+ " close the editor of an entity that has not been close cleanly after last edition.",
+							re);
+				}
+
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to save and chek in node", re);
 		}

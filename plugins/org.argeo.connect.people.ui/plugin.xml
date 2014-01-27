@@ -333,9 +333,17 @@
 				style="push"
 				tooltip="Check Out item for edit">
 				<visibleWhen>
-					<with variable="activePart">
-						<instanceof value="org.argeo.connect.people.ui.editors.utils.IVersionedItemEditor" />
-					</with>
+					<and>
+						<with variable="activePart">
+							<instanceof value="org.argeo.connect.people.ui.editors.utils.IVersionedItemEditor" />
+						</with>
+						<with variable="roles">
+			      			<iterate ifEmpty="false" operator="or">
+			        			<equals value="ROLE_BUSINESS_ADMIN" />
+			        			<equals value="ROLE_MEMBER" />
+			      			</iterate>
+			    		</with>
+			    	</and>
 				</visibleWhen>
 			</command>
 			<command
@@ -345,9 +353,17 @@
 				style="push"
 				tooltip="Abandon changes and check back in">
 				<visibleWhen>
-					<with variable="activePart">
-						<instanceof value="org.argeo.connect.people.ui.editors.utils.IVersionedItemEditor" />
-					</with>
+					<and>
+						<with variable="activePart">
+							<instanceof value="org.argeo.connect.people.ui.editors.utils.IVersionedItemEditor" />
+						</with>
+						<with variable="roles">
+			      			<iterate ifEmpty="false" operator="or">
+			        			<equals value="ROLE_BUSINESS_ADMIN" />
+			        			<equals value="ROLE_MEMBER" />
+			      			</iterate>
+			    		</with>
+			    	</and>
 				</visibleWhen>
 			</command>
  			

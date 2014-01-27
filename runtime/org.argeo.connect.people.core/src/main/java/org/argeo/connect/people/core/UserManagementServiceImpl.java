@@ -17,9 +17,16 @@ import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.UserJcrUtils;
+import org.springframework.security.Authentication;
+import org.springframework.security.GrantedAuthority;
+import org.springframework.security.context.SecurityContextHolder;
 
 /** Canonical implementation of the people {@link UserManagementService} */
 public class UserManagementServiceImpl implements UserManagementService {
+
+	//
+	// GROUP MANAGEMENT
+	//
 
 	protected String getUserGroupParentPath() {
 		return PeopleConstants.PEOPLE_USER_GROUPS_BASE_PATH;
@@ -212,6 +219,34 @@ public class UserManagementServiceImpl implements UserManagementService {
 		groups.add(userGp);
 		addGroupsToUser(session, username, groups);
 		return userGp;
+	}
+
+	/** returns true if the current user is in the specified role */
+	@Override
+	public boolean isUserInRole(String role) {
+		Authentication authen = SecurityContextHolder.getContext()
+				.getAuthentication();
+		for (GrantedAuthority ga : authen.getAuthorities()) {
+			if (ga.getAuthority().equals(role))
+				return true;
+		}
+		return false;
+		// return currentUserService.getCurrentUser().getRoles().contains(role);
+	}
+
+	/** returns the current user ID **/
+	@Override
+	public String getCurrentUserId() {
+		Authentication authen = SecurityContextHolder.getContext()
+				.getAuthentication();
+		return authen.getName();
+	}
+
+	/** Returns a human readable display name using the user ID **/
+	@Override
+	public String getUserDisplayName(String userId) {
+		// FIXME Must use a commons utils
+		return userId;
 	}
 
 }

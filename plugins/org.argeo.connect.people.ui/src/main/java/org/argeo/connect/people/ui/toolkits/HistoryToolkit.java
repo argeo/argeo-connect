@@ -96,8 +96,9 @@ public class HistoryToolkit {
 
 				if (lst.get(i).getUserId() != null)
 					main.append("User : "
-							+ peopleService.getUserDisplayName(lst.get(i)
-									.getUserId()) + ", ");
+							+ peopleService.getUserManagementService()
+									.getUserDisplayName(lst.get(i).getUserId())
+							+ ", ");
 				if (lst.get(i).getUpdateTime() != null) {
 					main.append("Date : ");
 					main.append(dateTimeFormat.format(lst.get(i)

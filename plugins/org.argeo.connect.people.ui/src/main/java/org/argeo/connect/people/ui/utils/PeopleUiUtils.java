@@ -11,6 +11,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;
 import org.eclipse.jface.fieldassist.ControlDecoration;
@@ -30,6 +31,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
@@ -344,6 +346,18 @@ public class PeopleUiUtils {
 		text.setLayoutData(width == 0 ? new RowData() : new RowData(width,
 				SWT.DEFAULT));
 		return text;
+	}
+
+	/**
+	 * Creates the basic right aligned bold label that is used in various forms.
+	 * 
+	 */
+	public static Label createBoldLabel(FormToolkit toolkit, Composite parent,
+			String value) {
+		Label label = toolkit.createLabel(parent, value, SWT.RIGHT);
+		label.setFont(EclipseUiUtils.getBoldFont(parent));
+		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		return label;
 	}
 
 	/**

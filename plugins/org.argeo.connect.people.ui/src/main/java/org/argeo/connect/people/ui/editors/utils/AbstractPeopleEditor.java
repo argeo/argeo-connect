@@ -13,6 +13,7 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -205,22 +206,25 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		PeopleUiUtils.setSwitchingFormData(roPanelCmp);
 		roPanelCmp.setLayout(new RowLayout(SWT.VERTICAL));
 
-		Button editBtn = toolkit.createButton(roPanelCmp, "Edit", SWT.PUSH);
-		editBtn.setLayoutData(new RowData(60, 20));
-		editBtn.addSelectionListener(new SelectionListener() {
-			private static final long serialVersionUID = 1L;
+		// Do not show the edit button if the user does not have sufficient
+		// rights
+		if (canBeCheckedOutByMe()) {
+			Button editBtn = toolkit.createButton(roPanelCmp, "Edit", SWT.PUSH);
+			editBtn.setLayoutData(new RowData(60, 20));
+			editBtn.addSelectionListener(new SelectionListener() {
+				private static final long serialVersionUID = 1L;
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (canBeCheckedOutByMe())
-					CommandUtils.callCommand(CheckOutItem.ID);
-			}
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					if (canBeCheckedOutByMe())
+						CommandUtils.callCommand(CheckOutItem.ID);
+				}
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+			});
+		}
 		// Add a refresh button to enable forcing refresh when having some UI
 		// glitches.
 		Button refreshBtn = toolkit.createButton(roPanelCmp, "Refresh",
@@ -393,7 +397,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		if (isCheckedOutByMe())
 			return false;
 		else
-			return true; // getMsmBackend().isUserInRole(MsmConstants.ROLE_CONSULTANT);
+			return getPeopleService().getUserManagementService().isUserInRole(
+					PeopleConstants.ROLE_MEMBER);
 	}
 
 	public boolean isCheckedOutByMe() {
