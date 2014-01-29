@@ -305,12 +305,12 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 				false));
 
 		final Button hasTrailerBtn = toolkit.createButton(flagCmp,
-				"Feature film", SWT.CHECK | SWT.LEFT);
+				"Film Has Trailer", SWT.CHECK | SWT.LEFT);
 		hasTrailerBtn.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false,
 				false));
 
 		final Button extractsOnTvBtn = toolkit.createButton(flagCmp,
-				"Feature film", SWT.CHECK | SWT.LEFT);
+				"Allows Extracts on TV", SWT.CHECK | SWT.LEFT);
 		extractsOnTvBtn.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false,
 				false, 2, 1));
 

@@ -176,7 +176,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		entityTk.populateTagPanel(tagsCmp, film,
-				PeopleNames.PEOPLE_ORG_BRANCHES, "Enter a new tag");
+				PeopleNames.PEOPLE_TAGS, "Enter a new tag");
 	}
 
 	protected void populateTitleComposite(final Composite parent) {

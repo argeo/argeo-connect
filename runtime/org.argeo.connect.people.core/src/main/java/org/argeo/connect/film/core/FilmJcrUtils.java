@@ -358,10 +358,10 @@ public class FilmJcrUtils implements FilmNames {
 
 	/**
 	 * Add or update the a synopsis node given a film and a language. Short
-	 * synopsis is optional
+	 * synopsis and log line are optional
 	 * */
 	public static Node addOrUpdateSynopsisNode(Node film, String synopsis,
-			String synopsisShort, String lang) {
+			String synopsisShort, String logLine, String lang) {
 		try {
 			Node synopses = JcrUtils.mkdirs(film, FILM_SYNOPSES,
 					NodeType.NT_UNSTRUCTURED);
@@ -377,9 +377,15 @@ public class FilmJcrUtils implements FilmNames {
 					sNode = synopses.addNode(lang, FilmTypes.FILM_SYNOPSIS);
 
 				sNode.setProperty(SYNOPSIS_CONTENT, synopsis);
+				sNode.setProperty(PeopleNames.PEOPLE_LANG, lang);
+
+				// Optionnal info
 				if (CommonsJcrUtils.checkNotEmptyString(synopsisShort))
 					sNode.setProperty(SYNOPSIS_CONTENT_SHORT, synopsisShort);
-				sNode.setProperty(PeopleNames.PEOPLE_LANG, lang);
+
+				if (CommonsJcrUtils.checkNotEmptyString(logLine))
+					sNode.setProperty(FILM_LOG_LINE, logLine);
+
 				return sNode;
 			}
 			return null;
@@ -389,19 +395,29 @@ public class FilmJcrUtils implements FilmNames {
 		}
 	}
 
+	/**
+	 * Add or update the a synopsis node given a film and a language. Short
+	 * synopsis is optional
+	 * */
+	public static Node addOrUpdateSynopsisNode(Node film, String synopsis,
+			String synopsisShort, String lang) {
+		return addOrUpdateSynopsisNode(film, synopsis, synopsisShort, null,
+				lang);
+	}
+
 	public static Node getFilmWithId(Session session, String filmId)
 			throws RepositoryException {
 		QueryObjectModelFactory factory = session.getWorkspace()
 				.getQueryManager().getQOMFactory();
-		final String typeSelector = "film";
-		Selector source = factory.selector(FilmTypes.FILM, typeSelector);
+		// final String typeSelector = "film";
+		Selector source = factory.selector(FilmTypes.FILM, FilmTypes.FILM);
 
-		DynamicOperand legalNameDO = factory.propertyValue(
+		DynamicOperand dynOp = factory.propertyValue(
 				source.getSelectorName(), FilmNames.FILM_ID);
 
 		StaticOperand so = factory.literal(session.getValueFactory()
 				.createValue(filmId));
-		Constraint defaultC = factory.comparison(legalNameDO,
+		Constraint defaultC = factory.comparison(dynOp,
 				QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, so);
 
 		QueryObjectModel query = factory.createQuery(source, defaultC, null,
@@ -409,7 +425,7 @@ public class FilmJcrUtils implements FilmNames {
 
 		QueryResult result = query.execute();
 		NodeIterator ni = result.getNodes();
-		// TODO clean this to handle multiple result
+
 		if (ni.hasNext())
 			return ni.nextNode();
 		return null;

@@ -55,9 +55,21 @@ public class EntityToolkit {
 			final String tagPropName, final String newTagMsg) {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
 
+		GridData gd;
+
+		final Composite nlCmp = toolkit.createComposite(parent);
+		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+		nlCmp.setLayoutData(gd);
+		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
+		rl.wrap = true;
+		rl.marginHeight = 0;
+		rl.marginLeft = 5;
+		rl.marginRight = 0;
+		nlCmp.setLayout(rl);
+
 		final Text tagTxt = toolkit.createText(parent, "", SWT.BORDER);
 		tagTxt.setMessage(newTagMsg);
-		GridData gd = new GridData(SWT.CENTER, SWT.TOP, false, false);
+		gd = new GridData(SWT.CENTER, SWT.TOP, false, false);
 		gd.minimumWidth = 120;
 		gd.widthHint = 130;
 		tagTxt.setLayoutData(gd);
@@ -74,16 +86,6 @@ public class EntityToolkit {
 				}
 			}
 		});
-
-		final Composite nlCmp = toolkit.createComposite(parent);
-		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
-		nlCmp.setLayoutData(gd);
-		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
-		rl.wrap = true;
-		rl.marginHeight = 0;
-		rl.marginLeft = 5;
-		rl.marginRight = 0;
-		nlCmp.setLayout(rl);
 
 		AbstractFormPart editPart = new AbstractFormPart() {
 			public void refresh() {

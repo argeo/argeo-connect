@@ -303,7 +303,8 @@ public class CommonsJcrUtils {
 						builder.append(currStr).append(separator);
 				}
 				if (builder.lastIndexOf(separator) >= 0)
-					return builder.substring(0, builder.length() - 2);
+					return builder.substring(0,
+							builder.length() - separator.length());
 				else
 					return builder.toString();
 			}
@@ -678,7 +679,7 @@ public class CommonsJcrUtils {
 	 * part of the list, it returns an error message. We use case insensitive
 	 * comparison
 	 */
-	public String addMultiPropertyValue(Node node, String propName, String value) {
+	public static String addMultiPropertyValue(Node node, String propName, String value) {
 		try {
 			Value[] values;
 			String[] valuesStr;
@@ -712,4 +713,29 @@ public class CommonsJcrUtils {
 			throw new ArgeoException("Unable to set tags", re);
 		}
 	}
+
+	/**
+	 * Add a string value on a multivalued property. WARNING if values is not an
+	 * empty String, it overrides any existing value, and delete old ones.
+	 */
+	public static void setMultiValueStringPropFromString(Node node, String propName,
+			String values, String separator) {
+		try {
+			if (!CommonsJcrUtils.isEmptyString(values)) {
+				String[] valArray = values.split(separator);
+				// Remove any empty value
+				List<String> newValList = new ArrayList<String>();
+				for (String currValue : valArray) {
+					if (CommonsJcrUtils.checkNotEmptyString(currValue))
+						newValList.add(currValue);
+				}
+				node.setProperty(propName, newValList.toArray(new String[0]));
+			}
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Unable to set multi value property "
+					+ propName + " of node " + node + " with values [" + values
+					+ "]", re);
+		}
+	}
+
 }
