@@ -31,10 +31,10 @@ public class FilmJcrUtils implements FilmNames {
 
 	public static boolean markAsOriginalTitle(Node parentNode,
 			Node primaryChild, boolean isOriginal) {
-		
+
 		// TODO: remove original from other
-		// put first 
-		
+		// put first
+
 		try {
 			// check if changed:
 			if (((!isOriginal) && !primaryChild.hasProperty(FILM_TITLE_IS_ORIG))
@@ -43,6 +43,10 @@ public class FilmJcrUtils implements FilmNames {
 					&& primaryChild.getProperty(FILM_TITLE_IS_ORIG)
 							.getBoolean())
 				return false;
+
+			Node oldOriginal = getOriginalTitle(parentNode);
+			if (oldOriginal != null)
+				oldOriginal.setProperty(FILM_TITLE_IS_ORIG, false);
 
 			if (isOriginal) {
 				String titleStr = CommonsJcrUtils.get(primaryChild,
@@ -73,14 +77,44 @@ public class FilmJcrUtils implements FilmNames {
 		}
 	}
 
+	private static Node getSpecialTitle(Node parentNode, String propName) {
+		try {
+			if (!parentNode.hasNode(FILM_TITLES))
+				return null;
+			NodeIterator nit = parentNode.getNode(FILM_TITLES).getNodes();
+			while (nit.hasNext()) {
+				Node currNode = nit.nextNode();
+				if (currNode.hasProperty(propName)
+						&& currNode.getProperty(propName).getBoolean())
+					return currNode;
+			}
+			return null;
+		} catch (RepositoryException re) {
+			throw new ArgeoException(
+					"Unable to get original/primary title node for "
+							+ parentNode + " with property " + propName, re);
+		}
+	}
+
+	public static Node getOriginalTitle(Node parentNode) {
+		return getSpecialTitle(parentNode, FILM_TITLE_IS_ORIG);
+	}
+
+	public static Node getPrimaryTitle(Node parentNode) {
+		return getSpecialTitle(parentNode, PeopleNames.PEOPLE_IS_PRIMARY);
+	}
+
 	public static boolean updatePrimaryTitle(Node parentNode, Node primaryChild) {
-		// TODO: remove primary from other
-		// put first 
+		// TODO: put first
 		try {
 			if (primaryChild.hasProperty(PeopleNames.PEOPLE_IS_PRIMARY)
 					&& primaryChild.getProperty(PeopleNames.PEOPLE_IS_PRIMARY)
 							.getBoolean())
 				return false; // already primary, nothing to do
+
+			Node oldPrimary = getPrimaryTitle(parentNode);
+			if (oldPrimary != null)
+				oldPrimary.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, false);
 
 			String titleStr = CommonsJcrUtils.get(primaryChild,
 					FILM_TITLE_VALUE);

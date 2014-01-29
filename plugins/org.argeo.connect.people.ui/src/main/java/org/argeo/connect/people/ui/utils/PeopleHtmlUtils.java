@@ -130,6 +130,20 @@ public class PeopleHtmlUtils {
 		}
 	}
 
+	/**
+	 * creates the ReadOnly HTML snippet to display in a label with styling
+	 * enabled in order to provide a clickable link
+	 */
+	public static String getWebsiteSnippet(String address) {
+		StringBuilder builder = new StringBuilder();
+
+		String value = cleanHtmlString(address);
+		builder.append("<a ").append(PeopleUiConstants.PEOPLE_CSS_URL_STYLE)
+				.append(" href=\"http://");
+		builder.append(value + "\" target=\"_blank\" >" + value + "</a>");
+		return builder.toString();
+	}
+
 	/** creates the display ReadOnly HTML snippet for a work address */
 	public static String getWorkAddressDisplaySnippet(Node contactNode,
 			Node referencedEntity) {

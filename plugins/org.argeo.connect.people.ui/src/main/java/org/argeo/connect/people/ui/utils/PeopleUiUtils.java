@@ -162,6 +162,27 @@ public class PeopleUiUtils {
 	}
 
 	/**
+	 * Shortcut to refresh a radio <code>Button</code> widget given a Node in a
+	 * form and a property Name. Also manage its enabled state
+	 */
+	public static void refreshRadioWidget(Button button, Node entity,
+			String propName) {
+		Boolean tmp = null;
+		try {
+			if (entity.hasProperty(propName)) {
+				tmp = entity.getProperty(propName).getString()
+						.equals(button.getText());
+			} else
+				tmp = false;
+			button.setSelection(tmp);
+			button.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
+		} catch (RepositoryException re) {
+			throw new PeopleException("unable get boolean value for property "
+					+ propName);
+		}
+	}
+
+	/**
 	 * Shortcut to add a default modify listeners to a <code>DateTime</code>
 	 * widget that is bound a JCR String Property. Any change in the text is
 	 * immediately stored in the active session, but no save is done.
@@ -474,6 +495,27 @@ public class PeopleUiUtils {
 			}
 		};
 		return selectionAdapter;
+	}
+
+	/* LENGHT AND DURATION MANAGEMENT */
+	public static long getSecondsFromLength(long lengthInSeconds) {
+		return lengthInSeconds % 60;
+	}
+
+	public static long getMinutesFromLength(long lengthInSeconds) {
+		return (lengthInSeconds / 60) % 60;
+	}
+
+	public static long getHoursFromLength(long lengthInSeconds) {
+		return (lengthInSeconds / (60 * 60)) % 60;
+	}
+
+	/** format a duration in second using a hh:mm:ss pattern */
+	public static String getLengthFormattedAsString(long lengthInSeconds) {
+		return String.format("%02d:%02d:%02d",
+				getHoursFromLength(lengthInSeconds),
+				getMinutesFromLength(lengthInSeconds),
+				getSecondsFromLength(lengthInSeconds));
 	}
 
 }

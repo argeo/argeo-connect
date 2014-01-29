@@ -4,26 +4,20 @@
 // FILM
 //
 [film:film] > people:group
-// a business specific film ID
-- film:filmId (STRING) 
+- film:filmId (STRING) // a business specific film ID
+- film:type (STRING) // Feature, Mid-Length, Short
 
-- film:productionYear (LONG)
-// A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
-- film:originalLanguage (STRING) *
-// A list of countries as defined in ISO 3166-1
-// primary production country must be the first of the list
-- film:productionCountry (STRING) *
-// The corresponding english values to ease search and rendering 
-- film:prodCountryString  (STRING) *
+- film:originalLanguage (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
+- film:prodYear (LONG)
+- film:prodCountry (STRING) * // A list of countries as defined in ISO 3166-1
+                                    // primary production country must be the first of the list
+- film:prodCountryString  (STRING) * // The corresponding english values to ease search and rendering 
 - film:director (String)
-// exactRunningTime hh:mm:ss
-- film:length (String)
-- film:lengthInMinutes (LONG)
+- film:length (LONG) ='0' m a // the length in seconds
 
-- film:category (String)
-// only if category == animation
-- film:animationTechnique
-- film:genre
+- film:categories (String) *
+- film:animationTechnique (String) // only if animation is in categories
+- film:genres (String) *
 
 // cache to ease full text search 
 - film:cacheOTitle (STRING) IGNORE
@@ -45,14 +39,15 @@
 // film crew is inherited from people:group
 
 // maybe too specific
-- film:isFeature (BOOLEAN)
 - film:isPremiere (BOOLEAN)
 - film:isStudentProject (BOOLEAN)
 - film:isDebutFilm (BOOLEAN)
+- film:hasTrailer (BOOLEAN)
+- film:extractsOnTvAllowed (BOOLEAN)
 // why not use a contact ?
-- film:website
+- film:website (STRING) 
 
-// Alternative titles
+// Titles
 [film:title] > nt:unstructured, people:language, people:orderable
 - film:titleValue (STRING)
 - film:titleArticle (STRING)
@@ -60,11 +55,12 @@
 - film:titleLatinPronunciation (STRING)
 - film:titleIsOrig (BOOLEAN)
 
-// Synopsis
+// Synopses
 [film:synopsis] > nt:unstructured, people:language
 - film:synopsisContent (STRING)
 // an optional short synopsis
 - film:synopsisContentShort (STRING)
+- film:logLine (STRING)
 
 
 // Time stamp

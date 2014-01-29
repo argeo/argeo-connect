@@ -419,6 +419,42 @@ public class CommonsJcrUtils {
 		}
 	}
 
+	/** Remove a String from a multi valued property */
+	public static void removeStringFromMultiValuedProp(Node node,
+			String propName, String value) {
+		try {
+			List<Value> nodes = new ArrayList<Value>();
+			Value[] values = node.getProperty(propName).getValues();
+			for (int i = 0; i < values.length; i++) {
+				String curr = values[i].getString();
+				if (!value.equals(curr))
+					nodes.add(values[i]);
+			}
+			Value[] results = nodes.toArray(new Value[0]);
+			node.setProperty(propName, results);
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"Unable to remove reference from property " + propName
+							+ " of Node " + node, e);
+		}
+	}
+
+	/**
+	 * Concisely get the value of a long property or null if this node doesn't
+	 * have this property
+	 */
+	public static Long getLongValue(Node node, String propertyName) {
+		try {
+			if (!node.hasProperty(propertyName))
+				return null;
+			else
+				return node.getProperty(propertyName).getLong();
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Cannot get long property " + propertyName
+					+ " of " + node, e);
+		}
+	}
+
 	/**
 	 * Concisely get the value of a boolean property or null if this node
 	 * doesn't have this property
@@ -615,4 +651,65 @@ public class CommonsJcrUtils {
 			return baseRelPath + '/' + propertyName;
 	}
 
+	/**
+	 * Remove a given String from a multi value property of a node. If the
+	 * String is not found, it fails silently
+	 */
+	public static void removeMultiPropertyValue(Node node, String propName,
+			String stringToRemove) {
+		try {
+			List<String> strings = new ArrayList<String>();
+			Value[] values = node.getProperty(propName).getValues();
+			for (int i = 0; i < values.length; i++) {
+				String curr = values[i].getString();
+				if (!stringToRemove.equals(curr))
+					strings.add(curr);
+			}
+			node.setProperty(propName, strings.toArray(new String[0]));
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to remove value "
+					+ stringToRemove + " for property " + propName + " of "
+					+ node, e);
+		}
+	}
+
+	/**
+	 * Add a string value on a multivalued property. If this value is already
+	 * part of the list, it returns an error message. We use case insensitive
+	 * comparison
+	 */
+	public String addMultiPropertyValue(Node node, String propName, String value) {
+		try {
+			Value[] values;
+			String[] valuesStr;
+			String errMsg = null;
+			if (node.hasProperty(propName)) {
+				values = node.getProperty(propName).getValues();
+
+				// Check dupplicate
+				for (Value currVal : values) {
+					String curTagUpperCase = currVal.getString().toUpperCase()
+							.trim();
+					if (value.toUpperCase().trim().equals(curTagUpperCase)) {
+						errMsg = value
+								+ " is already in the list and thus could not be added.";
+						return errMsg;
+					}
+				}
+				valuesStr = new String[values.length + 1];
+				int i;
+				for (i = 0; i < values.length; i++) {
+					valuesStr[i] = values[i].getString();
+				}
+				valuesStr[i] = value;
+			} else {
+				valuesStr = new String[1];
+				valuesStr[0] = value;
+			}
+			node.setProperty(propName, valuesStr);
+			return null;
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Unable to set tags", re);
+		}
+	}
 }

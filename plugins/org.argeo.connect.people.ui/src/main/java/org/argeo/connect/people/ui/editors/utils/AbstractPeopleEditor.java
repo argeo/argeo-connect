@@ -208,7 +208,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 		// Do not show the edit button if the user does not have sufficient
 		// rights
-		if (canBeCheckedOutByMe()) {
+		if (getPeopleService().getUserManagementService().isUserInRole(
+				PeopleConstants.ROLE_MEMBER)) {
 			Button editBtn = toolkit.createButton(roPanelCmp, "Edit", SWT.PUSH);
 			editBtn.setLayoutData(new RowData(60, 20));
 			editBtn.addSelectionListener(new SelectionListener() {
@@ -368,8 +369,11 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	/* UTILITES */
 	/** Forces refresh of all form parts of the current editor */
 	public void forceRefresh(Object object) {
-		for (IFormPart part : mForm.getParts())
+		for (IFormPart part : mForm.getParts()) {
+			// if (part instanceof AbstractFormPart)
+			// ((AbstractFormPart) part).markStale();
 			part.refresh();
+		}
 		main.layout(true);
 		mForm.reflow(true);
 	}

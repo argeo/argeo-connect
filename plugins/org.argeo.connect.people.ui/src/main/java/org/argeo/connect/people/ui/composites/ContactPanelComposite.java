@@ -78,7 +78,7 @@ public class ContactPanelComposite extends Composite {
 		formPart = new ContactFormPart();
 
 		container.setExpandHorizontal(true);
-		container.setExpandVertical(true);
+		container.setExpandVertical(false);
 		container.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 		innerCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
@@ -132,7 +132,9 @@ public class ContactPanelComposite extends Composite {
 				noteCmp.setLayoutData(gd);
 				populateNotePanel(noteCmp);
 
-				innerCmp.layout();
+				innerCmp.pack(true);
+				innerCmp.getParent().pack(true);
+				// parent.layout();
 				innerCmp.getParent().layout();
 			} catch (Exception e) {
 				throw new PeopleException(

@@ -6,11 +6,11 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
-import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.film.FilmNames;
+import org.argeo.connect.film.core.FilmJcrUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -100,7 +100,8 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void createToolkits() {
-		filmTk = new FilmToolkit(toolkit, getManagedForm(), film);
+		filmTk = new FilmToolkit(toolkit, getManagedForm(), film,
+				getPeopleService());
 		entityTk = new EntityToolkit(toolkit, getManagedForm());
 		listTk = new ListToolkit(toolkit, getManagedForm(), getPeopleService());
 
@@ -109,12 +110,20 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 	@Override
 	protected void populateTabFolder(CTabFolder folder) {
 
-		// Film Details
-		String tooltip = "Details for film "
+		// Film info
+		String tooltip = "Main information for film "
 				+ JcrUtils.get(film, FilmNames.FILM_ID);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
-				"Details", PeopleUiConstants.PANEL_FILM_INFO, tooltip);
-		filmTk.populateFilmDetailsPanel(innerPannel);
+				"Main info.", PeopleUiConstants.PANEL_FILM_MAIN_INFO, tooltip);
+		filmTk.populateFilmMainInfoPanel(innerPannel);
+
+		// Film Details
+		tooltip = "Additional information for film "
+				+ JcrUtils.get(film, FilmNames.FILM_ID);
+		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
+				"Additional info.", PeopleUiConstants.PANEL_FILM_ADD_INFO,
+				tooltip);
+		filmTk.populateFilmAdditionalInfoPanel(innerPannel);
 
 		// Synopses
 		tooltip = "The synopses for film "
@@ -171,55 +180,85 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 	}
 
 	protected void populateTitleComposite(final Composite parent) {
+		Label lbl;
+		GridData gd;
 		try {
 			parent.setLayout(new FormLayout());
 
 			// READ ONLY PANEL
 			final Composite roPanelCmp = toolkit.createComposite(parent,
 					SWT.NO_FOCUS);
+			roPanelCmp.layout();
 			PeopleUiUtils.setSwitchingFormData(roPanelCmp);
 			roPanelCmp.setLayout(new GridLayout());
 			final Label filmInfoROLbl = toolkit.createLabel(roPanelCmp, "",
 					SWT.WRAP);
 			filmInfoROLbl.setData(PeopleUiConstants.MARKUP_ENABLED,
 					Boolean.TRUE);
+			roPanelCmp.layout();
+
 			final ColumnLabelProvider filmExtractLP = new FilmOverviewLabelProvider(
 					false, getPeopleService());
 
 			// EDIT PANEL
 			final Composite editPanelCmp = toolkit.createComposite(parent,
-					SWT.NONE);
+					SWT.NO_FOCUS);
 			PeopleUiUtils.setSwitchingFormData(editPanelCmp);
 			editPanelCmp.setLayout(new GridLayout(4, false));
 
-			// Film ID
-			Label lbl = toolkit.createLabel(editPanelCmp, "ID", SWT.NONE);
-			lbl.setLayoutData(new GridData());
+			editPanelCmp.layout();
+
+			// Film Number
+			// = toolkit.createLabel(editPanelCmp, "ID", SWT.NONE);
+			// lbl.setLayoutData(new GridData());
+			PeopleUiUtils.createBoldLabel(toolkit, editPanelCmp, "Film Number");
 			final Text idTxt = toolkit.createText(editPanelCmp, "", SWT.BORDER
 					| SWT.SINGLE | SWT.LEFT);
-			idTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
-					| GridData.FILL_HORIZONTAL));
+			// idTxt.setLayoutData(GridData.FILL_HORIZONTAL);
+
+			editPanelCmp.layout();
+
+			lbl = toolkit.createLabel(editPanelCmp, "");
+			lbl.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false,
+					false, 2, 1));
+
+			editPanelCmp.layout();
 
 			// Original Title
-			lbl = toolkit.createLabel(editPanelCmp, "Original Title", SWT.NONE);
-			final Text origTitleTxt = toolkit.createText(editPanelCmp, "",
-					SWT.BORDER | SWT.SINGLE | SWT.LEFT);
+			PeopleUiUtils.createBoldLabel(toolkit, editPanelCmp,
+					"Original Title");
+			Composite titleCmp = toolkit.createComposite(editPanelCmp,
+					SWT.NO_FOCUS);
+			titleCmp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+					false, 3, 1));
+			GridLayout layout = PeopleUiUtils.gridLayoutNoBorder(2);
+			layout.horizontalSpacing = 5;
+			titleCmp.setLayout(layout);
+
+			final Text origTitleArticleTxt = toolkit.createText(titleCmp, "",
+					SWT.BORDER);
+			gd = new GridData();
+			gd.widthHint = 100;
+			origTitleArticleTxt.setLayoutData(gd);
+			editPanelCmp.layout();
+
+			final Text origTitleTxt = toolkit.createText(titleCmp, "",
+					SWT.BORDER);
 			origTitleTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 					| GridData.FILL_HORIZONTAL));
 
-			// Original Title Article
-			lbl = toolkit.createLabel(editPanelCmp, "Orig. Title Article",
-					SWT.NONE);
-			final Text origTitleArticleTxt = toolkit.createText(editPanelCmp,
-					"", SWT.BORDER | SWT.SINGLE | SWT.LEFT);
-			origTitleArticleTxt.setLayoutData(new GridData(
-					GridData.GRAB_HORIZONTAL | GridData.FILL_HORIZONTAL));
-
-			// latin Title
-			lbl = toolkit.createLabel(editPanelCmp, "Latin pronounciation",
-					SWT.NONE);
+			// latin pronunciation & corresponding language
+			PeopleUiUtils.createBoldLabel(toolkit, editPanelCmp,
+					"Latin pronounciation");
 			final Text latinTitleTxt = toolkit.createText(editPanelCmp, "",
-					SWT.BORDER | SWT.SINGLE | SWT.LEFT);
+					SWT.BORDER);
+			latinTitleTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
+					| GridData.FILL_HORIZONTAL));
+
+			PeopleUiUtils.createBoldLabel(toolkit, editPanelCmp,
+					"Title Language");
+			final Text titleLangTxt = toolkit.createText(editPanelCmp, "",
+					SWT.BORDER);
 			latinTitleTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 					| GridData.FILL_HORIZONTAL));
 
@@ -227,43 +266,37 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 				// Update values on refresh
 				public void refresh() {
 					super.refresh();
+					boolean isCheckedOut = CommonsJcrUtils
+							.isNodeCheckedOutByMe(film);
+					if (isCheckedOut) {
+						Node originalNode = FilmJcrUtils.getOriginalTitle(film);
+						// EDIT PART
+						PeopleUiUtils.refreshFormTextWidget(idTxt, film,
+								FilmNames.FILM_ID);
+						PeopleUiUtils.refreshFormTextWidget(
+								origTitleArticleTxt, originalNode,
+								FilmNames.FILM_TITLE_ARTICLE);
+						PeopleUiUtils.refreshFormTextWidget(origTitleTxt,
+								originalNode, FilmNames.FILM_TITLE_VALUE);
+						PeopleUiUtils.refreshFormTextWidget(latinTitleTxt,
+								originalNode,
+								FilmNames.FILM_TITLE_LATIN_PRONUNCIATION);
+						PeopleUiUtils.refreshFormTextWidget(titleLangTxt,
+								originalNode, PeopleNames.PEOPLE_LANG);
 
-					// EDIT PART
-					String filmBusinessID = JcrUtils.get(film,
-							FilmNames.FILM_ID);
-
-					if (CommonsJcrUtils.checkNotEmptyString(filmBusinessID))
-						idTxt.setText(filmBusinessID);
-
-					String latinTitle = JcrUtils.get(film,
-							FilmNames.FILM_CACHE_OTITLE_LATIN);
-					if (CommonsJcrUtils.checkNotEmptyString(latinTitle))
-						latinTitleTxt.setText(latinTitle);
-
-					String origTitle = JcrUtils.get(film,
-							FilmNames.FILM_CACHE_OTITLE);
-					if (CommonsJcrUtils.checkNotEmptyString(origTitle))
-						origTitleTxt.setText(origTitle);
-
-					String origTitleArt = JcrUtils.get(film,
-							FilmNames.FILM_CACHE_OTITLE_ARTICLE);
-					if (CommonsJcrUtils.checkNotEmptyString(origTitleArt))
-						origTitleArticleTxt.setText(origTitleArt);
-
+						// TODO FIX THIS
+						origTitleArticleTxt.setEnabled(false);
+						origTitleTxt.setEnabled(false);
+						latinTitleTxt.setEnabled(false);
+						origTitleArticleTxt.setEnabled(false);
+					}
 					// READ ONLY PART
 					String roText = filmExtractLP.getText(film);
 					filmInfoROLbl.setText(roText);
-
-					try {
-						if (film.isCheckedOut())
-							editPanelCmp.moveAbove(roPanelCmp);
-						else
-							editPanelCmp.moveBelow(roPanelCmp);
-					} catch (RepositoryException e) {
-						throw new PeopleException(
-								"Unable to get checked out status", e);
-					}
-					// editPanelCmp.getParent().layout();
+					if (isCheckedOut)
+						editPanelCmp.moveAbove(roPanelCmp);
+					else
+						editPanelCmp.moveBelow(roPanelCmp);
 					roPanelCmp.getParent().layout();
 				}
 			};
