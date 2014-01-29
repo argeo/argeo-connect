@@ -30,23 +30,38 @@
 Text[BORDER]:disabled,
 Text[MULTI][BORDER]:disabled {
   box-shadow: none;
-  border: 1px solid white;
+  border: 1px solid #eeeeee;
 }
 
 /** focused */
 
 Text[BORDER]:focused,
 Text[MULTI][BORDER]:focused {
-  box-shadow: 4px 4px 2px 0px black; 
+  box-shadow: 2px 2px 2px 2px #00008B; 
   border: 1px solid #a4a4a4;
 }
 
 /****** Flat image Buttons *********/
+Button[FLAT] {
+  background-image: none;
+  /*background-repeat: repeat;
+  background-position: left top;*/
+  padding: 0px 0px;
+  spacing: 2px;
+  cursor: default;
+  animation: none;
+  color: white;
+  background-color: transparent;
+  opacity: 1;
+  text-shadow: none;
+  text-decoration: none;
+}
 
-Button.peopleCss-flatImgBtn,
+Button.peopleCss-flatImgBtn:default,
 Button.peopleCss-flatImgBtn:hover, 
 Button.peopleCss-flatImgBtn:pressed, 
-Button.peopleCss-flatImgBtn:selected {
+Button.peopleCss-flatImgBtn:selected, 
+Button.peopleCss-flatImgBtn {
   border: 0px solid white;
   border-radius: 0px;
   padding: 0px 0px;

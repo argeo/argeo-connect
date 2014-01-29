@@ -23,6 +23,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.editors.StaticSearchEntityEditor;
 import org.argeo.connect.people.ui.editors.utils.SearchEntityEditorInput;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
@@ -66,6 +67,7 @@ public class PeopleDefaultView extends ViewPart {
 	/* DEPENDENCY INJECTION */
 	private Session session;
 	private PeopleService peopleService;
+	private String openEntityEditorCmdId = OpenEntityEditor.ID;
 
 	// This page widgets
 	private TableViewer personViewer;
@@ -203,10 +205,11 @@ public class PeopleDefaultView extends ViewPart {
 		table.setHeaderVisible(false);
 		// Enable markups
 		table.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(PeopleUiConstants.CUSTOM_ITEM_HEIGHT, Integer.valueOf(20));
+		table.setData(PeopleUiConstants.CUSTOM_ITEM_HEIGHT, Integer.valueOf(24));
 
 		v.setContentProvider(new BasicNodeListContentProvider());
-		v.addDoubleClickListener(new PeopleJcrViewerDClickListener(null));
+		v.addDoubleClickListener(new PeopleJcrViewerDClickListener(
+				openEntityEditorCmdId));
 		return v;
 	}
 
@@ -301,4 +304,14 @@ public class PeopleDefaultView extends ViewPart {
 					+ "session for view " + ID, e);
 		}
 	}
+
+	public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
+		this.openEntityEditorCmdId = openEntityEditorCmdId;
+	}
+
+	/** Overwrite to use another command that open an editor given a node */
+	protected String getOpenEditorCommandId() {
+		return openEntityEditorCmdId;
+	}
+
 }

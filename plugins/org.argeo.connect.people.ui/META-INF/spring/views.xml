@@ -14,16 +14,19 @@
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
+		<property name="openEntityEditorCmdId" value="org.argeo.connect.people.ui.openEntityEditor" />
 	</bean>
-	
-	
+
+
 	<!-- USERS, GROUPS AND ACTIVITIES -->
 	<bean id="myTasksView" class="org.argeo.connect.people.ui.views.MyTasksView"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
+		<property name="openEntityEditorCmdId"
+			value="org.argeo.connect.people.ui.openEntityEditor" />
 	</bean>
-	
+
 	<bean id="userGroupsView" class="org.argeo.connect.people.ui.views.UserGroupsView"
 		scope="prototype">
 		<property name="repository" ref="repository" />
