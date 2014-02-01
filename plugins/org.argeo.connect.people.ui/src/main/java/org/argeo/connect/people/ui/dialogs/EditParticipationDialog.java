@@ -321,9 +321,19 @@ public class EditParticipationDialog extends TrayDialog {
 
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
+
+				Object element = ((IStructuredSelection) event.getSelection())
+						.getFirstElement();
+
+				if (element == null) {
+
+					selectedItem = null;
+					return;
+
+				}
+
 				// Only single selection is enabled
-				Node selectedEntity = (Node) ((IStructuredSelection) event
-						.getSelection()).getFirstElement();
+				Node selectedEntity = (Node) element;
 				selectedItem = selectedEntity;
 
 				try {
