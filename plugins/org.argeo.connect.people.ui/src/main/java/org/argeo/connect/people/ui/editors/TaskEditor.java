@@ -157,7 +157,7 @@ public class TaskEditor extends AbstractPeopleEditor {
 					// TODO clean this.
 					// update current assigned to group cache here
 					String manager = ActivityJcrUtils
-							.getActivityManagerDisplayName(task);
+							.getAssignedToDisplayName(task);
 					if (task.hasProperty(PeopleNames.PEOPLE_ASSIGNED_TO))
 						assignedToNode = task.getProperty(
 								PeopleNames.PEOPLE_ASSIGNED_TO).getNode();
