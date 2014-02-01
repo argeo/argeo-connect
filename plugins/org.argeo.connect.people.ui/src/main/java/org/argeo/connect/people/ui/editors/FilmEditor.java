@@ -114,13 +114,14 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 				"Main info.", PeopleUiConstants.PANEL_FILM_MAIN_INFO, tooltip);
 		filmTk.populateFilmMainInfoPanel(innerPannel);
 
+		// TODO finalize this
 		// Film Details
-		tooltip = "Additional information for film "
-				+ JcrUtils.get(film, FilmNames.FILM_ID);
-		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
-				"Additional info.", PeopleUiConstants.PANEL_FILM_ADD_INFO,
-				tooltip);
-		filmTk.populateFilmAdditionalInfoPanel(innerPannel);
+		// tooltip = "Additional information for film "
+		// + JcrUtils.get(film, FilmNames.FILM_ID);
+		// innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
+		// "Additional info.", PeopleUiConstants.PANEL_FILM_ADD_INFO,
+		// tooltip);
+		// filmTk.populateFilmAdditionalInfoPanel(innerPannel);
 
 		// Synopses
 		tooltip = "The synopses for film "
@@ -143,24 +144,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 		tooltip = "Staff related to " + JcrUtils.get(film, FilmNames.FILM_ID);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Crew",
 				PeopleUiConstants.PANEL_MEMBERS, tooltip);
-		listTk
-				.populateParticipantsPanel(innerPannel, film);
-
-		// viewer.addDoubleClickListener(new PeopleDoubleClickAdapter() {
-		//
-		// @Override
-		// protected void processDoubleClick(Object obj) {
-		// // Here we have PeopleMembers, we want to display linked
-		// // entities on double click
-		// if (obj instanceof Node) {
-		// Node link = (Node) obj;
-		// CommandUtils.callCommand(getOpenEntityEditorCmdId(),
-		// OpenEntityEditor.PARAM_ENTITY_UID, CommonsJcrUtils
-		// .get(link, PeopleNames.PEOPLE_REF_UID));
-		// }
-		// }
-		// });
-
+		listTk.populateParticipantsPanel(innerPannel, film);
 	}
 
 	@Override
@@ -204,7 +188,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 			PeopleUiUtils.setSwitchingFormData(editPanelCmp);
 			editPanelCmp.setLayout(new GridLayout(4, false));
 
-			editPanelCmp.layout();
+			// editPanelCmp.layout();
 
 			// Film Number
 			// = toolkit.createLabel(editPanelCmp, "ID", SWT.NONE);
@@ -212,17 +196,17 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 			PeopleUiUtils.createBoldLabel(toolkit, editPanelCmp, "Film Number");
 			final Text idTxt = toolkit.createText(editPanelCmp, "", SWT.BORDER
 					| SWT.SINGLE | SWT.LEFT);
-			// idTxt.setLayoutData(GridData.FILL_HORIZONTAL);
+			idTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-			editPanelCmp.layout();
+			// editPanelCmp.layout();
 
 			lbl = toolkit.createLabel(editPanelCmp, "");
 			lbl.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false,
 					false, 2, 1));
 
-			editPanelCmp.layout();
+			// editPanelCmp.layout();
 
-			// Original Title
+			// Original Title - Article and value are in a sub composite
 			PeopleUiUtils.createBoldLabel(toolkit, editPanelCmp,
 					"Original Title");
 			Composite titleCmp = toolkit.createComposite(editPanelCmp,
@@ -236,14 +220,18 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 			final Text origTitleArticleTxt = toolkit.createText(titleCmp, "",
 					SWT.BORDER);
 			gd = new GridData();
-			gd.widthHint = 100;
+			gd.widthHint = 60;
 			origTitleArticleTxt.setLayoutData(gd);
-			editPanelCmp.layout();
+			origTitleArticleTxt.setData(PeopleUiConstants.CUSTOM_VARIANT,
+					PeopleUiConstants.CSS_ALWAYS_SHOW_BORDER);
+			// editPanelCmp.layout();
 
 			final Text origTitleTxt = toolkit.createText(titleCmp, "",
 					SWT.BORDER);
-			origTitleTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
-					| GridData.FILL_HORIZONTAL));
+			origTitleTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+					false));
+			origTitleTxt.setData(PeopleUiConstants.CUSTOM_VARIANT,
+					PeopleUiConstants.CSS_ALWAYS_SHOW_BORDER);
 
 			// latin pronunciation & corresponding language
 			PeopleUiUtils.createBoldLabel(toolkit, editPanelCmp,
@@ -252,13 +240,17 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 					SWT.BORDER);
 			latinTitleTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 					| GridData.FILL_HORIZONTAL));
+			latinTitleTxt.setData(PeopleUiConstants.CUSTOM_VARIANT,
+					PeopleUiConstants.CSS_ALWAYS_SHOW_BORDER);
 
 			PeopleUiUtils.createBoldLabel(toolkit, editPanelCmp,
 					"Title Language");
 			final Text titleLangTxt = toolkit.createText(editPanelCmp, "",
 					SWT.BORDER);
-			latinTitleTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
+			titleLangTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 					| GridData.FILL_HORIZONTAL));
+			titleLangTxt.setData(PeopleUiConstants.CUSTOM_VARIANT,
+					PeopleUiConstants.CSS_ALWAYS_SHOW_BORDER);
 
 			final AbstractFormPart editPart = new AbstractFormPart() {
 				// Update values on refresh
@@ -273,12 +265,13 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 								FilmNames.FILM_ID);
 						PeopleUiUtils.refreshFormTextWidget(
 								origTitleArticleTxt, originalNode,
-								FilmNames.FILM_TITLE_ARTICLE);
+								FilmNames.FILM_TITLE_ARTICLE, "Article");
 						PeopleUiUtils.refreshFormTextWidget(origTitleTxt,
 								originalNode, FilmNames.FILM_TITLE_VALUE);
 						PeopleUiUtils.refreshFormTextWidget(latinTitleTxt,
 								originalNode,
-								FilmNames.FILM_TITLE_LATIN_PRONUNCIATION);
+								FilmNames.FILM_TITLE_LATIN_PRONUNCIATION,
+								"Latin pronunciation if needed");
 						PeopleUiUtils.refreshFormTextWidget(titleLangTxt,
 								originalNode, PeopleNames.PEOPLE_LANG);
 
@@ -287,6 +280,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 						origTitleTxt.setEnabled(false);
 						latinTitleTxt.setEnabled(false);
 						origTitleArticleTxt.setEnabled(false);
+						titleLangTxt.setEnabled(false);
 					}
 					// READ ONLY PART
 					String roText = filmExtractLP.getText(film);
