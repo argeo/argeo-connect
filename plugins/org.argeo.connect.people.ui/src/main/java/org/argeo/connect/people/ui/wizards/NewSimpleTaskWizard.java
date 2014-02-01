@@ -10,12 +10,12 @@ import javax.jcr.Session;
 
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.ActivitiesImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.dialogs.PickUpByNodeTypeDialog;
+import org.argeo.connect.people.ui.dialogs.PickUpGroupDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -176,14 +176,21 @@ public class NewSimpleTaskWizard extends Wizard {
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
 					try {
-						PickUpByNodeTypeDialog diag = new PickUpByNodeTypeDialog(
+						// PickUpByNodeTypeDialog diag = new
+						// PickUpByNodeTypeDialog(
+						// assignedToTxt.getShell(), "Choose a group",
+						// currSession, PeopleTypes.PEOPLE_USER_GROUP);
+						//
+						PickUpGroupDialog diag = new PickUpGroupDialog(
 								assignedToTxt.getShell(), "Choose a group",
-								currSession, PeopleTypes.PEOPLE_USER_GROUP);
-						diag.open();
-						// update display
-						assignedToGroupNode = diag.getSelected();
-						// TODO use correct group name
-						assignedToTxt.setText(assignedToGroupNode.getName());
+								currSession, null);
+						int result = diag.open();
+						if (Window.OK == result) {
+							// update display
+							assignedToGroupNode = diag.getSelected();
+							// TODO use correct group name
+							assignedToTxt.setText(assignedToGroupNode.getName());
+						}
 					} catch (RepositoryException e) {
 						throw new PeopleException(
 								"Unable to pick up a group node to assign to",

@@ -10,17 +10,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.dialogs.PickUpByNodeTypeDialog;
+import org.argeo.connect.people.ui.dialogs.PickUpGroupDialog;
 import org.argeo.connect.people.ui.dialogs.PickUpRelatedDialog;
 import org.argeo.connect.people.ui.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -251,26 +251,27 @@ public class TaskEditor extends AbstractPeopleEditor {
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				try {
-					PickUpByNodeTypeDialog diag = new PickUpByNodeTypeDialog(
+					PickUpGroupDialog diag = new PickUpGroupDialog(
 							changeAssignationLk.getShell(), "Choose a group",
-							getSession(), PeopleTypes.PEOPLE_USER_GROUP);
-					diag.open();
-					Node newNode = diag.getSelected();
-
-					if (assignedToNode != null
-							&& newNode.getPath().equals(
-									assignedToNode.getPath()))
-						return; // nothing has changed
-					else {
-						// Update value
-						task.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO,
-								newNode);
-						// update cache and display.
-						assignedToNode = newNode;
-						changeAssignationLk.setText(CommonsJcrUtils.get(
-								assignedToNode, Property.JCR_TITLE)
-								+ "  ~ <a>Change</a>");
-						headerPart.markDirty();
+							getSession(), null);
+					int result = diag.open();
+					if (Window.OK == result) {
+						Node newNode = diag.getSelected();
+						if (assignedToNode != null
+								&& newNode.getPath().equals(
+										assignedToNode.getPath()))
+							return; // nothing has changed
+						else {
+							// Update value
+							task.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO,
+									newNode);
+							// update cache and display.
+							assignedToNode = newNode;
+							changeAssignationLk.setText(CommonsJcrUtils.get(
+									assignedToNode, Property.JCR_TITLE)
+									+ "  ~ <a>Change</a>");
+							headerPart.markDirty();
+						}
 					}
 				} catch (RepositoryException re) {
 					throw new PeopleException(
@@ -293,23 +294,29 @@ public class TaskEditor extends AbstractPeopleEditor {
 					PickUpRelatedDialog diag = new PickUpRelatedDialog(shell,
 							"Choose an entity", task.getSession(), task);
 					diag.open();
-					Node node = diag.getSelected();
-					String errMsg = CommonsJcrUtils.addRefToMultiValuedProp(
-							task, PeopleNames.PEOPLE_RELATED_TO, node);
-					if (errMsg != null)
-						MessageDialog.openError(PeopleUiPlugin.getDefault()
-								.getWorkbench().getActiveWorkbenchWindow()
-								.getShell(), "Dupplicates", errMsg);
-					else {
-						headerPart.refresh();
-						headerPart.markDirty();
 
-						getManagedForm().dirtyStateChanged();
-						for (IFormPart part : getManagedForm().getParts()) {
-							((AbstractFormPart) part).markStale();
-							part.refresh();
+					int result = diag.open();
+					if (Window.OK == result) {
+
+						Node node = diag.getSelected();
+						String errMsg = CommonsJcrUtils
+								.addRefToMultiValuedProp(task,
+										PeopleNames.PEOPLE_RELATED_TO, node);
+						if (errMsg != null)
+							MessageDialog.openError(PeopleUiPlugin.getDefault()
+									.getWorkbench().getActiveWorkbenchWindow()
+									.getShell(), "Dupplicates", errMsg);
+						else {
+							headerPart.refresh();
+							headerPart.markDirty();
+
+							getManagedForm().dirtyStateChanged();
+							for (IFormPart part : getManagedForm().getParts()) {
+								((AbstractFormPart) part).markStale();
+								part.refresh();
+							}
+
 						}
-
 					}
 				} catch (RepositoryException e) {
 					throw new PeopleException("Unable to link chosen node "
