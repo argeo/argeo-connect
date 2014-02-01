@@ -12,6 +12,18 @@
 		<property name="repository" ref="repository" />
 	</bean>
 
+	<!-- Persons and Organisations -->
+	<bean id="editJob" class="org.argeo.connect.people.ui.commands.EditJob"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+		<property name="repository" ref="repository" />
+	</bean>
+	<bean id="editParticipation" class="org.argeo.connect.people.ui.commands.EditParticipation"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+		<property name="repository" ref="repository" />
+	</bean>
+
 	<!-- Entity References CRUD -->
 	<bean id="addEntityReference" class="org.argeo.connect.people.ui.commands.AddEntityReference"
 		scope="prototype">
@@ -55,18 +67,29 @@
 		<property name="peopleService" ref="peopleService" />
 	</bean>
 
-	<!--  TASKS AND ACTIVITIES -->
+	<!-- TASKS AND ACTIVITIES -->
 	<bean id="createSimpleTask" class="org.argeo.connect.people.ui.commands.CreateSimpleTask"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
 	</bean>
 
-
-
+	<!-- TODO Check and eventually remove following commands after cleaning. -->
 	<bean id="importPeople"
 		class="org.argeo.connect.people.ui.commands.ImportPeopleHandler"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 	</bean>
+
+	<bean id="org.argeo.connect.people.ui.addEntityReferences"
+		class="org.argeo.connect.people.ui.commands.AddEntityReferences"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+	</bean>
+	<bean id="org.argeo.connect.people.ui.addEntityReferenceWithPosition"
+		class="org.argeo.connect.people.ui.commands.AddEntityReferenceWithPosition"
+		scope="prototype">
+		<property name="peopleService" ref="peopleService" />
+	</bean>
+	<!-- until there -->
 </beans>

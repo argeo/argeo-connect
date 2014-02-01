@@ -9,6 +9,7 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Constraint;
@@ -28,10 +29,8 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.jcr.JcrUtils;
-import org.springframework.security.Authentication;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.context.SecurityContextHolder;
 
 /** Concrete access to people services */
 public class PeopleServiceImpl implements PeopleService {
@@ -42,8 +41,9 @@ public class PeopleServiceImpl implements PeopleService {
 
 	/* Other services */
 	private UserManagementService userManagementService = new UserManagementServiceImpl();
-	private ActivityService activityService = new ActivityServiceImpl(userManagementService);
-	
+	private ActivityService activityService = new ActivityServiceImpl(
+			userManagementService);
+
 	// private Map<Integer, String> managedRoles;
 
 	// business catalogs maintained in file business catalogs of the specs
@@ -238,30 +238,144 @@ public class PeopleServiceImpl implements PeopleService {
 
 	}
 
-	/* Persons */
+	/* PERSONS AND ORGANISATIONS */
 
-	/* USER MANAGEMENT */
-	//TODO move this to user management service
-	
-	/** Expose injected repository */
-	public Repository getRepository() {
-		return repository;
+	@Override
+	public Node createOrUpdateJob(Node oldJob, Node person, Node organisation,
+			String position, String department, boolean isPrimary) {
+		// A shortcut to have a node name even when no position is given
+		String newNodeName = CommonsJcrUtils.checkNotEmptyString(position) ? position
+				: "Unnamed_job";
+
+		// The job on which to update various info
+		Node newJob = null;
+
+		try {
+			// First check if we must remove the old job when linked person has changed
+			if (oldJob != null) {
+				Node oldPerson = oldJob.getParent().getParent();
+				String oldPath = oldPerson.getPath();
+				String newPath = person.getPath();
+				if (!newPath.equals(oldPath)) {
+					// remove old
+					boolean wasCO = checkCOStatusBeforeUpdate(oldPerson);
+					oldJob.remove();
+					checkCOStatusAfterUpdate(oldPerson, wasCO);
+				} else
+					newJob = oldJob;
+			}
+
+			boolean wasCO = checkCOStatusBeforeUpdate(person);
+			// Create node if necessary
+			if (newJob == null) {
+				Node parentNode = JcrUtils.mkdirs(person,
+						PeopleNames.PEOPLE_JOBS, NodeType.NT_UNSTRUCTURED);
+				newJob = parentNode
+						.addNode(newNodeName, PeopleTypes.PEOPLE_JOB);
+			}
+
+			// update properties
+
+			// Related org
+			newJob.setProperty(PeopleNames.PEOPLE_REF_UID, organisation
+					.getProperty(PeopleNames.PEOPLE_UID).getString());
+
+			// position
+			if (position == null)
+				position = ""; // to be able to remove an existing position
+			newJob.setProperty(PeopleNames.PEOPLE_ROLE, position);
+			// TODO update node name ??
+
+			// department
+			if (department == null)
+				department = "";
+			newJob.setProperty(PeopleNames.PEOPLE_DEPARTMENT, department);
+
+			// primary flag
+			newJob.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, isPrimary);
+			if (isPrimary)
+				PeopleJcrUtils.markAsPrimary(person, newJob);
+			checkCOStatusAfterUpdate(person, wasCO);
+		} catch (RepositoryException re) {
+			throw new PeopleException("unable to create or update job "
+					+ oldJob + " for person " + person + " and org "
+					+ organisation, re);
+		}
+		return null;
 	}
 
-	/* DEPENDENCY INJECTION */
-	// public void setManagedRoles(Map<Integer, String> managedRoles) {
-	// this.managedRoles = managedRoles;
-	// }
+	//TODO mov this in a filmService
+	@Override
+	public Node createOrUpdateParticipation(Node oldParticipation, Node film,
+			Node contact, String role) {
+		// A shortcut to have a node name even when no position is given
+		String newNodeName = CommonsJcrUtils.checkNotEmptyString(role) ? role
+				: "Unnamed_role";
 
-	// Inject a map with all business catalogs
-	public void setBusinessCatalogs(Map<String, Object> businessCatalogs) {
-		// this.businessCatalogs = businessCatalogs;
+		// The position on which to update various info
+		Node newParticipation = null;
+
+		try {
+			// First check if we must remove the old job when linked person has changed
+			if (oldParticipation != null) {
+				Node oldFilm = oldParticipation.getParent().getParent();
+				String oldPath = oldFilm.getPath();
+				String newPath = film.getPath();
+				if (!newPath.equals(oldPath)) {
+					// remove old
+					boolean wasCO = checkCOStatusBeforeUpdate(oldFilm);
+					oldParticipation.remove();
+					checkCOStatusAfterUpdate(oldFilm, wasCO);
+				} else
+					newParticipation = oldParticipation;
+			}
+
+			boolean wasCO = checkCOStatusBeforeUpdate(film);
+			// Create node if necessary
+			if (newParticipation == null) {
+				Node parentNode = JcrUtils.mkdirs(film,
+						PeopleNames.PEOPLE_MEMBERS, NodeType.NT_UNSTRUCTURED);
+				newParticipation = parentNode
+						.addNode(newNodeName, PeopleTypes.PEOPLE_MEMBER);
+			}
+
+			// update properties
+
+			// Related org
+			newParticipation.setProperty(PeopleNames.PEOPLE_REF_UID, contact
+					.getProperty(PeopleNames.PEOPLE_UID).getString());
+
+			// position
+			if (role == null)
+				role = ""; // to be able to reset value if an existing role
+			newParticipation.setProperty(PeopleNames.PEOPLE_ROLE, role);
+			// TODO update node name ??
+
+			checkCOStatusAfterUpdate(film, wasCO);
+		} catch (RepositoryException re) {
+			throw new PeopleException("unable to create or update job "
+					+ oldParticipation + " for person " + film + " and org "
+					+ contact, re);
+		}
+		return null;
 	}
 
-	public void setRepository(Repository repository) {
-		this.repository = repository;
+	private boolean checkCOStatusBeforeUpdate(Node node) {
+		boolean wasCheckedOut = CommonsJcrUtils.isNodeCheckedOutByMe(node);
+		if (!wasCheckedOut)
+			CommonsJcrUtils.checkout(node);
+		return wasCheckedOut;
 	}
 
+	private void checkCOStatusAfterUpdate(Node node, boolean wasCheckedOut)
+			throws RepositoryException {
+		if (!wasCheckedOut)
+			CommonsJcrUtils.saveAndCheckin(node);
+		else
+			node.getSession().save();
+	}
+
+	/* EXPOSED CLASSES */
 	@Override
 	public ActivityService getActivityService() {
 		return activityService;
@@ -271,4 +385,25 @@ public class PeopleServiceImpl implements PeopleService {
 	public UserManagementService getUserManagementService() {
 		return userManagementService;
 	}
+
+	// TODO remove this we rather want to directly inject the repository if
+	// needed
+	/** Expose injected repository */
+	public Repository getRepository() {
+		return repository;
+	}
+
+	/* DEPENDENCY INJECTION */
+	// Inject a map with all business catalogs
+	public void setBusinessCatalogs(Map<String, Object> businessCatalogs) {
+		// this.businessCatalogs = businessCatalogs;
+	}
+
+	public void setRepository(Repository repository) {
+		this.repository = repository;
+	}
+
+	// public void setManagedRoles(Map<Integer, String> managedRoles) {
+	// this.managedRoles = managedRoles;
+	// }
 }

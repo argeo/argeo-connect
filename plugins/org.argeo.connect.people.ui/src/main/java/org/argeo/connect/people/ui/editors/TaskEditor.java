@@ -118,7 +118,7 @@ public class TaskEditor extends AbstractPeopleEditor {
 		// RELATED ENTITIES
 		Label label = PeopleUiUtils.createBoldLabel(toolkit, parent,
 				"Related entities");
-		
+
 		gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
 		gd.verticalIndent = 4;
 		label.setLayoutData(gd);
@@ -154,9 +154,13 @@ public class TaskEditor extends AbstractPeopleEditor {
 
 					boolean isCO = CommonsJcrUtils.isNodeCheckedOutByMe(task);
 
+					// TODO clean this.
+					// update current assigned to group cache here
 					String manager = ActivityJcrUtils
 							.getActivityManagerDisplayName(task);
-
+					if (task.hasProperty(PeopleNames.PEOPLE_ASSIGNED_TO))
+						assignedToNode = task.getProperty(
+								PeopleNames.PEOPLE_ASSIGNED_TO).getNode();
 					if (isCO)
 						manager += " ~ <a>Change</a>";
 					changeAssignationLk.setText(manager);
@@ -253,9 +257,15 @@ public class TaskEditor extends AbstractPeopleEditor {
 					diag.open();
 					Node newNode = diag.getSelected();
 
-					if (newNode.getPath().equals(assignedToNode.getPath()))
+					if (assignedToNode != null
+							&& newNode.getPath().equals(
+									assignedToNode.getPath()))
 						return; // nothing has changed
 					else {
+						// Update value
+						task.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO,
+								newNode);
+						// update cache and display.
 						assignedToNode = newNode;
 						changeAssignationLk.setText(CommonsJcrUtils.get(
 								assignedToNode, Property.JCR_TITLE)

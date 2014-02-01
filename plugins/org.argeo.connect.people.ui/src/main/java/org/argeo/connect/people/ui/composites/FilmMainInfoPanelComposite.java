@@ -30,6 +30,7 @@ import org.argeo.connect.people.ui.dialogs.PickUpCountryDialog;
 import org.argeo.connect.people.ui.dialogs.PickUpDateDialog;
 import org.argeo.connect.people.ui.dialogs.PickUpFromListDialog;
 import org.argeo.connect.people.ui.dialogs.PickUpLangDialog;
+import org.argeo.connect.people.ui.providers.BooleanFlagLabelProvider;
 import org.argeo.connect.people.ui.utils.JcrUiUtils;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
@@ -57,12 +58,12 @@ import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
@@ -84,6 +85,19 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  */
 public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 	private static final long serialVersionUID = 58381532068661087L;
+
+	// TODO VARIOUS VALUE LIST THAT MUST BE MANAGE MORE CLEANLY
+	private final static String[] ANIM_TECH_VALUES = { "3D Computer Animation",
+			"2D Computer Animation", "Cutout Animation", "Puppet Animation",
+			"Clay Animation", "Sand Animation", "Stop Motion",
+			"Hand-Drawn Animation", "Other" };
+
+	private final static String[] CATEGORY_VALUES = { "Fiction", "Animation",
+			"Documentary", "Experimental", "Art", "Performance", "Music",
+			"Video", "Mockumentary" };
+
+	private final static String[] GENRE_VALUES = { "Roadmovie", "Thriller",
+			"Drama", "Romantic Comedy", "Erotic Movie", "Horror" };
 
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
@@ -346,9 +360,11 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 
 		// Animation tech
 		PeopleUiUtils.createBoldLabel(toolkit, parent, "Animation technique");
-		final Text animTechTxt = toolkit.createText(parent, "", SWT.BORDER);
-		animTechTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+		final Combo animTechCmb = new Combo(parent, SWT.READ_ONLY);
+		// toolkit.createC(parent, "", SWT.BORDER);
+		animTechCmb.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false));
+		animTechCmb.setItems(ANIM_TECH_VALUES);
 
 		Label dummyLbl = toolkit.createLabel(parent, "");
 		dummyLbl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
@@ -427,9 +443,9 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 					return;
 
 				refreshCategoryChk(categoryBtns);
-				PeopleUiUtils.refreshFormTextWidget(animTechTxt, film,
+				PeopleUiUtils.refreshFormComboValue(animTechCmb, film,
 						FILM_ANIMATION_TECHNIQUE);
-				animTechTxt.setEnabled(isValueContained(film, FILM_CATEGORIES,
+				animTechCmb.setEnabled(isValueContained(film, FILM_CATEGORIES,
 						"Animation"));
 
 				PeopleUiUtils.refreshFormTextWidget(prodYearTxt, film,
@@ -465,8 +481,8 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 
 		parentEditPart.refresh();
 
-		PeopleUiUtils.addModifyListener(animTechTxt, film,
-				FILM_ANIMATION_TECHNIQUE, parentEditPart);
+		PeopleUiUtils.addComboSelectionListener(parentEditPart, animTechCmb,
+				film, FILM_ANIMATION_TECHNIQUE, PropertyType.STRING);
 		PeopleUiUtils.addModifyListener(prodYearTxt, film, FILM_PROD_YEAR,
 				parentEditPart);
 		PeopleUiUtils.addModifyListener(websiteTxt, film, FILM_WEBSITE,
@@ -496,12 +512,8 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 
 	private List<Button> createCategoryChk(Composite parent) {
 		List<Button> buttons = new ArrayList<Button>();
-		// TODO clean this
-		final String[] elements = { "Fiction", "Animation", "Documentary",
-				"Experimental", "Art", "Performance", "Music", "Video",
-				"Mockumentary" };
 		parent.setLayout(createBasicRL());
-		for (String category : elements) {
+		for (String category : CATEGORY_VALUES) {
 			buttons.add(toolkit.createButton(parent, category, SWT.CHECK));
 		}
 		return buttons;
@@ -775,16 +787,12 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 	// Related to composite
 	private SelectionListener getAddGenreListener(final Shell shell) {
 		return new SelectionAdapter() {
-			// TODO clean this
-			final String[] elements = { "Roadmovie", "Thriller", "Drama",
-					"Romantic Comedy", "Erotic Movie", "Horror" };
-
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				PickUpFromListDialog diag = new PickUpFromListDialog(shell,
-						"Choose an entity", elements);
+						"Choose an entity", GENRE_VALUES);
 				int result = diag.open();
 				if (result != Window.OK)
 					return;
@@ -873,13 +881,13 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		group.setText("Titles");
 		group.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-
+	
 		final Link addLk = isCheckedOut ? new Link(group, SWT.BOTTOM) : null;
 		if (addLk != null)
 			addLk.setText("<a>Add a new title</a>");
-
+	
 		titlesViewer = createItemViewer(group);
-
+	
 		AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
@@ -889,18 +897,130 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 				group.layout();
 			}
 		};
-
+	
 		configureAltTitleViewer(titlesViewer, formPart);
 		titlesViewer.setContentProvider(new MyTableContentProvider());
 		if (addLk != null)
 			configureAddTitleLink(formPart, addLk, film,
 					"Add a new title for current film");
 		formPart.refresh();
-
+	
 		parent.layout();
 		formPart.initialize(form);
 		form.addPart(formPart);
 		localParts.add(formPart);
+	}
+
+	// //////////////////////////////////
+	// Table viewers helpers
+	private void refreshTitlesViewer() {
+		try {
+			if (film.hasNode(FilmNames.FILM_TITLES)) {
+				List<Node> titles = JcrUtils.nodeIteratorToList(film.getNode(
+						FilmNames.FILM_TITLES).getNodes());
+				titlesViewer.setInput(titles.toArray(new Node[titles.size()]));
+				titlesViewer.refresh();
+			}
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"unexpected error while getting film titles for node "
+							+ film, e);
+		}
+	}
+
+	private void configureAltTitleViewer(TableViewer itemsViewer,
+			AbstractFormPart part) {
+		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
+		columns.add(new ColumnDefinition(FilmTypes.FILM_TITLE,
+				FilmNames.FILM_TITLE_VALUE, PropertyType.STRING, "Title", 150));
+		columns.add(new ColumnDefinition(FilmTypes.FILM_TITLE,
+				FilmNames.FILM_TITLE_ARTICLE, PropertyType.STRING, "Article",
+				40));
+		columns.add(new ColumnDefinition(FilmTypes.FILM_TITLE,
+				FilmNames.FILM_TITLE_LATIN_PRONUNCIATION, PropertyType.STRING,
+				"Latin pronun.", 110));
+	
+		NodeViewerComparator comparator = new NodeViewerComparator();
+	
+		// RAP SPECIFIC, enable adding link
+		itemsViewer.getTable().setData(PeopleUiConstants.MARKUP_ENABLED,
+				Boolean.TRUE);
+		itemsViewer.getTable().addSelectionListener(
+				new LangListRwtAdapter(part));
+	
+		// The columns
+		TableViewerColumn col;
+		EditingSupport editingSupport;
+	
+		// original title
+		col = ViewerUtils.createTableViewerColumn(itemsViewer, "", SWT.CENTER,
+				25);
+		editingSupport = new OriginalEditingSupport(itemsViewer, part,
+				FilmNames.FILM_TITLE_IS_ORIG);
+		col.setEditingSupport(editingSupport);
+		col.setLabelProvider(new BooleanFlagLabelProvider(
+				FilmNames.FILM_TITLE_IS_ORIG, PeopleImages.ORIGINAL_BTN, null));
+	
+		// primary item
+		col = ViewerUtils.createTableViewerColumn(itemsViewer, "", SWT.CENTER,
+				25);
+		editingSupport = new PrimaryEditingSupport(itemsViewer, part,
+				PeopleNames.PEOPLE_IS_PRIMARY);
+		col.setEditingSupport(editingSupport);
+		col.setLabelProvider(new BooleanFlagLabelProvider(
+				PeopleNames.PEOPLE_IS_PRIMARY, PeopleImages.PRIMARY_BTN,
+				PeopleImages.PRIMARY_NOT_BTN));
+	
+		// the language
+		col = ViewerUtils.createTableViewerColumn(itemsViewer, "lang.",
+				SWT.NONE, 30);
+		col.setLabelProvider(new LangLabelProvider());
+	
+		col.getColumn().addSelectionListener(
+				PeopleUiUtils.getSelectionAdapter(2, PropertyType.STRING,
+						PeopleNames.PEOPLE_LANG, comparator, itemsViewer));
+	
+		int i = 3;
+		for (ColumnDefinition colDef : columns) {
+			col = ViewerUtils.createTableViewerColumn(itemsViewer,
+					colDef.getHeaderLabel(), SWT.NONE, colDef.getColumnSize());
+			col.setLabelProvider(new SimpleJcrNodeLabelProvider(colDef
+					.getPropertyName()));
+			col.setEditingSupport(new TextEditingSupport(itemsViewer, part,
+					colDef.getPropertyName()));
+	
+			col.getColumn().addSelectionListener(
+					PeopleUiUtils.getSelectionAdapter(i,
+							colDef.getPropertyType(), colDef.getPropertyName(),
+							comparator, itemsViewer));
+			i++;
+		}
+	
+		ColumnDefinition firstCol = columns.get(0);
+		// IMPORTANT: initialize comparator before setting it
+		comparator.setColumn(firstCol.getPropertyType(),
+				firstCol.getPropertyName());
+		itemsViewer.setComparator(comparator);
+	}
+
+	private void configureAddTitleLink(final AbstractFormPart part,
+			final Link button, final Node film, String tooltip) {
+		button.setToolTipText(tooltip);
+		button.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, false, false));
+		button.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+	
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				NewTitleDialog dialog = new NewTitleDialog(button.getShell(),
+						"Add a new title", film);
+				int res = dialog.open();
+				if (res == org.eclipse.jface.dialogs.Dialog.OK) {
+					part.refresh();
+					part.markDirty();
+				}
+			}
+		});
 	}
 
 	private void populateTimeStampsGroup(Composite parent) {
@@ -945,9 +1065,9 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 
 		columns.add(new ColumnDefinition(null, Property.JCR_TITLE,
-				PropertyType.STRING, "Title", 120));
+				PropertyType.STRING, "Title", 100));
 		columns.add(new ColumnDefinition(null, Property.JCR_DESCRIPTION,
-				PropertyType.STRING, "Description", 180));
+				PropertyType.STRING, "Description", 100));
 
 		NodeViewerComparator comparator = new NodeViewerComparator();
 
@@ -962,7 +1082,7 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 
 		// specific columns
 		col = ViewerUtils.createTableViewerColumn(itemsViewer, "Date",
-				SWT.NONE, 80);
+				SWT.NONE, 50);
 		col.setLabelProvider(new DateLabelProvider());
 		col.getColumn().addSelectionListener(
 				PeopleUiUtils.getSelectionAdapter(0, PropertyType.DATE,
@@ -1018,118 +1138,6 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 		});
 	}
 
-	private void configureAddTitleLink(final AbstractFormPart part,
-			final Link button, final Node film, String tooltip) {
-		button.setToolTipText(tooltip);
-		button.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, false, false));
-		button.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				NewTitleDialog dialog = new NewTitleDialog(button.getShell(),
-						"Add a new title", film);
-				int res = dialog.open();
-				if (res == org.eclipse.jface.dialogs.Dialog.OK) {
-					part.refresh();
-					part.markDirty();
-				}
-			}
-		});
-	}
-
-	private void configureAltTitleViewer(TableViewer itemsViewer,
-			AbstractFormPart part) {
-		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
-		columns.add(new ColumnDefinition(FilmTypes.FILM_TITLE,
-				FilmNames.FILM_TITLE_VALUE, PropertyType.STRING, "Title", 150));
-		columns.add(new ColumnDefinition(FilmTypes.FILM_TITLE,
-				FilmNames.FILM_TITLE_ARTICLE, PropertyType.STRING, "Article",
-				60));
-		columns.add(new ColumnDefinition(FilmTypes.FILM_TITLE,
-				FilmNames.FILM_TITLE_LATIN_PRONUNCIATION, PropertyType.STRING,
-				"Latin pronun.", 150));
-
-		NodeViewerComparator comparator = new NodeViewerComparator();
-
-		// RAP SPECIFIC, enable adding link
-		itemsViewer.getTable().setData(PeopleUiConstants.MARKUP_ENABLED,
-				Boolean.TRUE);
-		itemsViewer.getTable().addSelectionListener(
-				new LangListRwtAdapter(part));
-
-		// The columns
-		TableViewerColumn col;
-		EditingSupport editingSupport;
-
-		// original title
-		col = ViewerUtils.createTableViewerColumn(itemsViewer, "", SWT.CENTER,
-				25);
-		editingSupport = new OriginalEditingSupport(itemsViewer, part,
-				FilmNames.FILM_TITLE_IS_ORIG);
-		col.setEditingSupport(editingSupport);
-		col.setLabelProvider(new BooleanFlagLabelProvider(
-				FilmNames.FILM_TITLE_IS_ORIG, PeopleImages.ORIGINAL_BTN, null));
-
-		// primary item
-		col = ViewerUtils.createTableViewerColumn(itemsViewer, "", SWT.CENTER,
-				25);
-		editingSupport = new PrimaryEditingSupport(itemsViewer, part,
-				PeopleNames.PEOPLE_IS_PRIMARY);
-		col.setEditingSupport(editingSupport);
-		col.setLabelProvider(new BooleanFlagLabelProvider(
-				PeopleNames.PEOPLE_IS_PRIMARY, PeopleImages.PRIMARY_BTN,
-				PeopleImages.PRIMARY_NOT_BTN));
-
-		// the language
-		col = ViewerUtils.createTableViewerColumn(itemsViewer, "lang.",
-				SWT.NONE, 40);
-		col.setLabelProvider(new LangLabelProvider());
-
-		col.getColumn().addSelectionListener(
-				PeopleUiUtils.getSelectionAdapter(2, PropertyType.STRING,
-						PeopleNames.PEOPLE_LANG, comparator, itemsViewer));
-
-		int i = 3;
-		for (ColumnDefinition colDef : columns) {
-			col = ViewerUtils.createTableViewerColumn(itemsViewer,
-					colDef.getHeaderLabel(), SWT.NONE, colDef.getColumnSize());
-			col.setLabelProvider(new SimpleJcrNodeLabelProvider(colDef
-					.getPropertyName()));
-			col.setEditingSupport(new TextEditingSupport(itemsViewer, part,
-					colDef.getPropertyName()));
-
-			col.getColumn().addSelectionListener(
-					PeopleUiUtils.getSelectionAdapter(i,
-							colDef.getPropertyType(), colDef.getPropertyName(),
-							comparator, itemsViewer));
-			i++;
-		}
-
-		ColumnDefinition firstCol = columns.get(0);
-		// IMPORTANT: initialize comparator before setting it
-		comparator.setColumn(firstCol.getPropertyType(),
-				firstCol.getPropertyName());
-		itemsViewer.setComparator(comparator);
-	}
-
-	// //////////////////////////////////
-	// Table viewers helpers
-	private void refreshTitlesViewer() {
-		try {
-			if (film.hasNode(FilmNames.FILM_TITLES)) {
-				List<Node> titles = JcrUtils.nodeIteratorToList(film.getNode(
-						FilmNames.FILM_TITLES).getNodes());
-				titlesViewer.setInput(titles.toArray(new Node[titles.size()]));
-				titlesViewer.refresh();
-			}
-		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"unexpected error while getting film titles for node "
-							+ film, e);
-		}
-	}
-
 	private void refreshTimeStampsViewer() {
 		try {
 			if (film.hasNode(FilmNames.FILM_TIMESTAMPS)) {
@@ -1146,8 +1154,13 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 
 	private TableViewer createItemViewer(Composite parent) {
 		// Table control creation
-		int style = SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL;
+		int style;
+		if (isCheckedOut)
+			style = SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL;
+		else
+			style = SWT.SINGLE | SWT.V_SCROLL;
 		Table table = new Table(parent, style);
+
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -1234,7 +1247,7 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 		private static final long serialVersionUID = -3585657671575195850L;
 
 		private DateFormat dateFormat = new SimpleDateFormat(
-				PeopleUiConstants.DEFAULT_DATE_FORMAT);
+				PeopleUiConstants.DEFAULT_SHORT_DATE_FORMAT);
 
 		@Override
 		public String getText(Object element) {
@@ -1353,47 +1366,6 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 		}
 	}
 
-	private class BooleanFlagLabelProvider extends ColumnLabelProvider {
-		private static final long serialVersionUID = 1L;
-
-		private final String propertyName; // = PeopleNames.PEOPLE_IS_PRIMARY;
-		private final Image imgTrue; // = PeopleImages.PRIMARY_BTN;
-		private final Image imgFalse; // = PeopleImages.PRIMARY_NOT_BTN;
-
-		public BooleanFlagLabelProvider(String propertyName, Image imgTrue,
-				Image imgFalse) {
-			this.propertyName = propertyName;
-			this.imgTrue = imgTrue;
-			this.imgFalse = imgFalse;
-		}
-
-		@Override
-		public String getText(Object element) {
-			return null;
-		}
-
-		@Override
-		public Image getImage(Object element) {
-			boolean isPrimary = false;
-			try {
-				Node currNode = ((Node) element);
-				if (currNode.hasProperty(propertyName)
-						&& currNode.getProperty(propertyName).getValue()
-								.getType() == PropertyType.BOOLEAN)
-					isPrimary = currNode.getProperty(propertyName).getBoolean();
-			} catch (RepositoryException e) {
-				throw new PeopleException("Unable to get " + propertyName
-						+ " value for node " + element, e);
-			}
-
-			if (isPrimary) {
-				return imgTrue;
-			} else {
-				return imgFalse;
-			}
-		}
-	}
-
 	private class PrimaryEditingSupport extends BooleanEditingSupport {
 		private static final long serialVersionUID = 7142181193364269102L;
 		private final AbstractFormPart part;
@@ -1409,13 +1381,13 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 			Node currNode = (Node) element;
 			if (((Boolean) value).booleanValue()
 					&& FilmJcrUtils.updatePrimaryTitle(film, currNode)) {
-//				part.refresh();
+				// part.refresh();
 				// we refresh all parts to also refresh the header
 				for (IFormPart part : form.getParts()) {
 					part.refresh();
 				}
 				part.markDirty();
-				
+
 			}
 		}
 	}
@@ -1435,13 +1407,13 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 			Node currNode = (Node) element;
 			if (FilmJcrUtils.markAsOriginalTitle(film, currNode,
 					(Boolean) value)) {
-				//part.refresh();
+				// part.refresh();
 				// we refresh all parts to also refresh the header
 				for (IFormPart part : form.getParts()) {
 					part.refresh();
 				}
 				part.markDirty();
-				
+
 			}
 		}
 	}
@@ -1539,7 +1511,7 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 	private void addROTableViewer() {
 		Composite altTitleCmp = toolkit.createComposite(innerCmp);
 		GridData gd = new GridData(SWT.CENTER, SWT.FILL, true, true, 2, 1);
-		gd.heightHint = 150;
+		gd.heightHint = 200;
 		altTitleCmp.setLayoutData(gd);
 		populateAltTitleGroup(altTitleCmp);
 
@@ -1552,7 +1524,7 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 	private void addEditTableViewer() {
 		Composite altTitleCmp = toolkit.createComposite(innerCmp);
 		GridData gd = new GridData(SWT.CENTER, SWT.FILL, true, true);
-		gd.heightHint = 150;
+		gd.heightHint = 200;
 		altTitleCmp.setLayoutData(gd);
 		populateAltTitleGroup(altTitleCmp);
 

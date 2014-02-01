@@ -129,15 +129,14 @@ public class PeopleUiUtils {
 
 	/**
 	 * Shortcut to select an item of a <code>Combo</code> widget given a Node in
-	 * a form, a property NameAlso manages its enable state and set a default
-	 * message if corresponding Text value is empty
+	 * a form, a property Name. Also manages its enable state.
 	 */
-	public static void refreshFormComboValue(Combo combo, Node entity,
+	public static void refreshFormComboValue(Combo combo, Node node,
 			String propName) {
-		String currValue = CommonsJcrUtils.get(entity, propName);
+		String currValue = CommonsJcrUtils.get(node, propName);
 		if (CommonsJcrUtils.checkNotEmptyString(currValue))
 			combo.select(combo.indexOf(currValue));
-		combo.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
+		combo.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(node));
 	}
 
 	/**

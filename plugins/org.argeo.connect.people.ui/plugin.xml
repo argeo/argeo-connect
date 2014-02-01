@@ -141,6 +141,38 @@
       		id="org.argeo.connect.people.ui.cancelAndCheckInItem"
             name="cancelAndcheckInItem">
     	</command>
+    	
+    	<!-- Open correct editor given the node type --> 
+    	<command
+			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
+			id="org.argeo.connect.people.ui.openEntityEditor"
+			name="Open Editor">
+			<commandParameter
+         		id="param.jcrId"
+         		name="The jcr identifier">
+         	</commandParameter>
+         	<!-- @deprecated -->
+         	<commandParameter
+         		id="param.entityUid"
+         		name="The Model Specific Entity Uid">
+  	 		</commandParameter>
+		</command>    
+		
+		<!-- Person and organisation management --> 
+		<command
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		id="org.argeo.connect.people.ui.editJob"
+            name="Create or edit a job">
+            <commandParameter
+         		id="param.relevantNodeJcrId"
+         		name="Jcr ID of the node to edit">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.isBackward"
+         		name="When editing an existing job, true if editing an org">
+  	 		</commandParameter>
+    	</command>
+		
 		
 		<!-- Users and Groups Management --> 
 		<command
@@ -170,9 +202,22 @@
             name="Create simple task">
         </command>
     	
-    	<!-- Legacy: import big data --> 
-		
-		<!-- Entity CRUD --> 
+    	<!-- Film Management --> 
+    	<command
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		id="org.argeo.connect.people.ui.editParticipation"
+            name="Create or edit a participation">
+            <commandParameter
+         		id="param.relevantNodeJcrId"
+         		name="Jcr ID of the node to edit">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.isBackward"
+         		name="When editing an existing job, true if editing an org">
+  	 		</commandParameter>
+    	</command>
+    	
+    	<!-- Entity CRUD --> 
 		<command
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       		id="org.argeo.connect.people.ui.deleteEntity"
@@ -186,20 +231,7 @@
          		name="Indicates whether parent node should also be deleted">
   	 		</commandParameter>
     	</command>
-    	<command
-			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
-			id="org.argeo.connect.people.ui.openEntityEditor"
-			name="Open Editor">
-			<commandParameter
-         		id="param.entityUid"
-         		name="The Model Specific Entity Uid">
-  	 		</commandParameter>
-			<commandParameter
-         		id="param.jcrId"
-         		name="The jcr identifier">
-         	</commandParameter>
-		</command>    
-    	
+    
 		
 		<!-- Entity References CRUD --> 
 		<command
@@ -268,6 +300,43 @@
          		name="type of node to search for">
   	 		</commandParameter>
     	</command>
+    	
+    	<!-- TODO remove the 2 following commands --> 
+    	<command
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		id="org.argeo.connect.people.ui.addEntityReferences"
+            name="Add Entity References">
+            <commandParameter
+         		id="param.referencingJcrId"
+         		name="Referencing node JCR identifier">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.referencedJcrId"
+         		name="Referenced node JCR identifier">
+  	 		</commandParameter>
+    	</command>
+    	<command
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		id="org.argeo.connect.people.ui.addEntityReferenceWithPosition"
+            name="Add Entity References With Position">
+            <commandParameter
+         		id="param.referencingJcrId"
+         		name="Referencing node JCR identifier">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.referencedJcrId"
+         		name="Referenced node JCR identifier">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.toSearchNodeType"
+         		name="type of node to search for">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.dialogId"
+         		name="ID of the corresponding dialog">
+  	 		</commandParameter>
+    	</command>
+    	<!-- Until there --> 
 
     	<!-- Extract generation -->
 		<command
@@ -440,6 +509,11 @@
 		<!-- MyTasksView tool bar menu --> 
 		<menuContribution
             locationURI="toolbar:org.argeo.connect.people.ui.myTasksView">
+            <command
+				commandId="org.argeo.connect.people.ui.createSimpleTask"
+				icon="icons/newGroup.gif"
+				label="Task">
+			</command>	
             <command
 				commandId="org.argeo.connect.people.ui.forceRefresh"
                 icon="icons/refresh.png"

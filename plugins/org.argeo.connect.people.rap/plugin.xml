@@ -55,6 +55,6 @@
 		point="org.eclipse.rap.ui.themes">
 		<themeContribution
 			themeId="org.eclipse.rap.rwt.theme.Default"
-			file="theme/defaultExt.css" />
+			file="theme/peopleExt.css" />
 	</extension> 
 </plugin>

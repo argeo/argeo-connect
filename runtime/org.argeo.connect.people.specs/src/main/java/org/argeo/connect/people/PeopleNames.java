@@ -73,12 +73,19 @@ public interface PeopleNames {
 	public final static String PEOPLE_VAT_ID_NB = "people:vatIdNb";
 	public final static String PEOPLE_ORG_BRANCHES = "people:orgBranches";
 
-	
 	/* USER MANAGEMENT */
-	public final static String PEOPLE_RELATED_PERSON = "people:relatedPersons"; //REFERENCE * towards people:person types 
-	public final static String PEOPLE_USER_GROUPS= "people:userGroups";//REFERENCE * towards people:userGroup types 
-	public final static String PEOPLE_IS_SINGLE_USER_GROUP= "people:isSingleUserGroup";
-	
+	public final static String PEOPLE_RELATED_PERSON = "people:relatedPersons"; // REFERENCE
+																				// *
+																				// towards
+																				// people:person
+																				// types
+	public final static String PEOPLE_USER_GROUPS = "people:userGroups";// REFERENCE
+																		// *
+																		// towards
+																		// people:userGroup
+																		// types
+	public final static String PEOPLE_IS_SINGLE_USER_GROUP = "people:isSingleUserGroup";
+
 	/* ACTIVITIES AND TASKS */
 	public final static String PEOPLE_MANAGER = "people:manager";
 	public final static String PEOPLE_RELATED_TO = "people:relatedTo";
@@ -92,7 +99,8 @@ public interface PeopleNames {
 	public final static String PEOPLE_CLOSE_DATE = "people:closeDate";
 	public final static String PEOPLE_WAKE_UP_DATE = "people:wakeUpDate";
 	public final static String PEOPLE_DEPENDS_ON = "people:dependsOn";
-	public final static String PEOPLE_CHILD_TASKS = "people:childTasks";
+	public final static String PEOPLE_TASKS = "people:tasks";
+	public final static String PEOPLE_ACTIVITIES = "people:activities";
 
 	// Workflow specific
 	public final static String PEOPLE_DATE_BEGIN = "people:dateBegin";
@@ -100,8 +108,6 @@ public interface PeopleNames {
 	public final static String PEOPLE_WF_VERSION = "people:wfVersion";
 	public final static String PEOPLE_WF_VERSION_ID = "people:wfId";
 	public final static String PEOPLE_WF_STATUS = "people:wfStatus";
-
-
 
 	/* CONTACTS */
 	// base properties for all contact type nodes

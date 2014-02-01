@@ -205,8 +205,8 @@ mixin
 - people:wakeUpDate (DATE) 
 //various sub nodes
 - people:dependsOn (REFERENCE) *
-+ people:childTasks (nt:unstructured)
-// + people:activities (nt:unstructured)
++ people:tasks (nt:unstructured)
++ people:activities (nt:unstructured)
 
 //
 // LANGUAGES AND COUNTRIES

@@ -15,6 +15,7 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.window.Window;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 
@@ -48,10 +49,10 @@ public class EditEntityReferenceWithPosition extends AbstractHandler {
 
 			Dialog diag = new EditEntityRefWithPositionDialog(
 					HandlerUtil.getActiveShell(event), "Edit position",
-					peopleService, oldLinkNode, toSearchNodeType, isBackward);
+					peopleService, oldLinkNode, isBackward);
 			int result = diag.open();
 
-			if (result == Dialog.OK) {
+			if (result == Window.OK) {
 				IEditorPart iep = HandlerUtil.getActiveWorkbenchWindow(event)
 						.getActivePage().getActiveEditor();
 				if (iep != null && iep instanceof AbstractEntityEditor)

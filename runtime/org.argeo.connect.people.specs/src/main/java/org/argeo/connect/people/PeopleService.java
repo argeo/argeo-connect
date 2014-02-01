@@ -10,7 +10,43 @@ import javax.jcr.Session;
 /** Provides method interfaces to manage a people repository */
 public interface PeopleService {
 
-	/* ENTITIES */
+	// TODO Move this to a film service
+	/**
+	 * Creates or update a participation of a person or an org to a film
+	 * 
+	 * @param oldParticipation
+	 * @param film
+	 * @param contact
+	 * @param role
+	 * @return
+	 */
+	public Node createOrUpdateParticipation(Node oldParticipation, Node film,
+			Node contact, String role);
+
+	/* PERSONS AND ORGANISATIONS */
+
+	/**
+	 * 
+	 * Creates or update a job of a person in an organisation
+	 * 
+	 * @param oldJob
+	 *            null if creation
+	 * @param person
+	 *            cannot be null
+	 * @param organisation
+	 *            cannot be null
+	 * @param position
+	 *            can be null
+	 * @param department
+	 *            can be null
+	 * @param isPrimary
+	 *            pass false by default
+	 * @return
+	 */
+	public Node createOrUpdateJob(Node oldJob, Node person, Node organisation,
+			String position, String department, boolean isPrimary);
+
+	/* GENERIC */
 	/**
 	 * returns the list of predefined values for a given property or null if
 	 * none has been defined.
@@ -31,7 +67,7 @@ public interface PeopleService {
 
 	/**
 	 * Creates and returns a model specific Node to store a reference, depending
-	 * on the two object we want to link togeteher
+	 * on the two object we want to link together
 	 * */
 	public Node createEntityReference(Node referencingNode,
 			Node referencedNode, String role);

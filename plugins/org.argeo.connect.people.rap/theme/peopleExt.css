@@ -27,6 +27,11 @@
 
 /** disabled (uneditable) */
 
+/* Specific style to display border even when the text is disable in some specific cases.*/
+Text.alwaysShowBorder[BORDER]:disabled {
+  border: 1px solid #a4a4a4;
+}
+
 Text[BORDER]:disabled,
 Text[MULTI][BORDER]:disabled {
   box-shadow: none;

@@ -16,6 +16,8 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.commands.DeleteEntity;
 import org.argeo.connect.people.ui.commands.EditEntityReference;
 import org.argeo.connect.people.ui.commands.EditEntityReferenceWithPosition;
+import org.argeo.connect.people.ui.commands.EditJob;
+import org.argeo.connect.people.ui.commands.EditParticipation;
 import org.argeo.connect.people.ui.commands.RemoveEntityReference;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
@@ -427,6 +429,45 @@ public class PeopleHtmlUtils {
 					+ EditEntityReference.PARAM_TOEDIT_JCR_ID + "="
 					+ toEditJcrId;
 
+			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""
+					+ uri + "\" target=\"_rwt\">Edit</a>";
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Error getting remove snippet for list item", re);
+		}
+	}
+
+	/**
+	 * Create the text value of a link that enable calling the
+	 * <code>EditJob</code> command from a cell of a HTML list
+	 */
+	public static String getEditJobSnippetForLists(Node relevantNode,
+			boolean isBackward) {
+		try {
+			String toEditJcrId = relevantNode.getIdentifier();
+			String uri = EditJob.ID + "/" + EditJob.PUBLIC_RELEVANT_NODE_JCR_ID
+					+ "=" + toEditJcrId + "/" + EditJob.PARAM_IS_BACKWARD + "="
+					+ isBackward;
+			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""
+					+ uri + "\" target=\"_rwt\">Edit</a>";
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Error getting remove snippet for list item", re);
+		}
+	}
+
+	/**
+	 * Create the text value of a link that enable calling the
+	 * <code>EditParticipation</code> command from a cell of a HTML list
+	 */
+	public static String getEditParticipationSnippetForLists(Node relevantNode,
+			boolean isBackward) {
+		try {
+			String toEditJcrId = relevantNode.getIdentifier();
+			String uri = EditParticipation.ID + "/"
+					+ EditParticipation.PUBLIC_RELEVANT_NODE_JCR_ID + "="
+					+ toEditJcrId + "/" + EditParticipation.PARAM_IS_BACKWARD
+					+ "=" + isBackward;
 			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""
 					+ uri + "\" target=\"_rwt\">Edit</a>";
 		} catch (RepositoryException re) {

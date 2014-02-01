@@ -61,6 +61,10 @@ public interface PeopleUiConstants {
 	// a composite used to put titles in various lists
 	public final static String CSS_FLAT_IMG_BUTTON = "peopleCss-flatImgBtn";
 
+	// Overwrite normal behaviour to show the border even when the text is
+	// disabled.
+	public final static String CSS_ALWAYS_SHOW_BORDER = "alwaysShowBorder";
+
 	// FIXME workaround to work on fixing RAP/RCP single sourcing for people
 	// Caches name of RWT.MARKUP_ENABLED property
 	public final static String MARKUP_ENABLED = "org.eclipse.rap.rwt.markupEnabled";
@@ -68,7 +72,12 @@ public interface PeopleUiConstants {
 	public final static String CUSTOM_ITEM_HEIGHT = "org.eclipse.rap.rwt.customItemHeight";
 	// Caches name of RWT.CUSTOM_VARIANT property
 	public static final String CUSTOM_VARIANT = "org.eclipse.rap.rwt.customVariant";
-	
+
+	// custom image for each item : set size
+	public final static String PEOPLE_CSS_ITEM_IMAGE = "peopleCss-itemImage";
+
+	// /////////////////////////
+	// LEGACY to be removed
 	public final static String PEOPLE_CSS_TITLE_COMPOSITE_FIRST = "peopleCss-titleCompositeFirst";
 	public final static String PEOPLE_CSS_TITLE_COMPOSITE = "peopleCss-titleComposite";
 
@@ -86,9 +95,7 @@ public interface PeopleUiConstants {
 	public final static String PEOPLE_CSS_URL_STYLE = "style='color:#383838; font-decoration:none;'";
 	public final static String CSS_STYLE_UNIQUE_CELL_TABLE = "uniqueCellTable";
 
-	// custom image for each item : set size
-	public final static String PEOPLE_CSS_ITEM_IMAGE = "peopleCss-itemImage";
-
 	// a dummy style just to see where is a composite
-	public final static String PEOPLE_CSS_SHOW_BORDER = "peopleCss-showBorder";
+	// public final static String PEOPLE_CSS_SHOW_BORDER =
+	// "peopleCss-showBorder";
 }

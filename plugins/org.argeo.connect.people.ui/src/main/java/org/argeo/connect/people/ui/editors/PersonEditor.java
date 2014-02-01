@@ -12,9 +12,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.editors.utils.AbstractEntityCTabEditor;
-import org.argeo.connect.people.ui.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.ui.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.ui.toolkits.ActivityToolkit;
 import org.argeo.connect.people.ui.toolkits.ContactToolkit;
@@ -26,11 +24,9 @@ import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.PersonJcrUtils;
-import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.ModifyEvent;
@@ -99,7 +95,8 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
 				getPeopleService());
 
-		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService());
+		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
+				getOpenEditorCommandId());
 		historyTK = new HistoryToolkit(getPeopleService(), toolkit,
 				getManagedForm(), person);
 	}
@@ -181,22 +178,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Organisations",
 				PeopleUiConstants.PANEL_JOBS, tooltip);
-		TableViewer viewer = listTK.populateJobsPanel(innerPannel, person);
-
-		viewer.addDoubleClickListener(new PeopleDoubleClickAdapter() {
-
-			@Override
-			protected void processDoubleClick(Object obj) {
-				// Here we have PeopleMembers, we want to display linked
-				// entities on double click
-				if (obj instanceof Node) {
-					Node link = (Node) obj;
-					CommandUtils.callCommand(getOpenEntityEditorCmdId(),
-							OpenEntityEditor.PARAM_ENTITY_UID, CommonsJcrUtils
-									.get(link, PeopleNames.PEOPLE_REF_UID));
-				}
-			}
-		});
+		listTK.populateJobsPanel(innerPannel, person);
 
 		// Film participation panel
 		// TODO: move this in specific film project
@@ -204,28 +186,29 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Films",
 				PeopleUiConstants.PANEL_PRODUCTIONS, tooltip);
-		viewer = listTK.populateFilmsPanel(innerPannel, person);
-		viewer.addDoubleClickListener(new PeopleDoubleClickAdapter() {
-
-			@Override
-			protected void processDoubleClick(Object obj) {
-				// Here we have film crew members, we open editor for the parent
-				// film
-				try {
-					if (obj instanceof Node) {
-						Node link = ((Node) obj).getParent().getParent();
-						CommandUtils.callCommand(getOpenEntityEditorCmdId(),
-								OpenEntityEditor.PARAM_ENTITY_UID,
-								CommonsJcrUtils.get(link,
-										PeopleNames.PEOPLE_UID));
-					}
-				} catch (RepositoryException e) {
-					throw new PeopleException(
-							"unable to get related film for entity " + obj, e);
-				}
-
-			}
-		});
+		listTK.populateParticipationPanel(innerPannel,
+				person);
+		// viewer.addDoubleClickListener(new PeopleDoubleClickAdapter() {
+		//
+		// @Override
+		// protected void processDoubleClick(Object obj) {
+		// // Here we have film crew members, we open editor for the parent
+		// // film
+		// try {
+		// if (obj instanceof Node) {
+		// Node link = ((Node) obj).getParent().getParent();
+		// CommandUtils.callCommand(getOpenEntityEditorCmdId(),
+		// OpenEntityEditor.PARAM_ENTITY_UID,
+		// CommonsJcrUtils.get(link,
+		// PeopleNames.PEOPLE_UID));
+		// }
+		// } catch (RepositoryException e) {
+		// throw new PeopleException(
+		// "unable to get related film for entity " + obj, e);
+		// }
+		//
+		// }
+		// });
 
 		folder.layout();
 

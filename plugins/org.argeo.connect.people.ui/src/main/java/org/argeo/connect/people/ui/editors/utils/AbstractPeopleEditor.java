@@ -183,12 +183,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	protected abstract Boolean deleteParentOnRemove();
 
-	/**
-	 * Overwrite to provide a plugin specific open editor command and thus be
-	 * able to open plugin specific editors
-	 */
 	protected String getOpenEditorCommandId() {
-		return OpenEntityEditor.ID;
+		return openEntityEditorCmdId;
 	}
 
 	/** Overwrite following methods to create a nice editor... */

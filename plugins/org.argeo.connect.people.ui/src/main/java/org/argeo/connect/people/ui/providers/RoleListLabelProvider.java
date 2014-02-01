@@ -30,18 +30,27 @@ public class RoleListLabelProvider extends ColumnLabelProvider implements
 			} else
 				throw new PeopleException("Unvalid node type. "
 						+ "Cannot display role information");
+
 			String pos = CommonsJcrUtils.getStringValue(link,
 					PeopleNames.PEOPLE_ROLE);
-			if (pos == null)
-				return "";
-			else {
-				StringBuilder builder = new StringBuilder();
-				builder.append("<b>");
-				for (String token : pos.split(","))
-					builder.append(token).append("<br/>");
-				builder.append("</b>");
-				String result = PeopleHtmlUtils.cleanHtmlString(builder.toString());
-				return result;			}
+
+			// ROLE
+			StringBuilder builder = new StringBuilder();
+			if (CommonsJcrUtils.checkNotEmptyString(pos))
+				builder.append("<b>").append(pos).append("</b> <br/>");
+			// TODO ? manage multiple roles
+			// for (String token : pos.split(","))
+			// builder.append(token).append("<br/>");
+
+			// DEPARTMENT
+			if (link.isNodeType(PeopleTypes.PEOPLE_JOB)) {
+				String dep = CommonsJcrUtils.getStringValue(link,
+						PeopleNames.PEOPLE_DEPARTMENT);
+				if (CommonsJcrUtils.checkNotEmptyString(dep))
+					builder.append("Department: ").append(dep);
+
+			}
+			return PeopleHtmlUtils.cleanHtmlString(builder.toString());
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot create organizations content", re);
 		}

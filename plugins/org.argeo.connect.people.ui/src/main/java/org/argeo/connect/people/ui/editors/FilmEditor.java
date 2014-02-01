@@ -16,9 +16,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.editors.utils.AbstractEntityCTabEditor;
-import org.argeo.connect.people.ui.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.ui.providers.FilmOverviewLabelProvider;
 import org.argeo.connect.people.ui.toolkits.EntityToolkit;
 import org.argeo.connect.people.ui.toolkits.FilmToolkit;
@@ -27,11 +25,9 @@ import org.argeo.connect.people.ui.utils.JcrUiUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
-import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.ModifyEvent;
@@ -103,7 +99,8 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 		filmTk = new FilmToolkit(toolkit, getManagedForm(), film,
 				getPeopleService());
 		entityTk = new EntityToolkit(toolkit, getManagedForm());
-		listTk = new ListToolkit(toolkit, getManagedForm(), getPeopleService());
+		listTk = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
+				getOpenEditorCommandId());
 
 	}
 
@@ -146,22 +143,23 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 		tooltip = "Staff related to " + JcrUtils.get(film, FilmNames.FILM_ID);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Crew",
 				PeopleUiConstants.PANEL_MEMBERS, tooltip);
-		TableViewer viewer = listTk.populateMembersPanel(innerPannel, film);
+		listTk
+				.populateParticipantsPanel(innerPannel, film);
 
-		viewer.addDoubleClickListener(new PeopleDoubleClickAdapter() {
-
-			@Override
-			protected void processDoubleClick(Object obj) {
-				// Here we have PeopleMembers, we want to display linked
-				// entities on double click
-				if (obj instanceof Node) {
-					Node link = (Node) obj;
-					CommandUtils.callCommand(getOpenEntityEditorCmdId(),
-							OpenEntityEditor.PARAM_ENTITY_UID, CommonsJcrUtils
-									.get(link, PeopleNames.PEOPLE_REF_UID));
-				}
-			}
-		});
+		// viewer.addDoubleClickListener(new PeopleDoubleClickAdapter() {
+		//
+		// @Override
+		// protected void processDoubleClick(Object obj) {
+		// // Here we have PeopleMembers, we want to display linked
+		// // entities on double click
+		// if (obj instanceof Node) {
+		// Node link = (Node) obj;
+		// CommandUtils.callCommand(getOpenEntityEditorCmdId(),
+		// OpenEntityEditor.PARAM_ENTITY_UID, CommonsJcrUtils
+		// .get(link, PeopleNames.PEOPLE_REF_UID));
+		// }
+		// }
+		// });
 
 	}
 
@@ -175,8 +173,8 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 
 		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		entityTk.populateTagPanel(tagsCmp, film,
-				PeopleNames.PEOPLE_TAGS, "Enter a new tag");
+		entityTk.populateTagPanel(tagsCmp, film, PeopleNames.PEOPLE_TAGS,
+				"Enter a new tag");
 	}
 
 	protected void populateTitleComposite(final Composite parent) {

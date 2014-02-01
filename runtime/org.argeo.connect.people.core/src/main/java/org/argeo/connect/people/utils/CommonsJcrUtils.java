@@ -57,6 +57,18 @@ public class CommonsJcrUtils {
 	}
 
 	/**
+	 * Call {@link Node#getIdentifier()} without exceptions
+	 */
+	public static String getIdentifier(Node node) {
+		try {
+			return node.getIdentifier();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to retrieve identifier for node "
+					+ node, re);
+		}
+	}
+
+	/**
 	 * Call {@link Node#isNodetype(String nodeTypeName)} without exceptions
 	 */
 	public static boolean isNodeType(Node node, String nodeTypeName) {
@@ -679,7 +691,8 @@ public class CommonsJcrUtils {
 	 * part of the list, it returns an error message. We use case insensitive
 	 * comparison
 	 */
-	public static String addMultiPropertyValue(Node node, String propName, String value) {
+	public static String addMultiPropertyValue(Node node, String propName,
+			String value) {
 		try {
 			Value[] values;
 			String[] valuesStr;
@@ -718,8 +731,8 @@ public class CommonsJcrUtils {
 	 * Add a string value on a multivalued property. WARNING if values is not an
 	 * empty String, it overrides any existing value, and delete old ones.
 	 */
-	public static void setMultiValueStringPropFromString(Node node, String propName,
-			String values, String separator) {
+	public static void setMultiValueStringPropFromString(Node node,
+			String propName, String values, String separator) {
 		try {
 			if (!CommonsJcrUtils.isEmptyString(values)) {
 				String[] valArray = values.split(separator);

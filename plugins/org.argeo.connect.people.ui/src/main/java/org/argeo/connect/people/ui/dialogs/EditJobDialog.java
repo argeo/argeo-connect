@@ -39,6 +39,7 @@ import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -68,8 +69,11 @@ import org.eclipse.swt.widgets.Text;
  * in an organisation. If editing an existing position, note that both
  * referenced and referencing entities must be given in order to eventually
  * remove old reference
+ * 
+ * It is the dialog duty to correctly initialise what is displayed the
+ * parameters passed on instantiation
  */
-public class EditEntityRefWithPositionDialog extends TrayDialog {
+public class EditJobDialog extends TrayDialog {
 	private static final long serialVersionUID = -3534660152626908662L;
 	// The various field
 	private Text positionTxt;
@@ -88,7 +92,6 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 	private Text filterTxt;
 	private TableViewer entityViewer;
 
-	private String value;
 	private final String title;
 
 	private Session session;
@@ -116,23 +119,30 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 	 *            tells if we must remove referenced (if true) or referencing
 	 *            (if false) node
 	 */
-	public EditEntityRefWithPositionDialog(Shell parentShell, String title,
-			PeopleService peopleService, Node oldLink, boolean isBackward) {
+	public EditJobDialog(Shell parentShell, String title,
+			PeopleService peopleService, Node oldLink, Node toUpdateNode,
+			boolean isBackward) {
 		// , String toSearchNodeType
 		super(parentShell);
 		this.title = title;
 		this.peopleService = peopleService;
-		this.oldLinkNode = oldLink;
 		this.isBackward = isBackward;
 		if (isBackward)
 			toSearchNodeType = PeopleTypes.PEOPLE_PERSON;
-		else 
+		else
 			toSearchNodeType = PeopleTypes.PEOPLE_ORGANIZATION;
-		
-		if (oldLink != null) {
-			// Try to initiallize our shortcuts
+
+		if (oldLink == null) { // CREATE
+			session = CommonsJcrUtils.getSession(toUpdateNode);
+			if (isBackward)
+				oldReferenced = toUpdateNode;
+			else
+				oldReferencing = toUpdateNode;
+		} else { // UPDATE
+			this.oldLinkNode = oldLink;
 			try {
-				session = CommonsJcrUtils.login(peopleService.getRepository());
+				// Initiallize with old values
+				session = oldLink.getSession();
 				oldPosition = CommonsJcrUtils.get(oldLinkNode,
 						PeopleNames.PEOPLE_ROLE);
 				oldDepartment = CommonsJcrUtils.get(oldLinkNode,
@@ -153,6 +163,7 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 	}
 
 	protected Control createDialogArea(Composite parent) {
+		// MAIN LAYOUT
 		Composite dialogarea = (Composite) super.createDialogArea(parent);
 		dialogarea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		dialogarea.setLayout(new GridLayout(2, false));
@@ -170,26 +181,28 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 				new EntitySingleColumnLabelProvider(peopleService));
 		refreshFilteredList(toSearchNodeType);
 
-		// FIXME an emty line to give some air to the dialog
+		// FIXME an empty line to give some air to the dialog
 		Label dummyLbl = new Label(dialogarea, SWT.NONE);
 		dummyLbl.setText("");
 		dummyLbl.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2,
 				1));
 
-		// The chosen item
+		// Display choosen org or person
 		selectedItemTxt = createLT(dialogarea, chosenItemLbl);
 		selectedItemTxt.setEnabled(false);
 		selectedItemTxt.setData(PeopleUiConstants.CUSTOM_VARIANT,
 				PeopleUiConstants.CSS_ALWAYS_SHOW_BORDER);
 
 		if (isBackward) {
-			selectedItemTxt.setText(CommonsJcrUtils.get(oldReferencing,
-					Property.JCR_TITLE));
-		} else
-			selectedItemTxt.setText(CommonsJcrUtils.get(oldReferenced,
-					Property.JCR_TITLE));
-
-		// Role if needed
+			if (oldReferencing != null)
+				selectedItemTxt.setText(CommonsJcrUtils.get(oldReferencing,
+						Property.JCR_TITLE));
+		} else {
+			if (oldReferenced != null)
+				selectedItemTxt.setText(CommonsJcrUtils.get(oldReferenced,
+						Property.JCR_TITLE));
+		}
+		// Role
 		positionTxt = createLT(dialogarea, positionLbl);
 		positionTxt.setText(oldPosition);
 
@@ -197,8 +210,10 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 		departmentTxt = createLT(dialogarea, departmentLbl);
 		departmentTxt.setText(oldDepartment);
 
-		// TODO display this only when adding a position for a person
 		// Is primary
+
+		// Display primary check box only when editing a position from a person
+		// perspective
 		if (!isBackward) {
 			isPrimaryBtn = createLC(dialogarea, primaryLbl);
 			isPrimaryBtn.setSelection(wasPrimary);
@@ -217,76 +232,51 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 	 * @return
 	 */
 	protected boolean performFinish() {
-		// String msg = null;
-
-		// TODO clean check for edit use case
-		// if (CommonsJcrUtils.isEmptyString(positionTxt.getText())
-		// && CommonsJcrUtils.isEmptyString(oldPosition))
-		// msg = "Please enter a role for current position.";
-		// else if (selectedItem == null && )
-		// msg = "Please select an entity.";
-
-		// if (msg != null) {
-		// MessageDialog.openError(getShell(), "Non valid information", msg);
-		// return false;
-		// } else {
-		Node srcNode = null;
-		Node targetNode = null;
-		try {
-			if (isBackward) {
-				if (selectedItem == null)
-					srcNode = oldReferencing;
-				else
-					srcNode = selectedItem;
-				targetNode = oldReferenced;
-				// First remove old entity reference
-				boolean wasCheckedOut = CommonsJcrUtils
-						.isNodeCheckedOutByMe(oldReferencing);
-				if (!wasCheckedOut)
-					CommonsJcrUtils.checkout(oldReferencing);
-				oldLinkNode.remove();
-				if (wasCheckedOut)
-					oldReferencing.getSession().save();
-				else
-					CommonsJcrUtils.saveAndCheckin(oldReferencing);
-				peopleService.createEntityReference(srcNode, targetNode,
-						positionTxt.getText());
-			} else {
-				// just edit current link
-				if (selectedItem == null)
-					targetNode = oldReferenced;
-				else
-					targetNode = selectedItem;
-
-				boolean wasCheckedOut = CommonsJcrUtils
-						.isNodeCheckedOutByMe(oldReferencing);
-				if (!wasCheckedOut)
-					CommonsJcrUtils.checkout(oldReferencing);
-				oldLinkNode.setProperty(PeopleNames.PEOPLE_ROLE,
-						positionTxt.getText());
-				oldLinkNode.setProperty(PeopleNames.PEOPLE_REF_UID, targetNode
-						.getProperty(PeopleNames.PEOPLE_UID).getString());
-				if (wasCheckedOut)
-					oldReferencing.getSession().save();
-				else
-					CommonsJcrUtils.saveAndCheckin(oldReferencing);
-			}
-
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to update link reference", e);
+		// Sanity check
+		String msg = null;
+		if (selectedItem == null && oldLinkNode == null)
+			msg = "Please select an entity.";
+		if (msg != null) {
+			MessageDialog.openError(getShell(), "Non valid information", msg);
+			return false;
 		}
+
+		// Retrieve values
+		String position = positionTxt.getText();
+		String department = departmentTxt.getText();
+		boolean isPrimary = wasPrimary;
+		if (isPrimaryBtn != null)
+			isPrimary = isPrimaryBtn.getSelection();
+		Node person, organisation;
+
+		if (isBackward) {
+			organisation = oldReferenced;
+			if (selectedItem == null)
+				person = oldReferencing;
+			else
+				person = selectedItem;
+		} else {
+			person = oldReferencing;
+			if (selectedItem == null)
+				organisation = oldReferenced;
+			else
+				organisation = selectedItem;
+		}
+
+		// Real update
+		peopleService.createOrUpdateJob(oldLinkNode, person, organisation,
+				position, department, isPrimary);
 		return true;
-		// }
 	}
 
 	// This dialog life cycle
-	
+
 	@Override
 	protected void okPressed() {
 		if (performFinish())
 			super.okPressed();
 	}
-	
+
 	protected Point getInitialSize() {
 		return new Point(400, 500);
 	}
@@ -295,16 +285,15 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 		super.configureShell(shell);
 		shell.setText(title);
 	}
-	
+
 	/** Overwrite to close session */
 	public boolean close() {
 		JcrUtils.logoutQuietly(session);
 		return super.close();
 	}
 
-	
 	// Specific widgets management
-	
+
 	/** Creates label and text. */
 	protected Text createLT(Composite parent, String label) {
 		Label lbl = new Label(parent, SWT.RIGHT);
@@ -330,7 +319,6 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 
 	protected void addFilterPanel(Composite parent) {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-		// Text Area for the filter
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
 				| SWT.ICON_CANCEL);
 		filterTxt.setMessage("Search and choose a corresponding entity");
@@ -373,22 +361,21 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
+				// Only single selection is enabled
+				Node selectedEntity = (Node) ((IStructuredSelection) event
+						.getSelection()).getFirstElement();
+				selectedItem = selectedEntity;
+
 				try {
-					// Only single selection is enabled
-					Node selectedEntity = (Node) ((IStructuredSelection) event
-							.getSelection()).getFirstElement();
 					if (selectedEntity.isNodeType(NodeType.MIX_TITLE))
 						selectedItemTxt.setText(CommonsJcrUtils.get(
 								selectedEntity, Property.JCR_TITLE));
-					selectedItem = selectedEntity;
-
-					// Sets the focus to next usefull field
-					positionTxt.setFocus();
-
 				} catch (RepositoryException e) {
-					throw new PeopleException("Unable to manage selected item",
-							e);
+					throw new PeopleException("Unable to update "
+							+ "selected item", e);
 				}
+				// Sets the focus to next usefull field
+				positionTxt.setFocus();
 			}
 		});
 

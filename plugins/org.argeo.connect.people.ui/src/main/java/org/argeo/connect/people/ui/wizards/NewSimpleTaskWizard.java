@@ -12,7 +12,9 @@ import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.ActivitiesImages;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.dialogs.PickUpByNodeTypeDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
@@ -65,8 +67,7 @@ public class NewSimpleTaskWizard extends Wizard {
 
 	protected TableViewer itemsViewer;
 
-	public NewSimpleTaskWizard(Session session,
-			ActivityService activityService) {
+	public NewSimpleTaskWizard(Session session, ActivityService activityService) {
 		this.activityService = activityService;
 		this.currSession = session;
 	}
@@ -94,6 +95,15 @@ public class NewSimpleTaskWizard extends Wizard {
 	 */
 	@Override
 	public boolean performFinish() {
+		// Sanity check
+		String msg = null;
+		if (assignedToGroupNode == null)
+			msg = "Please assign this task to a group.";
+		if (msg != null) {
+			MessageDialog.openError(getShell(), "Uncomplete information", msg);
+			return false;
+		}
+
 		Calendar dueDate = GregorianCalendar.getInstance();
 		dueDate.set(dueDateDt.getYear(), dueDateDt.getMonth(),
 				dueDateDt.getDay());
@@ -148,6 +158,9 @@ public class NewSimpleTaskWizard extends Wizard {
 			final Text assignedToTxt = new Text(parent, SWT.BORDER
 					| SWT.NO_FOCUS);
 			assignedToTxt.setMessage("Assign a group to manage this task");
+			assignedToTxt.setData(PeopleUiConstants.CUSTOM_VARIANT,
+					PeopleUiConstants.CSS_ALWAYS_SHOW_BORDER);
+
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
 			assignedToTxt.setLayoutData(gd);
 			assignedToTxt.setEnabled(false);
@@ -167,6 +180,7 @@ public class NewSimpleTaskWizard extends Wizard {
 								assignedToTxt.getShell(), "Choose a group",
 								currSession, PeopleTypes.PEOPLE_USER_GROUP);
 						diag.open();
+						// update display
 						assignedToGroupNode = diag.getSelected();
 						// TODO use correct group name
 						assignedToTxt.setText(assignedToGroupNode.getName());
