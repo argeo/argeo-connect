@@ -346,8 +346,9 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 	}
 
 	private void populateMainInfoCmp(Composite parent) {
-		GridLayout layout = PeopleUiUtils.gridLayoutNoBorder(4);
-		layout.horizontalSpacing = layout.verticalSpacing = 5;
+		GridLayout layout = new GridLayout(4, false);// PeopleUiUtils.gridLayoutNoBorder(4);
+		// layout.horizontalSpacing =
+		layout.verticalSpacing = 2;
 		parent.setLayout(layout);
 
 		// Category
@@ -461,7 +462,7 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 					lengthDt.setHours(0);
 					lengthDt.setMinutes(0);
 					lengthDt.setSeconds(0);
-					lengthInMinLbl.setText("0min");
+					lengthInMinLbl.setText("0 min");
 				} else {
 					lengthDt.setHours((int) PeopleUiUtils
 							.getHoursFromLength(lengthInSec.longValue()));
@@ -502,6 +503,23 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 		featureBtn.addListener(SWT.Selection, listener);
 		midLengthBtn.addListener(SWT.Selection, listener);
 		shortBtn.addListener(SWT.Selection, listener);
+
+		lengthDt.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				long value = PeopleUiUtils.getLengthFromHMS(
+						lengthDt.getHours(), lengthDt.getMinutes(),
+						lengthDt.getSeconds());
+				if (JcrUiUtils.setJcrProperty(film, FILM_LENGTH,
+						PropertyType.LONG, value)) {
+					parentEditPart.markDirty();
+					lengthInMinLbl.setText(TimeUnit.SECONDS.toMinutes(value)
+							+ " min");
+				}
+			}
+		});
 
 		parent.layout();
 
@@ -881,13 +899,13 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		group.setText("Titles");
 		group.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-	
+
 		final Link addLk = isCheckedOut ? new Link(group, SWT.BOTTOM) : null;
 		if (addLk != null)
 			addLk.setText("<a>Add a new title</a>");
-	
+
 		titlesViewer = createItemViewer(group);
-	
+
 		AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
@@ -897,14 +915,14 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 				group.layout();
 			}
 		};
-	
+
 		configureAltTitleViewer(titlesViewer, formPart);
 		titlesViewer.setContentProvider(new MyTableContentProvider());
 		if (addLk != null)
 			configureAddTitleLink(formPart, addLk, film,
 					"Add a new title for current film");
 		formPart.refresh();
-	
+
 		parent.layout();
 		formPart.initialize(form);
 		form.addPart(formPart);
@@ -939,19 +957,19 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 		columns.add(new ColumnDefinition(FilmTypes.FILM_TITLE,
 				FilmNames.FILM_TITLE_LATIN_PRONUNCIATION, PropertyType.STRING,
 				"Latin pronun.", 110));
-	
+
 		NodeViewerComparator comparator = new NodeViewerComparator();
-	
+
 		// RAP SPECIFIC, enable adding link
 		itemsViewer.getTable().setData(PeopleUiConstants.MARKUP_ENABLED,
 				Boolean.TRUE);
 		itemsViewer.getTable().addSelectionListener(
 				new LangListRwtAdapter(part));
-	
+
 		// The columns
 		TableViewerColumn col;
 		EditingSupport editingSupport;
-	
+
 		// original title
 		col = ViewerUtils.createTableViewerColumn(itemsViewer, "", SWT.CENTER,
 				25);
@@ -960,7 +978,7 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 		col.setEditingSupport(editingSupport);
 		col.setLabelProvider(new BooleanFlagLabelProvider(
 				FilmNames.FILM_TITLE_IS_ORIG, PeopleImages.ORIGINAL_BTN, null));
-	
+
 		// primary item
 		col = ViewerUtils.createTableViewerColumn(itemsViewer, "", SWT.CENTER,
 				25);
@@ -970,16 +988,16 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 		col.setLabelProvider(new BooleanFlagLabelProvider(
 				PeopleNames.PEOPLE_IS_PRIMARY, PeopleImages.PRIMARY_BTN,
 				PeopleImages.PRIMARY_NOT_BTN));
-	
+
 		// the language
 		col = ViewerUtils.createTableViewerColumn(itemsViewer, "lang.",
 				SWT.NONE, 30);
 		col.setLabelProvider(new LangLabelProvider());
-	
+
 		col.getColumn().addSelectionListener(
 				PeopleUiUtils.getSelectionAdapter(2, PropertyType.STRING,
 						PeopleNames.PEOPLE_LANG, comparator, itemsViewer));
-	
+
 		int i = 3;
 		for (ColumnDefinition colDef : columns) {
 			col = ViewerUtils.createTableViewerColumn(itemsViewer,
@@ -988,14 +1006,14 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 					.getPropertyName()));
 			col.setEditingSupport(new TextEditingSupport(itemsViewer, part,
 					colDef.getPropertyName()));
-	
+
 			col.getColumn().addSelectionListener(
 					PeopleUiUtils.getSelectionAdapter(i,
 							colDef.getPropertyType(), colDef.getPropertyName(),
 							comparator, itemsViewer));
 			i++;
 		}
-	
+
 		ColumnDefinition firstCol = columns.get(0);
 		// IMPORTANT: initialize comparator before setting it
 		comparator.setColumn(firstCol.getPropertyType(),
@@ -1009,7 +1027,7 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 		button.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, false, false));
 		button.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
-	
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				NewTitleDialog dialog = new NewTitleDialog(button.getShell(),
@@ -1067,7 +1085,7 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 		columns.add(new ColumnDefinition(null, Property.JCR_TITLE,
 				PropertyType.STRING, "Title", 100));
 		columns.add(new ColumnDefinition(null, Property.JCR_DESCRIPTION,
-				PropertyType.STRING, "Description", 100));
+				PropertyType.STRING, "Description", 130));
 
 		NodeViewerComparator comparator = new NodeViewerComparator();
 
@@ -1082,7 +1100,7 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 
 		// specific columns
 		col = ViewerUtils.createTableViewerColumn(itemsViewer, "Date",
-				SWT.NONE, 50);
+				SWT.NONE, 65);
 		col.setLabelProvider(new DateLabelProvider());
 		col.getColumn().addSelectionListener(
 				PeopleUiUtils.getSelectionAdapter(0, PropertyType.DATE,

@@ -17,32 +17,33 @@
 		<property name="bundleContext" ref="bundleContext" />
 	</bean>
 
-	<!--  Current JCR Security model (used by the UI to create new users) -->
+	<!-- Current JCR Security model (used by the UI to create new users) -->
 	<bean name="jcrSecurityModel" class="org.argeo.security.jackrabbit.JackrabbitSecurityModel" />
-	
+
 	<!-- People specific roles declaration -->
 
 	<!-- ROLE_BUSINESS_ADMIN: A role that has JCR_ALL rights on the workspace. 
-		 Sees people specific admin perspectives -->
+		Sees people specific admin perspectives -->
 	<bean class="org.argeo.security.core.SimpleRoleRegistration"
 		init-method="run">
 		<property name="role" value="ROLE_BUSINESS_ADMIN" />
 		<property name="userAdminService" ref="userAdminService" />
 	</bean>
 
-	
-	<!-- ROLE_MEMBER: A role that has JCR_ALL rights on the workspace. 
-		 Sees less perspectives as the Business or the technical admin. -->
+
+	<!-- ROLE_REGISTERED_MEMBER: A role that has JCR_ALL rights on the workspace. 
+		Sees less perspectives as the Business or the technical admin. -->
 	<bean class="org.argeo.security.core.SimpleRoleRegistration"
 		init-method="run">
-		<property name="role" value="ROLE_MEMBER" />
+		<property name="role" value="ROLE_REGISTERED_MEMBER" />
 		<property name="userAdminService" ref="userAdminService" />
 	</bean>
 
-	<!-- ROLE_GUEST: A role that has been granted JCR_READ rights on the workspace -->
+	<!-- ROLE_REGISTERED_GUEST: A role that has been granted JCR_READ rights 
+		on the workspace -->
 	<bean class="org.argeo.security.core.SimpleRoleRegistration"
 		init-method="run">
-		<property name="role" value="ROLE_GUEST" />
+		<property name="role" value="ROLE_REGISTERED_GUEST" />
 		<property name="userAdminService" ref="userAdminService" />
 	</bean>
 
@@ -51,8 +52,8 @@
 		<property name="principalPrivileges">
 			<util:map>
 				<entry key="jcr:all" value="ROLE_BUSINESS_ADMIN" />
-				<entry key="jcr:all" value="ROLE_MEMBER" />
-				<entry key="jcr:read" value="ROLE_GUEST" />
+				<entry key="jcr:all" value="ROLE_REGISTERED_MEMBER" />
+				<entry key="jcr:read" value="ROLE_REGISTERED_GUEST" />
 			</util:map>
 		</property>
 	</bean>

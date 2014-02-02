@@ -135,10 +135,12 @@ public class NewPeopleUserWizard extends Wizard {
 
 			userAdminService.createUser(jcrUserDetails);
 
-			userManagementService.createDefaultGroupForUser(session, username);
-			userManagementService.addGroupsToUser(session, username,
-					chooseGroupsPage.getSelectedGroups());
-
+			Node defaultGroup = userManagementService
+					.createDefaultGroupForUser(session, username);
+			List<Node> selected = chooseGroupsPage.getSelectedGroups();
+			// otherwise default group is overridden.
+			selected.add(defaultGroup);
+			userManagementService.addGroupsToUser(session, username, selected);
 			return true;
 		} catch (Exception e) {
 			JcrUtils.discardQuietly(session);

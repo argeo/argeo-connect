@@ -69,6 +69,8 @@ import org.eclipse.swt.widgets.Text;
  * referenced and referencing entities must be given in order to eventually
  * remove old reference
  */
+
+@Deprecated
 public class EditEntityRefWithPositionDialog extends TrayDialog {
 	private static final long serialVersionUID = -3534660152626908662L;
 	// The various field

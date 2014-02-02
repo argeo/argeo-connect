@@ -65,6 +65,7 @@ import org.eclipse.swt.widgets.Text;
  * here is to pass either the Referencing node or the Reference node to be able
  * to manage where to put the link depending on the info we have.
  */
+@Deprecated
 public class CreateEntityRefWithPositionDialog extends TrayDialog {
 	private static final long serialVersionUID = 5641280645351822123L;
 	// The various field

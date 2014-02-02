@@ -41,14 +41,15 @@ public class AddMLMembershipDialog extends AddReferenceDialog {
 	private static final long serialVersionUID = 7681423439719164047L;
 	// business objects
 	private Node referencedNode;
-	private PeopleService peopleService;
+
+	// private PeopleService peopleService;
 
 	public AddMLMembershipDialog(Shell parentShell, String title,
 			PeopleService peopleService, Node referencedNode,
 			String[] toSearchNodeTypes) {
 		super(parentShell, title, peopleService, toSearchNodeTypes);
 		this.referencedNode = referencedNode;
-		this.peopleService = peopleService;
+		// this.peopleService = peopleService;
 	}
 
 	protected List<ColumnDefinition> getColumnsDef() {
@@ -81,7 +82,7 @@ public class AddMLMembershipDialog extends AddReferenceDialog {
 							.append(PersonJcrUtils
 									.getPersonDisplayName(referencedNode))
 							.append("; ");
-							// .append("(" + defaultMail + "); ");
+					// .append("(" + defaultMail + "); ");
 				} else {
 					ContactJcrUtils.addToMailingList(mailingList,
 							referencedNode);

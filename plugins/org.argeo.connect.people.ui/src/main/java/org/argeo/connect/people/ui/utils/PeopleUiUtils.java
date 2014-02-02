@@ -381,6 +381,18 @@ public class PeopleUiUtils {
 	}
 
 	/**
+	 * Creates a basic right aligned bold label with no specific toolkit.
+	 * 
+	 */
+	public static Label createBoldLabel(Composite parent, String value) {
+		Label label = new Label(parent, SWT.RIGHT);
+		label.setText(value);
+		label.setFont(EclipseUiUtils.getBoldFont(parent));
+		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		return label;
+	}
+
+	/**
 	 * Creates a text widget with GridData already set
 	 * 
 	 * @param toolkit
@@ -507,6 +519,10 @@ public class PeopleUiUtils {
 
 	public static long getHoursFromLength(long lengthInSeconds) {
 		return (lengthInSeconds / (60 * 60)) % 60;
+	}
+
+	public static long getLengthFromHMS(int hours, int min, int secs) {
+		return 60 * 60 * hours + 60 * min + secs;
 	}
 
 	/** format a duration in second using a hh:mm:ss pattern */

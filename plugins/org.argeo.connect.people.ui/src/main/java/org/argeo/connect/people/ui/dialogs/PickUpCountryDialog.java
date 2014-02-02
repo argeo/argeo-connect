@@ -61,7 +61,7 @@ public class PickUpCountryDialog extends TrayDialog {
 		colDefs.add(new ColumnDefinition(null, PeopleNames.PEOPLE_ISO_CODE,
 				PropertyType.STRING, "Iso Code", 100));
 		colDefs.add(new ColumnDefinition(null, Property.JCR_TITLE,
-				PropertyType.STRING, "Label", 300));
+				PropertyType.STRING, "Label", 240));
 	};
 
 	public PickUpCountryDialog(Shell parentShell, String title, Session session) {
@@ -71,7 +71,7 @@ public class PickUpCountryDialog extends TrayDialog {
 	}
 
 	protected Point getInitialSize() {
-		return new Point(600, 400);
+		return new Point(400, 400);
 	}
 
 	protected Control createDialogArea(Composite parent) {

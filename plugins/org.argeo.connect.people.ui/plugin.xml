@@ -13,6 +13,7 @@
 		</perspective>
       
 		<!-- Draft perspective for people standalone application --> 
+		
 		<perspective
 			class="org.argeo.connect.people.ui.PeoplePerspective"
 			icon="icons/people.gif"
@@ -415,7 +416,7 @@
 						<with variable="roles">
 			      			<iterate ifEmpty="false" operator="or">
 			        			<equals value="ROLE_BUSINESS_ADMIN" />
-			        			<equals value="ROLE_MEMBER" />
+			        			<equals value="ROLE_REGISTERED_MEMBER" />
 			      			</iterate>
 			    		</with>
 			    	</and>
@@ -435,10 +436,24 @@
 						<with variable="roles">
 			      			<iterate ifEmpty="false" operator="or">
 			        			<equals value="ROLE_BUSINESS_ADMIN" />
-			        			<equals value="ROLE_MEMBER" />
+			        			<equals value="ROLE_REGISTERED_MEMBER" />
 			      			</iterate>
 			    		</with>
 			    	</and>
+				</visibleWhen>
+			</command>
+ 				
+			<!-- Force resfresh if possible --> 
+			<command
+				commandId="org.argeo.connect.people.ui.forceRefresh"
+				icon="icons/refresh.png"
+				label="Force refresh of the current active part"
+				style="push"
+				tooltip="Force refresh of the current active part">
+				<visibleWhen>
+					<with variable="activePart">
+						<instanceof value="org.argeo.connect.people.ui.utils.Refreshable" />
+					</with>
 				</visibleWhen>
 			</command>
  			
@@ -455,6 +470,7 @@
 					</with>
 				</visibleWhen>
 			</command>
+			
 		</menuContribution>
 		
 		<!-- PeopleUserAdminView toolbar menu --> 

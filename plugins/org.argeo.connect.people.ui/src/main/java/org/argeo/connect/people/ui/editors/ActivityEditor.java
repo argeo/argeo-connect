@@ -103,7 +103,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		// 2nd line - RELATED ENTITIES
 		Label label = PeopleUiUtils.createBoldLabel(toolkit, parent,
 				"Related entities");
-		label.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
+		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 
 		final Composite relatedCmp = toolkit.createComposite(parent,
 				SWT.NO_FOCUS);

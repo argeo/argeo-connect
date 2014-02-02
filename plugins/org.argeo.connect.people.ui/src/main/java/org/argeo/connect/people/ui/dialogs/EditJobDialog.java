@@ -361,6 +361,14 @@ public class EditJobDialog extends TrayDialog {
 
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
+				// FIXME Avoid null pointer on filter reset
+				Object element = ((IStructuredSelection) event.getSelection())
+						.getFirstElement();
+				if (element == null) {
+					selectedItem = null;
+					return;
+				}
+				
 				// Only single selection is enabled
 				Node selectedEntity = (Node) ((IStructuredSelection) event
 						.getSelection()).getFirstElement();

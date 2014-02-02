@@ -94,8 +94,8 @@ public class ContactComposite extends Composite {
 				contactNode, PeopleTypes.PEOPLE_EMAIL));
 
 		// The widgets
-		final Text labelTxt = createAddressTxt(parent, "", 120);
 		final Text valueTxt = createAddressTxt(parent, "Value", 150);
+		final Text labelTxt = createAddressTxt(parent, "", 120);
 		final Combo catCmb = hasCat ? new Combo(parent, SWT.READ_ONLY) : null;
 
 		if (catCmb != null) {

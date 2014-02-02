@@ -35,7 +35,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -116,12 +115,11 @@ public class TaskEditor extends AbstractPeopleEditor {
 				false));
 
 		// RELATED ENTITIES
-		Label label = PeopleUiUtils.createBoldLabel(toolkit, parent,
-				"Related entities");
-
-		gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
-		gd.verticalIndent = 4;
-		label.setLayoutData(gd);
+		// Label label =
+		PeopleUiUtils.createBoldLabel(toolkit, parent, "Related entities");
+		// gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
+		// gd.verticalIndent = 10;
+		// label.setLayoutData(gd);
 
 		Composite relEntitiesCmp = toolkit
 				.createComposite(parent, SWT.NO_FOCUS);
@@ -132,7 +130,7 @@ public class TaskEditor extends AbstractPeopleEditor {
 		// Parent composite with related entities and add link
 		final Composite relatedCmp = toolkit.createComposite(relEntitiesCmp,
 				SWT.NO_FOCUS);
-		gd = new GridData(SWT.FILL, SWT.TOP, true, false);
+		gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		relatedCmp.setLayoutData(gd);
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = true;
@@ -176,7 +174,7 @@ public class TaskEditor extends AbstractPeopleEditor {
 						Value[] values = task.getProperty(
 								PeopleNames.PEOPLE_RELATED_TO).getValues();
 						for (final Value value : values) {
-
+							// TODO try to generate this as a single link.
 							final String valueStr = value.getString();
 							Node relatedNode = getSession()
 									.getNodeByIdentifier(valueStr);
@@ -221,6 +219,9 @@ public class TaskEditor extends AbstractPeopleEditor {
 						final Link addRelatedLk = new Link(relatedCmp,
 								SWT.CENTER);
 						toolkit.adapt(addRelatedLk, false, false);
+						addRelatedLk.setLayoutData(new GridData(SWT.CENTER,
+								SWT.TOP, false, false));
+
 						addRelatedLk.setText("<a>Add</a>");
 						addRelatedLk
 								.addSelectionListener(getAddRelatedSelList(relatedCmp

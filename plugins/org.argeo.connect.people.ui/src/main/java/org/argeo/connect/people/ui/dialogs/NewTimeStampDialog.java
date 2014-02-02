@@ -24,8 +24,11 @@ import javax.jcr.Session;
 
 import org.argeo.connect.film.core.FilmJcrUtils;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
@@ -38,7 +41,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -75,7 +77,7 @@ public class NewTimeStampDialog extends TrayDialog {
 	}
 
 	protected Point getInitialSize() {
-		return new Point(400, 300);
+		return new Point(400, 200);
 	}
 
 	protected Control createDialogArea(Composite parent) {
@@ -85,15 +87,17 @@ public class NewTimeStampDialog extends TrayDialog {
 		dialogArea.setLayout(new GridLayout(3, false));
 
 		// DATE
-		new Label(dialogArea, SWT.NONE).setText("Date");
+		// new Label(dialogArea, SWT.NONE).setText("Date");
+		PeopleUiUtils.createBoldLabel(dialogArea, "Date");
 		dateTimeCtl = new DateTime(dialogArea, SWT.DATE | SWT.MEDIUM
-				| SWT.DROP_DOWN);
+				| SWT.DROP_DOWN | SWT.BORDER);
 		dateTimeCtl.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,
 				2, 1));
 
 		// AWARD
-		isAward = new Button(dialogArea, SWT.CHECK);
-		isAward.setText("Is award ?");
+		isAward = new Button(dialogArea, SWT.CHECK | SWT.RIGHT);
+		isAward.setText("Is Award");
+		isAward.setFont(EclipseUiUtils.getBoldFont(dialogArea));
 		isAward.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
 
 		// Countries for awards
@@ -102,6 +106,8 @@ public class NewTimeStampDialog extends TrayDialog {
 		countryTxt.setEnabled(false);
 		countryTxt.setVisible(false);
 		countryTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		countryTxt.setData(PeopleUiConstants.CUSTOM_VARIANT,
+				PeopleUiConstants.CSS_ALWAYS_SHOW_BORDER);
 
 		final Link chooseCountryLk = new Link(dialogArea, SWT.BOTTOM);
 		chooseCountryLk.setText("<a>Choose a country</a>");
@@ -148,7 +154,7 @@ public class NewTimeStampDialog extends TrayDialog {
 
 	/** Creates label and text. text control has an horizontal span of 2 */
 	protected Text createLT(Composite parent, String label, int horizontalSpan) {
-		new Label(parent, SWT.NONE).setText(label);
+		PeopleUiUtils.createBoldLabel(parent, label);
 		Text text = new Text(parent, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
 		text.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,
 				horizontalSpan, 1));
@@ -167,6 +173,8 @@ public class NewTimeStampDialog extends TrayDialog {
 		String errMmsg = null;
 		if (CommonsJcrUtils.isEmptyString(title))
 			errMmsg = "Please enter a non empty title";
+		else if (award && countryIso == null)
+			errMmsg = "Please choose a country";
 
 		if (errMmsg != null) {
 			MessageDialog.openError(getShell(), "Invalid data", errMmsg);

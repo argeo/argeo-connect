@@ -193,7 +193,7 @@ public class UserEditor extends FormEditor {
 		private UserManagementService userManagementService;
 
 		// Business objects
-		private Node argeoProfile;
+		// private Node argeoProfile;
 		private List<Node> selectedGroups;
 		// Keep a local cache for upper table
 		private List<Node> displayedGroups = new ArrayList<Node>();
@@ -202,7 +202,7 @@ public class UserEditor extends FormEditor {
 				UserManagementService userManagementService, Node argeoProfile) {
 			super(editor, ID, "Groups");
 			this.userManagementService = userManagementService;
-			this.argeoProfile = argeoProfile;
+			// this.argeoProfile = argeoProfile;
 		}
 
 		protected void createFormContent(final IManagedForm mf) {

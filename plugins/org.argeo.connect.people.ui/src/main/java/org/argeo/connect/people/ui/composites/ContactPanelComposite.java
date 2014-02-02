@@ -11,6 +11,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -29,6 +30,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
@@ -42,6 +44,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class ContactPanelComposite extends Composite {
 	private static final long serialVersionUID = 58381532068661087L;
 
+	// private final static Log log = LogFactory
+	// .getLog(ContactPanelComposite.class);
+
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 
@@ -50,6 +55,9 @@ public class ContactPanelComposite extends Composite {
 	private ContactFormPart formPart;
 
 	private Composite innerCmp;
+
+	// FIXME caches the add new contact combo
+	private Combo addContactCmb;
 
 	public ContactPanelComposite(Composite parent, int style,
 			FormToolkit toolkit, IManagedForm form, Node entityNode,
@@ -65,8 +73,6 @@ public class ContactPanelComposite extends Composite {
 	private void populate() {
 		Composite parent = this;
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-
-		// Does not scroll...
 
 		// Add a scrolled container
 		ScrolledComposite container = new ScrolledComposite(parent,
@@ -119,8 +125,19 @@ public class ContactPanelComposite extends Composite {
 				// list existing contacts
 				Composite contactListCmp = toolkit.createComposite(innerCmp,
 						SWT.NO_FOCUS);
-				contactListCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
-						true, true));
+
+				gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+				if (checkedOut) {
+					long count = getCurrentContactCount() ;
+					if (count < 5)
+					gd.heightHint = 170;
+					else 
+						gd.heightHint = (int) (count*30 + 20);
+						
+					
+				}
+				contactListCmp.setLayoutData(gd);
+
 				populateDisplayContactPanel(contactListCmp, checkedOut);
 				contactListCmp.layout(true);
 
@@ -133,14 +150,34 @@ public class ContactPanelComposite extends Composite {
 				populateNotePanel(noteCmp);
 
 				innerCmp.pack(true);
+				innerCmp.setLayoutData(gd = new GridData(SWT.FILL, SWT.FILL,
+						true, true));
+				innerCmp.layout();
 				innerCmp.getParent().pack(true);
 				// parent.layout();
 				innerCmp.getParent().layout();
+				ContactPanelComposite.this.layout();
+
 			} catch (Exception e) {
 				throw new PeopleException(
 						"unexpected error while refreshing node " + entity, e);
 			}
 		}
+	}
+
+	private long getCurrentContactCount() {
+		long result = 0;
+		try {
+			if (entity.hasNode(PeopleNames.PEOPLE_CONTACTS)) {
+				Node contactsPar = entity.getNode(PeopleNames.PEOPLE_CONTACTS);
+				NodeIterator ni = contactsPar.getNodes();
+				result = ni.getSize();
+			}
+		} catch (RepositoryException re) {
+			throw new PeopleException("Error while conting contacts for "
+					+ entity, re);
+		}
+		return result;
 	}
 
 	/** Manage display and update of existing contact Nodes */
@@ -172,7 +209,12 @@ public class ContactPanelComposite extends Composite {
 
 	private void populateNotePanel(Composite parent) {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
-		toolkit.createLabel(parent, "Notes: ", SWT.TOP);
+		Label label = PeopleUiUtils.createBoldLabel(toolkit, parent, "Notes: ");
+
+		GridData gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
+		gd.verticalIndent = 3;
+		label.setLayoutData(gd);
+
 		Text notesTxt = toolkit.createText(parent, "", SWT.BORDER | SWT.MULTI
 				| SWT.WRAP);
 		notesTxt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -190,7 +232,7 @@ public class ContactPanelComposite extends Composite {
 		parent.setLayout(layout);
 
 		// ADD CONTACT
-		Combo addContactCmb = new Combo(parent, SWT.NONE | SWT.READ_ONLY
+		addContactCmb = new Combo(parent, SWT.NONE | SWT.READ_ONLY
 				| SWT.NO_FOCUS);
 
 		addContactCmb.setLayoutData(new RowData(100, SWT.DEFAULT));
@@ -205,6 +247,7 @@ public class ContactPanelComposite extends Composite {
 		if (natureCmb != null) {
 			natureCmb.setLayoutData(new RowData(100, SWT.DEFAULT));
 			natureCmb.setItems(ContactValueCatalogs.ARRAY_CONTACT_NATURES);
+			natureCmb.setVisible(false);
 		}
 
 		// Listeners
@@ -238,6 +281,8 @@ public class ContactPanelComposite extends Composite {
 				int index = addContactCmb.getSelectionIndex();
 				if (natureCmb != null) {
 					natureCmb.setVisible(index > 0);
+					if (index > 0 && natureCmb.getSelectionIndex() == -1)
+						natureCmb.select(0);
 				}
 
 				if (index == 0) {
@@ -264,8 +309,19 @@ public class ContactPanelComposite extends Composite {
 				throw new PeopleException(
 						"Unable to refresh add contact panel", e1);
 			}
-			// innerCmp.pack();
+
+			parent.layout();
+
+			innerCmp.pack(true);
 			innerCmp.layout();
+
+			// innerCmp.getParent().pack(true);
+			// parent.layout();
+			innerCmp.getParent().layout();
+
+			// for (Control ctl : parent.getChildren()) {
+			// log.debug("Current children controls " + ctl.toString());
+			// }
 		}
 	}
 
@@ -274,8 +330,10 @@ public class ContactPanelComposite extends Composite {
 		// remove all controls
 		for (Control ctl : editPanel.getChildren()) {
 			if (!(chooseTypeCmb == ctl || chooseNatureCmb != null
-					&& chooseNatureCmb == ctl))
+					&& chooseNatureCmb == ctl)) {
+				// log.debug("Disposing control " + ctl.toString());
 				ctl.dispose();
+			}
 		}
 	}
 
@@ -339,14 +397,13 @@ public class ContactPanelComposite extends Composite {
 			}
 		});
 
-		valueTxt.addTraverseListener(new TraverseListener() {
+		TraverseListener travList = new TraverseListener() {
 			private static final long serialVersionUID = 9192624317905937169L;
 
 			@Override
 			public void keyTraversed(TraverseEvent e) {
 				if (e.keyCode == SWT.CR) {
 					e.doit = false;
-
 					String value = valueTxt.getText();
 					String label = labelTxt.getText();
 					boolean isPrimary = primaryChk.getSelection();
@@ -354,8 +411,10 @@ public class ContactPanelComposite extends Composite {
 							nature, null, label);
 				}
 			}
-		});
+		};
 
+		valueTxt.addTraverseListener(travList);
+		labelTxt.addTraverseListener(travList);
 		return valueTxt;
 	}
 
@@ -396,7 +455,7 @@ public class ContactPanelComposite extends Composite {
 			}
 		});
 
-		valueTxt.addTraverseListener(new TraverseListener() {
+		TraverseListener travList = new TraverseListener() {
 			private static final long serialVersionUID = 9192624317905937169L;
 
 			@Override
@@ -411,7 +470,11 @@ public class ContactPanelComposite extends Composite {
 							nature, cat, label);
 				}
 			}
-		});
+		};
+
+		valueTxt.addTraverseListener(travList);
+		labelTxt.addTraverseListener(travList);
+		catCmb.addTraverseListener(travList);
 		return valueTxt;
 	}
 
@@ -420,6 +483,7 @@ public class ContactPanelComposite extends Composite {
 
 		PeopleJcrUtils.createContact(entity, contactType, contactType, value,
 				isPrimary, nature, null, label);
+		addContactCmb.select(0);
 		formPart.markDirty();
 		formPart.refresh();
 	}
@@ -438,8 +502,6 @@ public class ContactPanelComposite extends Composite {
 		}
 		catCmb.select(0);
 
-		final Text labelTxt = createRowDataLT(parent, "Label", 120);
-
 		final Text streetTxt = createRowDataLT(parent, "Street", 150);
 		final Text street2Txt = createRowDataLT(parent, "Street Complement",
 				150);
@@ -447,7 +509,8 @@ public class ContactPanelComposite extends Composite {
 		final Text cityTxt = createRowDataLT(parent, "City", 150);
 		final Text stateTxt = createRowDataLT(parent, "State", 150);
 		final Text countryTxt = createRowDataLT(parent, "Country", 150);
-		final Text geoPointTxt = createRowDataLT(parent, "Geopoint", 200);
+		// final Text geoPointTxt = createRowDataLT(parent, "Geopoint", 200);
+		final Text labelTxt = createRowDataLT(parent, "Label", 120);
 
 		final Button primaryChk = toolkit.createButton(parent, "Primary",
 				SWT.CHECK);
@@ -467,14 +530,50 @@ public class ContactPanelComposite extends Composite {
 				Node node = PeopleJcrUtils.createAddress(entity,
 						streetTxt.getText(), street2Txt.getText(),
 						zipTxt.getText(), cityTxt.getText(),
-						stateTxt.getText(), countryTxt.getText(),
-						geoPointTxt.getText(), isPrimary, nature, cat, label);
+						stateTxt.getText(), countryTxt.getText(), null,
+						isPrimary, nature, cat, label);
+				// geoPointTxt.getText()
 				PeopleJcrUtils.updateDisplayAddress(node);
 				formPart.markDirty();
 				formPart.refresh();
 			}
 
 		});
+
+		TraverseListener travList = new TraverseListener() {
+			private static final long serialVersionUID = 9192624317905937169L;
+
+			@Override
+			public void keyTraversed(TraverseEvent e) {
+				if (e.keyCode == SWT.CR) {
+					e.doit = false;
+					String cat = catCmb.getText();
+					String label = labelTxt.getText();
+					boolean isPrimary = primaryChk.getSelection();
+
+					Node node = PeopleJcrUtils.createAddress(entity,
+							streetTxt.getText(), street2Txt.getText(),
+							zipTxt.getText(), cityTxt.getText(),
+							stateTxt.getText(), countryTxt.getText(), null,
+							isPrimary, nature, cat, label);
+					// geoPointTxt.getText()
+					PeopleJcrUtils.updateDisplayAddress(node);
+					formPart.markDirty();
+					formPart.refresh();
+				}
+			}
+		};
+
+		streetTxt.addTraverseListener(travList);
+		street2Txt.addTraverseListener(travList);
+		zipTxt.addTraverseListener(travList);
+		cityTxt.addTraverseListener(travList);
+		stateTxt.addTraverseListener(travList);
+		countryTxt.addTraverseListener(travList);
+		// geoPointTxt.addTraverseListener(travList);
+		labelTxt.addTraverseListener(travList);
+		catCmb.addTraverseListener(travList);
+
 		return catCmb;
 	}
 
@@ -487,19 +586,22 @@ public class ContactPanelComposite extends Composite {
 					.getPrimaryNodeType().getName(), contactType, nature));
 			catCmb.select(0);
 
-			final Text labelTxt = createRowDataLT(parent, "Label", 120);
-
+			final Text valueTxt = createRowDataLT(parent, "Linked company", 200);
+			valueTxt.setData(PeopleUiConstants.CUSTOM_VARIANT,
+					PeopleUiConstants.CSS_ALWAYS_SHOW_BORDER);
+			valueTxt.setEnabled(false);
+			
 			final Link chooseOrgLk = new Link(parent, SWT.BOTTOM);
+			
 			toolkit.adapt(chooseOrgLk, false, false);
-			chooseOrgLk.setText("<a>Pick up an Organisation</a>");
+			chooseOrgLk.setText("<a>Pick up</a>");
 			final PickUpOrgDialog diag = new PickUpOrgDialog(
 					chooseOrgLk.getShell(), "Choose an organisation",
 					entity.getSession(), entity);
 
-			final Text valueTxt = createRowDataLT(parent, "Contact value", 200);
-			final String PROP_SELECTED_NODE = "selectedNode";
+			final Text labelTxt = createRowDataLT(parent, "A custom label", 120);
 
-			valueTxt.setEnabled(false);
+			final String PROP_SELECTED_NODE = "selectedNode";
 
 			chooseOrgLk.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = -7118320199160680131L;

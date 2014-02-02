@@ -121,20 +121,24 @@ public class ContactAddressComposite extends Composite {
 		try {
 			// The widgets
 			final Combo catCmb = new Combo(parent, SWT.NONE);
-			final Text labelTxt = PeopleUiUtils.createRDText(toolkit, parent,
-					"", "", 120);
 
-			final Link chooseOrgLk = new Link(parent, SWT.NONE);
+			//Label lbl = toolkit.createLabel(parent, "Address of:", SWT.BOTTOM);
+
+			final Text valueTxt = PeopleUiUtils.createRDText(toolkit, parent,
+					"Chosen org.", "", 0);
+			valueTxt.setEnabled(false);
+
+			final Link chooseOrgLk = new Link(parent, SWT.LEFT);
+
+			final Text labelTxt = PeopleUiUtils.createRDText(toolkit, parent,
+					"A custom label", "A custom label", 120);
+
 			toolkit.adapt(chooseOrgLk, false, false);
-			chooseOrgLk.setText("<a>Pick up an Org.</a>");
+			chooseOrgLk.setText("<a>Change</a>");
 			final PickUpOrgDialog diag = new PickUpOrgDialog(
 					chooseOrgLk.getShell(), "Choose an organisation",
 					contactNode.getSession(), contactNode.getParent()
 							.getParent());
-
-			final Text valueTxt = PeopleUiUtils.createRDText(toolkit, parent,
-					"Chosen org.", "", 150);
-			valueTxt.setEnabled(false);
 
 			// REFRESH VALUES
 			PeopleUiUtils.refreshFormTextWidget(labelTxt, contactNode,

@@ -56,7 +56,7 @@ public class PickUpOrgDialog extends TrayDialog {
 	}
 
 	protected Point getInitialSize() {
-		return new Point(800, 600);
+		return new Point(400, 600);
 	}
 
 	protected Control createDialogArea(Composite parent) {

@@ -20,6 +20,7 @@ import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.composites.ActivityTableComposite;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.ui.wizards.NewSimpleTaskWizard;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -160,7 +161,7 @@ public class ActivityToolkit {
 			}
 		});
 
-		titleTxt.addTraverseListener(new TraverseListener() {
+		TraverseListener travList = new TraverseListener() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -171,20 +172,10 @@ public class ActivityToolkit {
 							activityTable);
 				}
 			}
-		});
+		};
 
-		descTxt.addTraverseListener(new TraverseListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void keyTraversed(TraverseEvent e) {
-				if (e.keyCode == SWT.CR) {
-					e.doit = false;
-					createActivity(entity, typeCmb, titleTxt, descTxt,
-							activityTable);
-				}
-			}
-		});
+		titleTxt.addTraverseListener(travList);
+		descTxt.addTraverseListener(travList);
 
 		addTaskLk.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
@@ -305,7 +296,7 @@ public class ActivityToolkit {
 			relatedTo.add(relatedEntity);
 			Node activity = activityService.createActivity(session, type,
 					title, desc, relatedTo);
-			session.save();
+			CommonsJcrUtils.saveAndCheckin(activity);
 			return activity;
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to create activity node", e);
