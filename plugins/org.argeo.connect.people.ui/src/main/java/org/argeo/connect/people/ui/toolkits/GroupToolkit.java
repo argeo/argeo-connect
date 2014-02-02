@@ -208,7 +208,5 @@ public class GroupToolkit {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-
 	}
-
 }

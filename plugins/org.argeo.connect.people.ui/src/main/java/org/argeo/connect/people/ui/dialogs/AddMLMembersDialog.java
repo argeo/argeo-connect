@@ -66,50 +66,35 @@ public class AddMLMembersDialog extends AddReferenceDialog {
 	}
 
 	protected Point getInitialSize() {
-		return new Point(800, 600);
+		return new Point(450, 600);
 	}
 
 	@Override
 	protected List<ColumnDefinition> getColumnsDef() {
 		List<ColumnDefinition> columnDefs = new ArrayList<ColumnDefinition>();
 		columnDefs.add(new ColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
-				Property.JCR_TITLE, PropertyType.STRING, "Display name", 400));
-		// columnDefs.add(new ColumnDefinition(PeopleTypes.PEOPLE_PERSON,
-		// PeopleNames.PEOPLE_FIRST_NAME, PropertyType.STRING,
-		// "First name", 120));
+				Property.JCR_TITLE, PropertyType.STRING, "Display name", 380));
 		return columnDefs;
 	}
 
 	@Override
 	protected boolean performAddition(List<Row> selectedItems) {
-		// StringBuilder skippedPerson = new StringBuilder();
-		// StringBuilder duplicates = new StringBuilder();
-
+		// TODO implement sanity checks
+		// if (duplicates.length() > 0) {
+		// String msg = "Following persons are already part of the list, "
+		// + "they could not be added: \n"
+		// + duplicates.substring(0, duplicates.length() - 2);
+		// MessageDialog.openError(getShell(), "Dupplicates", msg);
+		// }
 		try {
 			for (Row personRow : selectedItems) {
 				Node contactable = personRow.getNode(PeopleTypes.PEOPLE_ENTITY);
 				ContactJcrUtils.addToMailingList(referencingNode, contactable);
 			}
-
-			// TODO implement sanity checks
-
-			// if (skippedPerson.length() > 0) {
-			// String msg = "Following persons have no defined mail adress, "
-			// + "they could not be added: "
-			// + skippedPerson
-			// .substring(0, skippedPerson.length() - 2);
-			// MessageDialog.openError(getShell(), "Non valid information",
-			// msg);
-			// }
-			// if (duplicates.length() > 0) {
-			// String msg = "Following persons are already part of the list, "
-			// + "they could not be added: \n"
-			// + duplicates.substring(0, duplicates.length() - 2);
-			// MessageDialog.openError(getShell(), "Dupplicates", msg);
-			// }
 			return true;
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to get person node from row", e);
+			throw new PeopleException("Error while trying to add members to "
+					+ referencingNode, e);
 		}
 	}
 

@@ -25,6 +25,7 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -75,6 +76,8 @@ public class MailingListToolkit {
 		Table table = new Table(parent, style);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
+		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		
 		RowViewerComparator comparator = new RowViewerComparator();
 
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);

@@ -104,8 +104,8 @@ public class TaskEditor extends AbstractPeopleEditor {
 		// ASSIGNED TO
 		PeopleUiUtils.createBoldLabel(toolkit, parent, "Assigned to");
 		final Link changeAssignationLk = new Link(parent, SWT.NONE);
-		changeAssignationLk.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER,
-				false, false));
+		changeAssignationLk.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
+				true, false));
 
 		// WAKE UP DATE
 		PeopleUiUtils.createBoldLabel(toolkit, parent, "Wake up date");
@@ -162,6 +162,7 @@ public class TaskEditor extends AbstractPeopleEditor {
 					if (isCO)
 						manager += " ~ <a>Change</a>";
 					changeAssignationLk.setText(manager);
+					changeAssignationLk.getParent().layout();
 
 					// We redraw the full related to composite at each refresh,
 					// might be a
@@ -210,23 +211,25 @@ public class TaskEditor extends AbstractPeopleEditor {
 									});
 							deleteBtn.setVisible(isCO);
 						}
-						// relatedCmp.pack();
-						relatedCmp.layout(false);
-						relatedCmp.getParent().getParent().layout();
 					}
 					// The add button
 					if (isCO) {
 						final Link addRelatedLk = new Link(relatedCmp,
 								SWT.CENTER);
 						toolkit.adapt(addRelatedLk, false, false);
-						addRelatedLk.setLayoutData(new GridData(SWT.CENTER,
-								SWT.TOP, false, false));
+						// addRelatedLk.setLayoutData(new RowData(SWT.CENTER,
+						// SWT.TOP, false, false));
 
 						addRelatedLk.setText("<a>Add</a>");
 						addRelatedLk
 								.addSelectionListener(getAddRelatedSelList(relatedCmp
 										.getShell()));
 					}
+
+					// relatedCmp.pack();
+					relatedCmp.layout(false);
+					relatedCmp.getParent().getParent().layout();
+
 				} catch (RepositoryException re) {
 					throw new PeopleException(
 							"Unable to refresh form part for activity " + task,

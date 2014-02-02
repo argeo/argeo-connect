@@ -140,9 +140,6 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 
 		Button addBtn = toolkit
 				.createButton(buttonsCmp, "Add member", SWT.PUSH);
-		configureAddMemberButton(addBtn, entity,
-				"Add new members to this mailing list",
-				PeopleTypes.PEOPLE_CONTACTABLE);
 
 		Button exportBtn = toolkit.createButton(buttonsCmp, "Export", SWT.PUSH);
 		configureCallExtractButton(exportBtn,
@@ -180,12 +177,17 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 			public void refresh() {
 				super.refresh();
 				// refreshFilteredList((String) membersViewer.getInput());
+				tableViewer.setInput(refreshFilteredList(""));
 				tableViewer.refresh();
 			}
 		};
 		sPart.initialize(getManagedForm());
 		getManagedForm().addPart(sPart);
 		addFilterListener(filterTxt, tableViewer);
+		configureAddMemberButton(sPart, addBtn, entity,
+				"Add new members to this mailing list",
+				PeopleTypes.PEOPLE_CONTACTABLE);
+
 		tableViewer.setInput(refreshFilteredList(""));
 		return tableViewer;
 	}
@@ -463,8 +465,9 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 	// ///////////////////////
 	// HELPERS
 
-	private void configureAddMemberButton(Button button, final Node targetNode,
-			String tooltip, final String nodeTypeToSearch) {
+	private void configureAddMemberButton(final AbstractFormPart part,
+			Button button, final Node targetNode, String tooltip,
+			final String nodeTypeToSearch) {
 		button.setToolTipText(tooltip);
 		button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
 
@@ -482,6 +485,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 					params.put(AddEntityReference.PARAM_DIALOG_ID,
 							PeopleUiConstants.DIALOG_ADD_ML_MEMBERS);
 					CommandUtils.callCommand(AddEntityReference.ID, params);
+					part.refresh();
 				} catch (RepositoryException e1) {
 					throw new PeopleException(
 							"Unable to get parent Jcr identifier", e1);

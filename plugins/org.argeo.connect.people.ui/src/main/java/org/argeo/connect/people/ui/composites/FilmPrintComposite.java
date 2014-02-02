@@ -36,11 +36,11 @@ public class FilmPrintComposite extends Composite {
 		this.form = form;
 		populate();
 	}
-	
-//	@Override
-//	public void pack(boolean changed) {
-//		// super.pack(changed);
-//	}
+
+	// @Override
+	// public void pack(boolean changed) {
+	// // super.pack(changed);
+	// }
 
 	private void populate() {
 		// initialization
@@ -48,18 +48,19 @@ public class FilmPrintComposite extends Composite {
 		parent.setLayout(new GridLayout(1, false));
 		final Group group = new Group(parent, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		group.setLayout(new GridLayout(2, false));
+		group.setLayout(new GridLayout(4, false));
 
 		// Main Info
 		final Text titleTxt = createLT(group, "Name:", 1);
 		final Text typeTxt = createLT(group, "Type:", 1);
-		final Text descTxt = createLT(group, "Description:", 2);
+		final Text descTxt = createLT(group, "Description:", 3);
 		final Text formatTxt = createLT(group, "Format:", 1);
 		final Text ratioTxt = createLT(group, "Ratio:", 1);
 		final Text soundFormatTxt = createLT(group, "Sound format:", 1);
 		final Text languageVersionTxt = createLT(group, "Language versions:", 1);
 		final Text feeTxt = createLT(group, "Fee:", 1);
-		final Text feeInfoTxt = createLT(group, "Fee additional information:", 1);
+		final Text feeInfoTxt = createLT(group, "Fee additional information:",
+				1);
 		final Text sourceTxt = createLT(group, "Source contact:", 1);
 		final Text returnTxt = createLT(group, "Return contact:", 1);
 
@@ -148,16 +149,10 @@ public class FilmPrintComposite extends Composite {
 	}
 
 	private Text createLT(Composite parent, String label, int colspan) {
-		Composite cmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, colspan,
+		PeopleUiUtils.createBoldLabel(parent, label);
+		Text txt = toolkit.createText(parent, "", SWT.BORDER);
+		txt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, colspan,
 				1));
-		GridLayout gl = new GridLayout(2, false);
-		gl.marginWidth = gl.verticalSpacing = gl.marginHeight = 0;
-		gl.horizontalSpacing = 5;
-		cmp.setLayout(gl);
-		toolkit.createLabel(cmp, label);
-		Text txt = toolkit.createText(cmp, "", SWT.BORDER);
-		txt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		return txt;
 	}
 

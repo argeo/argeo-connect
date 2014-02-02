@@ -22,6 +22,7 @@ import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -206,9 +207,6 @@ public class ActivityEditor extends AbstractPeopleEditor {
 									});
 							deleteBtn.setVisible(isCO);
 						}
-						relatedCmp.layout(false);
-						relatedCmp.getParent().getParent().layout();
-
 					}
 					// The add link
 					if (isCO) {
@@ -220,6 +218,8 @@ public class ActivityEditor extends AbstractPeopleEditor {
 								.addSelectionListener(getAddRelatedSelList(relatedCmp
 										.getShell()));
 					}
+					relatedCmp.layout(false);
+					relatedCmp.getParent().getParent().layout();
 				} catch (RepositoryException re) {
 					throw new PeopleException(
 							"Unable to refresh form part for activity "
@@ -241,17 +241,20 @@ public class ActivityEditor extends AbstractPeopleEditor {
 				try {
 					PickUpRelatedDialog diag = new PickUpRelatedDialog(shell,
 							"Choose an entity", activity.getSession(), activity);
-					diag.open();
-					Node node = diag.getSelected();
-					String errMsg = CommonsJcrUtils.addRefToMultiValuedProp(
-							activity, PeopleNames.PEOPLE_RELATED_TO, node);
-					if (errMsg != null)
-						MessageDialog.openError(PeopleUiPlugin.getDefault()
-								.getWorkbench().getActiveWorkbenchWindow()
-								.getShell(), "Dupplicates", errMsg);
-					else {
-						headerPart.refresh();
-						headerPart.markDirty();
+					int result = diag.open();
+					if (Window.OK == result) {
+						Node node = diag.getSelected();
+						String errMsg = CommonsJcrUtils
+								.addRefToMultiValuedProp(activity,
+										PeopleNames.PEOPLE_RELATED_TO, node);
+						if (errMsg != null)
+							MessageDialog.openError(PeopleUiPlugin.getDefault()
+									.getWorkbench().getActiveWorkbenchWindow()
+									.getShell(), "Dupplicates", errMsg);
+						else {
+							headerPart.refresh();
+							headerPart.markDirty();
+						}
 					}
 				} catch (RepositoryException e) {
 					throw new PeopleException(

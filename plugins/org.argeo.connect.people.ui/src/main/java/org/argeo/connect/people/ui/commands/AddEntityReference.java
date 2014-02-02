@@ -64,7 +64,7 @@ public class AddEntityReference extends AbstractHandler {
 			if (PeopleUiConstants.DIALOG_ADD_ML_MEMBERS.equals(dialogId))
 				diag = new AddMLMembersDialog(
 						HandlerUtil.getActiveShell(event),
-						"Add Mailing List Members...", peopleService,
+						"Add Members to current mailing list", peopleService,
 						referencing, new String[] { toSearchNodeType });
 			else if (PeopleUiConstants.DIALOG_ADD_ML_MEMBERSHIP
 					.equals(dialogId))

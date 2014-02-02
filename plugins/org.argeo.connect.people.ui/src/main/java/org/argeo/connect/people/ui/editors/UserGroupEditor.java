@@ -60,7 +60,7 @@ public class UserGroupEditor extends GroupEditor {
 		// Create the composite that displays the list and a filter
 		userTableCmp = new MyUserTableComposite(parent, SWT.NO_FOCUS,
 				getSession());
-		userTableCmp.populate(false, true);
+		userTableCmp.populate(true, false);
 
 		// Configure
 		getSite().setSelectionProvider(userTableCmp.getTableViewer());
