@@ -274,7 +274,6 @@ public class ListToolkit {
 								+ PeopleHtmlUtils
 										.getRemoveReferenceSnippetForLists(
 												link, person);
-						System.out.println("hop "+ tmp);
 						return tmp;
 					} else
 						return "";

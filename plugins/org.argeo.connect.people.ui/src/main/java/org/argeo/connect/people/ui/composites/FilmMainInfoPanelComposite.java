@@ -731,14 +731,13 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 										}
 									});
 						}
-						Link addLangLk = createAddValueLk(parent);
-						addLangLk
-								.addSelectionListener(getAddLangListener(parent
-										.getShell()));
-
-						parent.layout();
-						parent.getParent().layout();
 					}
+					Link addLangLk = createAddValueLk(parent);
+					addLangLk.addSelectionListener(getAddLangListener(parent
+							.getShell()));
+
+					parent.layout();
+					parent.getParent().layout();
 				} catch (RepositoryException re) {
 					throw new PeopleException("Language list", re);
 				}
