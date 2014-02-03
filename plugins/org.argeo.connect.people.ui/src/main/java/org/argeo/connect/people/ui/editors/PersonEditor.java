@@ -91,10 +91,8 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		entityTK = new EntityToolkit(toolkit, getManagedForm());
 		contactTK = new ContactToolkit(toolkit, getManagedForm(),
 				getPeopleService());
-
 		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
 				getPeopleService());
-
 		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
 				getOpenEditorCommandId());
 		historyTK = new HistoryToolkit(getPeopleService(), toolkit,
@@ -165,13 +163,14 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				tooltip);
 		contactTK.createContactPanelWithNotes(innerPannel, person);
 
+		// TODO enable this when ready
 		// Activities and tasks
-		tooltip = "Activities and tasks related to "
-				+ JcrUtils.get(person, Property.JCR_TITLE);
-		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
-				PeopleUiConstants.PANEL_ACTIVITY_LOG, tooltip);
-		activityTK.populateActivityLogPanel(innerPannel, person,
-				getOpenEntityEditorCmdId());
+		// tooltip = "Activities and tasks related to "
+		// + JcrUtils.get(person, Property.JCR_TITLE);
+		// innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
+		// PeopleUiConstants.PANEL_ACTIVITY_LOG, tooltip);
+		// activityTK.populateActivityLogPanel(innerPannel, person,
+		// getOpenEntityEditorCmdId());
 
 		// Jobs panel
 		tooltip = "Organisations linked to "
@@ -186,8 +185,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Films",
 				PeopleUiConstants.PANEL_PRODUCTIONS, tooltip);
-		listTK.populateParticipationPanel(innerPannel,
-				person);
+		listTK.populateParticipationPanel(innerPannel, person);
 		// viewer.addDoubleClickListener(new PeopleDoubleClickAdapter() {
 		//
 		// @Override
