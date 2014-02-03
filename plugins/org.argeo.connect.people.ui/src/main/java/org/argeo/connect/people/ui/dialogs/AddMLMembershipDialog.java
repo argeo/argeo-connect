@@ -31,6 +31,7 @@ import org.argeo.connect.people.utils.ContactJcrUtils;
 import org.argeo.connect.people.utils.PersonJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -52,6 +53,10 @@ public class AddMLMembershipDialog extends AddReferenceDialog {
 		// this.peopleService = peopleService;
 	}
 
+	protected Point getInitialSize() {
+		return new Point(300, 400);
+	}
+	
 	protected List<ColumnDefinition> getColumnsDef() {
 		List<ColumnDefinition> columnDefs = new ArrayList<ColumnDefinition>();
 		columnDefs.add(new ColumnDefinition(PeopleTypes.PEOPLE_MAILING_LIST,

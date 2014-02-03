@@ -261,20 +261,23 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 					if (isCheckedOut) {
 						Node originalNode = FilmJcrUtils.getOriginalTitle(film);
 						// EDIT PART
-						PeopleUiUtils.refreshFormTextWidget(idTxt, film,
-								FilmNames.FILM_ID);
-						PeopleUiUtils.refreshFormTextWidget(
-								origTitleArticleTxt, originalNode,
-								FilmNames.FILM_TITLE_ARTICLE, "Article");
-						PeopleUiUtils.refreshFormTextWidget(origTitleTxt,
-								originalNode, FilmNames.FILM_TITLE_VALUE);
-						PeopleUiUtils.refreshFormTextWidget(latinTitleTxt,
-								originalNode,
-								FilmNames.FILM_TITLE_LATIN_PRONUNCIATION,
-								"Latin pronunciation if needed");
-						PeopleUiUtils.refreshFormTextWidget(titleLangTxt,
-								originalNode, PeopleNames.PEOPLE_LANG);
 
+						if (originalNode != null) {
+
+							PeopleUiUtils.refreshFormTextWidget(idTxt, film,
+									FilmNames.FILM_ID);
+							PeopleUiUtils.refreshFormTextWidget(
+									origTitleArticleTxt, originalNode,
+									FilmNames.FILM_TITLE_ARTICLE, "Article");
+							PeopleUiUtils.refreshFormTextWidget(origTitleTxt,
+									originalNode, FilmNames.FILM_TITLE_VALUE);
+							PeopleUiUtils.refreshFormTextWidget(latinTitleTxt,
+									originalNode,
+									FilmNames.FILM_TITLE_LATIN_PRONUNCIATION,
+									"Latin pronunciation if needed");
+							PeopleUiUtils.refreshFormTextWidget(titleLangTxt,
+									originalNode, PeopleNames.PEOPLE_LANG);
+						}
 						// TODO FIX THIS
 						origTitleArticleTxt.setEnabled(false);
 						origTitleTxt.setEnabled(false);

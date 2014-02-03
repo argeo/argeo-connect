@@ -335,7 +335,7 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 		Composite mainInfoCmp = toolkit.createComposite(innerCmp);
 		mainInfoCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,
 				2, 1));
-		populateMainInfoCmp(mainInfoCmp);
+		populateEditCmp(mainInfoCmp);
 
 		// Title and Awards
 		addEditTableViewer();
@@ -345,7 +345,7 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 		innerCmp.getParent().layout();
 	}
 
-	private void populateMainInfoCmp(Composite parent) {
+	private void populateEditCmp(Composite parent) {
 		GridLayout layout = new GridLayout(4, false);// PeopleUiUtils.gridLayoutNoBorder(4);
 		// layout.horizontalSpacing =
 		layout.verticalSpacing = 2;
@@ -736,7 +736,7 @@ public class FilmMainInfoPanelComposite extends Composite implements FilmNames {
 								.addSelectionListener(getAddLangListener(parent
 										.getShell()));
 
-						parent.layout(false);
+						parent.layout();
 						parent.getParent().layout();
 					}
 				} catch (RepositoryException re) {

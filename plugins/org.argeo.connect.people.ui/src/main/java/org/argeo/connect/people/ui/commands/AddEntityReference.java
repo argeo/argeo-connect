@@ -11,7 +11,7 @@ import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.dialogs.AddMLMembersDialog;
 import org.argeo.connect.people.ui.dialogs.AddMLMembershipDialog;
 import org.argeo.connect.people.ui.dialogs.CreateEntityRefWithPositionDialog;
-import org.argeo.connect.people.ui.editors.utils.AbstractEntityEditor;
+import org.argeo.connect.people.ui.editors.utils.AbstractPeopleEditor;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -83,8 +83,8 @@ public class AddEntityReference extends AbstractHandler {
 			if (result == Dialog.OK) {
 				IEditorPart iep = HandlerUtil.getActiveWorkbenchWindow(event)
 						.getActivePage().getActiveEditor();
-				if (iep != null && iep instanceof AbstractEntityEditor)
-					((AbstractEntityEditor) iep).forceRefresh();
+				if (iep != null && iep instanceof AbstractPeopleEditor)
+					((AbstractPeopleEditor) iep).forceRefresh();
 			}
 		} catch (RepositoryException e) {
 			throw new PeopleException("unexpected JCR error while opening "

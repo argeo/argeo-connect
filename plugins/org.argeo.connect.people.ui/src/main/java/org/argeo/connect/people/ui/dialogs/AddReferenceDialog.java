@@ -103,6 +103,7 @@ public abstract class AddReferenceDialog extends TrayDialog {
 					rows.add((Row) obj);
 					performAddition(rows);
 				}
+				okPressed();
 			}
 		});
 

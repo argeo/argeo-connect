@@ -53,7 +53,6 @@ public class FilmPrintComposite extends Composite {
 		// Main Info
 		final Text titleTxt = createLT(group, "Name:", 1);
 		final Text typeTxt = createLT(group, "Type:", 1);
-		final Text descTxt = createLT(group, "Description:", 3);
 		final Text formatTxt = createLT(group, "Format:", 1);
 		final Text ratioTxt = createLT(group, "Ratio:", 1);
 		final Text soundFormatTxt = createLT(group, "Sound format:", 1);
@@ -63,7 +62,8 @@ public class FilmPrintComposite extends Composite {
 				1);
 		final Text sourceTxt = createLT(group, "Source contact:", 1);
 		final Text returnTxt = createLT(group, "Return contact:", 1);
-
+		final Text descTxt = createLT(group, "Description:", 3);
+		
 		formPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
