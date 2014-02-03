@@ -267,14 +267,16 @@ public class ListToolkit {
 					Node link = (Node) element;
 					Node person = link.getParent().getParent();
 
-					if (CommonsJcrUtils.isNodeCheckedOutByMe(entity))
-						return PeopleHtmlUtils.getEditJobSnippetForLists(link,
-								true)
+					if (CommonsJcrUtils.isNodeCheckedOutByMe(entity)) {
+						String tmp = PeopleHtmlUtils.getEditJobSnippetForLists(
+								link, true)
 								+ " <br />"
 								+ PeopleHtmlUtils
 										.getRemoveReferenceSnippetForLists(
 												link, person);
-					else
+						System.out.println("hop "+ tmp);
+						return tmp;
+					} else
 						return "";
 				} catch (RepositoryException e) {
 					throw new PeopleException(
@@ -302,11 +304,11 @@ public class ListToolkit {
 
 	private class ParticipantsPanelPart extends ListPanelPart {
 		private TableViewer participantsViewer;
-	
+
 		public ParticipantsPanelPart(Composite parent, Node entity) {
 			super(parent, entity);
 		}
-	
+
 		protected void reCreateChildComposite(Composite panel, Node entity) {
 			// Create new button
 			Button addBtn = isCurrentlyCheckedOut ? toolkit.createButton(panel,
@@ -314,7 +316,7 @@ public class ListToolkit {
 			if (addBtn != null)
 				configureAddFilmParticipationBtn(addBtn, entity,
 						"Add a new crew member");
-	
+
 			// Corresponding list
 			Composite tableComp = toolkit.createComposite(panel);
 			tableComp
@@ -324,14 +326,14 @@ public class ListToolkit {
 					entity, tableComp, participantsViewer);
 			tableComp.setLayout(tableColumnLayout);
 			PeopleUiUtils.setTableDefaultStyle(participantsViewer, 60);
-	
+
 			participantsViewer
 					.setContentProvider(new BasicNodeListContentProvider());
 			participantsViewer
 					.addDoubleClickListener(new ListDoubleClickListener(false));
 			refreshContent(panel, entity);
 		}
-	
+
 		protected void refreshContent(Composite parent, Node entity) {
 			try {
 				List<Node> members = new ArrayList<Node>();
@@ -359,14 +361,14 @@ public class ListToolkit {
 			Composite parent, TableViewer viewer) {
 		int[] bounds = { 150, 300 };
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
-	
+
 		// Role
 		TableViewerColumn col = ViewerUtils.createTableViewerColumn(viewer, "",
 				SWT.LEFT, bounds[0]);
 		col.setLabelProvider(new RoleListLabelProvider());
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
 				80, 20, true));
-	
+
 		// Person
 		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT,
 				bounds[1]);
@@ -374,7 +376,7 @@ public class ListToolkit {
 				PeopleUiConstants.LIST_TYPE_MEDIUM, peopleService));
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
 				200, 80, true));
-	
+
 		// Edit & Remove links
 		viewer.getTable().addSelectionListener(new HtmlListRwtAdapter());
 		col = ViewerUtils.createTableViewerColumn(viewer, "Edit/Remove links",
@@ -383,14 +385,14 @@ public class ListToolkit {
 				40, 40, true));
 		col.setLabelProvider(new ColumnLabelProvider() {
 			private static final long serialVersionUID = 1L;
-	
+
 			@Override
 			public String getText(Object element) {
 				try {
 					// get the corresponding person
 					Node link = (Node) element;
 					Node person = link.getParent().getParent();
-	
+
 					if (CommonsJcrUtils.isNodeCheckedOutByMe(entity))
 						return PeopleHtmlUtils
 								.getEditParticipationSnippetForLists(link,
@@ -405,10 +407,10 @@ public class ListToolkit {
 					throw new PeopleException(
 							"Error while getting versionable parent", e);
 				}
-	
+
 			}
 		});
-	
+
 		return tableColumnLayout;
 	}
 

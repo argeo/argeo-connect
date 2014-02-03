@@ -10,8 +10,6 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.dialogs.EditJobDialog;
-import org.argeo.connect.people.ui.dialogs.EditParticipationDialog;
-import org.argeo.connect.people.ui.editors.utils.AbstractEntityEditor;
 import org.argeo.connect.people.ui.editors.utils.AbstractPeopleEditor;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -61,9 +59,9 @@ public class EditJob extends AbstractHandler {
 			if (relevantNode.isNodeType(PeopleTypes.PEOPLE_JOB)) {
 				// Edit an existing job
 				isBackward = new Boolean(event.getParameter(PARAM_IS_BACKWARD));
-				diag = new EditParticipationDialog(HandlerUtil.getActiveShell(event),
-						"Create or edit a participation to a film", peopleService, relevantNode, null,
-						isBackward);
+				diag = new EditJobDialog(HandlerUtil.getActiveShell(event),
+						"Edit employee information", peopleService,
+						relevantNode, null, isBackward);
 			} else {
 				// Create a new job
 				isBackward = relevantNode
