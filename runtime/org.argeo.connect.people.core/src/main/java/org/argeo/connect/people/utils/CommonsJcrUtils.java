@@ -124,7 +124,7 @@ public class CommonsJcrUtils {
 					.isCheckedOut(node.getPath());
 		} catch (RepositoryException re) {
 			throw new PeopleException(
-					"Unable to get check out status for node", re);
+					"Unable to get check out status for node " + node, re);
 		}
 	}
 
@@ -166,7 +166,7 @@ public class CommonsJcrUtils {
 			node.getSession().getWorkspace().getVersionManager()
 					.checkout(node.getPath());
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to check out Node", re);
+			throw new PeopleException("Unable to check out node  " + node, re);
 		}
 	}
 
@@ -184,7 +184,8 @@ public class CommonsJcrUtils {
 			node.getSession().getWorkspace().getVersionManager()
 					.checkin(node.getPath());
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to save and chek in node", re);
+			throw new PeopleException(
+					"Unable to save and chek in node " + node, re);
 		}
 	}
 
@@ -219,7 +220,7 @@ public class CommonsJcrUtils {
 				}
 
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to save and chek in node", re);
+			throw new PeopleException("Unable to cancel and chek in node ", re);
 		}
 	}
 
