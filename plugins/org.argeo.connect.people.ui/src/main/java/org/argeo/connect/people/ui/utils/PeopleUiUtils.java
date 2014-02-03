@@ -381,7 +381,8 @@ public class PeopleUiUtils {
 	}
 
 	/**
-	 * Creates a basic right aligned bold label with no specific toolkit.
+	 * Creates a basic right aligned vertical centered bold label with no
+	 * specific toolkit.
 	 * 
 	 */
 	public static Label createBoldLabel(Composite parent, String value) {
@@ -389,6 +390,19 @@ public class PeopleUiUtils {
 		label.setText(value);
 		label.setFont(EclipseUiUtils.getBoldFont(parent));
 		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		return label;
+	}
+
+	/**
+	 * Creates a basic right aligned bold label with no specific toolkit.
+	 * precise vertical alignment
+	 */
+	public static Label createBoldLabel(Composite parent, String value,
+			int verticalAlign) {
+		Label label = new Label(parent, SWT.RIGHT);
+		label.setText(value);
+		label.setFont(EclipseUiUtils.getBoldFont(parent));
+		label.setLayoutData(new GridData(SWT.RIGHT, verticalAlign, false, false));
 		return label;
 	}
 

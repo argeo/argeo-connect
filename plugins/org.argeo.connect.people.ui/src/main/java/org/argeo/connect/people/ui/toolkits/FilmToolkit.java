@@ -52,9 +52,21 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 	}
 
 	/** Populate a panel with a list synopsis. */
-	public void populateSynopsisPanel(final Composite panel,
+	public void populateSynopsisPanel(final Composite parent,
 			final List<String> langIsos) {
-		panel.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+
+		// Add a scrolled container
+		ScrolledComposite container = new ScrolledComposite(parent,
+				SWT.NO_FOCUS | SWT.V_SCROLL); // SWT.H_SCROLL |
+		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		final Composite panel = new Composite(container, SWT.NO_FOCUS);
+		panel.setLayout(new GridLayout());
+
+		container.setExpandHorizontal(true);
+		container.setExpandVertical(false);
+		container.setContent(panel);
 
 		final AbstractFormPart editPart = new AbstractFormPart() {
 			public void refresh() {
@@ -93,7 +105,10 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 
 							}
 						}
-						panel.layout();
+						panel.pack(true);
+						panel.getParent().pack(true);
+						panel.getParent().layout();
+						parent.layout();
 					} catch (RepositoryException e) {
 						throw new PeopleException(
 								"Unable to populate synopsis panel", e);
@@ -108,44 +123,58 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 
 	/** Populate a synopsis composite. */
 	private AbstractFormPart populateSingleSynopsisCmp(Composite panel,
-			final Node synopsisNode, String titleLabel) {
+			final Node synopsisNode, final String titleLabel) {
 		panel.setLayout(new GridLayout());
+
+		GridData gd;
 
 		Group group = new Group(panel, 0);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		group.setText(titleLabel);
-		group.setLayout(new GridLayout());
+		group.setLayout(new GridLayout(2, false));
+
+		// Logline
+		PeopleUiUtils.createBoldLabel(toolkit, group, "Logline");
+		final Text loglineTxt = toolkit.createText(group, "", SWT.BORDER
+				| SWT.SINGLE);
+		gd = new GridData(SWT.FILL, SWT.TOP, true, false);
+		loglineTxt.setLayoutData(gd);
 
 		// Short synopsis
+		PeopleUiUtils.createBoldLabel(group, "Extract", SWT.TOP);
 		final Text shortSynTxt = toolkit.createText(group, "", SWT.BORDER
 				| SWT.MULTI | SWT.WRAP);
-		GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
+		gd = new GridData(SWT.FILL, SWT.TOP, true, false);
 		gd.heightHint = 50;
 		shortSynTxt.setLayoutData(gd);
-		shortSynTxt
-				.setToolTipText("Enter a short " + titleLabel + " synopsis.");
 
 		// Long synopsis
+		PeopleUiUtils.createBoldLabel(group, "Synopsis", SWT.TOP);
 		final Text synopsisTxt = toolkit.createText(group, "", SWT.BORDER
 				| SWT.MULTI | SWT.WRAP);
-		synopsisTxt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		synopsisTxt.setToolTipText("Enter the full length " + titleLabel
-				+ " synopsis.");
+		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gd.heightHint = 100;
+		synopsisTxt.setLayoutData(gd);
 
 		final AbstractFormPart editPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
 				if (!shortSynTxt.isDisposed()) {
+					PeopleUiUtils.refreshFormTextWidget(loglineTxt,
+							synopsisNode, FILM_LOG_LINE, titleLabel
+									+ " log line");
 					PeopleUiUtils.refreshFormTextWidget(shortSynTxt,
 							synopsisNode, SYNOPSIS_CONTENT_SHORT,
-							"Enter a short synopsis");
+							"Enter a short " + titleLabel + " synopsis");
 					PeopleUiUtils.refreshFormTextWidget(synopsisTxt,
-							synopsisNode, SYNOPSIS_CONTENT,
-							"Enter the full synopsis");
+							synopsisNode, SYNOPSIS_CONTENT, "Enter the full "
+									+ titleLabel + "  synopsis");
 				}
 			}
 		};
 
+		PeopleUiUtils.addTxtModifyListener(editPart, loglineTxt, synopsisNode,
+				FILM_LOG_LINE, PropertyType.STRING);
 		PeopleUiUtils.addTxtModifyListener(editPart, shortSynTxt, synopsisNode,
 				SYNOPSIS_CONTENT_SHORT, PropertyType.STRING);
 		PeopleUiUtils.addTxtModifyListener(editPart, synopsisTxt, synopsisNode,
