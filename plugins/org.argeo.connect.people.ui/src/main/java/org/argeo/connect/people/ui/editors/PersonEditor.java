@@ -212,11 +212,12 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 
 		// History panel
 		// TODO: make this dynamic
-		tooltip = "History of information about "
-				+ JcrUtils.get(person, Property.JCR_TITLE);
-		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "History",
-				PeopleUiConstants.PANEL_HISTORY, tooltip);
-		historyTK.populateHistoryPanel(innerPannel);
+		// TODO enable this when ready
+		// tooltip = "History of information about "
+		// + JcrUtils.get(person, Property.JCR_TITLE);
+		// innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "History",
+		// PeopleUiConstants.PANEL_HISTORY, tooltip);
+		// historyTK.populateHistoryPanel(innerPannel);
 		folder.layout();
 	}
 
