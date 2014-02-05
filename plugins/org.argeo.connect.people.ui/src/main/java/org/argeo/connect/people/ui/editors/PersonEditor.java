@@ -163,14 +163,13 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				tooltip);
 		contactTK.createContactPanelWithNotes(innerPannel, person);
 
-		// TODO enable this when ready
 		// Activities and tasks
-		// tooltip = "Activities and tasks related to "
-		// + JcrUtils.get(person, Property.JCR_TITLE);
-		// innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
-		// PeopleUiConstants.PANEL_ACTIVITY_LOG, tooltip);
-		// activityTK.populateActivityLogPanel(innerPannel, person,
-		// getOpenEntityEditorCmdId());
+		tooltip = "Activities and tasks related to "
+				+ JcrUtils.get(person, Property.JCR_TITLE);
+		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
+				PeopleUiConstants.PANEL_ACTIVITY_LOG, tooltip);
+		activityTK.populateActivityLogPanel(innerPannel, person,
+				getOpenEntityEditorCmdId());
 
 		// Jobs panel
 		tooltip = "Organisations linked to "
@@ -186,38 +185,14 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Films",
 				PeopleUiConstants.PANEL_PRODUCTIONS, tooltip);
 		listTK.populateParticipationPanel(innerPannel, person);
-		// viewer.addDoubleClickListener(new PeopleDoubleClickAdapter() {
-		//
-		// @Override
-		// protected void processDoubleClick(Object obj) {
-		// // Here we have film crew members, we open editor for the parent
-		// // film
-		// try {
-		// if (obj instanceof Node) {
-		// Node link = ((Node) obj).getParent().getParent();
-		// CommandUtils.callCommand(getOpenEntityEditorCmdId(),
-		// OpenEntityEditor.PARAM_ENTITY_UID,
-		// CommonsJcrUtils.get(link,
-		// PeopleNames.PEOPLE_UID));
-		// }
-		// } catch (RepositoryException e) {
-		// throw new PeopleException(
-		// "unable to get related film for entity " + obj, e);
-		// }
-		//
-		// }
-		// });
-
-		folder.layout();
 
 		// History panel
 		// TODO: make this dynamic
-		// TODO enable this when ready
-		// tooltip = "History of information about "
-		// + JcrUtils.get(person, Property.JCR_TITLE);
-		// innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "History",
-		// PeopleUiConstants.PANEL_HISTORY, tooltip);
-		// historyTK.populateHistoryPanel(innerPannel);
+		tooltip = "History of information about "
+				+ JcrUtils.get(person, Property.JCR_TITLE);
+		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "History",
+				PeopleUiConstants.PANEL_HISTORY, tooltip);
+		historyTK.populateHistoryPanel(innerPannel);
 		folder.layout();
 	}
 
