@@ -12,6 +12,7 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.ui.providers.OrgOverviewLabelProvider;
+import org.argeo.connect.people.ui.toolkits.ActivityToolkit;
 import org.argeo.connect.people.ui.toolkits.ContactToolkit;
 import org.argeo.connect.people.ui.toolkits.EntityToolkit;
 import org.argeo.connect.people.ui.toolkits.LegalInfoToolkit;
@@ -53,6 +54,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 	private ContactToolkit contactTK;
 	private ListToolkit listTK;
 	private LegalInfoToolkit legalTK;
+	private ActivityToolkit activityTK;
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -74,9 +76,11 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		entityTK = new EntityToolkit(toolkit, getManagedForm());
 		contactTK = new ContactToolkit(toolkit, getManagedForm(),
 				getPeopleService());
-
-		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService(), getOpenEditorCommandId());
+		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
+				getOpenEditorCommandId());
 		legalTK = new LegalInfoToolkit(toolkit, getManagedForm(), org);
+		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
+				getPeopleService());
 	}
 
 	@Override
@@ -110,12 +114,13 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		// innerPannel.setLayoutData(layoutData);
 		contactTK.createContactPanelWithNotes(innerPannel, org);
 
-		// Legal informations
-		tooltip = "Legal information for "
-				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Admin.",
-				PeopleUiConstants.PANEL_LEGAL_INFO, tooltip);
-		legalTK.populateLegalInfoPanel(innerPannel);
+		// Activities and tasks
+		tooltip = "Activities and tasks related to "
+				+ JcrUtils.get(org, Property.JCR_TITLE);
+		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
+				PeopleUiConstants.PANEL_ACTIVITY_LOG, tooltip);
+		activityTK.populateActivityLogPanel(innerPannel, org,
+				getOpenEntityEditorCmdId());
 
 		// Employees
 		tooltip = "Known employees of "
@@ -123,6 +128,14 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Team",
 				PeopleUiConstants.PANEL_EMPLOYEES, tooltip);
 		listTK.populateEmployeesPanel(innerPannel, org);
+
+		// Legal informations
+		tooltip = "Legal information for "
+				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
+		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Admin.",
+				PeopleUiConstants.PANEL_LEGAL_INFO, tooltip);
+		legalTK.populateLegalInfoPanel(innerPannel);
+
 		// viewer.addDoubleClickListener(new PeopleDoubleClickAdapter() {
 		//
 		// @Override

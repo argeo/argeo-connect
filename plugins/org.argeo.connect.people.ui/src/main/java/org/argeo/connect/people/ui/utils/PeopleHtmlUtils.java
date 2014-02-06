@@ -18,6 +18,7 @@ import org.argeo.connect.people.ui.commands.EditEntityReference;
 import org.argeo.connect.people.ui.commands.EditEntityReferenceWithPosition;
 import org.argeo.connect.people.ui.commands.EditJob;
 import org.argeo.connect.people.ui.commands.EditParticipation;
+import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.commands.RemoveEntityReference;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
@@ -387,7 +388,8 @@ public class PeopleHtmlUtils {
 					+ uri + "\" target=\"_rwt\">Delete</a>";
 		} catch (RepositoryException re) {
 			throw new PeopleException(
-					"Error getting remove snippet for list item", re);
+					"Error getting remove reference snippet for list for node "
+							+ currNode, re);
 		}
 	}
 
@@ -409,7 +411,8 @@ public class PeopleHtmlUtils {
 					+ uri + "\" target=\"_rwt\">Delete</a>";
 		} catch (RepositoryException re) {
 			throw new PeopleException(
-					"Error getting remove snippet for list item", re);
+					"Error getting remove snippet for list item for node "
+							+ currNode, re);
 		}
 	}
 
@@ -433,7 +436,8 @@ public class PeopleHtmlUtils {
 					+ uri + "\" target=\"_rwt\">Edit</a>";
 		} catch (RepositoryException re) {
 			throw new PeopleException(
-					"Error getting remove snippet for list item", re);
+					"Error getting edit snippet for list item for node "
+							+ currNode, re);
 		}
 	}
 
@@ -452,7 +456,8 @@ public class PeopleHtmlUtils {
 					+ uri + "\" target=\"_rwt\">Edit</a>";
 		} catch (RepositoryException re) {
 			throw new PeopleException(
-					"Error getting remove snippet for list item", re);
+					"Error getting edit job snippet for list item for node "
+							+ relevantNode, re);
 		}
 	}
 
@@ -494,6 +499,24 @@ public class PeopleHtmlUtils {
 					+ "=" + toSearchNodeType;
 			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""
 					+ uri + "\" target=\"_rwt\">Edit</a>";
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Error getting remove snippet for list item", re);
+		}
+	}
+
+	/**
+	 * Create the text value of a link that enable calling the
+	 * <code>OpenEditor</code> command from a cell of a HTML list
+	 */
+	public static String getOpenEditorSnippet(String commandId,
+			Node relevantNode, String value) {
+		try {
+			String toEditJcrId = relevantNode.getIdentifier();
+			String uri = commandId + "/" + OpenEntityEditor.PARAM_JCR_ID + "="
+					+ toEditJcrId;
+			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""
+					+ uri + "\" target=\"_rwt\">" + value + "</a>";
 		} catch (RepositoryException re) {
 			throw new PeopleException(
 					"Error getting remove snippet for list item", re);

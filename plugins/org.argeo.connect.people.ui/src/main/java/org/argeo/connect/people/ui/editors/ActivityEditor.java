@@ -1,9 +1,5 @@
 package org.argeo.connect.people.ui.editors;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
@@ -16,11 +12,13 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.dialogs.PickUpRelatedDialog;
 import org.argeo.connect.people.ui.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -34,6 +32,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
@@ -53,8 +52,6 @@ public class ActivityEditor extends AbstractPeopleEditor {
 	// local constants
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".activityEditor";
-	private DateFormat dateFormat = new SimpleDateFormat(
-			PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
 	// Main business Objects
 	private Node activity;
@@ -95,11 +92,12 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false);
 		managerLbl.setLayoutData(gd);
 
-		// DATE
+		// ACTIVITY DATE
 		PeopleUiUtils.createBoldLabel(toolkit, parent, "Date");
-		final Label dateLbl = toolkit.createLabel(parent, "");
-		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false);
-		dateLbl.setLayoutData(gd);
+		final DateTime activityDateDt = new DateTime(parent, SWT.RIGHT
+				| SWT.DATE | SWT.MEDIUM | SWT.DROP_DOWN);
+		activityDateDt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true,
+				false));
 
 		// 2nd line - RELATED ENTITIES
 		Label label = PeopleUiUtils.createBoldLabel(toolkit, parent,
@@ -116,28 +114,6 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		rl.marginRight = 0;
 		relatedCmp.setLayout(rl);
 
-		// Composite secLineCmp = new Composite(parent, SWT.NO_FOCUS);
-		// gd = new GridData(SWT.FILL, SWT.TOP, false, false);
-		// gd.horizontalSpan = 3;
-		// secLineCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder(3));
-		//
-		// toolkit.createLabel(secLineCmp, "Related entities:");
-		//
-		// // Parent composite with related entities and add link
-		// final Composite relatedCmp = new Composite(parent, SWT.NO_FOCUS);
-		// gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
-		// relatedCmp.setLayoutData(gd);
-		// RowLayout rl = new RowLayout(SWT.HORIZONTAL);
-		// rl.wrap = true;
-		// rl.marginLeft = 5;
-		// rl.marginRight = 0;
-		// relatedCmp.setLayout(rl);
-		//
-		// // The add button
-		// final Link addRelatedLk = new Link(parent, SWT.BOTTOM);
-		// toolkit.adapt(addRelatedLk, false, false);
-		// addRelatedLk.setText("<a>Add...</a>");
-
 		headerPart = new AbstractFormPart() {
 			public void refresh() {
 				try {
@@ -149,15 +125,11 @@ public class ActivityEditor extends AbstractPeopleEditor {
 					// TODO display correct display name instead of ID
 					String manager = ActivityJcrUtils
 							.getActivityManagerDisplayName(activity);
-					// peopleService.getUserManagementService()
-					// .getUserDisplayName(lst.get(i).getUserId())
-
 					if (CommonsJcrUtils.checkNotEmptyString(manager))
 						managerLbl.setText(manager);
 
-					Calendar dateToDisplay = activity.getProperty(
-							Property.JCR_CREATED).getDate();
-					dateLbl.setText(dateFormat.format(dateToDisplay.getTime()));
+					PeopleUiUtils.refreshFormDateTimeWidget(activityDateDt,
+							activity, PeopleNames.PEOPLE_ACTIVITY_DATE);
 
 					boolean isCO = CommonsJcrUtils
 							.isNodeCheckedOutByMe(activity);
@@ -177,9 +149,16 @@ public class ActivityEditor extends AbstractPeopleEditor {
 									.getNodeByIdentifier(valueStr);
 							String labelStr = CommonsJcrUtils.get(relatedNode,
 									Property.JCR_TITLE);
-							toolkit.createLabel(relatedCmp, labelStr,
-									SWT.BOTTOM);
+							// toolkit.createLabel(relatedCmp, labelStr,
+							// SWT.BOTTOM);
 
+							Link relatedLk = new Link(relatedCmp, SWT.CENTER);
+							toolkit.adapt(relatedLk, false, false);
+							relatedLk.setText("<a>" + labelStr + "</a>");
+							relatedLk
+									.addSelectionListener(new MyOpenEditorAdapter(
+											valueStr));
+							if (isCO){
 							Button deleteBtn = new Button(relatedCmp, SWT.FLAT);
 							deleteBtn.setData(PeopleUiConstants.CUSTOM_VARIANT,
 									PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
@@ -205,13 +184,12 @@ public class ActivityEditor extends AbstractPeopleEditor {
 											headerPart.markDirty();
 										}
 									});
-							deleteBtn.setVisible(isCO);
+							} 
 						}
 					}
 					// The add link
 					if (isCO) {
-						final Link addRelatedLk = new Link(relatedCmp,
-								SWT.CENTER);
+						Link addRelatedLk = new Link(relatedCmp, SWT.CENTER);
 						toolkit.adapt(addRelatedLk, false, false);
 						addRelatedLk.setText("<a>Add</a>");
 						addRelatedLk
@@ -230,6 +208,25 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		parent.layout();
 		headerPart.initialize(getManagedForm());
 		getManagedForm().addPart(headerPart);
+
+		PeopleUiUtils.addSelectionListener(activityDateDt, activity,
+				PeopleNames.PEOPLE_ACTIVITY_DATE, headerPart);
+	}
+
+	private class MyOpenEditorAdapter extends SelectionAdapter {
+		private static final long serialVersionUID = 1L;
+
+		private final String jcrId;
+
+		public MyOpenEditorAdapter(String jcrId) {
+			this.jcrId = jcrId;
+		}
+
+		@Override
+		public void widgetSelected(final SelectionEvent event) {
+			CommandUtils.callCommand(getOpenEditorCommandId(),
+					OpenEntityEditor.PARAM_JCR_ID, jcrId);
+		}
 	}
 
 	private SelectionListener getAddRelatedSelList(final Shell shell) {
@@ -261,7 +258,6 @@ public class ActivityEditor extends AbstractPeopleEditor {
 							"Unable to link chosen node to current activity "
 									+ activity, e);
 				}
-
 			}
 		};
 	}
@@ -312,5 +308,4 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		formPart.initialize(getManagedForm());
 		getManagedForm().addPart(formPart);
 	}
-
 }

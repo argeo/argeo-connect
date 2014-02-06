@@ -153,6 +153,9 @@ mixin
 [people:activity] > people:base
 // reference the user that has created this activity. Might be redundant with jcr:createdBy property ?
 - people:manager (REFERENCE) m
+// reference the relevant date for this activity, generally, the creation date. 
+- people:activityDate (DATE)
+
 // a list of related entities like persons, orgs or ...
 - people:relatedTo (REFERENCE) * 
 // an optional list of related documents

@@ -13,15 +13,20 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.dialogs.PickUpGroupDialog;
 import org.argeo.connect.people.ui.dialogs.PickUpRelatedDialog;
-import org.argeo.connect.people.ui.editors.utils.AbstractPeopleEditor;
+import org.argeo.connect.people.ui.editors.utils.AbstractEntityCTabEditor;
+import org.argeo.connect.people.ui.toolkits.ActivityToolkit;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.utils.CommandUtils;
+import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -34,7 +39,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -47,7 +51,7 @@ import org.eclipse.ui.forms.IFormPart;
 /**
  * Default connect task editor
  */
-public class TaskEditor extends AbstractPeopleEditor {
+public class TaskEditor extends AbstractEntityCTabEditor {
 	final static Log log = LogFactory.getLog(TaskEditor.class);
 
 	// local constants
@@ -58,6 +62,9 @@ public class TaskEditor extends AbstractPeopleEditor {
 	// Main business Objects
 	private Node assignedToNode;
 	private Node task;
+
+	// Usefull toolkits
+	private ActivityToolkit activityTK;
 
 	// Form parts must be explicitly disposed
 	private AbstractFormPart headerPart;
@@ -70,6 +77,8 @@ public class TaskEditor extends AbstractPeopleEditor {
 
 	@Override
 	protected void createToolkits() {
+		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
+				getPeopleService());
 	}
 
 	@Override
@@ -138,6 +147,18 @@ public class TaskEditor extends AbstractPeopleEditor {
 		rl.marginRight = 0;
 		relatedCmp.setLayout(rl);
 
+		// Title
+		PeopleUiUtils.createBoldLabel(parent, "Title");
+		final Text titleTxt = toolkit.createText(parent, "", SWT.BORDER);
+		gd = new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1);
+		titleTxt.setLayoutData(gd);
+
+		// Description
+		PeopleUiUtils.createBoldLabel(parent, "Description");
+		final Text descTxt = toolkit.createText(parent, "", SWT.BORDER);
+		gd = new GridData(SWT.FILL, SWT.CENTER, false, true, 3, 1);
+		descTxt.setLayoutData(gd);
+
 		headerPart = new AbstractFormPart() {
 			public void refresh() {
 				try {
@@ -149,6 +170,11 @@ public class TaskEditor extends AbstractPeopleEditor {
 							PeopleNames.PEOPLE_DUE_DATE);
 					PeopleUiUtils.refreshFormDateTimeWidget(wakeUpDateDt, task,
 							PeopleNames.PEOPLE_WAKE_UP_DATE);
+
+					PeopleUiUtils.refreshFormTextWidget(titleTxt, task,
+							Property.JCR_TITLE);
+					PeopleUiUtils.refreshFormTextWidget(descTxt, task,
+							Property.JCR_DESCRIPTION);
 
 					boolean isCO = CommonsJcrUtils.isNodeCheckedOutByMe(task);
 
@@ -175,41 +201,49 @@ public class TaskEditor extends AbstractPeopleEditor {
 						Value[] values = task.getProperty(
 								PeopleNames.PEOPLE_RELATED_TO).getValues();
 						for (final Value value : values) {
-							// TODO try to generate this as a single link.
 							final String valueStr = value.getString();
 							Node relatedNode = getSession()
 									.getNodeByIdentifier(valueStr);
 							String labelStr = CommonsJcrUtils.get(relatedNode,
 									Property.JCR_TITLE);
-							toolkit.createLabel(relatedCmp, labelStr,
-									SWT.BOTTOM);
 
-							Button deleteBtn = new Button(relatedCmp, SWT.FLAT);
-							deleteBtn.setData(PeopleUiConstants.CUSTOM_VARIANT,
-									PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
-							deleteBtn.setImage(PeopleImages.DELETE_BTN);
-							RowData rd = new RowData();
-							rd.height = 16;
-							rd.width = 16;
-							deleteBtn.setLayoutData(rd);
+							Link relatedLk = new Link(relatedCmp, SWT.CENTER);
+							toolkit.adapt(relatedLk, false, false);
+							relatedLk.setText("<a>" + labelStr + "</a>");
+							relatedLk
+									.addSelectionListener(new MyOpenEditorAdapter(
+											valueStr));
 
-							deleteBtn
-									.addSelectionListener(new SelectionAdapter() {
-										private static final long serialVersionUID = 1L;
+							// Display delete button only in edit mode.
+							if (isCO) {
+								Button deleteBtn = new Button(relatedCmp,
+										SWT.FLAT);
+								deleteBtn.setData(
+										PeopleUiConstants.CUSTOM_VARIANT,
+										PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+								deleteBtn.setImage(PeopleImages.DELETE_BTN);
+								RowData rd = new RowData();
+								rd.height = 16;
+								rd.width = 16;
+								deleteBtn.setLayoutData(rd);
 
-										@Override
-										public void widgetSelected(
-												final SelectionEvent event) {
-											CommonsJcrUtils
-													.removeRefFromMultiValuedProp(
-															task,
-															PeopleNames.PEOPLE_RELATED_TO,
-															valueStr);
-											headerPart.refresh();
-											headerPart.markDirty();
-										}
-									});
-							deleteBtn.setVisible(isCO);
+								deleteBtn
+										.addSelectionListener(new SelectionAdapter() {
+											private static final long serialVersionUID = 1L;
+
+											@Override
+											public void widgetSelected(
+													final SelectionEvent event) {
+												CommonsJcrUtils
+														.removeRefFromMultiValuedProp(
+																task,
+																PeopleNames.PEOPLE_RELATED_TO,
+																valueStr);
+												headerPart.refresh();
+												headerPart.markDirty();
+											}
+										});
+							}
 						}
 					}
 					// The add button
@@ -245,9 +279,12 @@ public class TaskEditor extends AbstractPeopleEditor {
 				PeopleNames.PEOPLE_DUE_DATE, headerPart);
 		PeopleUiUtils.addSelectionListener(wakeUpDateDt, task,
 				PeopleNames.PEOPLE_WAKE_UP_DATE, headerPart);
-
 		PeopleUiUtils.addComboSelectionListener(headerPart, statusCmb, task,
 				PeopleNames.PEOPLE_TASK_STATUS, PropertyType.STRING);
+		PeopleUiUtils.addModifyListener(titleTxt, task, Property.JCR_TITLE,
+				headerPart);
+		PeopleUiUtils.addModifyListener(descTxt, task,
+				Property.JCR_DESCRIPTION, headerPart);
 
 		changeAssignationLk.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
@@ -286,6 +323,22 @@ public class TaskEditor extends AbstractPeopleEditor {
 
 	}
 
+	private class MyOpenEditorAdapter extends SelectionAdapter {
+		private static final long serialVersionUID = 1L;
+
+		private final String jcrId;
+
+		public MyOpenEditorAdapter(String jcrId) {
+			this.jcrId = jcrId;
+		}
+
+		@Override
+		public void widgetSelected(final SelectionEvent event) {
+			CommandUtils.callCommand(getOpenEditorCommandId(),
+					OpenEntityEditor.PARAM_JCR_ID, jcrId);
+		}
+	}
+
 	// Configure the action launched when the user click the add link in the
 	// Related to composite
 	private SelectionListener getAddRelatedSelList(final Shell shell) {
@@ -297,7 +350,6 @@ public class TaskEditor extends AbstractPeopleEditor {
 				try {
 					PickUpRelatedDialog diag = new PickUpRelatedDialog(shell,
 							"Choose an entity", task.getSession(), task);
-					diag.open();
 
 					int result = diag.open();
 					if (Window.OK == result) {
@@ -331,50 +383,15 @@ public class TaskEditor extends AbstractPeopleEditor {
 	}
 
 	@Override
-	protected void populateBody(Composite parent) {
-		parent.setLayout(new GridLayout());
-
-		// Title
-		Group titleGrp = new Group(parent, 0);
-		GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
-		gd.heightHint = 60;
-		titleGrp.setLayoutData(gd);
-		titleGrp.setText("Title");
-		titleGrp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-		final Text titleTxt = toolkit.createText(titleGrp, "", SWT.BORDER
-				| SWT.MULTI | SWT.WRAP);
-		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		titleTxt.setLayoutData(gd);
-
-		// Description
-		Group descGrp = new Group(parent, 0);
-		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		descGrp.setLayoutData(gd);
-		descGrp.setText("Description");
-		descGrp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-		final Text descTxt = toolkit.createText(descGrp, "", SWT.BORDER
-				| SWT.MULTI | SWT.WRAP);
-		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		descTxt.setLayoutData(gd);
-
-		final AbstractFormPart formPart = new AbstractFormPart() {
-			public void refresh() {
-				super.refresh();
-				PeopleUiUtils.refreshFormTextWidget(titleTxt, task,
-						Property.JCR_TITLE);
-				PeopleUiUtils.refreshFormTextWidget(descTxt, task,
-						Property.JCR_DESCRIPTION);
-			}
-		};
-
-		PeopleUiUtils.addModifyListener(titleTxt, task, Property.JCR_TITLE,
-				formPart);
-		PeopleUiUtils.addModifyListener(descTxt, task,
-				Property.JCR_DESCRIPTION, formPart);
-
-		parent.layout();
-		formPart.initialize(getManagedForm());
-		getManagedForm().addPart(formPart);
+	protected void populateTabFolder(CTabFolder tabFolder) {
+		// TODO Auto-generated method stub
+		// Activities and tasks
+		String tooltip = "Activities and tasks related to "
+				+ JcrUtils.get(task, Property.JCR_TITLE);
+		Composite innerPannel = addTabToFolder(tabFolder, CTAB_COMP_STYLE,
+				"Activity log", PeopleUiConstants.PANEL_ACTIVITY_LOG, tooltip);
+		activityTK.populateActivityLogPanel(innerPannel, task,
+				getOpenEntityEditorCmdId());
 	}
 
 }

@@ -18,6 +18,7 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.ui.providers.FilmOverviewLabelProvider;
+import org.argeo.connect.people.ui.toolkits.ActivityToolkit;
 import org.argeo.connect.people.ui.toolkits.EntityToolkit;
 import org.argeo.connect.people.ui.toolkits.FilmToolkit;
 import org.argeo.connect.people.ui.toolkits.ListToolkit;
@@ -57,6 +58,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 	private FilmToolkit filmTk;
 	private ListToolkit listTk;
 	private EntityToolkit entityTk;
+	private ActivityToolkit activityTK;
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -101,6 +103,8 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 		entityTk = new EntityToolkit(toolkit, getManagedForm());
 		listTk = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
 				getOpenEditorCommandId());
+		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
+				getPeopleService());
 
 	}
 
@@ -132,6 +136,14 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 		isoLangs.add(PeopleConstants.LANG_DE);
 		isoLangs.add(PeopleConstants.LANG_EN);
 		filmTk.populateSynopsisPanel(innerPannel, isoLangs);
+
+		// Activities and tasks
+		tooltip = "Activities and tasks related to "
+				+ JcrUtils.get(film, Property.JCR_TITLE);
+		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
+				PeopleUiConstants.PANEL_ACTIVITY_LOG, tooltip);
+		activityTK.populateActivityLogPanel(innerPannel, film,
+				getOpenEntityEditorCmdId());
 
 		// film prints
 		tooltip = "Registered film prints for "

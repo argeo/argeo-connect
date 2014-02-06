@@ -91,6 +91,7 @@ public interface PeopleNames {
 	public final static String PEOPLE_RELATED_TO = "people:relatedTo";
 	public final static String PEOPLE_BOUND_ACTIVITIES = "people:boundActivities";
 	public final static String PEOPLE_ATTACHEMENTS = "people:attachments";
+	public final static String PEOPLE_ACTIVITY_DATE = "people:activityDate";
 
 	// Tasks
 	public final static String PEOPLE_TASK_STATUS = "people:taskStatus";

@@ -65,6 +65,10 @@ public class ActivityServiceImpl implements ActivityService {
 					session.getUserID());
 			activity.setProperty(PeopleNames.PEOPLE_MANAGER, userProfile);
 
+			// Activity Date 
+			activity.setProperty(PeopleNames.PEOPLE_ACTIVITY_DATE,
+					new GregorianCalendar());
+			
 			// related to
 			if (relatedTo != null && !relatedTo.isEmpty())
 				CommonsJcrUtils.setMultipleReferences(activity,
@@ -92,10 +96,9 @@ public class ActivityServiceImpl implements ActivityService {
 					dateToDisplay = activityNode.getProperty(
 							PeopleNames.PEOPLE_DUE_DATE).getDate();
 				else
-					dateToDisplay = activityNode.getProperty(
-							Property.JCR_CREATED).getDate();
+					dateToDisplay = activityNode.getProperty(PeopleNames.PEOPLE_ACTIVITY_DATE).getDate();
 			} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-				dateToDisplay = activityNode.getProperty(Property.JCR_CREATED)
+				dateToDisplay = activityNode.getProperty(PeopleNames.PEOPLE_ACTIVITY_DATE)
 						.getDate();
 			}
 			return dateToDisplay;
