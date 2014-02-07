@@ -27,10 +27,18 @@ public interface ActivityService {
 	public String getActivityParentCanonicalPath(Session session);
 
 	/**
-	 * Creates a new simple activity using the default path
+	 * Creates a new simple activity using the default path with default manager
+	 * (the current logged in user) and default date (now)
 	 */
 	public Node createActivity(Session session, String type, String title,
 			String desc, List<Node> relatedTo);
+
+	/**
+	 * Creates a new simple activity using the default path
+	 */
+	public Node createActivity(Session session, Calendar date,
+			String managerId, String type, String title, String desc,
+			List<Node> relatedTo);
 
 	/**
 	 * Try to retrieve a date to display depending on the node type.
@@ -48,12 +56,27 @@ public interface ActivityService {
 	 * types eg, by instance:
 	 * people:system/people:activities/Y2014/M01/D14/H12/root/Task
 	 * 
-	 * Corresponding node is not saved. Either a valid session or a parent Node
-	 * should be provided
+	 * Either a valid session or a parent Node should be provided
+	 * 
+	 * Manager is by default current logged in User
 	 **/
 	public Node createTask(Session session, Node parentNode, String title,
 			String description, Node assignedTo, List<Node> relatedTo,
 			Calendar dueDate, Calendar awakeDate);
+
+	/**
+	 * Creates a new task given some information. If no parent node is provided,
+	 * the task is created using the same path policy as all other activity
+	 * types eg, by instance:
+	 * people:system/people:activities/Y2014/M01/D14/H12/root/Task
+	 * 
+	 * Either a valid session or a parent Node should be provided
+	 * 
+	 **/
+	public Node createTask(Session session, Node parentNode, String managerId,
+			String title, String description, Node assignedTo,
+			List<Node> relatedTo, Calendar creationDate, Calendar dueDate,
+			Calendar awakeDate);
 
 	/**
 	 * Retrieves tasks assigned to one of the group that contain the username
@@ -71,12 +94,10 @@ public interface ActivityService {
 	 */
 	public boolean isTaskDone(Node taskNode);
 
-	
 	/**
 	 * Retrieves valid possible status for a given task
 	 */
 	public String[] getStatusList(Node task);
 
-	
 	/* MISCELLANEOUS */
 }

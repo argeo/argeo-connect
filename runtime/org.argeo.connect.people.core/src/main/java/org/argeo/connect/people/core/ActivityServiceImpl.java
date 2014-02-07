@@ -22,6 +22,9 @@ import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.UserJcrUtils;
 
 public class ActivityServiceImpl implements ActivityService {
+	// private final static Log log =
+	// LogFactory.getLog(ActivityServiceImpl.class);
+
 	/* DEPENDENCY INJECTION */
 	private UserManagementService userManagementService;
 
@@ -52,22 +55,35 @@ public class ActivityServiceImpl implements ActivityService {
 		return path;
 	}
 
+	public String getActivityParentPath(Session session, Calendar date,
+			String managerId) {
+		String path = PeopleConstants.PEOPLE_ACTIVITIES_BASE_PATH + "/"
+				+ JcrUtils.dateAsPath(date, true) + managerId;
+		return path;
+	}
+
 	@Override
 	public Node createActivity(Session session, String type, String title,
 			String desc, List<Node> relatedTo) {
+		return createActivity(session, new GregorianCalendar(),
+				session.getUserID(), type, title, desc, relatedTo);
+	}
+
+	@Override
+	public Node createActivity(Session session, Calendar date,
+			String managerId, String type, String title, String desc,
+			List<Node> relatedTo) {
+
 		try {
 			Node parent = JcrUtils.mkdirs(session,
-					getActivityParentCanonicalPath(session));
+					getActivityParentPath(session, date, managerId));
 			Node activity = parent.addNode(type, PeopleTypes.PEOPLE_ACTIVITY);
 			activity.addMixin(type);
-
-			Node userProfile = UserJcrUtils.getUserProfile(session,
-					session.getUserID());
+			Node userProfile = UserJcrUtils.getUserProfile(session, managerId);
 			activity.setProperty(PeopleNames.PEOPLE_MANAGER, userProfile);
 
 			// Activity Date
-			activity.setProperty(PeopleNames.PEOPLE_ACTIVITY_DATE,
-					new GregorianCalendar());
+			activity.setProperty(PeopleNames.PEOPLE_ACTIVITY_DATE, date);
 
 			// related to
 			if (relatedTo != null && !relatedTo.isEmpty())
@@ -167,6 +183,17 @@ public class ActivityServiceImpl implements ActivityService {
 	public Node createTask(Session session, Node parentNode, String title,
 			String description, Node assignedTo, List<Node> relatedTo,
 			Calendar dueDate, Calendar wakeUpDate) {
+		return createTask(session, parentNode, session.getUserID(), title,
+				description, assignedTo, relatedTo, new GregorianCalendar(),
+				dueDate, wakeUpDate);
+	}
+
+	@Override
+	public Node createTask(Session session, Node parentNode, String managerId,
+			String title, String description, Node assignedTo,
+			List<Node> relatedTo, Calendar creationDate, Calendar dueDate,
+			Calendar wakeUpDate) {
+
 		try {
 
 			if (session == null && parentNode == null)
@@ -178,8 +205,10 @@ public class ActivityServiceImpl implements ActivityService {
 				session = parentNode.getSession();
 
 			if (parentNode == null)
-				parentNode = JcrUtils.mkdirs(session,
-						getActivityParentCanonicalPath(session));
+				parentNode = JcrUtils
+						.mkdirs(session,
+								getActivityParentPath(session, creationDate,
+										managerId));
 
 			Node taskNode = parentNode.addNode(PeopleTypes.PEOPLE_TASK,
 					PeopleTypes.PEOPLE_TASK);
@@ -190,16 +219,8 @@ public class ActivityServiceImpl implements ActivityService {
 			if (CommonsJcrUtils.checkNotEmptyString(description))
 				taskNode.setProperty(Property.JCR_DESCRIPTION, description);
 
-			String userId = session.getUserID();
-			// TODO fix this - user is not a normal user during init phase
-
-			if ("admin".equals(userId))
-				userId = "cgesell";
-			
-			Node userProfile = UserJcrUtils.getUserProfile(session,
-					session.getUserID());
-			if (userProfile != null)
-				taskNode.setProperty(PeopleNames.PEOPLE_MANAGER, userProfile);
+			Node userProfile = UserJcrUtils.getUserProfile(session, managerId);
+			taskNode.setProperty(PeopleNames.PEOPLE_MANAGER, userProfile);
 
 			if (assignedTo != null)
 				taskNode.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO, assignedTo);
@@ -215,6 +236,10 @@ public class ActivityServiceImpl implements ActivityService {
 				taskNode.setProperty(PeopleNames.PEOPLE_WAKE_UP_DATE,
 						wakeUpDate);
 			}
+
+			// FIXME check this, not very satisfaying.
+			// Activity Date
+			taskNode.setProperty(PeopleNames.PEOPLE_ACTIVITY_DATE, creationDate);
 
 			CommonsJcrUtils.saveAndCheckin(taskNode);
 			return taskNode;

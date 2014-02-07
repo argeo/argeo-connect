@@ -90,6 +90,8 @@ public class UserManagementServiceImpl implements UserManagementService {
 			else {
 				Node newGroup = JcrUtils.mkdirs(session, fullPath,
 						PeopleTypes.PEOPLE_USER_GROUP);
+
+				newGroup.setProperty(PeopleNames.PEOPLE_GROUP_ID, groupId);
 				if (CommonsJcrUtils.checkNotEmptyString(title))
 					newGroup.setProperty(Property.JCR_TITLE, title);
 				if (CommonsJcrUtils.checkNotEmptyString(description))
