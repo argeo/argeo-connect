@@ -65,10 +65,10 @@ public class ActivityServiceImpl implements ActivityService {
 					session.getUserID());
 			activity.setProperty(PeopleNames.PEOPLE_MANAGER, userProfile);
 
-			// Activity Date 
+			// Activity Date
 			activity.setProperty(PeopleNames.PEOPLE_ACTIVITY_DATE,
 					new GregorianCalendar());
-			
+
 			// related to
 			if (relatedTo != null && !relatedTo.isEmpty())
 				CommonsJcrUtils.setMultipleReferences(activity,
@@ -96,10 +96,11 @@ public class ActivityServiceImpl implements ActivityService {
 					dateToDisplay = activityNode.getProperty(
 							PeopleNames.PEOPLE_DUE_DATE).getDate();
 				else
-					dateToDisplay = activityNode.getProperty(PeopleNames.PEOPLE_ACTIVITY_DATE).getDate();
+					dateToDisplay = activityNode.getProperty(
+							PeopleNames.PEOPLE_ACTIVITY_DATE).getDate();
 			} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-				dateToDisplay = activityNode.getProperty(PeopleNames.PEOPLE_ACTIVITY_DATE)
-						.getDate();
+				dateToDisplay = activityNode.getProperty(
+						PeopleNames.PEOPLE_ACTIVITY_DATE).getDate();
 			}
 			return dateToDisplay;
 		} catch (RepositoryException re) {
@@ -189,9 +190,16 @@ public class ActivityServiceImpl implements ActivityService {
 			if (CommonsJcrUtils.checkNotEmptyString(description))
 				taskNode.setProperty(Property.JCR_DESCRIPTION, description);
 
+			String userId = session.getUserID();
+			// TODO fix this - user is not a normal user during init phase
+
+			if ("admin".equals(userId))
+				userId = "cgesell";
+			
 			Node userProfile = UserJcrUtils.getUserProfile(session,
 					session.getUserID());
-			taskNode.setProperty(PeopleNames.PEOPLE_MANAGER, userProfile);
+			if (userProfile != null)
+				taskNode.setProperty(PeopleNames.PEOPLE_MANAGER, userProfile);
 
 			if (assignedTo != null)
 				taskNode.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO, assignedTo);
@@ -207,8 +215,8 @@ public class ActivityServiceImpl implements ActivityService {
 				taskNode.setProperty(PeopleNames.PEOPLE_WAKE_UP_DATE,
 						wakeUpDate);
 			}
-			
-			// CommonsJcrUtils.saveAndCheckin(taskNode);
+
+			CommonsJcrUtils.saveAndCheckin(taskNode);
 			return taskNode;
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to create the new task " + title,

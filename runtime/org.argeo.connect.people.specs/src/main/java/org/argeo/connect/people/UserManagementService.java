@@ -41,6 +41,15 @@ public interface UserManagementService {
 			String description);
 
 	/**
+	 * Retrieves a user group given its id
+	 * 
+	 * @param session
+	 * @param groupId
+	 * @return
+	 */
+	public Node getGroupById(Session session, String groupId);
+
+	/**
 	 * Simply returns existing default user group if such a one exists.
 	 * Otherwise, it creates a default group with same id and add a reference in
 	 * the user people:profile node.

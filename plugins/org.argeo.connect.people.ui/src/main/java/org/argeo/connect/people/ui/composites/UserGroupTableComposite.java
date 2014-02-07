@@ -72,7 +72,7 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 
 		// Displayed name
 		columnDefs.add(new ColumnDefinition(null, Property.JCR_TITLE,
-				PropertyType.STRING, "Name", 120));
+				PropertyType.STRING, "Name", 140));
 
 		// Description
 		columnDefs.add(new ColumnDefinition(null, Property.JCR_DESCRIPTION,

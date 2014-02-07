@@ -142,6 +142,9 @@ mixin
 - people:userGroups (REFERENCE) *  // towards people:userGroup types 
 
 [people:userGroup] > nt:unstructured, mix:title, mix:versionable, mix:lastModified 
+// An almost human readable group ID 
+// Should be mandatory, left like that for legacy reasons.
+- people:groupId (STRING) 
 // only set when creating the default group for a single user 
 - people:isSingleUserGroup (BOOLEAN) 
 

@@ -74,16 +74,11 @@ public interface PeopleNames {
 	public final static String PEOPLE_ORG_BRANCHES = "people:orgBranches";
 
 	/* USER MANAGEMENT */
-	public final static String PEOPLE_RELATED_PERSON = "people:relatedPersons"; // REFERENCE
-																				// *
-																				// towards
-																				// people:person
-																				// types
-	public final static String PEOPLE_USER_GROUPS = "people:userGroups";// REFERENCE
-																		// *
-																		// towards
-																		// people:userGroup
-																		// types
+	// REFERENCE * towards people:person types
+	public final static String PEOPLE_RELATED_PERSON = "people:relatedPersons";
+	// REFERENCE * towards people:userGroup types
+	public final static String PEOPLE_USER_GROUPS = "people:userGroups";
+	public final static String PEOPLE_GROUP_ID = "people:groupId";
 	public final static String PEOPLE_IS_SINGLE_USER_GROUP = "people:isSingleUserGroup";
 
 	/* ACTIVITIES AND TASKS */

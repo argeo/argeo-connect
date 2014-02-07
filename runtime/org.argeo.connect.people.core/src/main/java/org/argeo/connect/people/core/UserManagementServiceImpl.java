@@ -4,10 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+import javax.jcr.query.qom.Constraint;
+import javax.jcr.query.qom.DynamicOperand;
+import javax.jcr.query.qom.QueryObjectModel;
+import javax.jcr.query.qom.QueryObjectModelFactory;
+import javax.jcr.query.qom.Selector;
+import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
@@ -30,6 +39,38 @@ public class UserManagementServiceImpl implements UserManagementService {
 
 	protected String getUserGroupParentPath() {
 		return PeopleConstants.PEOPLE_USER_GROUPS_BASE_PATH;
+	}
+
+	@Override
+	public Node getGroupById(Session session, String groupId) {
+		try {
+			QueryManager queryManager = session.getWorkspace()
+					.getQueryManager();
+			QueryObjectModelFactory factory = queryManager.getQOMFactory();
+			Selector source = factory.selector(PeopleTypes.PEOPLE_USER_GROUP,
+					PeopleTypes.PEOPLE_USER_GROUP);
+			DynamicOperand dynOp = factory.propertyValue(
+					source.getSelectorName(), PeopleNames.PEOPLE_GROUP_ID);
+			StaticOperand statOp = factory.literal(session.getValueFactory()
+					.createValue(groupId));
+			Constraint defaultC = factory.comparison(dynOp,
+					QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+			QueryObjectModel query = factory.createQuery(source, defaultC,
+					null, null);
+			QueryResult queryResult = query.execute();
+			NodeIterator ni = queryResult.getNodes();
+
+			if (ni.getSize() == 0)
+				return null;
+			else if (ni.getSize() > 1) {
+				throw new PeopleException("Problem retrieving group " + groupId
+						+ " by ID, we found " + ni.getSize()
+						+ " correspnding entity(ies)");
+			} else
+				return ni.nextNode();
+		} catch (RepositoryException re) {
+			throw new PeopleException("unable to create group " + groupId, re);
+		}
 	}
 
 	@Override
@@ -167,6 +208,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 		return null;
 	}
 
+	// TODO manage adding without overwriting
 	@Override
 	public String addGroupsToUser(Session session, String username,
 			List<Node> groups) {
