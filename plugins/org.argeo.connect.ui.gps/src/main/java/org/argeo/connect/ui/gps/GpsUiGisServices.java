@@ -106,4 +106,7 @@ public class GpsUiGisServices {
 		this.baseLayers = baseLayers;
 	}
 
+	public Boolean isShapefileBackend() {
+		return trackDao.isShapefileBackend();
+	}
 }

@@ -11,6 +11,7 @@ import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.shapefile.ShapefileDataStoreFactory;
 
+/** Wraps a {@link ShapefileDataStoreFactory}, preparing the directories. */
 public class ShpDataStoreFactory {
 	private ShapefileDataStoreFactory wrappedFactory = new ShapefileDataStoreFactory();
 

@@ -94,6 +94,8 @@ public class GeoToolsTrackDao implements TrackDao {
 	private String dataStoreAlias;
 	private GeoJcrMapper geoJcrMapper;
 
+	private Boolean shapefileBackend;
+
 	private String addGpsCleanTablePrefix(String baseName) {
 		return "connect_gpsclean_" + baseName;
 	}
@@ -509,6 +511,14 @@ public class GeoToolsTrackDao implements TrackDao {
 
 	public void setGeoJcrMapper(GeoJcrMapper geoJcrMapper) {
 		this.geoJcrMapper = geoJcrMapper;
+	}
+
+	public void setShapefileBackend(Boolean shapefile) {
+		this.shapefileBackend = shapefile;
+	}
+
+	public Boolean isShapefileBackend() {
+		return shapefileBackend;
 	}
 
 	public class TrackGpxHandler extends GpxHandler {

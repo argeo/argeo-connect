@@ -69,4 +69,7 @@ public interface TrackDao {
 	 */
 	public void deleteCleanPositions(String referential,
 			List<String> segmentUuuids);
+
+	/** Whether backend is shapefile (thus with limitaitons) */
+	public Boolean isShapefileBackend();
 }
