@@ -33,7 +33,7 @@
 			<list>
 				<value>/org/argeo/gis/argeo_gis.cnd</value>
 				<value>/org/argeo/connect/connect.cnd</value>
-<!-- 				<value>/org/argeo/connect/people/argeo_people.cnd</value> -->
+				<!-- <value>/org/argeo/connect/people/argeo_people.cnd</value> -->
 			</list>
 		</property>
 		<property name="repository" ref="nodeRepository" />
@@ -50,15 +50,18 @@
 		<property name="url" value="${osgi.instance.area}/geodb" />
 	</bean>
 
-	<!-- <bean id="geoDbDataStore" factory-bean="shapefileDataStoreFactory" -->
-	<!-- factory-method="createDataStore"> -->
-	<!-- </bean> -->
+	<bean id="geoDbDataStore" factory-bean="shapefileDataStoreFactory"
+		factory-method="createDataStore">
+	</bean>
 
 
 	<!-- POSTGIS -->
-	<bean id="postGisDataStoreFactory" class="org.argeo.geotools.jdbc.PostgisDataStoreFactory" />
+	<bean id="postGisDataStoreFactory" class="org.argeo.geotools.jdbc.PostgisDataStoreFactory">
+		<property name="shapefile" value="${connect.geodb.shapefile}" />
+		<property name="shpDataStoreFactory" ref="shapefileDataStoreFactory" />
+	</bean>
 
-	<bean id="geoDbDataStore" factory-bean="postGisDataStoreFactory"
+	<bean id="geoDbDataStorePostGis" factory-bean="postGisDataStoreFactory"
 		factory-method="createDataStore">
 		<constructor-arg ref="geoDbDataSource" />
 	</bean>

@@ -26,8 +26,6 @@
 	<service ref="geoDbDataStore" interface="org.geotools.data.DataStore">
 		<service-properties>
 			<beans:entry key="alias" value="connect_geodb" />
-			<!-- <beans:entry key="publishedFeatureSources" value="connect_geodb" 
-				/> -->
 		</service-properties>
 	</service>
 

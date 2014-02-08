@@ -33,6 +33,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.argeo.ArgeoException;
+import org.argeo.geotools.ShpDataStoreFactory;
 import org.geotools.data.DataStore;
 import org.geotools.data.postgis.PostgisNGDataStoreFactory;
 
@@ -42,15 +43,29 @@ import org.geotools.data.postgis.PostgisNGDataStoreFactory;
  */
 public class PostgisDataStoreFactory {
 	private PostgisNGDataStoreFactory wrappedFactory = new PostgisNGDataStoreFactory();
+	private Boolean shapefile = false;
+	private ShpDataStoreFactory shpDataStoreFactory;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public DataStore createDataStore(DataSource dataSource) {
-		try {
-			Map params = new HashMap();
-			params.put(PostgisNGDataStoreFactory.DATASOURCE.key, dataSource);
-			return wrappedFactory.createDataStore(params);
-		} catch (IOException e) {
-			throw new ArgeoException("Cannot create PostGIS data store", e);
-		}
+		if (shapefile)
+			return shpDataStoreFactory.createDataStore();
+		else
+			try {
+				Map params = new HashMap();
+				params.put(PostgisNGDataStoreFactory.DATASOURCE.key, dataSource);
+				return wrappedFactory.createDataStore(params);
+			} catch (IOException e) {
+				throw new ArgeoException("Cannot create PostGIS data store", e);
+			}
 	}
+
+	public void setShapefile(Boolean shapefile) {
+		this.shapefile = shapefile;
+	}
+
+	public void setShpDataStoreFactory(ShpDataStoreFactory shpDataStoreFactory) {
+		this.shpDataStoreFactory = shpDataStoreFactory;
+	}
+
 }

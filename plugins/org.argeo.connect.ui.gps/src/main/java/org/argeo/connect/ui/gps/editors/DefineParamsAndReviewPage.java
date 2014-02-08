@@ -94,6 +94,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage
 	private Button points;
 
 	private MapViewer mapViewer;
+	private GpsStyling gpsStyling;
 
 	// Local object used as cache
 	private GpsUiJcrServices uiJcrServices;
@@ -109,6 +110,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage
 		uiJcrServices = getEditor().getUiJcrServices();
 		uiGisServices = getEditor().getUiGisServices();
 		currCleanSession = getEditor().getCurrentCleanSession();
+		gpsStyling = new GpsStyling(uiGisServices);
 
 		// Initialize current form
 		ScrolledForm form = managedForm.getForm();
@@ -416,7 +418,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage
 	protected Style createToCleanStyle() {
 		String displayedField = lines.getSelection() ? TrackSpeed.LINE
 				: TrackSpeed.POSITION;
-		return GpsStyling.createGpsCleanStyle(displayedField,
+		return gpsStyling.createGpsCleanStyle(displayedField,
 				preview.getSelection(), maxSpeedViewer.getValue(),
 				maxAccelerationViewer.getValue(), maxRotationViewer.getValue(),
 				maxVerticalSpeedViewer.getValue());
@@ -429,7 +431,7 @@ public class DefineParamsAndReviewPage extends AbstractCleanDataEditorPage
 		Double maxAbsoluteAcceleration = maxAccelerationViewer.getValue();
 
 		String cql;
-		if (ConnectGpsUiPlugin.shapefileBackend) {
+		if (uiGisServices.isShapefileBackend()) {
 			cql = "speed>" + maxSpeed + " OR azimuthVar<"
 					+ (-maxAbsoluteRotation) + " OR azimuthVar>"
 					+ maxAbsoluteRotation + " OR verticalSp<"

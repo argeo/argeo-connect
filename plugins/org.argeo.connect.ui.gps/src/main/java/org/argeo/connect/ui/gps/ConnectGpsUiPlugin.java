@@ -36,9 +36,6 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plug-in life cycle
  */
 public class ConnectGpsUiPlugin extends AbstractUIPlugin {
-	// FIXME make it generic
-	public static Boolean shapefileBackend = false;
-
 	public final static String EPSG_3857 = "EPSG:3857";
 
 	// The plug-in ID

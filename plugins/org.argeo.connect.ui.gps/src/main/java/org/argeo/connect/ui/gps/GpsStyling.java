@@ -31,12 +31,19 @@ public class GpsStyling {
 	private static FilterFactory ff = CommonFactoryFinder
 			.getFilterFactory(null);
 
-	public static Style createGpsCleanStyle(String field, Boolean preview,
+	private final GpsUiGisServices gpsUiGisServices;
+
+	public GpsStyling(GpsUiGisServices gpsUiGisServices) {
+		super();
+		this.gpsUiGisServices = gpsUiGisServices;
+	}
+
+	public Style createGpsCleanStyle(String field, Boolean preview,
 			Double maxSpeed, Double maxAbsoluteAcceleration,
 			Double maxAbsoluteRotation, Double maxAbsoluteVerticalSpeed) {
 		// map filters and colors
 		Map<String, String> cqlFilters = new HashMap<String, String>();
-		if (ConnectGpsUiPlugin.shapefileBackend) {
+		if (gpsUiGisServices.isShapefileBackend()) {
 			cqlFilters.put("speed>" + maxSpeed, "ORANGE");
 			cqlFilters.put("azimuthVar<" + (-maxAbsoluteRotation)
 					+ " OR azimuthVar>" + maxAbsoluteRotation, "RED");
@@ -76,7 +83,7 @@ public class GpsStyling {
 							unmatchedColor, unmatchedWidth, null, null));
 			rules.add(ruleUnMatched);
 		}
-		
+
 		if (preview) {
 			List<Filter> filters = new ArrayList<Filter>();
 			for (String cqlFilter : cqlFilters.keySet()) {
@@ -116,7 +123,7 @@ public class GpsStyling {
 							.symbolizers()
 							.add(sf.createLineSymbolizer(
 									stroke,
-									ConnectGpsUiPlugin.shapefileBackend ? "the_geom"
+									gpsUiGisServices.isShapefileBackend() ? "the_geom"
 											: field));
 					ruleMatched.setFilter(filter);
 					rules.add(ruleMatched);
@@ -150,9 +157,8 @@ public class GpsStyling {
 
 	}
 
-	public static PointSymbolizer createPointSymbolizer(Mark mark,
-			String fillColor, Integer width, String strokeColor,
-			Integer strokeWidth) {
+	public PointSymbolizer createPointSymbolizer(Mark mark, String fillColor,
+			Integer width, String strokeColor, Integer strokeWidth) {
 		Graphic gr = sf.createDefaultGraphic();
 
 		if (strokeColor != null)
