@@ -59,7 +59,7 @@ public class RenamePage extends WizardPage implements SelectionListener {
 			fromDir
 					.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			// FIXME: generalize
-			fromDir.setText("/media/NIKON D200/dcim/100nd200");
+			fromDir.setText("/media/NIKON D800/DCIM/100ND800");
 			fromDirBrowse = new Button(sub, SWT.NONE);
 			fromDirBrowse.setText("Browse...");
 			fromDirBrowse.addSelectionListener(this);
@@ -77,7 +77,7 @@ public class RenamePage extends WizardPage implements SelectionListener {
 		patternConverterViewer.setInput(converter);
 		GridData patternConverterViewerGd = new GridData(GridData.FILL,
 				GridData.FILL, true, true);
-		patternConverterViewerGd.minimumHeight=80;
+		patternConverterViewerGd.minimumHeight=150;
 		patternConverterViewer.setLayoutData(patternConverterViewerGd);
 
 		refresh = new Button(panel, SWT.NONE);

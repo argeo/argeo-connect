@@ -42,8 +42,9 @@ public class PictureDisplayPage extends FormPage {
 
 		InputStream in = pictureManager
 				.getPictureAsStream(ei.getRelativePath());
-		imageData = new ImageData(in);
-		image = new Image(display, imageData);
+		//imageData = new ImageData(in);
+		image = new Image(display, in);
+		imageData = image.getImageData();
 		final Canvas canvas = new Canvas(parent, SWT.NO_REDRAW_RESIZE);
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {

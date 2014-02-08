@@ -98,7 +98,7 @@ public class JcrPictureManager implements PictureManager {
 			} else {
 				// extract thumbnail
 
-				InputStream in = dcraw(relativePath, "-e");
+				InputStream in = dcraw(relativePath, "-T -w");
 				return new ByteArrayInputStream(IOUtils.toByteArray(in));
 			}
 		} catch (ArgeoException e) {
