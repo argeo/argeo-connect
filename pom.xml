@@ -24,9 +24,9 @@
 	</modules>
 	<url>${site.urlBase}/${developmentCycle.connect}</url>
 	<scm>
-		<connection>scm:svn:https://svn.argeo.org/connect/trunk</connection>
-		<developerConnection>scm:svn:https://svn.argeo.org/connect/trunk</developerConnection>
-		<url>https://svn.argeo.org/connect/trunk</url>
+		<connection>scm:svn:https://svn.argeo.org/connect/branches/1.x</connection>
+		<developerConnection>scm:svn:https://svn.argeo.org/connect/branches/1.x</developerConnection>
+		<url>https://svn.argeo.org/connect/branches/1.x</url>
 	</scm>
 	<licenses>
 		<license>
