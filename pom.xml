@@ -9,7 +9,7 @@
 	<artifactId>argeo-connect</artifactId>
 	<packaging>pom</packaging>
 	<name>Argeo Connect</name>
-	<version>1.1.5-SNAPSHOT</version>
+	<version>1.1.5</version>
 	<properties>
 		<version.connect>1.1.5-SNAPSHOT</version.connect>
 	</properties>
@@ -24,9 +24,9 @@
 	</modules>
 	<url>${site.urlBase}/${developmentCycle.connect}</url>
 	<scm>
-		<connection>scm:svn:https://svn.argeo.org/connect/branches/1.x</connection>
-		<developerConnection>scm:svn:https://svn.argeo.org/connect/branches/1.x</developerConnection>
-		<url>https://svn.argeo.org/connect/branches/1.x</url>
+		<connection>scm:svn:https://svn.argeo.org/connect/tags/argeo-connect-1.1.5</connection>
+		<developerConnection>scm:svn:https://svn.argeo.org/connect/tags/argeo-connect-1.1.5</developerConnection>
+		<url>https://svn.argeo.org/connect/tags/argeo-connect-1.1.5</url>
 	</scm>
 	<licenses>
 		<license>
