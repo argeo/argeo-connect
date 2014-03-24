@@ -17,6 +17,7 @@ package org.argeo.connect.people.ui.dialogs;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
@@ -73,6 +74,12 @@ import org.eclipse.swt.widgets.Text;
 @Deprecated
 public class EditEntityRefWithPositionDialog extends TrayDialog {
 	private static final long serialVersionUID = -3534660152626908662L;
+
+	/* DEPENDENCY INJECTION */
+	private Repository repository;
+	private PeopleService peopleService;
+	private Session session;
+
 	// The various field
 	private Text positionTxt;
 	private Text selectedItemTxt;
@@ -90,14 +97,12 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 	private Text filterTxt;
 	private TableViewer entityViewer;
 
-	private String value;
+	// private String value;
 	private final String title;
 
-	private Session session;
 	private boolean isBackward;
 	private String toSearchNodeType;
 	private Node oldLinkNode;
-	private PeopleService peopleService;
 
 	// caches old info to initialise widgets if needed
 	private String oldPosition = "";
@@ -119,22 +124,24 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 	 *            (if false) node
 	 */
 	public EditEntityRefWithPositionDialog(Shell parentShell, String title,
-			PeopleService peopleService, Node oldLink, boolean isBackward) {
+			Repository repository, PeopleService peopleService, Node oldLink,
+			boolean isBackward) {
 		// , String toSearchNodeType
 		super(parentShell);
 		this.title = title;
+		this.repository = repository;
 		this.peopleService = peopleService;
 		this.oldLinkNode = oldLink;
 		this.isBackward = isBackward;
 		if (isBackward)
 			toSearchNodeType = PeopleTypes.PEOPLE_PERSON;
-		else 
+		else
 			toSearchNodeType = PeopleTypes.PEOPLE_ORGANIZATION;
-		
+
 		if (oldLink != null) {
 			// Try to initiallize our shortcuts
 			try {
-				session = CommonsJcrUtils.login(peopleService.getRepository());
+				session = CommonsJcrUtils.login(repository);
 				oldPosition = CommonsJcrUtils.get(oldLinkNode,
 						PeopleNames.PEOPLE_ROLE);
 				oldDepartment = CommonsJcrUtils.get(oldLinkNode,
@@ -282,13 +289,13 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 	}
 
 	// This dialog life cycle
-	
+
 	@Override
 	protected void okPressed() {
 		if (performFinish())
 			super.okPressed();
 	}
-	
+
 	protected Point getInitialSize() {
 		return new Point(400, 500);
 	}
@@ -297,16 +304,15 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 		super.configureShell(shell);
 		shell.setText(title);
 	}
-	
+
 	/** Overwrite to close session */
 	public boolean close() {
 		JcrUtils.logoutQuietly(session);
 		return super.close();
 	}
 
-	
 	// Specific widgets management
-	
+
 	/** Creates label and text. */
 	protected Text createLT(Composite parent, String label) {
 		Label lbl = new Label(parent, SWT.RIGHT);

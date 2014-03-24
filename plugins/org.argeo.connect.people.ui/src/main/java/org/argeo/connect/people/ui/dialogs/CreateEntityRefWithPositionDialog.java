@@ -17,6 +17,7 @@ package org.argeo.connect.people.ui.dialogs;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
@@ -68,6 +69,16 @@ import org.eclipse.swt.widgets.Text;
 @Deprecated
 public class CreateEntityRefWithPositionDialog extends TrayDialog {
 	private static final long serialVersionUID = 5641280645351822123L;
+
+	// Business objects
+	private PeopleService peopleService;
+	// private Repository repository;
+	private Session session;
+
+	private Node referencingNode;
+	private Node referencedNode;
+	private String toSearchNodeType;
+
 	// The various field
 	private Text positionTxt;
 	private final String positionLbl = "Role";
@@ -82,22 +93,16 @@ public class CreateEntityRefWithPositionDialog extends TrayDialog {
 	private String value;
 	private final String title;
 
-	private Session session;
-	private Node referencingNode;
-	private Node referencedNode;
-	private String toSearchNodeType;
-	private PeopleService peopleService;
-
 	public CreateEntityRefWithPositionDialog(Shell parentShell, String title,
-			PeopleService peopleService, Node referencingNode,
-			Node referencedNode, String toSearchNodeType) {
+			Repository repository, PeopleService peopleService,
+			Node referencingNode, Node referencedNode, String toSearchNodeType) {
 		super(parentShell);
 		this.title = title;
 		this.peopleService = peopleService;
 		this.referencedNode = referencedNode;
 		this.referencingNode = referencingNode;
 		this.toSearchNodeType = toSearchNodeType;
-		session = CommonsJcrUtils.login(peopleService.getRepository());
+		session = CommonsJcrUtils.login(repository);
 	}
 
 	protected Point getInitialSize() {
@@ -164,8 +169,9 @@ public class CreateEntityRefWithPositionDialog extends TrayDialog {
 				targetNode = selectedItem;
 			}
 
-			Node createdNode = peopleService.createEntityReference(srcNode,
-					targetNode, positionTxt.getText());
+			// Node createdNode =
+			peopleService.createEntityReference(srcNode, targetNode,
+					positionTxt.getText());
 			return true;
 
 		}

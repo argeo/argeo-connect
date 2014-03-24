@@ -7,7 +7,7 @@
 	<!-- RAP Specific open file command -->
 	<bean id="org.argeo.connect.people.ui.specific.openFile" class="org.argeo.connect.people.ui.specific.commands.OpenFile"
 		scope="prototype">
-		<property name="downloadServiceHandlerId"
+		<property name="openFileServiceId"
 			value="org.argeo.connect.people.ui.specific.downloadFsFileService" />
 	</bean>
 

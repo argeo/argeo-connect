@@ -1,6 +1,7 @@
 package org.argeo.connect.people.ui.commands;
 
 import javax.jcr.Node;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
@@ -34,6 +35,7 @@ public class EditEntityReferenceWithPosition extends AbstractHandler {
 	public final static String PARAM_TO_SEARCH_NODE_TYPE = "param.toSearchNodeType";
 
 	/* DEPENDENCY INJECTION */
+	private Repository repository;
 	private PeopleService peopleService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
@@ -44,12 +46,12 @@ public class EditEntityReferenceWithPosition extends AbstractHandler {
 
 		Session session = null;
 		try {
-			session = peopleService.getRepository().login();
+			session = repository.login();
 			Node oldLinkNode = session.getNodeByIdentifier(oldLinkJcrId);
 
 			Dialog diag = new EditEntityRefWithPositionDialog(
 					HandlerUtil.getActiveShell(event), "Edit position",
-					peopleService, oldLinkNode, isBackward);
+					repository, peopleService, oldLinkNode, isBackward);
 			int result = diag.open();
 
 			if (result == Window.OK) {
@@ -70,5 +72,9 @@ public class EditEntityReferenceWithPosition extends AbstractHandler {
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
+	}
+
+	public void setRepository(Repository repository) {
+		this.repository = repository;
 	}
 }

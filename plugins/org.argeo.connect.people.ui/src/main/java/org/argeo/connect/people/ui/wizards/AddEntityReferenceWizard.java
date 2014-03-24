@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
@@ -15,6 +16,7 @@ import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.ui.providers.EntitySingleColumnLabelProvider;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.CellEditor;
@@ -49,6 +51,7 @@ import org.eclipse.ui.IEditorPart;
 public abstract class AddEntityReferenceWizard extends Wizard {
 	// private final static Log log = LogFactory.getLog(AddEntityWizard.class);
 
+	private final Repository repository;
 	private Session currSession;
 	private PeopleService peopleService;
 	private List<Node> selectedItems = new ArrayList<Node>();
@@ -57,14 +60,11 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 	protected Text filterTxt;
 	protected TableViewer itemsViewer;
 
-	public AddEntityReferenceWizard(PeopleService peopleService) {
-		try {
-			this.peopleService = peopleService;
-			this.currSession = peopleService.getRepository().login();
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to login to add an entity", e);
-		}
-		// setWindowTitle("Add.. ");
+	public AddEntityReferenceWizard(Repository repository,
+			PeopleService peopleService) {
+		this.peopleService = peopleService;
+		this.repository = repository;
+		this.currSession = CommonsJcrUtils.login(repository);
 	}
 
 	// //////////////////////////////////////
@@ -91,6 +91,10 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 	protected abstract EntitySingleColumnLabelProvider defineLabelProvider();
 
 	// Exposes to children
+	protected Repository getRepository() {
+		return repository;
+	}
+
 	protected Session getSession() {
 		return currSession;
 	}

@@ -2,15 +2,10 @@ package org.argeo.connect.people.ui.editors;
 
 import java.util.List;
 
-import javax.jcr.Node;
 import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
 
-import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
@@ -21,12 +16,8 @@ import org.argeo.connect.people.ui.extracts.ITableProvider;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
-import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -49,7 +40,7 @@ public class StaticSearchEntityEditor extends EditorPart implements
 	/* DEPENDENCY INJECTION */
 	private Session session;
 	private String openEntityEditorCmdId = OpenEntityEditor.ID;
-	
+
 	// This page widgets
 	private ITableProvider currTableProvider;
 
@@ -163,5 +154,5 @@ public class StaticSearchEntityEditor extends EditorPart implements
 	public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
 		this.openEntityEditorCmdId = openEntityEditorCmdId;
 	}
-	
+
 }

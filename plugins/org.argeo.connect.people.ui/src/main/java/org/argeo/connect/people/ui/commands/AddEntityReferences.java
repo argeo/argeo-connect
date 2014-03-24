@@ -1,6 +1,7 @@
 package org.argeo.connect.people.ui.commands;
 
 import javax.jcr.Node;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
@@ -42,6 +43,7 @@ public class AddEntityReferences extends AbstractHandler {
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
+	private Repository repository;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
@@ -50,7 +52,7 @@ public class AddEntityReferences extends AbstractHandler {
 
 		Session session = null;
 		try {
-			session = peopleService.getRepository().login();
+			session = repository.login();
 			Node referencing = null;
 			if (referencingJcrId != null)
 				referencing = session.getNodeByIdentifier(referencingJcrId);
@@ -65,7 +67,7 @@ public class AddEntityReferences extends AbstractHandler {
 			if (wizard == null) {
 				Dialog diag = new CreateEntityRefWithPositionDialog(
 						HandlerUtil.getActiveShell(event), "Create position",
-						peopleService, referencing, referenced,
+						repository, peopleService, referencing, referenced,
 						PeopleTypes.PEOPLE_ORGANIZATION);
 				diag.open();
 				return null;
@@ -102,5 +104,9 @@ public class AddEntityReferences extends AbstractHandler {
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
+	}
+
+	public void setRepository(Repository repository) {
+		this.repository = repository;
 	}
 }

@@ -362,6 +362,10 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		return session;
 	}
 
+	protected Repository getRepository() {
+		return repository;
+	}
+
 	/* UTILITES */
 	/** Forces refresh of all form parts of the current editor */
 	public void forceRefresh(Object object) {

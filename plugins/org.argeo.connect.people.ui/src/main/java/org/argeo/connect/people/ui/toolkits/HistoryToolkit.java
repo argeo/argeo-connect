@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
@@ -37,11 +38,13 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class HistoryToolkit {
 	private final static Log log = LogFactory.getLog(HistoryToolkit.class);
 
+	private Repository repository;
+	private PeopleService peopleService;
+
 	// private List<String> relevantAttributeList;
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 	private Node entity;
-	private PeopleService peopleService;
 
 	private DateFormat dateTimeFormat = new SimpleDateFormat(
 			PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
@@ -177,7 +180,7 @@ public class HistoryToolkit {
 	private List<VersionDiff> listHistoryDiff() {
 		Session session = null;
 		try {
-			session = peopleService.getRepository().login();
+			session = repository.login();
 			List<VersionDiff> res = new ArrayList<VersionDiff>();
 			VersionManager versionManager = session.getWorkspace()
 					.getVersionManager();

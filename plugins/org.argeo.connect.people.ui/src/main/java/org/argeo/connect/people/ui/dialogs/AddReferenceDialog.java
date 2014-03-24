@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Property;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.QueryManager;
@@ -72,12 +73,12 @@ public abstract class AddReferenceDialog extends TrayDialog {
 	private String[] toSearchNodeTypes;
 
 	public AddReferenceDialog(Shell parentShell, String title,
-			PeopleService peopleService, String[] toSearchNodeTypes) {
+			Repository repository, String[] toSearchNodeTypes) {
 		super(parentShell);
 		this.mlToolkit = new MailingListToolkit();
 		this.title = title;
 		this.toSearchNodeTypes = toSearchNodeTypes;
-		session = CommonsJcrUtils.login(peopleService.getRepository());
+		session = CommonsJcrUtils.login(repository);
 	}
 
 	protected Point getInitialSize() {

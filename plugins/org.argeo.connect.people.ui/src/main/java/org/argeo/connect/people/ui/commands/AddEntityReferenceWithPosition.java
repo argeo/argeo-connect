@@ -1,6 +1,7 @@
 package org.argeo.connect.people.ui.commands;
 
 import javax.jcr.Node;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
@@ -38,6 +39,7 @@ public class AddEntityReferenceWithPosition extends AbstractHandler {
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
+	private Repository repository;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
@@ -48,7 +50,7 @@ public class AddEntityReferenceWithPosition extends AbstractHandler {
 
 		Session session = null;
 		try {
-			session = peopleService.getRepository().login();
+			session = repository.login();
 			Node referencing = null;
 			if (referencingJcrId != null)
 				referencing = session.getNodeByIdentifier(referencingJcrId);
@@ -62,18 +64,18 @@ public class AddEntityReferenceWithPosition extends AbstractHandler {
 			if (PeopleUiConstants.DIALOG_ADD_ML_MEMBERS.equals(dialogId))
 				diag = new AddMLMembersDialog(
 						HandlerUtil.getActiveShell(event),
-						"Add Mailing List Members...", peopleService,
-						referencing, new String[] { toSearchNodeType });
+						"Add Mailing List Members...", repository, referencing,
+						new String[] { toSearchNodeType });
 			else if (PeopleUiConstants.DIALOG_ADD_ML_MEMBERSHIP
 					.equals(dialogId))
 				diag = new AddMLMembershipDialog(
 						HandlerUtil.getActiveShell(event),
-						"Add Mailing List membership", peopleService,
-						referenced, new String[] { toSearchNodeType });
+						"Add Mailing List membership", repository, referenced,
+						new String[] { toSearchNodeType });
 			else
 				diag = new CreateEntityRefWithPositionDialog(
 						HandlerUtil.getActiveShell(event), "Create position",
-						peopleService, referencing, referenced,
+						repository, peopleService, referencing, referenced,
 						toSearchNodeType);
 
 			int result = diag.open();
@@ -96,5 +98,9 @@ public class AddEntityReferenceWithPosition extends AbstractHandler {
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
+	}
+
+	public void setRepository(Repository repository) {
+		this.repository = repository;
 	}
 }

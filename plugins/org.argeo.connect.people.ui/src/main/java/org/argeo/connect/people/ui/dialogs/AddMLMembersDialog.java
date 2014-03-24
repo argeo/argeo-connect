@@ -21,6 +21,7 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.QueryManager;
@@ -39,7 +40,6 @@ import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.utils.ContactJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
@@ -55,14 +55,11 @@ public class AddMLMembersDialog extends AddReferenceDialog {
 	// business objects
 	private Node referencingNode;
 
-	// private PeopleService peopleService;
-
 	public AddMLMembersDialog(Shell parentShell, String title,
-			PeopleService peopleService, Node referencingNode,
+			Repository repository, Node referencingNode,
 			String[] toSearchNodeTypes) {
-		super(parentShell, title, peopleService, toSearchNodeTypes);
+		super(parentShell, title, repository, toSearchNodeTypes);
 		this.referencingNode = referencingNode;
-		// this.peopleService = peopleService;
 	}
 
 	protected Point getInitialSize() {

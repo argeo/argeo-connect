@@ -2,13 +2,13 @@ package org.argeo.connect.people.ui.commands;
 
 import javax.jcr.Node;
 import javax.jcr.ReferentialIntegrityException;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -39,7 +39,7 @@ public class DeleteEntity extends AbstractHandler {
 	public final static String PARAM_REMOVE_ALSO_PARENT = "param.removeParent";
 
 	/* DEPENDENCY INJECTION */
-	private PeopleService peopleService;
+	private Repository repository;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
@@ -62,7 +62,7 @@ public class DeleteEntity extends AbstractHandler {
 
 		Session session = null;
 		try {
-			session = peopleService.getRepository().login();
+			session = repository.login();
 			Node toRemoveNode = session.getNodeByIdentifier(toRemoveJcrId);
 			boolean wasCheckedOut = CommonsJcrUtils
 					.isNodeCheckedOutByMe(toRemoveNode);
@@ -99,7 +99,7 @@ public class DeleteEntity extends AbstractHandler {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setPeopleService(PeopleService peopleService) {
-		this.peopleService = peopleService;
+	public void setRepository(Repository repository) {
+		this.repository = repository;
 	}
 }

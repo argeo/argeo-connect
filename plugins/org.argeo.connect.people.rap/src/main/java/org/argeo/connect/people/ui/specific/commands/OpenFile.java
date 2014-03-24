@@ -16,17 +16,16 @@
 package org.argeo.connect.people.ui.specific.commands;
 
 import org.argeo.connect.people.rap.PeopleRapPlugin;
-import org.argeo.eclipse.ui.specific.OpenFsFile;
 
 /**
  * Rap specific handler to open a file stored in the server file system, among
  * other tmp files created for exports.
  * 
  */
-public class OpenFile extends OpenFsFile {
-	
+public class OpenFile extends org.argeo.eclipse.ui.specific.OpenFile {
+
 	// NOTE: A DownloadFsFileService must be created via the plugin.xml
-	// and its id must be injected in param downloadServiceHandlerId 
-	
+	// and its id must be injected in param downloadServiceHandlerId
+
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".openFile";
 }

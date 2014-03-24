@@ -1,11 +1,11 @@
 package org.argeo.connect.people.ui.commands;
 
 import javax.jcr.Node;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -33,7 +33,7 @@ public class EditEntityReference extends AbstractHandler {
 	public final static String PARAM_TOEDIT_JCR_ID = "param.toEditJcrId";
 
 	/* DEPENDENCY INJECTION */
-	private PeopleService peopleService;
+	private Repository repository;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
@@ -43,7 +43,7 @@ public class EditEntityReference extends AbstractHandler {
 
 		Session session = null;
 		try {
-			session = peopleService.getRepository().login();
+			session = repository.login();
 			Node versionableParent = session
 					.getNodeByIdentifier(versParentJcrId);
 			Node toEditNode = session.getNodeByIdentifier(toEditJcrId);
@@ -77,7 +77,7 @@ public class EditEntityReference extends AbstractHandler {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setPeopleService(PeopleService peopleService) {
-		this.peopleService = peopleService;
+	public void setRepository(Repository repository) {
+		this.repository = repository;
 	}
 }

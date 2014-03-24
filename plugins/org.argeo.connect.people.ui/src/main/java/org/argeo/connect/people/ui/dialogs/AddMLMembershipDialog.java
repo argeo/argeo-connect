@@ -21,11 +21,11 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Row;
 
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.utils.ContactJcrUtils;
 import org.argeo.connect.people.utils.PersonJcrUtils;
@@ -46,9 +46,9 @@ public class AddMLMembershipDialog extends AddReferenceDialog {
 	// private PeopleService peopleService;
 
 	public AddMLMembershipDialog(Shell parentShell, String title,
-			PeopleService peopleService, Node referencedNode,
+			Repository repository, Node referencedNode,
 			String[] toSearchNodeTypes) {
-		super(parentShell, title, peopleService, toSearchNodeTypes);
+		super(parentShell, title, repository, toSearchNodeTypes);
 		this.referencedNode = referencedNode;
 		// this.peopleService = peopleService;
 	}
@@ -56,7 +56,7 @@ public class AddMLMembershipDialog extends AddReferenceDialog {
 	protected Point getInitialSize() {
 		return new Point(300, 400);
 	}
-	
+
 	protected List<ColumnDefinition> getColumnsDef() {
 		List<ColumnDefinition> columnDefs = new ArrayList<ColumnDefinition>();
 		columnDefs.add(new ColumnDefinition(PeopleTypes.PEOPLE_MAILING_LIST,

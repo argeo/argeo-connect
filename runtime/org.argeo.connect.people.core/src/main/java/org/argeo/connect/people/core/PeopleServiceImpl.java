@@ -6,10 +6,13 @@ import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Property;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Constraint;
@@ -251,7 +254,8 @@ public class PeopleServiceImpl implements PeopleService {
 		Node newJob = null;
 
 		try {
-			// First check if we must remove the old job when linked person has changed
+			// First check if we must remove the old job when linked person has
+			// changed
 			if (oldJob != null) {
 				Node oldPerson = oldJob.getParent().getParent();
 				String oldPath = oldPerson.getPath();
@@ -304,7 +308,7 @@ public class PeopleServiceImpl implements PeopleService {
 		return null;
 	}
 
-	//TODO mov this in a filmService
+	// TODO mov this in a filmService
 	@Override
 	public Node createOrUpdateParticipation(Node oldParticipation, Node film,
 			Node contact, String role) {
@@ -316,7 +320,8 @@ public class PeopleServiceImpl implements PeopleService {
 		Node newParticipation = null;
 
 		try {
-			// First check if we must remove the old job when linked person has changed
+			// First check if we must remove the old job when linked person has
+			// changed
 			if (oldParticipation != null) {
 				Node oldFilm = oldParticipation.getParent().getParent();
 				String oldPath = oldFilm.getPath();
@@ -335,8 +340,8 @@ public class PeopleServiceImpl implements PeopleService {
 			if (newParticipation == null) {
 				Node parentNode = JcrUtils.mkdirs(film,
 						PeopleNames.PEOPLE_MEMBERS, NodeType.NT_UNSTRUCTURED);
-				newParticipation = parentNode
-						.addNode(newNodeName, PeopleTypes.PEOPLE_MEMBER);
+				newParticipation = parentNode.addNode(newNodeName,
+						PeopleTypes.PEOPLE_MEMBER);
 			}
 
 			// update properties
@@ -375,6 +380,99 @@ public class PeopleServiceImpl implements PeopleService {
 			node.getSession().save();
 	}
 
+	// ///////////////////////
+	// TAGS Management
+
+	@Override
+	public void refreshKnownTags(Node tagsParentNode, Node tagableParentNode) {
+		List<String> existingValues = new ArrayList<String>();
+		List<String> registeredTags = new ArrayList<String>();
+
+		try {
+			Session session = tagsParentNode.getSession();
+			Query query = session
+					.getWorkspace()
+					.getQueryManager()
+					.createQuery(
+							"select * from [" + NodeType.MIX_TITLE
+									+ "] as tags where ISDESCENDANTNODE('"
+									+ tagsParentNode.getPath() + "') ",
+							Query.JCR_SQL2);
+			NodeIterator nit = query.execute().getNodes();
+			while (nit.hasNext()) {
+				Node currNode = nit.nextNode();
+				String currTag = CommonsJcrUtils.get(currNode,
+						Property.JCR_TITLE);
+				if (CommonsJcrUtils.checkNotEmptyString(currTag)
+						&& !registeredTags.contains(currTag))
+					registeredTags.add(currTag);
+			}
+
+			query = session
+					.getWorkspace()
+					.getQueryManager()
+					.createQuery(
+							"select * from [" + PeopleTypes.PEOPLE_TAGABLE
+									+ "] as instances where ISDESCENDANTNODE('"
+									+ tagableParentNode.getPath() + "') ",
+							Query.JCR_SQL2);
+			nit = query.execute().getNodes();
+			while (nit.hasNext()) {
+				Node currNode = nit.nextNode();
+				if (currNode.hasProperty(PeopleNames.PEOPLE_TAGS)) {
+					Value[] tags = currNode
+							.getProperty(PeopleNames.PEOPLE_TAGS).getValues();
+					for (Value tagV : tags) {
+						String currTag = tagV.getString();
+						if (CommonsJcrUtils.checkNotEmptyString(currTag)
+								&& !existingValues.contains(currTag))
+							existingValues.add(currTag);
+					}
+				}
+			}
+			for (String tag : existingValues) {
+				if (!registeredTags.contains(tag)) {
+					addTag(tagsParentNode, tag);
+				}
+			}
+		} catch (RepositoryException ee) {
+			throw new PeopleException("Unable to refresh cache of known tags",
+					ee);
+		}
+	}
+
+	@Override
+	public void addTag(Node tagsParentNode, String tag) {
+		try {
+			Session session = tagsParentNode.getSession();
+			String cleanedTag = JcrUtils.replaceInvalidChars(tag);
+			String relPath = JcrUtils.firstCharsToPath(cleanedTag, 2);
+			String path = tagsParentNode.getPath() + relPath + "/" + cleanedTag;
+			// Sanity check
+			if (session.nodeExists(path)) {
+				Node existing = session.getNode(path);
+				if (tag.equalsIgnoreCase(CommonsJcrUtils.get(existing,
+						Property.JCR_TITLE))) {
+					log.error("Trying to add an existing tag (" + tag
+							+ "), nothing to do");
+					return;
+				}
+			}
+			Node newTag = JcrUtils.mkdirs(session, path);
+			newTag.addMixin(NodeType.MIX_TITLE);
+			newTag.setProperty(Property.JCR_TITLE, tag);
+			session.save();
+		} catch (RepositoryException ee) {
+			throw new PeopleException("Unable to add new tag " + tag
+					+ " under " + tagsParentNode);
+		}
+	}
+
+	@Override
+	public void removeTag(Node tagsParentNode, String tag) {
+		throw new PeopleException("unimplemented method.");
+	}
+
 	/* EXPOSED CLASSES */
 	@Override
 	public ActivityService getActivityService() {
@@ -386,12 +484,13 @@ public class PeopleServiceImpl implements PeopleService {
 		return userManagementService;
 	}
 
-	// TODO remove this we rather want to directly inject the repository if
-	// needed
-	/** Expose injected repository */
-	public Repository getRepository() {
-		return repository;
-	}
+	//
+	// // TODO remove this we rather want to directly inject the repository if
+	// // needed
+	// /** Expose injected repository */
+	// private Repository getRepository() {
+	// return repository;
+	// }
 
 	/* DEPENDENCY INJECTION */
 	// Inject a map with all business catalogs

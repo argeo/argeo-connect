@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
-import javax.jcr.Repository;
 import javax.jcr.Session;
 
 /** Provides method interfaces to manage a people repository */
@@ -78,7 +77,7 @@ public interface PeopleService {
 	 * it might be a JCR Identifier but must not.
 	 * 
 	 * @param relatedEntityType
-	 *            optionaly, the type of the grand-parent node typically to
+	 *            Optionally, the type of the grand-parent node typically to
 	 *            choose between an organisation, a group or a person in a group
 	 * */
 	public List<Node> getRelatedEntities(Node entity, String linkNodeType,
@@ -87,7 +86,7 @@ public interface PeopleService {
 	/* MISCELLANEOUS */
 
 	/** Returns the JCR repository used by this service */
-	public Repository getRepository();
+	// public Repository getRepository();
 
 	/** Returns the corresponding {@link ActivityService} */
 	public ActivityService getActivityService();
@@ -95,4 +94,16 @@ public interface PeopleService {
 	/** Returns the corresponding {@link UserManagementService} */
 	public UserManagementService getUserManagementService();
 
+	/* TAG MANAGEMENT */
+	/**
+	 * Updates the repository cache that list all tags known in
+	 * the current application
+	 * 
+	 * TODO make it asynchronous
+	 */
+	public void refreshKnownTags(Node tagsParentNode, Node tagableParentNode);
+
+	public void addTag(Node tagsParentNode, String tag);
+	
+	public void removeTag(Node tagsParentNode, String tag);
 }
