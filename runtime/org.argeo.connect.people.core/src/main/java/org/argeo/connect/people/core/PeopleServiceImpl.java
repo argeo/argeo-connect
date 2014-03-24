@@ -40,7 +40,7 @@ public class PeopleServiceImpl implements PeopleService {
 	private final static Log log = LogFactory.getLog(PeopleServiceImpl.class);
 
 	/* DEPENDENCY INJECTION */
-	private Repository repository;
+	// private Repository repository;
 
 	/* Other services */
 	private UserManagementService userManagementService = new UserManagementServiceImpl();
@@ -405,7 +405,7 @@ public class PeopleServiceImpl implements PeopleService {
 						Property.JCR_TITLE);
 				if (CommonsJcrUtils.checkNotEmptyString(currTag)
 						&& !registeredTags.contains(currTag))
-					registeredTags.add(currTag);
+					registeredTags.add(currTag.trim());
 			}
 
 			query = session
@@ -423,9 +423,9 @@ public class PeopleServiceImpl implements PeopleService {
 					Value[] tags = currNode
 							.getProperty(PeopleNames.PEOPLE_TAGS).getValues();
 					for (Value tagV : tags) {
-						String currTag = tagV.getString();
+						String currTag = tagV.getString().trim();
 						if (CommonsJcrUtils.checkNotEmptyString(currTag)
-								&& !existingValues.contains(currTag))
+								&& !registeredTags.contains(currTag))
 							existingValues.add(currTag);
 					}
 				}
@@ -444,10 +444,14 @@ public class PeopleServiceImpl implements PeopleService {
 	@Override
 	public void addTag(Node tagsParentNode, String tag) {
 		try {
+			
+			// remove trailing and starting space
+			tag = tag.trim();
+			
 			Session session = tagsParentNode.getSession();
-			String cleanedTag = JcrUtils.replaceInvalidChars(tag);
+			String cleanedTag = JcrUtils.replaceInvalidChars(tag).trim();
 			String relPath = JcrUtils.firstCharsToPath(cleanedTag, 2);
-			String path = tagsParentNode.getPath() + relPath + "/" + cleanedTag;
+			String path = tagsParentNode.getPath() + "/" + relPath + "/" + cleanedTag;
 			// Sanity check
 			if (session.nodeExists(path)) {
 				Node existing = session.getNode(path);
@@ -499,7 +503,7 @@ public class PeopleServiceImpl implements PeopleService {
 	}
 
 	public void setRepository(Repository repository) {
-		this.repository = repository;
+		// this.repository = repository;
 	}
 
 	// public void setManagedRoles(Map<Integer, String> managedRoles) {

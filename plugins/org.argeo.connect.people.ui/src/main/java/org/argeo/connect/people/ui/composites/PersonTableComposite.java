@@ -1,5 +1,6 @@
 package org.argeo.connect.people.ui.composites;
 
+import java.awt.KeyboardFocusManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +10,8 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
+import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
@@ -41,7 +44,10 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -52,6 +58,8 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.Section;
@@ -65,6 +73,7 @@ public class PersonTableComposite extends Composite implements ArgeoNames,
 	private Text filterTxt;
 
 	private Text tagTxt;
+	private Text tagOutTxt;
 
 	private final static String FILTER_HELP_MSG = "Type filter criterion "
 			+ "separated by a space";
@@ -75,6 +84,8 @@ public class PersonTableComposite extends Composite implements ArgeoNames,
 	private boolean hasFilter = true;
 	private boolean hasStaticFilter = true;
 	private boolean hasSelectionColumn = false;
+
+	// Must be explicitely disposed
 
 	private List<ColumnDefinition> colDefs = new ArrayList<ColumnDefinition>();
 	{
@@ -104,6 +115,14 @@ public class PersonTableComposite extends Composite implements ArgeoNames,
 		tagTxt.setMessage("Filter by tag");
 		tagTxt.setLayoutData(new RowData(120, SWT.DEFAULT));
 
+		// final SelectionToggle ddSelection = new SelectionToggle();
+
+		MyDropDown dd = new MyDropDown(tagTxt);
+
+		tagOutTxt = new Text(body, SWT.BORDER);
+		tagOutTxt.setMessage("Filter Out by tag");
+		tagOutTxt.setLayoutData(new RowData(120, SWT.DEFAULT));
+
 		Button goBtn = new Button(body, SWT.PUSH);
 		goBtn.setText("Search");
 		goBtn.addSelectionListener(new SelectionAdapter() {
@@ -117,6 +136,98 @@ public class PersonTableComposite extends Composite implements ArgeoNames,
 		});
 
 		headerSection.setClient(body);
+	}
+
+	private class MyDropDown {
+		private final String TAGS_BASE_PATH = "/people:system/people:tags";
+
+		private final Text text;
+		private final DropDown dropDown;
+
+		private boolean modifyFromList = false;
+
+		private String[] values;
+
+		/** Overwrite to provide specific filtering */
+		protected void refreshValues() {
+			List<String> filteredValues = new ArrayList<String>();
+			try {
+				Query query = session
+						.getWorkspace()
+						.getQueryManager()
+						.createQuery(
+								"select * from ["
+										+ NodeType.MIX_TITLE
+										+ "] as tags where ISDESCENDANTNODE('"
+										+ TAGS_BASE_PATH + "') AND tags.["
+										+ Property.JCR_TITLE + "] like '%"
+										+ text.getText() + "%' ORDER BY tags.["
+										+ Property.JCR_TITLE + "]",
+								Query.JCR_SQL2);
+				NodeIterator nit = query.execute().getNodes();
+
+				while (nit.hasNext()) {
+					Node curr = nit.nextNode();
+					if (curr.hasProperty(Property.JCR_TITLE))
+						filteredValues.add(curr.getProperty(Property.JCR_TITLE)
+								.getString());
+				}
+			} catch (RepositoryException re) {
+				throw new PeopleException(
+						"Unable to get tags values for node ", re);
+			}
+			values = filteredValues.toArray(new String[filteredValues.size()]);
+			dropDown.setItems(values);
+			dropDown.show();
+		}
+
+		public MyDropDown(Text text) {
+			dropDown = new DropDown(text);
+			this.text = text;
+			addListeners();
+			refreshValues();
+		}
+
+		private void addListeners() {
+			text.addFocusListener(new FocusListener() {
+
+				@Override
+				public void focusLost(FocusEvent event) {
+				}
+
+				@Override
+				public void focusGained(FocusEvent event) {
+					// Force show on focus in
+					dropDown.show();
+				}
+			});
+
+			text.addModifyListener(new ModifyListener() {
+				@Override
+				public void modifyText(ModifyEvent event) {
+					// Avoid reducing suggestion while browsing them
+					if (!modifyFromList) {
+						refreshValues();
+					}
+				}
+			});
+
+			dropDown.addListener(SWT.Selection, new DDSelectionListener());
+			dropDown.addListener(SWT.DefaultSelection,
+					new DDSelectionListener());
+		}
+
+		private class DDSelectionListener implements Listener {
+			@Override
+			public void handleEvent(Event event) {
+				modifyFromList = true;
+				tagTxt.setText(values[dropDown.getSelectionIndex()]);
+				modifyFromList = false;
+				if (event.type == SWT.DefaultSelection)
+					KeyboardFocusManager.getCurrentKeyboardFocusManager()
+							.focusNextComponent();
+			}
+		}
 	}
 
 	// CONSTRUCTORS

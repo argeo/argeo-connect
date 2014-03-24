@@ -20,6 +20,8 @@ public interface PeopleConstants {
 			+ "/people:countries";
 	public final static String PEOPLE_LANGS_BASE_PATH = PEOPLE_RESOURCES_PATH
 			+ "/people:languages";
+	public final static String PEOPLE_TAGS_BASE_PATH = PEOPLE_RESOURCES_PATH
+			+ "/people:tags";
 
 	// Helper to decide wether we speak about the parent object of a link node
 	// or about the ref it points to
