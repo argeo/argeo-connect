@@ -29,8 +29,6 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.commands.AddEntityReference;
 import org.argeo.connect.people.ui.commands.GetCalcExtract;
-import org.argeo.connect.people.ui.extracts.ExtractDefinition;
-import org.argeo.connect.people.ui.extracts.ITableProvider;
 import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.ui.providers.PeopleImageProvider;
@@ -39,7 +37,6 @@ import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.ui.utils.RowViewerComparator;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
-import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -72,7 +69,7 @@ import org.eclipse.ui.forms.AbstractFormPart;
  * Editor page that display a mailing list, roughly based on the group editor
  * TODO what specific should be added
  */
-public class MailingListEditor extends GroupEditor implements ITableProvider {
+public class MailingListEditor extends GroupEditor {
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".mailingListEditor";
@@ -119,15 +116,18 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 		membersViewer.addDoubleClickListener(ndcl);
 	}
 
-	@Override
-	public RowIterator getRowIterator(String extractId) {
-		return refreshFilteredList(filterTxt.getText());
-	}
 
-	@Override
-	public List<ColumnDefinition> getColumnDefinition(String extractId) {
-		return ExtractDefinition.EXTRACT_SIMPLE_MAILING_LIST;
-	}
+	// implements ITableProvider
+	//
+	// @Override
+	// public RowIterator getRowIterator(String extractId) {
+	// return refreshFilteredList(filterTxt.getText());
+	// }
+	//
+	// @Override
+	// public List<ColumnDefinition> getColumnDefinition(String extractId) {
+	// return ExtractDefinition.EXTRACT_SIMPLE_MAILING_LIST;
+	// }
 
 	public TableViewer createMembersList(Composite parent, final Node entity) {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());

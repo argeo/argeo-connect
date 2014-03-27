@@ -28,7 +28,6 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.extracts.ITableProvider;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.ui.utils.RowViewerComparator;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -65,8 +64,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.Section;
 
 /** Basic implementation of a table that display persons */
-public class PersonTableComposite extends Composite implements ArgeoNames,
-		ITableProvider {
+public class PersonTableComposite extends Composite implements ArgeoNames { // ,ITableProvider
 	private static final long serialVersionUID = 1262369448445021926L;
 
 	private TableViewer personViewer;
@@ -156,8 +154,7 @@ public class PersonTableComposite extends Composite implements ArgeoNames,
 						.getWorkspace()
 						.getQueryManager()
 						.createQuery(
-								"select * from ["
-										+ NodeType.MIX_TITLE
+								"select * from [" + NodeType.MIX_TITLE
 										+ "] as tags where ISDESCENDANTNODE('"
 										+ TAGS_BASE_PATH + "') AND tags.["
 										+ Property.JCR_TITLE + "] like '%"
@@ -539,18 +536,18 @@ public class PersonTableComposite extends Composite implements ArgeoNames,
 
 	// ///////////////////
 	// Enable extraction
-	@Override
-	public List<ColumnDefinition> getColumnDefinition(String extractId) {
-		return colDefs;
-	}
-
-	@Override
-	public RowIterator getRowIterator(String extractId) {
-		try {
-			String filter = hasFilter ? filterTxt.getText() : null;
-			return listFilteredElements(session, filter);
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get rows for the extract", re);
-		}
-	}
+	// @Override
+	// public List<ColumnDefinition> getColumnDefinition(String extractId) {
+	// return colDefs;
+	// }
+	//
+	// @Override
+	// public RowIterator getRowIterator(String extractId) {
+	// try {
+	// String filter = hasFilter ? filterTxt.getText() : null;
+	// return listFilteredElements(session, filter);
+	// } catch (RepositoryException re) {
+	// throw new PeopleException("Unable to get rows for the extract", re);
+	// }
+	// }
 }

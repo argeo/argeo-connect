@@ -1,10 +1,7 @@
 package org.argeo.connect.people.ui.editors;
 
-import java.util.List;
-
 import javax.jcr.Repository;
 import javax.jcr.Session;
-import javax.jcr.query.RowIterator;
 
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
@@ -12,10 +9,8 @@ import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.composites.EntityTableComposite;
 import org.argeo.connect.people.ui.composites.PersonTableComposite;
 import org.argeo.connect.people.ui.editors.utils.SearchEntityEditorInput;
-import org.argeo.connect.people.ui.extracts.ITableProvider;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.TableViewer;
@@ -31,8 +26,8 @@ import org.eclipse.ui.part.EditorPart;
 /**
  * Search repository with a given entity type
  */
-public class StaticSearchEntityEditor extends EditorPart implements
-		ITableProvider {
+public class StaticSearchEntityEditor extends EditorPart {
+	// implements ITableProvider
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".staticSearchEntityEditor";
@@ -42,7 +37,7 @@ public class StaticSearchEntityEditor extends EditorPart implements
 	private PeopleUiService peopleUiService;
 
 	// This page widgets
-	private ITableProvider currTableProvider;
+	// private ITableProvider currTableProvider;
 
 	// Business Objects
 	private String entityType;
@@ -73,7 +68,7 @@ public class StaticSearchEntityEditor extends EditorPart implements
 		if (PeopleTypes.PEOPLE_PERSON.equals(entityType)) {
 			PersonTableComposite tmpCmp = new PersonTableComposite(parent,
 					SWT.MULTI, session);
-			currTableProvider = tmpCmp;
+			// currTableProvider = tmpCmp;
 			viewer = tmpCmp.getTableViewer();
 			table = tmpCmp;
 		} else {
@@ -104,21 +99,21 @@ public class StaticSearchEntityEditor extends EditorPart implements
 		return entityType;
 	}
 
-	// Configure calc extracts
-	@Override
-	public RowIterator getRowIterator(String extractId) {
-		if (currTableProvider != null)
-			return currTableProvider.getRowIterator(extractId);
-
-		return null;
-	}
-
-	@Override
-	public List<ColumnDefinition> getColumnDefinition(String extractId) {
-		if (currTableProvider != null)
-			return currTableProvider.getColumnDefinition(extractId);
-		return null;
-	}
+	// // Configure calc extracts
+	// @Override
+	// public RowIterator getRowIterator(String extractId) {
+	// if (currTableProvider != null)
+	// return currTableProvider.getRowIterator(extractId);
+	//
+	// return null;
+	// }
+	//
+	// @Override
+	// public List<ColumnDefinition> getColumnDefinition(String extractId) {
+	// if (currTableProvider != null)
+	// return currTableProvider.getColumnDefinition(extractId);
+	// return null;
+	// }
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {

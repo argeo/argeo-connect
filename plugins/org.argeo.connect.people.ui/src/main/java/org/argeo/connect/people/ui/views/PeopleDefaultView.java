@@ -141,7 +141,7 @@ public class PeopleDefaultView extends ViewPart {
 		if (CMD_SEARCH_PERSON_EDITOR.equals(commandId)) {
 			try {
 				SearchEntityEditorInput eei = new SearchEntityEditorInput(
-						PeopleTypes.PEOPLE_PERSON);
+						PeopleTypes.PEOPLE_ENTITY);
 				PeopleUiPlugin.getDefault().getWorkbench()
 						.getActiveWorkbenchWindow().getActivePage()
 						.openEditor(eei, SearchEntityEditor.ID);

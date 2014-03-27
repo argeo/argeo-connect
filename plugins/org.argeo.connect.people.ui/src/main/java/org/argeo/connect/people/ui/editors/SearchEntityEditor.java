@@ -36,7 +36,6 @@ import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -136,7 +135,7 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 	private Text tagTxt;
 	private Text tagOutTxt;
 
-	/** Override this to provide type specific staic filters */
+	/** Override this to provide type specific static filters */
 	protected void populateStaticFilters(Composite parent) {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
@@ -187,6 +186,16 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 		});
 	}
 
+	protected void createListPart(Composite parent) {
+		parent.setLayout(new GridLayout());
+		PeopleVirtualTableViewer tableCmp = new PeopleVirtualTableViewer(
+				parent, SWT.MULTI, getColumnDefinition(null));
+		tableViewer = tableCmp.getTableViewer();
+		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
+				entityType, peopleUiService));
+	}
+
 	/** Refresh the table viewer based on the free text search field */
 	protected void refreshStaticFilteredList() {
 		try {
@@ -195,7 +204,7 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
 			Selector source = factory.selector(entityType, entityType);
 
-			Constraint defaultC = getFreeTextContraint(factory, source);
+			Constraint defaultC = getFreeTextConstraint(factory, source);
 
 			// Tag
 			String currVal = tagTxt.getText();
@@ -238,49 +247,6 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 		}
 	}
 
-	protected Constraint localAnd(QueryObjectModelFactory factory,
-			Constraint defaultC, Constraint newC) throws RepositoryException {
-		if (defaultC == null)
-			return newC;
-		else
-			return factory.and(defaultC, newC);
-	}
-
-	protected Text createLT(Composite parent, String title, String message,
-			String tooltip) {
-		Label label = new Label(parent, SWT.RIGHT);
-		label.setText(title);
-		label.setFont(EclipseUiUtils.getBoldFont(parent));
-		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-		Text text = new Text(parent, SWT.BOTTOM | SWT.BORDER);
-		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		text.setMessage(message);
-		text.setToolTipText(tooltip);
-		return text;
-	}
-
-	protected class TagDropDown extends MyDropDown {
-
-		public TagDropDown(Text text) {
-			super(text);
-		}
-
-		@Override
-		protected List<String> getFilteredValues(String filter) {
-			return peopleUiService.getDefinedFilteredTags(session, getText());
-		}
-	}
-
-	protected void createListPart(Composite parent) {
-		parent.setLayout(new GridLayout());
-		PeopleVirtualTableViewer tableCmp = new PeopleVirtualTableViewer(
-				parent, SWT.MULTI, colDefs);
-		tableViewer = tableCmp.getTableViewer();
-		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-				entityType, peopleUiService));
-	}
-
 	protected void populateSearchPanel(Composite parent) {
 		parent.setLayout(new GridLayout());
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
@@ -306,7 +272,7 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 		tableViewer.refresh();
 	}
 
-	protected Constraint getFreeTextContraint(QueryObjectModelFactory factory,
+	protected Constraint getFreeTextConstraint(QueryObjectModelFactory factory,
 			Selector source) throws RepositoryException {
 		String filter = filterTxt.getText();
 		Constraint defaultC = null;
@@ -333,7 +299,7 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 					.getQueryManager();
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
 			Selector source = factory.selector(entityType, entityType);
-			Constraint defaultC = getFreeTextContraint(factory, source);
+			Constraint defaultC = getFreeTextConstraint(factory, source);
 
 			// TODO handle the case where no TITLE prop is available
 			Ordering order = factory.ascending(factory.propertyValue(
@@ -370,7 +336,7 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 	// Life cycle management
 	@Override
 	public void setFocus() {
-		//filterTxt.forceFocus();
+		filterTxt.forceFocus();
 	}
 
 	@Override
@@ -414,19 +380,26 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 
 		private void addListeners() {
 			text.addFocusListener(new FocusListener() {
+				private static final long serialVersionUID = 1L;
 
+				// TODO clean this, it is no the best way to force display of
+				// the
+				// list when the text is empty, and has some weird side effects.
 				@Override
 				public void focusLost(FocusEvent event) {
+					dropDown.hide();
 				}
 
 				@Override
 				public void focusGained(FocusEvent event) {
 					// Force show on focus in
-					//dropDown.show();
+					dropDown.show();
 				}
 			});
 
 			text.addModifyListener(new ModifyListener() {
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void modifyText(ModifyEvent event) {
 					// Avoid reducing suggestion while browsing them
@@ -442,6 +415,8 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 		}
 
 		private class DDSelectionListener implements Listener {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void handleEvent(Event event) {
 				modifyFromList = true;
@@ -467,15 +442,14 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 	}
 
 	@Override
-	public RowIterator getRowIterator(String extractId) {
-		// TODO Auto-generated method stub
-		return null;
+	public Row[] getRows(String extractId) {
+		return rows;
 	}
 
+	/** Overwrite to provide corresponding column definitions */
 	@Override
-	public List<ColumnDefinition> getColumnDefinition(String extractId) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<PeopleColumnDefinition> getColumnDefinition(String extractId) {
+		return colDefs;
 	}
 
 	// ////////////
@@ -486,6 +460,39 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 			rows.add(rit.nextRow());
 		}
 		return rows.toArray(new Row[rows.size()]);
+	}
+
+	protected Constraint localAnd(QueryObjectModelFactory factory,
+			Constraint defaultC, Constraint newC) throws RepositoryException {
+		if (defaultC == null)
+			return newC;
+		else
+			return factory.and(defaultC, newC);
+	}
+
+	protected Text createLT(Composite parent, String title, String message,
+			String tooltip) {
+		Label label = new Label(parent, SWT.RIGHT);
+		label.setText(title);
+		label.setFont(EclipseUiUtils.getBoldFont(parent));
+		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		Text text = new Text(parent, SWT.BOTTOM | SWT.BORDER);
+		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		text.setMessage(message);
+		text.setToolTipText(tooltip);
+		return text;
+	}
+
+	protected class TagDropDown extends MyDropDown {
+
+		public TagDropDown(Text text) {
+			super(text);
+		}
+
+		@Override
+		protected List<String> getFilteredValues(String filter) {
+			return peopleUiService.getDefinedFilteredTags(session, getText());
+		}
 	}
 
 	/* DEPENDENCY INJECTION */

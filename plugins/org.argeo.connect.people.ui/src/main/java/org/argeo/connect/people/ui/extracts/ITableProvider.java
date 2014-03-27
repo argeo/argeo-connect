@@ -2,9 +2,7 @@ package org.argeo.connect.people.ui.extracts;
 
 import java.util.List;
 
-import javax.jcr.query.RowIterator;
-
-import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
+import javax.jcr.query.Row;
 
 /**
  * Views and editors can implement this interface so that one of the row list
@@ -15,10 +13,10 @@ public interface ITableProvider {
 	/**
 	 * Returns the list to display in the spread sheet
 	 */
-	public RowIterator getRowIterator(String extractId);
+	public Row[] getRows(String extractId);
 
 	/**
 	 * Returns the column definition for passed ID
 	 */
-	public List<ColumnDefinition> getColumnDefinition(String extractId);
+	public List<PeopleColumnDefinition> getColumnDefinition(String extractId);
 }

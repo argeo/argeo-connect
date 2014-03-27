@@ -28,11 +28,8 @@ import org.argeo.connect.people.ui.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.ui.editors.utils.SearchEntityEditorInput;
 import org.argeo.connect.people.ui.extracts.ITableProvider;
 import org.argeo.connect.people.ui.extracts.PeopleColumnDefinition;
-import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
-import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -47,9 +44,9 @@ import org.eclipse.ui.part.EditorPart;
 /**
  * Search repository with a given entity type
  */
-public class SearchPersonEditor extends EditorPart implements PeopleNames,
-		ITableProvider {
-
+public class SearchPersonEditor extends EditorPart implements PeopleNames{
+	// implements ITableProvider 
+	
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".searchPersonEditor";
 
@@ -187,27 +184,27 @@ public class SearchPersonEditor extends EditorPart implements PeopleNames,
 		return entityType;
 	}
 
-	// Configure calc extractsgetOpenEntityEditorCmdId()
-	@Override
-	public RowIterator getRowIterator(String extractId) {
-		if (currTableProvider != null)
-			return currTableProvider.getRowIterator(extractId);
-
-		return null;
-	}
-
-	@Override
-	public void dispose() {
-		JcrUtils.logoutQuietly(session);
-		super.dispose();
-	}
-
-	@Override
-	public List<ColumnDefinition> getColumnDefinition(String extractId) {
-		if (currTableProvider != null)
-			return currTableProvider.getColumnDefinition(extractId);
-		return null;
-	}
+	// // Configure calc extractsgetOpenEntityEditorCmdId()
+	// @Override
+	// public RowIterator getRowIterator(String extractId) {
+	// if (currTableProvider != null)
+	// return currTableProvider.getRowIterator(extractId);
+	//
+	// return null;
+	// }
+	//
+	// @Override
+	// public void dispose() {
+	// JcrUtils.logoutQuietly(session);
+	// super.dispose();
+	// }
+	//
+	// @Override
+	// public List<ColumnDefinition> getColumnDefinition(String extractId) {
+	// if (currTableProvider != null)
+	// return currTableProvider.getColumnDefinition(extractId);
+	// return null;
+	// }
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {

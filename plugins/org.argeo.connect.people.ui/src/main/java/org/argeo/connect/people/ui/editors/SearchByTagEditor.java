@@ -65,11 +65,10 @@ public class SearchByTagEditor extends SearchEntityEditor {
 
 	private Text tagTxt;
 
+	// TODO solve the drop down problem when setting the text
 	public void setTagValue(String tag) {
 		tagTxt.setText(tag);
 		refreshStaticFilteredList();
-		// TODO solve the drop down problem when setting the text
-		// programmatically
 	}
 
 	@Override
@@ -86,7 +85,7 @@ public class SearchByTagEditor extends SearchEntityEditor {
 
 		tagTxt = createLT(body, "List entities for tag", "",
 				"Select from list to find entities that are categorised with this tag");
-		// new TagDropDown(tagTxt);
+		new TagDropDown(tagTxt);
 
 		Button goBtn = new Button(body, SWT.PUSH);
 		goBtn.setText("Refresh list");
@@ -110,7 +109,7 @@ public class SearchByTagEditor extends SearchEntityEditor {
 			Selector source = factory
 					.selector(getEntityType(), getEntityType());
 
-			Constraint defaultC = getFreeTextContraint(factory, source);
+			Constraint defaultC = getFreeTextConstraint(factory, source);
 
 			// Tag
 			String currVal = tagTxt.getText();

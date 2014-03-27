@@ -167,6 +167,11 @@
          		id="param.jcrId"
          		name="The jcr identifier">
          	</commandParameter>
+         	<!-- Still used to open editor with the linked list (employees...) -->
+			<commandParameter
+				id="param.entityUid"
+				name="The Model Specific Entity Uid">
+			</commandParameter>
 		</command>    
 
 		<!-- Person and organisation management --> 

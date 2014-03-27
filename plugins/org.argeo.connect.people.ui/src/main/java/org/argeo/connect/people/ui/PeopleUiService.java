@@ -16,6 +16,8 @@ public interface PeopleUiService {
 	 */
 	public String getOpenEntityEditorCmdId();
 
+	public String getOpenSearchEntityEditorCmdId();
+
 	public String getOpenSearchByTagEditorCmdId();
 
 	public List<String> getDefinedFilteredTags(Session session, String filter);

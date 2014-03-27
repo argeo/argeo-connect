@@ -67,9 +67,11 @@ public class GetCalcExtract extends AbstractHandler {
 	protected synchronized void callCalcGenerator(ITableProvider provider,
 			String extractId, File file) throws Exception {
 
-		RowIteratorToCalcWriter writer = new RowIteratorToCalcWriter();
-		writer.setColumnDefinition(provider.getColumnDefinition(extractId));
-		writer.writeTableFromRowIterator(file,
-				provider.getRowIterator(extractId));
+		throw new PeopleException("Implement this, broken by the new search strategy");
+		
+//		RowIteratorToCalcWriter writer = new RowIteratorToCalcWriter();
+//		writer.setColumnDefinition(provider.getColumnDefinition(extractId));
+//		writer.writeTableFromRowIterator(file,
+//				provider.getRowIterator(extractId));
 	}
 }

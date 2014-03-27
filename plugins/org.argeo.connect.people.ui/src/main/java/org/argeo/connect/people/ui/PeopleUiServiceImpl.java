@@ -15,6 +15,7 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.commands.OpenSearchByTagEditor;
+import org.argeo.connect.people.ui.commands.OpenSearchEntityEditor;
 
 /**
  * Centralize here the definition of context specific parameter (for instance
@@ -32,6 +33,11 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 		return OpenEntityEditor.ID;
 	}
 
+	@Override
+	public String getOpenSearchEntityEditorCmdId() {
+		return OpenSearchEntityEditor.ID;
+	}
+	
 	@Override
 	public String getOpenSearchByTagEditorCmdId() {
 		return OpenSearchByTagEditor.ID;

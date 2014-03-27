@@ -9,9 +9,9 @@ public class SearchEntityEditorInput implements IEditorInput {
 
 	private final String nodeType;
 
-	/** uid must not be null */
-	public SearchEntityEditorInput(String uid) {
-		this.nodeType = uid;
+	/** Node type cannty be null*/
+	public SearchEntityEditorInput(String nodeType) {
+		this.nodeType = nodeType;
 	}
 
 	@SuppressWarnings("rawtypes")
