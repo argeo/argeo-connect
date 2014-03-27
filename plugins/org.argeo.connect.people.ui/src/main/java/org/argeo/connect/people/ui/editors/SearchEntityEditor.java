@@ -357,8 +357,16 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 
 		private String[] values;
 
-		protected String getText() {
+		public String getText() {
 			return text.getText();
+		}
+
+		public void reset() {
+			// Workaround the dropDown Show pb when resetting the text
+			modifyFromList = true;
+			text.setText("");
+			modifyFromList = false;
+
 		}
 
 		/** Overwrite to provide specific filtering */
@@ -383,11 +391,10 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 				private static final long serialVersionUID = 1L;
 
 				// TODO clean this, it is no the best way to force display of
-				// the
-				// list when the text is empty, and has some weird side effects.
+				// the list when the text is empty, and has some weird side
+				// effects.
 				@Override
 				public void focusLost(FocusEvent event) {
-					dropDown.hide();
 				}
 
 				@Override
