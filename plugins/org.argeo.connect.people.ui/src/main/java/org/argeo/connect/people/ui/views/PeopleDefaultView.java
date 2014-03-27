@@ -23,13 +23,15 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.commands.OpenEntityEditor;
-import org.argeo.connect.people.ui.editors.StaticSearchEntityEditor;
+import org.argeo.connect.people.ui.PeopleUiService;
+import org.argeo.connect.people.ui.editors.SearchEntityEditor;
+import org.argeo.connect.people.ui.editors.SearchPersonEditor;
 import org.argeo.connect.people.ui.editors.utils.SearchEntityEditorInput;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.ui.providers.EntitySingleColumnLabelProvider;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -67,7 +69,7 @@ public class PeopleDefaultView extends ViewPart {
 	/* DEPENDENCY INJECTION */
 	private Session session;
 	private PeopleService peopleService;
-	private String openEntityEditorCmdId = OpenEntityEditor.ID;
+	private PeopleUiService peopleUiService;
 
 	// This page widgets
 	private TableViewer personViewer;
@@ -126,7 +128,7 @@ public class PeopleDefaultView extends ViewPart {
 		linksCmp.setData(PeopleUiConstants.CUSTOM_VARIANT, "people-logoTable");
 		linksCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
-		addLink(linksCmp, "Search Persons",
+		addLink(linksCmp, "Search Entities",
 				"Open an editor to narrow you search", CMD_SEARCH_PERSON_EDITOR);
 		addLink(linksCmp, "Logout", "Log out from connect", CMD_LOGOUT);
 
@@ -142,7 +144,7 @@ public class PeopleDefaultView extends ViewPart {
 						PeopleTypes.PEOPLE_PERSON);
 				PeopleUiPlugin.getDefault().getWorkbench()
 						.getActiveWorkbenchWindow().getActivePage()
-						.openEditor(eei, StaticSearchEntityEditor.ID);
+						.openEditor(eei, SearchEntityEditor.ID);
 			} catch (PartInitException pie) {
 				throw new PeopleException(
 						"Unexpected PartInitException while opening entity editor",
@@ -209,7 +211,7 @@ public class PeopleDefaultView extends ViewPart {
 
 		v.setContentProvider(new BasicNodeListContentProvider());
 		v.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-				openEntityEditorCmdId));
+				peopleUiService));
 		return v;
 	}
 
@@ -292,26 +294,16 @@ public class PeopleDefaultView extends ViewPart {
 	}
 
 	/* DEPENDENCY INJECTION */
+	public void setRepository(Repository repository) {
+		session = CommonsJcrUtils.login(repository);
+	}
+
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
 	}
 
-	public void setRepository(Repository repository) {
-		try {
-			session = repository.login();
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to initialize "
-					+ "session for view " + ID, e);
-		}
-	}
-
-	public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
-		this.openEntityEditorCmdId = openEntityEditorCmdId;
-	}
-
-	/** Overwrite to use another command that open an editor given a node */
-	protected String getOpenEditorCommandId() {
-		return openEntityEditorCmdId;
+	public void setPeopleUiService(PeopleUiService peopleUiService) {
+		this.peopleUiService = peopleUiService;
 	}
 
 }

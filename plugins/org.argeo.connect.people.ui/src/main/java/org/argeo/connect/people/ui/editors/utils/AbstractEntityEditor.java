@@ -604,7 +604,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		if (isCheckedOutByMe())
 			return false;
 		else
-			return true; // getMsmBackend().isUserInRole(MsmConstants.ROLE_CONSULTANT);
+			return true;
 	}
 
 	@Override

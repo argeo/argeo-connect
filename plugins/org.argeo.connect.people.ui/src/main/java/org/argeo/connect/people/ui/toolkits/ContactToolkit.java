@@ -25,6 +25,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.commands.AddEntityReference;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.composites.ContactPanelComposite;
@@ -56,12 +57,14 @@ public class ContactToolkit {
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 	private final PeopleService peopleService;
+	private final PeopleUiService peopleUiService;
 
 	public ContactToolkit(FormToolkit toolkit, IManagedForm form,
-			PeopleService peopleService) {
+			PeopleService peopleService, PeopleUiService peopleUiService) {
 		this.toolkit = toolkit;
 		this.form = form;
 		this.peopleService = peopleService;
+		this.peopleUiService = peopleUiService;
 	}
 
 	/**
@@ -72,7 +75,7 @@ public class ContactToolkit {
 	 * @param entity
 	 */
 	public void populateMailingListMembershipPanel(final Composite parent,
-			final Node entity, final String openEditorCmdId) {
+			final Node entity) {
 		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder(2);
 		gl.marginBottom = 5;
 		parent.setLayout(gl);
@@ -131,8 +134,8 @@ public class ContactToolkit {
 								params.put(OpenEntityEditor.PARAM_ENTITY_UID,
 										CommonsJcrUtils.get(parNode,
 												PeopleNames.PEOPLE_UID));
-								CommandUtils.callCommand(openEditorCmdId,
-										params);
+								CommandUtils.callCommand(peopleUiService
+										.getOpenEntityEditorCmdId(), params);
 							}
 						});
 

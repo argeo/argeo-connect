@@ -115,7 +115,7 @@ public class MailingListEditor extends GroupEditor implements ITableProvider {
 
 		// Double click
 		PeopleJcrViewerDClickListener ndcl = new PeopleJcrViewerDClickListener(
-				PeopleTypes.PEOPLE_ENTITY, getOpenEntityEditorCmdId());
+				PeopleTypes.PEOPLE_ENTITY, getPeopleUiService());
 		membersViewer.addDoubleClickListener(ndcl);
 	}
 

@@ -8,13 +8,28 @@
 		class="org.argeo.connect.people.ui.editors.StaticSearchEntityEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="openEntityEditorCmdId" value="org.argeo.connect.people.ui.openEntityEditor" />
+		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
+
 	<!-- REMOVE THE FOLLOWING -->
 	<bean id="searchEntityEditor" class="org.argeo.connect.people.ui.editors.SearchEntityEditor"
 		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
+		<property name="repository" ref="repository" />
+		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
+
+	<bean id="searchByTagEditor" class="org.argeo.connect.people.ui.editors.SearchByTagEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="peopleUiService" ref="peopleUiService" />
+	</bean>
+
+	<bean id="searchPersonEditor" class="org.argeo.connect.people.ui.editors.SearchPersonEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="peopleUiService" ref="peopleUiService" />
+	</bean>
+
 
 	<!-- User and groups -->
 	<bean id="userEditor" class="org.argeo.connect.people.ui.editors.UserEditor"
@@ -41,16 +56,14 @@
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
-		<property name="openEntityEditorCmdId" value="org.argeo.connect.people.ui.openEntityEditor" />
-
+		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
 
 	<bean id="orgEditor" class="org.argeo.connect.people.ui.editors.OrgEditor"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
-		<property name="openEntityEditorCmdId" value="org.argeo.connect.people.ui.openEntityEditor" />
-
+		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
 
 	<!-- DEFAULT ACTIVITIES EDITORS -->
@@ -58,13 +71,13 @@
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
-		<property name="openEntityEditorCmdId" value="org.argeo.connect.people.ui.openEntityEditor" />
+		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
 
 	<bean id="taskEditor" class="org.argeo.connect.people.ui.editors.TaskEditor"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
-		<property name="openEntityEditorCmdId" value="org.argeo.connect.people.ui.openEntityEditor" />
+		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
 </beans>

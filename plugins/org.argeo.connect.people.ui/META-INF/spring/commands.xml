@@ -28,6 +28,7 @@
 	<bean id="addEntityReference" class="org.argeo.connect.people.ui.commands.AddEntityReference"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
+		<property name="repository" ref="repository" />
 	</bean>
 
 	<bean id="editEntityReference"
@@ -83,6 +84,7 @@
 		<property name="repository" ref="repository" />
 	</bean>
 
+
 <!--  	<bean id="addTagInCache" class="org.argeo.connect.people.ui.commands.AddTagInCache"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
@@ -98,12 +100,12 @@
 		<property name="repository" ref="repository" />
 	</bean>
 
-	<bean id="org.argeo.connect.people.ui.addEntityReferences"
+	<bean id="addEntityReferences"
 		class="org.argeo.connect.people.ui.commands.AddEntityReferences"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 	</bean>
-	<bean id="org.argeo.connect.people.ui.addEntityReferenceWithPosition"
+	<bean id="addEntityReferenceWithPosition"
 		class="org.argeo.connect.people.ui.commands.AddEntityReferenceWithPosition"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />

@@ -68,11 +68,26 @@
 			id="org.argeo.connect.people.ui.staticSearchEntityEditor"
 			name="Search">
 		</editor>
+		
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/search.png"
 			id="org.argeo.connect.people.ui.searchEntityEditor"
 			name="Search">
+		</editor>
+		
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/search.png"
+			id="org.argeo.connect.people.ui.searchPersonEditor"
+			name="Persons">
+		</editor>
+
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/search.png"
+			id="org.argeo.connect.people.ui.searchByTagEditor"
+			name="Search by Tag">
 		</editor>
 		
 		<!-- Entities -->
@@ -152,13 +167,8 @@
          		id="param.jcrId"
          		name="The jcr identifier">
          	</commandParameter>
-         	<!-- @deprecated -->
-         	<commandParameter
-         		id="param.entityUid"
-         		name="The Model Specific Entity Uid">
-  	 		</commandParameter>
 		</command>    
-		
+
 		<!-- Person and organisation management --> 
 		<command
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
@@ -349,6 +359,35 @@
          		name="An extract ID">
   	 		</commandParameter>
     	</command>    	
+    	
+    	<!-- Tags Management -->  
+		<command
+			defaultHandler="org.argeo.connect.people.ui.commands.OpenSearchByTagEditor"
+			id="org.argeo.connect.people.ui.openSearchByTagEditor"
+			name="Open Editor">
+			<commandParameter
+         		id="param.tagValue"
+         		name="The tag value">
+         	</commandParameter>
+		</command>    
+  		
+  		<command
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+			id="org.argeo.connect.people.ui.forceTagCacheRefresh"
+			name="Force an update of the Tags cache in the repository">
+  		</command>
+
+  		<!-- <command
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+			id="org.argeo.connect.people.ui.addTagInCache"
+			name="Creates a new tag in the repository cache">
+			<commandParameter
+					id="param.tagValue"
+					name="The value of the tag to create. Cannot be null">
+ 			</commandParameter>
+  		</command>
+  		-->
+    	
     	<!-- Utility command to simply open an URL --> 
     	<command
 			defaultHandler="org.argeo.connect.people.ui.commands.OpenUrl"
@@ -385,26 +424,7 @@
  			</commandParameter>
   		</command>
   		
-  		<!-- Tags Management -->  
-  		<command
-			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
-			id="org.argeo.connect.people.ui.forceTagCacheRefresh"
-			name="Force an update of the Tags cache in the repository">
-  		</command>
-
-  		<!-- <command
-			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
-			id="org.argeo.connect.people.ui.addTagInCache"
-			name="Creates a new tag in the repository cache">
-			<commandParameter
-					id="param.tagValue"
-					name="The value of the tag to create. Cannot be null">
- 			</commandParameter>
-  		</command>
-  		
-  		-->
-  		
-    	<!-- Utility to provide sub menues when we don't want to define a default command for this menu -->
+  		<!-- Utility to provide sub menues when we don't want to define a default command for this menu -->
 		<command
 			defaultHandler="org.argeo.connect.people.ui.commands.DoNothing"
 			id="org.argeo.connect.people.ui.doNothing"

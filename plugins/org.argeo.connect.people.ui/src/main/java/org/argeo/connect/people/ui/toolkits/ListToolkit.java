@@ -15,6 +15,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.commands.EditJob;
 import org.argeo.connect.people.ui.commands.EditParticipation;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
@@ -60,11 +61,11 @@ public class ListToolkit {
 	private final String openEntityEditorCmdId;
 
 	public ListToolkit(FormToolkit toolkit, IManagedForm form,
-			PeopleService peopleService, String openEntityEditorCmdId) {
+			PeopleService peopleService, PeopleUiService peopleUiService) {
 		this.toolkit = toolkit;
 		this.form = form;
 		this.peopleService = peopleService;
-		this.openEntityEditorCmdId = openEntityEditorCmdId;
+		this.openEntityEditorCmdId = peopleUiService.getOpenEntityEditorCmdId();
 	}
 
 	/**

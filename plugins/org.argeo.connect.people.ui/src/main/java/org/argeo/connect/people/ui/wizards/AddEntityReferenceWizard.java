@@ -246,17 +246,17 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 		private CellLabelProvider getCurrentLabelProvider() {
 			return new ColumnLabelProvider() {
 				private static final long serialVersionUID = 1L;
-				private EntitySingleColumnLabelProvider msmLP = defineLabelProvider();
+				private EntitySingleColumnLabelProvider provider = defineLabelProvider();
 
 				@Override
 				public String getText(Object element) {
-					return msmLP.getText(element);
+					return provider.getText(element);
 				}
 
 				@Override
 				public void dispose() {
 					super.dispose();
-					msmLP.dispose();
+					provider.dispose();
 				}
 			};
 		}

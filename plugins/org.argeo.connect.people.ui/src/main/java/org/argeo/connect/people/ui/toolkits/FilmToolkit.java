@@ -11,6 +11,7 @@ import org.argeo.connect.film.FilmNames;
 import org.argeo.connect.film.core.FilmJcrUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.composites.FilmMainInfoPanelComposite;
 import org.argeo.connect.people.ui.composites.FilmPrintComposite;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
@@ -43,8 +44,8 @@ public class FilmToolkit extends EntityToolkit implements FilmNames {
 	private final PeopleService peopleService;
 
 	public FilmToolkit(FormToolkit toolkit, IManagedForm form, Node film,
-			PeopleService peopleService) {
-		super(toolkit, form);
+			PeopleService peopleService, PeopleUiService peopleUiService) {
+		super(toolkit, form, peopleUiService);
 		this.toolkit = toolkit;
 		this.form = form;
 		this.film = film;

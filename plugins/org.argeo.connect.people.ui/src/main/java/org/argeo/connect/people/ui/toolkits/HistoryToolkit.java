@@ -49,12 +49,13 @@ public class HistoryToolkit {
 	private DateFormat dateTimeFormat = new SimpleDateFormat(
 			PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
-	public HistoryToolkit(PeopleService peopleService, FormToolkit toolkit,
-			IManagedForm form, Node entity) {
+	public HistoryToolkit(FormToolkit toolkit, IManagedForm form,
+			Repository repository, PeopleService peopleService, Node entity) {
 		this.toolkit = toolkit;
 		this.form = form;
 		this.entity = entity;
 		this.peopleService = peopleService;
+		this.repository = repository;
 	}
 
 	public void populateHistoryPanel(Composite parent) {

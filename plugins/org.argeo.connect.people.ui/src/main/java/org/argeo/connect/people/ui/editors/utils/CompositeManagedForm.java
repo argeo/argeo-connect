@@ -16,7 +16,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 /**
  * Implementation of the IManagedForm that relies on a Form rather than on a
  * scroll form in order to workaround scrolling issues in complexe layouts,
- * especially when table with many lines are displayed.
+ * especially when tables with many lines are displayed.
  */
 class CompositeManagedForm implements IManagedForm {
 
@@ -73,7 +73,7 @@ class CompositeManagedForm implements IManagedForm {
 				"Unsupported method: we use a Form rather than a ScrolledForm");
 	}
 
-	/** Here is the magik */
+	/** Here is the magic */
 	@Override
 	public void reflow(boolean changed) {
 		composite.layout(changed);

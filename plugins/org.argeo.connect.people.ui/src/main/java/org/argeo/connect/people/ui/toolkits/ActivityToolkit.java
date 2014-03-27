@@ -16,6 +16,7 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.composites.ActivityTableComposite;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
@@ -54,18 +55,20 @@ public class ActivityToolkit {
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 	private final PeopleService peopleService;
+	private final PeopleUiService peopleUiService;
 	private final ActivityService activityService;
 
 	public ActivityToolkit(FormToolkit toolkit, IManagedForm form,
-			PeopleService peopleService) {
+			PeopleService peopleService, PeopleUiService peopleUiService) {
 		this.toolkit = toolkit;
 		this.form = form;
 		this.peopleService = peopleService;
+		this.peopleUiService = peopleUiService;
 		this.activityService = peopleService.getActivityService();
 	}
 
 	public void populateActivityLogPanel(final Composite parent,
-			final Node entity, final String openEditorCmdId) {
+			final Node entity) {
 		parent.setLayout(new GridLayout()); // .gridLayoutNoBorder());
 		try {
 			Composite addCmp = null;
@@ -96,12 +99,14 @@ public class ActivityToolkit {
 			form.addPart(sPart);
 
 			if (addCmp != null)
-				addNewActivityPanel(addCmp, entity, openEditorCmdId,
+				addNewActivityPanel(addCmp, entity,
+						peopleUiService.getOpenEntityEditorCmdId(),
 						activityTable);
 
 			// Doubleclick listener
 			activityTable.getTableViewer().addDoubleClickListener(
-					new ActivityTableDCL(openEditorCmdId));
+					new ActivityTableDCL(peopleUiService
+							.getOpenEntityEditorCmdId()));
 		} catch (RepositoryException re) {
 			throw new PeopleException("unable to create activity log", re);
 		}

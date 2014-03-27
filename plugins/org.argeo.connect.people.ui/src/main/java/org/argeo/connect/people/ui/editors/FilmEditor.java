@@ -99,12 +99,13 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 	@Override
 	protected void createToolkits() {
 		filmTk = new FilmToolkit(toolkit, getManagedForm(), film,
-				getPeopleService());
-		entityTk = new EntityToolkit(toolkit, getManagedForm());
+				getPeopleService(), getPeopleUiService());
+		entityTk = new EntityToolkit(toolkit, getManagedForm(),
+				getPeopleUiService());
 		listTk = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
-				getOpenEditorCommandId());
+				getPeopleUiService());
 		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
-				getPeopleService());
+				getPeopleService(), getPeopleUiService());
 
 	}
 
@@ -142,8 +143,7 @@ public class FilmEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(film, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
 				PeopleUiConstants.PANEL_ACTIVITY_LOG, tooltip);
-		activityTK.populateActivityLogPanel(innerPannel, film,
-				getOpenEntityEditorCmdId());
+		activityTK.populateActivityLogPanel(innerPannel, film);
 
 		// film prints
 		tooltip = "Registered film prints for "

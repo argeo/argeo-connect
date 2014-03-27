@@ -5,9 +5,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.query.Row;
 
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -23,18 +22,18 @@ public class PeopleJcrViewerDClickListener implements IDoubleClickListener {
 	private final String openEntityEditorCmdId;
 
 	public PeopleJcrViewerDClickListener(String selectorName,
-			String openEntityEditorCmdId) {
+			PeopleUiService peopleUiService) {
 		this.selectorName = selectorName;
-		this.openEntityEditorCmdId = openEntityEditorCmdId;
+		this.openEntityEditorCmdId = peopleUiService.getOpenEntityEditorCmdId();
 	}
 
 	/**
 	 * Double click listener for NODES only, to manage JCR row use
 	 * PeopleJcrViewerDClickListener(String selectorName)
 	 **/
-	public PeopleJcrViewerDClickListener(String openEntityEditorCmdId) {
+	public PeopleJcrViewerDClickListener(PeopleUiService peopleUiService) {
 		selectorName = null;
-		this.openEntityEditorCmdId = openEntityEditorCmdId;
+		this.openEntityEditorCmdId = peopleUiService.getOpenEntityEditorCmdId();
 	}
 
 	public void doubleClick(DoubleClickEvent event) {
@@ -51,17 +50,10 @@ public class PeopleJcrViewerDClickListener implements IDoubleClickListener {
 				currNode = (Node) obj;
 
 			if (currNode != null) {
-
-				String uid = CommonsJcrUtils.get(currNode,
-						PeopleNames.PEOPLE_UID);
-
-				if (CommonsJcrUtils.isEmptyString(uid))
-					CommandUtils.callCommand(openEntityEditorCmdId,
-							OpenEntityEditor.PARAM_JCR_ID,
-							currNode.getIdentifier());
-				else
-					CommandUtils.callCommand(openEntityEditorCmdId,
-							OpenEntityEditor.PARAM_ENTITY_UID, uid);
+				CommandUtils
+						.callCommand(openEntityEditorCmdId,
+								OpenEntityEditor.PARAM_JCR_ID,
+								currNode.getIdentifier());
 			}
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to open editor for node", re);

@@ -19,6 +19,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.commands.CancelAndCheckInItem;
 import org.argeo.connect.people.ui.commands.CheckOutItem;
 import org.argeo.connect.people.ui.commands.DeleteEntity;
@@ -65,7 +66,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
-	private String openEntityEditorCmdId = OpenEntityEditor.ID;
+	private PeopleUiService peopleUiService;
+	// private String openEntityEditorCmdId = OpenEntityEditor.ID;
 
 	/* CONSTANTS */
 	// length for short strings (typically tab names)
@@ -183,9 +185,9 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	protected abstract Boolean deleteParentOnRemove();
 
-	protected String getOpenEditorCommandId() {
-		return openEntityEditorCmdId;
-	}
+//	protected String getOpenEditorCommandId() {
+//		return openEntityEditorCmdId;
+//	}
 
 	/** Overwrite following methods to create a nice editor... */
 	protected abstract void populateBody(Composite parent);;
@@ -356,6 +358,10 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	protected PeopleService getPeopleService() {
 		return peopleService;
+	}
+
+	protected PeopleUiService getPeopleUiService() {
+		return peopleUiService;
 	}
 
 	protected Session getSession() {
@@ -574,24 +580,28 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		}
 	}
 
-	/**
-	 * Exposes the id of the openEntityEditor command. By default it is
-	 * {@code OpenEntityEditor.ID} but might be changed by injection
-	 */
-	final protected String getOpenEntityEditorCmdId() {
-		return openEntityEditorCmdId;
-	}
+//	/**
+//	 * Exposes the id of the openEntityEditor command. By default it is
+//	 * {@code OpenEntityEditor.ID} but might be changed by injection
+//	 */
+//	final protected String getOpenEntityEditorCmdId() {
+//		return openEntityEditorCmdId;
+//	}
 
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
 	}
 
+	public void setPeopleUiService(PeopleUiService peopleUiService) {
+		this.peopleUiService = peopleUiService;
+	}
+
 	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
 
-	public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
-		this.openEntityEditorCmdId = openEntityEditorCmdId;
-	}
+//	public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
+//		this.openEntityEditorCmdId = openEntityEditorCmdId;
+//	}
 }

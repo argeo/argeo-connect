@@ -1,7 +1,9 @@
 package org.argeo.connect.people.ui.toolkits;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -12,8 +14,11 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.PeopleUiService;
+import org.argeo.connect.people.ui.commands.OpenSearchByTagEditor;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -39,14 +44,16 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class EntityToolkit {
 	// private final static Log log = LogFactory.getLog(EntityToolkit.class);
 
+	private PeopleUiService peopleUiService;
+
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 
-	// private AbstractEntityEditor editor;
-
-	public EntityToolkit(FormToolkit toolkit, IManagedForm form) {
+	public EntityToolkit(FormToolkit toolkit, IManagedForm form,
+			PeopleUiService peopleUiService) {
 		this.toolkit = toolkit;
 		this.form = form;
+		this.peopleUiService = peopleUiService;
 	}
 
 	// ////////////////
@@ -101,6 +108,8 @@ public class EntityToolkit {
 						Value[] values = entity.getProperty(tagPropName)
 								.getValues();
 						for (final Value value : values) {
+							final String tagValue = value.getString();
+
 							Composite tagCmp = toolkit.createComposite(nlCmp,
 									SWT.NO_FOCUS);
 							tagCmp.setLayout(PeopleUiUtils
@@ -108,9 +117,25 @@ public class EntityToolkit {
 							Link link = new Link(tagCmp, SWT.NONE);
 							link.setData(PeopleUiConstants.CUSTOM_VARIANT,
 									"tag");
-							link.setText("#" + value.getString() + "");
+							link.setText("<a>#" + tagValue + "</a>");
 							link.setData(PeopleUiConstants.MARKUP_ENABLED,
 									Boolean.TRUE);
+
+							link.addSelectionListener(new SelectionAdapter() {
+								private static final long serialVersionUID = 1L;
+
+								@Override
+								public void widgetSelected(
+										final SelectionEvent event) {
+									Map<String, String> params = new HashMap<String, String>();
+									params.put(
+											OpenSearchByTagEditor.PARAM_TAG_VALUE,
+											tagValue);
+									CommandUtils.callCommand(peopleUiService
+											.getOpenSearchByTagEditorCmdId(),
+											params);
+								}
+							});
 
 							if (CommonsJcrUtils.isNodeCheckedOutByMe(entity)) {
 								addDeleteButton(tagCmp, entity, value,

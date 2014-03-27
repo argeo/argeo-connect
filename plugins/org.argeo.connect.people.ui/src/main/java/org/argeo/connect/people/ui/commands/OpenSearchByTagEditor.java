@@ -3,43 +3,47 @@ package org.argeo.connect.people.ui.commands;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.editors.SearchPersonEditor;
-import org.argeo.connect.people.ui.editors.StaticSearchEntityEditor;
+import org.argeo.connect.people.ui.editors.SearchByTagEditor;
 import org.argeo.connect.people.ui.editors.utils.SearchEntityEditorInput;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 
 /**
- * Open an editor that display a filtered table for a given JCR Node type
+ * Open an editor that display a table filtered by tag
  */
-public class OpenSearchEntityEditor extends AbstractHandler {
+public class OpenSearchByTagEditor extends AbstractHandler {
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
-			+ ".openSearchEntityEditor";
+			+ ".openSearchByTagEditor";
 
-	public final static String PARAM_ENTITY_TYPE = "param.entityType";
+	public final static String PARAM_TAG_VALUE = "param.tagValue";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
-		String entityType = event.getParameter(PARAM_ENTITY_TYPE);
+		String tagValue = event.getParameter(PARAM_TAG_VALUE);
 		try {
 			SearchEntityEditorInput eei = new SearchEntityEditorInput(
-					entityType);
+					PeopleTypes.PEOPLE_ENTITY);
 
-			if (entityType.equals(PeopleTypes.PEOPLE_PERSON)) {
-				PeopleUiPlugin.getDefault().getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage()
-						.openEditor(eei, SearchPersonEditor.ID);
-			} else
-				PeopleUiPlugin.getDefault().getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage()
-						.openEditor(eei, StaticSearchEntityEditor.ID);
+			IEditorPart part = PeopleUiPlugin.getDefault().getWorkbench()
+					.getActiveWorkbenchWindow().getActivePage()
+					.openEditor(eei, getEditorId());
+			SearchByTagEditor editor = (SearchByTagEditor) part;
+
+			if (editor != null)
+				editor.setTagValue(tagValue);
+
 		} catch (PartInitException pie) {
 			throw new PeopleException(
 					"Unexpected PartInitException while opening entity editor",
 					pie);
 		}
 		return null;
+	}
+
+	protected String getEditorId() {
+		return SearchByTagEditor.ID;
 	}
 }

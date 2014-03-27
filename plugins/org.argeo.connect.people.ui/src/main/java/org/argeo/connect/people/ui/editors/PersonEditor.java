@@ -88,15 +88,16 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void createToolkits() {
-		entityTK = new EntityToolkit(toolkit, getManagedForm());
+		entityTK = new EntityToolkit(toolkit, getManagedForm(),
+				getPeopleUiService());
 		contactTK = new ContactToolkit(toolkit, getManagedForm(),
-				getPeopleService());
+				getPeopleService(), getPeopleUiService());
 		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
-				getPeopleService());
+				getPeopleService(), getPeopleUiService());
 		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
-				getOpenEditorCommandId());
-		historyTK = new HistoryToolkit(getPeopleService(), toolkit,
-				getManagedForm(), person);
+				getPeopleUiService());
+		historyTK = new HistoryToolkit(toolkit, getManagedForm(),
+				getRepository(), getPeopleService(), person);
 	}
 
 	@Override
@@ -149,8 +150,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		// Mailing list management
 		Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		contactTK.populateMailingListMembershipPanel(mlCmp, person,
-				getOpenEntityEditorCmdId());
+		contactTK.populateMailingListMembershipPanel(mlCmp, person);
 	}
 
 	@Override
@@ -168,8 +168,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
 				PeopleUiConstants.PANEL_ACTIVITY_LOG, tooltip);
-		activityTK.populateActivityLogPanel(innerPannel, person,
-				getOpenEntityEditorCmdId());
+		activityTK.populateActivityLogPanel(innerPannel, person);
 
 		// Jobs panel
 		tooltip = "Organisations linked to "

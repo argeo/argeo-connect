@@ -26,6 +26,7 @@ import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.ui.providers.EntitySingleColumnLabelProvider;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -257,46 +258,6 @@ public class CategorizedSearchView extends ViewPart {
 		return result.getNodes();
 	}
 
-	// private void asynchronousRefresh() {
-	// RefreshJob job = new RefreshJob(filterTxt.getText(), personViewer,
-	// getSite().getShell().getDisplay());
-	// job.setUser(true);
-	// job.schedule();
-	// }
-	//
-	// private class RefreshJob extends PrivilegedJob {
-	// private TableViewer viewer;
-	// private String filter;
-	// private Display display;
-	//
-	// public RefreshJob(String filter, TableViewer viewer, Display display) {
-	// super("Get bundle list");
-	// this.filter = filter;
-	// this.viewer = viewer;
-	// this.display = display;
-	// }
-	//
-	// @Override
-	// protected IStatus doRun(IProgressMonitor progressMonitor) {
-	// try {
-	// ArgeoMonitor monitor = new EclipseArgeoMonitor(progressMonitor);
-	// monitor.beginTask("Filtering", -1);
-	// final List<Node> result = JcrUiUtils.nodeIteratorToList(
-	// listRelevantPersons(session, filter), 5);
-	//
-	// display.asyncExec(new Runnable() {
-	// public void run() {
-	// viewer.setInput(result);
-	// }
-	// });
-	// } catch (Exception e) {
-	// return new Status(IStatus.ERROR, MsmUiPlugin.PLUGIN_ID,
-	// "Cannot get filtered list", e);
-	// }
-	// return Status.OK_STATUS;
-	// }
-	// }
-
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
@@ -304,11 +265,6 @@ public class CategorizedSearchView extends ViewPart {
 	}
 
 	public void setRepository(Repository repository) {
-		try {
-			session = repository.login();
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to initialize "
-					+ "session for view " + ID, e);
-		}
+		session = CommonsJcrUtils.login(repository);
 	}
 }

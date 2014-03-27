@@ -23,7 +23,7 @@ import javax.jcr.observation.EventListener;
 
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.commands.OpenEntityEditor;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.composites.UserGroupTableComposite;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.ui.utils.Refreshable;
@@ -40,12 +40,13 @@ import org.eclipse.ui.part.ViewPart;
 public class UserGroupsView extends ViewPart implements Refreshable {
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".userGroupsView";
-	private String openEntityEditorCmdId = OpenEntityEditor.ID;
 
-	private UserGroupTableComposite userTableCmp;
 	private Session session;
+	private PeopleUiService peopleUiService;
+
 	private JcrUserListener userStructureListener;
 	private JcrUserListener userPropertiesListener;
+	private UserGroupTableComposite userTableCmp;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -58,7 +59,7 @@ public class UserGroupsView extends ViewPart implements Refreshable {
 
 		// Configure
 		userTableCmp.getTableViewer().addDoubleClickListener(
-				new PeopleJcrViewerDClickListener(getOpenEntityEditorCmdId()));
+				new PeopleJcrViewerDClickListener(peopleUiService));
 		getViewSite().setSelectionProvider(userTableCmp.getTableViewer());
 
 		// Add listener to refresh the list when something changes
@@ -131,17 +132,13 @@ public class UserGroupsView extends ViewPart implements Refreshable {
 		return ArgeoJcrConstants.PEOPLE_BASE_PATH;
 	}
 
-	protected String getOpenEntityEditorCmdId() {
-		return openEntityEditorCmdId;
-	}
-
-	/** DEPENDENCY INJECTION */ 
-	
+	/* DEPENDENCY INJECTION */
 	public void setRepository(Repository repository) {
 		this.session = CommonsJcrUtils.login(repository);
 	}
-	
-	public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
-		this.openEntityEditorCmdId = openEntityEditorCmdId;
+
+	public void setPeopleUiService(PeopleUiService peopleUiService) {
+		this.peopleUiService = peopleUiService;
 	}
+
 }

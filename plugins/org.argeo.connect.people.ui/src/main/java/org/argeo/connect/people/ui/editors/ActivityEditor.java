@@ -158,33 +158,35 @@ public class ActivityEditor extends AbstractPeopleEditor {
 							relatedLk
 									.addSelectionListener(new MyOpenEditorAdapter(
 											valueStr));
-							if (isCO){
-							Button deleteBtn = new Button(relatedCmp, SWT.FLAT);
-							deleteBtn.setData(PeopleUiConstants.CUSTOM_VARIANT,
-									PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
-							deleteBtn.setImage(PeopleImages.DELETE_BTN);
-							RowData rd = new RowData();
-							rd.height = 16;
-							rd.width = 16;
-							deleteBtn.setLayoutData(rd);
+							if (isCO) {
+								Button deleteBtn = new Button(relatedCmp,
+										SWT.FLAT);
+								deleteBtn.setData(
+										PeopleUiConstants.CUSTOM_VARIANT,
+										PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+								deleteBtn.setImage(PeopleImages.DELETE_BTN);
+								RowData rd = new RowData();
+								rd.height = 16;
+								rd.width = 16;
+								deleteBtn.setLayoutData(rd);
 
-							deleteBtn
-									.addSelectionListener(new SelectionAdapter() {
-										private static final long serialVersionUID = 1L;
+								deleteBtn
+										.addSelectionListener(new SelectionAdapter() {
+											private static final long serialVersionUID = 1L;
 
-										@Override
-										public void widgetSelected(
-												final SelectionEvent event) {
-											CommonsJcrUtils
-													.removeRefFromMultiValuedProp(
-															activity,
-															PeopleNames.PEOPLE_RELATED_TO,
-															valueStr);
-											headerPart.refresh();
-											headerPart.markDirty();
-										}
-									});
-							} 
+											@Override
+											public void widgetSelected(
+													final SelectionEvent event) {
+												CommonsJcrUtils
+														.removeRefFromMultiValuedProp(
+																activity,
+																PeopleNames.PEOPLE_RELATED_TO,
+																valueStr);
+												headerPart.refresh();
+												headerPart.markDirty();
+											}
+										});
+							}
 						}
 					}
 					// The add link
@@ -224,8 +226,9 @@ public class ActivityEditor extends AbstractPeopleEditor {
 
 		@Override
 		public void widgetSelected(final SelectionEvent event) {
-			CommandUtils.callCommand(getOpenEditorCommandId(),
-					OpenEntityEditor.PARAM_JCR_ID, jcrId);
+			CommandUtils.callCommand(getPeopleUiService()
+					.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
+					jcrId);
 		}
 	}
 

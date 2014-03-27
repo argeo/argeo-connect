@@ -78,7 +78,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 	@Override
 	protected void createToolkits() {
 		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
-				getPeopleService());
+				getPeopleService(), getPeopleUiService());
 	}
 
 	@Override
@@ -334,8 +334,9 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 
 		@Override
 		public void widgetSelected(final SelectionEvent event) {
-			CommandUtils.callCommand(getOpenEditorCommandId(),
-					OpenEntityEditor.PARAM_JCR_ID, jcrId);
+			CommandUtils.callCommand(getPeopleUiService()
+					.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
+					jcrId);
 		}
 	}
 
@@ -390,8 +391,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(task, Property.JCR_TITLE);
 		Composite innerPannel = addTabToFolder(tabFolder, CTAB_COMP_STYLE,
 				"Activity log", PeopleUiConstants.PANEL_ACTIVITY_LOG, tooltip);
-		activityTK.populateActivityLogPanel(innerPannel, task,
-				getOpenEntityEditorCmdId());
+		activityTK.populateActivityLogPanel(innerPannel, task);
 	}
 
 }

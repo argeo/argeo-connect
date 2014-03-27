@@ -8,7 +8,7 @@ import javax.jcr.query.RowIterator;
 
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.commands.OpenEntityEditor;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.composites.EntityTableComposite;
 import org.argeo.connect.people.ui.composites.PersonTableComposite;
 import org.argeo.connect.people.ui.editors.utils.SearchEntityEditorInput;
@@ -39,18 +39,10 @@ public class StaticSearchEntityEditor extends EditorPart implements
 
 	/* DEPENDENCY INJECTION */
 	private Session session;
-	private String openEntityEditorCmdId = OpenEntityEditor.ID;
+	private PeopleUiService peopleUiService;
 
 	// This page widgets
 	private ITableProvider currTableProvider;
-
-	/**
-	 * Overwrite to provide a plugin specific open editor command and thus be
-	 * able to open plugin specific editors
-	 */
-	protected String getOpenEntityEditorCmdId() {
-		return openEntityEditorCmdId;
-	}
 
 	// Business Objects
 	private String entityType;
@@ -92,7 +84,7 @@ public class StaticSearchEntityEditor extends EditorPart implements
 		}
 		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		viewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-				entityType, getOpenEntityEditorCmdId()));
+				entityType, peopleUiService));
 	}
 
 	/**
@@ -151,8 +143,8 @@ public class StaticSearchEntityEditor extends EditorPart implements
 		session = CommonsJcrUtils.login(repository);
 	}
 
-	public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
-		this.openEntityEditorCmdId = openEntityEditorCmdId;
+	public void setPeopleUiService(PeopleUiService peopleUiService) {
+		this.peopleUiService = peopleUiService;
 	}
 
 }

@@ -22,6 +22,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.utils.ActivityViewerComparator;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
@@ -55,8 +56,9 @@ public class MyTasksView extends ViewPart implements Refreshable {
 	// private PeopleService peopleService;
 	private Session session;
 	private ActivityService activityService;
-	private String openEntityEditorCmdId = OpenEntityEditor.ID;
+	private PeopleUiService peopleUiService;
 
+	// private String openEntityEditorCmdId = OpenEntityEditor.ID;
 
 	private TableViewer tableViewer;
 
@@ -301,17 +303,14 @@ public class MyTasksView extends ViewPart implements Refreshable {
 				try {
 					String jcrId = ((Node) obj).getIdentifier();
 					String paramName = OpenEntityEditor.PARAM_JCR_ID;
-					CommandUtils.callCommand(getOpenEditorCommandId(),
+					CommandUtils.callCommand(
+							peopleUiService.getOpenEntityEditorCmdId(),
 							paramName, jcrId);
 				} catch (RepositoryException e) {
 					throw new ArgeoException("Cannot open user editor", e);
 				}
 			}
 		}
-	}
-
-	protected String getOpenEditorCommandId() {
-		return openEntityEditorCmdId;
 	}
 
 	/* DEPENDENCY INJECTION */
@@ -322,9 +321,9 @@ public class MyTasksView extends ViewPart implements Refreshable {
 	public void setRepository(Repository repository) {
 		this.session = CommonsJcrUtils.login(repository);
 	}
-	
-	public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
-		this.openEntityEditorCmdId = openEntityEditorCmdId;
+
+	public void setPeopleUiService(PeopleUiService peopleUiService) {
+		this.peopleUiService = peopleUiService;
 	}
 
 }
