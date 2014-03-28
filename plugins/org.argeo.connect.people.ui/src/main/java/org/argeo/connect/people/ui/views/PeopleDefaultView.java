@@ -24,9 +24,7 @@ import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiService;
-import org.argeo.connect.people.ui.editors.SearchEntityEditor;
-import org.argeo.connect.people.ui.editors.SearchPersonEditor;
-import org.argeo.connect.people.ui.editors.utils.SearchEntityEditorInput;
+import org.argeo.connect.people.ui.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.ui.providers.EntitySingleColumnLabelProvider;
@@ -54,7 +52,6 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
 /** Basic view that display a list of entities with a quick search field. */
@@ -139,18 +136,9 @@ public class PeopleDefaultView extends ViewPart {
 
 	private void callCommand(String commandId) {
 		if (CMD_SEARCH_PERSON_EDITOR.equals(commandId)) {
-			try {
-				SearchEntityEditorInput eei = new SearchEntityEditorInput(
-						PeopleTypes.PEOPLE_ENTITY);
-				PeopleUiPlugin.getDefault().getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage()
-						.openEditor(eei, SearchEntityEditor.ID);
-			} catch (PartInitException pie) {
-				throw new PeopleException(
-						"Unexpected PartInitException while opening entity editor",
-						pie);
-			}
-
+			CommandUtils.callCommand(OpenSearchEntityEditor.ID,
+					OpenSearchEntityEditor.PARAM_ENTITY_TYPE,
+					PeopleTypes.PEOPLE_PERSON);
 		} else if (CMD_LOGOUT.equals(commandId))
 			CommandUtils.callCommand("org.eclipse.ui.file.exit");
 	}

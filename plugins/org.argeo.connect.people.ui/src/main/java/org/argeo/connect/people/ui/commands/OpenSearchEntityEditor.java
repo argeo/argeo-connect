@@ -3,8 +3,8 @@ package org.argeo.connect.people.ui.commands;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.editors.DefaultSearchEntityEditor;
 import org.argeo.connect.people.ui.editors.SearchPersonEditor;
-import org.argeo.connect.people.ui.editors.StaticSearchEntityEditor;
 import org.argeo.connect.people.ui.editors.utils.SearchEntityEditorInput;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -34,7 +34,7 @@ public class OpenSearchEntityEditor extends AbstractHandler {
 			} else
 				PeopleUiPlugin.getDefault().getWorkbench()
 						.getActiveWorkbenchWindow().getActivePage()
-						.openEditor(eei, StaticSearchEntityEditor.ID);
+						.openEditor(eei, DefaultSearchEntityEditor.ID);
 		} catch (PartInitException pie) {
 			throw new PeopleException(
 					"Unexpected PartInitException while opening entity editor",

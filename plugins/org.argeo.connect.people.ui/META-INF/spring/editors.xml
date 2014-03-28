@@ -4,15 +4,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="staticSearchEntityEditor"
-		class="org.argeo.connect.people.ui.editors.StaticSearchEntityEditor"
-		scope="prototype">
-		<property name="repository" ref="repository" />
-		<property name="peopleUiService" ref="peopleUiService" />
-	</bean>
-
-	<!-- REMOVE THE FOLLOWING -->
-	<bean id="searchEntityEditor" class="org.argeo.connect.people.ui.editors.SearchEntityEditor"
+	<bean id="defaultSearchEntityEditor" class="org.argeo.connect.people.ui.editors.DefaultSearchEntityEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleUiService" ref="peopleUiService" />

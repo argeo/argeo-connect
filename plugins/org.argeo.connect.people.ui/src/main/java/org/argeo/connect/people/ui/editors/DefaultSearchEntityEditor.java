@@ -6,7 +6,6 @@ import java.util.List;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
@@ -24,29 +23,27 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.utils.AbstractSearchEntityEditor;
 import org.argeo.connect.people.ui.extracts.PeopleColumnDefinition;
+import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.forms.widgets.Section;
 
 /**
  * Search the repository with a given entity type
  */
-public class SearchByTagEditor extends AbstractSearchEntityEditor {
+public abstract class DefaultSearchEntityEditor extends
+		AbstractSearchEntityEditor {
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
-			+ ".searchByTagEditor";
-
-	private TagDropDown tagDD;
-	private Button goBtn;
+			+ ".defaultSearchEntityEditor";
 
 	// Default column
 	private List<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
@@ -61,42 +58,31 @@ public class SearchByTagEditor extends AbstractSearchEntityEditor {
 						PEOPLE_TAGS), 300));
 	};
 
-	@Override
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
-		super.init(site, input);
-	}
+	private TagDropDown tagDD;
 
-	public void setTagValue(String tag) {
-		tagDD.reset(tag);
-		refreshStaticFilteredList();
-		// TODO solve the drop down problem when setting the text
-		goBtn.setFocus();
-	}
+	/** Override this to provide type specific static filters */
+	protected void populateStaticFilters(Composite parent) {
+		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
-	@Override
-	protected boolean queryOnCreation() {
-		// the refresh will be done by the method above once the tag value has
-		// been set.
-		return false;
-	}
+		// Configure the Twistie section
+		Section headerSection = new Section(parent, Section.TITLE_BAR
+				| Section.TWISTIE);
+		headerSection.setText("Show more filters");
+		headerSection.setExpanded(false);
+		headerSection.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+				false));
 
-	@Override
-	public List<PeopleColumnDefinition> getColumnDefinition(String extractId) {
-		return colDefs;
-	}
+		Composite body = new Composite(headerSection, SWT.NONE);
+		headerSection.setClient(body);
 
-	/** Override this to provide type specific staic filters */
-	protected void populateStaticFilters(Composite body) {
+		body.setLayout(new GridLayout(4, false));
 
-		body.setLayout(new GridLayout(3, false));
-
-		Text tagTxt = createLT(body, "List entities for tag", "",
+		Text tagTxt = createLT(body, "Tag", "",
 				"Select from list to find entities that are categorised with this tag");
-		tagDD = new TagDropDown(tagTxt);
+		new TagDropDown(tagTxt);
 
-		goBtn = new Button(body, SWT.PUSH);
-		goBtn.setText("Refresh list");
+		Button goBtn = new Button(body, SWT.PUSH);
+		goBtn.setText("Search");
 		goBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
@@ -105,13 +91,23 @@ public class SearchByTagEditor extends AbstractSearchEntityEditor {
 				refreshStaticFilteredList();
 			}
 		});
+
+		Button resetBtn = new Button(body, SWT.PUSH);
+		resetBtn.setText("Reset");
+		resetBtn.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				tagDD.reset(null);
+			}
+		});
 	}
 
 	/** Refresh the table viewer based on the free text search field */
 	protected void refreshStaticFilteredList() {
 		try {
-			Session session = getSession();
-			QueryManager queryManager = session.getWorkspace()
+			QueryManager queryManager = getSession().getWorkspace()
 					.getQueryManager();
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
 			Selector source = factory
@@ -122,8 +118,8 @@ public class SearchByTagEditor extends AbstractSearchEntityEditor {
 			// Tag
 			String currVal = tagDD.getText();
 			if (CommonsJcrUtils.checkNotEmptyString(currVal)) {
-				StaticOperand so = factory.literal(session.getValueFactory()
-						.createValue(currVal));
+				StaticOperand so = factory.literal(getSession()
+						.getValueFactory().createValue(currVal));
 				DynamicOperand dyo = factory.propertyValue(
 						source.getSelectorName(), PEOPLE_TAGS);
 				Constraint currC = factory.comparison(dyo,
@@ -145,5 +141,11 @@ public class SearchByTagEditor extends AbstractSearchEntityEditor {
 			throw new PeopleException("Unable to list " + getEntityType()
 					+ " entities with static filter ", e);
 		}
+	}
+
+	/** Overwrite to provide corresponding column definitions */
+	@Override
+	public List<PeopleColumnDefinition> getColumnDefinition(String extractId) {
+		return colDefs;
 	}
 }

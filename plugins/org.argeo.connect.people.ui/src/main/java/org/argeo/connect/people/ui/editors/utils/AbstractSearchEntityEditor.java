@@ -1,42 +1,29 @@
-package org.argeo.connect.people.ui.editors;
+package org.argeo.connect.people.ui.editors.utils;
 
 import java.awt.KeyboardFocusManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.jcr.Property;
-import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
 import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.DynamicOperand;
-import javax.jcr.query.qom.Ordering;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelConstants;
 import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
-import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiServiceImpl;
 import org.argeo.connect.people.ui.composites.PeopleVirtualTableViewer;
-import org.argeo.connect.people.ui.editors.utils.SearchEntityEditorInput;
 import org.argeo.connect.people.ui.extracts.ITableProvider;
 import org.argeo.connect.people.ui.extracts.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.TableViewer;
@@ -46,11 +33,8 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -59,17 +43,13 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.part.EditorPart;
 
 /**
  * Search the repository with a given entity type
  */
-public class SearchEntityEditor extends EditorPart implements PeopleNames,
-		ITableProvider {
-
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID
-			+ ".searchEntityEditor";
+public abstract class AbstractSearchEntityEditor extends EditorPart implements
+		PeopleNames, ITableProvider {
 
 	/* DEPENDENCY INJECTION */
 	private Session session;
@@ -85,19 +65,6 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 	// Locally cache what is displayed in the UI. Enable among other the report
 	// mechanism management
 	private Row[] rows;
-
-	// Default column
-	private List<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
-	{
-		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
-				Property.JCR_TITLE, PropertyType.STRING, "Display Name",
-				new SimpleJcrRowLabelProvider(PeopleTypes.PEOPLE_ENTITY,
-						Property.JCR_TITLE), 300));
-		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
-				PEOPLE_TAGS, PropertyType.STRING, "Tags",
-				new SimpleJcrRowLabelProvider(PeopleTypes.PEOPLE_ENTITY,
-						PEOPLE_TAGS), 300));
-	};
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
@@ -118,10 +85,12 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 		searchCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// section with static filters
-		Composite filterSection = new Composite(parent, SWT.NO_FOCUS);
-		populateStaticFilters(filterSection);
-		filterSection
-				.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		if (showStaticFilterSection()) {
+			Composite filterSection = new Composite(parent, SWT.NO_FOCUS);
+			populateStaticFilters(filterSection);
+			filterSection.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
+					false));
+		}
 
 		// The table itself
 		Composite tableCmp = new Composite(parent, SWT.NO_FOCUS);
@@ -129,61 +98,55 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		// initialize table
-		refreshFilteredList();
+		refreshStaticFilteredList();
 	}
 
-	private Text tagTxt;
-	private Text tagOutTxt;
-
 	/** Override this to provide type specific static filters */
-	protected void populateStaticFilters(Composite parent) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+	protected abstract void populateStaticFilters(Composite parent);
 
-		// Configure the Twistie section
-		Section headerSection = new Section(parent, Section.TITLE_BAR
-				| Section.TWISTIE);
-		headerSection.setText("Show more filters");
-		headerSection.setExpanded(false);
-		headerSection.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				false));
+	protected abstract void refreshStaticFilteredList();
 
-		Composite body = new Composite(headerSection, SWT.NONE);
-		headerSection.setClient(body);
+	/** Overwrite to set the correct row height */
+	protected int getCurrRowHeight() {
+		return 20;
+	}
 
-		body.setLayout(new GridLayout(4, false));
+	/**
+	 * Overwrite to false if implementation has no static filter session.
+	 * Warning: the refreshStaticFilteredList() must still be implemented
+	 */
+	protected boolean showStaticFilterSection() {
+		return true;
+	}
 
-		tagTxt = createLT(body, "Tag", "",
-				"Select from list to find entities that are categorised with this tag");
-		new TagDropDown(tagTxt);
+	/**
+	 * Overwrite to false if the table should not be automatically refreshed on
+	 * startup, see for instance {@code SearchByTagEditor} to have a relevant
+	 * example
+	 */
+	protected boolean queryOnCreation() {
+		return true;
+	}
 
-		tagOutTxt = createLT(body, "Omit Tag", "",
-				"Select from list to find persons that are NOT categorised with this tag");
-		new TagDropDown(tagOutTxt);
+	/**
+	 * Overwrite to provide corresponding column definitions. Also used for
+	 * exports generation
+	 */
+	@Override
+	public abstract List<PeopleColumnDefinition> getColumnDefinition(
+			String extractId);
 
-		Button goBtn = new Button(body, SWT.PUSH);
-		goBtn.setText("Search");
-		goBtn.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
+	/**
+	 * Call this when reseting static filter if you also want to reset the free
+	 * text search field
+	 */
+	protected void resetFilterText() {
+		filterTxt.setText("");
+	}
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				refreshStaticFilteredList();
-			}
-		});
-
-		Button resetBtn = new Button(body, SWT.PUSH);
-		resetBtn.setText("Reset");
-		resetBtn.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				tagTxt.setText("");
-				tagOutTxt.setText("");
-				// WARNING to reset last a text with a drop down
-				filterTxt.setText("");
-			}
-		});
+	@Override
+	public Row[] getRows(String extractId) {
+		return rows;
 	}
 
 	protected void createListPart(Composite parent) {
@@ -197,55 +160,6 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 	}
 
 	/** Refresh the table viewer based on the free text search field */
-	protected void refreshStaticFilteredList() {
-		try {
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
-			QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			Selector source = factory.selector(entityType, entityType);
-
-			Constraint defaultC = getFreeTextConstraint(factory, source);
-
-			// Tag
-			String currVal = tagTxt.getText();
-			if (CommonsJcrUtils.checkNotEmptyString(currVal)) {
-				StaticOperand so = factory.literal(session.getValueFactory()
-						.createValue(currVal));
-				DynamicOperand dyo = factory.propertyValue(
-						source.getSelectorName(), PEOPLE_TAGS);
-				Constraint currC = factory.comparison(dyo,
-						QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
-				defaultC = localAnd(factory, defaultC, currC);
-			}
-
-			// Omit Tag
-			currVal = tagOutTxt.getText();
-			if (CommonsJcrUtils.checkNotEmptyString(currVal)) {
-				StaticOperand so = factory.literal(session.getValueFactory()
-						.createValue(currVal));
-				DynamicOperand dyo = factory.propertyValue(
-						source.getSelectorName(), PEOPLE_TAGS);
-				Constraint currC = factory.comparison(dyo,
-						QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
-				currC = factory.not(currC);
-				defaultC = localAnd(factory, defaultC, currC);
-			}
-
-			// TODO handle the case where no TITLE prop is available
-			Ordering order = factory.ascending(factory.propertyValue(
-					source.getSelectorName(), Property.JCR_TITLE));
-			Ordering[] orderings = { order };
-			QueryObjectModel query = factory.createQuery(source, defaultC,
-					orderings, null);
-			QueryResult result = query.execute();
-			Row[] rows = rowIteratorToArray(result.getRows());
-			setViewerInput(rows);
-
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to list " + entityType
-					+ " entities with static filter ", e);
-		}
-	}
 
 	protected void populateSearchPanel(Composite parent) {
 		parent.setLayout(new GridLayout());
@@ -258,7 +172,7 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 			private static final long serialVersionUID = 5003010530960334977L;
 
 			public void modifyText(ModifyEvent event) {
-				refreshFilteredList();
+				refreshStaticFilteredList();
 			}
 		});
 	}
@@ -292,46 +206,29 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 		return defaultC;
 	}
 
-	/** Refresh the table viewer only based on the free text search field */
-	protected void refreshFilteredList() {
-		try {
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
-			QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			Selector source = factory.selector(entityType, entityType);
-			Constraint defaultC = getFreeTextConstraint(factory, source);
-
-			// TODO handle the case where no TITLE prop is available
-			Ordering order = factory.ascending(factory.propertyValue(
-					source.getSelectorName(), Property.JCR_TITLE));
-			Ordering[] orderings = { order };
-			QueryObjectModel query = factory.createQuery(source, defaultC,
-					orderings, null);
-			QueryResult result = query.execute();
-			Row[] rows = rowIteratorToArray(result.getRows());
-			setViewerInput(rows);
-
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to list entities with filter ", e);
-		}
-	}
-
-	/**
-	 * Overwrite to set the correct row height
-	 * 
-	 */
-	protected int getCurrRowHeight() {
-		return 20;
-	}
-
-	/**
-	 * Overwrite to false if the table should not be automatically refreshed on
-	 * startup, see for instance {@code SearchByTagEditor} to have a relevant
-	 * example
-	 */
-	protected boolean queryOnCreation() {
-		return true;
-	}
+	// /** Refresh the table viewer only based on the free text search field */
+	// private void refreshFilteredList() {
+	// try {
+	// QueryManager queryManager = session.getWorkspace()
+	// .getQueryManager();
+	// QueryObjectModelFactory factory = queryManager.getQOMFactory();
+	// Selector source = factory.selector(entityType, entityType);
+	// Constraint defaultC = getFreeTextConstraint(factory, source);
+	//
+	// // TODO handle the case where no TITLE prop is available
+	// Ordering order = factory.ascending(factory.propertyValue(
+	// source.getSelectorName(), Property.JCR_TITLE));
+	// Ordering[] orderings = { order };
+	// QueryObjectModel query = factory.createQuery(source, defaultC,
+	// orderings, null);
+	// QueryResult result = query.execute();
+	// Row[] rows = rowIteratorToArray(result.getRows());
+	// setViewerInput(rows);
+	//
+	// } catch (RepositoryException e) {
+	// throw new PeopleException("Unable to list entities with filter ", e);
+	// }
+	// }
 
 	// Life cycle management
 	@Override
@@ -449,17 +346,6 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 
 	protected String getEntityType() {
 		return entityType;
-	}
-
-	@Override
-	public Row[] getRows(String extractId) {
-		return rows;
-	}
-
-	/** Overwrite to provide corresponding column definitions */
-	@Override
-	public List<PeopleColumnDefinition> getColumnDefinition(String extractId) {
-		return colDefs;
 	}
 
 	// ////////////
