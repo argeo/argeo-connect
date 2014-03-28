@@ -44,6 +44,9 @@ public class SearchByTagEditor extends SearchEntityEditor {
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".searchByTagEditor";
 
+	private TagDropDown tagDD;
+	private Button goBtn;
+
 	// Default column
 	private List<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 	{
@@ -63,12 +66,11 @@ public class SearchByTagEditor extends SearchEntityEditor {
 		super.init(site, input);
 	}
 
-	private Text tagTxt;
-
 	// TODO solve the drop down problem when setting the text
 	public void setTagValue(String tag) {
-		tagTxt.setText(tag);
+		tagDD.reset(tag);
 		refreshStaticFilteredList();
+		goBtn.setFocus();
 	}
 
 	@Override
@@ -83,11 +85,11 @@ public class SearchByTagEditor extends SearchEntityEditor {
 
 		body.setLayout(new GridLayout(3, false));
 
-		tagTxt = createLT(body, "List entities for tag", "",
+		Text tagTxt = createLT(body, "List entities for tag", "",
 				"Select from list to find entities that are categorised with this tag");
-		new TagDropDown(tagTxt);
+		tagDD = new TagDropDown(tagTxt);
 
-		Button goBtn = new Button(body, SWT.PUSH);
+		goBtn = new Button(body, SWT.PUSH);
 		goBtn.setText("Refresh list");
 		goBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
@@ -112,7 +114,7 @@ public class SearchByTagEditor extends SearchEntityEditor {
 			Constraint defaultC = getFreeTextConstraint(factory, source);
 
 			// Tag
-			String currVal = tagTxt.getText();
+			String currVal = tagDD.getText();
 			if (CommonsJcrUtils.checkNotEmptyString(currVal)) {
 				StaticOperand so = factory.literal(session.getValueFactory()
 						.createValue(currVal));

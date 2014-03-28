@@ -361,10 +361,13 @@ public class SearchEntityEditor extends EditorPart implements PeopleNames,
 			return text.getText();
 		}
 
-		public void reset() {
+		public void reset(String value) {
 			// Workaround the dropDown Show pb when resetting the text
 			modifyFromList = true;
-			text.setText("");
+			if (CommonsJcrUtils.checkNotEmptyString(value))
+				text.setText(value);
+			else
+				text.setText("");
 			modifyFromList = false;
 
 		}
