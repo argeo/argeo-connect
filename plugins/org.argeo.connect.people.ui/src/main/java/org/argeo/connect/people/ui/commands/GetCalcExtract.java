@@ -5,10 +5,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.extracts.ITableProvider;
-import org.argeo.connect.people.ui.extracts.RowIteratorToCalcWriter;
+import org.argeo.connect.people.ui.extracts.RowsToCalcWriter;
 import org.argeo.connect.people.ui.specific.commands.OpenFile;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -24,13 +27,13 @@ import org.eclipse.ui.handlers.HandlerUtil;
 public class GetCalcExtract extends AbstractHandler {
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".getCalcExtract";
-	public final static String PARAM_EXTACT_ID = "param.extractId";
+	public final static String PARAM_EXTRACT_ID = "param.extractId";
 
 	// private CalcFileProvider efp = new CalcFileProvider();
 	// private FileHandler fileHandler = new FileHandler(efp);
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		String extractId = event.getParameter(PARAM_EXTACT_ID);
+		String extractId = event.getParameter(PARAM_EXTRACT_ID);
 
 		try {
 			IWorkbenchPart iwp = HandlerUtil.getActiveWorkbenchWindow(event)
@@ -42,8 +45,12 @@ public class GetCalcExtract extends AbstractHandler {
 					File tmpFile = File
 							.createTempFile("people-extract", ".xls");
 					tmpFile.deleteOnExit();
+					
+					if (CommonsJcrUtils.checkNotEmptyString(extractId))
 					callCalcGenerator((ITableProvider) iwp, extractId, tmpFile);
-
+					else 
+						callCalcGenerator((ITableProvider) iwp, PeopleUiConstants.DEFAULT_CALC_EXPORT, tmpFile);
+					
 					Map<String, String> params = new HashMap<String, String>();
 					params.put(OpenFile.PARAM_FILE_NAME, tmpFile.getName());
 					params.put(OpenFile.PARAM_FILE_PATH,
@@ -67,11 +74,11 @@ public class GetCalcExtract extends AbstractHandler {
 	protected synchronized void callCalcGenerator(ITableProvider provider,
 			String extractId, File file) throws Exception {
 
-		throw new PeopleException("Implement this, broken by the new search strategy");
-		
-//		RowIteratorToCalcWriter writer = new RowIteratorToCalcWriter();
-//		writer.setColumnDefinition(provider.getColumnDefinition(extractId));
-//		writer.writeTableFromRowIterator(file,
-//				provider.getRowIterator(extractId));
+		// throw new
+		// PeopleException("Implement this, broken by the new search strategy");
+		RowsToCalcWriter writer = new RowsToCalcWriter();
+		// writer.setColumnDefinition();
+		writer.writeTableFromRows(file, provider.getRows(extractId),
+				provider.getColumnDefinition(extractId));
 	}
 }

@@ -20,7 +20,7 @@ public interface ExtractDefinition {
 		}
 	};
 
-	// Reminder create a List in one line
+	// TIP: create a List in one line
 	// List<String> list3 = new ArrayList<String>(
 	// Arrays.asList("String A", "String B", "String C")
 	// );

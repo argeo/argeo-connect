@@ -515,7 +515,6 @@
 					</with>
 				</visibleWhen>
 			</command>
-			
 		</menuContribution>
 		
 		<!-- PeopleUserAdminView toolbar menu --> 

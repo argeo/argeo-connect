@@ -15,8 +15,9 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleUiServiceImpl;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.ui.extracts.ITableProvider;
 import org.argeo.connect.people.ui.extracts.PeopleColumnDefinition;
@@ -53,7 +54,8 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	/* DEPENDENCY INJECTION */
 	private Session session;
-	private PeopleUiServiceImpl peopleUiService;
+	private PeopleUiService peopleUiService;
+	private PeopleService peopleService;
 
 	// Business Objects
 	private String entityType;
@@ -348,6 +350,10 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		return entityType;
 	}
 
+	protected PeopleService getPeopleService() {
+		return peopleService;
+	}
+
 	// ////////////
 	// Helpers
 	protected Row[] rowIteratorToArray(RowIterator rit) {
@@ -396,8 +402,12 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		session = CommonsJcrUtils.login(repository);
 	}
 
-	public void setPeopleUiService(PeopleUiServiceImpl peopleUiService) {
+	public void setPeopleUiService(PeopleUiService peopleUiService) {
 		this.peopleUiService = peopleUiService;
+	}
+
+	public void setPeopleService(PeopleService peopleService) {
+		this.peopleService = peopleService;
 	}
 
 	// Compulsory unused methods

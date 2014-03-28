@@ -21,6 +21,9 @@ public interface PeopleUiConstants {
 	/* Default messages */
 	public final static String FILTER_HELP_MSG = "Enter filter criterion";
 
+	/* Ids for the various exports */
+	public final static String DEFAULT_CALC_EXPORT = "defaultCalcExport";
+	
 	/* IDs for the various dialogs */
 	public final static String DIALOG_ADD_ML_MEMBERS = "dialog:addMLMembers";
 	public final static String DIALOG_ADD_ML_MEMBERSHIP = "dialog:addMLMembership";
