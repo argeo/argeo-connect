@@ -374,17 +374,23 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	protected Text createLT(Composite parent, String title, String message,
 			String tooltip) {
+		return createLT(parent, title, message, tooltip, 1);
+	}
+
+	
+	protected Text createLT(Composite parent, String title, String message,
+			String tooltip, int colspan) {
 		Label label = new Label(parent, SWT.RIGHT);
 		label.setText(title);
 		label.setFont(EclipseUiUtils.getBoldFont(parent));
 		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 		Text text = new Text(parent, SWT.BOTTOM | SWT.BORDER);
-		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, colspan, 1));
 		text.setMessage(message);
 		text.setToolTipText(tooltip);
 		return text;
 	}
-
+	
 	protected class TagDropDown extends MyDropDown {
 
 		public TagDropDown(Text text) {

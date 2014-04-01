@@ -2,7 +2,7 @@ package org.argeo.connect.streams.ui.editors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.people.ui.editors.SearchEntityEditor;
+//import org.argeo.connect.people.ui.editors.SearchEntityEditor;
 import org.argeo.connect.streams.ui.RssUiPlugin;
 import org.argeo.connect.streams.ui.providers.RssListLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -12,7 +12,8 @@ import org.eclipse.jface.viewers.ILabelProvider;
  * 
  * This must be fixed and the dependency to people should be removed.
  */
-public class RssSearchPostEditor extends SearchEntityEditor {
+public class RssSearchPostEditor  {
+	//extends SearchEntityEditor
 	final static Log log = LogFactory.getLog(RssSearchPostEditor.class);
 	public final static String ID = RssUiPlugin.PLUGIN_ID
 			+ ".rssSearchPostEditor";
@@ -22,7 +23,7 @@ public class RssSearchPostEditor extends SearchEntityEditor {
 		return new RssListLabelProvider(false);
 	}
 
-	@Override
+	// @Override
 	protected int getCurrRowHeight() {
 		return 60;
 	}
