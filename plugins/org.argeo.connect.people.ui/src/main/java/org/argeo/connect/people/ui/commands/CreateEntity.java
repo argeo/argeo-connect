@@ -11,6 +11,7 @@ import javax.jcr.Session;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -34,12 +35,7 @@ public class CreateEntity extends AbstractHandler {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private String openEntityEditorCmdId = OpenEntityEditor.ID;
-
-
-	protected String getOpenEntityEditorCmdId() {
-		return openEntityEditorCmdId;
-	}
+	private PeopleUiService peopleUiService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
@@ -61,7 +57,8 @@ public class CreateEntity extends AbstractHandler {
 
 			session.save();
 
-			CommandUtils.callCommand(getOpenEntityEditorCmdId(),
+			CommandUtils.callCommand(
+					peopleUiService.getOpenEntityEditorCmdId(),
 					OpenEntityEditor.PARAM_ENTITY_UID, uuid);
 		} catch (RepositoryException e) {
 			throw new PeopleException("unexpected JCR error while opening "
@@ -86,8 +83,8 @@ public class CreateEntity extends AbstractHandler {
 	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
-	
-	public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
-		this.openEntityEditorCmdId = openEntityEditorCmdId;
+
+	public void setPeopleUiService(PeopleUiService peopleUiService) {
+		this.peopleUiService = peopleUiService;
 	}
 }

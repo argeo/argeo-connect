@@ -37,6 +37,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -372,25 +373,43 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 			return factory.and(defaultC, newC);
 	}
 
-	protected Text createLT(Composite parent, String title, String message,
+	protected Text createBoldLT(Composite parent, String title, String message,
 			String tooltip) {
-		return createLT(parent, title, message, tooltip, 1);
+		return createBoldLT(parent, title, message, tooltip, 1);
 	}
 
-	
-	protected Text createLT(Composite parent, String title, String message,
+	protected Text createBoldLT(Composite parent, String title, String message,
 			String tooltip, int colspan) {
-		Label label = new Label(parent, SWT.RIGHT);
-		label.setText(title);
-		label.setFont(EclipseUiUtils.getBoldFont(parent));
-		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		createBoldLabel(parent, title);
 		Text text = new Text(parent, SWT.BOTTOM | SWT.BORDER);
-		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, colspan, 1));
+		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
+				colspan, 1));
 		text.setMessage(message);
 		text.setToolTipText(tooltip);
 		return text;
 	}
-	
+
+	protected DateTime createLDT(Composite parent, String title,
+			String tooltip) {
+		Label label = new Label(parent, SWT.RIGHT);
+		label.setText(title);
+		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));		
+		DateTime dateTime = new DateTime(parent, SWT.RIGHT | SWT.DATE
+				| SWT.MEDIUM | SWT.DROP_DOWN);
+		dateTime.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true,
+				false));
+		dateTime.setToolTipText(tooltip);
+		return dateTime;
+	}
+
+	protected Label createBoldLabel(Composite parent, String title) {
+		Label label = new Label(parent, SWT.RIGHT);
+		label.setText(title);
+		label.setFont(EclipseUiUtils.getBoldFont(parent));
+		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		return label;
+	}
+
 	protected class TagDropDown extends MyDropDown {
 
 		public TagDropDown(Text text) {

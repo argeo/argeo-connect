@@ -81,7 +81,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 
 		body.setLayout(new GridLayout(4, false));
 
-		Text tagTxt = createLT(body, "Tag", "",
+		Text tagTxt = createBoldLT(body, "Tag", "",
 				"Select from list to find entities that are categorised with this tag");
 		tagDD = new TagDropDown(tagTxt);
 

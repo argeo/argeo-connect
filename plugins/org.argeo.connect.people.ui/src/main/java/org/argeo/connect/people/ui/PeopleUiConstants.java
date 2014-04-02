@@ -57,6 +57,7 @@ public interface PeopleUiConstants {
 			put(FilmTypes.FILM, "Film");
 			put(PeopleTypes.PEOPLE_MAILING_LIST, "Mailing list");
 			put(PeopleTypes.PEOPLE_GROUP, "Group");
+			put(PeopleTypes.PEOPLE_TASK, "Task");
 		}
 	};
 

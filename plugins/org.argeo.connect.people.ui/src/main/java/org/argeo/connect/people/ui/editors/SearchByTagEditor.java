@@ -91,7 +91,7 @@ public class SearchByTagEditor extends AbstractSearchEntityEditor {
 
 		body.setLayout(new GridLayout(3, false));
 
-		Text tagTxt = createLT(body, "List entities for tag", "",
+		Text tagTxt = createBoldLT(body, "List entities for tag", "",
 				"Select from list to find entities that are categorised with this tag");
 		tagDD = new TagDropDown(tagTxt);
 

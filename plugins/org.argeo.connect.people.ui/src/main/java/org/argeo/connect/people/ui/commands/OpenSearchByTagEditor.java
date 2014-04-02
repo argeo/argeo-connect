@@ -30,10 +30,10 @@ public class OpenSearchByTagEditor extends AbstractHandler {
 			IEditorPart part = PeopleUiPlugin.getDefault().getWorkbench()
 					.getActiveWorkbenchWindow().getActivePage()
 					.openEditor(eei, getEditorId());
-			SearchByTagEditor editor = (SearchByTagEditor) part;
 
+			SearchByTagEditor editor = (SearchByTagEditor) part;
 			if (editor != null)
-				editor.setTagValue(tagValue);
+				editor.setTagValue(tagValue == null ? "" : tagValue);
 
 		} catch (PartInitException pie) {
 			throw new PeopleException(
