@@ -39,7 +39,7 @@ import org.eclipse.ui.forms.widgets.Section;
 /**
  * Search the repository with a given entity type
  */
-public abstract class DefaultSearchEntityEditor extends
+public class DefaultSearchEntityEditor extends
 		AbstractSearchEntityEditor {
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
