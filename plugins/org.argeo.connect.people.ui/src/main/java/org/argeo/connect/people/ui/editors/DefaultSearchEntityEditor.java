@@ -19,7 +19,6 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.utils.AbstractSearchEntityEditor;
 import org.argeo.connect.people.ui.extracts.PeopleColumnDefinition;
@@ -34,31 +33,36 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.widgets.Section;
 
 /**
  * Search the repository with a given entity type
  */
-public class DefaultSearchEntityEditor extends
-		AbstractSearchEntityEditor {
+public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".defaultSearchEntityEditor";
 
 	// Default column
-	private List<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
-	{
-		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
-				Property.JCR_TITLE, PropertyType.STRING, "Display Name",
-				new SimpleJcrRowLabelProvider(PeopleTypes.PEOPLE_ENTITY,
-						Property.JCR_TITLE), 300));
-		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
-				PEOPLE_TAGS, PropertyType.STRING, "Tags",
-				new SimpleJcrRowLabelProvider(PeopleTypes.PEOPLE_ENTITY,
-						PEOPLE_TAGS), 300));
-	};
-
+	private List<PeopleColumnDefinition> colDefs;
 	private TagDropDown tagDD;
+
+	@Override
+	public void init(IEditorSite site, IEditorInput input)
+			throws PartInitException {
+		super.init(site, input);
+		colDefs = new ArrayList<PeopleColumnDefinition>();
+		colDefs.add(new PeopleColumnDefinition(getEntityType(),
+				Property.JCR_TITLE, PropertyType.STRING, "Display Name",
+				new SimpleJcrRowLabelProvider(getEntityType(),
+						Property.JCR_TITLE), 300));
+		colDefs.add(new PeopleColumnDefinition(getEntityType(), PEOPLE_TAGS,
+				PropertyType.STRING, "Tags", new SimpleJcrRowLabelProvider(
+						getEntityType(), PEOPLE_TAGS), 300));
+	}
 
 	/** Override this to provide type specific static filters */
 	protected void populateStaticFilters(Composite parent) {
@@ -79,7 +83,7 @@ public class DefaultSearchEntityEditor extends
 
 		Text tagTxt = createLT(body, "Tag", "",
 				"Select from list to find entities that are categorised with this tag");
-		new TagDropDown(tagTxt);
+		tagDD = new TagDropDown(tagTxt);
 
 		Button goBtn = new Button(body, SWT.PUSH);
 		goBtn.setText("Search");

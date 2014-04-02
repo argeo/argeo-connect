@@ -4,12 +4,15 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 
-/** Editor input for generic editor that display info on a given JCR Node */
+/**
+ * Editor input for an editor that display a filtered list of nodes that have a
+ * given JCR Node Type
+ */
 public class SearchEntityEditorInput implements IEditorInput {
 
 	private final String nodeType;
 
-	/** Node type cannty be null*/
+	/** Node type cannot be null */
 	public SearchEntityEditorInput(String nodeType) {
 		this.nodeType = nodeType;
 	}
@@ -35,6 +38,10 @@ public class SearchEntityEditorInput implements IEditorInput {
 		return nodeType;
 	}
 
+	public String getNodeType() {
+		return nodeType;
+	}
+
 	@Override
 	public IPersistableElement getPersistable() {
 		return null;
@@ -42,7 +49,8 @@ public class SearchEntityEditorInput implements IEditorInput {
 
 	@Override
 	public String getToolTipText() {
-		return "Search view for node type: " + nodeType;
+		return "Search among all " + nodeType
+				+ " defined in the current repository";
 	}
 
 	public boolean equals(Object obj) {
@@ -53,7 +61,7 @@ public class SearchEntityEditorInput implements IEditorInput {
 		if (getClass() != obj.getClass())
 			return false;
 		SearchEntityEditorInput other = (SearchEntityEditorInput) obj;
-		if (!nodeType.equals(other.getName()))
+		if (!nodeType.equals(other.getNodeType()))
 			return false;
 		return true;
 	}

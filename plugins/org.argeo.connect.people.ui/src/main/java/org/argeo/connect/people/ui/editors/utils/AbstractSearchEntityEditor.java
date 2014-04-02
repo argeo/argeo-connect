@@ -74,7 +74,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		setSite(site);
 		setInput(input);
 		SearchEntityEditorInput sei = (SearchEntityEditorInput) getEditorInput();
-		entityType = sei.getName();
+		entityType = sei.getNodeType();
 	}
 
 	@Override
