@@ -29,9 +29,6 @@ public class GetCalcExtract extends AbstractHandler {
 			+ ".getCalcExtract";
 	public final static String PARAM_EXTRACT_ID = "param.extractId";
 
-	// private CalcFileProvider efp = new CalcFileProvider();
-	// private FileHandler fileHandler = new FileHandler(efp);
-
 	/* DEPENDENCY INJECTION */
 	private PeopleUiService peopleUiService;
 
