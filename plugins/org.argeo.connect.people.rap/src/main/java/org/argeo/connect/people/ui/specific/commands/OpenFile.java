@@ -21,8 +21,10 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
  * Rap specific handler to open a file stored in the server file system, among
  * other tmp files created for exports.
  * 
+ * TODO must be refactorised with new download files approach.
+ * 
  */
-public class OpenFile extends org.argeo.eclipse.ui.specific.OpenFile {
+public class OpenFile { // extends org.argeo.eclipse.ui.specific.OpenFile
 
 	// NOTE: A DownloadFsFileService must be created via the plugin.xml
 	// and its id must be injected in param downloadServiceHandlerId
