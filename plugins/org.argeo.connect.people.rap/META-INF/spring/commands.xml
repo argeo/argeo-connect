@@ -5,9 +5,15 @@
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<!-- RAP Specific open file command -->
-	<bean id="org.argeo.connect.people.ui.specific.openFile" class="org.argeo.connect.people.ui.specific.commands.OpenFile"
+	<bean id="org.argeo.connect.people.ui.specific.openFile" class="org.argeo.eclipse.ui.specific.OpenFile"
 		scope="prototype">
 		<property name="openFileServiceId"
-			value="org.argeo.connect.people.ui.specific.openFsFileService" />
+			value="org.argeo.connect.people.rap.peopleOpenFileService" />
+	</bean>
+	
+	<bean id="org.argeo.connect.people.rap.peopleOpenFileService" class="org.argeo.connect.people.rap.PeopleOpenFileService"
+			scope="prototype">
+		<property name="repository"
+			ref="repository" />
 	</bean>
 </beans>

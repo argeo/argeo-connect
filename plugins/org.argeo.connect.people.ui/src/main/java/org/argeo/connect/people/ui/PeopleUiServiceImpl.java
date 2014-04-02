@@ -43,6 +43,11 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 		return OpenSearchByTagEditor.ID;
 	}
 
+	@Override
+	public String getOpenFileCmdId() {
+		return "org.argeo.connect.people.ui.specific.openFile";
+	}
+	
 	public List<String> getDefinedFilteredTags(Session session, String filter) {
 		List<String> tags = new ArrayList<String>();
 		try {

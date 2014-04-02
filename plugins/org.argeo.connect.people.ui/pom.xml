@@ -22,7 +22,6 @@
 						<Import-Package>
 							*,
 							org.argeo.connect.people,
-							org.argeo.connect.people.ui.specific.commands,
 							org.argeo.eclipse.spring,
 							org.springframework.dao,
 							org.springframework.core

@@ -10,8 +10,8 @@ import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.extracts.ITableProvider;
 import org.argeo.connect.people.ui.extracts.RowsToCalcWriter;
-import org.argeo.connect.people.ui.specific.commands.OpenFile;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.specific.OpenFile;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -32,6 +32,9 @@ public class GetCalcExtract extends AbstractHandler {
 	// private CalcFileProvider efp = new CalcFileProvider();
 	// private FileHandler fileHandler = new FileHandler(efp);
 
+	/* DEPENDENCY INJECTION */
+	private PeopleUiService peopleUiService;
+
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		String extractId = event.getParameter(PARAM_EXTRACT_ID);
 
@@ -45,17 +48,20 @@ public class GetCalcExtract extends AbstractHandler {
 					File tmpFile = File
 							.createTempFile("people-extract", ".xls");
 					tmpFile.deleteOnExit();
-					
+
 					if (CommonsJcrUtils.checkNotEmptyString(extractId))
-					callCalcGenerator((ITableProvider) iwp, extractId, tmpFile);
-					else 
-						callCalcGenerator((ITableProvider) iwp, PeopleUiConstants.DEFAULT_CALC_EXPORT, tmpFile);
-					
+						callCalcGenerator((ITableProvider) iwp, extractId,
+								tmpFile);
+					else
+						callCalcGenerator((ITableProvider) iwp,
+								PeopleUiConstants.DEFAULT_CALC_EXPORT, tmpFile);
+
 					Map<String, String> params = new HashMap<String, String>();
 					params.put(OpenFile.PARAM_FILE_NAME, tmpFile.getName());
-					params.put(OpenFile.PARAM_FILE_PATH,
-							tmpFile.getAbsolutePath());
-					CommandUtils.callCommand(OpenFile.ID, params);
+					params.put(OpenFile.PARAM_FILE_URI,
+							"file://" + tmpFile.getAbsolutePath());
+					CommandUtils.callCommand(
+							peopleUiService.getOpenFileCmdId(), params);
 				}
 			} else
 				throw new PeopleException(iwp.toString()
@@ -80,5 +86,10 @@ public class GetCalcExtract extends AbstractHandler {
 		// writer.setColumnDefinition();
 		writer.writeTableFromRows(file, provider.getRows(extractId),
 				provider.getColumnDefinition(extractId));
+	}
+
+	/* DEPENDENCY INJECTION */
+	public void setPeopleUiService(PeopleUiService peopleUiService) {
+		this.peopleUiService = peopleUiService;
 	}
 }

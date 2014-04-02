@@ -20,9 +20,13 @@
 			name="People OpenFile">
 			<commandParameter
          		id="param.fileName"
-         		name="The name of the file to open">
+         		name="The name of the file to open (optional)">
   	 		</commandParameter>
             <commandParameter
+         		id="param.fileURI"
+         		name="The URI of this file on the server">
+  	 		</commandParameter>
+  	 		<commandParameter
          		id="param.filePath"
          		name="The absolute path of this file on the server file system">
   	 		</commandParameter>
@@ -44,9 +48,10 @@
 
 	<!-- SERVICE HANDLERS --> 
 	<extension point="org.eclipse.rap.ui.serviceHandler">
+            <!-- class="org.argeo.eclipse.ui.specific.OpenFsFileService" --> 
 		<serviceHandler
-            class="org.argeo.eclipse.ui.specific.OpenFsFileService"
-            id="org.argeo.connect.people.ui.specific.openFsFileService">
+            class="org.argeo.eclipse.spring.SpringExtensionFactory"
+            id="org.argeo.connect.people.rap.peopleOpenFileService">
       </serviceHandler>
    </extension>
 

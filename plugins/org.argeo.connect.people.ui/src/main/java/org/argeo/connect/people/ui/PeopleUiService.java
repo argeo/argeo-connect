@@ -20,5 +20,7 @@ public interface PeopleUiService {
 
 	public String getOpenSearchByTagEditorCmdId();
 
+	public String getOpenFileCmdId();
+
 	public List<String> getDefinedFilteredTags(Session session, String filter);
 }
