@@ -31,10 +31,8 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.jcr.JcrUtils;
 
 /**
- * Static utilitary methods to manage generic CRM concepts within JCR.
- * 
- * Rather use these methods than direct JCR queries in order to ease model
- * evolution.
+ * Static utility methods to manage generic CRM concepts within JCR. Rather use
+ * these methods than direct JCR queries in order to ease model evolution.
  */
 public class PeopleJcrUtils implements PeopleNames {
 
@@ -52,8 +50,8 @@ public class PeopleJcrUtils implements PeopleNames {
 			String title, Calendar dateBegin, Calendar dateEnd,
 			Boolean isCurrent) throws RepositoryException {
 
-		Node members = CommonsJcrUtils
-				.getOrCreateDirNode(group, PEOPLE_MEMBERS);
+		Node members = JcrUtils.mkdirs(group, PEOPLE_MEMBERS,
+				NodeType.NT_UNSTRUCTURED);
 		Node member = members.addNode(
 				CommonsJcrUtils.get(entity, Property.JCR_TITLE),
 				PeopleTypes.PEOPLE_MEMBER);
@@ -107,7 +105,10 @@ public class PeopleJcrUtils implements PeopleNames {
 		}
 	}
 
-	/** Compute the country of an entity using primary addresses */
+	/**
+	 * Returns the country of an entity relying on its primary address, if
+	 * defined
+	 */
 	public static String getCountryFromItem(Node item) {
 		Node node = getPrimaryContact(item, PeopleTypes.PEOPLE_ADDRESS);
 		if (node != null
@@ -123,7 +124,10 @@ public class PeopleJcrUtils implements PeopleNames {
 		return "";
 	}
 
-	/** Compute the town of an entity using primary addresses */
+	/**
+	 * Returns the country of an entity relying on its primary address, if
+	 * defined
+	 */
 	public static String getTownFromItem(Node item) {
 		Node node = getPrimaryContact(item, PeopleTypes.PEOPLE_ADDRESS);
 		if (node != null
@@ -140,8 +144,8 @@ public class PeopleJcrUtils implements PeopleNames {
 	}
 
 	/**
-	 * Return primary contact given a node type. or null if none defined as
-	 * primary
+	 * Returns the primary contact for the type or null if no node with this
+	 * type is defined as primary
 	 */
 	public static Node getPrimaryContact(Node item, String nodeType) {
 		try {
@@ -165,8 +169,8 @@ public class PeopleJcrUtils implements PeopleNames {
 	}
 
 	/**
-	 * Return primary contact given a node type. or null if none defined as
-	 * primary
+	 * Returns the primary contact value given a type or an empty String if no
+	 * node with this type is defined as primary
 	 */
 	public static String getPrimaryContactValue(Node item, String nodeType) {
 		Node primary = getPrimaryContact(item, nodeType);
@@ -288,8 +292,8 @@ public class PeopleJcrUtils implements PeopleNames {
 			// throw new PeopleException("We should have found current "
 			// + "node and never reach this point");
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to mark " + primaryChild
-					+ " as primary", re);
+			throw new ArgeoException("Unable to check primary status for "
+					+ primaryChild, re);
 		}
 	}
 
@@ -324,11 +328,11 @@ public class PeopleJcrUtils implements PeopleNames {
 				}
 			} else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_URL)) {
 				if (isPrimary) {
-					parentNode.setProperty(PEOPLE_CACHE_PWeb, CommonsJcrUtils
+					parentNode.setProperty(PEOPLE_CACHE_PURL, CommonsJcrUtils
 							.get(primaryChild, PEOPLE_CONTACT_VALUE));
 				} else {
-					if (parentNode.hasProperty(PEOPLE_CACHE_PWeb))
-						parentNode.setProperty(PEOPLE_CACHE_PWeb, "");
+					if (parentNode.hasProperty(PEOPLE_CACHE_PURL))
+						parentNode.setProperty(PEOPLE_CACHE_PURL, "");
 				}
 			} else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
 				if (isPrimary) {
@@ -426,8 +430,8 @@ public class PeopleJcrUtils implements PeopleNames {
 			String name, String value, boolean primary, String nature,
 			Node linkedOrg, String category, String label) {
 		try {
-			Node contacts = CommonsJcrUtils.getOrCreateDirNode(parentNode,
-					PEOPLE_CONTACTS);
+			Node contacts = JcrUtils.mkdirs(parentNode, PEOPLE_CONTACTS,
+					NodeType.NT_UNSTRUCTURED);
 			Node contact = contacts.addNode(name.trim(), nodeType);
 			contact.setProperty(PEOPLE_CONTACT_VALUE, value);
 			if (primary)
@@ -860,24 +864,24 @@ public class PeopleJcrUtils implements PeopleNames {
 			else if (ni.getSize() > 1) {
 				throw new PeopleException(
 						"Problem retrieving entity by UID, we found "
-								+ ni.getSize() + " correspnding entity(ies)");
+								+ ni.getSize() + " corresponding entity(ies)");
 			} else
 				return ni.nextNode();
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Unable to retrive entity of uid: " + uid, e);
+			throw new PeopleException("Unable to retrieve entity of uid: "
+					+ uid, e);
 		}
 	}
 
 	/**
-	 * insure user to retrieve at most one single node in the current
-	 * repository, independently of the implementation of the model
-	 * 
+	 * Retrieves the referenced Node in the current repository, using a business
+	 * defined ID and regardless of the implemented model. This will at most
+	 * return one single node.
 	 * 
 	 * @param node
 	 * @param propName
-	 *            the name of the property that contains the reference usually
-	 *            we use <code>PeopleName.PEOPLE_REF_UID</code>
+	 *            the name of the property that contains the used reference.
+	 *            Usually we rely on {@link PeopleName#PEOPLE_REF_UID} *
 	 * @return
 	 */
 	public static Node getEntityFromNodeReference(Node node, String propName) {
@@ -892,5 +896,4 @@ public class PeopleJcrUtils implements PeopleNames {
 					"unable to get entity from reference node", re);
 		}
 	}
-
 }

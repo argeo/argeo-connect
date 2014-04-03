@@ -20,7 +20,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 
 /**
- * static utilitary methods to manage the resources for people concepts in JCR.
+ * Static utility methods to manage the resources for people concepts in JCR.
  * Rather use these methods than direct Jcr queries in order to ease model
  * evolution.
  */

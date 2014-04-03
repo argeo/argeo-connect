@@ -23,14 +23,17 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.jcr.JcrUtils;
 
 /**
- * static utilitary methods to manage CRM contact concepts in JCR. Rather use
- * these methods than direct Jcr queries in order to ease model evolution.
+ * Static utility methods to manage CRM contact concepts in JCR. Rather use
+ * these methods than direct JCR queries in order to ease model evolution.
  * 
- * Must be refactored in a ContactService
+ * Might be refactored in a ContactService
  */
 
 public class ContactJcrUtils {
 
+	////////////////////////////////
+	// MAILING LIST MANAGEMENT 
+		
 	/**
 	 * 
 	 * Add a new member to a given Mailing List

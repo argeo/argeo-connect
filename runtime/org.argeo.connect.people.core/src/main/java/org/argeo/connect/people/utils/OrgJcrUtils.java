@@ -18,19 +18,21 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 
 /**
- * static utilitary methods to manage CRM organization concepts in JCR. Rather
- * use these methods than direct Jcr queries in order to ease model evolution.
+ * Static utility methods to manage CRM organisation concepts in JCR. Rather use
+ * these methods than direct JCR queries in order to ease model evolution.
  */
-
 public class OrgJcrUtils {
 
+	/**
+	 * Mainly used during imports to provide a key to a given organisation. Do
+	 * not rely on this for production purposes. *
+	 */
 	public static Node getOrgWithWebSite(Session session, String website)
 			throws RepositoryException {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
 		QueryObjectModelFactory factory = queryManager.getQOMFactory();
-		final String typeSelector = "website";
-		Selector source = factory
-				.selector(PeopleTypes.PEOPLE_URL, typeSelector);
+		Selector source = factory.selector(PeopleTypes.PEOPLE_URL,
+				PeopleTypes.PEOPLE_URL);
 		DynamicOperand dynOp = factory.propertyValue(source.getSelectorName(),
 				PeopleNames.PEOPLE_CONTACT_VALUE);
 		StaticOperand statOp = factory.literal(session.getValueFactory()
@@ -47,6 +49,10 @@ public class OrgJcrUtils {
 		return orga;
 	}
 
+	/**
+	 * Mainly used during imports to provide a key to a given organisation. Do
+	 * not rely on this for production purposes.
+	 */
 	public static Node getOrgByName(Session session, String name)
 			throws RepositoryException {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();

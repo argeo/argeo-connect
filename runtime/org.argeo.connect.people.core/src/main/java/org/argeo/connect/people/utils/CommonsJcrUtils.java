@@ -138,7 +138,7 @@ public class CommonsJcrUtils {
 	}
 
 	/**
-	 * works around missing method to test if a node has been removed from
+	 * Works around missing method to test if a node has been removed from
 	 * existing session
 	 * 
 	 * @param node
@@ -497,6 +497,8 @@ public class CommonsJcrUtils {
 		}
 	}
 
+	/** Use {@link JcrUtils#mkdirs(Node, String))} instead */
+	@Deprecated
 	public static Node getOrCreateDirNode(Node parent, String dirName)
 			throws RepositoryException {
 		Node dirNode;
@@ -548,9 +550,6 @@ public class CommonsJcrUtils {
 		}
 	}
 
-	private CommonsJcrUtils() {
-	}
-
 	public static Map<String, PropertyDiff> diffProperties(Node reference,
 			Node observed) {
 		Map<String, PropertyDiff> diffs = new TreeMap<String, PropertyDiff>();
@@ -571,7 +570,7 @@ public class CommonsJcrUtils {
 		try {
 			// check removed and modified
 			PropertyIterator pit = reference.getProperties();
-			props: while (pit.hasNext()) {
+			while (pit.hasNext()) {
 				Property p = pit.nextProperty();
 				String name = p.getName();
 				// if (name.startsWith("jcr:"))
@@ -750,6 +749,10 @@ public class CommonsJcrUtils {
 					+ propName + " of node " + node + " with values [" + values
 					+ "]", re);
 		}
+	}
+
+	/** Prevent instantiation */
+	private CommonsJcrUtils() {
 	}
 
 }

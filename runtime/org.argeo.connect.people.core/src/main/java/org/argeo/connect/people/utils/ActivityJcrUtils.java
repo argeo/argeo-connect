@@ -9,10 +9,10 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 
 /**
- * static utilitary methods to manage activity concepts in JCR. Rather use these
- * methods than direct Jcr queries in order to ease model evolution.
+ * Static utility methods to manage activity concepts in JCR. Rather use these
+ * methods than direct JCR queries in order to ease model evolution.
  * 
- * Must be refactored as a ActivityService
+ * Might be refactored as an ActivityService
  */
 
 public class ActivityJcrUtils {

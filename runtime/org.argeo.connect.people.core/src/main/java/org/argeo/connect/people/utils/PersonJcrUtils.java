@@ -7,6 +7,7 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Constraint;
 import javax.jcr.query.qom.DynamicOperand;
@@ -18,6 +19,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.jcr.JcrUtils;
 
 /**
  * static utils methods to manage Person concepts in JCR. Rather use these
@@ -112,21 +114,6 @@ public class PersonJcrUtils implements PeopleNames {
 		return secondaryName == null ? "" : secondaryName;
 	}
 
-	// @Deprecated
-	// public static String getTags(Node person) {
-	// try {
-	// StringBuilder tags = new StringBuilder();
-	// if (person.hasProperty(PEOPLE_TAGS)) {
-	// for (Value value : person.getProperty(PEOPLE_TAGS).getValues())
-	// tags.append("#").append(value.getString()).append(" ");
-	// }
-	// return tags.toString();
-	// } catch (RepositoryException e) {
-	// throw new PeopleException("Error while getting tags for node "
-	// + person, e);
-	// }
-	// }
-
 	/**
 	 * Helper to retrieve a person given her first and last Name. Must be
 	 * refined.
@@ -175,7 +162,8 @@ public class PersonJcrUtils implements PeopleNames {
 			String role, String title, boolean isPrimary, Calendar dateBegin,
 			Calendar dateEnd, Boolean isCurrent) throws RepositoryException {
 
-		Node jobs = CommonsJcrUtils.getOrCreateDirNode(person, PEOPLE_JOBS);
+		Node jobs = JcrUtils.mkdirs(person, PEOPLE_JOBS,
+				NodeType.NT_UNSTRUCTURED);
 		Node job = jobs.addNode(org.getName(), PeopleTypes.PEOPLE_JOB);
 		job.setProperty(PEOPLE_REF_UID, org.getProperty(PEOPLE_UID).getString());
 
