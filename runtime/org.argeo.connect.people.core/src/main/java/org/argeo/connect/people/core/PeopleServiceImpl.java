@@ -137,7 +137,7 @@ public class PeopleServiceImpl implements PeopleService {
 					parentNode = referencingNode
 							.getNode(PeopleNames.PEOPLE_JOBS);
 				}
-			} else if (referencingNode.isNodeType(FilmTypes.FILM)) {
+			} else if (referencingNode.isNodeType(FilmTypes.FILM_FILM)) {
 				if (referencedNode.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)
 						|| referencedNode.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
 					linkNodeType = PeopleTypes.PEOPLE_MEMBER;

@@ -779,19 +779,19 @@ public class PeopleJcrUtils implements PeopleNames {
 					relPath = UNKNOWN_NAME + "/"
 							+ JcrUtils.firstCharsToPath(displayName, 2) + "/"
 							+ displayName;
-			} else if (node.isNodeType(FilmTypes.FILM) || nodeType != null
-					&& FilmTypes.FILM.equals(nodeType)) {
+			} else if (node.isNodeType(FilmTypes.FILM_FILM) || nodeType != null
+					&& FilmTypes.FILM_FILM.equals(nodeType)) {
 				// init
 				String origTitle = "";
 				String origLatinTitle = "";
 				String displayName = "";
-				if (node.hasProperty(FilmNames.FILM_CACHE_OTITLE))
+				if (node.hasProperty(FilmNames.FILM_CACHE_PTITLE))
 					origTitle = replaceInvalidChars(node
-							.getProperty(FilmNames.FILM_CACHE_OTITLE)
+							.getProperty(FilmNames.FILM_CACHE_PTITLE)
 							.getString().trim());
-				if (node.hasProperty(FilmNames.FILM_CACHE_OTITLE_LATIN))
+				if (node.hasProperty(FilmNames.FILM_CACHE_PTITLE_LATIN))
 					origLatinTitle = replaceInvalidChars(node
-							.getProperty(FilmNames.FILM_CACHE_OTITLE_LATIN)
+							.getProperty(FilmNames.FILM_CACHE_PTITLE_LATIN)
 							.getString().trim());
 				if (node.hasProperty(Property.JCR_TITLE))
 					displayName = replaceInvalidChars(node

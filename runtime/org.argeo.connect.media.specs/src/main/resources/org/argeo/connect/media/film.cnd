@@ -6,6 +6,8 @@
 [film:film] > people:group
 - film:filmId (STRING) // a business specific film ID
 - film:type (STRING) // Feature, Mid-Length, Short
+- film:website (STRING) 
+
 
 - film:originalLanguage (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
 - film:prodYear (LONG)
@@ -19,15 +21,15 @@
 - film:animationTechnique (String) // only if animation is in categories
 - film:genres (String) *
 
-// cache to ease full text search 
-- film:cacheOTitle (STRING) IGNORE
-- film:cacheOTitleArticle (STRING) IGNORE
-- film:cacheOTitleLatin (STRING) IGNORE
+// cache primary title values to ease full text search 
+- film:cachePTitle (STRING) IGNORE
+- film:cachePTitleArticle (STRING) IGNORE
+- film:cachePTitleLatin (STRING) IGNORE
 
 // Subnode with alternative title
 + film:titles (nt:unstructured) 
 
-// Subnode with synopses title
+// Subnode that contains synopses 
 + film:synopses (nt:unstructured)
 
 // Subnode with time stamps and awards
@@ -45,7 +47,6 @@
 - film:hasTrailer (BOOLEAN)
 - film:extractsOnTvAllowed (BOOLEAN)
 // why not use a contact ?
-- film:website (STRING) 
 
 // Titles
 [film:title] > nt:unstructured, people:language, people:orderable
@@ -58,10 +59,8 @@
 // Synopses
 [film:synopsis] > nt:unstructured, people:language
 - film:synopsisContent (STRING)
-// an optional short synopsis
 - film:synopsisContentShort (STRING)
 - film:logLine (STRING)
-
 
 // Time stamp
 [film:timestamp] > nt:unstructured, mix:title

@@ -358,7 +358,7 @@ public class EditParticipationDialog extends TrayDialog {
 
 			Selector source = null;
 			if (isBackward)
-				source = factory.selector(FilmTypes.FILM, FilmTypes.FILM);
+				source = factory.selector(FilmTypes.FILM_FILM, FilmTypes.FILM_FILM);
 			else {
 				// TODO add organisations
 				source = factory.selector(PeopleTypes.PEOPLE_PERSON,

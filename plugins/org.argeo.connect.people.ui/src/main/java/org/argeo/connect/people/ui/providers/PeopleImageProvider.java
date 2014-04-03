@@ -24,7 +24,7 @@ public class PeopleImageProvider {
 				return PeopleImages.ICON_PERSON;
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION))
 				return PeopleImages.ICON_ORG;
-			else if (entity.isNodeType(FilmTypes.FILM))
+			else if (entity.isNodeType(FilmTypes.FILM_FILM))
 				return PeopleImages.ICON_FILM;
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST))
 				return PeopleImages.ICON_MAILING_LIST;
