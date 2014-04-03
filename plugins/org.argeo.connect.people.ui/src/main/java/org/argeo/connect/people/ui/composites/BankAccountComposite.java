@@ -38,42 +38,39 @@ public class BankAccountComposite extends Composite {
 	private void populate() {
 		// initialization
 		Composite parent = this;
-		// Main Layout
-		// this.setLayout(new GridLayout(1, false));
-
 		this.setLayout(new GridLayout(6, false));
 
 		// Main Info
-		toolkit.createLabel(parent, "Account holder");
+		PeopleUiUtils.createBoldLabel(toolkit, parent, "Account Holder");
 		final Text holderTxt = toolkit.createText(parent, "", SWT.BORDER);
 		holderTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		toolkit.createLabel(parent, "Bank name");
+		PeopleUiUtils.createBoldLabel(toolkit, parent, "Bank Name");
 		final Text bankNameTxt = toolkit.createText(parent, "", SWT.BORDER);
 		bankNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		toolkit.createLabel(parent, "Currency");
+		PeopleUiUtils.createBoldLabel(toolkit, parent, "Currency");
 		final Text currencyTxt = toolkit.createText(parent, "", SWT.BORDER);
 		GridData gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
 		gd.widthHint = 50;
 		currencyTxt.setLayoutData(gd);
 
 		// Bank number
-		toolkit.createLabel(parent, "Account number");
+		PeopleUiUtils.createBoldLabel(toolkit, parent, "Account Number");
 		final Text accNbTxt = toolkit.createText(parent, "", SWT.BORDER);
 		accNbTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		toolkit.createLabel(parent, "Bank number");
+		PeopleUiUtils.createBoldLabel(toolkit, parent, "Bank Number");
 		final Text bankNbTxt = toolkit.createText(parent, "", SWT.BORDER);
 		bankNbTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3,
 				1));
 
 		// BIC / IBAN
-		toolkit.createLabel(parent, "BIC");
+		PeopleUiUtils.createBoldLabel(toolkit, parent, "BIC");
 		final Text bicTxt = toolkit.createText(parent, "", SWT.BORDER);
 		bicTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		toolkit.createLabel(parent, "IBAN");
+		PeopleUiUtils.createBoldLabel(toolkit, parent, "IBAN");
 		final Text ibanTxt = toolkit.createText(parent, "", SWT.BORDER);
 		ibanTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
@@ -100,8 +97,7 @@ public class BankAccountComposite extends Composite {
 			}
 		};
 
-		formPart.refresh();
-
+		// Listeners
 		PeopleUiUtils.addModifyListener(holderTxt, currAccount,
 				PeopleNames.PEOPLE_ACCOUNT_HOLDER, formPart);
 		PeopleUiUtils.addModifyListener(bankNameTxt, currAccount,
@@ -117,11 +113,12 @@ public class BankAccountComposite extends Composite {
 		PeopleUiUtils.addModifyListener(ibanTxt, currAccount,
 				PeopleNames.PEOPLE_IBAN, formPart);
 
+		// Superstition?
+		formPart.refresh();
 		parent.layout();
 
 		formPart.initialize(form);
 		form.addPart(formPart);
-
 	}
 
 	@Override
@@ -135,5 +132,4 @@ public class BankAccountComposite extends Composite {
 		formPart.dispose();
 		super.dispose();
 	}
-
 }

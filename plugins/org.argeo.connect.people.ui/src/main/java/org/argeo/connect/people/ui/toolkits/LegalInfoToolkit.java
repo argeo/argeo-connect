@@ -64,19 +64,19 @@ public class LegalInfoToolkit {
 		parent.setLayout(new GridLayout(4, false));
 
 		// Legal Name
-		toolkit.createLabel(parent, "Legal Name");
+		PeopleUiUtils.createBoldLabel(toolkit, parent, "Legal Name");
 		final Text legalNameTxt = toolkit.createText(parent, "", SWT.BORDER);
 		legalNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,
 				3, 1));
 
 		// Legal form
-		toolkit.createLabel(parent, "Legal form");
+		PeopleUiUtils.createBoldLabel(toolkit, parent, "Legal Form");
 		final Text legalFormTxt = toolkit.createText(parent, "", SWT.BORDER);
 		legalFormTxt
 				.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// VAT ID Number
-		toolkit.createLabel(parent, "VAT ID Number");
+		PeopleUiUtils.createBoldLabel(toolkit, parent, "VAT ID");
 		final Text vatIDTxt = toolkit.createText(parent, "", SWT.BORDER);
 		vatIDTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
@@ -92,8 +92,11 @@ public class LegalInfoToolkit {
 			}
 		};
 
-		// PeopleUiUtils.addModifyListener(legalNameTxt, entity,
-		// PeopleNames.PEOPLE_LEGAL_NAME, notePart);
+		// Listeners
+		PeopleUiUtils.addModifyListener(legalFormTxt, entity,
+				PeopleNames.PEOPLE_LEGAL_STATUS, notePart);
+		PeopleUiUtils.addModifyListener(vatIDTxt, entity,
+				PeopleNames.PEOPLE_VAT_ID_NB, notePart);
 
 		// Specific listeners to manage correctly display name
 		legalNameTxt.addModifyListener(new ModifyListener() {
@@ -118,13 +121,8 @@ public class LegalInfoToolkit {
 				}
 			}
 		});
-		PeopleUiUtils.addModifyListener(legalFormTxt, entity,
-				PeopleNames.PEOPLE_LEGAL_STATUS, notePart);
-		PeopleUiUtils.addModifyListener(vatIDTxt, entity,
-				PeopleNames.PEOPLE_VAT_ID_NB, notePart);
 
 		parent.layout();
-
 		notePart.initialize(form);
 		form.addPart(notePart);
 	}
@@ -133,12 +131,12 @@ public class LegalInfoToolkit {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 		final Group group = new Group(parent, 0);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		group.setText("Payment accounts");
+		group.setText("Payment account");
 		group.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
 		AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {
-				// TODO add "create account button"
+				// TODO Manage multiple bank account
 				super.refresh();
 				try {
 					if (!entity.hasNode(PeopleNames.PEOPLE_PAYMENT_ACCOUNTS)
@@ -148,8 +146,8 @@ public class LegalInfoToolkit {
 						entity.getSession().save();
 					}
 				} catch (RepositoryException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					throw new PeopleException(
+							"Unable to create bank account for " + entity, e);
 				}
 
 				Control[] children = group.getChildren();
@@ -167,7 +165,6 @@ public class LegalInfoToolkit {
 				group.layout();
 			}
 		};
-		// notePart.refresh();
 		parent.layout();
 		formPart.initialize(form);
 		form.addPart(formPart);

@@ -92,7 +92,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		titleCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		populateTitleComposite(titleCmp);
 
-		// Branche Management
+		// Tag Management
 		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		entityTK.populateTagPanel(tagsCmp, org,
@@ -111,7 +111,6 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Details", PeopleUiConstants.PANEL_CONTACT_DETAILS, tooltip);
-		// innerPannel.setLayoutData(layoutData);
 		contactTK.createContactPanelWithNotes(innerPannel, org);
 
 		// Activities and tasks
