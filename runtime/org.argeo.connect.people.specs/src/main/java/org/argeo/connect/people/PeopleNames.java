@@ -138,7 +138,7 @@ public interface PeopleNames {
 	public final static String PEOPLE_CACHE_PORG = "people:cachePOrg";
 	public final static String PEOPLE_CACHE_PPHONE = "people:cachePPhone";
 	public final static String PEOPLE_CACHE_PMAIL = "people:cachePMail";
-	public final static String PEOPLE_CACHE_PWeb = "people:cachePWeb";
+	public final static String PEOPLE_CACHE_PURL = "people:cachePWeb";
 
 	/* MISCENELLANEOUS */
 
