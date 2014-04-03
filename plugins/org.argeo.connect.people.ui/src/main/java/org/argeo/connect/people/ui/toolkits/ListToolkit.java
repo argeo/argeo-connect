@@ -305,23 +305,7 @@ public class ListToolkit {
 
 	}
 
-	private void configureAddFilmParticipationBtn(Button button,
-			final Node relevantNode, String tooltip) {
-		button.setToolTipText(tooltip);
-		button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
-		button.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Map<String, String> params = new HashMap<String, String>();
-				params.put(EditParticipation.PUBLIC_RELEVANT_NODE_JCR_ID,
-						CommonsJcrUtils.getIdentifier(relevantNode));
-				CommandUtils.callCommand(EditParticipation.ID, params);
-			}
-		});
-
-	}
+	
 
 	// private void configureAddReferenceButton(Button button,
 	// final Node targetNode, String tooltip, final boolean isBackward,
