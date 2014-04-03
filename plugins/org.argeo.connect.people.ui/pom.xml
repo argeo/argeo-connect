@@ -22,6 +22,7 @@
 						<Import-Package>
 							*,
 							org.argeo.connect.people,
+							org.argeo.connect.media,
 							org.argeo.eclipse.spring,
 							org.springframework.dao,
 							org.springframework.core

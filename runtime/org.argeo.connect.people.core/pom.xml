@@ -17,8 +17,9 @@
 				<configuration>
 					<instructions>
 						<Import-Package>
-							*,
 							javax.jcr.nodetype,	
+							org.argeo.connect.media,
+							*,
 						</Import-Package>
 					</instructions>
 				</configuration>
@@ -26,16 +27,17 @@
 		</plugins>
 	</build>
 	<dependencies>
-		<!-- The specification bundle -->
-		<dependency>
-			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.people.specs</artifactId>
-			<version>2.1.6-SNAPSHOT</version>
-		</dependency>
-		<!--  TODO Remove this dependency, once refactoring is done. -->
+		<!--  The specification bundles -->
+		<!--  TODO Remove this dependency, once refactoring has been done. -->
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.media.specs</artifactId>
+			<version>2.1.6-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.people.specs</artifactId>
 			<version>2.1.6-SNAPSHOT</version>
 		</dependency>
 

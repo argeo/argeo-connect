@@ -9,6 +9,7 @@
 	<artifactId>argeo-connect</artifactId>
 	<packaging>pom</packaging>
 	<name>Argeo Connect</name>
+	<description>Real life IT - Data management and communications</description>
 	<version>2.1.6-SNAPSHOT</version>
 	<properties>
 		<version.connect>2.1.6-SNAPSHOT</version.connect>

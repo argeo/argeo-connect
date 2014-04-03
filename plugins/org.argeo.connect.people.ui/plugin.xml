@@ -426,7 +426,7 @@
 			id="org.argeo.connect.people.ui.doNothing"
 			name="Open menu">
 		</command>    
-		<!-- 		<command
+		<command
 			defaultHandler="org.argeo.connect.people.ui.commands.OpenSearchEntityEditor"
 			id="org.argeo.connect.people.ui.openSearchEntityEditor"
 			name="Open Search Entity Editor">
@@ -434,7 +434,7 @@
          		id="param.entityType"
          		name="Entity Node Type">
   	 		</commandParameter>
-		</command> -->   
+		</command>
 	</extension>		
 	
 	

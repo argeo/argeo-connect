@@ -73,8 +73,8 @@ public class PeopleDefaultView extends ViewPart {
 	private Text filterTxt;
 	private final static String FILTER_HELP_MSG = "Search...";
 
-	private final static String CMD_SEARCH_PERSON_EDITOR = "openSearchPersonEditor";
-	private final static String CMD_LOGOUT = "logout";
+	private final static String CMD_OPEN_SEARCH_EDITOR = "openSearchEditor";
+	private final static String CMD_LOGOUT = "org.eclipse.ui.file.exit";
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -126,7 +126,7 @@ public class PeopleDefaultView extends ViewPart {
 		linksCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 
 		addLink(linksCmp, "Search Entities",
-				"Open an editor to narrow you search", CMD_SEARCH_PERSON_EDITOR);
+				"Open an editor to narrow you search", CMD_OPEN_SEARCH_EDITOR);
 		addLink(linksCmp, "Logout", "Log out from connect", CMD_LOGOUT);
 
 		// Order layouts
@@ -135,12 +135,12 @@ public class PeopleDefaultView extends ViewPart {
 	}
 
 	private void callCommand(String commandId) {
-		if (CMD_SEARCH_PERSON_EDITOR.equals(commandId)) {
-			CommandUtils.callCommand(OpenSearchEntityEditor.ID,
+		if (CMD_OPEN_SEARCH_EDITOR.equals(commandId)) {
+			CommandUtils.callCommand(peopleUiService.getOpenSearchEntityEditorCmdId(),
 					OpenSearchEntityEditor.PARAM_ENTITY_TYPE,
-					PeopleTypes.PEOPLE_PERSON);
+					PeopleTypes.PEOPLE_ENTITY);
 		} else if (CMD_LOGOUT.equals(commandId))
-			CommandUtils.callCommand("org.eclipse.ui.file.exit");
+			CommandUtils.callCommand(CMD_LOGOUT);
 	}
 
 	private Link addLink(Composite parent, String label, String tooltip,

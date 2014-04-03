@@ -17,8 +17,8 @@
 				<configuration>
 					<instructions>
 						<Import-Package>
-							*,
 							javax.jcr.nodetype,
+							*
 						</Import-Package>
 					</instructions>
 				</configuration>

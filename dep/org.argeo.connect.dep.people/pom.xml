@@ -29,12 +29,5 @@
 			<artifactId>org.argeo.connect.people.services</artifactId>
 			<version>2.1.6-SNAPSHOT</version>
 		</dependency>
-
-		<!-- add vCard Parsing abilities -->
-		<!--  <dependency>
-			<groupId>org.argeo.tp</groupId>
-			<artifactId>ez-vcard</artifactId>
-			<version>${version.ez-vcard}</version>
-		</dependency>  -->
 	</dependencies>
 </project>

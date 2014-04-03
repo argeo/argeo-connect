@@ -2,6 +2,9 @@
 <projectDescription>
 	<name>org.argeo.connect.media.specs</name>
 	<comment></comment>
+	<projects>
+		<project>org.argeo.connect.people</project>
+	</projects>
 		<buildSpec>
 		<buildCommand>
 			<name>org.eclipse.jdt.core.javabuilder</name>
