@@ -138,7 +138,7 @@ public class SearchByTagEditor extends AbstractSearchEntityEditor {
 			QueryObjectModel query = factory.createQuery(source, defaultC,
 					orderings, null);
 			QueryResult result = query.execute();
-			Row[] rows = rowIteratorToArray(result.getRows());
+			Row[] rows = CommonsJcrUtils.rowIteratorToArray(result.getRows());
 			setViewerInput(rows);
 
 		} catch (RepositoryException e) {

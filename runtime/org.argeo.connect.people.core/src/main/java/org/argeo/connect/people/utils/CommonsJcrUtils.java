@@ -85,7 +85,7 @@ public class CommonsJcrUtils {
 	 * name. It relies on the <code>Row.getNode(String selectorName)</code>
 	 * method.
 	 */
-	public static List<Node> rowIteratorToList(RowIterator rowIterator,
+	public static List<Node> rowIteratorToNodeList(RowIterator rowIterator,
 			String selectorName) throws RepositoryException {
 		List<Node> nodes = new ArrayList<Node>();
 		while (rowIterator.hasNext()) {
@@ -94,6 +94,17 @@ public class CommonsJcrUtils {
 				nodes.add(row.getNode(selectorName));
 		}
 		return nodes;
+	}
+
+	/**
+	 * Browses a {@code RowIterator} to build the corresponding row array.
+	 */
+	public static Row[] rowIteratorToArray(RowIterator rit) {
+		List<Row> rows = new ArrayList<Row>();
+		while (rit.hasNext()) {
+			rows.add(rit.nextRow());
+		}
+		return rows.toArray(new Row[rows.size()]);
 	}
 
 	/**

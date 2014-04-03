@@ -96,7 +96,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		entityTK.populateTagPanel(tagsCmp, org,
-				PeopleNames.PEOPLE_ORG_BRANCHES, "Enter a new branche");
+				PeopleNames.PEOPLE_TAGS, "Add a tag");
 
 		// Mailing list management
 		Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);

@@ -20,6 +20,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.utils.AbstractSearchEntityEditor;
 import org.argeo.connect.people.ui.extracts.PeopleColumnDefinition;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
@@ -93,7 +94,7 @@ public class SearchPersonEditor extends AbstractSearchEntityEditor {
 			QueryObjectModel query = factory.createQuery(source,
 					getFreeTextConstraint(factory, source), orderings, null);
 			QueryResult result = query.execute();
-			Row[] rows = rowIteratorToArray(result.getRows());
+			Row[] rows = CommonsJcrUtils.rowIteratorToArray(result.getRows());
 			setViewerInput(rows);
 
 		} catch (RepositoryException e) {

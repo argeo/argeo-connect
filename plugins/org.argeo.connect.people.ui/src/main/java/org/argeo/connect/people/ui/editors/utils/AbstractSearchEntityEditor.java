@@ -19,7 +19,6 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.composites.PeopleVirtualTableViewer;
-import org.argeo.connect.people.ui.extracts.ITableProvider;
 import org.argeo.connect.people.ui.extracts.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
@@ -51,7 +50,7 @@ import org.eclipse.ui.part.EditorPart;
  * Search the repository with a given entity type
  */
 public abstract class AbstractSearchEntityEditor extends EditorPart implements
-		PeopleNames, ITableProvider {
+		PeopleNames {
 
 	/* DEPENDENCY INJECTION */
 	private Session session;
@@ -135,7 +134,6 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	 * Overwrite to provide corresponding column definitions. Also used for
 	 * exports generation
 	 */
-	@Override
 	public abstract List<PeopleColumnDefinition> getColumnDefinition(
 			String extractId);
 
@@ -147,7 +145,6 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		filterTxt.setText("");
 	}
 
-	@Override
 	public Row[] getRows(String extractId) {
 		return rows;
 	}
@@ -357,14 +354,6 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	// ////////////
 	// Helpers
-	protected Row[] rowIteratorToArray(RowIterator rit) {
-		List<Row> rows = new ArrayList<Row>();
-		while (rit.hasNext()) {
-			rows.add(rit.nextRow());
-		}
-		return rows.toArray(new Row[rows.size()]);
-	}
-
 	protected Constraint localAnd(QueryObjectModelFactory factory,
 			Constraint defaultC, Constraint newC) throws RepositoryException {
 		if (defaultC == null)
@@ -389,15 +378,13 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		return text;
 	}
 
-	protected DateTime createLDT(Composite parent, String title,
-			String tooltip) {
+	protected DateTime createLDT(Composite parent, String title, String tooltip) {
 		Label label = new Label(parent, SWT.RIGHT);
 		label.setText(title);
-		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));		
+		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 		DateTime dateTime = new DateTime(parent, SWT.RIGHT | SWT.DATE
 				| SWT.MEDIUM | SWT.DROP_DOWN);
-		dateTime.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true,
-				false));
+		dateTime.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
 		dateTime.setToolTipText(tooltip);
 		return dateTime;
 	}

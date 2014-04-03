@@ -54,7 +54,7 @@ public class GetCalcExtract extends AbstractHandler {
 								PeopleUiConstants.DEFAULT_CALC_EXPORT, tmpFile);
 
 					Map<String, String> params = new HashMap<String, String>();
-					params.put(OpenFile.PARAM_FILE_NAME, tmpFile.getName());
+					params.put(OpenFile.PARAM_FILE_NAME, "Export-Persons-20140502.xls");
 					params.put(OpenFile.PARAM_FILE_URI,
 							"file://" + tmpFile.getAbsolutePath());
 					CommandUtils.callCommand(
