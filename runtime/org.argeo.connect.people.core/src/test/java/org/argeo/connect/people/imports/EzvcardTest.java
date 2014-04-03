@@ -6,8 +6,10 @@ import org.argeo.support.junit.AbstractSpringTestCase;
 public class EzvcardTest extends AbstractSpringTestCase {
 	// private final static Log log = LogFactory.getLog(EzvcardTest.class);
 
+	@SuppressWarnings("unused")
 	private final static String PATH_TO_FILES = "org/argeo/connect/people/imports/";
 
+	@SuppressWarnings("unused")
 	public void testCanonical() throws Exception {
 		String text = "BEGIN:vcard\r\n" + "VERSION:3.0\r\n"
 				+ "N:House;Gregory;;Dr;MD\r\n"

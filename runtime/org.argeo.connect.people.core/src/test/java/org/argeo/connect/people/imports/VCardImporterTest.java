@@ -12,6 +12,7 @@ public class VCardImporterTest extends AbstractModelTestCase {
 
 	protected String pathToRepository = System.getProperty("user.dir")
 			+ "/target/jackrabbit-" + System.getProperty("user.name");
+	@SuppressWarnings("unused")
 	private Session session;
 
 	private final static String PATH_TO_FILES = "org/argeo/connect/people/imports/";
@@ -41,6 +42,7 @@ public class VCardImporterTest extends AbstractModelTestCase {
 
 	}
 
+	@SuppressWarnings("unused")
 	private void importFiles() throws Exception {
 		Resource vCardFile = new ClassPathResource(PATH_TO_FILES
 				+ "contacts.vcf");
