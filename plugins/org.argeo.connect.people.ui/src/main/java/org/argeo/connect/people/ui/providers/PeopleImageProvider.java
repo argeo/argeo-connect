@@ -3,7 +3,7 @@ package org.argeo.connect.people.ui.providers;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.film.FilmTypes;
+import org.argeo.connect.media.FilmTypes;
 import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleTypes;

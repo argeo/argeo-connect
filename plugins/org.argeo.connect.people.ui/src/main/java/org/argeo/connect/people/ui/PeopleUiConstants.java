@@ -3,7 +3,7 @@ package org.argeo.connect.people.ui;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.argeo.connect.film.FilmTypes;
+import org.argeo.connect.media.FilmTypes;
 import org.argeo.connect.people.PeopleTypes;
 
 /** Defines some constants that are used all across the user interface **/
@@ -80,24 +80,33 @@ public interface PeopleUiConstants {
 	// custom image for each item : set size
 	public final static String PEOPLE_CSS_ITEM_IMAGE = "peopleCss-itemImage";
 
-	// /////////////////////////
-	// LEGACY to be removed
-	public final static String PEOPLE_CSS_TITLE_COMPOSITE_FIRST = "peopleCss-titleCompositeFirst";
-	public final static String PEOPLE_CSS_TITLE_COMPOSITE = "peopleCss-titleComposite";
-
-	// for various meta lists subtitles
-	// public final static String PEOPLE_CSS_LIST_SUBTITLE_FIRST =
-	// "peopleCss-list-subtitle-first";
-	public final static String PEOPLE_CSS_LIST_SUBTITLE = "peopleCss-list-subtitle";
-
-	// for main items "header" with all main info
-	public final static String PEOPLE_CSS_GENERALINFO_TITLE = "peopleCss-generalInfo-title";
-	public final static String PEOPLE_CSS_GENERALINFO_SUBTITLE = "peopleCss-generalInfo-subtitle";
-	public final static String PEOPLE_CSS_GENERALINFO_COMPOSITE = "peopleCss-generalInfo-composite";
-	public final static String PEOPLE_CSS_GENERALINFO_TAGS = "peopleCss-generalInfo-tags";
-
 	public final static String PEOPLE_CSS_URL_STYLE = "style='color:#383838; font-decoration:none;'";
-	public final static String CSS_STYLE_UNIQUE_CELL_TABLE = "uniqueCellTable";
+	
+	// // /////////////////////////
+	// // LEGACY to be removed
+	// public final static String PEOPLE_CSS_TITLE_COMPOSITE_FIRST =
+	// "peopleCss-titleCompositeFirst";
+	// public final static String PEOPLE_CSS_TITLE_COMPOSITE =
+	// "peopleCss-titleComposite";
+	//
+	// // for various meta lists subtitles
+	// // public final static String PEOPLE_CSS_LIST_SUBTITLE_FIRST =
+	// // "peopleCss-list-subtitle-first";
+	// public final static String PEOPLE_CSS_LIST_SUBTITLE =
+	// "peopleCss-list-subtitle";
+	//
+	// // for main items "header" with all main info
+	// public final static String PEOPLE_CSS_GENERALINFO_TITLE =
+	// "peopleCss-generalInfo-title";
+	// public final static String PEOPLE_CSS_GENERALINFO_SUBTITLE =
+	// "peopleCss-generalInfo-subtitle";
+	// public final static String PEOPLE_CSS_GENERALINFO_COMPOSITE =
+	// "peopleCss-generalInfo-composite";
+	// public final static String PEOPLE_CSS_GENERALINFO_TAGS =
+	// "peopleCss-generalInfo-tags";
+	//
+	// public final static String CSS_STYLE_UNIQUE_CELL_TABLE =
+	// "uniqueCellTable";
 
 	// a dummy style just to see where is a composite
 	// public final static String PEOPLE_CSS_SHOW_BORDER =

@@ -4,16 +4,15 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.argeo.connect.film.FilmTypes;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.editors.FilmEditor;
-import org.argeo.connect.people.ui.editors.OrgEditor;
-import org.argeo.connect.people.ui.editors.PersonEditor;
+import org.argeo.connect.people.ui.PeopleUiService;
+import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.editors.utils.EntityEditorInput;
+import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -25,16 +24,17 @@ import org.eclipse.ui.PartInitException;
 public class NodeListDoubleClickListener implements IDoubleClickListener {
 
 	private PeopleService peopleService;
+	private PeopleUiService peopleUiService;
 	private String parentNodeType = null;
-
-	// private String tableId = null;
 
 	/**
 	 * Set people service and table id to enable opening of the correct editor
 	 * when displaying list of references
 	 */
-	public NodeListDoubleClickListener(PeopleService peopleService) {
+	public NodeListDoubleClickListener(PeopleService peopleService,
+			PeopleUiService peopleUiService) {
 		this.peopleService = peopleService;
+		this.peopleUiService = peopleUiService;
 	}
 
 	public NodeListDoubleClickListener(PeopleService peopleService,
@@ -71,26 +71,31 @@ public class NodeListDoubleClickListener implements IDoubleClickListener {
 			try {
 				Node curNode = (Node) obj;
 				Session session = curNode.getSession();
+
+				String cmdID = peopleUiService.getOpenEntityEditorCmdId();
 				// Mapping for jobs
 				if (curNode.isNodeType(PeopleTypes.PEOPLE_JOB)) {
 					if (PeopleTypes.PEOPLE_PERSON.equals(parentNodeType)) {
 						Node linkedOrg = peopleService.getEntityByUid(session,
 								curNode.getProperty(PeopleNames.PEOPLE_REF_UID)
 										.getString());
-						openNodeEditor(linkedOrg.getIdentifier(), OrgEditor.ID);
+						CommandUtils.callCommand(cmdID,
+								OpenEntityEditor.PARAM_ENTITY_UID,
+								linkedOrg.getIdentifier());
 					} else if (PeopleTypes.PEOPLE_ORGANIZATION
 							.equals(parentNodeType))
-						openNodeEditor(curNode.getParent().getParent()
-								.getIdentifier(), PersonEditor.ID);
-				} else if (curNode.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
-					openNodeEditor(curNode.getIdentifier(), PersonEditor.ID);
-				} else if (curNode.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)) {
-					openNodeEditor(curNode.getIdentifier(), OrgEditor.ID);
-				} else if (curNode.isNodeType(FilmTypes.FILM)) {
-					openNodeEditor(curNode.getIdentifier(), FilmEditor.ID);
+						CommandUtils.callCommand(cmdID,
+								OpenEntityEditor.PARAM_ENTITY_UID, curNode
+										.getParent().getParent()
+										.getIdentifier());
+				} else {
+					CommandUtils.callCommand(cmdID,
+							OpenEntityEditor.PARAM_ENTITY_UID,
+							curNode.getIdentifier());
 				}
 			} catch (RepositoryException re) {
-				throw new PeopleException("Unable to open editor for node", re);
+				throw new PeopleException("Unable to open editor for node "
+						+ obj, re);
 			}
 		}
 	}

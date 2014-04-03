@@ -24,7 +24,7 @@ import javax.jcr.query.qom.StaticOperand;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.film.FilmTypes;
+import org.argeo.connect.media.FilmTypes;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -444,14 +444,15 @@ public class PeopleServiceImpl implements PeopleService {
 	@Override
 	public void addTag(Node tagsParentNode, String tag) {
 		try {
-			
+
 			// remove trailing and starting space
 			tag = tag.trim();
-			
+
 			Session session = tagsParentNode.getSession();
 			String cleanedTag = JcrUtils.replaceInvalidChars(tag).trim();
 			String relPath = JcrUtils.firstCharsToPath(cleanedTag, 2);
-			String path = tagsParentNode.getPath() + "/" + relPath + "/" + cleanedTag;
+			String path = tagsParentNode.getPath() + "/" + relPath + "/"
+					+ cleanedTag;
 			// Sanity check
 			if (session.nodeExists(path)) {
 				Node existing = session.getNode(path);

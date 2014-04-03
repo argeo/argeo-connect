@@ -1,4 +1,4 @@
-package org.argeo.connect.film;
+package org.argeo.connect.media;
 
 /** JCR names managed by Connect Film. */
 public interface FilmNames {

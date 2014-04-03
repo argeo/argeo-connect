@@ -22,8 +22,8 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.film.FilmNames;
-import org.argeo.connect.film.FilmTypes;
+import org.argeo.connect.media.FilmNames;
+import org.argeo.connect.media.FilmTypes;
 import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;

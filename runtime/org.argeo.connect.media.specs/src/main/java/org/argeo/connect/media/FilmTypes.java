@@ -1,4 +1,4 @@
-package org.argeo.connect.film;
+package org.argeo.connect.media;
 
 /** JCR node types managed by Connect Film */
 public interface FilmTypes {

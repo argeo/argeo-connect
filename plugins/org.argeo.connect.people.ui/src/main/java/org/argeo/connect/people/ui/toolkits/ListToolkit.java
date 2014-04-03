@@ -1,15 +1,12 @@
 package org.argeo.connect.people.ui.toolkits;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.film.FilmTypes;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -22,7 +19,6 @@ import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.ui.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
-import org.argeo.connect.people.ui.providers.FilmOverviewLabelProvider;
 import org.argeo.connect.people.ui.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.ui.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.ui.providers.RoleListLabelProvider;
@@ -287,238 +283,6 @@ public class ListToolkit {
 		});
 		return tableColumnLayout;
 
-	}
-
-	/**
-	 * List of all person or organisation that participate in making this film.
-	 * It is caller responsability to add corresponding double click listener on
-	 * the returned viewer
-	 */
-	public void populateParticipantsPanel(Composite parent, final Node entity) {
-		parent.setLayout(new GridLayout());
-		ListPanelPart mainInfoPart = new ParticipantsPanelPart(parent, entity);
-		mainInfoPart.refresh();
-		mainInfoPart.initialize(form);
-		form.addPart(mainInfoPart);
-	}
-
-	private class ParticipantsPanelPart extends ListPanelPart {
-		private TableViewer participantsViewer;
-
-		public ParticipantsPanelPart(Composite parent, Node entity) {
-			super(parent, entity);
-		}
-
-		protected void reCreateChildComposite(Composite panel, Node entity) {
-			// Create new button
-			Button addBtn = isCurrentlyCheckedOut ? toolkit.createButton(panel,
-					"Add crew", SWT.PUSH) : null;
-			if (addBtn != null)
-				configureAddFilmParticipationBtn(addBtn, entity,
-						"Add a new crew member");
-
-			// Corresponding list
-			Composite tableComp = toolkit.createComposite(panel);
-			tableComp
-					.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			participantsViewer = new TableViewer(tableComp, SWT.V_SCROLL);
-			TableColumnLayout tableColumnLayout = createParticipantsTableColumns(
-					entity, tableComp, participantsViewer);
-			tableComp.setLayout(tableColumnLayout);
-			PeopleUiUtils.setTableDefaultStyle(participantsViewer, 60);
-
-			participantsViewer
-					.setContentProvider(new BasicNodeListContentProvider());
-			participantsViewer
-					.addDoubleClickListener(new ListDoubleClickListener(false));
-			refreshContent(panel, entity);
-		}
-
-		protected void refreshContent(Composite parent, Node entity) {
-			try {
-				List<Node> members = new ArrayList<Node>();
-				if (!entity.hasNode(PeopleNames.PEOPLE_MEMBERS))
-					return; // No member to display
-				NodeIterator ni = entity.getNode(PeopleNames.PEOPLE_MEMBERS)
-						.getNodes();
-				while (ni.hasNext()) {
-					// Check relevant nodeType
-					Node currMember = ni.nextNode();
-					if (currMember.isNodeType(PeopleTypes.PEOPLE_MEMBER)) {
-						members.add(currMember);
-					}
-				}
-				participantsViewer.setInput(members);
-				participantsViewer.refresh();
-			} catch (RepositoryException re) {
-				throw new PeopleException(
-						"Cannot refresh film participation list", re);
-			}
-		}
-	}
-
-	private TableColumnLayout createParticipantsTableColumns(final Node entity,
-			Composite parent, TableViewer viewer) {
-		int[] bounds = { 150, 300 };
-		TableColumnLayout tableColumnLayout = new TableColumnLayout();
-
-		// Role
-		TableViewerColumn col = ViewerUtils.createTableViewerColumn(viewer, "",
-				SWT.LEFT, bounds[0]);
-		col.setLabelProvider(new RoleListLabelProvider());
-		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
-				80, 20, true));
-
-		// Person
-		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT,
-				bounds[1]);
-		col.setLabelProvider(new PersonOverviewLabelProvider(
-				PeopleUiConstants.LIST_TYPE_MEDIUM, peopleService));
-		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
-				200, 80, true));
-
-		// Edit & Remove links
-		viewer.getTable().addSelectionListener(new HtmlListRwtAdapter());
-		col = ViewerUtils.createTableViewerColumn(viewer, "Edit/Remove links",
-				SWT.NONE, 60);
-		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
-				40, 40, true));
-		col.setLabelProvider(new ColumnLabelProvider() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public String getText(Object element) {
-				try {
-					// get the corresponding person
-					Node link = (Node) element;
-					Node person = link.getParent().getParent();
-
-					if (CommonsJcrUtils.isNodeCheckedOutByMe(entity))
-						return PeopleHtmlUtils
-								.getEditParticipationSnippetForLists(link,
-										false)
-								+ " <br />"
-								+ PeopleHtmlUtils
-										.getRemoveReferenceSnippetForLists(
-												link, person);
-					else
-						return "";
-				} catch (RepositoryException e) {
-					throw new PeopleException(
-							"Error while getting versionable parent", e);
-				}
-
-			}
-		});
-
-		return tableColumnLayout;
-	}
-
-	/**
-	 * Film participation of a given person or organisation It is caller
-	 * responsability to add corresponding double click listener on the returned
-	 * viewer
-	 */
-	public void populateParticipationPanel(Composite parent, final Node entity) {
-		parent.setLayout(new GridLayout());
-		ListPanelPart mainInfoPart = new ParticipationsPanelPart(parent, entity);
-		mainInfoPart.refresh();
-		mainInfoPart.initialize(form);
-		form.addPart(mainInfoPart);
-	}
-
-	private class ParticipationsPanelPart extends ListPanelPart {
-		private TableViewer participationsViewer;
-
-		public ParticipationsPanelPart(Composite parent, Node entity) {
-			super(parent, entity);
-		}
-
-		protected void reCreateChildComposite(Composite panel, Node entity) {
-			// Create new button
-			final Button addBtn = isCurrentlyCheckedOut ? toolkit.createButton(
-					panel, "Add Film", SWT.PUSH) : null;
-			if (addBtn != null)
-				configureAddFilmParticipationBtn(addBtn, entity,
-						"Add a film participation");
-
-			// Corresponding list
-			Composite tableComp = toolkit.createComposite(panel);
-			tableComp
-					.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			participationsViewer = new TableViewer(tableComp, SWT.V_SCROLL);
-			TableColumnLayout tableColumnLayout = createParticipationTableColumns(
-					entity, tableComp, participationsViewer);
-			tableComp.setLayout(tableColumnLayout);
-			PeopleUiUtils.setTableDefaultStyle(participationsViewer, 60);
-
-			participationsViewer
-					.setContentProvider(new BasicNodeListContentProvider());
-			participationsViewer
-					.addDoubleClickListener(new ListDoubleClickListener(true));
-			refreshContent(panel, entity);
-		}
-
-		protected void refreshContent(Composite parent, Node entity) {
-			participationsViewer.setInput(peopleService.getRelatedEntities(
-					entity, PeopleTypes.PEOPLE_MEMBER, FilmTypes.FILM));
-		}
-	}
-
-	private TableColumnLayout createParticipationTableColumns(
-			final Node entity, Composite parent, TableViewer viewer) {
-		int[] bounds = { 150, 300 };
-		TableColumnLayout tableColumnLayout = new TableColumnLayout();
-
-		// Role
-		TableViewerColumn col = ViewerUtils.createTableViewerColumn(viewer, "",
-				SWT.LEFT, bounds[0]);
-		col.setLabelProvider(new RoleListLabelProvider());
-		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
-				80, 20, true));
-
-		// Film
-		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT,
-				bounds[1]);
-		col.setLabelProvider(new FilmOverviewLabelProvider(true, peopleService));
-		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
-				200, 80, true));
-
-		// Edit & Remove links
-		viewer.getTable().addSelectionListener(new HtmlListRwtAdapter());
-		col = ViewerUtils.createTableViewerColumn(viewer, "Edit/Remove links",
-				SWT.NONE, 60);
-		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
-				40, 40, true));
-		col.setLabelProvider(new ColumnLabelProvider() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public String getText(Object element) {
-				try {
-					// get the corresponding person
-					Node link = (Node) element;
-					Node person = link.getParent().getParent();
-
-					if (CommonsJcrUtils.isNodeCheckedOutByMe(entity))
-						return PeopleHtmlUtils
-								.getEditParticipationSnippetForLists(link, true)
-								+ " <br />"
-								+ PeopleHtmlUtils
-										.getRemoveReferenceSnippetForLists(
-												link, person);
-					else
-						return "";
-
-				} catch (RepositoryException e) {
-					throw new PeopleException(
-							"Error while getting versionable parent", e);
-				}
-
-			}
-		});
-
-		return tableColumnLayout;
 	}
 
 	// ///////////////////////

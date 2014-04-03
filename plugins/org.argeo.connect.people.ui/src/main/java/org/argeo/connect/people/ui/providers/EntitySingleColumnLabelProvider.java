@@ -3,7 +3,6 @@ package org.argeo.connect.people.ui.providers;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.film.FilmTypes;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -24,7 +23,7 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 
 	private OrgListLabelProvider orgLp = new OrgListLabelProvider();
 	private PersonListLabelProvider personLp;
-	private FilmListLabelProvider filmLp = new FilmListLabelProvider();
+	// private FilmListLabelProvider filmLp = new FilmListLabelProvider();
 	private GroupLabelProvider groupLp = new GroupLabelProvider(
 			PeopleUiConstants.LIST_TYPE_SMALL);
 
@@ -42,8 +41,8 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 				result = personLp.getText(element);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION))
 				result = orgLp.getText(element);
-			else if (entity.isNodeType(FilmTypes.FILM))
-				result = filmLp.getText(element);
+			// else if (entity.isNodeType(FilmTypes.FILM))
+			// result = filmLp.getText(element);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_GROUP))
 				result = groupLp.getText(element);
 			else
