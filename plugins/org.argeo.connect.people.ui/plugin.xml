@@ -62,10 +62,16 @@
 		point="org.eclipse.ui.editors">
 		
 		<!-- Search -->
-		<editor
+		<!-- <editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/search.png"
 			id="org.argeo.connect.people.ui.defaultSearchEntityEditor"
+			name="Search">
+		</editor> --> 
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/search.png"
+			id="org.argeo.connect.people.ui.listValuesEditor"
 			name="Search">
 		</editor>
 		<editor
@@ -139,17 +145,7 @@
 	<!-- COMMANDS -->
 	<extension
 		point="org.eclipse.ui.commands">
-		<!-- Generic Check in and out introduced by people -->
-		<command
-      		id="org.argeo.connect.people.ui.checkOutItem"
-            name="checkOutItem">
-    	</command>
-    	<command
-      		id="org.argeo.connect.people.ui.cancelAndCheckInItem"
-            name="cancelAndcheckInItem">
-    	</command>
-    	
-    	<!-- Open correct editor given the node type --> 
+		<!-- Open correct editor given the node type --> 
     	<command
 			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
 			id="org.argeo.connect.people.ui.openEntityEditor"
@@ -164,6 +160,25 @@
 				name="The Model Specific Entity Uid">
 			</commandParameter>
 		</command>    
+
+		<command
+			defaultHandler="org.argeo.connect.people.ui.commands.OpenSearchEntityEditor"
+			id="org.argeo.connect.people.ui.openSearchEntityEditor"
+			name="Open Search Entity Editor">
+			 <commandParameter
+         		id="param.nodeType"
+         		name="Node Type">
+  	 		</commandParameter>
+			 <commandParameter
+         		id="param.editorName"
+         		name="Editor Name">
+  	 		</commandParameter>
+			 <commandParameter
+         		id="param.basePath"
+         		name="Parent base path">
+  	 		</commandParameter>
+		</command>
+	
 
 		<!-- Person and organisation management --> 
 		<command
@@ -222,6 +237,16 @@
          		id="param.isBackward"
          		name="When editing an existing job, true if editing an org">
   	 		</commandParameter>
+    	</command>
+    	
+    	<!-- Generic Check in and out introduced by people -->
+		<command
+      		id="org.argeo.connect.people.ui.checkOutItem"
+            name="checkOutItem">
+    	</command>
+    	<command
+      		id="org.argeo.connect.people.ui.cancelAndCheckInItem"
+            name="cancelAndcheckInItem">
     	</command>
     	
     	<!-- Entity CRUD --> 
@@ -426,15 +451,6 @@
 			id="org.argeo.connect.people.ui.doNothing"
 			name="Open menu">
 		</command>    
-		<command
-			defaultHandler="org.argeo.connect.people.ui.commands.OpenSearchEntityEditor"
-			id="org.argeo.connect.people.ui.openSearchEntityEditor"
-			name="Open Search Entity Editor">
-			 <commandParameter
-         		id="param.entityType"
-         		name="Entity Node Type">
-  	 		</commandParameter>
-		</command>
 	</extension>		
 	
 	

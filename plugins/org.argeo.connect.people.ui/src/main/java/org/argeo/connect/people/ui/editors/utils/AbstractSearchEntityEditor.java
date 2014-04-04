@@ -1,14 +1,12 @@
 package org.argeo.connect.people.ui.editors.utils;
 
 import java.awt.KeyboardFocusManager;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.Row;
-import javax.jcr.query.RowIterator;
 import javax.jcr.query.qom.Constraint;
 import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
@@ -47,7 +45,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 
 /**
- * Search the repository with a given entity type
+ * Search the repository with a given entity type at base path. Expect a {@Code
+ *  SearchNodeEditorInput} editor input.
  */
 public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		PeopleNames {
@@ -58,7 +57,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	private PeopleService peopleService;
 
 	// Business Objects
-	private String entityType;
+	// private String entityType;
 
 	// This page widgets
 	private TableViewer tableViewer;
@@ -73,8 +72,8 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 			throws PartInitException {
 		setSite(site);
 		setInput(input);
-		SearchEntityEditorInput sei = (SearchEntityEditorInput) getEditorInput();
-		entityType = sei.getNodeType();
+		String label = ((SearchNodeEditorInput) getEditorInput()).getName();
+		setPartName(label);
 	}
 
 	@Override
@@ -104,7 +103,8 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	}
 
 	/** Override this to provide type specific static filters */
-	protected abstract void populateStaticFilters(Composite parent);
+	protected void populateStaticFilters(Composite body) {
+	}
 
 	protected abstract void refreshStaticFilteredList();
 
@@ -156,7 +156,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-				entityType, peopleUiService));
+				getEntityType(), peopleUiService));
 	}
 
 	/** Refresh the table viewer based on the free text search field */
@@ -197,38 +197,11 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 						.createValue("*" + token + "*"));
 				Constraint currC = factory.fullTextSearch(
 						source.getSelectorName(), null, so);
-				if (defaultC == null)
-					defaultC = currC;
-				else
-					defaultC = factory.and(defaultC, currC);
+				localAnd(factory, defaultC, currC);
 			}
 		}
 		return defaultC;
 	}
-
-	// /** Refresh the table viewer only based on the free text search field */
-	// private void refreshFilteredList() {
-	// try {
-	// QueryManager queryManager = session.getWorkspace()
-	// .getQueryManager();
-	// QueryObjectModelFactory factory = queryManager.getQOMFactory();
-	// Selector source = factory.selector(entityType, entityType);
-	// Constraint defaultC = getFreeTextConstraint(factory, source);
-	//
-	// // TODO handle the case where no TITLE prop is available
-	// Ordering order = factory.ascending(factory.propertyValue(
-	// source.getSelectorName(), Property.JCR_TITLE));
-	// Ordering[] orderings = { order };
-	// QueryObjectModel query = factory.createQuery(source, defaultC,
-	// orderings, null);
-	// QueryResult result = query.execute();
-	// Row[] rows = rowIteratorToArray(result.getRows());
-	// setViewerInput(rows);
-	//
-	// } catch (RepositoryException e) {
-	// throw new PeopleException("Unable to list entities with filter ", e);
-	// }
-	// }
 
 	// Life cycle management
 	@Override
@@ -345,7 +318,11 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	}
 
 	protected String getEntityType() {
-		return entityType;
+		return ((SearchNodeEditorInput) getEditorInput()).getNodeType();
+	}
+
+	protected String getBasePath() {
+		return ((SearchNodeEditorInput) getEditorInput()).getBasePath();
 	}
 
 	protected PeopleService getPeopleService() {

@@ -4,7 +4,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.SearchByTagEditor;
-import org.argeo.connect.people.ui.editors.utils.SearchEntityEditorInput;
+import org.argeo.connect.people.ui.editors.utils.SearchNodeEditorInput;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -24,7 +24,7 @@ public class OpenSearchByTagEditor extends AbstractHandler {
 
 		String tagValue = event.getParameter(PARAM_TAG_VALUE);
 		try {
-			SearchEntityEditorInput eei = new SearchEntityEditorInput(
+			SearchNodeEditorInput eei = new SearchNodeEditorInput(
 					PeopleTypes.PEOPLE_ENTITY);
 
 			IEditorPart part = PeopleUiPlugin.getDefault().getWorkbench()

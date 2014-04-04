@@ -94,13 +94,12 @@ public class MailingListEditor extends GroupEditor {
 		filterTxt = createFilterText(buttonsCmp);
 		Button addBtn = toolkit
 				.createButton(buttonsCmp, "Add member", SWT.PUSH);
-	
+
 		// Button exportBtn = toolkit.createButton(buttonsCmp, "Export",
 		// SWT.PUSH);
 		// configureCallExtractButton(exportBtn,
 		// "Export current results as a tabular file.");
 
-		
 		// Add a button that triggers a "mailto action" with the mail of all
 		// items that are currently displayed in the bottom table.
 		final Button button = toolkit.createButton(buttonsCmp, "Mail to",
@@ -125,13 +124,14 @@ public class MailingListEditor extends GroupEditor {
 		tableComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		membersViewer = createTableViewer(tableComp);
-		membersViewer.setContentProvider(new MyLazyContentProvider(membersViewer));
+		membersViewer.setContentProvider(new MyLazyContentProvider(
+				membersViewer));
 
 		// Add life cycle management
 		AbstractFormPart sPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
-				refreshFilteredList(null);
+				refreshFilteredList();
 			}
 		};
 		sPart.initialize(getManagedForm());
@@ -141,8 +141,8 @@ public class MailingListEditor extends GroupEditor {
 				"Add new members to this mailing list",
 				PeopleTypes.PEOPLE_CONTACTABLE);
 
-		refreshFilteredList(null);
-		
+		refreshFilteredList();
+
 		// Double click
 		PeopleJcrViewerDClickListener ndcl = new PeopleJcrViewerDClickListener(
 				PeopleTypes.PEOPLE_ENTITY, getPeopleUiService());
@@ -163,14 +163,14 @@ public class MailingListEditor extends GroupEditor {
 			private static final long serialVersionUID = 5003010530960334977L;
 
 			public void modifyText(ModifyEvent event) {
-				refreshFilteredList(filterTxt.getText());
+				refreshFilteredList();
 				// viewer.setInput(rows);
 			}
 		});
 
 	}
 
-	protected void refreshFilteredList(String filter) {
+	protected void refreshFilteredList() {
 		try {
 			QueryManager queryManager = getSession().getWorkspace()
 					.getQueryManager();
@@ -193,33 +193,41 @@ public class MailingListEditor extends GroupEditor {
 					refSlct.getSelectorName(),
 					getNode().getNode(PeopleNames.PEOPLE_MEMBERS).getPath());
 
-			// TODO clean this
-			if (filter == null)
-				filter = "";
-
 			// Parse the String
-			String[] strs = filter.trim().split(" ");
-			if (strs.length == 0) {
-				StaticOperand so = factory.literal(getSession()
-						.getValueFactory().createValue("*"));
-				Constraint currC = factory.fullTextSearch(
-						refSlct.getSelectorName(), null, so);
-				defaultC = factory.and(defaultC, currC);
-			} else {
+			// String[] strs = filter.trim().split(" ");
+			// if (strs.length == 0) {
+			// StaticOperand so = factory.literal(getSession()
+			// .getValueFactory().createValue("*"));
+			// Constraint currC = factory.fullTextSearch(
+			// refSlct.getSelectorName(), null, so);
+			// defaultC = factory.and(defaultC, currC);
+			// } else {
+			// for (String token : strs) {
+			// StaticOperand so = factory.literal(getSession()
+			// .getValueFactory().createValue("*" + token + "*"));
+			// Constraint currC = factory.fullTextSearch(
+			// mainSlct.getSelectorName(), null, so);
+			// if (defaultC == null)
+			// defaultC = currC;
+			// else
+			// defaultC = factory.and(defaultC, currC);
+			// }
+			// }
+
+			String filter = filterTxt.getText();
+			if (CommonsJcrUtils.checkNotEmptyString(filter)) {
+				String[] strs = filter.trim().split(" ");
 				for (String token : strs) {
 					StaticOperand so = factory.literal(getSession()
 							.getValueFactory().createValue("*" + token + "*"));
 					Constraint currC = factory.fullTextSearch(
 							mainSlct.getSelectorName(), null, so);
-					if (defaultC == null)
-						defaultC = currC;
-					else
-						defaultC = factory.and(defaultC, currC);
+					localAnd(factory, defaultC, currC);
 				}
 			}
+
 			QueryObjectModel query;
 			query = factory.createQuery(jointSrc, defaultC, null, null);
-			// query.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
 			QueryResult result = query.execute();
 			setViewerInput(CommonsJcrUtils.rowIteratorToArray(result.getRows()));
 
@@ -330,7 +338,7 @@ public class MailingListEditor extends GroupEditor {
 		});
 		return viewer;
 	}
-	
+
 	/** Use this method to update the result table */
 	protected void setViewerInput(Row[] rows) {
 		this.rows = rows;
@@ -339,7 +347,6 @@ public class MailingListEditor extends GroupEditor {
 		membersViewer.setItemCount(rows.length);
 		membersViewer.refresh();
 	}
-	
 
 	// private class LazyJcrContentProvider implements ILazyContentProvider {
 	//

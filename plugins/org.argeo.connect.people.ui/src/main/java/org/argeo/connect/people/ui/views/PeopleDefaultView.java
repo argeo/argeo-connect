@@ -1,6 +1,8 @@
 package org.argeo.connect.people.ui.views;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -136,9 +138,13 @@ public class PeopleDefaultView extends ViewPart {
 
 	private void callCommand(String commandId) {
 		if (CMD_OPEN_SEARCH_EDITOR.equals(commandId)) {
-			CommandUtils.callCommand(peopleUiService.getOpenSearchEntityEditorCmdId(),
-					OpenSearchEntityEditor.PARAM_ENTITY_TYPE,
+			Map<String, String> params = new HashMap<String, String>();
+			params.put(OpenSearchEntityEditor.PARAM_NODE_TYPE,
 					PeopleTypes.PEOPLE_ENTITY);
+			params.put(OpenSearchEntityEditor.PARAM_EDITOR_NAME, "Search");
+			params.put(OpenSearchEntityEditor.PARAM_BASE_PATH, "/");
+			CommandUtils.callCommand(
+					peopleUiService.getOpenSearchEntityEditorCmdId(), params);
 		} else if (CMD_LOGOUT.equals(commandId))
 			CommandUtils.callCommand(CMD_LOGOUT);
 	}

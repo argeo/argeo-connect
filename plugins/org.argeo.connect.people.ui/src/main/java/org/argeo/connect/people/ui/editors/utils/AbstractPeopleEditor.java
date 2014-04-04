@@ -11,6 +11,8 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.query.qom.Constraint;
+import javax.jcr.query.qom.QueryObjectModelFactory;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
@@ -372,6 +374,14 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	}
 
 	/* UTILITES */
+	protected Constraint localAnd(QueryObjectModelFactory factory,
+			Constraint defaultC, Constraint newC) throws RepositoryException {
+		if (defaultC == null)
+			return newC;
+		else
+			return factory.and(defaultC, newC);
+	}
+
 	/** Forces refresh of all form parts of the current editor */
 	public void forceRefresh(Object object) {
 		for (IFormPart part : mForm.getParts()) {

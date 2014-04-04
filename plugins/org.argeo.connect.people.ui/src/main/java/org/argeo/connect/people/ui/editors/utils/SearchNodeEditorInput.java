@@ -1,20 +1,39 @@
 package org.argeo.connect.people.ui.editors.utils;
 
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 
 /**
  * Editor input for an editor that display a filtered list of nodes that have a
- * given JCR Node Type
+ * given JCR Node Type under a given path. A name might be given to display in
+ * the corresponding tab of the editor
  */
-public class SearchEntityEditorInput implements IEditorInput {
+public class SearchNodeEditorInput implements IEditorInput {
 
 	private final String nodeType;
+	private final String basePath;
+	private final String name;
 
 	/** Node type cannot be null */
-	public SearchEntityEditorInput(String nodeType) {
+	public SearchNodeEditorInput(String nodeType) {
 		this.nodeType = nodeType;
+		this.name = nodeType;
+		this.basePath = "/";
+	}
+
+	/** Node type cannot be null */
+	public SearchNodeEditorInput(String nodeType, String basePath, String name) {
+		this.nodeType = nodeType;
+		if (CommonsJcrUtils.checkNotEmptyString(basePath))
+			this.basePath = basePath;
+		else
+			this.basePath = "/";
+		if (CommonsJcrUtils.checkNotEmptyString(name))
+			this.name = name;
+		else
+			this.name = nodeType;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -35,7 +54,11 @@ public class SearchEntityEditorInput implements IEditorInput {
 
 	@Override
 	public String getName() {
-		return nodeType;
+		return name;
+	}
+
+	public String getBasePath() {
+		return basePath;
 	}
 
 	public String getNodeType() {
@@ -49,7 +72,7 @@ public class SearchEntityEditorInput implements IEditorInput {
 
 	@Override
 	public String getToolTipText() {
-		return "Search among all " + nodeType
+		return "Search among all " + name
 				+ " defined in the current repository";
 	}
 
@@ -60,9 +83,12 @@ public class SearchEntityEditorInput implements IEditorInput {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		SearchEntityEditorInput other = (SearchEntityEditorInput) obj;
-		if (!nodeType.equals(other.getNodeType()))
+		SearchNodeEditorInput other = (SearchNodeEditorInput) obj;
+		if (!nodeType.equals(other.getNodeType())
+				|| !name.equals(other.getName())
+				|| !basePath.equals(other.getBasePath()))
 			return false;
+
 		return true;
 	}
 }

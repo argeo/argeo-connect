@@ -117,7 +117,7 @@ public class EntityToolkit {
 							Link link = new Link(tagCmp, SWT.NONE);
 							link.setData(PeopleUiConstants.CUSTOM_VARIANT,
 									"tag");
-							link.setText("<a>#" + tagValue + "</a>");
+							link.setText(" #<a>" + tagValue + "</a>");
 							link.setData(PeopleUiConstants.MARKUP_ENABLED,
 									Boolean.TRUE);
 
