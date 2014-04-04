@@ -13,7 +13,7 @@ import org.argeo.connect.people.ui.composites.BankAccountComposite;
 import org.argeo.connect.people.ui.utils.JcrUiUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.argeo.connect.people.utils.OrgJcrUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -141,7 +141,7 @@ public class LegalInfoToolkit {
 				try {
 					if (!entity.hasNode(PeopleNames.PEOPLE_PAYMENT_ACCOUNTS)
 							&& CommonsJcrUtils.isNodeCheckedOutByMe(entity)) {
-						PeopleJcrUtils.createPaymentAccount(entity,
+						OrgJcrUtils.createPaymentAccount(entity,
 								PeopleTypes.PEOPLE_BANK_ACCOUNT, "new");
 						entity.getSession().save();
 					}
@@ -155,7 +155,7 @@ public class LegalInfoToolkit {
 					child.dispose();
 				}
 
-				NodeIterator ni = PeopleJcrUtils.getPaymentAccounts(entity);
+				NodeIterator ni = OrgJcrUtils.getPaymentAccounts(entity);
 				while (ni != null && ni.hasNext()) {
 					Composite cmp = new BankAccountComposite(group, 0, toolkit,
 							form, ni.nextNode());

@@ -42,4 +42,8 @@ public interface PeopleConstants {
 	public final static String LANG_DE = "de";
 	public final static String LANG_FR = "fr";
 
+	// String used in the various pathes to replace an empty value 
+	// Typically /?/john 
+	public final static String UNKNOWN_NAME = "?";
+
 }

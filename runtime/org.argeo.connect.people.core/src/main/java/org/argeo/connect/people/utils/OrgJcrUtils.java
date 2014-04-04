@@ -21,7 +21,7 @@ import org.argeo.connect.people.PeopleTypes;
  * Static utility methods to manage CRM organisation concepts in JCR. Rather use
  * these methods than direct JCR queries in order to ease model evolution.
  */
-public class OrgJcrUtils {
+public class OrgJcrUtils implements PeopleNames {
 
 	/**
 	 * Mainly used during imports to provide a key to a given organisation. Do
@@ -82,4 +82,50 @@ public class OrgJcrUtils {
 			throw new PeopleException("More than 1 org with name " + name
 					+ " has been found.");
 	}
+
+	// ///////////////////////////
+	// PAYMENT MANAGEMENT
+	public static NodeIterator getPaymentAccounts(Node entity) {
+		try {
+			if (entity.hasNode(PEOPLE_PAYMENT_ACCOUNTS))
+				return entity.getNode(PEOPLE_PAYMENT_ACCOUNTS).getNodes();
+			else
+				return null;
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"Error while getting payment accounts for node " + entity,
+					e);
+		}
+	}
+
+	public static Node getPrimaryPaymentAccount(Node entity) {
+		NodeIterator nit = getPaymentAccounts(entity);
+		if (nit == null || nit.getSize() == 0)
+			return null;
+		else if (nit.getSize() > 1)
+			throw new PeopleException(
+					"Unable to get primary payment accounts for " + entity
+							+ ". Multiple accounts is not implemented and "
+							+ nit.getSize() + " accounts has been found.");
+
+		else
+			return nit.nextNode();
+	}
+
+	public static Node createPaymentAccount(Node entity, String nodeType,
+			String name) {
+		try {
+			Node accounts = null;
+			if (entity.hasNode(PEOPLE_PAYMENT_ACCOUNTS))
+				accounts = entity.getNode(PEOPLE_PAYMENT_ACCOUNTS);
+			else
+				accounts = entity.addNode(PEOPLE_PAYMENT_ACCOUNTS);
+			return accounts.addNode(name, nodeType);
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"Error while creating new payment account for node "
+							+ entity, e);
+		}
+	}
+
 }

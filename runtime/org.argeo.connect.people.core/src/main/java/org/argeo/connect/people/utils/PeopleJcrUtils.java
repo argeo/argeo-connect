@@ -25,6 +25,7 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.media.FilmNames;
 import org.argeo.connect.media.FilmTypes;
 import org.argeo.connect.people.ContactValueCatalogs;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
@@ -179,37 +180,6 @@ public class PeopleJcrUtils implements PeopleNames {
 					.getStringValue(primary, PEOPLE_CONTACT_VALUE);
 		else
 			return "";
-	}
-
-	// ///////////////////////////
-	// PAYMENT MANAGEMENT
-	public static NodeIterator getPaymentAccounts(Node entity) {
-		try {
-			if (entity.hasNode(PEOPLE_PAYMENT_ACCOUNTS))
-				return entity.getNode(PEOPLE_PAYMENT_ACCOUNTS).getNodes();
-			else
-				return null;
-		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Error while getting payment accounts for node " + entity,
-					e);
-		}
-	}
-
-	public static Node createPaymentAccount(Node entity, String nodeType,
-			String name) {
-		try {
-			Node accounts = null;
-			if (entity.hasNode(PEOPLE_PAYMENT_ACCOUNTS))
-				accounts = entity.getNode(PEOPLE_PAYMENT_ACCOUNTS);
-			else
-				accounts = entity.addNode(PEOPLE_PAYMENT_ACCOUNTS);
-			return accounts.addNode(name, nodeType);
-		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Error while creating new payment account for node "
-							+ entity, e);
-		}
 	}
 
 	/**
@@ -700,8 +670,6 @@ public class PeopleJcrUtils implements PeopleNames {
 				fileName.lastIndexOf("."), fileName.length()));
 	}
 
-	private final static String UNKNOWN_NAME = "?";
-
 	/**
 	 * Centralizes management of relPath creation for an entity given its type.
 	 * Returns null if the node hasn't the necessary property set and thus
@@ -756,11 +724,11 @@ public class PeopleJcrUtils implements PeopleNames {
 					relPath = JcrUtils.firstCharsToPath(lastName, 2) + "/"
 							+ lastName;
 				} else
-					relPath = UNKNOWN_NAME;
+					relPath = PeopleConstants.UNKNOWN_NAME;
 				if (firstName.length() > 0)
 					relPath += "/" + firstName;
 				else
-					relPath += "/" + UNKNOWN_NAME;
+					relPath += "/" + PeopleConstants.UNKNOWN_NAME;
 
 			} else if (node.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)
 					|| (nodeType != null && PeopleTypes.PEOPLE_ORGANIZATION
@@ -780,11 +748,14 @@ public class PeopleJcrUtils implements PeopleNames {
 					relPath = JcrUtils.firstCharsToPath(legalName, 2) + "/"
 							+ legalName;
 				else if (displayName.length() > 1)
-					relPath = UNKNOWN_NAME + "/"
+					relPath = PeopleConstants.UNKNOWN_NAME + "/"
 							+ JcrUtils.firstCharsToPath(displayName, 2) + "/"
 							+ displayName;
 			} else if (node.isNodeType(FilmTypes.FILM_FILM) || nodeType != null
 					&& FilmTypes.FILM_FILM.equals(nodeType)) {
+
+				// TODO remove this after refactoring the strategy to provide
+				// path for entities.
 				// init
 				String origTitle = "";
 				String origLatinTitle = "";
@@ -806,11 +777,12 @@ public class PeopleJcrUtils implements PeopleNames {
 					relPath = JcrUtils.firstCharsToPath(origTitle, 2) + "/"
 							+ origTitle;
 				else if (origLatinTitle.length() > 1)
-					relPath = UNKNOWN_NAME + "/"
+					relPath = PeopleConstants.UNKNOWN_NAME + "/"
 							+ JcrUtils.firstCharsToPath(origLatinTitle, 2)
 							+ "/" + origLatinTitle;
 				else if (displayName.length() > 1)
-					relPath = UNKNOWN_NAME + "/" + UNKNOWN_NAME + "/"
+					relPath = PeopleConstants.UNKNOWN_NAME + "/"
+							+ PeopleConstants.UNKNOWN_NAME + "/"
 							+ JcrUtils.firstCharsToPath(displayName, 2)
 							+ displayName;
 			} else if (node.isNodeType(PeopleTypes.PEOPLE_GROUP)

@@ -24,7 +24,6 @@ import javax.jcr.query.qom.StaticOperand;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.media.FilmTypes;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -136,13 +135,6 @@ public class PeopleServiceImpl implements PeopleService {
 					linkNodeType = PeopleTypes.PEOPLE_JOB;
 					parentNode = referencingNode
 							.getNode(PeopleNames.PEOPLE_JOBS);
-				}
-			} else if (referencingNode.isNodeType(FilmTypes.FILM_FILM)) {
-				if (referencedNode.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)
-						|| referencedNode.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
-					linkNodeType = PeopleTypes.PEOPLE_MEMBER;
-					parentNode = referencingNode
-							.getNode(PeopleNames.PEOPLE_MEMBERS);
 				}
 			} else if (referencingNode
 					.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST)) {
