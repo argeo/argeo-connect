@@ -120,6 +120,10 @@ public class OpenEntityEditor extends AbstractHandler {
 		}
 	}
 
+	protected PeopleService getPeopleService() {
+		return peopleService;
+	}
+
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;

@@ -11,7 +11,6 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.commands.OpenSearchByTagEditor;
@@ -48,37 +47,9 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 		return "org.argeo.connect.people.ui.specific.openFile";
 	}
 
-	public List<String> getDefinedFilteredTags(Session session, String filter) {
-		List<String> tags = new ArrayList<String>();
-		try {
-			Query query = session
-					.getWorkspace()
-					.getQueryManager()
-					.createQuery(
-							"select * from [" + NodeType.MIX_TITLE
-									+ "] as tags where ISDESCENDANTNODE('"
-									+ PeopleConstants.PEOPLE_TAGS_BASE_PATH
-									+ "') AND tags.[" + Property.JCR_TITLE
-									+ "] like '%" + filter
-									+ "%' ORDER BY tags.[" + Property.JCR_TITLE
-									+ "]", Query.JCR_SQL2);
-			NodeIterator nit = query.execute().getNodes();
-
-			while (nit.hasNext()) {
-				Node curr = nit.nextNode();
-				if (curr.hasProperty(Property.JCR_TITLE))
-					tags.add(curr.getProperty(Property.JCR_TITLE).getString());
-			}
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get tags values for node ", re);
-		}
-		return tags;
-	}
-
 	public List<String> getValueList(Session session, String basePath,
 			String filter) {
-		return getValueList(session, NodeType.MIX_TITLE,
-				basePath, filter);
+		return getValueList(session, NodeType.MIX_TITLE, basePath, filter);
 	}
 
 	public List<String> getValueList(Session session, String nodeType,

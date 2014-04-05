@@ -11,6 +11,7 @@ import javax.jcr.nodetype.NodeType;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.util.CsvParserWithLinesAsMap;
@@ -21,11 +22,14 @@ public class LanguagesCsvFileParser extends CsvParserWithLinesAsMap {
 	private final static String EN_SHORT_NAME = "Language name";
 	private final static String ISO_CODE = "639-1";
 
-	protected Session adminSession;
+	private final Session adminSession;
+	private final PeopleService peopleService;
 
-	public LanguagesCsvFileParser(Session adminSession) {
+	public LanguagesCsvFileParser(Session adminSession,
+			PeopleService peopleService) {
 		super();
 		this.adminSession = adminSession;
+		this.peopleService = peopleService;
 	}
 
 	@Override
@@ -34,8 +38,8 @@ public class LanguagesCsvFileParser extends CsvParserWithLinesAsMap {
 			String enName = line.get(EN_SHORT_NAME);
 			String isoCode = line.get(ISO_CODE);
 
-			Node langs = adminSession
-					.getNode(PeopleConstants.PEOPLE_LANGS_BASE_PATH);
+			Node langs = adminSession.getNode(peopleService
+					.getBasePathForType(PeopleConstants.RESOURCE_LANGS));
 			Node lang;
 			String relPath = isoCode.substring(0, 1) + "/" + isoCode;
 			if (!adminSession.nodeExists(langs.getPath() + "/" + relPath)) {

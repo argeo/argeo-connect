@@ -25,6 +25,7 @@ import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.composites.SimpleJcrTableComposite;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -49,6 +50,7 @@ public class PickUpLangDialog extends TrayDialog {
 	private static final long serialVersionUID = 3766899676609659573L;
 
 	// Business objects
+	private PeopleService peopleService;
 	private final Session session;
 	private Node selectedNode;
 
@@ -64,10 +66,12 @@ public class PickUpLangDialog extends TrayDialog {
 				PropertyType.STRING, "Label", 300));
 	};
 
-	public PickUpLangDialog(Shell parentShell, String title, Session session) {
+	public PickUpLangDialog(Shell parentShell, PeopleService peopleService,
+			Session session, String title) {
 		super(parentShell);
 		this.title = title;
 		this.session = session;
+		this.peopleService = peopleService;
 	}
 
 	protected Point getInitialSize() {
@@ -79,7 +83,8 @@ public class PickUpLangDialog extends TrayDialog {
 
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
 		tableCmp = new SimpleJcrTableComposite(dialogArea, style, session,
-				PeopleConstants.PEOPLE_LANGS_BASE_PATH,
+				peopleService
+						.getBasePathForType(PeopleConstants.RESOURCE_LANGS),
 				PeopleTypes.PEOPLE_ISO_LANGUAGE, colDefs, true, false);
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 

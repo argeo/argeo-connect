@@ -22,6 +22,13 @@ public interface PeopleService {
 			Node contact, String role);
 
 	/* BASE PATHS MANAGEMENT */
+
+	/** Exposes the application specific parent business path */
+	public String getBasePath();
+
+	/** Exposes the application specific parent path for resources */
+	public String getResourcesBasePath();
+
 	/**
 	 * Centralises the management of known types to provide corresponding base
 	 * path

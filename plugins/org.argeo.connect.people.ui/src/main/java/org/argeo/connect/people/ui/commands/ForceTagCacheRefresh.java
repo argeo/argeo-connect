@@ -7,6 +7,7 @@ import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.jcr.JcrUtils;
@@ -30,13 +31,6 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 	private Repository repository;
 	private PeopleService peopleService;
 
-	/**
-	 * Overwrite to provide a plugin specific path to the taggable node parent
-	 */
-	protected String getPathToTagsParent() {
-		return PeopleConstants.PEOPLE_TAGS_BASE_PATH;
-	}
-
 	protected String getPathToBusinessParent() {
 		return PeopleConstants.PEOPLE_BASE_PATH;
 	}
@@ -46,7 +40,8 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 		try {
 			session = repository.login();
 
-			String tagParPath = getPathToTagsParent();
+			String tagParPath = peopleService
+					.getBasePathForType(PeopleNames.PEOPLE_TAGS);
 			String businessPath = getPathToBusinessParent();
 			Node tagParent = null;
 			if (!session.nodeExists(tagParPath)) {
@@ -54,9 +49,8 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 				session.save();
 			} else
 				tagParent = session.getNode(tagParPath);
-			
-			Node businessParent = session
-					.getNode(businessPath);
+
+			Node businessParent = session.getNode(businessPath);
 
 			String msg = "You are about to update the tag cache repository with all already defined values.\n"
 					+ "Are you sure you want to proceed ?";

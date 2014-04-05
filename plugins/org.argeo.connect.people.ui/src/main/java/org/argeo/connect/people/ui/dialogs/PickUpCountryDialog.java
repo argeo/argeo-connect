@@ -25,6 +25,7 @@ import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.composites.SimpleJcrTableComposite;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -49,6 +50,7 @@ public class PickUpCountryDialog extends TrayDialog {
 	private static final long serialVersionUID = 3766899676609659573L;
 
 	// Business objects
+	private PeopleService peopleService;
 	private final Session session;
 	private Node selectedNode;
 
@@ -64,10 +66,12 @@ public class PickUpCountryDialog extends TrayDialog {
 				PropertyType.STRING, "Label", 240));
 	};
 
-	public PickUpCountryDialog(Shell parentShell, String title, Session session) {
+	public PickUpCountryDialog(Shell parentShell, PeopleService peopleService,
+			Session session, String title) {
 		super(parentShell);
 		this.title = title;
 		this.session = session;
+		this.peopleService = peopleService;
 	}
 
 	protected Point getInitialSize() {
@@ -78,8 +82,12 @@ public class PickUpCountryDialog extends TrayDialog {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-		tableCmp = new SimpleJcrTableComposite(dialogArea, style, session,
-				PeopleConstants.PEOPLE_COUNTRIES_BASE_PATH,
+		tableCmp = new SimpleJcrTableComposite(
+				dialogArea,
+				style,
+				session,
+				peopleService
+						.getBasePathForType(PeopleConstants.RESOURCE_COUNTRIES),
 				PeopleTypes.PEOPLE_ISO_COUNTRY, colDefs, true, false);
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 

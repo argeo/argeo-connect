@@ -17,6 +17,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 
 /**
@@ -33,7 +34,8 @@ public class ResourcesJcrUtils {
 	 * 
 	 * @return
 	 */
-	public static String getLangIsoFromEnLabel(Session session, String enLabel) {
+	public static String getLangIsoFromEnLabel(PeopleService peopleService,
+			Session session, String enLabel) {
 		try {
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
@@ -41,8 +43,9 @@ public class ResourcesJcrUtils {
 			Selector source = factory.selector(PeopleTypes.PEOPLE_ISO_LANGUAGE,
 					PeopleTypes.PEOPLE_ISO_LANGUAGE);
 
-			Constraint c1 = factory.descendantNode(source.getSelectorName(),
-					PeopleConstants.PEOPLE_LANGS_BASE_PATH);
+			Constraint c1 = factory
+					.descendantNode(source.getSelectorName(), peopleService
+							.getBasePathForType(PeopleConstants.RESOURCE_LANGS));
 
 			DynamicOperand dynOp = factory.propertyValue(
 					source.getSelectorName(), Property.JCR_TITLE);
@@ -69,9 +72,12 @@ public class ResourcesJcrUtils {
 		}
 	}
 
-	public static String getLangEnLabelFromIso(Session session, String isoCode) {
+	public static String getLangEnLabelFromIso(PeopleService peopleService,
+			Session session, String isoCode) {
 		try {
-			String path = PeopleConstants.PEOPLE_LANGS_BASE_PATH + "/"
+			String path = peopleService
+					.getBasePathForType(PeopleConstants.RESOURCE_LANGS)
+					+ "/"
 					+ isoCode.substring(0, 1) + "/" + isoCode;
 			Node code = session.getNode(path);
 			return CommonsJcrUtils.get(code, Property.JCR_TITLE);
@@ -80,8 +86,8 @@ public class ResourcesJcrUtils {
 		}
 	}
 
-	public static String getCountryIsoFromEnLabel(Session session,
-			String enLabel) {
+	public static String getCountryIsoFromEnLabel(PeopleService peopleService,
+			Session session, String enLabel) {
 		try {
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
@@ -89,8 +95,11 @@ public class ResourcesJcrUtils {
 			Selector source = factory.selector(PeopleTypes.PEOPLE_ISO_COUNTRY,
 					PeopleTypes.PEOPLE_ISO_COUNTRY);
 
-			Constraint c1 = factory.descendantNode(source.getSelectorName(),
-					PeopleConstants.PEOPLE_COUNTRIES_BASE_PATH);
+			Constraint c1 = factory
+					.descendantNode(
+							source.getSelectorName(),
+							peopleService
+									.getBasePathForType(PeopleConstants.RESOURCE_COUNTRIES));
 
 			DynamicOperand dynOp = factory.propertyValue(
 					source.getSelectorName(), Property.JCR_TITLE);
@@ -117,11 +126,12 @@ public class ResourcesJcrUtils {
 		}
 	}
 
-	public static String getCountryEnLabelFromIso(Session session,
-			String isoCode) {
+	public static String getCountryEnLabelFromIso(PeopleService peopleService,
+			Session session, String isoCode) {
 		try {
-			String path = PeopleConstants.PEOPLE_COUNTRIES_BASE_PATH + "/"
-					+ isoCode.substring(0, 1) + "/" + isoCode;
+			String path = peopleService
+					.getBasePathForType(PeopleConstants.RESOURCE_COUNTRIES)
+					+ "/" + isoCode.substring(0, 1) + "/" + isoCode;
 			Node code = session.getNode(path);
 			return CommonsJcrUtils.get(code, Property.JCR_TITLE);
 		} catch (RepositoryException e) {

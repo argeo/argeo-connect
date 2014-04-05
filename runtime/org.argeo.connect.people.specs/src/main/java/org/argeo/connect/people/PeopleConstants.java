@@ -27,16 +27,18 @@ public interface PeopleConstants {
 
 
 	@Deprecated
-	public final static String PEOPLE_COUNTRIES_BASE_PATH = PEOPLE_RESOURCES_BASE_PATH
-			+ "/" + RESOURCE_COUNTRIES;
-	@Deprecated
-	public final static String PEOPLE_LANGS_BASE_PATH = PEOPLE_RESOURCES_BASE_PATH
-			+ "/" + RESOURCE_LANGS;
-
-	@Deprecated
-	public final static String PEOPLE_TAGS_BASE_PATH = PEOPLE_RESOURCES_BASE_PATH
-			+ "/" + PeopleNames.PEOPLE_TAGS;
-
+	// public final static String PEOPLE_COUNTRIES_BASE_PATH =
+	// PEOPLE_RESOURCES_BASE_PATH
+	// + "/" + RESOURCE_COUNTRIES;
+	// @Deprecated
+	// public final static String PEOPLE_LANGS_BASE_PATH =
+	// PEOPLE_RESOURCES_BASE_PATH
+	// + "/" + RESOURCE_LANGS;
+	//
+	// @Deprecated
+	// public final static String PEOPLE_TAGS_BASE_PATH =
+	// PEOPLE_RESOURCES_BASE_PATH
+	// + "/" + PeopleNames.PEOPLE_TAGS;
 	// Helper to decide wether we speak about the parent object of a link node
 	// or about the ref it points to
 	public final static Integer TARGET_LINK_PARENT = 0;
