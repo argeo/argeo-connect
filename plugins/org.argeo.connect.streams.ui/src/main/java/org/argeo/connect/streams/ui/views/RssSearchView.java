@@ -17,7 +17,7 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.utils.EntityEditorInput;
-import org.argeo.connect.people.ui.editors.utils.SearchEntityEditorInput;
+import org.argeo.connect.people.ui.editors.utils.SearchNodeEditorInput;
 import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
@@ -153,7 +153,7 @@ public class RssSearchView extends ViewPart {
 						sourcesCmp.moveAbove(postsCmp);
 					else if (CMD_OPEN_ALL_POSTS_EDITOR.equals(event.text)) {
 						try {
-							SearchEntityEditorInput eei = new SearchEntityEditorInput(
+							SearchNodeEditorInput eei = new SearchNodeEditorInput(
 									RssTypes.RSS_ITEM);
 							PeopleUiPlugin.getDefault().getWorkbench()
 									.getActiveWorkbenchWindow().getActivePage()

@@ -16,7 +16,7 @@
 package org.argeo.connect.streams.ui.rap;
 
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.editors.utils.SearchEntityEditorInput;
+import org.argeo.connect.people.ui.editors.utils.SearchNodeEditorInput;
 import org.argeo.connect.streams.RssTypes;
 import org.argeo.connect.streams.ui.editors.RssSearchPostEditor;
 import org.argeo.security.ui.rap.RapWindowAdvisor;
@@ -66,7 +66,7 @@ public class RssRapWindowAdvisor extends RapWindowAdvisor {
 	public void postWindowOpen() {
 		super.postWindowOpen();
 		try {
-			SearchEntityEditorInput eei = new SearchEntityEditorInput(
+			SearchNodeEditorInput eei = new SearchNodeEditorInput(
 					RssTypes.RSS_ITEM);
 			PeopleUiPlugin.getDefault().getWorkbench()
 					.getActiveWorkbenchWindow().getActivePage()

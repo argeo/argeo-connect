@@ -23,4 +23,11 @@ public interface PeopleUiService {
 	public String getOpenFileCmdId();
 
 	public List<String> getDefinedFilteredTags(Session session, String filter);
+
+	public List<String> getValueList(Session session, String basePath,
+			String filter);
+
+	public List<String> getValueList(Session session, String nodeType,
+			String basePath, String filter);
+
 }
