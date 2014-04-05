@@ -1,7 +1,6 @@
 package org.argeo.connect.people;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.Session;
@@ -21,6 +20,13 @@ public interface PeopleService {
 	 */
 	public Node createOrUpdateParticipation(Node oldParticipation, Node film,
 			Node contact, String role);
+
+	/* BASE PATHS MANAGEMENT */
+	/**
+	 * Centralises the management of known types to provide corresponding base
+	 * path
+	 */
+	public String getBasePathForType(String typeId);
 
 	/* PERSONS AND ORGANISATIONS */
 
@@ -46,11 +52,11 @@ public interface PeopleService {
 			String position, String department, boolean isPrimary);
 
 	/* GENERIC */
-	/**
-	 * returns the list of predefined values for a given property or null if
-	 * none has been defined.
-	 */
-	public Map<String, String> getMapValuesForProperty(String propertyName);
+	// /**
+	// * returns the list of predefined values for a given property or null if
+	// * none has been defined.
+	// */
+	// public Map<String, String> getMapValuesForProperty(String propertyName);
 
 	/**
 	 * Returns the corresponding entity or null if not found. Uid is
@@ -96,14 +102,14 @@ public interface PeopleService {
 
 	/* TAG MANAGEMENT */
 	/**
-	 * Updates the repository cache that list all tags known in
-	 * the current application
+	 * Updates the repository cache that list all tags known in the current
+	 * application
 	 * 
 	 * TODO make it asynchronous
 	 */
 	public void refreshKnownTags(Node tagsParentNode, Node tagableParentNode);
 
 	public void addTag(Node tagsParentNode, String tag);
-	
+
 	public void removeTag(Node tagsParentNode, String tag);
 }

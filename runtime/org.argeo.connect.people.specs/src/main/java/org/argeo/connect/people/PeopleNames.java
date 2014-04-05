@@ -16,16 +16,18 @@ public interface PeopleNames {
 	/** A number of people */
 	public static String PEOPLE_COUNT = "people:count";
 
-	/* Parent node for all persons */
+	// Main concepts parent node names 
 	public final static String PEOPLE_PERSONS = "people:persons";
-	/* Parent node for all organisations */
 	public final static String PEOPLE_ORGS = "people:organizations";
-	/* Parent node for all films */
 	public final static String PEOPLE_FILMS = "people:films";
-	/* Parent node for all projects */
 	public final static String PEOPLE_PROJECTS = "people:projects";
+	public final static String PEOPLE_WORKFLOWS = "people:workflows";
 
-	// path to parent node for various sub concepts
+	// Resources parent node names 
+	public final static String PEOPLE_TAGS = "people:tags";
+	public final static String PEOPLE_MAILING_LISTS = "people:mailingLists";
+	
+	// Sub concepts parent node names 
 	public final static String PEOPLE_PAYMENT_ACCOUNTS = "people:paymentAccounts";
 	public final static String PEOPLE_CONTACTS = "people:contacts";
 	public final static String PEOPLE_TITLES = "people:titles";
@@ -33,23 +35,20 @@ public interface PeopleNames {
 	public final static String PEOPLE_MEMBERS = "people:members";
 	public final static String PEOPLE_JOBS = "people:jobs";
 
-	public final static String PEOPLE_WORKFLOWS = "people:workflows";
-	// public final static String PEOPLE_FILM_SELECTION_WFS =
-	// "people:filmSelectionWorkflows";
 
-	/* Common concept */
+	// Widely used property names 
+	public final static String PEOPLE_LANG = "people:lang";
 	public final static String PEOPLE_PICTURE = "people:picture";
-	// public final static String PEOPLE_DISPLAY_NAME = "people:displayName";
+	// the iso code of a given resource
+	public final static String PEOPLE_ISO_CODE = "people:isoCode";
 	// an implementation specific UID, might be a JCR node Identifier but it is
 	// not compulsory
 	public final static String PEOPLE_UID = "people:uid";
 	// Reference an other entity using the implementation specific UID
 	public final static String PEOPLE_REF_UID = "people:refUid";
-
-	// an integer to enable ordering, 1 is the most prefered
-	// public final static String PEOPLE_PREF = "people:pref";
-	// Flag a node as primary node in a set
+	// Primary boolean flag 
 	public final static String PEOPLE_IS_PRIMARY = "people:isPrimary";
+
 
 	/* PERSONS */
 	public final static String PEOPLE_FIRST_NAME = "people:firstName";
@@ -64,7 +63,6 @@ public interface PeopleNames {
 	public final static String PEOPLE_NICKNAME = "people:nickname";
 	public final static String PEOPLE_MAIDEN_NAME = "people:maidenName";
 	public final static String PEOPLE_USE_DEFAULT_DISPLAY_NAME = "people:useDefaultDisplayName";
-
 	// public final static String PEOPLE_PSEUDONYM = "people:pseudonym";
 
 	/* ORGANIZATIONS */
@@ -106,7 +104,6 @@ public interface PeopleNames {
 	public final static String PEOPLE_WF_STATUS = "people:wfStatus";
 
 	/* CONTACTS */
-	// base properties for all contact type nodes
 	public final static String PEOPLE_CONTACT_VALUE = "people:contactValue";
 	// Pro or private
 	public final static String PEOPLE_CONTACT_NATURE = "people:contactNature";
@@ -114,10 +111,10 @@ public interface PeopleNames {
 	public final static String PEOPLE_CONTACT_LABEL = "people:contactLabel";
 	public final static String PEOPLE_CONTACT_URI = "people:contactUri";
 
-	// tel: enable display of current time for this timezone
+	// Phone: enable display of current time for this time zone
 	public final static String PEOPLE_TIME_ZONE = "people:timeZone";
 
-	// post mail
+	// Physical Address
 	public final static String PEOPLE_STREET = "people:street";
 	public final static String PEOPLE_STREET_COMPLEMENT = "people:streetComplement";
 	public final static String PEOPLE_ZIP_CODE = "people:zipCode";
@@ -125,14 +122,10 @@ public interface PeopleNames {
 	public final static String PEOPLE_STATE = "people:state";
 	public final static String PEOPLE_COUNTRY = "people:country";
 	public final static String PEOPLE_GEOPOINT = "people:geoPoint";
-	// A shortcut to store the displayed address
-	// public final static String PEOPLE_DISPLAY_ADDRESS =
-	// "people:displayAddress";
 
 	/* CACHE */
 	// following properties are all "on parent version" ignore and are used to
-	// store primary
-	// information to fasten fulltextsearch
+	// store primary information to ease fulltextsearch
 	public final static String PEOPLE_CACHE_PCITY = "people:cachePCity";
 	public final static String PEOPLE_CACHE_PCOUNTRY = "people:cachePCountry";
 	public final static String PEOPLE_CACHE_PORG = "people:cachePOrg";
@@ -141,18 +134,11 @@ public interface PeopleNames {
 	public final static String PEOPLE_CACHE_PURL = "people:cachePWeb";
 
 	/* MISCENELLANEOUS */
-
-	public final static String PEOPLE_LATIN_PHONETIC_SPELLING = "people:latinPhoneticSpelling";
-	public final static String PEOPLE_TAGS = "people:tags";
-
-	public final static String PEOPLE_LANG = "people:lang";
-	// public final static String PEOPLE_ALT_TITLES = "people:altTitles";
 	public final static String PEOPLE_ALT_LANGS = "people:altLangs";
-	// public final static String PEOPLE_ALT_DESCS = "people:altDescs";
+	
+	public final static String PEOPLE_LATIN_PHONETIC_SPELLING = "people:latinPhoneticSpelling";
 
-	// the iso code of a given resource
-	public final static String PEOPLE_ISO_CODE = "people:isoCode";
-
+	
 	/* GROUP AND JOBS MANAGEMENT */
 	// An optional department within the org corresponding to the current
 	// position

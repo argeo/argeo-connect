@@ -25,6 +25,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.ActivityService;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -69,11 +70,24 @@ public class PeopleServiceImpl implements PeopleService {
 		// Do nothing
 	}
 
-	/* ENTITY SERVICES */
+	/* BASE PATH MANAGEMENT */
 	@Override
-	public Map<String, String> getMapValuesForProperty(String propertyName) {
-		return null;
+	public String getBasePathForType(String typeId) {
+		if (PeopleNames.PEOPLE_TAGS.equals(typeId))
+			return PeopleConstants.PEOPLE_RESOURCES_BASE_PATH + "/" + typeId;
+		else if (PeopleConstants.RESOURCE_COUNTRIES.equals(typeId))
+			return PeopleConstants.PEOPLE_RESOURCES_BASE_PATH + "/" + typeId;
+		else if (PeopleConstants.RESOURCE_LANGS.equals(typeId))
+			return PeopleConstants.PEOPLE_RESOURCES_BASE_PATH + "/" + typeId;
+		else
+			throw new PeopleException("Undefined type: " + typeId);
 	}
+
+	/* ENTITY SERVICES */
+	// @Override
+	// public Map<String, String> getMapValuesForProperty(String propertyName) {
+	// return null;
+	// }
 
 	@Override
 	public Node getEntityByUid(Session session, String uid) {
