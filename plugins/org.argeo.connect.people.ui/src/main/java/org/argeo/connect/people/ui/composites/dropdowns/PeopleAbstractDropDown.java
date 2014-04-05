@@ -21,11 +21,11 @@ public abstract class PeopleAbstractDropDown {
 	private boolean modifyFromList = false;
 	private String[] values;
 
+	// Implementers should call refreshValues() once init has been done.
 	public PeopleAbstractDropDown(Text text) {
 		dropDown = new DropDown(text);
 		this.text = text;
 		addListeners();
-		refreshValues();
 	}
 
 	public String getText() {

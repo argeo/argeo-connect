@@ -23,10 +23,13 @@ public class SimpleResourceDropDown extends PeopleAbstractDropDown {
 		this.peopleUiService = peopleUiService;
 		this.session = session;
 		this.resourceBasePath = resourceBasePath;
+		refreshValues();
 	}
 
 	@Override
 	protected List<String> getFilteredValues(String filter) {
-		return peopleUiService.getValueList(session, resourceBasePath, filter);
+		List<String> values = peopleUiService.getValueList(session,
+				resourceBasePath, filter);
+		return values;
 	}
 }
