@@ -63,8 +63,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	private TableViewer tableViewer;
 	private Text filterTxt;
 
-	// Locally cache what is displayed in the UI. Enable among other the report
-	// mechanism management
+	// Locally cache what is displayed in the UI. Enable exports among others.
 	private Row[] rows;
 
 	@Override
@@ -102,23 +101,22 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		refreshStaticFilteredList();
 	}
 
-	/** Override this to provide type specific static filters */
-	protected void populateStaticFilters(Composite body) {
-	}
-
-	protected abstract void refreshStaticFilteredList();
-
-	/** Overwrite to set the correct row height */
-	protected int getCurrRowHeight() {
-		return 20;
-	}
-
 	/**
 	 * Overwrite to false if implementation has no static filter session.
 	 * Warning: the refreshStaticFilteredList() must still be implemented
 	 */
 	protected boolean showStaticFilterSection() {
 		return true;
+	}
+
+	/** Override this to provide type specific static filters */
+	protected abstract void populateStaticFilters(Composite body);
+
+	protected abstract void refreshStaticFilteredList();
+
+	/** Overwrite to set the correct row height */
+	protected int getCurrRowHeight() {
+		return 20;
 	}
 
 	/**
@@ -138,7 +136,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 			String extractId);
 
 	/**
-	 * Call this when reseting static filter if you also want to reset the free
+	 * Call this when resetting static filters if you also want to reset the free
 	 * text search field
 	 */
 	protected void resetFilterText() {
@@ -160,7 +158,6 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	}
 
 	/** Refresh the table viewer based on the free text search field */
-
 	protected void populateSearchPanel(Composite parent) {
 		parent.setLayout(new GridLayout());
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
@@ -197,7 +194,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 						.createValue("*" + token + "*"));
 				Constraint currC = factory.fullTextSearch(
 						source.getSelectorName(), null, so);
-				localAnd(factory, defaultC, currC);
+				defaultC = localAnd(factory, defaultC, currC);
 			}
 		}
 		return defaultC;

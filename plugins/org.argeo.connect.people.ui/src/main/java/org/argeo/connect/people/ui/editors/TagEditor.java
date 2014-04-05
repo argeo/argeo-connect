@@ -196,7 +196,7 @@ public class TagEditor extends EditorPart implements PeopleNames {
 					.createValue(currVal));
 			DynamicOperand dyo = factory.propertyValue(
 					source.getSelectorName(), PEOPLE_TAGS);
-			Constraint defaultC = factory.comparison(dyo,
+			Constraint constraint = factory.comparison(dyo,
 					QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
 
 			if (CommonsJcrUtils.checkNotEmptyString(filter)) {
@@ -205,15 +205,15 @@ public class TagEditor extends EditorPart implements PeopleNames {
 					StaticOperand soTmp = factory.literal(session
 							.getValueFactory().createValue("*" + token + "*"));
 					Constraint currC = factory.fullTextSearch(
-							source.getSelectorName(), PEOPLE_TAGS, soTmp);
-					localAnd(factory, defaultC, currC);
+							source.getSelectorName(), null, soTmp);
+					constraint = localAnd(factory, constraint, currC);
 				}
 			}
 
 			Ordering order = factory.ascending(factory.propertyValue(
 					source.getSelectorName(), Property.JCR_TITLE));
 			Ordering[] orderings = { order };
-			QueryObjectModel query = factory.createQuery(source, defaultC,
+			QueryObjectModel query = factory.createQuery(source, constraint,
 					orderings, null);
 			QueryResult result = query.execute();
 			Row[] rows = CommonsJcrUtils.rowIteratorToArray(result.getRows());

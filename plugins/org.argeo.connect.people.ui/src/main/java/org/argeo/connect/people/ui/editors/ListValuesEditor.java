@@ -22,6 +22,7 @@ import org.argeo.connect.people.ui.editors.utils.AbstractSearchEntityEditor;
 import org.argeo.connect.people.ui.extracts.PeopleColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -51,6 +52,10 @@ public class ListValuesEditor extends AbstractSearchEntityEditor {
 
 	protected boolean showStaticFilterSection() {
 		return false;
+	}
+
+	// unused compulsory method.
+	protected void populateStaticFilters(Composite body) {
 	}
 
 	/** Refresh the table viewer based on the free text search field */
