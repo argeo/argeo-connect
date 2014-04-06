@@ -24,6 +24,13 @@ public interface FilmNames {
 	public final static String FILM_ANIMATION_TECHNIQUE = "film:animationTechnique";
 	public final static String FILM_GENRES = "film:genres";
 
+	// maybe too specific
+	public final static String FILM_IS_PREMIERE = "film:isPremiere";
+	public final static String FILM_IS_STUDENT_PROJECT = "film:isStudentProject";
+	public final static String FILM_IS_DEBUT_FILM = "film:isDebutFilm";
+	public final static String FILM_HAS_TRAILER = "film:hasTrailer";
+	public final static String FILM_EXTRACTS_ON_TV_ALLOWED = "extractsOnTvAllowed";
+
 	// Cache primary title info to ease full text search
 	// following properties are all "on parent version" ignore and are used to
 	// store primary information and thus fasten fulltextsearch
@@ -57,26 +64,58 @@ public interface FilmNames {
 	public final static String FILM_AWARD_COUNTRY_ISO = "film:awardCountryIso";
 
 	/* FILM PRINTS */
-	public final static String FILM_PRINT_TYPE = "film:printType";
-	public final static String FILM_PRINT_FORMAT = "film:printFormat";
-	public final static String FILM_PRINT_RATIO = "film:printRatio";
-	public final static String FILM_PRINT_SOUND_FORMAT = "film:printSoundFormat";
-	public final static String FILM_PRINT_LANGUAGE_VERSION = "film:printLanguageVersion";
-	public final static String FILM_PRINT_FEE = "film:printFee";
-	public final static String FILM_PRINT_FEE_INFO = "film:printFeeInfo";
-	public final static String FILM_PRINT_SOURCE_CONTACT = "film:printSourceContact";
-	public final static String FILM_PRINT_RETURN_CONTACT = "film:printReturnContact";
+	// public final static String FILM_PRINT_TYPE = "film:printType";
+	// public final static String FILM_PRINT_ = "";
+	//
+	// public final static String FILM_PRINT_PICTURE_FORMAT =
+	// "film:printFormat";
+	// public final static String FILM_PRINT_RATIO = "film:printRatio";
+	// public final static String FILM_PRINT_SOUND_FORMAT =
+	// "film:printSoundFormat";
+	// public final static String FILM_PRINT_LANGUAGE_VERSION =
+	// "film:printLanguageVersion";
+	// public final static String FILM_PRINT_FEE = "film:printFee";
+	// public final static String FILM_PRINT_FEE_INFO = "film:printFeeInfo";
+	// public final static String FILM_PRINT_SOURCE_CONTACT =
+	// "film:printSourceContact";
+	// public final static String FILM_PRINT_RETURN_CONTACT =
+	// "film:printReturnContact";
 
-	// maybe too specific
-	public final static String FILM_IS_PREMIERE = "film:isPremiere";
-	public final static String FILM_IS_STUDENT_PROJECT = "film:isStudentProject";
-	public final static String FILM_IS_DEBUT_FILM = "film:isDebutFilm";
-	public final static String FILM_HAS_TRAILER = "film:hasTrailer";
-	public final static String FILM_EXTRACTS_ON_TV_ALLOWED = "extractsOnTvAllowed";
+	// [film:print] > nt:unstructured, mix:title, people:orderable
+	public final static String FILM_PRINT_TYPE = "film:printType";// (STRING)
+	public final static String FILM_PRINT_NUMBER = "film:printNumber";// (STRING)
+	// length in seconds
+	public final static String FILM_PRINT_DURATION = "film:printDuration"; // (LONG)
+	
+	// time codes
+	public final static String FILM_PRINT_TC_IN = "film:tcIn";// (STRING)
+	public final static String FILM_PRINT_TC_OUT = "film:tcOut";// (STRING)
 
-	/* MISCEALLENEOUS */
-	// A tag to define the corresponding language(s) for a node or a property,
-	// might be multiple
-	// @Deprecated
-	// public final static String FILM_LANG = "film:lang";
+	public final static String FILM_PRINT_PICTURE_FORMAT = "film:printPictureFormat";// (STRING)
+	public final static String FILM_PRINT_ASPECT_RATIO = "film:printAspectRatio";// (STRING)
+	public final static String FILM_PRINT_FRAME_RATE = "film:printFrameRate";// (STRING)
+	public final static String FILM_PRINT_VIDEO_STEREOSCOPIC = "film:printVideoStereoscopic";// (STRING)
+	public final static String FILM_PRINT_VIDEO_CODEC = "film:printVideoCodec";// (STRING)
+	public final static String FILM_PRINT_HRES = "film:printHRes";// (STRING)
+	public final static String FILM_PRINT_VRES = "film:printVRes";// (STRING)
+	public final static String FILM_PRINT_AVG_BITRATE = "film:printAvgBitrate";// (STRING)
+
+	public final static String FILM_PRINT_AUDIO_LANG = "film:printAudioLang";// (STRING)
+	public final static String FILM_PRINT_SOUND_FORMAT = "film:printSoundFormat";// (STRING)
+
+	public final static String FILM_PRINT_SUBTITLE_LANG = "film:printSubtitleLang";// (STRING)
+	public final static String FILM_PRINT_SUBTITLE_FORMAT = "film:printSubtitleFormat";// (STRING)
+	// - film:printSoundFormat (STRING)
+	// - film:printLanguageVersion (STRING)
+
+	public final static String FILM_PRINT_FEE = "film:printFee";// (STRING)
+	public final static String FILM_PRINT_FEE_INFO = "film:printFeeInfo";// (STRING)
+	public final static String FILM_PRINT_SOURCE_CONTACT = "film:printSourceContact";// (REFERENCE)
+	public final static String FILM_PRINT_RETURN_CONTACT = "film:printReturnContact";// (REFERENCE)
+
+	// [film:printDcp] > film:print
+	public final static String FILM_PRINT_FILE_NAME = "film:printFileName";// (STRING)
+	public final static String FILM_PRINT_RES = "resolution";// (STRING)
+	public final static String FILM_PRINT_ENCRYPTED = "encrypted";// (BOOLEAN)
+
 }

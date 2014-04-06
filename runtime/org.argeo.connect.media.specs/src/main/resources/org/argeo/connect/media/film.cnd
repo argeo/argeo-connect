@@ -75,11 +75,36 @@
 //
 [film:print] > nt:unstructured, mix:title, people:orderable
 - film:printType (STRING)
-- film:printFormat (STRING)
-- film:printRatio (STRING)
+- film:printNumber (STRING)
+- film:printDuration (LONG) // length in seconds
+// time codes
+- film:tcIn (STRING)
+- film:tcOut (STRING)
+
+- film:printPictureFormat (STRING)
+- film:printAspectRatio (STRING)
+- film:printFrameRate (STRING)
+- film:printVideoStereoscopic (STRING)
+- film:printVideoCodec (STRING)
+- film:printHRes (STRING)
+- film:printVRes (STRING)
+- film:printAvgBitrate (STRING)
+
+- film:printAudioLanguage (STRING)
 - film:printSoundFormat (STRING)
-- film:printLanguageVersion (STRING)
+
+- film:printSubtitleLanguage (STRING)
+- film:printSubtitleFormat (STRING)
+// - film:printSoundFormat (STRING)
+// - film:printLanguageVersion (STRING)
+
 - film:printFee (STRING)
 - film:printFeeInfo (STRING)
-- film:printSourceContact (STRING)
-- film:printReturnContact (STRING)
+- film:printSourceContact (REFERENCE)
+- film:printReturnContact (REFERENCE)
+
+
+[film:printDcp] > film:print
+- film:printFileName (STRING)
+- film:printRes (STRING)
+- film:printEncrypted (BOOLEAN)
