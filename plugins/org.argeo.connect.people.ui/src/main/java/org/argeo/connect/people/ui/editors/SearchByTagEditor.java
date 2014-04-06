@@ -95,7 +95,7 @@ public class SearchByTagEditor extends AbstractSearchEntityEditor {
 		Text tagTxt = createBoldLT(body, "List entities for tag", "",
 				"Select from list to find entities that are categorised with this tag");
 		tagDD = new SimpleResourceDropDown(getPeopleUiService(), getSession(),
-				getPeopleService().getBasePathForType(PEOPLE_TAGS), tagTxt);
+				getPeopleService().getResourcesBasePath(PEOPLE_TAGS), tagTxt);
 
 		goBtn = new Button(body, SWT.PUSH);
 		goBtn.setText("Refresh list");

@@ -12,4 +12,5 @@ public interface FilmTypes {
 	public final static String FILM_AWARD = "film:award";
 
 	public final static String FILM_PRINT = "film:print";
+	public final static String FILM_PRINT_DCP = "film:printDcp";
 }

@@ -84,7 +84,7 @@ public class PickUpLangDialog extends TrayDialog {
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
 		tableCmp = new SimpleJcrTableComposite(dialogArea, style, session,
 				peopleService
-						.getBasePathForType(PeopleConstants.RESOURCE_LANGS),
+						.getResourcesBasePath(PeopleConstants.RESOURCE_LANGS),
 				PeopleTypes.PEOPLE_ISO_LANGUAGE, colDefs, true, false);
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 

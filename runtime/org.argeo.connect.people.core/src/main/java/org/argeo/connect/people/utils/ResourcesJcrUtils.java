@@ -44,8 +44,10 @@ public class ResourcesJcrUtils {
 					PeopleTypes.PEOPLE_ISO_LANGUAGE);
 
 			Constraint c1 = factory
-					.descendantNode(source.getSelectorName(), peopleService
-							.getBasePathForType(PeopleConstants.RESOURCE_LANGS));
+					.descendantNode(
+							source.getSelectorName(),
+							peopleService
+									.getResourcesBasePath(PeopleConstants.RESOURCE_LANGS));
 
 			DynamicOperand dynOp = factory.propertyValue(
 					source.getSelectorName(), Property.JCR_TITLE);
@@ -76,7 +78,7 @@ public class ResourcesJcrUtils {
 			Session session, String isoCode) {
 		try {
 			String path = peopleService
-					.getBasePathForType(PeopleConstants.RESOURCE_LANGS)
+					.getResourcesBasePath(PeopleConstants.RESOURCE_LANGS)
 					+ "/"
 					+ isoCode.substring(0, 1) + "/" + isoCode;
 			Node code = session.getNode(path);
@@ -99,7 +101,7 @@ public class ResourcesJcrUtils {
 					.descendantNode(
 							source.getSelectorName(),
 							peopleService
-									.getBasePathForType(PeopleConstants.RESOURCE_COUNTRIES));
+									.getResourcesBasePath(PeopleConstants.RESOURCE_COUNTRIES));
 
 			DynamicOperand dynOp = factory.propertyValue(
 					source.getSelectorName(), Property.JCR_TITLE);
@@ -130,7 +132,7 @@ public class ResourcesJcrUtils {
 			Session session, String isoCode) {
 		try {
 			String path = peopleService
-					.getBasePathForType(PeopleConstants.RESOURCE_COUNTRIES)
+					.getResourcesBasePath(PeopleConstants.RESOURCE_COUNTRIES)
 					+ "/" + isoCode.substring(0, 1) + "/" + isoCode;
 			Node code = session.getNode(path);
 			return CommonsJcrUtils.get(code, Property.JCR_TITLE);

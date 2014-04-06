@@ -32,6 +32,13 @@ public abstract class PeopleAbstractDropDown {
 		return text.getText();
 	}
 
+	public void init() {
+		// Workaround the dropDown show issue initialising the drop down
+		List<String> filteredValues = getFilteredValues(text.getText());
+		values = filteredValues.toArray(new String[filteredValues.size()]);
+		dropDown.setItems(values);
+	}
+	
 	public void reset(String value) {
 		// Workaround the dropDown show issue when resetting the text
 		modifyFromList = true;
@@ -49,7 +56,8 @@ public abstract class PeopleAbstractDropDown {
 		List<String> filteredValues = getFilteredValues(text.getText());
 		values = filteredValues.toArray(new String[filteredValues.size()]);
 		dropDown.setItems(values);
-		dropDown.show();
+		if (!modifyFromList)
+			dropDown.show();
 	}
 
 	private void addListeners() {

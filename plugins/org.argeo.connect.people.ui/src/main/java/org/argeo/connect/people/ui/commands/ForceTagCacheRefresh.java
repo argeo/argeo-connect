@@ -41,7 +41,7 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 			session = repository.login();
 
 			String tagParPath = peopleService
-					.getBasePathForType(PeopleNames.PEOPLE_TAGS);
+					.getResourcesBasePath(PeopleNames.PEOPLE_TAGS);
 			String businessPath = getPathToBusinessParent();
 			Node tagParent = null;
 			if (!session.nodeExists(tagParPath)) {

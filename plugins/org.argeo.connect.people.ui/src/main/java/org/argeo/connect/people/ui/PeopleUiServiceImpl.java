@@ -8,6 +8,7 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
@@ -76,5 +77,29 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 			throw new PeopleException("Unable to get tags values for node ", re);
 		}
 		return values;
+	}
+
+	@Override
+	public List<String> getInstancePropCatalog(Session session,
+			String resourcePath, String propertyName, String filter) {
+		List<String> result = new ArrayList<String>();
+		try {
+			if (session.nodeExists(resourcePath)) {
+				Node node = session.getNode(resourcePath);
+				Value[] values = node.getProperty(propertyName).getValues();
+				for (Value value : values) {
+					String curr = value.getString();
+					if (CommonsJcrUtils.checkNotEmptyString(curr)
+							&& curr.toLowerCase()
+									.contains(filter.toLowerCase()))
+						result.add(curr);
+				}
+			}
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to get " + propertyName
+					+ " values for node at path " + resourcePath, re);
+		}
+
+		return result;
 	}
 }

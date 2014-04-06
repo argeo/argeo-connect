@@ -23,7 +23,7 @@ public class SimpleResourceDropDown extends PeopleAbstractDropDown {
 		this.peopleUiService = peopleUiService;
 		this.session = session;
 		this.resourceBasePath = resourceBasePath;
-		refreshValues();
+		init();
 	}
 
 	@Override

@@ -26,8 +26,11 @@ public interface PeopleService {
 	/** Exposes the application specific parent business path */
 	public String getBasePath();
 
-	/** Exposes the application specific parent path for resources */
-	public String getResourcesBasePath();
+	/**
+	 * Exposes the application specific parents path for resources. querying
+	 * with null parameter will return the respource base bath
+	 */
+	public String getResourcesBasePath(String typeId);
 
 	/**
 	 * Centralises the management of known types to provide corresponding base

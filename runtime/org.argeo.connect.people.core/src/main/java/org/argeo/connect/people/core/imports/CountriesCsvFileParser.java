@@ -39,7 +39,7 @@ public class CountriesCsvFileParser extends CsvParserWithLinesAsMap {
 			String isoCode = line.get(ISO_CODE);
 
 			Node countries = adminSession.getNode(peopleService
-					.getBasePathForType(PeopleConstants.RESOURCE_COUNTRIES));
+					.getResourcesBasePath(PeopleConstants.RESOURCE_COUNTRIES));
 			Node country;
 			String relPath = isoCode.substring(0, 1) + "/" + isoCode;
 			if (!adminSession.nodeExists(countries.getPath() + "/" + relPath)) {

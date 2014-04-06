@@ -14,7 +14,6 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.commands.EditJob;
-import org.argeo.connect.people.ui.commands.EditParticipation;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.ui.listeners.PeopleDoubleClickAdapter;

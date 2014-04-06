@@ -77,21 +77,26 @@ public class PeopleServiceImpl implements PeopleService {
 	}
 
 	/** Exposes the application specific parent path for resources */
-	public String getResourcesBasePath() {
-		return PeopleConstants.PEOPLE_RESOURCES_BASE_PATH;
+	@Override
+	public String getResourcesBasePath(String typeId) {
+		if (typeId == null)
+			return PeopleConstants.PEOPLE_RESOURCES_BASE_PATH;
+
+		String prefix = PeopleConstants.PEOPLE_RESOURCES_BASE_PATH + "/";
+		if (PeopleNames.PEOPLE_TAGS.equals(typeId))
+			return prefix + typeId;
+		else if (PeopleConstants.RESOURCE_COUNTRIES.equals(typeId))
+			return prefix + typeId;
+		else if (PeopleConstants.RESOURCE_LANGS.equals(typeId))
+			return prefix + typeId;
+		else
+			throw new PeopleException("Undefined type: " + typeId);
 	}
 
 	@Override
 	public String getBasePathForType(String typeId) {
 		// Resources
-		if (PeopleNames.PEOPLE_TAGS.equals(typeId))
-			return getResourcesBasePath() + "/" + typeId;
-		else if (PeopleConstants.RESOURCE_COUNTRIES.equals(typeId))
-			return getResourcesBasePath() + "/" + typeId;
-		else if (PeopleConstants.RESOURCE_LANGS.equals(typeId))
-			return getResourcesBasePath() + "/" + typeId;
-		else
-			throw new PeopleException("Undefined type: " + typeId);
+		throw new PeopleException("Undefined type: " + typeId);
 	}
 
 	/* ENTITY SERVICES */

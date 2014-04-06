@@ -28,4 +28,7 @@ public interface PeopleUiService {
 	public List<String> getValueList(Session session, String nodeType,
 			String basePath, String filter);
 
+	public List<String> getInstancePropCatalog(Session session,
+			String resourcePath, String propertyName, String filter);
+
 }

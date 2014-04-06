@@ -87,7 +87,7 @@ public class PickUpCountryDialog extends TrayDialog {
 				style,
 				session,
 				peopleService
-						.getBasePathForType(PeopleConstants.RESOURCE_COUNTRIES),
+						.getResourcesBasePath(PeopleConstants.RESOURCE_COUNTRIES),
 				PeopleTypes.PEOPLE_ISO_COUNTRY, colDefs, true, false);
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
