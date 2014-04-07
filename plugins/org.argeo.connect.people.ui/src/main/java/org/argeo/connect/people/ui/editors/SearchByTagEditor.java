@@ -25,6 +25,7 @@ import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.composites.dropdowns.SimpleResourceDropDown;
 import org.argeo.connect.people.ui.editors.utils.AbstractSearchEntityEditor;
 import org.argeo.connect.people.ui.extracts.PeopleColumnDefinition;
+import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.eclipse.swt.SWT;
@@ -130,7 +131,7 @@ public class SearchByTagEditor extends AbstractSearchEntityEditor {
 						source.getSelectorName(), PEOPLE_TAGS);
 				Constraint currC = factory.comparison(dyo,
 						QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
-				defaultC = localAnd(factory, defaultC, currC);
+				defaultC = PeopleUiUtils.localAnd(factory, defaultC, currC);
 			}
 
 			// TODO handle the case where no TITLE prop is available

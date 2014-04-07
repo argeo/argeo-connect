@@ -130,7 +130,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 						source.getSelectorName(), PEOPLE_TAGS);
 				Constraint currC = factory.comparison(dyo,
 						QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
-				defaultC = localAnd(factory, defaultC, currC);
+				defaultC = PeopleUiUtils.localAnd(factory, defaultC, currC);
 			}
 
 			// TODO handle the case where no TITLE prop is available

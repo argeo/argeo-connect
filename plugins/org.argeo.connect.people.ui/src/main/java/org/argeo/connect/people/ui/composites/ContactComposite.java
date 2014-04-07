@@ -78,8 +78,8 @@ public class ContactComposite extends Composite {
 		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
 				SWT.WRAP);
 		readOnlyInfoLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
-		String addressHtml = PeopleHtmlUtils.getContactDisplaySnippet(
-				contactNode, parentVersionableNode);
+		String addressHtml = PeopleHtmlUtils
+				.getContactDisplaySnippet(contactNode);
 		readOnlyInfoLbl.setText(addressHtml);
 	}
 

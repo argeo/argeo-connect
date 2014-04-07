@@ -6,10 +6,16 @@ import java.util.GregorianCalendar;
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.query.qom.Constraint;
+import javax.jcr.query.qom.QueryObjectModelFactory;
+import javax.jcr.query.qom.Selector;
+import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.composites.dropdowns.PeopleAbstractDropDown;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
@@ -153,6 +159,26 @@ public class PeopleUiUtils {
 			} else
 				tmp = false;
 			button.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
+		} catch (RepositoryException re) {
+			throw new PeopleException("unable get boolean value for property "
+					+ propName);
+		}
+		return tmp;
+	}
+
+	/**
+	 * Shortcut to refresh the text underlying a DropDown widget given a Node
+	 * and a property Name.
+	 */
+	public static String refreshDropDownWidget(PeopleAbstractDropDown dropDown,
+			Node entity, String propName) {
+		String tmp = null;
+		try {
+			if (entity.hasProperty(propName)) {
+				tmp = entity.getProperty(propName).getString();
+				dropDown.reset(CommonsJcrUtils.get(entity, propName));
+			} else
+				dropDown.reset(null);
 		} catch (RepositoryException re) {
 			throw new PeopleException("unable get boolean value for property "
 					+ propName);
@@ -547,4 +573,34 @@ public class PeopleUiUtils {
 				getSecondsFromLength(lengthInSeconds));
 	}
 
+	/* QOM HELPERS */
+	/**
+	 * returns and(constraintA, constraintB) if constraintA != null, or
+	 * constraintB otherwise (that can be null)
+	 */
+	public static Constraint localAnd(QueryObjectModelFactory factory,
+			Constraint defaultC, Constraint newC) throws RepositoryException {
+		if (defaultC == null)
+			return newC;
+		else
+			return factory.and(defaultC, newC);
+	}
+
+	/** widely used pattern in various UI Parts */
+	public static Constraint getFreeTextConstraint(Session session,
+			QueryObjectModelFactory factory, Selector source, String filter)
+			throws RepositoryException {
+		Constraint defaultC = null;
+		if (CommonsJcrUtils.checkNotEmptyString(filter)) {
+			String[] strs = filter.trim().split(" ");
+			for (String token : strs) {
+				StaticOperand so = factory.literal(session.getValueFactory()
+						.createValue("*" + token + "*"));
+				Constraint currC = factory.fullTextSearch(
+						source.getSelectorName(), null, so);
+				defaultC = PeopleUiUtils.localAnd(factory, defaultC, currC);
+			}
+		}
+		return defaultC;
+	}
 }

@@ -20,6 +20,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.utils.AbstractSearchEntityEditor;
 import org.argeo.connect.people.ui.extracts.PeopleColumnDefinition;
+import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.eclipse.swt.widgets.Composite;
@@ -70,8 +71,8 @@ public class ListValuesEditor extends AbstractSearchEntityEditor {
 
 			Constraint defaultC = getFreeTextConstraint(factory, source);
 
-			defaultC = localAnd(factory, defaultC, factory.descendantNode(
-					source.getSelectorName(), getBasePath()));
+			defaultC = PeopleUiUtils.localAnd(factory, defaultC, factory
+					.descendantNode(source.getSelectorName(), getBasePath()));
 
 			// TODO handle the case where no TITLE prop is available
 			Ordering order = factory.ascending(factory.propertyValue(

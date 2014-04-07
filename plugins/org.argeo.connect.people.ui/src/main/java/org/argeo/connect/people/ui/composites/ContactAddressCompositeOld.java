@@ -166,7 +166,7 @@ public class ContactAddressCompositeOld extends Composite {
 										referencedEntity);
 					} else
 						addressHtml = PeopleHtmlUtils.getContactDisplaySnippet(
-								contactNode, parentVersionableNode);
+								contactNode);
 					readOnlyInfoLbl.setText(addressHtml);
 					readOnlyInfoLbl.pack(true);
 					readOnlyPanel.pack(true);

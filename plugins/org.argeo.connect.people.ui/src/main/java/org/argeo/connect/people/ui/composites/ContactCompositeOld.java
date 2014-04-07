@@ -46,8 +46,9 @@ public class ContactCompositeOld extends Composite {
 	private AbstractFormPart roFormPart;
 	private AbstractFormPart editFormPart;
 
-	public ContactCompositeOld(Composite parent, int style, FormToolkit toolkit,
-			IManagedForm form, Node contactNode, Node parentVersionableNode) {
+	public ContactCompositeOld(Composite parent, int style,
+			FormToolkit toolkit, IManagedForm form, Node contactNode,
+			Node parentVersionableNode) {
 		super(parent, style);
 		this.contactNode = contactNode;
 		this.toolkit = toolkit;
@@ -134,8 +135,7 @@ public class ContactCompositeOld extends Composite {
 				super.refresh();
 				if (CommonsJcrUtils.nodeStillExists(contactNode)) {
 					String addressHtml = PeopleHtmlUtils
-							.getContactDisplaySnippet(contactNode,
-									parentVersionableNode);
+							.getContactDisplaySnippet(contactNode);
 					readOnlyInfoLbl.setText(addressHtml);
 					readOnlyInfoLbl.pack(true);
 					readOnlyPanel.pack(true);

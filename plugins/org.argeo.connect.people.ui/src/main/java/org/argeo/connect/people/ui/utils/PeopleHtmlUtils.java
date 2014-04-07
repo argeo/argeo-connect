@@ -11,6 +11,7 @@ import javax.jcr.nodetype.NodeType;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.commands.DeleteEntity;
@@ -22,6 +23,7 @@ import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.commands.RemoveEntityReference;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.argeo.connect.people.utils.PersonJcrUtils;
 
 /** Some helper methods to generate html snippets */
 public class PeopleHtmlUtils {
@@ -97,7 +99,7 @@ public class PeopleHtmlUtils {
 	}
 
 	/** creates the display ReadOnly HTML snippet for various contacts */
-	public static String getContactDisplaySnippet(Node node, Node entity) {
+	public static String getContactDisplaySnippet(Node node) {
 		try {
 			StringBuilder builder = new StringBuilder();
 
@@ -523,4 +525,70 @@ public class PeopleHtmlUtils {
 		}
 	}
 
+	/**
+	 * 
+	 * @param entity
+	 * @param label
+	 *            an optional label to be displayed first
+	 * @return
+	 */
+	public static String getEntityContactSnippet(PeopleService peopleService,
+			Node entity, String label) {
+		try {
+			// local cache
+			Node person = null, org = null;
+
+			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
+				person = entity;
+				Node currContact = PeopleJcrUtils.getPrimaryContact(person,
+						PeopleTypes.PEOPLE_ADDRESS);
+				if (!(currContact == null || !currContact
+						.isNodeType(PeopleTypes.PEOPLE_CONTACT_REF))) {
+					org = peopleService.getEntityByUid(CommonsJcrUtils
+							.getSession(currContact), CommonsJcrUtils.get(
+							currContact, PeopleNames.PEOPLE_REF_UID));
+				}
+			} else if (entity.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION))
+				org = entity;
+
+			StringBuilder builder = new StringBuilder();
+			// builder.append("<span>");
+
+			builder.append("<b>");
+			if (CommonsJcrUtils.checkNotEmptyString(label))
+				builder.append(label);
+			if (org != null)
+				builder.append(CommonsJcrUtils.get(org, Property.JCR_TITLE))
+						.append("<br/>");
+			builder.append("</b>");
+			if (person != null)
+				builder.append(PersonJcrUtils.getPersonDisplayName(person))
+						.append("<br/>");
+
+			// phone
+			String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
+					PeopleTypes.PEOPLE_PHONE);
+			if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
+				builder.append(tmpStr);
+				builder.append("<br/>");
+			}
+
+			// mail
+			tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
+					PeopleTypes.PEOPLE_EMAIL);
+			if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
+				builder.append("<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
+						+ " href=\"mailto:");
+				builder.append(tmpStr).append("\">");
+				builder.append(tmpStr).append("</a>");
+			}
+			// builder.append("</span>");
+
+			return cleanHtmlString(builder.toString());
+
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Unable to create contact snippet for node " + entity, re);
+		}
+	}
 }

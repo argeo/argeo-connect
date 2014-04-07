@@ -101,8 +101,7 @@ public class ContactAddressComposite extends Composite {
 			addressHtml = PeopleHtmlUtils.getWorkAddressDisplaySnippet(
 					contactNode, referencedEntity);
 		} else
-			addressHtml = PeopleHtmlUtils.getContactDisplaySnippet(contactNode,
-					parentVersionableNode);
+			addressHtml = PeopleHtmlUtils.getContactDisplaySnippet(contactNode);
 		readOnlyInfoLbl.setText(addressHtml);
 	}
 
@@ -122,7 +121,8 @@ public class ContactAddressComposite extends Composite {
 			// The widgets
 			final Combo catCmb = new Combo(parent, SWT.NONE);
 
-			//Label lbl = toolkit.createLabel(parent, "Address of:", SWT.BOTTOM);
+			// Label lbl = toolkit.createLabel(parent, "Address of:",
+			// SWT.BOTTOM);
 
 			final Text valueTxt = PeopleUiUtils.createRDText(toolkit, parent,
 					"Chosen org.", "", 0);

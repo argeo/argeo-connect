@@ -188,7 +188,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 						.createValue("*" + token + "*"));
 				Constraint currC = factory.fullTextSearch(
 						source.getSelectorName(), null, so);
-				defaultC = localAnd(factory, defaultC, currC);
+				defaultC = PeopleUiUtils.localAnd(factory, defaultC, currC);
 			}
 		}
 		return defaultC;
@@ -322,16 +322,6 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	protected PeopleUiService getPeopleUiService() {
 		return peopleUiService;
-	}
-
-	// ////////////
-	// Helpers
-	protected Constraint localAnd(QueryObjectModelFactory factory,
-			Constraint defaultC, Constraint newC) throws RepositoryException {
-		if (defaultC == null)
-			return newC;
-		else
-			return factory.and(defaultC, newC);
 	}
 
 	protected Text createBoldLT(Composite parent, String title, String message,
