@@ -89,7 +89,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 	@Override
 	protected void createToolkits() {
 		entityTK = new EntityToolkit(toolkit, getManagedForm(),
-				getPeopleUiService());
+				getPeopleService(), getPeopleUiService());
 		contactTK = new ContactToolkit(toolkit, getManagedForm(),
 				getPeopleService(), getPeopleUiService());
 		activityTK = new ActivityToolkit(toolkit, getManagedForm(),

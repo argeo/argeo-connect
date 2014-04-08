@@ -1,9 +1,7 @@
 package org.argeo.connect.people.ui.toolkits;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -11,13 +9,16 @@ import javax.jcr.Value;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiService;
-import org.argeo.connect.people.ui.commands.OpenSearchByTagEditor;
+import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -44,16 +45,17 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class EntityToolkit {
 	// private final static Log log = LogFactory.getLog(EntityToolkit.class);
 
+	private PeopleService peopleService;
 	private PeopleUiService peopleUiService;
-
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 
 	public EntityToolkit(FormToolkit toolkit, IManagedForm form,
-			PeopleUiService peopleUiService) {
+			PeopleService peopleService, PeopleUiService peopleUiService) {
 		this.toolkit = toolkit;
 		this.form = form;
 		this.peopleUiService = peopleUiService;
+		this.peopleService = peopleService;
 	}
 
 	// ////////////////
@@ -127,13 +129,16 @@ public class EntityToolkit {
 								@Override
 								public void widgetSelected(
 										final SelectionEvent event) {
-									Map<String, String> params = new HashMap<String, String>();
-									params.put(
-											OpenSearchByTagEditor.PARAM_TAG_VALUE,
+									Node cachedTag = ResourcesJcrUtils.getTagNodeFromValue(
+											CommonsJcrUtils.getSession(entity),
+											peopleService
+													.getResourcesBasePath(PeopleNames.PEOPLE_TAGS),
 											tagValue);
 									CommandUtils.callCommand(peopleUiService
-											.getOpenSearchByTagEditorCmdId(),
-											params);
+											.getOpenEntityEditorCmdId(),
+											OpenEntityEditor.PARAM_JCR_ID,
+											CommonsJcrUtils
+													.getIdentifier(cachedTag));
 								}
 							});
 

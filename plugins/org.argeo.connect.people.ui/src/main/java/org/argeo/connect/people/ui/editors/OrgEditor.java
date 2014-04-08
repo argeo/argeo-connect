@@ -74,7 +74,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 	@Override
 	protected void createToolkits() {
 		entityTK = new EntityToolkit(toolkit, getManagedForm(),
-				getPeopleUiService());
+				getPeopleService(), getPeopleUiService());
 		contactTK = new ContactToolkit(toolkit, getManagedForm(),
 				getPeopleService(), getPeopleUiService());
 		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
@@ -95,8 +95,8 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		// Tag Management
 		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		entityTK.populateTagPanel(tagsCmp, org,
-				PeopleNames.PEOPLE_TAGS, "Add a tag");
+		entityTK.populateTagPanel(tagsCmp, org, PeopleNames.PEOPLE_TAGS,
+				"Add a tag");
 
 		// Mailing list management
 		Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);

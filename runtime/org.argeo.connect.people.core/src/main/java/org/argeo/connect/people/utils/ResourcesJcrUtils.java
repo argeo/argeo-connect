@@ -5,6 +5,7 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Constraint;
@@ -137,7 +138,32 @@ public class ResourcesJcrUtils {
 			Node code = session.getNode(path);
 			return CommonsJcrUtils.get(code, Property.JCR_TITLE);
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to get lable for " + isoCode, e);
+			throw new PeopleException("Unable to get label for " + isoCode, e);
+		}
+	}
+
+	public static Node getTagNodeFromValue(Session session, String basePath,
+			String tagValue) {
+		try {
+			QueryObjectModelFactory factory = session.getWorkspace()
+					.getQueryManager().getQOMFactory();
+			Selector source = factory.selector(NodeType.MIX_TITLE,
+					NodeType.MIX_TITLE);
+			Constraint c1 = factory.descendantNode(source.getSelectorName(),
+					basePath);
+			DynamicOperand dynOp = factory.propertyValue(
+					source.getSelectorName(), Property.JCR_TITLE);
+			StaticOperand statOp = factory.literal(session.getValueFactory()
+					.createValue(tagValue));
+			Constraint c2 = factory.comparison(dynOp,
+					QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+			Constraint defaultC = factory.and(c1, c2);
+			NodeIterator ni = factory.createQuery(source, defaultC, null, null)
+					.execute().getNodes();
+			return ni.getSize() == 1 ? ni.nextNode() : null;
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to get cached node for tag "
+					+ tagValue, e);
 		}
 	}
 }
