@@ -1,9 +1,20 @@
 package org.argeo.connect.people;
 
+import java.util.ArrayList;
 
 public interface PeopleConstants {
 
 	// Base path
+	public static ArrayList<String> KNOWN_RESOURCE_TYPE = new ArrayList<String>() {
+		private static final long serialVersionUID = 4277773515826637164L;
+		{
+			add(PeopleNames.PEOPLE_TAGS);
+			add(PeopleNames.PEOPLE_TASKS);
+			add(PeopleConstants.RESOURCE_COUNTRIES);
+			add(PeopleConstants.RESOURCE_LANGS);
+		}
+	};
+
 	public final static String PEOPLE_BASE_PATH = "/people:system";
 
 	public final static String PEOPLE_MAILING_LISTS_BASE_PATH = PEOPLE_BASE_PATH
@@ -20,11 +31,9 @@ public interface PeopleConstants {
 	public final static String PEOPLE_RESOURCES_BASE_PATH = PEOPLE_BASE_PATH
 			+ "/people:resources";
 
-	
 	// Defined resources
 	public final static String RESOURCE_COUNTRIES = "people:countries";
 	public final static String RESOURCE_LANGS = "people:languages";
-
 
 	@Deprecated
 	// public final static String PEOPLE_COUNTRIES_BASE_PATH =

@@ -100,8 +100,8 @@
 
 - film:printFee (STRING)
 - film:printFeeInfo (STRING)
-- film:printSourceContact (REFERENCE)
-- film:printReturnContact (REFERENCE)
+// - film:printSourceContact (REFERENCE)
+// - film:printReturnContact (REFERENCE)
 
 
 [film:printDcp] > film:print

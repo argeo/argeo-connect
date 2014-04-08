@@ -16,18 +16,20 @@ public interface PeopleNames {
 	/** A number of people */
 	public static String PEOPLE_COUNT = "people:count";
 
-	// Main concepts parent node names 
+	// Main concepts parent node names
 	public final static String PEOPLE_PERSONS = "people:persons";
 	public final static String PEOPLE_ORGS = "people:organizations";
 	public final static String PEOPLE_FILMS = "people:films";
 	public final static String PEOPLE_PROJECTS = "people:projects";
+	@Deprecated
 	public final static String PEOPLE_WORKFLOWS = "people:workflows";
+	public final static String PEOPLE_ACTIVITIES = "people:activities";
 
-	// Resources parent node names 
+	// Resources parent node names
 	public final static String PEOPLE_TAGS = "people:tags";
 	public final static String PEOPLE_MAILING_LISTS = "people:mailingLists";
-	
-	// Sub concepts parent node names 
+
+	// Sub concepts parent node names
 	public final static String PEOPLE_PAYMENT_ACCOUNTS = "people:paymentAccounts";
 	public final static String PEOPLE_CONTACTS = "people:contacts";
 	public final static String PEOPLE_TITLES = "people:titles";
@@ -35,8 +37,7 @@ public interface PeopleNames {
 	public final static String PEOPLE_MEMBERS = "people:members";
 	public final static String PEOPLE_JOBS = "people:jobs";
 
-
-	// Widely used property names 
+	// Widely used property names
 	public final static String PEOPLE_LANG = "people:lang";
 	public final static String PEOPLE_PICTURE = "people:picture";
 	// the iso code of a given resource
@@ -46,9 +47,8 @@ public interface PeopleNames {
 	public final static String PEOPLE_UID = "people:uid";
 	// Reference an other entity using the implementation specific UID
 	public final static String PEOPLE_REF_UID = "people:refUid";
-	// Primary boolean flag 
+	// Primary boolean flag
 	public final static String PEOPLE_IS_PRIMARY = "people:isPrimary";
-
 
 	/* PERSONS */
 	public final static String PEOPLE_FIRST_NAME = "people:firstName";
@@ -94,7 +94,6 @@ public interface PeopleNames {
 	public final static String PEOPLE_WAKE_UP_DATE = "people:wakeUpDate";
 	public final static String PEOPLE_DEPENDS_ON = "people:dependsOn";
 	public final static String PEOPLE_TASKS = "people:tasks";
-	public final static String PEOPLE_ACTIVITIES = "people:activities";
 
 	// Workflow specific
 	public final static String PEOPLE_DATE_BEGIN = "people:dateBegin";
@@ -135,10 +134,9 @@ public interface PeopleNames {
 
 	/* MISCENELLANEOUS */
 	public final static String PEOPLE_ALT_LANGS = "people:altLangs";
-	
+
 	public final static String PEOPLE_LATIN_PHONETIC_SPELLING = "people:latinPhoneticSpelling";
 
-	
 	/* GROUP AND JOBS MANAGEMENT */
 	// An optional department within the org corresponding to the current
 	// position

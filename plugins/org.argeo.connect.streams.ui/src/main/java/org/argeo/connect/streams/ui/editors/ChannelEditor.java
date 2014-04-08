@@ -492,7 +492,7 @@ public class ChannelEditor extends AbstractEntityEditor implements RssNames {
 	}
 
 	protected void refreshTextValue(Text text, Node entity, String propName) {
-		String tmpStr = CommonsJcrUtils.getStringValue(entity, propName);
+		String tmpStr = CommonsJcrUtils.get(entity, propName);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
 			text.setText(tmpStr);
 	}

@@ -19,7 +19,7 @@ public class ActivityValueCatalogs {
 	public final static String ACT_LBL_SENT_FAX = "Sent fax";
 	public final static String ACT_LBL_MEETING = "Meeting";
 	public final static String ACT_LBL_POST_MAIL = "Post mail";
-	public final static String ACT_LBL_PAYMENT = "Payement";
+	public final static String ACT_LBL_PAYMENT = "Payment";
 	public final static String ACT_LBL_REVIEW = "Review";
 	public final static String ACT_LBL_CHAT = "Chat";
 	public final static String ACT_LBL_TWEET = "Tweet";

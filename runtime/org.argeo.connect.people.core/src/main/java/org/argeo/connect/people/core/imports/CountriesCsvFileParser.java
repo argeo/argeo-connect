@@ -8,10 +8,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.util.CsvParserWithLinesAsMap;
@@ -23,13 +21,12 @@ public class CountriesCsvFileParser extends CsvParserWithLinesAsMap {
 	private final static String ISO_CODE = "Alpha-2 code";
 
 	private final Session adminSession;
-	private final PeopleService peopleService;
+	private final Node countries;
 
-	public CountriesCsvFileParser(Session adminSession,
-			PeopleService peopleService) {
+	public CountriesCsvFileParser(Session adminSession, Node countries) {
 		super();
 		this.adminSession = adminSession;
-		this.peopleService = peopleService;
+		this.countries = countries;
 	}
 
 	@Override
@@ -37,9 +34,6 @@ public class CountriesCsvFileParser extends CsvParserWithLinesAsMap {
 		try {
 			String enName = line.get(EN_SHORT_NAME);
 			String isoCode = line.get(ISO_CODE);
-
-			Node countries = adminSession.getNode(peopleService
-					.getResourcesBasePath(PeopleConstants.RESOURCE_COUNTRIES));
 			Node country;
 			String relPath = isoCode.substring(0, 1) + "/" + isoCode;
 			if (!adminSession.nodeExists(countries.getPath() + "/" + relPath)) {

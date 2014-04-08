@@ -15,15 +15,20 @@ import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.UserJcrUtils;
 
-public class ActivityServiceImpl implements ActivityService {
+public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	// private final static Log log =
 	// LogFactory.getLog(ActivityServiceImpl.class);
+
+	// Keeps a local reference to the parent people service,
+	// Among other to rely on its base path policies.
+	private final PeopleService peopleService;
 
 	/* DEPENDENCY INJECTION */
 	private UserManagementService userManagementService;
@@ -32,7 +37,8 @@ public class ActivityServiceImpl implements ActivityService {
 	 * Default constructor, caller must then inject a relevant
 	 * {@link userManagementService}
 	 */
-	public ActivityServiceImpl() {
+	public ActivityServiceImpl(PeopleService peopleService) {
+		this.peopleService = peopleService;
 	}
 
 	/**
@@ -41,7 +47,9 @@ public class ActivityServiceImpl implements ActivityService {
 	 * 
 	 * @param userManagementService
 	 */
-	public ActivityServiceImpl(UserManagementService userManagementService) {
+	public ActivityServiceImpl(PeopleService peopleService,
+			UserManagementService userManagementService) {
+		this.peopleService = peopleService;
 		setUserManagementService(userManagementService);
 	}
 
@@ -50,14 +58,17 @@ public class ActivityServiceImpl implements ActivityService {
 	public String getActivityParentCanonicalPath(Session session) {
 		String currentUser = session.getUserID();
 		Calendar currentTime = GregorianCalendar.getInstance();
-		String path = PeopleConstants.PEOPLE_ACTIVITIES_BASE_PATH + "/"
+		String path = peopleService
+				.getBasePathForType(PeopleTypes.PEOPLE_ACTIVITY) + "/"
 				+ JcrUtils.dateAsPath(currentTime, true) + currentUser;
 		return path;
 	}
 
 	public String getActivityParentPath(Session session, Calendar date,
 			String managerId) {
-		String path = PeopleConstants.PEOPLE_ACTIVITIES_BASE_PATH + "/"
+		String path = peopleService
+				.getBasePathForType(PeopleTypes.PEOPLE_ACTIVITY)
+				+ "/"
 				+ JcrUtils.dateAsPath(date, true) + managerId;
 		return path;
 	}
@@ -195,7 +206,6 @@ public class ActivityServiceImpl implements ActivityService {
 			Calendar wakeUpDate) {
 
 		try {
-
 			if (session == null && parentNode == null)
 				throw new PeopleException(
 						"Define either a session or a parent node. "

@@ -1,6 +1,8 @@
 package org.argeo.connect.people.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +38,7 @@ import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.jcr.JcrUtils;
 
 /** Concrete access to people services */
-public class PeopleServiceImpl implements PeopleService {
+public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private final static Log log = LogFactory.getLog(PeopleServiceImpl.class);
 
 	/* DEPENDENCY INJECTION */
@@ -44,7 +46,7 @@ public class PeopleServiceImpl implements PeopleService {
 
 	/* Other services */
 	private UserManagementService userManagementService = new UserManagementServiceImpl();
-	private ActivityService activityService = new ActivityServiceImpl(
+	private ActivityService activityService = new ActivityServiceImpl(this,
 			userManagementService);
 
 	// private Map<Integer, String> managedRoles;
@@ -54,6 +56,19 @@ public class PeopleServiceImpl implements PeopleService {
 	// private Map<String, Object> businessCatalogs;
 
 	// private Session adminSession = null;
+
+	// SHOULD BE IN PeopleConstants but it does not work
+	// TODO investigate
+	// Initialize the map between node types and their names
+	public static Map<String, String> BASE_TYPE_NAMES;
+	static {
+		Map<String, String> tmpMap = new HashMap<String, String>();
+		{
+			tmpMap.put(PeopleTypes.PEOPLE_ACTIVITY,
+					PeopleNames.PEOPLE_ACTIVITIES);
+		}
+		BASE_TYPE_NAMES = Collections.unmodifiableMap(tmpMap);
+	}
 
 	/* Life cycle management */
 	/**
@@ -81,30 +96,23 @@ public class PeopleServiceImpl implements PeopleService {
 	public String getResourcesBasePath(String typeId) {
 		if (typeId == null)
 			return PeopleConstants.PEOPLE_RESOURCES_BASE_PATH;
-
-		String prefix = getResourcesBasePath(null) + "/";
-		if (PeopleNames.PEOPLE_TAGS.equals(typeId))
-			return prefix + typeId;
-		else if (PeopleConstants.RESOURCE_COUNTRIES.equals(typeId))
-			return prefix + typeId;
-		else if (PeopleConstants.RESOURCE_LANGS.equals(typeId))
-			return prefix + typeId;
+		else if (PeopleConstants.KNOWN_RESOURCE_TYPE.contains(typeId))
+			return getResourcesBasePath(null) + "/" + typeId;
 		else
 			throw new PeopleException("Undefined type: " + typeId);
 	}
 
 	@Override
 	public String getBasePathForType(String typeId) {
-		// Resources
-		throw new PeopleException("Undefined type: " + typeId);
+		if (typeId == null)
+			return PeopleConstants.PEOPLE_BASE_PATH;
+		else if (BASE_TYPE_NAMES.containsKey(typeId))
+			return getBasePathForType(null) + "/" + BASE_TYPE_NAMES.get(typeId);
+		else
+			throw new PeopleException("Undefined type: " + typeId);
 	}
 
 	/* ENTITY SERVICES */
-	// @Override
-	// public Map<String, String> getMapValuesForProperty(String propertyName) {
-	// return null;
-	// }
-
 	@Override
 	public Node getEntityByUid(Session session, String uid) {
 		try {

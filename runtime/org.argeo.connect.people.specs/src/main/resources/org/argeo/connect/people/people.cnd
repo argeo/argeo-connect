@@ -202,7 +202,7 @@ mixin
 
 // Tasks 
 [people:task] > people:activity
-- people:taskStatus (String) ="NEW" a m
+- people:taskStatus (String) // mandatory or not?
 // reference to a group
 - people:assignedTo (REFERENCE)
 // - people:relatedTo (REFERENCE) * 

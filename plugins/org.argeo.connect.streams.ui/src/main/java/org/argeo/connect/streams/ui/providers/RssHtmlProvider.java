@@ -32,7 +32,7 @@ public class RssHtmlProvider implements RssNames {
 	public static String getChannelShort(Node node) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b>");
-		builder.append(CommonsJcrUtils.getStringValue(node, Property.JCR_TITLE));
+		builder.append(CommonsJcrUtils.get(node, Property.JCR_TITLE));
 		builder.append("</b>");
 		builder.append("<br/>");
 		builder.append(getLastUpdateSnippet(node));
@@ -40,7 +40,7 @@ public class RssHtmlProvider implements RssNames {
 		builder.append(RssHtmlProvider.getTags(node));
 		builder.append("<br/>");
 
-		// String desc = CommonsJcrUtils.getStringValue(node,
+		// String desc = CommonsJcrUtils.get(node,
 		// Property.JCR_DESCRIPTION);
 		// if (desc != null) {
 		// builder.append(desc);
@@ -51,9 +51,9 @@ public class RssHtmlProvider implements RssNames {
 	public static String getChannelTitle(Node node) throws RepositoryException {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b><big>");
-		builder.append(CommonsJcrUtils.getStringValue(node, Property.JCR_TITLE));
+		builder.append(CommonsJcrUtils.get(node, Property.JCR_TITLE));
 		builder.append("</big></b><br/>");
-		String desc = CommonsJcrUtils.getStringValue(node,
+		String desc = CommonsJcrUtils.get(node,
 				Property.JCR_DESCRIPTION);
 		if (desc != null) {
 			builder.append(desc);
@@ -64,11 +64,11 @@ public class RssHtmlProvider implements RssNames {
 	public static String getChannelMedium(Node node) throws RepositoryException {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b><big>");
-		builder.append(CommonsJcrUtils.getStringValue(node, Property.JCR_TITLE));
+		builder.append(CommonsJcrUtils.get(node, Property.JCR_TITLE));
 		builder.append("</big></b><br/>");
 		builder.append(RssHtmlProvider.getTags(node));
 		builder.append("<br/>");
-		String desc = CommonsJcrUtils.getStringValue(node,
+		String desc = CommonsJcrUtils.get(node,
 				Property.JCR_DESCRIPTION);
 		if (desc != null) {
 			builder.append(desc);
@@ -78,21 +78,21 @@ public class RssHtmlProvider implements RssNames {
 
 	public static String getItemShort(Node node) {
 		StringBuilder builder = new StringBuilder();
-		String link = CommonsJcrUtils.getStringValue(node, RSS_LINK);
+		String link = CommonsJcrUtils.get(node, RSS_LINK);
 
 		builder.append("<span style=\"float:left;padding:0px;white-space:pre-wrap;\"> ");
 		builder.append("<a " + RssConstants.CSS_URL_STYLE + " ");
 		builder.append("href=\"");
 		builder.append(cleanLink(link));
 		builder.append("\"").append(" target=\"_blank\" ").append(">");
-		String title = CommonsJcrUtils.getStringValue(node, Property.JCR_TITLE);
+		String title = CommonsJcrUtils.get(node, Property.JCR_TITLE);
 		builder.append(title);
 		builder.append("</a>");
 
 		builder.append("<br/>");
 		// builder.append(RssHtmlProvider.getPubDate(node));
 		// builder.append("<br/>");
-		String desc = CommonsJcrUtils.getStringValue(node,
+		String desc = CommonsJcrUtils.get(node,
 				Property.JCR_DESCRIPTION);
 		if (desc != null) {
 			// TODO clean
@@ -112,7 +112,7 @@ public class RssHtmlProvider implements RssNames {
 
 	public static String getItemMedium(Node node) {
 		StringBuilder builder = new StringBuilder();
-		String link = CommonsJcrUtils.getStringValue(node, RSS_LINK);
+		String link = CommonsJcrUtils.get(node, RSS_LINK);
 		// TODO add image management
 		builder.append("<span> <big> <a ").append(RssConstants.CSS_URL_STYLE)
 				.append(" ");
@@ -120,7 +120,7 @@ public class RssHtmlProvider implements RssNames {
 		builder.append(cleanLink(link));
 		builder.append("\"").append(" target=\"_blank\" ").append(">");
 
-		String title = CommonsJcrUtils.getStringValue(node, Property.JCR_TITLE);
+		String title = CommonsJcrUtils.get(node, Property.JCR_TITLE);
 		builder.append(title);
 		builder.append("</a>");
 		builder.append("</big> </span>");
@@ -131,7 +131,7 @@ public class RssHtmlProvider implements RssNames {
 		builder.append("<br/>");
 		builder.append(RssHtmlProvider.getTags(node));
 
-		String desc = CommonsJcrUtils.getStringValue(node,
+		String desc = CommonsJcrUtils.get(node,
 				Property.JCR_DESCRIPTION);
 		if (desc != null) {
 			builder.append("<span style=\"float:left;padding:0px;white-space:pre-wrap;\" >");
