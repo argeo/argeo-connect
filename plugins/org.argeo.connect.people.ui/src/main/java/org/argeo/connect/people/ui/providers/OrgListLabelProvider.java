@@ -23,7 +23,7 @@ public class OrgListLabelProvider extends LabelProvider implements PeopleNames {
 		Node orga = (Node) element;
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b>");
-		builder.append(CommonsJcrUtils.getStringValue(orga, PEOPLE_LEGAL_NAME));
+		builder.append(CommonsJcrUtils.get(orga, PEOPLE_LEGAL_NAME));
 		builder.append("</b>");
 
 		if (PeopleJcrUtils.getTownFromItem(orga) != null) {

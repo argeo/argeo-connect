@@ -176,8 +176,7 @@ public class PeopleJcrUtils implements PeopleNames {
 	public static String getPrimaryContactValue(Node item, String nodeType) {
 		Node primary = getPrimaryContact(item, nodeType);
 		if (primary != null)
-			return CommonsJcrUtils
-					.getStringValue(primary, PEOPLE_CONTACT_VALUE);
+			return CommonsJcrUtils.get(primary, PEOPLE_CONTACT_VALUE);
 		else
 			return "";
 	}

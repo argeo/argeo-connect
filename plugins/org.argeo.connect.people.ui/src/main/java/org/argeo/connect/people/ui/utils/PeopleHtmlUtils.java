@@ -580,7 +580,7 @@ public class PeopleHtmlUtils {
 				builder.append("<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
 						+ " href=\"mailto:");
 				builder.append(tmpStr).append("\">");
-				builder.append(tmpStr).append("</a>");
+				builder.append(tmpStr).append("</a><br/>");
 			}
 			// builder.append("</span>");
 

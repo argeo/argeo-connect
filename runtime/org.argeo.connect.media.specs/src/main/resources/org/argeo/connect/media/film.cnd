@@ -90,10 +90,10 @@
 - film:printVRes (STRING)
 - film:printAvgBitrate (STRING)
 
-- film:printAudioLanguage (STRING)
+- film:printAudioLanguage (STRING) *
 - film:printSoundFormat (STRING)
 
-- film:printSubtitleLanguage (STRING)
+- film:printSubtitleLanguage (STRING) *
 - film:printSubtitleFormat (STRING)
 // - film:printSoundFormat (STRING)
 // - film:printLanguageVersion (STRING)

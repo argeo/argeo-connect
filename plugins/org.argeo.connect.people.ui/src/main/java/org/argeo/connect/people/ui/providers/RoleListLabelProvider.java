@@ -31,7 +31,7 @@ public class RoleListLabelProvider extends ColumnLabelProvider implements
 				throw new PeopleException("Unvalid node type. "
 						+ "Cannot display role information");
 
-			String pos = CommonsJcrUtils.getStringValue(link,
+			String pos = CommonsJcrUtils.get(link,
 					PeopleNames.PEOPLE_ROLE);
 
 			// ROLE
@@ -44,7 +44,7 @@ public class RoleListLabelProvider extends ColumnLabelProvider implements
 
 			// DEPARTMENT
 			if (link.isNodeType(PeopleTypes.PEOPLE_JOB)) {
-				String dep = CommonsJcrUtils.getStringValue(link,
+				String dep = CommonsJcrUtils.get(link,
 						PeopleNames.PEOPLE_DEPARTMENT);
 				if (CommonsJcrUtils.checkNotEmptyString(dep))
 					builder.append("Department: ").append(dep);

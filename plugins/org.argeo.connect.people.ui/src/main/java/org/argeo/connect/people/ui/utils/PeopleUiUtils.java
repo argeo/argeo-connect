@@ -13,6 +13,7 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.composites.dropdowns.PeopleAbstractDropDown;
@@ -72,7 +73,7 @@ public class PeopleUiUtils {
 	 */
 	public static String refreshTextWidgetValue(Text text, Node entity,
 			String propName) {
-		String tmpStr = CommonsJcrUtils.getStringValue(entity, propName);
+		String tmpStr = CommonsJcrUtils.get(entity, propName);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
 			text.setText(tmpStr);
 		return tmpStr;
@@ -473,6 +474,22 @@ public class PeopleUiUtils {
 		formData.right = new FormAttachment(right, 0);
 		formData.bottom = new FormAttachment(bottom, 0);
 		return formData;
+	}
+
+	/**
+	 * Shortcut to create a delete button that will be used in composites that
+	 * display a multi value property in Tag Like manner
+	 */
+	public static Button createDeleteButton(Composite parent) {
+		Button button = new Button(parent, SWT.FLAT);
+		button.setData(PeopleUiConstants.CUSTOM_VARIANT,
+				PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+		button.setImage(PeopleImages.DELETE_BTN);
+		RowData rd = new RowData();
+		rd.height = 16;
+		rd.width = 16;
+		button.setLayoutData(rd);
+		return button;
 	}
 
 	/**

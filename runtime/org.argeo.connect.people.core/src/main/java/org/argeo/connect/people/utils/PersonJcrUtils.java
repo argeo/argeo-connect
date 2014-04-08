@@ -59,39 +59,33 @@ public class PersonJcrUtils implements PeopleNames {
 	public static String getVariousNameInfo(Node person) {
 		StringBuilder nameInfo = new StringBuilder();
 
-		if (CommonsJcrUtils.getStringValue(person, PEOPLE_SALUTATION) != null) {
-			nameInfo.append(CommonsJcrUtils.getStringValue(person,
-					PEOPLE_SALUTATION));
+		if (CommonsJcrUtils.get(person, PEOPLE_SALUTATION) != null) {
+			nameInfo.append(CommonsJcrUtils.get(person, PEOPLE_SALUTATION));
 			nameInfo.append(" ");
 		}
-		if (CommonsJcrUtils.getStringValue(person, PEOPLE_PERSON_TITLE) != null) {
-			nameInfo.append(CommonsJcrUtils.getStringValue(person,
-					PEOPLE_PERSON_TITLE));
-			nameInfo.append(" ");
-		}
-
-		if (CommonsJcrUtils.getStringValue(person, PEOPLE_FIRST_NAME) != null) {
-			nameInfo.append(CommonsJcrUtils.getStringValue(person,
-					PEOPLE_FIRST_NAME));
+		if (CommonsJcrUtils.get(person, PEOPLE_PERSON_TITLE) != null) {
+			nameInfo.append(CommonsJcrUtils.get(person, PEOPLE_PERSON_TITLE));
 			nameInfo.append(" ");
 		}
 
-		if (CommonsJcrUtils.getStringValue(person, PEOPLE_NICKNAME) != null) {
+		if (CommonsJcrUtils.get(person, PEOPLE_FIRST_NAME) != null) {
+			nameInfo.append(CommonsJcrUtils.get(person, PEOPLE_FIRST_NAME));
+			nameInfo.append(" ");
+		}
+
+		if (CommonsJcrUtils.get(person, PEOPLE_NICKNAME) != null) {
 			nameInfo.append("(");
-			nameInfo.append(CommonsJcrUtils.getStringValue(person,
-					PEOPLE_NICKNAME));
+			nameInfo.append(CommonsJcrUtils.get(person, PEOPLE_NICKNAME));
 			nameInfo.append(") ");
 		}
 
-		if (CommonsJcrUtils.getStringValue(person, PEOPLE_LAST_NAME) != null) {
-			nameInfo.append(CommonsJcrUtils.getStringValue(person,
-					PEOPLE_LAST_NAME));
+		if (CommonsJcrUtils.get(person, PEOPLE_LAST_NAME) != null) {
+			nameInfo.append(CommonsJcrUtils.get(person, PEOPLE_LAST_NAME));
 			nameInfo.append(" ");
 		}
 
-		if (CommonsJcrUtils.getStringValue(person, PEOPLE_NAME_SUFFIX) != null) {
-			nameInfo.append(CommonsJcrUtils.getStringValue(person,
-					PEOPLE_NAME_SUFFIX));
+		if (CommonsJcrUtils.get(person, PEOPLE_NAME_SUFFIX) != null) {
+			nameInfo.append(CommonsJcrUtils.get(person, PEOPLE_NAME_SUFFIX));
 			nameInfo.append(" ");
 		}
 		return nameInfo.toString();

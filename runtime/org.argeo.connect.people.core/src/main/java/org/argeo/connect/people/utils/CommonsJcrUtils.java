@@ -264,29 +264,9 @@ public class CommonsJcrUtils {
 	}
 
 	/**
-	 * Concisely get the string value of a property or null if this node doesn't
-	 * have this property or if the corresponding property is an empty string
-	 */
-	public static String getStringValue(Node node, String propertyName) {
-		try {
-			if (!node.hasProperty(propertyName)
-					|| "".equals(node.getProperty(propertyName).getString()
-							.trim()))
-				return null;
-			else
-				return node.getProperty(propertyName).getString();
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get property " + propertyName
-					+ " of " + node, e);
-		}
-	}
-
-	/**
-	 * Concisely get the string value of a property. Contrary to
-	 * <code>CommonsJcrUtils.getStringValue()</code>, returns an empty String
+	 * Concisely get the string value of a property. Returns an empty String
 	 * rather than null if this node doesn't have this property or if the
-	 * corresponding property is an empty string. Useful in the read only label
-	 * providers.
+	 * corresponding property is an empty string.
 	 */
 	public static String get(Node node, String propertyName) {
 		try {
@@ -336,6 +316,28 @@ public class CommonsJcrUtils {
 			throw new ArgeoException("Cannot get multi valued property "
 					+ propertyName + " of " + node, e);
 		}
+	}
+
+	/**
+	 * Concisely get a list with the values of a multi valued string property
+	 * return an empty list if the property does not exist
+	 */
+	public static List<String> getMultiAsList(Node node, String propertyName) {
+		List<String> results = new ArrayList<String>();
+		try {
+			if (!node.hasProperty(propertyName))
+				return results;
+			else {
+				Value[] langs = node.getProperty(propertyName).getValues();
+				for (Value val : langs) {
+					results.add(val.getString());
+				}
+			}
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Cannot get multi valued property "
+					+ propertyName + " of " + node, e);
+		}
+		return results;
 	}
 
 	/**
@@ -493,6 +495,26 @@ public class CommonsJcrUtils {
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Cannot get boolean property "
 					+ propertyName + " of " + node, e);
+		}
+	}
+
+	/**
+	 * Concisely get a referenced node or null if the given node doesn't have
+	 * this property or if the property is of the wrong type
+	 */
+	public static Node getReference(Node node, String propName) {
+		try {
+			Node ref = null;
+			if (node.hasProperty(propName)) {
+				Property prop = node.getProperty(propName);
+				if (prop.getType() == PropertyType.REFERENCE) {
+					ref = prop.getNode();
+				}
+			}
+			return ref;
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to get reference " + propName
+					+ " for node " + node, re);
 		}
 	}
 

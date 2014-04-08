@@ -36,10 +36,10 @@ public class GroupMembersLabelProvider extends ColumnLabelProvider implements
 			// Create HTML snippet
 			StringBuilder builder = new StringBuilder();
 			builder.append("<b>");
-			builder.append(CommonsJcrUtils.getStringValue(referencedEntity,
+			builder.append(CommonsJcrUtils.get(referencedEntity,
 					Property.JCR_TITLE));
 			builder.append("</b>");
-			String role = CommonsJcrUtils.getStringValue(position, PEOPLE_ROLE);
+			String role = CommonsJcrUtils.get(position, PEOPLE_ROLE);
 			if (CommonsJcrUtils.checkNotEmptyString(role))
 				builder.append(" [").append(role).append("]");
 			return builder.toString();

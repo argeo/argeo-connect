@@ -82,7 +82,7 @@ public class PeopleServiceImpl implements PeopleService {
 		if (typeId == null)
 			return PeopleConstants.PEOPLE_RESOURCES_BASE_PATH;
 
-		String prefix = PeopleConstants.PEOPLE_RESOURCES_BASE_PATH + "/";
+		String prefix = getResourcesBasePath(null) + "/";
 		if (PeopleNames.PEOPLE_TAGS.equals(typeId))
 			return prefix + typeId;
 		else if (PeopleConstants.RESOURCE_COUNTRIES.equals(typeId))

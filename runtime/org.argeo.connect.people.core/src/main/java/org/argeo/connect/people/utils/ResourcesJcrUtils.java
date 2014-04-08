@@ -29,7 +29,7 @@ import org.argeo.connect.people.PeopleTypes;
 public class ResourcesJcrUtils {
 
 	/**
-	 * Returns the ISO code given a language name in english or null if none is
+	 * Returns the ISO code given a language name in English or null if none is
 	 * found.
 	 * 
 	 * @return
