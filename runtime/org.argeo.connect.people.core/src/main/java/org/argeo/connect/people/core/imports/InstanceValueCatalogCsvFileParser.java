@@ -10,7 +10,7 @@ import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.util.CsvParserWithLinesAsMap;
 
 /**
- * Base utility to load a catalog of property values for a given business type
+ * Base utility to load a catalogue of property values for a given business type
  * in a repository.
  * 
  * Expected file format is a Csv with 2 columns, the first with the property

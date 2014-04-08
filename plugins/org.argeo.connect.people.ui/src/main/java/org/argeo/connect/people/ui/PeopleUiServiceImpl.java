@@ -89,7 +89,8 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 				Value[] values = node.getProperty(propertyName).getValues();
 				for (Value value : values) {
 					String curr = value.getString();
-					if (CommonsJcrUtils.checkNotEmptyString(curr)
+					if (CommonsJcrUtils.isEmptyString(filter)
+							|| CommonsJcrUtils.checkNotEmptyString(curr)
 							&& curr.toLowerCase()
 									.contains(filter.toLowerCase()))
 						result.add(curr);
