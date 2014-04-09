@@ -8,7 +8,7 @@ import org.eclipse.ui.IPersistableElement;
 public class EntityEditorInput implements IEditorInput {
 
 	private final String uid;
-
+	
 	/** uid must not be null */
 	public EntityEditorInput(String uid) {
 		this.uid = uid;

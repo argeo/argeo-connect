@@ -12,7 +12,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.connect.people.ActivityService;
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -59,7 +58,8 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 		String currentUser = session.getUserID();
 		Calendar currentTime = GregorianCalendar.getInstance();
 		String path = peopleService
-				.getBasePathForType(PeopleTypes.PEOPLE_ACTIVITY) + "/"
+				.getBasePathForType(PeopleTypes.PEOPLE_ACTIVITY)
+				+ "/"
 				+ JcrUtils.dateAsPath(currentTime, true) + currentUser;
 		return path;
 	}
@@ -204,6 +204,16 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			String title, String description, Node assignedTo,
 			List<Node> relatedTo, Calendar creationDate, Calendar dueDate,
 			Calendar wakeUpDate) {
+		return createTask(session, parentNode, PeopleTypes.PEOPLE_TASK,
+				managerId, title, description, assignedTo, relatedTo,
+				creationDate, dueDate, wakeUpDate);
+	}
+
+	@Override
+	public Node createTask(Session session, Node parentNode,
+			String taskNodeType, String managerId, String title,
+			String description, Node assignedTo, List<Node> relatedTo,
+			Calendar creationDate, Calendar dueDate, Calendar wakeUpDate) {
 
 		try {
 			if (session == null && parentNode == null)
@@ -220,8 +230,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 								getActivityParentPath(session, creationDate,
 										managerId));
 
-			Node taskNode = parentNode.addNode(PeopleTypes.PEOPLE_TASK,
-					PeopleTypes.PEOPLE_TASK);
+			Node taskNode = parentNode.addNode(taskNodeType, taskNodeType);
 
 			if (CommonsJcrUtils.checkNotEmptyString(title))
 				taskNode.setProperty(Property.JCR_TITLE, title);
@@ -230,6 +239,10 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 				taskNode.setProperty(Property.JCR_DESCRIPTION, description);
 
 			Node userProfile = UserJcrUtils.getUserProfile(session, managerId);
+			
+			// FIXME
+			if (userProfile == null && "admin".equals(managerId))
+				userProfile = UserJcrUtils.getUserProfile(session, "root");
 			taskNode.setProperty(PeopleNames.PEOPLE_MANAGER, userProfile);
 
 			if (assignedTo != null)
@@ -247,15 +260,15 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 						wakeUpDate);
 			}
 
-			// FIXME check this, not very satisfaying.
+			// FIXME check this, not good enough.
 			// Activity Date
 			taskNode.setProperty(PeopleNames.PEOPLE_ACTIVITY_DATE, creationDate);
-
 			CommonsJcrUtils.saveAndCheckin(taskNode);
 			return taskNode;
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to create the new task " + title,
-					e);
+			throw new PeopleException(
+					"Unable to create task of type " + taskNodeType + " named "
+							+ title + " under " + parentNode, e);
 		}
 	}
 

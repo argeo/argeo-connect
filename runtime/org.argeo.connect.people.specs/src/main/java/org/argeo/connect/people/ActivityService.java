@@ -51,9 +51,9 @@ public interface ActivityService {
 
 	/* TASKS */
 	/**
-	 * Creates a new task given some information. If no parent node is provided,
-	 * the task is created using the same path policy as all other activity
-	 * types eg, by instance:
+	 * Creates a new dafault task given some information. If no parent node is
+	 * provided, the task is created using the same path policy as all other
+	 * activity types eg, by instance:
 	 * people:system/people:activities/Y2014/M01/D14/H12/root/Task
 	 * 
 	 * Either a valid session or a parent Node should be provided
@@ -62,12 +62,12 @@ public interface ActivityService {
 	 **/
 	public Node createTask(Session session, Node parentNode, String title,
 			String description, Node assignedTo, List<Node> relatedTo,
-			Calendar dueDate, Calendar awakeDate);
+			Calendar dueDate, Calendar wakeUpDate);
 
 	/**
-	 * Creates a new task given some information. If no parent node is provided,
-	 * the task is created using the same path policy as all other activity
-	 * types eg, by instance:
+	 * Creates a new default task given some information. If no parent node is
+	 * provided, the task is created using the same path policy as all other
+	 * activity types eg, by instance:
 	 * people:system/people:activities/Y2014/M01/D14/H12/root/Task
 	 * 
 	 * Either a valid session or a parent Node should be provided
@@ -76,7 +76,21 @@ public interface ActivityService {
 	public Node createTask(Session session, Node parentNode, String managerId,
 			String title, String description, Node assignedTo,
 			List<Node> relatedTo, Calendar creationDate, Calendar dueDate,
-			Calendar awakeDate);
+			Calendar wakeUpDate);
+
+	/**
+	 * Creates a new task of given type with some information. If no parent node
+	 * is provided, the task is created using the same path policy as all other
+	 * activity types eg, by instance:
+	 * people:system/people:activities/Y2014/M01/D14/H12/root/Task
+	 * 
+	 * Either a valid session or a parent Node should be provided
+	 * 
+	 **/
+	public Node createTask(Session session, Node parentNode,
+			String taskNodeType, String managerId, String title,
+			String description, Node assignedTo, List<Node> relatedTo,
+			Calendar creationDate, Calendar dueDate, Calendar wakeUpDate);
 
 	/**
 	 * Retrieves tasks assigned to one of the group that contain the username

@@ -191,8 +191,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 					changeAssignationLk.getParent().layout();
 
 					// We redraw the full related to composite at each refresh,
-					// might be a
-					// more efficient way to do
+					// might be a more efficient way to do
 					Control[] oldChildren = relatedCmp.getChildren();
 					for (Control child : oldChildren)
 						child.dispose();
