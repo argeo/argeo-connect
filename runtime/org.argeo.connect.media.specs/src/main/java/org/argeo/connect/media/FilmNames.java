@@ -86,7 +86,7 @@ public interface FilmNames {
 	public final static String FILM_PRINT_NUMBER = "film:printNumber";// (STRING)
 	// length in seconds
 	public final static String FILM_PRINT_DURATION = "film:printDuration"; // (LONG)
-	
+
 	// time codes
 	public final static String FILM_PRINT_TC_IN = "film:tcIn";// (STRING)
 	public final static String FILM_PRINT_TC_OUT = "film:tcOut";// (STRING)
@@ -110,8 +110,10 @@ public interface FilmNames {
 
 	public final static String FILM_PRINT_FEE = "film:printFee";// (STRING)
 	public final static String FILM_PRINT_FEE_INFO = "film:printFeeInfo";// (STRING)
-	public final static String FILM_PRINT_SOURCE_CONTACT = "film:printSourceContact";// (REFERENCE)
-	public final static String FILM_PRINT_RETURN_CONTACT = "film:printReturnContact";// (REFERENCE)
+	// public final static String FILM_PRINT_SOURCE_CONTACT =
+	// "film:printSourceContact";// (REFERENCE)
+	// public final static String FILM_PRINT_RETURN_CONTACT =
+	// "film:printReturnContact";// (REFERENCE)
 
 	// [film:printDcp] > film:print
 	public final static String FILM_PRINT_FILE_NAME = "film:printFileName";// (STRING)
