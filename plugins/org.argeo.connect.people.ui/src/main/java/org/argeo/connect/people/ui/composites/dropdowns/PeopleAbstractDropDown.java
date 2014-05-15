@@ -46,6 +46,7 @@ public abstract class PeopleAbstractDropDown {
 			text.setText(value);
 		else
 			text.setText("");
+		refreshValues();
 		modifyFromList = false;
 	}
 
