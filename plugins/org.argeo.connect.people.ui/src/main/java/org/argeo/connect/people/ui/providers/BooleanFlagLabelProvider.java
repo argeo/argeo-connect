@@ -11,9 +11,9 @@ import org.eclipse.swt.graphics.Image;
 public class BooleanFlagLabelProvider extends ColumnLabelProvider {
 	private static final long serialVersionUID = 1L;
 
-	private final String propertyName; // = PeopleNames.PEOPLE_IS_PRIMARY;
-	private final Image imgTrue; // = PeopleImages.PRIMARY_BTN;
-	private final Image imgFalse; // = PeopleImages.PRIMARY_NOT_BTN;
+	private final String propertyName; 
+	private final Image imgTrue; 
+	private final Image imgFalse;
 
 	public BooleanFlagLabelProvider(String propertyName, Image imgTrue,
 			Image imgFalse) {
