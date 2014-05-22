@@ -12,7 +12,7 @@
 	<description>Real life IT - Geographical information system, data management and analysis, communications and management</description>
 	<version>2.1.6-SNAPSHOT</version>
 	<properties>
-		<version.connect>2.1.6-SNAPSHOT</version.connect>
+		<version.connect>2.1.6</version.connect>
 	</properties>
 	<modules>
 		<module>data</module>
