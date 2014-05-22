@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.argeo.connect.demo</groupId>
 		<artifactId>dist</artifactId>
-		<version>2.1.6</version>
+		<version>2.1.7-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>connect-demo-gr</artifactId>
@@ -13,7 +13,7 @@
 		<dependency>
 			<groupId>org.argeo.connect.demo</groupId>
 			<artifactId>org.argeo.connect.demo.dep.rap</artifactId>
-			<version>2.1.6</version>
+			<version>2.1.7-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<profiles>
