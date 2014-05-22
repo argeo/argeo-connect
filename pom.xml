@@ -82,7 +82,9 @@ which are used as well as that of the covered work.]]>
 			<organization>Argeo</organization>
 			<organizationUrl>http://www.argeo.org</organizationUrl>
 			<roles>
+				<role>architect</role>
 				<role>developer</role>
+				<role>QA</role>
 			</roles>
 		</developer>
 	</developers>
