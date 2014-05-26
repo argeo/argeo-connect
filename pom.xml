@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.argeo.commons</groupId>
@@ -99,16 +100,9 @@ which are used as well as that of the covered work.]]>
 			</releases>
 		</repository>
 		<!-- LOCAL REPOSITORY TO PROVIDE ADDITIONNAL EXPERIMENTAL THIRD PARTIES -->
-		<!--   <repository>
-			<id>argeo-connect-tp</id>
-			<url>http://localhost:7070/data/public/java/org.argeo.tp-2.1.br</url>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-				<checksumPolicy>warn</checksumPolicy>
-			</releases>
-		</repository>
-		-->
+		<!-- <repository> <id>argeo-localtesting</id> <url>http://localhost:7070/data/public/java/org.argeo.tp-2.1</url> 
+			<releases> <enabled>true</enabled> <updatePolicy>daily</updatePolicy> <checksumPolicy>warn</checksumPolicy> 
+			</releases> </repository> -->
 	</repositories>
 	<build>
 		<plugins>
