@@ -2,7 +2,10 @@ package org.argeo.connect.people.ui;
 
 import java.util.List;
 
+import javax.jcr.Node;
 import javax.jcr.Session;
+
+import org.eclipse.swt.graphics.Image;
 
 /**
  * Centralize here the definition of context specific parameter (for instance
@@ -31,4 +34,6 @@ public interface PeopleUiService {
 	public List<String> getInstancePropCatalog(Session session,
 			String resourcePath, String propertyName, String filter);
 
+	/** Centralize icon management for a given app */
+	public Image getIconForType(Node entity);
 }

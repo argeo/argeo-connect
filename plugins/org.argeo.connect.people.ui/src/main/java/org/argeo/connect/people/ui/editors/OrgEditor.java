@@ -17,7 +17,6 @@ import org.argeo.connect.people.ui.toolkits.ContactToolkit;
 import org.argeo.connect.people.ui.toolkits.EntityToolkit;
 import org.argeo.connect.people.ui.toolkits.LegalInfoToolkit;
 import org.argeo.connect.people.ui.toolkits.ListToolkit;
-import org.argeo.connect.people.ui.utils.JcrUiUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -234,14 +233,15 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					boolean useDefault = defaultDisplayBtn.getSelection();
-					if (JcrUiUtils.setJcrProperty(org,
+					if (CommonsJcrUtils.setJcrProperty(org,
 							PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME,
 							PropertyType.BOOLEAN, useDefault)) {
 						if (useDefault) {
 							String displayName = CommonsJcrUtils.get(org,
 									PeopleNames.PEOPLE_LEGAL_NAME);
-							JcrUiUtils.setJcrProperty(org, Property.JCR_TITLE,
-									PropertyType.STRING, displayName);
+							CommonsJcrUtils.setJcrProperty(org,
+									Property.JCR_TITLE, PropertyType.STRING,
+									displayName);
 							displayNameTxt.setText(displayName);
 							displayNameTxt.setEnabled(false);
 						} else

@@ -46,6 +46,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -76,7 +77,7 @@ public class TagEditor extends EditorPart implements PeopleNames {
 	{
 		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
 				Property.JCR_TITLE, PropertyType.STRING, "Display Name",
-				new SimpleJcrRowLabelProvider(PeopleTypes.PEOPLE_ENTITY,
+				new TitleWithIconLP(PeopleTypes.PEOPLE_ENTITY,
 						Property.JCR_TITLE), 300));
 		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
 				PEOPLE_TAGS, PropertyType.STRING, "Tags",
@@ -206,7 +207,8 @@ public class TagEditor extends EditorPart implements PeopleNames {
 							.getValueFactory().createValue("*" + token + "*"));
 					Constraint currC = factory.fullTextSearch(
 							source.getSelectorName(), null, soTmp);
-					constraint = localAnd(factory, constraint, currC);
+					constraint = PeopleUiUtils.localAnd(factory, constraint,
+							currC);
 				}
 			}
 
@@ -281,15 +283,29 @@ public class TagEditor extends EditorPart implements PeopleNames {
 		return node;
 	}
 
-	/* UTILITES */
-	protected Constraint localAnd(QueryObjectModelFactory factory,
-			Constraint defaultC, Constraint newC) throws RepositoryException {
-		if (defaultC == null)
-			return newC;
-		else
-			return factory.and(defaultC, newC);
+	/* Private */
+
+	private class TitleWithIconLP extends SimpleJcrRowLabelProvider {
+		private static final long serialVersionUID = 6064779874148619776L;
+
+		public TitleWithIconLP(String selectorName, String propertyName) {
+			super(selectorName, propertyName);
+		}
+
+		@Override
+		public Image getImage(Object element) {
+			try {
+				return peopleUiService.getIconForType(((Row) element)
+						.getNode(PeopleTypes.PEOPLE_ENTITY));
+			} catch (RepositoryException e) {
+				throw new PeopleException("unable to retrieve image for "
+						+ element, e);
+			}
+		}
+
 	}
 
+	/* UTILITES */
 	protected boolean canSave() {
 		return false;
 	}

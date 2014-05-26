@@ -19,7 +19,6 @@ import org.argeo.connect.people.ui.toolkits.ContactToolkit;
 import org.argeo.connect.people.ui.toolkits.EntityToolkit;
 import org.argeo.connect.people.ui.toolkits.HistoryToolkit;
 import org.argeo.connect.people.ui.toolkits.ListToolkit;
-import org.argeo.connect.people.ui.utils.JcrUiUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
@@ -337,7 +336,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 			@Override
 			public void modifyText(ModifyEvent event) {
 				try {
-					if (JcrUiUtils.setJcrProperty(person,
+					if (CommonsJcrUtils.setJcrProperty(person,
 							PeopleNames.PEOPLE_FIRST_NAME, PropertyType.STRING,
 							firstNameTxt.getText())) {
 						if (person.getProperty(
@@ -362,7 +361,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 			@Override
 			public void modifyText(ModifyEvent event) {
 				try {
-					if (JcrUiUtils.setJcrProperty(person,
+					if (CommonsJcrUtils.setJcrProperty(person,
 							PeopleNames.PEOPLE_LAST_NAME, PropertyType.STRING,
 							lastNameTxt.getText())) {
 						if (person.getProperty(
@@ -389,8 +388,9 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				boolean useDefault = defaultDisplayBtn.getSelection();
 				// if use default, do nothing
 				if (!useDefault)
-					if (JcrUiUtils.setJcrProperty(person, Property.JCR_TITLE,
-							PropertyType.STRING, displayNameTxt.getText())) {
+					if (CommonsJcrUtils.setJcrProperty(person,
+							Property.JCR_TITLE, PropertyType.STRING,
+							displayNameTxt.getText())) {
 						editPart.markDirty();
 					}
 			}
@@ -402,14 +402,15 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				boolean useDefault = defaultDisplayBtn.getSelection();
-				if (JcrUiUtils.setJcrProperty(person,
+				if (CommonsJcrUtils.setJcrProperty(person,
 						PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME,
 						PropertyType.BOOLEAN, useDefault)) {
 					if (useDefault) {
 						String displayName = PersonJcrUtils
 								.getPersonDisplayName(person);
-						JcrUiUtils.setJcrProperty(person, Property.JCR_TITLE,
-								PropertyType.STRING, displayName);
+						CommonsJcrUtils.setJcrProperty(person,
+								Property.JCR_TITLE, PropertyType.STRING,
+								displayName);
 						displayNameTxt.setText(displayName);
 						displayNameTxt.setEnabled(false);
 					} else

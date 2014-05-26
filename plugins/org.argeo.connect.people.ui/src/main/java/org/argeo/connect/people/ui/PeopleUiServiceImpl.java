@@ -13,10 +13,12 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.commands.OpenSearchByTagEditor;
 import org.argeo.connect.people.ui.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.eclipse.swt.graphics.Image;
 
 /**
  * Centralize here the definition of context specific parameter (for instance
@@ -103,4 +105,23 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 
 		return result;
 	}
+	
+	@Override 
+	public Image getIconForType(Node entity) {
+		try {
+			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
+				return null;
+			else if (entity.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION))
+				return null;
+			else if (entity.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST))
+				return null;
+			else if (entity.isNodeType(PeopleTypes.PEOPLE_GROUP))
+				return null;
+			else
+				return null;
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to get image for node", re);
+		}
+	}
+	
 }
