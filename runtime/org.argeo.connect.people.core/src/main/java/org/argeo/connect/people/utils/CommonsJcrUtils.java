@@ -33,6 +33,11 @@ import org.argeo.jcr.PropertyDiff;
 public class CommonsJcrUtils {
 	private final static Log log = LogFactory.getLog(CommonsJcrUtils.class);
 
+	/*
+	 * Encapsulate most commons JCR calls with the try/catch block in order to
+	 * simplify the code
+	 */
+
 	/**
 	 * Call {@link Repository#login()} without exceptions (useful in super
 	 * constructors).
@@ -70,6 +75,19 @@ public class CommonsJcrUtils {
 	}
 
 	/**
+	 * Concisely get the identifier of a node in Ui listener for instance
+	 * */
+	@Deprecated
+	public static String getIdentifierQuietly(Node node) {
+		try {
+			return node.getIdentifier();
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Cannot get identifier for node " + node,
+					e);
+		}
+	}
+
+	/**
 	 * Call {@link Node#isNodetype(String nodeTypeName)} without exceptions
 	 */
 	public static boolean isNodeType(Node node, String nodeTypeName) {
@@ -80,6 +98,8 @@ public class CommonsJcrUtils {
 					+ " for node " + node, re);
 		}
 	}
+
+	/* Centralise widely used patterns */
 
 	/**
 	 * Convert a {@link rowIterator} to a list of {@link Node} given a selector
@@ -236,33 +256,7 @@ public class CommonsJcrUtils {
 		}
 	}
 
-	/**
-	 * Parse and trim a String of values
-	 */
-	public static String[] parseAndClean(String string, String regExp,
-			boolean clean) {
-		String[] temp = string.split(regExp);
-		if (clean) {
-			String[] cleanRes = new String[temp.length];
-			int i = 0;
-			for (String tag : temp) {
-				cleanRes[i] = tag.trim();
-				i++;
-			}
-			return cleanRes;
-		}
-		return temp;
-	}
-
-	/**
-	 * Clean a String to remove or replace chars that are known to be
-	 * problematic
-	 */
-	public static String cleanString(String string) {
-		String cleanStr = string;
-		cleanStr.replaceAll("&", "&amp;");
-		return cleanStr;
-	}
+	/* HELPERS FOR SINGLE VALUES */
 
 	/**
 	 * Concisely get the string value of a property. Returns an empty String
@@ -281,7 +275,218 @@ public class CommonsJcrUtils {
 		}
 	}
 
+	/**
+	 * Concisely get the value of a long property or null if this node doesn't
+	 * have this property
+	 */
+	public static Long getLongValue(Node node, String propertyName) {
+		try {
+			if (!node.hasProperty(propertyName))
+				return null;
+			else
+				return node.getProperty(propertyName).getLong();
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Cannot get long property " + propertyName
+					+ " of " + node, e);
+		}
+	}
+
+	/**
+	 * Concisely get the value of a boolean property or null if this node
+	 * doesn't have this property
+	 */
+	public static Boolean getBooleanValue(Node node, String propertyName) {
+		try {
+			if (!node.hasProperty(propertyName))
+				return null;
+			else
+				return node.getProperty(propertyName).getBoolean();
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Cannot get boolean property "
+					+ propertyName + " of " + node, e);
+		}
+	}
+
+	/**
+	 * Concisely get a referenced node or null if the given node doesn't have
+	 * this property or if the property is of the wrong type
+	 */
+	public static Node getReference(Node node, String propName) {
+		try {
+			Node ref = null;
+			if (node.hasProperty(propName)) {
+				Property prop = node.getProperty(propName);
+				if (prop.getType() == PropertyType.REFERENCE) {
+					ref = prop.getNode();
+				}
+			}
+			return ref;
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to get reference " + propName
+					+ " for node " + node, re);
+		}
+	}
+
+	/**
+	 * Centralizes management of updating property value. Among other to avoid
+	 * infinite loop when the new value is the same as the one that is already
+	 * stored in JCR (typically in UI Text controls that have a listener).
+	 * 
+	 * @return true if the value as changed
+	 */
+	public static boolean setJcrProperty(Node node, String propName,
+			int propertyType, Object value) {
+		try {
+			switch (propertyType) {
+			case PropertyType.STRING:
+				if ("".equals((String) value)
+						&& (!node.hasProperty(propName) || node
+								.hasProperty(propName)
+								&& "".equals(node.getProperty(propName)
+										.getString())))
+					return false;
+				else if (node.hasProperty(propName)
+						&& node.getProperty(propName).getString()
+								.equals((String) value))
+					return false;
+				else {
+					node.setProperty(propName, (String) value);
+					return true;
+				}
+			case PropertyType.BOOLEAN:
+				if (node.hasProperty(propName)
+						&& node.getProperty(propName).getBoolean() == (Boolean) value)
+					return false;
+				else {
+					node.setProperty(propName, (Boolean) value);
+					return true;
+				}
+			case PropertyType.DATE:
+				if (node.hasProperty(propName)
+						&& node.getProperty(propName).getDate()
+								.equals((Calendar) value))
+					// nothing changed yet
+					return false;
+				else {
+					node.setProperty(propName, (Calendar) value);
+					return true;
+				}
+			case PropertyType.LONG:
+				Long lgValue = (Long) value;
+
+				if (lgValue == null)
+					lgValue = 0L;
+
+				if (node.hasProperty(propName)
+						&& node.getProperty(propName).getLong() == lgValue)
+					// nothing changed yet
+					return false;
+				else {
+					node.setProperty(propName, lgValue);
+					return true;
+				}
+
+			default:
+				throw new PeopleException(
+						"update unimplemented for property type "
+								+ propertyType + ". Unable to update property "
+								+ propName + " on " + node);
+			}
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Unexpected error while setting property " + propName
+							+ " on " + node, re);
+		}
+	}
+
 	/* MULTIPLE VALUES MANAGEMENT */
+
+	/**
+	 * Remove a given String from a multi value property of a node. If the
+	 * String is not found, it fails silently
+	 */
+	public static void removeMultiPropertyValue(Node node, String propName,
+			String stringToRemove) {
+		try {
+			List<String> strings = new ArrayList<String>();
+			Value[] values = node.getProperty(propName).getValues();
+			for (int i = 0; i < values.length; i++) {
+				String curr = values[i].getString();
+				if (!stringToRemove.equals(curr))
+					strings.add(curr);
+			}
+			node.setProperty(propName, strings.toArray(new String[0]));
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to remove value "
+					+ stringToRemove + " for property " + propName + " of "
+					+ node, e);
+		}
+	}
+
+	/**
+	 * Add a string value on a multivalued property. If this value is already
+	 * part of the list, it returns an error message. We use case insensitive
+	 * comparison
+	 */
+	public static String addMultiPropertyValue(Node node, String propName,
+			String value) {
+		try {
+			Value[] values;
+			String[] valuesStr;
+			String errMsg = null;
+			if (node.hasProperty(propName)) {
+				values = node.getProperty(propName).getValues();
+
+				// Check dupplicate
+				for (Value currVal : values) {
+					String curTagUpperCase = currVal.getString().toUpperCase()
+							.trim();
+					if (value.toUpperCase().trim().equals(curTagUpperCase)) {
+						errMsg = value
+								+ " is already in the list and thus could not be added.";
+						return errMsg;
+					}
+				}
+				valuesStr = new String[values.length + 1];
+				int i;
+				for (i = 0; i < values.length; i++) {
+					valuesStr[i] = values[i].getString();
+				}
+				valuesStr[i] = value;
+			} else {
+				valuesStr = new String[1];
+				valuesStr[0] = value;
+			}
+			node.setProperty(propName, valuesStr);
+			return null;
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Unable to set tags", re);
+		}
+	}
+
+	/**
+	 * Add a string value on a multivalued property. WARNING if values is not an
+	 * empty String, it overrides any existing value, and delete old ones.
+	 */
+	public static void setMultiValueStringPropFromString(Node node,
+			String propName, String values, String separator) {
+		try {
+			if (!CommonsJcrUtils.isEmptyString(values)) {
+				String[] valArray = values.split(separator);
+				// Remove any empty value
+				List<String> newValList = new ArrayList<String>();
+				for (String currValue : valArray) {
+					if (CommonsJcrUtils.checkNotEmptyString(currValue))
+						newValList.add(currValue);
+				}
+				node.setProperty(propName, newValList.toArray(new String[0]));
+			}
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Unable to set multi value property "
+					+ propName + " of node " + node + " with values [" + values
+					+ "]", re);
+		}
+	}
 
 	/**
 	 * Concisely get a string that concat values of a multi-valued String
@@ -358,76 +563,6 @@ public class CommonsJcrUtils {
 		}
 		node.setProperty(propertyName, values);
 	}
-	
-	
-	/**
-	 * Centralizes management of updating property value. Among other to avoid
-	 * infinite loop when the new value is the same as the ones that is already
-	 * stored in JCR.
-	 * 
-	 * @return true if the value as changed
-	 */
-	public static boolean setJcrProperty(Node node, String propName,
-			int propertyType, Object value) {
-		try {
-			switch (propertyType) {
-			case PropertyType.STRING:
-				if ("".equals((String) value)
-						&& (!node.hasProperty(propName) || node
-								.hasProperty(propName)
-								&& "".equals(node.getProperty(propName)
-										.getString())))
-					return false;
-				else if (node.hasProperty(propName)
-						&& node.getProperty(propName).getString()
-								.equals((String) value))
-					return false;
-				else {
-					node.setProperty(propName, (String) value);
-					return true;
-				}
-			case PropertyType.BOOLEAN:
-				if (node.hasProperty(propName)
-						&& node.getProperty(propName).getBoolean() == (Boolean) value)
-					return false;
-				else {
-					node.setProperty(propName, (Boolean) value);
-					return true;
-				}
-			case PropertyType.DATE:
-				if (node.hasProperty(propName)
-						&& node.getProperty(propName).getDate()
-								.equals((Calendar) value))
-					// nothing changed yet
-					return false;
-				else {
-					node.setProperty(propName, (Calendar) value);
-					return true;
-				}
-			case PropertyType.LONG:
-				Long lgValue = (Long) value;
-
-				if (lgValue == null)
-					lgValue = 0L;
-
-				if (node.hasProperty(propName)
-						&& node.getProperty(propName).getLong() == lgValue)
-					// nothing changed yet
-					return false;
-				else {
-					node.setProperty(propName, lgValue);
-					return true;
-				}
-
-			default:
-				throw new ArgeoException("Unimplemented property save");
-			}
-		} catch (RepositoryException re) {
-			throw new ArgeoException("Unexpected error while setting property",
-					re);
-		}
-	}
-	
 
 	/** Remove a Reference from a multi valued property */
 	public static void removeRefFromMultiValuedProp(Node node, String propName,
@@ -538,80 +673,24 @@ public class CommonsJcrUtils {
 	}
 
 	/**
-	 * Concisely get the value of a long property or null if this node doesn't
-	 * have this property
+	 * Parse and trim a String of values
 	 */
-	public static Long getLongValue(Node node, String propertyName) {
-		try {
-			if (!node.hasProperty(propertyName))
-				return null;
-			else
-				return node.getProperty(propertyName).getLong();
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get long property " + propertyName
-					+ " of " + node, e);
-		}
-	}
-
-	/**
-	 * Concisely get the value of a boolean property or null if this node
-	 * doesn't have this property
-	 */
-	public static Boolean getBooleanValue(Node node, String propertyName) {
-		try {
-			if (!node.hasProperty(propertyName))
-				return null;
-			else
-				return node.getProperty(propertyName).getBoolean();
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get boolean property "
-					+ propertyName + " of " + node, e);
-		}
-	}
-
-	/**
-	 * Concisely get a referenced node or null if the given node doesn't have
-	 * this property or if the property is of the wrong type
-	 */
-	public static Node getReference(Node node, String propName) {
-		try {
-			Node ref = null;
-			if (node.hasProperty(propName)) {
-				Property prop = node.getProperty(propName);
-				if (prop.getType() == PropertyType.REFERENCE) {
-					ref = prop.getNode();
-				}
+	public static String[] parseAndClean(String string, String regExp,
+			boolean clean) {
+		String[] temp = string.split(regExp);
+		if (clean) {
+			String[] cleanRes = new String[temp.length];
+			int i = 0;
+			for (String tag : temp) {
+				cleanRes[i] = tag.trim();
+				i++;
 			}
-			return ref;
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get reference " + propName
-					+ " for node " + node, re);
+			return cleanRes;
 		}
+		return temp;
 	}
 
-	/**
-	 * Concisely get the identifier of a node in Ui listener for instance
-	 * */
-	public static String getIdentifierQuietly(Node node) {
-		try {
-			return node.getIdentifier();
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get identifier for node " + node,
-					e);
-		}
-	}
-
-	/** Use {@link JcrUtils#mkdirs(Node, String))} instead */
-	@Deprecated
-	public static Node getOrCreateDirNode(Node parent, String dirName)
-			throws RepositoryException {
-		Node dirNode;
-		if (parent.hasNode(dirName))
-			dirNode = parent.getNode(dirName);
-		else
-			dirNode = parent.addNode(dirName, NodeType.NT_UNSTRUCTURED);
-		return dirNode;
-	}
+	/* INTERNATIONALISATION HELPERS */
 
 	/**
 	 * Concisely get the node for the translation of a property given a language
@@ -653,6 +732,8 @@ public class CommonsJcrUtils {
 					+ lang, e);
 		}
 	}
+
+	/* HISTORY MANAGEMENT */
 
 	public static Map<String, PropertyDiff> diffProperties(Node reference,
 			Node observed) {
@@ -768,91 +849,28 @@ public class CommonsJcrUtils {
 			return baseRelPath + '/' + propertyName;
 	}
 
+	/* MISCELLANEOUS */
+
 	/**
-	 * Remove a given String from a multi value property of a node. If the
-	 * String is not found, it fails silently
+	 * Clean a String to remove or replace chars that are known to be
+	 * problematic
 	 */
-	public static void removeMultiPropertyValue(Node node, String propName,
-			String stringToRemove) {
-		try {
-			List<String> strings = new ArrayList<String>();
-			Value[] values = node.getProperty(propName).getValues();
-			for (int i = 0; i < values.length; i++) {
-				String curr = values[i].getString();
-				if (!stringToRemove.equals(curr))
-					strings.add(curr);
-			}
-			node.setProperty(propName, strings.toArray(new String[0]));
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to remove value "
-					+ stringToRemove + " for property " + propName + " of "
-					+ node, e);
-		}
+	public static String cleanString(String string) {
+		String cleanStr = string;
+		cleanStr.replaceAll("&", "&amp;");
+		return cleanStr;
 	}
 
-	/**
-	 * Add a string value on a multivalued property. If this value is already
-	 * part of the list, it returns an error message. We use case insensitive
-	 * comparison
-	 */
-	public static String addMultiPropertyValue(Node node, String propName,
-			String value) {
-		try {
-			Value[] values;
-			String[] valuesStr;
-			String errMsg = null;
-			if (node.hasProperty(propName)) {
-				values = node.getProperty(propName).getValues();
-
-				// Check dupplicate
-				for (Value currVal : values) {
-					String curTagUpperCase = currVal.getString().toUpperCase()
-							.trim();
-					if (value.toUpperCase().trim().equals(curTagUpperCase)) {
-						errMsg = value
-								+ " is already in the list and thus could not be added.";
-						return errMsg;
-					}
-				}
-				valuesStr = new String[values.length + 1];
-				int i;
-				for (i = 0; i < values.length; i++) {
-					valuesStr[i] = values[i].getString();
-				}
-				valuesStr[i] = value;
-			} else {
-				valuesStr = new String[1];
-				valuesStr[0] = value;
-			}
-			node.setProperty(propName, valuesStr);
-			return null;
-		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to set tags", re);
-		}
-	}
-
-	/**
-	 * Add a string value on a multivalued property. WARNING if values is not an
-	 * empty String, it overrides any existing value, and delete old ones.
-	 */
-	public static void setMultiValueStringPropFromString(Node node,
-			String propName, String values, String separator) {
-		try {
-			if (!CommonsJcrUtils.isEmptyString(values)) {
-				String[] valArray = values.split(separator);
-				// Remove any empty value
-				List<String> newValList = new ArrayList<String>();
-				for (String currValue : valArray) {
-					if (CommonsJcrUtils.checkNotEmptyString(currValue))
-						newValList.add(currValue);
-				}
-				node.setProperty(propName, newValList.toArray(new String[0]));
-			}
-		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to set multi value property "
-					+ propName + " of node " + node + " with values [" + values
-					+ "]", re);
-		}
+	/** Use {@link JcrUtils#mkdirs(Node, String))} instead */
+	@Deprecated
+	public static Node getOrCreateDirNode(Node parent, String dirName)
+			throws RepositoryException {
+		Node dirNode;
+		if (parent.hasNode(dirName))
+			dirNode = parent.getNode(dirName);
+		else
+			dirNode = parent.addNode(dirName, NodeType.NT_UNSTRUCTURED);
+		return dirNode;
 	}
 
 	/** Prevent instantiation */

@@ -16,8 +16,13 @@ public class JcrUiUtils {
 	 * infinite loop when the new value is the same as the ones that is already
 	 * stored in JCR.
 	 * 
+	 * Rather use {@link CommonsJcrUtils.setJcrProperty(}
+	 * 
 	 * @return true if the value as changed
+	 * 
+	 * 
 	 */
+	@Deprecated
 	public static boolean setJcrProperty(Node node, String propName,
 			int propertyType, Object value) {
 		try {
