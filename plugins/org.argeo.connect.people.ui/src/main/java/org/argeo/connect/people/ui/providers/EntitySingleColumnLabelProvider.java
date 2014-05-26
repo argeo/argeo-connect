@@ -23,7 +23,6 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 
 	private OrgListLabelProvider orgLp = new OrgListLabelProvider();
 	private PersonListLabelProvider personLp;
-	// private FilmListLabelProvider filmLp = new FilmListLabelProvider();
 	private GroupLabelProvider groupLp = new GroupLabelProvider(
 			PeopleUiConstants.LIST_TYPE_SMALL);
 
