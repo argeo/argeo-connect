@@ -11,19 +11,23 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.commands.EditJob;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
+import org.argeo.connect.people.ui.editors.utils.BooleanEditingSupport;
 import org.argeo.connect.people.ui.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.ui.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
+import org.argeo.connect.people.ui.providers.BooleanFlagLabelProvider;
 import org.argeo.connect.people.ui.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.ui.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.ui.providers.RoleListLabelProvider;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrUtils;
@@ -41,6 +45,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.AbstractFormPart;
+import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
@@ -95,7 +100,7 @@ public class ListToolkit {
 
 			jobsViewer = new TableViewer(tableComp);
 			TableColumnLayout tableColumnLayout = createJobsTableColumns(
-					entity, tableComp, jobsViewer);
+					entity, tableComp, jobsViewer, JobsPanelPart.this);
 			tableComp.setLayout(tableColumnLayout);
 			PeopleUiUtils.setTableDefaultStyle(jobsViewer, 60);
 
@@ -122,13 +127,27 @@ public class ListToolkit {
 
 	// Jobs of a person
 	private TableColumnLayout createJobsTableColumns(final Node entity,
-			final Composite parent, final TableViewer viewer) {
+			final Composite parent, final TableViewer viewer,
+			AbstractFormPart part) {
 		int[] bounds = { 150, 300 };
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
+		TableViewerColumn col;
 
+		// Primary item
+		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.CENTER, 25);
+		PrimaryEditingSupport editingSupport = new PrimaryEditingSupport(
+				viewer, part, entity, PeopleNames.PEOPLE_IS_PRIMARY);
+		col.setEditingSupport(editingSupport);
+		col.setLabelProvider(new BooleanFlagLabelProvider(
+				PeopleNames.PEOPLE_IS_PRIMARY, PeopleImages.PRIMARY_BTN,
+				PeopleImages.PRIMARY_NOT_BTN));
+		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
+				10, 15, true));
+
+		
 		// Role
-		TableViewerColumn col = ViewerUtils.createTableViewerColumn(viewer, "",
-				SWT.LEFT, bounds[0]);
+		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT,
+				bounds[0]);
 		col.setLabelProvider(new RoleListLabelProvider());
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
 				80, 20, true));
@@ -304,50 +323,39 @@ public class ListToolkit {
 
 	}
 
-	
+	private class PrimaryEditingSupport extends BooleanEditingSupport {
+		private static final long serialVersionUID = 4712271289751015687L;
+		private final AbstractFormPart part;
+		private final Node person;
 
-	// private void configureAddReferenceButton(Button button,
-	// final Node targetNode, String tooltip, final boolean isBackward,
-	// final String nodeTypeToSearch) {
-	// button.setToolTipText(tooltip);
-	// button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
-	//
-	// button.addSelectionListener(new SelectionListener() {
-	// private static final long serialVersionUID = 1L;
-	//
-	// @Override
-	// public void widgetSelected(SelectionEvent e) {
-	// Map<String, String> params = new HashMap<String, String>();
-	// try {
-	// if (isBackward)
-	// params.put(
-	// AddEntityReferenceWithPosition.PARAM_REFERENCED_JCR_ID,
-	// targetNode.getIdentifier());
-	// else
-	// params.put(
-	// AddEntityReferenceWithPosition.PARAM_REFERENCING_JCR_ID,
-	// targetNode.getIdentifier());
-	// params.put(
-	// AddEntityReferenceWithPosition.PARAM_TO_SEARCH_NODE_TYPE,
-	// nodeTypeToSearch);
-	//
-	// CommandUtils.callCommand(AddEntityReferenceWithPosition.ID,
-	// params);
-	// } catch (RepositoryException e1) {
-	// throw new PeopleException(
-	// "Unable to get parent Jcr identifier", e1);
-	// }
-	// }
-	//
-	// @Override
-	// public void widgetDefaultSelected(SelectionEvent e) {
-	// }
-	// });
-	//
-	// }
+		public PrimaryEditingSupport(TableViewer viewer, AbstractFormPart part,
+				Node person, String propertyName) {
+			super(viewer, propertyName);
+			this.part = part;
+			this.person = person;
+		}
+
+		@Override
+		protected boolean canEdit(Object element) {
+			return CommonsJcrUtils.isNodeCheckedOutByMe(person);
+		}
+
+		@Override
+		protected void setValue(Object element, Object value) {
+			Node currNode = (Node) element;
+			if (((Boolean) value).booleanValue()
+					&& PeopleJcrUtils.markAsPrimary(person, currNode)) {
+				// we refresh all parts to insure homogeneity.
+				// TODO check if a simple part refresh is enough
+				for (IFormPart part : form.getParts()) {
+					part.refresh();
+				}
+				part.markDirty();
+			}
+		}
+	}
 
 	private class ListDoubleClickListener extends PeopleDoubleClickAdapter {
-
 		private final boolean isBackward;
 
 		public ListDoubleClickListener(boolean isBackward) {
@@ -415,5 +423,4 @@ public class ListToolkit {
 
 		abstract protected void refreshContent(Composite parent, Node entity);
 	}
-
 }

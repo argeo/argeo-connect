@@ -326,9 +326,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			newJob.setProperty(PeopleNames.PEOPLE_DEPARTMENT, department);
 
 			// primary flag
-			newJob.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, isPrimary);
 			if (isPrimary)
 				PeopleJcrUtils.markAsPrimary(person, newJob);
+			else  
+				newJob.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, isPrimary);
+
 			checkCOStatusAfterUpdate(person, wasCO);
 		} catch (RepositoryException re) {
 			throw new PeopleException("unable to create or update job "
