@@ -115,9 +115,22 @@ public interface PeopleService {
 	 * Updates the repository cache that list all tags known in the current
 	 * application
 	 * 
-	 * TODO make it asynchronous
+	 * @param session
+	 * @param tagableParentPath
+	 *            the path to the business parent node of all tags that are
+	 *            tagable and that already have some tags set
+	 * @param tagParentPath
+	 *            the path to the parent node of all cache nodes
 	 */
-	public void refreshKnownTags(Node tagsParentNode, Node tagableParentNode);
+	public void refreshKnownTags(Session session, String tagParentPath,
+			String tagableParentPath);
+
+	/**
+	 * Updates the repository cache that list all tags known in the current
+	 * application using default values for path to parent nodes.
+	 * 
+	 */
+	public void refreshKnownTags(Session session);
 
 	public void addTag(Node tagsParentNode, String tag);
 

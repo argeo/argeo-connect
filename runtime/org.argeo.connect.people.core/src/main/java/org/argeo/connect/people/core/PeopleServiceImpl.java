@@ -328,7 +328,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			// primary flag
 			if (isPrimary)
 				PeopleJcrUtils.markAsPrimary(person, newJob);
-			else  
+			else
 				newJob.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, isPrimary);
 
 			checkCOStatusAfterUpdate(person, wasCO);
@@ -414,40 +414,49 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	// ///////////////////////
 	// TAGS Management
+	@Override
+	public void refreshKnownTags(Session session) {
+		refreshKnownTags(session, getResourcesBasePath(PEOPLE_TAGS),
+				getBasePath());
+	}
 
 	@Override
-	public void refreshKnownTags(Node tagsParentNode, Node tagableParentNode) {
+	public void refreshKnownTags(Session session, String tagParentPath,
+			String tagableParentPath) {
 		List<String> existingValues = new ArrayList<String>();
 		List<String> registeredTags = new ArrayList<String>();
 
 		try {
-			Session session = tagsParentNode.getSession();
-			Query query = session
-					.getWorkspace()
-					.getQueryManager()
-					.createQuery(
-							"select * from [" + NodeType.MIX_TITLE
-									+ "] as tags where ISDESCENDANTNODE('"
-									+ tagsParentNode.getPath() + "') ",
-							Query.JCR_SQL2);
-			NodeIterator nit = query.execute().getNodes();
-			while (nit.hasNext()) {
-				Node currNode = nit.nextNode();
-				String currTag = CommonsJcrUtils.get(currNode,
-						Property.JCR_TITLE);
-				if (CommonsJcrUtils.checkNotEmptyString(currTag)
-						&& !registeredTags.contains(currTag))
-					registeredTags.add(currTag.trim());
+			Query query;
+			NodeIterator nit;
+			// Retrieve existing tags
+			if (session.nodeExists(tagParentPath)) {
+				query = session
+						.getWorkspace()
+						.getQueryManager()
+						.createQuery(
+								"select * from [" + NodeType.MIX_TITLE
+										+ "] as tags where ISDESCENDANTNODE('"
+										+ tagParentPath + "') ", Query.JCR_SQL2);
+				nit = query.execute().getNodes();
+				while (nit.hasNext()) {
+					Node currNode = nit.nextNode();
+					String currTag = CommonsJcrUtils.get(currNode,
+							Property.JCR_TITLE);
+					if (CommonsJcrUtils.checkNotEmptyString(currTag)
+							&& !registeredTags.contains(currTag))
+						registeredTags.add(currTag.trim());
+				}
 			}
-
+			
+			// Look for not yet registered tags
 			query = session
 					.getWorkspace()
 					.getQueryManager()
 					.createQuery(
 							"select * from [" + PeopleTypes.PEOPLE_TAGABLE
 									+ "] as instances where ISDESCENDANTNODE('"
-									+ tagableParentNode.getPath() + "') ",
-							Query.JCR_SQL2);
+									+ tagableParentPath + "') ", Query.JCR_SQL2);
 			nit = query.execute().getNodes();
 			while (nit.hasNext()) {
 				Node currNode = nit.nextNode();
@@ -462,9 +471,19 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 					}
 				}
 			}
+
+			// Create tag parent if needed
+			Node tagParent = null;
+			if (!session.nodeExists(tagParentPath)) {
+				tagParent = JcrUtils.mkdirs(session, tagParentPath);
+				session.save();
+			} else
+				tagParent = session.getNode(tagParentPath);
+
+			// real update
 			for (String tag : existingValues) {
 				if (!registeredTags.contains(tag)) {
-					addTag(tagsParentNode, tag);
+					addTag(tagParent, tag);
 				}
 			}
 		} catch (RepositoryException ee) {

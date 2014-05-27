@@ -1,13 +1,10 @@
 package org.argeo.connect.people.ui.commands;
 
-import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.jcr.JcrUtils;
@@ -19,8 +16,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
- * Browse all taggable items of the injected repository and updates the tag
- * cache if needed.
+ * Browse all tagable items of the injected repository and updates the tag cache
+ * if needed.
  */
 public class ForceTagCacheRefresh extends AbstractHandler {
 
@@ -31,37 +28,22 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 	private Repository repository;
 	private PeopleService peopleService;
 
-	protected String getPathToBusinessParent() {
-		return PeopleConstants.PEOPLE_BASE_PATH;
-	}
-
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Session session = null;
+
+		String msg = "You are about to update the tag cache repository with all already defined values.\n"
+				+ "Are you sure you want to proceed ?";
+		Shell activeShell = HandlerUtil.getActiveWorkbenchWindow(event)
+				.getShell();
+
+		if (!MessageDialog.openConfirm(activeShell, "Confirm Deletion", msg))
+			return null;
+
 		try {
 			session = repository.login();
-
-			String tagParPath = peopleService
-					.getResourcesBasePath(PeopleNames.PEOPLE_TAGS);
-			String businessPath = getPathToBusinessParent();
-			Node tagParent = null;
-			if (!session.nodeExists(tagParPath)) {
-				tagParent = JcrUtils.mkdirs(session, tagParPath);
-				session.save();
-			} else
-				tagParent = session.getNode(tagParPath);
-
-			Node businessParent = session.getNode(businessPath);
-
-			String msg = "You are about to update the tag cache repository with all already defined values.\n"
-					+ "Are you sure you want to proceed ?";
-
-			Shell activeShell = HandlerUtil.getActiveWorkbenchWindow(event)
-					.getShell();
-			if (MessageDialog.openConfirm(activeShell, "Confirm Deletion", msg))
-				peopleService.refreshKnownTags(tagParent, businessParent);
-
+			peopleService.refreshKnownTags(session);
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to create task node", e);
+			throw new PeopleException("Unable to log in the repository", e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}
