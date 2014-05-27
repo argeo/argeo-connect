@@ -132,7 +132,7 @@ public interface PeopleService {
 	 */
 	public void refreshKnownTags(Session session);
 
-	public void addTag(Node tagsParentNode, String tag);
+	public void registerTag(Node tagsParentNode, String tag);
 
-	public void removeTag(Node tagsParentNode, String tag);
+	public void unregisterTag(Node tagsParentNode, String tag);
 }

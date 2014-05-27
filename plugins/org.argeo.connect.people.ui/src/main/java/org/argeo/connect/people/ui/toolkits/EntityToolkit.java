@@ -248,12 +248,19 @@ public class EntityToolkit {
 			boolean wasCheckedout = CommonsJcrUtils.isNodeCheckedOut(tagable);
 			if (!wasCheckedout)
 				CommonsJcrUtils.checkout(tagable);
+
 			tagable.setProperty(tagPropName, valuesStr);
+
+			// register tag if needed.
+			String tagsParentPath = peopleService
+					.getResourcesBasePath(PeopleNames.PEOPLE_TAGS);
+			Node tagsParent = tagable.getSession().getNode(tagsParentPath);
+			peopleService.registerTag(tagsParent, newTag);
+
 			if (!wasCheckedout)
 				CommonsJcrUtils.saveAndCheckin(tagable);
 			else
 				form.dirtyStateChanged();
-
 			for (IFormPart part : form.getParts()) {
 				((AbstractFormPart) part).markStale();
 				part.refresh();

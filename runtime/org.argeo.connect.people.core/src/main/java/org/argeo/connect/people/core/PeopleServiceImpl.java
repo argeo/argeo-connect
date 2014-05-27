@@ -448,7 +448,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 						registeredTags.add(currTag.trim());
 				}
 			}
-			
+
 			// Look for not yet registered tags
 			query = session
 					.getWorkspace()
@@ -483,7 +483,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			// real update
 			for (String tag : existingValues) {
 				if (!registeredTags.contains(tag)) {
-					addTag(tagParent, tag);
+					registerTag(tagParent, tag);
 				}
 			}
 		} catch (RepositoryException ee) {
@@ -493,9 +493,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	@Override
-	public void addTag(Node tagsParentNode, String tag) {
+	public void registerTag(Node tagsParentNode, String tag) {
 		try {
-
 			// remove trailing and starting space
 			tag = tag.trim();
 
@@ -509,8 +508,13 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 				Node existing = session.getNode(path);
 				if (tag.equalsIgnoreCase(CommonsJcrUtils.get(existing,
 						Property.JCR_TITLE))) {
-					log.error("Trying to add an existing tag (" + tag
-							+ "), nothing to do");
+					// Tag already exists, we do nothing.
+					if (log.isTraceEnabled())
+						log.debug("Tag ["
+								+ CommonsJcrUtils.get(existing,
+										Property.JCR_TITLE)
+								+ "] already exists. Cannot add [" + tag
+								+ "], nothing has been done.");
 					return;
 				}
 			}
@@ -525,7 +529,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	@Override
-	public void removeTag(Node tagsParentNode, String tag) {
+	public void unregisterTag(Node tagsParentNode, String tag) {
 		throw new PeopleException("unimplemented method.");
 	}
 
