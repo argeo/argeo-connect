@@ -484,7 +484,7 @@ public class PeopleUiUtils {
 		Button button = new Button(parent, SWT.FLAT);
 		button.setData(PeopleUiConstants.CUSTOM_VARIANT,
 				PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
-		button.setImage(PeopleImages.DELETE_BTN);
+		button.setImage(PeopleImages.DELETE_BTN_LEFT);
 		RowData rd = new RowData();
 		rd.height = 16;
 		rd.width = 16;

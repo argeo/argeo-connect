@@ -12,11 +12,11 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.composites.TagListComposite;
 import org.argeo.connect.people.ui.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.ui.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.ui.toolkits.ActivityToolkit;
 import org.argeo.connect.people.ui.toolkits.ContactToolkit;
-import org.argeo.connect.people.ui.toolkits.EntityToolkit;
 import org.argeo.connect.people.ui.toolkits.HistoryToolkit;
 import org.argeo.connect.people.ui.toolkits.ListToolkit;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
@@ -57,7 +57,6 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 	private Node person;
 
 	// Usefull toolkits
-	private EntityToolkit entityTK;
 	private ContactToolkit contactTK;
 	private ActivityToolkit activityTK;
 	private ListToolkit listTK;
@@ -87,8 +86,6 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void createToolkits() {
-		entityTK = new EntityToolkit(toolkit, getManagedForm(),
-				getPeopleService(), getPeopleUiService());
 		contactTK = new ContactToolkit(toolkit, getManagedForm(),
 				getPeopleService(), getPeopleUiService());
 		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
@@ -141,10 +138,10 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		populateTitleComposite(titleCmp);
 
 		// Tag Management
-		Composite tagsCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		Composite tagsCmp = new TagListComposite(parent, SWT.NO_FOCUS, toolkit,
+				getManagedForm(), getPeopleService(), getPeopleUiService(),
+				person, PeopleNames.PEOPLE_TAGS, "Add a tag");
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		entityTK.populateTagPanel(tagsCmp, person, PeopleNames.PEOPLE_TAGS,
-				"Enter a new tag");
 
 		// Mailing list management
 		Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);

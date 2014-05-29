@@ -1,4 +1,4 @@
-package org.argeo.connect.people.ui.toolkits;
+package org.argeo.connect.people.ui.composites;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +29,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -38,42 +39,56 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
- * Centralizes creation of common controls (typically Text and composite widget)
- * for entity, to be used in various forms.
+ * Wraps an Abstract form part that enable management of a tag like list in a
+ * form editor.
  */
-public class EntityToolkit {
-	// private final static Log log = LogFactory.getLog(EntityToolkit.class);
+public class TagListComposite extends Composite {
+	private static final long serialVersionUID = -312141685147619814L;
+	// public class ContactComposite {
+	// private static final long serialVersionUID = -789885142022513273L;
 
 	private PeopleService peopleService;
 	private PeopleUiService peopleUiService;
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
+	private final Node entity;
+	private final String tagPropName;
+	private final String newTagMsg;
 
-	public EntityToolkit(FormToolkit toolkit, IManagedForm form,
-			PeopleService peopleService, PeopleUiService peopleUiService) {
+	public TagListComposite(Composite parent, int style, FormToolkit toolkit,
+			IManagedForm form, PeopleService peopleService,
+			PeopleUiService peopleUiService, Node entity, String tagPropName,
+			String newTagMsg) {
+		super(parent, style);
 		this.toolkit = toolkit;
 		this.form = form;
 		this.peopleUiService = peopleUiService;
 		this.peopleService = peopleService;
+		this.entity = entity;
+		this.tagPropName = tagPropName;
+		this.newTagMsg = newTagMsg;
+
+		populate();
 	}
 
 	// ////////////////
 	// The Tag panel
-	public void populateTagPanel(Composite parent, Node entity,
-			String tagPropName, String newTagMsg) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder(1));
+	private void populate() {
+		Composite parent = this;
+		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder();
+		gl.marginLeft = 3;
+		parent.setLayout(gl);
 
 		Composite nlCmp = toolkit.createComposite(parent);
 		nlCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = true;
-		rl.marginHeight = rl.marginRight = 0;
-		rl.marginLeft = 5;
+		rl.marginHeight = rl.marginLeft = 0;
+		rl.marginRight = 8;
 		nlCmp.setLayout(rl);
 
 		AbstractFormPart tagFormPart = new TagFormPart(nlCmp, entity,
@@ -146,61 +161,60 @@ public class EntityToolkit {
 									value, tagPropName);
 						}
 					}
-
-					if (isCO) {
-						final Text tagTxt = toolkit.createText(nlCmp, "",
-								SWT.BORDER);
-						tagTxt.setMessage(newTagMsg);
-						RowData rd = new RowData(120, SWT.DEFAULT);
-						tagTxt.setLayoutData(rd);
-
-						String tagBP = peopleService
-								.getResourcesBasePath(PeopleNames.PEOPLE_TAGS);
-						final SimpleResourceDropDown tagDD = new SimpleResourceDropDown(
-								peopleUiService, entity.getSession(), tagBP,
-								tagTxt);
-
-						tagTxt.addTraverseListener(new TraverseListener() {
-							private static final long serialVersionUID = 1L;
-
-							public void keyTraversed(TraverseEvent e) {
-								if (e.keyCode == SWT.CR) {
-									String newTag = tagDD.getText();
-									addTag(tagTxt.getShell(), TagFormPart.this,
-											entity, tagPropName, newTag);
-									e.doit = false;
-									// if (!tagTxt.isDisposed())
-									// tagDD.reset("");
-									// tagTxt.setText("");
-								}
-							}
-						});
-
-						tagTxt.getParent().layout();
-						
-						Button okBtn = toolkit.createButton(nlCmp, "OK",
-								SWT.BORDER | SWT.PUSH | SWT.BOTTOM);
-						rd = new RowData(SWT.DEFAULT, tagTxt.getSize().y -2);
-						okBtn.setLayoutData(rd);
-
-						okBtn.addSelectionListener(new SelectionAdapter() {
-							private static final long serialVersionUID = 2780819012423622369L;
-
-							@Override
-							public void widgetSelected(SelectionEvent e) {
-								String newTag = tagDD.getText();
-								if (CommonsJcrUtils.isEmptyString(newTag))
-									return;
-								else
-									addTag(tagTxt.getShell(), TagFormPart.this,
-											entity, tagPropName, newTag);
-							}
-						});
-
-					}
-					nlCmp.layout(false);
-					nlCmp.getParent().getParent().layout();
 				}
+				if (isCO) {
+					final Text tagTxt = toolkit.createText(nlCmp, "",
+							SWT.BORDER);
+					tagTxt.setMessage(newTagMsg);
+					RowData rd = new RowData(120, SWT.DEFAULT);
+					tagTxt.setLayoutData(rd);
+
+					String tagBP = peopleService
+							.getResourcesBasePath(PeopleNames.PEOPLE_TAGS);
+					final SimpleResourceDropDown tagDD = new SimpleResourceDropDown(
+							peopleUiService, entity.getSession(), tagBP, tagTxt);
+
+					tagTxt.addTraverseListener(new TraverseListener() {
+						private static final long serialVersionUID = 1L;
+
+						public void keyTraversed(TraverseEvent e) {
+							if (e.keyCode == SWT.CR) {
+								String newTag = tagDD.getText();
+								addTag(tagTxt.getShell(), TagFormPart.this,
+										entity, tagPropName, newTag);
+								e.doit = false;
+								// if (!tagTxt.isDisposed())
+								// tagDD.reset("");
+								// tagTxt.setText("");
+							}
+						}
+					});
+
+					tagTxt.getParent().layout();
+
+					Button okBtn = toolkit.createButton(nlCmp, "OK", SWT.BORDER
+							| SWT.PUSH | SWT.BOTTOM);
+					rd = new RowData(SWT.DEFAULT, tagTxt.getSize().y - 2);
+					okBtn.setLayoutData(rd);
+
+					okBtn.addSelectionListener(new SelectionAdapter() {
+						private static final long serialVersionUID = 2780819012423622369L;
+
+						@Override
+						public void widgetSelected(SelectionEvent e) {
+							String newTag = tagDD.getText();
+							if (CommonsJcrUtils.isEmptyString(newTag))
+								return;
+							else
+								addTag(tagTxt.getShell(), TagFormPart.this,
+										entity, tagPropName, newTag);
+						}
+					});
+
+				}
+				nlCmp.layout(false);
+				nlCmp.getParent().getParent().layout();
+
 			} catch (RepositoryException re) {
 				throw new PeopleException(
 						"Error while refreshing mailing list appartenance", re);
@@ -213,6 +227,7 @@ public class EntityToolkit {
 		final Button deleteBtn = new Button(parent, SWT.FLAT);
 		deleteBtn.setData(PeopleUiConstants.CUSTOM_VARIANT,
 				PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+		deleteBtn.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		deleteBtn.setImage(PeopleImages.DELETE_BTN_LEFT);
 		deleteBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
@@ -238,10 +253,10 @@ public class EntityToolkit {
 					throw new PeopleException("unable to initialise deletion",
 							e);
 				}
-				for (IFormPart part : form.getParts()) {
-					((AbstractFormPart) part).markStale();
-					part.refresh();
-				}
+				// for (IFormPart part : form.getParts()) {
+				// ((AbstractFormPart) part).markStale();
+				// part.refresh();
+				// }
 			}
 		});
 	}

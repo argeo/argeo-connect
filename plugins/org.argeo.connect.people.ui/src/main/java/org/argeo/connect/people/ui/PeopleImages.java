@@ -66,7 +66,7 @@ public class PeopleImages {
 			"icons/delete.gif").createImage();
 
 	public final static Image DELETE_BTN_LEFT = PeopleUiPlugin
-			.getImageDescriptor("icons/delete.gif").createImage();
+			.getImageDescriptor("icons/delete_left.gif").createImage();
 
 	public final static Image ADD_BTN = PeopleUiPlugin.getImageDescriptor(
 			"icons/add.gif").createImage();
