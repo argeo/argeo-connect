@@ -1,8 +1,6 @@
 package org.argeo.connect.people.core;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +43,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	// private Repository repository;
 
 	/* Other services */
-	private UserManagementService userManagementService = new UserManagementServiceImpl();
+	private UserManagementService userManagementService = new UserManagementServiceImpl(
+			this);
 	private ActivityService activityService = new ActivityServiceImpl(this,
 			userManagementService);
 
@@ -60,15 +59,15 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	// SHOULD BE IN PeopleConstants but it does not work
 	// TODO investigate
 	// Initialize the map between node types and their names
-	public static Map<String, String> BASE_TYPE_NAMES;
-	static {
-		Map<String, String> tmpMap = new HashMap<String, String>();
-		{
-			tmpMap.put(PeopleTypes.PEOPLE_ACTIVITY,
-					PeopleNames.PEOPLE_ACTIVITIES);
-		}
-		BASE_TYPE_NAMES = Collections.unmodifiableMap(tmpMap);
-	}
+	// public static Map<String, String> BASE_TYPE_NAMES;
+	// static {
+	// Map<String, String> tmpMap = new HashMap<String, String>();
+	// {
+	// tmpMap.put(PeopleTypes.PEOPLE_ACTIVITY,
+	// PeopleNames.PEOPLE_ACTIVITIES);
+	// }
+	// BASE_TYPE_NAMES = Collections.unmodifiableMap(tmpMap);
+	// }
 
 	/* Life cycle management */
 	/**
@@ -87,29 +86,53 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	/* BASE PATH MANAGEMENT */
 	@Override
+	@Deprecated
 	public String getBasePath() {
-		return PeopleConstants.PEOPLE_BASE_PATH;
-	}
-
-	/** Exposes the application specific parent path for resources */
-	@Override
-	public String getResourcesBasePath(String typeId) {
-		if (typeId == null)
-			return PeopleConstants.PEOPLE_RESOURCES_BASE_PATH;
-		else if (PeopleConstants.KNOWN_RESOURCE_TYPE.contains(typeId))
-			return getResourcesBasePath(null) + "/" + typeId;
-		else
-			throw new PeopleException("Undefined type: " + typeId);
+		return getBasePath(null);
 	}
 
 	@Override
-	public String getBasePathForType(String typeId) {
-		if (typeId == null)
+	public String getBasePath(String entityType) {
+		if (entityType == null)
 			return PeopleConstants.PEOPLE_BASE_PATH;
-		else if (BASE_TYPE_NAMES.containsKey(typeId))
-			return getBasePathForType(null) + "/" + BASE_TYPE_NAMES.get(typeId);
+
+		String parentName = getParentNameFromType(entityType);
+		if (PeopleConstants.PEOPLE_KNOWN_PARENT_NAMES.contains(parentName))
+			return getBasePath(null) + "/" + parentName;
 		else
-			throw new PeopleException("Undefined type: " + typeId);
+			throw new PeopleException("Unable to find base path for type: "
+					+ parentName);
+	}
+
+	@Override
+	public String getResourceBasePath(String resourceType) {
+		// resourceType
+		if (resourceType == null)
+			return getBasePath(PeopleConstants.PEOPLE_RESOURCE);
+
+		String parentName = getParentNameFromType(resourceType);
+		if (PeopleConstants.KNOWN_RESOURCE_NAMES.contains(parentName))
+			return getResourceBasePath(null) + "/" + parentName;
+		else
+			throw new PeopleException("Undefined type: " + parentName);
+	}
+
+	@Override
+	public String getResourcePath(String resourceType, String resourceId) {
+		// TODO clean this
+		return getResourceBasePath(resourceType) + "/" + resourceId;
+	}
+
+	// Clean this: small helper to retrieve the parent node name given a
+	// NodeType or a Property name
+	protected String getParentNameFromType(String typeId) {
+		// TODO refactor to clean this
+		if (typeId.equals(PeopleTypes.PEOPLE_ORGANIZATION))
+			return PeopleNames.PEOPLE_ORGS;
+		else if (typeId.endsWith("y"))
+			return typeId.substring(0, typeId.length() - 1) + "ies";
+		else
+			return typeId + "s";
 	}
 
 	/* ENTITY SERVICES */
@@ -416,8 +439,9 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	// TAGS Management
 	@Override
 	public void refreshKnownTags(Session session) {
-		refreshKnownTags(session, getResourcesBasePath(PEOPLE_TAGS),
-				getBasePath());
+		refreshKnownTags(session,
+				getResourceBasePath(PeopleConstants.RESOURCE_TAG),
+				getBasePath(null));
 	}
 
 	@Override
@@ -481,7 +505,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			// real update
 			for (String tag : existingValues) {
 				if (!registeredTags.contains(tag)) {
-					registerTag(session, tagableParentPath, tag);
+					registerTag(session, tagParentPath, tag);
 					session.save();
 				}
 			}

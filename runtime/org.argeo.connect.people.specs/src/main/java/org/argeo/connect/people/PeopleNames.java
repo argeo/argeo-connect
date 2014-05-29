@@ -24,10 +24,13 @@ public interface PeopleNames {
 	@Deprecated
 	public final static String PEOPLE_WORKFLOWS = "people:workflows";
 	public final static String PEOPLE_ACTIVITIES = "people:activities";
+	public final static String PEOPLE_RESOURCES = "people:resources";
 
 	// Resources parent node names
 	public final static String PEOPLE_TAGS = "people:tags";
-	public final static String PEOPLE_MAILING_LISTS = "people:mailingLists";
+	public final static String PEOPLE_MAILING_LISTS = "people:mailingListInstances";
+	public final static String PEOPLE_COUNTRIES = "people:countries";
+	public final static String PEOPLE_LANGS= "people:languages";
 
 	// Sub concepts parent node names
 	public final static String PEOPLE_PAYMENT_ACCOUNTS = "people:paymentAccounts";

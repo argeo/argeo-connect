@@ -82,12 +82,9 @@ public class PickUpCountryDialog extends TrayDialog {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-		tableCmp = new SimpleJcrTableComposite(
-				dialogArea,
-				style,
-				session,
+		tableCmp = new SimpleJcrTableComposite(dialogArea, style, session,
 				peopleService
-						.getResourcesBasePath(PeopleConstants.RESOURCE_COUNTRIES),
+						.getResourceBasePath(PeopleConstants.RESOURCE_COUNTRY),
 				PeopleTypes.PEOPLE_ISO_COUNTRY, colDefs, true, false);
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 

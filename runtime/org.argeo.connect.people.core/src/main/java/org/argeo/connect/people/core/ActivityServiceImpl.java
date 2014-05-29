@@ -58,7 +58,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 		String currentUser = session.getUserID();
 		Calendar currentTime = GregorianCalendar.getInstance();
 		String path = peopleService
-				.getBasePathForType(PeopleTypes.PEOPLE_ACTIVITY)
+				.getBasePath(PeopleTypes.PEOPLE_ACTIVITY)
 				+ "/"
 				+ JcrUtils.dateAsPath(currentTime, true) + currentUser;
 		return path;
@@ -67,7 +67,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	public String getActivityParentPath(Session session, Calendar date,
 			String managerId) {
 		String path = peopleService
-				.getBasePathForType(PeopleTypes.PEOPLE_ACTIVITY)
+				.getBasePath(PeopleTypes.PEOPLE_ACTIVITY)
 				+ "/"
 				+ JcrUtils.dateAsPath(date, true) + managerId;
 		return path;

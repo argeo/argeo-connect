@@ -18,9 +18,9 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -33,13 +33,15 @@ import org.springframework.security.context.SecurityContextHolder;
 /** Canonical implementation of the people {@link UserManagementService} */
 public class UserManagementServiceImpl implements UserManagementService {
 
+	private final PeopleService peopleService;
+
+	public UserManagementServiceImpl(PeopleService peopleService) {
+		this.peopleService = peopleService;
+	}
+
 	//
 	// GROUP MANAGEMENT
 	//
-
-	protected String getUserGroupParentPath() {
-		return PeopleConstants.PEOPLE_USER_GROUPS_BASE_PATH;
-	}
 
 	@Override
 	public Node getGroupById(Session session, String groupId) {
@@ -83,8 +85,11 @@ public class UserManagementServiceImpl implements UserManagementService {
 			String description, boolean isUserGroup) {
 		try {
 			String relPath = JcrUtils.firstCharsToPath(groupId, 2);
-			String fullPath = getUserGroupParentPath() + "/" + relPath + "/"
-					+ groupId;
+			String fullPath = peopleService
+					.getBasePath(PeopleTypes.PEOPLE_USER_GROUP)
+					+ "/"
+					+ relPath
+					+ "/" + groupId;
 			if (session.nodeExists(fullPath))
 				return session.getNode(fullPath);
 			else {

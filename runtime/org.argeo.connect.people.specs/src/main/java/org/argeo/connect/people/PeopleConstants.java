@@ -1,39 +1,56 @@
 package org.argeo.connect.people;
 
-import java.util.ArrayList;
+import static java.util.Arrays.asList;
+
+import java.util.List;
 
 public interface PeopleConstants {
 
-	// Base path
-	public static ArrayList<String> KNOWN_RESOURCE_TYPE = new ArrayList<String>() {
-		private static final long serialVersionUID = 4277773515826637164L;
-		{
-			add(PeopleNames.PEOPLE_TAGS);
-			add(PeopleNames.PEOPLE_TASKS);
-			add(PeopleConstants.RESOURCE_COUNTRIES);
-			add(PeopleConstants.RESOURCE_LANGS);
-		}
-	};
+	// Namespace
+	public final static String PEOPLE_PREFIX = "people";
 
+	// Base path
 	public final static String PEOPLE_BASE_PATH = "/people:system";
 
-	public final static String PEOPLE_MAILING_LISTS_BASE_PATH = PEOPLE_BASE_PATH
-			+ '/' + PeopleNames.PEOPLE_MAILING_LISTS;
+	// Types that do not correspond to a Jcr type
+	public final static String PEOPLE_RESOURCE = "people:resource";
+	public final static String RESOURCE_TAG = "people:tag";
+	public final static String RESOURCE_COUNTRY = "people:country";
+	public final static String RESOURCE_LANG = "people:language";
 
-	public final static String PEOPLE_ACTIVITIES_BASE_PATH = PEOPLE_BASE_PATH
-			+ "/people:activities";
-	public final static String PEOPLE_TASKS_BASE_PATH = PEOPLE_BASE_PATH
-			+ "/people:tasks";
-	public final static String PEOPLE_USER_GROUPS_BASE_PATH = PEOPLE_BASE_PATH
-			+ "/people:userGroups";
+	// Known types
+	public static final List<String> PEOPLE_KNOWN_PARENT_NAMES = asList(
+			//
+			PeopleNames.PEOPLE_PERSONS, PeopleNames.PEOPLE_ORGS,
+			PeopleNames.PEOPLE_FILMS, PeopleNames.PEOPLE_PROJECTS,
+			PeopleNames.PEOPLE_ACTIVITIES, "/people:tasks",
+			"/people:userGroups");
 
-	// People resources, typically language and country lists
-	public final static String PEOPLE_RESOURCES_BASE_PATH = PEOPLE_BASE_PATH
-			+ "/people:resources";
+	public static final List<String> KNOWN_RESOURCE_NAMES = asList(
+			//
+			PeopleNames.PEOPLE_TAGS, PeopleNames.PEOPLE_MAILING_LISTS,
+			PeopleNames.PEOPLE_TASKS, PeopleNames.PEOPLE_COUNTRIES,
+			PeopleNames.PEOPLE_LANGS);
+
+	// public final static String PEOPLE_MAILING_LISTS_BASE_PATH =
+	// PEOPLE_BASE_PATH
+	// + '/' + PeopleNames.PEOPLE_MAILING_LISTS;
+	//
+	// public final static String PEOPLE_ACTIVITIES_BASE_PATH = PEOPLE_BASE_PATH
+	// + "/people:activities";
+	// public final static String PEOPLE_TASKS_BASE_PATH = PEOPLE_BASE_PATH
+	// + "/people:tasks";
+	// public final static String PEOPLE_USER_GROUPS_BASE_PATH =
+	// PEOPLE_BASE_PATH
+	// + "/people:userGroups";
+
+	// // People resources, typically language and country lists
+	// public final static String PEOPLE_RESOURCES_BASE_PATH = PEOPLE_BASE_PATH
+	// + "/people:resources";
 
 	// Defined resources
-	public final static String RESOURCE_COUNTRIES = "people:countries";
-	public final static String RESOURCE_LANGS = "people:languages";
+	// public final static String RESOURCE_COUNTRIES = "people:countries";
+	// public final static String RESOURCE_LANGS = "people:languages";
 
 	@Deprecated
 	// public final static String PEOPLE_COUNTRIES_BASE_PATH =

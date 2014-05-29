@@ -23,21 +23,29 @@ public interface PeopleService {
 			Node contact, String role);
 
 	/* BASE PATHS MANAGEMENT */
-
 	/** Exposes the application specific parent business path */
+	@Deprecated
 	public String getBasePath();
-
-	/**
-	 * Exposes the application specific parents path for resources. querying
-	 * with null parameter will return the respource base bath
-	 */
-	public String getResourcesBasePath(String typeId);
 
 	/**
 	 * Centralises the management of known types to provide corresponding base
 	 * path
+	 * 
+	 * getBasePath(null) returns the application specific parent business path
 	 */
-	public String getBasePathForType(String typeId);
+	public String getBasePath(String entityType);
+
+	/**
+	 * Exposes the application specific parent path for this resource. Querying
+	 * with null parameter will return the resource base bath
+	 */
+	public String getResourceBasePath(String resourceType);
+
+	/**
+	 * Exposes the application specific parent path for the given subtype of
+	 * this resource.
+	 */
+	public String getResourcePath(String resourceType, String categoryId);
 
 	/* PERSONS AND ORGANISATIONS */
 

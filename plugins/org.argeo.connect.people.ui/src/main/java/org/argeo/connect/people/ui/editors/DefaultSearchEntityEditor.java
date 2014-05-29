@@ -18,6 +18,7 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.composites.dropdowns.SimpleResourceDropDown;
@@ -85,7 +86,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 		Text tagTxt = createBoldLT(body, "Tag", "",
 				"Select from list to find entities that are categorised with this tag");
 		tagDD = new SimpleResourceDropDown(getPeopleUiService(), getSession(),
-				getPeopleService().getResourcesBasePath(PEOPLE_TAGS), tagTxt);
+				getPeopleService().getResourceBasePath(PeopleConstants.RESOURCE_TAG), tagTxt);
 
 		Button goBtn = new Button(body, SWT.PUSH);
 		goBtn.setText("Search");

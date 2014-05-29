@@ -19,6 +19,7 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
@@ -97,7 +98,7 @@ public class SearchByTagEditor extends AbstractSearchEntityEditor {
 		Text tagTxt = createBoldLT(body, "List entities for tag", "",
 				"Select from list to find entities that are categorised with this tag");
 		tagDD = new SimpleResourceDropDown(getPeopleUiService(), getSession(),
-				getPeopleService().getResourcesBasePath(PEOPLE_TAGS), tagTxt);
+				getPeopleService().getResourceBasePath(PeopleConstants.RESOURCE_TAG), tagTxt);
 
 		goBtn = new Button(body, SWT.PUSH);
 		goBtn.setText("Refresh list");

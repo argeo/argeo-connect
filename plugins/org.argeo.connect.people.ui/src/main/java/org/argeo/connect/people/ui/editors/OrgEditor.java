@@ -6,6 +6,7 @@ import javax.jcr.PropertyType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleUiConstants;
@@ -91,8 +92,8 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		// Tag Management
 		Composite tagsCmp = new TagListComposite(parent, SWT.NO_FOCUS, toolkit,
 				getManagedForm(), getPeopleService(), getPeopleUiService(),
-				org, getPeopleService().getResourcesBasePath(
-						PeopleNames.PEOPLE_TAGS), PeopleNames.PEOPLE_TAGS,
+				org, getPeopleService().getResourceBasePath(
+						PeopleConstants.RESOURCE_TAG), PeopleNames.PEOPLE_TAGS,
 				"Add a tag");
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
