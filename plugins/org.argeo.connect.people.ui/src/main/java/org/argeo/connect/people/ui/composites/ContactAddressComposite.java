@@ -12,7 +12,6 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.dialogs.PickUpOrgDialog;
-import org.argeo.connect.people.ui.utils.JcrUiUtils;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -184,7 +183,7 @@ public class ContactAddressComposite extends Composite {
 								Property.JCR_TITLE));
 						String uid = CommonsJcrUtils.get(currNode,
 								PeopleNames.PEOPLE_UID);
-						if (JcrUiUtils.setJcrProperty(contactNode,
+						if (CommonsJcrUtils.setJcrProperty(contactNode,
 								PeopleNames.PEOPLE_REF_UID,
 								PropertyType.STRING, uid))
 							formPart.markDirty();
@@ -277,7 +276,7 @@ public class ContactAddressComposite extends Composite {
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				if (JcrUiUtils.setJcrProperty(entity, propName, propType,
+				if (CommonsJcrUtils.setJcrProperty(entity, propName, propType,
 						text.getText())) {
 					part.markDirty();
 					PeopleJcrUtils.updateDisplayAddress(entity);

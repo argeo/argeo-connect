@@ -304,7 +304,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 					if (isCheckedOutByMe()) {
 						Map<String, String> params = new HashMap<String, String>();
 						params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID,
-								CommonsJcrUtils.getIdentifierQuietly(node));
+								CommonsJcrUtils.getIdentifier(node));
 						params.put(DeleteEntity.PARAM_REMOVE_ALSO_PARENT,
 								deleteParentOnRemove().toString());
 						CommandUtils.callCommand(DeleteEntity.ID, params);

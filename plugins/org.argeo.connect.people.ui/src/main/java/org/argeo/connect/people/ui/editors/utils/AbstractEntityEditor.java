@@ -460,7 +460,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 					if (isCheckedOutByMe()) {
 						Map<String, String> params = new HashMap<String, String>();
 						params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID,
-								CommonsJcrUtils.getIdentifierQuietly(entity));
+								CommonsJcrUtils.getIdentifier(entity));
 						params.put(DeleteEntity.PARAM_REMOVE_ALSO_PARENT,
 								deleteParentOnRemove().toString());
 						CommandUtils.callCommand(DeleteEntity.ID, params);
