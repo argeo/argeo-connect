@@ -31,14 +31,15 @@
 - people:middleName (STRING)
 - people:lastName (STRING)
 - people:salutation (STRING)
+- people:usePoliteForm (BOOLEAN)
 - people:honorificTitle (STRING)
 - people:nameSuffix (STRING)
 - people:nickname (STRING)
 - people:maidenName (STRING)
 - people:latinPhoneticSpelling (STRING)
-- people:birthDate (DATE) 
+- people:birthDate (DATE)
 // Enable approximative birth date 
-- people:birthDateTxt
+- people:birthDateTxt (STRING)
 // Sex component:  A single letter.  M stands for "male", 
 // F stands for "female", O stands for "other", N stands for "none or not
 // applicable", U stands for "unknown".
