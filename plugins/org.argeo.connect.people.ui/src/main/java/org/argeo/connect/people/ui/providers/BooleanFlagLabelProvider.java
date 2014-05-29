@@ -8,11 +8,15 @@ import org.argeo.connect.people.PeopleException;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
+/**
+ * Manage display of a boolean property, given an image for true and one for
+ * false
+ */
 public class BooleanFlagLabelProvider extends ColumnLabelProvider {
 	private static final long serialVersionUID = 1L;
 
-	private final String propertyName; 
-	private final Image imgTrue; 
+	private final String propertyName;
+	private final Image imgTrue;
 	private final Image imgFalse;
 
 	public BooleanFlagLabelProvider(String propertyName, Image imgTrue,
