@@ -26,12 +26,6 @@
 - film:cachePTitleArticle (STRING) IGNORE
 - film:cachePTitleLatin (STRING) IGNORE
 
-// LEGACY - kept for [2.1.x, 2.4[ retrocompatibility 
-// To be removed in 2.4+ versions 
-- film:cacheOTitle (STRING) IGNORE
-- film:cacheOTitleArticle (STRING) IGNORE
-- film:cacheOTitleLatin (STRING) IGNORE
-
 // Subnode with alternative title
 + film:titles (nt:unstructured) 
 
@@ -53,6 +47,12 @@
 - film:hasTrailer (BOOLEAN)
 - film:extractsOnTvAllowed (BOOLEAN)
 // why not use a contact ?
+
+// LEGACY - kept for [2.1.x, 2.4[ retrocompatibility 
+// To be removed in 2.4+ versions 
+- film:cacheOTitle (STRING) IGNORE
+- film:cacheOTitleArticle (STRING) IGNORE
+- film:cacheOTitleLatin (STRING) IGNORE
 
 // Titles
 [film:title] > nt:unstructured, people:language, people:orderable
