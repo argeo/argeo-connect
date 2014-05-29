@@ -473,17 +473,16 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			}
 
 			// Create tag parent if needed
-			Node tagParent = null;
 			if (!session.nodeExists(tagParentPath)) {
-				tagParent = JcrUtils.mkdirs(session, tagParentPath);
+				JcrUtils.mkdirs(session, tagParentPath);
 				session.save();
-			} else
-				tagParent = session.getNode(tagParentPath);
+			}
 
 			// real update
 			for (String tag : existingValues) {
 				if (!registeredTags.contains(tag)) {
-					registerTag(tagParent, tag);
+					registerTag(session, tagableParentPath, tag);
+					session.save();
 				}
 			}
 		} catch (RepositoryException ee) {
@@ -493,44 +492,70 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	@Override
-	public void registerTag(Node tagsParentNode, String tag) {
+	public Node getRegisteredTag(Session session, String tagParentPath,
+			String tag) {
 		try {
 			// remove trailing and starting space
 			tag = tag.trim();
+			String path = tagParentPath + "/" + getTagRelPath(tag);
 
-			Session session = tagsParentNode.getSession();
-			String cleanedTag = JcrUtils.replaceInvalidChars(tag).trim();
-			String relPath = JcrUtils.firstCharsToPath(cleanedTag, 2);
-			String path = tagsParentNode.getPath() + "/" + relPath + "/"
-					+ cleanedTag;
-			// Sanity check
 			if (session.nodeExists(path)) {
 				Node existing = session.getNode(path);
 				if (tag.equalsIgnoreCase(CommonsJcrUtils.get(existing,
 						Property.JCR_TITLE))) {
-					// Tag already exists, we do nothing.
-					if (log.isTraceEnabled())
-						log.debug("Tag ["
-								+ CommonsJcrUtils.get(existing,
-										Property.JCR_TITLE)
-								+ "] already exists. Cannot add [" + tag
-								+ "], nothing has been done.");
-					return;
+					return existing;
 				}
 			}
-			Node newTag = JcrUtils.mkdirs(session, path);
-			newTag.addMixin(NodeType.MIX_TITLE);
-			newTag.setProperty(Property.JCR_TITLE, tag);
-			session.save();
 		} catch (RepositoryException ee) {
-			throw new PeopleException("Unable to add new tag " + tag
-					+ " under " + tagsParentNode);
+			throw new PeopleException("Unable to get registered tag " + tag
+					+ " under " + tagParentPath);
 		}
+		return null;
 	}
 
 	@Override
-	public void unregisterTag(Node tagsParentNode, String tag) {
+	public Node registerTag(Session session, String tagParentPath, String tag)
+			throws RepositoryException {
+		// remove trailing and starting space
+		tag = tag.trim();
+		String path = tagParentPath + "/" + getTagRelPath(tag);
+
+		if (session.nodeExists(path)) {
+			Node existing = session.getNode(path);
+			if (tag.equalsIgnoreCase(CommonsJcrUtils.get(existing,
+					Property.JCR_TITLE))) {
+				// Tag already exists, we do nothing.
+				if (log.isTraceEnabled())
+					log.debug("Tag ["
+							+ CommonsJcrUtils.get(existing, Property.JCR_TITLE)
+							+ "] already exists. Cannot add [" + tag
+							+ "], nothing has been done.");
+				return existing;
+			}
+		}
+		Node newTag = JcrUtils.mkdirs(session, path);
+		newTag.addMixin(NodeType.MIX_TITLE);
+		newTag.setProperty(Property.JCR_TITLE, tag);
+		// } catch (RepositoryException ee) {
+		// throw new PeopleException("Unable to add new tag " + tag
+		// + " under " + tagParentPath);
+		// }
+		return newTag;
+	}
+
+	@Override
+	public void unregisterTag(Session session, String tagParentPath,
+			String tag, String tagableParentPath) {
+		// TODO Auto-generated method stub
 		throw new PeopleException("unimplemented method.");
+	}
+
+	protected String getTagRelPath(String tag) {
+		// remove trailing and starting space
+		tag = tag.trim();
+		String cleanedTag = JcrUtils.replaceInvalidChars(tag).trim();
+		String relPath = JcrUtils.firstCharsToPath(cleanedTag, 2);
+		return relPath + "/" + cleanedTag;
 	}
 
 	/* EXPOSED CLASSES */

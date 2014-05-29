@@ -48,7 +48,7 @@
 - film:extractsOnTvAllowed (BOOLEAN)
 // why not use a contact ?
 
-// LEGACY - kept for [2.1.x, 2.4[ retrocompatibility 
+// LEGACY - kept for [2.1.x, 2.3[ retrocompatibility 
 // To be removed in 2.4+ versions 
 - film:cacheOTitle (STRING) IGNORE
 - film:cacheOTitleArticle (STRING) IGNORE

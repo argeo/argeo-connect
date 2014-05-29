@@ -47,7 +47,6 @@
 - people:gender (STRING)
 // Positions in the various organisations this person is attached to
 + people:jobs (nt:unstructured)
-//+ people:jobs (nt:unstructured) = nt:unstructured m a
 
 // cache to ease full text search 
 - people:cachePCity  (STRING) IGNORE
@@ -86,12 +85,6 @@
 [people:group] > people:entity, people:tagable
 + people:members (nt:unstructured) =nt:unstructured m a 
 
-//
-// MAILING LIST 
-//
-[people:mailingList] > people:group
-
-
 // 
 // GROUP MEMBERS
 // node with reference to corresponding entities 
@@ -108,14 +101,6 @@
 // we don't know when it has ended 
 - people:isCurrent (BOOLEAN) ="true" a m
 
-
-// An item of a mailing list
-// Note that for the time being, we store the corresponding 
-// mail address in the people:role property
-[people:mailingListItem] > people:position
-// an entity that can provide a primary contact (person, org, group...)
-- people:refUid (STRING) m nofulltext
-
 // The job or position of a person in an organisation
 [people:job] > people:position
 // ONLY an organisation
@@ -127,6 +112,27 @@
 [people:member] > people:position
 // MIGHT BE a person, an organisation or another group
 - people:refUid (STRING) m nofulltext
+
+//
+// MAILING LIST 
+//
+
+// TODO - Rename this to people:mailingList in 2.3.+ 
+// TODO - Enhance to provide additional services like tracking of sent newsletters 
+// The fact that a contactable entity belongs to this mailing list is stored in
+// the corresponding node via the people:mailingLists multivalued property
+[people:mailingListInstance] > mix:title
+
+
+// Deprecated - REMOVE THIS as from 2.3.x 
+[people:mailingList] > people:group
+
+// Deprecated - REMOVE THIS as from 2.3.x 
+// An item of a mailing list
+[people:mailingListItem] > people:position
+// an entity that can provide a primary contact (person, org, group...)
+- people:refUid (STRING) m nofulltext
+
 
 // 
 // TAGABLE
@@ -250,9 +256,7 @@ mixin
 - people:pref (LONG) 
 - people:isPrimary (BOOLEAN) 
 
-
-
-
+//////////////////////
 /////// COMMUNICATION
 
 // 
@@ -261,7 +265,9 @@ mixin
 [people:contactable] 
 mixin
 + people:contacts (nt:unstructured)
-//+ people:contacts (nt:unstructured) =nt:unstructured m a 
+// A tag like property to keep reference to the mailing list this contact is bound to.
+- people:mailingLists (STRING) *
+
 
 // 
 // CONTACTS
@@ -323,8 +329,6 @@ mixin
 [people:contactRef]  
 mixin
 - people:refUid (STRING)
-
-
 
 // PARENT PAYMENT ACCOUNT TYPE 
 // To enable future storing of alternative payment means (bitcoins or internet payment providers...)

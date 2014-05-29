@@ -42,6 +42,7 @@ import org.eclipse.ui.PartInitException;
 /**
  * Search the repository with a given entity type
  */
+@Deprecated
 public class SearchByTagEditor extends AbstractSearchEntityEditor {
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID

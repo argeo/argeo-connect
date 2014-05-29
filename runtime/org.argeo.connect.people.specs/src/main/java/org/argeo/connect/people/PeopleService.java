@@ -3,6 +3,7 @@ package org.argeo.connect.people;
 import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 /** Provides method interfaces to manage a people repository */
@@ -132,7 +133,30 @@ public interface PeopleService {
 	 */
 	public void refreshKnownTags(Session session);
 
-	public void registerTag(Node tagsParentNode, String tag);
+	/**
+	 * Register a new tag if such a tag does not exist, does nothing otherwise.
+	 * Corresponding session is not saved
+	 * 
+	 * Comparison is case insensitive and a trim() is applied on the passed
+	 * String
+	 */
+	public Node registerTag(Session session, String tagParentPath, String tag)
+			throws RepositoryException;
 
-	public void unregisterTag(Node tagsParentNode, String tag);
+	/**
+	 * Retrieve the cached tag node or null if such a tag has not yet been
+	 * registered
+	 * 
+	 * Comparison is case insensitive and a trim() is applied on the passed
+	 * String
+	 */
+	public Node getRegisteredTag(Session session, String tagParentPath,
+			String tag);
+
+	/**
+	 * Unregister an existing tag and remove all references to this tag on all
+	 * nodes under the tagableParentPath that have this tag
+	 */
+	public void unregisterTag(Session session, String tagParentPath,
+			String tag, String tagableParentPath);
 }

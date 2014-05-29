@@ -25,9 +25,11 @@ public interface PeopleTypes {
 
 	/* GROUPS */
 	public final static String PEOPLE_GROUP = "people:group";
+	@Deprecated
 	public final static String PEOPLE_MAILING_LIST = "people:mailingList";
 
 	/* GROUP MEMBERS */
+	@Deprecated
 	public final static String PEOPLE_MAILING_LIST_ITEM = "people:mailingListItem";
 	public final static String PEOPLE_POSITION = "people:position";
 	public final static String PEOPLE_JOB = "people:job";
@@ -63,6 +65,9 @@ public interface PeopleTypes {
 	public final static String PEOPLE_SOCIAL_MEDIA = "people:socialMedia";
 	public final static String PEOPLE_ADDRESS = "people:address";
 
+	public final static String PEOPLE_ML_INSTANCE = "people:mailingListInstance";
+
+	
 	// contact with this mixin will use value(s) of the primary contact of the
 	// given type
 	// of the referenced entity if such a contact exists.
