@@ -36,15 +36,6 @@ public interface PeopleUiConstants {
 	public final static String PANEL_MEMBERS = "people:members";
 	public final static String PANEL_HISTORY = "people:history";
 
-	
-	// public final static String PANEL_PRODUCTIONS = "people:productions";
-	// public final static String PANEL_DESCRIPTION = "people:descriptions";
-	// public final static String PANEL_SYNOPSES = "people:synopses";
-	// public final static String PANEL_FILM_MAIN_INFO = "people:filmMainInfo";
-	// public final static String PANEL_FILM_ADD_INFO =
-	// "people:filmAdditionalInfo";
-	// public final static String PANEL_FILM_PRINTS = "people:filmPrints";
-	//
 	// Various types for list label providers
 	public final static int LIST_TYPE_OVERVIEW_TITLE = 0;
 	public final static int LIST_TYPE_OVERVIEW_DETAIL = 1;
@@ -82,6 +73,8 @@ public interface PeopleUiConstants {
 	public final static String PEOPLE_CSS_ITEM_IMAGE = "peopleCss-itemImage";
 
 	public final static String PEOPLE_CSS_URL_STYLE = "style='color:#383838; font-decoration:none;'";
+
+	public final static String PEOPLE_CSS_TAG_STYLE = "tag";
 
 	// // /////////////////////////
 	// // LEGACY to be removed

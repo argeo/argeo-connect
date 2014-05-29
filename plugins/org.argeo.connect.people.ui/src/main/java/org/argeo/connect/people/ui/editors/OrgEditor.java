@@ -91,9 +91,11 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		// Tag Management
 		Composite tagsCmp = new TagListComposite(parent, SWT.NO_FOCUS, toolkit,
 				getManagedForm(), getPeopleService(), getPeopleUiService(),
-				org, PeopleNames.PEOPLE_TAGS, "Add a tag");
+				org, getPeopleService().getResourcesBasePath(
+						PeopleNames.PEOPLE_TAGS), PeopleNames.PEOPLE_TAGS,
+				"Add a tag");
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		
+
 		// entityTK.populateTagPanel(tagsCmp, org, );
 
 		// Mailing list management

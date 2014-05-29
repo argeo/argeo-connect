@@ -140,7 +140,9 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		// Tag Management
 		Composite tagsCmp = new TagListComposite(parent, SWT.NO_FOCUS, toolkit,
 				getManagedForm(), getPeopleService(), getPeopleUiService(),
-				person, PeopleNames.PEOPLE_TAGS, "Add a tag");
+				person, getPeopleService().getResourcesBasePath(
+						PeopleNames.PEOPLE_TAGS), PeopleNames.PEOPLE_TAGS,
+				"Add a tag");
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// Mailing list management

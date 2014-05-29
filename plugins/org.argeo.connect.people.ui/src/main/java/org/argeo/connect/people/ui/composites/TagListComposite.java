@@ -11,7 +11,6 @@ import javax.jcr.Value;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
@@ -20,7 +19,6 @@ import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.composites.dropdowns.SimpleResourceDropDown;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -29,7 +27,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -55,60 +52,48 @@ public class TagListComposite extends Composite {
 	private PeopleUiService peopleUiService;
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
-	private final Node entity;
+	private final Node tagable;
+	private final String tagsParentPath;
 	private final String tagPropName;
 	private final String newTagMsg;
 
+	// TODO document this
 	public TagListComposite(Composite parent, int style, FormToolkit toolkit,
 			IManagedForm form, PeopleService peopleService,
-			PeopleUiService peopleUiService, Node entity, String tagPropName,
-			String newTagMsg) {
+			PeopleUiService peopleUiService, Node tagable,
+			String tagsParentPath, String tagPropName, String newTagMsg) {
 		super(parent, style);
 		this.toolkit = toolkit;
 		this.form = form;
 		this.peopleUiService = peopleUiService;
 		this.peopleService = peopleService;
-		this.entity = entity;
+		this.tagable = tagable;
+		this.tagsParentPath = tagsParentPath;
 		this.tagPropName = tagPropName;
 		this.newTagMsg = newTagMsg;
 
 		populate();
 	}
 
-	// ////////////////
-	// The Tag panel
+	/* Main layout and form part creation */
 	private void populate() {
 		Composite parent = this;
-		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder();
-		gl.marginLeft = 3;
-		parent.setLayout(gl);
-
-		Composite nlCmp = toolkit.createComposite(parent);
-		nlCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = true;
 		rl.marginHeight = rl.marginLeft = 0;
 		rl.marginRight = 8;
-		nlCmp.setLayout(rl);
+		parent.setLayout(rl);
 
-		AbstractFormPart tagFormPart = new TagFormPart(nlCmp, entity,
-				tagPropName, newTagMsg);
+		AbstractFormPart tagFormPart = new TagFormPart(parent);
 		tagFormPart.initialize(form);
 		form.addPart(tagFormPart);
 	}
 
 	private class TagFormPart extends AbstractFormPart {
 		private Composite nlCmp;
-		private Node entity;
-		private String tagPropName;
-		private String newTagMsg;
 
-		public TagFormPart(Composite parent, Node entity, String tagPropName,
-				String newTagMsg) {
+		public TagFormPart(Composite parent) {
 			this.nlCmp = parent;
-			this.entity = entity;
-			this.tagPropName = tagPropName;
-			this.newTagMsg = newTagMsg;
 		}
 
 		public void refresh() {
@@ -119,11 +104,11 @@ public class TagListComposite extends Composite {
 			for (Control child : oldChildren)
 				child.dispose();
 
-			boolean isCO = CommonsJcrUtils.isNodeCheckedOutByMe(entity);
+			boolean isCO = CommonsJcrUtils.isNodeCheckedOutByMe(tagable);
 
 			try {
-				if (entity.hasProperty(tagPropName)) {
-					Value[] values = entity.getProperty(tagPropName)
+				if (tagable.hasProperty(tagPropName)) {
+					Value[] values = tagable.getProperty(tagPropName)
 							.getValues();
 					for (final Value value : values) {
 						final String tagValue = value.getString();
@@ -132,7 +117,8 @@ public class TagListComposite extends Composite {
 								SWT.NO_FOCUS);
 						tagCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
 						Link link = new Link(tagCmp, SWT.NONE);
-						link.setData(PeopleUiConstants.CUSTOM_VARIANT, "tag");
+						link.setData(PeopleUiConstants.CUSTOM_VARIANT,
+								PeopleUiConstants.PEOPLE_CSS_TAG_STYLE);
 						link.setText(" #<a>" + tagValue + "</a>");
 						link.setData(PeopleUiConstants.MARKUP_ENABLED,
 								Boolean.TRUE);
@@ -143,22 +129,23 @@ public class TagListComposite extends Composite {
 							@Override
 							public void widgetSelected(
 									final SelectionEvent event) {
-								Node cachedTag = ResourcesJcrUtils.getTagNodeFromValue(
-										CommonsJcrUtils.getSession(entity),
-										peopleService
-												.getResourcesBasePath(PeopleNames.PEOPLE_TAGS),
-										tagValue);
+								Node tag = peopleService.getRegisteredTag(
+										CommonsJcrUtils.getSession(tagable),
+										tagsParentPath, tagValue);
+								// ResourcesJcrUtils.getTagNodeFromValue(
+								// CommonsJcrUtils.getSession(entity),
+								// peopleService
+								// .getResourcesBasePath(PeopleNames.PEOPLE_TAGS),
+								// tagValue);
 								CommandUtils.callCommand(peopleUiService
 										.getOpenEntityEditorCmdId(),
 										OpenEntityEditor.PARAM_JCR_ID,
-										CommonsJcrUtils
-												.getIdentifier(cachedTag));
+										CommonsJcrUtils.getIdentifier(tag));
 							}
 						});
 
 						if (isCO) {
-							addDeleteButton(TagFormPart.this, tagCmp, entity,
-									value, tagPropName);
+							addDeleteButton(TagFormPart.this, tagCmp, value);
 						}
 					}
 				}
@@ -169,10 +156,9 @@ public class TagListComposite extends Composite {
 					RowData rd = new RowData(120, SWT.DEFAULT);
 					tagTxt.setLayoutData(rd);
 
-					String tagBP = peopleService
-							.getResourcesBasePath(PeopleNames.PEOPLE_TAGS);
 					final SimpleResourceDropDown tagDD = new SimpleResourceDropDown(
-							peopleUiService, entity.getSession(), tagBP, tagTxt);
+							peopleUiService, tagable.getSession(),
+							tagsParentPath, tagTxt);
 
 					tagTxt.addTraverseListener(new TraverseListener() {
 						private static final long serialVersionUID = 1L;
@@ -181,7 +167,7 @@ public class TagListComposite extends Composite {
 							if (e.keyCode == SWT.CR) {
 								String newTag = tagDD.getText();
 								addTag(tagTxt.getShell(), TagFormPart.this,
-										entity, tagPropName, newTag);
+										newTag);
 								e.doit = false;
 								// if (!tagTxt.isDisposed())
 								// tagDD.reset("");
@@ -207,7 +193,7 @@ public class TagListComposite extends Composite {
 								return;
 							else
 								addTag(tagTxt.getShell(), TagFormPart.this,
-										entity, tagPropName, newTag);
+										newTag);
 						}
 					});
 
@@ -217,17 +203,19 @@ public class TagListComposite extends Composite {
 
 			} catch (RepositoryException re) {
 				throw new PeopleException(
-						"Error while refreshing mailing list appartenance", re);
+						"Error while refreshing tag like list for " + tagable,
+						re);
 			}
 		}
 	}
 
 	private void addDeleteButton(final AbstractFormPart part, Composite parent,
-			final Node entity, final Value value, final String tagPropName) {
+			final Value value) {
 		final Button deleteBtn = new Button(parent, SWT.FLAT);
 		deleteBtn.setData(PeopleUiConstants.CUSTOM_VARIANT,
 				PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
-		deleteBtn.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		deleteBtn
+				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		deleteBtn.setImage(PeopleImages.DELETE_BTN_LEFT);
 		deleteBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
@@ -237,38 +225,29 @@ public class TagListComposite extends Composite {
 				try {
 					String tagToRemove = value.getString();
 					List<String> tags = new ArrayList<String>();
-					Value[] values = entity.getProperty(tagPropName)
+					Value[] values = tagable.getProperty(tagPropName)
 							.getValues();
 					for (int i = 0; i < values.length; i++) {
 						String curr = values[i].getString();
 						if (!tagToRemove.equals(curr))
 							tags.add(curr);
 					}
-					entity.setProperty(tagPropName,
+					tagable.setProperty(tagPropName,
 							tags.toArray(new String[tags.size()]));
 					part.markDirty();
 					part.refresh();
-					// form.dirtyStateChanged();
 				} catch (RepositoryException e) {
 					throw new PeopleException("unable to initialise deletion",
 							e);
 				}
-				// for (IFormPart part : form.getParts()) {
-				// ((AbstractFormPart) part).markStale();
-				// part.refresh();
-				// }
 			}
 		});
 	}
 
-	private void addTag(Shell shell, final AbstractFormPart part, Node tagable,
-			String tagPropName, String newTag) {
+	private void addTag(Shell shell, final AbstractFormPart part, String newTag) {
 		String msg = null;
 
 		try {
-			String tagsParentPath = peopleService
-					.getResourcesBasePath(PeopleNames.PEOPLE_TAGS);
-
 			Session session = tagable.getSession();
 			// Check if such a tag is already registered
 			Node registered = peopleService.getRegisteredTag(session,
@@ -276,7 +255,7 @@ public class TagListComposite extends Composite {
 
 			if (registered == null) {
 				// Ask end user if we create a new tag
-				msg = "This tag  \""
+				msg = "\""
 						+ newTag
 						+ "\" is not yet registered.\n Are you sure you want to create it?";
 				if (MessageDialog.openConfirm(shell, "Confirm creation", msg)) {
@@ -296,14 +275,13 @@ public class TagListComposite extends Composite {
 					String curTagUpperCase = tag.getString().toUpperCase()
 							.trim();
 					if (newTag.toUpperCase().trim().equals(curTagUpperCase)) {
-						msg = "Current entity \""
+						msg = "\""
 								+ CommonsJcrUtils.get(tagable,
 										Property.JCR_TITLE)
-								+ "\" is already tagged as \""
+								+ "\" is already linked with \""
 								+ tag.getString()
 								+ "\". Nothing has been done.";
-						MessageDialog.openError(shell, "Already existing tag",
-								msg);
+						MessageDialog.openError(shell, "Duplicate link", msg);
 						return;
 					}
 				}
@@ -322,7 +300,8 @@ public class TagListComposite extends Composite {
 			part.markDirty();
 			part.refresh();
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to set tags", re);
+			throw new ArgeoException("Unable to set " + tagPropName + " on "
+					+ tagable, re);
 		}
 	}
 }
