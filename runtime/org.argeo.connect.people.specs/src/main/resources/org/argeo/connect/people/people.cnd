@@ -121,7 +121,7 @@
 // TODO - Enhance to provide additional services like tracking of sent newsletters 
 // The fact that a contactable entity belongs to this mailing list is stored in
 // the corresponding node via the people:mailingLists multivalued property
-[people:mailingListInstance] > mix:title
+[people:mailingListInstance] > people:base
 
 
 // Deprecated - REMOVE THIS as from 2.3.x 
@@ -266,7 +266,9 @@ mixin
 mixin
 + people:contacts (nt:unstructured)
 // A tag like property to keep reference to the mailing list this contact is bound to.
-- people:mailingLists (STRING) *
+- people:mailingListInstances (STRING) *
+// Deprecated - remove
+// - people:mailingLists (STRING) *
 
 
 // 

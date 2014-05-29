@@ -28,9 +28,9 @@ public interface PeopleNames {
 
 	// Resources parent node names
 	public final static String PEOPLE_TAGS = "people:tags";
-	public final static String PEOPLE_MAILING_LISTS = "people:mailingListInstances";
+	public final static String PEOPLE_ML_INSTANCES = "people:mailingListInstances";
 	public final static String PEOPLE_COUNTRIES = "people:countries";
-	public final static String PEOPLE_LANGS= "people:languages";
+	public final static String PEOPLE_LANGS = "people:languages";
 
 	// Sub concepts parent node names
 	public final static String PEOPLE_PAYMENT_ACCOUNTS = "people:paymentAccounts";

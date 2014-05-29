@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.composites.TagListComposite;
@@ -146,9 +147,15 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// Mailing list management
-		Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		Composite mlCmp = new TagListComposite(parent, SWT.NO_FOCUS, toolkit,
+				getManagedForm(), getPeopleService(), getPeopleUiService(),
+				person, getPeopleService().getResourceBasePath(
+						PeopleTypes.PEOPLE_ML_INSTANCE),
+				PeopleNames.PEOPLE_ML_INSTANCES, "Add a mailing");
+
+		// Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		contactTK.populateMailingListMembershipPanel(mlCmp, person);
+		// contactTK.populateMailingListMembershipPanel(mlCmp, person);
 	}
 
 	@Override

@@ -28,7 +28,7 @@ public interface PeopleConstants {
 
 	public static final List<String> KNOWN_RESOURCE_NAMES = asList(
 			//
-			PeopleNames.PEOPLE_TAGS, PeopleNames.PEOPLE_MAILING_LISTS,
+			PeopleNames.PEOPLE_TAGS, PeopleNames.PEOPLE_ML_INSTANCES,
 			PeopleNames.PEOPLE_TASKS, PeopleNames.PEOPLE_COUNTRIES,
 			PeopleNames.PEOPLE_LANGS);
 
