@@ -120,11 +120,15 @@ public class TagListComposite extends Composite {
 								SWT.NO_FOCUS);
 						tagCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
 						Link link = new Link(tagCmp, SWT.NONE);
-						link.setText(" #<a>" + tagValue + "</a>");
 						// Specific style for tags.
-						if (tagPropName.equals(PeopleNames.PEOPLE_TAGS))
+						if (tagPropName.equals(PeopleNames.PEOPLE_TAGS)) {
+							link.setText(" #<a>" + tagValue + "</a>");
+
 							link.setData(PeopleUiConstants.CUSTOM_VARIANT,
 									PeopleUiConstants.PEOPLE_CSS_TAG_STYLE);
+						} else
+							link.setText(" <a>" + tagValue + "</a>");
+
 						link.setData(PeopleUiConstants.MARKUP_ENABLED,
 								Boolean.TRUE);
 
