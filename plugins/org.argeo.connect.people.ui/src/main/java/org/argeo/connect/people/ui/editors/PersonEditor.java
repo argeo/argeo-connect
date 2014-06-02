@@ -4,6 +4,7 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
+import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -141,17 +142,17 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		// Tag Management
 		Composite tagsCmp = new TagListComposite(parent, SWT.NO_FOCUS, toolkit,
 				getManagedForm(), getPeopleService(), getPeopleUiService(),
-				person, getPeopleService().getResourceBasePath(
-						PeopleConstants.RESOURCE_TAG), PeopleNames.PEOPLE_TAGS,
-				"Add a tag");
+				person, PeopleNames.PEOPLE_TAGS, getPeopleService()
+						.getResourceBasePath(PeopleConstants.RESOURCE_TAG),
+				NodeType.NT_UNSTRUCTURED, "Add a tag");
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// Mailing list management
 		Composite mlCmp = new TagListComposite(parent, SWT.NO_FOCUS, toolkit,
 				getManagedForm(), getPeopleService(), getPeopleUiService(),
-				person, getPeopleService().getResourceBasePath(
-						PeopleTypes.PEOPLE_ML_INSTANCE),
-				PeopleNames.PEOPLE_ML_INSTANCES, "Add a mailing");
+				person, PeopleNames.PEOPLE_ML_INSTANCES, getPeopleService()
+						.getResourceBasePath(PeopleTypes.PEOPLE_ML_INSTANCE),
+				PeopleTypes.PEOPLE_ML_INSTANCE, "Add a mailing");
 
 		// Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));

@@ -439,13 +439,14 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	// TAGS Management
 	@Override
 	public void refreshKnownTags(Session session) {
-		refreshKnownTags(session,
+		refreshKnownTags(session, NodeType.MIX_TITLE,
 				getResourceBasePath(PeopleConstants.RESOURCE_TAG),
-				getBasePath(null));
+				PeopleTypes.PEOPLE_BASE, getBasePath(null));
 	}
 
 	@Override
-	public void refreshKnownTags(Session session, String tagParentPath,
+	public void refreshKnownTags(Session session, String tagResourceType,
+			String tagParentPath, String tagableNodeType,
 			String tagableParentPath) {
 		List<String> existingValues = new ArrayList<String>();
 		List<String> registeredTags = new ArrayList<String>();
@@ -459,7 +460,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 						.getWorkspace()
 						.getQueryManager()
 						.createQuery(
-								"select * from [" + NodeType.MIX_TITLE
+								"select * from [" + tagResourceType
 										+ "] as tags where ISDESCENDANTNODE('"
 										+ tagParentPath + "') ", Query.JCR_SQL2);
 				nit = query.execute().getNodes();
@@ -478,7 +479,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 					.getWorkspace()
 					.getQueryManager()
 					.createQuery(
-							"select * from [" + PeopleTypes.PEOPLE_TAGABLE
+							"select * from [" + tagableNodeType
 									+ "] as instances where ISDESCENDANTNODE('"
 									+ tagableParentPath + "') ", Query.JCR_SQL2);
 			nit = query.execute().getNodes();
@@ -505,7 +506,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			// real update
 			for (String tag : existingValues) {
 				if (!registeredTags.contains(tag)) {
-					registerTag(session, tagParentPath, tag);
+					registerTag(session, tagResourceType, tagParentPath, tag);
 					session.save();
 				}
 			}
@@ -538,8 +539,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	@Override
-	public Node registerTag(Session session, String tagParentPath, String tag)
-			throws RepositoryException {
+	public Node registerTag(Session session, String resourceType,
+			String tagParentPath, String tag) throws RepositoryException {
 		// remove trailing and starting space
 		tag = tag.trim();
 		String path = tagParentPath + "/" + getTagRelPath(tag);
@@ -557,8 +558,9 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 				return existing;
 			}
 		}
-		Node newTag = JcrUtils.mkdirs(session, path);
-		newTag.addMixin(NodeType.MIX_TITLE);
+		Node newTag = JcrUtils.mkdirs(session, path, resourceType);
+		if (!newTag.isNodeType(NodeType.MIX_TITLE))
+			newTag.addMixin(NodeType.MIX_TITLE);
 		newTag.setProperty(Property.JCR_TITLE, tag);
 		// } catch (RepositoryException ee) {
 		// throw new PeopleException("Unable to add new tag " + tag

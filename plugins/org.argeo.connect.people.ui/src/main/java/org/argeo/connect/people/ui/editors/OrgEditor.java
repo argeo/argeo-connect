@@ -3,6 +3,7 @@ package org.argeo.connect.people.ui.editors;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
+import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -92,9 +93,9 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		// Tag Management
 		Composite tagsCmp = new TagListComposite(parent, SWT.NO_FOCUS, toolkit,
 				getManagedForm(), getPeopleService(), getPeopleUiService(),
-				org, getPeopleService().getResourceBasePath(
-						PeopleConstants.RESOURCE_TAG), PeopleNames.PEOPLE_TAGS,
-				"Add a tag");
+				org, PeopleNames.PEOPLE_TAGS, getPeopleService()
+						.getResourceBasePath(PeopleConstants.RESOURCE_TAG),
+				NodeType.NT_UNSTRUCTURED, "Add a tag");
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// entityTK.populateTagPanel(tagsCmp, org, );

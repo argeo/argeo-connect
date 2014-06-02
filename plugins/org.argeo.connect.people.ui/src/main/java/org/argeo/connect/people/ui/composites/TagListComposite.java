@@ -11,6 +11,7 @@ import javax.jcr.Value;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
@@ -53,23 +54,25 @@ public class TagListComposite extends Composite {
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 	private final Node tagable;
-	private final String tagsParentPath;
 	private final String tagPropName;
+	private final String tagsParentPath;
+	private final String resourceType;
 	private final String newTagMsg;
 
 	// TODO document this
 	public TagListComposite(Composite parent, int style, FormToolkit toolkit,
 			IManagedForm form, PeopleService peopleService,
-			PeopleUiService peopleUiService, Node tagable,
-			String tagsParentPath, String tagPropName, String newTagMsg) {
+			PeopleUiService peopleUiService, Node tagable, String tagPropName,
+			String tagsParentPath, String resourceType, String newTagMsg) {
 		super(parent, style);
 		this.toolkit = toolkit;
 		this.form = form;
 		this.peopleUiService = peopleUiService;
 		this.peopleService = peopleService;
 		this.tagable = tagable;
-		this.tagsParentPath = tagsParentPath;
 		this.tagPropName = tagPropName;
+		this.tagsParentPath = tagsParentPath;
+		this.resourceType = resourceType;
 		this.newTagMsg = newTagMsg;
 
 		populate();
@@ -117,9 +120,11 @@ public class TagListComposite extends Composite {
 								SWT.NO_FOCUS);
 						tagCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
 						Link link = new Link(tagCmp, SWT.NONE);
-						link.setData(PeopleUiConstants.CUSTOM_VARIANT,
-								PeopleUiConstants.PEOPLE_CSS_TAG_STYLE);
 						link.setText(" #<a>" + tagValue + "</a>");
+						// Specific style for tags.
+						if (tagPropName.equals(PeopleNames.PEOPLE_TAGS))
+							link.setData(PeopleUiConstants.CUSTOM_VARIANT,
+									PeopleUiConstants.PEOPLE_CSS_TAG_STYLE);
 						link.setData(PeopleUiConstants.MARKUP_ENABLED,
 								Boolean.TRUE);
 
@@ -260,7 +265,7 @@ public class TagListComposite extends Composite {
 						+ "\" is not yet registered.\n Are you sure you want to create it?";
 				if (MessageDialog.openConfirm(shell, "Confirm creation", msg)) {
 					registered = peopleService.registerTag(session,
-							tagsParentPath, newTag);
+							resourceType, tagsParentPath, newTag);
 				} else
 					return;
 			}

@@ -126,12 +126,13 @@ public interface PeopleService {
 	 * 
 	 * @param session
 	 * @param tagableParentPath
-	 *            the path to the business parent node of all tags that are
-	 *            tagable and that already have some tags set
+	 *            the path to the business parent node of all nodes that are
+	 *            tagables and that already have some tags set
 	 * @param tagParentPath
 	 *            the path to the parent node of all cache nodes
 	 */
-	public void refreshKnownTags(Session session, String tagParentPath,
+	public void refreshKnownTags(Session session, String tagResourceType,
+			String tagParentPath, String tagableNodeType,
 			String tagableParentPath);
 
 	/**
@@ -148,8 +149,8 @@ public interface PeopleService {
 	 * Comparison is case insensitive and a trim() is applied on the passed
 	 * String
 	 */
-	public Node registerTag(Session session, String tagParentPath, String tag)
-			throws RepositoryException;
+	public Node registerTag(Session session, String resourceType,
+			String tagParentPath, String tag) throws RepositoryException;
 
 	/**
 	 * Retrieve the cached tag node or null if such a tag has not yet been

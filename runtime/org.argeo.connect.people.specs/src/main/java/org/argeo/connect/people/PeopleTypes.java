@@ -12,6 +12,7 @@ public interface PeopleTypes {
 
 	/* COMMON CONCEPTS */
 	// Parent base type
+	public final static String PEOPLE_BASE = "people:base";
 	public final static String PEOPLE_ENTITY = "people:entity";
 	public final static String PEOPLE_TAGABLE = "people:tagable";
 	public final static String PEOPLE_ORDERABLE = "people:orderable";
@@ -39,7 +40,7 @@ public interface PeopleTypes {
 	/* USER MANAGEMENT */
 	public final static String PEOPLE_PROFILE = "people:profile";
 	public final static String PEOPLE_USER_GROUP = "people:userGroup";
-	
+
 	/* TASKS AND ACTIVITIES */
 	public final static String PEOPLE_ACTIVITY = "people:activity";
 	public final static String PEOPLE_TASK = "people:task";
@@ -67,7 +68,6 @@ public interface PeopleTypes {
 
 	public final static String PEOPLE_ML_INSTANCE = "people:mailingListInstance";
 
-	
 	// contact with this mixin will use value(s) of the primary contact of the
 	// given type
 	// of the referenced entity if such a contact exists.
