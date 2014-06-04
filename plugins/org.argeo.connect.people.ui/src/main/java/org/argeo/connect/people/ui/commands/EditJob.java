@@ -9,6 +9,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.dialogs.EditJobDialog;
 import org.argeo.connect.people.ui.editors.utils.AbstractPeopleEditor;
 import org.argeo.jcr.JcrUtils;
@@ -40,8 +41,9 @@ public class EditJob extends AbstractHandler {
 	public final static String PARAM_IS_BACKWARD = "param.isBackward";
 
 	/* DEPENDENCY INJECTION */
-	private PeopleService peopleService;
 	private Repository repository;
+	private PeopleService peopleService;
+	private PeopleUiService peopleUiService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
@@ -61,14 +63,14 @@ public class EditJob extends AbstractHandler {
 				isBackward = new Boolean(event.getParameter(PARAM_IS_BACKWARD));
 				diag = new EditJobDialog(HandlerUtil.getActiveShell(event),
 						"Edit employee information", peopleService,
-						relevantNode, null, isBackward);
+						peopleUiService, relevantNode, null, isBackward);
 			} else {
 				// Create a new job
 				isBackward = relevantNode
 						.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION);
 				diag = new EditJobDialog(HandlerUtil.getActiveShell(event),
-						"Edit position", peopleService, null, relevantNode,
-						isBackward);
+						"Edit position", peopleService, peopleUiService, null,
+						relevantNode, isBackward);
 			}
 
 			int result = diag.open();
@@ -90,6 +92,10 @@ public class EditJob extends AbstractHandler {
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
+	}
+
+	public void setPeopleUiService(PeopleUiService peopleUiService) {
+		this.peopleUiService = peopleUiService;
 	}
 
 	public void setRepository(Repository repository) {

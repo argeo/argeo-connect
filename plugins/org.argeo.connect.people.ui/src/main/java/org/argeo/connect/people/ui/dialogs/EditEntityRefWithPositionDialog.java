@@ -76,7 +76,7 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 	private static final long serialVersionUID = -3534660152626908662L;
 
 	/* DEPENDENCY INJECTION */
-	private Repository repository;
+	// private Repository repository;
 	private PeopleService peopleService;
 	private Session session;
 
@@ -129,7 +129,7 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 		// , String toSearchNodeType
 		super(parentShell);
 		this.title = title;
-		this.repository = repository;
+		// this.repository = repository;
 		this.peopleService = peopleService;
 		this.oldLinkNode = oldLink;
 		this.isBackward = isBackward;
@@ -176,7 +176,7 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 		Composite listCmp = new Composite(dialogarea, SWT.NONE);
 		listCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		entityViewer = createListPart(listCmp,
-				new EntitySingleColumnLabelProvider(peopleService));
+				new EntitySingleColumnLabelProvider(peopleService, null));
 		refreshFilteredList(toSearchNodeType);
 
 		// FIXME an emty line to give some air to the dialog

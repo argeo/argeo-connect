@@ -132,7 +132,7 @@ public class CreateEntityRefWithPositionDialog extends TrayDialog {
 		Composite listCmp = new Composite(dialogarea, SWT.NONE);
 		listCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		entityViewer = createListPart(listCmp,
-				new EntitySingleColumnLabelProvider(peopleService));
+				new EntitySingleColumnLabelProvider(peopleService, null));
 		refreshFilteredList(toSearchNodeType);
 
 		parent.pack();

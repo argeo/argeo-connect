@@ -34,6 +34,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.ui.providers.EntitySingleColumnLabelProvider;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
@@ -73,6 +74,12 @@ import org.eclipse.swt.widgets.Text;
  */
 public class EditParticipationDialog extends TrayDialog {
 	private static final long serialVersionUID = -3534660152626908662L;
+
+	// Services
+	private Session session;
+	private PeopleService peopleService;
+	private PeopleUiService peopleUiService;
+
 	// The various field
 	private Text roleTxt;
 	private Text selectedItemTxt;
@@ -92,10 +99,8 @@ public class EditParticipationDialog extends TrayDialog {
 
 	private final String title;
 
-	private Session session;
 	private boolean isBackward;
 	private Node oldLinkNode;
-	private PeopleService peopleService;
 
 	// caches old info to initialise widgets if needed
 	private String oldPosition = "";
@@ -115,11 +120,12 @@ public class EditParticipationDialog extends TrayDialog {
 	 *            (if false) node
 	 */
 	public EditParticipationDialog(Shell parentShell, String title,
-			PeopleService peopleService, Node oldLink, Node toUpdateNode,
-			boolean isBackward) {
+			PeopleService peopleService, PeopleUiService peopleUiService,
+			Node oldLink, Node toUpdateNode, boolean isBackward) {
 		super(parentShell);
 		this.title = title;
 		this.peopleService = peopleService;
+		this.peopleUiService = peopleUiService;
 		this.isBackward = isBackward;
 
 		if (oldLink == null) { // CREATE
@@ -167,7 +173,8 @@ public class EditParticipationDialog extends TrayDialog {
 		Composite listCmp = new Composite(dialogarea, SWT.NONE);
 		listCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		entityViewer = createListPart(listCmp,
-				new EntitySingleColumnLabelProvider(peopleService));
+				new EntitySingleColumnLabelProvider(peopleService,
+						peopleUiService));
 		refreshFilteredList();
 
 		// FIXME an empty line to give some air to the dialog
@@ -358,7 +365,8 @@ public class EditParticipationDialog extends TrayDialog {
 
 			Selector source = null;
 			if (isBackward)
-				source = factory.selector(FilmTypes.FILM_FILM, FilmTypes.FILM_FILM);
+				source = factory.selector(FilmTypes.FILM_FILM,
+						FilmTypes.FILM_FILM);
 			else {
 				// TODO add organisations
 				source = factory.selector(PeopleTypes.PEOPLE_PERSON,

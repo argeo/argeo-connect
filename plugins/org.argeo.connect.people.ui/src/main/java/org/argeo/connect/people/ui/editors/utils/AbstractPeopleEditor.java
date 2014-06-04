@@ -541,6 +541,12 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			if (canSave()) {
 				saveAndCheckInItem();
 				mForm.commit(true);
+				// FIXME necessary duplicate call to the commit
+				// (used to check-in newly created versionnable tags)
+				// Why is it not done automagicaly ?
+				for (IFormPart part : mForm.getParts()) {
+					part.commit(true);
+				}
 				updatePartName();
 			}
 		} catch (Exception e) {

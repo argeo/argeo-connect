@@ -33,6 +33,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.ui.providers.EntitySingleColumnLabelProvider;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
@@ -95,10 +96,12 @@ public class EditJobDialog extends TrayDialog {
 	private final String title;
 
 	private Session session;
+	private PeopleService peopleService;
+	private PeopleUiService peopleUiService;
+
 	private boolean isBackward;
 	private String toSearchNodeType;
 	private Node oldLinkNode;
-	private PeopleService peopleService;
 
 	// caches old info to initialise widgets if needed
 	private String oldPosition = "";
@@ -120,12 +123,14 @@ public class EditJobDialog extends TrayDialog {
 	 *            (if false) node
 	 */
 	public EditJobDialog(Shell parentShell, String title,
-			PeopleService peopleService, Node oldLink, Node toUpdateNode,
-			boolean isBackward) {
+			PeopleService peopleService, PeopleUiService peopleUiService,
+			Node oldLink, Node toUpdateNode, boolean isBackward) {
 		// , String toSearchNodeType
 		super(parentShell);
 		this.title = title;
 		this.peopleService = peopleService;
+		this.peopleUiService = peopleUiService;
+
 		this.isBackward = isBackward;
 		if (isBackward)
 			toSearchNodeType = PeopleTypes.PEOPLE_PERSON;
@@ -178,7 +183,8 @@ public class EditJobDialog extends TrayDialog {
 		Composite listCmp = new Composite(dialogarea, SWT.NONE);
 		listCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		entityViewer = createListPart(listCmp,
-				new EntitySingleColumnLabelProvider(peopleService));
+				new EntitySingleColumnLabelProvider(peopleService,
+						peopleUiService));
 		refreshFilteredList(toSearchNodeType);
 
 		// FIXME an empty line to give some air to the dialog
@@ -368,7 +374,7 @@ public class EditJobDialog extends TrayDialog {
 					selectedItem = null;
 					return;
 				}
-				
+
 				// Only single selection is enabled
 				Node selectedEntity = (Node) ((IStructuredSelection) event
 						.getSelection()).getFirstElement();

@@ -8,6 +8,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -25,10 +26,14 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 	private PersonListLabelProvider personLp;
 	private GroupLabelProvider groupLp = new GroupLabelProvider(
 			PeopleUiConstants.LIST_TYPE_SMALL);
+	private TagLabelProvider mlInstanceLp;
 
-	public EntitySingleColumnLabelProvider(PeopleService peopleService) {
+	public EntitySingleColumnLabelProvider(PeopleService peopleService,
+			PeopleUiService peopleUiService) {
 		personLp = new PersonListLabelProvider(peopleService);
-
+		mlInstanceLp = new TagLabelProvider(PeopleUiConstants.LIST_TYPE_SMALL,
+				peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
+				PEOPLE_ML_INSTANCES);
 	}
 
 	@Override
@@ -40,8 +45,8 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 				result = personLp.getText(element);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION))
 				result = orgLp.getText(element);
-			// else if (entity.isNodeType(FilmTypes.FILM))
-			// result = filmLp.getText(element);
+			else if (entity.isNodeType(PeopleTypes.PEOPLE_ML_INSTANCE))
+				result = mlInstanceLp.getText(element);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_GROUP))
 				result = groupLp.getText(element);
 			else
@@ -58,5 +63,4 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 	public Image getImage(Object element) {
 		return null;
 	}
-
 }

@@ -73,7 +73,8 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 
 	private String getOverviewTitle(Node person) throws RepositoryException {
 		StringBuilder builder = new StringBuilder();
-		builder.append("<span style='font-size:15px;'>");
+		builder.append("<span "
+				+ PeopleUiConstants.PEOPLE_CSS_EDITOR_HEADER_ROSTYLE + " >");
 		// first line
 		builder.append("<b><big> ");
 		String displayName = PersonJcrUtils.getPersonDisplayName(person);

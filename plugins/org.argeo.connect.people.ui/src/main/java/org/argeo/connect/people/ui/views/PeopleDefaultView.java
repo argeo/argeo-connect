@@ -69,6 +69,7 @@ public class PeopleDefaultView extends ViewPart {
 	private Session session;
 	private PeopleService peopleService;
 	private PeopleUiService peopleUiService;
+	// private Repository repository;
 
 	// This page widgets
 	private TableViewer personViewer;
@@ -95,7 +96,7 @@ public class PeopleDefaultView extends ViewPart {
 		cmp = new Composite(parent, SWT.NO_FOCUS);
 		cmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		personViewer = createListPart(cmp, new EntitySingleColumnLabelProvider(
-				peopleService));
+				peopleService, peopleUiService));
 
 		refreshFilteredList();
 	}
@@ -289,6 +290,7 @@ public class PeopleDefaultView extends ViewPart {
 
 	/* DEPENDENCY INJECTION */
 	public void setRepository(Repository repository) {
+		// this.repository = repository;
 		session = CommonsJcrUtils.login(repository);
 	}
 

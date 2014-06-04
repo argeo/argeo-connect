@@ -47,7 +47,7 @@ public interface PeopleUiConstants {
 		{
 			put(PeopleTypes.PEOPLE_PERSON, "Person");
 			put(PeopleTypes.PEOPLE_ORGANIZATION, "Organisation");
-			put(PeopleTypes.PEOPLE_MAILING_LIST, "Mailing list");
+			put(PeopleTypes.PEOPLE_ML_INSTANCE, "Mailing list");
 			put(PeopleTypes.PEOPLE_GROUP, "Group");
 			put(PeopleTypes.PEOPLE_TASK, "Task");
 		}
@@ -75,6 +75,8 @@ public interface PeopleUiConstants {
 	public final static String PEOPLE_CSS_URL_STYLE = "style='color:#383838; font-decoration:none;'";
 
 	public final static String PEOPLE_CSS_TAG_STYLE = "tag";
+
+	public final static String PEOPLE_CSS_EDITOR_HEADER_ROSTYLE = "style='font-size:15px;'";
 
 	// // /////////////////////////
 	// // LEGACY to be removed

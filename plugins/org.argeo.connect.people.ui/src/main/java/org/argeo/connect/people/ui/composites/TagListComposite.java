@@ -8,7 +8,11 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
+import javax.jcr.nodetype.NodeType;
+import javax.jcr.version.VersionManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -46,18 +50,23 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  */
 public class TagListComposite extends Composite {
 	private static final long serialVersionUID = -312141685147619814L;
-	// public class ContactComposite {
-	// private static final long serialVersionUID = -789885142022513273L;
+	private final static Log log = LogFactory.getLog(TagListComposite.class);
 
+	// Business objects
 	private PeopleService peopleService;
 	private PeopleUiService peopleUiService;
-	private final FormToolkit toolkit;
-	private final IManagedForm form;
 	private final Node tagable;
 	private final String tagPropName;
 	private final String tagsParentPath;
 	private final String resourceType;
 	private final String newTagMsg;
+
+	// UI Objects
+	private final FormToolkit toolkit;
+	private final IManagedForm form;
+
+	// Cache to trace newly created versionable tag like objects.
+	private final List<String> createdTagPath = new ArrayList<String>();
 
 	// TODO document this
 	public TagListComposite(Composite parent, int style, FormToolkit toolkit,
@@ -97,6 +106,37 @@ public class TagListComposite extends Composite {
 
 		public TagFormPart(Composite parent) {
 			this.nlCmp = parent;
+		}
+
+		@Override
+		public void commit(boolean onSave) {
+
+			boolean isEmpty = createdTagPath.isEmpty();
+			if (onSave && !isEmpty) {
+				try {
+					Session session = tagable.getSession();
+					if (session.hasPendingChanges()) {
+						log.warn("Session have been saved before commit "
+								+ "of newly created tags when saving node "
+								+ tagable);
+						session.save();
+					}
+					VersionManager manager = session.getWorkspace()
+							.getVersionManager();
+					for (String path : createdTagPath) {
+						Node newTag = session.getNode(path);
+						if (newTag.isCheckedOut()) {
+							manager.checkin(path);
+						}
+					}
+					createdTagPath.clear();
+				} catch (RepositoryException re) {
+					throw new PeopleException(
+							"Error while committing tagrefreshing tag like list for "
+									+ tagable, re);
+				}
+			}
+			super.commit(onSave);
 		}
 
 		public void refresh() {
@@ -270,6 +310,8 @@ public class TagListComposite extends Composite {
 				if (MessageDialog.openConfirm(shell, "Confirm creation", msg)) {
 					registered = peopleService.registerTag(session,
 							resourceType, tagsParentPath, newTag);
+					if (registered.isNodeType(NodeType.MIX_VERSIONABLE))
+						createdTagPath.add(registered.getPath());
 				} else
 					return;
 			}

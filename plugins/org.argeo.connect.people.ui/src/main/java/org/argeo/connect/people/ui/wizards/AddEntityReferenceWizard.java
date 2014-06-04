@@ -13,6 +13,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.ui.providers.EntitySingleColumnLabelProvider;
@@ -54,6 +55,7 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 	private final Repository repository;
 	private Session currSession;
 	private PeopleService peopleService;
+	private PeopleUiService peopleUiService;
 	private List<Node> selectedItems = new ArrayList<Node>();
 
 	// This page widgets
@@ -61,10 +63,12 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 	protected TableViewer itemsViewer;
 
 	public AddEntityReferenceWizard(Repository repository,
-			PeopleService peopleService) {
-		this.peopleService = peopleService;
+			PeopleService peopleService, PeopleUiService peopleUiService) {
 		this.repository = repository;
 		this.currSession = CommonsJcrUtils.login(repository);
+
+		this.peopleService = peopleService;
+		this.peopleUiService = peopleUiService;
 	}
 
 	// //////////////////////////////////////
@@ -101,6 +105,10 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 
 	protected PeopleService getPeopleService() {
 		return peopleService;
+	}
+
+	protected PeopleUiService getPeopleUiService() {
+		return peopleUiService;
 	}
 
 	protected List<Node> getSelectedItems() {

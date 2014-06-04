@@ -9,6 +9,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.dialogs.EditParticipationDialog;
 import org.argeo.connect.people.ui.editors.utils.AbstractPeopleEditor;
 import org.argeo.jcr.JcrUtils;
@@ -42,8 +43,9 @@ public class EditParticipation extends AbstractHandler {
 	public final static String PARAM_IS_BACKWARD = "param.isBackward";
 
 	/* DEPENDENCY INJECTION */
-	private PeopleService peopleService;
 	private Repository repository;
+	private PeopleService peopleService;
+	private PeopleUiService peopleUiService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
@@ -63,16 +65,18 @@ public class EditParticipation extends AbstractHandler {
 				isBackward = new Boolean(event.getParameter(PARAM_IS_BACKWARD));
 				diag = new EditParticipationDialog(
 						HandlerUtil.getActiveShell(event),
-						"Edit Participation", peopleService, relevantNode,
-						null, isBackward);
+						"Edit Participation", peopleService, peopleUiService,
+						relevantNode, null, isBackward);
 			} else {
 				// Create a new participation
 				isBackward = relevantNode
 						.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)
 						|| relevantNode.isNodeType(PeopleTypes.PEOPLE_PERSON);
-				 diag = new EditParticipationDialog(
-						HandlerUtil.getActiveShell(event), "Create or edit a participation to a film",
-						peopleService, null, relevantNode, isBackward);
+				diag = new EditParticipationDialog(
+						HandlerUtil.getActiveShell(event),
+						"Create or edit a participation to a film",
+						peopleService, peopleUiService, null, relevantNode,
+						isBackward);
 			}
 
 			int result = diag.open();
@@ -94,6 +98,10 @@ public class EditParticipation extends AbstractHandler {
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
+	}
+
+	public void setPeopleUiService(PeopleUiService peopleUiService) {
+		this.peopleUiService = peopleUiService;
 	}
 
 	public void setRepository(Repository repository) {

@@ -8,6 +8,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
@@ -51,7 +52,9 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 			if (isSmallList)
 				builder.append("<span>");
 			else
-				builder.append("<span style='font-size:15px;'>");
+				builder.append("<span "
+						+ PeopleUiConstants.PEOPLE_CSS_EDITOR_HEADER_ROSTYLE
+						+ " >");
 			builder.append("<big><b>");
 			builder.append(CommonsJcrUtils.get(orga, Property.JCR_TITLE));
 			builder.append("</b></big>");

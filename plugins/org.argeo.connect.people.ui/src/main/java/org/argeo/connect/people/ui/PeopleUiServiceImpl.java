@@ -105,15 +105,15 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 
 		return result;
 	}
-	
-	@Override 
+
+	@Override
 	public Image getIconForType(Node entity) {
 		try {
 			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
 				return null;
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION))
 				return null;
-			else if (entity.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST))
+			else if (entity.isNodeType(PeopleTypes.PEOPLE_ML_INSTANCE))
 				return null;
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_GROUP))
 				return null;
@@ -123,5 +123,5 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 			throw new PeopleException("Unable to get image for node", re);
 		}
 	}
-	
+
 }

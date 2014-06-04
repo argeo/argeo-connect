@@ -3,6 +3,7 @@ package org.argeo.connect.people.core;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -197,16 +198,14 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 					parentNode = referencingNode
 							.getNode(PeopleNames.PEOPLE_JOBS);
 				}
-			} else if (referencingNode
-					.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST)) {
-				if (referencedNode.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
-					linkNodeType = PeopleTypes.PEOPLE_MAILING_LIST_ITEM;
-					parentNode = referencingNode
-							.getNode(PeopleNames.PEOPLE_MEMBERS);
-				}
-			} else if (referencingNode.isNodeType(PeopleTypes.PEOPLE_GROUP)
-					&& !referencingNode
-							.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST)) {
+				// } else if (referencingNode
+				// .isNodeType(PeopleTypes.PEOPLE_MAILING_LIST)) {
+				// if (referencedNode.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
+				// linkNodeType = PeopleTypes.PEOPLE_MAILING_LIST_ITEM;
+				// parentNode = referencingNode
+				// .getNode(PeopleNames.PEOPLE_MEMBERS);
+				// }
+			} else if (referencingNode.isNodeType(PeopleTypes.PEOPLE_GROUP)) {
 				if (referencedNode.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)
 						|| referencedNode.isNodeType(PeopleTypes.PEOPLE_PERSON)
 						|| (referencedNode.isNodeType(PeopleTypes.PEOPLE_GROUP) && referencedNode
@@ -562,10 +561,12 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		if (!newTag.isNodeType(NodeType.MIX_TITLE))
 			newTag.addMixin(NodeType.MIX_TITLE);
 		newTag.setProperty(Property.JCR_TITLE, tag);
-		// } catch (RepositoryException ee) {
-		// throw new PeopleException("Unable to add new tag " + tag
-		// + " under " + tagParentPath);
-		// }
+
+		if (newTag.isNodeType(PeopleTypes.PEOPLE_ENTITY)) {
+			String uuid = UUID.randomUUID().toString();
+			newTag.setProperty(PeopleNames.PEOPLE_UID, uuid);
+		}
+
 		return newTag;
 	}
 
