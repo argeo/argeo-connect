@@ -110,13 +110,13 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 	public Image getIconForType(Node entity) {
 		try {
 			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
-				return null;
+				return PeopleImages.ICON_PERSON;
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION))
-				return null;
+				return PeopleImages.ICON_ORG;
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ML_INSTANCE))
-				return null;
+				return PeopleImages.ICON_MAILING_LIST;
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_GROUP))
-				return null;
+				return PeopleImages.ICON_GROUP;
 			else
 				return null;
 		} catch (RepositoryException re) {

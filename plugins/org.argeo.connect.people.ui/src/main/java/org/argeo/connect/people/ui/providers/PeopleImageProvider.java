@@ -1,44 +1,20 @@
 package org.argeo.connect.people.ui.providers;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-
-import org.argeo.connect.media.FilmTypes;
 import org.argeo.connect.people.ContactValueCatalogs;
-import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.ContactImages;
-import org.argeo.connect.people.ui.PeopleImages;
 import org.eclipse.swt.graphics.Image;
 
 /**
  * Centralize management of icon retrieval depending on a given Node
  * 
+ * TODO move this in the PeopleUiService
+ * 
  */
 public class PeopleImageProvider {
 
-	/** Returns the icon corresponding to the type of a given entity Node */
-	public Image getDefaultIconByType(Node entity) {
-		try {
-			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
-				return PeopleImages.ICON_PERSON;
-			else if (entity.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION))
-				return PeopleImages.ICON_ORG;
-			else if (entity.isNodeType(FilmTypes.FILM_FILM))
-				return PeopleImages.ICON_FILM;
-			else if (entity.isNodeType(PeopleTypes.PEOPLE_ML_INSTANCE))
-				return PeopleImages.ICON_MAILING_LIST;
-			else if (entity.isNodeType(PeopleTypes.PEOPLE_GROUP))
-				return PeopleImages.ICON_GROUP;
-			else
-				return null;
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get image for node", re);
-		}
-	}
-
 	/**
-	 * Return the corresponding image if found or default one depending only on
+	 * Return the correspondi ng image if found or default one depending only on
 	 * the contact type
 	 */
 	public Image getContactIcon(String entityNType, String contactNType,

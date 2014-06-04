@@ -33,7 +33,6 @@ import org.argeo.connect.people.ui.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.ui.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.ui.providers.GroupLabelProvider;
-import org.argeo.connect.people.ui.providers.PeopleImageProvider;
 import org.argeo.connect.people.ui.providers.TitleWithIconLP;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
@@ -369,7 +368,9 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 
 	private class TypeLabelProvider extends ColumnLabelProvider {
 		private static final long serialVersionUID = 1L;
-		private PeopleImageProvider imageProvider = new PeopleImageProvider();
+
+		// private PeopleImageProvider imageProvider = new
+		// PeopleImageProvider();
 
 		@Override
 		public String getText(Object element) {
@@ -381,7 +382,7 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 			try {
 				Row currRow = (Row) element;
 				Node currNode = currRow.getNode(PeopleTypes.PEOPLE_ENTITY);
-				return imageProvider.getDefaultIconByType(currNode);
+				return getPeopleUiService().getIconForType(currNode);
 			} catch (RepositoryException re) {
 			}
 			return null;
