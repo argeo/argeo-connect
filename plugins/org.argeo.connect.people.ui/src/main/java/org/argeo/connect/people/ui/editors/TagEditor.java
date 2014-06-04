@@ -33,7 +33,7 @@ import org.argeo.connect.people.ui.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.ui.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.ui.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
-import org.argeo.connect.people.ui.providers.GroupLabelProvider;
+import org.argeo.connect.people.ui.providers.TagLabelProvider;
 import org.argeo.connect.people.ui.providers.TitleWithIconLP;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -66,9 +66,10 @@ public class TagEditor extends EditorPart implements PeopleNames {
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".tagEditor";
 
 	/* DEPENDENCY INJECTION */
-	private PeopleUiService peopleUiService;
 	private Repository repository;
 	private Session session;
+	private PeopleService peopleService;
+	private PeopleUiService peopleUiService;
 
 	// this page widgets.
 	private TableViewer membersViewer;
@@ -140,8 +141,10 @@ public class TagEditor extends EditorPart implements PeopleNames {
 		parent.setLayout(new GridLayout());
 		final Label titleROLbl = toolkit.createLabel(parent, "", SWT.WRAP);
 		titleROLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
-		final ColumnLabelProvider groupTitleLP = new GroupLabelProvider(
-				PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE);
+		final ColumnLabelProvider groupTitleLP = new TagLabelProvider(
+				PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE,
+				peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
+				PEOPLE_TAGS);
 		titleROLbl.setText(groupTitleLP.getText(getNode()));
 	}
 
@@ -315,7 +318,7 @@ public class TagEditor extends EditorPart implements PeopleNames {
 
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
-		// this.peopleService = peopleService;
+		this.peopleService = peopleService;
 	}
 
 	public void setPeopleUiService(PeopleUiService peopleUiService) {

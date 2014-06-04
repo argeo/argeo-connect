@@ -66,7 +66,7 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 		builder.append(CommonsJcrUtils.get(entity, Property.JCR_TITLE));
 		builder.append("</big></b>");
 		long membersNb = countMembers(entity);
-		builder.append("<i>(").append(membersNb).append(" members)</i>");
+		builder.append(" <i>(").append(membersNb).append(" members)</i>");
 
 		// Description
 		String desc = CommonsJcrUtils.get(entity, Property.JCR_DESCRIPTION);
@@ -83,7 +83,7 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 		builder.append(CommonsJcrUtils.get(entity, Property.JCR_TITLE));
 		builder.append("</b>");
 		long membersNb = countMembers(entity);
-		builder.append("<i>(").append(membersNb).append(" members)</i>");
+		builder.append(" <i>(").append(membersNb).append(" members)</i>");
 		return builder.toString();
 	}
 
