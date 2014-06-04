@@ -10,6 +10,7 @@ import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.eclipse.ui.utils.CommandUtils;
@@ -35,6 +36,7 @@ public class CreateEntity extends AbstractHandler {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
+	private PeopleService peopleService;
 	private PeopleUiService peopleUiService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
@@ -54,12 +56,12 @@ public class CreateEntity extends AbstractHandler {
 			newNode.setProperty(PeopleNames.PEOPLE_UID, uuid);
 			// TODO find a cleaner way to keep a clean referential
 			newNode.setProperty(PeopleNames.PEOPLE_IS_DRAFT, true);
-
 			session.save();
 
+			String jcrId = newNode.getIdentifier();
 			CommandUtils.callCommand(
 					peopleUiService.getOpenEntityEditorCmdId(),
-					OpenEntityEditor.PARAM_ENTITY_UID, uuid);
+					OpenEntityEditor.PARAM_JCR_ID, jcrId);
 		} catch (RepositoryException e) {
 			throw new PeopleException("unexpected JCR error while opening "
 					+ "editor for newly created programm", e);
@@ -73,15 +75,33 @@ public class CreateEntity extends AbstractHandler {
 	 * Overwrite to provide the relevant draft base path for the current
 	 * application
 	 */
+	@Deprecated 
 	protected String getDraftBasePath(String nodeType)
 			throws RepositoryException {
 		// TODO implement this in a People only context
 		return null;
 	}
 
+	// expose to children classes
+	protected Repository getRepository() {
+		return repository;
+	}
+
+	protected PeopleUiService getPeopleUiService() {
+		return peopleUiService;
+	}
+
+	protected PeopleService getPeopleService() {
+		return peopleService;
+	}
+
 	/* DEPENDENCY INJECTION */
 	public void setRepository(Repository repository) {
 		this.repository = repository;
+	}
+
+	public void setPeopleService(PeopleService peopleService) {
+		this.peopleService = peopleService;
 	}
 
 	public void setPeopleUiService(PeopleUiService peopleUiService) {
