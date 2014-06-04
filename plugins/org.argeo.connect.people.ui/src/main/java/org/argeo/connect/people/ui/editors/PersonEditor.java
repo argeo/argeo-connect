@@ -133,7 +133,9 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void populateHeader(Composite parent) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder();
+		gl.marginBottom = 10;
+		parent.setLayout(gl);
 
 		Composite titleCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		titleCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
@@ -153,10 +155,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				person, PeopleNames.PEOPLE_ML_INSTANCES, getPeopleService()
 						.getResourceBasePath(PeopleTypes.PEOPLE_ML_INSTANCE),
 				PeopleTypes.PEOPLE_ML_INSTANCE, "Add a mailing");
-
-		// Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		// contactTK.populateMailingListMembershipPanel(mlCmp, person);
 	}
 
 	@Override

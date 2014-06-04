@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.composites.TagListComposite;
@@ -84,7 +85,9 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void populateHeader(Composite parent) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder();
+		gl.marginBottom = 10;
+		parent.setLayout(gl);
 
 		Composite titleCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		titleCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
@@ -98,13 +101,13 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				NodeType.NT_UNSTRUCTURED, "Add a tag");
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		// entityTK.populateTagPanel(tagsCmp, org, );
-
 		// Mailing list management
-		Composite mlCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		Composite mlCmp = new TagListComposite(parent, SWT.NO_FOCUS, toolkit,
+				getManagedForm(), getPeopleService(), getPeopleUiService(),
+				org, PeopleNames.PEOPLE_ML_INSTANCES, getPeopleService()
+						.getResourceBasePath(PeopleTypes.PEOPLE_ML_INSTANCE),
+				PeopleTypes.PEOPLE_ML_INSTANCE, "Add a mailing");
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		contactTK.populateMailingListMembershipPanel(mlCmp, org);
-
 	}
 
 	protected void populateTabFolder(CTabFolder folder) {
@@ -135,29 +138,6 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Admin.",
 				PeopleUiConstants.PANEL_LEGAL_INFO, tooltip);
 		legalTK.populateLegalInfoPanel(innerPannel);
-
-		// viewer.addDoubleClickListener(new PeopleDoubleClickAdapter() {
-		//
-		// @Override
-		// protected void processDoubleClick(Object obj) {
-		// // Here we have a list of staff membership item. We want to open
-		// // editor for the parent
-		// // person
-		// try {
-		// if (obj instanceof Node) {
-		// Node link = ((Node) obj).getParent().getParent();
-		// CommandUtils.callCommand(getOpenEntityEditorCmdId(),
-		// OpenEntityEditor.PARAM_ENTITY_UID,
-		// CommonsJcrUtils.get(link,
-		// PeopleNames.PEOPLE_UID));
-		// }
-		// } catch (RepositoryException e) {
-		// throw new PeopleException("unable to get related "
-		// + "person for organisation " + obj, e);
-		// }
-		//
-		// }
-		// });
 	}
 
 	protected void populateTitleComposite(final Composite parent) {
@@ -167,8 +147,6 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 			final Composite roPanelCmp = toolkit.createComposite(parent,
 					SWT.NO_FOCUS);
 			PeopleUiUtils.setSwitchingFormData(roPanelCmp);
-			// roPanelCmp.setData(RWT.CUSTOM_VARIANT,
-			// PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 			roPanelCmp.setLayout(new GridLayout());
 
 			// Add a label with info provided by the OrgOverviewLabelProvider
@@ -183,8 +161,6 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 			final Composite editPanelCmp = toolkit.createComposite(parent,
 					SWT.NONE);
 			PeopleUiUtils.setSwitchingFormData(editPanelCmp);
-			// editPanelCmp.setData(RWT.CUSTOM_VARIANT,
-			// PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 			editPanelCmp.setLayout(new GridLayout(2, false));
 
 			// Create edit text
