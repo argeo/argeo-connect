@@ -14,10 +14,13 @@ public interface PeopleTypes {
 	// Parent base type
 	public final static String PEOPLE_BASE = "people:base";
 	public final static String PEOPLE_ENTITY = "people:entity";
+	public final static String PEOPLE_EXTERNAL_ID = "people:externalId";
+	
+	// Mixins
 	public final static String PEOPLE_TAGABLE = "people:tagable";
 	public final static String PEOPLE_ORDERABLE = "people:orderable";
 	public final static String PEOPLE_CONTACTABLE = "people:contactable";
-
+	
 	/* PERSONS */
 	public final static String PEOPLE_PERSON = "people:person";
 

@@ -39,7 +39,9 @@ public interface PeopleNames {
 	// for groups, job and mailing lists.
 	public final static String PEOPLE_MEMBERS = "people:members";
 	public final static String PEOPLE_JOBS = "people:jobs";
-
+	// To enable synchronisation with third party systems
+	public final static String PEOPLE_EXTERNAL_IDS = "people:externalIds";
+		
 	// Widely used property names
 	public final static String PEOPLE_LANG = "people:lang";
 	public final static String PEOPLE_PICTURE = "people:picture";
@@ -52,6 +54,10 @@ public interface PeopleNames {
 	public final static String PEOPLE_REF_UID = "people:refUid";
 	// Primary boolean flag
 	public final static String PEOPLE_IS_PRIMARY = "people:isPrimary";
+
+	/* EXTERNAL IDS */
+	public final static String PEOPLE_SOURCE_ID = "people:sourceId";
+	public final static String PEOPLE_EXTERNAL_UID = "people:externalUid";
 
 	/* PERSONS */
 	public final static String PEOPLE_FIRST_NAME = "people:firstName";
