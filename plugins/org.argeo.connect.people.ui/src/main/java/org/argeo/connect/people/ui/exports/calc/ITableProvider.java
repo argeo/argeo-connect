@@ -1,8 +1,10 @@
-package org.argeo.connect.people.ui.extracts;
+package org.argeo.connect.people.ui.exports.calc;
 
 import java.util.List;
 
 import javax.jcr.query.Row;
+
+import org.argeo.connect.people.ui.exports.PeopleColumnDefinition;
 
 /**
  * Views and editors can implement this interface so that one of the row list

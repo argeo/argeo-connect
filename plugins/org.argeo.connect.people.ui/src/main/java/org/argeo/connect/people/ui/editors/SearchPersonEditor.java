@@ -19,7 +19,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.utils.AbstractSearchEntityEditor;
-import org.argeo.connect.people.ui.extracts.PeopleColumnDefinition;
+import org.argeo.connect.people.ui.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.eclipse.swt.widgets.Composite;

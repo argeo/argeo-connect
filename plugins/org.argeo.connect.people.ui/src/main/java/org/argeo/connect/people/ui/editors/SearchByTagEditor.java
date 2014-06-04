@@ -25,7 +25,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.composites.dropdowns.SimpleResourceDropDown;
 import org.argeo.connect.people.ui.editors.utils.AbstractSearchEntityEditor;
-import org.argeo.connect.people.ui.extracts.PeopleColumnDefinition;
+import org.argeo.connect.people.ui.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;

@@ -1,4 +1,4 @@
-package org.argeo.connect.people.ui.extracts;
+package org.argeo.connect.people.ui.exports.calc;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -439,7 +439,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	// TAGS Management
 	@Override
 	public void refreshKnownTags(Session session) {
-		refreshKnownTags(session, NodeType.MIX_TITLE,
+		refreshKnownTags(session, NodeType.NT_UNSTRUCTURED,
 				getResourceBasePath(PeopleConstants.RESOURCE_TAG),
 				PeopleTypes.PEOPLE_BASE, getBasePath(null));
 	}

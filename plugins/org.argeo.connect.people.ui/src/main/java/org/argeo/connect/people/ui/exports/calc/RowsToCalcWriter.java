@@ -1,4 +1,4 @@
-package org.argeo.connect.people.ui.extracts;
+package org.argeo.connect.people.ui.exports.calc;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.exports.PeopleColumnDefinition;
 
 public class RowsToCalcWriter {
 

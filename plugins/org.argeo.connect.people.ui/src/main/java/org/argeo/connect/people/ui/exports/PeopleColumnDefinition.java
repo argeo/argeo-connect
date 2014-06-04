@@ -1,4 +1,4 @@
-package org.argeo.connect.people.ui.extracts;
+package org.argeo.connect.people.ui.exports;
 
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
