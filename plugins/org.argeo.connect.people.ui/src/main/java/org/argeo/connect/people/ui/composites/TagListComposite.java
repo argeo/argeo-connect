@@ -186,10 +186,27 @@ public class TagListComposite extends Composite {
 								// peopleService
 								// .getResourcesBasePath(PeopleNames.PEOPLE_TAGS),
 								// tagValue);
-								CommandUtils.callCommand(peopleUiService
-										.getOpenEntityEditorCmdId(),
-										OpenEntityEditor.PARAM_JCR_ID,
-										CommonsJcrUtils.getIdentifier(tag));
+
+								try {
+									if (createdTagPath.contains(tag.getPath())) {
+										String msg = "This category is still in a draft state.\n"
+												+ "Please save first.";
+										MessageDialog.openInformation(
+												nlCmp.getShell(),
+												"Forbidden action", msg);
+									} else
+										CommandUtils.callCommand(
+												peopleUiService
+														.getOpenEntityEditorCmdId(),
+												OpenEntityEditor.PARAM_JCR_ID,
+												CommonsJcrUtils
+														.getIdentifier(tag));
+								} catch (RepositoryException e) {
+									throw new PeopleException(
+											"unable to get path for resource tag node "
+													+ tag + " while editing "
+													+ tagable, e);
+								}
 							}
 						});
 
