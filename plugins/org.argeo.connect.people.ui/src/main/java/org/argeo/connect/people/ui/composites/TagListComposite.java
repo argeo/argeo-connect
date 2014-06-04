@@ -201,7 +201,7 @@ public class TagListComposite extends Composite {
 							if (CommonsJcrUtils.isEmptyString(newTag))
 								return;
 							else
-								addTag(tagTxt.getShell(), TagFormPart.this,
+								addTag(nlCmp.getShell(), TagFormPart.this,
 										newTag);
 						}
 					});
