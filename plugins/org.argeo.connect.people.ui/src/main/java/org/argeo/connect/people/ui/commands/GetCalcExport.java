@@ -24,16 +24,16 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * values for the current active view or editor. Note that this IWorkbenchPart
  * must implement ICalcExtractProvider interface.
  */
-public class GetCalcExtract extends AbstractHandler {
+public class GetCalcExport extends AbstractHandler {
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
 			+ ".getCalcExtract";
-	public final static String PARAM_EXTRACT_ID = "param.extractId";
+	public final static String PARAM_EXPORT_ID = "param.exportId";
 
 	/* DEPENDENCY INJECTION */
 	private PeopleUiService peopleUiService;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		String extractId = event.getParameter(PARAM_EXTRACT_ID);
+		String extractId = event.getParameter(PARAM_EXPORT_ID);
 
 		try {
 			IWorkbenchPart iwp = HandlerUtil.getActiveWorkbenchWindow(event)

@@ -86,16 +86,11 @@
 		<property name="repository" ref="repository" />
 	</bean>
 
-
-	<!-- <bean id="addTagInCache" class="org.argeo.connect.people.ui.commands.AddTagInCache" 
-		scope="prototype"> <property name="peopleService" ref="peopleService" /> 
-		<property name="repository" ref="repository" /> </bean> -->
-
-	<bean id="getCalcExtract" class="org.argeo.connect.people.ui.commands.GetCalcExtract"
+	<!-- Export Management -->
+	<bean id="getCalcExport" class="org.argeo.connect.people.ui.commands.GetCalcExport"
 		scope="prototype">
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
-
 
 	<!-- TODO Check and eventually remove following commands after cleaning. -->
 	<bean id="importPeople"

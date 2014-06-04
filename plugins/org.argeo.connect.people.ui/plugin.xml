@@ -370,14 +370,14 @@
     	</command>
     	<!-- Until there --> 
 
-    	<!-- Extract generation -->
+    	<!-- Exports generation and management -->
 		<command
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
-      		id="org.argeo.connect.people.ui.getCalcExtract"
-            name="Generate a calc extract">
+      		id="org.argeo.connect.people.ui.getCalcExport"
+            name="Generate a calc export">
             <commandParameter
-         		id="param.extractId"
-         		name="An extract ID">
+         		id="param.exportId"
+         		name="An export ID">
   	 		</commandParameter>
     	</command>    	
     	
@@ -398,17 +398,6 @@
 			name="Force an update of the Tags cache in the repository">
   		</command>
 
-  		<!-- <command
-			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
-			id="org.argeo.connect.people.ui.addTagInCache"
-			name="Creates a new tag in the repository cache">
-			<commandParameter
-					id="param.tagValue"
-					name="The value of the tag to create. Cannot be null">
- 			</commandParameter>
-  		</command>
-  		-->
-    	
     	<!-- Utility command to simply open an URL --> 
     	<command
 			defaultHandler="org.argeo.connect.people.ui.commands.OpenUrl"
@@ -509,7 +498,7 @@
  			
  			<!-- Launch Calc extract generation --> 
 			<command
-				commandId="org.argeo.connect.people.ui.getCalcExtract"
+				commandId="org.argeo.connect.people.ui.getCalcExport"
 				icon="icons/spreadsheet.gif"
 				label="Generate extract"
 				style="push"
