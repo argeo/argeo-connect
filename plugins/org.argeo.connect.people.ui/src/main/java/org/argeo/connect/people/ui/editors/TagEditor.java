@@ -34,6 +34,7 @@ import org.argeo.connect.people.ui.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.ui.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.ui.providers.GroupLabelProvider;
+import org.argeo.connect.people.ui.providers.TitleWithIconLP;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
@@ -46,7 +47,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -63,32 +63,19 @@ import org.eclipse.ui.part.EditorPart;
  * Editor that display a list of entity that has a given Tag.
  */
 public class TagEditor extends EditorPart implements PeopleNames {
-
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".tagEditor";
-
-	private TableViewer membersViewer;
-	private Text filterTxt;
-	// Keep a local cache of the currently displayed rows.
-	@SuppressWarnings("unused")
-	private Row[] rows;
-
-	// Default column
-	private List<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
-	{
-		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
-				Property.JCR_TITLE, PropertyType.STRING, "Display Name",
-				new TitleWithIconLP(PeopleTypes.PEOPLE_ENTITY,
-						Property.JCR_TITLE), 300));
-		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
-				PEOPLE_TAGS, PropertyType.STRING, "Tags",
-				new SimpleJcrRowLabelProvider(PeopleTypes.PEOPLE_ENTITY,
-						PEOPLE_TAGS), 300));
-	};
 
 	/* DEPENDENCY INJECTION */
 	private PeopleUiService peopleUiService;
 	private Repository repository;
 	private Session session;
+
+	// this page widgets.
+	private TableViewer membersViewer;
+	private Text filterTxt;
+	@SuppressWarnings("unused")
+	private Row[] rows; // Keep a local cache of the currently displayed rows.
+	private List<PeopleColumnDefinition> colDefs;
 
 	// Business Objects
 	private Node node;
@@ -112,6 +99,19 @@ public class TagEditor extends EditorPart implements PeopleNames {
 		if (CommonsJcrUtils.checkNotEmptyString(name))
 			setPartName(name);
 		setTitleToolTip("List contacts tagged as " + name);
+
+		// Initialize column definition
+		// Cannot be statically done to have a valid reference to the injected
+		// peopleUiService
+		colDefs = new ArrayList<PeopleColumnDefinition>();
+		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
+				Property.JCR_TITLE, PropertyType.STRING, "Display Name",
+				new TitleWithIconLP(peopleUiService, PeopleTypes.PEOPLE_ENTITY,
+						Property.JCR_TITLE), 300));
+		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
+				PEOPLE_TAGS, PropertyType.STRING, "Tags",
+				new SimpleJcrRowLabelProvider(PeopleTypes.PEOPLE_ENTITY,
+						PEOPLE_TAGS), 300));
 	}
 
 	/* CONTENT CREATION */
@@ -284,26 +284,6 @@ public class TagEditor extends EditorPart implements PeopleNames {
 	}
 
 	/* Private */
-
-	private class TitleWithIconLP extends SimpleJcrRowLabelProvider {
-		private static final long serialVersionUID = 6064779874148619776L;
-
-		public TitleWithIconLP(String selectorName, String propertyName) {
-			super(selectorName, propertyName);
-		}
-
-		@Override
-		public Image getImage(Object element) {
-			try {
-				return peopleUiService.getIconForType(((Row) element)
-						.getNode(PeopleTypes.PEOPLE_ENTITY));
-			} catch (RepositoryException e) {
-				throw new PeopleException("unable to retrieve image for "
-						+ element, e);
-			}
-		}
-
-	}
 
 	/* UTILITES */
 	protected boolean canSave() {
