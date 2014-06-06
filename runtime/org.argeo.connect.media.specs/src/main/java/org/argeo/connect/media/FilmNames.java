@@ -14,6 +14,7 @@ public interface FilmNames {
 	public final static String FILM_ORIGINAL_LANGUAGES = "film:originalLanguages";
 	public final static String FILM_AVAILABLE_SUBTITLES = "film:availableSubtitles";
 
+	public final static String FILM_PREMIERE = "film:premiere";
 	public final static String FILM_WEBSITE = "film:website";
 	public final static String FILM_LENGTH = "film:length";
 
