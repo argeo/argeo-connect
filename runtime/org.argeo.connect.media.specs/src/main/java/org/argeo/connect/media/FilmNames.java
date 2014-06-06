@@ -9,8 +9,10 @@ public interface FilmNames {
 	public final static String FILM_TYPE = "film:type";
 
 	public final static String FILM_PROD_YEAR = "film:prodYear";
-	public final static String FILM_ORIGINAL_LANGUAGES = "film:originalLanguages";
 	public final static String FILM_PROD_COUNTRIES = "film:prodCountries";
+	public final static String FILM_PROD_COSTS = "film:prodCosts";
+	public final static String FILM_ORIGINAL_LANGUAGES = "film:originalLanguages";
+	public final static String FILM_AVAILABLE_SUBTITLES = "film:availableSubtitles";
 
 	public final static String FILM_WEBSITE = "film:website";
 	public final static String FILM_LENGTH = "film:length";
@@ -70,25 +72,8 @@ public interface FilmNames {
 	public final static String FILM_TIMESTAMP_VALUE = "film:timestampValue";
 	public final static String FILM_AWARD_COUNTRY_ISO = "film:awardCountryIso";
 
-	/* FILM PRINTS */
-	// public final static String FILM_PRINT_TYPE = "film:printType";
-	// public final static String FILM_PRINT_ = "";
-	//
-	// public final static String FILM_PRINT_PICTURE_FORMAT =
-	// "film:printFormat";
-	// public final static String FILM_PRINT_RATIO = "film:printRatio";
-	// public final static String FILM_PRINT_SOUND_FORMAT =
-	// "film:printSoundFormat";
-	// public final static String FILM_PRINT_LANGUAGE_VERSION =
-	// "film:printLanguageVersion";
-	// public final static String FILM_PRINT_FEE = "film:printFee";
-	// public final static String FILM_PRINT_FEE_INFO = "film:printFeeInfo";
-	// public final static String FILM_PRINT_SOURCE_CONTACT =
-	// "film:printSourceContact";
-	// public final static String FILM_PRINT_RETURN_CONTACT =
-	// "film:printReturnContact";
-
-	// [film:print] > nt:unstructured, mix:title, people:orderable
+	/* FILM PRINTS */// [film:print] > nt:unstructured, mix:title,
+						// people:orderable
 	public final static String FILM_PRINT_TYPE = "film:printType";// (STRING)
 	public final static String FILM_PRINT_NUMBER = "film:printNumber";// (STRING)
 	// length in seconds
@@ -107,24 +92,17 @@ public interface FilmNames {
 	public final static String FILM_PRINT_VRES = "film:printVRes";// (STRING)
 	public final static String FILM_PRINT_AVG_BITRATE = "film:printAvgBitrate";// (STRING)
 
-	public final static String FILM_PRINT_AUDIO_LANG = "film:printAudioLang";// (STRING)
+	public final static String FILM_PRINT_AUDIO_LANGS = "film:printAudioLanguages";// (STRING)
 	public final static String FILM_PRINT_SOUND_FORMAT = "film:printSoundFormat";// (STRING)
 
-	public final static String FILM_PRINT_SUBTITLE_LANG = "film:printSubtitleLang";// (STRING)
+	public final static String FILM_PRINT_SUBTITLE_LANGS = "film:printSubtitleLanguages";// (STRING)
 	public final static String FILM_PRINT_SUBTITLE_FORMAT = "film:printSubtitleFormat";// (STRING)
-	// - film:printSoundFormat (STRING)
-	// - film:printLanguageVersion (STRING)
 
 	public final static String FILM_PRINT_FEE = "film:printFee";// (STRING)
 	public final static String FILM_PRINT_FEE_INFO = "film:printFeeInfo";// (STRING)
-	// public final static String FILM_PRINT_SOURCE_CONTACT =
-	// "film:printSourceContact";// (REFERENCE)
-	// public final static String FILM_PRINT_RETURN_CONTACT =
-	// "film:printReturnContact";// (REFERENCE)
 
 	// [film:printDcp] > film:print
 	public final static String FILM_PRINT_FILE_NAME = "film:printFileName";// (STRING)
 	public final static String FILM_PRINT_RES = "resolution";// (STRING)
 	public final static String FILM_PRINT_ENCRYPTED = "encrypted";// (BOOLEAN)
-
 }

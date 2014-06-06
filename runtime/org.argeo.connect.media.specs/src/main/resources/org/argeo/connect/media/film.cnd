@@ -11,14 +11,34 @@
 - film:prodYear (LONG)
 - film:prodCountries (STRING) * // A list of countries as defined in ISO 3166-1
                                     // primary production country must be the first of the list
+- film:prodCosts (STRING) // Approximative production costs. There is a festival specific list of possible choices.
 - film:originalLanguages (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
+- film:availableSubtitles (STRING) * // Tag like list of available subtitles
+
 - film:length (LONG) ='0' m a // the length in seconds
 
+- film:genres (STRING) *
 - film:categories (STRING) *
 - film:animationTechnique (STRING) // only if animation is in categories
-- film:genres (STRING) *
 - film:soundType (STRING)
 - film:colourType (STRING)
+- film:premiere (STRING)
+
+// Subnode with alternative title
++ film:titles (nt:unstructured) 
+// Subnode that contains synopses 
++ film:synopses (nt:unstructured)
+// Subnode with time stamps and awards
++ film:timestamps (nt:unstructured)
+// Subnode with film prints
++ film:prints (nt:unstructured)
+
+// maybe too specific
+- film:isStudentProject (BOOLEAN)
+- film:isDebutFilm (BOOLEAN)
+- film:hasTrailer (BOOLEAN)
+- film:extractsOnTvAllowed (BOOLEAN)
+
 
 // cache some values to ease full text search 
 - film:cachePTitle (STRING) IGNORE
@@ -27,30 +47,8 @@
 - film:cacheDirectors (String) * IGNORE
 // TODO implement this if needed.
 // - film:cacheProdCountries (String) * IGNORE
-	
 
 
-// Subnode with alternative title
-+ film:titles (nt:unstructured) 
-
-// Subnode that contains synopses 
-+ film:synopses (nt:unstructured)
-
-// Subnode with time stamps and awards
-+ film:timestamps (nt:unstructured)
-
-// Subnode with film prints
-+ film:prints (nt:unstructured)
-
-// film crew is inherited from people:group
-
-// maybe too specific
-- film:isPremiere (BOOLEAN)
-- film:isStudentProject (BOOLEAN)
-- film:isDebutFilm (BOOLEAN)
-- film:hasTrailer (BOOLEAN)
-- film:extractsOnTvAllowed (BOOLEAN)
-// why not use a contact ?
 
 // LEGACY - kept for [2.1.x, 2.3[ retrocompatibility 
 // To be removed in 2.4+ versions 
@@ -67,6 +65,7 @@
 // Should we add this in the cache ??
 - film:prodCountryString  (STRING) * // The corresponding english values to ease search and rendering 
 
+- film:isPremiere (BOOLEAN)
 
 // Titles
 [film:title] > nt:unstructured, people:language, people:orderable
@@ -110,10 +109,10 @@
 - film:printVRes (STRING)
 - film:printAvgBitrate (STRING)
 
-- film:printAudioLanguage (STRING) *
+- film:printAudioLanguages (STRING) *
 - film:printSoundFormat (STRING)
 
-- film:printSubtitleLanguage (STRING) *
+- film:printSubtitleLanguages (STRING) *
 - film:printSubtitleFormat (STRING)
 // - film:printSoundFormat (STRING)
 // - film:printLanguageVersion (STRING)
