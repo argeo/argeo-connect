@@ -8,23 +8,27 @@
 - film:type (STRING) // Feature, Mid-Length, Short
 - film:website (STRING) 
 
-
-- film:originalLanguage (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
 - film:prodYear (LONG)
-- film:prodCountry (STRING) * // A list of countries as defined in ISO 3166-1
+- film:prodCountries (STRING) * // A list of countries as defined in ISO 3166-1
                                     // primary production country must be the first of the list
-- film:prodCountryString  (STRING) * // The corresponding english values to ease search and rendering 
-- film:director (String)
+- film:originalLanguages (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
 - film:length (LONG) ='0' m a // the length in seconds
 
-- film:categories (String) *
-- film:animationTechnique (String) // only if animation is in categories
-- film:genres (String) *
+- film:categories (STRING) *
+- film:animationTechnique (STRING) // only if animation is in categories
+- film:genres (STRING) *
+- film:soundType (STRING)
+- film:colourType (STRING)
 
-// cache primary title values to ease full text search 
+// cache some values to ease full text search 
 - film:cachePTitle (STRING) IGNORE
 - film:cachePTitleArticle (STRING) IGNORE
 - film:cachePTitleLatin (STRING) IGNORE
+- film:cacheDirectors (String) * IGNORE
+// TODO implement this if needed.
+// - film:cacheProdCountries (String) * IGNORE
+	
+
 
 // Subnode with alternative title
 + film:titles (nt:unstructured) 
@@ -53,6 +57,16 @@
 - film:cacheOTitle (STRING) IGNORE
 - film:cacheOTitleArticle (STRING) IGNORE
 - film:cacheOTitleLatin (STRING) IGNORE
+// This is now managed with other film participations. 
+// Yet a we cache a the directors name to ease various searches 
+- film:director (String)
+// homogeneity: multiple value properties should use plural. 
+- film:originalLanguage (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
+- film:prodCountry (STRING) * // A list of countries as defined in ISO 3166-1
+                                    // primary production country must be the first of the list
+// Should we add this in the cache ??
+- film:prodCountryString  (STRING) * // The corresponding english values to ease search and rendering 
+
 
 // Titles
 [film:title] > nt:unstructured, people:language, people:orderable

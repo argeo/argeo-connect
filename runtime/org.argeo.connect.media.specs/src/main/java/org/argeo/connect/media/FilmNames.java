@@ -9,20 +9,25 @@ public interface FilmNames {
 	public final static String FILM_TYPE = "film:type";
 
 	public final static String FILM_PROD_YEAR = "film:prodYear";
-	public final static String FILM_ORIGINAL_LANGUAGE = "film:originalLanguage";
-	public final static String FILM_PROD_COUNTRY = "film:prodCountry";
-	// The corresponding value to ease various searches
-	public final static String FILM_PROD_COUNTRY_STRING = "film:prodCountryString";
+	public final static String FILM_ORIGINAL_LANGUAGES = "film:originalLanguages";
+	public final static String FILM_PROD_COUNTRIES = "film:prodCountries";
 
 	public final static String FILM_WEBSITE = "film:website";
-
-	// Should be multiple ??
-	public final static String FILM_DIRECTOR = "film:director";
 	public final static String FILM_LENGTH = "film:length";
 
 	public final static String FILM_CATEGORIES = "film:categories";
 	public final static String FILM_ANIMATION_TECHNIQUE = "film:animationTechnique";
 	public final static String FILM_GENRES = "film:genres";
+	public final static String FILM_SOUND_TYPE = "film:soundType";
+	public final static String FILM_COLOUR_TYPE = "film:colourType";
+
+	@Deprecated
+	public final static String FILM_DIRECTORS = "film:directors";
+	// The corresponding value to ease various searches
+	// @Deprecated
+	// Use FILM_CACHE_PROD_COUNTRIES instead.
+	// public final static String FILM_PROD_COUNTRY_STRING =
+	// "film:prodCountryString";
 
 	// maybe too specific
 	public final static String FILM_IS_PREMIERE = "film:isPremiere";
@@ -31,21 +36,23 @@ public interface FilmNames {
 	public final static String FILM_HAS_TRAILER = "film:hasTrailer";
 	public final static String FILM_EXTRACTS_ON_TV_ALLOWED = "extractsOnTvAllowed";
 
-	// Cache primary title info to ease full text search
-	// following properties are all "on parent version" ignore and are used to
+	// Cache some children properties to ease full text search:
+	// primary title info, directors...
+	// These properties are all "on parent version" ignore and are used to
 	// store primary information and thus fasten fulltextsearch
 	public final static String FILM_CACHE_PTITLE = "film:cachePTitle";
 	public final static String FILM_CACHE_PTITLE_ARTICLE = "film:cachePTitleArticle";
 	public final static String FILM_CACHE_PTITLE_LATIN = "film:cachePTitleLatin";
+	public final static String FILM_CACHE_DIRECTORS = "film:cacheDirectors";
+	// TODO implement this if needed.
+	// public final static String FILM_CACHE_PROD_COUNTRIES =
+	// "film:cacheProdCountries";
 
 	// Various parent nodes for films specific sub-concepts
-	// titles (for various country / languages)
-	public final static String FILM_TITLES = "film:titles";
-	// time stamps and awards
+	public final static String FILM_TITLES = "film:titles";// for various
+															// languages
 	public final static String FILM_TIMESTAMPS = "film:timestamps";
-	// film prints
 	public final static String FILM_PRINTS = "film:prints";
-	// synopses
 	public final static String FILM_SYNOPSES = "film:synopses";
 
 	/* TITLES */
