@@ -121,6 +121,11 @@ public class ListToolkit {
 						.getNodes();
 				jobsViewer.setInput(JcrUtils.nodeIteratorToList(ni));
 				jobsViewer.refresh();
+				// Fix problem when updating the job using a command.
+				// Maybe not the best solution
+				if (entity.getSession().hasPendingChanges())
+					JobsPanelPart.this.markDirty();
+
 			} catch (RepositoryException e) {
 				throw new PeopleException("unable to refresh jobs for "
 						+ entity, e);
@@ -247,6 +252,16 @@ public class ListToolkit {
 			Collections.sort(employees, lastNameFirstNamePersonComparator);
 			employeesViewer.setInput(employees);
 			employeesViewer.refresh();
+
+			// Try to force dirty state on refresh.
+			// Does not work cause the link is saved
+			// try {
+			// if (entity.getSession().hasPendingChanges())
+			// EmployeesPanelPart.this.markDirty();
+			// } catch (RepositoryException e) {
+			// throw new PeopleException("unable to refresh jobs for "
+			// + entity, e);
+			// }
 		}
 	}
 
