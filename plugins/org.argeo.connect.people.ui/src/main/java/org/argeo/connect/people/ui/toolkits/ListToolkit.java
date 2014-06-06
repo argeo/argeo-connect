@@ -1,6 +1,9 @@
 package org.argeo.connect.people.ui.toolkits;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
@@ -144,7 +147,6 @@ public class ListToolkit {
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
 				10, 15, true));
 
-		
 		// Role
 		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT,
 				bounds[0]);
@@ -240,11 +242,44 @@ public class ListToolkit {
 		}
 
 		protected void refreshContent(Composite parent, Node entity) {
-			employeesViewer.setInput(peopleService.getRelatedEntities(entity,
-					PeopleTypes.PEOPLE_JOB, PeopleTypes.PEOPLE_PERSON));
+			List<Node> employees = peopleService.getRelatedEntities(entity,
+					PeopleTypes.PEOPLE_JOB, PeopleTypes.PEOPLE_PERSON);
+			Collections.sort(employees, lastNameFirstNamePersonComparator);
+			employeesViewer.setInput(employees);
 			employeesViewer.refresh();
 		}
 	}
+
+	private static Comparator<Node> lastNameFirstNamePersonComparator = new Comparator<Node>() {
+
+		public int compare(Node node1, Node node2) {
+			try {
+				int rc = 0;
+				// We have a job, we want to compare corresponding parent person
+				if (node1 != null)
+					node1 = node1.getParent().getParent();
+				if (node2 != null)
+					node2 = node2.getParent().getParent();
+				String lastName1 = CommonsJcrUtils.get(node1,
+						PeopleNames.PEOPLE_LAST_NAME).toLowerCase();
+				String lastName2 = CommonsJcrUtils.get(node2,
+						PeopleNames.PEOPLE_LAST_NAME).toLowerCase();
+				String firstName1 = CommonsJcrUtils.get(node1,
+						PeopleNames.PEOPLE_FIRST_NAME).toLowerCase();
+				String firstName2 = CommonsJcrUtils.get(node2,
+						PeopleNames.PEOPLE_FIRST_NAME).toLowerCase();
+				rc = lastName1.compareTo(lastName2);
+				if (rc == 0)
+					rc = firstName1.compareTo(firstName2);
+				return rc;
+			} catch (RepositoryException e) {
+				throw new PeopleException("Unable to compare " + node1
+						+ " with " + node2, e);
+			}
+		}
+	};
+
+	// private class MyNodeComparator extends Comparator<Node>
 
 	// Employees of a company
 	private TableColumnLayout createEmployeesTableColumns(final Node entity,
