@@ -18,7 +18,6 @@ import org.argeo.connect.people.ui.commands.DeleteEntity;
 import org.argeo.connect.people.ui.commands.EditEntityReference;
 import org.argeo.connect.people.ui.commands.EditEntityReferenceWithPosition;
 import org.argeo.connect.people.ui.commands.EditJob;
-import org.argeo.connect.people.ui.commands.EditParticipation;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.commands.RemoveEntityReference;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -460,26 +459,6 @@ public class PeopleHtmlUtils {
 			throw new PeopleException(
 					"Error getting edit job snippet for list item for node "
 							+ relevantNode, re);
-		}
-	}
-
-	/**
-	 * Create the text value of a link that enable calling the
-	 * <code>EditParticipation</code> command from a cell of a HTML list
-	 */
-	public static String getEditParticipationSnippetForLists(Node relevantNode,
-			boolean isBackward) {
-		try {
-			String toEditJcrId = relevantNode.getIdentifier();
-			String uri = EditParticipation.ID + "/"
-					+ EditParticipation.PUBLIC_RELEVANT_NODE_JCR_ID + "="
-					+ toEditJcrId + "/" + EditParticipation.PARAM_IS_BACKWARD
-					+ "=" + isBackward;
-			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""
-					+ uri + "\" target=\"_rwt\">Edit</a>";
-		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"Error getting remove snippet for list item", re);
 		}
 	}
 

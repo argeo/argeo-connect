@@ -18,6 +18,13 @@ public class InstancePropertyValuesDropDown extends PeopleAbstractDropDown {
 	private final String resourcePath;
 	private final String propertyName;
 
+	/**
+	 * @param peopleUiService
+	 * @param session
+	 * @param resourcePath
+	 * @param propertyName
+	 * @param text
+	 */
 	public InstancePropertyValuesDropDown(PeopleUiService peopleUiService,
 			Session session, String resourcePath, String propertyName, Text text) {
 		super(text);

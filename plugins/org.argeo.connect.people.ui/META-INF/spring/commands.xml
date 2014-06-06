@@ -19,12 +19,6 @@
 		<property name="repository" ref="repository" />
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
-	<bean id="editParticipation" class="org.argeo.connect.people.ui.commands.EditParticipation"
-		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
-		<property name="repository" ref="repository" />
-		<property name="peopleUiService" ref="peopleUiService" />
-	</bean>
 
 	<!-- Entity References CRUD -->
 	<bean id="addEntityReference" class="org.argeo.connect.people.ui.commands.AddEntityReference"

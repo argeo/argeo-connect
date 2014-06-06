@@ -224,21 +224,6 @@
             name="Create simple task">
         </command>
     	
-    	<!-- Film Management --> 
-    	<command
-			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
-      		id="org.argeo.connect.people.ui.editParticipation"
-            name="Create or edit a participation">
-            <commandParameter
-         		id="param.relevantNodeJcrId"
-         		name="Jcr ID of the node to edit">
-  	 		</commandParameter>
-            <commandParameter
-         		id="param.isBackward"
-         		name="When editing an existing job, true if editing an org">
-  	 		</commandParameter>
-    	</command>
-    	
     	<!-- Generic Check in and out introduced by people -->
 		<command
       		id="org.argeo.connect.people.ui.checkOutItem"
