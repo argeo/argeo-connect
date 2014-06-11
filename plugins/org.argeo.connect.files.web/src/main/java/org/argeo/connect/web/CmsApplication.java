@@ -63,7 +63,7 @@ public class CmsApplication implements ApplicationConfiguration {
 
 			registerClientScriptingResources(application);
 		} catch (RuntimeException e) {
-			// Easier access to initialization errors
+			// Easier access to initialisation errors
 			log.error("Unexpected exception when configuring RWT application.",
 					e);
 			throw e;

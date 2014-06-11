@@ -6,10 +6,37 @@
 
 	<bean name="filesEntryPoint" class="org.argeo.connect.web.CmsEntryPointFactory"
 		scope="prototype">
+		<property name="header" ref="header" />
+		<property name="dynamicPages" ref="dynamicPages" />
+		<property name="staticPages">
+			<map>
+				<entry key="test">
+					<bean class="org.argeo.connect.web.SimpleStaticPage">
+						<property name="text">
+							<value><![CDATA[Hello <b>world</b>!]]></value>
+						</property>
+					</bean>
+				</entry>
+			</map>
+
+		</property>
 		<property name="nodeRepository" ref="nodeRepository" />
 		<property name="authenticationManager" ref="authenticationManager" />
 		<property name="systemKey" value="${argeo.security.systemKey}" />
 	</bean>
+
+	<bean id="header" class="org.argeo.connect.web.SimpleCmsHeader">
+		<property name="lead">
+			<list>
+				<bean p:label="Home" p:target="/home"
+					class="org.argeo.connect.web.NavigationLink" />
+				<bean p:label="Test" p:target="test"
+					class="org.argeo.connect.web.NavigationLink" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="dynamicPages" class="org.argeo.connect.web.SimpleDynamicPages" />
 
 	<bean id="application" class="org.argeo.connect.web.CmsApplication">
 		<property name="entryPoints">
