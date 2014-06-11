@@ -11,8 +11,11 @@ public interface CmsStyles {
 	public final static String CMS_HEADER_LEAD = "cms_header-lead";
 	public final static String CMS_HEADER_CENTER = "cms_header-center";
 	public final static String CMS_HEADER_END = "cms_header-end";
+	public final static String CMS_LOGIN = "cms_login";
 
 	// Body
+	public final static String CMS_SCROLLED_AREA = "cms_scrolled_area";
 	public final static String CMS_BODY = "cms_body";
 	public final static String CMS_STATIC_TEXT = "cms_static-text";
+	public final static String CMS_LINK = "cms_link";
 }

@@ -13,6 +13,7 @@ import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.EntryPoint;
 import org.eclipse.rap.rwt.application.EntryPointFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -122,18 +123,37 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 			try {
 				getShell().getDisplay().setData(CmsSession.KEY, this);
 
+				parent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+						true));
 				GridLayout layout = new GridLayout(1, true);
+				layout.horizontalSpacing = 0;
+				layout.verticalSpacing = 0;
 				parent.setLayout(layout);
+				
 				Control headerArea = header.createUi(parent, getNode());
-				headerArea.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER,
-						false, true));
+				GridData headerData = new GridData(SWT.FILL, SWT.FILL, false,
+						false);
+				headerData.heightHint = 50;
+				headerArea.setLayoutData(headerData);
 
-				bodyArea = new Composite(parent, SWT.NONE);
-				bodyArea.setLayout(new FillLayout());
+				ScrolledComposite scrolledArea = new ScrolledComposite(parent,
+						SWT.H_SCROLL);
+				scrolledArea.setData(RWT.CUSTOM_VARIANT,
+						CmsStyles.CMS_SCROLLED_AREA);
+				// scrolledComp.setMinHeight( CONTENT_MIN_HEIGHT );
+				// scrolledComp.setMinWidth( CENTER_AREA_WIDTH );
+				scrolledArea.setExpandVertical(true);
+				scrolledArea.setExpandHorizontal(true);
+				scrolledArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
+						true, true));
+				scrolledArea.setLayout(new FillLayout());
+				bodyArea = new Composite(scrolledArea, SWT.NONE);
 				bodyArea.setData(RWT.CUSTOM_VARIANT, CmsStyles.CMS_BODY);
-				bodyArea.setLayoutData(new GridData(SWT.LEAD, SWT.TOP, true,
+				bodyArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 						true));
 				bodyArea.setBackgroundMode(SWT.INHERIT_DEFAULT);
+				bodyArea.setLayout(new FillLayout());
+				scrolledArea.setContent(bodyArea);
 			} catch (Exception e) {
 				throw new ArgeoException("Cannot create entrypoint contents", e);
 			}

@@ -28,16 +28,29 @@
 	<bean id="header" class="org.argeo.connect.web.SimpleCmsHeader">
 		<property name="lead">
 			<list>
-				<bean p:label="Home" p:target="/home"
-					class="org.argeo.connect.web.NavigationLink" />
-				<bean p:label="Test" p:target="test"
-					class="org.argeo.connect.web.NavigationLink" />
+				<bean p:image="/icons/argeo-logo-white.png" p:target="http://www.argeo.org"
+					p:custom="cms_header-logo" parent="navigation_link" />
+				<bean p:label="Home" p:target="/home" parent="navigation_link" />
+				<bean p:label="Test" p:target="test" parent="navigation_link" />
+			</list>
+		</property>
+		<property name="end">
+			<list>
+				<bean p:label="Contact" p:target="mailto:contact@argeo.org"
+					parent="navigation_link" />
+				<bean class="org.argeo.connect.web.CmsLogin" />
 			</list>
 		</property>
 	</bean>
 
 	<bean id="dynamicPages" class="org.argeo.connect.web.SimpleDynamicPages" />
 
+	<!-- TEMPLATES -->
+	<bean id="navigation_link" p:custom="cms_navigation_link"
+		abstract="true" class="org.argeo.connect.web.CmsLink" />
+
+
+	<!-- APPLICATION -->
 	<bean id="application" class="org.argeo.connect.web.CmsApplication">
 		<property name="entryPoints">
 			<map>

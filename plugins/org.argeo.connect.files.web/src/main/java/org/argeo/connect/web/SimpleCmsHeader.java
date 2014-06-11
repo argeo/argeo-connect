@@ -9,7 +9,6 @@ import javax.jcr.RepositoryException;
 import org.argeo.ArgeoException;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -21,18 +20,22 @@ public class SimpleCmsHeader implements CmsUiProvider {
 	private List<CmsUiProvider> center = new ArrayList<CmsUiProvider>();
 	private List<CmsUiProvider> end = new ArrayList<CmsUiProvider>();
 
+	private Boolean subPartsSameWidth = false;
+
 	@Override
 	public Control createUi(Composite parent, Node context)
 			throws RepositoryException {
 		Composite header = new Composite(parent, SWT.NONE);
 		header.setData(RWT.CUSTOM_VARIANT, CmsStyles.CMS_HEADER);
 		header.setBackgroundMode(SWT.INHERIT_DEFAULT);
-		header.setLayout(new GridLayout(3, false));
+		GridLayout layout = new GridLayout(3, false);
+		layout.horizontalSpacing = 0;
+		layout.verticalSpacing = 0;
+		header.setLayout(layout);
 
 		configurePart(context, header, lead);
 		configurePart(context, header, center);
 		configurePart(context, header, end);
-
 		return header;
 	}
 
@@ -56,12 +59,23 @@ public class SimpleCmsHeader implements CmsUiProvider {
 
 		Composite part = new Composite(parent, SWT.NONE);
 		part.setData(RWT.CUSTOM_VARIANT, custom);
-		part.setLayout(new FillLayout());
-		GridData gridData = new GridData();
-		gridData.horizontalAlignment = style;
+		GridData gridData = new GridData(style, SWT.FILL, true, true);
 		part.setLayoutData(gridData);
-		for (CmsUiProvider uiProvider : partProviders)
-			uiProvider.createUi(part, context);
+		GridLayout layout = new GridLayout(partProviders.size(),
+				subPartsSameWidth);
+		layout.horizontalSpacing = 0;
+		layout.verticalSpacing = 0;
+		part.setLayout(layout);
+		for (CmsUiProvider uiProvider : partProviders) {
+			Control subPart = uiProvider.createUi(part, context);
+			subPart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			// if
+			// (subPart.getData(RWT.CUSTOM_VARIANT).equals(CmsStyles.CMS_LINK))
+			// {// default
+			// subPart.setData(RWT.CUSTOM_VARIANT,
+			// CmsStyles.CMS_NAVIGATION_LINK);
+			// }
+		}
 	}
 
 	public void setLead(List<CmsUiProvider> lead) {
@@ -74,6 +88,10 @@ public class SimpleCmsHeader implements CmsUiProvider {
 
 	public void setEnd(List<CmsUiProvider> end) {
 		this.end = end;
+	}
+
+	public void setSubPartsSameWidth(Boolean subPartsSameWidth) {
+		this.subPartsSameWidth = subPartsSameWidth;
 	}
 
 }

@@ -1,21 +1,30 @@
-.cms_shell {
-  background-color: #fff;
+.cms_header {
+  background-color: #00294b;
 }
 
-Composite.cms_header {
-  background-color: #31619C;
+.cms_body {
+  /*border: 1px solid red;*/
 }
 
-Composite.cms_header-lead {
-  background-color: red;
+.cms_link {
+  text-decoration:underline;
 }
 
-Composite.cms_body {
-  background-color: red;
+.cms_link:hover {
+  text-decoration:none;
+  color: black;
 }
 
-Label.cms_navigation_link {
-  color: red;
-  font: 24px Helvetica, Verdana, sans-serif; 
-  
+.cms_header-logo {
+  padding: -4px 0px 10px 0px;
+}
+
+.cms_navigation_link {
+  padding: 0px 5px;
+  color: gray;
+  font: 15px Helvetica, Verdana, sans-serif;  
+}
+
+.cms_navigation_link:hover {
+  color: white;
 }
