@@ -362,71 +362,14 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		return null;
 	}
 
-	// TODO mov this in a filmService
-	@Override
-	public Node createOrUpdateParticipation(Node oldParticipation, Node film,
-			Node contact, String role) {
-		// A shortcut to have a node name even when no position is given
-		String newNodeName = CommonsJcrUtils.checkNotEmptyString(role) ? role
-				: "Unnamed_role";
-
-		// The position on which to update various info
-		Node newParticipation = null;
-
-		try {
-			// First check if we must remove the old job when linked person has
-			// changed
-			if (oldParticipation != null) {
-				Node oldFilm = oldParticipation.getParent().getParent();
-				String oldPath = oldFilm.getPath();
-				String newPath = film.getPath();
-				if (!newPath.equals(oldPath)) {
-					// remove old
-					boolean wasCO = checkCOStatusBeforeUpdate(oldFilm);
-					oldParticipation.remove();
-					checkCOStatusAfterUpdate(oldFilm, wasCO);
-				} else
-					newParticipation = oldParticipation;
-			}
-
-			boolean wasCO = checkCOStatusBeforeUpdate(film);
-			// Create node if necessary
-			if (newParticipation == null) {
-				Node parentNode = JcrUtils.mkdirs(film,
-						PeopleNames.PEOPLE_MEMBERS, NodeType.NT_UNSTRUCTURED);
-				newParticipation = parentNode.addNode(newNodeName,
-						PeopleTypes.PEOPLE_MEMBER);
-			}
-
-			// update properties
-
-			// Related org
-			newParticipation.setProperty(PeopleNames.PEOPLE_REF_UID, contact
-					.getProperty(PeopleNames.PEOPLE_UID).getString());
-
-			// position
-			if (role == null)
-				role = ""; // to be able to reset value if an existing role
-			newParticipation.setProperty(PeopleNames.PEOPLE_ROLE, role);
-			// TODO update node name ??
-
-			checkCOStatusAfterUpdate(film, wasCO);
-		} catch (RepositoryException re) {
-			throw new PeopleException("unable to create or update job "
-					+ oldParticipation + " for person " + film + " and org "
-					+ contact, re);
-		}
-		return null;
-	}
-
-	private boolean checkCOStatusBeforeUpdate(Node node) {
+	protected boolean checkCOStatusBeforeUpdate(Node node) {
 		boolean wasCheckedOut = CommonsJcrUtils.isNodeCheckedOutByMe(node);
 		if (!wasCheckedOut)
 			CommonsJcrUtils.checkout(node);
 		return wasCheckedOut;
 	}
 
-	private void checkCOStatusAfterUpdate(Node node, boolean wasCheckedOut)
+	protected void checkCOStatusAfterUpdate(Node node, boolean wasCheckedOut)
 			throws RepositoryException {
 		if (!wasCheckedOut)
 			CommonsJcrUtils.saveAndCheckin(node);

@@ -9,19 +9,6 @@ import javax.jcr.Session;
 /** Provides method interfaces to manage a people repository */
 public interface PeopleService {
 
-	// TODO Move this to a film service
-	/**
-	 * Creates or update a participation of a person or an org to a film
-	 * 
-	 * @param oldParticipation
-	 * @param film
-	 * @param contact
-	 * @param role
-	 * @return
-	 */
-	public Node createOrUpdateParticipation(Node oldParticipation, Node film,
-			Node contact, String role);
-
 	/* BASE PATHS MANAGEMENT */
 	/** Exposes the application specific parent business path */
 	@Deprecated

@@ -53,6 +53,11 @@ public interface PeopleUiConstants {
 		}
 	};
 
+	// CRUD ACTION TYPE IDS
+	public final static String CRUD_CREATE = "Create";
+	public final static String CRUD_EDIT = "Edit";
+	public final static String CRUD_DELETE = "Delete";
+
 	/* CUSTOM STYLING */
 	// a composite used to put titles in various lists
 	public final static String CSS_FLAT_IMG_BUTTON = "peopleCss-flatImgBtn";
@@ -77,34 +82,4 @@ public interface PeopleUiConstants {
 	public final static String PEOPLE_CSS_TAG_STYLE = "tag";
 
 	public final static String PEOPLE_CSS_EDITOR_HEADER_ROSTYLE = "style='font-size:15px;'";
-
-	// // /////////////////////////
-	// // LEGACY to be removed
-	// public final static String PEOPLE_CSS_TITLE_COMPOSITE_FIRST =
-	// "peopleCss-titleCompositeFirst";
-	// public final static String PEOPLE_CSS_TITLE_COMPOSITE =
-	// "peopleCss-titleComposite";
-	//
-	// // for various meta lists subtitles
-	// // public final static String PEOPLE_CSS_LIST_SUBTITLE_FIRST =
-	// // "peopleCss-list-subtitle-first";
-	// public final static String PEOPLE_CSS_LIST_SUBTITLE =
-	// "peopleCss-list-subtitle";
-	//
-	// // for main items "header" with all main info
-	// public final static String PEOPLE_CSS_GENERALINFO_TITLE =
-	// "peopleCss-generalInfo-title";
-	// public final static String PEOPLE_CSS_GENERALINFO_SUBTITLE =
-	// "peopleCss-generalInfo-subtitle";
-	// public final static String PEOPLE_CSS_GENERALINFO_COMPOSITE =
-	// "peopleCss-generalInfo-composite";
-	// public final static String PEOPLE_CSS_GENERALINFO_TAGS =
-	// "peopleCss-generalInfo-tags";
-	//
-	// public final static String CSS_STYLE_UNIQUE_CELL_TABLE =
-	// "uniqueCellTable";
-
-	// a dummy style just to see where is a composite
-	// public final static String PEOPLE_CSS_SHOW_BORDER =
-	// "peopleCss-showBorder";
 }
