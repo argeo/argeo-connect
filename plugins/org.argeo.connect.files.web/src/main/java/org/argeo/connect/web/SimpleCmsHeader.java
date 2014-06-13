@@ -69,12 +69,6 @@ public class SimpleCmsHeader implements CmsUiProvider {
 		for (CmsUiProvider uiProvider : partProviders) {
 			Control subPart = uiProvider.createUi(part, context);
 			subPart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			// if
-			// (subPart.getData(RWT.CUSTOM_VARIANT).equals(CmsStyles.CMS_LINK))
-			// {// default
-			// subPart.setData(RWT.CUSTOM_VARIANT,
-			// CmsStyles.CMS_NAVIGATION_LINK);
-			// }
 		}
 	}
 

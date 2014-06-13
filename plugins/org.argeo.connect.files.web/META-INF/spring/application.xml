@@ -18,9 +18,8 @@
 					</bean>
 				</entry>
 			</map>
-
 		</property>
-		<property name="nodeRepository" ref="nodeRepository" />
+		<property name="repository" ref="repository" />
 		<property name="authenticationManager" ref="authenticationManager" />
 		<property name="systemKey" value="${argeo.security.systemKey}" />
 	</bean>
@@ -38,7 +37,8 @@
 			<list>
 				<bean p:label="Contact" p:target="mailto:contact@argeo.org"
 					parent="navigation_link" />
-				<bean class="org.argeo.connect.web.CmsLogin" />
+				<bean class="org.argeo.connect.web.CmsLogin"
+					p:authenticationManager-ref="authenticationManager" />
 			</list>
 		</property>
 	</bean>

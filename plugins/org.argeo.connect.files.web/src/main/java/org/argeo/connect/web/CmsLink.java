@@ -7,6 +7,7 @@ import java.net.URL;
 
 import javax.jcr.Node;
 
+import org.argeo.ArgeoException;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.client.service.JavaScriptExecutor;
 import org.eclipse.swt.SWT;
@@ -28,14 +29,15 @@ public class CmsLink implements CmsUiProvider {
 	private String target;
 	private String image;
 
+	// internal
+	private Boolean isUrl = false;
+
 	public CmsLink() {
 		super();
 	}
 
 	public CmsLink(String label, String target) {
-		super();
-		this.label = label;
-		this.target = target;
+		this(label, target, null);
 	}
 
 	public CmsLink(String label, String target, String custom) {
@@ -43,6 +45,13 @@ public class CmsLink implements CmsUiProvider {
 		this.label = label;
 		this.target = target;
 		this.custom = custom;
+
+		try {
+			new URL(target);
+			isUrl = true;
+		} catch (MalformedURLException e1) {
+			isUrl = false;
+		}
 	}
 
 	@Override
@@ -65,37 +74,13 @@ public class CmsLink implements CmsUiProvider {
 		if (image != null) {
 			final Image img = loadImage(parent.getDisplay());
 			link.setImage(img);
-			link.addDisposeListener(new DisposeListener() {
-
-				@Override
-				public void widgetDisposed(DisposeEvent event) {
-					img.dispose();
-				}
-			});
+			link.addDisposeListener(new DListener(img));
 		}
 
 		link.setCursor(link.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
-		link.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDown(MouseEvent e) {
-				try {
-					URL url = new URL(target);
-					JavaScriptExecutor executor = RWT.getClient().getService(
-							JavaScriptExecutor.class);
-					if (executor != null) {
-						executor.execute("window.location.href = '"
-								+ url.toString() + "'");
-					}
-				} catch (MalformedURLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
-				AbstractCmsEntryPoint entryPoint = (AbstractCmsEntryPoint) parent
-						.getDisplay().getData(CmsSession.KEY);
-				entryPoint.navigateTo(target);
-			}
-		});
+		CmsSession cmsSession = (CmsSession) parent.getDisplay().getData(
+				CmsSession.KEY);
+		link.addMouseListener(new MListener(cmsSession));
 
 		return comp;
 	}
@@ -129,10 +114,56 @@ public class CmsLink implements CmsUiProvider {
 
 	public void setTarget(String target) {
 		this.target = target;
+		try {
+			new URL(target);
+			isUrl = true;
+		} catch (MalformedURLException e1) {
+			isUrl = false;
+		}
 	}
 
 	public void setImage(String image) {
 		this.image = image;
 	}
 
+	/** Mouse listener */
+	private class MListener extends MouseAdapter {
+		private static final long serialVersionUID = 3634864186295639792L;
+		private final CmsSession cmsSession;
+
+		public MListener(CmsSession cmsSession) {
+			super();
+			if (cmsSession == null)
+				throw new ArgeoException("CMS Session cannot be null");
+			this.cmsSession = cmsSession;
+		}
+
+		@Override
+		public void mouseDown(MouseEvent e) {
+			if (isUrl) {
+				JavaScriptExecutor executor = RWT.getClient().getService(
+						JavaScriptExecutor.class);
+				if (executor != null)
+					executor.execute("window.location.href = '" + target + "'");
+			} else
+				cmsSession.navigateTo(target);
+		}
+	}
+
+	/** Dispose listener */
+	private class DListener implements DisposeListener {
+		private static final long serialVersionUID = -3808587499269394812L;
+		private final Image img;
+
+		public DListener(Image img) {
+			super();
+			this.img = img;
+		}
+
+		@Override
+		public void widgetDisposed(DisposeEvent event) {
+			img.dispose();
+		}
+
+	}
 }

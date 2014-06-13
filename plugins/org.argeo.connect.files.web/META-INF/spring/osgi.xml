@@ -16,7 +16,7 @@
 	</beans:bean>
 
 	<!-- REFERENCES -->
-	<reference id="nodeRepository" interface="javax.jcr.Repository"
+	<reference id="repository" interface="javax.jcr.Repository"
 		filter="(argeo.jcr.repository.alias=node)" />
 
 	<!-- <bundle id="clientScriptingBundle" symbolic-name="org.eclipse.rap.clientscripting" 

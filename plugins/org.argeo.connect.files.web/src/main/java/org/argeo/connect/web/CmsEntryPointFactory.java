@@ -4,7 +4,6 @@ import java.util.Map;
 
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,7 +23,6 @@ import org.springframework.security.AuthenticationManager;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.GrantedAuthorityImpl;
 import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.security.providers.anonymous.AnonymousAuthenticationToken;
 import org.springframework.security.userdetails.User;
 import org.springframework.security.userdetails.UserDetails;
@@ -33,7 +31,8 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 	private final static Log log = LogFactory
 			.getLog(CmsEntryPointFactory.class);
 
-	private Repository nodeRepository;
+	private Repository repository;
+	private String workspace;
 	private AuthenticationManager authenticationManager;
 	private String systemKey = null;
 
@@ -43,51 +42,15 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 
 	@Override
 	public EntryPoint create() {
-		Authentication authentication = SecurityContextHolder.getContext()
-				.getAuthentication();
-		// TODO Better deal with authentication
-		if (authentication == null) {
-			try {
-				GrantedAuthority[] anonAuthorities = { new GrantedAuthorityImpl(
-						"ROLE_ANONYMOUS") };
-				UserDetails anonUser = new User("anonymous", "", true, true,
-						true, true, anonAuthorities);
-				AnonymousAuthenticationToken anonToken = new AnonymousAuthenticationToken(
-						systemKey, anonUser, anonAuthorities);
-
-				UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-						"root", "demo");
-
-				authentication = authenticationManager.authenticate(token);
-				SecurityContextHolder.getContext().setAuthentication(
-						authentication);
-				if (log.isDebugEnabled())
-					log.debug("Authenticated as " + authentication);
-			} catch (Exception e) {
-				throw new ArgeoException("Cannot authenticate", e);
-			}
-		}
-
-		try {
-
-			// HttpServletRequest req = RWT.getRequest();
-			// log.debug(req.getRequestURL().toString());
-			// log.debug(req.getQueryString());
-			// log.debug(RWT.getUISession().getId());
-			// log.debug(req.getPathTranslated());
-
-			// String currentState = navigationListener.getCurrentState();
-			// log.debug("Current state : " + currentState);
-
-			Session session = nodeRepository.login();
-			return new CmsEntryPoint(session);
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot create entrypoint", e);
-		}
+		return new CmsEntryPoint(repository, workspace);
 	}
 
-	public void setNodeRepository(Repository nodeRepository) {
-		this.nodeRepository = nodeRepository;
+	public void setRepository(Repository repository) {
+		this.repository = repository;
+	}
+
+	public void setWorkspace(String workspace) {
+		this.workspace = workspace;
 	}
 
 	public void setAuthenticationManager(
@@ -112,10 +75,11 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 	}
 
 	private class CmsEntryPoint extends AbstractCmsEntryPoint {
+		private Composite headerArea;
 		private Composite bodyArea;
 
-		public CmsEntryPoint(Session session) {
-			super(session);
+		public CmsEntryPoint(Repository repository, String workspace) {
+			super(repository, workspace);
 		}
 
 		@Override
@@ -129,12 +93,14 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 				layout.horizontalSpacing = 0;
 				layout.verticalSpacing = 0;
 				parent.setLayout(layout);
-				
-				Control headerArea = header.createUi(parent, getNode());
+
+				headerArea = new Composite(parent, SWT.NONE);
+				headerArea.setLayout(new FillLayout());
 				GridData headerData = new GridData(SWT.FILL, SWT.FILL, false,
 						false);
 				headerData.heightHint = 50;
 				headerArea.setLayoutData(headerData);
+				refreshHeader();
 
 				ScrolledComposite scrolledArea = new ScrolledComposite(parent,
 						SWT.H_SCROLL);
@@ -160,7 +126,23 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 		}
 
 		@Override
+		protected void refreshHeader() {
+			if (headerArea == null)
+				return;
+			for (Control child : headerArea.getChildren())
+				child.dispose();
+			try {
+				header.createUi(headerArea, getNode());
+			} catch (RepositoryException e) {
+				throw new ArgeoException("Cannot refresh header", e);
+			}
+			headerArea.layout(true, true);
+		}
+
+		@Override
 		protected void refreshBody() {
+			if (bodyArea == null)
+				return;
 			// clear
 			for (Control child : bodyArea.getChildren())
 				child.dispose();
@@ -182,6 +164,25 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 			}
 
 			bodyArea.layout(true, true);
+		}
+
+		@Override
+		protected void logAsAnonymous() {
+			// TODO Better deal with anonymous authentication
+			try {
+				GrantedAuthority[] anonAuthorities = { new GrantedAuthorityImpl(
+						"ROLE_ANONYMOUS") };
+				UserDetails anonUser = new User("anonymous", "", true, true,
+						true, true, anonAuthorities);
+				AnonymousAuthenticationToken anonToken = new AnonymousAuthenticationToken(
+						systemKey, anonUser, anonAuthorities);
+				Authentication authentication = authenticationManager
+						.authenticate(anonToken);
+				SecurityContextHolder.getContext().setAuthentication(
+						authentication);
+			} catch (Exception e) {
+				throw new ArgeoException("Cannot authenticate", e);
+			}
 		}
 	}
 }
