@@ -23,5 +23,5 @@
 		interface="org.springframework.security.AuthenticationManager" />
 
 	<!-- SERVICES -->
-	<service ref="peopleService" interface="org.argeo.connect.people.PeopleService" />
+	<!--  <service ref="peopleService" interface="org.argeo.connect.people.PeopleService" /> -->
 </beans:beans>

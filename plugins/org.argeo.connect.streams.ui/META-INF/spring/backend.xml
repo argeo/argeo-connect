@@ -39,13 +39,12 @@
 		<property name="bundleContext" ref="bundleContext" />
 	</bean>
 
-	<bean id="peopleService" class="org.argeo.connect.people.core.PeopleServiceImpl"
+	<bean id="rssPeopleService" class="org.argeo.connect.people.core.PeopleServiceImpl"
 		init-method="init" destroy-method="destroy">
 		<property name="repository" ref="repository" />
-		<property name="managedRoles" ref="managedRoles" />
 	</bean>
 
-	<bean id="peopleUiService" class="org.argeo.connect.people.ui.PeopleUiServiceImpl"
+	<bean id="rssPeopleUiService" class="org.argeo.connect.people.ui.PeopleUiServiceImpl"
 		scope="prototype">
 	</bean>
 
@@ -64,11 +63,7 @@
 
 	<!-- Map of the roles used in the user interface - TODO merge with new role 
 		definition -->
-	<util:map id="managedRoles">
-		<entry key="0">
-			<value>ROLE_ADMIN</value>
-		</entry>
-	</util:map>
-
+	<!-- <util:map id="managedRoles"> <entry key="0"> <value>ROLE_ADMIN</value> 
+		</entry> </util:map> -->
 
 </beans>

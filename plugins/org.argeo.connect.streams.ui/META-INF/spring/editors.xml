@@ -6,13 +6,12 @@
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 	<bean id="channelEditor" class="org.argeo.connect.streams.ui.editors.ChannelEditor"
 		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
+		<property name="peopleService" ref="rssPeopleService" />
 		<property name="repository" ref="nodeRepository" />
 	</bean>
 	<bean id="rssSearchPostEditor"
 		class="org.argeo.connect.streams.ui.editors.RssSearchPostEditor"
 		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="nodeRepository" />
 	</bean>
 </beans>

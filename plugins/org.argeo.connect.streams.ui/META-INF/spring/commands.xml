@@ -4,9 +4,8 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="org.argeo.connect.people.ui.deleteEntity"
-		class="org.argeo.connect.people.ui.commands.DeleteEntity"
+	<bean id="org.argeo.connect.streams.ui.deleteEntity" class="org.argeo.connect.people.ui.commands.DeleteEntity"
 		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
+		<property name="repository" ref="nodeRepository" />
 	</bean>
 </beans>
