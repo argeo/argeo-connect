@@ -31,8 +31,8 @@
 							org.argeo.connect.people.ui.listeners,
 							org.argeo.connect.people.ui.editors,
 							org.argeo.security.ui.rap;resolution:=optional,
-							org.xml.sax;resolution:=optional,
-							org.xml.sax.helpers;resolution:=optional,
+							org.xml.sax;version="0.0.0";resolution:=optional,
+							org.xml.sax.helpers;version="0.0.0";resolution:=optional,
 							org.argeo.security.ui.rap;resolution:=optional,
 							*
 						</Import-Package>
