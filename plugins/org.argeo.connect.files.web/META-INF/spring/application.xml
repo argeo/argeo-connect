@@ -17,6 +17,9 @@
 						</property>
 					</bean>
 				</entry>
+				<entry key="contact">
+					<bean class="org.argeo.connect.files.web.SimpleContactPage" />
+				</entry>
 			</map>
 		</property>
 		<property name="repository" ref="repository" />
@@ -35,8 +38,8 @@
 		</property>
 		<property name="end">
 			<list>
-				<bean p:label="Contact" p:target="mailto:contact@argeo.org"
-					parent="navigation_link" />
+				<bean p:label="Contact" p:target="contact" parent="navigation_link" />
+				<!-- p:target="mailto:contact@argeo.org" -->
 				<bean class="org.argeo.connect.web.CmsLogin"
 					p:authenticationManager-ref="authenticationManager" />
 			</list>
