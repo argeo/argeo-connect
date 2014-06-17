@@ -18,8 +18,10 @@ import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.streams.RssConstants;
 import org.argeo.connect.streams.RssNames;
 
-/** Some helper methods to generate html snippets */
-
+/**
+ * Some helper methods to generate HTML snippets and provide styled labels that
+ * are supported by RAP
+ */
 public class RssHtmlProvider implements RssNames {
 
 	private final static Log log = LogFactory.getLog(RssHtmlProvider.class);
@@ -53,8 +55,7 @@ public class RssHtmlProvider implements RssNames {
 		builder.append("<b><big>");
 		builder.append(CommonsJcrUtils.get(node, Property.JCR_TITLE));
 		builder.append("</big></b><br/>");
-		String desc = CommonsJcrUtils.get(node,
-				Property.JCR_DESCRIPTION);
+		String desc = CommonsJcrUtils.get(node, Property.JCR_DESCRIPTION);
 		if (desc != null) {
 			builder.append(desc);
 		}
@@ -68,8 +69,7 @@ public class RssHtmlProvider implements RssNames {
 		builder.append("</big></b><br/>");
 		builder.append(RssHtmlProvider.getTags(node));
 		builder.append("<br/>");
-		String desc = CommonsJcrUtils.get(node,
-				Property.JCR_DESCRIPTION);
+		String desc = CommonsJcrUtils.get(node, Property.JCR_DESCRIPTION);
 		if (desc != null) {
 			builder.append(desc);
 		}
@@ -90,23 +90,14 @@ public class RssHtmlProvider implements RssNames {
 		builder.append("</a>");
 
 		builder.append("<br/>");
-		// builder.append(RssHtmlProvider.getPubDate(node));
-		// builder.append("<br/>");
-		String desc = CommonsJcrUtils.get(node,
-				Property.JCR_DESCRIPTION);
+		String desc = CommonsJcrUtils.get(node, Property.JCR_DESCRIPTION);
 		if (desc != null) {
-			// TODO clean
-			// String sLegalName = legalName.replaceAll("[^a-zA-Z0-9]", "");
-			// int index = desc.indexOf("<");
-			// if (index > 0)
-			// desc = desc.substring(0, desc.indexOf("<"));
-			// builder.append("<span>");
 			builder.append(cleanDescription(desc));
 		}
 		builder.append("</span>");
 		String result = builder.toString();
-		// result = cleanString(result);
-		log.debug("after: " + result);
+		if (log.isTraceEnabled())
+			log.debug("Cleaned snippet: " + result);
 		return result;
 	}
 
@@ -131,8 +122,7 @@ public class RssHtmlProvider implements RssNames {
 		builder.append("<br/>");
 		builder.append(RssHtmlProvider.getTags(node));
 
-		String desc = CommonsJcrUtils.get(node,
-				Property.JCR_DESCRIPTION);
+		String desc = CommonsJcrUtils.get(node, Property.JCR_DESCRIPTION);
 		if (desc != null) {
 			builder.append("<span style=\"float:left;padding:0px;white-space:pre-wrap;\" >");
 			int index = desc.indexOf("<");
@@ -144,7 +134,6 @@ public class RssHtmlProvider implements RssNames {
 			builder.append("</span>");
 
 		}
-		// System.out.println("\n\n" + builder.toString() + "\n\n");
 		return builder.toString();
 	}
 
@@ -153,10 +142,8 @@ public class RssHtmlProvider implements RssNames {
 		StringBuilder builder = new StringBuilder();
 		try {
 			if (entity.hasProperty(RSS_PUB_DATE)) {
-				// builder.append("<small><i>");
 				builder.append(df.format(entity.getProperty(RSS_PUB_DATE)
 						.getDate().getTime()));
-				// builder.append("</i></small>");
 			}
 			return builder.toString();
 		} catch (RepositoryException re) {
@@ -310,5 +297,4 @@ public class RssHtmlProvider implements RssNames {
 	// throw new ArgeoException("Unable to clean string");
 	// }
 	// }
-
 }
