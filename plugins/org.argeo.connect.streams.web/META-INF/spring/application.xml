@@ -17,9 +17,6 @@
 						</property>
 					</bean>
 				</entry>
-				<entry key="contact">
-					<bean class="org.argeo.connect.files.web.SimpleContactPage" />
-				</entry>
 			</map>
 		</property>
 		<property name="repository" ref="repository" />
@@ -32,14 +29,12 @@
 			<list>
 				<bean p:image="/icons/argeo-logo-white.png" p:target="http://www.argeo.org"
 					p:custom="cms_header-logo" parent="navigation_link" />
-				<bean p:label="Home" p:target="/home" parent="navigation_link" />
 				<bean p:label="Test" p:target="test" parent="navigation_link" />
 			</list>
 		</property>
 		<property name="end">
 			<list>
-				<bean p:label="Contact" p:target="contact" parent="navigation_link" />
-				<!-- p:target="mailto:contact@argeo.org" -->
+				<bean p:label="Contact" p:target="mailto:contact@argeo.org" parent="navigation_link" />
 				<bean class="org.argeo.connect.web.CmsLogin"
 					p:authenticationManager-ref="authenticationManager" />
 			</list>
@@ -60,9 +55,21 @@
 				<entry key="/streams" value-ref="streamsEntryPoint" />
 			</map>
 		</property>
+
+		<!-- TODO clean this - everything still must be defined in the parent files.web 
+			bundle. -->
+		<property name="styleSheets">
+			<map>
+				<entry key="org.eclipse.rap.rwt.theme.Default">
+					<list>
+						<value>theme/argeo-files.css</value>
+					</list>
+				</entry>
+			</map>
+		</property>
 		<property name="entryPointsBranding">
 			<map>
-				<entry key="/files">
+				<entry key="/streams">
 					<map>
 						<entry key="org.eclipse.rap.rwt.webclient.pageTitle" value="Argeo Streams" />
 						<entry key="org.eclipse.rap.rwt.webclient.favicon" value="icons/rss.png" />
@@ -79,14 +86,8 @@
 				</entry>
 			</map>
 		</property>
-		<property name="styleSheets">
-			<map>
-				<entry key="org.eclipse.rap.rwt.theme.Default">
-					<list>
-						<value>theme/argeo-streams.css</value>
-					</list>
-				</entry>
-			</map>
-		</property>
+
+		<!-- <property name="clientScriptingBundle" ref="clientScriptingBundle" 
+			/> -->
 	</bean>
 </beans>

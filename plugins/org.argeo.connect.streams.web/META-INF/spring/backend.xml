@@ -6,46 +6,48 @@
         http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-	<bean id="rssManager" class="org.argeo.connect.streams.backend.RssManagerImpl"
-		init-method="init" destroy-method="destroy">
-		<property name="defaultChannels">
-			<map>
-				<!-- Weird bug with descriptions -->
-				<!-- <entry key="http://projects.apache.org/feeds/rss.xml"> -->
-				<!-- <list> -->
-				<!-- <value>Apache</value> -->
-				<!-- </list> -->
-				<!-- </entry> -->
-				<entry key="http://feeds.nytimes.com/nyt/rss/Technology">
-					<list>
-						<value>New York Times</value>
-					</list>
-				</entry>
-			</map>
-		</property>
-		<property name="pollingPeriod" value="${argeo.connect.streams.pollingPeriod}" />
-		<property name="repository" ref="repository" />
-	</bean>
 
-	<bean id="repository" class="org.argeo.jackrabbit.JackrabbitWrapper"
+	<!-- <bean id="rssManager" class="org.argeo.connect.streams.backend.RssManagerImpl" -->
+	<!-- init-method="init" destroy-method="destroy"> -->
+	<!-- <property name="defaultChannels"> -->
+	<!-- <map> -->
+	<!-- <entry key="http://feeds.nytimes.com/nyt/rss/Technology"> -->
+	<!-- <list> -->
+	<!-- <value>New York Times</value> -->
+	<!-- </list> -->
+	<!-- </entry> -->
+	<!-- </map> -->
+	<!-- </property> -->
+	<!-- <property name="pollingPeriod" value="${argeo.connect.streams.pollingPeriod}" 
+		/> -->
+	<!-- <property name="repository" ref="rssRepository" /> -->
+	<!-- </bean> -->
+
+	<!-- Channel that has the weird bug with descriptions -->
+	<!-- <entry key="http://projects.apache.org/feeds/rss.xml"> -->
+	<!-- <list> -->
+	<!-- <value>Apache</value> -->
+	<!-- </list> -->
+	<!-- </entry> -->
+
+	<bean id="rssRepository" class="org.argeo.jackrabbit.JackrabbitWrapper"
 		init-method="init" destroy-method="destroy">
 		<property name="cndFiles">
 			<list>
 				<value>/org/argeo/connect/people/rss.cnd</value>
 			</list>
 		</property>
-		<property name="repository" ref="nodeRepository" />
+		<property name="repository" ref="repository" />
 		<property name="bundleContext" ref="bundleContext" />
 	</bean>
-
 	<!-- Execute initialization with a system authentication -->
 	<bean
 		class="org.argeo.security.core.AuthenticatedApplicationContextInitialization">
 		<property name="authenticationManager" ref="authenticationManager" />
 		<property name="beanNames">
 			<list>
-				<value>rssManager</value>
-				<value>repository</value>
+				<!-- <value>rssManager</value> -->
+				<value>rssRepository</value>
 			</list>
 		</property>
 	</bean>

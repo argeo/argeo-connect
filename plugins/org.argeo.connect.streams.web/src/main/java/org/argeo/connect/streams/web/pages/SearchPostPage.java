@@ -1,4 +1,4 @@
-package org.argeo.connect.streams.web.editors;
+package org.argeo.connect.streams.web.pages;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -38,8 +38,8 @@ import org.eclipse.swt.widgets.Text;
  * 
  * This must be fixed and the dependency to people should be removed.
  */
-public class RssSearchPostEditor implements CmsUiProvider {
-	final static Log log = LogFactory.getLog(RssSearchPostEditor.class);
+public class SearchPostPage implements CmsUiProvider {
+	final static Log log = LogFactory.getLog(SearchPostPage.class);
 
 	// Business Objects
 	private Session session;

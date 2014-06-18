@@ -119,6 +119,8 @@ public class RssManagerImpl implements RssNames, RssManager {
 					return channelNode;
 			}
 			URL feedUrl = new URL(url);
+			if (log.isDebugEnabled())
+				log.debug("Initializing feed at " + feedUrl.toURI());
 			SyndFeedInput input = new SyndFeedInput();
 			SyndFeed feed = input.build(new XmlReader(feedUrl));
 			String nodeName = JcrUtils.replaceInvalidChars(feed.getTitle());

@@ -1,4 +1,4 @@
-package org.argeo.connect.streams.web.editors;
+package org.argeo.connect.streams.web.pages;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -44,8 +44,8 @@ import org.eclipse.swt.widgets.Text;
  * <li>display corresponding items</li>
  * </ul>
  */
-public class ChannelEditor implements CmsUiProvider, RssNames {
-	final static Log log = LogFactory.getLog(ChannelEditor.class);
+public class ChannelPage implements CmsUiProvider, RssNames {
+	final static Log log = LogFactory.getLog(ChannelPage.class);
 
 	// Main business Objects
 	private Session session;

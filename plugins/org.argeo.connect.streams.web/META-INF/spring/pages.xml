@@ -5,15 +5,8 @@
 		http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="channelEditor" class="org.argeo.connect.streams.web.editors.ChannelEditor"
-		scope="prototype">
-	</bean>
-	<bean id="rssSearchPostEditor"
-		class="org.argeo.connect.streams.web.editors.RssSearchPostEditor"
-		scope="prototype">
-	</bean>
-
-	<bean id="rssSearchView" class="org.argeo.connect.streams.web.views.RssSearchView"
-		scope="prototype">
-	</bean>
+	<!-- <bean id="channelEditor" class="org.argeo.connect.streams.web.editors.ChannelEditor" 
+		scope="prototype"> </bean> <bean id="rssSearchPostEditor" class="org.argeo.connect.streams.web.editors.RssSearchPostEditor" 
+		scope="prototype"> </bean> <bean id="rssSearchView" class="org.argeo.connect.streams.web.views.RssSearchView" 
+		scope="prototype"> </bean> -->
 </beans>

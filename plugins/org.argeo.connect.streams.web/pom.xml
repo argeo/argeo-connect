@@ -27,7 +27,10 @@
 						</Require-Bundle>
 						<Import-Package>
 							*,
+							javax.jcr.nodetype,
 							org.springframework.core,
+							org.argeo.connect.people,
+							org.argeo.security.ui.rap;resolution:=optional,
 							org.xml.sax;version="0.0.0";resolution:=optional,
 							org.xml.sax.helpers;version="0.0.0";resolution:=optional,
 						</Import-Package>
@@ -47,6 +50,13 @@
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.files.web</artifactId>
+			<version>2.1.7-SNAPSHOT</version>
+		</dependency>
+
+		<!-- FIXME only used because the CND must be in an other bundle. -->
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.people.specs</artifactId>
 			<version>2.1.7-SNAPSHOT</version>
 		</dependency>
 
@@ -76,6 +86,14 @@
 			<groupId>org.argeo.commons.base</groupId>
 			<artifactId>org.argeo.eclipse.ui.jcr</artifactId>
 			<version>${version.argeo-commons}</version>
+		</dependency>
+
+		<!-- TODO Why is it needed ? -->
+		<dependency>
+			<groupId>org.argeo.commons.security</groupId>
+			<artifactId>org.argeo.security.ui.rap</artifactId>
+			<version>${version.argeo-commons}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- QA -->

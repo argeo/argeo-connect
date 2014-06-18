@@ -1,7 +1,7 @@
-package org.argeo.connect.streams.web.views;
+package org.argeo.connect.streams.web.pages;
 
 /** First draft of a user friendly pannel to manage RSS channels and feeds */
-public class RssSearchView {
+public class RssHomePage {
 }
 // extends ViewPart {
 // // private final static Log log = LogFactory.getLog(RssSearchView.class);
