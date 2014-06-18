@@ -1,0 +1,29 @@
+###
+### TODO ENABLE THIS.
+###
+
+<rss = 'http://www.argeo.org/ns/rss'>
+
+[rss:channel] > nt:unstructured
+// was mixin rss:tagable
+- rss:uri (STRING) m
+- rss:link (STRING)
++ rss:channelInfo (rss:channelInfo) =rss:channelInfo m a 
+
+[rss:channelInfo] > nt:unstructured, mix:title, rss:tagable, mix:versionable, mix:lastModified
+// - rss:uri (STRING) m
+// - rss:link (STRING)
+
+
+[rss:item] > nt:unstructured, mix:title, rss:tagable
+- rss:link (STRING) 
+- rss:pubDate (DATE)
+- rss:updatedate (DATE)
++ rss:enclosure (nt:unstructured) *
+
+// 
+// TAGABLE
+//
+[rss:tagable] 
+mixin
+- rss:category (STRING) *
