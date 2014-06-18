@@ -27,6 +27,9 @@
 						</Require-Bundle>
 						<Import-Package>
 							*,
+							com.sun.syndication,
+							com.sun.syndication.feed.synd.impl,
+							com.sun.syndication.io.impl,
 							javax.jcr.nodetype,
 							org.springframework.core,
 							org.argeo.connect.people,
@@ -77,11 +80,8 @@
 			<artifactId>org.argeo.util</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.argeo.commons.base</groupId>
-			<artifactId>org.argeo.eclipse.ui</artifactId>
-			<version>${version.argeo-commons}</version>
-		</dependency>
+		<!-- <dependency> <groupId>org.argeo.commons.base</groupId> <artifactId>org.argeo.eclipse.ui</artifactId> 
+			<version>${version.argeo-commons}</version> </dependency> -->
 		<dependency>
 			<groupId>org.argeo.commons.base</groupId>
 			<artifactId>org.argeo.eclipse.ui.jcr</artifactId>

@@ -10,11 +10,15 @@
 		<property name="dynamicPages" ref="dynamicPages" />
 		<property name="staticPages">
 			<map>
-				<entry key="test">
-					<bean class="org.argeo.connect.web.SimpleStaticPage">
-						<property name="text">
-							<value><![CDATA[Hello <b>world</b>!]]></value>
-						</property>
+				<entry key="home">
+					<bean class="org.argeo.connect.streams.web.pages.RssHomePage">
+						<property name="repository" ref="rssRepository" />
+						<property name="rssManager" ref="rssManager" />
+					</bean>
+				</entry>
+				<entry key="searchPosts">
+					<bean class="org.argeo.connect.streams.web.pages.SearchPostPage">
+						<property name="repository" ref="rssRepository" />
 					</bean>
 				</entry>
 			</map>
@@ -29,8 +33,8 @@
 			<list>
 				<bean p:image="/icons/argeo-logo-white.png" p:target="http://www.argeo.org"
 					p:custom="cms_header-logo" parent="navigation_link" />
-				<bean p:label="Home" p:target="/" parent="navigation_link" />
-				<bean p:label="Test" p:target="test" parent="navigation_link" />
+				<bean p:label="Home" p:target="home" parent="navigation_link" />
+				<bean p:label="All Posts" p:target="searchPosts" parent="navigation_link" />
 			</list>
 		</property>
 		<property name="end">
@@ -48,7 +52,6 @@
 	<!-- TEMPLATES -->
 	<bean id="navigation_link" p:custom="cms_navigation_link"
 		abstract="true" class="org.argeo.connect.web.CmsLink" />
-
 
 	<!-- APPLICATION -->
 	<bean id="application" class="org.argeo.connect.web.CmsApplication">

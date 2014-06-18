@@ -6,22 +6,20 @@
         http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-
-	<!-- <bean id="rssManager" class="org.argeo.connect.streams.backend.RssManagerImpl" -->
-	<!-- init-method="init" destroy-method="destroy"> -->
-	<!-- <property name="defaultChannels"> -->
-	<!-- <map> -->
-	<!-- <entry key="http://feeds.nytimes.com/nyt/rss/Technology"> -->
-	<!-- <list> -->
-	<!-- <value>New York Times</value> -->
-	<!-- </list> -->
-	<!-- </entry> -->
-	<!-- </map> -->
-	<!-- </property> -->
-	<!-- <property name="pollingPeriod" value="${argeo.connect.streams.pollingPeriod}" 
-		/> -->
-	<!-- <property name="repository" ref="rssRepository" /> -->
-	<!-- </bean> -->
+	<bean id="rssManager" class="org.argeo.connect.streams.backend.RssManagerImpl"
+		init-method="init" destroy-method="destroy">
+		<property name="defaultChannels">
+			<map>
+				<entry key="http://feeds.nytimes.com/nyt/rss/Technology">
+					<list>
+						<value>New York Times</value>
+					</list>
+				</entry>
+			</map>
+		</property>
+		<property name="pollingPeriod" value="${argeo.connect.streams.pollingPeriod}" />
+		<property name="repository" ref="rssRepository" />
+	</bean>
 
 	<!-- Channel that has the weird bug with descriptions -->
 	<!-- <entry key="http://projects.apache.org/feeds/rss.xml"> -->
@@ -46,7 +44,7 @@
 		<property name="authenticationManager" ref="authenticationManager" />
 		<property name="beanNames">
 			<list>
-				<!-- <value>rssManager</value> -->
+				<value>rssManager</value>
 				<value>rssRepository</value>
 			</list>
 		</property>

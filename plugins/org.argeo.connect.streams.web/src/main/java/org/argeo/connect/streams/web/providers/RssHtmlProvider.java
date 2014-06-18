@@ -49,7 +49,7 @@ public class RssHtmlProvider implements RssNames {
 		return builder.toString();
 	}
 
-	public static String getChannelTitle(Node node) throws RepositoryException {
+	public static String getChannelTitle(Node node) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b><big>");
 		builder.append(StreamsJcrUtils.get(node, Property.JCR_TITLE));
@@ -61,7 +61,7 @@ public class RssHtmlProvider implements RssNames {
 		return builder.toString();
 	}
 
-	public static String getChannelMedium(Node node) throws RepositoryException {
+	public static String getChannelMedium(Node node) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b><big>");
 		builder.append(StreamsJcrUtils.get(node, Property.JCR_TITLE));

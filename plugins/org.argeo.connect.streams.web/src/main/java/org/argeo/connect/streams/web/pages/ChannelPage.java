@@ -17,7 +17,9 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.streams.RssNames;
 import org.argeo.connect.streams.RssTypes;
+import org.argeo.connect.streams.web.providers.RssHtmlProvider;
 import org.argeo.connect.streams.web.providers.RssListLblProvider;
+import org.argeo.connect.streams.web.providers.SimpleNodeListContentProvider;
 import org.argeo.connect.web.CmsUiProvider;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -26,7 +28,6 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
@@ -55,7 +56,6 @@ public class ChannelPage implements CmsUiProvider, RssNames {
 	@Override
 	public Control createUi(Composite parent, Node context)
 			throws RepositoryException {
-
 		this.channel = context;
 		try {
 			session = channel.getSession();
@@ -63,165 +63,33 @@ public class ChannelPage implements CmsUiProvider, RssNames {
 			throw new ArgeoException("Unable to get session for node "
 					+ context, re);
 		}
-		createMainInfoPanel(parent);
+		populate(parent);
 		return null;
 	}
 
-	/**
-	 * Overwrite default main panel creation to spare some space.
-	 */
-	protected void createMainInfoPanel(final Composite parent) {
+	protected void populate(Composite parent) {
 		parent.setLayout(new GridLayout());
 
-		// First row: Title + Buttons.
-		Composite firstRow = new Composite(parent, SWT.NO_FOCUS);
-		firstRow.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		GridLayout gl = new GridLayout(2, false);
-		gl.marginLeft = 5;
-		gl.marginRight = 5;
-		gl.marginTop = 5;
-		firstRow.setLayout(gl);
+		Label readOnlyInfoLbl = new Label(parent, SWT.WRAP);
+		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		readOnlyInfoLbl.setText(RssHtmlProvider.getChannelTitle(channel));
 
-		// left: title
-		Composite title = new Composite(firstRow, SWT.NO_FOCUS);
-		title.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		populateTitleComposite(title);
-
-		// Right: buttons
-		Composite buttons = new Composite(firstRow, SWT.NO_FOCUS);
-		GridData gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
-		gd.heightHint = 30;
-		buttons.setLayoutData(gd);
-		// populateButtonsComposite(buttons);
-
-		// NO TAGS for the time being
-		// // 2nd line: Main Info Details
-		// Composite details = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		// details.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		// populateMainInfoDetails(details);
-
-		parent.layout();
-	}
-
-	protected void populateTitleComposite(Composite parent) {
-		parent.setLayout(new FormLayout());
-
-		new Label(parent, SWT.NONE).setText("TITLE");
-
-		// // READ ONLY
-		// final Composite readOnlyPanel = new Composite(parent,
-		// SWT.NO_FOCUS);
-		// PeopleUiUtils.setSwitchingFormData(readOnlyPanel);
-		// readOnlyPanel.setLayout(PeopleUiUtils.gridLayoutNoBorder());
-		// final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
-		// SWT.WRAP);
-		// readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		//
-		// // EDIT
-		// final Composite editPanel = toolkit.createComposite(parent,
-		// SWT.NO_FOCUS);
-		// PeopleUiUtils.setSwitchingFormData(editPanel);
-		//
-		// // intern layout
-		// editPanel.setLayout(new GridLayout(2, false));
-		// final Text titleTxt = createGDText(editPanel, "Title",
-		// "Rss feed title", 200, 1);
-		//
-		// final Text websiteTxt = createGDText(editPanel, "Website",
-		// "This channel provider's website", 200, 1);
-		// ((GridData) websiteTxt.getLayoutData()).grabExcessHorizontalSpace =
-		// false;
-		//
-		// final Text descTxt = createGDText(editPanel, "A Description", "",
-		// 400,
-		// 2);
-		//
-		// editPanel.layout();
-		//
-		// final AbstractFormPart editPart = new AbstractFormPart() {
-		// public void refresh() { // update display value
-		// try {
-		// super.refresh();
-		// // EDIT PART
-		// refreshTextValue(titleTxt, channel, Property.JCR_TITLE);
-		// refreshTextValue(websiteTxt, channel, RSS_LINK);
-		// refreshTextValue(descTxt, channel, Property.JCR_DESCRIPTION);
-		//
-		// // READ ONLY PART
-		// readOnlyInfoLbl.setText(RssHtmlProvider
-		// .getChannelTitle(channel));
-		// // Manage switch
-		// if (CommonsJcrUtils.isNodeCheckedOutByMe(channel))
-		// editPanel.moveAbove(readOnlyPanel);
-		// else
-		// editPanel.moveBelow(readOnlyPanel);
-		// editPanel.getParent().layout();
-		// } catch (RepositoryException e) {
-		// throw new PeopleException("Unable to get channel info", e);
-		// }
-		//
-		// }
-		// };
-		//
-		// // Must refresh a first time so that UI and JCR are in line before
-		// // adding the listeners.
-		// editPart.refresh();
-		// // Listeners
-		// addTxtModifyListener(editPart, titleTxt, channel, Property.JCR_TITLE,
-		// PropertyType.STRING);
-		// // addTxtModifyListener(editPart, titleTxt, channel, RSS_LINK,
-		// // PropertyType.STRING);
-		// addTxtModifyListener(editPart, descTxt, channel,
-		// Property.JCR_DESCRIPTION, PropertyType.STRING);
-		//
-		// // compulsory because we broke normal life cycle while implementing
-		// // IManageForm
-		// editPart.initialize(getManagedForm());
-		// getManagedForm().addPart(editPart);
-	}
-
-	protected void populateMainInfoDetails(Composite parent) {
-		parent.setLayout(new GridLayout());
-
-		// Details
-		Composite details = new Composite(parent, SWT.NO_FOCUS);
-		details.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		// populateTagsROPanel(details);
-
-		// Create NEW tags
-		Composite addTagPanel = new Composite(parent, SWT.NO_FOCUS);
-		addTagPanel
-				.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, false));
-		// populateAddTagComposite(addTagPanel);
-	}
-
-	protected void createBodyPart(Composite parent) {
-		parent.setLayout(new GridLayout());
 		// 1st line: Search + Buttons.
-		// Composite buttons = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		// buttons.setLayout(gridLayoutNoBorder());
+		// Composite buttons = new Composite(parent, SWT.NO_FOCUS);
+		// buttons.setLayout(new GridLayout());
 		// buttons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		// toolkit.createLabel(buttons, "Add here search and buttons");
+		// new Label(parent, SWT.NONE).setText("Add here search and buttons");
 
 		// 2nd line: the list
 		Composite list = new Composite(parent, SWT.NO_FOCUS);
 		list.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		createListPart(list, new RssListLblProvider(false));
 
-		// set data
-		// put that in a cleaner place it's too hidden here
-		// refreshFilteredList(RssTypes.RSS_CHANNEL);
 	}
 
 	protected void createListPart(Composite parent, ILabelProvider labelProvider) {
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 		parent.setLayout(tableColumnLayout);
-
-		// Composite tableComposite = toolkit.createComposite(parent,
-		// SWT.NO_FOCUS | SWT.V_SCROLL);
-		// tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-		// true));
-		// // Corresponding table & style
 
 		Table table = new Table(parent, SWT.V_SCROLL | SWT.H_SCROLL);
 		table.setLinesVisible(false);
@@ -232,9 +100,7 @@ public class ChannelPage implements CmsUiProvider, RssNames {
 
 		TableViewer v = new TableViewer(table);
 		v.setLabelProvider(labelProvider);
-		// v.setContentProvider(new BasicNodeListContentProvider());
-		// v.addDoubleClickListener(new
-		// NodeListDoubleClickListener(peopleService));
+		v.setContentProvider(new SimpleNodeListContentProvider());
 		feeds = v;
 
 		TableColumn singleColumn = new TableColumn(table, SWT.LEFT);
@@ -296,5 +162,4 @@ public class ChannelPage implements CmsUiProvider, RssNames {
 	public String getlastUpdateMessage() {
 		return "";
 	}
-
 }

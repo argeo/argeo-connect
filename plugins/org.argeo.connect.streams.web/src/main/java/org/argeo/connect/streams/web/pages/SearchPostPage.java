@@ -1,9 +1,9 @@
 package org.argeo.connect.streams.web.pages;
 
 import javax.jcr.Node;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Constraint;
@@ -15,6 +15,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
+import org.argeo.connect.streams.RssTypes;
 import org.argeo.connect.streams.web.providers.RssListLblProvider;
 import org.argeo.connect.streams.web.providers.SimpleNodeListContentProvider;
 import org.argeo.connect.web.CmsUiProvider;
@@ -45,25 +46,27 @@ public class SearchPostPage implements CmsUiProvider {
 
 	// Business Objects
 	private Session session;
-	private String entityType = NodeType.NT_UNSTRUCTURED;
-	// TODO use this type instead as soon as the import is fixed.
-	// private String entityType = RssTypes.RSS_ITEM;
+	private String entityType = RssTypes.RSS_ITEM;
 
 	// This page widgets
 	private TableViewer entityViewer;
 	private Text filterTxt;
 	private final static String FILTER_HELP_MSG = "Enter filter criterion";
 
+	protected int getCurrRowHeight() {
+		return 80;
+	}
+
 	/** Passed node is only used to retrieve JCR Session */
 	@Override
 	public Control createUi(Composite parent, Node context)
 			throws RepositoryException {
-		try {
-			session = context.getSession();
-		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to get session for node "
-					+ context, re);
-		}
+		// try {
+		// session = context.getSession();
+		// } catch (RepositoryException re) {
+		// throw new ArgeoException("Unable to get session for node "
+		// + context, re);
+		// }
 		createPartControl(parent);
 		return null;
 	}
@@ -77,10 +80,6 @@ public class SearchPostPage implements CmsUiProvider {
 
 	protected ILabelProvider getCurrentLabelProvider() {
 		return new RssListLblProvider(false);
-	}
-
-	protected int getCurrRowHeight() {
-		return 60;
 	}
 
 	public void createFilterPanel(Composite parent) {
@@ -170,5 +169,15 @@ public class SearchPostPage implements CmsUiProvider {
 		// v.addDoubleClickListener(peopleUiService
 		// .getNewNodeListDoubleClickListener(peopleService));
 		entityViewer = v;
+	}
+
+	/* DEPENDENCY INJECTION */
+	public void setRepository(Repository repository) {
+		// TO MANAGE THIS: session stay unclosed.
+		try {
+			this.session = repository.login();
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Unable to log in the repository", e);
+		}
 	}
 }
