@@ -63,7 +63,7 @@ public class ChannelPage implements CmsUiProvider, RssNames {
 			throw new ArgeoException("Unable to get session for node "
 					+ context, re);
 		}
-		// TODO Auto-generated method stub
+		createMainInfoPanel(parent);
 		return null;
 	}
 

@@ -3,6 +3,7 @@ package org.argeo.connect.streams.web.pages;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Constraint;
@@ -15,6 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.streams.web.providers.RssListLblProvider;
+import org.argeo.connect.streams.web.providers.SimpleNodeListContentProvider;
 import org.argeo.connect.web.CmsUiProvider;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -43,7 +45,9 @@ public class SearchPostPage implements CmsUiProvider {
 
 	// Business Objects
 	private Session session;
-	private String entityType;
+	private String entityType = NodeType.NT_UNSTRUCTURED;
+	// TODO use this type instead as soon as the import is fixed.
+	// private String entityType = RssTypes.RSS_ITEM;
 
 	// This page widgets
 	private TableViewer entityViewer;
@@ -103,7 +107,7 @@ public class SearchPostPage implements CmsUiProvider {
 					.getQueryManager();
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
 
-			Selector source = factory.selector(entityType, "selector");
+			Selector source = factory.selector(entityType, entityType);
 
 			// no Default Constraint
 			Constraint defaultC = null;
@@ -162,7 +166,7 @@ public class SearchPostPage implements CmsUiProvider {
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		table.setData(RWT.CUSTOM_ITEM_HEIGHT,
 				Integer.valueOf(getCurrRowHeight()));
-		// v.setContentProvider(new BasicNodeListContentProvider());
+		v.setContentProvider(new SimpleNodeListContentProvider());
 		// v.addDoubleClickListener(peopleUiService
 		// .getNewNodeListDoubleClickListener(peopleService));
 		entityViewer = v;
