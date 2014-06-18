@@ -19,7 +19,7 @@
 				</entry>
 			</map>
 		</property>
-		<property name="repository" ref="repository" />
+		<property name="repository" ref="rssRepository" />
 		<property name="authenticationManager" ref="authenticationManager" />
 		<property name="systemKey" value="${argeo.security.systemKey}" />
 	</bean>

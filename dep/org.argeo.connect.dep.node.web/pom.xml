@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.argeo.connect</groupId>
@@ -10,6 +11,34 @@
 	<artifactId>org.argeo.connect.dep.node.web</artifactId>
 	<name>Connect Node Web Dependencies</name>
 	<dependencies>
+		<!-- Streams -->
+		<dependency>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>com.sun.syndication</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>org.apache.commons.lang</artifactId>
+		</dependency>
+
+		<!-- Commons  -->
+		<dependency>
+			<groupId>org.argeo.commons.base</groupId>
+			<artifactId>org.argeo.util</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.commons.base</groupId>
+			<artifactId>org.argeo.eclipse.ui</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.commons.base</groupId>
+			<artifactId>org.argeo.eclipse.ui.jcr</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+
+		<!-- Minimal web target platform -->
 		<dependency>
 			<groupId>org.argeo.commons.security</groupId>
 			<artifactId>org.argeo.security.dep.node.rap</artifactId>
@@ -29,6 +58,5 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 	</dependencies>
 </project>
