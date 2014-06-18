@@ -23,5 +23,10 @@
 		interface="org.springframework.security.AuthenticationManager" />
 
 	<!-- SERVICES -->
-	<!--  <service ref="peopleService" interface="org.argeo.connect.people.PeopleService" /> -->
+	<service ref="application"
+		interface="org.eclipse.rap.rwt.application.ApplicationConfiguration">
+		<service-properties>
+			<beans:entry key="contextPath" value="ui" />
+		</service-properties>
+	</service>
 </beans:beans>

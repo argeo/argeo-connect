@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean name="streamsEntryPoint" class="org.argeo.connect.web.CmsEntryPointFactory"
+		scope="prototype">
+		<property name="header" ref="header" />
+		<property name="dynamicPages" ref="dynamicPages" />
+		<property name="staticPages">
+			<map>
+				<entry key="test">
+					<bean class="org.argeo.connect.web.SimpleStaticPage">
+						<property name="text">
+							<value><![CDATA[Hello <b>world</b>!]]></value>
+						</property>
+					</bean>
+				</entry>
+				<entry key="contact">
+					<bean class="org.argeo.connect.files.web.SimpleContactPage" />
+				</entry>
+			</map>
+		</property>
+		<property name="repository" ref="repository" />
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="systemKey" value="${argeo.security.systemKey}" />
+	</bean>
+
+	<bean id="header" class="org.argeo.connect.web.SimpleCmsHeader">
+		<property name="lead">
+			<list>
+				<bean p:image="/icons/argeo-logo-white.png" p:target="http://www.argeo.org"
+					p:custom="cms_header-logo" parent="navigation_link" />
+				<bean p:label="Home" p:target="/home" parent="navigation_link" />
+				<bean p:label="Test" p:target="test" parent="navigation_link" />
+			</list>
+		</property>
+		<property name="end">
+			<list>
+				<bean p:label="Contact" p:target="contact" parent="navigation_link" />
+				<!-- p:target="mailto:contact@argeo.org" -->
+				<bean class="org.argeo.connect.web.CmsLogin"
+					p:authenticationManager-ref="authenticationManager" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="dynamicPages" class="org.argeo.connect.web.SimpleDynamicPages" />
+
+	<!-- TEMPLATES -->
+	<bean id="navigation_link" p:custom="cms_navigation_link"
+		abstract="true" class="org.argeo.connect.web.CmsLink" />
+
+
+	<!-- APPLICATION -->
+	<bean id="application" class="org.argeo.connect.web.CmsApplication">
+		<property name="entryPoints">
+			<map>
+				<entry key="/streams" value-ref="streamsEntryPoint" />
+			</map>
+		</property>
+		<property name="entryPointsBranding">
+			<map>
+				<entry key="/files">
+					<map>
+						<entry key="org.eclipse.rap.rwt.webclient.pageTitle" value="Argeo Streams" />
+						<entry key="org.eclipse.rap.rwt.webclient.favicon" value="icons/rss.png" />
+						<entry key="org.eclipse.rap.rwt.webclient.bodyHtml">
+							<value><![CDATA[
+<div id="splash" style="position: absolute; margin-left: -75px; margin-top: -50px; left: 50%; top: 50%; width: 150px; border: 1px solid #c0c0c0; background-color: #fafafa; text-align: center;">
+  <img src="./rwt-resources/icons/loading.gif" width="32" height="32" style="margin: 10px 15px 0" />
+  <div style="margin: 5px 15px 10px; color: #656565; font: 12px Verdana, 'Lucida Sans', sans-serif">
+    Argeo Streams loading ...
+  </div>
+</div>]]></value>
+						</entry>
+					</map>
+				</entry>
+			</map>
+		</property>
+		<property name="styleSheets">
+			<map>
+				<entry key="org.eclipse.rap.rwt.theme.Default">
+					<list>
+						<value>theme/argeo-streams.css</value>
+					</list>
+				</entry>
+			</map>
+		</property>
+	</bean>
+</beans>

@@ -7,9 +7,9 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plug-in life cycle
  */
 
-public class StreamsActivator implements BundleActivator {
+public class StreamsWebActivator implements BundleActivator {
 
-	private static StreamsActivator plugin;
+	private static StreamsWebActivator plugin;
 
 	public void start(BundleContext context) throws Exception {
 		plugin = this;
@@ -19,7 +19,7 @@ public class StreamsActivator implements BundleActivator {
 		plugin = null;
 	}
 
-	static StreamsActivator getDefault() {
+	static StreamsWebActivator getDefault() {
 		return plugin;
 	}
 }

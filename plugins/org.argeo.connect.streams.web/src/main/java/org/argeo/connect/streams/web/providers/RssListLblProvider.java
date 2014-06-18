@@ -5,7 +5,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 /**
  * Provide a single column label provider for entity lists
  */
-public class RssListLblProvider extends LabelProvider { // implements RssNames {
+public class RssListLblProvider extends LabelProvider { // implements
+														// RssNames {
 
 	private static final long serialVersionUID = 1L;
 	private final boolean smallList;

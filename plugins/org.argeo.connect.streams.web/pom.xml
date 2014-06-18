@@ -18,11 +18,19 @@
 				<artifactId>maven-bundle-plugin</artifactId>
 				<configuration>
 					<instructions>
-						<Bundle-Activator>org.argeo.connect.streams.web.RssUiPlugin</Bundle-Activator>
+						<!-- Different from plugin -->
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Activator>org.argeo.connect.streams.web.StreamsWebActivator</Bundle-Activator>
+						<Require-Bundle>
+							org.eclipse.rap.rwt;bundle-version="[2.2.0,3.0.0)",
+							org.eclipse.rap.jface;bundle-version="[2.2.0,3.0.0)"
+						</Require-Bundle>
 						<Import-Package>
-							*
+							*,
+							org.springframework.core,
+							org.xml.sax;version="0.0.0";resolution:=optional,
+							org.xml.sax.helpers;version="0.0.0";resolution:=optional,
 						</Import-Package>
-
 						<!-- org.argeo.eclipse.spring, javax.jcr.nodetype, org.jdom, org.argeo.connect.people, 
 							com.sun.syndication, com.sun.syndication.feed.synd.impl, com.sun.syndication.io.impl, 
 							org.argeo.connect.people.core, org.argeo.connect.people.ui.utils, org.argeo.connect.people.ui.listeners, 
