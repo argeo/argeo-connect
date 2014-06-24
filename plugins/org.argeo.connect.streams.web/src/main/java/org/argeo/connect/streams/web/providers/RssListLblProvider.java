@@ -11,8 +11,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 /**
  * Provide a single column label provider for entity lists
  */
-public class RssListLblProvider extends LabelProvider { // implements
-														// RssNames {
+public class RssListLblProvider extends LabelProvider { 
 
 	private static final long serialVersionUID = 1L;
 	private final boolean smallList;
@@ -25,19 +24,6 @@ public class RssListLblProvider extends LabelProvider { // implements
 	public RssListLblProvider(boolean smallList) {
 		this.smallList = smallList;
 	}
-
-	// /**
-	// * @param propName
-	// * optionally the key to recognise the current column
-	// * @param parentVersionableNode
-	// * the ancestor node that is versionable to manage remove/edit
-	// * action in case we are dealing such actions.
-	// */
-	// public RssListLblProvider(boolean smallList, String propName) {
-	// this.smallList = smallList;
-	// this.propName = propName;
-	//
-	// }
 
 	public String getText(Object element) {
 		Node node = (Node) element;

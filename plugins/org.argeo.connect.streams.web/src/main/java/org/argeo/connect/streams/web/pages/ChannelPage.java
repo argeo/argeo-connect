@@ -96,7 +96,7 @@ public class ChannelPage implements CmsUiProvider, RssNames {
 		table.setHeaderVisible(false);
 		// Enable markups
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(70));
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(80));
 
 		TableViewer v = new TableViewer(table);
 		v.setLabelProvider(labelProvider);

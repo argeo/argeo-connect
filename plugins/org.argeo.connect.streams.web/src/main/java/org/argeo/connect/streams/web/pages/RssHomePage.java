@@ -17,6 +17,7 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.streams.RssManager;
 import org.argeo.connect.streams.RssNames;
 import org.argeo.connect.streams.RssTypes;
+import org.argeo.connect.streams.web.StreamsWebStyles;
 import org.argeo.connect.streams.web.listeners.NodeListDoubleClickListener;
 import org.argeo.connect.streams.web.providers.RssListLblProvider;
 import org.argeo.connect.streams.web.providers.SimpleNodeListContentProvider;
@@ -40,9 +41,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -54,7 +52,6 @@ import org.eclipse.swt.widgets.Text;
 
 /** Simple page to manage RSS channels and feeds */
 public class RssHomePage implements CmsUiProvider {
-
 	// private final static Log log = LogFactory.getLog(RssHomePage.class);
 
 	/* DEPENDENCY INJECTION */
@@ -65,39 +62,20 @@ public class RssHomePage implements CmsUiProvider {
 	private TableViewer sourcesViewer;
 	private Text srcFilterTxt;
 	private Text newSourceTxt;
-	private Composite sourcesCmp;
-
-	private TableViewer postsViewer;
-	@SuppressWarnings("unused")
-	private Text postsFilterTxt;
-	private Composite postsCmp;
 
 	private final static String FILTER_HELP_MSG = "Enter filter criterion";
 	private final static String NEW_FEED_MSG = "Register a new RSS source";
 
-	private final static int QUERY_LIMIT = 30;
-
 	@Override
 	public Control createUi(Composite parent, Node context) {
 		parent.setLayout(gridLayoutNoBorder());
-		Composite leftPart = new Composite(parent, SWT.NO_FOCUS);
-		leftPart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		createLeftPart(leftPart);
-		return null;
-	}
-
-	public void createLeftPart(Composite parent) {
-		parent.setLayout(new FormLayout());
-		// sources panel
-		sourcesCmp = new Composite(parent, SWT.NO_FOCUS);
-		sourcesCmp.setLayoutData(createformData(0, 0, 100, 100));
+		Composite sourcesCmp = new Composite(parent, SWT.NO_FOCUS);
+		sourcesCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		sourcesCmp.setData(RWT.CUSTOM_VARIANT,
+				StreamsWebStyles.STREAMS_MAIN_COMPOSITE);
 		populateSourcesPanel(sourcesCmp);
-
-		// posts panel
-		postsCmp = new Composite(parent, SWT.NO_FOCUS);
-		postsCmp.setLayoutData(createformData(0, 0, 100, 100));
-		populatePostsPanel(postsCmp);
 		parent.layout();
+		return null;
 	}
 
 	public void populateSourcesPanel(Composite parent) {
@@ -115,18 +93,6 @@ public class RssHomePage implements CmsUiProvider {
 				RssTypes.RSS_CHANNEL_INFO);
 		sourcesViewer.setInput(JcrUtils.nodeIteratorToList(doSearch(
 				RssTypes.RSS_CHANNEL_INFO, "")));
-	}
-
-	public void populatePostsPanel(Composite parent) {
-		// parent.setLayout(gridLayoutNoBorder());
-		// Text txt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
-		// | SWT.ICON_CANCEL);
-		//
-		// postsViewer = createListPart(parent, new RssListLblProvider());
-		// initializeFilterPanel(txt, postsViewer, RssTypes.RSS_ITEM);
-		// postsViewer.setInput(JcrUtils.nodeIteratorToList(doSearch(
-		// RssTypes.RSS_ITEM, "")));
-
 	}
 
 	public void addChannelPanel(Composite body) {
@@ -163,38 +129,6 @@ public class RssHomePage implements CmsUiProvider {
 				registerRssLink(newSourceTxt.getText());
 			}
 		});
-	}
-
-	private boolean registerRssLink(String sourceStr) {
-		try {
-			Node channelInfo = rssManager
-					.getOrCreateChannel(session, sourceStr).getNode(
-							RssNames.RSS_CHANNEL_INFO);
-			// TODO do it asynchroneously
-			rssManager.retrieveItems();
-
-			// Save and check in
-			JcrUtils.updateLastModified(channelInfo);
-			channelInfo.getSession().save();
-			channelInfo.getSession().getWorkspace().getVersionManager()
-					.checkin(channelInfo.getPath());
-
-			openChannelEditor(channelInfo);
-
-			String filter = srcFilterTxt.getText();
-			sourcesViewer.setInput(JcrUtils.nodeIteratorToList(doSearch(
-					RssTypes.RSS_CHANNEL_INFO, filter)));
-			newSourceTxt.setText("");
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Unable to create a Stream", e);
-		}
-		return true;
-	}
-
-	private void openChannelEditor(Node channelInfo) throws RepositoryException {
-		CmsSession cmsSession = (CmsSession) this.newSourceTxt.getDisplay()
-				.getData(CmsSession.KEY);
-		cmsSession.navigateTo(channelInfo.getPath());
 	}
 
 	public Text initializeFilterPanel(final Text txt, final TableViewer viewer,
@@ -294,16 +228,6 @@ public class RssHomePage implements CmsUiProvider {
 		return v;
 	}
 
-	private static TableViewerColumn createTableViewerColumn(
-			TableViewer parent, String name, int style, int width) {
-		TableViewerColumn tvc = new TableViewerColumn(parent, style);
-		final TableColumn column = tvc.getColumn();
-		column.setText(name);
-		column.setWidth(width);
-		column.setResizable(true);
-		return tvc;
-	}
-
 	protected TableViewer createListPart(Composite parent,
 			ILabelProvider labelProvider) {
 		parent.setLayout(new GridLayout());
@@ -334,58 +258,80 @@ public class RssHomePage implements CmsUiProvider {
 		return v;
 	}
 
+	private NodeIterator doSearch(String nodeType, String filter) {
+		try {
+			QueryManager queryManager = session.getWorkspace()
+					.getQueryManager();
+			QueryObjectModelFactory factory = queryManager.getQOMFactory();
+			Selector source = factory.selector(nodeType, nodeType);
+			Constraint defaultC = null;
+			String[] strs = filter.trim().split(" ");
+			for (String token : strs) {
+				StaticOperand so = factory.literal(session.getValueFactory()
+						.createValue("*" + token + "*"));
+				Constraint currC = factory.fullTextSearch(
+						source.getSelectorName(), null, so);
+				if (defaultC == null)
+					defaultC = currC;
+				else
+					defaultC = factory.and(defaultC, currC);
+			}
+			QueryObjectModel query = factory.createQuery(source, defaultC,
+					null, null);
+			QueryResult result = query.execute();
+			return result.getNodes();
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Unable to list " + nodeType, e);
+		}
+	}
+
+	// HELPERS
 	private GridLayout gridLayoutNoBorder() {
 		GridLayout gl = new GridLayout(1, false);
 		gl.marginWidth = gl.marginHeight = gl.horizontalSpacing = gl.verticalSpacing = 0;
 		return gl;
 	}
 
-	private FormData createformData(int left, int top, int right, int bottom) {
-		FormData formData = new FormData();
-		formData.left = new FormAttachment(left, 0);
-		formData.top = new FormAttachment(top, 0);
-		formData.right = new FormAttachment(right, 0);
-		formData.bottom = new FormAttachment(bottom, 0);
-		return formData;
+	private static TableViewerColumn createTableViewerColumn(
+			TableViewer parent, String name, int style, int width) {
+		TableViewerColumn tvc = new TableViewerColumn(parent, style);
+		final TableColumn column = tvc.getColumn();
+		column.setText(name);
+		column.setWidth(width);
+		column.setResizable(true);
+		return tvc;
 	}
 
-	protected NodeIterator doSearch(String nodeType, String filter) {
+	private boolean registerRssLink(String sourceStr) {
 		try {
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
-			QueryObjectModelFactory factory = queryManager.getQOMFactory();
+			Node channelInfo = rssManager
+					.getOrCreateChannel(session, sourceStr).getNode(
+							RssNames.RSS_CHANNEL_INFO);
+			// TODO do it asynchroneously
+			rssManager.retrieveItems();
 
-			Selector source = factory.selector(nodeType, "selector");
+			// Save and check in
+			JcrUtils.updateLastModified(channelInfo);
+			channelInfo.getSession().save();
+			channelInfo.getSession().getWorkspace().getVersionManager()
+					.checkin(channelInfo.getPath());
 
-			Constraint defaultC = null;
-			// Parse the String
-			String[] strs = filter.trim().split(" ");
-			if (strs.length == 0) {
-				StaticOperand so = factory.literal(session.getValueFactory()
-						.createValue("*"));
-				defaultC = factory.fullTextSearch(source.getSelectorName(),
-						null, so);
-			} else {
-				for (String token : strs) {
-					StaticOperand so = factory.literal(session
-							.getValueFactory().createValue("*" + token + "*"));
-					Constraint currC = factory.fullTextSearch(
-							source.getSelectorName(), null, so);
-					if (defaultC == null)
-						defaultC = currC;
-					else
-						defaultC = factory.and(defaultC, currC);
-				}
-			}
-			QueryObjectModel query = factory.createQuery(source, defaultC,
-					null, null);
-			query.setLimit(QUERY_LIMIT);
-			QueryResult result = query.execute();
-			NodeIterator ni = result.getNodes();
-			return ni;
+			openChannelEditor(channelInfo);
+
+			String filter = srcFilterTxt.getText();
+			sourcesViewer.setInput(JcrUtils.nodeIteratorToList(doSearch(
+					RssTypes.RSS_CHANNEL_INFO, filter)));
+			newSourceTxt.setText("");
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Unable to list " + nodeType, e);
+			throw new ArgeoException("Unable to create a Stream", e);
 		}
+		return true;
+	}
+
+	private void openChannelEditor(Node channelInfo) throws RepositoryException {
+		CmsSession cmsSession = (CmsSession) this.newSourceTxt.getDisplay()
+				.getData(CmsSession.KEY);
+		cmsSession.navigateTo(channelInfo.getPath());
 	}
 
 	/* DEPENDENCY INJECTION */

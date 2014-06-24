@@ -18,7 +18,7 @@ import org.argeo.connect.streams.web.StreamsWebStyles;
 import org.argeo.connect.streams.web.utils.StreamsJcrUtils;
 
 /**
- * Some helper methods to generate HTML snippets and provide styled labels that
+ * Some helper methods to generate HTML snippet and provide styled labels that
  * are supported by RAP
  */
 public class RssHtmlProvider implements RssNames {
@@ -26,26 +26,19 @@ public class RssHtmlProvider implements RssNames {
 	private final static Log log = LogFactory.getLog(RssHtmlProvider.class);
 	private final static DateFormat df = new SimpleDateFormat(
 			"EEE, dd MMM yyyy");
-	private final static int SHORT_TITLE_LENGHT = 40;
-	@SuppressWarnings("unused")
-	private final static int SHORT_DESCRIPTION_LENGHT = 140;
 
 	public static String getChannelShort(Node node) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b>");
 		builder.append(StreamsJcrUtils.get(node, Property.JCR_TITLE));
 		builder.append("</b>");
-		builder.append("<br/>");
-		builder.append(getLastUpdateSnippet(node));
-		builder.append("<br/>");
 		builder.append(RssHtmlProvider.getTags(node));
 		builder.append("<br/>");
 
-		// String desc = StreamsJcrUtils.get(node,
-		// Property.JCR_DESCRIPTION);
-		// if (desc != null) {
-		// builder.append(desc);
-		// }
+		String desc = StreamsJcrUtils.get(node, Property.JCR_DESCRIPTION);
+		if (!"".equals(desc.trim())) {
+			builder.append(desc);
+		}
 		return builder.toString();
 	}
 
@@ -79,8 +72,9 @@ public class RssHtmlProvider implements RssNames {
 		StringBuilder builder = new StringBuilder();
 		String link = StreamsJcrUtils.get(node, RSS_LINK);
 
-		builder.append("<span style=\"float:left;padding:0px;white-space:pre-wrap;\"> ");
-		builder.append("<a " + StreamsWebStyles.CSS_URL_STYLE + " ");
+		builder.append("<span " + StreamsWebStyles.STREAMS_LIST_ITEM_STYLE
+				+ "> ");
+		builder.append("<a " + StreamsWebStyles.STREAMS_URL_STYLE + " ");
 		builder.append("href=\"");
 		builder.append(cleanLink(link));
 		builder.append("\"").append(" target=\"_blank\" ").append(">");
@@ -91,7 +85,7 @@ public class RssHtmlProvider implements RssNames {
 		builder.append("<br/>");
 		String desc = StreamsJcrUtils.get(node, Property.JCR_DESCRIPTION);
 		if (desc != null) {
-			builder.append(cleanDescription(desc));
+			builder.append(desc);
 		}
 		builder.append("</span>");
 		String result = builder.toString();
@@ -104,8 +98,17 @@ public class RssHtmlProvider implements RssNames {
 		StringBuilder builder = new StringBuilder();
 		String link = StreamsJcrUtils.get(node, RSS_LINK);
 		// TODO add image management
+		// Title and date.
+
+		// TESTING REVERT ONCE DONE
+		// builder.append("<span> <big> <a ")
+		// .append(StreamsWebStyles.CSS_URL_STYLE).append(" ");
+
 		builder.append("<span> <big> <a ")
-				.append(StreamsWebStyles.CSS_URL_STYLE).append(" ");
+				.append(StreamsWebStyles.STREAMS_URL_STYLE).append(" ");
+
+		// UNTIL HERE
+
 		builder.append("href=\"");
 		builder.append(cleanLink(link));
 		builder.append("\"").append(" target=\"_blank\" ").append(">");
@@ -114,21 +117,20 @@ public class RssHtmlProvider implements RssNames {
 		builder.append(title);
 		builder.append("</a>");
 		builder.append("</big> </span>");
-
-		// Add tags
-		builder.append(" Published on ");
 		builder.append(RssHtmlProvider.getPubDate(node));
+
+		// Tags
 		builder.append("<br/>");
 		builder.append(RssHtmlProvider.getTags(node));
 
+		// Description
 		String desc = StreamsJcrUtils.get(node, Property.JCR_DESCRIPTION);
 		if (desc != null) {
-			builder.append("<span style=\"float:left;padding:0px;white-space:pre-wrap;\" >");
+			builder.append("<span " + StreamsWebStyles.STREAMS_LIST_ITEM_STYLE
+					+ " >");
 			int index = desc.indexOf("<");
 			if (index > 0)
 				desc = desc.substring(0, desc.indexOf("<"));
-
-			// builder.append(shortenString(desc, SHORT_DESCRIPTION_LENGHT));
 			builder.append(desc);
 			builder.append("</span>");
 
@@ -189,50 +191,10 @@ public class RssHtmlProvider implements RssNames {
 		}
 	}
 
-	// TODO clean this
-	@SuppressWarnings("unused")
-	private final static String XML_PREFIX = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><xml>";
-	@SuppressWarnings("unused")
-	private final static String XML_SUFFIX = "</xml>";
-
+	// HELPERS
 	public static String cleanLink(String string) {
 		string = StringEscapeUtils.escapeXml(string.trim());
 		return string;
-	}
-
-	public static String cleanDescription(String string) {
-		// InputStream is = null;
-		try {
-			// int index = string.indexOf("<");
-			// if (index > 0)
-			// string = string.substring(0, index);
-
-			// string = string.replaceAll("&(?![#a-zA-Z0-9]+;)", "&#38;");
-			// string = string.replaceAll("&nbsp;", "&#160;");
-			// string = XML_PREFIX + string + XML_SUFFIX;
-			// SAXBuilder builder = new SAXBuilder(false);
-			// is = new ByteArrayInputStream(string.getBytes("utf-8"));
-			// Document doc = (Document) builder.build(new InputSource(is));
-			// Element rootNode = doc.getRootElement();
-			// String result = rootNode.getText();
-			// result = StringEscapeUtils.escapeXml(result.trim());
-			// return result;
-
-			// string = StringEscapeUtils.escapeXml(string.trim());
-			return string;
-
-		} catch (Exception ex) {
-			throw new ArgeoException("Unable to parse and clean description",
-					ex);
-		}
-	}
-
-	@SuppressWarnings("unused")
-	private static String shortenString(String string, int lenght) {
-		if (string.length() > SHORT_TITLE_LENGHT)
-			return string.substring(0, lenght) + "...";
-		else
-			return string;
 	}
 
 }
