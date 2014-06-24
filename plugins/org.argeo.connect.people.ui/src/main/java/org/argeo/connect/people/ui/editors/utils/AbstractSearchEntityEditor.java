@@ -59,6 +59,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	// Locally cache what is displayed in the UI. Enable exports among others.
 	private Row[] rows;
+	private String filterString;
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
@@ -137,8 +138,18 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		filterTxt.setText("");
 	}
 
-	public Row[] getRows(String extractId) {
+	/**
+	 * Returns an array with the rows that where retrieved by the last search
+	 * (or all if the filter has been reset in the mean while). For the time
+	 * being, returned rows are still *not* linked to the export ID
+	 */
+	public Row[] getRows(String exportId) {
 		return rows;
+	}
+
+	/** Generates a pseudo query String that defines the last filter applied */
+	public String getFilterAsString() {
+		return filterString;
 	}
 
 	protected void createListPart(Composite parent) {
@@ -175,6 +186,11 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		// we must explicitly set the items count
 		tableViewer.setItemCount(rows.length);
 		tableViewer.refresh();
+	}
+
+	/** Use this method to string representing current applied filter */
+	protected void setFilterString(String filterString) {
+		this.filterString = filterString;
 	}
 
 	protected Constraint getFreeTextConstraint(QueryObjectModelFactory factory,
