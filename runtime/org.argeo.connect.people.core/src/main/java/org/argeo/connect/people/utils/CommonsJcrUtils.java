@@ -489,19 +489,19 @@ public class CommonsJcrUtils {
 	}
 
 	/**
-	 * Concisely get a string that concat values of a multi-valued String
-	 * property. returns an empty String rather than null if this node doesn't
-	 * have this property or if the corresponding property is an empty string.
+	 * Concisely get a string that concatenates values of a multi-valued String
+	 * property. It returns an empty String rather than null if this node
+	 * doesn't have this property or if the corresponding property is an empty
+	 * string.
+	 * 
 	 * Useful in the read only label providers. Caller might define a
-	 * concatenation sign, otherwise a semi-colon and a space are used
+	 * concatenation string, otherwise a semi-colon and a space are used.
 	 */
 	public static String getMultiAsString(Node node, String propertyName,
 			String separator) {
 		try {
-
 			if (separator == null)
 				separator = "; ";
-			// original language & lenght
 			if (!node.hasProperty(propertyName))
 				return "";
 			else {
