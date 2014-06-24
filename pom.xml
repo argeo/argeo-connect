@@ -16,13 +16,10 @@
 		<version.connect>2.1.7-SNAPSHOT</version.connect>
 	</properties>
 	<modules>
-		<module>data</module>
 		<module>runtime</module>
 		<module>plugins</module>
 		<module>modules</module>
 		<module>dep</module>
-		<module>dist</module>
-		<module>demo</module>
 	</modules>
 	<url>${site.urlBase}/${developmentCycle.connect}</url>
 	<scm>

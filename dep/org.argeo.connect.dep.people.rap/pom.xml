@@ -40,14 +40,6 @@
 			</exclusions>
 		</dependency>
 
-		<!-- Node -->
-		<dependency>
-			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.dep.node</artifactId>
-			<version>2.1.7-SNAPSHOT</version>
-			<type>pom</type>
-		</dependency>
-
 		<!-- Test -->
 		<dependency>
 			<groupId>org.argeo.tp</groupId>

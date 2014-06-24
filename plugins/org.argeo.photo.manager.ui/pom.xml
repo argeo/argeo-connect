@@ -7,7 +7,7 @@
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>org.argeo.photo.manager.ui</artifactId>
-	<name>Photo Manager UI</name>
+	<name>Connect Media Manager UI</name>
 	<packaging>jar</packaging>
 	<build>
 		<plugins>

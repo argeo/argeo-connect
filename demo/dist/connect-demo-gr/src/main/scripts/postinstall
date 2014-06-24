@@ -1,5 +1,0 @@
-if [ $1 = "1" ];then
-	APP=gr
-	/sbin/chkconfig --add $APP
-	/sbin/chkconfig --level 3 $APP on
-fi

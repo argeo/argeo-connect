@@ -11,8 +11,6 @@
 	<name>Connect Runtime</name>
 	<packaging>pom</packaging>
 	<modules>
-		<module>org.argeo.gis.geotools</module>
-		<module>org.argeo.connect.core</module>
 		<module>org.argeo.connect.people.specs</module>
 		<module>org.argeo.connect.media.specs</module>
 		<module>org.argeo.connect.people.core</module>

@@ -10,8 +10,6 @@
 	<packaging>pom</packaging>
 	<name>Connect Modules</name>
 	<modules>
-		<module>org.argeo.connect.backend</module>
-		<module>org.argeo.connect.backend.gps</module>
 		<module>org.argeo.connect.people.services</module>
 	</modules>
 	<build>

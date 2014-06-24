@@ -1,6 +1,0 @@
-- direction
-- show values (speed, acc, rotation)
-- show reason
-- error messages ennoying
-- switch display between points and lines
-- define views (~ select in photoshop) upon which to apply clean (save and reuse them)
