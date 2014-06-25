@@ -10,10 +10,9 @@
 		<property name="openFileServiceId"
 			value="org.argeo.connect.people.rap.peopleOpenFileService" />
 	</bean>
-	
-	<bean id="org.argeo.connect.people.rap.peopleOpenFileService" class="org.argeo.connect.people.rap.PeopleOpenFileService"
-			scope="prototype">
-		<property name="repository"
-			ref="repository" />
+
+	<bean id="org.argeo.connect.people.rap.peopleOpenFileService"
+		class="org.argeo.connect.people.rap.PeopleOpenFileService" scope="prototype">
+		<property name="repository" ref="repository" />
 	</bean>
 </beans>

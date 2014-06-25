@@ -13,9 +13,7 @@
 	<modules>
 		<module>org.argeo.connect.dep.node.web</module>
 		<module>org.argeo.connect.dep.people</module>
-		<module>org.argeo.connect.dep.people.rcp</module>
 		<module>org.argeo.connect.dep.people.rap</module>
-		<module>org.argeo.connect.dep.streams.rap</module>
 	</modules>
 	<build>
 		<resources>
