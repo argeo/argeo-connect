@@ -22,8 +22,8 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.jcr.JcrUtils;
 
 /**
- * static utils methods to manage Person concepts in JCR. Rather use these
- * methods than direct Jcr queries in order to ease model evolution.
+ * Static utilitary methods to manage Person concepts in JCR. Rather use these
+ * methods than direct JCR queries in order to ease model evolution.
  */
 public class PersonJcrUtils implements PeopleNames {
 
@@ -41,12 +41,11 @@ public class PersonJcrUtils implements PeopleNames {
 						PEOPLE_FIRST_NAME);
 				if (CommonsJcrUtils.checkNotEmptyString(firstName)
 						|| CommonsJcrUtils.checkNotEmptyString(lastName)) {
-					displayName = lastName;
+					displayName = firstName;
 					if (CommonsJcrUtils.checkNotEmptyString(firstName)
 							&& CommonsJcrUtils.checkNotEmptyString(lastName))
-						displayName += ", ";
-					displayName += firstName;
-
+						displayName += " ";
+					displayName += lastName;
 				}
 			} else
 				displayName = CommonsJcrUtils.get(person, Property.JCR_TITLE);
