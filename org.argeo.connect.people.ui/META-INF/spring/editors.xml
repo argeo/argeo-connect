@@ -16,6 +16,15 @@
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
 
+	<bean id="defaultSearchEntityEditor" class="org.argeo.connect.people.ui.editors.DefaultSearchEntityEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleUiService" ref="peopleUiService" />
+	</bean>
+
+
+
 	<bean id="searchPersonEditor" class="org.argeo.connect.people.ui.editors.SearchPersonEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
