@@ -21,6 +21,7 @@
 	<modules>
 		<module>org.argeo.connect.cms</module>
 		<module>org.argeo.connect.people.specs</module>
+		<module>org.argeo.connect.media.specs</module>
 		<module>org.argeo.connect.people.core</module>
 		<module>org.argeo.connect.people.services</module>
 		<module>org.argeo.connect.people.ui</module>
