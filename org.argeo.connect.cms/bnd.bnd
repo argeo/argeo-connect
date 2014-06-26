@@ -1,2 +1,3 @@
-Import-Package: *,\
-org.springframework.core
+Import-Package: org.springframework.core,\
+	org.eclipse.swt,\
+	*

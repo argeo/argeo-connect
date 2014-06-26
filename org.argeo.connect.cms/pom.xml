@@ -11,8 +11,13 @@
 	<artifactId>org.argeo.connect.cms</artifactId>
 	<name>Connect Content Management System</name>
 	<packaging>jar</packaging>
-	
-	<!--  TODO move to parent -->
+
+	<!-- TODO move to parent -->
+	<properties>
+		<!-- FIXME factorize -->
+		<version.rap>2.2.0-R-20131204-0942</version.rap>
+		<version.rap.addons>0.2.0.20131212-1229</version.rap.addons>
+	</properties>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<resources>
@@ -38,7 +43,7 @@
 					<exclude>bin/**</exclude>
 					<exclude>pom.xml</exclude>
 					<exclude>build.properties</exclude>
-					<exclude>bnd.bnd</exclude>
+					<exclude>*.bnd</exclude>
 					<exclude>*.target</exclude>
 				</excludes>
 			</resource>
@@ -56,26 +61,37 @@
 			</plugin>
 		</plugins>
 	</build>
-<!-- 	<build> -->
-<!-- 		<plugins> -->
-<!-- 			<plugin> -->
-<!-- 				<groupId>org.apache.felix</groupId> -->
-<!-- 				<artifactId>maven-bundle-plugin</artifactId> -->
-<!-- 				<configuration> -->
-<!-- 					<instructions> -->
-<!-- 						Different from plugin -->
-<!-- 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName> -->
-<!-- 						<Bundle-Activator>org.argeo.connect.files.web.Activator</Bundle-Activator> -->
-<!-- 						<Require-Bundle>org.eclipse.rap.rwt;bundle-version="[2.2.0,3.0.0)"</Require-Bundle> -->
-<!-- 						<Import-Package> -->
-<!-- 							*, -->
-<!-- 							org.springframework.core -->
-<!-- 						</Import-Package> -->
-<!-- 					</instructions> -->
-<!-- 				</configuration> -->
-<!-- 			</plugin> -->
-<!-- 		</plugins> -->
-<!-- 	</build> -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.argeo.tp.rap.platform</groupId>
+				<artifactId>binaries</artifactId>
+				<version>${version.rap}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<!-- <build> -->
+	<!-- <plugins> -->
+	<!-- <plugin> -->
+	<!-- <groupId>org.apache.felix</groupId> -->
+	<!-- <artifactId>maven-bundle-plugin</artifactId> -->
+	<!-- <configuration> -->
+	<!-- <instructions> -->
+	<!-- Different from plugin -->
+	<!-- <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName> -->
+	<!-- <Bundle-Activator>org.argeo.connect.files.web.Activator</Bundle-Activator> -->
+	<!-- <Require-Bundle>org.eclipse.rap.rwt;bundle-version="[2.2.0,3.0.0)"</Require-Bundle> -->
+	<!-- <Import-Package> -->
+	<!-- *, -->
+	<!-- org.springframework.core -->
+	<!-- </Import-Package> -->
+	<!-- </instructions> -->
+	<!-- </configuration> -->
+	<!-- </plugin> -->
+	<!-- </plugins> -->
+	<!-- </build> -->
 	<dependencies>
 		<dependency>
 			<groupId>org.argeo.commons.server</groupId>
@@ -89,12 +105,14 @@
 			<version>${version.argeo-commons}</version>
 		</dependency>
 
-		<!-- RAP only dependency, needed at compile time -->
+		<!-- RAP -->
 		<dependency>
-			<groupId>org.argeo.commons.base</groupId>
-			<artifactId>org.argeo.eclipse.ui.rap</artifactId>
-			<version>${version.argeo-commons}</version>
-			<scope>provided</scope>
+			<groupId>org.argeo.tp.rap.platform</groupId>
+			<artifactId>org.eclipse.rap.rwt</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.rap.platform</groupId>
+			<artifactId>org.eclipse.rap.jface</artifactId>
 		</dependency>
 	</dependencies>
 </project>
