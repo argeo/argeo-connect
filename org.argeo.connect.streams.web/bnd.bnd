@@ -1,0 +1,17 @@
+Bundle-SymbolicName: org.argeo.connect.streams.web;singleton:=true
+Bundle-Activator: org.argeo.connect.people.ui.PeopleUiPlugin
+Require-Bundle: org.eclipse.ui;resolution:=optional,\
+ org.eclipse.core.runtime;resolution:=optional,\
+ org.eclipse.rap.ui;resolution:=optional,\
+ org.eclipse.rap.ui.workbench;resolution:=optional
+Import-Package:*,\
+	com.sun.syndication,\
+	com.sun.syndication.feed.synd.impl,\
+	com.sun.syndication.io.impl,\
+	javax.jcr.nodetype,\
+	org.springframework.core,\
+	org.argeo.connect.people,\
+	org.argeo.security.ui.rap;resolution:=optional,\
+	org.xml.sax;version="0.0.0";resolution:=optional,\
+	org.xml.sax.helpers;version="0.0.0";resolution:=optional
+

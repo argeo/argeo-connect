@@ -1,0 +1,13 @@
+Bundle-SymbolicName: org.argeo.connect.people.ui;singleton:=true
+Bundle-Activator: org.argeo.connect.people.ui.PeopleUiPlugin
+Require-Bundle: org.eclipse.ui;resolution:=optional,\
+ org.eclipse.core.runtime;resolution:=optional,\
+ org.eclipse.rap.ui;resolution:=optional,\
+ org.eclipse.rap.ui.workbench;resolution:=optional
+Import-Package:*,\
+	org.argeo.connect.people,\
+	org.argeo.connect.media,\
+	org.argeo.eclipse.spring,\
+	org.springframework.dao,\
+	org.springframework.core
+

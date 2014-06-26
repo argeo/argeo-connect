@@ -14,12 +14,19 @@
 	<version>2.1.7-SNAPSHOT</version>
 	<properties>
 		<version.connect>2.1.7-SNAPSHOT</version.connect>
+		<!-- FIXME factorize -->
+		<version.rap>2.2.0-R-20131204-0942</version.rap>
+		<version.rap.addons>0.2.0.20131212-1229</version.rap.addons>
 	</properties>
 	<modules>
 		<module>org.argeo.connect.cms</module>
-		<module>runtime</module>
-		<module>plugins</module>
-		<module>modules</module>
+		<module>org.argeo.connect.people.specs</module>
+		<module>org.argeo.connect.people.core</module>
+		<module>org.argeo.connect.people.services</module>
+		<module>org.argeo.connect.people.ui</module>
+		<module>org.argeo.photo.manager.ui</module>
+		<module>org.argeo.connect.files.web</module>
+		<module>org.argeo.connect.streams.web</module>
 		<module>dep</module>
 	</modules>
 	<url>${site.urlBase}/${developmentCycle.connect}</url>
@@ -103,7 +110,46 @@ which are used as well as that of the covered work.]]>
 			</releases> </repository> -->
 	</repositories>
 	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>src</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>.</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+				<excludes>
+					<exclude>.*</exclude>
+					<exclude>.*/**</exclude>
+					<exclude>src/**</exclude>
+					<exclude>target/**</exclude>
+					<exclude>bin/**</exclude>
+					<exclude>pom.xml</exclude>
+					<exclude>build.properties</exclude>
+					<exclude>*.bnd</exclude>
+					<exclude>*.target</exclude>
+				</excludes>
+			</resource>
+		</resources>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<_include>bnd.bnd</_include>
+					</instructions>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>com.mycila.maven-license-plugin</groupId>
 				<artifactId>maven-license-plugin</artifactId>
@@ -113,6 +159,18 @@ which are used as well as that of the covered work.]]>
 			</plugin>
 		</plugins>
 	</build>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.argeo.tp.rap.platform</groupId>
+				<artifactId>binaries</artifactId>
+				<version>${version.rap}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<distributionManagement>
 		<repository>
 			<id>staging</id>
