@@ -61,15 +61,15 @@
 
 		<!-- TODO clean this - everything still must be defined in the parent files.web 
 			bundle. -->
-		<property name="styleSheets">
-			<map>
-				<entry key="org.eclipse.rap.rwt.theme.Default">
-					<list>
-						<value>theme/argeo-files.css</value>
-					</list>
-				</entry>
-			</map>
-		</property>
+<!-- 		<property name="styleSheets"> -->
+<!-- 			<map> -->
+<!-- 				<entry key="org.eclipse.rap.rwt.theme.Default"> -->
+<!-- 					<list> -->
+<!-- 						<value>theme/argeo-files.css</value> -->
+<!-- 					</list> -->
+<!-- 				</entry> -->
+<!-- 			</map> -->
+<!-- 		</property> -->
 		<property name="entryPointsBranding">
 			<map>
 				<entry key="/streams">

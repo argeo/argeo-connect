@@ -20,11 +20,10 @@
 					<instructions>
 						<!-- Different from plugin -->
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-						<Bundle-Activator>org.argeo.connect.files.web.Activator</Bundle-Activator>
-						<Require-Bundle>org.eclipse.rap.rwt;bundle-version="[2.2.0,3.0.0)"</Require-Bundle>
+						<_include>bnd.bnd</_include>
 						<Import-Package>
-							*,
-							org.springframework.core
+							org.springframework.core,
+							*
 						</Import-Package>
 					</instructions>
 				</configuration>
@@ -32,6 +31,12 @@
 		</plugins>
 	</build>
 	<dependencies>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.cms</artifactId>
+			<version>2.1.7-SNAPSHOT</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.argeo.commons.server</groupId>
 			<artifactId>org.argeo.server.jcr</artifactId>
@@ -42,14 +47,6 @@
 			<groupId>org.argeo.commons.security</groupId>
 			<artifactId>org.argeo.security.core</artifactId>
 			<version>${version.argeo-commons}</version>
-		</dependency>
-
-		<!-- RAP only dependency, needed at compile time -->
-		<dependency>
-			<groupId>org.argeo.commons.base</groupId>
-			<artifactId>org.argeo.eclipse.ui.rap</artifactId>
-			<version>${version.argeo-commons}</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

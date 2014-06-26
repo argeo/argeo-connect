@@ -21,10 +21,10 @@
 						<!-- Different from plugin -->
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Activator>org.argeo.connect.streams.web.StreamsWebActivator</Bundle-Activator>
-						<Require-Bundle>
-							org.eclipse.rap.rwt;bundle-version="[2.2.0,3.0.0)",
-							org.eclipse.rap.jface;bundle-version="[2.2.0,3.0.0)"
-						</Require-Bundle>
+<!-- 						<Require-Bundle> -->
+<!-- 							org.eclipse.rap.rwt;bundle-version="[2.2.0,3.0.0)", -->
+<!-- 							org.eclipse.rap.jface;bundle-version="[2.2.0,3.0.0)" -->
+<!-- 						</Require-Bundle> -->
 						<Import-Package>
 							*,
 							com.sun.syndication,
@@ -49,10 +49,10 @@
 		</plugins>
 	</build>
 	<dependencies>
-		<!-- Argeo Web -->
+		<!-- Connect -->
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.files.web</artifactId>
+			<artifactId>org.argeo.connect.cms</artifactId>
 			<version>2.1.7-SNAPSHOT</version>
 		</dependency>
 
