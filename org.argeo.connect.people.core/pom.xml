@@ -35,20 +35,5 @@
 			<artifactId>org.argeo.security.core</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
-
-		<!-- add vCard Parsing abilities -->
-		<!-- <dependency> <groupId>org.argeo.tp</groupId> <artifactId>ez-vcard</artifactId> 
-			<version>${version.ez-vcard}</version> </dependency> -->
-
-		<!-- TEST -->
-		<!-- <dependency> <groupId>org.argeo.commons.server</groupId> <artifactId>org.argeo.server.jackrabbit</artifactId> 
-			<version>${version.argeo-commons}</version> <scope>test</scope> </dependency> 
-			<dependency> <groupId>org.argeo.tp</groupId> <artifactId>org.h2</artifactId> 
-			<scope>test</scope> </dependency> <dependency> <groupId>org.argeo.commons.base</groupId> 
-			<artifactId>org.argeo.support.junit</artifactId> <version>${version.argeo-commons}</version> 
-			<scope>test</scope> </dependency> -->
-		<!-- See Argeo commons Bug #55 - https://www.argeo.org/bugzilla/show_bug.cgi?id=55 -->
-		<!-- <dependency> <groupId>org.argeo.tp</groupId> <artifactId>org.eclipse.osgi</artifactId> 
-			<scope>test</scope> </dependency> -->
 	</dependencies>
 </project>
