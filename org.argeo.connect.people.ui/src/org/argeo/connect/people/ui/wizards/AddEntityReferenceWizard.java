@@ -12,7 +12,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.ui.providers.BasicNodeListContentProvider;
@@ -42,6 +41,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbench;
 
 /**
  * Generic one page wizard to add one or more entity to a given Node. Provides a
@@ -52,10 +52,14 @@ import org.eclipse.ui.IEditorPart;
 public abstract class AddEntityReferenceWizard extends Wizard {
 	// private final static Log log = LogFactory.getLog(AddEntityWizard.class);
 
+	// Context
 	private final Repository repository;
 	private Session currSession;
 	private PeopleService peopleService;
 	private PeopleUiService peopleUiService;
+	private IWorkbench workbench;
+
+	// Business objects
 	private List<Node> selectedItems = new ArrayList<Node>();
 
 	// This page widgets
@@ -63,12 +67,13 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 	protected TableViewer itemsViewer;
 
 	public AddEntityReferenceWizard(Repository repository,
-			PeopleService peopleService, PeopleUiService peopleUiService) {
+			PeopleService peopleService, PeopleUiService peopleUiService,
+			IWorkbench workbench) {
 		this.repository = repository;
 		this.currSession = CommonsJcrUtils.login(repository);
-
 		this.peopleService = peopleService;
 		this.peopleUiService = peopleUiService;
+		this.workbench = workbench;
 	}
 
 	// //////////////////////////////////////
@@ -215,8 +220,7 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 						throw new PeopleException(
 								"Unable to add node by double click");
 					}
-					IEditorPart iep = PeopleUiPlugin.getDefault()
-							.getWorkbench().getActiveWorkbenchWindow()
+					IEditorPart iep = workbench.getActiveWorkbenchWindow()
 							.getActivePage().getActiveEditor();
 					if (iep != null && iep instanceof AbstractEntityCTabEditor)
 						((AbstractEntityCTabEditor) iep).forceRefresh();

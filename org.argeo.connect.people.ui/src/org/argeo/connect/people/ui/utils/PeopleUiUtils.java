@@ -15,7 +15,6 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.composites.dropdowns.PeopleAbstractDropDown;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -42,6 +41,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
@@ -327,13 +327,13 @@ public class PeopleUiUtils {
 	 * Shortcut to add a Text Modifylistener that updates a LONG property on a
 	 * Node. Checks the input validity while the user is typing
 	 */
-	public static void addNbOnlyTxtModifyListener(final AbstractFormPart part,
-			final Text text, final Node entity, final String propName,
-			final int propType) {
+	public static void addNbOnlyTxtModifyListener(IWorkbench workbench,
+			final AbstractFormPart part, final Text text, final Node entity,
+			final String propName, final int propType) {
 		final ControlDecoration decoration = new ControlDecoration(text,
 				SWT.TOP | SWT.LEFT);
-		decoration.setImage(PeopleUiPlugin.getDefault().getWorkbench()
-				.getSharedImages().getImage(ISharedImages.IMG_DEC_FIELD_ERROR));
+		decoration.setImage(workbench.getSharedImages().getImage(
+				ISharedImages.IMG_DEC_FIELD_ERROR));
 		decoration.hide();
 
 		text.addModifyListener(new ModifyListener() {

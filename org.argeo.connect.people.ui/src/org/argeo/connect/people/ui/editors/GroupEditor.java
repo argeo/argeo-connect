@@ -64,8 +64,7 @@ public class GroupEditor extends AbstractEntityCTabEditor {
 		if (displayName.length() < 2) {
 			String msg = "Please note that you must define a group title"
 					+ " that is at least 2 character long.";
-			MessageDialog.openError(PeopleUiPlugin.getDefault().getWorkbench()
-					.getDisplay().getActiveShell(), "Non-valid information",
+			MessageDialog.openError(this.getSite().getShell(), "Non-valid information",
 					msg);
 
 			return false;

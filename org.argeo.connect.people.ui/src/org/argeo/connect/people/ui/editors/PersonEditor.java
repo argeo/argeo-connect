@@ -114,8 +114,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 					&& (useDefaultDisplay || displayName.length() < 2)) {
 				String msg = "Please note that you must define a first name, a "
 						+ "last name or a display name that is at least 2 character long.";
-				MessageDialog.openError(PeopleUiPlugin.getDefault()
-						.getWorkbench().getDisplay().getActiveShell(),
+				MessageDialog.openError(this.getSite().getShell(),
 						"Non-valid information", msg);
 
 				return false;

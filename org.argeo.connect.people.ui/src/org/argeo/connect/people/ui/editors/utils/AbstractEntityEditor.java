@@ -17,7 +17,6 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.commands.CancelAndCheckInItem;
 import org.argeo.connect.people.ui.commands.CheckOutItem;
 import org.argeo.connect.people.ui.commands.DeleteEntity;
@@ -48,9 +47,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchCommandConstants;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IFormPart;
@@ -575,9 +572,8 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	/** Manage check out state and corresponding refresh of the UI */
 	protected void notifyCheckOutStateChange() {
 		// update enable state of the check out button
-		IWorkbench iw = PeopleUiPlugin.getDefault().getWorkbench();
-		IWorkbenchWindow window = iw.getActiveWorkbenchWindow();
-		ISourceProviderService sourceProviderService = (ISourceProviderService) window
+		ISourceProviderService sourceProviderService = (ISourceProviderService) this
+				.getSite().getWorkbenchWindow()
 				.getService(ISourceProviderService.class);
 		CheckoutSourceProvider csp = (CheckoutSourceProvider) sourceProviderService
 				.getSourceProvider(CheckoutSourceProvider.CHECKOUT_STATE);

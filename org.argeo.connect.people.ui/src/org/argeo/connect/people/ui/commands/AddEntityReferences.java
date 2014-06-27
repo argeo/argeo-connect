@@ -61,7 +61,7 @@ public class AddEntityReferences extends AbstractHandler {
 			if (referencedJcrId != null)
 				referenced = session.getNodeByIdentifier(referencedJcrId);
 
-			AddEntityReferenceWizard wizard = getCorrespondingWizard(
+			AddEntityReferenceWizard wizard = getCorrespondingWizard(event,
 					referencing, referenced);
 
 			if (wizard == null) {
@@ -92,8 +92,9 @@ public class AddEntityReferences extends AbstractHandler {
 		return null;
 	}
 
-	protected AddEntityReferenceWizard getCorrespondingWizard(Node referencing,
-			Node referenced) throws RepositoryException {
+	protected AddEntityReferenceWizard getCorrespondingWizard(
+			ExecutionEvent event, Node referencing, Node referenced)
+			throws RepositoryException {
 		if (referencing != null) {
 			if (referencing.isNodeType(PeopleTypes.PEOPLE_PERSON))
 				return null;

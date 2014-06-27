@@ -1,15 +1,11 @@
 package org.argeo.connect.people.ui.toolkits;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.jcr.Node;
 import javax.jcr.query.Row;
 
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.editors.utils.AbstractEntityEditor;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
@@ -19,10 +15,7 @@ import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.rap.rwt.RWT;
@@ -34,7 +27,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.IEditorPart;
 
 public class MailingListToolkit {
 
@@ -146,26 +138,26 @@ public class MailingListToolkit {
 
 	}
 
-	/** Extends to provide the correct add call back method */
-	public abstract class AddDoubleClickListener implements
-			IDoubleClickListener {
-		@Override
-		public void doubleClick(DoubleClickEvent event) {
-			// same as itemsViewer
-			Node selectedNode = (Node) ((IStructuredSelection) ((TableViewer) event
-					.getSource()).getSelection()).getFirstElement();
-			List<Node> nodes = new ArrayList<Node>();
-			nodes.add(selectedNode);
-			add(nodes);
-			IEditorPart iep = PeopleUiPlugin.getDefault().getWorkbench()
-					.getActiveWorkbenchWindow().getActivePage()
-					.getActiveEditor();
-			if (iep != null && iep instanceof AbstractEntityEditor)
-				((AbstractEntityEditor) iep).forceRefresh();
-		}
-
-		protected abstract void add(List<Node> nodes);
-	}
+	// /** Extends to provide the correct add call back method */
+	// public abstract class AddDoubleClickListener implements
+	// IDoubleClickListener {
+	// @Override
+	// public void doubleClick(DoubleClickEvent event) {
+	// // same as itemsViewer
+	// Node selectedNode = (Node) ((IStructuredSelection) ((TableViewer) event
+	// .getSource()).getSelection()).getFirstElement();
+	// List<Node> nodes = new ArrayList<Node>();
+	// nodes.add(selectedNode);
+	// add(nodes);
+	// IEditorPart iep = PeopleUiPlugin.getDefault().getWorkbench()
+	// .getActiveWorkbenchWindow().getActivePage()
+	// .getActiveEditor();
+	// if (iep != null && iep instanceof AbstractEntityEditor)
+	// ((AbstractEntityEditor) iep).forceRefresh();
+	// }
+	//
+	// protected abstract void add(List<Node> nodes);
+	// }
 
 	private class SelectedEditingSupport extends EditingSupport {
 		private static final long serialVersionUID = 1L;
