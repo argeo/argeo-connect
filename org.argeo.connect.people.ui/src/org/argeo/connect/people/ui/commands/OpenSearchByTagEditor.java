@@ -10,6 +10,7 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
  * Open an editor that display a table filtered by tag
@@ -27,9 +28,8 @@ public class OpenSearchByTagEditor extends AbstractHandler {
 			SearchNodeEditorInput eei = new SearchNodeEditorInput(
 					PeopleTypes.PEOPLE_ENTITY);
 
-			IEditorPart part = PeopleUiPlugin.getDefault().getWorkbench()
-					.getActiveWorkbenchWindow().getActivePage()
-					.openEditor(eei, getEditorId());
+			IEditorPart part = HandlerUtil.getActiveWorkbenchWindow(event)
+					.getActivePage().openEditor(eei, getEditorId());
 
 			SearchByTagEditor editor = (SearchByTagEditor) part;
 			if (editor != null)

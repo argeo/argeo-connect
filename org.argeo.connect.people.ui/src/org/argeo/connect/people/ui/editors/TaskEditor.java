@@ -359,9 +359,8 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 								.addRefToMultiValuedProp(task,
 										PeopleNames.PEOPLE_RELATED_TO, node);
 						if (errMsg != null)
-							MessageDialog.openError(PeopleUiPlugin.getDefault()
-									.getWorkbench().getActiveWorkbenchWindow()
-									.getShell(), "Dupplicates", errMsg);
+							MessageDialog.openError(shell, "Dupplicates",
+									errMsg);
 						else {
 							headerPart.refresh();
 							headerPart.markDirty();

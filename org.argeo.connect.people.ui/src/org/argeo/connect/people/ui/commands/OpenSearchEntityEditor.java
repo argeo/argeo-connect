@@ -10,6 +10,7 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
  * Open an editor that display a filtered table for a given JCR Node type
@@ -33,12 +34,10 @@ public class OpenSearchEntityEditor extends AbstractHandler {
 					basePath, name);
 
 			if (entityType.equals(PeopleTypes.PEOPLE_PERSON)) {
-				PeopleUiPlugin.getDefault().getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage()
+				HandlerUtil.getActiveWorkbenchWindow(event).getActivePage()
 						.openEditor(eei, SearchPersonEditor.ID);
 			} else
-				PeopleUiPlugin.getDefault().getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage()
+				HandlerUtil.getActiveWorkbenchWindow(event).getActivePage()
 						.openEditor(eei, DefaultSearchEntityEditor.ID);
 		} catch (PartInitException pie) {
 			throw new PeopleException(

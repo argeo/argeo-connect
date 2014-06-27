@@ -24,6 +24,7 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
  * Open the corresponding editor given a node. Centralize here mapping between a
@@ -73,8 +74,7 @@ public class OpenEntityEditor extends AbstractHandler {
 
 			String editorId = getEditorIdFromNode(entity);
 			if (editorId != null)
-				PeopleUiPlugin.getDefault().getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage()
+				HandlerUtil.getActiveWorkbenchWindow(event).getActivePage()
 						.openEditor(eei, editorId);
 		} catch (PartInitException pie) {
 			throw new PeopleException(

@@ -53,9 +53,8 @@ public class EditEntityReference extends AbstractHandler {
 			if (!wasCheckedOut)
 				CommonsJcrUtils.checkout(versionableParent);
 
-			MessageDialog.openConfirm(PeopleUiPlugin.getDefault()
-					.getWorkbench().getDisplay().getActiveShell(), "Edit",
-					"Implement edition");
+			MessageDialog.openConfirm(HandlerUtil.getActiveShell(event),
+					"Edit", "Implement edition");
 
 			if (wasCheckedOut)
 				versionableParent.getSession().save();

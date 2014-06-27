@@ -41,9 +41,8 @@ public class RemoveEntityReference extends AbstractHandler {
 		String msg = "Your are about to definitively remove this reference.\n"
 				+ "Are you sure you want to proceed ?";
 
-		boolean result = MessageDialog.openConfirm(PeopleUiPlugin.getDefault()
-				.getWorkbench().getDisplay().getActiveShell(),
-				"Confirm Deletion", msg);
+		boolean result = MessageDialog.openConfirm(
+				HandlerUtil.getActiveShell(event), "Confirm Deletion", msg);
 
 		if (!result)
 			return null;
