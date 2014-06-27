@@ -47,7 +47,10 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 
 	@Override
 	public String getOpenFileCmdId() {
-		return "org.argeo.connect.people.ui.specific.openFile";
+		// TODO clean this.
+		throw new PeopleException("OpenFile command is undefined for "
+				+ "PeopleUiService base implementation");
+		// return "org.argeo.connect.people.ui.specific.openFile";
 	}
 
 	public List<String> getValueList(Session session, String basePath,

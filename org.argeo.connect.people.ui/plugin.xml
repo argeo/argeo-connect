@@ -355,17 +355,6 @@
     	</command>
     	<!-- Until there --> 
 
-    	<!-- Exports generation and management -->
-		<command
-			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
-      		id="org.argeo.connect.people.ui.getCalcExport"
-            name="Generate a calc export">
-            <commandParameter
-         		id="param.exportId"
-         		name="An export ID">
-  	 		</commandParameter>
-    	</command>    	
-    	
     	<!-- Tags Management -->  
 		<command
 			defaultHandler="org.argeo.connect.people.ui.commands.OpenSearchByTagEditor"
@@ -377,11 +366,11 @@
          	</commandParameter>
 		</command>    
   		
-  		<command
+  		<!-- <command
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
 			id="org.argeo.connect.people.ui.forceTagCacheRefresh"
 			name="Force an update of the Tags cache in the repository">
-  		</command>
+  		</command> -->
 
     	<!-- Utility command to simply open an URL --> 
     	<command
@@ -477,20 +466,6 @@
 				<visibleWhen>
 					<with variable="activePart">
 						<instanceof value="org.argeo.connect.people.ui.utils.Refreshable" />
-					</with>
-				</visibleWhen>
-			</command>
- 			
- 			<!-- Launch Calc extract generation --> 
-			<command
-				commandId="org.argeo.connect.people.ui.getCalcExport"
-				icon="icons/spreadsheet.gif"
-				label="Generate extract"
-				style="push"
-				tooltip="Generate an tabular extract for the current entity editor">
-				<visibleWhen>
-					<with variable="activePart">
-						<instanceof value="org.argeo.connect.people.ui.exports.calc.ITableProvider" />
 					</with>
 				</visibleWhen>
 			</command>
