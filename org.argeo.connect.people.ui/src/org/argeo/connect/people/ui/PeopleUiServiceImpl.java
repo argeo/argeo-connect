@@ -91,14 +91,16 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 		try {
 			if (session.nodeExists(resourcePath)) {
 				Node node = session.getNode(resourcePath);
-				Value[] values = node.getProperty(propertyName).getValues();
-				for (Value value : values) {
-					String curr = value.getString();
-					if (CommonsJcrUtils.isEmptyString(filter)
-							|| CommonsJcrUtils.checkNotEmptyString(curr)
-							&& curr.toLowerCase()
-									.contains(filter.toLowerCase()))
-						result.add(curr);
+				if (node.hasProperty(propertyName)) {
+					Value[] values = node.getProperty(propertyName).getValues();
+					for (Value value : values) {
+						String curr = value.getString();
+						if (CommonsJcrUtils.isEmptyString(filter)
+								|| CommonsJcrUtils.checkNotEmptyString(curr)
+								&& curr.toLowerCase().contains(
+										filter.toLowerCase()))
+							result.add(curr);
+					}
 				}
 			}
 		} catch (RepositoryException re) {

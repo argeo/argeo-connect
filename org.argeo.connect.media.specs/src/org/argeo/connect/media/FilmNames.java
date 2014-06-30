@@ -24,20 +24,14 @@ public interface FilmNames {
 	public final static String FILM_SOUND_TYPE = "film:soundType";
 	public final static String FILM_COLOUR_TYPE = "film:colourType";
 
-	@Deprecated
-	public final static String FILM_DIRECTORS = "film:directors";
-	// The corresponding value to ease various searches
-	// @Deprecated
-	// Use FILM_CACHE_PROD_COUNTRIES instead.
-	// public final static String FILM_PROD_COUNTRY_STRING =
-	// "film:prodCountryString";
-
-	// maybe too specific
+	// Maybe too specific - should be moved to client project
 	public final static String FILM_IS_PREMIERE = "film:isPremiere";
 	public final static String FILM_IS_STUDENT_PROJECT = "film:isStudentProject";
 	public final static String FILM_IS_DEBUT_FILM = "film:isDebutFilm";
 	public final static String FILM_HAS_TRAILER = "film:hasTrailer";
 	public final static String FILM_EXTRACTS_ON_TV_ALLOWED = "extractsOnTvAllowed";
+	public final static String FILM_SUBMITTED_FOR = "film:submittedFor";
+	
 
 	// Cache some children properties to ease full text search:
 	// primary title info, directors...

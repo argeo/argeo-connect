@@ -33,12 +33,12 @@
 // Subnode with film prints
 + film:prints (nt:unstructured)
 
-// maybe too specific
+// maybe too specific - should be moved to client specific project 
 - film:isStudentProject (BOOLEAN)
 - film:isDebutFilm (BOOLEAN)
 - film:hasTrailer (BOOLEAN)
 - film:extractsOnTvAllowed (BOOLEAN)
-
+- film:submittedFor (STRING)
 
 // cache some values to ease full text search 
 - film:cachePTitle (STRING) IGNORE
@@ -50,7 +50,7 @@
 
 
 
-// LEGACY - kept for [2.1.x, 2.3[ retrocompatibility 
+// LEGACY - kept for [2.1.x, 2.3[ retro compatibility 
 // To be removed in 2.4+ versions 
 - film:cacheOTitle (STRING) IGNORE
 - film:cacheOTitleArticle (STRING) IGNORE
@@ -62,10 +62,11 @@
 - film:originalLanguage (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
 - film:prodCountry (STRING) * // A list of countries as defined in ISO 3166-1
                                     // primary production country must be the first of the list
-// Should we add this in the cache ??
-- film:prodCountryString  (STRING) * // The corresponding english values to ease search and rendering 
-
+- film:prodCountryString  (STRING) * // The corresponding English values to ease search and rendering 
 - film:isPremiere (BOOLEAN)
+
+// END LEGACY
+
 
 // Titles
 [film:title] > nt:unstructured, people:language, people:orderable
