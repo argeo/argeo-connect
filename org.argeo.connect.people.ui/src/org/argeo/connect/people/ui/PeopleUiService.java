@@ -8,10 +8,10 @@ import javax.jcr.Session;
 import org.eclipse.swt.graphics.Image;
 
 /**
- * Centralize here the definition of context specific parameter (for instance
- * the name of the command to open editors so that it is easily extended by
- * specific extensions
+ * Centralizes the definition of context specific parameters (Among other, the
+ * name of the command to open editors or default editor
  */
+
 public interface PeopleUiService {
 	/**
 	 * Provide the plugin specific ID of the {@code OpenEntityEditor} command
@@ -24,6 +24,8 @@ public interface PeopleUiService {
 	public String getOpenSearchByTagEditorCmdId();
 
 	public String getOpenFileCmdId();
+
+	public String getDefaultEditorId();
 
 	public List<String> getValueList(Session session, String basePath,
 			String filter);

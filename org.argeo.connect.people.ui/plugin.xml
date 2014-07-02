@@ -4,22 +4,24 @@
 	<!-- Perspective --> 
 	<extension
     	point="org.eclipse.ui.perspectives">
+		<!-- RATHER DEFINE THE PERSPECTIVE DIRECTLY IN THE APPS. -->  
+		
 		<!-- People specific business admin perspective -->  
-		<perspective
+		<!-- <perspective
 			class="org.argeo.connect.people.ui.BusinessAdminPerspective"
 			icon="icons/people.gif"
             id="org.argeo.connect.people.ui.businessAdminPerspective"
             name="User management">
 		</perspective>
-      
+      -->
 		<!-- Draft perspective for people standalone application --> 
-		
+		<!--
 		<perspective
 			class="org.argeo.connect.people.ui.PeoplePerspective"
 			icon="icons/people.gif"
             id="org.argeo.connect.people.ui.peoplePerspective"
             name="People">
-		</perspective>
+		</perspective> -->
 	</extension>
 
     <!-- VIEWS -->

@@ -53,6 +53,12 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 		// return "org.argeo.connect.people.ui.specific.openFile";
 	}
 
+	@Override
+	public String getDefaultEditorId() {
+		throw new PeopleException("No default editor has been defined for "
+				+ "PeopleUiService base implementation");
+	}
+
 	public List<String> getValueList(Session session, String basePath,
 			String filter) {
 		return getValueList(session, NodeType.MIX_TITLE, basePath, filter);
