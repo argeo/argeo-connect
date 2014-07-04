@@ -7,6 +7,14 @@ public interface PeopleNames {
 	// TODO clean this
 	public static String PEOPLE_IS_DRAFT = "people:isDraft";
 
+	/**
+	 * An implementation specific UID, might be a JCR node Identifier but it is
+	 * not compulsory We personally use the type 4 (pseudo randomly generated)
+	 * UUID - we retrieve them simply in java with this method
+	 * <code>UUID.randomUUID().toString()</code>
+	 */
+	public final static String PEOPLE_UID = "people:uid";
+
 	/** Distinguished names */
 	// public static String PEOPLE_DN = "people:dn";
 	/** Class 3 UUID of the distinguished name in UTF-8 */
@@ -41,15 +49,12 @@ public interface PeopleNames {
 	public final static String PEOPLE_JOBS = "people:jobs";
 	// To enable synchronisation with third party systems
 	public final static String PEOPLE_EXTERNAL_IDS = "people:externalIds";
-		
+
 	// Widely used property names
 	public final static String PEOPLE_LANG = "people:lang";
 	public final static String PEOPLE_PICTURE = "people:picture";
 	// the iso code of a given resource
 	public final static String PEOPLE_ISO_CODE = "people:isoCode";
-	// an implementation specific UID, might be a JCR node Identifier but it is
-	// not compulsory
-	public final static String PEOPLE_UID = "people:uid";
 	// Reference an other entity using the implementation specific UID
 	public final static String PEOPLE_REF_UID = "people:refUid";
 	// Primary boolean flag
