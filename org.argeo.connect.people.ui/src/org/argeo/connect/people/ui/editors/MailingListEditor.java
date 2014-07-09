@@ -94,7 +94,7 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 				new TitleWithIconLP(getPeopleUiService(),
 						PeopleTypes.PEOPLE_ENTITY, Property.JCR_TITLE), 300));
 		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
-				PEOPLE_ML_INSTANCES, PropertyType.STRING, "Mailing lists",
+				PEOPLE_MAILING_LISTS, PropertyType.STRING, "Mailing lists",
 				new SimpleJcrRowLabelProvider(PeopleTypes.PEOPLE_ENTITY,
 						PEOPLE_TAGS), 300));
 	}
@@ -129,7 +129,7 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 			final ColumnLabelProvider groupTitleLP = new TagLabelProvider(
 					PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE,
 					getPeopleService().getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
-					PEOPLE_ML_INSTANCES);
+					PEOPLE_MAILING_LISTS);
 
 			
 
@@ -259,7 +259,7 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 			StaticOperand so = factory.literal(session.getValueFactory()
 					.createValue(currVal));
 			DynamicOperand dyo = factory.propertyValue(
-					source.getSelectorName(), PEOPLE_ML_INSTANCES);
+					source.getSelectorName(), PEOPLE_MAILING_LISTS);
 			Constraint constraint = factory.comparison(dyo,
 					QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
 

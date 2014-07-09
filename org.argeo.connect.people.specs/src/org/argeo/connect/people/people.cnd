@@ -15,7 +15,7 @@
 // To map the FN value of a vCard rather use JCR_TITLE
 + people:picture (nt:file) // An optional picture for this entity
 // DEPRECATED remove in 2.3+
-- people:source (URI)
+// - people:source (URI)
 // Rather use this
 + people:externalIds (nt:unstructured) // Optional, enable synchronisation with third party systems
 
@@ -95,11 +95,13 @@
 // node with reference to corresponding entities 
 // and some more information if needed.
 
-[people:position] > nt:unstructured, people:orderable
+[people:position] > nt:unstructured, people:orderable, mix:title
 - people:role (STRING) 
 // OPTIONAL: the nature of the subject in this relation: 
 // For instance "Actor" or "Engineer" 
-- people:title (STRING) 
+// Use jcr:title instead
+// - people:title (STRING) 
+// Use jcr:description (STRING) for comments and org name if no corresponding org exists forinstance
 - people:dateBegin (DATE)
 - people:dateEnd (DATE)
 // enable to notify that a position is not relevant anymore in the case 
@@ -109,34 +111,24 @@
 // The job or position of a person in an organisation
 [people:job] > people:position
 // ONLY an organisation
-- people:refUid (STRING) m nofulltext
+- people:refUid (STRING) nofulltext //was mandatory m
 // An optional department within the org corresponding to the current position
 - people:department (STRING)
 
 // Membership in a group
 [people:member] > people:position
 // MIGHT BE a person, an organisation or another group
-- people:refUid (STRING) m nofulltext
+- people:refUid (STRING) nofulltext  //was mandatory m
 
 //
 // MAILING LIST 
 //
 
-// TODO - Rename this to people:mailingList in 2.3.+ 
 // TODO - Enhance to provide additional services like tracking of sent newsletters 
 // The fact that a contactable entity belongs to this mailing list is stored in
 // the corresponding node via the people:mailingListInstances multivalued property
-[people:mailingListInstance] > people:entity
+[people:mailingList] > people:entity
 
-
-// Deprecated - REMOVE THIS as from 2.3.x 
-[people:mailingList] > people:group
-
-// Deprecated - REMOVE THIS as from 2.3.x 
-// An item of a mailing list
-[people:mailingListItem] > people:position
-// an entity that can provide a primary contact (person, org, group...)
-- people:refUid (STRING) m nofulltext
 
 
 // 
@@ -167,7 +159,7 @@ mixin
 // Activities
 [people:activity] > people:base
 // reference the user that has created this activity. Might be redundant with jcr:createdBy property ?
-- people:manager (REFERENCE) m
+- people:manager (REFERENCE) //was mandatory m
 // reference the relevant date for this activity, generally, the creation date. 
 - people:activityDate (DATE)
 
@@ -271,9 +263,9 @@ mixin
 mixin
 + people:contacts (nt:unstructured)
 // A tag like property to keep reference to the mailing list this contact is bound to.
-- people:mailingListInstances (STRING) *
 // Deprecated - remove
-// - people:mailingLists (STRING) *
+// - people:mailingListInstances (STRING) *
+- people:mailingLists (STRING) *
 
 
 // 

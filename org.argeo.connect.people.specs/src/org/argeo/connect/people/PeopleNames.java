@@ -36,7 +36,7 @@ public interface PeopleNames {
 
 	// Resources parent node names
 	public final static String PEOPLE_TAGS = "people:tags";
-	public final static String PEOPLE_ML_INSTANCES = "people:mailingListInstances";
+	public final static String PEOPLE_MAILING_LISTS = "people:mailingLists";
 	public final static String PEOPLE_COUNTRIES = "people:countries";
 	public final static String PEOPLE_LANGS = "people:languages";
 
@@ -157,7 +157,7 @@ public interface PeopleNames {
 	public final static String PEOPLE_DEPARTMENT = "people:department";
 	// nature of the participation of the given entity in a group
 	public final static String PEOPLE_ROLE = "people:role";
-	public final static String PEOPLE_TITLE = "people:title";
+	// public final static String PEOPLE_TITLE = "jcr:title";
 	public final static String PEOPLE_POSITION = "people:position";
 	public final static String PEOPLE_IS_CURRENT = "people:isCurrent";
 	// An additional reference to an organisation when needed

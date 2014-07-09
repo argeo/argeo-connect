@@ -165,7 +165,7 @@ public class PersonJcrUtils implements PeopleNames {
 		if (CommonsJcrUtils.checkNotEmptyString(department))
 			job.setProperty(PEOPLE_DEPARTMENT, department);
 		if (CommonsJcrUtils.checkNotEmptyString(title))
-			job.setProperty(PEOPLE_TITLE, title);
+			job.setProperty(Property.JCR_TITLE, title);
 		if (dateBegin != null)
 			job.setProperty(PEOPLE_DATE_BEGIN, dateBegin);
 		if (dateEnd != null)

@@ -151,7 +151,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		// Mailing list management
 		Composite mlCmp = new TagListComposite(parent, SWT.NO_FOCUS, toolkit,
 				getManagedForm(), getPeopleService(), getPeopleUiService(),
-				person, PeopleNames.PEOPLE_ML_INSTANCES, getPeopleService()
+				person, PeopleNames.PEOPLE_MAILING_LISTS, getPeopleService()
 						.getResourceBasePath(PeopleTypes.PEOPLE_ML_INSTANCE),
 				PeopleTypes.PEOPLE_ML_INSTANCE, "Add a mailing");
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));

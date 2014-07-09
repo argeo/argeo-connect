@@ -33,7 +33,7 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 		personLp = new PersonListLabelProvider(peopleService);
 		mlInstanceLp = new TagLabelProvider(PeopleUiConstants.LIST_TYPE_SMALL,
 				peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
-				PEOPLE_ML_INSTANCES);
+				PEOPLE_MAILING_LISTS);
 	}
 
 	@Override
