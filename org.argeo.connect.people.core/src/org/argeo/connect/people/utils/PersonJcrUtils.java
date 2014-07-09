@@ -149,7 +149,7 @@ public class PersonJcrUtils implements PeopleNames {
 	 *            the role of the given entity in this group. Cannot be null
 	 * @param title
 	 *            OPTIONAL: the nature of the subject in this relation, for
-	 *            instance "Actor" or "Engineer"
+	 *            instance "Actor" or "Engineer" - Not yet implemented
 	 * */
 	public static Node addJob(Node person, Node org, String department,
 			String role, String title, boolean isPrimary, Calendar dateBegin,
@@ -165,7 +165,9 @@ public class PersonJcrUtils implements PeopleNames {
 		if (CommonsJcrUtils.checkNotEmptyString(department))
 			job.setProperty(PEOPLE_DEPARTMENT, department);
 		if (CommonsJcrUtils.checkNotEmptyString(title))
-			job.setProperty(Property.JCR_TITLE, title);
+			throw new PeopleException(
+					"Position Nature: Unimplemented property ");
+		// job.setProperty(Property.JCR_TITLE, title);
 		if (dateBegin != null)
 			job.setProperty(PEOPLE_DATE_BEGIN, dateBegin);
 		if (dateEnd != null)

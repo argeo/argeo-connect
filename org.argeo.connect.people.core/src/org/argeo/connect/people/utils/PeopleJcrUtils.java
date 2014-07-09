@@ -60,7 +60,9 @@ public class PeopleJcrUtils implements PeopleNames {
 				CommonsJcrUtils.get(entity, PEOPLE_UID));
 		member.setProperty(PEOPLE_ROLE, role);
 		if (CommonsJcrUtils.checkNotEmptyString(title))
-			member.setProperty(Property.JCR_TITLE, title);
+			throw new PeopleException(
+					"Position Nature: Unimplemented property ");
+		// member.setProperty(Property.JCR_TITLE, title);
 		if (dateBegin != null)
 			member.setProperty(PEOPLE_DATE_BEGIN, dateBegin);
 		if (dateEnd != null)

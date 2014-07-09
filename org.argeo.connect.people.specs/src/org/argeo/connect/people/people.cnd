@@ -95,13 +95,12 @@
 // node with reference to corresponding entities 
 // and some more information if needed.
 
-[people:position] > nt:unstructured, people:orderable, mix:title
+[people:position] > nt:unstructured, people:orderable
 - people:role (STRING) 
 // OPTIONAL: the nature of the subject in this relation: 
 // For instance "Actor" or "Engineer" 
-// Use jcr:title instead
-// - people:title (STRING) 
-// Use jcr:description (STRING) for comments and org name if no corresponding org exists forinstance
+// Refine before implementation 
+// - people:positionNature (STRING) 
 - people:dateBegin (DATE)
 - people:dateEnd (DATE)
 // enable to notify that a position is not relevant anymore in the case 

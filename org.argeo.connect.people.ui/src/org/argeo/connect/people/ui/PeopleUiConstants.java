@@ -47,7 +47,7 @@ public interface PeopleUiConstants {
 		{
 			put(PeopleTypes.PEOPLE_PERSON, "Person");
 			put(PeopleTypes.PEOPLE_ORGANIZATION, "Organisation");
-			put(PeopleTypes.PEOPLE_ML_INSTANCE, "Mailing list");
+			put(PeopleTypes.PEOPLE_MAILING_LIST, "Mailing list");
 			put(PeopleTypes.PEOPLE_GROUP, "Group");
 			put(PeopleTypes.PEOPLE_TASK, "Task");
 		}

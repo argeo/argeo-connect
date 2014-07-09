@@ -45,7 +45,7 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 				result = personLp.getText(element);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION))
 				result = orgLp.getText(element);
-			else if (entity.isNodeType(PeopleTypes.PEOPLE_ML_INSTANCE))
+			else if (entity.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST))
 				result = mlInstanceLp.getText(element);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_GROUP))
 				result = groupLp.getText(element);

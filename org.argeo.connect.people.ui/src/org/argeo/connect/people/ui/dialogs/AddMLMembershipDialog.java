@@ -22,13 +22,10 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
 import javax.jcr.query.Row;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.utils.ContactJcrUtils;
-import org.argeo.connect.people.utils.PersonJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.graphics.Point;
@@ -78,20 +75,21 @@ public class AddMLMembershipDialog extends AddReferenceDialog {
 
 		try {
 			for (Row mlRow : selectedItems) {
-				Node mailingList = mlRow
-						.getNode(PeopleTypes.PEOPLE_MAILING_LIST);
+				throw new PeopleException("Clean this dialog.");
+				// Node mailingList = mlRow
+				// .getNode(PeopleTypes.PEOPLE_MAILING_LIST);
 
-				if (ContactJcrUtils
-						.isMailingMember(mailingList, referencedNode)) {
-					duplicates
-							.append(PersonJcrUtils
-									.getPersonDisplayName(referencedNode))
-							.append("; ");
-					// .append("(" + defaultMail + "); ");
-				} else {
-					ContactJcrUtils.addToMailingList(mailingList,
-							referencedNode);
-				}
+				// if (ContactJcrUtils
+				// .isMailingMember(mailingList, referencedNode)) {
+				// duplicates
+				// .append(PersonJcrUtils
+				// .getPersonDisplayName(referencedNode))
+				// .append("; ");
+				// // .append("(" + defaultMail + "); ");
+				// } else {
+				// ContactJcrUtils.addToMailingList(mailingList,
+				// referencedNode);
+				// }
 			}
 
 			if (duplicates.length() > 0) {
@@ -101,7 +99,8 @@ public class AddMLMembershipDialog extends AddReferenceDialog {
 				MessageDialog.openError(getShell(), "Dupplicates", msg);
 			}
 			return true;
-		} catch (RepositoryException e) {
+		} catch (Exception e) {
+			// } catch (RepositoryException e) {
 			throw new PeopleException("Unable to get person node from row", e);
 		}
 	}

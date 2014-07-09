@@ -124,7 +124,7 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 				return PeopleImages.ICON_PERSON;
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION))
 				return PeopleImages.ICON_ORG;
-			else if (entity.isNodeType(PeopleTypes.PEOPLE_ML_INSTANCE))
+			else if (entity.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST))
 				return PeopleImages.ICON_MAILING_LIST;
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_GROUP))
 				return PeopleImages.ICON_GROUP;

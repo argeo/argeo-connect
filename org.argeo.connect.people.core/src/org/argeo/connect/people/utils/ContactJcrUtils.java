@@ -8,14 +8,6 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.DynamicOperand;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
-import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -31,9 +23,9 @@ import org.argeo.jcr.JcrUtils;
 
 public class ContactJcrUtils {
 
-	////////////////////////////////
-	// MAILING LIST MANAGEMENT 
-		
+	// //////////////////////////////
+	// MAILING LIST MANAGEMENT
+
 	/**
 	 * 
 	 * Add a new member to a given Mailing List
@@ -57,7 +49,7 @@ public class ContactJcrUtils {
 						+ referencedNode + "("
 						+ referencedNode.getPrimaryNodeType() + ")");
 
-			String linkNodeType = PeopleTypes.PEOPLE_MAILING_LIST_ITEM;
+			String linkNodeType = PeopleTypes.PEOPLE_MAILING_LIST;
 			Node parentNode = referencingNode
 					.getNode(PeopleNames.PEOPLE_MEMBERS);
 
@@ -136,48 +128,48 @@ public class ContactJcrUtils {
 	 * 
 	 * @return
 	 */
-	public static boolean isMailingMember(Node referencingNode,
-			Node referencedNode) {
-		try {
-			Session session = referencingNode.getSession();
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
-			QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			Selector source = factory.selector(
-					PeopleTypes.PEOPLE_MAILING_LIST_ITEM,
-					PeopleTypes.PEOPLE_MAILING_LIST_ITEM);
-
-			String parentPath = referencingNode.getNode(
-					PeopleNames.PEOPLE_MEMBERS).getPath();
-			Constraint c1 = factory.descendantNode(source.getSelectorName(),
-					parentPath);
-
-			DynamicOperand dynOp = factory.propertyValue(
-					source.getSelectorName(), PeopleNames.PEOPLE_REF_UID);
-			StaticOperand statOp = factory.literal(session.getValueFactory()
-					.createValue(
-							referencedNode.getProperty(PeopleNames.PEOPLE_UID)
-									.getString()));
-			Constraint c2 = factory.comparison(dynOp,
-					QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
-
-			Constraint defaultC = factory.and(c1, c2);
-
-			QueryObjectModel query = factory.createQuery(source, defaultC,
-					null, null);
-			QueryResult queryResult = query.execute();
-			NodeIterator ni = queryResult.getNodes();
-
-			if (ni.getSize() == 1)
-				return true;
-			else {
-				return false;
-			}
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to add " + referencedNode
-					+ " to mailing list " + referencingNode, e);
-		}
-	}
+	// public static boolean isMailingMember(Node referencingNode,
+	// Node referencedNode) {
+	// try {
+	// Session session = referencingNode.getSession();
+	// QueryManager queryManager = session.getWorkspace()
+	// .getQueryManager();
+	// QueryObjectModelFactory factory = queryManager.getQOMFactory();
+	// Selector source = factory.selector(
+	// PeopleTypes.PEOPLE_MAILING_LIST,
+	// PeopleTypes.PEOPLE_MAILING_LIST);
+	//
+	// String parentPath = referencingNode.getNode(
+	// PeopleNames.PEOPLE_MEMBERS).getPath();
+	// Constraint c1 = factory.descendantNode(source.getSelectorName(),
+	// parentPath);
+	//
+	// DynamicOperand dynOp = factory.propertyValue(
+	// source.getSelectorName(), PeopleNames.PEOPLE_REF_UID);
+	// StaticOperand statOp = factory.literal(session.getValueFactory()
+	// .createValue(
+	// referencedNode.getProperty(PeopleNames.PEOPLE_UID)
+	// .getString()));
+	// Constraint c2 = factory.comparison(dynOp,
+	// QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+	//
+	// Constraint defaultC = factory.and(c1, c2);
+	//
+	// QueryObjectModel query = factory.createQuery(source, defaultC,
+	// null, null);
+	// QueryResult queryResult = query.execute();
+	// NodeIterator ni = queryResult.getNodes();
+	//
+	// if (ni.getSize() == 1)
+	// return true;
+	// else {
+	// return false;
+	// }
+	// } catch (RepositoryException e) {
+	// throw new PeopleException("Unable to add " + referencedNode
+	// + " to mailing list " + referencingNode, e);
+	// }
+	// }
 
 	// public static Node getMailingListByName(Session session, String name,
 	// String basePath) throws RepositoryException {

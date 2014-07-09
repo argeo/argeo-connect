@@ -15,12 +15,12 @@ public interface PeopleTypes {
 	public final static String PEOPLE_BASE = "people:base";
 	public final static String PEOPLE_ENTITY = "people:entity";
 	public final static String PEOPLE_EXTERNAL_ID = "people:externalId";
-	
+
 	// Mixins
 	public final static String PEOPLE_TAGABLE = "people:tagable";
 	public final static String PEOPLE_ORDERABLE = "people:orderable";
 	public final static String PEOPLE_CONTACTABLE = "people:contactable";
-	
+
 	/* PERSONS */
 	public final static String PEOPLE_PERSON = "people:person";
 
@@ -29,12 +29,12 @@ public interface PeopleTypes {
 
 	/* GROUPS */
 	public final static String PEOPLE_GROUP = "people:group";
-	@Deprecated
 	public final static String PEOPLE_MAILING_LIST = "people:mailingList";
 
 	/* GROUP MEMBERS */
-	@Deprecated
-	public final static String PEOPLE_MAILING_LIST_ITEM = "people:mailingListItem";
+	// @Deprecated
+	// public final static String PEOPLE_MAILING_LIST_ITEM =
+	// "people:mailingListItem";
 	public final static String PEOPLE_POSITION = "people:position";
 	public final static String PEOPLE_JOB = "people:job";
 	public final static String PEOPLE_MEMBER = "people:member";
@@ -69,7 +69,8 @@ public interface PeopleTypes {
 	public final static String PEOPLE_SOCIAL_MEDIA = "people:socialMedia";
 	public final static String PEOPLE_ADDRESS = "people:address";
 
-	public final static String PEOPLE_ML_INSTANCE = "people:mailingListInstance";
+	// public final static String PEOPLE_ML_INSTANCE =
+	// "people:mailingListInstance";
 
 	// contact with this mixin will use value(s) of the primary contact of the
 	// given type
