@@ -46,7 +46,7 @@ public class CreateEntity extends AbstractHandler {
 		Session session = null;
 		try {
 			session = repository.login();
-			String draftPath = getDraftBasePath(nodeType);
+			String draftPath = peopleService.getTmpPath();
 			String datePath = JcrUtils.dateAsPath(Calendar.getInstance(), true);
 
 			Node parent = JcrUtils.mkdirs(session, draftPath + "/" + datePath);
@@ -75,7 +75,7 @@ public class CreateEntity extends AbstractHandler {
 	 * Overwrite to provide the relevant draft base path for the current
 	 * application
 	 */
-	@Deprecated 
+	@Deprecated
 	protected String getDraftBasePath(String nodeType)
 			throws RepositoryException {
 		// TODO implement this in a People only context

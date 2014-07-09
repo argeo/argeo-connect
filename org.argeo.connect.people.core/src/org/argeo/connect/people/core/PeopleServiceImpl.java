@@ -87,12 +87,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	/* BASE PATH MANAGEMENT */
 	@Override
-	@Deprecated
-	public String getBasePath() {
-		return getBasePath(null);
-	}
-
-	@Override
 	public String getBasePath(String entityType) {
 		if (entityType == null)
 			return PeopleConstants.PEOPLE_BASE_PATH;
@@ -103,6 +97,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		else
 			throw new PeopleException("Unable to find base path for type: "
 					+ parentName);
+	}
+
+	@Override
+	public String getTmpPath() {
+		return PeopleConstants.PEOPLE_TMP_PATH;
 	}
 
 	@Override

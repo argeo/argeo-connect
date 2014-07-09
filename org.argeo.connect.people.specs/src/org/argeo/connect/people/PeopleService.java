@@ -10,10 +10,6 @@ import javax.jcr.Session;
 public interface PeopleService {
 
 	/* BASE PATHS MANAGEMENT */
-	/** Exposes the application specific parent business path */
-	@Deprecated
-	public String getBasePath();
-
 	/**
 	 * Centralises the management of known types to provide corresponding base
 	 * path
@@ -21,6 +17,11 @@ public interface PeopleService {
 	 * getBasePath(null) returns the application specific parent business path
 	 */
 	public String getBasePath(String entityType);
+
+	/**
+	 * provide a system specific tmp path typically for imports
+	 */
+	public String getTmpPath();
 
 	/**
 	 * Exposes the application specific parent path for this resource. Querying

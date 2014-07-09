@@ -736,8 +736,12 @@ public class PeopleJcrUtils implements PeopleNames {
 				String legalName = "";
 				String displayName = "";
 				if (node.hasProperty(PEOPLE_LEGAL_NAME))
-					legalName = replaceInvalidChars(node
-							.getProperty(PEOPLE_LEGAL_NAME).getString().trim());
+					// TODO implement a less violent replacement
+					legalName = node.getProperty(PEOPLE_LEGAL_NAME).getString()
+							.replaceAll("[^a-zA-Z0-9]", "");
+
+				// We use Display Name as a failover property if the legal name
+				// is undefined.
 				if (node.hasProperty(Property.JCR_TITLE))
 					displayName = replaceInvalidChars(node
 							.getProperty(Property.JCR_TITLE).getString().trim());
