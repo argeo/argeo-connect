@@ -1,6 +1,9 @@
 package org.argeo.connect.people.ui.commands;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,37 +28,41 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * must implement ICalcExtractProvider interface.
  */
 public class GetCalcExport extends AbstractHandler {
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID
-			+ ".getCalcExtract";
+	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".getCalcExport";
 	public final static String PARAM_EXPORT_ID = "param.exportId";
+
+	private final static DateFormat df = new SimpleDateFormat(
+			"yyyy-MM-dd_HH-mm");
 
 	/* DEPENDENCY INJECTION */
 	private PeopleUiService peopleUiService;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		String extractId = event.getParameter(PARAM_EXPORT_ID);
+		String exportId = event.getParameter(PARAM_EXPORT_ID);
+		// force default
+		if (CommonsJcrUtils.isEmptyString(exportId))
+			exportId = PeopleUiConstants.DEFAULT_CALC_EXPORT;
 
 		try {
 			IWorkbenchPart iwp = HandlerUtil.getActiveWorkbenchWindow(event)
 					.getActivePage().getActivePart();
 			if (iwp instanceof ITableProvider) {
-				if (((ITableProvider) iwp).getColumnDefinition(extractId) == null)
+				ITableProvider provider = (ITableProvider) iwp;
+
+				if ((provider).getColumnDefinition(exportId) == null)
 					return null;
 				else {
+					// Create file
 					File tmpFile = File
-							.createTempFile("people-extract", ".xls");
+							.createTempFile("people-extract", ".ods");
 					tmpFile.deleteOnExit();
 
-					if (CommonsJcrUtils.checkNotEmptyString(extractId))
-						callCalcGenerator((ITableProvider) iwp, extractId,
-								tmpFile);
-					else
-						callCalcGenerator((ITableProvider) iwp,
-								PeopleUiConstants.DEFAULT_CALC_EXPORT, tmpFile);
+					// Effective generation
+					callCalcGenerator(provider, exportId, tmpFile);
 
+					// Open result file
 					Map<String, String> params = new HashMap<String, String>();
-					// TODO implement a sexier naming strategy
-					params.put(OpenFile.PARAM_FILE_NAME, tmpFile.getName());
+					params.put(OpenFile.PARAM_FILE_NAME, getFileName(provider));
 					params.put(OpenFile.PARAM_FILE_URI,
 							"file://" + tmpFile.getAbsolutePath());
 					CommandUtils.callCommand(
@@ -74,16 +81,20 @@ public class GetCalcExport extends AbstractHandler {
 		}
 	}
 
+	/** Override to provide other naming strategy */
+	protected String getFileName(ITableProvider provider) {
+		String prefix = "PeopleExport-";
+		String dateVal = df.format(new GregorianCalendar().getTime());
+		return prefix + dateVal + ".ods";
+	}
+
 	/** Real call to spreadsheet generator. */
 	protected synchronized void callCalcGenerator(ITableProvider provider,
-			String extractId, File file) throws Exception {
+			String exportId, File file) throws Exception {
 
-		// throw new
-		// PeopleException("Implement this, broken by the new search strategy");
 		RowsToCalcWriter writer = new RowsToCalcWriter();
-		// writer.setColumnDefinition();
-		writer.writeTableFromRows(file, provider.getRows(extractId),
-				provider.getColumnDefinition(extractId));
+		writer.writeTableFromRows(file, provider.getRows(exportId),
+				provider.getColumnDefinition(exportId));
 	}
 
 	/* DEPENDENCY INJECTION */

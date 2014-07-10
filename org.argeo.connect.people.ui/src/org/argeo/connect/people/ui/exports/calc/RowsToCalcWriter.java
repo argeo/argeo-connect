@@ -111,7 +111,8 @@ public class RowsToCalcWriter {
 			WritableWorkbook workbook = null;
 			try {
 				workbook = Workbook.createWorkbook(outputFile, wSettings);
-				log.info("Workbook created");
+				if (log.isTraceEnabled())
+					log.trace("Workbook " + outputFile.getName() + " created");
 
 			} catch (FileNotFoundException fnfe) {
 				throw new PeopleException("Cannot create workbook", fnfe);
@@ -133,6 +134,9 @@ public class RowsToCalcWriter {
 			// finalize
 			workbook.write();
 			workbook.close();
+
+			if (log.isDebugEnabled())
+				log.debug("Workbook generated in file " + outputFile.getName());
 		} catch (Exception e) {
 			throw new PeopleException("Could not write spreadsheet to file '"
 					+ outputFile + "'.", e);
