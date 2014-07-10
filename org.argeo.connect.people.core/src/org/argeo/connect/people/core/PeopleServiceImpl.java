@@ -40,35 +40,11 @@ import org.argeo.jcr.JcrUtils;
 public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private final static Log log = LogFactory.getLog(PeopleServiceImpl.class);
 
-	/* DEPENDENCY INJECTION */
-	// private Repository repository;
-
 	/* Other services */
 	private UserManagementService userManagementService = new UserManagementServiceImpl(
 			this);
 	private ActivityService activityService = new ActivityServiceImpl(this,
 			userManagementService);
-
-	// private Map<Integer, String> managedRoles;
-
-	// business catalogs maintained in file business catalogs of the specs
-	// bundle
-	// private Map<String, Object> businessCatalogs;
-
-	// private Session adminSession = null;
-
-	// SHOULD BE IN PeopleConstants but it does not work
-	// TODO investigate
-	// Initialize the map between node types and their names
-	// public static Map<String, String> BASE_TYPE_NAMES;
-	// static {
-	// Map<String, String> tmpMap = new HashMap<String, String>();
-	// {
-	// tmpMap.put(PeopleTypes.PEOPLE_ACTIVITY,
-	// PeopleNames.PEOPLE_ACTIVITIES);
-	// }
-	// BASE_TYPE_NAMES = Collections.unmodifiableMap(tmpMap);
-	// }
 
 	/* Life cycle management */
 	/**
@@ -382,13 +358,19 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	public void refreshKnownTags(Session session) {
 		refreshKnownTags(session, NodeType.NT_UNSTRUCTURED,
 				getResourceBasePath(PeopleConstants.RESOURCE_TAG),
-				PeopleTypes.PEOPLE_BASE, getBasePath(null));
+				PeopleTypes.PEOPLE_BASE, PeopleNames.PEOPLE_TAGS,
+				getBasePath(null));
 	}
 
 	@Override
 	public void refreshKnownTags(Session session, String tagResourceType,
-			String tagParentPath, String tagableNodeType,
+			String tagParentPath, String tagableNodeType, String tagPropName,
 			String tagableParentPath) {
+
+		// Session session, String resourceNodeType,
+		// String resourceInstancesParentPath, String tagableNodeType,
+		// , String tagableParentPath
+
 		List<String> existingValues = new ArrayList<String>();
 		List<String> registeredTags = new ArrayList<String>();
 
@@ -426,9 +408,9 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			nit = query.execute().getNodes();
 			while (nit.hasNext()) {
 				Node currNode = nit.nextNode();
-				if (currNode.hasProperty(PeopleNames.PEOPLE_TAGS)) {
-					Value[] tags = currNode
-							.getProperty(PeopleNames.PEOPLE_TAGS).getValues();
+				if (currNode.hasProperty(tagPropName)) {
+					Value[] tags = currNode.getProperty(tagPropName)
+							.getValues();
 					for (Value tagV : tags) {
 						String currTag = tagV.getString().trim();
 						if (CommonsJcrUtils.checkNotEmptyString(currTag)
@@ -538,17 +520,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		return userManagementService;
 	}
 
-	//
-	// // TODO remove this we rather want to directly inject the repository if
-	// // needed
-	// /** Expose injected repository */
-	// private Repository getRepository() {
-	// return repository;
-	// }
-
 	/* DEPENDENCY INJECTION */
-	// Inject a map with all business catalogs
+	// TODO remove this unused methods and the corresponding injection in the
+	// spring XML files.
 	public void setBusinessCatalogs(Map<String, Object> businessCatalogs) {
+		// Inject a map with all business catalogs
 		// this.businessCatalogs = businessCatalogs;
 	}
 
@@ -556,7 +532,4 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		// this.repository = repository;
 	}
 
-	// public void setManagedRoles(Map<Integer, String> managedRoles) {
-	// this.managedRoles = managedRoles;
-	// }
 }

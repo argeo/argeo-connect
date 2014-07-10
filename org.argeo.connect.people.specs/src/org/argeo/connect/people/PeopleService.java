@@ -108,20 +108,32 @@ public interface PeopleService {
 	public UserManagementService getUserManagementService();
 
 	/* TAG MANAGEMENT */
+	/*
+	 * Updates the repository cache that list all known values for this tag-like
+	 * property in the current application
+	 */
+
 	/**
-	 * Updates the repository cache that list all tags known in the current
-	 * application
 	 * 
 	 * @param session
+	 *            with write rights
+	 * @param resourceNodeType
+	 *            The nodeType of the cached instance if needed (used for
+	 *            instance for the mailing lists)
+	 * @param resourceInstancesParentPath
+	 *            the application specific path to the parent of all cached
+	 *            instance for this tag-like property
+	 * @param tagableNodeType
+	 *            the NodeType of the taggable object for instance people:base
+	 * @param tagPropName
+	 *            the multivalue property of the tagable node: for instance
+	 *            people:tags
 	 * @param tagableParentPath
-	 *            the path to the business parent node of all nodes that are
-	 *            tagables and that already have some tags set
-	 * @param tagParentPath
-	 *            the path to the parent node of all cache nodes
+	 *            reduce search of taggable objects in a sub tree of the repo
 	 */
-	public void refreshKnownTags(Session session, String tagResourceType,
-			String tagParentPath, String tagableNodeType,
-			String tagableParentPath);
+	public void refreshKnownTags(Session session, String resourceNodeType,
+			String resourceInstancesParentPath, String tagableNodeType,
+			String tagPropName, String tagableParentPath);
 
 	/**
 	 * Updates the repository cache that list all tags known in the current
