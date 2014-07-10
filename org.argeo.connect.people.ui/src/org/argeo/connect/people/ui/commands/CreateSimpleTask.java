@@ -9,7 +9,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.wizards.NewSimpleTaskWizard;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -50,7 +49,7 @@ public class CreateSimpleTask extends AbstractHandler {
 					HandlerUtil.getActiveShell(event), wizard);
 			int result = dialog.open();
 			if (result == WizardDialog.OK) {
-				CommonsJcrUtils.saveAndCheckin(wizard.getCreatedTask());
+				// CommonsJcrUtils.saveAndCheckin(wizard.getCreatedTask());
 				uuid = wizard.getCreatedTask().getIdentifier();
 			}
 		} catch (RepositoryException e) {

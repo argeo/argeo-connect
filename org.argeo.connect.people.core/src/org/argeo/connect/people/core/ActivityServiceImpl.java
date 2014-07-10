@@ -259,9 +259,6 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 				taskNode.setProperty(PeopleNames.PEOPLE_WAKE_UP_DATE,
 						wakeUpDate);
 			}
-
-			// FIXME check this, not good enough.
-			// Activity Date
 			taskNode.setProperty(PeopleNames.PEOPLE_ACTIVITY_DATE, creationDate);
 			CommonsJcrUtils.saveAndCheckin(taskNode);
 			return taskNode;

@@ -38,7 +38,7 @@ public abstract class PeopleAbstractDropDown {
 		values = filteredValues.toArray(new String[filteredValues.size()]);
 		dropDown.setItems(values);
 	}
-	
+
 	public void reset(String value) {
 		// Workaround the dropDown show issue when resetting the text
 		modifyFromList = true;
@@ -91,8 +91,19 @@ public abstract class PeopleAbstractDropDown {
 			}
 		});
 
+		dropDown.addListener(SWT.Hide, new HideListener());
 		dropDown.addListener(SWT.Selection, new DDSelectionListener());
 		dropDown.addListener(SWT.DefaultSelection, new DDSelectionListener());
+	}
+
+	private class HideListener implements Listener {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void handleEvent(Event event) {
+			System.out.println("HIDDEN DROPDOWN");
+		}
+
 	}
 
 	private class DDSelectionListener implements Listener {
