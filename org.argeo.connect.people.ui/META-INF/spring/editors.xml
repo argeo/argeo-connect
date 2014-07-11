@@ -23,14 +23,11 @@
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
 
-
-
 	<bean id="searchPersonEditor" class="org.argeo.connect.people.ui.editors.SearchPersonEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
-
 
 	<!-- User and groups -->
 	<bean id="userEditor" class="org.argeo.connect.people.ui.editors.UserEditor"

@@ -80,8 +80,9 @@ public class NewUserGroupWizard extends Wizard {
 				chooseCommandPage.getTitleValue(),
 				chooseCommandPage.getDescValue());
 
-		userManagementService.addUsersToGroup(session, userGroup,
-				userListPage.getSelectedUserNames());
+		List<String> users = userListPage.getSelectedUserNames();
+		if (users != null)
+			userManagementService.addUsersToGroup(session, userGroup, users);
 
 		return true;
 	}

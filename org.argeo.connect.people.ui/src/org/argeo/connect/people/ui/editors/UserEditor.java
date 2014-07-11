@@ -153,10 +153,10 @@ public class UserEditor extends FormEditor {
 
 		if (userRolesPage.isDirty()) {
 			userRolesPage.doSave(monitor);
-			userDetails = userDetails.cloneWithNewRoles(userRolesPage
-					.getRoles());
 		}
 
+		userDetails = userDetails.cloneWithNewRoles(userRolesPage
+				.getRoles());
 		userAdminService.updateUser(userDetails);
 
 		if (userGroupsPage.isDirty()) {
@@ -350,9 +350,9 @@ public class UserEditor extends FormEditor {
 
 		}
 
-		public List<Node> getSelectedGroups() {
-			return selectedGroups;
-		}
+		// public List<Node> getSelectedGroups() {
+		// return selectedGroups;
+		// }
 
 		public void refresh() {
 			selectedGroups = userManagementService.getUserGroups(session,
@@ -448,6 +448,12 @@ public class UserEditor extends FormEditor {
 		}
 	}
 
+	@Override
+	public void dispose() {
+		JcrUtils.logoutQuietly(session);
+		super.dispose();
+	}
+
 	/* DEPENDENCY INJECTION */
 	public void setUserAdminService(UserAdminService userAdminService) {
 		this.userAdminService = userAdminService;
@@ -457,14 +463,7 @@ public class UserEditor extends FormEditor {
 		this.session = CommonsJcrUtils.login(repository);
 	}
 
-	@Override
-	public void dispose() {
-		JcrUtils.logoutQuietly(session);
-		super.dispose();
-	}
-
 	public void setPeopleService(PeopleService peopleService) {
 		userManagementService = peopleService.getUserManagementService();
 	}
-
 }

@@ -48,9 +48,9 @@ public class AdminUsersView extends ViewPart implements ArgeoNames {
 			+ ".adminUsersView";
 
 	/* DEPENDENCY INJECTION */
+	private Session session;
 
 	private UserTableComposite userTableCmp;
-	private Session session;
 	private JcrUserListener userStructureListener;
 	private JcrUserListener userPropertiesListener;
 
@@ -94,10 +94,6 @@ public class AdminUsersView extends ViewPart implements ArgeoNames {
 		super.dispose();
 	}
 
-	private void setSession(Session session) {
-		this.session = session;
-	}
-
 	public void refresh() {
 		this.getSite().getShell().getDisplay().asyncExec(new Runnable() {
 			@Override
@@ -126,10 +122,6 @@ public class AdminUsersView extends ViewPart implements ArgeoNames {
 		}
 	}
 
-	public void setRepository(Repository repository) {
-		setSession(CommonsJcrUtils.login(repository));
-	}
-
 	class ViewDoubleClickListener implements IDoubleClickListener {
 		public void doubleClick(DoubleClickEvent evt) {
 			if (evt.getSelection().isEmpty())
@@ -150,4 +142,10 @@ public class AdminUsersView extends ViewPart implements ArgeoNames {
 			}
 		}
 	}
+
+	/* DEPENDENCY INJECTION */
+	public void setRepository(Repository repository) {
+		this.session = CommonsJcrUtils.login(repository);
+	}
+
 }
