@@ -37,8 +37,10 @@
 - film:isStudentProject (BOOLEAN)
 - film:isDebutFilm (BOOLEAN)
 - film:hasTrailer (BOOLEAN)
-- film:extractsOnTvAllowed (BOOLEAN)
+- film:allowExcerptsOnTv (BOOLEAN)
+- film:allowExcerptsOnWeb (BOOLEAN)
 - film:submittedFor (STRING)
+- film:shootingFormat (STRING)
 
 // cache some values to ease full text search 
 - film:cachePTitle (STRING) IGNORE
@@ -47,27 +49,6 @@
 - film:cacheDirectors (String) * IGNORE
 // TODO implement this if needed.
 // - film:cacheProdCountries (String) * IGNORE
-
-
-
-// LEGACY - kept for [2.1.x, 2.3[ retro compatibility 
-// To be removed in 2.4+ versions 
-// - film:cacheOTitle (STRING) IGNORE
-// - film:cacheOTitleArticle (STRING) IGNORE
-// - film:cacheOTitleLatin (STRING) IGNORE
-//// This is now managed with other film participations. 
-//// Yet a we cache a the directors name to ease various searches 
-// - film:director (String)
-
-//// homogeneity: multiple value properties should use plural. 
-
-// - film:originalLanguage (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
-//- film:prodCountry (STRING) * // A list of countries as defined in ISO 3166-1
-                                    // primary production country must be the first of the list
-// - film:prodCountryString  (STRING) * // The corresponding English values to ease search and rendering 
-// - film:isPremiere (BOOLEAN)
-
-// END LEGACY
 
 
 // Titles
@@ -99,9 +80,8 @@
 - film:printType (STRING)
 - film:printNumber (STRING)
 - film:printDuration (LONG) // length in seconds
-// time codes
-- film:tcIn (STRING)
-- film:tcOut (STRING)
+- film:tcIn (STRING) // time codes
+- film:tcOut (STRING) // time codes
 
 - film:printPictureFormat (STRING)
 - film:printAspectRatio (STRING)
@@ -117,14 +97,8 @@
 
 - film:printSubtitleLanguages (STRING) *
 - film:printSubtitleFormat (STRING)
-// - film:printSoundFormat (STRING)
-// - film:printLanguageVersion (STRING)
-
 - film:printFee (STRING)
 - film:printFeeInfo (STRING)
-// - film:printSourceContact (REFERENCE)
-// - film:printReturnContact (REFERENCE)
-
 
 [film:printDcp] > film:print
 - film:printFileName (STRING)

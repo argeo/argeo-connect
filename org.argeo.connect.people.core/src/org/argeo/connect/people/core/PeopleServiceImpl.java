@@ -46,6 +46,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private ActivityService activityService = new ActivityServiceImpl(this,
 			userManagementService);
 
+	private Repository repository;
+
 	/* Life cycle management */
 	/**
 	 * Call by each startup in order to make sure the backend is ready to
@@ -520,16 +522,20 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		return userManagementService;
 	}
 
+	protected Repository getRepository() {
+		return repository;
+	}
+
 	/* DEPENDENCY INJECTION */
-	// TODO remove this unused methods and the corresponding injection in the
+	public void setRepository(Repository repository) {
+		this.repository = repository;
+	}
+
+	// TODO remove this unused method and the corresponding injection in the
 	// spring XML files.
 	public void setBusinessCatalogs(Map<String, Object> businessCatalogs) {
 		// Inject a map with all business catalogs
 		// this.businessCatalogs = businessCatalogs;
-	}
-
-	public void setRepository(Repository repository) {
-		// this.repository = repository;
 	}
 
 }

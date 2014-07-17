@@ -29,8 +29,10 @@ public interface FilmNames {
 	public final static String FILM_IS_STUDENT_PROJECT = "film:isStudentProject";
 	public final static String FILM_IS_DEBUT_FILM = "film:isDebutFilm";
 	public final static String FILM_HAS_TRAILER = "film:hasTrailer";
-	public final static String FILM_EXTRACTS_ON_TV_ALLOWED = "extractsOnTvAllowed";
+	public final static String FILM_ALLOW_EXCERPTS_ON_TV = "film:allowExcerptsOnTv";
+	public final static String FILM_ALLOW_EXCERPTS_ON_WEB = "film:allowExcerptsOnWeb";
 	public final static String FILM_SUBMITTED_FOR = "film:submittedFor";
+	public final static String FILM_SHOOTING_FORMAT = "film:shootingFormat";
 	
 
 	// Cache some children properties to ease full text search:
