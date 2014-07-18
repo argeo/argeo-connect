@@ -96,6 +96,19 @@ public interface PeopleService {
 	public List<Node> getRelatedEntities(Node entity, String linkNodeType,
 			String relatedEntityType);
 
+	/**
+	 * Try to save and optionally commit a business object after applying
+	 * context specific rules and special behaviours (typically cache updates).
+	 * 
+	 * @param entity
+	 * @param commit
+	 *            also commit the corresponding node
+	 * @throws PeopleException
+	 *             If one a the rule defined for this type is not respected. Use
+	 *             getMessage to display to the user if needed
+	 */
+	public void saveEntity(Node entity, boolean commit) throws PeopleException;
+
 	/* MISCELLANEOUS */
 
 	/** Returns the JCR repository used by this service */

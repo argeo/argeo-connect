@@ -13,6 +13,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.ActivitiesImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.dialogs.PickUpGroupDialog;
+import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
@@ -146,7 +147,7 @@ public class NewSimpleTaskWizard extends Wizard {
 			parent.setLayout(new GridLayout(4, false));
 
 			// TITLE
-			createLabel(parent, "Title");
+			PeopleUiUtils.createBoldLabel(parent, "Title");
 			titleTxt = new Text(parent, SWT.BORDER);
 			titleTxt.setMessage("A title for the new task");
 			GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -154,7 +155,7 @@ public class NewSimpleTaskWizard extends Wizard {
 			titleTxt.setLayoutData(gd);
 
 			// ASSIGNED TO
-			createLabel(parent, "Assigned to");
+			PeopleUiUtils.createBoldLabel(parent, "Assigned to");
 			final Text assignedToTxt = new Text(parent, SWT.BORDER
 					| SWT.NO_FOCUS);
 			assignedToTxt.setMessage("Assign a group to manage this task");
@@ -200,24 +201,19 @@ public class NewSimpleTaskWizard extends Wizard {
 			});
 
 			// DUE DATE
-			createLabel(parent, "Due date");
+			PeopleUiUtils.createBoldLabel(parent, "Due date");
 			dueDateDt = new DateTime(parent, SWT.RIGHT | SWT.DATE | SWT.MEDIUM
 					| SWT.DROP_DOWN);
 			// dueDateDt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false,
 			// false));
 
 			// WAKE UP DATE
-			Label label = new Label(parent, SWT.RIGHT | SWT.CENTER);
-			label.setText("Wake up date");
-			label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
+			PeopleUiUtils.createBoldLabel(parent, "Wake up date");
 			wakeUpDateDt = new DateTime(parent, SWT.RIGHT | SWT.DATE
 					| SWT.MEDIUM | SWT.DROP_DOWN);
-			// wakeUpDateDt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER,
-			// false,
-			// false));
 
 			// DESCRIPTION
-			label = new Label(parent, SWT.RIGHT | SWT.TOP);
+			Label label = new Label(parent, SWT.RIGHT | SWT.TOP);
 			label.setText("Description");
 			gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
 			label.setLayoutData(gd);
@@ -236,12 +232,10 @@ public class NewSimpleTaskWizard extends Wizard {
 
 	}
 
-	private void createLabel(Composite parent, String text) {
-		Label label = new Label(parent, SWT.RIGHT);
-		label.setText(text);
-
-		GridData gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
-		label.setLayoutData(gd);
-	}
-
+	// private void createLabel(Composite parent, String text) {
+	// Label label = new Label(parent, SWT.RIGHT);
+	// label.setText(text);
+	// GridData gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
+	// label.setLayoutData(gd);
+	// }
 }

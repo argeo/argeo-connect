@@ -114,6 +114,39 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	/* ENTITY SERVICES */
+	public void saveEntity(Node entity, boolean commit) throws PeopleException {
+		try {
+			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
+				savePerson(entity, commit);
+			else if (entity.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION))
+				saveOrganisation(entity, commit);
+
+			else
+				throw new PeopleException("Unknown entity type for " + entity);
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to save " + entity, e);
+		}
+	}
+
+	/** Override to provide business specific rules before save and commmit */
+	protected void savePerson(Node person, boolean commit)
+			throws PeopleException, RepositoryException {
+		if (commit)
+			CommonsJcrUtils.saveAndCheckin(person);
+		else
+			person.getSession().save();
+
+	}
+
+	/** Override to provide business specific rules before save and commmit */
+	protected void saveOrganisation(Node org, boolean commit)
+			throws PeopleException, RepositoryException {
+		if (commit)
+			CommonsJcrUtils.saveAndCheckin(org);
+		else
+			org.getSession().save();
+	}
+
 	@Override
 	public Node getEntityByUid(Session session, String uid) {
 		try {

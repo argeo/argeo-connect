@@ -56,6 +56,10 @@ public class CreateEntity extends AbstractHandler {
 			newNode.setProperty(PeopleNames.PEOPLE_UID, uuid);
 			// TODO find a cleaner way to keep a clean referential
 			newNode.setProperty(PeopleNames.PEOPLE_IS_DRAFT, true);
+			
+			
+			
+			
 			session.save();
 
 			String jcrId = newNode.getIdentifier();
