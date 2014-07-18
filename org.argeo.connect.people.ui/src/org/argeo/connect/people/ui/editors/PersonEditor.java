@@ -4,6 +4,7 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
+import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
@@ -25,6 +26,7 @@ import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.PersonJcrUtils;
+import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -40,7 +42,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -50,7 +54,8 @@ import org.eclipse.ui.forms.AbstractFormPart;
 /**
  * Editor page that display a person with corresponding details
  */
-public class PersonEditor extends AbstractEntityCTabEditor {
+public class PersonEditor extends AbstractEntityCTabEditor implements
+		PeopleNames {
 	final static Log log = LogFactory.getLog(PersonEditor.class);
 
 	// local constants
@@ -73,8 +78,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void updatePartName() {
-		String shortName = CommonsJcrUtils.get(getNode(),
-				PeopleNames.PEOPLE_LAST_NAME);
+		String shortName = CommonsJcrUtils.get(getNode(), PEOPLE_LAST_NAME);
 		if (CommonsJcrUtils.isEmptyString(shortName)) {
 			shortName = CommonsJcrUtils.get(getNode(), Property.JCR_TITLE);
 		}
@@ -101,14 +105,12 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 	@Override
 	protected boolean canSave() {
 		try {
-			String lastName = CommonsJcrUtils.get(person,
-					PeopleNames.PEOPLE_LAST_NAME);
-			String firstName = CommonsJcrUtils.get(person,
-					PeopleNames.PEOPLE_FIRST_NAME);
+			String lastName = CommonsJcrUtils.get(person, PEOPLE_LAST_NAME);
+			String firstName = CommonsJcrUtils.get(person, PEOPLE_FIRST_NAME);
 			String displayName = CommonsJcrUtils
 					.get(person, Property.JCR_TITLE);
 			boolean useDefaultDisplay = person.getProperty(
-					PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME).getBoolean();
+					PEOPLE_USE_DEFAULT_DISPLAY_NAME).getBoolean();
 
 			if (lastName.length() < 2 && firstName.length() < 2
 					&& (useDefaultDisplay || displayName.length() < 2)) {
@@ -119,9 +121,10 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 
 				return false;
 			} else {
-				PeopleJcrUtils.checkPathAndMoveIfNeeded(person,
-						PeopleConstants.PEOPLE_BASE_PATH + "/"
-								+ PeopleNames.PEOPLE_PERSONS);
+				PeopleJcrUtils
+						.checkPathAndMoveIfNeeded(person,
+								PeopleConstants.PEOPLE_BASE_PATH + "/"
+										+ PEOPLE_PERSONS);
 				return true;
 			}
 
@@ -143,15 +146,15 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		// Tag Management
 		Composite tagsCmp = new TagListComposite(parent, SWT.NO_FOCUS, toolkit,
 				getManagedForm(), getPeopleService(), getPeopleUiService(),
-				person, PeopleNames.PEOPLE_TAGS, getPeopleService()
-						.getResourceBasePath(PeopleConstants.RESOURCE_TAG),
+				person, PEOPLE_TAGS, getPeopleService().getResourceBasePath(
+						PeopleConstants.RESOURCE_TAG),
 				NodeType.NT_UNSTRUCTURED, "Add a tag");
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// Mailing list management
 		Composite mlCmp = new TagListComposite(parent, SWT.NO_FOCUS, toolkit,
 				getManagedForm(), getPeopleService(), getPeopleUiService(),
-				person, PeopleNames.PEOPLE_MAILING_LISTS, getPeopleService()
+				person, PEOPLE_MAILING_LISTS, getPeopleService()
 						.getResourceBasePath(PeopleTypes.PEOPLE_MAILING_LIST),
 				PeopleTypes.PEOPLE_MAILING_LIST, "Add a mailing");
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
@@ -244,6 +247,11 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		rl.wrap = false;
 		thirdCmp.setLayout(rl);
 
+		// Fourth Line: Polite form & spoken languages
+		Composite fourthCmp = toolkit.createComposite(editPanel, SWT.NO_FOCUS);
+		fourthCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		fourthCmp.setLayout(new GridLayout(4, false));
+
 		// Create edit text
 		final Text displayNameTxt = PeopleUiUtils.createRDText(toolkit,
 				firstCmp, "Display name",
@@ -277,6 +285,32 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				thirdCmp, "Latin Phonetic",
 				"A helper to know how to pronounce this name", 100);
 
+		// Fourth Line
+		PeopleUiUtils.createBoldLabel(toolkit, fourthCmp, "Form Of Address");
+		Composite politeCmp = toolkit.createComposite(fourthCmp, SWT.NO_FOCUS);
+		politeCmp
+				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
+		GridLayout layout = new GridLayout(2, false);
+		layout.marginHeight = layout.marginTop = layout.marginBottom = layout.verticalSpacing = 0;
+		politeCmp.setLayout(layout);
+		final Button formalBtn = new Button(politeCmp, SWT.RADIO);
+		formalBtn.setText("Formal");
+		final Button informalBtn = new Button(politeCmp, SWT.RADIO);
+		informalBtn.setText("Informal");
+
+		PeopleUiUtils.createBoldLabel(toolkit, fourthCmp, "Language");
+		Composite languageCmp = toolkit
+				.createComposite(fourthCmp, SWT.NO_FOCUS);
+		languageCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true,
+				false));
+		layout = new GridLayout(2, false);
+		layout.marginHeight = layout.marginTop = layout.marginBottom = layout.verticalSpacing = 0;
+		languageCmp.setLayout(layout);
+		final Button deBtn = new Button(languageCmp, SWT.RADIO);
+		deBtn.setText("German");
+		final Button enBtn = new Button(languageCmp, SWT.RADIO);
+		enBtn.setText("English");
+
 		final AbstractFormPart editPart = new AbstractFormPart() {
 			public void refresh() { // update display value
 				super.refresh();
@@ -286,8 +320,7 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 
 				try {
 					boolean useDefault = person.getProperty(
-							PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME)
-							.getBoolean();
+							PEOPLE_USE_DEFAULT_DISPLAY_NAME).getBoolean();
 					displayNameTxt.setEnabled(!useDefault);
 					defaultDisplayBtn.setSelection(useDefault);
 				} catch (RepositoryException e) {
@@ -297,25 +330,30 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 				}
 
 				PeopleUiUtils.refreshTextWidgetValue(salutationTxt, person,
-						PeopleNames.PEOPLE_SALUTATION);
+						PEOPLE_SALUTATION);
 				PeopleUiUtils.refreshTextWidgetValue(firstNameTxt, person,
-						PeopleNames.PEOPLE_FIRST_NAME);
+						PEOPLE_FIRST_NAME);
 				PeopleUiUtils.refreshTextWidgetValue(middleNameTxt, person,
-						PeopleNames.PEOPLE_MIDDLE_NAME);
+						PEOPLE_MIDDLE_NAME);
 				PeopleUiUtils.refreshTextWidgetValue(lastNameTxt, person,
-						PeopleNames.PEOPLE_LAST_NAME);
+						PEOPLE_LAST_NAME);
 				PeopleUiUtils.refreshTextWidgetValue(nickNameTxt, person,
-						PeopleNames.PEOPLE_NICKNAME);
+						PEOPLE_NICKNAME);
 				// PeopleUiUtils.refreshTextValue(genderTxt, person,
-				// PeopleNames.PEOPLE_GENDER);
+				// PEOPLE_GENDER);
 				PeopleUiUtils.refreshTextWidgetValue(maidenNameTxt, person,
-						PeopleNames.PEOPLE_MAIDEN_NAME);
+						PEOPLE_MAIDEN_NAME);
 				PeopleUiUtils.refreshTextWidgetValue(titleTxt, person,
-						PeopleNames.PEOPLE_PERSON_TITLE);
+						PEOPLE_PERSON_TITLE);
 				PeopleUiUtils.refreshTextWidgetValue(suffixTxt, person,
-						PeopleNames.PEOPLE_NAME_SUFFIX);
+						PEOPLE_NAME_SUFFIX);
 				PeopleUiUtils.refreshTextWidgetValue(latinPhoneticTxt, person,
-						PeopleNames.PEOPLE_LATIN_PHONETIC_SPELLING);
+						PEOPLE_LATIN_PHONETIC_SPELLING);
+
+				refreshFormalRadio(formalBtn, person);
+				refreshFormalRadio(informalBtn, person);
+				refreshLangRadio(deBtn, person);
+				refreshLangRadio(enBtn, person);
 
 				// READ ONLY PART
 				String roText = personLP.getText(person);
@@ -342,10 +380,9 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 			public void modifyText(ModifyEvent event) {
 				try {
 					if (CommonsJcrUtils.setJcrProperty(person,
-							PeopleNames.PEOPLE_FIRST_NAME, PropertyType.STRING,
+							PEOPLE_FIRST_NAME, PropertyType.STRING,
 							firstNameTxt.getText())) {
-						if (person.getProperty(
-								PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME)
+						if (person.getProperty(PEOPLE_USE_DEFAULT_DISPLAY_NAME)
 								.getBoolean()) {
 							String displayName = PersonJcrUtils
 									.getPersonDisplayName(person);
@@ -367,10 +404,9 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 			public void modifyText(ModifyEvent event) {
 				try {
 					if (CommonsJcrUtils.setJcrProperty(person,
-							PeopleNames.PEOPLE_LAST_NAME, PropertyType.STRING,
+							PEOPLE_LAST_NAME, PropertyType.STRING,
 							lastNameTxt.getText())) {
-						if (person.getProperty(
-								PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME)
+						if (person.getProperty(PEOPLE_USE_DEFAULT_DISPLAY_NAME)
 								.getBoolean()) {
 							String displayName = PersonJcrUtils
 									.getPersonDisplayName(person);
@@ -408,8 +444,8 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 			public void widgetSelected(SelectionEvent e) {
 				boolean useDefault = defaultDisplayBtn.getSelection();
 				if (CommonsJcrUtils.setJcrProperty(person,
-						PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME,
-						PropertyType.BOOLEAN, useDefault)) {
+						PEOPLE_USE_DEFAULT_DISPLAY_NAME, PropertyType.BOOLEAN,
+						useDefault)) {
 					if (useDefault) {
 						String displayName = PersonJcrUtils
 								.getPersonDisplayName(person);
@@ -427,28 +463,117 @@ public class PersonEditor extends AbstractEntityCTabEditor {
 		});
 
 		PeopleUiUtils.addTxtModifyListener(editPart, salutationTxt, person,
-				PeopleNames.PEOPLE_SALUTATION, PropertyType.STRING);
+				PEOPLE_SALUTATION, PropertyType.STRING);
 		PeopleUiUtils.addTxtModifyListener(editPart, middleNameTxt, person,
-				PeopleNames.PEOPLE_MIDDLE_NAME, PropertyType.STRING);
+				PEOPLE_MIDDLE_NAME, PropertyType.STRING);
 		PeopleUiUtils.addTxtModifyListener(editPart, lastNameTxt, person,
-				PeopleNames.PEOPLE_LAST_NAME, PropertyType.STRING);
+				PEOPLE_LAST_NAME, PropertyType.STRING);
 		PeopleUiUtils.addTxtModifyListener(editPart, nickNameTxt, person,
-				PeopleNames.PEOPLE_NICKNAME, PropertyType.STRING);
+				PEOPLE_NICKNAME, PropertyType.STRING);
 		// entityTK.addTxtModifyListener(editPart, genderTxt, person,
-		// PeopleNames.PEOPLE_GENDER, PropertyType.STRING);
+		// PEOPLE_GENDER, PropertyType.STRING);
 		PeopleUiUtils.addTxtModifyListener(editPart, maidenNameTxt, person,
-				PeopleNames.PEOPLE_MAIDEN_NAME, PropertyType.STRING);
+				PEOPLE_MAIDEN_NAME, PropertyType.STRING);
 		PeopleUiUtils.addTxtModifyListener(editPart, titleTxt, person,
-				PeopleNames.PEOPLE_PERSON_TITLE, PropertyType.STRING);
+				PEOPLE_PERSON_TITLE, PropertyType.STRING);
 		PeopleUiUtils.addTxtModifyListener(editPart, suffixTxt, person,
-				PeopleNames.PEOPLE_NAME_SUFFIX, PropertyType.STRING);
-		PeopleUiUtils
-				.addTxtModifyListener(editPart, latinPhoneticTxt, person,
-						PeopleNames.PEOPLE_LATIN_PHONETIC_SPELLING,
-						PropertyType.STRING);
+				PEOPLE_NAME_SUFFIX, PropertyType.STRING);
+		PeopleUiUtils.addTxtModifyListener(editPart, latinPhoneticTxt, person,
+				PEOPLE_LATIN_PHONETIC_SPELLING, PropertyType.STRING);
+
+		Listener formalRadioListener = new Listener() {
+			private static final long serialVersionUID = 1L;
+
+			public void handleEvent(Event event) {
+				Button btn = (Button) event.widget;
+				if (!btn.getSelection())
+					return;
+				boolean value = "Formal".equals(btn.getText());
+				if (CommonsJcrUtils.setJcrProperty(person,
+						PEOPLE_USE_POLITE_FORM, PropertyType.BOOLEAN, value))
+					editPart.markDirty();
+			}
+		};
+		formalBtn.addListener(SWT.Selection, formalRadioListener);
+		informalBtn.addListener(SWT.Selection, formalRadioListener);
+
+		Listener langRadioListener = new Listener() {
+			private static final long serialVersionUID = 1L;
+
+			public void handleEvent(Event event) {
+				Button btn = (Button) event.widget;
+				try {
+					if (!btn.getSelection())
+						return;
+					String newValueIso = ResourcesJcrUtils
+							.getLangIsoFromEnLabel(getPeopleService(),
+									getSession(), btn.getText());
+
+					String oldValueIso = null;
+					if (person.hasProperty(PEOPLE_SPOKEN_LANGUAGES)) {
+						Value[] values = person.getProperty(
+								PEOPLE_SPOKEN_LANGUAGES).getValues();
+						if (values[0] != null)
+							oldValueIso = values[0].getString();
+					}
+					if (!newValueIso.equals(oldValueIso)) {
+						String[] newVals = { newValueIso };
+						person.setProperty(PEOPLE_SPOKEN_LANGUAGES, newVals);
+						editPart.markDirty();
+					}
+				} catch (RepositoryException e) {
+					throw new PeopleException("Unable to update "
+							+ "spooken language on " + person, e);
+				}
+			}
+
+		};
+		deBtn.addListener(SWT.Selection, langRadioListener);
+		enBtn.addListener(SWT.Selection, langRadioListener);
 
 		editPart.initialize(getManagedForm());
 		getManagedForm().addPart(editPart);
 
+	}
+
+	private void refreshFormalRadio(Button button, Node entity) {
+		Boolean tmp = false;
+		try {
+			if (entity.hasProperty(PEOPLE_USE_POLITE_FORM)) {
+				boolean value = entity.getProperty(PEOPLE_USE_POLITE_FORM)
+						.getBoolean();
+				if ("Formal".equals(button.getText()) && value
+						|| "Informal".equals(button.getText()) && !value)
+					tmp = true;
+			}
+			button.setSelection(tmp);
+			button.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
+		} catch (RepositoryException re) {
+			throw new PeopleException("Error getting polite form property on "
+					+ entity, re);
+		}
+	}
+
+	private void refreshLangRadio(Button button, Node entity) {
+		Boolean tmp = false;
+		try {
+			if (entity.hasProperty(PEOPLE_SPOKEN_LANGUAGES)) {
+				Value[] values = entity.getProperty(PEOPLE_SPOKEN_LANGUAGES)
+						.getValues();
+				String isoVal = null;
+				if (values[0] != null)
+					isoVal = values[0].getString();
+				if (isoVal != null
+						&& ResourcesJcrUtils.getLangEnLabelFromIso(
+								getPeopleService(), getSession(), isoVal)
+								.equals(button.getText()))
+					tmp = true;
+			}
+			button.setSelection(tmp);
+			button.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
+		} catch (RepositoryException re) {
+			throw new PeopleException("Error getting polite form property on "
+					+ entity, re);
+		}
 	}
 }

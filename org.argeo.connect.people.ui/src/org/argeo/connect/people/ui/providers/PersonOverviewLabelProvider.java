@@ -90,7 +90,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		Boolean politeFormFlag = CommonsJcrUtils.getBooleanValue(person,
 				PEOPLE_USE_POLITE_FORM);
 		List<String> spokenLanguages = CommonsJcrUtils.getMultiAsList(person,
-				PEOPLE_SPOKEN_LANGUGES);
+				PEOPLE_SPOKEN_LANGUAGES);
 
 		if (CommonsJcrUtils.checkNotEmptyString(fmn)
 				|| CommonsJcrUtils.checkNotEmptyString(local)) {
@@ -116,8 +116,8 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 									peopleService, person.getSession(), str))
 							.append(", ");
 				}
-				// remove last occurence of the separator
-				builder.substring(0, builder.length() - 2);
+				// remove last occurence of the separator 
+				builder.delete(builder.length() - 2, builder.length());
 			}
 		}
 

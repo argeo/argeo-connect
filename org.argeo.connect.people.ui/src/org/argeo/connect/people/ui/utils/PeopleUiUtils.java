@@ -203,8 +203,9 @@ public class PeopleUiUtils {
 			button.setSelection(tmp);
 			button.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
 		} catch (RepositoryException re) {
-			throw new PeopleException("unable get boolean value for property "
-					+ propName);
+			throw new PeopleException(
+					"Unable to get boolean value for property " + propName
+							+ " on " + entity, re);
 		}
 	}
 
@@ -224,10 +225,9 @@ public class PeopleUiUtils {
 				value.set(dateTime.getYear(), dateTime.getMonth(),
 						dateTime.getDay(), dateTime.getHours(),
 						dateTime.getMinutes());
-				if (JcrUiUtils.setJcrProperty(node, propName,
-						PropertyType.DATE, value)) {
+				if (CommonsJcrUtils.setJcrProperty(node, propName,
+						PropertyType.DATE, value))
 					part.markDirty();
-				}
 			}
 		});
 	}
@@ -246,10 +246,9 @@ public class PeopleUiUtils {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				boolean value = button.getSelection();
-				if (JcrUiUtils.setJcrProperty(node, propName,
-						PropertyType.BOOLEAN, value)) {
+				if (CommonsJcrUtils.setJcrProperty(node, propName,
+						PropertyType.BOOLEAN, value))
 					part.markDirty();
-				}
 			}
 		});
 	}
@@ -266,7 +265,7 @@ public class PeopleUiUtils {
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				if (JcrUiUtils.setJcrProperty(node, propName,
+				if (CommonsJcrUtils.setJcrProperty(node, propName,
 						PropertyType.STRING, text.getText()))
 					part.markDirty();
 			}
@@ -292,7 +291,7 @@ public class PeopleUiUtils {
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				if (JcrUiUtils.setJcrProperty(entity, propName, propType,
+				if (CommonsJcrUtils.setJcrProperty(entity, propName, propType,
 						text.getText()))
 					part.markDirty();
 			}
@@ -314,8 +313,8 @@ public class PeopleUiUtils {
 				int index = combo.getSelectionIndex();
 				if (index != -1) {
 					String selectedCategory = combo.getItem(index);
-					if (JcrUiUtils.setJcrProperty(entity, propName, propType,
-							selectedCategory))
+					if (CommonsJcrUtils.setJcrProperty(entity, propName,
+							propType, selectedCategory))
 						part.markDirty();
 				}
 
@@ -354,8 +353,8 @@ public class PeopleUiUtils {
 					Long length = null;
 					if (CommonsJcrUtils.checkNotEmptyString(lengthStr))
 						length = new Long(lengthStr);
-					if (JcrUiUtils.setJcrProperty(entity, propName, propType,
-							length))
+					if (CommonsJcrUtils.setJcrProperty(entity, propName,
+							propType, length))
 						part.markDirty();
 				}
 			}
