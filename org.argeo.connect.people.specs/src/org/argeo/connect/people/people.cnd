@@ -73,7 +73,7 @@
 // Departments or organisational units
 + * (people:org) *
 // tag like multivalued properties to add an organisation to a given branch
-- people:orgBranches (STRING) *
+// - people:orgBranches (STRING) *
 // Subnode for all bank accounts owned by this org
 + people:paymentAccounts (nt:unstructured)
 
@@ -228,7 +228,8 @@ mixin
 [people:language] 
 mixin
 // A single language tag, as defined in http://tools.ietf.org/html/rfc5646
-- people:lang (STRING) ='en' m a
+// We added 2 values: "und" for unknown and "zxx" for No linguistic content  
+- people:lang (STRING) ='und' m a
 // NOTE: we don't use mix:language for the time being because constraints on the 
 // jcr:language properties are implementation specific
 
