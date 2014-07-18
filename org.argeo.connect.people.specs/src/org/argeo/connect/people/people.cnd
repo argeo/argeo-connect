@@ -41,7 +41,8 @@
 - people:latinPhoneticSpelling (STRING)
 
 - people:usePoliteForm (BOOLEAN)
-- people:preferedLanguages (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
+- people:spokenLanguages (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
+									// Prefered language must be added first
 
 - people:birthDate (DATE)
 // Enable approximative birth date 

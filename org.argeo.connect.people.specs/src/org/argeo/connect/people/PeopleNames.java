@@ -77,6 +77,9 @@ public interface PeopleNames {
 	public final static String PEOPLE_NICKNAME = "people:nickname";
 	public final static String PEOPLE_MAIDEN_NAME = "people:maidenName";
 	public final static String PEOPLE_USE_DEFAULT_DISPLAY_NAME = "people:useDefaultDisplayName";
+	public final static String PEOPLE_USE_POLITE_FORM = "people:usePoliteForm"; // (BOOLEAN)
+	public final static String PEOPLE_SPOKEN_LANGUGES = "people:spokenLanguages"; // STRING*
+
 	// public final static String PEOPLE_PSEUDONYM = "people:pseudonym";
 
 	/* ORGANIZATIONS */

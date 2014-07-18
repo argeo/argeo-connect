@@ -1,5 +1,7 @@
 package org.argeo.connect.people.ui.providers;
 
+import java.util.List;
+
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
@@ -11,6 +13,7 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PersonJcrUtils;
+import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
 /**
@@ -84,6 +87,11 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		String local = PeopleHtmlUtils.getLocalisationInfo(person);
 		String primaryContacts = PeopleHtmlUtils.getPrimaryContacts(person,
 				false);
+		Boolean politeFormFlag = CommonsJcrUtils.getBooleanValue(person,
+				PEOPLE_USE_POLITE_FORM);
+		List<String> spokenLanguages = CommonsJcrUtils.getMultiAsList(person,
+				PEOPLE_SPOKEN_LANGUGES);
+
 		if (CommonsJcrUtils.checkNotEmptyString(fmn)
 				|| CommonsJcrUtils.checkNotEmptyString(local)) {
 			builder.append("<br/>").append(fmn);
@@ -94,7 +102,27 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		}
 		if (CommonsJcrUtils.checkNotEmptyString(primaryContacts))
 			builder.append("<br/>").append(primaryContacts);
+
+		if (politeFormFlag != null || !spokenLanguages.isEmpty()) {
+			builder.append("<br/>");
+			if (politeFormFlag != null)
+				builder.append(politeFormFlag ? "Formal" : "Informal");
+			if (politeFormFlag != null && !spokenLanguages.isEmpty())
+				builder.append(" / ");
+			if (!spokenLanguages.isEmpty()) {
+				for (String str : spokenLanguages) {
+					builder.append(
+							ResourcesJcrUtils.getLangEnLabelFromIso(
+									peopleService, person.getSession(), str))
+							.append(", ");
+				}
+				// remove last occurence of the separator
+				builder.substring(0, builder.length() - 2);
+			}
+		}
+
 		builder.append("</span>");
+
 		return builder.toString();
 	}
 
