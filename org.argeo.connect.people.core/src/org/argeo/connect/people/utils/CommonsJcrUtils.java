@@ -805,12 +805,11 @@ public class CommonsJcrUtils {
 	 * Clean a String to remove or replace chars that are known to be
 	 * problematic
 	 */
-	@Deprecated
-	public static String cleanString(String string) {
-		String cleanStr = string;
-		cleanStr.replaceAll("&", "&amp;");
-		return cleanStr;
-	}
+	// public static String cleanString(String string) {
+	// String cleanStr = string;
+	// cleanStr.replaceAll("&", "&amp;");
+	// return cleanStr;
+	// }
 
 	/* WIDELY USED PATTERNS */
 	/**

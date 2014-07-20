@@ -34,7 +34,6 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
-import org.argeo.connect.people.utils.PersonJcrUtils;
 import org.argeo.jcr.JcrUtils;
 
 /** Concrete access to people services */
@@ -134,7 +133,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		try {
 			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
 				savePerson(entity, commit);
-			else if (entity.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION))
+			else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
 				saveOrganisation(entity, commit);
 
 			else
@@ -155,13 +154,14 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 				PeopleNames.PEOPLE_LAST_NAME);
 		String firstName = CommonsJcrUtils.get(person,
 				PeopleNames.PEOPLE_FIRST_NAME);
-		boolean useDefaultDisplay = person.getProperty(
-				PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME).getBoolean();
+		Boolean defineDistinctDefaultDisplay = CommonsJcrUtils.getBooleanValue(
+				person, PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME);
 		String displayName = null;
 
-		// Update display name if needed
-		if (useDefaultDisplay) {
-			displayName = PersonJcrUtils.getPersonDisplayName(person);
+		// Update display name cache if needed
+		if (defineDistinctDefaultDisplay == null
+				|| !defineDistinctDefaultDisplay) {
+			displayName = getDisplayName(person);
 			person.setProperty(Property.JCR_TITLE, displayName);
 		} else
 			displayName = CommonsJcrUtils.get(person, Property.JCR_TITLE);
@@ -169,8 +169,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		// Check validity of main info
 		if (CommonsJcrUtils.isEmptyString(lastName)
 				&& CommonsJcrUtils.isEmptyString(firstName)
-				&& (useDefaultDisplay || CommonsJcrUtils
-						.isEmptyString(displayName))) {
+				&& CommonsJcrUtils.isEmptyString(displayName)) {
 			String msg = "Please note that you must define a first name, a "
 					+ "last name or a display name to be able to create or "
 					+ "update this person.";
@@ -180,6 +179,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		// Update cache
 		updatePrimaryCache(person);
 
+		checkPathAndMoveIfNeeded(person, PeopleTypes.PEOPLE_PERSON);
 		if (commit)
 			CommonsJcrUtils.saveAndCheckin(person);
 		else
@@ -196,8 +196,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		String legalName = CommonsJcrUtils.get(org,
 				PeopleNames.PEOPLE_LEGAL_NAME);
 
-		boolean useDefaultDisplay = org.getProperty(
-				PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME).getBoolean();
+		boolean useDefaultDisplay = !org.getProperty(
+				PeopleNames.PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME).getBoolean();
 		String displayName = "";
 
 		if (useDefaultDisplay) {
@@ -214,6 +214,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			throw new PeopleException(msg);
 		}
 
+		// Finalise save process.
+		checkPathAndMoveIfNeeded(org, PeopleTypes.PEOPLE_ORG);
 		if (commit)
 			CommonsJcrUtils.saveAndCheckin(org);
 		else
@@ -239,8 +241,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	protected void updatePrimaryCache(Node entity) throws PeopleException,
 			RepositoryException {
 		if (CommonsJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)
-				|| CommonsJcrUtils.isNodeType(entity,
-						PeopleTypes.PEOPLE_ORGANIZATION)) {
+				|| CommonsJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG)) {
 			for (String currType : PeopleTypes.KNOWN_CONTACT_TYPES) {
 				Node pNode = PeopleJcrUtils.getPrimaryContact(entity, currType);
 				if (pNode != null)
@@ -249,6 +250,55 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		} else
 			log.warn("Trying to update primary cache on " + entity
 					+ " - Unknown type.");
+	}
+
+	@Override
+	public String getDisplayName(Node entity) {
+		String displayName = null;
+		try {
+			boolean defineDistinct = false;
+
+			if (entity.hasProperty(PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME))
+				defineDistinct = entity.getProperty(
+						PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME).getBoolean();
+			if (defineDistinct)
+				displayName = CommonsJcrUtils.get(entity, Property.JCR_TITLE);
+			else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
+				String lastName = CommonsJcrUtils.get(entity, PEOPLE_LAST_NAME);
+				String firstName = CommonsJcrUtils.get(entity,
+						PEOPLE_FIRST_NAME);
+				// Todo use this for Kassel
+				// if (CommonsJcrUtils.checkNotEmptyString(firstName) ||
+				// CommonsJcrUtils.checkNotEmptyString(lastName)) {
+				// displayName = firstName;
+				// if (CommonsJcrUtils.checkNotEmptyString(firstName)
+				// && CommonsJcrUtils.checkNotEmptyString(lastName))
+				// displayName += " ";
+				// displayName += lastName;
+				// }
+				if (CommonsJcrUtils.checkNotEmptyString(firstName)
+						|| CommonsJcrUtils.checkNotEmptyString(lastName)) {
+					displayName = lastName;
+					if (CommonsJcrUtils.checkNotEmptyString(firstName)
+							&& CommonsJcrUtils.checkNotEmptyString(lastName))
+						displayName += ", ";
+					displayName += firstName;
+				}
+			} else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG)) {
+				// Default display is simply the legal name
+				displayName = CommonsJcrUtils.get(entity, PEOPLE_LEGAL_NAME);
+			} else
+				throw new PeopleException("Display name not defined for type "
+						+ entity.getPrimaryNodeType().getName() + " - node: "
+						+ entity);
+
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to get display name for node "
+					+ entity, e);
+		}
+
+		return displayName;
+
 	}
 
 	@Override
@@ -307,7 +357,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			Node parentNode = null;
 			String linkNodeType = null;
 			if (referencingNode.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
-				if (referencedNode.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)) {
+				if (referencedNode.isNodeType(PeopleTypes.PEOPLE_ORG)) {
 					linkNodeType = PeopleTypes.PEOPLE_JOB;
 					parentNode = referencingNode
 							.getNode(PeopleNames.PEOPLE_JOBS);
@@ -320,7 +370,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 				// .getNode(PeopleNames.PEOPLE_MEMBERS);
 				// }
 			} else if (referencingNode.isNodeType(PeopleTypes.PEOPLE_GROUP)) {
-				if (referencedNode.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)
+				if (referencedNode.isNodeType(PeopleTypes.PEOPLE_ORG)
 						|| referencedNode.isNodeType(PeopleTypes.PEOPLE_PERSON)
 						|| (referencedNode.isNodeType(PeopleTypes.PEOPLE_GROUP) && referencedNode
 								.getIdentifier() != referencingNode

@@ -9,6 +9,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -32,6 +33,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class ContactComposite extends Composite {
 	private static final long serialVersionUID = -789885142022513273L;
 
+	private final PeopleUiService peopleUiService;
 	private final Node contactNode;
 	private final Node parentVersionableNode;
 	private final FormToolkit toolkit;
@@ -40,8 +42,9 @@ public class ContactComposite extends Composite {
 
 	public ContactComposite(Composite parent, int style, FormToolkit toolkit,
 			AbstractFormPart formPart, Node contactNode,
-			Node parentVersionableNode) {
+			Node parentVersionableNode, PeopleUiService peopleUiService) {
 		super(parent, style);
+		this.peopleUiService = peopleUiService;
 		this.contactNode = contactNode;
 		this.parentVersionableNode = parentVersionableNode;
 		this.toolkit = toolkit;
@@ -58,7 +61,8 @@ public class ContactComposite extends Composite {
 
 		// buttons
 		Composite buttCmp = new ContactButtonsComposite(parent, SWT.NO_FOCUS,
-				toolkit, formPart, contactNode, parentVersionableNode);
+				toolkit, formPart, contactNode, parentVersionableNode,
+				peopleUiService);
 		toolkit.adapt(buttCmp, false, false);
 		buttCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 

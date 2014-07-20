@@ -13,11 +13,11 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.composites.ContactPanelComposite;
 import org.argeo.connect.people.ui.composites.TagListComposite;
 import org.argeo.connect.people.ui.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.ui.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.ui.toolkits.ActivityToolkit;
-import org.argeo.connect.people.ui.toolkits.ContactToolkit;
 import org.argeo.connect.people.ui.toolkits.LegalInfoToolkit;
 import org.argeo.connect.people.ui.toolkits.ListToolkit;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
@@ -52,7 +52,6 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 	private Node org;
 
 	// Toolkits
-	private ContactToolkit contactTK;
 	private ListToolkit listTK;
 	private LegalInfoToolkit legalTK;
 	private ActivityToolkit activityTK;
@@ -74,8 +73,6 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void createToolkits() {
-		contactTK = new ContactToolkit(toolkit, getManagedForm(),
-				getPeopleService(), getPeopleUiService());
 		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
 				getPeopleUiService());
 		legalTK = new LegalInfoToolkit(toolkit, getManagedForm(), org);
@@ -116,7 +113,11 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Details", PeopleUiConstants.PANEL_CONTACT_DETAILS, tooltip);
-		contactTK.createContactPanelWithNotes(innerPannel, org);
+		innerPannel.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		ContactPanelComposite cpc = new ContactPanelComposite(innerPannel,
+				SWT.NO_FOCUS, toolkit, getManagedForm(), getNode(),
+				getPeopleService(), getPeopleUiService());
+		cpc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		// Activities and tasks
 		tooltip = "Activities and tasks related to "
@@ -177,9 +178,9 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 					super.refresh();
 
 					// EDIT PART
-					boolean useDefault = PeopleUiUtils.refreshCheckBoxWidget(
+					boolean useDefault = !PeopleUiUtils.refreshCheckBoxWidget(
 							defaultDisplayBtn, org,
-							PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME);
+							PeopleNames.PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME);
 
 					if (useDefault) {
 						PeopleUiUtils.refreshTextWidgetValue(displayNameTxt,
@@ -211,11 +212,11 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					boolean useDefault = defaultDisplayBtn.getSelection();
+					boolean defineDistinct = !defaultDisplayBtn.getSelection();
 					if (CommonsJcrUtils.setJcrProperty(org,
-							PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME,
-							PropertyType.BOOLEAN, useDefault)) {
-						if (useDefault) {
+							PeopleNames.PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME,
+							PropertyType.BOOLEAN, defineDistinct)) {
+						if (defineDistinct) {
 							String displayName = CommonsJcrUtils.get(org,
 									PeopleNames.PEOPLE_LEGAL_NAME);
 							CommonsJcrUtils.setJcrProperty(org,

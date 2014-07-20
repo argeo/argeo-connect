@@ -29,7 +29,7 @@
 // PERSON
 //
 [people:person] > people:entity, people:contactable, people:tagable
-- people:useDefaultDisplayName (BOOLEAN) ='true' m a 
+- people:defineDistinctDisplayName (BOOLEAN)  
 - people:firstName (STRING) 
 - people:middleName (STRING)
 - people:lastName (STRING)

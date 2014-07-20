@@ -38,7 +38,7 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 		try {
 			Node node = (Node) element;
 			Node orga;
-			if (node.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION))
+			if (node.isNodeType(PeopleTypes.PEOPLE_ORG))
 				orga = node;
 			else if (node.isNodeType(PeopleTypes.PEOPLE_JOB)) {
 				orga = peopleService.getEntityByUid(node.getSession(), node
@@ -76,7 +76,7 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 
 			String tmpStr;
 			if (isSmallList) {
-				tmpStr = PeopleHtmlUtils.getBranches(orga);
+				tmpStr = PeopleHtmlUtils.getTags(orga);
 				if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
 					builder.append(tmpStr).append("<br/>");
 			}

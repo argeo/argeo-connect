@@ -5,7 +5,7 @@ public interface PeopleNames {
 
 	// workaround to manage draft concept.
 	// TODO clean this
-	public static String PEOPLE_IS_DRAFT = "people:isDraft";
+	// public static String PEOPLE_IS_DRAFT = "people:isDraft";
 
 	/**
 	 * An implementation specific UID, might be a JCR node Identifier but it is
@@ -76,7 +76,9 @@ public interface PeopleNames {
 	public final static String PEOPLE_NAME_SUFFIX = "people:nameSuffix";
 	public final static String PEOPLE_NICKNAME = "people:nickname";
 	public final static String PEOPLE_MAIDEN_NAME = "people:maidenName";
-	public final static String PEOPLE_USE_DEFAULT_DISPLAY_NAME = "people:useDefaultDisplayName";
+	// public final static String PEOPLE_USE_DEFAULT_DISPLAY_NAME =
+	// "people:useDefaultDisplayName";
+	public final static String PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME = "people:defineDistinctDisplayName";
 	public final static String PEOPLE_USE_POLITE_FORM = "people:usePoliteForm"; // (BOOLEAN)
 	public final static String PEOPLE_SPOKEN_LANGUAGES = "people:spokenLanguages"; // STRING*
 
@@ -84,9 +86,9 @@ public interface PeopleNames {
 
 	/* ORGANIZATIONS */
 	public final static String PEOPLE_LEGAL_NAME = "people:legalName";
-	public final static String PEOPLE_LEGAL_STATUS = "people:legalStatus";
+	public final static String PEOPLE_LEGAL_FORM = "people:legalForm";
 	public final static String PEOPLE_VAT_ID_NB = "people:vatIdNb";
-	public final static String PEOPLE_ORG_BRANCHES = "people:orgBranches";
+	// public final static String PEOPLE_ORG_BRANCHES = "people:orgBranches";
 
 	/* USER MANAGEMENT */
 	// REFERENCE * towards people:person types

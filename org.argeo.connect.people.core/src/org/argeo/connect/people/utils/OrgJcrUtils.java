@@ -57,8 +57,8 @@ public class OrgJcrUtils implements PeopleNames {
 			throws RepositoryException {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
 		QueryObjectModelFactory factory = queryManager.getQOMFactory();
-		Selector source = factory.selector(PeopleTypes.PEOPLE_ORGANIZATION,
-				PeopleTypes.PEOPLE_ORGANIZATION);
+		Selector source = factory.selector(PeopleTypes.PEOPLE_ORG,
+				PeopleTypes.PEOPLE_ORG);
 
 		DynamicOperand dynOp = factory.propertyValue(source.getSelectorName(),
 				PeopleNames.PEOPLE_LEGAL_NAME);

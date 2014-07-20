@@ -10,7 +10,6 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.PersonJcrUtils;
 import org.eclipse.jface.viewers.LabelProvider;
 
 /**
@@ -31,7 +30,7 @@ public class PersonListLabelProvider extends LabelProvider implements
 		Node person = (Node) element;
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b>");
-		builder.append(PersonJcrUtils.getPersonDisplayName(person));
+		builder.append(peopleService.getDisplayName(person));
 		builder.append("</b>");
 
 		try {

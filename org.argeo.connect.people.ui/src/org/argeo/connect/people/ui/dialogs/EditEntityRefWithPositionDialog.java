@@ -136,7 +136,7 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 		if (isBackward)
 			toSearchNodeType = PeopleTypes.PEOPLE_PERSON;
 		else
-			toSearchNodeType = PeopleTypes.PEOPLE_ORGANIZATION;
+			toSearchNodeType = PeopleTypes.PEOPLE_ORG;
 
 		if (oldLink != null) {
 			// Try to initiallize our shortcuts

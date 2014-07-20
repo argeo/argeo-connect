@@ -67,7 +67,7 @@ public class EditJob extends AbstractHandler {
 			} else {
 				// Create a new job
 				isBackward = relevantNode
-						.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION);
+						.isNodeType(PeopleTypes.PEOPLE_ORG);
 				diag = new EditJobDialog(HandlerUtil.getActiveShell(event),
 						"Edit position", peopleService, peopleUiService, null,
 						relevantNode, isBackward);

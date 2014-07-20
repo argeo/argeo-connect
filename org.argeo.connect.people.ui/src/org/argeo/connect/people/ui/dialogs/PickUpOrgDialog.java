@@ -67,7 +67,7 @@ public class PickUpOrgDialog extends TrayDialog {
 
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
 		tableCmp = new EntityTableComposite(dialogArea, style, session,
-				PeopleTypes.PEOPLE_ORGANIZATION, null, true, false);
+				PeopleTypes.PEOPLE_ORG, null, true, false);
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		// Add listeners

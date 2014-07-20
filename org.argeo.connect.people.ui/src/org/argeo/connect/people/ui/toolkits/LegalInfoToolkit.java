@@ -10,7 +10,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.composites.BankAccountComposite;
-import org.argeo.connect.people.ui.utils.JcrUiUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.OrgJcrUtils;
@@ -86,7 +85,7 @@ public class LegalInfoToolkit {
 				PeopleUiUtils.refreshFormTextWidget(legalNameTxt, entity,
 						PeopleNames.PEOPLE_LEGAL_NAME);
 				PeopleUiUtils.refreshFormTextWidget(legalFormTxt, entity,
-						PeopleNames.PEOPLE_LEGAL_STATUS);
+						PeopleNames.PEOPLE_LEGAL_FORM);
 				PeopleUiUtils.refreshFormTextWidget(vatIDTxt, entity,
 						PeopleNames.PEOPLE_VAT_ID_NB);
 			}
@@ -94,7 +93,7 @@ public class LegalInfoToolkit {
 
 		// Listeners
 		PeopleUiUtils.addModifyListener(legalFormTxt, entity,
-				PeopleNames.PEOPLE_LEGAL_STATUS, notePart);
+				PeopleNames.PEOPLE_LEGAL_FORM, notePart);
 		PeopleUiUtils.addModifyListener(vatIDTxt, entity,
 				PeopleNames.PEOPLE_VAT_ID_NB, notePart);
 
@@ -105,15 +104,16 @@ public class LegalInfoToolkit {
 			@Override
 			public void modifyText(ModifyEvent event) {
 				try {
-					if (JcrUiUtils.setJcrProperty(entity,
+					if (CommonsJcrUtils.setJcrProperty(entity,
 							PeopleNames.PEOPLE_LEGAL_NAME, PropertyType.STRING,
 							legalNameTxt.getText())) {
-						if (entity.getProperty(
-								PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME)
-								.getBoolean()) {
+						Boolean defineDistinct = CommonsJcrUtils
+								.getBooleanValue(
+										entity,
+										PeopleNames.PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME);
+						if (defineDistinct == null || !defineDistinct)
 							entity.setProperty(Property.JCR_TITLE,
 									legalNameTxt.getText());
-						}
 						notePart.markDirty();
 					}
 				} catch (RepositoryException e) {

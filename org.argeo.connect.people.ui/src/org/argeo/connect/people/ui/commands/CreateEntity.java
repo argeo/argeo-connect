@@ -57,7 +57,7 @@ public class CreateEntity extends AbstractHandler {
 			Node newNode = parent.addNode(nodeType, nodeType);
 			String uuid = UUID.randomUUID().toString();
 			newNode.setProperty(PeopleNames.PEOPLE_UID, uuid);
-			newNode.setProperty(PeopleNames.PEOPLE_IS_DRAFT, true);
+			// newNode.setProperty(PeopleNames.PEOPLE_IS_DRAFT, true);
 
 			Wizard wizard = peopleUiService.getCreationWizard(peopleService,
 					newNode);

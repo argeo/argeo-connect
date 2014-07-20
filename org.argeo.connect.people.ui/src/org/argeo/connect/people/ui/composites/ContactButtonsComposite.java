@@ -7,7 +7,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.providers.PeopleImageProvider;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
@@ -28,17 +28,21 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class ContactButtonsComposite extends Composite {
 	private static final long serialVersionUID = 2331713954300845292L;
 
+	// Context
+	private final PeopleUiService peopleUiService;
 	private final Node contactNode;
 	private final boolean isCheckedOut;
 	private final Node parentVersionableNode;
 	private final AbstractFormPart formPart;
 
-	private final PeopleImageProvider imageProvider = new PeopleImageProvider();
+	// private final PeopleImageProvider imageProvider = new
+	// PeopleImageProvider();
 
 	public ContactButtonsComposite(Composite parent, int style,
 			FormToolkit toolkit, AbstractFormPart formPart, Node contactNode,
-			Node parentVersionableNode) {
+			Node parentVersionableNode, PeopleUiService peopleUiService) {
 		super(parent, style);
+		this.peopleUiService = peopleUiService;
 		this.contactNode = contactNode;
 		this.parentVersionableNode = parentVersionableNode;
 		this.formPart = formPart;
@@ -71,31 +75,41 @@ public class ContactButtonsComposite extends Composite {
 		Button btn = new Button(parent, SWT.FLAT);
 		btn.setData(PeopleUiConstants.CUSTOM_VARIANT,
 				PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
-		try {
-			String category = null;
-			if (contactNode.hasProperty(PeopleNames.PEOPLE_CONTACT_CATEGORY))
-				category = CommonsJcrUtils.get(contactNode,
-						PeopleNames.PEOPLE_CONTACT_CATEGORY);
-			String nature = null;
-			if (contactNode.hasProperty(PeopleNames.PEOPLE_CONTACT_NATURE))
-				nature = CommonsJcrUtils.get(contactNode,
-						PeopleNames.PEOPLE_CONTACT_NATURE);
 
-			String contactType = contactNode.getPrimaryNodeType().getName();
-			String entityType = contactNode.getParent().getParent()
-					.getPrimaryNodeType().getName();
+		btn.setImage(peopleUiService.getIconForType(contactNode));
+		GridData gd = new GridData();
+		gd.widthHint = 16;
+		gd.heightHint = 16;
+		btn.setLayoutData(gd);
+		return btn;
 
-			btn.setImage(imageProvider.getContactIcon(entityType, contactType,
-					nature, category));
-
-			GridData gd = new GridData();
-			gd.widthHint = 16;
-			gd.heightHint = 16;
-			btn.setLayoutData(gd);
-			return btn;
-		} catch (RepositoryException re) {
-			throw new PeopleException("unable to get image for contact");
-		}
+		// try {
+		//
+		//
+		// String category = null;
+		// if (contactNode.hasProperty(PeopleNames.PEOPLE_CONTACT_CATEGORY))
+		// category = CommonsJcrUtils.get(contactNode,
+		// PeopleNames.PEOPLE_CONTACT_CATEGORY);
+		// String nature = null;
+		// if (contactNode.hasProperty(PeopleNames.PEOPLE_CONTACT_NATURE))
+		// nature = CommonsJcrUtils.get(contactNode,
+		// PeopleNames.PEOPLE_CONTACT_NATURE);
+		//
+		// String contactType = contactNode.getPrimaryNodeType().getName();
+		// String entityType = contactNode.getParent().getParent()
+		// .getPrimaryNodeType().getName();
+		//
+		// // btn.setImage(imageProvider.getContactIcon(entityType, contactType,
+		// // nature, category));
+		//
+		// GridData gd = new GridData();
+		// gd.widthHint = 16;
+		// gd.heightHint = 16;
+		// btn.setLayoutData(gd);
+		// return btn;
+		// } catch (RepositoryException re) {
+		// throw new PeopleException("unable to get image for contact");
+		// }
 	}
 
 	private Button createDeleteButton(Composite parent) {

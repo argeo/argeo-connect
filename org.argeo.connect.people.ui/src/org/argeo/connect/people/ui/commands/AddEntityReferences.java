@@ -68,7 +68,7 @@ public class AddEntityReferences extends AbstractHandler {
 				Dialog diag = new CreateEntityRefWithPositionDialog(
 						HandlerUtil.getActiveShell(event), "Create position",
 						repository, peopleService, referencing, referenced,
-						PeopleTypes.PEOPLE_ORGANIZATION);
+						PeopleTypes.PEOPLE_ORG);
 				diag.open();
 				return null;
 			}

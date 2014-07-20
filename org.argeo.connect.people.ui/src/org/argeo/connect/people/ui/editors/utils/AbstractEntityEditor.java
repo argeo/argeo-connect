@@ -105,9 +105,9 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			EntityEditorInput sei = (EntityEditorInput) getEditorInput();
 			entity = getSession().getNodeByIdentifier(sei.getUid());
 
-			if (entity.hasProperty(PeopleNames.PEOPLE_IS_DRAFT))
-				isDraft = entity.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
-						.getBoolean();
+//			if (entity.hasProperty(PeopleNames.PEOPLE_IS_DRAFT))
+//				isDraft = entity.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
+//						.getBoolean();
 
 			InputStream is = null;
 			try {
@@ -615,28 +615,28 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	@Override
 	public void cancelAndCheckInItem() {
 		// TODO best effort to keep a clean repository
-		try {
-			if (entity.hasProperty(PeopleNames.PEOPLE_IS_DRAFT)
-					&& entity.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
-							.getBoolean()) {
-				String path = entity.getPath();
-				session.removeItem(path);
-				session.save();
-				entity = null;
-				// close current editor
-				this.getSite().getWorkbenchWindow().getActivePage()
-						.closeEditor(this, false);
-
-			} else {
+//		try {
+//			if (entity.hasProperty(PeopleNames.PEOPLE_IS_DRAFT)
+//					&& entity.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
+//							.getBoolean()) {
+//				String path = entity.getPath();
+//				session.removeItem(path);
+//				session.save();
+//				entity = null;
+//				// close current editor
+//				this.getSite().getWorkbenchWindow().getActivePage()
+//						.closeEditor(this, false);
+//
+//			} else {
 				CommonsJcrUtils.cancelAndCheckin(entity);
 				notifyCheckOutStateChange();
 				firePropertyChange(PROP_DIRTY);
-			}
-		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"Unable to corrctly remove newly created node. Repo is probably corrupted",
-					re);
-		}
+		// }
+		// } catch (RepositoryException re) {
+		// throw new PeopleException(
+		// "Unable to corrctly remove newly created node. Repo is probably corrupted",
+		// re);
+		// }
 
 	}
 

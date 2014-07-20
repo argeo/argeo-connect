@@ -22,7 +22,6 @@ import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.commands.RemoveEntityReference;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
-import org.argeo.connect.people.utils.PersonJcrUtils;
 
 /** Some helper methods to generate html snippets */
 public class PeopleHtmlUtils {
@@ -293,21 +292,21 @@ public class PeopleHtmlUtils {
 		}
 	}
 
-	public static String getBranches(Node orga) {
-		try {
-			StringBuilder tags = new StringBuilder();
-			if (orga.hasProperty(PeopleNames.PEOPLE_ORG_BRANCHES)) {
-				for (Value value : orga.getProperty(
-						PeopleNames.PEOPLE_ORG_BRANCHES).getValues())
-					tags.append("#").append(cleanHtmlString(value.getString()))
-							.append(" ");
-			}
-			return PeopleHtmlUtils.cleanHtmlString(tags.toString());
-		} catch (RepositoryException e) {
-			throw new PeopleException("Error while getting branches for node "
-					+ orga, e);
-		}
-	}
+	// public static String getBranches(Node orga) {
+	// try {
+	// StringBuilder tags = new StringBuilder();
+	// if (orga.hasProperty(PeopleNames.PEOPLE_ORG_BRANCHES)) {
+	// for (Value value : orga.getProperty(
+	// PeopleNames.PEOPLE_ORG_BRANCHES).getValues())
+	// tags.append("#").append(cleanHtmlString(value.getString()))
+	// .append(" ");
+	// }
+	// return PeopleHtmlUtils.cleanHtmlString(tags.toString());
+	// } catch (RepositoryException e) {
+	// throw new PeopleException("Error while getting branches for node "
+	// + orga, e);
+	// }
+	// }
 
 	/** a snippet to display primary contact information for this entity */
 	public static String getPrimaryContacts(Node entity, boolean smallList) {
@@ -527,7 +526,7 @@ public class PeopleHtmlUtils {
 							.getSession(currContact), CommonsJcrUtils.get(
 							currContact, PeopleNames.PEOPLE_REF_UID));
 				}
-			} else if (entity.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION))
+			} else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
 				org = entity;
 
 			StringBuilder builder = new StringBuilder();
@@ -541,8 +540,8 @@ public class PeopleHtmlUtils {
 						.append("<br/>");
 			builder.append("</b>");
 			if (person != null)
-				builder.append(PersonJcrUtils.getPersonDisplayName(person))
-						.append("<br/>");
+				builder.append(peopleService.getDisplayName(person)).append(
+						"<br/>");
 
 			// phone
 			String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,

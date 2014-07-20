@@ -107,7 +107,7 @@ public class OpenEntityEditor extends AbstractHandler {
 				return ActivityEditor.ID;
 			else if (curNode.isNodeType(PeopleTypes.PEOPLE_PERSON))
 				return PersonEditor.ID;
-			else if (curNode.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)) {
+			else if (curNode.isNodeType(PeopleTypes.PEOPLE_ORG)) {
 				return OrgEditor.ID;
 				// } else if
 				// (curNode.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST)) {

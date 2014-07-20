@@ -25,7 +25,7 @@ public interface PeopleTypes {
 	public final static String PEOPLE_PERSON = "people:person";
 
 	/* ORGANIZATIONS */
-	public final static String PEOPLE_ORGANIZATION = "people:org";
+	public final static String PEOPLE_ORG = "people:org";
 
 	/* GROUPS */
 	public final static String PEOPLE_GROUP = "people:group";

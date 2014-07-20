@@ -12,6 +12,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -37,10 +38,7 @@ import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
-/**
- * 
- * The special panel that display contacts
- */
+/** A panel to display contacts */
 public class ContactPanelComposite extends Composite {
 	private static final long serialVersionUID = 58381532068661087L;
 
@@ -49,8 +47,8 @@ public class ContactPanelComposite extends Composite {
 
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
-
 	private final PeopleService peopleService;
+	private final PeopleUiService peopleUiService;
 	private final Node entity;
 	private ContactFormPart formPart;
 
@@ -61,12 +59,13 @@ public class ContactPanelComposite extends Composite {
 
 	public ContactPanelComposite(Composite parent, int style,
 			FormToolkit toolkit, IManagedForm form, Node entityNode,
-			PeopleService peopleService) {
+			PeopleService peopleService, PeopleUiService peopleUiService) {
 		super(parent, style);
 		this.toolkit = toolkit;
 		this.form = form;
 		this.entity = entityNode;
 		this.peopleService = peopleService;
+		this.peopleUiService = peopleUiService;
 		populate();
 	}
 
@@ -128,13 +127,12 @@ public class ContactPanelComposite extends Composite {
 
 				gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 				if (checkedOut) {
-					long count = getCurrentContactCount() ;
+					long count = getCurrentContactCount();
 					if (count < 5)
-					gd.heightHint = 170;
-					else 
-						gd.heightHint = (int) (count*30 + 20);
-						
-					
+						gd.heightHint = 170;
+					else
+						gd.heightHint = (int) (count * 30 + 20);
+
 				}
 				contactListCmp.setLayoutData(gd);
 
@@ -154,10 +152,8 @@ public class ContactPanelComposite extends Composite {
 						true, true));
 				innerCmp.layout();
 				innerCmp.getParent().pack(true);
-				// parent.layout();
 				innerCmp.getParent().layout();
 				ContactPanelComposite.this.layout();
-
 			} catch (Exception e) {
 				throw new PeopleException(
 						"unexpected error while refreshing node " + entity, e);
@@ -193,11 +189,11 @@ public class ContactPanelComposite extends Composite {
 					if (CommonsJcrUtils.isNodeType(currNode,
 							PeopleTypes.PEOPLE_ADDRESS))
 						new ContactAddressComposite(parent, SWT.NO_FOCUS,
-								toolkit, formPart, peopleService, currNode,
-								entity);
+								toolkit, formPart, peopleService,
+								peopleUiService, currNode, entity);
 					else
 						new ContactComposite(parent, SWT.NO_FOCUS, toolkit,
-								formPart, currNode, entity);
+								formPart, currNode, entity, peopleUiService);
 				}
 			}
 		} catch (RepositoryException e) {
@@ -590,9 +586,9 @@ public class ContactPanelComposite extends Composite {
 			valueTxt.setData(PeopleUiConstants.CUSTOM_VARIANT,
 					PeopleUiConstants.CSS_ALWAYS_SHOW_BORDER);
 			valueTxt.setEnabled(false);
-			
+
 			final Link chooseOrgLk = new Link(parent, SWT.BOTTOM);
-			
+
 			toolkit.adapt(chooseOrgLk, false, false);
 			chooseOrgLk.setText("<a>Pick up</a>");
 			final PickUpOrgDialog diag = new PickUpOrgDialog(

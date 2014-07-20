@@ -135,7 +135,7 @@ public class EditJobDialog extends TrayDialog {
 		if (isBackward)
 			toSearchNodeType = PeopleTypes.PEOPLE_PERSON;
 		else
-			toSearchNodeType = PeopleTypes.PEOPLE_ORGANIZATION;
+			toSearchNodeType = PeopleTypes.PEOPLE_ORG;
 
 		if (oldLink == null) { // CREATE
 			session = CommonsJcrUtils.getSession(toUpdateNode);

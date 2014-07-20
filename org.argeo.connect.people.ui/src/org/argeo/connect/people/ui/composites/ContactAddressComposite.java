@@ -11,6 +11,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
@@ -43,6 +44,7 @@ public class ContactAddressComposite extends Composite {
 	private static final long serialVersionUID = 4475049051062923873L;
 
 	private final PeopleService peopleService;
+	private final PeopleUiService peopleUiService;
 	private final Node contactNode;
 	private final Node parentVersionableNode;
 	private final AbstractFormPart formPart;
@@ -51,10 +53,11 @@ public class ContactAddressComposite extends Composite {
 
 	public ContactAddressComposite(Composite parent, int style,
 			FormToolkit toolkit, AbstractFormPart formPart,
-			PeopleService peopleService, Node contactNode,
-			Node parentVersionableNode) {
+			PeopleService peopleService, PeopleUiService peopleUiService,
+			Node contactNode, Node parentVersionableNode) {
 		super(parent, style);
 		this.peopleService = peopleService;
+		this.peopleUiService = peopleUiService;
 		this.contactNode = contactNode;
 		this.toolkit = toolkit;
 		this.formPart = formPart;
@@ -71,7 +74,8 @@ public class ContactAddressComposite extends Composite {
 
 		// BUTTONS
 		Composite buttCmp = new ContactButtonsComposite(parent, SWT.NONE,
-				toolkit, formPart, contactNode, parentVersionableNode);
+				toolkit, formPart, contactNode, parentVersionableNode,
+				peopleUiService);
 		toolkit.adapt(buttCmp, false, false);
 		buttCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 

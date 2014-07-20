@@ -12,7 +12,6 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.PersonJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
@@ -80,7 +79,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 				+ PeopleUiConstants.PEOPLE_CSS_EDITOR_HEADER_ROSTYLE + " >");
 		// first line
 		builder.append("<b><big> ");
-		String displayName = PersonJcrUtils.getPersonDisplayName(person);
+		String displayName = peopleService.getDisplayName(person);
 		builder.append(displayName);
 		builder.append("</big></b>");
 		String fmn = PeopleHtmlUtils.getFullMontyName(person);
@@ -116,7 +115,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 									peopleService, person.getSession(), str))
 							.append(", ");
 				}
-				// remove last occurence of the separator 
+				// remove last occurence of the separator
 				builder.delete(builder.length() - 2, builder.length());
 			}
 		}
@@ -142,15 +141,11 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 
 	private String getOverviewForList(Node person, boolean isSmallList)
 			throws RepositoryException {
-		StringBuilder builder = new StringBuilder();
-
-		builder.append("<span>");
-
+		StringBuilder builder = new StringBuilder().append("<span>");
 		// first line
 		builder.append("<b><big> ");
-		builder.append(PersonJcrUtils.getPersonDisplayName(person));
+		builder.append(peopleService.getDisplayName(person));
 		builder.append("</big> </b>");
-		// String fmn = PeopleHtmlUtils.getFullMontyName(person);
 		String local = PeopleHtmlUtils.getLocalisationInfo(person);
 		if (CommonsJcrUtils.checkNotEmptyString(local))
 			builder.append(local);

@@ -120,6 +120,15 @@ public interface PeopleService {
 	 */
 	public void saveEntity(Node entity, boolean commit) throws PeopleException;
 
+	/**
+	 * Returns a display name that is app specific and that depends on one or
+	 * more of the entity properties. The user can always set a flag to force
+	 * the value to something else.
+	 * 
+	 * The Display name is usually stored in the JCR_TITLE property.
+	 */
+	public String getDisplayName(Node entity);
+
 	/* MISCELLANEOUS */
 
 	/** Returns the JCR repository used by this service */

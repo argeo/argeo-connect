@@ -4,7 +4,6 @@ import java.util.Calendar;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
-import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
@@ -30,30 +29,30 @@ public class PersonJcrUtils implements PeopleNames {
 	/**
 	 * Get the display name
 	 */
-	public static String getPersonDisplayName(Node person) {
-		String displayName = null;
-		try {
-			if (person.hasProperty(PEOPLE_USE_DEFAULT_DISPLAY_NAME)
-					&& person.getProperty(PEOPLE_USE_DEFAULT_DISPLAY_NAME)
-							.getBoolean()) {
-				String lastName = CommonsJcrUtils.get(person, PEOPLE_LAST_NAME);
-				String firstName = CommonsJcrUtils.get(person,
-						PEOPLE_FIRST_NAME);
-				if (CommonsJcrUtils.checkNotEmptyString(firstName)
-						|| CommonsJcrUtils.checkNotEmptyString(lastName)) {
-					displayName = firstName;
-					if (CommonsJcrUtils.checkNotEmptyString(firstName)
-							&& CommonsJcrUtils.checkNotEmptyString(lastName))
-						displayName += " ";
-					displayName += lastName;
-				}
-			} else
-				displayName = CommonsJcrUtils.get(person, Property.JCR_TITLE);
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to get Person display name", e);
-		}
-		return displayName;
-	}
+	// public static String getPersonDisplayName(Node person) {
+	// String displayName = null;
+	// try {
+	// if (person.hasProperty(PEOPLE_USE_DEFAULT_DISPLAY_NAME)
+	// && person.getProperty(PEOPLE_USE_DEFAULT_DISPLAY_NAME)
+	// .getBoolean()) {
+	// String lastName = CommonsJcrUtils.get(person, PEOPLE_LAST_NAME);
+	// String firstName = CommonsJcrUtils.get(person,
+	// PEOPLE_FIRST_NAME);
+	// if (CommonsJcrUtils.checkNotEmptyString(firstName)
+	// || CommonsJcrUtils.checkNotEmptyString(lastName)) {
+	// displayName = firstName;
+	// if (CommonsJcrUtils.checkNotEmptyString(firstName)
+	// && CommonsJcrUtils.checkNotEmptyString(lastName))
+	// displayName += " ";
+	// displayName += lastName;
+	// }
+	// } else
+	// displayName = CommonsJcrUtils.get(person, Property.JCR_TITLE);
+	// } catch (RepositoryException e) {
+	// throw new PeopleException("Unable to get Person display name", e);
+	// }
+	// return displayName;
+	// }
 
 	public static String getVariousNameInfo(Node person) {
 		StringBuilder nameInfo = new StringBuilder();

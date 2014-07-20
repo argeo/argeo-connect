@@ -15,16 +15,15 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
+import org.argeo.connect.people.ui.composites.ContactPanelComposite;
 import org.argeo.connect.people.ui.composites.TagListComposite;
 import org.argeo.connect.people.ui.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.ui.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.ui.toolkits.ActivityToolkit;
-import org.argeo.connect.people.ui.toolkits.ContactToolkit;
 import org.argeo.connect.people.ui.toolkits.HistoryToolkit;
 import org.argeo.connect.people.ui.toolkits.ListToolkit;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.PersonJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -62,7 +61,6 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 	private Node person;
 
 	// Usefull toolkits
-	private ContactToolkit contactTK;
 	private ActivityToolkit activityTK;
 	private ListToolkit listTK;
 	private HistoryToolkit historyTK;
@@ -90,8 +88,6 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 
 	@Override
 	protected void createToolkits() {
-		contactTK = new ContactToolkit(toolkit, getManagedForm(),
-				getPeopleService(), getPeopleUiService());
 		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
 				getPeopleService(), getPeopleUiService());
 		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
@@ -100,43 +96,13 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				getRepository(), getPeopleService(), person);
 	}
 
-	// @Override
-	// protected boolean canSave() {
-	// try {
-	// String lastName = CommonsJcrUtils.get(person, PEOPLE_LAST_NAME);
-	// String firstName = CommonsJcrUtils.get(person, PEOPLE_FIRST_NAME);
-	// String displayName = CommonsJcrUtils
-	// .get(person, Property.JCR_TITLE);
-	// boolean useDefaultDisplay = person.getProperty(
-	// PEOPLE_USE_DEFAULT_DISPLAY_NAME).getBoolean();
-	//
-	// if (lastName.length() < 2 && firstName.length() < 2
-	// && (useDefaultDisplay || displayName.length() < 2)) {
-	// String msg = "Please note that you must define a first name, a "
-	// + "last name or a display name that is at least 2 character long.";
-	// MessageDialog.openError(this.getSite().getShell(),
-	// "Non-valid information", msg);
-	//
-	// return false;
-	// } else {
-	// PeopleJcrUtils
-	// .checkPathAndMoveIfNeeded(person,
-	// PeopleConstants.PEOPLE_BASE_PATH + "/"
-	// + PEOPLE_PERSONS);
-	// return true;
-	// }
-	//
-	// } catch (RepositoryException re) {
-	// throw new PeopleException("Unable to determine savable status", re);
-	// }
-	// }
-
 	@Override
 	protected void populateHeader(Composite parent) {
 		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder();
 		gl.marginBottom = 10;
 		parent.setLayout(gl);
 
+		// Main info
 		Composite titleCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		titleCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		populateTitleComposite(titleCmp);
@@ -166,7 +132,11 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Contact details", PeopleUiConstants.PANEL_CONTACT_DETAILS,
 				tooltip);
-		contactTK.createContactPanelWithNotes(innerPannel, person);
+		innerPannel.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		ContactPanelComposite cpc = new ContactPanelComposite(innerPannel,
+				SWT.NO_FOCUS, toolkit, getManagedForm(), getNode(),
+				getPeopleService(), getPeopleUiService());
+		cpc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		// Activities and tasks
 		tooltip = "Activities and tasks related to "
@@ -181,14 +151,6 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Organisations",
 				PeopleUiConstants.PANEL_JOBS, tooltip);
 		listTK.populateJobsPanel(innerPannel, person);
-
-		// // Film participation panel
-		// // TODO: move this in specific film project
-		// tooltip = "Films related to "
-		// + JcrUtils.get(person, Property.JCR_TITLE);
-		// innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Films",
-		// PeopleUiConstants.PANEL_PRODUCTIONS, tooltip);
-		// listTK.populateParticipationPanel(innerPannel, person);
 
 		// History panel
 		// TODO: make this dynamic
@@ -254,9 +216,9 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		final Text displayNameTxt = PeopleUiUtils.createRDText(toolkit,
 				firstCmp, "Display name",
 				"Default display name for this person", 300);
-		final Button defaultDisplayBtn = toolkit.createButton(firstCmp,
-				"Use default display name", SWT.CHECK);
-		defaultDisplayBtn.setToolTipText("Default is \"Firstname LASTNAME\"");
+		final Button defineDistinctBtn = toolkit.createButton(firstCmp,
+				"Define a distinct display name", SWT.CHECK);
+		defineDistinctBtn.setToolTipText("Default is \"Firstname LASTNAME\"");
 
 		final Text salutationTxt = PeopleUiUtils.createRDText(toolkit,
 				secondCmp, "Salutation", "Mr, Mrs...", 60);
@@ -317,10 +279,10 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 						Property.JCR_TITLE);
 
 				try {
-					boolean useDefault = person.getProperty(
-							PEOPLE_USE_DEFAULT_DISPLAY_NAME).getBoolean();
-					displayNameTxt.setEnabled(!useDefault);
-					defaultDisplayBtn.setSelection(useDefault);
+					boolean defineDistinct = person.getProperty(
+							PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME).getBoolean();
+					displayNameTxt.setEnabled(defineDistinct);
+					defineDistinctBtn.setSelection(!defineDistinct);
 				} catch (RepositoryException e) {
 					throw new PeopleException(
 							"Unable to refresh use default display name property",
@@ -380,10 +342,12 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 					if (CommonsJcrUtils.setJcrProperty(person,
 							PEOPLE_FIRST_NAME, PropertyType.STRING,
 							firstNameTxt.getText())) {
-						if (person.getProperty(PEOPLE_USE_DEFAULT_DISPLAY_NAME)
-								.getBoolean()) {
-							String displayName = PersonJcrUtils
-									.getPersonDisplayName(person);
+						Boolean defineDistinct = CommonsJcrUtils
+								.getBooleanValue(person,
+										PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME);
+						if (defineDistinct == null || !defineDistinct) {
+							String displayName = getPeopleService()
+									.getDisplayName(person);
 							person.setProperty(Property.JCR_TITLE, displayName);
 							displayNameTxt.setText(displayName);
 						}
@@ -404,10 +368,12 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 					if (CommonsJcrUtils.setJcrProperty(person,
 							PEOPLE_LAST_NAME, PropertyType.STRING,
 							lastNameTxt.getText())) {
-						if (person.getProperty(PEOPLE_USE_DEFAULT_DISPLAY_NAME)
-								.getBoolean()) {
-							String displayName = PersonJcrUtils
-									.getPersonDisplayName(person);
+						Boolean defineDistinct = CommonsJcrUtils
+								.getBooleanValue(person,
+										PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME);
+						if (defineDistinct == null || !defineDistinct) {
+							String displayName = getPeopleService()
+									.getDisplayName(person);
 							person.setProperty(Property.JCR_TITLE, displayName);
 							displayNameTxt.setText(displayName);
 						}
@@ -424,7 +390,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				boolean useDefault = defaultDisplayBtn.getSelection();
+				boolean useDefault = defineDistinctBtn.getSelection();
 				// if use default, do nothing
 				if (!useDefault)
 					if (CommonsJcrUtils.setJcrProperty(person,
@@ -435,18 +401,18 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 			}
 		});
 
-		defaultDisplayBtn.addSelectionListener(new SelectionAdapter() {
+		defineDistinctBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				boolean useDefault = defaultDisplayBtn.getSelection();
+				boolean defineDistinct = defineDistinctBtn.getSelection();
 				if (CommonsJcrUtils.setJcrProperty(person,
-						PEOPLE_USE_DEFAULT_DISPLAY_NAME, PropertyType.BOOLEAN,
-						useDefault)) {
-					if (useDefault) {
-						String displayName = PersonJcrUtils
-								.getPersonDisplayName(person);
+						PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME,
+						PropertyType.BOOLEAN, defineDistinct)) {
+					if (!defineDistinct) {
+						String displayName = getPeopleService().getDisplayName(
+								person);
 						CommonsJcrUtils.setJcrProperty(person,
 								Property.JCR_TITLE, PropertyType.STRING,
 								displayName);

@@ -69,7 +69,7 @@ public class ContactValueCatalogs {
 					return ARRAY_PERSON_PRO_PHONES;
 				else
 					return ARRAY_PERSON_PRIVATE_PHONES;
-			} else if (entityType.equals(PeopleTypes.PEOPLE_ORGANIZATION))
+			} else if (entityType.equals(PeopleTypes.PEOPLE_ORG))
 				return ARRAY_ORG_PHONES;
 		}
 		// NO category for MAIL
@@ -77,7 +77,7 @@ public class ContactValueCatalogs {
 		else if (PeopleTypes.PEOPLE_ADDRESS.equals(contactType)) {
 			if (entityType.equals(PeopleTypes.PEOPLE_PERSON))
 				return ARRAY_PERSON_ADDRESSES;
-			else if (entityType.equals(PeopleTypes.PEOPLE_ORGANIZATION))
+			else if (entityType.equals(PeopleTypes.PEOPLE_ORG))
 				return ARRAY_ORG_ADDRESSES;
 		}
 		// NO category for URL
