@@ -1,18 +1,5 @@
 package org.argeo.connect.people.utils;
 
-import java.util.UUID;
-
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.Property;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
-
-import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleTypes;
-import org.argeo.jcr.JcrUtils;
 
 /**
  * Static utility methods to manage CRM contact concepts in JCR. Rather use
@@ -26,102 +13,104 @@ public class ContactJcrUtils {
 	// //////////////////////////////
 	// MAILING LIST MANAGEMENT
 
-	/**
-	 * 
-	 * Add a new member to a given Mailing List
-	 * 
-	 * @param referencingNode
-	 * @param referencedNode
-	 *            a person or an organisation
-	 * @return
-	 */
-	public static Node addToMailingList(Node referencingNode,
-			Node referencedNode) {
-		try {
-			Session session = referencingNode.getSession();
-
-			// Sanity check
-			if (!(referencedNode.isNodeType(PeopleTypes.PEOPLE_PERSON) || referencedNode
-					.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)))
-				throw new PeopleException("Unsupported reference: from "
-						+ referencingNode + "("
-						+ referencingNode.getPrimaryNodeType() + ")" + " to "
-						+ referencedNode + "("
-						+ referencedNode.getPrimaryNodeType() + ")");
-
-			String linkNodeType = PeopleTypes.PEOPLE_MAILING_LIST;
-			Node parentNode = referencingNode
-					.getNode(PeopleNames.PEOPLE_MEMBERS);
-
-			String relPath = "/"
-					+ PeopleJcrUtils.getRelPathForEntity(referencedNode);
-			String absPath = parentNode.getPath() + relPath;
-
-			if (session.nodeExists(JcrUtils.parentPath(absPath))) {
-				// Insure it's the same entity and not an entity with the same
-				// name.
-				Node parent = session.getNode(JcrUtils.parentPath(absPath));
-				NodeIterator ni = parent.getNodes();
-				String referencedUid = CommonsJcrUtils.get(referencedNode,
-						PeopleNames.PEOPLE_UID);
-				while (ni.hasNext()) {
-					Node currNode = ni.nextNode();
-					if (referencedUid.equals(CommonsJcrUtils.get(currNode,
-							PeopleNames.PEOPLE_REF_UID)))
-						return currNode;
-				}
-			}
-
-			boolean wasCheckedout = CommonsJcrUtils
-					.isNodeCheckedOutByMe(referencingNode);
-			if (!wasCheckedout)
-				CommonsJcrUtils.checkout(referencingNode);
-
-			// add the corresponding node
-			Node parlink = JcrUtils.mkdirs(parentNode,
-					JcrUtils.parentPath(relPath), NodeType.NT_UNSTRUCTURED);
-			Node link = parlink.addNode(JcrUtils.lastPathElement(relPath),
-					linkNodeType);
-			String uid = referencedNode.getProperty(PeopleNames.PEOPLE_UID)
-					.getString();
-			link.setProperty(PeopleNames.PEOPLE_REF_UID, uid);
-			if (!wasCheckedout)
-				CommonsJcrUtils.saveAndCheckin(referencingNode);
-			else
-				referencingNode.getSession().save();
-			return link;
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to add " + referencedNode
-					+ " to mailing list " + referencingNode, e);
-		}
-	}
-
-	public static Node createMailingList(Node parentNode, String name)
-			throws RepositoryException {
-		String relPath = getMailingListRelPath(name);
-		Node ml = JcrUtils.mkdirs(parentNode, relPath,
-				PeopleTypes.PEOPLE_MAILING_LIST, NodeType.NT_UNSTRUCTURED);
-		ml.setProperty(PeopleNames.PEOPLE_UID, UUID.randomUUID().toString());
-		ml.setProperty(Property.JCR_TITLE, name);
-
-		// leave it checked out on creation to fasten import process
-		// CommonsJcrUtils.saveAndCheckin(ml);
-		ml.getSession().save();
-		return ml;
-	}
-
-	/** Returns the relativ path of a mailing list given its name */
-	public static String getMailingListRelPath(String name) {
-		String cleanedName = JcrUtils.replaceInvalidChars(name);
-		String relPath = null;
-		if (cleanedName.length() > 1)
-			relPath = JcrUtils.firstCharsToPath(cleanedName, 2) + "/"
-					+ cleanedName;
-		else
-			throw new PeopleException(
-					"Mailing list name must be at least 2 valid characters long");
-		return relPath;
-	}
+	// /**
+	// *
+	// * Add a new member to a given Mailing List
+	// *
+	// * @param referencingNode
+	// * @param referencedNode
+	// * a person or an organisation
+	// * @return
+	// */
+	// @Deprecated
+	// public static Node addToMailingList(Node referencingNode,
+	// Node referencedNode) {
+	// try {
+	// Session session = referencingNode.getSession();
+	//
+	// // Sanity check
+	// if (!(referencedNode.isNodeType(PeopleTypes.PEOPLE_PERSON) ||
+	// referencedNode
+	// .isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)))
+	// throw new PeopleException("Unsupported reference: from "
+	// + referencingNode + "("
+	// + referencingNode.getPrimaryNodeType() + ")" + " to "
+	// + referencedNode + "("
+	// + referencedNode.getPrimaryNodeType() + ")");
+	//
+	// String linkNodeType = PeopleTypes.PEOPLE_MAILING_LIST;
+	// Node parentNode = referencingNode
+	// .getNode(PeopleNames.PEOPLE_MEMBERS);
+	//
+	// String relPath = "/"
+	// + PeopleJcrUtils.getRelPathForEntity(referencedNode);
+	// String absPath = parentNode.getPath() + relPath;
+	//
+	// if (session.nodeExists(JcrUtils.parentPath(absPath))) {
+	// // Insure it's the same entity and not an entity with the same
+	// // name.
+	// Node parent = session.getNode(JcrUtils.parentPath(absPath));
+	// NodeIterator ni = parent.getNodes();
+	// String referencedUid = CommonsJcrUtils.get(referencedNode,
+	// PeopleNames.PEOPLE_UID);
+	// while (ni.hasNext()) {
+	// Node currNode = ni.nextNode();
+	// if (referencedUid.equals(CommonsJcrUtils.get(currNode,
+	// PeopleNames.PEOPLE_REF_UID)))
+	// return currNode;
+	// }
+	// }
+	//
+	// boolean wasCheckedout = CommonsJcrUtils
+	// .isNodeCheckedOutByMe(referencingNode);
+	// if (!wasCheckedout)
+	// CommonsJcrUtils.checkout(referencingNode);
+	//
+	// // add the corresponding node
+	// Node parlink = JcrUtils.mkdirs(parentNode,
+	// JcrUtils.parentPath(relPath), NodeType.NT_UNSTRUCTURED);
+	// Node link = parlink.addNode(JcrUtils.lastPathElement(relPath),
+	// linkNodeType);
+	// String uid = referencedNode.getProperty(PeopleNames.PEOPLE_UID)
+	// .getString();
+	// link.setProperty(PeopleNames.PEOPLE_REF_UID, uid);
+	// if (!wasCheckedout)
+	// CommonsJcrUtils.saveAndCheckin(referencingNode);
+	// else
+	// referencingNode.getSession().save();
+	// return link;
+	// } catch (RepositoryException e) {
+	// throw new PeopleException("Unable to add " + referencedNode
+	// + " to mailing list " + referencingNode, e);
+	// }
+	// }
+	//
+	// public static Node createMailingList(Node parentNode, String name)
+	// throws RepositoryException {
+	// String relPath = getMailingListRelPath(name);
+	// Node ml = JcrUtils.mkdirs(parentNode, relPath,
+	// PeopleTypes.PEOPLE_MAILING_LIST, NodeType.NT_UNSTRUCTURED);
+	// ml.setProperty(PeopleNames.PEOPLE_UID, UUID.randomUUID().toString());
+	// ml.setProperty(Property.JCR_TITLE, name);
+	//
+	// // leave it checked out on creation to fasten import process
+	// // CommonsJcrUtils.saveAndCheckin(ml);
+	// ml.getSession().save();
+	// return ml;
+	// }
+	//
+	// /** Returns the relativ path of a mailing list given its name */
+	// public static String getMailingListRelPath(String name) {
+	// String cleanedName = JcrUtils.replaceInvalidChars(name);
+	// String relPath = null;
+	// if (cleanedName.length() > 1)
+	// relPath = JcrUtils.firstCharsToPath(cleanedName, 2) + "/"
+	// + cleanedName;
+	// else
+	// throw new PeopleException(
+	// "Mailing list name must be at least 2 valid characters long");
+	// return relPath;
+	// }
 
 	/**
 	 * Check if a given Node is already member of the given mailing list

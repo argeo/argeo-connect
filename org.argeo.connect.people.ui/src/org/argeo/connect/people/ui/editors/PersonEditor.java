@@ -24,11 +24,9 @@ import org.argeo.connect.people.ui.toolkits.HistoryToolkit;
 import org.argeo.connect.people.ui.toolkits.ListToolkit;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.PersonJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.argeo.jcr.JcrUtils;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -102,36 +100,36 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				getRepository(), getPeopleService(), person);
 	}
 
-	@Override
-	protected boolean canSave() {
-		try {
-			String lastName = CommonsJcrUtils.get(person, PEOPLE_LAST_NAME);
-			String firstName = CommonsJcrUtils.get(person, PEOPLE_FIRST_NAME);
-			String displayName = CommonsJcrUtils
-					.get(person, Property.JCR_TITLE);
-			boolean useDefaultDisplay = person.getProperty(
-					PEOPLE_USE_DEFAULT_DISPLAY_NAME).getBoolean();
-
-			if (lastName.length() < 2 && firstName.length() < 2
-					&& (useDefaultDisplay || displayName.length() < 2)) {
-				String msg = "Please note that you must define a first name, a "
-						+ "last name or a display name that is at least 2 character long.";
-				MessageDialog.openError(this.getSite().getShell(),
-						"Non-valid information", msg);
-
-				return false;
-			} else {
-				PeopleJcrUtils
-						.checkPathAndMoveIfNeeded(person,
-								PeopleConstants.PEOPLE_BASE_PATH + "/"
-										+ PEOPLE_PERSONS);
-				return true;
-			}
-
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to determine savable status", re);
-		}
-	}
+	// @Override
+	// protected boolean canSave() {
+	// try {
+	// String lastName = CommonsJcrUtils.get(person, PEOPLE_LAST_NAME);
+	// String firstName = CommonsJcrUtils.get(person, PEOPLE_FIRST_NAME);
+	// String displayName = CommonsJcrUtils
+	// .get(person, Property.JCR_TITLE);
+	// boolean useDefaultDisplay = person.getProperty(
+	// PEOPLE_USE_DEFAULT_DISPLAY_NAME).getBoolean();
+	//
+	// if (lastName.length() < 2 && firstName.length() < 2
+	// && (useDefaultDisplay || displayName.length() < 2)) {
+	// String msg = "Please note that you must define a first name, a "
+	// + "last name or a display name that is at least 2 character long.";
+	// MessageDialog.openError(this.getSite().getShell(),
+	// "Non-valid information", msg);
+	//
+	// return false;
+	// } else {
+	// PeopleJcrUtils
+	// .checkPathAndMoveIfNeeded(person,
+	// PeopleConstants.PEOPLE_BASE_PATH + "/"
+	// + PEOPLE_PERSONS);
+	// return true;
+	// }
+	//
+	// } catch (RepositoryException re) {
+	// throw new PeopleException("Unable to determine savable status", re);
+	// }
+	// }
 
 	@Override
 	protected void populateHeader(Composite parent) {
@@ -344,7 +342,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				PeopleUiUtils.refreshTextWidgetValue(maidenNameTxt, person,
 						PEOPLE_MAIDEN_NAME);
 				PeopleUiUtils.refreshTextWidgetValue(titleTxt, person,
-						PEOPLE_PERSON_TITLE);
+						PEOPLE_HONORIFIC_TITLE);
 				PeopleUiUtils.refreshTextWidgetValue(suffixTxt, person,
 						PEOPLE_NAME_SUFFIX);
 				PeopleUiUtils.refreshTextWidgetValue(latinPhoneticTxt, person,
@@ -475,7 +473,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		PeopleUiUtils.addTxtModifyListener(editPart, maidenNameTxt, person,
 				PEOPLE_MAIDEN_NAME, PropertyType.STRING);
 		PeopleUiUtils.addTxtModifyListener(editPart, titleTxt, person,
-				PEOPLE_PERSON_TITLE, PropertyType.STRING);
+				PEOPLE_HONORIFIC_TITLE, PropertyType.STRING);
 		PeopleUiUtils.addTxtModifyListener(editPart, suffixTxt, person,
 				PEOPLE_NAME_SUFFIX, PropertyType.STRING);
 		PeopleUiUtils.addTxtModifyListener(editPart, latinPhoneticTxt, person,

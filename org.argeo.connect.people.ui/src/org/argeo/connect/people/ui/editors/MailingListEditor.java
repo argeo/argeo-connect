@@ -31,7 +31,6 @@ import org.argeo.connect.people.ui.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.ui.providers.TagLabelProvider;
 import org.argeo.connect.people.ui.providers.TitleWithIconLP;
-import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
@@ -49,7 +48,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -94,6 +92,10 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 				new TitleWithIconLP(getPeopleUiService(),
 						PeopleTypes.PEOPLE_ENTITY, Property.JCR_TITLE), 300));
 		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
+				PEOPLE_CACHE_PMAIL, PropertyType.STRING, "Primary mail",
+				new SimpleJcrRowLabelProvider(PeopleTypes.PEOPLE_ENTITY,
+						PEOPLE_CACHE_PMAIL), 300));
+		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
 				PEOPLE_MAILING_LISTS, PropertyType.STRING, "Mailing lists",
 				new SimpleJcrRowLabelProvider(PeopleTypes.PEOPLE_ENTITY,
 						PEOPLE_TAGS), 300));
@@ -125,13 +127,11 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 			final Label titleROLbl = toolkit.createLabel(roPanelCmp, "",
 					SWT.WRAP);
 			titleROLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
-			
+
 			final ColumnLabelProvider groupTitleLP = new TagLabelProvider(
 					PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE,
-					getPeopleService().getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
-					PEOPLE_MAILING_LISTS);
-
-			
+					getPeopleService().getBasePath(null),
+					PeopleTypes.PEOPLE_ENTITY, PEOPLE_MAILING_LISTS);
 
 			// EDIT PANEL
 			final Composite editPanel = toolkit.createComposite(parent,
@@ -266,7 +266,7 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 			Constraint subTree = factory.descendantNode(
 					source.getSelectorName(),
 					getPeopleService().getBasePath(null));
-			constraint = localAnd(factory, constraint, subTree);
+			constraint = PeopleUiUtils.localAnd(factory, constraint, subTree);
 
 			if (CommonsJcrUtils.checkNotEmptyString(filter)) {
 				String[] strs = filter.trim().split(" ");
@@ -301,31 +301,31 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 		return rows;
 	}
 
-	private class PrimaryMailLabelProvider extends ColumnLabelProvider {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public String getText(Object element) {
-			String text = null;
-			try {
-				Row currRow = (Row) element;
-				Node currNode = currRow.getNode(PeopleTypes.PEOPLE_ENTITY);
-				text = PeopleJcrUtils.getPrimaryContactValue(currNode,
-						PeopleTypes.PEOPLE_EMAIL);
-			} catch (RepositoryException re) {
-				throw new PeopleException(
-						"unable to retrieve primary mail value for row "
-								+ element, re);
-			}
-			return text == null ? "" : PeopleHtmlUtils.cleanHtmlString(text);
-		}
-
-		@Override
-		public Image getImage(Object element) {
-			return null;
-		}
-
-	}
+	// private class PrimaryMailLabelProvider extends ColumnLabelProvider {
+	// private static final long serialVersionUID = 1L;
+	//
+	// @Override
+	// public String getText(Object element) {
+	// String text = null;
+	// try {
+	// Row currRow = (Row) element;
+	// Node currNode = currRow.getNode(PeopleTypes.PEOPLE_ENTITY);
+	// text = PeopleJcrUtils.getPrimaryContactValue(currNode,
+	// PeopleTypes.PEOPLE_EMAIL);
+	// } catch (RepositoryException re) {
+	// throw new PeopleException(
+	// "unable to retrieve primary mail value for row "
+	// + element, re);
+	// }
+	// return text == null ? "" : PeopleHtmlUtils.cleanHtmlString(text);
+	// }
+	//
+	// @Override
+	// public Image getImage(Object element) {
+	// return null;
+	// }
+	//
+	// }
 
 	private TableViewer createTableViewer(Composite parent) {
 		parent.setLayout(new GridLayout());

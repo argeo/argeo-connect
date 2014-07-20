@@ -9,7 +9,7 @@ import javax.jcr.Session;
 /** Provides method interfaces to manage a people repository */
 public interface PeopleService {
 
-	/* BASE PATHS MANAGEMENT */
+	/* PATH MANAGEMENT */
 	/**
 	 * Centralises the management of known types to provide corresponding base
 	 * path
@@ -34,6 +34,17 @@ public interface PeopleService {
 	 * this resource.
 	 */
 	public String getResourcePath(String resourceType, String categoryId);
+
+	/**
+	 * Builds a default path for a known type based on the people:uid property
+	 * of this business entity
+	 */
+	public String getDefaultPathForEntity(Node node, String nodeType);
+
+	/**
+	 * Builds a default path for a known type based on the people:uid property.
+	 */
+	public String getDefaultPathForEntity(String peopleUid, String nodeType);
 
 	/* PERSONS AND ORGANISATIONS */
 

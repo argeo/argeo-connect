@@ -62,8 +62,8 @@ public class PersonJcrUtils implements PeopleNames {
 			nameInfo.append(CommonsJcrUtils.get(person, PEOPLE_SALUTATION));
 			nameInfo.append(" ");
 		}
-		if (CommonsJcrUtils.get(person, PEOPLE_PERSON_TITLE) != null) {
-			nameInfo.append(CommonsJcrUtils.get(person, PEOPLE_PERSON_TITLE));
+		if (CommonsJcrUtils.get(person, PEOPLE_HONORIFIC_TITLE) != null) {
+			nameInfo.append(CommonsJcrUtils.get(person, PEOPLE_HONORIFIC_TITLE));
 			nameInfo.append(" ");
 		}
 
@@ -174,9 +174,7 @@ public class PersonJcrUtils implements PeopleNames {
 			job.setProperty(PEOPLE_DATE_END, dateEnd);
 		if (isCurrent != null)
 			job.setProperty(PEOPLE_IS_CURRENT, isCurrent);
-
 		// TODO manage primary concept
-
 		return job;
 	}
 

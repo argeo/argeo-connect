@@ -69,8 +69,10 @@ public interface PeopleTypes {
 	public final static String PEOPLE_SOCIAL_MEDIA = "people:socialMedia";
 	public final static String PEOPLE_ADDRESS = "people:address";
 
-	// public final static String PEOPLE_ML_INSTANCE =
-	// "people:mailingListInstance";
+	// A array with the known types that might be defined as primary
+	public final static String[] KNOWN_CONTACT_TYPES = { PEOPLE_PHONE,
+			PEOPLE_EMAIL, PEOPLE_ADDRESS, PEOPLE_URL, PEOPLE_IMPP,
+			PEOPLE_SOCIAL_MEDIA };
 
 	// contact with this mixin will use value(s) of the primary contact of the
 	// given type

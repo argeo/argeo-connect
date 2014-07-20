@@ -34,6 +34,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.argeo.connect.people.utils.PersonJcrUtils;
 import org.argeo.jcr.JcrUtils;
 
 /** Concrete access to people services */
@@ -54,16 +55,16 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	 * receive/provide data.
 	 */
 	public void init() {
-		// Do nothing
+		// Does nothing
 		log.info("People's backend has been initialized");
 	}
 
 	/** Clean shutdown of the backend. */
 	public void destroy() {
-		// Do nothing
+		// Does nothing
 	}
 
-	/* BASE PATH MANAGEMENT */
+	/* PATH MANAGEMENT */
 	@Override
 	public String getBasePath(String entityType) {
 		if (entityType == null)
@@ -104,13 +105,28 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	// Clean this: small helper to retrieve the parent node name given a
 	// NodeType or a Property name
 	protected String getParentNameFromType(String typeId) {
-		// TODO refactor to clean this
-		if (typeId.equals(PeopleTypes.PEOPLE_ORGANIZATION))
-			return PeopleNames.PEOPLE_ORGS;
-		else if (typeId.endsWith("y"))
+		if (typeId.endsWith("y"))
 			return typeId.substring(0, typeId.length() - 1) + "ies";
 		else
 			return typeId + "s";
+	}
+
+	@Override
+	public String getDefaultPathForEntity(Node node, String nodeType) {
+		String peopleUid = CommonsJcrUtils.get(node, PEOPLE_UID);
+		if (CommonsJcrUtils.isEmptyString(peopleUid))
+			throw new PeopleException("Unable to define default path for "
+					+ node + " of type " + nodeType
+					+ ". No property people:uid is defined");
+		else
+			return getDefaultPathForEntity(peopleUid, nodeType);
+	}
+
+	@Override
+	public String getDefaultPathForEntity(String peopleUid, String nodeType) {
+		String path = getBasePath(nodeType) + "/";
+		path += JcrUtils.firstCharsToPath(peopleUid, 2);
+		return path;
 	}
 
 	/* ENTITY SERVICES */
@@ -128,23 +144,111 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		}
 	}
 
-	/** Override to provide business specific rules before save and commit */
+	/**
+	 * Business specific save of a business object of type person. Among other,
+	 * it updates cache information. Extend to provide business specific rules
+	 * before save and commit
+	 */
 	protected void savePerson(Node person, boolean commit)
 			throws PeopleException, RepositoryException {
+		String lastName = CommonsJcrUtils.get(person,
+				PeopleNames.PEOPLE_LAST_NAME);
+		String firstName = CommonsJcrUtils.get(person,
+				PeopleNames.PEOPLE_FIRST_NAME);
+		boolean useDefaultDisplay = person.getProperty(
+				PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME).getBoolean();
+		String displayName = null;
+
+		// Update display name if needed
+		if (useDefaultDisplay) {
+			displayName = PersonJcrUtils.getPersonDisplayName(person);
+			person.setProperty(Property.JCR_TITLE, displayName);
+		} else
+			displayName = CommonsJcrUtils.get(person, Property.JCR_TITLE);
+
+		// Check validity of main info
+		if (CommonsJcrUtils.isEmptyString(lastName)
+				&& CommonsJcrUtils.isEmptyString(firstName)
+				&& (useDefaultDisplay || CommonsJcrUtils
+						.isEmptyString(displayName))) {
+			String msg = "Please note that you must define a first name, a "
+					+ "last name or a display name to be able to create or "
+					+ "update this person.";
+			throw new PeopleException(msg);
+		}
+
+		// Update cache
+		updatePrimaryCache(person);
+
 		if (commit)
 			CommonsJcrUtils.saveAndCheckin(person);
 		else
 			person.getSession().save();
-
 	}
 
 	/** Override to provide business specific rules before save and commit */
 	protected void saveOrganisation(Node org, boolean commit)
 			throws PeopleException, RepositoryException {
+		// Update cache
+		updatePrimaryCache(org);
+
+		// Check validity of main info
+		String legalName = CommonsJcrUtils.get(org,
+				PeopleNames.PEOPLE_LEGAL_NAME);
+
+		boolean useDefaultDisplay = org.getProperty(
+				PeopleNames.PEOPLE_USE_DEFAULT_DISPLAY_NAME).getBoolean();
+		String displayName = "";
+
+		if (useDefaultDisplay) {
+			// displayName = legalName;
+			org.setProperty(Property.JCR_TITLE, legalName);
+		} else
+			displayName = CommonsJcrUtils.get(org, Property.JCR_TITLE);
+
+		if (CommonsJcrUtils.isEmptyString(legalName)
+				&& CommonsJcrUtils.isEmptyString(displayName)) {
+			String msg = "Please note that you must define a legal "
+					+ " or a display name to be able to create or "
+					+ "update this organisation.";
+			throw new PeopleException(msg);
+		}
+
 		if (commit)
 			CommonsJcrUtils.saveAndCheckin(org);
 		else
 			org.getSession().save();
+	}
+
+	/**
+	 * Typically used to move temporary import nodes to the main business
+	 * repository
+	 */
+	protected void checkPathAndMoveIfNeeded(Node entity, String entityNodeType)
+			throws RepositoryException {
+		String peopleUid = entity.getProperty(PEOPLE_UID).getString();
+		String destPath = getDefaultPathForEntity(peopleUid, entityNodeType);
+		if (!destPath.equals(entity.getParent().getPath())) {
+			JcrUtils.mkdirs(entity.getSession(), destPath);
+			entity.getSession().move(entity.getPath(),
+					destPath + "/" + peopleUid);
+		}
+	}
+
+	/** Simply look for primary information and update primary cache if needed */
+	protected void updatePrimaryCache(Node entity) throws PeopleException,
+			RepositoryException {
+		if (CommonsJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)
+				|| CommonsJcrUtils.isNodeType(entity,
+						PeopleTypes.PEOPLE_ORGANIZATION)) {
+			for (String currType : PeopleTypes.KNOWN_CONTACT_TYPES) {
+				Node pNode = PeopleJcrUtils.getPrimaryContact(entity, currType);
+				if (pNode != null)
+					PeopleJcrUtils.updatePrimaryCache(entity, pNode, true);
+			}
+		} else
+			log.warn("Trying to update primary cache on " + entity
+					+ " - Unknown type.");
 	}
 
 	@Override
@@ -154,7 +258,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 					.getQueryManager();
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
 			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
-					"entities");
+					PeopleTypes.PEOPLE_ENTITY);
 			DynamicOperand dynOp = factory.propertyValue(
 					source.getSelectorName(), PeopleNames.PEOPLE_UID);
 			StaticOperand statOp = factory.literal(session.getValueFactory()

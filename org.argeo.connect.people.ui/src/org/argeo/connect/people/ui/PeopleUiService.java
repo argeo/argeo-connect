@@ -5,6 +5,8 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
+import org.argeo.connect.people.PeopleService;
+import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -26,6 +28,12 @@ public interface PeopleUiService {
 	public String getOpenFileCmdId();
 
 	public String getDefaultEditorId();
+
+	/**
+	 * Creates the correct wizard depending on the type of the given node.
+	 * Overwrite to provide application specific wizard depending on the context
+	 */
+	public Wizard getCreationWizard(PeopleService peopleService, Node node);
 
 	public List<String> getValueList(Session session, String basePath,
 			String filter);

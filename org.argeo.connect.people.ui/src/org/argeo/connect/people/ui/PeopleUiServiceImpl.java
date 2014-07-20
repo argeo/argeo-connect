@@ -13,11 +13,14 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.commands.OpenSearchByTagEditor;
 import org.argeo.connect.people.ui.commands.OpenSearchEntityEditor;
+import org.argeo.connect.people.ui.wizards.NewPersonWizard;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -57,6 +60,14 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 	public String getDefaultEditorId() {
 		throw new PeopleException("No default editor has been defined for "
 				+ "PeopleUiService base implementation");
+	}
+
+	@Override
+	public Wizard getCreationWizard(PeopleService peopleService, Node node) {
+		if (CommonsJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_PERSON))
+			return new NewPersonWizard(peopleService, node);
+		else
+			throw new PeopleException("No defined wizard for node " + node);
 	}
 
 	public List<String> getValueList(Session session, String basePath,

@@ -9,7 +9,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.dialogs.AddMLMembersDialog;
 import org.argeo.connect.people.ui.dialogs.AddMLMembershipDialog;
 import org.argeo.connect.people.ui.dialogs.CreateEntityRefWithPositionDialog;
 import org.argeo.connect.people.ui.editors.utils.AbstractEntityEditor;
@@ -61,12 +60,13 @@ public class AddEntityReferenceWithPosition extends AbstractHandler {
 
 			Dialog diag = null;
 
-			if (PeopleUiConstants.DIALOG_ADD_ML_MEMBERS.equals(dialogId))
-				diag = new AddMLMembersDialog(
-						HandlerUtil.getActiveShell(event),
-						"Add Mailing List Members...", repository, referencing,
-						new String[] { toSearchNodeType });
-			else if (PeopleUiConstants.DIALOG_ADD_ML_MEMBERSHIP
+			// if (PeopleUiConstants.DIALOG_ADD_ML_MEMBERS.equals(dialogId))
+			// diag = new AddMLMembersDialog(
+			// HandlerUtil.getActiveShell(event),
+			// "Add Mailing List Members...", repository, referencing,
+			// new String[] { toSearchNodeType });
+			// else 
+				if (PeopleUiConstants.DIALOG_ADD_ML_MEMBERSHIP
 					.equals(dialogId))
 				diag = new AddMLMembershipDialog(
 						HandlerUtil.getActiveShell(event),

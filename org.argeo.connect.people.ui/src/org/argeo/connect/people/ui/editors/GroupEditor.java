@@ -6,9 +6,7 @@ import javax.jcr.PropertyType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.utils.AbstractEntityCTabEditor;
@@ -16,9 +14,7 @@ import org.argeo.connect.people.ui.providers.GroupLabelProvider;
 import org.argeo.connect.people.ui.toolkits.GroupToolkit;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.jcr.JcrUtils;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -58,23 +54,24 @@ public class GroupEditor extends AbstractEntityCTabEditor {
 		// getPeopleServices(), getPeopleUiServices());
 	}
 
-	@Override
-	protected boolean canSave() {
-		String displayName = CommonsJcrUtils.get(group, Property.JCR_TITLE);
-		if (displayName.length() < 2) {
-			String msg = "Please note that you must define a group title"
-					+ " that is at least 2 character long.";
-			MessageDialog.openError(this.getSite().getShell(), "Non-valid information",
-					msg);
-
-			return false;
-		} else {
-			PeopleJcrUtils.checkPathAndMoveIfNeeded(group,
-					PeopleConstants.PEOPLE_BASE_PATH + "/"
-							+ PeopleNames.PEOPLE_PERSONS);
-			return true;
-		}
-	}
+	// @Override
+	// protected boolean canSave() {
+	// String displayName = CommonsJcrUtils.get(group, Property.JCR_TITLE);
+	// if (displayName.length() < 2) {
+	// String msg = "Please note that you must define a group title"
+	// + " that is at least 2 character long.";
+	// MessageDialog.openError(this.getSite().getShell(),
+	// "Non-valid information",
+	// msg);
+	//
+	// return false;
+	// } else {
+	// PeopleJcrUtils.checkPathAndMoveIfNeeded(group,
+	// PeopleConstants.PEOPLE_BASE_PATH + "/"
+	// + PeopleNames.PEOPLE_PERSONS);
+	// return true;
+	// }
+	// }
 
 	@Override
 	protected void populateTabFolder(CTabFolder folder) {

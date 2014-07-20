@@ -13,12 +13,16 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiService;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
  * Creates a new entity under draft path of the current repository and opens the
@@ -51,38 +55,31 @@ public class CreateEntity extends AbstractHandler {
 
 			Node parent = JcrUtils.mkdirs(session, draftPath + "/" + datePath);
 			Node newNode = parent.addNode(nodeType, nodeType);
-
 			String uuid = UUID.randomUUID().toString();
 			newNode.setProperty(PeopleNames.PEOPLE_UID, uuid);
-			// TODO find a cleaner way to keep a clean referential
 			newNode.setProperty(PeopleNames.PEOPLE_IS_DRAFT, true);
-			
-			
-			
-			
-			session.save();
 
-			String jcrId = newNode.getIdentifier();
-			CommandUtils.callCommand(
-					peopleUiService.getOpenEntityEditorCmdId(),
-					OpenEntityEditor.PARAM_JCR_ID, jcrId);
+			Wizard wizard = peopleUiService.getCreationWizard(peopleService,
+					newNode);
+			WizardDialog dialog = new WizardDialog(
+					HandlerUtil.getActiveShell(event), wizard);
+			dialog.setTitle("New...");
+			int result = dialog.open();
+			if (result == WizardDialog.OK) {
+				String jcrId = newNode.getIdentifier();
+				CommandUtils.callCommand(
+						peopleUiService.getOpenEntityEditorCmdId(),
+						OpenEntityEditor.PARAM_JCR_ID, jcrId);
+			} else
+				// remove tmp Node
+				CommonsJcrUtils.cancelAndCheckin(newNode);
+
 		} catch (RepositoryException e) {
 			throw new PeopleException("unexpected JCR error while opening "
 					+ "editor for newly created programm", e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}
-		return null;
-	}
-
-	/**
-	 * Overwrite to provide the relevant draft base path for the current
-	 * application
-	 */
-	@Deprecated
-	protected String getDraftBasePath(String nodeType)
-			throws RepositoryException {
-		// TODO implement this in a People only context
 		return null;
 	}
 

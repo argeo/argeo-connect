@@ -26,7 +26,7 @@ public interface PeopleNames {
 
 	// Main concepts parent node names
 	public final static String PEOPLE_PERSONS = "people:persons";
-	public final static String PEOPLE_ORGS = "people:organizations";
+	public final static String PEOPLE_ORGS = "people:orgs";
 	public final static String PEOPLE_FILMS = "people:films";
 	public final static String PEOPLE_PROJECTS = "people:projects";
 	@Deprecated
@@ -72,7 +72,7 @@ public interface PeopleNames {
 	public final static String PEOPLE_BIRTH_DATE = "people:birthDate";
 	public final static String PEOPLE_SALUTATION = "people:salutation";
 	public final static String PEOPLE_GENDER = "people:gender";
-	public final static String PEOPLE_PERSON_TITLE = "people:personTitle";
+	public final static String PEOPLE_HONORIFIC_TITLE = "people:honorificTitle";
 	public final static String PEOPLE_NAME_SUFFIX = "people:nameSuffix";
 	public final static String PEOPLE_NICKNAME = "people:nickname";
 	public final static String PEOPLE_MAIDEN_NAME = "people:maidenName";

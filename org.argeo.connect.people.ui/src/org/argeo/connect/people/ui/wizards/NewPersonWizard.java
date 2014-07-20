@@ -2,37 +2,28 @@ package org.argeo.connect.people.ui.wizards;
 
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
-import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.dialogs.PickUpGroupDialog;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DateTime;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
 /**
  * Generic wizard to manually create a new "Person" entry in the system
  * 
  * The node must have been created. But the wizard will try to save and commit
- * using the PeopleServiec before returning SWT.OK. the caller might then call
+ * using the PeopleService before returning SWT.OK. The caller might then call
  * the "open entity editor" command if needed.
  */
 
@@ -77,7 +68,7 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 		CommonsJcrUtils.setJcrProperty(person, PEOPLE_LAST_NAME,
 				PropertyType.STRING, lastName);
 		CommonsJcrUtils.setJcrProperty(person, PEOPLE_FIRST_NAME,
-				PropertyType.STRING, lastName);
+				PropertyType.STRING, firstName);
 
 		try {
 			peopleService.saveEntity(person, true);
@@ -100,8 +91,8 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 	@Override
 	public boolean canFinish() {
 		// TODO implement Sanity check
-//		String lastName = lastNameTxt.getText();
-//		String firstName = firstNameTxt.getText();
+		// String lastName = lastNameTxt.getText();
+		// String firstName = firstNameTxt.getText();
 		return true;
 	}
 
@@ -121,19 +112,20 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 			PeopleUiUtils.createBoldLabel(parent, "Last Name");
 			lastNameTxt = new Text(parent, SWT.BORDER);
 			lastNameTxt.setMessage("a last name");
-			lastNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+			lastNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+					false));
 
 			// FirstName
 			// LastName
 			PeopleUiUtils.createBoldLabel(parent, "First Name");
 			firstNameTxt = new Text(parent, SWT.BORDER);
 			firstNameTxt.setMessage("a first name");
-			firstNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+			firstNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+					false));
 
 			// Don't forget this.
 			setControl(lastNameTxt);
 			lastNameTxt.setFocus();
 		}
-
 	}
 }

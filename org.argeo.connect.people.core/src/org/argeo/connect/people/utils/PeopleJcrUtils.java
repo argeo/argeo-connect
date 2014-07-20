@@ -22,10 +22,7 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.media.FilmNames;
-import org.argeo.connect.media.FilmTypes;
 import org.argeo.connect.people.ContactValueCatalogs;
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
@@ -150,10 +147,10 @@ public class PeopleJcrUtils implements PeopleNames {
 	 * Returns the primary contact for the type or null if no node with this
 	 * type is defined as primary
 	 */
-	public static Node getPrimaryContact(Node item, String nodeType) {
+	public static Node getPrimaryContact(Node entity, String nodeType) {
 		try {
-			if (item.hasNode(PEOPLE_CONTACTS)) {
-				Node contacts = item.getNode(PEOPLE_CONTACTS);
+			if (entity.hasNode(PEOPLE_CONTACTS)) {
+				Node contacts = entity.getNode(PEOPLE_CONTACTS);
 				NodeIterator ni = contacts.getNodes();
 				while (ni.hasNext()) {
 					Node currNode = ni.nextNode();
@@ -167,8 +164,31 @@ public class PeopleJcrUtils implements PeopleNames {
 			}
 			return null;
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to get city for item", re);
+			throw new ArgeoException("Unable to get primary contact of type "
+					+ nodeType + " for " + entity, re);
 		}
+	}
+
+	/** Returns a list of contact for the given entity and type */
+	public static List<Node> getContactOfType(Node entity,
+			String contactNodeType) {
+		List<Node> result = new ArrayList<Node>();
+		try {
+			if (entity.hasNode(PEOPLE_CONTACTS)) {
+				Node contacts = entity.getNode(PEOPLE_CONTACTS);
+				NodeIterator ni = contacts.getNodes();
+				while (ni.hasNext()) {
+					Node currNode = ni.nextNode();
+					if (currNode.isNodeType(contactNodeType)) {
+						result.add(currNode);
+					}
+				}
+			}
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Unable to get contact list of type "
+					+ contactNodeType + " for " + entity, re);
+		}
+		return result;
 	}
 
 	/**
@@ -671,142 +691,144 @@ public class PeopleJcrUtils implements PeopleNames {
 				fileName.lastIndexOf("."), fileName.length()));
 	}
 
-	/**
-	 * Centralizes management of relPath creation for an entity given its type.
-	 * Returns null if the node hasn't the necessary property set and thus
-	 * cannot be inserted in the permanent repository (It then likely means that
-	 * it is a draft entity)
-	 */
-	public static String getRelPathForEntity(Node node) {
-		return getRelPathForEntity(node, null);
-	}
+//	/**
+//	 * Centralizes management of relPath creation for an entity given its type.
+//	 * Returns null if the node hasn't the necessary property set and thus
+//	 * cannot be inserted in the permanent repository (It then likely means that
+//	 * it is a draft entity)
+//	 */
+//	@Deprecated
+//	public static String getRelPathForEntity(Node node) {
+//		return getRelPathForEntity(node, null);
+//	}
 
-	public static void checkPathAndMoveIfNeeded(Node node, String basePath) {
-		try {
-			String srcPath = node.getPath();
-			String destPath = basePath + "/" + getRelPathForEntity(node);
-			if (!destPath.equals(srcPath)) {
-				JcrUtils.mkdirs(node.getSession(),
-						JcrUtils.parentPath(destPath));
-				node.getSession().move(srcPath, destPath);
-				node.setProperty(PEOPLE_IS_DRAFT, false);
-			}
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to move node " + node
-					+ " before saving under basePath " + basePath, re);
-		}
-	}
+	
+//	public static void checkPathAndMoveIfNeeded(Node node, String basePath) {
+//		try {
+//			String srcPath = node.getPath();
+//			String destPath = basePath + "/" + getRelPathForEntity(node);
+//			if (!destPath.equals(srcPath)) {
+//				JcrUtils.mkdirs(node.getSession(),
+//						JcrUtils.parentPath(destPath));
+//				node.getSession().move(srcPath, destPath);
+//				node.setProperty(PEOPLE_IS_DRAFT, false);
+//			}
+//		} catch (RepositoryException re) {
+//			throw new PeopleException("Unable to move node " + node
+//					+ " before saving under basePath " + basePath, re);
+//		}
+//	}
 
-	/**
-	 * workaround to generate rel path while importing existing data in the
-	 * repository
-	 */
-	public static String getRelPathForEntity(Node node, String nodeType) {
-		try {
-			String relPath = null;
-
-			if (node.isNodeType(PeopleTypes.PEOPLE_PERSON) || nodeType != null
-					&& PeopleTypes.PEOPLE_PERSON.equals(nodeType)) {
-				// init
-				String lastName = "";
-				String firstName = "";
-				// String displayName = "";
-				if (node.hasProperty(PEOPLE_LAST_NAME)) {
-					lastName = replaceInvalidChars(node
-							.getProperty(PEOPLE_LAST_NAME).getString().trim());
-					// remove space
-				}
-				if (node.hasProperty(PEOPLE_FIRST_NAME))
-					firstName = replaceInvalidChars(node
-							.getProperty(PEOPLE_FIRST_NAME).getString().trim());
-
-				// Effective building of the rel path
-				if (lastName.length() > 1) {
-					relPath = JcrUtils.firstCharsToPath(lastName, 2) + "/"
-							+ lastName;
-				} else
-					relPath = PeopleConstants.UNKNOWN_NAME;
-				if (firstName.length() > 0)
-					relPath += "/" + firstName;
-				else
-					relPath += "/" + PeopleConstants.UNKNOWN_NAME;
-
-			} else if (node.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)
-					|| (nodeType != null && PeopleTypes.PEOPLE_ORGANIZATION
-							.equals(nodeType))) {
-				// init
-				String legalName = "";
-				String displayName = "";
-				if (node.hasProperty(PEOPLE_LEGAL_NAME))
-					// TODO implement a less violent replacement
-					legalName = node.getProperty(PEOPLE_LEGAL_NAME).getString()
-							.replaceAll("[^a-zA-Z0-9]", "");
-
-				// We use Display Name as a failover property if the legal name
-				// is undefined.
-				if (node.hasProperty(Property.JCR_TITLE))
-					displayName = replaceInvalidChars(node
-							.getProperty(Property.JCR_TITLE).getString().trim());
-
-				// Effective building of the rel path
-				if (legalName.length() > 1)
-					relPath = JcrUtils.firstCharsToPath(legalName, 2) + "/"
-							+ legalName;
-				else if (displayName.length() > 1)
-					relPath = PeopleConstants.UNKNOWN_NAME + "/"
-							+ JcrUtils.firstCharsToPath(displayName, 2) + "/"
-							+ displayName;
-			} else if (node.isNodeType(FilmTypes.FILM_FILM) || nodeType != null
-					&& FilmTypes.FILM_FILM.equals(nodeType)) {
-
-				// TODO remove this after refactoring the strategy to provide
-				// path for entities.
-				// init
-				String origTitle = "";
-				String origLatinTitle = "";
-				String displayName = "";
-				if (node.hasProperty(FilmNames.FILM_CACHE_PTITLE))
-					origTitle = replaceInvalidChars(node
-							.getProperty(FilmNames.FILM_CACHE_PTITLE)
-							.getString().trim());
-				if (node.hasProperty(FilmNames.FILM_CACHE_PTITLE_LATIN))
-					origLatinTitle = replaceInvalidChars(node
-							.getProperty(FilmNames.FILM_CACHE_PTITLE_LATIN)
-							.getString().trim());
-				if (node.hasProperty(Property.JCR_TITLE))
-					displayName = replaceInvalidChars(node
-							.getProperty(Property.JCR_TITLE).getString().trim());
-
-				// Effective building of the rel path
-				if (origTitle.length() > 1)
-					relPath = JcrUtils.firstCharsToPath(origTitle, 2) + "/"
-							+ origTitle;
-				else if (origLatinTitle.length() > 1)
-					relPath = PeopleConstants.UNKNOWN_NAME + "/"
-							+ JcrUtils.firstCharsToPath(origLatinTitle, 2)
-							+ "/" + origLatinTitle;
-				else if (displayName.length() > 1)
-					relPath = PeopleConstants.UNKNOWN_NAME + "/"
-							+ PeopleConstants.UNKNOWN_NAME + "/"
-							+ JcrUtils.firstCharsToPath(displayName, 2)
-							+ displayName;
-			} else if (node.isNodeType(PeopleTypes.PEOPLE_GROUP)
-					|| (nodeType != null && PeopleTypes.PEOPLE_GROUP
-							.equals(nodeType))) {
-				// init
-				String title = "";
-				if (node.hasProperty(Property.JCR_TITLE))
-					title = replaceInvalidChars(node
-							.getProperty(Property.JCR_TITLE).getString().trim());
-
-				if (title.length() > 1)
-					relPath = JcrUtils.firstCharsToPath(title, 2) + "/" + title;
-			}
-			return relPath;
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get rel path for node", re);
-		}
-	}
+	// /**
+	// * workaround to generate rel path while importing existing data in the
+	// * repository
+	// */
+	// @Deprecated
+	// public static String getRelPathForEntity(Node node, String nodeType) {
+	// try {
+	// String relPath = null;
+	//
+	// if (node.isNodeType(PeopleTypes.PEOPLE_PERSON) || nodeType != null
+	// && PeopleTypes.PEOPLE_PERSON.equals(nodeType)) {
+	// // init
+	// String lastName = "";
+	// String firstName = "";
+	// // String displayName = "";
+	// if (node.hasProperty(PEOPLE_LAST_NAME)) {
+	// lastName = replaceInvalidChars(node
+	// .getProperty(PEOPLE_LAST_NAME).getString().trim());
+	// // remove space
+	// }
+	// if (node.hasProperty(PEOPLE_FIRST_NAME))
+	// firstName = replaceInvalidChars(node
+	// .getProperty(PEOPLE_FIRST_NAME).getString().trim());
+	//
+	// // Effective building of the rel path
+	// if (lastName.length() > 1) {
+	// relPath = JcrUtils.firstCharsToPath(lastName, 2) + "/"
+	// + lastName;
+	// } else
+	// relPath = PeopleConstants.UNKNOWN_NAME;
+	// if (firstName.length() > 0)
+	// relPath += "/" + firstName;
+	// else
+	// relPath += "/" + PeopleConstants.UNKNOWN_NAME;
+	//
+	// } else if (node.isNodeType(PeopleTypes.PEOPLE_ORGANIZATION)
+	// || (nodeType != null && PeopleTypes.PEOPLE_ORGANIZATION
+	// .equals(nodeType))) {
+	// // init
+	// String legalName = "";
+	// String displayName = "";
+	// if (node.hasProperty(PEOPLE_LEGAL_NAME))
+	// // TODO implement a less violent replacement
+	// legalName = node.getProperty(PEOPLE_LEGAL_NAME).getString()
+	// .replaceAll("[^a-zA-Z0-9]", "");
+	//
+	// // We use Display Name as a failover property if the legal name
+	// // is undefined.
+	// if (node.hasProperty(Property.JCR_TITLE))
+	// displayName = replaceInvalidChars(node
+	// .getProperty(Property.JCR_TITLE).getString().trim());
+	//
+	// // Effective building of the rel path
+	// if (legalName.length() > 1)
+	// relPath = JcrUtils.firstCharsToPath(legalName, 2) + "/"
+	// + legalName;
+	// else if (displayName.length() > 1)
+	// relPath = JcrUtils.firstCharsToPath(displayName, 2) + "/"
+	// + displayName;
+	// } else if (node.isNodeType(FilmTypes.FILM_FILM) || nodeType != null
+	// && FilmTypes.FILM_FILM.equals(nodeType)) {
+	//
+	// // TODO remove this after refactoring the strategy to provide
+	// // path for entities.
+	// // init
+	// String origTitle = "";
+	// String origLatinTitle = "";
+	// String displayName = "";
+	// if (node.hasProperty(FilmNames.FILM_CACHE_PTITLE))
+	// origTitle = replaceInvalidChars(node
+	// .getProperty(FilmNames.FILM_CACHE_PTITLE)
+	// .getString().trim());
+	// if (node.hasProperty(FilmNames.FILM_CACHE_PTITLE_LATIN))
+	// origLatinTitle = replaceInvalidChars(node
+	// .getProperty(FilmNames.FILM_CACHE_PTITLE_LATIN)
+	// .getString().trim());
+	// if (node.hasProperty(Property.JCR_TITLE))
+	// displayName = replaceInvalidChars(node
+	// .getProperty(Property.JCR_TITLE).getString().trim());
+	//
+	// // Effective building of the rel path
+	// if (origTitle.length() > 1)
+	// relPath = JcrUtils.firstCharsToPath(origTitle, 2) + "/"
+	// + origTitle;
+	// else if (origLatinTitle.length() > 1)
+	// relPath = PeopleConstants.UNKNOWN_NAME + "/"
+	// + JcrUtils.firstCharsToPath(origLatinTitle, 2)
+	// + "/" + origLatinTitle;
+	// else if (displayName.length() > 1)
+	// relPath = PeopleConstants.UNKNOWN_NAME + "/"
+	// + PeopleConstants.UNKNOWN_NAME + "/"
+	// + JcrUtils.firstCharsToPath(displayName, 2)
+	// + displayName;
+	// } else if (node.isNodeType(PeopleTypes.PEOPLE_GROUP)
+	// || (nodeType != null && PeopleTypes.PEOPLE_GROUP
+	// .equals(nodeType))) {
+	// // init
+	// String title = "";
+	// if (node.hasProperty(Property.JCR_TITLE))
+	// title = replaceInvalidChars(node
+	// .getProperty(Property.JCR_TITLE).getString().trim());
+	//
+	// if (title.length() > 1)
+	// relPath = JcrUtils.firstCharsToPath(title, 2) + "/" + title;
+	// }
+	// return relPath;
+	// } catch (RepositoryException re) {
+	// throw new PeopleException("Unable to get rel path for node", re);
+	// }
+	// }
 
 	/** Calls JcrUtils */
 	public static String replaceInvalidChars(String string) {

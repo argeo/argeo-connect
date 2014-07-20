@@ -54,7 +54,7 @@ public class PeopleHtmlUtils {
 		String salutation = getHtml(node, PeopleNames.PEOPLE_SALUTATION);
 		String firstName = getHtml(node, PeopleNames.PEOPLE_FIRST_NAME);
 		String lastName = getHtml(node, PeopleNames.PEOPLE_LAST_NAME);
-		String title = getHtml(node, PeopleNames.PEOPLE_PERSON_TITLE);
+		String title = getHtml(node, PeopleNames.PEOPLE_HONORIFIC_TITLE);
 		String suffix = getHtml(node, PeopleNames.PEOPLE_NAME_SUFFIX);
 		String nickName = getHtml(node, PeopleNames.PEOPLE_NICKNAME);
 		String maidenName = getHtml(node, PeopleNames.PEOPLE_MAIDEN_NAME);

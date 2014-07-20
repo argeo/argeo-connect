@@ -169,7 +169,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 					"Default display name for this organisation", 300, 1);
 			final Button defaultDisplayBtn = toolkit.createButton(editPanelCmp,
 					"Use default display name", SWT.CHECK);
-			defaultDisplayBtn.setToolTipText("Use Legal name by default");
+			defaultDisplayBtn.setToolTipText("Use Legal Name as display name");
 
 			final AbstractFormPart editPart = new AbstractFormPart() {
 				// Update values on refresh

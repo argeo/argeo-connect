@@ -11,13 +11,12 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.QueryObjectModelFactory;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiService;
@@ -31,6 +30,7 @@ import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -61,25 +61,28 @@ import org.eclipse.ui.services.ISourceProviderService;
  */
 public abstract class AbstractPeopleEditor extends EditorPart implements
 		IVersionedItemEditor, Refreshable {
+	private final static Log log = LogFactory
+			.getLog(AbstractPeopleEditor.class);
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
 	private PeopleUiService peopleUiService;
-	// private String openEntityEditorCmdId = OpenEntityEditor.ID;
-
-	/* CONSTANTS */
-	// length for short strings (typically tab names)
-	protected final static int SHORT_NAME_LENGHT = 10;
-
 	// We use a one session per editor pattern to secure various nodes and
 	// changes life cycle
 	private Repository repository;
 	private Session session;
 
+	/* CONSTANTS */
+	// length for short strings (typically tab names)
+	protected final static int SHORT_NAME_LENGHT = 10;
+
+	private final static DateFormat df = new SimpleDateFormat(
+			PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
+
 	// Business Objects
 	private Node node;
-	// Enable mangement of new entities
-	private boolean isDraft = false;
+	// Enable management of new entities
+	// private boolean isDraft = false;
 
 	// Form and corresponding life cycle
 	private IManagedForm mForm;
@@ -97,10 +100,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			session = repository.login();
 			EntityEditorInput sei = (EntityEditorInput) getEditorInput();
 			node = getSession().getNodeByIdentifier(sei.getUid());
-
-			if (node.hasProperty(PeopleNames.PEOPLE_IS_DRAFT))
-				isDraft = node.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
-						.getBoolean();
 
 			// try to set a default part name
 			updatePartName();
@@ -173,8 +172,9 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			if (name.length() > SHORT_NAME_LENGHT)
 				name = name.substring(0, SHORT_NAME_LENGHT - 1) + "...";
 			setPartName(name);
-		} else if (isDraft)
-			setPartName("New...");
+		}
+		// else if (isDraft)
+		// setPartName("New...");
 	}
 
 	/** Overwrite to create specific toolkits relevant for the current editor */
@@ -182,10 +182,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	}
 
 	protected abstract Boolean deleteParentOnRemove();
-
-	// protected String getOpenEditorCommandId() {
-	// return openEntityEditorCmdId;
-	// }
 
 	/** Overwrite following methods to create a nice editor... */
 	protected abstract void populateBody(Composite parent);;
@@ -371,14 +367,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	}
 
 	/* UTILITES */
-	protected Constraint localAnd(QueryObjectModelFactory factory,
-			Constraint defaultC, Constraint newC) throws RepositoryException {
-		if (defaultC == null)
-			return newC;
-		else
-			return factory.and(defaultC, newC);
-	}
-
 	/** Forces refresh of all form parts of the current editor */
 	public void forceRefresh(Object object) {
 		for (IFormPart part : mForm.getParts()) {
@@ -445,44 +433,55 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	@Override
 	public void saveAndCheckInItem() {
-		if (!isCheckedOutByMe()) // Do nothing
-			;
-		else
-			CommonsJcrUtils.saveAndCheckin(node);
-		notifyCheckOutStateChange();
+		try {
+			peopleService.saveEntity(node, true);
+			mForm.commit(true);
+			// FIXME necessary duplicate call to the commit
+			// (used to check-in newly created versionable tags)
+			// Why is it not done automagicaly ?
+			for (IFormPart part : mForm.getParts()) {
+				part.commit(true);
+			}
+			updatePartName();
+		} catch (PeopleException pe) {
+			MessageDialog.openError(this.getSite().getShell(),
+					"Unable to save node " + node, pe.getMessage());
+			if (log.isDebugEnabled()) {
+				log.warn("Unable to save node " + node + " - "
+						+ pe.getMessage());
+				pe.printStackTrace();
+			}
+		}
 	}
 
 	@Override
 	public void cancelAndCheckInItem() {
 		// TODO best effort to keep a clean repository
-		String path = null;
-		try {
-			if (node.hasProperty(PeopleNames.PEOPLE_IS_DRAFT)
-					&& node.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
-							.getBoolean()) {
-				path = node.getPath();
-				session.removeItem(path);
-				session.save();
-				node = null;
-				// close current editor
-				this.getSite().getWorkbenchWindow().getActivePage()
-						.closeEditor(this, false);
-
-			} else {
-				CommonsJcrUtils.cancelAndCheckin(node);
-				notifyCheckOutStateChange();
-				firePropertyChange(PROP_DIRTY);
-			}
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to correctly remove newly "
-					+ "created node at path " + path
-					+ " The Jcr repository is probably corrupted", re);
-		}
+		// String path = null;
+		// try {
+		// if (node.hasProperty(PeopleNames.PEOPLE_IS_DRAFT)
+		// && node.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
+		// .getBoolean()) {
+		// path = node.getPath();
+		// session.removeItem(path);
+		// session.save();
+		// node = null;
+		// // close current editor
+		// this.getSite().getWorkbenchWindow().getActivePage()
+		// .closeEditor(this, false);
+		//
+		// } else {
+		CommonsJcrUtils.cancelAndCheckin(node);
+		notifyCheckOutStateChange();
+		firePropertyChange(PROP_DIRTY);
+		// }
+		// } catch (RepositoryException re) {
+		// throw new PeopleException("Unable to correctly remove newly "
+		// + "created node at path " + path
+		// + " The Jcr repository is probably corrupted", re);
+		// }
 
 	}
-
-	private final static DateFormat df = new SimpleDateFormat(
-			PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
 	@Override
 	public String getlastUpdateMessage() {
@@ -533,20 +532,10 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		try {
-			if (canSave()) {
-				saveAndCheckInItem();
-				mForm.commit(true);
-				// FIXME necessary duplicate call to the commit
-				// (used to check-in newly created versionnable tags)
-				// Why is it not done automagicaly ?
-				for (IFormPart part : mForm.getParts()) {
-					part.commit(true);
-				}
-				updatePartName();
-			}
-		} catch (Exception e) {
-			throw new PeopleException("Error while saving JCR node.", e);
+		if (canSave()){
+			saveAndCheckInItem();
+			notifyCheckOutStateChange();
+			firePropertyChange(PROP_DIRTY);
 		}
 	}
 

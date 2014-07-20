@@ -191,7 +191,6 @@ public class CommonsJcrUtils {
 			if (session.nodeExists(path)
 					&& session.getWorkspace().getVersionManager()
 							.isCheckedOut(path))
-
 				try {
 					session.getWorkspace().getVersionManager().checkin(path);
 
@@ -205,7 +204,6 @@ public class CommonsJcrUtils {
 									+ " close the editor of an entity that has not been close cleanly after last edition.",
 							re);
 				}
-
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to cancel and chek in node ", re);
 		}

@@ -592,7 +592,7 @@ public class PeopleUiUtils {
 	/* QOM HELPERS */
 	/**
 	 * returns and(constraintA, constraintB) if constraintA != null, or
-	 * constraintB otherwise (that can be null)
+	 * constraintB otherwise (that cannot be null)
 	 */
 	public static Constraint localAnd(QueryObjectModelFactory factory,
 			Constraint defaultC, Constraint newC) throws RepositoryException {
