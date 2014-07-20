@@ -29,12 +29,12 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.PropertyDiff;
 
-/** Some static utils methods that might be factorized in a near future */
+/** Some static utilities methods that might be factorized in a near future */
 public class CommonsJcrUtils {
 	private final static Log log = LogFactory.getLog(CommonsJcrUtils.class);
 
 	/*
-	 * Encapsulate most commons JCR calls with the try/catch block in order to
+	 * Encapsulate some commons JCR calls with the try/catch block in order to
 	 * simplify the code
 	 */
 
@@ -75,19 +75,6 @@ public class CommonsJcrUtils {
 	}
 
 	/**
-	 * Concisely get the identifier of a node in Ui listener for instance
-	 * */
-	@Deprecated
-	public static String getIdentifierQuietly(Node node) {
-		try {
-			return node.getIdentifier();
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get identifier for node " + node,
-					e);
-		}
-	}
-
-	/**
 	 * Call {@link Node#isNodetype(String nodeTypeName)} without exceptions
 	 */
 	public static boolean isNodeType(Node node, String nodeTypeName) {
@@ -97,51 +84,6 @@ public class CommonsJcrUtils {
 			throw new PeopleException("Unable to test NodeType " + nodeTypeName
 					+ " for node " + node, re);
 		}
-	}
-
-	/* Centralise widely used patterns */
-
-	/**
-	 * Convert a {@link rowIterator} to a list of {@link Node} given a selector
-	 * name. It relies on the <code>Row.getNode(String selectorName)</code>
-	 * method.
-	 */
-	public static List<Node> rowIteratorToNodeList(RowIterator rowIterator,
-			String selectorName) throws RepositoryException {
-		List<Node> nodes = new ArrayList<Node>();
-		while (rowIterator.hasNext()) {
-			Row row = rowIterator.nextRow();
-			if (row.getNode(selectorName) != null)
-				nodes.add(row.getNode(selectorName));
-		}
-		return nodes;
-	}
-
-	/**
-	 * Browses a {@code RowIterator} to build the corresponding row array.
-	 */
-	public static Row[] rowIteratorToArray(RowIterator rit) {
-		List<Row> rows = new ArrayList<Row>();
-		while (rit.hasNext()) {
-			rows.add(rit.nextRow());
-		}
-		return rows.toArray(new Row[rows.size()]);
-	}
-
-	/**
-	 * Check if a string is null or an empty string (a string with only spaces
-	 * is considered as empty
-	 */
-	public static boolean isEmptyString(String stringToTest) {
-		return stringToTest == null || "".equals(stringToTest.trim());
-	}
-
-	/**
-	 * Check if a string is null or an empty string (a string with only spaces
-	 * is considered as empty
-	 */
-	public static boolean checkNotEmptyString(String string) {
-		return string != null && !"".equals(string.trim());
 	}
 
 	/**
@@ -158,15 +100,6 @@ public class CommonsJcrUtils {
 			throw new PeopleException(
 					"Unable to get check out status for node " + node, re);
 		}
-	}
-
-	/**
-	 * For the time being, same as isNodeCheckedOut(Node node).
-	 * 
-	 * TODO : add management of check out by others.
-	 */
-	public static boolean isNodeCheckedOutByMe(Node node) {
-		return isNodeCheckedOut(node);
 	}
 
 	/**
@@ -188,8 +121,7 @@ public class CommonsJcrUtils {
 	}
 
 	/**
-	 * Wraps the versionMananger.checkedOut(path) method to adapt it to the
-	 * current check in / check out policy.
+	 * Concisely check out a node.
 	 * 
 	 * TODO : add management of check out by others.
 	 */
@@ -200,6 +132,29 @@ public class CommonsJcrUtils {
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to check out node  " + node, re);
 		}
+	}
+
+	/**
+	 * Concisely get the identifier of a node in Ui listener for instance
+	 */
+	@Deprecated
+	public static String getIdentifierQuietly(Node node) {
+		try {
+			return node.getIdentifier();
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Cannot get identifier for node " + node,
+					e);
+		}
+	}
+
+	/* VERSIONING MANAGEMENT */
+	/**
+	 * For the time being, same as isNodeCheckedOut(Node node).
+	 * 
+	 * TODO : add management of check out by others.
+	 */
+	public static boolean isNodeCheckedOutByMe(Node node) {
+		return isNodeCheckedOut(node);
 	}
 
 	/**
@@ -257,7 +212,6 @@ public class CommonsJcrUtils {
 	}
 
 	/* HELPERS FOR SINGLE VALUES */
-
 	/**
 	 * Concisely get the string value of a property. Returns an empty String
 	 * rather than null if this node doesn't have this property or if the
@@ -400,7 +354,6 @@ public class CommonsJcrUtils {
 	}
 
 	/* MULTIPLE VALUES MANAGEMENT */
-
 	/**
 	 * Remove a given String from a multi value property of a node. If the
 	 * String is not found, it fails silently
@@ -584,6 +537,15 @@ public class CommonsJcrUtils {
 		}
 	}
 
+	/**
+	 * Adds a reference to a JCR Node to the multi valued REFERENCE property of
+	 * a Node. An error message is returned if the Node is already referenced.
+	 * The new reference is always added after all already existing references
+	 * 
+	 * TODO rather use exception when trying to add an already referenced node
+	 * TODO Enable definition of a primary item by adding the new property as
+	 * first element in the list
+	 */
 	public static String addRefToMultiValuedProp(Node node, String propName,
 			Node nodeToReference) {
 		try {
@@ -593,8 +555,7 @@ public class CommonsJcrUtils {
 			String errMsg = null;
 			if (node.hasProperty(propName)) {
 				values = node.getProperty(propName).getValues();
-
-				// Check dupplicate
+				// Check duplicate
 				for (Value currValue : values) {
 					String jcrId = currValue.getString();
 					if (nodeToReference.getIdentifier().equals(jcrId)) {
@@ -614,6 +575,15 @@ public class CommonsJcrUtils {
 		}
 	}
 
+	/**
+	 * Adds a String to the multi valued STRING property of a Node. An error
+	 * message is returned if the String is already in the list. The new String
+	 * is always added after all already existing Strings.
+	 * 
+	 * TODO rather use exception when trying to add an already existing String
+	 * TODO Enable definition of a primary item by adding the new property as
+	 * first element in the list
+	 */
 	public static String addStringToMultiValuedProp(Node node, String propName,
 			String value) {
 		try {
@@ -670,24 +640,6 @@ public class CommonsJcrUtils {
 					"Unable to remove reference from property " + propName
 							+ " of Node " + node, e);
 		}
-	}
-
-	/**
-	 * Parse and trim a String of values
-	 */
-	public static String[] parseAndClean(String string, String regExp,
-			boolean clean) {
-		String[] temp = string.split(regExp);
-		if (clean) {
-			String[] cleanRes = new String[temp.length];
-			int i = 0;
-			for (String tag : temp) {
-				cleanRes[i] = tag.trim();
-				i++;
-			}
-			return cleanRes;
-		}
-		return temp;
 	}
 
 	/* INTERNATIONALISATION HELPERS */
@@ -855,26 +807,76 @@ public class CommonsJcrUtils {
 	 * Clean a String to remove or replace chars that are known to be
 	 * problematic
 	 */
+	@Deprecated
 	public static String cleanString(String string) {
 		String cleanStr = string;
 		cleanStr.replaceAll("&", "&amp;");
 		return cleanStr;
 	}
 
-	/** Use {@link JcrUtils#mkdirs(Node, String))} instead */
-	@Deprecated
-	public static Node getOrCreateDirNode(Node parent, String dirName)
-			throws RepositoryException {
-		Node dirNode;
-		if (parent.hasNode(dirName))
-			dirNode = parent.getNode(dirName);
-		else
-			dirNode = parent.addNode(dirName, NodeType.NT_UNSTRUCTURED);
-		return dirNode;
+	/* WIDELY USED PATTERNS */
+	/**
+	 * Browses a {@code RowIterator} to build the corresponding row array.
+	 */
+	public static Row[] rowIteratorToArray(RowIterator rit) {
+		List<Row> rows = new ArrayList<Row>();
+		while (rit.hasNext()) {
+			rows.add(rit.nextRow());
+		}
+		return rows.toArray(new Row[rows.size()]);
 	}
 
-	/** Prevent instantiation */
+	/**
+	 * Convert a {@link rowIterator} to a list of {@link Node} given a selector
+	 * name. It relies on the <code>Row.getNode(String selectorName)</code>
+	 * method.
+	 */
+	public static List<Node> rowIteratorToNodeList(RowIterator rowIterator,
+			String selectorName) throws RepositoryException {
+		List<Node> nodes = new ArrayList<Node>();
+		while (rowIterator.hasNext()) {
+			Row row = rowIterator.nextRow();
+			if (row.getNode(selectorName) != null)
+				nodes.add(row.getNode(selectorName));
+		}
+		return nodes;
+	}
+
+	/**
+	 * Check if a string is null or an empty string (a string with only spaces
+	 * is considered as empty
+	 */
+	public static boolean isEmptyString(String stringToTest) {
+		return stringToTest == null || "".equals(stringToTest.trim());
+	}
+
+	/**
+	 * Check if a string is null or an empty string (a string with only spaces
+	 * is considered as empty
+	 */
+	public static boolean checkNotEmptyString(String string) {
+		return string != null && !"".equals(string.trim());
+	}
+
+	/**
+	 * Parse and trim a String of values
+	 */
+	public static String[] parseAndClean(String string, String regExp,
+			boolean clean) {
+		String[] temp = string.split(regExp);
+		if (clean) {
+			String[] cleanRes = new String[temp.length];
+			int i = 0;
+			for (String tag : temp) {
+				cleanRes[i] = tag.trim();
+				i++;
+			}
+			return cleanRes;
+		}
+		return temp;
+	}
+
+	/* PREVENT INSTANTIATION */
 	private CommonsJcrUtils() {
 	}
-
 }

@@ -128,7 +128,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		}
 	}
 
-	/** Override to provide business specific rules before save and commmit */
+	/** Override to provide business specific rules before save and commit */
 	protected void savePerson(Node person, boolean commit)
 			throws PeopleException, RepositoryException {
 		if (commit)
@@ -138,7 +138,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	}
 
-	/** Override to provide business specific rules before save and commmit */
+	/** Override to provide business specific rules before save and commit */
 	protected void saveOrganisation(Node org, boolean commit)
 			throws PeopleException, RepositoryException {
 		if (commit)
