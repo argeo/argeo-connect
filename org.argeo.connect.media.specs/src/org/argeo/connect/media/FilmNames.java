@@ -24,6 +24,10 @@ public interface FilmNames {
 	public final static String FILM_SOUND_TYPE = "film:soundType";
 	public final static String FILM_COLOUR_TYPE = "film:colourType";
 
+	// TODO implement corresponding concept
+	// this property is not yet in the cnd, just there as a reminder.
+	public final static String FILM_ASSIGNED_EDITION = "film:assignedEdition";
+
 	// Maybe too specific - should be moved to client project
 	public final static String FILM_IS_PREMIERE = "film:isPremiere";
 	public final static String FILM_IS_STUDENT_PROJECT = "film:isStudentProject";
@@ -33,7 +37,6 @@ public interface FilmNames {
 	public final static String FILM_ALLOW_EXCERPTS_ON_WEB = "film:allowExcerptsOnWeb";
 	public final static String FILM_SUBMITTED_FOR = "film:submittedFor";
 	public final static String FILM_SHOOTING_FORMAT = "film:shootingFormat";
-	
 
 	// Cache some children properties to ease full text search:
 	// primary title info, directors...

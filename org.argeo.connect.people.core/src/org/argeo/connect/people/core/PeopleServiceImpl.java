@@ -336,8 +336,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			} else
 				return ni.nextNode();
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Unable to retrive entity of uid: " + uid, e);
+			throw new PeopleException("Unable to retrieve entity of uid: "
+					+ uid, e);
 		}
 	}
 
