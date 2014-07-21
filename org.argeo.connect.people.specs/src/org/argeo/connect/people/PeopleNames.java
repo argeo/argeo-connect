@@ -11,18 +11,18 @@ public interface PeopleNames {
 	 * An implementation specific UID, might be a JCR node Identifier but it is
 	 * not compulsory We personally use the type 4 (pseudo randomly generated)
 	 * UUID - we retrieve them simply in java with this method
-	 * <code>UUID.randomUUID().toString()</code>
+	 * <code>UUID.randomUUID().toString()</code> Class 3 UUID of the
+	 * distinguished name in UTF-8
 	 */
 	public final static String PEOPLE_UID = "people:uid";
 
-	/** Distinguished names */
-	// public static String PEOPLE_DN = "people:dn";
-	/** Class 3 UUID of the distinguished name in UTF-8 */
-	// public static String PEOPLE_PERSON_UUID = "people:personUuid";
-	/** Date of birth */
-	// public static String PEOPLE_DATE_OF_BIRTH = "people:dateOfBirth";
-	/** A number of people */
+	/** TODO A number of people - where is it used ?*/
+	@Deprecated
 	public static String PEOPLE_COUNT = "people:count";
+
+	// A default Node at the root of the business path to store information
+	// about current instance of the People repository
+	public final static String PEOPLE_HOME = "people:home";
 
 	// Main concepts parent node names
 	public final static String PEOPLE_PERSONS = "people:persons";

@@ -21,6 +21,8 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
@@ -33,6 +35,7 @@ import org.argeo.jcr.JcrUtils;
  * these methods than direct JCR queries in order to ease model evolution.
  */
 public class PeopleJcrUtils implements PeopleNames {
+	private final static Log log = LogFactory.getLog(PeopleJcrUtils.class);
 
 	/* GROUP MANAGEMENT */
 	/**
@@ -691,33 +694,34 @@ public class PeopleJcrUtils implements PeopleNames {
 				fileName.lastIndexOf("."), fileName.length()));
 	}
 
-//	/**
-//	 * Centralizes management of relPath creation for an entity given its type.
-//	 * Returns null if the node hasn't the necessary property set and thus
-//	 * cannot be inserted in the permanent repository (It then likely means that
-//	 * it is a draft entity)
-//	 */
-//	@Deprecated
-//	public static String getRelPathForEntity(Node node) {
-//		return getRelPathForEntity(node, null);
-//	}
+	// /**
+	// * Centralizes management of relPath creation for an entity given its
+	// type.
+	// * Returns null if the node hasn't the necessary property set and thus
+	// * cannot be inserted in the permanent repository (It then likely means
+	// that
+	// * it is a draft entity)
+	// */
+	// @Deprecated
+	// public static String getRelPathForEntity(Node node) {
+	// return getRelPathForEntity(node, null);
+	// }
 
-	
-//	public static void checkPathAndMoveIfNeeded(Node node, String basePath) {
-//		try {
-//			String srcPath = node.getPath();
-//			String destPath = basePath + "/" + getRelPathForEntity(node);
-//			if (!destPath.equals(srcPath)) {
-//				JcrUtils.mkdirs(node.getSession(),
-//						JcrUtils.parentPath(destPath));
-//				node.getSession().move(srcPath, destPath);
-//				node.setProperty(PEOPLE_IS_DRAFT, false);
-//			}
-//		} catch (RepositoryException re) {
-//			throw new PeopleException("Unable to move node " + node
-//					+ " before saving under basePath " + basePath, re);
-//		}
-//	}
+	// public static void checkPathAndMoveIfNeeded(Node node, String basePath) {
+	// try {
+	// String srcPath = node.getPath();
+	// String destPath = basePath + "/" + getRelPathForEntity(node);
+	// if (!destPath.equals(srcPath)) {
+	// JcrUtils.mkdirs(node.getSession(),
+	// JcrUtils.parentPath(destPath));
+	// node.getSession().move(srcPath, destPath);
+	// node.setProperty(PEOPLE_IS_DRAFT, false);
+	// }
+	// } catch (RepositoryException re) {
+	// throw new PeopleException("Unable to move node " + node
+	// + " before saving under basePath " + basePath, re);
+	// }
+	// }
 
 	// /**
 	// * workaround to generate rel path while importing existing data in the
@@ -861,9 +865,12 @@ public class PeopleJcrUtils implements PeopleNames {
 			if (ni.getSize() == 0)
 				return null;
 			else if (ni.getSize() > 1) {
-				throw new PeopleException(
-						"Problem retrieving entity by UID, we found "
-								+ ni.getSize() + " corresponding entity(ies)");
+				if (log.isDebugEnabled())
+					while (ni.hasNext())
+						log.debug("Found Node :" + ni.nextNode());
+				throw new PeopleException("Problem retrieving entity by UID "
+						+ uid + ", we found " + ni.getSize()
+						+ " corresponding entity(ies)");
 			} else
 				return ni.nextNode();
 		} catch (RepositoryException e) {

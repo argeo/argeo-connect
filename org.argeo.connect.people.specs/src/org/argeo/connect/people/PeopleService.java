@@ -19,9 +19,15 @@ public interface PeopleService {
 	public String getBasePath(String entityType);
 
 	/**
-	 * provide a system specific tmp path typically for imports
+	 * Provides a system specific tmp path typically for imports
 	 */
 	public String getTmpPath();
+
+	/**
+	 * Returns the path to a node that centralises information about the current
+	 * instance
+	 */
+	public String getHomePath();
 
 	/**
 	 * Exposes the application specific parent path for this resource. Querying
