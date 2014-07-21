@@ -155,7 +155,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		String firstName = CommonsJcrUtils.get(person,
 				PeopleNames.PEOPLE_FIRST_NAME);
 		Boolean defineDistinctDefaultDisplay = CommonsJcrUtils.getBooleanValue(
-				person, PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME);
+				person, PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 		String displayName = null;
 
 		// Update display name cache if needed
@@ -196,12 +196,14 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		String legalName = CommonsJcrUtils.get(org,
 				PeopleNames.PEOPLE_LEGAL_NAME);
 
-		boolean useDefaultDisplay = !org.getProperty(
-				PeopleNames.PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME).getBoolean();
-		String displayName = "";
+		Boolean defineDistinctDefaultDisplay = CommonsJcrUtils.getBooleanValue(
+				org, PEOPLE_USE_DISTINCT_DISPLAY_NAME);
+		
+		String displayName;
 
-		if (useDefaultDisplay) {
-			// displayName = legalName;
+		if (defineDistinctDefaultDisplay == null
+				|| !defineDistinctDefaultDisplay) {
+			displayName = getDisplayName(org);
 			org.setProperty(Property.JCR_TITLE, legalName);
 		} else
 			displayName = CommonsJcrUtils.get(org, Property.JCR_TITLE);
@@ -258,9 +260,9 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		try {
 			boolean defineDistinct = false;
 
-			if (entity.hasProperty(PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME))
+			if (entity.hasProperty(PEOPLE_USE_DISTINCT_DISPLAY_NAME))
 				defineDistinct = entity.getProperty(
-						PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME).getBoolean();
+						PEOPLE_USE_DISTINCT_DISPLAY_NAME).getBoolean();
 			if (defineDistinct)
 				displayName = CommonsJcrUtils.get(entity, Property.JCR_TITLE);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {

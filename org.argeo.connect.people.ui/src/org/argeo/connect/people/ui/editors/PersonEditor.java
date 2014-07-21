@@ -278,16 +278,12 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				PeopleUiUtils.refreshTextWidgetValue(displayNameTxt, person,
 						Property.JCR_TITLE);
 
-				try {
-					boolean defineDistinct = person.getProperty(
-							PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME).getBoolean();
-					displayNameTxt.setEnabled(defineDistinct);
-					defineDistinctBtn.setSelection(!defineDistinct);
-				} catch (RepositoryException e) {
-					throw new PeopleException(
-							"Unable to refresh use default display name property",
-							e);
-				}
+				Boolean defineDistinct = CommonsJcrUtils.getBooleanValue(
+						person, PEOPLE_USE_DISTINCT_DISPLAY_NAME);
+				if (defineDistinct == null)
+					defineDistinct = false;
+				displayNameTxt.setEnabled(defineDistinct);
+				defineDistinctBtn.setSelection(defineDistinct);
 
 				PeopleUiUtils.refreshTextWidgetValue(salutationTxt, person,
 						PEOPLE_SALUTATION);
@@ -344,7 +340,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 							firstNameTxt.getText())) {
 						Boolean defineDistinct = CommonsJcrUtils
 								.getBooleanValue(person,
-										PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME);
+										PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 						if (defineDistinct == null || !defineDistinct) {
 							String displayName = getPeopleService()
 									.getDisplayName(person);
@@ -370,7 +366,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 							lastNameTxt.getText())) {
 						Boolean defineDistinct = CommonsJcrUtils
 								.getBooleanValue(person,
-										PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME);
+										PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 						if (defineDistinct == null || !defineDistinct) {
 							String displayName = getPeopleService()
 									.getDisplayName(person);
@@ -408,7 +404,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 			public void widgetSelected(SelectionEvent e) {
 				boolean defineDistinct = defineDistinctBtn.getSelection();
 				if (CommonsJcrUtils.setJcrProperty(person,
-						PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME,
+						PEOPLE_USE_DISTINCT_DISPLAY_NAME,
 						PropertyType.BOOLEAN, defineDistinct)) {
 					if (!defineDistinct) {
 						String displayName = getPeopleService().getDisplayName(

@@ -78,7 +78,7 @@ public interface PeopleNames {
 	public final static String PEOPLE_MAIDEN_NAME = "people:maidenName";
 	// public final static String PEOPLE_USE_DEFAULT_DISPLAY_NAME =
 	// "people:useDefaultDisplayName";
-	public final static String PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME = "people:defineDistinctDisplayName";
+	public final static String PEOPLE_USE_DISTINCT_DISPLAY_NAME = "people:useDistinctDisplayName";// (BOOLEAN)
 	public final static String PEOPLE_USE_POLITE_FORM = "people:usePoliteForm"; // (BOOLEAN)
 	public final static String PEOPLE_SPOKEN_LANGUAGES = "people:spokenLanguages"; // STRING*
 

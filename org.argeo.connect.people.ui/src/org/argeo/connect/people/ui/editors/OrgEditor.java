@@ -167,29 +167,29 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 			// Create edit text
 			final Text displayNameTxt = PeopleUiUtils.createGDText(toolkit,
 					editPanelCmp, "Display name",
-					"Default display name for this organisation", 300, 1);
-			final Button defaultDisplayBtn = toolkit.createButton(editPanelCmp,
-					"Use default display name", SWT.CHECK);
-			defaultDisplayBtn.setToolTipText("Use Legal Name as display name");
+					"Display name used for this organisation", 300, 1);
+			final Button useDistinctDisplayBtn = toolkit.createButton(
+					editPanelCmp, "Use a specific display name", SWT.CHECK);
+			useDistinctDisplayBtn
+					.setToolTipText("Use a display name that is not the legal name");
 
 			final AbstractFormPart editPart = new AbstractFormPart() {
 				// Update values on refresh
 				public void refresh() {
 					super.refresh();
-
 					// EDIT PART
-					boolean useDefault = !PeopleUiUtils.refreshCheckBoxWidget(
-							defaultDisplayBtn, org,
-							PeopleNames.PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME);
+					boolean useDistinct = PeopleUiUtils.refreshCheckBoxWidget(
+							useDistinctDisplayBtn, org,
+							PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 
-					if (useDefault) {
-						PeopleUiUtils.refreshTextWidgetValue(displayNameTxt,
-								org, PeopleNames.PEOPLE_LEGAL_NAME);
-						displayNameTxt.setEnabled(false);
-					} else {
+					if (useDistinct) {
 						PeopleUiUtils.refreshTextWidgetValue(displayNameTxt,
 								org, Property.JCR_TITLE);
 						displayNameTxt.setEnabled(true);
+					} else {
+						PeopleUiUtils.refreshTextWidgetValue(displayNameTxt,
+								org, PeopleNames.PEOPLE_LEGAL_NAME);
+						displayNameTxt.setEnabled(false);
 					}
 					// READ ONLY PART
 					String roText = orgLP.getText(org);
@@ -207,16 +207,17 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 			PeopleUiUtils.addModifyListener(displayNameTxt, org,
 					Property.JCR_TITLE, editPart);
 
-			defaultDisplayBtn.addSelectionListener(new SelectionAdapter() {
+			useDistinctDisplayBtn.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					boolean defineDistinct = !defaultDisplayBtn.getSelection();
+					boolean defineDistinct = useDistinctDisplayBtn
+							.getSelection();
 					if (CommonsJcrUtils.setJcrProperty(org,
-							PeopleNames.PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME,
+							PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME,
 							PropertyType.BOOLEAN, defineDistinct)) {
-						if (defineDistinct) {
+						if (!defineDistinct) {
 							String displayName = CommonsJcrUtils.get(org,
 									PeopleNames.PEOPLE_LEGAL_NAME);
 							CommonsJcrUtils.setJcrProperty(org,

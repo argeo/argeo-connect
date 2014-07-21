@@ -69,17 +69,20 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 	public boolean performFinish() {
 		String legalName = legalNameTxt.getText();
 		// beware of the not !
-		boolean defineDistinctDisplayName = defineDistinctDisplayBtn
+		boolean useDistinctDisplayName = defineDistinctDisplayBtn
 				.getSelection();
 		String displayName = displayNameTxt.getText();
 		String legalForm = legalFormTxt.getText();
 		CommonsJcrUtils.setJcrProperty(org, PEOPLE_LEGAL_NAME,
 				PropertyType.STRING, legalName);
 
-		if (defineDistinctDisplayName)
+		if (useDistinctDisplayName) {
+			CommonsJcrUtils.setJcrProperty(org,
+					PEOPLE_USE_DISTINCT_DISPLAY_NAME, PropertyType.BOOLEAN,
+					useDistinctDisplayName);
 			CommonsJcrUtils.setJcrProperty(org, Property.JCR_TITLE,
 					PropertyType.STRING, displayName);
-
+		}
 		if (CommonsJcrUtils.checkNotEmptyString(legalForm))
 			CommonsJcrUtils.setJcrProperty(org, PEOPLE_LEGAL_FORM,
 					PropertyType.STRING, legalForm);

@@ -29,7 +29,7 @@
 // PERSON
 //
 [people:person] > people:entity, people:contactable, people:tagable
-- people:defineDistinctDisplayName (BOOLEAN)  
+- people:useDistinctDisplayName (BOOLEAN)  
 - people:firstName (STRING) 
 - people:middleName (STRING)
 - people:lastName (STRING)
@@ -67,7 +67,7 @@
 // ORGANISATION
 //
 [people:org] > people:entity, people:contactable, people:tagable
-- people:useDefaultDisplayName (BOOLEAN) ='true' m a 
+- people:useDistinctDisplayName (BOOLEAN) 
 - people:legalName (STRING)
 - people:legalForm (STRING)
 - people:vatIdNb (STRING)

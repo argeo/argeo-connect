@@ -110,7 +110,7 @@ public class LegalInfoToolkit {
 						Boolean defineDistinct = CommonsJcrUtils
 								.getBooleanValue(
 										entity,
-										PeopleNames.PEOPLE_DEFINE_DISTINCT_DISPLAY_NAME);
+										PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 						if (defineDistinct == null || !defineDistinct)
 							entity.setProperty(Property.JCR_TITLE,
 									legalNameTxt.getText());
