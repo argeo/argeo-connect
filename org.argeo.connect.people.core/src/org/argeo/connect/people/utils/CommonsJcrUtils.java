@@ -75,6 +75,19 @@ public class CommonsJcrUtils {
 	}
 
 	/**
+	 * Call {@link Row#getNode()} catching {@link RepositoryException}
+	 */
+	public static Node getNode(Row row, String selectorName) {
+		try {
+			return row.getNode(selectorName);
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Unable to retrieve Node with selector name "
+							+ selectorName + " on " + row, re);
+		}
+	}
+
+	/**
 	 * Call {@link Node#isNodetype(String nodeTypeName)} without exceptions
 	 */
 	public static boolean isNodeType(Node node, String nodeTypeName) {
