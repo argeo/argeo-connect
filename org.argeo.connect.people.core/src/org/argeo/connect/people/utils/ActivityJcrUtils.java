@@ -47,9 +47,13 @@ public class ActivityJcrUtils {
 	 */
 	public static String getAssignedToDisplayName(Node taskNode) {
 		try {
-			Node referencedManager = taskNode.getProperty(
-					PeopleNames.PEOPLE_ASSIGNED_TO).getNode();
-			return CommonsJcrUtils.get(referencedManager, Property.JCR_TITLE);
+			if (taskNode.hasProperty(PeopleNames.PEOPLE_ASSIGNED_TO)) {
+				Node referencedManager = taskNode.getProperty(
+						PeopleNames.PEOPLE_ASSIGNED_TO).getNode();
+				return CommonsJcrUtils.get(referencedManager,
+						Property.JCR_TITLE);
+			} else
+				return "";
 		} catch (RepositoryException e) {
 			throw new PeopleException(
 					"Unable to get name of group assigned to " + taskNode, e);
@@ -63,10 +67,13 @@ public class ActivityJcrUtils {
 	 */
 	public static String getActivityManagerDisplayName(Node activityNode) {
 		try {
-			Node referencedManager = activityNode.getProperty(
-					PeopleNames.PEOPLE_MANAGER).getNode();
-			return referencedManager.getParent().getName();
+			if (activityNode.hasProperty(PeopleNames.PEOPLE_MANAGER)) {
 
+				Node referencedManager = activityNode.getProperty(
+						PeopleNames.PEOPLE_MANAGER).getNode();
+				return referencedManager.getParent().getName();
+			} else
+				return "";
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to get type for activity "
 					+ activityNode, e);
