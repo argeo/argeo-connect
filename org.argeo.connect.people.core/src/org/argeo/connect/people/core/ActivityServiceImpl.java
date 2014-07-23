@@ -260,7 +260,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 						wakeUpDate);
 			}
 			taskNode.setProperty(PeopleNames.PEOPLE_ACTIVITY_DATE, creationDate);
-			CommonsJcrUtils.saveAndCheckin(taskNode);
+			// CommonsJcrUtils.saveAndCheckin(taskNode);
 			return taskNode;
 		} catch (RepositoryException e) {
 			throw new PeopleException(
