@@ -1,3 +1,8 @@
+/// NOTES AND TIPS 
+
+// Adding "nofulltext" tag to a property enable its removal from the full text search mechanism
+
+
 <people = 'http://www.argeo.org/ns/people'>
 
 //
@@ -5,25 +10,21 @@
 //
 [people:base] > nt:unstructured, mix:versionable, mix:created, mix:lastModified, mix:title
 
-
 //
 // ENTITY TYPE: it is the parent of all people CRM business types.
 //
 [people:entity] > people:base
-// An implementation dependent UID for each entity
-- people:uid (String) m nofulltext // We remove this technical property from the full text search mechanism
-// To map the FN value of a vCard rather use JCR_TITLE
-+ people:picture (nt:file) // An optional picture for this entity
-// DEPRECATED remove in 2.3+
-// - people:source (URI)
-// Rather use this
+- people:uid (String) m nofulltext // An implementation dependent UID for each entity
 + people:externalIds (nt:unstructured) // Optional, enable synchronisation with third party systems
++ people:picture (nt:file) // An optional picture for this entity
+
 
 // External ID instances
 [people:externalId] > nt:unstructured, mix:title
 //- people:source (URI) // an optional URI
 - people:sourceId (String) nofulltext // The external source ID, this must be cleanly handled in a later version
 - people:externalUid (String) nofulltext // This entity unique ID in the external system
+// Might be the FN value of a vCard
 
 //
 // PERSON

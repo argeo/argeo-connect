@@ -87,7 +87,7 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 			CommonsJcrUtils.setJcrProperty(org, PEOPLE_LEGAL_FORM,
 					PropertyType.STRING, legalForm);
 		try {
-			peopleService.saveEntity(org, true);
+			peopleService.saveEntity(org, false);
 		} catch (PeopleException e) {
 			MessageDialog.openError(getShell(), "Unvalid information",
 					e.getMessage());

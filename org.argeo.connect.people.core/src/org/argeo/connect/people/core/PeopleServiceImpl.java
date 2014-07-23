@@ -140,7 +140,13 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 				savePerson(entity, commit);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
 				saveOrganisation(entity, commit);
-
+			else if (entity.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
+				// TODO implement generic People behaviour for tasks and
+				// activities
+				if (commit)
+					CommonsJcrUtils.saveAndCheckin(entity);
+				else
+					entity.getSession().save();
 			else
 				throw new PeopleException("Unknown entity type for " + entity);
 		} catch (RepositoryException e) {
@@ -316,14 +322,22 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
 			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
 					PeopleTypes.PEOPLE_ENTITY);
+
+			// only look in business path
+			Constraint c1 = factory.descendantNode(source.getSelectorName(),
+					getBasePath(null));
+
+			// Retrieve correct ID
 			DynamicOperand dynOp = factory.propertyValue(
 					source.getSelectorName(), PeopleNames.PEOPLE_UID);
 			StaticOperand statOp = factory.literal(session.getValueFactory()
 					.createValue(uid));
-			Constraint defaultC = factory.comparison(dynOp,
+			Constraint c2 = factory.comparison(dynOp,
 					QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
-			QueryObjectModel query = factory.createQuery(source, defaultC,
-					null, null);
+
+			// effecetive query
+			QueryObjectModel query = factory.createQuery(source,
+					factory.and(c1, c2), null, null);
 			QueryResult queryResult = query.execute();
 			NodeIterator ni = queryResult.getNodes();
 
@@ -332,7 +346,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			else if (ni.getSize() > 1) {
 				throw new PeopleException(
 						"Problem retrieving entity by UID, we found "
-								+ ni.getSize() + " correspnding entity(ies)");
+								+ ni.getSize() + " corresponding entity(ies)");
 			} else
 				return ni.nextNode();
 		} catch (RepositoryException e) {

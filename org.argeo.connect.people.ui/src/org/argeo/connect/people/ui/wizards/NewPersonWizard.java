@@ -71,7 +71,7 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 				PropertyType.STRING, firstName);
 
 		try {
-			peopleService.saveEntity(person, true);
+			peopleService.saveEntity(person, false);
 		} catch (PeopleException e) {
 			MessageDialog.openError(getShell(), "Unvalid information",
 					e.getMessage());
