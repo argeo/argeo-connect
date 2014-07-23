@@ -268,26 +268,6 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 		public String getToolTipText(Object element) {
 			return getText(element);
 		}
-
-		// @Override
-		// public Font getFont(Object elem) {
-		// // self
-		// String username = getProperty(elem, ARGEO_USER_ID);
-		// if (username.equals(session.getUserID()))
-		// return bold;
-		//
-		// // disabled
-		// try {
-		// Node userProfile = (Node) elem;
-		// // Node userProfile = userHome.getNode(ARGEO_PROFILE);
-		// if (!userProfile.getProperty(ARGEO_ENABLED).getBoolean())
-		// return italic;
-		// else
-		// return null;
-		// } catch (RepositoryException e) {
-		// throw new ArgeoException("Cannot get font for " + username, e);
-		// }
-		// }
 	}
 
 	@Override
@@ -381,10 +361,10 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 		}
 
 		Ordering[] orderings = null;
-
 		QueryObjectModel query = factory.createQuery(source, defaultC,
 				orderings, null);
-
+		// TODO rather implement a virtual viewer
+		query.setLimit(100);
 		QueryResult result = query.execute();
 		return result.getNodes();
 	}

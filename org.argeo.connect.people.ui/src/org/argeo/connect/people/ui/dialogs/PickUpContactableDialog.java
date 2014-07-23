@@ -33,7 +33,6 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.ui.exports.PeopleColumnDefinition;
@@ -198,9 +197,10 @@ public class PickUpContactableDialog extends TrayDialog {
 			Ordering order = factory.ascending(factory.propertyValue(
 					source.getSelectorName(), Property.JCR_TITLE));
 			Ordering[] orderings = { order };
-			QueryObjectModel query = factory.createQuery(source,
-					defaultC,
+			QueryObjectModel query = factory.createQuery(source, defaultC,
 					orderings, null);
+			// TODO rather implement a virtual viewer
+			query.setLimit(100);
 			QueryResult result = query.execute();
 			Row[] rows = CommonsJcrUtils.rowIteratorToArray(result.getRows());
 			setViewerInput(rows);
