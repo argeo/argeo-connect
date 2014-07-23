@@ -285,14 +285,18 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 					StringBuilder builder = new StringBuilder();
 					Value[] refs = currNode.getProperty(
 							PeopleNames.PEOPLE_RELATED_TO).getValues();
-					for (Value value : refs) {
-						String id = value.getString();
-						Node currReferenced = session.getNodeByIdentifier(id);
-						builder.append(
-								CommonsJcrUtils.get(currReferenced,
-										Property.JCR_TITLE)).append(", ");
+					if (refs.length > 0) {
+						for (Value value : refs) {
+							String id = value.getString();
+							Node currReferenced = session
+									.getNodeByIdentifier(id);
+							builder.append(
+									CommonsJcrUtils.get(currReferenced,
+											Property.JCR_TITLE)).append(", ");
+						}
+						return builder.substring(0, builder.lastIndexOf(", "));
 					}
-					return builder.toString();
+
 				}
 				return "";
 			} catch (RepositoryException re) {
