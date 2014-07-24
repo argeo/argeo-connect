@@ -7,9 +7,7 @@ import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
-import org.argeo.connect.people.ui.dialogs.AddMLMembershipDialog;
 import org.argeo.connect.people.ui.dialogs.CreateEntityRefWithPositionDialog;
 import org.argeo.connect.people.ui.editors.utils.AbstractPeopleEditor;
 import org.argeo.jcr.JcrUtils;
@@ -68,13 +66,13 @@ public class AddEntityReference extends AbstractHandler {
 			// "Add Members to current mailing list", repository,
 			// referencing, new String[] { toSearchNodeType });
 			// else
-				if (PeopleUiConstants.DIALOG_ADD_ML_MEMBERSHIP
-					.equals(dialogId))
-				diag = new AddMLMembershipDialog(
-						HandlerUtil.getActiveShell(event),
-						"Add Mailing List membership", repository, referenced,
-						new String[] { toSearchNodeType });
-			else
+			// if (PeopleUiConstants.DIALOG_ADD_ML_MEMBERSHIP
+			// .equals(dialogId))
+			// diag = new AddMLMembershipDialog(
+			// HandlerUtil.getActiveShell(event),
+			// "Add Mailing List membership", repository, referenced,
+			// new String[] { toSearchNodeType });
+			// else
 				diag = new CreateEntityRefWithPositionDialog(
 						HandlerUtil.getActiveShell(event), "Create position",
 						repository, peopleService, referencing, referenced,

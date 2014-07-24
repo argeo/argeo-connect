@@ -4,6 +4,7 @@ package org.argeo.connect.media;
 public interface FilmConstants {
 	
 	// Namespace
+	public final static String MAP_PREFIX = "map";
 	public final static String FILM_PREFIX = "film";
 
 }

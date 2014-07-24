@@ -20,9 +20,9 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.editors.utils.AbstractSearchEntityEditor;
 import org.argeo.connect.people.ui.exports.PeopleColumnDefinition;
+import org.argeo.connect.people.ui.providers.JcrRowHtmlLabelProvider;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -44,10 +44,13 @@ public class ListValuesEditor extends AbstractSearchEntityEditor {
 	public List<PeopleColumnDefinition> getColumnDefinition(String extractId) {
 
 		List<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
-		colDefs.add(new PeopleColumnDefinition(getEntityType(),
-				Property.JCR_TITLE, PropertyType.STRING, "Title",
-				new SimpleJcrRowLabelProvider(getEntityType(),
-						Property.JCR_TITLE), 300));
+		colDefs.add(new PeopleColumnDefinition(
+				getEntityType(),
+				Property.JCR_TITLE,
+				PropertyType.STRING,
+				"Title",
+				new JcrRowHtmlLabelProvider(getEntityType(), Property.JCR_TITLE),
+				300));
 		return colDefs;
 	}
 

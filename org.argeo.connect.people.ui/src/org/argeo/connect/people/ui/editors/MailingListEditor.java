@@ -35,7 +35,6 @@ import org.argeo.connect.people.ui.providers.TitleWithIconLP;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
-import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILazyContentProvider;

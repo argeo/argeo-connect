@@ -1,9 +1,33 @@
+// MAP = Media or Artwork Project
+<map = 'http://www.argeo.org/ns/map'>
 <film = 'http://www.argeo.org/ns/film'>
+
+
+//
+// PROJECT
+//
+// Can be a film, a performance, a music album...
+
+[map:project] > people:group
+- map:projectId (STRING) // a business specific film ID
+// Subnode with alternative title
++ map:titles (nt:unstructured) 
+// Subnode that contains synopses 
++ map:synopses (nt:unstructured)
+// Subnode with time stamps and awards
++ map:timestamps (nt:unstructured)
+
+// Cache som values to ease rendering
+- map:cachePTitle (STRING) IGNORE
+- map:cachePTitleArticle (STRING) IGNORE
+- map:cachePTitleLatin (STRING) IGNORE
+- map:cacheDirectors (String) * IGNORE
+
 
 //
 // FILM
 //
-[film:film] > people:group
+[film:film] > map:project
 - film:filmId (STRING) // a business specific film ID
 - film:type (STRING) // Feature, Mid-Length, Short
 - film:website (STRING) 
@@ -59,19 +83,37 @@
 - film:titleLatinPronunciation (STRING)
 - film:titleIsOrig (BOOLEAN)
 
+[map:title] > nt:unstructured, people:language, people:orderable
+- map:titleValue (STRING)
+- map:titleArticle (STRING)
+// Helper to be able to read the original title when it is in a foreign alphabet
+- map:titleLatinPronunciation (STRING)
+- map:titleIsOrig (BOOLEAN)
+
 // Synopses
 [film:synopsis] > nt:unstructured, people:language
 - film:synopsisContent (STRING)
 - film:synopsisContentShort (STRING)
 - film:logLine (STRING)
 
+[map:synopsis] > nt:unstructured, people:language
+- map:synopsisContent (STRING)
+- map:synopsisContentShort (STRING)
+- map:logLine (STRING)
+
 // Time stamp
 [film:timestamp] > nt:unstructured, mix:title
 - film:timestampValue (DATE)
 
+[map:timestamp] > nt:unstructured, mix:title
+- map:timestampValue (DATE)
+
 // Awards 
 [film:award] > film:timestamp
 - film:awardCountryIso (STRING)
+
+[map:award] > film:timestamp
+- map:awardCountryIso (STRING)
 
 //
 // FILM PRINT

@@ -16,7 +16,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
-import org.argeo.connect.people.ui.commands.OpenSearchByTagEditor;
 import org.argeo.connect.people.ui.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.ui.wizards.NewOrgWizard;
 import org.argeo.connect.people.ui.wizards.NewPersonWizard;
@@ -44,10 +43,10 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 		return OpenSearchEntityEditor.ID;
 	}
 
-	@Override
-	public String getOpenSearchByTagEditorCmdId() {
-		return OpenSearchByTagEditor.ID;
-	}
+	// @Override
+	// public String getOpenSearchByTagEditorCmdId() {
+	// return OpenSearchByTagEditor.ID;
+	// }
 
 	@Override
 	public String getOpenFileCmdId() {

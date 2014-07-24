@@ -5,9 +5,7 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
-import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.PeopleTypes;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
@@ -25,7 +23,7 @@ public interface PeopleUiService {
 
 	public String getOpenSearchEntityEditorCmdId();
 
-	public String getOpenSearchByTagEditorCmdId();
+	// public String getOpenSearchByTagEditorCmdId();
 
 	public String getOpenFileCmdId();
 
