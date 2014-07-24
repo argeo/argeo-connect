@@ -837,6 +837,28 @@ public class CommonsJcrUtils {
 	}
 
 	/**
+	 * Browses a {@code RowIterator} to build the corresponding row array.
+	 * Performs a kind of "select distinct" based on the JcrUID of the nodes
+	 * designed by the selector name
+	 */
+	public static Row[] rowIteratorToDistinctArray(RowIterator rit,
+			String distinctSelectorName) throws RepositoryException {
+		List<Row> rows = new ArrayList<Row>();
+		List<String> filmIds = new ArrayList<String>();
+		while (rit.hasNext()) {
+			Row curr = rit.nextRow();
+			String currId = curr.getNode(distinctSelectorName).getIdentifier();
+			if (filmIds.contains(currId))
+				; // skip it
+			else {
+				filmIds.add(currId);
+				rows.add(curr);
+			}
+		}
+		return rows.toArray(new Row[rows.size()]);
+	}
+
+	/**
 	 * Convert a {@link rowIterator} to a list of {@link Node} given a selector
 	 * name. It relies on the <code>Row.getNode(String selectorName)</code>
 	 * method.

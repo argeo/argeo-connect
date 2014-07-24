@@ -29,6 +29,7 @@ import org.argeo.connect.people.ui.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.ui.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.ui.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
+import org.argeo.connect.people.ui.providers.JcrRowHtmlLabelProvider;
 import org.argeo.connect.people.ui.providers.TagLabelProvider;
 import org.argeo.connect.people.ui.providers.TitleWithIconLP;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
@@ -93,11 +94,11 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 						PeopleTypes.PEOPLE_ENTITY, Property.JCR_TITLE), 300));
 		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
 				PEOPLE_CACHE_PMAIL, PropertyType.STRING, "Primary mail",
-				new SimpleJcrRowLabelProvider(PeopleTypes.PEOPLE_ENTITY,
+				new JcrRowHtmlLabelProvider(PeopleTypes.PEOPLE_ENTITY,
 						PEOPLE_CACHE_PMAIL), 300));
 		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
 				PEOPLE_MAILING_LISTS, PropertyType.STRING, "Mailing lists",
-				new SimpleJcrRowLabelProvider(PeopleTypes.PEOPLE_ENTITY,
+				new JcrRowHtmlLabelProvider(PeopleTypes.PEOPLE_ENTITY,
 						PEOPLE_TAGS), 300));
 	}
 
