@@ -130,11 +130,20 @@ public class ResourcesJcrUtils {
 	public static String getCountryEnLabelFromIso(PeopleService peopleService,
 			Session session, String isoCode) {
 		try {
-			String path = peopleService
-					.getResourceBasePath(PeopleConstants.RESOURCE_COUNTRY)
-					+ "/" + isoCode.substring(0, 1) + "/" + isoCode;
-			Node code = session.getNode(path);
-			return CommonsJcrUtils.get(code, Property.JCR_TITLE);
+			if (isoCode == null)
+				return "";
+			else if (isoCode.length() < 2)
+				return isoCode;
+			else {
+				String path = peopleService
+						.getResourceBasePath(PeopleConstants.RESOURCE_COUNTRY)
+						+ "/" + isoCode.substring(0, 1) + "/" + isoCode;
+				if (session.nodeExists(path))
+					return CommonsJcrUtils.get(session.getNode(path),
+							Property.JCR_TITLE);
+				else
+					return isoCode;
+			}
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to get label for " + isoCode, e);
 		}

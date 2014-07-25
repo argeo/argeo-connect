@@ -3,9 +3,9 @@ package org.argeo.connect.people.ui.providers;
 import javax.jcr.Node;
 
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.eclipse.jface.viewers.LabelProvider;
 
 /**
@@ -14,8 +14,10 @@ import org.eclipse.jface.viewers.LabelProvider;
 public class OrgListLabelProvider extends LabelProvider implements PeopleNames {
 
 	private static final long serialVersionUID = -7643487102948380168L;
+	private final PeopleService peopleService;
 
-	public OrgListLabelProvider() {
+	public OrgListLabelProvider(PeopleService peopleService) {
+		this.peopleService = peopleService;
 	}
 
 	@Override
@@ -26,19 +28,10 @@ public class OrgListLabelProvider extends LabelProvider implements PeopleNames {
 		builder.append(CommonsJcrUtils.get(orga, PEOPLE_LEGAL_NAME));
 		builder.append("</b>");
 
-		if (PeopleJcrUtils.getTownFromItem(orga) != null) {
-			builder.append(" [");
-			String town = PeopleJcrUtils.getTownFromItem(orga);
-			String country = PeopleJcrUtils.getCountryFromItem(orga);
-			if (!CommonsJcrUtils.isEmptyString(town)) {
-				builder.append(town);
-				if (!CommonsJcrUtils.isEmptyString(country))
-					builder.append(", ");
-			}
-			if (!CommonsJcrUtils.isEmptyString(country))
-				builder.append(country);
-			builder.append("]");
-		}
+		String local = PeopleHtmlUtils.getLocalisationInfo(peopleService, orga);
+		if (CommonsJcrUtils.checkNotEmptyString(local))
+			builder.append(local);
+
 		String result = PeopleHtmlUtils.cleanHtmlString(builder.toString());
 		return result;
 	}

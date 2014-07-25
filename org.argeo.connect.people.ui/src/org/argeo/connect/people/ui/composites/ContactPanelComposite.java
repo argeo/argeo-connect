@@ -193,7 +193,8 @@ public class ContactPanelComposite extends Composite {
 								peopleUiService, currNode, entity);
 					else
 						new ContactComposite(parent, SWT.NO_FOCUS, toolkit,
-								formPart, currNode, entity, peopleUiService);
+								formPart, currNode, entity, peopleUiService,
+								peopleService);
 				}
 			}
 		} catch (RepositoryException e) {
@@ -477,8 +478,8 @@ public class ContactPanelComposite extends Composite {
 	private void saveAndRefresh(String contactType, String name, String value,
 			boolean isPrimary, String nature, String category, String label) {
 
-		PeopleJcrUtils.createContact(entity, contactType, contactType, value,
-				isPrimary, nature, null, label);
+		PeopleJcrUtils.createContact(peopleService, entity, contactType,
+				contactType, value, isPrimary, nature, null, label);
 		addContactCmb.select(0);
 		formPart.markDirty();
 		formPart.refresh();
@@ -523,7 +524,7 @@ public class ContactPanelComposite extends Composite {
 				String label = labelTxt.getText();
 				boolean isPrimary = primaryChk.getSelection();
 
-				Node node = PeopleJcrUtils.createAddress(entity,
+				Node node = PeopleJcrUtils.createAddress(peopleService, entity,
 						streetTxt.getText(), street2Txt.getText(),
 						zipTxt.getText(), cityTxt.getText(),
 						stateTxt.getText(), countryTxt.getText(), null,
@@ -547,8 +548,8 @@ public class ContactPanelComposite extends Composite {
 					String label = labelTxt.getText();
 					boolean isPrimary = primaryChk.getSelection();
 
-					Node node = PeopleJcrUtils.createAddress(entity,
-							streetTxt.getText(), street2Txt.getText(),
+					Node node = PeopleJcrUtils.createAddress(peopleService,
+							entity, streetTxt.getText(), street2Txt.getText(),
 							zipTxt.getText(), cityTxt.getText(),
 							stateTxt.getText(), countryTxt.getText(), null,
 							isPrimary, nature, cat, label);
@@ -629,8 +630,8 @@ public class ContactPanelComposite extends Composite {
 					String label = labelTxt.getText();
 					String cat = catCmb.getText();
 					boolean isPrimary = primaryChk.getSelection();
-					Node node = PeopleJcrUtils.createWorkAddress(entity,
-							selected, isPrimary, cat, label);
+					Node node = PeopleJcrUtils.createWorkAddress(peopleService,
+							entity, selected, isPrimary, cat, label);
 					PeopleJcrUtils.updateDisplayAddress(node);
 					formPart.markDirty();
 					formPart.refresh();

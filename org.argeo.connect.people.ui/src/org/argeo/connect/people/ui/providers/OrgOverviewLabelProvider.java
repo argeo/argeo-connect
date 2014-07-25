@@ -11,7 +11,6 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
 /**
@@ -59,19 +58,11 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 			builder.append(CommonsJcrUtils.get(orga, Property.JCR_TITLE));
 			builder.append("</b></big>");
 
-			String town = PeopleJcrUtils.getTownFromItem(orga);
-			String country = PeopleJcrUtils.getCountryFromItem(orga);
-			if (town != null || country != null) {
-				builder.append(" [");
-				if (!CommonsJcrUtils.isEmptyString(town)) {
-					builder.append(town);
-					if (!CommonsJcrUtils.isEmptyString(country))
-						builder.append(", ");
-				}
-				if (!CommonsJcrUtils.isEmptyString(country))
-					builder.append(country);
-				builder.append("]");
-			}
+			String local = PeopleHtmlUtils.getLocalisationInfo(peopleService,
+					orga);
+			if (CommonsJcrUtils.checkNotEmptyString(local))
+				builder.append(local);
+
 			builder.append("<br/>");
 
 			String tmpStr;

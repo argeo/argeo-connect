@@ -394,7 +394,8 @@ public class ListToolkit {
 		protected void setValue(Object element, Object value) {
 			Node currNode = (Node) element;
 			if (((Boolean) value).booleanValue()
-					&& PeopleJcrUtils.markAsPrimary(person, currNode)) {
+					&& PeopleJcrUtils.markAsPrimary(peopleService, person,
+							currNode)) {
 				// we refresh all parts to insure homogeneity.
 				// TODO check if a simple part refresh is enough
 				for (IFormPart part : form.getParts()) {

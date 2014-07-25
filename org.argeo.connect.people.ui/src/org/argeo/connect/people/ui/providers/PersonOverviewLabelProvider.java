@@ -83,7 +83,8 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		builder.append(displayName);
 		builder.append("</big></b>");
 		String fmn = PeopleHtmlUtils.getFullMontyName(person);
-		String local = PeopleHtmlUtils.getLocalisationInfo(person);
+		String local = PeopleHtmlUtils.getLocalisationInfo(peopleService,
+				person);
 		String primaryContacts = PeopleHtmlUtils.getPrimaryContacts(person,
 				false);
 		Boolean politeFormFlag = CommonsJcrUtils.getBooleanValue(person,
@@ -146,7 +147,8 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		builder.append("<b><big> ");
 		builder.append(peopleService.getDisplayName(person));
 		builder.append("</big> </b>");
-		String local = PeopleHtmlUtils.getLocalisationInfo(person);
+		String local = PeopleHtmlUtils.getLocalisationInfo(peopleService,
+				person);
 		if (CommonsJcrUtils.checkNotEmptyString(local))
 			builder.append(local);
 		builder.append("<br/>");

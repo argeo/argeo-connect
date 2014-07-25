@@ -5,6 +5,7 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiService;
@@ -29,6 +30,7 @@ public class ContactButtonsComposite extends Composite {
 	private static final long serialVersionUID = 2331713954300845292L;
 
 	// Context
+	private final PeopleService peopleService;
 	private final PeopleUiService peopleUiService;
 	private final Node contactNode;
 	private final boolean isCheckedOut;
@@ -40,8 +42,10 @@ public class ContactButtonsComposite extends Composite {
 
 	public ContactButtonsComposite(Composite parent, int style,
 			FormToolkit toolkit, AbstractFormPart formPart, Node contactNode,
-			Node parentVersionableNode, PeopleUiService peopleUiService) {
+			Node parentVersionableNode, PeopleUiService peopleUiService,
+			PeopleService peopleService) {
 		super(parent, style);
+		this.peopleService = peopleService;
 		this.peopleUiService = peopleUiService;
 		this.contactNode = contactNode;
 		this.parentVersionableNode = parentVersionableNode;
@@ -163,7 +167,7 @@ public class ContactButtonsComposite extends Composite {
 					// update primary cache
 					if (PeopleJcrUtils.isPrimary(parentVersionableNode,
 							contactNode))
-						PeopleJcrUtils.updatePrimaryCache(
+						PeopleJcrUtils.updatePrimaryCache(peopleService,
 								parentVersionableNode, contactNode, false);
 
 					contactNode.remove();
@@ -184,7 +188,7 @@ public class ContactButtonsComposite extends Composite {
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				boolean hasChanged = PeopleJcrUtils.markAsPrimary(
-						parentVersionableNode, contactNode);
+						peopleService, parentVersionableNode, contactNode);
 
 				if (hasChanged) {
 					formPart.markDirty();

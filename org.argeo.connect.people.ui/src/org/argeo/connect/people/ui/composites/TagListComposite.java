@@ -102,10 +102,10 @@ public class TagListComposite extends Composite {
 	}
 
 	private class TagFormPart extends AbstractFormPart {
-		private Composite nlCmp;
+		private Composite parentCmp;
 
 		public TagFormPart(Composite parent) {
-			this.nlCmp = parent;
+			this.parentCmp = parent;
 		}
 
 		@Override
@@ -143,7 +143,7 @@ public class TagListComposite extends Composite {
 			super.refresh();
 			// We redraw the full control at each refresh, might be a more
 			// efficient way to do
-			Control[] oldChildren = nlCmp.getChildren();
+			Control[] oldChildren = parentCmp.getChildren();
 			for (Control child : oldChildren)
 				child.dispose();
 
@@ -156,7 +156,7 @@ public class TagListComposite extends Composite {
 					for (final Value value : values) {
 						final String tagValue = value.getString();
 
-						Composite tagCmp = toolkit.createComposite(nlCmp,
+						Composite tagCmp = toolkit.createComposite(parentCmp,
 								SWT.NO_FOCUS);
 						tagCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
 						Link link = new Link(tagCmp, SWT.NONE);
@@ -192,7 +192,7 @@ public class TagListComposite extends Composite {
 										String msg = "This category is still in a draft state.\n"
 												+ "Please save first.";
 										MessageDialog.openInformation(
-												nlCmp.getShell(),
+												parentCmp.getShell(),
 												"Forbidden action", msg);
 									} else
 										CommandUtils.callCommand(
@@ -216,7 +216,7 @@ public class TagListComposite extends Composite {
 					}
 				}
 				if (isCO) {
-					final Text tagTxt = toolkit.createText(nlCmp, "",
+					final Text tagTxt = toolkit.createText(parentCmp, "",
 							SWT.BORDER);
 					tagTxt.setMessage(newTagMsg);
 					RowData rd = new RowData(120, SWT.DEFAULT);
@@ -244,7 +244,7 @@ public class TagListComposite extends Composite {
 
 					tagTxt.getParent().layout();
 
-					Button okBtn = toolkit.createButton(nlCmp, "OK", SWT.BORDER
+					Button okBtn = toolkit.createButton(parentCmp, "OK", SWT.BORDER
 							| SWT.PUSH | SWT.BOTTOM);
 					rd = new RowData(SWT.DEFAULT, tagTxt.getSize().y - 2);
 					okBtn.setLayoutData(rd);
@@ -258,14 +258,14 @@ public class TagListComposite extends Composite {
 							if (CommonsJcrUtils.isEmptyString(newTag))
 								return;
 							else
-								addTag(nlCmp.getShell(), TagFormPart.this,
+								addTag(parentCmp.getShell(), TagFormPart.this,
 										newTag);
 						}
 					});
 
 				}
-				nlCmp.layout(false);
-				nlCmp.getParent().getParent().layout();
+				parentCmp.layout(false);
+				parentCmp.getParent().getParent().layout();
 
 			} catch (RepositoryException re) {
 				throw new PeopleException(

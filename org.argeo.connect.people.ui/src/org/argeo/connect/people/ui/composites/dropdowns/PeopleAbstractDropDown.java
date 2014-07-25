@@ -91,26 +91,28 @@ public abstract class PeopleAbstractDropDown {
 			}
 		});
 
-		dropDown.addListener(SWT.Hide, new HideListener());
+		// text.addListener(SWT.Traverse, new DDReturnListener());
 		dropDown.addListener(SWT.Selection, new DDSelectionListener());
 		dropDown.addListener(SWT.DefaultSelection, new DDSelectionListener());
 	}
 
-	private class HideListener implements Listener {
-		private static final long serialVersionUID = 1L;
 
-		@Override
-		public void handleEvent(Event event) {
-			System.out.println("HIDDEN DROPDOWN");
-		}
-
-	}
+	// private class DDReturnListener implements Listener {
+	// private static final long serialVersionUID = 1L;
+	//
+	// @Override
+	// public void handleEvent(Event event) {
+	// event.doit = false;
+	// System.out.println("RETURN HIT");
+	// }
+	// }
 
 	private class DDSelectionListener implements Listener {
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void handleEvent(Event event) {
+
 			modifyFromList = true;
 			int index = dropDown.getSelectionIndex();
 			if (index != -1 && index < values.length)
@@ -119,6 +121,7 @@ public abstract class PeopleAbstractDropDown {
 			if (event.type == SWT.DefaultSelection)
 				KeyboardFocusManager.getCurrentKeyboardFocusManager()
 						.focusNextComponent();
+			// event.doit = false;
 		}
 	}
 }

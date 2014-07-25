@@ -49,7 +49,7 @@ public class HistoryToolkit {
 
 	// private List<String> relevantAttributeList;
 
-	private List<String> knownPrefixes;
+	// private List<String> knownPrefixes;
 
 	private final FormToolkit toolkit;
 	private final IManagedForm form;

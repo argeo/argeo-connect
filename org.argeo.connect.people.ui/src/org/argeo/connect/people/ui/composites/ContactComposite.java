@@ -7,6 +7,7 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiService;
@@ -33,6 +34,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class ContactComposite extends Composite {
 	private static final long serialVersionUID = -789885142022513273L;
 
+	private final PeopleService peopleService;
 	private final PeopleUiService peopleUiService;
 	private final Node contactNode;
 	private final Node parentVersionableNode;
@@ -42,8 +44,10 @@ public class ContactComposite extends Composite {
 
 	public ContactComposite(Composite parent, int style, FormToolkit toolkit,
 			AbstractFormPart formPart, Node contactNode,
-			Node parentVersionableNode, PeopleUiService peopleUiService) {
+			Node parentVersionableNode, PeopleUiService peopleUiService,
+			PeopleService peopleService) {
 		super(parent, style);
+		this.peopleService = peopleService;
 		this.peopleUiService = peopleUiService;
 		this.contactNode = contactNode;
 		this.parentVersionableNode = parentVersionableNode;
@@ -62,7 +66,7 @@ public class ContactComposite extends Composite {
 		// buttons
 		Composite buttCmp = new ContactButtonsComposite(parent, SWT.NO_FOCUS,
 				toolkit, formPart, contactNode, parentVersionableNode,
-				peopleUiService);
+				peopleUiService, peopleService);
 		toolkit.adapt(buttCmp, false, false);
 		buttCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
@@ -82,8 +86,8 @@ public class ContactComposite extends Composite {
 		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
 				SWT.WRAP);
 		readOnlyInfoLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
-		String addressHtml = PeopleHtmlUtils
-				.getContactDisplaySnippet(contactNode);
+		String addressHtml = PeopleHtmlUtils.getContactDisplaySnippet(
+				peopleService, contactNode);
 		readOnlyInfoLbl.setText(addressHtml);
 	}
 

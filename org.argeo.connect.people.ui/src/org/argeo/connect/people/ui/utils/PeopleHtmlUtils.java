@@ -22,6 +22,7 @@ import org.argeo.connect.people.ui.commands.OpenEntityEditor;
 import org.argeo.connect.people.ui.commands.RemoveEntityReference;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.argeo.connect.people.utils.ResourcesJcrUtils;
 
 /** Some helper methods to generate html snippets */
 public class PeopleHtmlUtils {
@@ -97,12 +98,14 @@ public class PeopleHtmlUtils {
 	}
 
 	/** creates the display ReadOnly HTML snippet for various contacts */
-	public static String getContactDisplaySnippet(Node node) {
+	public static String getContactDisplaySnippet(PeopleService peopleService,
+			Node node) {
 		try {
 			StringBuilder builder = new StringBuilder();
 
 			if (node.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
-				builder.append(cleanHtmlString(getAddressDisplayValue(node)));
+				builder.append(cleanHtmlString(getAddressDisplayValue(
+						peopleService, node)));
 			} else {
 				String value = cleanHtmlString(CommonsJcrUtils.get(node,
 						PeopleNames.PEOPLE_CONTACT_VALUE));
@@ -148,8 +151,8 @@ public class PeopleHtmlUtils {
 	}
 
 	/** creates the display ReadOnly HTML snippet for a work address */
-	public static String getWorkAddressDisplaySnippet(Node contactNode,
-			Node referencedEntity) {
+	public static String getWorkAddressDisplaySnippet(
+			PeopleService peopleService, Node contactNode, Node referencedEntity) {
 		StringBuilder builder = new StringBuilder();
 		// the referenced org
 		if (referencedEntity != null)
@@ -163,7 +166,8 @@ public class PeopleHtmlUtils {
 					referencedEntity, PeopleTypes.PEOPLE_ADDRESS);
 			if (primaryAddress != null) {
 				builder.append("<br />");
-				builder.append(cleanHtmlString(getAddressDisplayValue(primaryAddress)));
+				builder.append(cleanHtmlString(getAddressDisplayValue(
+						peopleService, primaryAddress)));
 			}
 		}
 		return builder.toString();
@@ -206,7 +210,8 @@ public class PeopleHtmlUtils {
 	}
 
 	/** creates an address Display value */
-	public static String getAddressDisplayValue(Node node) {
+	public static String getAddressDisplayValue(PeopleService peopleService,
+			Node node) {
 		String street = CommonsJcrUtils.get(node, PeopleNames.PEOPLE_STREET);
 		String street2 = CommonsJcrUtils.get(node,
 				PeopleNames.PEOPLE_STREET_COMPLEMENT);
@@ -248,6 +253,9 @@ public class PeopleHtmlUtils {
 		}
 
 		if (CommonsJcrUtils.checkNotEmptyString(country)) {
+			country = ResourcesJcrUtils.getCountryEnLabelFromIso(peopleService,
+					CommonsJcrUtils.getSession(node), country);
+
 			if (builder.length() > 0)
 				builder.append(", ");
 			builder.append(country.toUpperCase());
@@ -256,7 +264,8 @@ public class PeopleHtmlUtils {
 	}
 
 	/** creates the localisation snippet */
-	public static String getLocalisationInfo(Node entity) {
+	public static String getLocalisationInfo(PeopleService peopleService,
+			Node entity) {
 		String town = PeopleJcrUtils.getTownFromItem(entity);
 		String country = PeopleJcrUtils.getCountryFromItem(entity);
 		if (CommonsJcrUtils.checkNotEmptyString(town)
@@ -268,8 +277,12 @@ public class PeopleHtmlUtils {
 				if (!CommonsJcrUtils.isEmptyString(country))
 					builder.append(", ");
 			}
-			if (!CommonsJcrUtils.isEmptyString(country))
+			if (!CommonsJcrUtils.isEmptyString(country)) {
+				country = ResourcesJcrUtils.getCountryEnLabelFromIso(
+						peopleService, CommonsJcrUtils.getSession(entity),
+						country);
 				builder.append(country);
+			}
 			builder.append("]");
 			return builder.toString();
 		} else

@@ -4,19 +4,23 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
 import org.argeo.connect.people.ContactValueCatalogs;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiService;
+import org.argeo.connect.people.ui.composites.dropdowns.SimpleResourceDropDown;
 import org.argeo.connect.people.ui.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -75,7 +79,7 @@ public class ContactAddressComposite extends Composite {
 		// BUTTONS
 		Composite buttCmp = new ContactButtonsComposite(parent, SWT.NONE,
 				toolkit, formPart, contactNode, parentVersionableNode,
-				peopleUiService);
+				peopleUiService, peopleService);
 		toolkit.adapt(buttCmp, false, false);
 		buttCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
@@ -96,15 +100,18 @@ public class ContactAddressComposite extends Composite {
 				SWT.WRAP);
 		readOnlyInfoLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
 		String addressHtml = "";
+		String refUid = CommonsJcrUtils.get(contactNode,
+				PeopleNames.PEOPLE_REF_UID);
 		if (CommonsJcrUtils.isNodeType(contactNode,
-				PeopleTypes.PEOPLE_CONTACT_REF)) {
+				PeopleTypes.PEOPLE_CONTACT_REF)
+				&& CommonsJcrUtils.checkNotEmptyString(refUid)) {
 			Node referencedEntity = peopleService.getEntityByUid(
-					CommonsJcrUtils.getSession(contactNode), CommonsJcrUtils
-							.get(contactNode, PeopleNames.PEOPLE_REF_UID));
+					CommonsJcrUtils.getSession(contactNode), refUid);
 			addressHtml = PeopleHtmlUtils.getWorkAddressDisplaySnippet(
-					contactNode, referencedEntity);
+					peopleService, contactNode, referencedEntity);
 		} else
-			addressHtml = PeopleHtmlUtils.getContactDisplaySnippet(contactNode);
+			addressHtml = PeopleHtmlUtils.getContactDisplaySnippet(
+					peopleService, contactNode);
 		readOnlyInfoLbl.setText(addressHtml);
 	}
 
@@ -112,8 +119,12 @@ public class ContactAddressComposite extends Composite {
 		RowLayout rl = new RowLayout(SWT.WRAP);
 		rl.type = SWT.HORIZONTAL;
 		parent.setLayout(rl);
+
+		String refUid = CommonsJcrUtils.get(contactNode,
+				PeopleNames.PEOPLE_REF_UID);
 		if (CommonsJcrUtils.isNodeType(contactNode,
-				PeopleTypes.PEOPLE_CONTACT_REF))
+				PeopleTypes.PEOPLE_CONTACT_REF)
+				&& CommonsJcrUtils.checkNotEmptyString(refUid))
 			populateWorkAdresseCmp(parent, contactNode);
 		else
 			populateAdresseCmp(parent, contactNode);
@@ -223,8 +234,16 @@ public class ContactAddressComposite extends Composite {
 					"City", "", 0);
 			final Text stateTxt = PeopleUiUtils.createRDText(toolkit, parent,
 					"State", "", 0);
-			final Text countryTxt = PeopleUiUtils.createRDText(toolkit, parent,
-					"Country", "", 0);
+			Text countryTxt = PeopleUiUtils.createRDText(toolkit, parent,
+					"Country", "", 110);
+
+			// The country drop down
+			final String countryBP = peopleService
+					.getResourceBasePath(PeopleConstants.RESOURCE_COUNTRY);
+			Session session = CommonsJcrUtils.getSession(contactNode);
+			final SimpleResourceDropDown countryDD = new SimpleResourceDropDown(
+					peopleUiService, session, countryBP, countryTxt);
+
 			final Text geoPointTxt = PeopleUiUtils.createRDText(toolkit,
 					parent, "Geopoint", "", 0);
 
@@ -239,8 +258,6 @@ public class ContactAddressComposite extends Composite {
 					PeopleNames.PEOPLE_CITY, "City");
 			PeopleUiUtils.refreshFormTextWidget(stateTxt, contactNode,
 					PeopleNames.PEOPLE_STATE, "State");
-			PeopleUiUtils.refreshFormTextWidget(countryTxt, contactNode,
-					PeopleNames.PEOPLE_COUNTRY, "Country");
 			PeopleUiUtils.refreshFormTextWidget(geoPointTxt, contactNode,
 					PeopleNames.PEOPLE_GEOPOINT, "Geo point");
 
@@ -255,21 +272,45 @@ public class ContactAddressComposite extends Composite {
 					PeopleNames.PEOPLE_CITY, PropertyType.STRING);
 			addAddressTxtModifyListener(formPart, stateTxt, contactNode,
 					PeopleNames.PEOPLE_STATE, PropertyType.STRING);
-			addAddressTxtModifyListener(formPart, countryTxt, contactNode,
-					PeopleNames.PEOPLE_COUNTRY, PropertyType.STRING);
 			PeopleUiUtils.addTxtModifyListener(formPart, geoPointTxt,
 					contactNode, PeopleNames.PEOPLE_GEOPOINT,
 					PropertyType.STRING);
+
+			// specific for drop downs
+			String countryVal = CommonsJcrUtils.get(contactNode,
+					PeopleNames.PEOPLE_COUNTRY);
+			if (CommonsJcrUtils.checkNotEmptyString(countryVal))
+				countryDD.reset(ResourcesJcrUtils.getCountryEnLabelFromIso(
+						peopleService, session, countryVal));
+			addCountryTxtModifyListener(formPart, countryTxt);
+
 		}
-		// parent.pack(true);
-		// parent.layout();
-		// parent = parent.getParent(); // the switching panel
-		// parent = parent.getParent(); // One line of contacts
-		// parent = parent.getParent(); // body for scrollable composite
-		// parent = parent.getParent(); // the scollable composite
-		// parent = parent.getParent(); // the fullTab
-		// parent.pack(true);
-		// parent.layout();
+	}
+
+	private void addCountryTxtModifyListener(final AbstractFormPart part,
+			final Text text) {
+
+		text.addModifyListener(new ModifyListener() {
+			private static final long serialVersionUID = 1549789407363632491L;
+
+			@Override
+			public void modifyText(ModifyEvent event) {
+
+				String label = text.getText();
+				if (CommonsJcrUtils.isEmptyString(label))
+					return;
+
+				String iso = ResourcesJcrUtils.getCountryIsoFromEnLabel(
+						peopleService, CommonsJcrUtils.getSession(contactNode),
+						label);
+				if (CommonsJcrUtils.checkNotEmptyString(iso)
+						&& CommonsJcrUtils.setJcrProperty(contactNode,
+								PeopleNames.PEOPLE_COUNTRY,
+								PropertyType.STRING, iso)) {
+					part.markDirty();
+				}
+			}
+		});
 	}
 
 	private void addAddressTxtModifyListener(final AbstractFormPart part,

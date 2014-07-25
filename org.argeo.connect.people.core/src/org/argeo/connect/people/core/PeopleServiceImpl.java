@@ -258,7 +258,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			for (String currType : PeopleTypes.KNOWN_CONTACT_TYPES) {
 				Node pNode = PeopleJcrUtils.getPrimaryContact(entity, currType);
 				if (pNode != null)
-					PeopleJcrUtils.updatePrimaryCache(entity, pNode, true);
+					PeopleJcrUtils
+							.updatePrimaryCache(this, entity, pNode, true);
 			}
 		} else
 			log.warn("Trying to update primary cache on " + entity
@@ -534,7 +535,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 			// primary flag
 			if (isPrimary)
-				PeopleJcrUtils.markAsPrimary(person, newJob);
+				PeopleJcrUtils.markAsPrimary(this, person, newJob);
 			else
 				newJob.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, isPrimary);
 

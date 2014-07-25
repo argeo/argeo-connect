@@ -84,8 +84,8 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 			String queryStr = "select * from [" + nodeType
 					+ "] as nodes where ISDESCENDANTNODE('" + basePath + "')";
 			if (CommonsJcrUtils.checkNotEmptyString(filter))
-				queryStr += " AND nodes.[" + Property.JCR_TITLE + "] like '%"
-						+ filter + "%'";
+				queryStr += " AND LOWER(nodes.[" + Property.JCR_TITLE
+						+ "]) like \"%" + filter.toLowerCase() + "%\"";
 			queryStr += " ORDER BY nodes.[" + Property.JCR_TITLE + "]";
 
 			Query query = session.getWorkspace().getQueryManager()

@@ -22,7 +22,7 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 
 	private static final long serialVersionUID = 1L;
 
-	private OrgListLabelProvider orgLp = new OrgListLabelProvider();
+	private OrgListLabelProvider orgLp;
 	private PersonListLabelProvider personLp;
 	private GroupLabelProvider groupLp = new GroupLabelProvider(
 			PeopleUiConstants.LIST_TYPE_SMALL);
@@ -31,6 +31,7 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 	public EntitySingleColumnLabelProvider(PeopleService peopleService,
 			PeopleUiService peopleUiService) {
 		personLp = new PersonListLabelProvider(peopleService);
+		orgLp = new OrgListLabelProvider(peopleService);
 		mlInstanceLp = new TagLabelProvider(PeopleUiConstants.LIST_TYPE_SMALL,
 				peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
 				PEOPLE_MAILING_LISTS);
