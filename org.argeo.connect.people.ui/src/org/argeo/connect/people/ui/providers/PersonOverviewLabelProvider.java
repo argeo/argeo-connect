@@ -146,7 +146,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		// first line
 		builder.append("<b><big> ");
 		builder.append(peopleService.getDisplayName(person));
-		builder.append("</big> </b>");
+		builder.append("</big> </b> ");
 		String local = PeopleHtmlUtils.getLocalisationInfo(peopleService,
 				person);
 		if (CommonsJcrUtils.checkNotEmptyString(local))

@@ -26,7 +26,7 @@ public class OrgListLabelProvider extends LabelProvider implements PeopleNames {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b>");
 		builder.append(CommonsJcrUtils.get(orga, PEOPLE_LEGAL_NAME));
-		builder.append("</b>");
+		builder.append("</b> ");
 
 		String local = PeopleHtmlUtils.getLocalisationInfo(peopleService, orga);
 		if (CommonsJcrUtils.checkNotEmptyString(local))

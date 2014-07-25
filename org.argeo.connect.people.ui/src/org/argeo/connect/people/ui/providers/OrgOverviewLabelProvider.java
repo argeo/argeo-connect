@@ -56,7 +56,7 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 						+ " >");
 			builder.append("<big><b>");
 			builder.append(CommonsJcrUtils.get(orga, Property.JCR_TITLE));
-			builder.append("</b></big>");
+			builder.append("</b></big> ");
 
 			String local = PeopleHtmlUtils.getLocalisationInfo(peopleService,
 					orga);
