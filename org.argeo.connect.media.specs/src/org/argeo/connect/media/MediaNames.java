@@ -1,11 +1,45 @@
 package org.argeo.connect.media;
 
 /** JCR names managed by Connect Film. */
-public interface FilmNames {
+public interface MediaNames {
+
+	/* GENERIC CONCEPT */
+	public final static String MAP_PROJECT_ID = "map:projectId";
+
+	// Cache some children properties to ease full text search:
+	// primary title info, directors...
+	// These properties are all "on parent version" ignore and are used to
+	// store primary information and thus fasten fulltextsearch
+	public final static String MAP_CACHE_PTITLE = "map:cachePTitle";
+	public final static String MAP_CACHE_PTITLE_ARTICLE = "map:cachePTitleArticle";
+	public final static String MAP_CACHE_PTITLE_LATIN = "map:cachePTitleLatin";
+	public final static String MAP_CACHE_DIRECTORS = "map:cacheDirectors";
+	// TODO implement this if needed.
+	// public final static String FILM_CACHE_PROD_COUNTRIES =
+	// "film:cacheProdCountries";
+
+	// Various parent nodes for films specific sub-concepts
+	public final static String MAP_TITLES = "map:titles";// various langs
+	public final static String MAP_TIMESTAMPS = "map:timestamps";
+	public final static String MAP_SYNOPSES = "map:synopses";
+
+	/* TITLES */
+	public final static String MAP_TITLE_VALUE = "map:titleValue";
+	public final static String MAP_TITLE_ARTICLE = "map:titleArticle";
+	public final static String MAP_TITLE_LATIN_PRONUNCIATION = "map:titleLatinPronunciation";
+	public final static String MAP_TITLE_IS_ORIG = "map:titleIsOrig";
+
+	/* SYNOPSES */
+	public final static String MAP_LOG_LINE = "map:logLine";
+	public final static String MAP_SYNOPSIS_CONTENT = "map:synopsisContent";
+	public final static String MAP_SYNOPSIS_CONTENT_SHORT = "map:synopsisContentShort";
+
+	/* TIME STAMPS & AWARDS */
+	public final static String MAP_TIMESTAMP_VALUE = "map:timestampValue";
+	public final static String MAP_AWARD_COUNTRY_ISO = "map:awardCountryIso";
 
 	/* FILMS */
 	// specific business film ID
-	public final static String FILM_ID = "film:filmId";
 	public final static String FILM_TYPE = "film:type";
 
 	public final static String FILM_PROD_YEAR = "film:prodYear";
@@ -38,39 +72,7 @@ public interface FilmNames {
 	public final static String FILM_SUBMITTED_FOR = "film:submittedFor";
 	public final static String FILM_SHOOTING_FORMAT = "film:shootingFormat";
 
-	// Cache some children properties to ease full text search:
-	// primary title info, directors...
-	// These properties are all "on parent version" ignore and are used to
-	// store primary information and thus fasten fulltextsearch
-	public final static String FILM_CACHE_PTITLE = "film:cachePTitle";
-	public final static String FILM_CACHE_PTITLE_ARTICLE = "film:cachePTitleArticle";
-	public final static String FILM_CACHE_PTITLE_LATIN = "film:cachePTitleLatin";
-	public final static String FILM_CACHE_DIRECTORS = "film:cacheDirectors";
-	// TODO implement this if needed.
-	// public final static String FILM_CACHE_PROD_COUNTRIES =
-	// "film:cacheProdCountries";
-
-	// Various parent nodes for films specific sub-concepts
-	public final static String FILM_TITLES = "film:titles";// for various
-															// languages
-	public final static String FILM_TIMESTAMPS = "film:timestamps";
 	public final static String FILM_PRINTS = "film:prints";
-	public final static String FILM_SYNOPSES = "film:synopses";
-
-	/* TITLES */
-	public final static String FILM_TITLE_VALUE = "film:titleValue";
-	public final static String FILM_TITLE_ARTICLE = "film:titleArticle";
-	public final static String FILM_TITLE_LATIN_PRONUNCIATION = "film:titleLatinPronunciation";
-	public final static String FILM_TITLE_IS_ORIG = "film:titleIsOrig";
-
-	/* SYNOPSES */
-	public final static String FILM_LOG_LINE = "film:logLine";
-	public final static String FILM_SYNOPSIS_CONTENT = "film:synopsisContent";
-	public final static String FILM_SYNOPSIS_CONTENT_SHORT = "film:synopsisContentShort";
-
-	/* TIME STAMPS & AWARDS */
-	public final static String FILM_TIMESTAMP_VALUE = "film:timestampValue";
-	public final static String FILM_AWARD_COUNTRY_ISO = "film:awardCountryIso";
 
 	/* FILM PRINTS */// [film:print] > nt:unstructured, mix:title,
 						// people:orderable

@@ -184,7 +184,7 @@ mixin
 [people:meeting]
 mixin 
 
-[people:sentPostMail]
+[people:sentLetter]
 mixin 
 
 [people:sentFax]
@@ -202,7 +202,7 @@ mixin
 [people:tweet]
 mixin 
 
-[people:blog]
+[people:blogPost]
 mixin 
 
 // Tasks 
@@ -265,8 +265,6 @@ mixin
 mixin
 + people:contacts (nt:unstructured)
 // A tag like property to keep reference to the mailing list this contact is bound to.
-// Deprecated - remove
-// - people:mailingListInstances (STRING) *
 - people:mailingLists (STRING) *
 
 
@@ -277,10 +275,10 @@ mixin
 - people:contactValue (STRING) 
 // a shortcut to manage primary contact
 // should be refined
-// Only for person, Private or professional
+// Only for person, Work, Home, Other
 - people:contactNature (STRING)
-// Category for the given type : for instance a private phone can be:
-// Mobile, Home, Fax or other
+// Category for the given type : for instance a Home phone can be:
+// Mobile, Direct, VoIP, Fax or other
 - people:contactCategory (STRING)
 // an optional label 
 - people:contactLabel (STRING)
@@ -288,8 +286,12 @@ mixin
 // to be used directly by the system.
 - people:contactUri (URI) 
 
-// if contactNature == work - people:refUid (STRING)
-// Rather use people:contactRef mixin
+// CONTACT REFERENCE
+// This contact will be the primary contact of the given type of the referenced entity if such a contact exists.
+// Used among other for persons professional addresses
+[people:contactRef]  
+mixin
+- people:refUid (STRING)
 
 
 // TEL
@@ -301,7 +303,7 @@ mixin
 // EMAIL
 [people:email] > people:contact 
 
-// IMPP
+// IMPP (Instance messaging and presence protocol)
 [people:impp] > people:contact 
 
 // WEBSITE
@@ -323,13 +325,6 @@ mixin
 // An optionnal Geopoint. Should be refined
 - people:geoPoint (STRING)
 
-
-// CONTACT REFERENCE
-// this contact will be the primary contact of the given type of the referenced entity if such a contact exists.
-// Used among other for persons professional addresses
-[people:contactRef]  
-mixin
-- people:refUid (STRING)
 
 // PARENT PAYMENT ACCOUNT TYPE 
 // To enable future storing of alternative payment means (bitcoins or internet payment providers...)

@@ -52,13 +52,13 @@ public interface PeopleTypes {
 	public final static String PEOPLE_SENT_EMAIL = "people:sentEmail";
 	public final static String PEOPLE_CALL = "people:call";
 	public final static String PEOPLE_MEETING = "people:meeting";
-	public final static String PEOPLE_POST_MAIL = "people:sentPostMail";
+	public final static String PEOPLE_SENT_LETTER = "people:sentLetter";
 	public final static String PEOPLE_SENT_FAX = "people:sentFax";
 	public final static String PEOPLE_PAYMENT = "people:payment";
 	public final static String PEOPLE_REVIEW = "people:review";
 	public final static String PEOPLE_CHAT = "people:chat";
 	public final static String PEOPLE_TWEET = "people:tweet";
-	public final static String PEOPLE_BLOG = "people:blog";
+	public final static String PEOPLE_BLOG_POST = "people:blogPost";
 
 	/* CONTACT */
 	public final static String PEOPLE_CONTACT = "people:contact";

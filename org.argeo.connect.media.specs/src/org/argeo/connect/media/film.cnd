@@ -2,12 +2,10 @@
 <map = 'http://www.argeo.org/ns/map'>
 <film = 'http://www.argeo.org/ns/film'>
 
-
 //
 // PROJECT
 //
 // Can be a film, a performance, a music album...
-
 [map:project] > people:group
 - map:projectId (STRING) // a business specific film ID
 // Subnode with alternative title
@@ -17,16 +15,41 @@
 // Subnode with time stamps and awards
 + map:timestamps (nt:unstructured)
 
-// Cache som values to ease rendering
+// Cache some values to ease rendering
 - map:cachePTitle (STRING) IGNORE
 - map:cachePTitleArticle (STRING) IGNORE
 - map:cachePTitleLatin (STRING) IGNORE
 - map:cacheDirectors (String) * IGNORE
 
 
+[map:synopsis] > nt:unstructured, people:language
+
+- map:synopsisContent (STRING)
+- map:synopsisContentShort (STRING)
+- map:logLine (STRING)
+
+
+[map:title] > nt:unstructured, people:language, people:orderable
+
+- map:titleValue (STRING)
+- map:titleArticle (STRING)
+
+// Helper to be able to read the original title when it is in a foreign alphabet
+- map:titleLatinPronunciation (STRING)
+- map:titleIsOrig (BOOLEAN)
+
+// Time stamp
+[map:timestamp] > nt:unstructured, mix:title
+- map:timestampValue (DATE)
+
+// Awards 
+[map:award] > map:timestamp
+- map:awardCountryIso (STRING)
+
 //
 // FILM
 //
+
 [film:film] > map:project
 - film:filmId (STRING) // a business specific film ID
 - film:type (STRING) // Feature, Mid-Length, Short
@@ -48,12 +71,6 @@
 - film:colourType (STRING)
 - film:premiere (STRING)
 
-// Subnode with alternative title
-+ film:titles (nt:unstructured) 
-// Subnode that contains synopses 
-+ film:synopses (nt:unstructured)
-// Subnode with time stamps and awards
-+ film:timestamps (nt:unstructured)
 // Subnode with film prints
 + film:prints (nt:unstructured)
 
@@ -65,55 +82,6 @@
 - film:allowExcerptsOnWeb (BOOLEAN)
 - film:submittedFor (STRING)
 - film:shootingFormat (STRING)
-
-// cache some values to ease full text search 
-- film:cachePTitle (STRING) IGNORE
-- film:cachePTitleArticle (STRING) IGNORE
-- film:cachePTitleLatin (STRING) IGNORE
-- film:cacheDirectors (String) * IGNORE
-// TODO implement this if needed.
-// - film:cacheProdCountries (String) * IGNORE
-
-
-// Titles
-[film:title] > nt:unstructured, people:language, people:orderable
-- film:titleValue (STRING)
-- film:titleArticle (STRING)
-// Helper to be able to read the original title when it is in a foreign alphabet
-- film:titleLatinPronunciation (STRING)
-- film:titleIsOrig (BOOLEAN)
-
-[map:title] > nt:unstructured, people:language, people:orderable
-- map:titleValue (STRING)
-- map:titleArticle (STRING)
-// Helper to be able to read the original title when it is in a foreign alphabet
-- map:titleLatinPronunciation (STRING)
-- map:titleIsOrig (BOOLEAN)
-
-// Synopses
-[film:synopsis] > nt:unstructured, people:language
-- film:synopsisContent (STRING)
-- film:synopsisContentShort (STRING)
-- film:logLine (STRING)
-
-[map:synopsis] > nt:unstructured, people:language
-- map:synopsisContent (STRING)
-- map:synopsisContentShort (STRING)
-- map:logLine (STRING)
-
-// Time stamp
-[film:timestamp] > nt:unstructured, mix:title
-- film:timestampValue (DATE)
-
-[map:timestamp] > nt:unstructured, mix:title
-- map:timestampValue (DATE)
-
-// Awards 
-[film:award] > film:timestamp
-- film:awardCountryIso (STRING)
-
-[map:award] > film:timestamp
-- map:awardCountryIso (STRING)
 
 //
 // FILM PRINT

@@ -34,12 +34,12 @@ public class ActivityValueCatalogs {
 		tmpMap.put(PeopleTypes.PEOPLE_CALL, ACT_LBL_CALL);
 		tmpMap.put(PeopleTypes.PEOPLE_SENT_FAX, ACT_LBL_SENT_FAX);
 		tmpMap.put(PeopleTypes.PEOPLE_MEETING, ACT_LBL_MEETING);
-		tmpMap.put(PeopleTypes.PEOPLE_POST_MAIL, ACT_LBL_POST_MAIL);
+		tmpMap.put(PeopleTypes.PEOPLE_SENT_LETTER, ACT_LBL_POST_MAIL);
 		tmpMap.put(PeopleTypes.PEOPLE_PAYMENT, ACT_LBL_PAYMENT);
 		tmpMap.put(PeopleTypes.PEOPLE_REVIEW, ACT_LBL_REVIEW);
 		tmpMap.put(PeopleTypes.PEOPLE_CHAT, ACT_LBL_CHAT);
 		tmpMap.put(PeopleTypes.PEOPLE_TWEET, ACT_LBL_TWEET);
-		tmpMap.put(PeopleTypes.PEOPLE_BLOG, ACT_LBL_BLOG);
+		tmpMap.put(PeopleTypes.PEOPLE_BLOG_POST, ACT_LBL_BLOG);
 		MAPS_ACTIVITY_TYPES = Collections.unmodifiableMap(tmpMap);
 	}
 
