@@ -20,16 +20,22 @@ import javax.jcr.version.VersionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.PropertyDiff;
 import org.argeo.jcr.VersionDiff;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
@@ -42,6 +48,9 @@ public class HistoryToolkit {
 	private PeopleService peopleService;
 
 	// private List<String> relevantAttributeList;
+
+	private List<String> knownPrefixes;
+
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 	private Node entity;
@@ -60,9 +69,27 @@ public class HistoryToolkit {
 
 	public void populateHistoryPanel(Composite parent) {
 		try {
-			parent.setLayout(new FillLayout());
-			final Text styledText = toolkit.createText(parent, "", SWT.BORDER
-					| SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+			parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+
+			UserManagementService userService = peopleService
+					.getUserManagementService();
+
+			if (userService.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
+					|| userService.isUserInRole(PeopleConstants.ROLE_ADMIN)) {
+				Label label = new Label(parent, SWT.NONE);
+				label.setText("People UID: "
+						+ CommonsJcrUtils.get(entity, PeopleNames.PEOPLE_UID));
+				GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
+				gd.verticalIndent = 3;
+				gd.horizontalIndent = 5;
+				label.setLayoutData(gd);
+			}
+			Composite historyCmp = new Composite(parent, SWT.NONE);
+			historyCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+					true));
+			historyCmp.setLayout(new FillLayout());
+			final Text styledText = toolkit.createText(historyCmp, "",
+					SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 			// styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 			// true));
 			refreshHistory(styledText);
@@ -110,15 +137,15 @@ public class HistoryToolkit {
 				}
 				main.append(")\n");
 
-				// StringBuffer buf = new StringBuffer(formatter.format(node
-				// .getProperty(SEBI_LAST_UPDATE)));
 				StringBuffer buf = new StringBuffer("");
 				Map<String, PropertyDiff> diffs = lst.get(i).getDiffs();
-				// props:
-				for (String prop : diffs.keySet()) {
+				props: for (String prop : diffs.keySet()) {
 					PropertyDiff pd = diffs.get(prop);
 
 					String propName = pd.getRelPath();
+					if ("jcr:uuid".equals(propName))
+						continue props;
+
 					Value refValue = pd.getReferenceValue();
 					Value newValue = pd.getNewValue();
 					String refValueStr = "";
@@ -198,8 +225,7 @@ public class HistoryToolkit {
 					// FIXME helper to easily find the path of the technical
 					// node under jcr:system/jcr:versionStorage that
 					// manage versioning
-					log.trace("Retrieving history using frozenNode of path: "
-							+ node.getPath());
+					log.trace("Retrieving history using frozenNode : " + node);
 					first = false;
 				}
 
@@ -239,14 +265,31 @@ public class HistoryToolkit {
 
 	}
 
-	// public void setRelevantAttributeList(List<String> relevantAttributeList)
+	// /** Small hack to enhence prop label rendering **/
+	// public void setKnownPrefixes(List<String> knownPrefixes)
 	// {
-	// this.relevantAttributeList = relevantAttributeList;
+	// this.knownPrefixes = knownPrefixes;
 	// }
 
 	protected String propLabel(String str) {
-		// TODO use label rather than property name
-		return str;
+		if (str.lastIndexOf(":") < 2)
+			return str;
+		else
+			str = str.substring(str.lastIndexOf(":") + 1);
+
+		StringBuilder builder = new StringBuilder();
+
+		for (int i = 0; i < str.length(); i++) {
+			char curr = str.charAt(i);
+			if (i == 0)
+				builder.append(Character.toUpperCase(curr));
+			else if (Character.isUpperCase(curr))
+				builder.append(" ").append(curr);
+			else
+				builder.append(curr);
+		}
+
+		return builder.toString();
 
 		// try {
 		// String prop = str.substring("people:".length());

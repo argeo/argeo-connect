@@ -79,6 +79,8 @@ public interface PeopleConstants {
 	 */
 	public final static String ROLE_GUEST = "ROLE_REGISTERED_GUEST";
 	public final static String ROLE_MEMBER = "ROLE_REGISTERED_MEMBER";
+	public final static String ROLE_BUSINESS_ADMIN = "ROLE_BUSINESS_ADMIN";
+	public final static String ROLE_ADMIN = "ROLE_ADMIN";
 
 	/* LANGUAGE CONSTANTS */
 	public final static String LANG_EN = "en";
