@@ -181,20 +181,28 @@ public class ContactPanelComposite extends Composite {
 			boolean isCheckedOut) {
 		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
 		try {
+
+			String[] knownTypes = peopleService.getContactService()
+					.getKnownContactTypes();
 			if (entity.hasNode(PeopleNames.PEOPLE_CONTACTS)) {
 				Node contactsPar = entity.getNode(PeopleNames.PEOPLE_CONTACTS);
-				NodeIterator ni = contactsPar.getNodes();
-				while (ni.hasNext()) {
-					Node currNode = ni.nextNode();
-					if (CommonsJcrUtils.isNodeType(currNode,
-							PeopleTypes.PEOPLE_ADDRESS))
-						new ContactAddressComposite(parent, SWT.NO_FOCUS,
-								toolkit, formPart, peopleService,
-								peopleUiService, currNode, entity);
-					else
-						new ContactComposite(parent, SWT.NO_FOCUS, toolkit,
-								formPart, currNode, entity, peopleUiService,
-								peopleService);
+
+				for (String currType : knownTypes) {
+					NodeIterator ni = contactsPar.getNodes();
+					loop: while (ni.hasNext()) {
+						Node currNode = ni.nextNode();
+						if (!currNode.isNodeType(currType))
+							continue loop;
+						if (CommonsJcrUtils.isNodeType(currNode,
+								PeopleTypes.PEOPLE_ADDRESS))
+							new ContactAddressComposite(parent, SWT.NO_FOCUS,
+									toolkit, formPart, peopleService,
+									peopleUiService, currNode, entity);
+						else
+							new ContactComposite(parent, SWT.NO_FOCUS, toolkit,
+									formPart, currNode, entity,
+									peopleUiService, peopleService);
+					}
 				}
 			}
 		} catch (RepositoryException e) {
