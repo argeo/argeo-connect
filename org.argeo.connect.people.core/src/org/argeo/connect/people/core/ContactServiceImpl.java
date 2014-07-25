@@ -23,6 +23,15 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 
 	@Override
 	public String[] getKnownContactTypes() {
+		String[] knownTypes = { PeopleTypes.PEOPLE_EMAIL,
+				PeopleTypes.PEOPLE_PHONE, PeopleTypes.PEOPLE_SOCIAL_MEDIA,
+				PeopleTypes.PEOPLE_IMPP, PeopleTypes.PEOPLE_URL,
+				PeopleTypes.PEOPLE_ADDRESS };
+		return knownTypes;
+	}
+
+	@Override
+	public String[] getKnownContactLabels() {
 		return ContactValueCatalogs.ARRAY_CONTACT_TYPES;
 	}
 

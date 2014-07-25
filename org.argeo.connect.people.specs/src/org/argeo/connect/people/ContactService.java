@@ -20,6 +20,11 @@ public interface ContactService {
 	public String[] getKnownContactTypes();
 
 	/**
+	 * Retrieves the valid possible contact type labels
+	 */
+	public String[] getKnownContactLabels();
+
+	/**
 	 * Returns the list of possible contacts given an entity
 	 */
 	public String[] getContactTypeLabels(Node entity);
