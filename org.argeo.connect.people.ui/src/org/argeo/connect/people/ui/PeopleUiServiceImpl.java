@@ -12,7 +12,9 @@ import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
+import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.commands.OpenEntityEditor;
@@ -156,62 +158,54 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 	 */
 	protected Image getContactIcon(Node entity) throws RepositoryException {
 
+		Node contactable = entity.getParent().getParent();
+		String category = CommonsJcrUtils.get(entity,
+				PeopleNames.PEOPLE_CONTACT_CATEGORY);
+		String nature = CommonsJcrUtils.get(entity,
+				PeopleNames.PEOPLE_CONTACT_NATURE);
 		// EMAIL
 		if (entity.isNodeType(PeopleTypes.PEOPLE_EMAIL)) {
 			return ContactImages.DEFAULT_MAIL;
 		}
 		// PHONE
 		else if (entity.isNodeType(PeopleTypes.PEOPLE_PHONE)) {
-			// if (ContactValueCatalogs.CONTACT_CAT_FAX.equals(category))
-			// return ContactImages.FAX;
-			// else if
-			// (ContactValueCatalogs.CONTACT_CAT_MOBILE.equals(category))
-			// return ContactImages.MOBILE;
-			// if (entityNType.equals(PeopleTypes.PEOPLE_PERSON)) {
-			// if (ContactValueCatalogs.CONTACT_CAT_PRO_DIRECT
-			// .equals(category))
-			// return ContactImages.PHONE_DIRECT;
-			// else if (ContactValueCatalogs.CONTACT_NATURE_PRO.equals(nature))
-			// return ContactImages.WORK;
-			// } else if (entityNType.equals(PeopleTypes.PEOPLE_ORG))
-			// if (ContactValueCatalogs.CONTACT_CAT_PRO_RECEPTION
-			// .equals(category))
-			// return ContactImages.PHONE_DIRECT;
-			return ContactImages.DEFAULT_PHONE;
+			if (ContactValueCatalogs.CONTACT_CAT_MOBILE.equals(category))
+				return ContactImages.MOBILE;
+			else if (ContactValueCatalogs.CONTACT_CAT_FAX.equals(category))
+				return ContactImages.FAX;
+			else
+				return ContactImages.DEFAULT_PHONE;
 		}
-		// // ADDRESS
-		// else if (PeopleTypes.PEOPLE_ADDRESS.equals(contactNType)) {
-		// if (entityNType.equals(PeopleTypes.PEOPLE_PERSON)
-		// && ContactValueCatalogs.CONTACT_NATURE_PRIVATE
-		// .equals(nature))
-		// return ContactImages.DEFAULT_ADDRESS;
-		// return ContactImages.WORK;
-		// }
-		// // URL
-		// else if (PeopleTypes.PEOPLE_URL.equals(contactNType)) {
-		// if (entityNType.equals(PeopleTypes.PEOPLE_PERSON)
-		// && ContactValueCatalogs.CONTACT_NATURE_PRIVATE
-		// .equals(nature))
-		// return ContactImages.PRIVATE_HOME_PAGE;
-		// return ContactImages.DEFAULT_URL;
-		// }
-		// // SOCIAL MEDIA
-		// else if (PeopleTypes.PEOPLE_SOCIAL_MEDIA.equals(contactNType)) {
-		// if (ContactValueCatalogs.CONTACT_CAT_GOOGLEPLUS.equals(category))
-		// return ContactImages.GOOGLEPLUS;
-		// else if (ContactValueCatalogs.CONTACT_CAT_FACEBOOK.equals(category))
-		// return ContactImages.FACEBOOK;
-		// else if (ContactValueCatalogs.CONTACT_CAT_LINKEDIN.equals(category))
-		// return ContactImages.LINKEDIN;
-		// else if (ContactValueCatalogs.CONTACT_CAT_XING.equals(category))
-		// return ContactImages.XING;
-		// return ContactImages.DEFAULT_SOCIAL_MEDIA;
-		// }
+		// ADDRESS
+		else if (entity.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
+			if (contactable.isNodeType(PeopleTypes.PEOPLE_PERSON))
+				if (ContactValueCatalogs.CONTACT_NATURE_PRO.equals(nature))
+					return ContactImages.WORK;
+				else
+					return ContactImages.DEFAULT_ADDRESS;
+		}
+		// URL
+		else if (entity.isNodeType(PeopleTypes.PEOPLE_URL)) {
+			// return ContactImages.PRIVATE_HOME_PAGE;
+			return ContactImages.DEFAULT_URL;
+		}
+		// SOCIAL MEDIA
+		else if (entity.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA)) {
+
+			if (ContactValueCatalogs.CONTACT_CAT_GOOGLEPLUS.equals(category))
+				return ContactImages.GOOGLEPLUS;
+			else if (ContactValueCatalogs.CONTACT_CAT_FACEBOOK.equals(category))
+				return ContactImages.FACEBOOK;
+			else if (ContactValueCatalogs.CONTACT_CAT_LINKEDIN.equals(category))
+				return ContactImages.LINKEDIN;
+			else if (ContactValueCatalogs.CONTACT_CAT_XING.equals(category))
+				return ContactImages.XING;
+			return ContactImages.DEFAULT_SOCIAL_MEDIA;
+		}
 		// // IMPP
-		// else if (PeopleTypes.PEOPLE_IMPP.equals(contactNType)) {
-		// return ContactImages.DEFAULT_IMPP;
-		// }
+		else if (entity.isNodeType(PeopleTypes.PEOPLE_IMPP)) {
+			return ContactImages.DEFAULT_IMPP;
+		}
 		return null;
 	}
-
 }
