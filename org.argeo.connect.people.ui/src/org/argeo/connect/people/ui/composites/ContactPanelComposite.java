@@ -5,14 +5,17 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
 import org.argeo.connect.people.ContactValueCatalogs;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiService;
+import org.argeo.connect.people.ui.composites.dropdowns.SimpleResourceDropDown;
 import org.argeo.connect.people.ui.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -510,7 +513,14 @@ public class ContactPanelComposite extends Composite {
 		final Text zipTxt = createRowDataLT(parent, "Zip code", 60);
 		final Text cityTxt = createRowDataLT(parent, "City", 150);
 		final Text stateTxt = createRowDataLT(parent, "State", 150);
-		final Text countryTxt = createRowDataLT(parent, "Country", 150);
+		Text countryTxt = createRowDataLT(parent, "Country", 150);
+
+		String countryBP = peopleService
+				.getResourceBasePath(PeopleConstants.RESOURCE_COUNTRY);
+		Session session = CommonsJcrUtils.getSession(entity);
+		final SimpleResourceDropDown countryDD = new SimpleResourceDropDown(
+				peopleUiService, session, countryBP, countryTxt);
+
 		// final Text geoPointTxt = createRowDataLT(parent, "Geopoint", 200);
 		final Text labelTxt = createRowDataLT(parent, "Label", 120);
 
@@ -532,7 +542,7 @@ public class ContactPanelComposite extends Composite {
 				Node node = PeopleJcrUtils.createAddress(peopleService, entity,
 						streetTxt.getText(), street2Txt.getText(),
 						zipTxt.getText(), cityTxt.getText(),
-						stateTxt.getText(), countryTxt.getText(), null,
+						stateTxt.getText(), countryDD.getText(), null,
 						isPrimary, nature, cat, label);
 				// geoPointTxt.getText()
 				PeopleJcrUtils.updateDisplayAddress(node);
@@ -556,7 +566,7 @@ public class ContactPanelComposite extends Composite {
 					Node node = PeopleJcrUtils.createAddress(peopleService,
 							entity, streetTxt.getText(), street2Txt.getText(),
 							zipTxt.getText(), cityTxt.getText(),
-							stateTxt.getText(), countryTxt.getText(), null,
+							stateTxt.getText(), countryDD.getText(), null,
 							isPrimary, nature, cat, label);
 					// geoPointTxt.getText()
 					PeopleJcrUtils.updateDisplayAddress(node);

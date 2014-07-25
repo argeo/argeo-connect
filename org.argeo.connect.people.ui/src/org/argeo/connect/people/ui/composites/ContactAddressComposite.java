@@ -235,7 +235,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					"Country", "", 110);
 
 			// The country drop down
-			final String countryBP = peopleService
+			String countryBP = peopleService
 					.getResourceBasePath(PeopleConstants.RESOURCE_COUNTRY);
 			Session session = CommonsJcrUtils.getSession(contactNode);
 			final SimpleResourceDropDown countryDD = new SimpleResourceDropDown(
