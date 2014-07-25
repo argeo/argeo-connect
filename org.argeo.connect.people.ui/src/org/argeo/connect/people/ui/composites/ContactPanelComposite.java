@@ -485,7 +485,7 @@ public class ContactPanelComposite extends Composite {
 			boolean isPrimary, String nature, String category, String label) {
 
 		PeopleJcrUtils.createContact(peopleService, entity, contactType,
-				contactType, value, isPrimary, nature, null, label);
+				contactType, value, isPrimary, nature, category, label);
 		addContactCmb.select(0);
 		formPart.markDirty();
 		formPart.refresh();
