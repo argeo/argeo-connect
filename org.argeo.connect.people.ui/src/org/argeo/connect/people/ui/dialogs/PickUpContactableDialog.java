@@ -34,11 +34,12 @@ import javax.jcr.query.qom.Selector;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.ui.exports.PeopleColumnDefinition;
+import org.argeo.connect.people.ui.providers.TitleWithIconLP;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -76,7 +77,7 @@ public class PickUpContactableDialog extends TrayDialog {
 	private TableViewer tableViewer;
 
 	public PickUpContactableDialog(Shell parentShell, String title,
-			Session session, String nodeType) {
+			Session session, PeopleUiService peopleUiService, String nodeType) {
 		super(parentShell);
 		this.title = title;
 		this.session = session;
@@ -84,9 +85,8 @@ public class PickUpContactableDialog extends TrayDialog {
 
 		colDefs = new ArrayList<PeopleColumnDefinition>();
 		colDefs.add(new PeopleColumnDefinition(nodeType, Property.JCR_TITLE,
-				PropertyType.STRING, "Display Name",
-				new SimpleJcrRowLabelProvider(nodeType, Property.JCR_TITLE),
-				300));
+				PropertyType.STRING, "Display Name", new TitleWithIconLP(
+						peopleUiService, nodeType, Property.JCR_TITLE), 300));
 	}
 
 	protected Point getInitialSize() {

@@ -417,18 +417,13 @@ public class ContactPanelComposite extends Composite {
 
 	private Control createContactWidgets(Composite parent,
 			final String contactType, final String nature,
-			final Combo addContactCombo) {
+			final Combo addContactCombo) throws RepositoryException {
 
 		final Text valueTxt = createRowDataLT(parent, "Contact value", 200);
 
 		final Combo catCmb = new Combo(parent, SWT.READ_ONLY);
-		try {
-			catCmb.setItems(ContactValueCatalogs.getCategoryList(entity
-					.getPrimaryNodeType().getName(), contactType, nature));
-		} catch (RepositoryException e1) {
-			throw new PeopleException("unable to get category list for "
-					+ contactType + " & " + nature, e1);
-		}
+		catCmb.setItems(peopleService.getContactService().getContactCategories(
+				entity.getPrimaryNodeType().getName(), contactType, nature));
 		catCmb.select(0);
 
 		final Text labelTxt = createRowDataLT(parent, "Label", 120);
@@ -491,8 +486,10 @@ public class ContactPanelComposite extends Composite {
 
 		final Combo catCmb = new Combo(parent, SWT.NONE);
 		try {
-			catCmb.setItems(ContactValueCatalogs.getCategoryList(entity
-					.getPrimaryNodeType().getName(), contactType, nature));
+			catCmb.setItems(peopleService.getContactService()
+					.getContactCategories(
+							entity.getPrimaryNodeType().getName(), contactType,
+							nature));
 		} catch (RepositoryException e1) {
 			throw new PeopleException("unable to get category list for "
 					+ contactType + " & " + nature, e1);
@@ -579,8 +576,10 @@ public class ContactPanelComposite extends Composite {
 			final Combo addContactCombo) {
 		try {
 			final Combo catCmb = new Combo(parent, SWT.NONE);
-			catCmb.setItems(ContactValueCatalogs.getCategoryList(entity
-					.getPrimaryNodeType().getName(), contactType, nature));
+			catCmb.setItems(peopleService.getContactService()
+					.getContactCategories(
+							entity.getPrimaryNodeType().getName(), contactType,
+							nature));
 			catCmb.select(0);
 
 			final Text valueTxt = createRowDataLT(parent, "Linked company", 200);

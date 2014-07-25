@@ -143,6 +143,9 @@ public interface PeopleService {
 	/** Returns the corresponding {@link ActivityService} */
 	public ActivityService getActivityService();
 
+	/** Returns the corresponding {@link ContactService} */
+	public ContactService getContactService();
+
 	/** Returns the corresponding {@link UserManagementService} */
 	public UserManagementService getUserManagementService();
 

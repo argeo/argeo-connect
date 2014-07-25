@@ -2,10 +2,7 @@ package org.argeo.connect.people.ui.composites;
 
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
-import javax.jcr.RepositoryException;
 
-import org.argeo.connect.people.ContactValueCatalogs;
-import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
@@ -107,17 +104,9 @@ public class ContactComposite extends Composite {
 		final Combo catCmb = hasCat ? new Combo(parent, SWT.READ_ONLY) : null;
 
 		if (catCmb != null) {
-			try {
-				String nature = CommonsJcrUtils.get(contactNode,
-						PeopleNames.PEOPLE_CONTACT_NATURE);
-				catCmb.setItems(ContactValueCatalogs.getCategoryList(
-						parentVersionableNode.getPrimaryNodeType().getName(),
-						contactNode.getPrimaryNodeType().getName(), nature));
-			} catch (RepositoryException e1) {
-				throw new PeopleException(
-						"unable to get initialise category list for contact",
-						e1);
-			}
+			catCmb.setItems(peopleService.getContactService()
+					.getContactPossibleValues(contactNode,
+							PeopleNames.PEOPLE_CONTACT_CATEGORY));
 			catCmb.select(0);
 		}
 

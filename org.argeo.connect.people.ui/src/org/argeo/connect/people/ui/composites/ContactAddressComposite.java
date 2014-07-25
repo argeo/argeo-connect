@@ -6,7 +6,6 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -43,7 +42,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * address information.
  * 
  */
-public class ContactAddressComposite extends Composite {
+public class ContactAddressComposite extends Composite implements PeopleNames {
 
 	private static final long serialVersionUID = 4475049051062923873L;
 
@@ -157,11 +156,9 @@ public class ContactAddressComposite extends Composite {
 			// REFRESH VALUES
 			PeopleUiUtils.refreshFormTextWidget(labelTxt, contactNode,
 					PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
-			String nature = CommonsJcrUtils.get(contactNode,
-					PeopleNames.PEOPLE_CONTACT_NATURE);
-			catCmb.setItems(ContactValueCatalogs.getCategoryList(
-					parentVersionableNode.getPrimaryNodeType().getName(),
-					contactNode.getPrimaryNodeType().getName(), nature));
+			catCmb.setItems(peopleService.getContactService()
+					.getContactPossibleValues(contactNode,
+							PEOPLE_CONTACT_CATEGORY));
 			catCmb.select(0);
 			PeopleUiUtils.refreshFormComboValue(catCmb, contactNode,
 					PeopleNames.PEOPLE_CONTACT_CATEGORY);

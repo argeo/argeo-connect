@@ -26,6 +26,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.ActivityService;
+import org.argeo.connect.people.ContactService;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -43,6 +44,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	/* Other services */
 	private UserManagementService userManagementService = new UserManagementServiceImpl(
 			this);
+	private ContactService contactService = new ContactServiceImpl(this);
 	private ActivityService activityService = new ActivityServiceImpl(this,
 			userManagementService);
 
@@ -724,6 +726,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	@Override
 	public ActivityService getActivityService() {
 		return activityService;
+	}
+
+	@Override
+	public ContactService getContactService() {
+		return contactService;
 	}
 
 	@Override
