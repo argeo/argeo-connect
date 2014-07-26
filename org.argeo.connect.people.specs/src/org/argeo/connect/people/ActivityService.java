@@ -109,7 +109,8 @@ public interface ActivityService {
 	public boolean isTaskDone(Node taskNode);
 
 	/**
-	 * Retrieves valid possible status for a given task
+	 * Retrieves valid possible status for a given task. if task == null,
+	 * returns default possible values for a simple task.
 	 */
 	public String[] getStatusList(Node task);
 

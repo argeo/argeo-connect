@@ -61,7 +61,7 @@ public abstract class PeopleAbstractDropDown {
 			dropDown.show();
 	}
 
-	private void addListeners() {
+	protected void addListeners() {
 		text.addFocusListener(new FocusListener() {
 			private static final long serialVersionUID = 1L;
 
