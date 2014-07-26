@@ -10,7 +10,7 @@
 	<packaging>pom</packaging>
 	<name>Argeo Connect</name>
 	<description>Real life IT - Geographical information system, data management and analysis, communications and management</description>
-	<version>2.1.7</version>
+	<version>2.1.8-SNAPSHOT</version>
 	<properties>
 		<version.connect>2.1.7</version.connect>
 		<!-- FIXME factorize -->
@@ -31,9 +31,9 @@
 	</modules>
 	<url>${site.urlBase}/${developmentCycle.connect}</url>
 	<scm>
-		<connection>scm:svn:https://svn.argeo.org/connect/tags/argeo-connect-2.1.7</connection>
-		<developerConnection>scm:svn:https://svn.argeo.org/connect/tags/argeo-connect-2.1.7</developerConnection>
-		<url>https://svn.argeo.org/connect/tags/argeo-connect-2.1.7</url>
+		<connection>scm:svn:https://svn.argeo.org/connect/trunk</connection>
+		<developerConnection>scm:svn:https://svn.argeo.org/connect/trunk</developerConnection>
+		<url>https://svn.argeo.org/connect/trunk</url>
 	</scm>
 	<licenses>
 		<license>
