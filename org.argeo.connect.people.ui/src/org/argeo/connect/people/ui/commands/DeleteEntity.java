@@ -1,10 +1,12 @@
 package org.argeo.connect.people.ui.commands;
 
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.ReferentialIntegrityException;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,7 +44,6 @@ public class DeleteEntity extends AbstractHandler {
 	private Repository repository;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
-
 		String msg = "You are about to definitively remove this entity.\n"
 				+ "Are you sure you want to proceed ?";
 
@@ -54,6 +55,10 @@ public class DeleteEntity extends AbstractHandler {
 		if (!result)
 			return null;
 
+		IWorkbenchPage iwp = HandlerUtil.getActiveWorkbenchWindow(event)
+				.getActivePage();
+		IEditorPart iep = iwp.getActiveEditor();
+
 		String toRemoveJcrId = event.getParameter(PARAM_TOREMOVE_JCR_ID);
 		String tmpStr = event.getParameter(PARAM_REMOVE_ALSO_PARENT);
 		boolean removeParent = false;
@@ -61,37 +66,56 @@ public class DeleteEntity extends AbstractHandler {
 			removeParent = new Boolean(tmpStr);
 
 		Session session = null;
+		Node toRemoveNode = null;
+		Node parentVersionableNode = null;
 		try {
 			session = repository.login();
-			Node toRemoveNode = session.getNodeByIdentifier(toRemoveJcrId);
+			toRemoveNode = session.getNodeByIdentifier(toRemoveJcrId);
+
+			if (removeParent)
+				toRemoveNode = toRemoveNode.getParent();
+
 			boolean wasCheckedOut = CommonsJcrUtils
 					.isNodeCheckedOutByMe(toRemoveNode);
 			if (!wasCheckedOut)
 				CommonsJcrUtils.checkout(toRemoveNode);
 
+			boolean parentWasCheckout = true;
+
+			parentVersionableNode = getParentVersionableNode(toRemoveNode);
+			if (parentVersionableNode != null) {
+				parentWasCheckout = CommonsJcrUtils
+						.isNodeCheckedOutByMe(parentVersionableNode);
+				if (!parentWasCheckout)
+					CommonsJcrUtils.checkout(parentVersionableNode);
+			}
+
 			JcrUtils.discardUnderlyingSessionQuietly(toRemoveNode);
 
-			IWorkbenchPage iwp = HandlerUtil.getActiveWorkbenchWindow(event)
-					.getActivePage();
-			IEditorPart iep = iwp.getActiveEditor();
+			toRemoveNode.remove();
+			if (!parentWasCheckout)
+				CommonsJcrUtils.saveAndCheckin(parentVersionableNode);
+			else
+				session.save();
+
 			if (iep != null
 					&& iep.getEditorInput().getName().equals(toRemoveJcrId))
 				iwp.closeEditor(iep, false);
 
-			if (removeParent)
-				toRemoveNode.getParent().remove();
-			else
-				toRemoveNode.remove();
 			session.save();
 		} catch (ReferentialIntegrityException e) {
 			MessageDialog
-					.openError(activeShell, "Delete impossible",
-							"Current entity cannot be removed, it is still being referenced");
+					.openError(
+							activeShell,
+							"Delete impossible",
+							"Current contact cannot be removed, it is "
+									+ "still being referenced in some activities or as participant"
+									+ " in a project or organisation. Remove corresponding links andtry again.");
 			if (log.isDebugEnabled())
 				e.printStackTrace();
 		} catch (RepositoryException e) {
-			throw new PeopleException("unexpected JCR error while opening "
-					+ "editor for newly created programm", e);
+			throw new PeopleException("Unable to delete node " + toRemoveNode,
+					e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}
@@ -102,4 +126,21 @@ public class DeleteEntity extends AbstractHandler {
 	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
+
+	// TODO workaround to retrieve parent versionable node.
+	private Node getParentVersionableNode(Node node) throws RepositoryException {
+		Node curr = node;
+		while (true) {
+			try {
+				curr = curr.getParent();
+			} catch (ItemNotFoundException infe) {
+				// root node
+				return null;
+			}
+
+			if (curr.isNodeType(NodeType.MIX_VERSIONABLE))
+				return curr;
+		}
+	}
+
 }

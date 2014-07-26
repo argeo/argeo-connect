@@ -217,6 +217,8 @@ public class CommonsJcrUtils {
 									+ " close the editor of an entity that has not been close cleanly after last edition.",
 							re);
 				}
+		} catch (InvalidItemStateException re) {
+			// the item has been deleted.
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to cancel and chek in node ", re);
 		}

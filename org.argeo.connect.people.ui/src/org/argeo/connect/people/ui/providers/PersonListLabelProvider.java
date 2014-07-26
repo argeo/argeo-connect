@@ -45,7 +45,8 @@ public class PersonListLabelProvider extends LabelProvider implements
 					String role = CommonsJcrUtils.get(currNode, PEOPLE_ROLE);
 					if (CommonsJcrUtils.checkNotEmptyString(role))
 						builder.append(role).append(", ");
-					builder.append(CommonsJcrUtils.get(org, Property.JCR_TITLE));
+					builder.append(org != null ? CommonsJcrUtils.get(org,
+							Property.JCR_TITLE) : "-");
 					builder.append("]");
 				}
 			}
