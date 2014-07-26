@@ -358,7 +358,7 @@
     	<!-- Until there --> 
 
     	<!-- Tags Management -->  
-		<command
+		<!-- <command
 			defaultHandler="org.argeo.connect.people.ui.commands.OpenSearchByTagEditor"
 			id="org.argeo.connect.people.ui.openSearchByTagEditor"
 			name="Open Editor">
@@ -366,7 +366,7 @@
          		id="param.tagValue"
          		name="The tag value">
          	</commandParameter>
-		</command>    
+		</command>    -->
   		
   		<!-- <command
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
