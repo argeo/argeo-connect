@@ -68,7 +68,6 @@ public class PeopleVirtualTableViewer extends Composite implements ArgeoNames {
 		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 
-
 		// Create columns
 		TableViewerColumn column;
 		for (PeopleColumnDefinition colDef : colDefs) {
