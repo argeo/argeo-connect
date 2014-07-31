@@ -7,6 +7,9 @@ import java.net.URL;
 
 import javax.jcr.Node;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.client.service.JavaScriptExecutor;
@@ -22,8 +25,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.osgi.framework.BundleContext;
+import org.springframework.osgi.context.BundleContextAware;
 
-public class CmsLink implements CmsUiProvider {
+/** A link to an internal or external location. */
+public class CmsLink implements CmsUiProvider, BundleContextAware {
+	private final static Log log = LogFactory.getLog(CmsLink.class);
+
 	private String label;
 	private String custom;
 	private String target;
@@ -31,6 +39,8 @@ public class CmsLink implements CmsUiProvider {
 
 	// internal
 	private Boolean isUrl = false;
+
+	private BundleContext bundleContext;
 
 	public CmsLink() {
 		super();
@@ -86,20 +96,22 @@ public class CmsLink implements CmsUiProvider {
 	}
 
 	private Image loadImage(Display display) {
-		// FIXME Deal with multiple bundles
-		ClassLoader classLoader = getClass().getClassLoader();
-		InputStream inputStream = classLoader.getResourceAsStream(image);
+		if (bundleContext == null)
+			return null;
+
+		URL res = bundleContext.getBundle().getResource(image);
+
 		Image result = null;
-		if (inputStream != null) {
-			try {
-				result = new Image(display, inputStream);
-			} finally {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					// ignore
-				}
-			}
+		InputStream inputStream = null;
+		try {
+			inputStream = res.openStream();
+			result = new Image(display, inputStream);
+			if (log.isDebugEnabled())
+				log.debug("Loaded image " + image);
+		} catch (Exception e) {
+			throw new ArgeoException("Cannot load image " + image, e);
+		} finally {
+			IOUtils.closeQuietly(inputStream);
 		}
 		return result;
 	}
@@ -124,6 +136,11 @@ public class CmsLink implements CmsUiProvider {
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+
+	@Override
+	public void setBundleContext(BundleContext bundleContext) {
+		this.bundleContext = bundleContext;
 	}
 
 	/** Mouse listener */

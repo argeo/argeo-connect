@@ -2,13 +2,14 @@ package org.argeo.connect.web;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.Application;
 import org.eclipse.rap.rwt.application.Application.OperationMode;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
@@ -16,7 +17,7 @@ import org.eclipse.rap.rwt.application.EntryPointFactory;
 import org.eclipse.rap.rwt.application.ExceptionHandler;
 import org.eclipse.rap.rwt.client.WebClient;
 import org.eclipse.rap.rwt.service.ResourceLoader;
-import org.eclipse.rap.rwt.service.UISession;
+import org.osgi.framework.BundleContext;
 
 //import org.osgi.framework.Bundle;
 
@@ -27,13 +28,23 @@ public class CmsApplication implements ApplicationConfiguration {
 	private Map<String, Map<String, String>> entryPointsBranding = new HashMap<String, Map<String, String>>();
 	private Map<String, List<String>> styleSheets = new HashMap<String, List<String>>();
 
+	private List<String> resources = new ArrayList<String>();
+
 	// private Bundle clientScriptingBundle;
+	private BundleContext bundleContext;
 
 	public void configure(Application application) {
 		try {
 			application.setOperationMode(OperationMode.SWT_COMPATIBILITY);
 
 			application.setExceptionHandler(new CmsExceptionHandler());
+
+			for (String resource : resources) {
+				URL res = bundleContext.getBundle().getResource(resource);
+				application.addResource(resource, new UrlResourceLoader(res));
+				if (log.isDebugEnabled())
+					log.debug("Registered resource " + resource);
+			}
 
 			// entry points
 			for (String entryPoint : entryPoints.keySet()) {
@@ -43,8 +54,10 @@ public class CmsApplication implements ApplicationConfiguration {
 					if (properties.containsKey(WebClient.FAVICON)) {
 						String faviconRelPath = properties
 								.get(WebClient.FAVICON);
+						URL res = bundleContext.getBundle().getResource(
+								faviconRelPath);
 						application.addResource(faviconRelPath,
-								createResourceLoader(faviconRelPath));
+								new UrlResourceLoader(res));
 						if (log.isDebugEnabled())
 							log.debug("Registered favicon " + faviconRelPath);
 
@@ -59,8 +72,9 @@ public class CmsApplication implements ApplicationConfiguration {
 			for (String themeId : styleSheets.keySet()) {
 				List<String> cssLst = styleSheets.get(themeId);
 				for (String css : cssLst) {
-					// TODO load it from other bundles
-					application.addStyleSheet(themeId, css);
+					URL res = bundleContext.getBundle().getResource(css);
+					application.addStyleSheet(themeId, css,
+							new UrlResourceLoader(res));
 				}
 
 			}
@@ -120,6 +134,14 @@ public class CmsApplication implements ApplicationConfiguration {
 	// public void setClientScriptingBundle(Bundle clientScriptingBundle) {
 	// this.clientScriptingBundle = clientScriptingBundle;
 	// }
+
+	public void setBundleContext(BundleContext bundleContext) {
+		this.bundleContext = bundleContext;
+	}
+
+	public void setResources(List<String> resources) {
+		this.resources = resources;
+	}
 
 	class CmsExceptionHandler implements ExceptionHandler {
 

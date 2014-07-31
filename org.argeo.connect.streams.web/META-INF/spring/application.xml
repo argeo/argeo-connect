@@ -31,7 +31,7 @@
 	<bean id="header" class="org.argeo.connect.web.SimpleCmsHeader">
 		<property name="lead">
 			<list>
-				<bean p:image="/icons/argeo-logo-white.png" p:target="http://www.argeo.org"
+				<bean p:image="theme/argeo-logo-white.png" p:target="http://www.argeo.org"
 					p:custom="cms_header-logo" parent="navigation_link" />
 				<bean p:label="Home" p:target="home" parent="navigation_link" />
 				<bean p:label="All Posts" p:target="searchPosts" parent="navigation_link" />
@@ -61,21 +61,26 @@
 
 		<!-- TODO clean this - everything still must be defined in the parent files.web 
 			bundle. -->
-<!-- 		<property name="styleSheets"> -->
-<!-- 			<map> -->
-<!-- 				<entry key="org.eclipse.rap.rwt.theme.Default"> -->
-<!-- 					<list> -->
-<!-- 						<value>theme/argeo-files.css</value> -->
-<!-- 					</list> -->
-<!-- 				</entry> -->
-<!-- 			</map> -->
+		<property name="styleSheets">
+			<map>
+				<entry key="org.eclipse.rap.rwt.theme.Default">
+					<list>
+						<value>theme/argeo-streams.css</value>
+					</list>
+				</entry>
+			</map>
+		</property>
+<!-- 		<property name="resources"> -->
+<!-- 			<list> -->
+<!-- 				<value>theme/argeo-logo-white.png</value> -->
+<!-- 			</list> -->
 <!-- 		</property> -->
 		<property name="entryPointsBranding">
 			<map>
 				<entry key="/streams">
 					<map>
 						<entry key="org.eclipse.rap.rwt.webclient.pageTitle" value="Argeo Streams" />
-						<entry key="org.eclipse.rap.rwt.webclient.favicon" value="icons/rss.png" />
+						<entry key="org.eclipse.rap.rwt.webclient.favicon" value="theme/rss.png" />
 						<entry key="org.eclipse.rap.rwt.webclient.bodyHtml">
 							<value><![CDATA[
 <div id="splash" style="position: absolute; margin-left: -75px; margin-top: -50px; left: 50%; top: 50%; width: 150px; border: 1px solid #c0c0c0; background-color: #fafafa; text-align: center;">
@@ -92,5 +97,6 @@
 
 		<!-- <property name="clientScriptingBundle" ref="clientScriptingBundle" 
 			/> -->
+		<property name="bundleContext" ref="bundleContext" />
 	</bean>
 </beans>

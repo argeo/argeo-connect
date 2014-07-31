@@ -20,11 +20,11 @@
 		</dependency>
 
 		<!-- FIXME only used because the CND must be in an other bundle. -->
-		<dependency>
-			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.people.specs</artifactId>
-			<version>2.1.8-SNAPSHOT</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.argeo.connect</groupId> -->
+<!-- 			<artifactId>org.argeo.connect.people.specs</artifactId> -->
+<!-- 			<version>2.1.8-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
 
 		<!-- Feeds -->
 		<dependency>
@@ -45,19 +45,19 @@
 		</dependency>
 		<!-- <dependency> <groupId>org.argeo.commons.base</groupId> <artifactId>org.argeo.eclipse.ui</artifactId> 
 			<version>${version.argeo-commons}</version> </dependency> -->
-		<dependency>
-			<groupId>org.argeo.commons.base</groupId>
-			<artifactId>org.argeo.eclipse.ui.jcr</artifactId>
-			<version>${version.argeo-commons}</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.argeo.commons.base</groupId> -->
+<!-- 			<artifactId>org.argeo.eclipse.ui.jcr</artifactId> -->
+<!-- 			<version>${version.argeo-commons}</version> -->
+<!-- 		</dependency> -->
 
 		<!-- TODO Why is it needed ? -->
-		<dependency>
-			<groupId>org.argeo.commons.security</groupId>
-			<artifactId>org.argeo.security.ui.rap</artifactId>
-			<version>${version.argeo-commons}</version>
-			<scope>provided</scope>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.argeo.commons.security</groupId> -->
+<!-- 			<artifactId>org.argeo.security.ui.rap</artifactId> -->
+<!-- 			<version>${version.argeo-commons}</version> -->
+<!-- 			<scope>provided</scope> -->
+<!-- 		</dependency> -->
 
 		<!-- QA -->
 		<!-- RAP only dependency, needed at compile time -->
