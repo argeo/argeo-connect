@@ -14,6 +14,8 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.cms.CmsSession;
+import org.argeo.connect.cms.CmsUiProvider;
 import org.argeo.connect.streams.RssManager;
 import org.argeo.connect.streams.RssNames;
 import org.argeo.connect.streams.RssTypes;
@@ -21,8 +23,6 @@ import org.argeo.connect.streams.web.StreamsWebStyles;
 import org.argeo.connect.streams.web.listeners.NodeListDoubleClickListener;
 import org.argeo.connect.streams.web.providers.RssListLblProvider;
 import org.argeo.connect.streams.web.providers.SimpleNodeListContentProvider;
-import org.argeo.connect.web.CmsSession;
-import org.argeo.connect.web.CmsUiProvider;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;

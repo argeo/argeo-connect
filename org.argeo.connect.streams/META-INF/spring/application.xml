@@ -5,7 +5,7 @@
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<!-- USER INTERFACE -->
-	<bean name="streamsEntryPoint" class="org.argeo.connect.web.CmsEntryPointFactory">
+	<bean name="streamsEntryPoint" class="org.argeo.connect.cms.CmsEntryPointFactory">
 		<property name="staticPages">
 			<map>
 				<entry key="home">
@@ -22,7 +22,7 @@
 			</map>
 		</property>
 		<property name="header">
-			<bean class="org.argeo.connect.web.SimpleCmsHeader">
+			<bean class="org.argeo.connect.cms.SimpleCmsHeader">
 				<property name="lead">
 					<list>
 						<bean p:label="Home" p:target="home" parent="navigation_link" />
@@ -31,7 +31,7 @@
 				</property>
 				<property name="end">
 					<list>
-						<bean class="org.argeo.connect.web.CmsLogin"
+						<bean class="org.argeo.connect.cms.CmsLogin"
 							p:authenticationManager-ref="authenticationManager" />
 						<bean p:image="icons/byArgeo.png" p:target="http://www.argeo.org"
 							p:custom="cms_header-logo" parent="navigation_link" />
@@ -49,6 +49,6 @@
 
 	<!-- TEMPLATES -->
 	<bean id="navigation_link" p:custom="cms_navigation_link"
-		abstract="true" class="org.argeo.connect.web.CmsLink" />
+		abstract="true" class="org.argeo.connect.cms.CmsLink" />
 
 </beans>

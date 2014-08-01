@@ -3,7 +3,7 @@ package org.argeo.connect.files.web;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.web.CmsUiProvider;
+import org.argeo.connect.cms.CmsUiProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;

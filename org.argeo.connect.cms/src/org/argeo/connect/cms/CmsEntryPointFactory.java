@@ -1,4 +1,4 @@
-package org.argeo.connect.web;
+package org.argeo.connect.cms;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

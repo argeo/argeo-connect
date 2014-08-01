@@ -1,4 +1,4 @@
-package org.argeo.connect.web;
+package org.argeo.connect.cms;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

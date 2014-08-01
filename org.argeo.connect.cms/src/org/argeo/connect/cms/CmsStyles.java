@@ -1,4 +1,4 @@
-package org.argeo.connect.web;
+package org.argeo.connect.cms;
 
 /** Styles references in the CSS. */
 public interface CmsStyles {
