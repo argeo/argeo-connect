@@ -35,6 +35,10 @@
 					<groupId>org.argeo.tp</groupId>
 					<artifactId>org.eclipse.osgi</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.argeo.tp</groupId>
+					<artifactId>org.apache.jasper</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
