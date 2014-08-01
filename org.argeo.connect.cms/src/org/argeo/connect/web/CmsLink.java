@@ -1,6 +1,5 @@
 package org.argeo.connect.web;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -106,8 +105,8 @@ public class CmsLink implements CmsUiProvider, BundleContextAware {
 		try {
 			inputStream = res.openStream();
 			result = new Image(display, inputStream);
-			if (log.isDebugEnabled())
-				log.debug("Loaded image " + image);
+			if (log.isTraceEnabled())
+				log.trace("Loaded image " + image);
 		} catch (Exception e) {
 			throw new ArgeoException("Cannot load image " + image, e);
 		} finally {

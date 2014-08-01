@@ -54,8 +54,8 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 
 			@Override
 			public void run() {
-				if (log.isDebugEnabled())
-					log.debug("Logging out " + session);
+				if (log.isTraceEnabled())
+					log.trace("Logging out " + session);
 				JcrUtils.logoutQuietly(session);
 			}
 		});
