@@ -6,6 +6,7 @@
         http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
+	<!-- BACKEND -->
 	<bean id="rssManager" class="org.argeo.connect.streams.backend.RssManagerImpl"
 		init-method="init" destroy-method="destroy">
 		<property name="defaultChannels">
@@ -38,6 +39,7 @@
 		<property name="repository" ref="repository" />
 		<property name="bundleContext" ref="bundleContext" />
 	</bean>
+
 	<!-- Execute initialization with a system authentication -->
 	<bean
 		class="org.argeo.security.core.AuthenticatedApplicationContextInitialization">

@@ -1,12 +1,12 @@
 package org.argeo.connect.web;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.jcr.Repository;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,12 +16,12 @@ import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.eclipse.rap.rwt.application.EntryPointFactory;
 import org.eclipse.rap.rwt.application.ExceptionHandler;
 import org.eclipse.rap.rwt.client.WebClient;
-import org.eclipse.rap.rwt.service.ResourceLoader;
 import org.osgi.framework.BundleContext;
+import org.springframework.osgi.context.BundleContextAware;
 
-//import org.osgi.framework.Bundle;
-
-public class CmsApplication implements ApplicationConfiguration {
+/** Configures an Argeo CMS RWT application. */
+public class CmsApplication implements ApplicationConfiguration,
+		BundleContextAware {
 	final static Log log = LogFactory.getLog(CmsApplication.class);
 
 	private Map<String, EntryPointFactory> entryPoints = new HashMap<String, EntryPointFactory>();
@@ -63,7 +63,7 @@ public class CmsApplication implements ApplicationConfiguration {
 
 					}
 				}
-				application.addEntryPoint(entryPoint,
+				application.addEntryPoint("/" + entryPoint,
 						entryPoints.get(entryPoint), properties);
 				log.info("Registered entry point " + entryPoint);
 			}
@@ -107,15 +107,16 @@ public class CmsApplication implements ApplicationConfiguration {
 	// }
 	// }
 
-	private static ResourceLoader createResourceLoader(final String resourceName) {
-		return new ResourceLoader() {
-			public InputStream getResourceAsStream(String resourceName)
-					throws IOException {
-				return getClass().getClassLoader().getResourceAsStream(
-						resourceName);
-			}
-		};
-	}
+	// private static ResourceLoader createResourceLoader(final String
+	// resourceName) {
+	// return new ResourceLoader() {
+	// public InputStream getResourceAsStream(String resourceName)
+	// throws IOException {
+	// return getClass().getClassLoader().getResourceAsStream(
+	// resourceName);
+	// }
+	// };
+	// }
 
 	public void setEntryPoints(
 			Map<String, EntryPointFactory> entryPointFactories) {
@@ -142,6 +143,17 @@ public class CmsApplication implements ApplicationConfiguration {
 	public void setResources(List<String> resources) {
 		this.resources = resources;
 	}
+
+	/*
+	 * SERVICES REGISTRATION
+	 */
+
+//	@SuppressWarnings("rawtypes")
+//	public synchronized void register(EntryPointFactory entryPointFactory,
+//			Map properties) {
+//		String name = (String) properties.get("name");
+//		entryPoints.put(name, entryPointFactory);
+//	}
 
 	class CmsExceptionHandler implements ExceptionHandler {
 

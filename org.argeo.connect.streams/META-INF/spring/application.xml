@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- USER INTERFACE -->
+	<bean name="streamsEntryPoint" class="org.argeo.connect.web.CmsEntryPointFactory">
+		<property name="staticPages">
+			<map>
+				<entry key="home">
+					<bean class="org.argeo.connect.streams.web.pages.RssHomePage">
+						<property name="repository" ref="rssRepository" />
+						<property name="rssManager" ref="rssManager" />
+					</bean>
+				</entry>
+				<entry key="search">
+					<bean class="org.argeo.connect.streams.web.pages.SearchPostPage">
+						<property name="repository" ref="rssRepository" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+		<property name="header">
+			<bean class="org.argeo.connect.web.SimpleCmsHeader">
+				<property name="lead">
+					<list>
+						<bean p:label="Home" p:target="home" parent="navigation_link" />
+						<bean p:label="All Posts" p:target="search" parent="navigation_link" />
+					</list>
+				</property>
+				<property name="end">
+					<list>
+						<bean class="org.argeo.connect.web.CmsLogin"
+							p:authenticationManager-ref="authenticationManager" />
+						<bean p:image="icons/byArgeo.png" p:target="http://www.argeo.org"
+							p:custom="cms_header-logo" parent="navigation_link" />
+					</list>
+				</property>
+			</bean>
+		</property>
+		<property name="dynamicPages">
+			<bean class="org.argeo.connect.streams.web.pages.RssDynamicPages" />
+		</property>
+		<property name="repository" ref="rssRepository" />
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="systemKey" value="${argeo.security.systemKey}" />
+	</bean>
+
+	<!-- TEMPLATES -->
+	<bean id="navigation_link" p:custom="cms_navigation_link"
+		abstract="true" class="org.argeo.connect.web.CmsLink" />
+
+</beans>

@@ -32,6 +32,7 @@ import org.springframework.security.providers.anonymous.AnonymousAuthenticationT
 import org.springframework.security.userdetails.User;
 import org.springframework.security.userdetails.UserDetails;
 
+/** Creates and registers an {@link EntryPoint} */
 public class CmsEntryPointFactory implements EntryPointFactory {
 	private final static Log log = LogFactory
 			.getLog(CmsEntryPointFactory.class);

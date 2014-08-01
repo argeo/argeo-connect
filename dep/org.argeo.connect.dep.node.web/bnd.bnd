@@ -1,1 +1,1 @@
-Import-Package:*
+Import-Package:*, org.argeo.connect.streams

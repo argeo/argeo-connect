@@ -22,8 +22,8 @@
 		<module>org.argeo.connect.people.services</module>
 		<module>org.argeo.connect.people.ui</module>
 		<module>org.argeo.photo.manager.ui</module>
-		<module>org.argeo.connect.files.web</module>
-		<module>org.argeo.connect.streams.web</module>
+		<module>org.argeo.connect.files</module>
+		<module>org.argeo.connect.streams</module>
 		<module>dep</module>
 	</modules>
 	<url>${site.urlBase}/${developmentCycle.connect}</url>

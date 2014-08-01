@@ -7,8 +7,8 @@
 		<artifactId>argeo-connect</artifactId>
 		<relativePath>..</relativePath>
 	</parent>
-	<artifactId>org.argeo.connect.streams.web</artifactId>
-	<name>Connect Streams Web</name>
+	<artifactId>org.argeo.connect.streams</artifactId>
+	<name>Connect Streams</name>
 	<packaging>jar</packaging>
 
 	<dependencies>
