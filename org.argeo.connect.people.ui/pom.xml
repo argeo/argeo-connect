@@ -11,17 +11,13 @@
 	<name>Connect People UI</name>
 	<packaging>jar</packaging>
 	<dependencies>
-		<!-- RCP / RAP Specific bundles - Provided by the target plateform at runtime -->
-		<!-- TODO clean this, this bundle contains many rap specific piece of code. 
-			(among other RAP SPECIFIC DROPDOWN WIDGET) -->
-		<!-- <dependency> <groupId>org.argeo.connect</groupId> <artifactId>org.argeo.connect.people.rap</artifactId> 
-			<version>2.1.7-SNAPSHOT</version> </dependency> -->
-		<!-- <scope>provided</scope> -->
-
+		<!-- RAP Specific bundles -->
+		<!-- TODO clean this, current bundle contains many rap specific piece of code. 
+			(among other the rap specific Dropdown widget) -->
 		<dependency>
 			<groupId>org.argeo.tp.rap.addons</groupId>
 			<artifactId>org.eclipse.rap.addons.dropdown</artifactId>
-			<version>0.2.0.20131212-1229</version>
+			<version>${version.rap.addons}</version>
 		</dependency>
 
 		<!-- CONNECT -->
