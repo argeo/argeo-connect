@@ -68,8 +68,6 @@ public class ChannelPage implements CmsUiProvider, RssNames {
 	}
 
 	protected void populate(Composite parent) {
-		parent.setLayout(new GridLayout());
-
 		Label readOnlyInfoLbl = new Label(parent, SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		readOnlyInfoLbl.setText(RssHtmlProvider.getChannelTitle(channel));

@@ -16,6 +16,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.ArgeoException;
 import org.argeo.connect.cms.CmsSession;
 import org.argeo.connect.cms.CmsUiProvider;
+import org.argeo.connect.cms.CmsUtils;
 import org.argeo.connect.streams.RssManager;
 import org.argeo.connect.streams.RssNames;
 import org.argeo.connect.streams.RssTypes;
@@ -68,7 +69,6 @@ public class RssHomePage implements CmsUiProvider {
 
 	@Override
 	public Control createUi(Composite parent, Node context) {
-		parent.setLayout(gridLayoutNoBorder());
 		Composite sourcesCmp = new Composite(parent, SWT.NO_FOCUS);
 		sourcesCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		sourcesCmp.setData(RWT.CUSTOM_VARIANT,
@@ -79,7 +79,7 @@ public class RssHomePage implements CmsUiProvider {
 	}
 
 	public void populateSourcesPanel(Composite parent) {
-		parent.setLayout(gridLayoutNoBorder());
+		parent.setLayout(CmsUtils.noSpaceGridLayout());
 
 		Composite addFeedCmp = new Composite(parent, SWT.NO_FOCUS);
 		addFeedCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
@@ -283,13 +283,6 @@ public class RssHomePage implements CmsUiProvider {
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Unable to list " + nodeType, e);
 		}
-	}
-
-	// HELPERS
-	private GridLayout gridLayoutNoBorder() {
-		GridLayout gl = new GridLayout(1, false);
-		gl.marginWidth = gl.marginHeight = gl.horizontalSpacing = gl.verticalSpacing = 0;
-		return gl;
 	}
 
 	private static TableViewerColumn createTableViewerColumn(

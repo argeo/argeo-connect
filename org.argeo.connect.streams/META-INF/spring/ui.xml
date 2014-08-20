@@ -19,6 +19,9 @@
 						<property name="repository" ref="rssRepository" />
 					</bean>
 				</entry>
+				<entry key="text">
+					<bean class="org.argeo.connect.cms.text.SimpleTextPage" />
+				</entry>
 			</map>
 		</property>
 		<property name="header">
@@ -27,6 +30,7 @@
 					<list>
 						<bean p:label="Home" p:target="home" parent="navigation_link" />
 						<bean p:label="All Posts" p:target="search" parent="navigation_link" />
+						<bean p:label="Text" p:target="text" parent="navigation_link" />
 					</list>
 				</property>
 				<property name="end">

@@ -23,7 +23,6 @@ public class RssDynamicPages implements CmsUiProvider {
 		if (context.isNodeType(RssTypes.RSS_CHANNEL_INFO))
 			return (new ChannelPage()).createUi(parent, context);
 
-		parent.setLayout(new GridLayout());
 		new Label(parent, SWT.NONE).setText("Unknown node type.");
 
 		// TODO implement page type depending on the node type.
