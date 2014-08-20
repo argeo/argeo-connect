@@ -15,7 +15,6 @@ import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.EntryPoint;
 import org.eclipse.rap.rwt.application.EntryPointFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -86,6 +85,8 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 		private Composite headerArea;
 		private Composite bodyArea;
 
+		// private ScrolledComposite scrolledArea;
+
 		public CmsEntryPoint(Repository repository, String workspace) {
 			super(repository, workspace);
 		}
@@ -97,10 +98,7 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 
 				parent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 						true));
-				GridLayout layout = new GridLayout(1, true);
-				layout.horizontalSpacing = 0;
-				layout.verticalSpacing = 0;
-				parent.setLayout(layout);
+				parent.setLayout(CmsUtils.noSpaceGridLayout());
 
 				headerArea = new Composite(parent, SWT.NONE);
 				headerArea.setLayout(new FillLayout());
@@ -110,24 +108,39 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 				headerArea.setLayoutData(headerData);
 				refreshHeader();
 
-				ScrolledComposite scrolledArea = new ScrolledComposite(parent,
-						SWT.H_SCROLL);
-				scrolledArea.setData(RWT.CUSTOM_VARIANT,
-						CmsStyles.CMS_SCROLLED_AREA);
-				// scrolledComp.setMinHeight( CONTENT_MIN_HEIGHT );
-				// scrolledComp.setMinWidth( CENTER_AREA_WIDTH );
-				scrolledArea.setExpandVertical(true);
-				scrolledArea.setExpandHorizontal(true);
-				scrolledArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
-						true, true));
-				scrolledArea.setLayout(new FillLayout());
-				bodyArea = new Composite(scrolledArea, SWT.NONE);
+				// scrolledArea = new ScrolledComposite(parent, SWT.V_SCROLL);
+				// scrolledArea.setData(RWT.CUSTOM_VARIANT,
+				// CmsStyles.CMS_SCROLLED_AREA);
+				// // scrolledComp.setMinHeight( CONTENT_MIN_HEIGHT );
+				// // scrolledComp.setMinWidth( CENTER_AREA_WIDTH );
+				// scrolledArea.setExpandVertical(true);
+				// scrolledArea.setExpandHorizontal(true);
+				// scrolledArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
+				// true, true));
+				// // scrolledArea.setLayout(new FillLayout());
+				// scrolledArea.setAlwaysShowScrollBars(true);
+				// scrolledArea.setExpandVertical(true);
+				// scrolledArea.setMinHeight(400);
+
+				bodyArea = new Composite(parent, SWT.NONE);
 				bodyArea.setData(RWT.CUSTOM_VARIANT, CmsStyles.CMS_BODY);
 				bodyArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 						true));
 				bodyArea.setBackgroundMode(SWT.INHERIT_DEFAULT);
-				bodyArea.setLayout(new FillLayout());
-				scrolledArea.setContent(bodyArea);
+				bodyArea.setLayout(CmsUtils.noSpaceGridLayout());
+				// scrolledArea.setContent(bodyArea);
+				//
+				// // cf.
+				// //
+				// http://www.java2s.com/Code/Java/SWT-JFace-Eclipse/CreateaScrolledCompositewithwrappingcontent.htm
+				// scrolledArea.addControlListener(new ControlAdapter() {
+				// public void controlResized(ControlEvent e) {
+				// Rectangle r = scrolledArea.getClientArea();
+				// Point preferredSize = bodyArea.computeSize(SWT.DEFAULT,
+				// r.height);
+				// scrolledArea.setMinHeight(preferredSize.y);
+				// }
+				// });
 			} catch (Exception e) {
 				throw new ArgeoException("Cannot create entrypoint contents", e);
 			}
@@ -154,12 +167,11 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 			// clear
 			for (Control child : bodyArea.getChildren())
 				child.dispose();
+			bodyArea.setLayout(CmsUtils.noSpaceGridLayout());
 
 			// Exception
 			Throwable exception = getException();
 			if (exception != null) {
-				bodyArea.setLayout(new GridLayout(1, false));
-
 				new Label(bodyArea, SWT.NONE).setText("Unreachable state : "
 						+ getState());
 				if (getNode() != null)
@@ -196,6 +208,8 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 				}
 			}
 			bodyArea.layout(true, true);
+			// scrolledArea.setContent(bodyArea);
+			// scrolledArea.layout(true, true);
 		}
 
 		@Override
