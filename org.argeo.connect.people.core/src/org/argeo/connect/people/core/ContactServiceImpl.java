@@ -109,7 +109,7 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 					return ContactValueCatalogs.ARRAY_PERSON_HOME_ADDRESSES;
 				else
 					return ContactValueCatalogs.ARRAY_PERSON_HOME_ADDRESSES;
-			} else if (PeopleTypes.PEOPLE_ORG.equals(contactType))
+			} else if (PeopleTypes.PEOPLE_ORG.equals(contactableType))
 				return ContactValueCatalogs.ARRAY_ORG_ADDRESSES;
 		} else if (PeopleTypes.PEOPLE_SOCIAL_MEDIA.equals(contactType))
 			return ContactValueCatalogs.ARRAY_SOCIAL_MEDIA;
