@@ -442,6 +442,9 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	public List<Node> getRelatedEntities(Node entity, String linkNodeType,
 			String relatedEntityType) {
 		try {
+			if (!entity.hasProperty(PeopleNames.PEOPLE_UID))
+				return null;
+
 			Session session = entity.getSession();
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();

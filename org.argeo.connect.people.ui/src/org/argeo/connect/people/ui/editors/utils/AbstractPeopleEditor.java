@@ -285,30 +285,28 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			}
 		});
 
-		if (showDeleteButton()) {
-			Button deleteBtn = toolkit.createButton(editPanelCmp, "Delete",
-					SWT.PUSH);
-			deleteBtn.setLayoutData(new RowData(60, 20));
-			deleteBtn.addSelectionListener(new SelectionListener() {
-				private static final long serialVersionUID = 1L;
+		Button deleteBtn = toolkit.createButton(editPanelCmp, "Delete",
+				SWT.PUSH);
+		deleteBtn.setLayoutData(new RowData(60, 20));
+		deleteBtn.addSelectionListener(new SelectionListener() {
+			private static final long serialVersionUID = 1L;
 
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					if (isCheckedOutByMe()) {
-						Map<String, String> params = new HashMap<String, String>();
-						params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID,
-								CommonsJcrUtils.getIdentifier(node));
-						params.put(DeleteEntity.PARAM_REMOVE_ALSO_PARENT,
-								deleteParentOnRemove().toString());
-						CommandUtils.callCommand(DeleteEntity.ID, params);
-					}
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (isCheckedOutByMe()) {
+					Map<String, String> params = new HashMap<String, String>();
+					params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID,
+							CommonsJcrUtils.getIdentifier(node));
+					params.put(DeleteEntity.PARAM_REMOVE_ALSO_PARENT,
+							deleteParentOnRemove().toString());
+					CommandUtils.callCommand(DeleteEntity.ID, params);
 				}
+			}
 
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
-				}
-			});
-		}
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
 
 		addEditButtons(editPanelCmp);
 
@@ -333,11 +331,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	/** Overwrite this call back method to add buttons when in edit Mode */
 	protected void addEditButtons(Composite parent) {
-	}
-
-	/** Overwrite to hide the delete button */
-	protected boolean showDeleteButton() {
-		return true;
 	}
 
 	/* EXPOSES TO CHILDREN CLASSES */
@@ -532,7 +525,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		if (canSave()){
+		if (canSave()) {
 			saveAndCheckInItem();
 			notifyCheckOutStateChange();
 			firePropertyChange(PROP_DIRTY);
@@ -580,14 +573,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		}
 	}
 
-	// /**
-	// * Exposes the id of the openEntityEditor command. By default it is
-	// * {@code OpenEntityEditor.ID} but might be changed by injection
-	// */
-	// final protected String getOpenEntityEditorCmdId() {
-	// return openEntityEditorCmdId;
-	// }
-
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
@@ -600,8 +585,4 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
-
-	// public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
-	// this.openEntityEditorCmdId = openEntityEditorCmdId;
-	// }
 }
