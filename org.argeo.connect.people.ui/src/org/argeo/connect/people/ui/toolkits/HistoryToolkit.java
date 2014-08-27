@@ -222,10 +222,12 @@ public class HistoryToolkit {
 				Node node = version.getFrozenNode();
 
 				if (first && node != null && log.isTraceEnabled()) {
-					// FIXME helper to easily find the path of the technical
+					// Helper to easily find the path of the technical
 					// node under jcr:system/jcr:versionStorage that
 					// manage versioning
-					log.trace("Retrieving history using frozenNode : " + node);
+					if (log.isTraceEnabled())
+						log.trace("Retrieving history using frozenNode : "
+								+ node);
 					first = false;
 				}
 
