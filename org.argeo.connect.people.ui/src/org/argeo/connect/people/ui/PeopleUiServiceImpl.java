@@ -45,17 +45,11 @@ public class PeopleUiServiceImpl implements PeopleUiService {
 		return OpenSearchEntityEditor.ID;
 	}
 
-	// @Override
-	// public String getOpenSearchByTagEditorCmdId() {
-	// return OpenSearchByTagEditor.ID;
-	// }
-
 	@Override
 	public String getOpenFileCmdId() {
 		// TODO clean this.
 		throw new PeopleException("OpenFile command is undefined for "
 				+ "PeopleUiService base implementation");
-		// return "org.argeo.connect.people.ui.specific.openFile";
 	}
 
 	@Override

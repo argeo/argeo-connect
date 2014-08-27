@@ -41,7 +41,6 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 			Node entity;
 			if (node.isNodeType(PeopleTypes.PEOPLE_PERSON))
 				entity = node;
-			// FIXME works with luck
 			else if (node.isNodeType(PeopleTypes.PEOPLE_JOB))
 				entity = node.getParent().getParent();
 			else if (node.isNodeType(PeopleTypes.PEOPLE_POSITION)) {

@@ -121,8 +121,6 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 
 	@Override
 	public Image getContactIcon(Node contact) {
-		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

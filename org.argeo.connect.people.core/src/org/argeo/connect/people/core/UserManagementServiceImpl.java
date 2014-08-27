@@ -222,7 +222,8 @@ public class UserManagementServiceImpl implements UserManagementService {
 		try {
 			Node peopleProfile = getPeopleProfile(session, username);
 			CommonsJcrUtils.checkout(peopleProfile);
-			// FIXME it overrides all values at each time.
+
+			// it overrides all values at each time.
 			CommonsJcrUtils.setMultipleReferences(peopleProfile,
 					PeopleNames.PEOPLE_USER_GROUPS, groups);
 			CommonsJcrUtils.saveAndCheckin(peopleProfile);
@@ -294,7 +295,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 	/** Returns a human readable display name using the user ID **/
 	@Override
 	public String getUserDisplayName(String userId) {
-		// FIXME Must use a commons utils
+		// TODO Must use a commons utils
 		return userId;
 	}
 

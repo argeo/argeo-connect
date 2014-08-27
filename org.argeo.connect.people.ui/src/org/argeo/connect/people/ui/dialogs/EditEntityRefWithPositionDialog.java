@@ -179,7 +179,7 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 				new EntitySingleColumnLabelProvider(peopleService, null));
 		refreshFilteredList(toSearchNodeType);
 
-		// FIXME an emty line to give some air to the dialog
+		// An empty line to give some air to the dialog
 		Label dummyLbl = new Label(dialogarea, SWT.NONE);
 		dummyLbl.setText("");
 		dummyLbl.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2,

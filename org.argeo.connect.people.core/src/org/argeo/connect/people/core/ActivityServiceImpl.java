@@ -240,7 +240,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 
 			Node userProfile = UserJcrUtils.getUserProfile(session, managerId);
 			
-			// FIXME
+			// TODO hard coded root management
 			if (userProfile == null && "admin".equals(managerId))
 				userProfile = UserJcrUtils.getUserProfile(session, "root");
 			taskNode.setProperty(PeopleNames.PEOPLE_MANAGER, userProfile);

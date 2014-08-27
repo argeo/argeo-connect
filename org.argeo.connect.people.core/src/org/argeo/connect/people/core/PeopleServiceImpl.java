@@ -713,7 +713,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	@Override
 	public void unregisterTag(Session session, String tagParentPath,
 			String tag, String tagableParentPath) {
-		// TODO Auto-generated method stub
 		throw new PeopleException("unimplemented method.");
 	}
 

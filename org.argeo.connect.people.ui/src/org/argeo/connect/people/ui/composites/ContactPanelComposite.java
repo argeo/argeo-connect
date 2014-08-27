@@ -57,7 +57,7 @@ public class ContactPanelComposite extends Composite {
 
 	private Composite innerCmp;
 
-	// FIXME caches the add new contact combo
+	// Caches the add new contact combo
 	private Combo addContactCmb;
 
 	public ContactPanelComposite(Composite parent, int style,

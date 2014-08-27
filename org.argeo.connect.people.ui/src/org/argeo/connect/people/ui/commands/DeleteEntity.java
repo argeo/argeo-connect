@@ -136,7 +136,7 @@ public class DeleteEntity extends AbstractHandler {
 		return null;
 	}
 
-	// TODO workaround to retrieve parent versionable node.
+	// Workaround to retrieve parent versionable node.
 	private Node getParentVersionableNode(Node node) throws RepositoryException {
 		Node curr = node;
 		while (true) {

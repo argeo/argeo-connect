@@ -187,13 +187,13 @@ public class EditJobDialog extends TrayDialog {
 						peopleUiService));
 		refreshFilteredList(toSearchNodeType);
 
-		// FIXME an empty line to give some air to the dialog
+		// An empty line to give some air to the dialog
 		Label dummyLbl = new Label(dialogarea, SWT.NONE);
 		dummyLbl.setText("");
 		dummyLbl.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2,
 				1));
 
-		// Display choosen org or person
+		// Display chosen org or person
 		selectedItemTxt = createLT(dialogarea, chosenItemLbl);
 		selectedItemTxt.setEnabled(false);
 		selectedItemTxt.setData(PeopleUiConstants.CUSTOM_VARIANT,
@@ -367,7 +367,7 @@ public class EditJobDialog extends TrayDialog {
 
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
-				// FIXME Avoid null pointer on filter reset
+				// Avoid NPE on filter reset
 				Object element = ((IStructuredSelection) event.getSelection())
 						.getFirstElement();
 				if (element == null) {

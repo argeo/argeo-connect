@@ -66,7 +66,9 @@ public interface PeopleUiConstants {
 	// disabled.
 	public final static String CSS_ALWAYS_SHOW_BORDER = "alwaysShowBorder";
 
-	// FIXME workaround to work on fixing RAP/RCP single sourcing for people
+	// TODO workaround to work on fixing RAP/RCP single sourcing for people
+	// It is still some wortk in progress.
+	
 	// Caches name of RWT.MARKUP_ENABLED property
 	public final static String MARKUP_ENABLED = "org.eclipse.rap.rwt.markupEnabled";
 	// Caches name of RWT.CUSTOM_ITEM_HEIGHT property
