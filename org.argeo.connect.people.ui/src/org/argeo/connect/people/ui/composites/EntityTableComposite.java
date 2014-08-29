@@ -171,6 +171,9 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 		EclipseUiSpecificUtils.enableToolTipSupport(entityViewer);
 		entityViewer.setContentProvider(new MyTableContentProvider());
 		refreshFilteredList();
+
+		if (hasFilter)
+			filterTxt.setFocus();
 	}
 
 	public List<Node> getSelectedEntities() {

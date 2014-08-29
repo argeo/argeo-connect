@@ -97,7 +97,6 @@ public class PickUpContactableDialog extends TrayDialog {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
 		createFilterPart(dialogArea);
-
 		PeopleVirtualTableViewer tableCmp = new PeopleVirtualTableViewer(
 				dialogArea, SWT.MULTI, colDefs);
 		tableViewer = tableCmp.getTableViewer();
@@ -107,6 +106,7 @@ public class PickUpContactableDialog extends TrayDialog {
 				.addSelectionChangedListener(new MySelectionChangedListener());
 		parent.pack();
 		refreshFilteredList();
+		filterTxt.setFocus();
 		return dialogArea;
 	}
 

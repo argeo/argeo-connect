@@ -79,7 +79,8 @@ public class SimpleJcrTableComposite extends Composite implements ArgeoNames {
 	 * Default table with no filter and no selection column that only display
 	 * JCR_TITLE.
 	 * 
-	 * Default selector is NodeType.NT_UNSTRUCTURED, default parent path is the root path
+	 * Default selector is NodeType.NT_UNSTRUCTURED, default parent path is the
+	 * root path
 	 * 
 	 * @param parent
 	 * @param style
@@ -111,8 +112,9 @@ public class SimpleJcrTableComposite extends Composite implements ArgeoNames {
 	 * @param addSelection
 	 */
 	public SimpleJcrTableComposite(Composite parent, int style,
-			Session session, String parentPath, String nodeType, List<ColumnDefinition> colDefs,
-			boolean addFilter, boolean addSelection) {
+			Session session, String parentPath, String nodeType,
+			List<ColumnDefinition> colDefs, boolean addFilter,
+			boolean addSelection) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.session = session;
@@ -122,7 +124,7 @@ public class SimpleJcrTableComposite extends Composite implements ArgeoNames {
 			this.nodeType = nodeType;
 		if (parentPath != null)
 			this.parentPath = parentPath;
-		
+
 		this.hasFilter = addFilter;
 		this.hasSelectionColumn = addSelection;
 		populate();
@@ -139,6 +141,9 @@ public class SimpleJcrTableComposite extends Composite implements ArgeoNames {
 		EclipseUiSpecificUtils.enableToolTipSupport(tableViewer);
 		tableViewer.setContentProvider(new MyTableContentProvider());
 		refreshFilteredList();
+
+		if (hasFilter)
+			filterTxt.setFocus();
 	}
 
 	public List<Node> getSelectedNodes() {
@@ -310,7 +315,8 @@ public class SimpleJcrTableComposite extends Composite implements ArgeoNames {
 
 		Selector source = factory.selector(nodeType, nodeType);
 
-		Constraint defaultC = factory.descendantNode(source.getSelectorName(), parentPath);
+		Constraint defaultC = factory.descendantNode(source.getSelectorName(),
+				parentPath);
 
 		// Build constraints based the textArea filter content
 		if (filter != null && !"".equals(filter.trim())) {
