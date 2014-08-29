@@ -23,6 +23,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.composites.PeopleVirtualTableViewer;
@@ -33,6 +34,7 @@ import org.argeo.connect.people.ui.providers.JcrRowHtmlLabelProvider;
 import org.argeo.connect.people.ui.providers.TagLabelProvider;
 import org.argeo.connect.people.ui.providers.TitleWithIconLP;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
+import org.argeo.connect.people.ui.wizards.EditTagWizard;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -40,6 +42,8 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.client.service.UrlLauncher;
 import org.eclipse.swt.SWT;
@@ -54,6 +58,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -72,6 +77,8 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 	// Business objects
 	private Node mailingList;
 
+	private UserManagementService userService;
+
 	// This page objects
 	private List<PeopleColumnDefinition> colDefs; // Default column
 	private TableViewer membersViewer;
@@ -84,8 +91,8 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 		mailingList = getNode();
 
 		// Initialize column definition
-		// Cannot be statically done to have a valid reference to the injected
-		// peopleUiService
+		// Cannot be done statically: we must have a valid reference to the
+		// injected peopleUiService
 		colDefs = new ArrayList<PeopleColumnDefinition>();
 		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
 				Property.JCR_TITLE, PropertyType.STRING, "Display Name",
@@ -99,6 +106,9 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 				PEOPLE_MAILING_LISTS, PropertyType.STRING, "Mailing lists",
 				new JcrRowHtmlLabelProvider(PeopleTypes.PEOPLE_ENTITY,
 						PEOPLE_TAGS), 300));
+
+		// Retrieve userService from context
+		userService = getPeopleService().getUserManagementService();
 	}
 
 	@Override
@@ -112,7 +122,6 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 	}
 
 	@Override
-	// TODO refactor this.
 	protected void populateHeader(Composite parent) {
 		try {
 			parent.setLayout(new FormLayout());
@@ -139,18 +148,32 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 			PeopleUiUtils.setSwitchingFormData(editPanel);
 
 			// intern layout
-			editPanel.setLayout(new GridLayout(1, false));
-			final Text titleTxt = PeopleUiUtils.createGDText(toolkit,
-					editPanel, "A title", "The title of this group", 200, 1);
-			final Text descTxt = PeopleUiUtils.createGDText(toolkit, editPanel,
-					"A Description", "", 400, 1);
+			editPanel.setLayout(new GridLayout(2, false));
+			final Label editTitle = toolkit.createLabel(editPanel, "");
+			editTitle.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
+			editTitle
+					.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-			AbstractFormPart editPart = new AbstractFormPart() {
+			Link editTitleLink = null;
+			// TODO terminate this.
+			// if (userService.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
+			// || userService.isUserInRole(PeopleConstants.ROLE_ADMIN)) {
+			// editTitleLink = new Link(editPanel, SWT.NONE);
+			// editTitleLink.setText("<a>Edit Mailing List Title...</a>");
+			// } else
+			toolkit.createLabel(editPanel, "");
+
+			final Text descTxt = PeopleUiUtils.createGDText(toolkit, editPanel,
+					"A Description", "", 400, 2);
+
+			final AbstractFormPart editPart = new AbstractFormPart() {
 				public void refresh() {
 					super.refresh();
 					// EDIT PART
-					PeopleUiUtils.refreshTextWidgetValue(titleTxt, mailingList,
-							Property.JCR_TITLE);
+					String title = "<b><big> "
+							+ CommonsJcrUtils.get(mailingList,
+									Property.JCR_TITLE) + "</big></b>";
+					editTitle.setText(title);
 					PeopleUiUtils.refreshTextWidgetValue(descTxt, mailingList,
 							Property.JCR_DESCRIPTION);
 
@@ -165,14 +188,42 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 				}
 			};
 
-			// Listeners
-			PeopleUiUtils.addTxtModifyListener(editPart, titleTxt, mailingList,
-					Property.JCR_TITLE, PropertyType.STRING);
 			PeopleUiUtils.addTxtModifyListener(editPart, descTxt, mailingList,
 					Property.JCR_DESCRIPTION, PropertyType.STRING);
 
-			// compulsory because we broke normal life cycle while implementing
-			// IManageForm
+			if (editTitleLink != null) {
+				editTitleLink.addSelectionListener(new SelectionAdapter() {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void widgetSelected(final SelectionEvent event) {
+
+						// String tagableNodeType, String propertyName,
+						// Node tagLikeInstanceNode
+						//
+						// PeopleTypes.PEOPLE_MAILING_LIST,
+						// msmService
+						// .getResourceBasePath(PeopleTypes.PEOPLE_MAILING_LIST),
+						// PeopleTypes.PEOPLE_BASE,
+						// PeopleNames.PEOPLE_MAILING_LISTS, );
+						//
+						Wizard wizard = new EditTagWizard(getPeopleService(),
+								getPeopleUiService(), getPeopleService()
+										.getBasePath(null),
+								PeopleTypes.PEOPLE_ENTITY,
+								PeopleNames.PEOPLE_MAILING_LISTS, mailingList);
+						WizardDialog dialog = new WizardDialog(descTxt
+								.getShell(), wizard);
+						dialog.setTitle("New...");
+						int result = dialog.open();
+						if (result == WizardDialog.OK) {
+							editPart.markDirty();
+							editPart.refresh();
+						}
+					}
+				});
+			}
+
 			editPart.initialize(getManagedForm());
 			getManagedForm().addPart(editPart);
 		} catch (Exception e) {
@@ -232,10 +283,6 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 		sPart.initialize(getManagedForm());
 		getManagedForm().addPart(sPart);
 		addFilterListener(filterTxt, membersViewer);
-		// configureAddMemberButton(sPart, addBtn, entity,
-		// "Add new members to this mailing list",
-		// PeopleTypes.PEOPLE_CONTACTABLE);
-
 		refreshFilteredList();
 
 		// Double click
@@ -301,32 +348,6 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 		return rows;
 	}
 
-	// private class PrimaryMailLabelProvider extends ColumnLabelProvider {
-	// private static final long serialVersionUID = 1L;
-	//
-	// @Override
-	// public String getText(Object element) {
-	// String text = null;
-	// try {
-	// Row currRow = (Row) element;
-	// Node currNode = currRow.getNode(PeopleTypes.PEOPLE_ENTITY);
-	// text = PeopleJcrUtils.getPrimaryContactValue(currNode,
-	// PeopleTypes.PEOPLE_EMAIL);
-	// } catch (RepositoryException re) {
-	// throw new PeopleException(
-	// "unable to retrieve primary mail value for row "
-	// + element, re);
-	// }
-	// return text == null ? "" : PeopleHtmlUtils.cleanHtmlString(text);
-	// }
-	//
-	// @Override
-	// public Image getImage(Object element) {
-	// return null;
-	// }
-	//
-	// }
-
 	private TableViewer createTableViewer(Composite parent) {
 		parent.setLayout(new GridLayout());
 		PeopleVirtualTableViewer tableCmp = new PeopleVirtualTableViewer(
@@ -337,57 +358,6 @@ public class MailingListEditor extends AbstractEntityCTabEditor implements
 				PeopleTypes.PEOPLE_ENTITY, getPeopleUiService()));
 		return tableViewer;
 	}
-
-	// private TableViewer createTableViewer(Composite parent) {
-	// parent.setLayout(new FillLayout());
-	// // Define the TableViewer
-	// final Table table = toolkit.createTable(parent, SWT.VIRTUAL);
-	// TableViewer viewer = new TableViewer(table);
-	//
-	// table.setHeaderVisible(true);
-	// table.setLinesVisible(true);
-	// // table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-	// table.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
-	//
-	// // Entity Type Icon
-	// TableViewerColumn col = ViewerUtils.createTableViewerColumn(viewer, "",
-	// SWT.NONE, 25);
-	// col.setLabelProvider(new TypeLabelProvider());
-	//
-	// // Display Name
-	// col = ViewerUtils.createTableViewerColumn(viewer, "Display Name",
-	// SWT.NONE, 180);
-	// col.setLabelProvider(new HtmlJcrRowLabelProvider(
-	// PeopleTypes.PEOPLE_ENTITY, Property.JCR_TITLE));
-	//
-	// // Primary mail address
-	// col = ViewerUtils.createTableViewerColumn(viewer, "Primary mail",
-	// SWT.NONE, 300);
-	// col.setLabelProvider(new PrimaryMailLabelProvider());
-	//
-	// // Remove links
-	// table.addSelectionListener(new HtmlListRwtAdapter());
-	// col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE, 50);
-	// col.setLabelProvider(new ColumnLabelProvider() {
-	// private static final long serialVersionUID = 1L;
-	//
-	// @Override
-	// public String getText(Object element) {
-	// try {
-	// Node link = ((Row) element)
-	// .getNode(PeopleTypes.PEOPLE_MAILING_LIST_ITEM);
-	// // get the corresponding group
-	// Node person = getParentMailingList(link);
-	// return PeopleHtmlUtils.getRemoveReferenceSnippetForLists(
-	// link, person);
-	// } catch (RepositoryException e) {
-	// throw new PeopleException(
-	// "Error while getting versionable parent", e);
-	// }
-	// }
-	// });
-	// return viewer;
-	// }
 
 	/** Use this method to update the result table */
 	protected void setViewerInput(Row[] rows) {
