@@ -24,7 +24,6 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -45,40 +44,6 @@ public class SimpleTextPage implements CmsUiProvider {
 		
 		Composite shell = parent;
 		
-		Button button =new Button(shell, SWT.PUSH);
-		button.setText(" yes ");
-		button.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-		
-		button =new Button(shell, SWT.PUSH);
-		button.setText(" / ");
-		button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
-		
-		button =new Button(shell, SWT.PUSH);
-		button.setText(" no ");
-		button.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
-		
-		Button okButton=new Button(shell, SWT.PUSH);
-        okButton.setText(" yes ");
-        GridData okGridData = new GridData();
-        okGridData.horizontalAlignment = GridData.END;
-        okButton.setLayoutData(okGridData);
-
-        Label separate=new Label(shell, SWT.NULL);           
-        separate.setText(" / ");
-        GridData sepGridData = new GridData();
-        sepGridData.horizontalAlignment = GridData.CENTER;
-        separate.setLayoutData(sepGridData);
-
-        
-        Button notOkButton=new Button(shell, SWT.PUSH);
-        notOkButton.setText(" no ");
-        GridData notOkGridData = new GridData();
-        notOkGridData.horizontalAlignment = GridData.BEGINNING;
-        notOkButton.setLayoutData(notOkGridData);
-		
-		// if (context == null)
-		// throw new ArgeoException("Context cannot be null");
-
 		scrolledArea = new ScrolledComposite(parent, SWT.V_SCROLL);
 		scrolledArea.setExpandVertical(true);
 		scrolledArea.setExpandHorizontal(true);
