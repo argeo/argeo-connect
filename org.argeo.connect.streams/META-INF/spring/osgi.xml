@@ -24,10 +24,4 @@
 
 	<!-- SERVICES -->
 	<service ref="rssManager" interface="org.argeo.connect.streams.RssManager" />
-	<service ref="streamsEntryPoint"
-		interface="org.eclipse.rap.rwt.application.EntryPointFactory">
-		<service-properties>
-			<beans:entry key="name" value="streams" />
-		</service-properties>
-	</service>
 </beans:beans>

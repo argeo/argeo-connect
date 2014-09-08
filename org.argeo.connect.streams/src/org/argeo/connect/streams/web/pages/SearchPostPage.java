@@ -45,6 +45,7 @@ public class SearchPostPage implements CmsUiProvider {
 	final static Log log = LogFactory.getLog(SearchPostPage.class);
 
 	// Business Objects
+	private Repository repository;
 	private Session session;
 	private String entityType = RssTypes.RSS_ITEM;
 
@@ -61,6 +62,11 @@ public class SearchPostPage implements CmsUiProvider {
 	@Override
 	public Control createUi(Composite parent, Node context)
 			throws RepositoryException {
+		try {
+			this.session = repository.login();
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Unable to log in the repository", e);
+		}
 		// try {
 		// session = context.getSession();
 		// } catch (RepositoryException re) {
@@ -173,11 +179,6 @@ public class SearchPostPage implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
 	public void setRepository(Repository repository) {
-		// TO MANAGE THIS: session stay unclosed.
-		try {
-			this.session = repository.login();
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Unable to log in the repository", e);
-		}
+		this.repository = repository;
 	}
 }

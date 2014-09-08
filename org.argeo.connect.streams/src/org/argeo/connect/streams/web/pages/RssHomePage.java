@@ -57,6 +57,7 @@ public class RssHomePage implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
 	private RssManager rssManager;
+	private Repository repository;
 	private Session session;
 
 	// This page widgets
@@ -69,6 +70,12 @@ public class RssHomePage implements CmsUiProvider {
 
 	@Override
 	public Control createUi(Composite parent, Node context) {
+		try {
+			this.session = repository.login();
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Unable to log in the repository", e);
+		}
+
 		Composite sourcesCmp = new Composite(parent, SWT.NO_FOCUS);
 		sourcesCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		sourcesCmp.setData(RWT.CUSTOM_VARIANT,
@@ -329,12 +336,7 @@ public class RssHomePage implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
 	public void setRepository(Repository repository) {
-		// TO MANAGE THIS: session stay unclosed.
-		try {
-			this.session = repository.login();
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Unable to log in the repository", e);
-		}
+		this.repository = repository;
 	}
 
 	public void setRssManager(RssManager rssManager) {
