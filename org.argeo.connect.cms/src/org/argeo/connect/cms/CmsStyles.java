@@ -4,7 +4,7 @@ package org.argeo.connect.cms;
 public interface CmsStyles {
 	// General
 	public final static String CMS_SHELL = "cms_shell";
-	public final static String CMS_NAVIGATION_LINK = "cms_navigation_link";
+	public final static String CMS_MENU_LINK = "cms_menu_link";
 
 	// Header
 	public final static String CMS_HEADER = "cms_header";
