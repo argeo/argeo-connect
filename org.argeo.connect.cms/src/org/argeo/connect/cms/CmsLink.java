@@ -99,6 +99,8 @@ public class CmsLink implements CmsUiProvider, BundleContextAware {
 			return null;
 
 		URL res = bundleContext.getBundle().getResource(image);
+		if (res == null)
+			throw new ArgeoException("No image " + image + " available.");
 
 		Image result = null;
 		InputStream inputStream = null;
