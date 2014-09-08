@@ -6,7 +6,6 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.ArgeoException;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -53,7 +52,7 @@ public class SimpleCmsHeader implements CmsUiProvider {
 			style = SWT.END;
 			custom = CmsStyles.CMS_HEADER_END;
 		} else {
-			throw new ArgeoException("Unsupported part providers "
+			throw new CmsException("Unsupported part providers "
 					+ partProviders);
 		}
 

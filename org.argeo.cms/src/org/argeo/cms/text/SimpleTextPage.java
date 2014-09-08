@@ -11,7 +11,7 @@ import javax.jcr.RepositoryException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.ArgeoException;
+import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsUiProvider;
 import org.argeo.cms.CmsUtils;
 import org.eclipse.rap.rwt.RWT;
@@ -132,7 +132,7 @@ public class SimpleTextPage implements CmsUiProvider {
 							editor.getText()));
 					paragraphs.addAll(lines);
 				} catch (IOException e1) {
-					throw new ArgeoException("Cannot read " + editor.getText(),
+					throw new CmsException("Cannot read " + editor.getText(),
 							e1);
 				}
 				refresh();

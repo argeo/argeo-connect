@@ -9,7 +9,6 @@ import javax.jcr.Node;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.ArgeoException;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.client.service.JavaScriptExecutor;
 import org.eclipse.swt.SWT;
@@ -100,7 +99,7 @@ public class CmsLink implements CmsUiProvider, BundleContextAware {
 
 		URL res = bundleContext.getBundle().getResource(image);
 		if (res == null)
-			throw new ArgeoException("No image " + image + " available.");
+			throw new CmsException("No image " + image + " available.");
 
 		Image result = null;
 		InputStream inputStream = null;
@@ -110,7 +109,7 @@ public class CmsLink implements CmsUiProvider, BundleContextAware {
 			if (log.isTraceEnabled())
 				log.trace("Loaded image " + image);
 		} catch (Exception e) {
-			throw new ArgeoException("Cannot load image " + image, e);
+			throw new CmsException("Cannot load image " + image, e);
 		} finally {
 			IOUtils.closeQuietly(inputStream);
 		}
@@ -152,7 +151,7 @@ public class CmsLink implements CmsUiProvider, BundleContextAware {
 		public MListener(CmsSession cmsSession) {
 			super();
 			if (cmsSession == null)
-				throw new ArgeoException("CMS Session cannot be null");
+				throw new CmsException("CMS Session cannot be null");
 			this.cmsSession = cmsSession;
 		}
 

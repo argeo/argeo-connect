@@ -11,7 +11,6 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
-import org.argeo.ArgeoException;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -26,7 +25,7 @@ public class SimpleDynamicPages implements CmsUiProvider {
 	public Control createUi(Composite parent, Node context)
 			throws RepositoryException {
 		if (context == null)
-			throw new ArgeoException("Context cannot be null");
+			throw new CmsException("Context cannot be null");
 		parent.setLayout(new GridLayout(2, false));
 
 		// parent

@@ -7,7 +7,6 @@ import javax.jcr.Session;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.ArgeoException;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
@@ -97,7 +96,7 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 			refreshHeader();
 			refreshBody();
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot perform auth change", e);
+			throw new CmsException("Cannot perform auth change", e);
 		}
 
 	}
@@ -117,7 +116,7 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 				else
 					node = null;
 			} catch (RepositoryException e) {
-				throw new ArgeoException("Cannot retrieve node", e);
+				throw new CmsException("Cannot retrieve node", e);
 			}
 		}
 	}

@@ -45,6 +45,9 @@ public class CmsApplication implements ApplicationConfiguration,
 
 			for (String resource : resources) {
 				URL res = bundleContext.getBundle().getResource(resource);
+				if (res == null)
+					throw new CmsException("Resource " + resource
+							+ " not found");
 				application.addResource(resource, new UrlResourceLoader(res));
 				if (log.isDebugEnabled())
 					log.debug("Registered resource " + resource);
@@ -82,6 +85,9 @@ public class CmsApplication implements ApplicationConfiguration,
 				List<String> cssLst = styleSheets.get(themeId);
 				for (String css : cssLst) {
 					URL res = bundleContext.getBundle().getResource(css);
+					if (res == null)
+						throw new CmsException("Stylesheet " + css
+								+ " not found");
 					application.addStyleSheet(themeId, css,
 							new UrlResourceLoader(res));
 				}

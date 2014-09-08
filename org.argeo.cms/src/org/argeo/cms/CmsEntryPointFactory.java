@@ -10,14 +10,12 @@ import javax.jcr.RepositoryException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.ArgeoException;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.EntryPoint;
 import org.eclipse.rap.rwt.application.EntryPointFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -142,7 +140,7 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 				// }
 				// });
 			} catch (Exception e) {
-				throw new ArgeoException("Cannot create entrypoint contents", e);
+				throw new CmsException("Cannot create entrypoint contents", e);
 			}
 		}
 
@@ -155,7 +153,7 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 			try {
 				header.createUi(headerArea, getNode());
 			} catch (RepositoryException e) {
-				throw new ArgeoException("Cannot refresh header", e);
+				throw new CmsException("Cannot refresh header", e);
 			}
 			headerArea.layout(true, true);
 		}
@@ -227,7 +225,7 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 				SecurityContextHolder.getContext().setAuthentication(
 						authentication);
 			} catch (Exception e) {
-				throw new ArgeoException("Cannot authenticate", e);
+				throw new CmsException("Cannot authenticate", e);
 			}
 		}
 	}
