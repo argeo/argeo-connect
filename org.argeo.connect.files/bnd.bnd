@@ -1,4 +1,2 @@
 Import-Package: *,\
 org.springframework.core
-
-Fragment-Host: org.argeo.connect.cms

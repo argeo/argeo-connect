@@ -1,4 +1,4 @@
-package org.argeo.connect.cms.text;
+package org.argeo.cms.text;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -12,8 +12,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
-import org.argeo.connect.cms.CmsUiProvider;
-import org.argeo.connect.cms.CmsUtils;
+import org.argeo.cms.CmsUiProvider;
+import org.argeo.cms.CmsUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;

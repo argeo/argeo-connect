@@ -1,4 +1,4 @@
-package org.argeo.connect.cms.text;
+package org.argeo.cms.text;
 
 /** Styles references in the CSS. */
 public interface TextStyles {

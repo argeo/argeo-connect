@@ -16,7 +16,7 @@
 		<version.connect>2.1.9-SNAPSHOT</version.connect>
 	</properties>
 	<modules>
-		<module>org.argeo.connect.cms</module>
+		<module>org.argeo.cms</module>
 		<module>org.argeo.connect.people.specs</module>
 		<module>org.argeo.connect.media.specs</module>
 		<module>org.argeo.connect.people.core</module>

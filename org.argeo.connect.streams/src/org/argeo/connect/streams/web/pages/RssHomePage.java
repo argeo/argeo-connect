@@ -14,9 +14,9 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.cms.CmsSession;
-import org.argeo.connect.cms.CmsUiProvider;
-import org.argeo.connect.cms.CmsUtils;
+import org.argeo.cms.CmsSession;
+import org.argeo.cms.CmsUiProvider;
+import org.argeo.cms.CmsUtils;
 import org.argeo.connect.streams.RssManager;
 import org.argeo.connect.streams.RssNames;
 import org.argeo.connect.streams.RssTypes;

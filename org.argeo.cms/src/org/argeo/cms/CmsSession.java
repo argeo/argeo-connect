@@ -1,4 +1,4 @@
-package org.argeo.connect.cms;
+package org.argeo.cms;
 
 /** Provides interaction with the CMS system */
 public interface CmsSession {

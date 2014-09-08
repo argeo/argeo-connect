@@ -15,7 +15,7 @@ import javax.jcr.query.qom.Selector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
-import org.argeo.connect.cms.CmsUiProvider;
+import org.argeo.cms.CmsUiProvider;
 import org.argeo.connect.streams.RssNames;
 import org.argeo.connect.streams.RssTypes;
 import org.argeo.connect.streams.web.providers.RssHtmlProvider;

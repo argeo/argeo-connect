@@ -1,4 +1,4 @@
-package org.argeo.connect.cms;
+package org.argeo.cms;
 
 import org.eclipse.swt.layout.GridLayout;
 

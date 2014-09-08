@@ -7,7 +7,7 @@
 		<version>2.1.9-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
-	<artifactId>org.argeo.connect.cms</artifactId>
+	<artifactId>org.argeo.cms</artifactId>
 	<name>Connect Content Management System</name>
 	<packaging>jar</packaging>
 

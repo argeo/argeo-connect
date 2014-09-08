@@ -17,7 +17,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.cms</artifactId>
+			<artifactId>org.argeo.cms</artifactId>
 			<version>2.1.9-SNAPSHOT</version>
 		</dependency>
 

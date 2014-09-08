@@ -1,4 +1,4 @@
-package org.argeo.connect.cms;
+package org.argeo.cms;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;

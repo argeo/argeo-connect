@@ -4,7 +4,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.cms.CmsUiProvider;
+import org.argeo.cms.CmsUiProvider;
 import org.argeo.connect.streams.RssTypes;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;

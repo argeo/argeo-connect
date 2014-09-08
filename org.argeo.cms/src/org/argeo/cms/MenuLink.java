@@ -1,4 +1,4 @@
-package org.argeo.connect.cms;
+package org.argeo.cms;
 
 /**
  * Convenience class setting the custom style {@link CmsStyles#CMS_MENU_LINK} on
