@@ -13,7 +13,7 @@
 	<description></description>
 	<version>2.1.9-SNAPSHOT</version>
 	<properties>
-		<version.connect>2.1.9-SNAPSHOT</version.connect>
+		<version.connect>2.1.9</version.connect>
 	</properties>
 	<modules>
 		<module>org.argeo.cms</module>
