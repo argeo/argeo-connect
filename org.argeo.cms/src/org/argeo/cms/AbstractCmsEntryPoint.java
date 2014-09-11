@@ -8,6 +8,7 @@ import javax.jcr.Session;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.jcr.UserJcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.rap.rwt.client.service.BrowserNavigation;
@@ -104,6 +105,7 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 	@Override
 	public void exception(Throwable e) {
 		this.exception = e;
+		log.error("Unexpected exception in CMS", e);
 		refreshBody();
 	}
 
@@ -113,12 +115,13 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 			try {
 				if (session.itemExists(state))
 					node = session.getNode(state);
-				else
-					node = null;
 			} catch (RepositoryException e) {
 				throw new CmsException("Cannot retrieve node", e);
 			}
 		}
+
+		if (node == null)
+			node = UserJcrUtils.getUserHome(session);
 	}
 
 	protected Node getNode() {

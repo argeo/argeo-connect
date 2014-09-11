@@ -1,8 +1,8 @@
 <cms = 'http://www.argeo.org/ns/cms'>
 
 [cms:styled]
-- cms:style
-- cms:content
+- cms:style (STRING)
+- cms:content (STRING)
 
 [cms:media] > nt:file, mix:title
 

@@ -83,8 +83,6 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 		private Composite headerArea;
 		private Composite bodyArea;
 
-		// private ScrolledComposite scrolledArea;
-
 		public CmsEntryPoint(Repository repository, String workspace) {
 			super(repository, workspace);
 		}
@@ -106,39 +104,12 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 				headerArea.setLayoutData(headerData);
 				refreshHeader();
 
-				// scrolledArea = new ScrolledComposite(parent, SWT.V_SCROLL);
-				// scrolledArea.setData(RWT.CUSTOM_VARIANT,
-				// CmsStyles.CMS_SCROLLED_AREA);
-				// // scrolledComp.setMinHeight( CONTENT_MIN_HEIGHT );
-				// // scrolledComp.setMinWidth( CENTER_AREA_WIDTH );
-				// scrolledArea.setExpandVertical(true);
-				// scrolledArea.setExpandHorizontal(true);
-				// scrolledArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
-				// true, true));
-				// // scrolledArea.setLayout(new FillLayout());
-				// scrolledArea.setAlwaysShowScrollBars(true);
-				// scrolledArea.setExpandVertical(true);
-				// scrolledArea.setMinHeight(400);
-
 				bodyArea = new Composite(parent, SWT.NONE);
 				bodyArea.setData(RWT.CUSTOM_VARIANT, CmsStyles.CMS_BODY);
 				bodyArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 						true));
 				bodyArea.setBackgroundMode(SWT.INHERIT_DEFAULT);
 				bodyArea.setLayout(CmsUtils.noSpaceGridLayout());
-				// scrolledArea.setContent(bodyArea);
-				//
-				// // cf.
-				// //
-				// http://www.java2s.com/Code/Java/SWT-JFace-Eclipse/CreateaScrolledCompositewithwrappingcontent.htm
-				// scrolledArea.addControlListener(new ControlAdapter() {
-				// public void controlResized(ControlEvent e) {
-				// Rectangle r = scrolledArea.getClientArea();
-				// Point preferredSize = bodyArea.computeSize(SWT.DEFAULT,
-				// r.height);
-				// scrolledArea.setMinHeight(preferredSize.y);
-				// }
-				// });
 			} catch (Exception e) {
 				throw new CmsException("Cannot create entrypoint contents", e);
 			}

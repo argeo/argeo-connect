@@ -5,7 +5,10 @@ import org.eclipse.swt.layout.GridLayout;
 /** Static utilities for the CMS framework. */
 public class CmsUtils {
 	public static GridLayout noSpaceGridLayout() {
-		GridLayout layout = new GridLayout();
+		return noSpaceGridLayout(new GridLayout());
+	}
+
+	public static GridLayout noSpaceGridLayout(GridLayout layout) {
 		layout.horizontalSpacing = 0;
 		layout.verticalSpacing = 0;
 		layout.marginWidth = 0;
