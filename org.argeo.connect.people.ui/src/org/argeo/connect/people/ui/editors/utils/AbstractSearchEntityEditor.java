@@ -19,6 +19,7 @@ import org.argeo.connect.people.ui.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.ui.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
+import org.argeo.connect.people.ui.utils.Refreshable;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -43,7 +44,7 @@ import org.eclipse.ui.part.EditorPart;
  *  SearchNodeEditorInput} editor input.
  */
 public abstract class AbstractSearchEntityEditor extends EditorPart implements
-		PeopleNames {
+		PeopleNames, Refreshable {
 
 	/* DEPENDENCY INJECTION */
 	private Session session;
@@ -222,8 +223,10 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		super.dispose();
 	}
 
-	// ///////////////
-	// LOCAL CLASSES
+	@Override
+	public void forceRefresh(Object object) {
+		refreshStaticFilteredList();
+	}
 
 	// /////////////////////////
 	// Expose to children classes
@@ -247,6 +250,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		return peopleUiService;
 	}
 
+	// Local Methods
 	protected Text createBoldLT(Composite parent, String title, String message,
 			String tooltip) {
 		return createBoldLT(parent, title, message, tooltip, 1);

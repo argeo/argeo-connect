@@ -9,6 +9,7 @@ import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
@@ -22,10 +23,12 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiService;
@@ -36,6 +39,8 @@ import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.ui.providers.TagLabelProvider;
 import org.argeo.connect.people.ui.providers.TitleWithIconLP;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
+import org.argeo.connect.people.ui.utils.Refreshable;
+import org.argeo.connect.people.ui.wizards.EditTagWizard;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.argeo.jcr.JcrUtils;
@@ -44,13 +49,18 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -62,7 +72,7 @@ import org.eclipse.ui.part.EditorPart;
 /**
  * Editor that display a list of entity that has a given Tag.
  */
-public class TagEditor extends EditorPart implements PeopleNames {
+public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".tagEditor";
 
 	/* DEPENDENCY INJECTION */
@@ -72,12 +82,11 @@ public class TagEditor extends EditorPart implements PeopleNames {
 	private PeopleUiService peopleUiService;
 
 	// this page widgets.
+	private List<PeopleColumnDefinition> colDefs;
 	private TableViewer membersViewer;
 	private Text filterTxt;
-	@SuppressWarnings("unused")
-	private Row[] rows; // Keep a local cache of the currently displayed rows.
-	private List<PeopleColumnDefinition> colDefs;
-
+	// private Row[] rows; // Keep a local cache of the currently displayed rows.
+	
 	// Business Objects
 	private Node node;
 	protected FormToolkit toolkit;
@@ -138,7 +147,7 @@ public class TagEditor extends EditorPart implements PeopleNames {
 	}
 
 	protected void populateHeader(final Composite parent) {
-		parent.setLayout(new GridLayout());
+		parent.setLayout(new GridLayout(2, false));
 		final Label titleROLbl = toolkit.createLabel(parent, "", SWT.WRAP);
 		titleROLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
 		final ColumnLabelProvider groupTitleLP = new TagLabelProvider(
@@ -146,6 +155,45 @@ public class TagEditor extends EditorPart implements PeopleNames {
 				peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
 				PEOPLE_TAGS);
 		titleROLbl.setText(groupTitleLP.getText(getNode()));
+		titleROLbl
+				.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+		Link editTitleLink = null;
+		UserManagementService userService = peopleService
+				.getUserManagementService();
+		if (userService.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
+				|| userService.isUserInRole(PeopleConstants.ROLE_ADMIN)) {
+			editTitleLink = new Link(parent, SWT.NONE);
+			editTitleLink.setText("<a>Edit Tag</a>");
+		} else
+			toolkit.createLabel(parent, "");
+
+		if (editTitleLink != null) {
+			editTitleLink.addSelectionListener(new SelectionAdapter() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void widgetSelected(final SelectionEvent event) {
+
+					Wizard wizard = new EditTagWizard(
+							peopleService,
+							peopleUiService,
+							getNode(),
+							NodeType.NT_UNSTRUCTURED,
+							peopleService
+									.getResourceBasePath(PeopleConstants.RESOURCE_TAG),
+							PeopleTypes.PEOPLE_ENTITY, PeopleNames.PEOPLE_TAGS,
+							peopleService.getBasePath(null));
+					WizardDialog dialog = new WizardDialog(titleROLbl
+							.getShell(), wizard);
+					int result = dialog.open();
+					if (result == WizardDialog.OK) {
+						titleROLbl.setText(groupTitleLP.getText(getNode()));
+					}
+				}
+			});
+		}
+
 	}
 
 	public void createMembersList(Composite parent, final Node entity) {
@@ -244,7 +292,7 @@ public class TagEditor extends EditorPart implements PeopleNames {
 
 	/** Use this method to update the result table */
 	protected void setViewerInput(Row[] rows) {
-		this.rows = rows;
+		//this.rows = rows;
 		membersViewer.setInput(rows);
 		// we must explicitly set the items count
 		membersViewer.setItemCount(rows.length);
@@ -276,6 +324,11 @@ public class TagEditor extends EditorPart implements PeopleNames {
 	}
 
 	@Override
+	public void forceRefresh(Object object) {
+		refreshFilteredList();
+	}
+
+	@Override
 	public boolean isDirty() {
 		return false;
 	}
@@ -285,8 +338,6 @@ public class TagEditor extends EditorPart implements PeopleNames {
 	public Node getNode() {
 		return node;
 	}
-
-	/* Private */
 
 	/* UTILITES */
 	protected boolean canSave() {

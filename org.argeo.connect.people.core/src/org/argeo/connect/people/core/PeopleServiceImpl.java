@@ -3,7 +3,6 @@ package org.argeo.connect.people.core;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -11,9 +10,7 @@ import javax.jcr.Property;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
-import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Constraint;
@@ -32,6 +29,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.TagService;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
@@ -47,6 +45,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private ContactService contactService = new ContactServiceImpl(this);
 	private ActivityService activityService = new ActivityServiceImpl(this,
 			userManagementService);
+	private TagService tagService = new TagServiceImpl(this);
 
 	private Repository repository;
 
@@ -273,7 +272,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		String displayName = null;
 		try {
 			boolean defineDistinct = false;
-
 			if (entity.hasProperty(PEOPLE_USE_DISTINCT_DISPLAY_NAME))
 				defineDistinct = entity.getProperty(
 						PEOPLE_USE_DISTINCT_DISPLAY_NAME).getBoolean();
@@ -283,15 +281,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 				String lastName = CommonsJcrUtils.get(entity, PEOPLE_LAST_NAME);
 				String firstName = CommonsJcrUtils.get(entity,
 						PEOPLE_FIRST_NAME);
-				// Todo use this for Kassel
-				// if (CommonsJcrUtils.checkNotEmptyString(firstName) ||
-				// CommonsJcrUtils.checkNotEmptyString(lastName)) {
-				// displayName = firstName;
-				// if (CommonsJcrUtils.checkNotEmptyString(firstName)
-				// && CommonsJcrUtils.checkNotEmptyString(lastName))
-				// displayName += " ";
-				// displayName += lastName;
-				// }
 				if (CommonsJcrUtils.checkNotEmptyString(firstName)
 						|| CommonsJcrUtils.checkNotEmptyString(lastName)) {
 					displayName = lastName;
@@ -307,14 +296,12 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 				throw new PeopleException("Display name not defined for type "
 						+ entity.getPrimaryNodeType().getName() + " - node: "
 						+ entity);
-
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to get display name for node "
 					+ entity, e);
 		}
 
 		return displayName;
-
 	}
 
 	@Override
@@ -568,161 +555,161 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			node.getSession().save();
 	}
 
-	// ///////////////////////
-	// TAGS Management
-	@Override
-	public void refreshKnownTags(Session session) {
-		refreshKnownTags(session, NodeType.NT_UNSTRUCTURED,
-				getResourceBasePath(PeopleConstants.RESOURCE_TAG),
-				PeopleTypes.PEOPLE_BASE, PeopleNames.PEOPLE_TAGS,
-				getBasePath(null));
-	}
-
-	@Override
-	public void refreshKnownTags(Session session, String tagResourceType,
-			String tagParentPath, String tagableNodeType, String tagPropName,
-			String tagableParentPath) {
-
-		// Session session, String resourceNodeType,
-		// String resourceInstancesParentPath, String tagableNodeType,
-		// , String tagableParentPath
-
-		List<String> existingValues = new ArrayList<String>();
-		List<String> registeredTags = new ArrayList<String>();
-
-		try {
-			Query query;
-			NodeIterator nit;
-			// Retrieve existing tags
-			if (session.nodeExists(tagParentPath)) {
-				query = session
-						.getWorkspace()
-						.getQueryManager()
-						.createQuery(
-								"select * from [" + tagResourceType
-										+ "] as tags where ISDESCENDANTNODE('"
-										+ tagParentPath + "') ", Query.JCR_SQL2);
-				nit = query.execute().getNodes();
-				while (nit.hasNext()) {
-					Node currNode = nit.nextNode();
-					String currTag = CommonsJcrUtils.get(currNode,
-							Property.JCR_TITLE);
-					if (CommonsJcrUtils.checkNotEmptyString(currTag)
-							&& !registeredTags.contains(currTag))
-						registeredTags.add(currTag.trim());
-				}
-			}
-
-			// Look for not yet registered tags
-			query = session
-					.getWorkspace()
-					.getQueryManager()
-					.createQuery(
-							"select * from [" + tagableNodeType
-									+ "] as instances where ISDESCENDANTNODE('"
-									+ tagableParentPath + "') ", Query.JCR_SQL2);
-			nit = query.execute().getNodes();
-			while (nit.hasNext()) {
-				Node currNode = nit.nextNode();
-				if (currNode.hasProperty(tagPropName)) {
-					Value[] tags = currNode.getProperty(tagPropName)
-							.getValues();
-					for (Value tagV : tags) {
-						String currTag = tagV.getString().trim();
-						if (CommonsJcrUtils.checkNotEmptyString(currTag)
-								&& !registeredTags.contains(currTag))
-							existingValues.add(currTag);
-					}
-				}
-			}
-
-			// Create tag parent if needed
-			if (!session.nodeExists(tagParentPath)) {
-				JcrUtils.mkdirs(session, tagParentPath);
-				session.save();
-			}
-
-			// real update
-			for (String tag : existingValues) {
-				if (!registeredTags.contains(tag)) {
-					registerTag(session, tagResourceType, tagParentPath, tag);
-					session.save();
-				}
-			}
-		} catch (RepositoryException ee) {
-			throw new PeopleException("Unable to refresh cache of known tags",
-					ee);
-		}
-	}
-
-	@Override
-	public Node getRegisteredTag(Session session, String tagParentPath,
-			String tag) {
-		try {
-			// remove trailing and starting space
-			tag = tag.trim();
-			String path = tagParentPath + "/" + getTagRelPath(tag);
-
-			if (session.nodeExists(path)) {
-				Node existing = session.getNode(path);
-				if (tag.equalsIgnoreCase(CommonsJcrUtils.get(existing,
-						Property.JCR_TITLE))) {
-					return existing;
-				}
-			}
-		} catch (RepositoryException ee) {
-			throw new PeopleException("Unable to get registered tag " + tag
-					+ " under " + tagParentPath);
-		}
-		return null;
-	}
-
-	@Override
-	public Node registerTag(Session session, String resourceType,
-			String tagParentPath, String tag) throws RepositoryException {
-		// remove trailing and starting space
-		tag = tag.trim();
-		String path = tagParentPath + "/" + getTagRelPath(tag);
-
-		if (session.nodeExists(path)) {
-			Node existing = session.getNode(path);
-			if (tag.equalsIgnoreCase(CommonsJcrUtils.get(existing,
-					Property.JCR_TITLE))) {
-				// Tag already exists, we do nothing.
-				if (log.isTraceEnabled())
-					log.debug("Tag ["
-							+ CommonsJcrUtils.get(existing, Property.JCR_TITLE)
-							+ "] already exists. Cannot add [" + tag
-							+ "], nothing has been done.");
-				return existing;
-			}
-		}
-		Node newTag = JcrUtils.mkdirs(session, path, resourceType);
-		if (!newTag.isNodeType(NodeType.MIX_TITLE))
-			newTag.addMixin(NodeType.MIX_TITLE);
-		newTag.setProperty(Property.JCR_TITLE, tag);
-
-		if (newTag.isNodeType(PeopleTypes.PEOPLE_ENTITY)) {
-			String uuid = UUID.randomUUID().toString();
-			newTag.setProperty(PeopleNames.PEOPLE_UID, uuid);
-		}
-
-		return newTag;
-	}
-
-	@Override
-	public void unregisterTag(Session session, String tagParentPath,
-			String tag, String tagableParentPath) {
-		throw new PeopleException("unimplemented method.");
-	}
-
-	protected String getTagRelPath(String tag) {
-		// remove trailing and starting space
-		tag = tag.trim();
-		String cleanedTag = JcrUtils.replaceInvalidChars(tag).trim();
-		String relPath = JcrUtils.firstCharsToPath(cleanedTag, 2);
-		return relPath + "/" + cleanedTag;
-	}
+	// // ///////////////////////
+	// // TAGS Management
+	// @Override
+	// public void refreshKnownTags(Session session) {
+	// refreshKnownTags(session, NodeType.NT_UNSTRUCTURED,
+	// getResourceBasePath(PeopleConstants.RESOURCE_TAG),
+	// PeopleTypes.PEOPLE_BASE, PeopleNames.PEOPLE_TAGS,
+	// getBasePath(null));
+	// }
+	//
+	// @Override
+	// public void refreshKnownTags(Session session, String tagResourceType,
+	// String tagParentPath, String tagableNodeType, String tagPropName,
+	// String tagableParentPath) {
+	//
+	// // Session session, String resourceNodeType,
+	// // String resourceInstancesParentPath, String tagableNodeType,
+	// // , String tagableParentPath
+	//
+	// List<String> existingValues = new ArrayList<String>();
+	// List<String> registeredTags = new ArrayList<String>();
+	//
+	// try {
+	// Query query;
+	// NodeIterator nit;
+	// // Retrieve existing tags
+	// if (session.nodeExists(tagParentPath)) {
+	// query = session
+	// .getWorkspace()
+	// .getQueryManager()
+	// .createQuery(
+	// "select * from [" + tagResourceType
+	// + "] as tags where ISDESCENDANTNODE('"
+	// + tagParentPath + "') ", Query.JCR_SQL2);
+	// nit = query.execute().getNodes();
+	// while (nit.hasNext()) {
+	// Node currNode = nit.nextNode();
+	// String currTag = CommonsJcrUtils.get(currNode,
+	// Property.JCR_TITLE);
+	// if (CommonsJcrUtils.checkNotEmptyString(currTag)
+	// && !registeredTags.contains(currTag))
+	// registeredTags.add(currTag.trim());
+	// }
+	// }
+	//
+	// // Look for not yet registered tags
+	// query = session
+	// .getWorkspace()
+	// .getQueryManager()
+	// .createQuery(
+	// "select * from [" + tagableNodeType
+	// + "] as instances where ISDESCENDANTNODE('"
+	// + tagableParentPath + "') ", Query.JCR_SQL2);
+	// nit = query.execute().getNodes();
+	// while (nit.hasNext()) {
+	// Node currNode = nit.nextNode();
+	// if (currNode.hasProperty(tagPropName)) {
+	// Value[] tags = currNode.getProperty(tagPropName)
+	// .getValues();
+	// for (Value tagV : tags) {
+	// String currTag = tagV.getString().trim();
+	// if (CommonsJcrUtils.checkNotEmptyString(currTag)
+	// && !registeredTags.contains(currTag))
+	// existingValues.add(currTag);
+	// }
+	// }
+	// }
+	//
+	// // Create tag parent if needed
+	// if (!session.nodeExists(tagParentPath)) {
+	// JcrUtils.mkdirs(session, tagParentPath);
+	// session.save();
+	// }
+	//
+	// // real update
+	// for (String tag : existingValues) {
+	// if (!registeredTags.contains(tag)) {
+	// registerTag(session, tagResourceType, tagParentPath, tag);
+	// session.save();
+	// }
+	// }
+	// } catch (RepositoryException ee) {
+	// throw new PeopleException("Unable to refresh cache of known tags",
+	// ee);
+	// }
+	// }
+	//
+	// @Override
+	// public Node getRegisteredTag(Session session, String tagParentPath,
+	// String tag) {
+	// try {
+	// // remove trailing and starting space
+	// tag = tag.trim();
+	// String path = tagParentPath + "/" + getTagRelPath(tag);
+	//
+	// if (session.nodeExists(path)) {
+	// Node existing = session.getNode(path);
+	// if (tag.equalsIgnoreCase(CommonsJcrUtils.get(existing,
+	// Property.JCR_TITLE))) {
+	// return existing;
+	// }
+	// }
+	// } catch (RepositoryException ee) {
+	// throw new PeopleException("Unable to get registered tag " + tag
+	// + " under " + tagParentPath);
+	// }
+	// return null;
+	// }
+	//
+	// @Override
+	// public Node registerTag(Session session, String resourceType,
+	// String tagParentPath, String tag) throws RepositoryException {
+	// // remove trailing and starting space
+	// tag = tag.trim();
+	//
+	// String path = tagParentPath + "/" + getTagRelPath(tag);
+	// if (session.nodeExists(path)) {
+	// Node existing = session.getNode(path);
+	// if (tag.equalsIgnoreCase(CommonsJcrUtils.get(existing,
+	// Property.JCR_TITLE))) {
+	// // Tag already exists, we do nothing.
+	// if (log.isTraceEnabled())
+	// log.debug("Tag ["
+	// + CommonsJcrUtils.get(existing, Property.JCR_TITLE)
+	// + "] already exists. Cannot add [" + tag
+	// + "], nothing has been done.");
+	// return existing;
+	// }
+	// }
+	// Node newTag = JcrUtils.mkdirs(session, path, resourceType);
+	// if (!newTag.isNodeType(NodeType.MIX_TITLE))
+	// newTag.addMixin(NodeType.MIX_TITLE);
+	// newTag.setProperty(Property.JCR_TITLE, tag);
+	//
+	// if (newTag.isNodeType(PeopleTypes.PEOPLE_ENTITY)) {
+	// String uuid = UUID.randomUUID().toString();
+	// newTag.setProperty(PeopleNames.PEOPLE_UID, uuid);
+	// }
+	//
+	// return newTag;
+	// }
+	//
+	// @Override
+	// public void unregisterTag(Session session, String tagParentPath,
+	// String tag, String tagableParentPath) {
+	// throw new PeopleException("unimplemented method.");
+	// }
+	//
+	// protected String getTagRelPath(String tag) {
+	// // remove trailing and starting space
+	// tag = tag.trim();
+	// String cleanedTag = JcrUtils.replaceInvalidChars(tag).trim();
+	// String relPath = JcrUtils.firstCharsToPath(cleanedTag, 2);
+	// return relPath + "/" + cleanedTag;
+	// }
 
 	/* EXPOSED CLASSES */
 	@Override
@@ -733,6 +720,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	@Override
 	public ContactService getContactService() {
 		return contactService;
+	}
+
+	@Override
+	public TagService getTagService() {
+		return tagService;
 	}
 
 	@Override

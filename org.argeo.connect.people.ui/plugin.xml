@@ -411,9 +411,25 @@
 	<!-- Menus -->
 	<extension
 		point="org.eclipse.ui.menus">
-		<!-- Popup Menu for NetworkBrowserView-->
-		<!-- View Specific Menus --> 
+
 		<!-- Generic commands provided by the people app --> 
+		<menuContribution
+			locationURI="toolbar:org.argeo.ui.userToolbar?before=org.eclipse.ui.file.save"> 
+			<!-- Force resfresh if possible --> 
+			<command
+				commandId="org.argeo.connect.people.ui.forceRefresh"
+				icon="icons/refresh.png"
+				label="Force refresh of the current active part"
+				style="push"
+				tooltip="Force refresh of the current active part">
+				<visibleWhen>
+					<with variable="activePart">
+						<instanceof value="org.argeo.connect.people.ui.utils.Refreshable" />
+					</with>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+		
 		<menuContribution
 			locationURI="toolbar:org.argeo.ui.userToolbar?after=org.eclipse.ui.file.saveAll"> 
 			<!-- Check in and out management --> 
@@ -424,6 +440,10 @@
 				style="push"
 				tooltip="Check Out item for edit">
 				<visibleWhen>
+					<!-- <with variable="activePart">
+							<instanceof value="org.argeo.connect.people.ui.editors.utils.IVersionedItemEditor" />
+					</with> --> 
+					<!-- FIXME : never true, the role condition does not work -->
 					<and>
 						<with variable="activePart">
 							<instanceof value="org.argeo.connect.people.ui.editors.utils.IVersionedItemEditor" />
@@ -455,20 +475,6 @@
 			      			</iterate>
 			    		</with>
 			    	</and>
-				</visibleWhen>
-			</command>
- 				
-			<!-- Force resfresh if possible --> 
-			<command
-				commandId="org.argeo.connect.people.ui.forceRefresh"
-				icon="icons/refresh.png"
-				label="Force refresh of the current active part"
-				style="push"
-				tooltip="Force refresh of the current active part">
-				<visibleWhen>
-					<with variable="activePart">
-						<instanceof value="org.argeo.connect.people.ui.utils.Refreshable" />
-					</with>
 				</visibleWhen>
 			</command>
 		</menuContribution>

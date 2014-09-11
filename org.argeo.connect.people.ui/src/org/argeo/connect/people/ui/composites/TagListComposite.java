@@ -178,9 +178,11 @@ public class TagListComposite extends Composite {
 							@Override
 							public void widgetSelected(
 									final SelectionEvent event) {
-								Node tag = peopleService.getRegisteredTag(
-										CommonsJcrUtils.getSession(tagable),
-										tagsParentPath, tagValue);
+								Node tag = peopleService.getTagService()
+										.getRegisteredTag(
+												CommonsJcrUtils
+														.getSession(tagable),
+												tagsParentPath, tagValue);
 								// ResourcesJcrUtils.getTagNodeFromValue(
 								// CommonsJcrUtils.getSession(entity),
 								// peopleService
@@ -244,8 +246,8 @@ public class TagListComposite extends Composite {
 
 					tagTxt.getParent().layout();
 
-					Button okBtn = toolkit.createButton(parentCmp, "OK", SWT.BORDER
-							| SWT.PUSH | SWT.BOTTOM);
+					Button okBtn = toolkit.createButton(parentCmp, "OK",
+							SWT.BORDER | SWT.PUSH | SWT.BOTTOM);
 					rd = new RowData(SWT.DEFAULT, tagTxt.getSize().y - 2);
 					okBtn.setLayoutData(rd);
 
@@ -316,8 +318,8 @@ public class TagListComposite extends Composite {
 		try {
 			Session session = tagable.getSession();
 			// Check if such a tag is already registered
-			Node registered = peopleService.getRegisteredTag(session,
-					tagsParentPath, newTag);
+			Node registered = peopleService.getTagService().getRegisteredTag(
+					session, tagsParentPath, newTag);
 
 			if (registered == null) {
 				// Ask end user if we create a new tag
@@ -325,8 +327,8 @@ public class TagListComposite extends Composite {
 						+ newTag
 						+ "\" is not yet registered.\n Are you sure you want to create it?";
 				if (MessageDialog.openConfirm(shell, "Confirm creation", msg)) {
-					registered = peopleService.registerTag(session,
-							resourceType, tagsParentPath, newTag);
+					registered = peopleService.getTagService().registerTag(
+							session, resourceType, tagsParentPath, newTag);
 					if (registered.isNodeType(NodeType.MIX_VERSIONABLE))
 						createdTagPath.add(registered.getPath());
 				} else

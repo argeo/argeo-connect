@@ -3,9 +3,13 @@ package org.argeo.connect.people.ui.commands;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -41,7 +45,13 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 
 		try {
 			session = repository.login();
-			peopleService.refreshKnownTags(session);
+			peopleService.getTagService().refreshKnownTags(
+					session,
+					NodeType.NT_UNSTRUCTURED,
+					peopleService
+							.getResourceBasePath(PeopleConstants.RESOURCE_TAG),
+					PeopleTypes.PEOPLE_BASE, PeopleNames.PEOPLE_TAGS,
+					peopleService.getBasePath(null));
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to log in the repository", e);
 		} finally {
