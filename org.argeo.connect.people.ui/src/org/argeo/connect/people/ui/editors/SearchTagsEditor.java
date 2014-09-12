@@ -9,6 +9,7 @@ import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
@@ -28,6 +29,7 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiPlugin;
 import org.argeo.connect.people.ui.PeopleUiService;
 import org.argeo.connect.people.ui.composites.PeopleVirtualTableViewer;
+import org.argeo.connect.people.ui.dialogs.AskTitleDescriptionDialog;
 import org.argeo.connect.people.ui.editors.utils.SearchNodeEditorInput;
 import org.argeo.connect.people.ui.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.listeners.PeopleJcrViewerDClickListener;
@@ -37,6 +39,7 @@ import org.argeo.connect.people.ui.utils.Refreshable;
 import org.argeo.connect.people.ui.wizards.EditTagWizard;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -77,6 +80,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 	private String basePath;
 	private String entityType;
 	private String propertyName;
+	private String resourceType;
 	private List<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 
 	// This page widget
@@ -96,11 +100,13 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 		// TODO this info should be stored in the parent path
 		String testStr = basePath.substring(basePath.lastIndexOf(":") + 1);
-		if ("tags".equals(testStr))
+		if ("tags".equals(testStr)) {
 			propertyName = PeopleNames.PEOPLE_TAGS;
-		else if ("mailingLists".equals(testStr))
+			resourceType = NodeType.NT_UNSTRUCTURED;
+		} else if ("mailingLists".equals(testStr)) {
 			propertyName = PeopleNames.PEOPLE_MAILING_LISTS;
-		else
+			resourceType = PeopleTypes.PEOPLE_MAILING_LIST;
+		} else
 			throw new PeopleException("Unknown tag like property at base path "
 					+ basePath);
 
@@ -152,9 +158,24 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				System.out.println("Implement This! ");
+				AskTitleDescriptionDialog dialog = new AskTitleDescriptionDialog(
+						e.display.getActiveShell(), "Create");
+				if (Dialog.OK == dialog.open()) {
+					try {
+						Node tag = peopleService.getTagService().registerTag(
+								session, resourceType, basePath,
+								dialog.getTitle());
+						if (tag.isNodeType(NodeType.MIX_VERSIONABLE))
+							CommonsJcrUtils.saveAndCheckin(tag);
+						else
+							session.save();
+						refreshStaticFilteredList();
+					} catch (RepositoryException re) {
+						throw new PeopleException("Unable to create new "
+								+ propertyName, re);
+					}
+				}
 			}
-
 		});
 	}
 

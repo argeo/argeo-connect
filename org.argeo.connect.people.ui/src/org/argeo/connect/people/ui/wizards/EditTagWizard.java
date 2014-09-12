@@ -143,16 +143,13 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			}
 
 			// TODO use transaction
-
 			boolean isVersionable = tagLikeInstanceNode
 					.isNodeType(NodeType.MIX_VERSIONABLE);
 			boolean isCheckedIn = isVersionable
 					&& !CommonsJcrUtils
 							.isNodeCheckedOutByMe(tagLikeInstanceNode);
-
 			if (isCheckedIn)
 				CommonsJcrUtils.checkout(tagLikeInstanceNode);
-
 			peopleService.getTagService().updateTagTitle(tagLikeInstanceNode,
 					resourceNodeType, resourceInstancesParentPath, newTitle,
 					taggableNodeType, tagPropName, taggableParentPath);
@@ -162,7 +159,6 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			else if (tagLikeInstanceNode.hasProperty(Property.JCR_DESCRIPTION))
 				// force reset
 				tagLikeInstanceNode.setProperty(Property.JCR_DESCRIPTION, "");
-
 			if (isCheckedIn)
 				CommonsJcrUtils.saveAndCheckin(tagLikeInstanceNode);
 			else if (isVersionable) // workaround versionnable node should have
