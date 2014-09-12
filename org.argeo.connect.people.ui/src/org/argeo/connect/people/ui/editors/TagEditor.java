@@ -70,7 +70,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.EditorPart;
 
 /**
- * Editor that display a list of entity that has a given Tag.
+ * Editor that display a filtered list of entities that have a given Tag.
  */
 public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".tagEditor";
@@ -85,8 +85,9 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 	private List<PeopleColumnDefinition> colDefs;
 	private TableViewer membersViewer;
 	private Text filterTxt;
-	// private Row[] rows; // Keep a local cache of the currently displayed rows.
-	
+	// private Row[] rows; // Keep a local cache of the currently displayed
+	// rows.
+
 	// Business Objects
 	private Node node;
 	protected FormToolkit toolkit;
@@ -151,6 +152,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		final Label titleROLbl = toolkit.createLabel(parent, "", SWT.WRAP);
 		titleROLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
 		final ColumnLabelProvider groupTitleLP = new TagLabelProvider(
+				peopleService.getTagService(),
 				PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE,
 				peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
 				PEOPLE_TAGS);
@@ -292,7 +294,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 	/** Use this method to update the result table */
 	protected void setViewerInput(Row[] rows) {
-		//this.rows = rows;
+		// this.rows = rows;
 		membersViewer.setInput(rows);
 		// we must explicitly set the items count
 		membersViewer.setItemCount(rows.length);

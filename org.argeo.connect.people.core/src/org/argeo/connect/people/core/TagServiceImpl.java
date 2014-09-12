@@ -262,4 +262,28 @@ public class TagServiceImpl implements TagService {
 							+ " and adding " + newValue + " on " + node, ee);
 		}
 	}
+	
+	@Override
+	public long countMembers(Node tag, String tagableParentPath, String tagableType, String tagPropName) {
+		Query query;
+		NodeIterator nit;
+		try {
+			Session session = tag.getSession();
+			String tagValue = CommonsJcrUtils.get(tag, Property.JCR_TITLE);
+			// Retrieve existing tags
+			if (session.nodeExists(tagableParentPath)) {
+				String queryString = "select * from [" + tagableType
+						+ "] as tagged where ISDESCENDANTNODE('"
+						+ tagableParentPath + "') AND tagged.[" + tagPropName
+						+ "]='" + tagValue + "'";
+				query = session.getWorkspace().getQueryManager()
+						.createQuery(queryString, Query.JCR_SQL2);
+				nit = query.execute().getNodes();
+				return nit.getSize();
+			}
+			return 0;
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to count members for " + tag, re);
+		}
+	}
 }

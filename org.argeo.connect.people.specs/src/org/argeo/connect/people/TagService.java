@@ -90,4 +90,7 @@ public interface TagService {
 			String tagPropName, String taggableParentPath)
 			throws RepositoryException;
 
+	/** Count members that have such a tag in the taggable sub tree */
+	public long countMembers(Node tag, String tagableParentPath,
+			String tagableType, String tagPropName);
 }

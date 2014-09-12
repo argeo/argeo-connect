@@ -28,11 +28,11 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 
-/** Display a list for all values of a given resource. */
-public class ListValuesEditor extends AbstractSearchEntityEditor {
+/** Display a list for all values of a given tag like resource (Typically a tag or a mailing list). */
+public class SearchTagsEditor extends AbstractSearchEntityEditor {
 
 	public final static String ID = PeopleUiPlugin.PLUGIN_ID
-			+ ".listValuesEditor";
+			+ ".searchTagsEditor";
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)

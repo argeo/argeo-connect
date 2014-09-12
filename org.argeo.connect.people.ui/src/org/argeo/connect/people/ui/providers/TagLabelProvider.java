@@ -1,14 +1,11 @@
 package org.argeo.connect.people.ui.providers;
 
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.Property;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.query.Query;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.TagService;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -28,13 +25,16 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 	private final String tagableParentPath;
 	private final String tagableType;
 	private final String tagPropName;
+	private final TagService tagService; 
 
-	public TagLabelProvider(int listType, String tagableParentPath,
-			String tagableType, String tagPropName) {
+	public TagLabelProvider(TagService tagService, int listType,
+			String tagableParentPath, String tagableType, String tagPropName) {
+		this.tagService = tagService; 
 		this.listType = listType;
 		this.tagableParentPath = tagableParentPath;
 		this.tagableType = tagableType;
 		this.tagPropName = tagPropName;
+		
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 		builder.append("<b><big> ");
 		builder.append(CommonsJcrUtils.get(entity, Property.JCR_TITLE));
 		builder.append("</big></b>");
-		long membersNb = countMembers(entity);
+		long membersNb = tagService.countMembers(entity,tagableParentPath, tagableType, tagPropName);
 		builder.append(" <i>(").append(membersNb).append(" members)</i>");
 
 		// Description
@@ -82,33 +82,9 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 		builder.append("<b>");
 		builder.append(CommonsJcrUtils.get(entity, Property.JCR_TITLE));
 		builder.append("</b>");
-		long membersNb = countMembers(entity);
+		long membersNb = tagService.countMembers(entity, tagableParentPath, tagableType, tagPropName);
 		builder.append(" <i>(").append(membersNb).append(" members)</i>");
 		return builder.toString();
-	}
-
-	/** Count members that have such a tag in the tagable sub tree */
-	private long countMembers(Node tag) {
-		Query query;
-		NodeIterator nit;
-		try {
-			Session session = tag.getSession();
-			String tagValue = CommonsJcrUtils.get(tag, Property.JCR_TITLE);
-			// Retrieve existing tags
-			if (session.nodeExists(tagableParentPath)) {
-				String queryString = "select * from [" + tagableType
-						+ "] as tagged where ISDESCENDANTNODE('"
-						+ tagableParentPath + "') AND tagged.[" + tagPropName
-						+ "]='" + tagValue + "'";
-				query = session.getWorkspace().getQueryManager()
-						.createQuery(queryString, Query.JCR_SQL2);
-				nit = query.execute().getNodes();
-				return nit.getSize();
-			}
-			return 0;
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to count members for " + tag, re);
-		}
 	}
 
 }
