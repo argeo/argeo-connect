@@ -152,7 +152,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 
 			if (isCheckedIn)
 				CommonsJcrUtils.checkout(tagLikeInstanceNode);
-			
+
 			peopleService.getTagService().updateTagTitle(tagLikeInstanceNode,
 					resourceNodeType, resourceInstancesParentPath, newTitle,
 					taggableNodeType, tagPropName, taggableParentPath);
@@ -166,7 +166,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			if (isCheckedIn)
 				CommonsJcrUtils.saveAndCheckin(tagLikeInstanceNode);
 			else if (isVersionable) // workaround versionnable node should have
-									// been commited on last update
+				// been commited on last update
 				CommonsJcrUtils.saveAndCheckin(tagLikeInstanceNode);
 			else
 				tagLikeInstanceNode.getSession().save();

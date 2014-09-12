@@ -54,6 +54,10 @@ public class SearchPersonEditor extends AbstractSearchEntityEditor {
 				PEOPLE_TAGS, PropertyType.STRING, "Tags",
 				new SimpleJcrRowLabelProvider(PeopleTypes.PEOPLE_PERSON,
 						PEOPLE_TAGS), 200));
+		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_PERSON,
+				PEOPLE_MAILING_LISTS, PropertyType.STRING, "Mailing Lists",
+				new SimpleJcrRowLabelProvider(PeopleTypes.PEOPLE_PERSON,
+						PEOPLE_MAILING_LISTS), 200));
 	};
 
 	@Override

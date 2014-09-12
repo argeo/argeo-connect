@@ -32,8 +32,8 @@ import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -204,17 +204,13 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 				PeopleConstants.ROLE_MEMBER)) {
 			Button editBtn = toolkit.createButton(roPanelCmp, "Edit", SWT.PUSH);
 			editBtn.setLayoutData(new RowData(60, 20));
-			editBtn.addSelectionListener(new SelectionListener() {
+			editBtn.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					if (canBeCheckedOutByMe())
 						CommandUtils.callCommand(CheckOutItem.ID);
-				}
-
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
 				}
 			});
 		}
@@ -223,16 +219,12 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		Button refreshBtn = toolkit.createButton(roPanelCmp, "Refresh",
 				SWT.PUSH);
 		refreshBtn.setLayoutData(new RowData(60, 20));
-		refreshBtn.addSelectionListener(new SelectionListener() {
+		refreshBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				forceRefresh();
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
 
@@ -244,7 +236,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 		Button saveBtn = toolkit.createButton(editPanelCmp, "Save", SWT.PUSH);
 		saveBtn.setLayoutData(new RowData(60, 20));
-		saveBtn.addSelectionListener(new SelectionListener() {
+		saveBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -261,17 +253,13 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 							re);
 				}
 			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
 		});
 
 		Button cancelBtn = toolkit.createButton(editPanelCmp, "Cancel",
 				SWT.PUSH);
 		cancelBtn.setLayoutData(new RowData(60, 20));
 
-		cancelBtn.addSelectionListener(new SelectionListener() {
+		cancelBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -279,16 +267,12 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 				if (isCheckedOutByMe())
 					CommandUtils.callCommand(CancelAndCheckInItem.ID);
 			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
 		});
 
 		Button deleteBtn = toolkit.createButton(editPanelCmp, "Delete",
 				SWT.PUSH);
 		deleteBtn.setLayoutData(new RowData(60, 20));
-		deleteBtn.addSelectionListener(new SelectionListener() {
+		deleteBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -301,10 +285,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 							deleteParentOnRemove().toString());
 					CommandUtils.callCommand(DeleteEntity.ID, params);
 				}
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
 
@@ -390,7 +370,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	public boolean canBeCheckedOutByMe() {
 		// TODO add an error/warning message in the editor if the node has
 		// already been checked out by someone else.
-		// TODO add a check depending on current user rights
 		if (isCheckedOutByMe())
 			return false;
 		else
@@ -449,31 +428,9 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	@Override
 	public void cancelAndCheckInItem() {
-		// TODO best effort to keep a clean repository
-		// String path = null;
-		// try {
-		// if (node.hasProperty(PeopleNames.PEOPLE_IS_DRAFT)
-		// && node.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
-		// .getBoolean()) {
-		// path = node.getPath();
-		// session.removeItem(path);
-		// session.save();
-		// node = null;
-		// // close current editor
-		// this.getSite().getWorkbenchWindow().getActivePage()
-		// .closeEditor(this, false);
-		//
-		// } else {
 		CommonsJcrUtils.cancelAndCheckin(node);
 		notifyCheckOutStateChange();
 		firePropertyChange(PROP_DIRTY);
-		// }
-		// } catch (RepositoryException re) {
-		// throw new PeopleException("Unable to correctly remove newly "
-		// + "created node at path " + path
-		// + " The Jcr repository is probably corrupted", re);
-		// }
-
 	}
 
 	@Override
@@ -488,7 +445,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			}
 
 			if (currNode.isNodeType(NodeType.MIX_LAST_MODIFIED)) {
-				// .append("<i>")
 				builder.append("Last updated on ");
 				builder.append(df.format(currNode
 						.getProperty(Property.JCR_LAST_MODIFIED).getDate()
@@ -496,7 +452,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 				builder.append(", by ");
 				builder.append(currNode.getProperty(
 						Property.JCR_LAST_MODIFIED_BY).getString());
-				builder.append(". "); // </i>
+				builder.append(". ");
 			}
 			return builder.toString();
 		} catch (RepositoryException re) {

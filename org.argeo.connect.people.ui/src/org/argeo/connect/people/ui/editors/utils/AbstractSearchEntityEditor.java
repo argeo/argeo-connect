@@ -249,6 +249,10 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	protected PeopleUiService getPeopleUiService() {
 		return peopleUiService;
 	}
+	
+	protected TableViewer getTableViewer(){
+		return tableViewer;
+	}
 
 	// Local Methods
 	protected Text createBoldLT(Composite parent, String title, String message,
