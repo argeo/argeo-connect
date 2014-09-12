@@ -711,7 +711,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	// return relPath + "/" + cleanedTag;
 	// }
 
-	/* EXPOSED CLASSES */
+	/* EXPOSED SERVICES */
 	@Override
 	public ActivityService getActivityService() {
 		return activityService;
@@ -734,6 +734,13 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	protected Repository getRepository() {
 		return repository;
+	}
+
+	/* MISCEALLENEOUS */
+	@Override
+	/** Override to define app specific properties that are not system properties */
+	public String getConfigProperty(String key) {
+		return System.getProperty(key);
 	}
 
 	/* DEPENDENCY INJECTION */

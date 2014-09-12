@@ -134,11 +134,7 @@ public interface PeopleService {
 	 */
 	public String getDisplayName(Node entity);
 
-	/* MISCELLANEOUS */
-
-	/** Returns the JCR repository used by this service */
-	// public Repository getRepository();
-
+	/* CONTEXT SERVICES */
 	/** Returns the corresponding {@link ActivityService} */
 	public ActivityService getActivityService();
 
@@ -151,67 +147,8 @@ public interface PeopleService {
 	/** Returns the corresponding {@link TagService} */
 	public TagService getTagService();
 
-	// /* TAG MANAGEMENT */
-	// /*
-	// * Updates the repository cache that list all known values for this
-	// tag-like
-	// * property in the current application
-	// */
-	//
-	// /**
-	// *
-	// * @param session
-	// * with write rights
-	// * @param resourceNodeType
-	// * The nodeType of the cached instance if needed (used for
-	// * instance for the mailing lists)
-	// * @param resourceInstancesParentPath
-	// * the application specific path to the parent of all cached
-	// * instance for this tag-like property
-	// * @param tagableNodeType
-	// * the NodeType of the taggable object for instance people:base
-	// * @param tagPropName
-	// * the multivalue property of the tagable node: for instance
-	// * people:tags
-	// * @param tagableParentPath
-	// * reduce search of taggable objects in a sub tree of the repo
-	// */
-	// public void refreshKnownTags(Session session, String resourceNodeType,
-	// String resourceInstancesParentPath, String tagableNodeType,
-	// String tagPropName, String tagableParentPath);
-	//
-	// /**
-	// * Updates the repository cache that list all tags known in the current
-	// * application using default values for path to parent nodes.
-	// *
-	// */
-	// public void refreshKnownTags(Session session);
-	//
-	// /**
-	// * Register a new tag if such a tag does not exist, does nothing
-	// otherwise.
-	// * Corresponding session is not saved
-	// *
-	// * Comparison is case insensitive and a trim() is applied on the passed
-	// * String
-	// */
-	// public Node registerTag(Session session, String resourceType,
-	// String tagParentPath, String tag) throws RepositoryException;
-	//
-	// /**
-	// * Retrieve the cached tag node or null if such a tag has not yet been
-	// * registered
-	// *
-	// * Comparison is case insensitive and a trim() is applied on the passed
-	// * String
-	// */
-	// public Node getRegisteredTag(Session session, String tagParentPath,
-	// String tag);
-	//
-	// /**
-	// * Unregister an existing tag and remove all references to this tag on all
-	// * nodes under the tagableParentPath that have this tag
-	// */
-	// public void unregisterTag(Session session, String tagParentPath,
-	// String tag, String tagableParentPath);
+	/* MISCELLANEOUS */
+	/** Retrieves a context specific property used to configure the current system*/
+	public String getConfigProperty(String key);
+	
 }

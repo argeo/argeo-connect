@@ -14,9 +14,11 @@ import javax.jcr.version.VersionManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiService;
@@ -54,6 +56,7 @@ public class TagListComposite extends Composite {
 
 	// Business objects
 	private PeopleService peopleService;
+	private UserManagementService userService;
 	private PeopleUiService peopleUiService;
 	private final Node tagable;
 	private final String tagPropName;
@@ -78,6 +81,7 @@ public class TagListComposite extends Composite {
 		this.form = form;
 		this.peopleUiService = peopleUiService;
 		this.peopleService = peopleService;
+		this.userService = peopleService.getUserManagementService();
 		this.tagable = tagable;
 		this.tagPropName = tagPropName;
 		this.tagsParentPath = tagsParentPath;
@@ -322,17 +326,36 @@ public class TagListComposite extends Composite {
 					session, tagsParentPath, newTag);
 
 			if (registered == null) {
-				// Ask end user if we create a new tag
-				msg = "\""
-						+ newTag
-						+ "\" is not yet registered.\n Are you sure you want to create it?";
-				if (MessageDialog.openConfirm(shell, "Confirm creation", msg)) {
-					registered = peopleService.getTagService().registerTag(
-							session, resourceType, tagsParentPath, newTag);
-					if (registered.isNodeType(NodeType.MIX_VERSIONABLE))
-						createdTagPath.add(registered.getPath());
-				} else
+				boolean canAdd = !"true"
+						.equals(peopleService
+								.getConfigProperty(PeopleConstants.PEOPLE_PROP_PREVENT_TAG_ADDITION))
+						|| userService
+								.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
+						|| userService.isUserInRole(PeopleConstants.ROLE_ADMIN);
+
+				if (canAdd) {
+					// Ask end user if we create a new tag
+					msg = "\""
+							+ newTag
+							+ "\" is not yet registered.\n Are you sure you want to create it?";
+					if (MessageDialog.openConfirm(shell, "Confirm creation",
+							msg)) {
+						registered = peopleService.getTagService().registerTag(
+								session, resourceType, tagsParentPath, newTag);
+						if (registered.isNodeType(NodeType.MIX_VERSIONABLE))
+							createdTagPath.add(registered.getPath());
+					} else
+						return;
+				} else {
+					msg = "\""
+							+ newTag
+							+ "\" is not yet registered\n"
+							+ "and you don't have sufficient rights to create it.\n"
+							+ "Please contact a Business Admin and ask him "
+							+ "to register it for you if it is valid.";
+					MessageDialog.openError(shell, "Unvalid choice", msg);
 					return;
+				}
 			}
 
 			Value[] values;

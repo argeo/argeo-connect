@@ -33,41 +33,12 @@ public interface PeopleConstants {
 			PeopleNames.PEOPLE_TASKS, PeopleNames.PEOPLE_COUNTRIES,
 			PeopleNames.PEOPLE_LANGS);
 
-	// public final static String PEOPLE_MAILING_LISTS_BASE_PATH =
-	// PEOPLE_BASE_PATH
-	// + '/' + PeopleNames.PEOPLE_MAILING_LISTS;
-	//
-	// public final static String PEOPLE_ACTIVITIES_BASE_PATH = PEOPLE_BASE_PATH
-	// + "/people:activities";
-	// public final static String PEOPLE_TASKS_BASE_PATH = PEOPLE_BASE_PATH
-	// + "/people:tasks";
-	// public final static String PEOPLE_USER_GROUPS_BASE_PATH =
-	// PEOPLE_BASE_PATH
-	// + "/people:userGroups";
+	// Configuration System Properties
+	public final static String PEOPLE_PROP_PREVENT_TAG_ADDITION = "connect.people.user.preventTagAddition";
+	// public final static String PEOPLE_PROP_PREVENT_ML_ADDITION =
+	// "connect.people.user.preventMLAddition";
 
-	// // People resources, typically language and country lists
-	// public final static String PEOPLE_RESOURCES_BASE_PATH = PEOPLE_BASE_PATH
-	// + "/people:resources";
-
-	// Defined resources
-	// public final static String RESOURCE_COUNTRIES = "people:countries";
-	// public final static String RESOURCE_LANGS = "people:languages";
-
-	@Deprecated
-	// public final static String PEOPLE_COUNTRIES_BASE_PATH =
-	// PEOPLE_RESOURCES_BASE_PATH
-	// + "/" + RESOURCE_COUNTRIES;
-	// @Deprecated
-	// public final static String PEOPLE_LANGS_BASE_PATH =
-	// PEOPLE_RESOURCES_BASE_PATH
-	// + "/" + RESOURCE_LANGS;
-	//
-	// @Deprecated
-	// public final static String PEOPLE_TAGS_BASE_PATH =
-	// PEOPLE_RESOURCES_BASE_PATH
-	// + "/" + PeopleNames.PEOPLE_TAGS;
-	// Helper to decide wether we speak about the parent object of a link node
-	// or about the ref it points to
+	// TODO check this.
 	public final static Integer TARGET_LINK_PARENT = 0;
 	public final static Integer TARGET_LINK_REF = 1;
 
