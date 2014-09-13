@@ -168,6 +168,7 @@ public class TextDisplay implements CmsNames, TextStyles {
 			MouseListener {
 		private static final long serialVersionUID = -6372283442330912755L;
 		private Control child;
+		private String nodePath;
 
 		public StyledComposite(Composite parent, int swtStyle, Node node)
 				throws RepositoryException {
@@ -180,6 +181,7 @@ public class TextDisplay implements CmsNames, TextStyles {
 				style = node.getProperty(CMS_STYLE).getString();
 			else
 				style = TextStyles.TEXT_DEFAULT;
+			nodePath = node.getPath();
 			setData(RWT.CUSTOM_VARIANT, TEXT_STYLED_COMPOSITE);
 			child = createLabel(content, style);
 		}
@@ -235,6 +237,13 @@ public class TextDisplay implements CmsNames, TextStyles {
 
 		protected void stopEditing() {
 			String content = ((Text) child).getText();
+			try {
+				Node paragraphNode = textNode.getSession().getNode(nodePath);
+				paragraphNode.setProperty(CMS_CONTENT, content);
+				paragraphNode.getSession().save();
+			} catch (RepositoryException e1) {
+				throw new CmsException("Cannot set content on " + nodePath, e1);
+			}
 			Object style = child.getData(RWT.CUSTOM_VARIANT);
 			clear();
 			child = createLabel(content,
@@ -250,6 +259,10 @@ public class TextDisplay implements CmsNames, TextStyles {
 				return ((Text) child).getText();
 			else
 				return null;
+		}
+
+		public String getNodePath() {
+			return nodePath;
 		}
 
 		public void setTextStyle(String style) {
@@ -310,6 +323,9 @@ public class TextDisplay implements CmsNames, TextStyles {
 				styleButton.addMouseListener(stml);
 				styleButtons.add(styleButton);
 			}
+			DeleteButton deleteButton = new DeleteButton(this, SWT.NONE);
+			deleteButton.setText("Delete");
+			deleteButton.addMouseListener(stml);
 		}
 
 		public void show(StyledComposite source, Point location) {
@@ -343,17 +359,50 @@ public class TextDisplay implements CmsNames, TextStyles {
 
 		}
 
+		class DeleteButton extends Label {
+			private static final long serialVersionUID = -7488098923992809857L;
+
+			public DeleteButton(Composite parent, int swtStyle) {
+				super(parent, swtStyle);
+			}
+
+		}
+
 		class StyledToolMouseListener extends MouseAdapter {
 			private static final long serialVersionUID = 8516297091549329043L;
 
 			@Override
 			public void mouseDown(MouseEvent e) {
-				StyleButton sb = (StyleButton) e.getSource();
-				String style = sb.getData(RWT.CUSTOM_VARIANT).toString();
-				source.setTextStyle(style);
+				Object eventSource = e.getSource();
+				if (eventSource instanceof StyleButton) {
+					StyleButton sb = (StyleButton) e.getSource();
+					String style = sb.getData(RWT.CUSTOM_VARIANT).toString();
+					source.setTextStyle(style);
+					String nodePath = source.getNodePath();
+					try {
+						Node paragraphNode = textNode.getSession().getNode(
+								nodePath);
+						paragraphNode.setProperty(CMS_STYLE, style);
+						paragraphNode.getSession().save();
+					} catch (RepositoryException e1) {
+						throw new CmsException("Cannot set style " + style
+								+ " on " + nodePath, e1);
+					}
+				} else if (eventSource instanceof DeleteButton) {
+					String nodePath = source.getNodePath();
+					try {
+						Node paragraphNode = textNode.getSession().getNode(
+								nodePath);
+						paragraphNode.remove();
+						textNode.getSession().save();
+						source.dispose();
+						textCmp.layout(true, true);
+					} catch (RepositoryException e1) {
+						throw new CmsException("Cannot delete " + nodePath, e1);
+					}
+				}
 				setVisible(false);
 			}
-
 		}
 	}
 
