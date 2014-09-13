@@ -6,9 +6,9 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsLink;
 import org.argeo.cms.CmsNames;
+import org.argeo.cms.CmsTypes;
 import org.argeo.cms.CmsUiProvider;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.jcr.UserJcrUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -19,15 +19,17 @@ public class TextHome implements CmsUiProvider, CmsNames {
 	@Override
 	public Control createUi(Composite parent, Node context)
 			throws RepositoryException {
-		Node userHome = UserJcrUtils.getUserHome(context.getSession());
+		Node indexNode = JcrUtils.getOrAdd(context, CMS_INDEX,
+				CmsTypes.CMS_TEXT);
+		TextDisplay textDisplay = new TextDisplay(parent, indexNode);
 
-		new Label(parent, SWT.NONE).setText("Drafts");
+		new Label(parent, SWT.NONE).setText("Pages");
 
-		Node drafts = JcrUtils.getOrAdd(userHome, CMS_DRAFTS);
-		for (NodeIterator ni = drafts.getNodes(); ni.hasNext();) {
+		for (NodeIterator ni = context.getNodes(); ni.hasNext();) {
 			Node textNode = ni.nextNode();
-			new CmsLink(textNode.getName(), textNode.getPath()).createUi(
-					parent, textNode);
+			if (textNode.isNodeType(CmsTypes.CMS_TEXT))
+				new CmsLink(textNode.getName(), textNode.getPath()).createUi(
+						parent, textNode);
 		}
 		return null;
 	}

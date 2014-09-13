@@ -7,6 +7,7 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -34,7 +35,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /** Read-only display of text. */
-public class TextDisplay implements CmsNames {
+public class TextDisplay implements CmsNames, TextStyles {
 	private final static Log log = LogFactory.getLog(TextDisplay.class);
 
 	private final static String[] DEFAULT_TEXT_STYLES = {
@@ -45,18 +46,25 @@ public class TextDisplay implements CmsNames {
 	private Composite textCmp;
 	private StyledTools styledTools;
 
-	private Boolean editing = true;
+	private Boolean editing = false;
 	private EditableTextPart edited;
 	private Text addText;
 
 	public TextDisplay(Composite parent, Node textNode) {
 		this.textNode = textNode;
-
-		if (log.isDebugEnabled())
-			log.debug("Editing " + textNode);
+		try {
+			if (textNode.getSession().hasPermission(textNode.getPath(),
+					Session.ACTION_ADD_NODE)) {
+				editing = true;
+				if (log.isDebugEnabled())
+					log.debug("Editing " + textNode);
+			}
+		} catch (RepositoryException e) {
+			throw new CmsException("Cannot initialize text display for "
+					+ textNode, e);
+		}
 
 		textCmp = new ScrolledPage(parent, SWT.NONE);
-		// textCmp.addMouseListener(new TextMouseListener());
 		styledTools = new StyledTools();
 
 		refresh();
@@ -70,36 +78,16 @@ public class TextDisplay implements CmsNames {
 			for (Control child : textCmp.getChildren())
 				child.dispose();
 
-			// if (editing) {
-			// textCmp.setLayout(CmsUtils.noSpaceGridLayout(new GridLayout(2,
-			// false)));
-			// } else {
 			textCmp.setLayout(CmsUtils.noSpaceGridLayout());
-			// }
 
 			for (NodeIterator ni = textNode.getNodes(); ni.hasNext();) {
 				Node child = ni.nextNode();
-
-				if (editing) {
-					// new Label(textCmp, SWT.NONE).setText(" * ");
-				}
-
 				if (child.isNodeType(CmsTypes.CMS_STYLED)) {
 					new StyledComposite(textCmp, SWT.NONE, child);
-					// Label lbl = new Label(textCmp, SWT.LEAD | SWT.WRAP);
-					// lbl.setText(child.getProperty(CMS_CONTENT).getString());
-					// lbl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-					// false));
-					// lbl.setData(RWT.MARKUP_ENABLED, true);
-					// lbl.setData(RWT.CUSTOM_VARIANT, TextStyles.TEXT_DEFAULT);
-					//
-					// lbl.setParent(textCmp);
 				}
 			}
 
 			if (editing) {
-				// new Label(textCmp, SWT.NONE).setText(" * ");
-
 				addText = new Text(textCmp, SWT.MULTI | SWT.WRAP);
 				GridData textLayoutData = new GridData(GridData.FILL,
 						GridData.FILL, true, true);
@@ -116,16 +104,16 @@ public class TextDisplay implements CmsNames {
 		}
 	}
 
-	private class TextMouseListener extends MouseAdapter {
-		private static final long serialVersionUID = 4876233808807862257L;
-
-		@Override
-		public void mouseDoubleClick(MouseEvent e) {
-			editing = !editing;
-			refresh();
-		}
-
-	}
+	// private class TextMouseListener extends MouseAdapter {
+	// private static final long serialVersionUID = 4876233808807862257L;
+	//
+	// @Override
+	// public void mouseDoubleClick(MouseEvent e) {
+	// editing = !editing;
+	// refresh();
+	// }
+	//
+	// }
 
 	private class TextKeyListener implements KeyListener {
 		private static final long serialVersionUID = -7720848595910906899L;
@@ -192,8 +180,7 @@ public class TextDisplay implements CmsNames {
 				style = node.getProperty(CMS_STYLE).getString();
 			else
 				style = TextStyles.TEXT_DEFAULT;
-			setData(RWT.CUSTOM_VARIANT, TextStyles.TEXT_STYLED_COMPOSITE);
-			// setData(RWT.CUSTOM_VARIANT, style);
+			setData(RWT.CUSTOM_VARIANT, TEXT_STYLED_COMPOSITE);
 			child = createLabel(content, style);
 		}
 
@@ -206,7 +193,8 @@ public class TextDisplay implements CmsNames {
 			lbl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			lbl.setData(RWT.MARKUP_ENABLED, true);
 			lbl.setData(RWT.CUSTOM_VARIANT, style);
-			lbl.addMouseListener(this);
+			if (editing)
+				lbl.addMouseListener(this);
 			return lbl;
 		}
 
@@ -275,9 +263,6 @@ public class TextDisplay implements CmsNames {
 
 		@Override
 		public void mouseDoubleClick(MouseEvent e) {
-			// if (edited == this)
-			// return;
-
 			if (edited != null)
 				edited.stopEditing();
 
@@ -315,6 +300,8 @@ public class TextDisplay implements CmsNames {
 			super(textCmp.getDisplay(), SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
 			// setLayout(CmsUtils.noSpaceGridLayout());
 			setLayout(new GridLayout());
+			setData(RWT.CUSTOM_VARIANT, TEXT_STYLED_TOOLS_DIALOG);
+
 			StyledToolMouseListener stml = new StyledToolMouseListener();
 			for (String style : DEFAULT_TEXT_STYLES) {
 				StyleButton styleButton = new StyleButton(this, SWT.NONE);
