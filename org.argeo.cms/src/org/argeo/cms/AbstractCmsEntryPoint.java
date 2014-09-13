@@ -8,7 +8,6 @@ import javax.jcr.Session;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.jcr.UserJcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.rap.rwt.client.service.BrowserNavigation;
@@ -71,6 +70,13 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 	/** Log as anonymous */
 	protected abstract void logAsAnonymous();
 
+	/**
+	 * The node to return when no node was found (for authenticated users and
+	 * anonymous)
+	 */
+	protected abstract Node getDefaultNode(Session session)
+			throws RepositoryException;
+
 	public void navigateTo(String state) {
 		exception = null;
 		setState(state);
@@ -109,19 +115,20 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 		refreshBody();
 	}
 
+	/** Sets the state of the entry point and retrieve the related JCR node. */
 	protected void setState(String state) {
+		node = null;
 		this.state = state;
-		if (state.startsWith("/")) {
-			try {
+		try {
+			if (state.startsWith("/")) {
 				if (session.itemExists(state))
 					node = session.getNode(state);
-			} catch (RepositoryException e) {
-				throw new CmsException("Cannot retrieve node", e);
 			}
+			if (node == null)
+				node = getDefaultNode(session);
+		} catch (RepositoryException e) {
+			throw new CmsException("Cannot retrieve node", e);
 		}
-
-		if (node == null)
-			node = UserJcrUtils.getUserHome(session);
 	}
 
 	protected Node getNode() {

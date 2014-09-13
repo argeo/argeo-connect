@@ -1,6 +1,6 @@
 package org.argeo.cms;
 
-/** Provides interaction with the CMS system */
+/** Provides interaction with the CMS system. UNSTABLE API at this stage. */
 public interface CmsSession {
 	public final static String KEY = "org.argeo.connect.web.cmsSession";
 

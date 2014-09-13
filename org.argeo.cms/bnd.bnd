@@ -1,3 +1,4 @@
 Import-Package: org.springframework.core,\
 	org.eclipse.swt,\
+	javax.jcr.security,\
 	*

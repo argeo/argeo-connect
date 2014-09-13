@@ -2,14 +2,20 @@ package org.argeo.cms;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.security.Privilege;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.jcr.JcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.EntryPoint;
 import org.eclipse.rap.rwt.application.EntryPointFactory;
@@ -20,14 +26,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.springframework.security.Authentication;
-import org.springframework.security.AuthenticationManager;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.providers.anonymous.AnonymousAuthenticationToken;
-import org.springframework.security.userdetails.User;
-import org.springframework.security.userdetails.UserDetails;
 
 /** Creates and registers an {@link EntryPoint} */
 public class CmsEntryPointFactory implements EntryPointFactory {
@@ -35,9 +33,12 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 			.getLog(CmsEntryPointFactory.class);
 
 	private Repository repository;
-	private String workspace;
-	private AuthenticationManager authenticationManager;
-	private String systemKey = null;
+	private String workspace = null;
+	private String basePath = "/";
+	private List<String> roPrincipals = Arrays.asList("anonymous", "everyone");
+	private List<String> rwPrincipals = Arrays.asList("everyone");
+
+	private CmsLogin cmsLogin;
 
 	private CmsUiProvider header;
 	private CmsUiProvider dynamicPages;
@@ -50,6 +51,34 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 		return cmsEntryPoint;
 	}
 
+	public void init() throws RepositoryException {
+		if (workspace == null)
+			throw new CmsException(
+					"Workspace must be set when calling initialization."
+							+ " Please make sure that read-only and read-write roles"
+							+ " have been properly configured:"
+							+ " the defaults are open.");
+
+		Session session = null;
+		try {
+			session = JcrUtils.loginOrCreateWorkspace(repository, workspace);
+			// session = repository.login(workspace);
+			JcrUtils.mkdirs(session, basePath);
+			for (String principal : rwPrincipals)
+				JcrUtils.addPrivilege(session, basePath, principal,
+						Privilege.JCR_WRITE);
+			for (String principal : roPrincipals)
+				JcrUtils.addPrivilege(session, basePath, principal,
+						Privilege.JCR_READ);
+		} finally {
+			JcrUtils.logoutQuietly(session);
+		}
+	}
+
+	public void destroy() {
+
+	}
+
 	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
@@ -58,13 +87,8 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 		this.workspace = workspace;
 	}
 
-	public void setAuthenticationManager(
-			AuthenticationManager authenticationManager) {
-		this.authenticationManager = authenticationManager;
-	}
-
-	public void setSystemKey(String systemKey) {
-		this.systemKey = systemKey;
+	public void setCmsLogin(CmsLogin cmsLogin) {
+		this.cmsLogin = cmsLogin;
 	}
 
 	public void setHeader(CmsUiProvider header) {
@@ -77,6 +101,18 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 
 	public void setStaticPages(Map<String, CmsUiProvider> staticPages) {
 		this.staticPages = staticPages;
+	}
+
+	public void setBasePath(String basePath) {
+		this.basePath = basePath;
+	}
+
+	public void setRoPrincipals(List<String> roPrincipals) {
+		this.roPrincipals = roPrincipals;
+	}
+
+	public void setRwPrincipals(List<String> rwPrincipals) {
+		this.rwPrincipals = rwPrincipals;
 	}
 
 	private class CmsEntryPoint extends AbstractCmsEntryPoint {
@@ -155,9 +191,6 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 				exception.printStackTrace(new PrintWriter(sw));
 				errorText.setText(sw.toString());
 				IOUtils.closeQuietly(sw);
-
-				// new CmsLink("Back", getState()).createUi(bodyArea,
-				// getNode());
 				// TODO report
 			} else {
 				String state = getState();
@@ -177,27 +210,24 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 				}
 			}
 			bodyArea.layout(true, true);
-			// scrolledArea.setContent(bodyArea);
-			// scrolledArea.layout(true, true);
 		}
 
 		@Override
 		protected void logAsAnonymous() {
-			// TODO Better deal with anonymous authentication
-			try {
-				GrantedAuthority[] anonAuthorities = { new GrantedAuthorityImpl(
-						"ROLE_ANONYMOUS") };
-				UserDetails anonUser = new User("anonymous", "", true, true,
-						true, true, anonAuthorities);
-				AnonymousAuthenticationToken anonToken = new AnonymousAuthenticationToken(
-						systemKey, anonUser, anonAuthorities);
-				Authentication authentication = authenticationManager
-						.authenticate(anonToken);
-				SecurityContextHolder.getContext().setAuthentication(
-						authentication);
-			} catch (Exception e) {
-				throw new CmsException("Cannot authenticate", e);
-			}
+			cmsLogin.logInAsAnonymous();
 		}
+
+		@Override
+		protected Node getDefaultNode(Session session)
+				throws RepositoryException {
+			if (!session.hasPermission(basePath, "read")) {
+				if (session.getUserID().equals("anonymous"))
+					throw new CmsLoginRequiredException();
+				else
+					throw new CmsException("Unauthorized");
+			}
+			return session.getNode(basePath);
+		}
+
 	}
 }

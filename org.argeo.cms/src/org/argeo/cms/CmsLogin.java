@@ -20,12 +20,51 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.springframework.security.Authentication;
 import org.springframework.security.AuthenticationManager;
+import org.springframework.security.GrantedAuthority;
+import org.springframework.security.GrantedAuthorityImpl;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
+import org.springframework.security.providers.anonymous.AnonymousAuthenticationToken;
+import org.springframework.security.userdetails.User;
+import org.springframework.security.userdetails.UserDetails;
 
+/** Gateway for user login, can also generate the related UI. */
 public class CmsLogin implements CmsUiProvider, CmsStyles {
 	private final static Log log = LogFactory.getLog(CmsLogin.class);
 	private AuthenticationManager authenticationManager;
+	private String systemKey = "argeo";
+	
+	protected void logInAsAnonymous() {
+		// TODO Better deal with anonymous authentication
+		try {
+			GrantedAuthority[] anonAuthorities = { new GrantedAuthorityImpl(
+					"ROLE_ANONYMOUS") };
+			UserDetails anonUser = new User("anonymous", "", true, true, true,
+					true, anonAuthorities);
+			AnonymousAuthenticationToken anonToken = new AnonymousAuthenticationToken(
+					systemKey, anonUser, anonAuthorities);
+			Authentication authentication = authenticationManager
+					.authenticate(anonToken);
+			SecurityContextHolder.getContext()
+					.setAuthentication(authentication);
+		} catch (Exception e) {
+			throw new CmsException("Cannot authenticate", e);
+		}
+	}
+
+	protected void logInWithPassword(String username, char[] password) {
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+				username, new String(password));
+		Authentication authentication = authenticationManager
+				.authenticate(token);
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		if (log.isDebugEnabled())
+			log.debug("Authenticated as " + authentication);
+	}
+
+	/*
+	 * UI
+	 */
 
 	@Override
 	public Control createUi(Composite parent, Node context)
@@ -65,6 +104,10 @@ public class CmsLogin implements CmsUiProvider, CmsStyles {
 	public void setAuthenticationManager(
 			AuthenticationManager authenticationManager) {
 		this.authenticationManager = authenticationManager;
+	}
+
+	public void setSystemKey(String systemKey) {
+		this.systemKey = systemKey;
 	}
 
 	/** Mouse listener when user is logged in */
@@ -181,15 +224,7 @@ public class CmsLogin implements CmsUiProvider, CmsStyles {
 		protected void login(String username, char[] password) {
 			CmsSession cmsSession = (CmsSession) source.getDisplay().getData(
 					CmsSession.KEY);
-
-			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-					username, new String(password));
-			Authentication authentication = authenticationManager
-					.authenticate(token);
-			SecurityContextHolder.getContext()
-					.setAuthentication(authentication);
-			if (log.isDebugEnabled())
-				log.debug("Authenticated as " + authentication);
+			logInWithPassword(username, password);
 			dialog.close();
 			dialog.dispose();
 			refreshUi(source.getParent());
