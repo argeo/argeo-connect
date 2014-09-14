@@ -43,12 +43,13 @@ public class TextDisplay implements CmsNames, TextStyles {
 
 	private Node textNode;
 
-	private Composite textCmp;
+	private ScrolledPage textCmp;
 	private StyledTools styledTools;
 
 	private Boolean editing = false;
 	private EditableTextPart edited;
 	private Text addText;
+	private TextInterpreter textInterpreter = new WikiTextInterpreter();
 
 	public TextDisplay(Composite parent, Node textNode) {
 		this.textNode = textNode;
@@ -102,6 +103,10 @@ public class TextDisplay implements CmsNames, TextStyles {
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot refresh text " + textNode, e);
 		}
+	}
+
+	public void setLayoutData(Object layoutData) {
+		textCmp.getScrolledComposite().setLayoutData(layoutData);
 	}
 
 	// private class TextMouseListener extends MouseAdapter {

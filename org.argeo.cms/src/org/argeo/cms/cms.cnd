@@ -7,10 +7,11 @@
 [cms:media] > nt:file, mix:title
 
 [cms:section] > mix:created, mix:lastModified, mix:title
+mixin
 orderable
 + cms:h (cms:section) *
 + cms:p (cms:styled) *
 + cms:m (cms:media) *
 
-[cms:text] > cms:section, mix:versionable, mix:language
+[cms:text] > nt:hierarchyNode, cms:section, mix:versionable
 

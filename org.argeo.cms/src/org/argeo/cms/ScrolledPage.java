@@ -42,7 +42,7 @@ public class ScrolledPage extends Composite {
 		scrolledComposite.setMinHeight(preferredSize.y);
 	}
 
-	protected ScrolledComposite getScrolledComposite() {
+	public ScrolledComposite getScrolledComposite() {
 		return this.scrolledComposite;
 	}
 

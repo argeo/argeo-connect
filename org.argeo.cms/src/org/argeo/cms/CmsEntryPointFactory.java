@@ -194,15 +194,16 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 				// TODO report
 			} else {
 				String state = getState();
+				String page = getPage();
 				try {
 					if (state == null)
 						log.debug("null state");
 					else if (state.length() == 0)
 						log.debug("empty state");
-					else if (state.charAt(0) == '/')
+					else if (page == null)
 						dynamicPages.createUi(bodyArea, getNode());
-					else if (staticPages.containsKey(state))
-						staticPages.get(state).createUi(bodyArea, getNode());
+					else if (page != null && staticPages.containsKey(page))
+						staticPages.get(page).createUi(bodyArea, getNode());
 					else
 						log.error("Unsupported state " + state);
 				} catch (RepositoryException e) {

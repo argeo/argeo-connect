@@ -4,6 +4,7 @@ import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,9 +26,10 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 	private Repository repository;
 	private String workspace;
 	private Session session;
-	private Node node;
 
+	private Node node;
 	private String state;
+	private String page;
 	private Throwable exception;
 
 	private BrowserNavigation history;
@@ -77,6 +79,20 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 	protected abstract Node getDefaultNode(Session session)
 			throws RepositoryException;
 
+	/**
+	 * Reasonable default since it is a nt:hierarchyNode and is thus compatible
+	 * with the obvious default folder type, nt:folder, conceptual equivalent of
+	 * an empty text file in an operating system. To be overridden.
+	 */
+	protected String getDefaultNewNodeType() {
+		return CmsTypes.CMS_TEXT;
+	}
+
+	/** Default new folder type (used in mkdirs) is nt:folder. To be overridden. */
+	protected String getDefaultNewFolderType() {
+		return NodeType.NT_FOLDER;
+	}
+
 	public void navigateTo(String state) {
 		exception = null;
 		setState(state);
@@ -117,19 +133,87 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 
 	/** Sets the state of the entry point and retrieve the related JCR node. */
 	protected void setState(String state) {
+		String previousPage = page;
+		Node previousNode = node;
+		String previousState = this.state;
+
 		node = null;
+		page = null;
 		this.state = state;
+
 		try {
-			if (state.startsWith("/")) {
-				if (session.itemExists(state))
+			int firstSlash = state.indexOf('/');
+			if (firstSlash == 0) {
+				if (!session.nodeExists(state))
+					node = addNode(session, state, null);
+				else
 					node = session.getNode(state);
-			}
-			if (node == null)
+			} else if (firstSlash > 0) {
+				String prefix = state.substring(0, firstSlash);
+				String path = state.substring(firstSlash);
+				if (session.getWorkspace().getNodeTypeManager()
+						.hasNodeType(prefix)) {
+					String nodeType = prefix;
+					if (!session.nodeExists(path))
+						node = addNode(session, path, nodeType);
+					else {
+						node = session.getNode(state);
+						if (!node.isNodeType(nodeType))
+							throw new CmsException("Node " + path
+									+ " not of type " + nodeType);
+					}
+				} else if ("delete".equals(prefix)) {
+					if (session.itemExists(path)) {
+						Node nodeToDelete = session.getNode(path);
+						// TODO "Are you sure?"
+						nodeToDelete.remove();
+						session.save();
+						log.debug("Deleted " + path);
+						navigateTo(previousState);
+					} else
+						throw new CmsException("Data " + path
+								+ " does not exist");
+				} else {
+					if (session.itemExists(path))
+						node = session.getNode(path);
+					else
+						throw new CmsException("Data " + path
+								+ " does not exist");
+					page = prefix;
+				}
+			} else {
 				node = getDefaultNode(session);
+				page = state;
+			}
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot retrieve node", e);
 		}
 	}
+
+	protected Node addNode(Session session, String path, String nodeType)
+			throws RepositoryException {
+		return JcrUtils.mkdirs(session, path, nodeType != null ? nodeType
+				: getDefaultNewNodeType(), getDefaultNewFolderType(), false);
+		// not saved, so that the UI can discard it later on
+
+		// String parentPath = JcrUtils.parentPath(path);
+		// // FIXME Bug in JcrUtils?
+		// if (parentPath.trim().equals(""))
+		// parentPath = "/";
+		// if (!session.nodeExists(parentPath))
+		// throw new CmsException("Parent of " + path
+		// + " does not exist, create it first.");
+		// Node parent = session.getNode(parentPath);
+		// return parent.addNode(JcrUtils.lastPathElement(path), nodeType);
+	}
+
+	// protected Node retrieveNode(Session session, String path)
+	// throws RepositoryException {
+	// if (session.itemExists(path))
+	// return session.getNode(path);
+	// else
+	// throw new CmsException("Data " + path + " does not exist");
+	// }
 
 	protected Node getNode() {
 		return node;
@@ -139,7 +223,11 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 		return state;
 	}
 
-	public Throwable getException() {
+	protected String getPage() {
+		return page;
+	}
+
+	protected Throwable getException() {
 		return exception;
 	}
 
