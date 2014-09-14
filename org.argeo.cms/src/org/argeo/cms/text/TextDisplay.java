@@ -8,6 +8,7 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.version.VersionManager;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -41,31 +42,34 @@ public class TextDisplay implements CmsNames, TextStyles {
 	private final static String[] DEFAULT_TEXT_STYLES = {
 			TextStyles.TEXT_DEFAULT, TextStyles.TEXT_PRE, TextStyles.TEXT_QUOTE };
 
-	private Node textNode;
+	private final Node textNode;
+	private final String textNodePath;// cache
+	private VersionManager versionManager;
 
-	private ScrolledPage textCmp;
+	private ScrolledPage page;
 	private StyledTools styledTools;
 
-	private Boolean editing = false;
+	private Boolean canEdit = false;
 	private EditableTextPart edited;
 	private Text addText;
-	private TextInterpreter textInterpreter = new WikiTextInterpreter();
+	private TextInterpreter textInterpreter = new IdentityTextInterpreter();
 
 	public TextDisplay(Composite parent, Node textNode) {
 		this.textNode = textNode;
 		try {
+			this.textNodePath = textNode.getPath();
 			if (textNode.getSession().hasPermission(textNode.getPath(),
 					Session.ACTION_ADD_NODE)) {
-				editing = true;
-				if (log.isDebugEnabled())
-					log.debug("Editing " + textNode);
+				canEdit = true;
+				versionManager = textNode.getSession().getWorkspace()
+						.getVersionManager();
 			}
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot initialize text display for "
 					+ textNode, e);
 		}
 
-		textCmp = new ScrolledPage(parent, SWT.NONE);
+		page = new ScrolledPage(parent, SWT.NONE);
 		styledTools = new StyledTools();
 
 		refresh();
@@ -73,52 +77,52 @@ public class TextDisplay implements CmsNames, TextStyles {
 
 	protected void refresh() {
 		try {
-			if (textCmp == null)
+			if (page == null)
 				return;
 			// clear
-			for (Control child : textCmp.getChildren())
+			for (Control child : page.getChildren())
 				child.dispose();
 
-			textCmp.setLayout(CmsUtils.noSpaceGridLayout());
+			page.setLayout(CmsUtils.noSpaceGridLayout());
 
 			for (NodeIterator ni = textNode.getNodes(); ni.hasNext();) {
 				Node child = ni.nextNode();
 				if (child.isNodeType(CmsTypes.CMS_STYLED)) {
-					new StyledComposite(textCmp, SWT.NONE, child);
+					new StyledComposite(page, SWT.NONE, child);
 				}
 			}
 
-			if (editing) {
-				addText = new Text(textCmp, SWT.MULTI | SWT.WRAP);
+			if (isEditing()) {
+				addText = new Text(page, SWT.MULTI | SWT.WRAP);
 				GridData textLayoutData = new GridData(GridData.FILL,
 						GridData.FILL, true, true);
 				textLayoutData.minimumHeight = 200;
 				addText.setLayoutData(textLayoutData);
-				addText.setData(RWT.CUSTOM_VARIANT, TextStyles.TEXT_EDITOR);
+				addText.setData(RWT.CUSTOM_VARIANT, TextStyles.TEXT_DEFAULT);
 				addText.addKeyListener(new TextKeyListener());
 				addText.setFocus();
 			}
 
-			textCmp.layout(true, true);
+			page.layout(true, true);
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot refresh text " + textNode, e);
 		}
 	}
 
-	public void setLayoutData(Object layoutData) {
-		textCmp.getScrolledComposite().setLayoutData(layoutData);
+	public Boolean isEditing() {
+		try {
+			if (!canEdit)
+				return false;
+			return versionManager.isCheckedOut(textNodePath);
+		} catch (RepositoryException e) {
+			throw new CmsException("Cannot check whether " + textNodePath
+					+ " is editing", e);
+		}
 	}
 
-	// private class TextMouseListener extends MouseAdapter {
-	// private static final long serialVersionUID = 4876233808807862257L;
-	//
-	// @Override
-	// public void mouseDoubleClick(MouseEvent e) {
-	// editing = !editing;
-	// refresh();
-	// }
-	//
-	// }
+	public void setLayoutData(Object layoutData) {
+		page.getScrolledComposite().setLayoutData(layoutData);
+	}
 
 	private class TextKeyListener implements KeyListener {
 		private static final long serialVersionUID = -7720848595910906899L;
@@ -157,7 +161,8 @@ public class TextDisplay implements CmsNames, TextStyles {
 				for (String line : lines) {
 					Node paragraph = textNode.addNode(CMS_P,
 							CmsTypes.CMS_STYLED);
-					paragraph.setProperty(CMS_CONTENT, line);
+					textInterpreter.write(textNode, paragraph.getPath(), line);
+					// paragraph.setProperty(CMS_CONTENT, line);
 				}
 				textNode.getSession().save();
 				refresh();
@@ -180,7 +185,7 @@ public class TextDisplay implements CmsNames, TextStyles {
 			super(parent, swtStyle);
 			setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			setLayout(CmsUtils.noSpaceGridLayout());
-			String content = node.getProperty(CMS_CONTENT).getString();
+			String content = textInterpreter.raw(node);
 			String style = null;
 			if (node.hasProperty(CMS_STYLE))
 				style = node.getProperty(CMS_STYLE).getString();
@@ -200,7 +205,7 @@ public class TextDisplay implements CmsNames, TextStyles {
 			lbl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			lbl.setData(RWT.MARKUP_ENABLED, true);
 			lbl.setData(RWT.CUSTOM_VARIANT, style);
-			if (editing)
+			if (canEdit)
 				lbl.addMouseListener(this);
 			return lbl;
 		}
@@ -231,7 +236,7 @@ public class TextDisplay implements CmsNames, TextStyles {
 		}
 
 		protected void startEditing() {
-			String content = ((Label) child).getText();
+			String content = textInterpreter.read(textNode, nodePath);
 			Object style = child.getData(RWT.CUSTOM_VARIANT);
 			int height = child.getSize().y;
 			clear();
@@ -242,21 +247,17 @@ public class TextDisplay implements CmsNames, TextStyles {
 
 		protected void stopEditing() {
 			String content = ((Text) child).getText();
-			try {
-				Node paragraphNode = textNode.getSession().getNode(nodePath);
-				paragraphNode.setProperty(CMS_CONTENT, content);
-				paragraphNode.getSession().save();
-			} catch (RepositoryException e1) {
-				throw new CmsException("Cannot set content on " + nodePath, e1);
-			}
+			Node paragraphNode = textInterpreter.write(textNode, nodePath,
+					content);
 			Object style = child.getData(RWT.CUSTOM_VARIANT);
 			clear();
-			child = createLabel(content,
-					style == null ? null : style.toString());
+			String raw = textInterpreter.raw(paragraphNode);
+			child = createLabel(raw, style == null ? null : style.toString());
 			layout();
 		}
 
 		public String getText() {
+			// TODO compatibility with interpreter
 			assert child != null;
 			if (child instanceof Label)
 				return ((Label) child).getText();
@@ -281,22 +282,26 @@ public class TextDisplay implements CmsNames, TextStyles {
 
 		@Override
 		public void mouseDoubleClick(MouseEvent e) {
-			if (edited != null)
-				edited.stopEditing();
+			if (isEditing()) {
+				if (edited != null)
+					edited.stopEditing();
 
-			edited = this;
-			edited.startEditing();
+				edited = this;
+				edited.startEditing();
 
-			getParent().layout(true, true);
+				page.layout(true, true);
+			}
 		}
 
 		@Override
 		public void mouseDown(MouseEvent e) {
 			if (e.button == 1) {
-				if (edited != null && this != edited) {
-					edited.stopEditing();
-					edited = null;
-					getParent().layout(true, true);
+				if (isEditing()) {
+					if (edited != null && this != edited) {
+						edited.stopEditing();
+						edited = null;
+						page.layout(true, true);
+					}
 				}
 			} else if (e.button == 3) {
 				styledTools.show(this, new Point(e.x, e.y));
@@ -315,22 +320,66 @@ public class TextDisplay implements CmsNames, TextStyles {
 		private List<StyleButton> styleButtons = new ArrayList<TextDisplay.StyledTools.StyleButton>();
 
 		public StyledTools() {
-			super(textCmp.getDisplay(), SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
+			super(page.getDisplay(), SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
 			// setLayout(CmsUtils.noSpaceGridLayout());
 			setLayout(new GridLayout());
 			setData(RWT.CUSTOM_VARIANT, TEXT_STYLED_TOOLS_DIALOG);
 
 			StyledToolMouseListener stml = new StyledToolMouseListener();
-			for (String style : DEFAULT_TEXT_STYLES) {
-				StyleButton styleButton = new StyleButton(this, SWT.NONE);
-				styleButton.setData(RWT.CUSTOM_VARIANT, style);
-				styleButton.setData(RWT.MARKUP_ENABLED, true);
-				styleButton.addMouseListener(stml);
-				styleButtons.add(styleButton);
+			if (isEditing()) {
+
+				for (String style : DEFAULT_TEXT_STYLES) {
+					StyleButton styleButton = new StyleButton(this, SWT.NONE);
+					styleButton.setData(RWT.CUSTOM_VARIANT, style);
+					styleButton.setData(RWT.MARKUP_ENABLED, true);
+					styleButton.addMouseListener(stml);
+					styleButtons.add(styleButton);
+				}
+
+				// Delete
+				DeleteButton deleteButton = new DeleteButton(this, SWT.NONE);
+				deleteButton.setText("Delete");
+				deleteButton.addMouseListener(stml);
+
+				// Publish
+				Label publish = new Label(this, SWT.NONE);
+				publish.setText("Publish");
+				publish.addMouseListener(new MouseAdapter() {
+
+					@Override
+					public void mouseDoubleClick(MouseEvent e) {
+						try {
+							versionManager.checkin(textNodePath);
+						} catch (RepositoryException e1) {
+							throw new CmsException("Cannot publish "
+									+ textNodePath);
+						}
+						refresh();
+						setVisible(false);
+					}
+
+				});
+			} else if (canEdit) {
+				// Edit
+				Label publish = new Label(this, SWT.NONE);
+				publish.setText("Edit");
+				publish.addMouseListener(new MouseAdapter() {
+
+					@Override
+					public void mouseDoubleClick(MouseEvent e) {
+						try {
+							versionManager.checkout(textNodePath);
+							refresh();
+						} catch (RepositoryException e1) {
+							throw new CmsException("Cannot publish "
+									+ textNodePath);
+						}
+						refresh();
+						setVisible(false);
+					}
+
+				});
 			}
-			DeleteButton deleteButton = new DeleteButton(this, SWT.NONE);
-			deleteButton.setText("Delete");
-			deleteButton.addMouseListener(stml);
 		}
 
 		public void show(StyledComposite source, Point location) {
@@ -401,7 +450,7 @@ public class TextDisplay implements CmsNames, TextStyles {
 						paragraphNode.remove();
 						textNode.getSession().save();
 						source.dispose();
-						textCmp.layout(true, true);
+						page.layout(true, true);
 					} catch (RepositoryException e1) {
 						throw new CmsException("Cannot delete " + nodePath, e1);
 					}

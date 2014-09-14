@@ -40,7 +40,8 @@ public class TextDynamicPages implements CmsUiProvider, CmsNames {
 			}
 			for (NodeIterator ni = context.getNodes(); ni.hasNext();) {
 				Node textNode = ni.nextNode();
-				if (textNode.isNodeType(CmsTypes.CMS_TEXT))
+				if (textNode.isNodeType(CmsTypes.CMS_TEXT)
+						&& !textNode.getName().equals(CMS_INDEX))
 					new CmsLink(textNode.getName(), textNode.getPath())
 							.createUi(parent, textNode);
 			}
