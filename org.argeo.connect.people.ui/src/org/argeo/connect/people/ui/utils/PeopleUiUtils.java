@@ -2,6 +2,8 @@ package org.argeo.connect.people.ui.utils;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
@@ -15,11 +17,15 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.PeopleUiService;
+import org.argeo.connect.people.ui.commands.OpenEntityEditor;
+import org.argeo.connect.people.ui.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.ui.composites.dropdowns.PeopleAbstractDropDown;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;
+import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -38,6 +44,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
@@ -370,6 +377,66 @@ public class PeopleUiUtils {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Simply create a link to open a search editor with the given parameters
+	 * 
+	 * @param peopleUiService
+	 * @param parent
+	 * @param label
+	 * @param nodeType
+	 * @param basePath
+	 * @return
+	 */
+	public static Link createOpenSearchEditorLink(
+			final PeopleUiService peopleUiService, Composite parent,
+			final String label, final String nodeType, final String basePath) {
+		Link link = new Link(parent, SWT.NONE);
+		link.setText("<a>" + label + "</a>");
+		link.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent event) {
+				Map<String, String> params = new HashMap<String, String>();
+				params.put(OpenSearchEntityEditor.PARAM_NODE_TYPE, nodeType);
+				params.put(OpenSearchEntityEditor.PARAM_EDITOR_NAME, label);
+				params.put(OpenSearchEntityEditor.PARAM_BASE_PATH, basePath);
+				CommandUtils.callCommand(
+						peopleUiService.getOpenSearchEntityEditorCmdId(),
+						params);
+			}
+		});
+		return link;
+	}
+
+	/**
+	 * Simply create a link to open an entity editor for the given entity node
+	 * 
+	 * @param parent
+	 * @param label
+	 * @param entity
+	 * @return
+	 */
+	public static Link createOpenEntityEditorLink(
+			final PeopleUiService peopleUiService, Composite parent,
+			final String label, final Node entity) {
+		Link link = new Link(parent, SWT.NONE);
+		link.setText("<a>" + label + "</a>");
+		link.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent event) {
+				Map<String, String> params = new HashMap<String, String>();
+				params.put(OpenEntityEditor.PARAM_JCR_ID,
+						CommonsJcrUtils.getIdentifier(entity));
+				CommandUtils.callCommand(
+						peopleUiService.getOpenEntityEditorCmdId(), params);
+			}
+		});
+		return link;
 	}
 
 	/**

@@ -269,25 +269,26 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			}
 		});
 
-		Button deleteBtn = toolkit.createButton(editPanelCmp, "Delete",
-				SWT.PUSH);
-		deleteBtn.setLayoutData(new RowData(60, 20));
-		deleteBtn.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
+		if (showDeleteButton()) {
+			Button deleteBtn = toolkit.createButton(editPanelCmp, "Delete",
+					SWT.PUSH);
+			deleteBtn.setLayoutData(new RowData(60, 20));
+			deleteBtn.addSelectionListener(new SelectionAdapter() {
+				private static final long serialVersionUID = 1L;
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (isCheckedOutByMe()) {
-					Map<String, String> params = new HashMap<String, String>();
-					params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID,
-							CommonsJcrUtils.getIdentifier(node));
-					params.put(DeleteEntity.PARAM_REMOVE_ALSO_PARENT,
-							deleteParentOnRemove().toString());
-					CommandUtils.callCommand(DeleteEntity.ID, params);
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					if (isCheckedOutByMe()) {
+						Map<String, String> params = new HashMap<String, String>();
+						params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID,
+								CommonsJcrUtils.getIdentifier(node));
+						params.put(DeleteEntity.PARAM_REMOVE_ALSO_PARENT,
+								deleteParentOnRemove().toString());
+						CommandUtils.callCommand(DeleteEntity.ID, params);
+					}
 				}
-			}
-		});
-
+			});
+		}
 		addEditButtons(editPanelCmp);
 
 		editPanelCmp.layout();
@@ -458,6 +459,11 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot create organizations content", re);
 		}
+	}
+
+	/** Overwrite to hide the delete button */
+	protected boolean showDeleteButton() {
+		return true;
 	}
 
 	// ///////////////////////////////

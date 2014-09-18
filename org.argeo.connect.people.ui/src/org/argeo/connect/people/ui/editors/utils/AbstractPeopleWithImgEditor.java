@@ -43,14 +43,11 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
 				itemPicture = new Image(this.getSite().getShell().getDisplay(),
 						is);
 			} else
-				// No default image
-				// itemPicture = PeopleImages.NO_PICTURE;
 				itemPicture = null;
 		} catch (Exception e) {
 		} finally {
 			IOUtils.closeQuietly(is);
 		}
-
 	}
 
 	@Override

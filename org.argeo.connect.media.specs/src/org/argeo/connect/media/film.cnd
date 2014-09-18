@@ -23,14 +23,12 @@
 
 
 [map:synopsis] > nt:unstructured, people:language
-
 - map:synopsisContent (STRING)
 - map:synopsisContentShort (STRING)
 - map:logLine (STRING)
 
 
 [map:title] > nt:unstructured, people:language, people:orderable
-
 - map:titleValue (STRING)
 - map:titleArticle (STRING)
 

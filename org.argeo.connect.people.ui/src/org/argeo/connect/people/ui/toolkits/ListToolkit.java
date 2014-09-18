@@ -27,6 +27,7 @@ import org.argeo.connect.people.ui.providers.BooleanFlagLabelProvider;
 import org.argeo.connect.people.ui.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.ui.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.ui.providers.RoleListLabelProvider;
+import org.argeo.connect.people.ui.utils.AbstractPanelFormPart;
 import org.argeo.connect.people.ui.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.ui.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -46,7 +47,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.IManagedForm;
@@ -76,13 +76,13 @@ public class ListToolkit {
 	 */
 	public void populateJobsPanel(Composite parent, final Node entity) {
 		parent.setLayout(new GridLayout()); // PeopleUiUtils.gridLayoutNoBorder());
-		ListPanelPart mainInfoPart = new JobsPanelPart(parent, entity);
+		AbstractPanelFormPart mainInfoPart = new JobsPanelPart(parent, entity);
 		mainInfoPart.refresh();
 		mainInfoPart.initialize(form);
 		form.addPart(mainInfoPart);
 	}
 
-	private class JobsPanelPart extends ListPanelPart {
+	private class JobsPanelPart extends AbstractPanelFormPart {
 		private TableViewer jobsViewer;
 
 		public JobsPanelPart(Composite parent, Node entity) {
@@ -91,8 +91,8 @@ public class ListToolkit {
 
 		protected void reCreateChildComposite(Composite panel, Node entity) {
 			// Create new button
-			final Button addBtn = isCurrentlyCheckedOut ? toolkit.createButton(
-					panel, "Add job", SWT.PUSH) : null;
+			final Button addBtn = isCurrentlyCheckedOut() ? toolkit
+					.createButton(panel, "Add job", SWT.PUSH) : null;
 			if (addBtn != null)
 				configureAddJobBtn(addBtn, entity, "Add a new job");
 
@@ -208,13 +208,14 @@ public class ListToolkit {
 
 	public void populateEmployeesPanel(Composite parent, final Node entity) {
 		parent.setLayout(new GridLayout());
-		ListPanelPart mainInfoPart = new EmployeesPanelPart(parent, entity);
+		AbstractPanelFormPart mainInfoPart = new EmployeesPanelPart(parent,
+				entity);
 		mainInfoPart.refresh();
 		mainInfoPart.initialize(form);
 		form.addPart(mainInfoPart);
 	}
 
-	private class EmployeesPanelPart extends ListPanelPart {
+	private class EmployeesPanelPart extends AbstractPanelFormPart {
 		private TableViewer employeesViewer;
 
 		public EmployeesPanelPart(Composite parent, Node entity) {
@@ -223,8 +224,8 @@ public class ListToolkit {
 
 		protected void reCreateChildComposite(Composite panel, Node entity) {
 			// Create new button
-			final Button addBtn = isCurrentlyCheckedOut ? toolkit.createButton(
-					panel, "Add Employee", SWT.PUSH) : null;
+			final Button addBtn = isCurrentlyCheckedOut() ? toolkit
+					.createButton(panel, "Add Employee", SWT.PUSH) : null;
 			if (addBtn != null)
 				configureAddJobBtn(addBtn, entity,
 						"Add an employee for this organisation");
@@ -370,7 +371,6 @@ public class ListToolkit {
 				CommandUtils.callCommand(EditJob.ID, params);
 			}
 		});
-
 	}
 
 	private class PrimaryEditingSupport extends BooleanEditingSupport {
@@ -438,40 +438,4 @@ public class ListToolkit {
 		}
 	}
 
-	private abstract class ListPanelPart extends AbstractFormPart {
-		protected boolean isCurrentlyCheckedOut;
-		private final Composite parent;
-		private final Node entity;
-
-		public ListPanelPart(Composite parent, Node entity) {
-			this.parent = parent;
-			this.entity = entity;
-			// will force creation on first pass
-			isCurrentlyCheckedOut = !CommonsJcrUtils
-					.isNodeCheckedOutByMe(entity);
-		}
-
-		@Override
-		public void refresh() {
-			super.refresh();
-
-			if (isCurrentlyCheckedOut != CommonsJcrUtils
-					.isNodeCheckedOutByMe(entity)) {
-				isCurrentlyCheckedOut = CommonsJcrUtils
-						.isNodeCheckedOutByMe(entity);
-
-				for (Control control : parent.getChildren()) {
-					control.dispose();
-				}
-				reCreateChildComposite(parent, entity);
-				parent.layout();
-			} else
-				refreshContent(parent, entity);
-		}
-
-		abstract protected void reCreateChildComposite(Composite parent,
-				Node entity);
-
-		abstract protected void refreshContent(Composite parent, Node entity);
-	}
 }
