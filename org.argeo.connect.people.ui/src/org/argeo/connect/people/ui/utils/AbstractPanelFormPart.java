@@ -27,7 +27,6 @@ public abstract class AbstractPanelFormPart extends AbstractFormPart {
 	@Override
 	public void refresh() {
 		super.refresh();
-
 		if (isCurrentlyCheckedOut != CommonsJcrUtils
 				.isNodeCheckedOutByMe(entity)) {
 			isCurrentlyCheckedOut = CommonsJcrUtils
