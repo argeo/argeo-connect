@@ -2,6 +2,7 @@ package org.argeo.cms.text;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
 import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsNames;
@@ -11,16 +12,16 @@ import org.argeo.cms.CmsTypes;
 public class IdentityTextInterpreter implements TextInterpreter, CmsNames {
 
 	@Override
-	public Node write(Node contextNode, String nodePath, String content) {
+	public Node write(Session session, String nodePath, String content) {
 		try {
-			Node node = contextNode.getSession().getNode(nodePath);
+			Node node = session.getNode(nodePath);
 			if (node.isNodeType(CmsTypes.CMS_STYLED)) {
 				String raw = convertToStorage(node, content);
 				node.setProperty(CMS_CONTENT, raw);
 			} else {
 				throw new CmsException("Don't know how to interpret " + node);
 			}
-			contextNode.getSession().save();
+			session.save();
 			return node;
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot set content on " + nodePath, e);
@@ -28,9 +29,9 @@ public class IdentityTextInterpreter implements TextInterpreter, CmsNames {
 	}
 
 	@Override
-	public String read(Node contextNode, String nodePath) {
+	public String read(Session session, String nodePath) {
 		try {
-			Node node = contextNode.getSession().getNode(nodePath);
+			Node node = session.getNode(nodePath);
 			String raw = raw(node);
 			return convertFromStorage(node, raw);
 		} catch (RepositoryException e) {
