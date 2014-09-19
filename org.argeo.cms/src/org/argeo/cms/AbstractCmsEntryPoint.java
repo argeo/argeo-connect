@@ -157,7 +157,7 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 					if (!session.nodeExists(path))
 						node = addNode(session, path, nodeType);
 					else {
-						node = session.getNode(state);
+						node = session.getNode(path);
 						if (!node.isNodeType(nodeType))
 							throw new CmsException("Node " + path
 									+ " not of type " + nodeType);
