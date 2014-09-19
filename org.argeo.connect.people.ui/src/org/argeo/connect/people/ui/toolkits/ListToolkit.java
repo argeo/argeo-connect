@@ -224,8 +224,8 @@ public class ListToolkit {
 
 		protected void reCreateChildComposite(Composite panel, Node entity) {
 			// Create new button
-			final Button addBtn = isCurrentlyCheckedOut() ? toolkit
-					.createButton(panel, "Add Employee", SWT.PUSH) : null;
+			Button addBtn = isCurrentlyCheckedOut() ? toolkit.createButton(
+					panel, "Add Employee", SWT.PUSH) : null;
 			if (addBtn != null)
 				configureAddJobBtn(addBtn, entity,
 						"Add an employee for this organisation");

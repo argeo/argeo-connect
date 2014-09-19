@@ -26,7 +26,10 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;
 import org.argeo.eclipse.ui.utils.CommandUtils;
+import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -51,9 +54,44 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.menus.CommandContributionItem;
+import org.eclipse.ui.menus.CommandContributionItemParameter;
+import org.eclipse.ui.services.IServiceLocator;
 
 /** Some helper methods that factorize widely used snippets in people UI */
 public class PeopleUiUtils {
+
+	// Some methods that must be factorized in Commons Layers soon
+
+	/**
+	 * TODO Use commandUtils equivalent as soon as Commons v2.1.9 is released.
+	 */
+	@Deprecated
+	public static void refreshParameterizedCommand(IMenuManager menuManager,
+			IServiceLocator locator, String contributionId, String commandId,
+			String label, ImageDescriptor icon, boolean showCommand,
+			Map<String, String> params) {
+		IContributionItem ici = menuManager.find(contributionId);
+		if (ici != null)
+			menuManager.remove(ici);
+		if (showCommand) {
+			CommandContributionItemParameter contributionItemParameter = new CommandContributionItemParameter(
+					locator, null, commandId, SWT.PUSH);
+
+			// Set Params
+			contributionItemParameter.label = label;
+			contributionItemParameter.icon = icon;
+
+			if (params != null)
+				contributionItemParameter.parameters = params;
+
+			CommandContributionItem cci = new CommandContributionItem(
+					contributionItemParameter);
+			cci.setId(contributionId);
+			menuManager.add(cci);
+		}
+	}
+
 	/** shortcut to set form data while dealing with switching panel */
 	public static void setSwitchingFormData(Composite composite) {
 		FormData fdLabel = new FormData();
