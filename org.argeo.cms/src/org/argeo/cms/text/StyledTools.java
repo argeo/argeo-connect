@@ -14,6 +14,7 @@ import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -66,7 +67,10 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 			editButton = new Label(this, SWT.NONE);
 			editButton.setText("Edit");
 			editButton.addMouseListener(stml);
+
 		}
+
+		addShellListener(new ToolsShellListener());
 	}
 
 	public void show(EditableTextPart source, Point location) {
@@ -139,5 +143,15 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 			}
 			setVisible(false);
 		}
+	}
+
+	class ToolsShellListener extends org.eclipse.swt.events.ShellAdapter {
+		private static final long serialVersionUID = 8432350564023247241L;
+
+		@Override
+		public void shellDeactivated(ShellEvent e) {
+			setVisible(false);
+		}
+
 	}
 }
