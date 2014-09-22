@@ -501,7 +501,6 @@ public class PeopleUiUtils {
 
 	/**
 	 * Creates the basic right aligned bold label that is used in various forms.
-	 * 
 	 */
 	public static Label createBoldLabel(FormToolkit toolkit, Composite parent,
 			String value) {
