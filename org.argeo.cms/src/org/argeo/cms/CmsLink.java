@@ -18,7 +18,6 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -34,6 +33,8 @@ public class CmsLink implements CmsUiProvider, BundleContextAware {
 	private String custom;
 	private String target;
 	private String image;
+
+	private int verticalAlignment = SWT.CENTER;
 
 	// internal
 	private Boolean isUrl = false;
@@ -65,10 +66,11 @@ public class CmsLink implements CmsUiProvider, BundleContextAware {
 	@Override
 	public Control createUi(final Composite parent, Node context) {
 		Composite comp = new Composite(parent, SWT.NONE);
-		comp.setLayout(new GridLayout(1, true));
+		comp.setLayout(CmsUtils.noSpaceGridLayout());
 
 		Label link = new Label(comp, SWT.NONE);
-		link.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
+		link.setLayoutData(new GridData(SWT.CENTER, verticalAlignment, true,
+				true));
 		if (custom != null) {
 			comp.setData(RWT.CUSTOM_VARIANT, custom);
 			link.setData(RWT.CUSTOM_VARIANT, custom);
@@ -143,6 +145,19 @@ public class CmsLink implements CmsUiProvider, BundleContextAware {
 		this.bundleContext = bundleContext;
 	}
 
+	public void setvAlign(String vAlign) {
+		if ("bottom".equals(vAlign)) {
+			verticalAlignment = SWT.BOTTOM;
+		} else if ("top".equals(vAlign)) {
+			verticalAlignment = SWT.TOP;
+		} else if ("center".equals(vAlign)) {
+			verticalAlignment = SWT.CENTER;
+		} else {
+			throw new CmsException("Unsupported vertical allignment " + vAlign
+					+ " (must be: top, bottom or center)");
+		}
+	}
+
 	/** Mouse listener */
 	private class MListener extends MouseAdapter {
 		private static final long serialVersionUID = 3634864186295639792L;
@@ -157,13 +172,21 @@ public class CmsLink implements CmsUiProvider, BundleContextAware {
 
 		@Override
 		public void mouseDown(MouseEvent e) {
-			if (isUrl) {
-				JavaScriptExecutor executor = RWT.getClient().getService(
-						JavaScriptExecutor.class);
-				if (executor != null)
-					executor.execute("window.location.href = '" + target + "'");
-			} else
-				cmsSession.navigateTo(target);
+			if (e.button == 1 || e.button == 2) {
+				if (isUrl) {
+					JavaScriptExecutor executor = RWT.getClient().getService(
+							JavaScriptExecutor.class);
+					if (executor != null) {
+						if (e.button == 1)
+							executor.execute("window.location.href = '"
+									+ target + "'");
+						else if (e.button == 2)
+							executor.execute("window.open('" + target
+									+ "')");
+					}
+				} else
+					cmsSession.navigateTo(target);
+			}
 		}
 	}
 
