@@ -589,6 +589,45 @@ public class CommonsJcrUtils {
 	}
 
 	/**
+	 * Insert a reference to a given node in a multi value reference property
+	 * just before the reference that is passed as target parameter. Usefull
+	 * among other in the UI drag & drop mechanisms. If the target reference is
+	 * not found, the new reference is added at the end of the list. This
+	 * mechanism also check if another occurence of the source reference is
+	 * present and remove it
+	 */
+	public static void orderReferenceBefore(Node node, String propName,
+			Node sourceNode, Node targetNode) {
+		try {
+			Session session = node.getSession();
+			String sourceId = sourceNode.getIdentifier();
+			String targetId = targetNode.getIdentifier();
+
+			Value[] values;
+			List<Node> nodes = new ArrayList<Node>();
+			if (node.hasProperty(propName)) {
+				values = node.getProperty(propName).getValues();
+				// Check duplicate
+				for (Value currValue : values) {
+					String jcrId = currValue.getString();
+					if (sourceId.equals(jcrId)) {
+						// does not add
+					} else if (targetId.equals(jcrId)) {
+						nodes.add(session.getNodeByIdentifier(sourceId));
+						nodes.add(session.getNodeByIdentifier(targetId));
+					} else
+						nodes.add(session.getNodeByIdentifier(jcrId));
+				}
+			}
+			setMultipleReferences(node, propName, nodes);
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to update node " + node
+					+ " to order " + sourceNode + " before " + targetNode
+					+ " in multi value reference property " + propName, re);
+		}
+	}
+
+	/**
 	 * Adds a String to the multi valued STRING property of a Node. An error
 	 * message is returned if the String is already in the list. The new String
 	 * is always added after all already existing Strings.
