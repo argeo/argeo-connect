@@ -27,10 +27,7 @@ public class SimpleCmsHeader implements CmsUiProvider {
 		Composite header = new Composite(parent, SWT.NONE);
 		header.setData(RWT.CUSTOM_VARIANT, CmsStyles.CMS_HEADER);
 		header.setBackgroundMode(SWT.INHERIT_DEFAULT);
-		GridLayout layout = new GridLayout(3, false);
-		layout.horizontalSpacing = 0;
-		layout.verticalSpacing = 0;
-		header.setLayout(layout);
+		header.setLayout(CmsUtils.noSpaceGridLayout(new GridLayout(3, false)));
 
 		configurePart(context, header, lead);
 		configurePart(context, header, center);
@@ -60,14 +57,12 @@ public class SimpleCmsHeader implements CmsUiProvider {
 		part.setData(RWT.CUSTOM_VARIANT, custom);
 		GridData gridData = new GridData(style, SWT.FILL, true, true);
 		part.setLayoutData(gridData);
-		GridLayout layout = new GridLayout(partProviders.size(),
-				subPartsSameWidth);
-		layout.horizontalSpacing = 0;
-		layout.verticalSpacing = 0;
-		part.setLayout(layout);
+		part.setLayout(CmsUtils.noSpaceGridLayout(new GridLayout(partProviders
+				.size(), subPartsSameWidth)));
 		for (CmsUiProvider uiProvider : partProviders) {
 			Control subPart = uiProvider.createUi(part, context);
-			subPart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			subPart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+					true));
 		}
 	}
 
