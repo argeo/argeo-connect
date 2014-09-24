@@ -44,6 +44,8 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 	private CmsUiProvider dynamicPages;
 	private Map<String, CmsUiProvider> staticPages;
 
+	private Integer headerHeight = 40;
+
 	@Override
 	public EntryPoint create() {
 		CmsEntryPoint cmsEntryPoint = new CmsEntryPoint(repository, workspace);
@@ -115,6 +117,10 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 		this.rwPrincipals = rwPrincipals;
 	}
 
+	public void setHeaderHeight(Integer headerHeight) {
+		this.headerHeight = headerHeight;
+	}
+
 	private class CmsEntryPoint extends AbstractCmsEntryPoint {
 		private Composite headerArea;
 		private Composite bodyArea;
@@ -136,7 +142,7 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 				headerArea.setLayout(new FillLayout());
 				GridData headerData = new GridData(SWT.FILL, SWT.FILL, false,
 						false);
-				headerData.heightHint = 50;
+				headerData.heightHint = headerHeight;
 				headerArea.setLayoutData(headerData);
 				refreshHeader();
 
