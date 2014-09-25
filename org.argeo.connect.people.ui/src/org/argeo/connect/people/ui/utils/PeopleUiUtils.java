@@ -655,10 +655,27 @@ public class PeopleUiUtils {
 
 	/**
 	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
+	 * SWT.FILL, true, true.
+	 */
+	public static GridData fillGridData() {
+		return new GridData(SWT.FILL, SWT.FILL, true, true);
+	}
+
+	/**
+	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
 	 * SWT.CENTER, true, false.
 	 */
 	public static GridData horizontalFillData() {
 		return new GridData(SWT.FILL, SWT.CENTER, true, false);
+	}
+
+	/**
+	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
+	 * SWT.CENTER, true, false, horizontalSpan, 1.
+	 */
+	public static GridData horizontalFillData(int horizontalSpan) {
+		return new GridData(SWT.FILL, SWT.CENTER, true, false, horizontalSpan,
+				1);
 	}
 
 	/**
