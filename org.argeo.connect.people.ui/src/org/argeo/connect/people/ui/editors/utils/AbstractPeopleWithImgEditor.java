@@ -52,7 +52,7 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
 
 	@Override
 	protected void createMainLayout(Composite parent) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// Internal main Layout
 		// The header
@@ -61,9 +61,9 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
 
 		GridLayout gl;
 		if (displayImage())
-			gl = PeopleUiUtils.gridLayoutNoBorder(3);
+			gl = PeopleUiUtils.noSpaceGridLayout(3);
 		else
-			gl = PeopleUiUtils.gridLayoutNoBorder(2);
+			gl = PeopleUiUtils.noSpaceGridLayout(2);
 
 		// So that the buttons are not too close to the right border of the
 		// composite.
@@ -94,7 +94,7 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
 
 		// the body
 		Composite body = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		body.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		body.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		populateBody(body);
 	}

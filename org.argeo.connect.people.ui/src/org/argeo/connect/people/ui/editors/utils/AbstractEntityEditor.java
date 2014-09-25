@@ -172,11 +172,11 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	 * current object
 	 */
 	protected void populateMainInfoDetails(Composite parent) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		final Composite lastUpdateCmp = toolkit.createComposite(parent,
 				SWT.NO_FOCUS);
-		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder();
+		GridLayout gl = PeopleUiUtils.noSpaceGridLayout();
 		gl.marginTop = 8;
 		lastUpdateCmp.setLayout(gl);
 		lastUpdateCmp.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true,
@@ -227,16 +227,16 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	}
 
 	protected void createMainLayout(Composite parent) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		// Internal main Layout
 		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS
 				| SWT.NO_SCROLL | SWT.NO_TRIM);
-		header.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		header.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		header.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		createHeaderPart(header);
 
 		Composite body = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		body.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		body.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		createBodyPart(body);
 
@@ -315,7 +315,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	// }
 
 	protected void createMainInfoPanel(final Composite parent) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// First row: Title + Buttons.
 		Composite firstRow = toolkit.createComposite(parent, SWT.NO_FOCUS);
@@ -353,7 +353,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		final Composite roPanelCmp = toolkit.createComposite(buttons,
 				SWT.NO_FOCUS);
 		PeopleUiUtils.setSwitchingFormData(roPanelCmp);
-		roPanelCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		roPanelCmp.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// Add a level to right align the buttons
 		final Composite roSubPanelCmp = toolkit.createComposite(roPanelCmp,

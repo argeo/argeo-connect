@@ -53,7 +53,7 @@ public class PickUpDateDialog extends TrayDialog {
 
 	protected Control createDialogArea(Composite parent) {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
-		dialogArea.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		dialogArea.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		dateTimeCtl = new DateTime(dialogArea, SWT.CALENDAR);
 		dateTimeCtl.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true,

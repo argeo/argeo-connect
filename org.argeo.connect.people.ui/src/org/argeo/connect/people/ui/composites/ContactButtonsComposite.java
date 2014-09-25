@@ -58,7 +58,7 @@ public class ContactButtonsComposite extends Composite {
 	private void populate() {
 		// Initialization
 		Composite buttCmp = this;
-		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder(3);
+		GridLayout gl = PeopleUiUtils.noSpaceGridLayout(3);
 		buttCmp.setLayout(gl);
 
 		// final Button categoryBtn =

@@ -324,7 +324,7 @@ public class EditJobDialog extends TrayDialog {
 	}
 
 	protected void addFilterPanel(Composite parent) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
 				| SWT.ICON_CANCEL);
 		filterTxt.setMessage("Search and choose a corresponding entity");

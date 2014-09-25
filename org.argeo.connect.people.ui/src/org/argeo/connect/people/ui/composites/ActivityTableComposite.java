@@ -80,7 +80,7 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 	/** Must be called immediately after creation */
 	public void populate() {
 		Composite parent = this;
-		GridLayout layout = PeopleUiUtils.gridLayoutNoBorder();
+		GridLayout layout = PeopleUiUtils.noSpaceGridLayout();
 		layout.verticalSpacing = 5;
 		this.setLayout(layout);
 		tableViewer = createTableViewer(parent);

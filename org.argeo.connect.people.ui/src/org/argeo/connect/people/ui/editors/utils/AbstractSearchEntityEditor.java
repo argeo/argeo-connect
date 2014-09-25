@@ -73,7 +73,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	@Override
 	public void createPartControl(Composite parent) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// the generic free search part
 		Composite searchCmp = new Composite(parent, SWT.NO_FOCUS);

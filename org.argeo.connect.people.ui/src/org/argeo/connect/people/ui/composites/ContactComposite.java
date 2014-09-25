@@ -58,7 +58,7 @@ public class ContactComposite extends Composite {
 	private void populate() {
 		// Initialization
 		Composite parent = this;
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 
 		// buttons
 		Composite buttCmp = new ContactButtonsComposite(parent, SWT.NO_FOCUS,

@@ -134,7 +134,7 @@ public class SimpleJcrTableComposite extends Composite implements ArgeoNames {
 		// initialization
 		Composite parent = this;
 		// Main Layout
-		this.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		this.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		if (hasFilter)
 			createFilterPart(parent);
 		tableViewer = createTableViewer(parent);

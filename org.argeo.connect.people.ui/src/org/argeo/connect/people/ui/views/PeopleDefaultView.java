@@ -81,7 +81,7 @@ public class PeopleDefaultView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// Header
 		Composite cmp = new Composite(parent, SWT.NO_FOCUS);
@@ -126,7 +126,7 @@ public class PeopleDefaultView extends ViewPart {
 		Composite linksCmp = new Composite(parent, SWT.NO_FOCUS);
 		linksCmp.setLayoutData(PeopleUiUtils.createformData(75, 25, 98, 73));
 		linksCmp.setData(PeopleUiConstants.CUSTOM_VARIANT, "people-logoTable");
-		linksCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		linksCmp.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		addLink(linksCmp, "Search Entities",
 				"Open an editor to narrow you search", CMD_OPEN_SEARCH_EDITOR);

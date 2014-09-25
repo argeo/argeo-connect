@@ -134,7 +134,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 				.createComposite(parent, SWT.NO_FOCUS);
 		gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
 		relEntitiesCmp.setLayoutData(gd);
-		relEntitiesCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
+		relEntitiesCmp.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 
 		// Parent composite with related entities and add link
 		final Composite relatedCmp = toolkit.createComposite(relEntitiesCmp,

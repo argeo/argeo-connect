@@ -69,7 +69,7 @@ public class HistoryToolkit {
 
 	public void populateHistoryPanel(Composite parent) {
 		try {
-			parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+			parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 			UserManagementService userService = peopleService
 					.getUserManagementService();

@@ -237,7 +237,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 
 		public void createControl(Composite parent) {
 			Composite body = new Composite(parent, SWT.NONE);
-			body.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+			body.setLayout(PeopleUiUtils.noSpaceGridLayout());
 			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 			colDefs.add(new PeopleColumnDefinition(taggableNodeType,
 					Property.JCR_TITLE, PropertyType.STRING, "Display Name",

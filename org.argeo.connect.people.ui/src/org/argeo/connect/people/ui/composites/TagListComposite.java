@@ -162,7 +162,7 @@ public class TagListComposite extends Composite {
 
 						Composite tagCmp = toolkit.createComposite(parentCmp,
 								SWT.NO_FOCUS);
-						tagCmp.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
+						tagCmp.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 						Link link = new Link(tagCmp, SWT.NONE);
 						// Specific style for tags.
 						if (tagPropName.equals(PeopleNames.PEOPLE_TAGS)) {

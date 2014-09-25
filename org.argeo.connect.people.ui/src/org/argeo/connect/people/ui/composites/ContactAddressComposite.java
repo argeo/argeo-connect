@@ -73,7 +73,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 	private void populate() {
 		// Initialization
 		final Composite parent = this;
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 
 		// BUTTONS
 		Composite buttCmp = new ContactButtonsComposite(parent, SWT.NONE,

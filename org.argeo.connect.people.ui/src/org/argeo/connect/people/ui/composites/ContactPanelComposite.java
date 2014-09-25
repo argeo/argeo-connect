@@ -74,7 +74,7 @@ public class ContactPanelComposite extends Composite {
 
 	private void populate() {
 		Composite parent = this;
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// Add a scrolled container
 		ScrolledComposite container = new ScrolledComposite(parent,
@@ -87,7 +87,7 @@ public class ContactPanelComposite extends Composite {
 
 		container.setExpandHorizontal(true);
 		container.setExpandVertical(false);
-		container.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		container.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		innerCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		formPart.initialize(form);
@@ -182,7 +182,7 @@ public class ContactPanelComposite extends Composite {
 	/** Manage display and update of existing contact Nodes */
 	private void populateDisplayContactPanel(final Composite parent,
 			boolean isCheckedOut) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		try {
 
 			String[] knownTypes = peopleService.getContactService()
@@ -216,7 +216,7 @@ public class ContactPanelComposite extends Composite {
 	}
 
 	private void populateNotePanel(Composite parent) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 		Label label = PeopleUiUtils.createBoldLabel(toolkit, parent, "Notes: ");
 
 		GridData gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);

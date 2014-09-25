@@ -64,7 +64,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		GridLayout layout = PeopleUiUtils.gridLayoutNoBorder();
+		GridLayout layout = PeopleUiUtils.noSpaceGridLayout();
 		layout.verticalSpacing = 5;
 		parent.setLayout(layout);
 		tableViewer = createTableViewer(parent);

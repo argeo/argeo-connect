@@ -129,13 +129,13 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	}
 
 	protected void createMainLayout(Composite parent) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// Internal main Layout
 		// The header
 		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS
 				| SWT.NO_SCROLL | SWT.NO_TRIM);
-		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder(2);
+		GridLayout gl = PeopleUiUtils.noSpaceGridLayout(2);
 		// So that the buttons are not too close to the right border of the
 		// composite.
 		gl.marginRight = 5;
@@ -158,7 +158,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 		// the body
 		Composite body = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		body.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		body.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		populateBody(body);
 	}

@@ -154,7 +154,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 	}
 
 	protected void createMainLayout(Composite parent) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		// The header
 		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		header.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -313,7 +313,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 	// }
 
 	public void createMembersList(Composite parent, final Node entity) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// First line: search Text and buttons
 		Composite buttonsCmp = toolkit.createComposite(parent);

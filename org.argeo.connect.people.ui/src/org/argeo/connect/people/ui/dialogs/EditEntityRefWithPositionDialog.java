@@ -337,7 +337,7 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 	}
 
 	protected void addFilterPanel(Composite parent) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		// Text Area for the filter
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
 				| SWT.ICON_CANCEL);

@@ -92,26 +92,6 @@ public class PeopleUiUtils {
 		}
 	}
 
-	/** shortcut to set form data while dealing with switching panel */
-	public static void setSwitchingFormData(Composite composite) {
-		FormData fdLabel = new FormData();
-		fdLabel.top = new FormAttachment(0, 0);
-		fdLabel.left = new FormAttachment(0, 0);
-		fdLabel.right = new FormAttachment(100, 0);
-		fdLabel.bottom = new FormAttachment(100, 0);
-		composite.setLayoutData(fdLabel);
-	}
-
-	public static void setTableDefaultStyle(TableViewer viewer,
-			int customItemHeight) {
-		Table table = viewer.getTable();
-		table.setLinesVisible(true);
-		table.setHeaderVisible(false);
-		table.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(PeopleUiConstants.CUSTOM_ITEM_HEIGHT,
-				Integer.valueOf(customItemHeight));
-	}
-
 	/**
 	 * Shortcut to refresh the value of a <code>Text</code> given a Node and a
 	 * property Name
@@ -255,6 +235,79 @@ public class PeopleUiUtils {
 	}
 
 	/**
+	 * Creates a new selection adapter in order to provide sort abilities to a
+	 * table that displays JCR Rows
+	 * 
+	 * @param index
+	 * @param propertyType
+	 * @param selectorName
+	 * @param propertyName
+	 * @param comparator
+	 * @param viewer
+	 * @return
+	 */
+	public static SelectionAdapter getSelectionAdapter(final int index,
+			final int propertyType, final String selectorName,
+			final String propertyName, final RowViewerComparator comparator,
+			final TableViewer viewer) {
+		SelectionAdapter selectionAdapter = new SelectionAdapter() {
+			private static final long serialVersionUID = -3452356616673385039L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Table table = viewer.getTable();
+				comparator.setColumn(propertyType, selectorName, propertyName);
+				int dir = table.getSortDirection();
+				if (table.getSortColumn() == table.getColumn(index)) {
+					dir = dir == SWT.UP ? SWT.DOWN : SWT.UP;
+				} else {
+					dir = SWT.DOWN;
+				}
+				table.setSortDirection(dir);
+				table.setSortColumn(table.getColumn(index));
+				viewer.refresh();
+			}
+		};
+		return selectionAdapter;
+	}
+
+	/**
+	 * Creates a new selection adapter in order to provide sort abilities to a
+	 * table that displays JCR nodes
+	 * 
+	 * @param index
+	 * @param propertyType
+	 * @param selectorName
+	 * @param propertyName
+	 * @param comparator
+	 * @param viewer
+	 * @return
+	 */
+	public static SelectionAdapter getSelectionAdapter(final int index,
+			final int propertyType, final String propertyName,
+			final NodeViewerComparator comparator, final TableViewer viewer) {
+		SelectionAdapter selectionAdapter = new SelectionAdapter() {
+			private static final long serialVersionUID = -3452356616673385039L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Table table = viewer.getTable();
+				comparator.setColumn(propertyType, propertyName);
+				int dir = table.getSortDirection();
+				if (table.getSortColumn() == table.getColumn(index)) {
+					dir = dir == SWT.UP ? SWT.DOWN : SWT.UP;
+				} else {
+					dir = SWT.DOWN;
+				}
+				table.setSortDirection(dir);
+				table.setSortColumn(table.getColumn(index));
+				viewer.refresh();
+			}
+		};
+		return selectionAdapter;
+	}
+
+	/**
 	 * Shortcut to add a default modify listeners to a <code>DateTime</code>
 	 * widget that is bound a JCR String Property. Any change in the text is
 	 * immediately stored in the active session, but no save is done.
@@ -315,14 +368,6 @@ public class PeopleUiUtils {
 					part.markDirty();
 			}
 		});
-	}
-
-	/**
-	 * Shortcut to provide a gridlayout with no margin and no spacing (dafault
-	 * are normally 5 px)
-	 */
-	public static GridLayout gridLayoutNoBorder() {
-		return gridLayoutNoBorder(1);
 	}
 
 	/**
@@ -478,13 +523,19 @@ public class PeopleUiUtils {
 	}
 
 	/**
-	 * Shortcut to provide a gridlayout with no margin and no spacing (default
-	 * are normally 5 px) with the given column number (equals width is false).
+	 * Shortcut to create a delete button that will be used in composites that
+	 * display a multi value property in Tag Like manner
 	 */
-	public static GridLayout gridLayoutNoBorder(int nbOfCol) {
-		GridLayout gl = new GridLayout(nbOfCol, false);
-		gl.marginWidth = gl.marginHeight = gl.horizontalSpacing = gl.verticalSpacing = 0;
-		return gl;
+	public static Button createDeleteButton(Composite parent) {
+		Button button = new Button(parent, SWT.FLAT);
+		button.setData(PeopleUiConstants.CUSTOM_VARIANT,
+				PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+		button.setImage(PeopleImages.DELETE_BTN_LEFT);
+		RowData rd = new RowData();
+		rd.height = 16;
+		rd.width = 16;
+		button.setLayoutData(rd);
+		return button;
 	}
 
 	/** Creates a text widget with RowData already set */
@@ -560,6 +611,29 @@ public class PeopleUiUtils {
 		return text;
 	}
 
+	public static void setTableDefaultStyle(TableViewer viewer,
+			int customItemHeight) {
+		Table table = viewer.getTable();
+		table.setLinesVisible(true);
+		table.setHeaderVisible(false);
+		table.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
+		table.setData(PeopleUiConstants.CUSTOM_ITEM_HEIGHT,
+				Integer.valueOf(customItemHeight));
+	}
+
+	// /////////////////////////////
+	// Layouts and LayoutData
+
+	/** shortcut to set form data while dealing with switching panel */
+	public static void setSwitchingFormData(Composite composite) {
+		FormData fdLabel = new FormData();
+		fdLabel.top = new FormAttachment(0, 0);
+		fdLabel.left = new FormAttachment(0, 0);
+		fdLabel.right = new FormAttachment(100, 0);
+		fdLabel.bottom = new FormAttachment(100, 0);
+		composite.setLayoutData(fdLabel);
+	}
+
 	/**
 	 * Shortcut to quickly get a FormData object with configured FormAttachment
 	 * 
@@ -580,92 +654,22 @@ public class PeopleUiUtils {
 	}
 
 	/**
-	 * Shortcut to create a delete button that will be used in composites that
-	 * display a multi value property in Tag Like manner
+	 * Shortcut to create a {@link GridLayout} with no margin and no spacing
+	 * (default are normally 5 px).
 	 */
-	public static Button createDeleteButton(Composite parent) {
-		Button button = new Button(parent, SWT.FLAT);
-		button.setData(PeopleUiConstants.CUSTOM_VARIANT,
-				PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
-		button.setImage(PeopleImages.DELETE_BTN_LEFT);
-		RowData rd = new RowData();
-		rd.height = 16;
-		rd.width = 16;
-		button.setLayoutData(rd);
-		return button;
+	public static GridLayout noSpaceGridLayout() {
+		return noSpaceGridLayout(1);
 	}
 
 	/**
-	 * Creates a new selection adapter in order to provide sort abilities to a
-	 * table that displays JCR Rows
-	 * 
-	 * @param index
-	 * @param propertyType
-	 * @param selectorName
-	 * @param propertyName
-	 * @param comparator
-	 * @param viewer
-	 * @return
+	 * Shortcut to create a {@link GridLayout} with the given column number with
+	 * no margin and no spacing (default are normally 5 px).
+	 * makeColumnsEqualWidth parameter is set to false.
 	 */
-	public static SelectionAdapter getSelectionAdapter(final int index,
-			final int propertyType, final String selectorName,
-			final String propertyName, final RowViewerComparator comparator,
-			final TableViewer viewer) {
-		SelectionAdapter selectionAdapter = new SelectionAdapter() {
-			private static final long serialVersionUID = -3452356616673385039L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Table table = viewer.getTable();
-				comparator.setColumn(propertyType, selectorName, propertyName);
-				int dir = table.getSortDirection();
-				if (table.getSortColumn() == table.getColumn(index)) {
-					dir = dir == SWT.UP ? SWT.DOWN : SWT.UP;
-				} else {
-					dir = SWT.DOWN;
-				}
-				table.setSortDirection(dir);
-				table.setSortColumn(table.getColumn(index));
-				viewer.refresh();
-			}
-		};
-		return selectionAdapter;
-	}
-
-	/**
-	 * Creates a new selection adapter in order to provide sort abilities to a
-	 * table that displays JCR nodes
-	 * 
-	 * @param index
-	 * @param propertyType
-	 * @param selectorName
-	 * @param propertyName
-	 * @param comparator
-	 * @param viewer
-	 * @return
-	 */
-	public static SelectionAdapter getSelectionAdapter(final int index,
-			final int propertyType, final String propertyName,
-			final NodeViewerComparator comparator, final TableViewer viewer) {
-		SelectionAdapter selectionAdapter = new SelectionAdapter() {
-			private static final long serialVersionUID = -3452356616673385039L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Table table = viewer.getTable();
-				comparator.setColumn(propertyType, propertyName);
-				int dir = table.getSortDirection();
-				if (table.getSortColumn() == table.getColumn(index)) {
-					dir = dir == SWT.UP ? SWT.DOWN : SWT.UP;
-				} else {
-					dir = SWT.DOWN;
-				}
-				table.setSortDirection(dir);
-				table.setSortColumn(table.getColumn(index));
-				viewer.refresh();
-			}
-		};
-		return selectionAdapter;
+	public static GridLayout noSpaceGridLayout(int nbOfCol) {
+		GridLayout gl = new GridLayout(nbOfCol, false);
+		gl.marginWidth = gl.marginHeight = gl.horizontalSpacing = gl.verticalSpacing = 0;
+		return gl;
 	}
 
 	/* LENGHT AND DURATION MANAGEMENT */

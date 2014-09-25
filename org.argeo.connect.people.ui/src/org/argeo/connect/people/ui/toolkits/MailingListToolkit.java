@@ -50,7 +50,7 @@ public class MailingListToolkit {
 	 **/
 	public TableViewer createItemsViewerWithCheckBox(Composite parent,
 			List<Row> selectedItems, List<ColumnDefinition> columns) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// TODO clean this: we must 1st create the composite for the filter,
 		// then the table, then the filter itself
@@ -197,7 +197,7 @@ public class MailingListToolkit {
 	}
 
 	public Text addFilterPanel(Composite parent, final TableViewer viewer) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		// Text Area for the filter
 		final Text filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH
 				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);

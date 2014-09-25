@@ -209,7 +209,7 @@ public class UserEditor extends FormEditor {
 			ScrolledForm form = mf.getForm();
 			form.setText("Group Management");
 			Composite body = form.getBody();
-			body.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+			body.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 			Label lbl = new Label(body, SWT.NONE);
 			lbl.setFont(EclipseUiUtils.getBoldFont(body));

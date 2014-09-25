@@ -128,11 +128,11 @@ public class LegalInfoToolkit {
 	}
 
 	private void populateBankAccountGroup(Composite parent) {
-		parent.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		final Group group = new Group(parent, 0);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		group.setText("Payment account");
-		group.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		group.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {

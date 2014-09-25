@@ -258,7 +258,7 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 	/* MANAGE FILTER */
 	private void createFilterPart(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NO_FOCUS);
-		composite.setLayout(PeopleUiUtils.gridLayoutNoBorder(2));
+		composite.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 		composite
 				.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 

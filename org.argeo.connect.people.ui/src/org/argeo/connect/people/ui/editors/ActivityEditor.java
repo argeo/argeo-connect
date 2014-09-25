@@ -273,7 +273,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		gd.horizontalSpan = 3;
 		titleGrp.setLayoutData(gd);
 		titleGrp.setText("Title");
-		titleGrp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		titleGrp.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		final Text titleTxt = toolkit.createText(titleGrp, "", SWT.BORDER
 				| SWT.MULTI | SWT.WRAP);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -285,7 +285,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		gd.horizontalSpan = 3;
 		descGrp.setLayoutData(gd);
 		descGrp.setText("Description");
-		descGrp.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		descGrp.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		final Text descTxt = toolkit.createText(descGrp, "", SWT.BORDER
 				| SWT.MULTI | SWT.WRAP);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);

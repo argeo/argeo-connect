@@ -98,7 +98,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 
 	@Override
 	protected void populateHeader(Composite parent) {
-		GridLayout gl = PeopleUiUtils.gridLayoutNoBorder();
+		GridLayout gl = PeopleUiUtils.noSpaceGridLayout();
 		gl.marginBottom = 10;
 		parent.setLayout(gl);
 
@@ -132,7 +132,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Contact details", PeopleUiConstants.PANEL_CONTACT_DETAILS,
 				tooltip);
-		innerPannel.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		ContactPanelComposite cpc = new ContactPanelComposite(innerPannel,
 				SWT.NO_FOCUS, toolkit, getManagedForm(), getNode(),
 				getPeopleService(), getPeopleUiService());
@@ -184,7 +184,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		PeopleUiUtils.setSwitchingFormData(editPanel);
 		// editPanel.setData(RWT.CUSTOM_VARIANT,
 		// PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
-		editPanel.setLayout(PeopleUiUtils.gridLayoutNoBorder());
+		editPanel.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// First Line - display Name management
 		Composite firstCmp = toolkit.createComposite(editPanel, SWT.NO_FOCUS);

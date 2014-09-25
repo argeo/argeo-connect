@@ -45,7 +45,7 @@ public class PeopleVirtualTableViewer extends Composite implements ArgeoNames {
 		// initialization
 		Composite parent = this;
 		// Main Layout
-		GridLayout layout = PeopleUiUtils.gridLayoutNoBorder();
+		GridLayout layout = PeopleUiUtils.noSpaceGridLayout();
 		this.setLayout(layout);
 		createTableViewer(parent);
 		EclipseUiSpecificUtils.enableToolTipSupport(viewer);

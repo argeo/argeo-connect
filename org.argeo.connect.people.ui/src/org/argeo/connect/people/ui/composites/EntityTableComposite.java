@@ -162,7 +162,7 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 		// initialization
 		Composite parent = this;
 		// Main Layout
-		GridLayout layout = PeopleUiUtils.gridLayoutNoBorder();
+		GridLayout layout = PeopleUiUtils.noSpaceGridLayout();
 		layout.verticalSpacing = 5;
 		this.setLayout(layout);
 		if (hasFilter)
