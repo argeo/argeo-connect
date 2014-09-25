@@ -654,6 +654,14 @@ public class PeopleUiUtils {
 	}
 
 	/**
+	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
+	 * SWT.CENTER, true, false.
+	 */
+	public static GridData horizontalFillData() {
+		return new GridData(SWT.FILL, SWT.CENTER, true, false);
+	}
+
+	/**
 	 * Shortcut to create a {@link GridLayout} with no margin and no spacing
 	 * (default are normally 5 px).
 	 */
