@@ -18,7 +18,6 @@ import org.argeo.cms.CmsUiProvider;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.web.providers.SingleColListLabelProvider;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -77,7 +76,7 @@ public class DefaultHomePage implements CmsUiProvider {
 						context);
 			}
 		});
-
+		refreshFilteredList(entityViewer, entityFilterTxt.getText(), context);
 	}
 
 	protected TableViewer createListPart(Composite parent,
@@ -106,29 +105,31 @@ public class DefaultHomePage implements CmsUiProvider {
 			Node context) {
 		try {
 			// Do not load all contacts when no filter is present
-			if (CommonsJcrUtils.isEmptyString(filter)) {
-				entityViewer.setInput(null);
-				return;
-			}
+			// if (CommonsJcrUtils.isEmptyString(filter)) {
+			// entityViewer.setInput(null);
+			// return;
+			// }
 
 			Session session = context.getSession();
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
+			String path = context.getPath();
 
 			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
 					PeopleTypes.PEOPLE_ENTITY);
 
-			StaticOperand so = factory.literal(session.getValueFactory()
-					.createValue("*"));
-			Constraint defaultC = factory.fullTextSearch(
-					source.getSelectorName(), null, so);
+			// StaticOperand so =
+			// factory.literal(session.getValueFactory()
+			// .createValue("*"));
+			Constraint defaultC = factory.descendantNode(
+					source.getSelectorName(), path);
 
 			// Parse the String
 			String[] strs = filter.trim().split(" ");
 			for (String token : strs) {
-				so = factory.literal(session.getValueFactory().createValue(
-						"*" + token + "*"));
+				StaticOperand so = factory.literal(session.getValueFactory()
+						.createValue("*" + token + "*"));
 				Constraint currC = factory.fullTextSearch(
 						source.getSelectorName(), null, so);
 				if (defaultC == null)
