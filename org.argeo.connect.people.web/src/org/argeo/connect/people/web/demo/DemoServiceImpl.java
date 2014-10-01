@@ -27,18 +27,17 @@ public class DemoServiceImpl extends PeopleServiceImpl implements
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private String workspaceName; // = "people";
+	private String workspaceName;
 	private UserAdminService userAdminService;
 	private JcrSecurityModel jcrSecurityModel;
+	private Map<String, Resource> initResources = null;
 	/* DEMO ONLY: injected business data */
 	private Map<String, Resource> demoBusinessData = null;
-	private Map<String, Resource> initResources = null;
 
 	public void init() {
 		Session adminSession = null;
 		try {
 			adminSession = repository.login(workspaceName);
-
 			// Initialization of the model if needed
 			initializeModel(adminSession);
 			addModelResources(adminSession, initResources);

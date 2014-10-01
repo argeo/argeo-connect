@@ -29,6 +29,7 @@ import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.ArgeoTypes;
 import org.argeo.security.UserAdminService;
 import org.argeo.security.jcr.JcrSecurityModel;
+import org.argeo.util.CsvParserWithLinesAsMap;
 import org.springframework.core.io.Resource;
 
 /** Fills the repository in a demo context */
@@ -52,9 +53,11 @@ public class DemoDataImport implements PeopleConstants {
 
 			// User & group management
 			resource = demoData.get("userFile");
-			new UsersCsvFileParser(adminSession, peopleService,
-					userAdminService, jcrSecurityModel).parse(
-					resource.getInputStream(), "UTF-8");
+			// Force the import of org.argeo.util.CsvParserWithLinesAsMap
+			CsvParserWithLinesAsMap parser = new UsersCsvFileParser(
+					adminSession, peopleService, userAdminService,
+					jcrSecurityModel);
+			parser.parse(resource.getInputStream(), "UTF-8");
 
 			createUserGroups(adminSession);
 
@@ -115,8 +118,8 @@ public class DemoDataImport implements PeopleConstants {
 			String username = CommonsJcrUtils.get(currProfile,
 					ArgeoNames.ARGEO_USER_ID);
 
-			// TODO hardcoded default users...
-			if (!("root".equals(username) || "demo".equals(username))) // "guest".equals(username)||
+			// TODO remove hard coded default users names
+			if (!("root".equals(username) || "demo".equals(username)))
 				peopleService.getUserManagementService()
 						.createDefaultGroupForUser(adminSession, username);
 		}

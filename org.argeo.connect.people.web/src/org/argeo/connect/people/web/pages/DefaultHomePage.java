@@ -7,7 +7,6 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Constraint;
 import javax.jcr.query.qom.Ordering;
 import javax.jcr.query.qom.QueryObjectModel;
@@ -16,7 +15,6 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.cms.CmsUiProvider;
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
@@ -64,7 +62,10 @@ public class DefaultHomePage implements CmsUiProvider {
 				false));
 		entityFilterTxt.setMessage("Search entities");
 
-		final TableViewer entityViewer = createListPart(parent,
+		Composite tableComposite = new Composite(parent, SWT.NONE);
+		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+				true));
+		final TableViewer entityViewer = createListPart(tableComposite,
 				new SingleColListLabelProvider(peopleService));
 
 		entityFilterTxt.addModifyListener(new ModifyListener() {
@@ -81,29 +82,19 @@ public class DefaultHomePage implements CmsUiProvider {
 
 	protected TableViewer createListPart(Composite parent,
 			ILabelProvider labelProvider) {
-		parent.setLayout(new GridLayout());
-
-		Composite tableComposite = new Composite(parent, SWT.NONE);
-		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL
-				| GridData.GRAB_VERTICAL | GridData.VERTICAL_ALIGN_FILL
-				| GridData.GRAB_HORIZONTAL);
-		tableComposite.setLayoutData(gd);
-
-		TableViewer v = new TableViewer(tableComposite);
+		TableViewer v = new TableViewer(parent);
 		v.setLabelProvider(labelProvider);
-
 		TableColumn singleColumn = new TableColumn(v.getTable(), SWT.V_SCROLL);
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 		tableColumnLayout.setColumnData(singleColumn, new ColumnWeightData(85));
-		tableComposite.setLayout(tableColumnLayout);
+		parent.setLayout(tableColumnLayout);
 
 		// Corresponding table & style
 		Table table = v.getTable();
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
-		// Enable markups
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(30));
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(25));
 		v.setContentProvider(new BasicContentProvider());
 		// TODO manage double click
 		// v.addDoubleClickListener(new PeopleJcrViewerDClickListener(
@@ -114,7 +105,7 @@ public class DefaultHomePage implements CmsUiProvider {
 	protected void refreshFilteredList(TableViewer entityViewer, String filter,
 			Node context) {
 		try {
-
+			// Do not load all contacts when no filter is present
 			if (CommonsJcrUtils.isEmptyString(filter)) {
 				entityViewer.setInput(null);
 				return;
@@ -128,39 +119,31 @@ public class DefaultHomePage implements CmsUiProvider {
 			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
 					PeopleTypes.PEOPLE_ENTITY);
 
-			// no Default Constraint
-			Constraint defaultC = null;
+			StaticOperand so = factory.literal(session.getValueFactory()
+					.createValue("*"));
+			Constraint defaultC = factory.fullTextSearch(
+					source.getSelectorName(), null, so);
 
 			// Parse the String
 			String[] strs = filter.trim().split(" ");
-			if (strs.length == 0) {
-				StaticOperand so = factory.literal(session.getValueFactory()
-						.createValue("*"));
-				defaultC = factory.fullTextSearch(source.getSelectorName(),
-						null, so);
-			} else {
-				for (String token : strs) {
-					StaticOperand so = factory.literal(session
-							.getValueFactory().createValue("*" + token + "*"));
-					Constraint currC = factory.fullTextSearch(
-							source.getSelectorName(), null, so);
-					if (defaultC == null)
-						defaultC = currC;
-					else
-						defaultC = factory.and(defaultC, currC);
-				}
+			for (String token : strs) {
+				so = factory.literal(session.getValueFactory().createValue(
+						"*" + token + "*"));
+				Constraint currC = factory.fullTextSearch(
+						source.getSelectorName(), null, so);
+				if (defaultC == null)
+					defaultC = currC;
+				else
+					defaultC = factory.and(defaultC, currC);
 			}
-			// Order by display name
+
 			Ordering order = factory.ascending(factory.propertyValue(
 					source.getSelectorName(), Property.JCR_TITLE));
-
 			QueryObjectModel query = factory.createQuery(source, defaultC,
 					new Ordering[] { order }, null);
-			query.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
-
-			QueryResult result = query.execute();
-			entityViewer
-					.setInput(JcrUtils.nodeIteratorToList(result.getNodes()));
+			// query.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
+			entityViewer.setInput(JcrUtils.nodeIteratorToList(query.execute()
+					.getNodes()));
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list entities for context "
 					+ context + " and filter " + filter, e);
