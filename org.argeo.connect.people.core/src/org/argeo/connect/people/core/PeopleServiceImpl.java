@@ -291,7 +291,9 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			} else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG)) {
 				// Default display is simply the legal name
 				displayName = CommonsJcrUtils.get(entity, PEOPLE_LEGAL_NAME);
-			} else
+			} else if (entity.isNodeType(NodeType.MIX_TITLE))
+				displayName = CommonsJcrUtils.get(entity, Property.JCR_TITLE);
+			else
 				throw new PeopleException("Display name not defined for type "
 						+ entity.getPrimaryNodeType().getName() + " - node: "
 						+ entity);
@@ -731,9 +733,9 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		return userManagementService;
 	}
 
-//	protected Repository getRepository() {
-//		return repository;
-//	}
+	// protected Repository getRepository() {
+	// return repository;
+	// }
 
 	/* MISCEALLENEOUS */
 	@Override
