@@ -16,10 +16,6 @@ public interface PeopleNames {
 	 */
 	public final static String PEOPLE_UID = "people:uid";
 
-	/** TODO A number of people - where is it used ?*/
-	@Deprecated
-	public static String PEOPLE_COUNT = "people:count";
-
 	// A default Node at the root of the business path to store information
 	// about current instance of the People repository
 	public final static String PEOPLE_HOME = "people:home";
@@ -29,8 +25,6 @@ public interface PeopleNames {
 	public final static String PEOPLE_ORGS = "people:orgs";
 	public final static String PEOPLE_FILMS = "people:films";
 	public final static String PEOPLE_PROJECTS = "people:projects";
-	@Deprecated
-	public final static String PEOPLE_WORKFLOWS = "people:workflows";
 	public final static String PEOPLE_ACTIVITIES = "people:activities";
 	public final static String PEOPLE_RESOURCES = "people:resources";
 

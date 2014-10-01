@@ -24,8 +24,8 @@ public interface PeopleConstants {
 			//
 			PeopleNames.PEOPLE_PERSONS, PeopleNames.PEOPLE_ORGS,
 			PeopleNames.PEOPLE_FILMS, PeopleNames.PEOPLE_PROJECTS,
-			PeopleNames.PEOPLE_ACTIVITIES, "/people:tasks",
-			"/people:userGroups");
+			PeopleNames.PEOPLE_USER_GROUPS, PeopleNames.PEOPLE_ACTIVITIES,
+			PeopleNames.PEOPLE_RESOURCES, "/people:tasks", "/people:userGroups");
 
 	public static final List<String> KNOWN_RESOURCE_NAMES = asList(
 			//

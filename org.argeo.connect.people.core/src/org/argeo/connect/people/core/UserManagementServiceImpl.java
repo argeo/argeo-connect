@@ -151,7 +151,8 @@ public class UserManagementServiceImpl implements UserManagementService {
 				Session tmpSession = null;
 				try {
 					String tmpParentPath = parent.getPath();
-					tmpSession = session.getRepository().login();
+					tmpSession = session.getRepository().login(
+							session.getWorkspace().getName());
 					Node tmpParent = tmpSession.getNode(tmpParentPath);
 					Node tmpProfile = tmpParent.addNode(
 							PeopleTypes.PEOPLE_PROFILE,
@@ -189,7 +190,8 @@ public class UserManagementServiceImpl implements UserManagementService {
 			List<String> usernames) {
 		Session tmpSession = null;
 		try {
-			tmpSession = session.getRepository().login();
+			tmpSession = session.getRepository().login(
+					session.getWorkspace().getName());
 			StringBuilder builder = new StringBuilder();
 			for (String currUserName : usernames) {
 				Node peopleProfile = getPeopleProfile(tmpSession, currUserName);

@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
-import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
@@ -47,7 +46,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			userManagementService);
 	private TagService tagService = new TagServiceImpl(this);
 
-	private Repository repository;
+	// private Repository repository;
 
 	/* Life cycle management */
 	/**
@@ -732,9 +731,9 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		return userManagementService;
 	}
 
-	protected Repository getRepository() {
-		return repository;
-	}
+//	protected Repository getRepository() {
+//		return repository;
+//	}
 
 	/* MISCEALLENEOUS */
 	@Override
@@ -743,10 +742,10 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		return System.getProperty(key);
 	}
 
-	/* DEPENDENCY INJECTION */
-	public void setRepository(Repository repository) {
-		this.repository = repository;
-	}
+	// /* DEPENDENCY INJECTION */
+	// public void setRepository(Repository repository) {
+	// this.repository = repository;
+	// }
 
 	// TODO remove this unused method and the corresponding injection in the
 	// spring XML files.
