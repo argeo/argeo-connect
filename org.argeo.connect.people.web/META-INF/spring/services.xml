@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<bean id="peopleDemoService" class="org.argeo.connect.people.web.demo.DemoServiceImpl"
+		init-method="init" destroy-method="destroy">
+		<property name="repository" ref="peopleRepository" />
+		<property name="workspaceName" value="people" />
+		<property name="demoBusinessData" ref="demoBusinessData" />
+		<property name="initResources" ref="initResources" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="jcrSecurityModel" ref="jcrSecurityModel" />
+	</bean>
+
+	<!-- IMPORTANT: Enable auto magic admin login in the repository during the 
+		"init" phase -->
+	<bean
+		class="org.argeo.security.core.AuthenticatedApplicationContextInitialization">
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="beanNames" ref="adminServices" />
+	</bean>
+
+	<!-- limit the above mechanism to the listed beans -->
+	<util:list id="adminServices" value-type="java.lang.String">
+		<value>peopleDemoService</value>
+	</util:list>
+</beans>

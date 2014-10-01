@@ -1,0 +1,4 @@
+Import-Package: *,\
+org.springframework.core,\
+org.eclipse.rap.rwt,\
+org.eclipse.swt

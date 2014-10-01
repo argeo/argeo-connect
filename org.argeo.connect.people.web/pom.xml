@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.argeo.connect</groupId>
+		<artifactId>argeo-connect</artifactId>
+		<version>2.1.10-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>org.argeo.connect.people.web</artifactId>
+	<name>Connect People Web UI</name>
+	<packaging>jar</packaging>
+	<dependencies>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.cms</artifactId>
+			<version>2.1.10-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.people.core</artifactId>
+			<version>2.1.10-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.people.services</artifactId>
+			<version>2.1.10-SNAPSHOT</version>
+		</dependency>
+
+<!--		<dependency>
+			<groupId>org.argeo.commons.server</groupId>
+			<artifactId>org.argeo.server.jcr</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.argeo.commons.security</groupId>
+			<artifactId>org.argeo.security.core</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency> -->
+	</dependencies>
+</project>
