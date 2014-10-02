@@ -92,11 +92,12 @@ public class PersonPage implements CmsUiProvider {
 			parent.setLayout(new GridLayout(2, false));
 			Composite imgCmp = new Composite(parent, SWT.NO_FOCUS
 					| SWT.NO_SCROLL | SWT.NO_TRIM);
+			imgCmp.setLayout(PeopleWebUtils.noSpaceGridLayout());
 			imgCmp.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
 			new ImageLabel(imgCmp, SWT.NO_FOCUS, itemPicture);
 
 			Composite rightCmp = new Composite(parent, SWT.NO_FOCUS);
-			rightCmp.setLayoutData(PeopleWebUtils.horizontalFillData());
+			rightCmp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 			parent = rightCmp;
 
 		}
