@@ -1,7 +1,5 @@
 package org.argeo.connect.people.web.providers;
 
-import java.util.List;
-
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
@@ -9,7 +7,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.argeo.connect.people.web.PeopleLabelsUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.PeopleWebUtils;
@@ -18,22 +15,23 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
 /**
- * Provides HTML Snippet to display details of a person in various UI contexts
+ * Provide a single column label provider for person lists
  */
-public class PersonOverviewLP implements ILabelProvider, PeopleNames {
+public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 
 	private static final long serialVersionUID = 1L;
 	private final int listType;
 
 	private PeopleService peopleService;
 
-	public PersonOverviewLP(int listType, PeopleService peopleService) {
+	public OrgOverviewLP(int listType, PeopleService peopleService) {
 		this.listType = listType;
 		this.peopleService = peopleService;
 	}
 
 	@Override
 	public String getText(Object element) {
+
 		try {
 			Node entity = (Node) element;
 			String result;
@@ -56,95 +54,65 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 		}
 	}
 
-	private String getOverviewTitle(Node person) throws RepositoryException {
+	private String getOverviewTitle(Node orga) throws RepositoryException {
 		StringBuilder builder = new StringBuilder();
-		builder.append("<span style='font-size:15px;'  >");
-		// first line
-		builder.append("<b><big> ");
-		String displayName = peopleService.getDisplayName(person);
-		builder.append(displayName);
-		builder.append("</big></b>");
-		String fmn = PeopleLabelsUtils.getFullMontyName(person);
+		builder.append("<span style='font-size:15px;' >");
+		builder.append("<big><b>");
+		builder.append(peopleService.getDisplayName(orga));
+		builder.append("</b></big> ");
+
 		String local = PeopleLabelsUtils.getLocalisationInfo(peopleService,
-				person);
-		String primaryContacts = PeopleLabelsUtils.getPrimaryContacts(person,
-				false);
-		Boolean politeFormFlag = CommonsJcrUtils.getBooleanValue(person,
-				PEOPLE_USE_POLITE_FORM);
-		List<String> spokenLanguages = CommonsJcrUtils.getMultiAsList(person,
-				PEOPLE_SPOKEN_LANGUAGES);
-
-		if (CommonsJcrUtils.checkNotEmptyString(fmn)
-				|| CommonsJcrUtils.checkNotEmptyString(local)) {
-			builder.append("<br/>").append(fmn);
-			if (CommonsJcrUtils.checkNotEmptyString(fmn)
-					&& CommonsJcrUtils.checkNotEmptyString(local))
-				builder.append("&#160;&#160; ");
+				orga);
+		if (CommonsJcrUtils.checkNotEmptyString(local))
 			builder.append(local);
-		}
-		if (CommonsJcrUtils.checkNotEmptyString(primaryContacts))
-			builder.append("<br/>").append(primaryContacts);
 
-		if (politeFormFlag != null || !spokenLanguages.isEmpty()) {
-			builder.append("<br/>");
-			if (politeFormFlag != null)
-				builder.append(politeFormFlag ? "Formal" : "Informal");
-			if (politeFormFlag != null && !spokenLanguages.isEmpty())
-				builder.append(" / ");
-			if (!spokenLanguages.isEmpty()) {
-				for (String str : spokenLanguages) {
-					builder.append(
-							ResourcesJcrUtils.getLangEnLabelFromIso(
-									peopleService, person.getSession(), str))
-							.append(", ");
-				}
-				// remove last occurence of the separator
-				builder.delete(builder.length() - 2, builder.length());
-			}
-		}
+		builder.append("<br/>");
 
+		String tmpStr = PeopleLabelsUtils.getPrimaryContacts(orga, false);
+		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
+			builder.append(tmpStr);
+		}
 		builder.append("</span>");
 		return builder.toString();
 	}
 
-	private String getOverviewForList(Node person, boolean isSmallList)
+	private String getOverviewForList(Node orga, boolean isSmallList)
 			throws RepositoryException {
+
 		StringBuilder builder = new StringBuilder();
 
-		if (isSmallList) {
-			builder.append("<b>");
-			builder.append(peopleService.getDisplayName(person));
-			builder.append("</b> ");
-		} else {
-			builder.append("<span>").append("<b><big> ");
-			builder.append(peopleService.getDisplayName(person));
-			builder.append("</big> </b> ");
-		}
+		if (!isSmallList)
+			builder.append("<span> <big>");
+		builder.append("<b>");
+		builder.append(peopleService.getDisplayName(orga));
+		builder.append("</b> ");
+		if (!isSmallList)
+			builder.append("</big>");
 
 		String local = PeopleLabelsUtils.getLocalisationInfo(peopleService,
-				person);
+				orga);
 		if (CommonsJcrUtils.checkNotEmptyString(local))
 			builder.append(local);
-		if (!isSmallList)
+		if (isSmallList)
+			builder.append("&#160;&#160;");
+		else
 			builder.append("<br/>");
 
-		// Contacts
-		if (PeopleLabelsUtils.getPrimaryContacts(person, isSmallList) != null)
-			builder.append(PeopleLabelsUtils.getPrimaryContacts(person,
-					isSmallList));
-		if (!isSmallList)
-			builder.append("<br/>");
+		String tmpStr = PeopleLabelsUtils.getPrimaryContacts(orga, false);
+		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
+			builder.append(tmpStr);
+		}
 
-		// Tags
-		String tags = PeopleLabelsUtils.getTagLikeValues(person,
+		String tags = PeopleLabelsUtils.getTagLikeValues(orga,
 				PeopleNames.PEOPLE_TAGS, "#");
-		String mailingLists = PeopleLabelsUtils.getTagLikeValues(person,
+		String mailingLists = PeopleLabelsUtils.getTagLikeValues(orga,
 				PeopleNames.PEOPLE_MAILING_LISTS, "");
+
 		if (isSmallList) {
 			builder.append(tags.trim());
 			if (CommonsJcrUtils.checkNotEmptyString(tags)
 					&& CommonsJcrUtils.checkNotEmptyString(mailingLists))
-				builder.append("&#160;&#160;ML:&#160;&#160;");
+				builder.append(", &#160;&#160;ML:&#160;&#160;");
 			builder.append(mailingLists.trim());
 		} else {
 			builder.append("<br/>").append(tags.trim());

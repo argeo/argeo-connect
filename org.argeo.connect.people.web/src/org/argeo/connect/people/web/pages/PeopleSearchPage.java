@@ -20,7 +20,7 @@ import org.argeo.cms.CmsUiProvider;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.web.providers.SingleColListLabelProvider;
+import org.argeo.connect.people.web.providers.EntitySingleLineLabelProvider;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -70,7 +70,7 @@ public class PeopleSearchPage implements CmsUiProvider {
 		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				true));
 		final TableViewer entityViewer = createListPart(tableComposite,
-				new SingleColListLabelProvider(peopleService));
+				new EntitySingleLineLabelProvider(peopleService));
 
 		entityFilterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 1L;

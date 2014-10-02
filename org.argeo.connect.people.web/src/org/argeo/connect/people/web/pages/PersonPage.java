@@ -9,9 +9,11 @@ import javax.jcr.Value;
 
 import org.apache.commons.io.IOUtils;
 import org.argeo.cms.CmsUiProvider;
+import org.argeo.cms.CmsUtils;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.PeopleWebUtils;
 import org.argeo.connect.people.web.providers.PersonOverviewLP;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -23,10 +25,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 
 /**
  * Shows all information we have about a given person. Expects a context that
@@ -97,16 +99,16 @@ public class PersonPage implements CmsUiProvider {
 			new ImageLabel(imgCmp, SWT.NO_FOCUS, itemPicture);
 
 			Composite rightCmp = new Composite(parent, SWT.NO_FOCUS);
-			rightCmp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+			rightCmp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+					false));
 			parent = rightCmp;
-
 		}
-
-		parent.setLayout(PeopleWebUtils.noSpaceGridLayout());
+		parent.setLayout(new GridLayout());
 
 		final Label readOnlyInfoLbl = new Label(parent, SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		ILabelProvider personLP = new PersonOverviewLP(1, peopleService);
+		ILabelProvider personLP = new PersonOverviewLP(
+				PeopleWebConstants.OVERVIEW_TYPE_HEADER, peopleService);
 		readOnlyInfoLbl.setText(personLP.getText(context));
 	}
 
@@ -124,10 +126,10 @@ public class PersonPage implements CmsUiProvider {
 				final String valueStr = value.getString();
 				new Label(parent, SWT.NONE).setText(valueStr);
 
-				// TODO transform this link to remove current tag
-				Link link = new Link(parent, SWT.None);
-				link.setText("<a>X</a>");
-				link.addSelectionListener(new SelectionAdapter() {
+				Button icon = new Button(parent, SWT.NONE);
+				icon.setLayoutData(CmsUtils.ROW_DATA_16px);
+				icon.setData(RWT.CUSTOM_VARIANT, "cms_icon_delete");
+				icon.addSelectionListener(new SelectionAdapter() {
 					private static final long serialVersionUID = 1L;
 
 					@Override
