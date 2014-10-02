@@ -14,6 +14,8 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.argeo.ArgeoException;
+import org.argeo.cms.CmsSession;
 import org.argeo.cms.CmsUiProvider;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
@@ -22,8 +24,11 @@ import org.argeo.connect.people.web.providers.SingleColListLabelProvider;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.rap.rwt.RWT;
@@ -39,7 +44,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
 /** Simple page to manage RSS channels and feeds */
-public class DefaultHomePage implements CmsUiProvider {
+public class PeopleSearchPage implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
@@ -48,12 +53,12 @@ public class DefaultHomePage implements CmsUiProvider {
 	public Control createUi(Composite parent, Node context) {
 		Composite body = new Composite(parent, SWT.NO_FOCUS);
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		populateSourcesPanel(body, context);
+		populateBodyPanel(body, context);
 		parent.layout();
 		return body;
 	}
 
-	public void populateSourcesPanel(Composite parent, final Node context) {
+	public void populateBodyPanel(Composite parent, final Node context) {
 		parent.setLayout(new GridLayout());
 		final Text entityFilterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH
 				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
@@ -81,7 +86,7 @@ public class DefaultHomePage implements CmsUiProvider {
 
 	protected TableViewer createListPart(Composite parent,
 			ILabelProvider labelProvider) {
-		TableViewer v = new TableViewer(parent);
+		final TableViewer v = new TableViewer(parent);
 		v.setLabelProvider(labelProvider);
 		TableColumn singleColumn = new TableColumn(v.getTable(), SWT.V_SCROLL);
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
@@ -95,9 +100,27 @@ public class DefaultHomePage implements CmsUiProvider {
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(25));
 		v.setContentProvider(new BasicContentProvider());
-		// TODO manage double click
-		// v.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-		// peopleUiService));
+
+		v.addDoubleClickListener(new IDoubleClickListener() {
+
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				CmsSession cmsSession = (CmsSession) v.getTable().getDisplay()
+						.getData(CmsSession.KEY);
+				Node node = (Node) ((IStructuredSelection) event.getSelection())
+						.getFirstElement();
+				try {
+					cmsSession.navigateTo(node.getPath());
+				} catch (RepositoryException e) {
+					throw new ArgeoException("unable to get path for node "
+							+ node + " in the PeopleSearchPage", e);
+				}
+
+				// DefaultHomePage.this.
+
+			}
+		});
+
 		return v;
 	}
 

@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 public class SimpleBrowsingPage implements CmsUiProvider {
+	private final static String BROWSE_PREFIX = "browse";
 
 	@Override
 	public Control createUi(Composite parent, Node context)
@@ -33,8 +34,8 @@ public class SimpleBrowsingPage implements CmsUiProvider {
 
 		// parent
 		if (!context.getPath().equals("/")) {
-			new CmsLink("..", context.getParent().getPath()).createUi(parent,
-					context);
+			new CmsLink("..", BROWSE_PREFIX + context.getParent().getPath())
+					.createUi(parent, context);
 			new Label(parent, SWT.NONE).setText(context.getParent()
 					.getPrimaryNodeType().getName());
 		}
@@ -55,8 +56,8 @@ public class SimpleBrowsingPage implements CmsUiProvider {
 
 		for (NodeIterator nIt = context.getNodes(); nIt.hasNext();) {
 			Node child = nIt.nextNode();
-			new CmsLink(child.getName(), child.getPath()).createUi(parent,
-					context);
+			new CmsLink(child.getName(), BROWSE_PREFIX + child.getPath())
+					.createUi(parent, context);
 
 			new Label(parent, SWT.NONE).setText(child.getPrimaryNodeType()
 					.getName());
