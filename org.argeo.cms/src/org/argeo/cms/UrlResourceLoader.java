@@ -7,6 +7,7 @@ import java.net.URL;
 import org.eclipse.rap.rwt.service.ResourceLoader;
 
 /** {@link ResourceLoader} implementation wrapping an {@link URL}. */
+@Deprecated
 public class UrlResourceLoader implements ResourceLoader {
 	private final URL url;
 

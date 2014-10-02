@@ -2,7 +2,6 @@ package org.argeo.cms;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,11 +43,12 @@ public class CmsApplication implements ApplicationConfiguration,
 					createResourceLoader("icons/loading.gif"));
 
 			for (String resource : resources) {
-				URL res = bundleContext.getBundle().getResource(resource);
-				if (res == null)
-					throw new CmsException("Resource " + resource
-							+ " not found");
-				application.addResource(resource, new UrlResourceLoader(res));
+				// URL res = bundleContext.getBundle().getResource(resource);
+				// if (res == null)
+				// throw new CmsException("Resource " + resource
+				// + " not found");
+				application.addResource(resource, new BundleResourceLoader(
+						bundleContext));
 				if (log.isDebugEnabled())
 					log.debug("Registered resource " + resource);
 			}
@@ -61,10 +61,10 @@ public class CmsApplication implements ApplicationConfiguration,
 					if (properties.containsKey(WebClient.FAVICON)) {
 						String faviconRelPath = properties
 								.get(WebClient.FAVICON);
-						URL res = bundleContext.getBundle().getResource(
-								faviconRelPath);
+						// URL res = bundleContext.getBundle().getResource(
+						// faviconRelPath);
 						application.addResource(faviconRelPath,
-								new UrlResourceLoader(res));
+								new BundleResourceLoader(bundleContext));
 						if (log.isTraceEnabled())
 							log.trace("Registered favicon " + faviconRelPath);
 
@@ -84,12 +84,12 @@ public class CmsApplication implements ApplicationConfiguration,
 			for (String themeId : styleSheets.keySet()) {
 				List<String> cssLst = styleSheets.get(themeId);
 				for (String css : cssLst) {
-					URL res = bundleContext.getBundle().getResource(css);
-					if (res == null)
-						throw new CmsException("Stylesheet " + css
-								+ " not found");
+					// URL res = bundleContext.getBundle().getResource(css);
+					// if (res == null)
+					// throw new CmsException("Stylesheet " + css
+					// + " not found");
 					application.addStyleSheet(themeId, css,
-							new UrlResourceLoader(res));
+							new BundleResourceLoader(bundleContext));
 				}
 
 			}
