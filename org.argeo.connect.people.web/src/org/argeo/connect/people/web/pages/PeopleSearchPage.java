@@ -20,6 +20,7 @@ import org.argeo.cms.CmsUiProvider;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.web.PeopleMsg;
 import org.argeo.connect.people.web.providers.EntitySingleLineLabelProvider;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -64,7 +65,7 @@ public class PeopleSearchPage implements CmsUiProvider {
 				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		entityFilterTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
 				false));
-		entityFilterTxt.setMessage("Search entities");
+		entityFilterTxt.setMessage(PeopleMsg.searchEntities.lead());
 
 		Composite tableComposite = new Composite(parent, SWT.NONE);
 		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
