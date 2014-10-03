@@ -1,5 +1,8 @@
 package org.argeo.cms;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -45,6 +48,8 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 		history = RWT.getClient().getService(BrowserNavigation.class);
 		if (history != null)
 			history.addBrowserNavigationListener(new CmsNavigationListener());
+
+		// RWT.setLocale(Locale.FRANCE);
 	}
 
 	@Override
@@ -131,10 +136,22 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 		refreshBody();
 	}
 
+	@Override
+	public Object local(Msg msg) {
+		String key = msg.getId();
+		int lastDot = key.lastIndexOf('.');
+		String className = key.substring(0, lastDot);
+		String fieldName = key.substring(lastDot + 1);
+		Locale locale = RWT.getLocale();
+		ResourceBundle rb = ResourceBundle.getBundle(className, locale,
+				msg.getClassLoader());
+		return rb.getString(fieldName);
+	}
+
 	/** Sets the state of the entry point and retrieve the related JCR node. */
 	protected void setState(String state) {
-		String previousPage = page;
-		Node previousNode = node;
+		// String previousPage = page;
+		// Node previousNode = node;
 		String previousState = this.state;
 
 		node = null;

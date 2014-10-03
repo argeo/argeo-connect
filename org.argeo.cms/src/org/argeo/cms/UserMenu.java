@@ -70,7 +70,7 @@ public class UserMenu extends Shell implements CmsStyles {
 				CmsSession.KEY);
 		l = new Label(this, SWT.NONE);
 		l.setData(RWT.CUSTOM_VARIANT, CMS_USER_MENU_ITEM);
-		l.setText("Log out");
+		l.setText(CmsMsg.logout.lead());
 		GridData lData = new GridData(SWT.FILL, SWT.FILL, true, false);
 		lData.widthHint = 120;
 		l.setLayoutData(lData);
@@ -90,14 +90,14 @@ public class UserMenu extends Shell implements CmsStyles {
 		setData(RWT.CUSTOM_VARIANT, CMS_USER_MENU);
 		setLayout(new GridLayout(2, false));
 
-		new Label(this, SWT.NONE).setText("Username");
+		new Label(this, SWT.NONE).setText(CmsMsg.username.lead());
 		final Text username = new Text(this, SWT.BORDER);
 		username.setData(RWT.CUSTOM_VARIANT, CMS_LOGIN_DIALOG_USERNAME);
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		gd.widthHint = textWidth;
 		username.setLayoutData(gd);
 
-		new Label(this, SWT.NONE).setText("Password");
+		new Label(this, SWT.NONE).setText(CmsMsg.password.lead());
 		final Text password = new Text(this, SWT.BORDER | SWT.PASSWORD);
 		password.setData(RWT.CUSTOM_VARIANT, CMS_LOGIN_DIALOG_PASSWORD);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
