@@ -12,7 +12,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.PeopleWebUtils;
-import org.argeo.connect.people.web.providers.PersonOverviewLP;
+import org.argeo.connect.people.web.providers.OrgOverviewLP;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -23,8 +23,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
-/** Creates header for people:person nodes */
-public class PersonHeaderUiProvider implements CmsUiProvider {
+/** Creates header for people:org nodes */
+public class OrgHeaderPart implements CmsUiProvider {
 
 	/* dependency injection */
 	private PeopleService peopleService;
@@ -34,7 +34,7 @@ public class PersonHeaderUiProvider implements CmsUiProvider {
 	@Override
 	public Control createUi(Composite parent, Node context)
 			throws RepositoryException {
-		
+
 		InputStream is = null;
 		Image itemPicture = null;
 		// Initialize image
@@ -54,8 +54,8 @@ public class PersonHeaderUiProvider implements CmsUiProvider {
 
 		if (itemPicture != null) {
 			parent.setLayout(new GridLayout(2, false));
-			Composite imgCmp = new Composite(parent, SWT.NO_FOCUS | SWT.NO_SCROLL
-					| SWT.NO_TRIM);
+			Composite imgCmp = new Composite(parent, SWT.NO_FOCUS
+					| SWT.NO_SCROLL | SWT.NO_TRIM);
 			imgCmp.setLayout(PeopleWebUtils.noSpaceGridLayout());
 			imgCmp.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
 			new ImageLabel(imgCmp, SWT.NO_FOCUS, itemPicture);
@@ -69,9 +69,9 @@ public class PersonHeaderUiProvider implements CmsUiProvider {
 
 		final Label readOnlyInfoLbl = new Label(parent, SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		ILabelProvider personLP = new PersonOverviewLP(
+		ILabelProvider orgLP = new OrgOverviewLP(
 				PeopleWebConstants.OVERVIEW_TYPE_HEADER, peopleService);
-		readOnlyInfoLbl.setText(personLP.getText(context));
+		readOnlyInfoLbl.setText(orgLP.getText(context));
 
 		Composite tagsCmp = new Composite(parent, SWT.NO_FOCUS);
 		tagsCmp.setLayoutData(PeopleWebUtils.horizontalFillData());
