@@ -26,7 +26,7 @@ public class ContactsPart implements CmsUiProvider {
 
 	protected void createContactPanel(Composite parent, Node context)
 			throws RepositoryException {
-		parent.setLayout(new GridLayout());
+		parent.setLayout(PeopleWebUtils.noSpaceGridLayout());
 
 		if (context.hasNode(PeopleNames.PEOPLE_CONTACTS)) {
 			NodeIterator nit = context.getNode(PeopleNames.PEOPLE_CONTACTS)

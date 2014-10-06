@@ -68,7 +68,7 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 
 		builder.append("<br/>");
 
-		String tmpStr = PeopleLabelsUtils.getPrimaryContacts(orga);
+		String tmpStr = PeopleLabelsUtils.getPrimaryContactsSnippet(orga);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
 			builder.append(tmpStr);
 		}
@@ -99,7 +99,7 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 		else
 			builder.append("<br/>");
 
-		String tmpStr = PeopleLabelsUtils.getPrimaryContacts(orga);
+		String tmpStr = PeopleLabelsUtils.getPrimaryContactsSnippet(orga);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
 			builder.append(tmpStr);
 		}

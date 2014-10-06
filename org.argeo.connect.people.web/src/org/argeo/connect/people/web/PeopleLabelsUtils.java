@@ -87,14 +87,10 @@ public class PeopleLabelsUtils {
 						PeopleNames.PEOPLE_CONTACT_VALUE);
 				if (node.isNodeType(PeopleTypes.PEOPLE_URL)
 						|| node.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA)) {
-					builder.append("<a href=\"http://");
-					builder.append(value + "\" target=\"_blank\" >" + value
-							+ "</a>");
+					builder.append(getUrlLinkSnippet(value));
 				} else if (node.isNodeType(PeopleTypes.PEOPLE_EMAIL)) {
-					builder.append("<a href=\"mailto:" + value + "\">" + value
-							+ " </a>");
+					builder.append(getMailLinkSnippet(value));
 				} else if (node.isNodeType(PeopleTypes.PEOPLE_IMPP)
-						|| node.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA)
 						|| node.isNodeType(PeopleTypes.PEOPLE_PHONE)) {
 					builder.append(value);
 				}
@@ -106,18 +102,6 @@ public class PeopleLabelsUtils {
 			throw new PeopleException("Error while generating contact "
 					+ "display HTML snippet ", re);
 		}
-	}
-
-	/**
-	 * creates the ReadOnly HTML snippet to display in a label with styling
-	 * enabled in order to provide a clickable link
-	 */
-	public static String getWebsiteSnippet(String address) {
-		StringBuilder builder = new StringBuilder();
-		String value = PeopleWebUtils.replaceAmpersand(address);
-		builder.append("<a href=\"http://");
-		builder.append(value + "\" target=\"_blank\" >" + value + "</a>");
-		return builder.toString();
 	}
 
 	/** creates the display ReadOnly HTML snippet for a work address */
@@ -157,7 +141,7 @@ public class PeopleLabelsUtils {
 		if (CommonsJcrUtils.checkNotEmptyString(nature)
 				|| CommonsJcrUtils.checkNotEmptyString(category)
 				|| CommonsJcrUtils.checkNotEmptyString(label)) {
-			builder.append(PeopleWebUtils.NB_SPACE + "[");
+			builder.append(PeopleWebUtils.NB_DOUBLE_SPACE + "[");
 
 			if (CommonsJcrUtils.checkNotEmptyString(nature)) {
 				builder.append(nature).append(
@@ -274,38 +258,84 @@ public class PeopleLabelsUtils {
 			throw new PeopleException("Error while tag like property "
 					+ propertyName + " values for node " + entity, e);
 		}
-		return PeopleWebUtils.replaceAmpersand(builder.toString());
+		return PeopleWebUtils.replaceAmpersand(builder.toString().trim());
 	}
 
 	/** Returns primary contacts (phone, mail, website) as links if they exist */
-	public static String getPrimaryContacts(Node entity) {
+	public static String getPrimaryContactsSnippet(Node entity) {
 		StringBuilder builder = new StringBuilder();
+
 		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_PHONE);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
-			builder.append(tmpStr).append(
-					PeopleWebUtils.NB_SPACE + PeopleWebUtils.NB_SPACE);
+			builder.append(tmpStr).append(PeopleWebUtils.NB_DOUBLE_SPACE);
 		}
 
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_EMAIL);
-		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
-			builder.append("<a href=\"mailto:");
-			builder.append(tmpStr).append("\" >");
-			builder.append(tmpStr);
-			builder.append("</a>" + PeopleWebUtils.NB_SPACE
-					+ PeopleWebUtils.NB_SPACE);
-		}
+		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+			builder.append(getMailLinkSnippet(tmpStr)).append(
+					PeopleWebUtils.NB_DOUBLE_SPACE);
+
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_URL);
-		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
-			builder.append("<a  href=\"http://");
-			builder.append(tmpStr).append("\"").append(" target=\"_blank\" ")
-					.append(">");
-			builder.append(tmpStr);
-			builder.append("</a>");
-		}
-		return PeopleWebUtils.replaceAmpersand(builder.toString().trim());
+		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+			builder.append(getUrlLinkSnippet(tmpStr)).append(
+					PeopleWebUtils.NB_DOUBLE_SPACE);
+
+		String result = builder.toString();
+		if (result.lastIndexOf(PeopleWebUtils.NB_DOUBLE_SPACE) > 0)
+			result = result.substring(0,
+					result.lastIndexOf(PeopleWebUtils.NB_DOUBLE_SPACE));
+		return PeopleWebUtils.replaceAmpersand(result);
+	}
+
+	/**
+	 * creates the read-only HTML snippet to display in a label with styling
+	 * enabled in order to provide a click-able mail
+	 */
+	public static String getMailLinkSnippet(String value) {
+		return getMailLinkSnippet(value, value);
+	}
+
+	/**
+	 * 
+	 * @param value
+	 * @param label
+	 *            a potentially distinct label
+	 * @return
+	 */
+	public static String getMailLinkSnippet(String value, String label) {
+		StringBuilder builder = new StringBuilder();
+		value = PeopleWebUtils.replaceAmpersand(value);
+		builder.append("<a ").append(PeopleWebConstants.CSS_STYLE_LINK)
+				.append(" href=\"mailto:");
+		builder.append(value).append("\" >").append(label).append("</a>");
+		return builder.toString();
+	}
+
+	/**
+	 * creates the read-only HTML snippet to display in a label with styling
+	 * enabled in order to provide a click-able link
+	 */
+	public static String getUrlLinkSnippet(String value) {
+		return getUrlLinkSnippet(value, value);
+	}
+
+	/**
+	 * creates the read-only HTML snippet to display in a label with styling
+	 * enabled in order to provide a click-able link
+	 */
+	public static String getUrlLinkSnippet(String value, String label) {
+		StringBuilder builder = new StringBuilder();
+
+		value = PeopleWebUtils.replaceAmpersand(value);
+		if (!(value.startsWith("http://") || value.startsWith("https://")))
+			value = "http://" + value;
+		builder.append("<a ").append(PeopleWebConstants.CSS_STYLE_LINK)
+				.append(" href=\"");
+		builder.append(value + "\" target=\"_blank\" >" + label + "</a>");
+		return builder.toString();
 	}
 
 	/**

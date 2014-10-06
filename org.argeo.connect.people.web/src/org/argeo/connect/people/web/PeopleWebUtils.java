@@ -17,6 +17,7 @@ public class PeopleWebUtils {
 
 	/** Centralizes management of no-break space character */
 	public static String NB_SPACE= "&#160;";
+	public static String NB_DOUBLE_SPACE= "&#160;&#160;";
 	/**
 	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
 	 * SWT.FILL, true, true.
