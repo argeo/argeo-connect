@@ -219,7 +219,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 										SWT.FLAT);
 								deleteBtn.setData(
 										PeopleUiConstants.CUSTOM_VARIANT,
-										PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+										PeopleUiConstants.PEOPLE_CLASS_FLAT_BTN);
 								deleteBtn.setImage(PeopleImages.DELETE_BTN);
 								RowData rd = new RowData();
 								rd.height = 16;

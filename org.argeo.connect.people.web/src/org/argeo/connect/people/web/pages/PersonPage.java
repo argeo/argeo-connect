@@ -7,7 +7,7 @@ import org.argeo.cms.CmsUiProvider;
 import org.argeo.connect.people.web.PeopleWebUtils;
 import org.argeo.connect.people.web.parts.ActivitiesPart;
 import org.argeo.connect.people.web.parts.ContactsWithNotePart;
-import org.argeo.connect.people.web.parts.PersonHeaderUiProvider;
+import org.argeo.connect.people.web.parts.PersonHeaderPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Control;
 public class PersonPage implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
-	private PersonHeaderUiProvider personHeaderUP;
+	private PersonHeaderPart personHeaderPart;
 	private ContactsWithNotePart contactsWithNotePart;
 	private ActivitiesPart activitiesPart;
 
@@ -36,7 +36,7 @@ public class PersonPage implements CmsUiProvider {
 		// header
 		Composite headerCmp = new Composite(body, SWT.NO_FOCUS);
 		headerCmp.setLayoutData(PeopleWebUtils.horizontalFillData());
-		personHeaderUP.createUi(headerCmp, context);
+		personHeaderPart.createUi(headerCmp, context);
 
 		// contacts
 		Composite contactCmp = new Composite(body, SWT.NO_FOCUS);
@@ -53,8 +53,8 @@ public class PersonPage implements CmsUiProvider {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setPersonHeaderUP(PersonHeaderUiProvider personHeaderUP) {
-		this.personHeaderUP = personHeaderUP;
+	public void setPersonHeaderPart(PersonHeaderPart personHeaderPart) {
+		this.personHeaderPart = personHeaderPart;
 	}
 
 	public void setContactsWithNotePart(

@@ -38,7 +38,7 @@ public interface PeopleUiConstants {
 
 	// Various types for list label providers
 	public final static int LIST_TYPE_OVERVIEW_TITLE = 0;
-	public final static int LIST_TYPE_OVERVIEW_DETAIL = 1;
+	// public final static int LIST_TYPE_OVERVIEW_DETAIL = 1;
 	public final static int LIST_TYPE_SMALL = 2;
 	public final static int LIST_TYPE_MEDIUM = 3;
 
@@ -59,16 +59,9 @@ public interface PeopleUiConstants {
 	public final static String CRUD_DELETE = "Delete";
 
 	/* CUSTOM STYLING */
-	// a composite used to put titles in various lists
-	public final static String CSS_FLAT_IMG_BUTTON = "peopleCss-flatImgBtn";
 
-	// Overwrite normal behaviour to show the border even when the text is
-	// disabled.
-	public final static String CSS_ALWAYS_SHOW_BORDER = "alwaysShowBorder";
-
-	// TODO workaround to work on fixing RAP/RCP single sourcing for people
 	// It is still some wortk in progress.
-	
+	// TODO workaround to work on fixing RAP/RCP single sourcing for people
 	// Caches name of RWT.MARKUP_ENABLED property
 	public final static String MARKUP_ENABLED = "org.eclipse.rap.rwt.markupEnabled";
 	// Caches name of RWT.CUSTOM_ITEM_HEIGHT property
@@ -76,12 +69,20 @@ public interface PeopleUiConstants {
 	// Caches name of RWT.CUSTOM_VARIANT property
 	public static final String CUSTOM_VARIANT = "org.eclipse.rap.rwt.customVariant";
 
+	// Specific CSS classes
+	public final static String PEOPLE_CLASS_ENTITY_HEADER = "people_entity_header";
+	public final static String PEOPLE_CLASS_GADGET = "people_gadget";
+	public final static String PEOPLE_CLASS_GADGET_HEADER = "people_gadget_header";
+	public final static String PEOPLE_CLASS_FLAT_BTN = "people_flat_btn";
+	// Overwrite normal behaviour to show the border even when the text is
+	// disabled.
+	public final static String PEOPLE_CLASS_FORCE_BORDER = "people_force_border";
 	// custom image for each item : set size
-	public final static String PEOPLE_CSS_ITEM_IMAGE = "peopleCss-itemImage";
+	// public final static String PEOPLE_CSS_ITEM_IMAGE = "peopleCss-itemImage";
 
-	public final static String PEOPLE_CSS_URL_STYLE = "style='color:#383838; font-decoration:none;'";
-
-	public final static String PEOPLE_CSS_TAG_STYLE = "tag";
-
-	public final static String PEOPLE_CSS_EDITOR_HEADER_ROSTYLE = "style='font-size:15px;'";
+	// Specific CSS styling: we cannot use the CSS class parameter inside of a
+	// Custom variant widget.
+	// Typically to style links inside of a table row
+	public final static String PEOPLE_STYLE_ENTITY_HEADER = "style='font-size:14px;'";
+	public final static String PEOPLE_STYLE_LINK = " style='color:#383838; text-decoration:none;' ";
 }

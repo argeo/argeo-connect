@@ -160,7 +160,7 @@ public class NewSimpleTaskWizard extends Wizard {
 					| SWT.NO_FOCUS);
 			assignedToTxt.setMessage("Assign a group to manage this task");
 			assignedToTxt.setData(PeopleUiConstants.CUSTOM_VARIANT,
-					PeopleUiConstants.CSS_ALWAYS_SHOW_BORDER);
+					PeopleUiConstants.PEOPLE_CLASS_FORCE_BORDER);
 
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
 			assignedToTxt.setLayoutData(gd);

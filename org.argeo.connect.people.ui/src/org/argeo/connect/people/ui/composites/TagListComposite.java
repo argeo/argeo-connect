@@ -164,17 +164,22 @@ public class TagListComposite extends Composite {
 								SWT.NO_FOCUS);
 						tagCmp.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 						Link link = new Link(tagCmp, SWT.NONE);
-						// Specific style for tags.
-						if (tagPropName.equals(PeopleNames.PEOPLE_TAGS)) {
-							link.setText(" #<a>" + tagValue + "</a>");
-
-							link.setData(PeopleUiConstants.CUSTOM_VARIANT,
-									PeopleUiConstants.PEOPLE_CSS_TAG_STYLE);
-						} else
-							link.setText(" <a>" + tagValue + "</a>");
 
 						link.setData(PeopleUiConstants.MARKUP_ENABLED,
 								Boolean.TRUE);
+						if (tagPropName.equals(PeopleNames.PEOPLE_TAGS)) {
+							link.setText(" #<a>" + tagValue + "</a>");
+							link.setData(
+									PeopleUiConstants.CUSTOM_VARIANT,
+									PeopleUiConstants.PEOPLE_CLASS_ENTITY_HEADER);
+						} else if (tagPropName
+								.equals(PeopleNames.PEOPLE_MAILING_LISTS)) {
+							link.setText(" @<a>" + tagValue + "</a>");
+							link.setData(
+									PeopleUiConstants.CUSTOM_VARIANT,
+									PeopleUiConstants.PEOPLE_CLASS_ENTITY_HEADER);
+						} else
+							link.setText(" <a>" + tagValue + "</a>");
 
 						link.addSelectionListener(new SelectionAdapter() {
 							private static final long serialVersionUID = 1L;
@@ -285,7 +290,7 @@ public class TagListComposite extends Composite {
 			final Value value) {
 		final Button deleteBtn = new Button(parent, SWT.FLAT);
 		deleteBtn.setData(PeopleUiConstants.CUSTOM_VARIANT,
-				PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+				PeopleUiConstants.PEOPLE_CLASS_FLAT_BTN);
 		deleteBtn
 				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		deleteBtn.setImage(PeopleImages.DELETE_BTN_LEFT);

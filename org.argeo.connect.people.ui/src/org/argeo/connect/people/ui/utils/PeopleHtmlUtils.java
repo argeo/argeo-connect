@@ -107,22 +107,16 @@ public class PeopleHtmlUtils {
 				builder.append(cleanHtmlString(getAddressDisplayValue(
 						peopleService, node)));
 			} else {
-				String value = cleanHtmlString(CommonsJcrUtils.get(node,
-						PeopleNames.PEOPLE_CONTACT_VALUE));
+				String value = CommonsJcrUtils.get(node,
+						PeopleNames.PEOPLE_CONTACT_VALUE);
 				if (node.isNodeType(PeopleTypes.PEOPLE_URL)
 						|| node.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA)) {
-					builder.append("<a ")
-							.append(PeopleUiConstants.PEOPLE_CSS_URL_STYLE)
-							.append(" href=\"http://");
-					builder.append(value + "\" target=\"_blank\" >" + value
-							+ "</a>");
+					builder.append(getUrlLink(value));
 				} else if (node.isNodeType(PeopleTypes.PEOPLE_EMAIL)) {
-					builder.append("<a "
-							+ PeopleUiConstants.PEOPLE_CSS_URL_STYLE);
+					builder.append("<a " + PeopleUiConstants.PEOPLE_STYLE_LINK);
 					builder.append(" href=\"mailto:" + value + "\">" + value
 							+ " </a>");
 				} else if (node.isNodeType(PeopleTypes.PEOPLE_IMPP)
-						|| node.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA)
 						|| node.isNodeType(PeopleTypes.PEOPLE_PHONE)) {
 					builder.append(value);
 				}
@@ -140,11 +134,35 @@ public class PeopleHtmlUtils {
 	 * creates the ReadOnly HTML snippet to display in a label with styling
 	 * enabled in order to provide a clickable link
 	 */
+	public static String getUrlLink(String value) {
+		return getUrlLink(value, value);
+	}
+
+	/**
+	 * creates the ReadOnly HTML snippet to display in a label with styling
+	 * enabled in order to provide a clickable link
+	 */
+	public static String getUrlLink(String value, String label) {
+		StringBuilder builder = new StringBuilder();
+
+		value = cleanHtmlString(value);
+		if (!(value.startsWith("http://") || value.startsWith("https://")))
+			value = "http://" + value;
+		builder.append("<a ").append(PeopleUiConstants.PEOPLE_STYLE_LINK)
+				.append(" href=\"");
+		builder.append(value + "\" target=\"_blank\" >" + label + "</a>");
+		return builder.toString();
+	}
+
+	/**
+	 * creates the ReadOnly HTML snippet to display in a label with styling
+	 * enabled in order to provide a clickable link
+	 */
 	public static String getWebsiteSnippet(String address) {
 		StringBuilder builder = new StringBuilder();
 
 		String value = cleanHtmlString(address);
-		builder.append("<a ").append(PeopleUiConstants.PEOPLE_CSS_URL_STYLE)
+		builder.append("<a ").append(PeopleUiConstants.PEOPLE_STYLE_LINK)
 				.append(" href=\"http://");
 		builder.append(value + "\" target=\"_blank\" >" + value + "</a>");
 		return builder.toString();
@@ -322,11 +340,8 @@ public class PeopleHtmlUtils {
 	// }
 
 	/** a snippet to display primary contact information for this entity */
-	public static String getPrimaryContacts(Node entity, boolean smallList) {
+	public static String getPrimaryContacts(Node entity) {
 		StringBuilder builder = new StringBuilder();
-		// Small is too small for small lists
-		if (!smallList)
-			builder.append("<small>");
 
 		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_PHONE);
@@ -338,7 +353,7 @@ public class PeopleHtmlUtils {
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_EMAIL);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
-			builder.append("<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
+			builder.append("<a " + PeopleUiConstants.PEOPLE_STYLE_LINK
 					+ " href=\"mailto:");
 			builder.append(tmpStr).append("\">");
 			builder.append(tmpStr);
@@ -347,15 +362,13 @@ public class PeopleHtmlUtils {
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_URL);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
-			builder.append("<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
+			builder.append("<a " + PeopleUiConstants.PEOPLE_STYLE_LINK
 					+ " href=\"http://");
 			builder.append(cleanHtmlString(tmpStr)).append("\"")
 					.append(" target=\"_blank\" ").append(">");
 			builder.append(tmpStr);
 			builder.append("</a>&#160;&#160;&#160;");
 		}
-		if (!smallList)
-			builder.append("</small>");
 		return builder.toString();
 	}
 
@@ -397,7 +410,7 @@ public class PeopleHtmlUtils {
 					+ RemoveEntityReference.PARAM_TOREMOVE_JCR_ID + "="
 					+ toRemoveJcrId;
 
-			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""
+			return "<a " + PeopleUiConstants.PEOPLE_STYLE_LINK + " href=\""
 					+ uri + "\" target=\"_rwt\">Delete</a>";
 		} catch (RepositoryException re) {
 			throw new PeopleException(
@@ -420,7 +433,7 @@ public class PeopleHtmlUtils {
 					+ "/" + DeleteEntity.PARAM_REMOVE_ALSO_PARENT + "="
 					+ removeParent;
 
-			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""
+			return "<a " + PeopleUiConstants.PEOPLE_STYLE_LINK + " href=\""
 					+ uri + "\" target=\"_rwt\">Delete</a>";
 		} catch (RepositoryException re) {
 			throw new PeopleException(
@@ -445,8 +458,8 @@ public class PeopleHtmlUtils {
 					+ EditEntityReference.PARAM_TOEDIT_JCR_ID + "="
 					+ toEditJcrId;
 
-			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""
-					+ uri + "\" target=\"_rwt\">Edit</a>";
+			return "<a" + PeopleUiConstants.PEOPLE_STYLE_LINK + "href=\"" + uri
+					+ "\" target=\"_rwt\">Edit</a>";
 		} catch (RepositoryException re) {
 			throw new PeopleException(
 					"Error getting edit snippet for list item for node "
@@ -465,7 +478,7 @@ public class PeopleHtmlUtils {
 			String uri = EditJob.ID + "/" + EditJob.PUBLIC_RELEVANT_NODE_JCR_ID
 					+ "=" + toEditJcrId + "/" + EditJob.PARAM_IS_BACKWARD + "="
 					+ isBackward;
-			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""
+			return "<a " + PeopleUiConstants.PEOPLE_STYLE_LINK + " href=\""
 					+ uri + "\" target=\"_rwt\">Edit</a>";
 		} catch (RepositoryException re) {
 			throw new PeopleException(
@@ -490,7 +503,7 @@ public class PeopleHtmlUtils {
 					+ isBackward + "/"
 					+ EditEntityReferenceWithPosition.PARAM_TO_SEARCH_NODE_TYPE
 					+ "=" + toSearchNodeType;
-			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""
+			return "<a " + PeopleUiConstants.PEOPLE_STYLE_LINK + " href=\""
 					+ uri + "\" target=\"_rwt\">Edit</a>";
 		} catch (RepositoryException re) {
 			throw new PeopleException(
@@ -508,7 +521,7 @@ public class PeopleHtmlUtils {
 			String toEditJcrId = relevantNode.getIdentifier();
 			String uri = commandId + "/" + OpenEntityEditor.PARAM_JCR_ID + "="
 					+ toEditJcrId;
-			return "<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE + " href=\""
+			return "<a " + PeopleUiConstants.PEOPLE_STYLE_LINK + " href=\""
 					+ uri + "\" target=\"_rwt\">" + value + "</a>";
 		} catch (RepositoryException re) {
 			throw new PeopleException(
@@ -568,7 +581,7 @@ public class PeopleHtmlUtils {
 			tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 					PeopleTypes.PEOPLE_EMAIL);
 			if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
-				builder.append("<a " + PeopleUiConstants.PEOPLE_CSS_URL_STYLE
+				builder.append("<a " + PeopleUiConstants.PEOPLE_STYLE_LINK
 						+ " href=\"mailto:");
 				builder.append(tmpStr).append("\">");
 				builder.append(tmpStr).append("</a><br/>");

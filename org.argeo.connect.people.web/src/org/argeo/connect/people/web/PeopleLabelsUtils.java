@@ -157,7 +157,7 @@ public class PeopleLabelsUtils {
 		if (CommonsJcrUtils.checkNotEmptyString(nature)
 				|| CommonsJcrUtils.checkNotEmptyString(category)
 				|| CommonsJcrUtils.checkNotEmptyString(label)) {
-			builder.append("&#160;&#160;[");
+			builder.append(PeopleWebUtils.NB_SPACE + "[");
 
 			if (CommonsJcrUtils.checkNotEmptyString(nature)) {
 				builder.append(nature).append(
@@ -267,7 +267,8 @@ public class PeopleLabelsUtils {
 			if (entity.hasProperty(propertyName)) {
 				for (Value value : entity.getProperty((propertyName))
 						.getValues())
-					builder.append(prefix).append(value.getString()).append(" ");
+					builder.append(prefix).append(value.getString())
+							.append(" ");
 			}
 		} catch (RepositoryException e) {
 			throw new PeopleException("Error while tag like property "
@@ -276,27 +277,24 @@ public class PeopleLabelsUtils {
 		return PeopleWebUtils.replaceAmpersand(builder.toString());
 	}
 
-	/** a snippet to display primary contact information for this entity */
-	public static String getPrimaryContacts(Node entity, boolean smallList) {
+	/** Returns primary contacts (phone, mail, website) as links if they exist */
+	public static String getPrimaryContacts(Node entity) {
 		StringBuilder builder = new StringBuilder();
-		// Small is too small for small lists
-		if (!smallList)
-			builder.append("<small>");
-
 		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_PHONE);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
-			builder.append(tmpStr);
-			builder.append("&#160;&#160;&#160;");
+			builder.append(tmpStr).append(
+					PeopleWebUtils.NB_SPACE + PeopleWebUtils.NB_SPACE);
 		}
 
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_EMAIL);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
 			builder.append("<a href=\"mailto:");
-			builder.append(tmpStr).append("\">");
+			builder.append(tmpStr).append("\" >");
 			builder.append(tmpStr);
-			builder.append("</a>&#160;&#160;&#160;");
+			builder.append("</a>" + PeopleWebUtils.NB_SPACE
+					+ PeopleWebUtils.NB_SPACE);
 		}
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_URL);
@@ -305,11 +303,9 @@ public class PeopleLabelsUtils {
 			builder.append(tmpStr).append("\"").append(" target=\"_blank\" ")
 					.append(">");
 			builder.append(tmpStr);
-			builder.append("</a>&#160;&#160;&#160;");
+			builder.append("</a>");
 		}
-		if (!smallList)
-			builder.append("</small>");
-		return PeopleWebUtils.replaceAmpersand(builder.toString());
+		return PeopleWebUtils.replaceAmpersand(builder.toString().trim());
 	}
 
 	/**

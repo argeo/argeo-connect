@@ -54,9 +54,9 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 			case PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE:
 				result = getOverviewTitle(entity);
 				break;
-			case PeopleUiConstants.LIST_TYPE_OVERVIEW_DETAIL:
-				result = getOverviewDetails(entity);
-				break;
+//			case PeopleUiConstants.LIST_TYPE_OVERVIEW_DETAIL:
+//				result = getOverviewDetails(entity);
+//				break;
 			case PeopleUiConstants.LIST_TYPE_SMALL:
 				result = getOverviewForList(entity, true);
 				break;
@@ -74,8 +74,8 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 
 	private String getOverviewTitle(Node person) throws RepositoryException {
 		StringBuilder builder = new StringBuilder();
-		builder.append("<span "
-				+ PeopleUiConstants.PEOPLE_CSS_EDITOR_HEADER_ROSTYLE + " >");
+		builder.append("<span " + PeopleUiConstants.PEOPLE_STYLE_ENTITY_HEADER
+				+ " >");
 		// first line
 		builder.append("<b><big> ");
 		String displayName = peopleService.getDisplayName(person);
@@ -84,8 +84,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		String fmn = PeopleHtmlUtils.getFullMontyName(person);
 		String local = PeopleHtmlUtils.getLocalisationInfo(peopleService,
 				person);
-		String primaryContacts = PeopleHtmlUtils.getPrimaryContacts(person,
-				false);
+		String primaryContacts = PeopleHtmlUtils.getPrimaryContacts(person);
 		Boolean politeFormFlag = CommonsJcrUtils.getBooleanValue(person,
 				PEOPLE_USE_POLITE_FORM);
 		List<String> spokenLanguages = CommonsJcrUtils.getMultiAsList(person,
@@ -119,25 +118,24 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 				builder.delete(builder.length() - 2, builder.length());
 			}
 		}
-
-		builder.append("</span>");
-
-		return builder.toString();
-	}
-
-	private String getOverviewDetails(Node person) throws RepositoryException {
-		StringBuilder builder = new StringBuilder();
-		builder.append("<span style='font-size:15px;'>");
-
-		String primaryContacts = PeopleHtmlUtils.getPrimaryContacts(person,
-				false);
-		if (CommonsJcrUtils.checkNotEmptyString(primaryContacts))
-			builder.append(primaryContacts).append("<br/>");
-		builder.append(PeopleHtmlUtils.getLastUpdateSnippet(person));
-
 		builder.append("</span>");
 		return builder.toString();
 	}
+
+	//
+	// private String getOverviewDetails(Node person) throws RepositoryException
+	// {
+	// StringBuilder builder = new StringBuilder();
+	// builder.append("<span style='font-size:15px;'>");
+	//
+	// String primaryContacts = PeopleHtmlUtils.getPrimaryContacts(person);
+	// if (CommonsJcrUtils.checkNotEmptyString(primaryContacts))
+	// builder.append(primaryContacts).append("<br/>");
+	// builder.append(PeopleHtmlUtils.getLastUpdateSnippet(person));
+	//
+	// builder.append("</span>");
+	// return builder.toString();
+	// }
 
 	private String getOverviewForList(Node person, boolean isSmallList)
 			throws RepositoryException {
@@ -153,10 +151,9 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		builder.append("<br/>");
 
 		// Contacts
-		if (PeopleHtmlUtils.getPrimaryContacts(person, isSmallList) != null)
-			builder.append(
-					PeopleHtmlUtils.getPrimaryContacts(person, isSmallList))
-					.append("<br/>");
+		String primContactsStr = PeopleHtmlUtils.getPrimaryContacts(person);
+		if (CommonsJcrUtils.checkNotEmptyString(primContactsStr))
+			builder.append(primContactsStr).append("<br/>");
 
 		// Tags
 		if (PeopleHtmlUtils.getTags(person) != null)

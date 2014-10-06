@@ -189,7 +189,7 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 		selectedItemTxt = createLT(dialogarea, chosenItemLbl);
 		selectedItemTxt.setEnabled(false);
 		selectedItemTxt.setData(PeopleUiConstants.CUSTOM_VARIANT,
-				PeopleUiConstants.CSS_ALWAYS_SHOW_BORDER);
+				PeopleUiConstants.PEOPLE_CLASS_FORCE_BORDER);
 
 		if (isBackward) {
 			selectedItemTxt.setText(CommonsJcrUtils.get(oldReferencing,

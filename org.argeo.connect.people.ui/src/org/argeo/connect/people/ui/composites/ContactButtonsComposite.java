@@ -78,7 +78,7 @@ public class ContactButtonsComposite extends Composite {
 	private Button createCategoryButton(Composite parent) {
 		Button btn = new Button(parent, SWT.FLAT);
 		btn.setData(PeopleUiConstants.CUSTOM_VARIANT,
-				PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+				PeopleUiConstants.PEOPLE_CLASS_FLAT_BTN);
 
 		btn.setImage(peopleUiService.getIconForType(contactNode));
 		GridData gd = new GridData();
@@ -119,7 +119,7 @@ public class ContactButtonsComposite extends Composite {
 	private Button createDeleteButton(Composite parent) {
 		Button btn = new Button(parent, SWT.FLAT | SWT.BOTTOM);
 		btn.setData(PeopleUiConstants.CUSTOM_VARIANT,
-				PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+				PeopleUiConstants.PEOPLE_CLASS_FLAT_BTN);
 		btn.setImage(PeopleImages.DELETE_BTN);
 		GridData gd = new GridData();
 		gd.widthHint = 16;
@@ -132,7 +132,7 @@ public class ContactButtonsComposite extends Composite {
 		try {
 			Button btn = new Button(parent, SWT.FLAT);
 			btn.setData(PeopleUiConstants.CUSTOM_VARIANT,
-					PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+					PeopleUiConstants.PEOPLE_CLASS_FLAT_BTN);
 
 			// update image
 			boolean isPrimary = (contactNode

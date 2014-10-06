@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Label;
  * Displays existing values of a multi-valued String property that has the
  * injected name
  **/
-public class TagLikeValuesUiProvider implements CmsUiProvider {
+public class TagLikeValuesPart implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
 	private String propertyName;

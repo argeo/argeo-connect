@@ -14,8 +14,9 @@ public class PeopleWebUtils {
 		value = value.replaceAll("&(?![#a-zA-Z0-9]+;)", "&#38;");
 		return value;
 	}
-	
-	
+
+	/** Centralizes management of no-break space character */
+	public static String NB_SPACE= "&#160;";
 	/**
 	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
 	 * SWT.FILL, true, true.

@@ -21,6 +21,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.web.PeopleMsg;
+import org.argeo.connect.people.web.PeopleWebStyles;
 import org.argeo.connect.people.web.providers.EntitySingleLineLabelProvider;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -99,7 +100,8 @@ public class PeopleSearchPage implements CmsUiProvider {
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(25));
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(23));
+		table.setData(RWT.CUSTOM_VARIANT, PeopleWebStyles.PEOPLE_LINK);
 		v.setContentProvider(new BasicContentProvider());
 
 		v.addDoubleClickListener(new IDoubleClickListener() {

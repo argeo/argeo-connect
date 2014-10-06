@@ -11,6 +11,7 @@ import org.argeo.cms.CmsUiProvider;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.web.PeopleWebConstants;
+import org.argeo.connect.people.web.PeopleWebStyles;
 import org.argeo.connect.people.web.PeopleWebUtils;
 import org.argeo.connect.people.web.providers.PersonOverviewLP;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -24,17 +25,17 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 /** Creates header for people:person nodes */
-public class PersonHeaderUiProvider implements CmsUiProvider {
+public class PersonHeaderPart implements CmsUiProvider {
 
 	/* dependency injection */
 	private PeopleService peopleService;
-	private TagLikeValuesUiProvider tagsPart;
-	private TagLikeValuesUiProvider mailingListsPart;
+	private TagLikeValuesPart tagsPart;
+	private TagLikeValuesPart mailingListsPart;
 
 	@Override
 	public Control createUi(Composite parent, Node context)
 			throws RepositoryException {
-		
+
 		InputStream is = null;
 		Image itemPicture = null;
 		// Initialize image
@@ -54,8 +55,8 @@ public class PersonHeaderUiProvider implements CmsUiProvider {
 
 		if (itemPicture != null) {
 			parent.setLayout(new GridLayout(2, false));
-			Composite imgCmp = new Composite(parent, SWT.NO_FOCUS | SWT.NO_SCROLL
-					| SWT.NO_TRIM);
+			Composite imgCmp = new Composite(parent, SWT.NO_FOCUS
+					| SWT.NO_SCROLL | SWT.NO_TRIM);
 			imgCmp.setLayout(PeopleWebUtils.noSpaceGridLayout());
 			imgCmp.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
 			new ImageLabel(imgCmp, SWT.NO_FOCUS, itemPicture);
@@ -69,6 +70,8 @@ public class PersonHeaderUiProvider implements CmsUiProvider {
 
 		final Label readOnlyInfoLbl = new Label(parent, SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		readOnlyInfoLbl
+				.setData(RWT.CUSTOM_VARIANT, PeopleWebStyles.PEOPLE_LINK);
 		ILabelProvider personLP = new PersonOverviewLP(
 				PeopleWebConstants.OVERVIEW_TYPE_HEADER, peopleService);
 		readOnlyInfoLbl.setText(personLP.getText(context));
@@ -116,11 +119,11 @@ public class PersonHeaderUiProvider implements CmsUiProvider {
 		this.peopleService = peopleService;
 	}
 
-	public void setTagsPart(TagLikeValuesUiProvider tagsPart) {
+	public void setTagsPart(TagLikeValuesPart tagsPart) {
 		this.tagsPart = tagsPart;
 	}
 
-	public void setMailingListsPart(TagLikeValuesUiProvider mailingListsPart) {
+	public void setMailingListsPart(TagLikeValuesPart mailingListsPart) {
 		this.mailingListsPart = mailingListsPart;
 	}
 

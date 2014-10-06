@@ -197,7 +197,7 @@ public class EditJobDialog extends TrayDialog {
 		selectedItemTxt = createLT(dialogarea, chosenItemLbl);
 		selectedItemTxt.setEnabled(false);
 		selectedItemTxt.setData(PeopleUiConstants.CUSTOM_VARIANT,
-				PeopleUiConstants.CSS_ALWAYS_SHOW_BORDER);
+				PeopleUiConstants.PEOPLE_CLASS_FORCE_BORDER);
 
 		if (isBackward) {
 			if (oldReferencing != null)

@@ -68,7 +68,7 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 
 		builder.append("<br/>");
 
-		String tmpStr = PeopleLabelsUtils.getPrimaryContacts(orga, false);
+		String tmpStr = PeopleLabelsUtils.getPrimaryContacts(orga);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
 			builder.append(tmpStr);
 		}
@@ -93,12 +93,13 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 				orga);
 		if (CommonsJcrUtils.checkNotEmptyString(local))
 			builder.append(local);
+
 		if (isSmallList)
-			builder.append("&#160;&#160;");
+			builder.append(PeopleWebUtils.NB_SPACE + PeopleWebUtils.NB_SPACE);
 		else
 			builder.append("<br/>");
 
-		String tmpStr = PeopleLabelsUtils.getPrimaryContacts(orga, false);
+		String tmpStr = PeopleLabelsUtils.getPrimaryContacts(orga);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
 			builder.append(tmpStr);
 		}
@@ -106,21 +107,21 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 		String tags = PeopleLabelsUtils.getTagLikeValues(orga,
 				PeopleNames.PEOPLE_TAGS, "#");
 		String mailingLists = PeopleLabelsUtils.getTagLikeValues(orga,
-				PeopleNames.PEOPLE_MAILING_LISTS, "");
+				PeopleNames.PEOPLE_MAILING_LISTS, "@");
 
 		if (isSmallList) {
-			builder.append(tags.trim());
+			builder.append(PeopleWebUtils.NB_SPACE + PeopleWebUtils.NB_SPACE)
+					.append(tags.trim());
 			if (CommonsJcrUtils.checkNotEmptyString(tags)
 					&& CommonsJcrUtils.checkNotEmptyString(mailingLists))
-				builder.append(", &#160;&#160;ML:&#160;&#160;");
+				builder.append(PeopleWebUtils.NB_SPACE);
 			builder.append(mailingLists.trim());
 		} else {
 			builder.append("<br/>").append(tags.trim());
 			if (CommonsJcrUtils.checkNotEmptyString(tags)
 					&& CommonsJcrUtils.checkNotEmptyString(mailingLists))
 				builder.append("<br/>");
-			if (CommonsJcrUtils.checkNotEmptyString(mailingLists))
-				builder.append("Mailing lists:").append(mailingLists.trim());
+			builder.append(mailingLists.trim());
 			builder.append("</span>");
 		}
 		return builder.toString();

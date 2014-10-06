@@ -602,7 +602,7 @@ public class ContactPanelComposite extends Composite {
 
 			final Text valueTxt = createRowDataLT(parent, "Linked company", 200);
 			valueTxt.setData(PeopleUiConstants.CUSTOM_VARIANT,
-					PeopleUiConstants.CSS_ALWAYS_SHOW_BORDER);
+					PeopleUiConstants.PEOPLE_CLASS_FORCE_BORDER);
 			valueTxt.setEnabled(false);
 
 			final Link chooseOrgLk = new Link(parent, SWT.BOTTOM);

@@ -52,7 +52,7 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 				builder.append("<span>");
 			else
 				builder.append("<span "
-						+ PeopleUiConstants.PEOPLE_CSS_EDITOR_HEADER_ROSTYLE
+						+ PeopleUiConstants.PEOPLE_STYLE_ENTITY_HEADER
 						+ " >");
 			builder.append("<big><b>");
 			builder.append(CommonsJcrUtils.get(orga, Property.JCR_TITLE));
@@ -72,7 +72,7 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 					builder.append(tmpStr).append("<br/>");
 			}
 
-			tmpStr = PeopleHtmlUtils.getPrimaryContacts(orga, false);
+			tmpStr = PeopleHtmlUtils.getPrimaryContacts(orga);
 			if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
 				builder.append(tmpStr);
 			}

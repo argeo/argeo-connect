@@ -529,7 +529,7 @@ public class PeopleUiUtils {
 	public static Button createDeleteButton(Composite parent) {
 		Button button = new Button(parent, SWT.FLAT);
 		button.setData(PeopleUiConstants.CUSTOM_VARIANT,
-				PeopleUiConstants.CSS_FLAT_IMG_BUTTON);
+				PeopleUiConstants.PEOPLE_CLASS_FLAT_BTN);
 		button.setImage(PeopleImages.DELETE_BTN_LEFT);
 		RowData rd = new RowData();
 		rd.height = 16;

@@ -65,25 +65,25 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 		builder.append(displayName);
 		builder.append("</big></b>");
 		String fmn = PeopleLabelsUtils.getFullMontyName(person);
-		String local = PeopleLabelsUtils.getLocalisationInfo(peopleService,
+		String localisationStr = PeopleLabelsUtils.getLocalisationInfo(peopleService,
 				person);
-		String primaryContacts = PeopleLabelsUtils.getPrimaryContacts(person,
-				false);
+		String primContactStr = PeopleLabelsUtils.getPrimaryContacts(person);
 		Boolean politeFormFlag = CommonsJcrUtils.getBooleanValue(person,
 				PEOPLE_USE_POLITE_FORM);
 		List<String> spokenLanguages = CommonsJcrUtils.getMultiAsList(person,
 				PEOPLE_SPOKEN_LANGUAGES);
 
 		if (CommonsJcrUtils.checkNotEmptyString(fmn)
-				|| CommonsJcrUtils.checkNotEmptyString(local)) {
+				|| CommonsJcrUtils.checkNotEmptyString(localisationStr)) {
 			builder.append("<br/>").append(fmn);
 			if (CommonsJcrUtils.checkNotEmptyString(fmn)
-					&& CommonsJcrUtils.checkNotEmptyString(local))
-				builder.append("&#160;&#160; ");
-			builder.append(local);
+					&& CommonsJcrUtils.checkNotEmptyString(localisationStr))
+				builder.append(PeopleWebUtils.NB_SPACE
+						+ PeopleWebUtils.NB_SPACE);
+			builder.append(localisationStr);
 		}
-		if (CommonsJcrUtils.checkNotEmptyString(primaryContacts))
-			builder.append("<br/>").append(primaryContacts);
+		if (CommonsJcrUtils.checkNotEmptyString(primContactStr))
+			builder.append("<br/>").append(primContactStr);
 
 		if (politeFormFlag != null || !spokenLanguages.isEmpty()) {
 			builder.append("<br/>");
@@ -118,7 +118,7 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 		} else {
 			builder.append("<span>").append("<b><big> ");
 			builder.append(peopleService.getDisplayName(person));
-			builder.append("</big> </b> ");
+			builder.append("</big></b> ");
 		}
 
 		String local = PeopleLabelsUtils.getLocalisationInfo(peopleService,
@@ -129,9 +129,9 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 			builder.append("<br/>");
 
 		// Contacts
-		if (PeopleLabelsUtils.getPrimaryContacts(person, isSmallList) != null)
-			builder.append(PeopleLabelsUtils.getPrimaryContacts(person,
-					isSmallList));
+		String primContactStr = PeopleLabelsUtils.getPrimaryContacts(person);
+		if (CommonsJcrUtils.checkNotEmptyString(primContactStr))
+			builder.append(primContactStr);
 		if (!isSmallList)
 			builder.append("<br/>");
 
@@ -139,20 +139,20 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 		String tags = PeopleLabelsUtils.getTagLikeValues(person,
 				PeopleNames.PEOPLE_TAGS, "#");
 		String mailingLists = PeopleLabelsUtils.getTagLikeValues(person,
-				PeopleNames.PEOPLE_MAILING_LISTS, "");
+				PeopleNames.PEOPLE_MAILING_LISTS, "@");
 		if (isSmallList) {
 			builder.append(tags.trim());
 			if (CommonsJcrUtils.checkNotEmptyString(tags)
 					&& CommonsJcrUtils.checkNotEmptyString(mailingLists))
-				builder.append("&#160;&#160;ML:&#160;&#160;");
+				builder.append(PeopleWebUtils.NB_SPACE);
 			builder.append(mailingLists.trim());
 		} else {
 			builder.append("<br/>").append(tags.trim());
 			if (CommonsJcrUtils.checkNotEmptyString(tags)
 					&& CommonsJcrUtils.checkNotEmptyString(mailingLists))
 				builder.append("<br/>");
-			if (CommonsJcrUtils.checkNotEmptyString(mailingLists))
-				builder.append("Mailing lists:").append(mailingLists.trim());
+			builder.append(mailingLists.trim());
+
 			builder.append("</span>");
 		}
 		return builder.toString();

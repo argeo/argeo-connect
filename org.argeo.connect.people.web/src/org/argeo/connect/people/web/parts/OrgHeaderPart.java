@@ -28,8 +28,8 @@ public class OrgHeaderPart implements CmsUiProvider {
 
 	/* dependency injection */
 	private PeopleService peopleService;
-	private TagLikeValuesUiProvider tagsPart;
-	private TagLikeValuesUiProvider mailingListsPart;
+	private TagLikeValuesPart tagsPart;
+	private TagLikeValuesPart mailingListsPart;
 
 	@Override
 	public Control createUi(Composite parent, Node context)
@@ -116,11 +116,11 @@ public class OrgHeaderPart implements CmsUiProvider {
 		this.peopleService = peopleService;
 	}
 
-	public void setTagsPart(TagLikeValuesUiProvider tagsPart) {
+	public void setTagsPart(TagLikeValuesPart tagsPart) {
 		this.tagsPart = tagsPart;
 	}
 
-	public void setMailingListsPart(TagLikeValuesUiProvider mailingListsPart) {
+	public void setMailingListsPart(TagLikeValuesPart mailingListsPart) {
 		this.mailingListsPart = mailingListsPart;
 	}
 

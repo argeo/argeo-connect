@@ -259,13 +259,11 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 				String jcrId = currNode.getIdentifier();
 				StringBuilder builder = new StringBuilder();
 				if (canEdit())
-					builder.append("<a "
-							+ PeopleUiConstants.PEOPLE_CSS_URL_STYLE
+					builder.append("<a " + PeopleUiConstants.PEOPLE_STYLE_LINK
 							+ " href=\"edit/" + jcrId
 							+ "\" target=\"_rwt\">Edit</a> ");
 				if (canDelete(currNode))
-					builder.append("<a "
-							+ PeopleUiConstants.PEOPLE_CSS_URL_STYLE
+					builder.append("<a " + PeopleUiConstants.PEOPLE_STYLE_LINK
 							+ " href=\"delete/" + jcrId
 							+ "\" target=\"_rwt\">Delete</a> ");
 				return builder.toString();

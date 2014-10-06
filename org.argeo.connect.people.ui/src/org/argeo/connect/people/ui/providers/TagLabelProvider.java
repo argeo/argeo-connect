@@ -25,16 +25,16 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 	private final String tagableParentPath;
 	private final String tagableType;
 	private final String tagPropName;
-	private final TagService tagService; 
+	private final TagService tagService;
 
 	public TagLabelProvider(TagService tagService, int listType,
 			String tagableParentPath, String tagableType, String tagPropName) {
-		this.tagService = tagService; 
+		this.tagService = tagService;
 		this.listType = listType;
 		this.tagableParentPath = tagableParentPath;
 		this.tagableType = tagableType;
 		this.tagPropName = tagPropName;
-		
+
 	}
 
 	@Override
@@ -58,14 +58,15 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 	private String getOverviewTitle(Node entity) {
 		StringBuilder builder = new StringBuilder();
 
-		builder.append("<span "
-				+ PeopleUiConstants.PEOPLE_CSS_EDITOR_HEADER_ROSTYLE + " >");
+		builder.append("<span " + PeopleUiConstants.PEOPLE_STYLE_ENTITY_HEADER
+				+ " >");
 
 		// first line
 		builder.append("<b><big> ");
 		builder.append(CommonsJcrUtils.get(entity, Property.JCR_TITLE));
 		builder.append("</big></b>");
-		long membersNb = tagService.countMembers(entity,tagableParentPath, tagableType, tagPropName);
+		long membersNb = tagService.countMembers(entity, tagableParentPath,
+				tagableType, tagPropName);
 		builder.append(" <i>(").append(membersNb).append(" members)</i>");
 
 		// Description
@@ -82,7 +83,8 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 		builder.append("<b>");
 		builder.append(CommonsJcrUtils.get(entity, Property.JCR_TITLE));
 		builder.append("</b>");
-		long membersNb = tagService.countMembers(entity, tagableParentPath, tagableType, tagPropName);
+		long membersNb = tagService.countMembers(entity, tagableParentPath,
+				tagableType, tagPropName);
 		builder.append(" <i>(").append(membersNb).append(" members)</i>");
 		return builder.toString();
 	}
