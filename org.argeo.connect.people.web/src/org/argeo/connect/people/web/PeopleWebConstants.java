@@ -6,6 +6,6 @@ public interface PeopleWebConstants {
 	public final static int OVERVIEW_TYPE_SINGLE_LINE_LIST = 3;
 
 	// TODO workaround to force a less ugly styling for links
-	public final static String CSS_STYLE_LINK = " style='color:#383838; text-decoration:none;' ";
+	public final static String CSS_STYLE_LINK = " style='text-decoration:none;' ";
 
 }
