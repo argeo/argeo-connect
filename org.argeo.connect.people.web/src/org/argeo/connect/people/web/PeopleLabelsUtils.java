@@ -86,14 +86,15 @@ public class PeopleLabelsUtils {
 				String value = CommonsJcrUtils.get(node,
 						PeopleNames.PEOPLE_CONTACT_VALUE);
 				if (node.isNodeType(PeopleTypes.PEOPLE_URL)
-						|| node.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA)) {
+						|| node.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA))
 					builder.append(getUrlLinkSnippet(value));
-				} else if (node.isNodeType(PeopleTypes.PEOPLE_EMAIL)) {
+				else if (node.isNodeType(PeopleTypes.PEOPLE_EMAIL))
 					builder.append(getMailLinkSnippet(value));
-				} else if (node.isNodeType(PeopleTypes.PEOPLE_IMPP)
-						|| node.isNodeType(PeopleTypes.PEOPLE_PHONE)) {
+				else if (node.isNodeType(PeopleTypes.PEOPLE_PHONE))
+					builder.append(getPhoneLinkSnippet(value));
+				else
+					// if (node.isNodeType(PeopleTypes.PEOPLE_IMPP))
 					builder.append(value);
-				}
 			}
 			builder.append(getContactMetaData(node));
 			return PeopleWebUtils.replaceAmpersand(builder.toString());
@@ -268,7 +269,8 @@ public class PeopleLabelsUtils {
 		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_PHONE);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
-			builder.append(tmpStr).append(PeopleWebUtils.NB_DOUBLE_SPACE);
+			builder.append(getPhoneLinkSnippet(tmpStr)).append(
+					PeopleWebUtils.NB_DOUBLE_SPACE);
 		}
 
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
@@ -292,6 +294,30 @@ public class PeopleLabelsUtils {
 
 	/**
 	 * creates the read-only HTML snippet to display in a label with styling
+	 * enabled in order to provide a click-able phone number
+	 */
+	public static String getPhoneLinkSnippet(String value) {
+		return getPhoneLinkSnippet(value, value);
+	}
+
+	/**
+	 * creates the read-only HTML snippet to display in a label with styling
+	 * enabled in order to provide a click-able phone number
+	 * 
+	 * @param value
+	 * @param label
+	 *            a potentially distinct label
+	 * @return
+	 */
+	public static String getPhoneLinkSnippet(String value, String label) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("<a href=\"tel:");
+		builder.append(value).append("\" target=\"_blank\" >").append(label).append("</a>");
+		return builder.toString();
+	}
+
+	/**
+	 * creates the read-only HTML snippet to display in a label with styling
 	 * enabled in order to provide a click-able mail
 	 */
 	public static String getMailLinkSnippet(String value) {
@@ -308,8 +334,7 @@ public class PeopleLabelsUtils {
 	public static String getMailLinkSnippet(String value, String label) {
 		StringBuilder builder = new StringBuilder();
 		value = PeopleWebUtils.replaceAmpersand(value);
-		builder.append("<a ").append(PeopleWebConstants.CSS_STYLE_LINK)
-				.append(" href=\"mailto:");
+		builder.append("<a href=\"mailto:");
 		builder.append(value).append("\" >").append(label).append("</a>");
 		return builder.toString();
 	}
@@ -332,8 +357,7 @@ public class PeopleLabelsUtils {
 		value = PeopleWebUtils.replaceAmpersand(value);
 		if (!(value.startsWith("http://") || value.startsWith("https://")))
 			value = "http://" + value;
-		builder.append("<a ").append(PeopleWebConstants.CSS_STYLE_LINK)
-				.append(" href=\"");
+		builder.append("<a href=\"");
 		builder.append(value + "\" target=\"_blank\" >" + label + "</a>");
 		return builder.toString();
 	}

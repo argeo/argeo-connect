@@ -71,8 +71,7 @@ public class ContactButtonsPart implements CmsUiProvider {
 			if (contactable.isNodeType(PeopleTypes.PEOPLE_PERSON))
 				if (ContactValueCatalogs.CONTACT_NATURE_PRO.equals(nature))
 					return "people_icon_work";
-				else
-					return "people_icon_address";
+			return "people_icon_address";
 		}
 		// URL
 		else if (entity.isNodeType(PeopleTypes.PEOPLE_URL)) {
