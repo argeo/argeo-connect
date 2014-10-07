@@ -104,9 +104,9 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 			builder.append(tmpStr);
 		}
 
-		String tags = PeopleLabelsUtils.getTagLikeValues(orga,
+		String tags = PeopleLabelsUtils.getTagLikeValues(peopleService, orga,
 				PeopleNames.PEOPLE_TAGS, "#");
-		String mailingLists = PeopleLabelsUtils.getTagLikeValues(orga,
+		String mailingLists = PeopleLabelsUtils.getTagLikeValues(peopleService, orga,
 				PeopleNames.PEOPLE_MAILING_LISTS, "@");
 
 		if (isSmallList) {

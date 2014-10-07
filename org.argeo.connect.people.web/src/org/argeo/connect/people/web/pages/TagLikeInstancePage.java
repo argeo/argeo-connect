@@ -9,8 +9,10 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.qom.Constraint;
+import javax.jcr.query.qom.DynamicOperand;
 import javax.jcr.query.qom.Ordering;
 import javax.jcr.query.qom.QueryObjectModel;
+import javax.jcr.query.qom.QueryObjectModelConstants;
 import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
@@ -21,6 +23,7 @@ import org.argeo.cms.CmsUiProvider;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.web.PeopleMsg;
 import org.argeo.connect.people.web.providers.SearchEntitiesLP;
 import org.argeo.jcr.JcrUtils;
@@ -41,16 +44,20 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
-/** Simple page to manage RSS channels and feeds */
-public class PeopleSearchPage implements CmsUiProvider {
+/**
+ * Shows all entities that have a given tag like property
+ */
+public class TagLikeInstancePage implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
 	private Map<String, String> iconPathes;
+	private String propertyName;
 
 	@Override
 	public Control createUi(Composite parent, Node context) {
@@ -63,6 +70,16 @@ public class PeopleSearchPage implements CmsUiProvider {
 
 	public void populateBodyPanel(Composite parent, final Node context) {
 		parent.setLayout(new GridLayout());
+
+		// TODO use a label provider
+		Label title = new Label(parent, SWT.WRAP);
+		title.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		StringBuilder builder = new StringBuilder();
+		builder.append("<b><big> ");
+		builder.append(CommonsJcrUtils.get(context, Property.JCR_TITLE));
+		builder.append("</big></b>");
+		title.setText(builder.toString());
+
 		final Text entityFilterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH
 				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		entityFilterTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
@@ -78,7 +95,6 @@ public class PeopleSearchPage implements CmsUiProvider {
 			private static final long serialVersionUID = 1L;
 
 			public void modifyText(ModifyEvent event) {
-				// might be better to use an asynchronous Refresh();
 				refreshFilteredList(entityViewer, entityFilterTxt.getText(),
 						context);
 			}
@@ -113,63 +129,56 @@ public class PeopleSearchPage implements CmsUiProvider {
 					cmsSession.navigateTo(node.getPath());
 				} catch (RepositoryException e) {
 					throw new ArgeoException("unable to get path for node "
-							+ node + " in the PeopleSearchPage", e);
+							+ node + " in the Browsing by Tag Page", e);
 				}
-
-				// DefaultHomePage.this.
-
 			}
 		});
-
 		ILabelProvider labelProvider = new SearchEntitiesLP(peopleService,
 				table.getDisplay(), iconPathes);
 		v.setLabelProvider(labelProvider);
-
 		return v;
 	}
 
 	protected void refreshFilteredList(TableViewer entityViewer, String filter,
 			Node context) {
 		try {
-			// Do not load all contacts when no filter is present
-			// if (CommonsJcrUtils.isEmptyString(filter)) {
-			// entityViewer.setInput(null);
-			// return;
-			// }
-
 			Session session = context.getSession();
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			String path = context.getPath();
+			String path = peopleService.getBasePath(null);
+			String value = context.getProperty(Property.JCR_TITLE).getString();
 
 			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
 					PeopleTypes.PEOPLE_ENTITY);
 
-			// StaticOperand so =
-			// factory.literal(session.getValueFactory()
-			// .createValue("*"));
-			Constraint defaultC = factory.descendantNode(
+			// Reduce to the business sub tree
+			Constraint descCst = factory.descendantNode(
 					source.getSelectorName(), path);
 
-			// Parse the String
-			String[] strs = filter.trim().split(" ");
-			for (String token : strs) {
-				StaticOperand so = factory.literal(session.getValueFactory()
+			// only entities with correct tag like value
+			StaticOperand so = factory.literal(session.getValueFactory()
+					.createValue(value));
+			DynamicOperand dyo = factory.propertyValue(
+					source.getSelectorName(), propertyName);
+			Constraint tagCst = factory.comparison(dyo,
+					QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
+
+			Constraint defaultC = factory.and(tagCst, descCst);
+
+			// Apply filtering
+			for (String token : filter.trim().split(" ")) {
+				StaticOperand so2 = factory.literal(session.getValueFactory()
 						.createValue("*" + token + "*"));
 				Constraint currC = factory.fullTextSearch(
-						source.getSelectorName(), null, so);
-				if (defaultC == null)
-					defaultC = currC;
-				else
-					defaultC = factory.and(defaultC, currC);
+						source.getSelectorName(), null, so2);
+				defaultC = factory.and(defaultC, currC);
 			}
 
 			Ordering order = factory.ascending(factory.propertyValue(
 					source.getSelectorName(), Property.JCR_TITLE));
 			QueryObjectModel query = factory.createQuery(source, defaultC,
 					new Ordering[] { order }, null);
-			// query.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
 			entityViewer.setInput(JcrUtils.nodeIteratorToList(query.execute()
 					.getNodes()));
 		} catch (RepositoryException e) {
@@ -205,5 +214,9 @@ public class PeopleSearchPage implements CmsUiProvider {
 
 	public void setIconPathes(Map<String, String> iconPathes) {
 		this.iconPathes = iconPathes;
+	}
+
+	public void setPropertyName(String propertyName) {
+		this.propertyName = propertyName;
 	}
 }

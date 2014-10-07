@@ -1,20 +1,51 @@
 package org.argeo.connect.people.web;
 
+
 /**
- * Shared icons. TODO implement image management for the CMS
+ * Provide utilities to register images.
  */
 public class PeopleWebImages {
-
-	// order images in various folder to ease their management
-	// final private static String BASE_PATH = "icons/";
-
-	// Entities
-	// public final static Image ICON_PERSON =
-	// PeopleUiPlugin.getImageDescriptor(
-	// BASE_PATH + "person.gif").createImage();
-	// public final static Image ICON_ORG = PeopleUiPlugin.getImageDescriptor(
-	// BASE_PATH + "company.png").createImage();
-	// public final static Image ICON_MAILING_LIST = PeopleUiPlugin
-	// .getImageDescriptor(BASE_PATH + "mailingList.gif").createImage();
-
+	// private final static Log log = LogFactory.getLog(PeopleWebImages.class);
+	//
+	// private final BundleContext bundleContext;
+	//
+	// public PeopleWebImages(BundleContext bundleContext) {
+	// this.bundleContext = bundleContext;
+	// }
+	//
+	// public String registerImageIfNeeded(String image) {
+	// ResourceManager resourceManager = RWT.getResourceManager();
+	// if (!resourceManager.isRegistered(image)) {
+	// URL res = getImageUrl(image);
+	// InputStream inputStream = null;
+	// try {
+	// IOUtils.closeQuietly(inputStream);
+	// inputStream = res.openStream();
+	// resourceManager.register(image, inputStream);
+	// if (log.isTraceEnabled())
+	// log.trace("Registered image " + image);
+	// } catch (Exception e) {
+	// throw new CmsException("Cannot load image " + image, e);
+	// } finally {
+	// IOUtils.closeQuietly(inputStream);
+	// }
+	// }
+	// return resourceManager.getLocation(image);
+	// }
+	//
+	// private URL getImageUrl(String image) {
+	// URL url;
+	// try {
+	// // pure URL
+	// url = new URL(image);
+	// } catch (MalformedURLException e1) {
+	// // in OSGi bundle
+	// if (bundleContext == null)
+	// throw new CmsException("No bundle context available");
+	// url = bundleContext.getBundle().getResource(image);
+	// }
+	// if (url == null)
+	// throw new CmsException("No image " + image + " available.");
+	// return url;
+	// }
 }

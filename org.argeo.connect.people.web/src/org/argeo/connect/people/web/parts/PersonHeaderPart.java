@@ -11,7 +11,6 @@ import org.argeo.cms.CmsUiProvider;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.web.PeopleWebConstants;
-import org.argeo.connect.people.web.PeopleWebStyles;
 import org.argeo.connect.people.web.PeopleWebUtils;
 import org.argeo.connect.people.web.providers.PersonOverviewLP;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -70,8 +69,6 @@ public class PersonHeaderPart implements CmsUiProvider {
 
 		final Label readOnlyInfoLbl = new Label(parent, SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		readOnlyInfoLbl
-				.setData(RWT.CUSTOM_VARIANT, PeopleWebStyles.PEOPLE_LINK);
 		ILabelProvider personLP = new PersonOverviewLP(
 				PeopleWebConstants.OVERVIEW_TYPE_HEADER, peopleService);
 		readOnlyInfoLbl.setText(personLP.getText(context));

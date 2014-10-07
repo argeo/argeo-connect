@@ -1,11 +1,15 @@
 package org.argeo.connect.people.web;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 
 /** Helper methods for People Web UI */
 public class PeopleWebUtils {
+	private final static Log log = LogFactory.getLog(PeopleWebUtils.class);
+
 	/**
 	 * Cleans a String by replacing any '&' by its HTML encoding '&#38;' to
 	 * avoid <code>SAXParseException</code> while rendering HTML with RWT
@@ -16,8 +20,9 @@ public class PeopleWebUtils {
 	}
 
 	/** Centralizes management of no-break space character */
-	public static String NB_SPACE= "&#160;";
-	public static String NB_DOUBLE_SPACE= "&#160;&#160;";
+	public static String NB_SPACE = "&#160;";
+	public static String NB_DOUBLE_SPACE = "&#160;&#160;";
+
 	/**
 	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
 	 * SWT.FILL, true, true.

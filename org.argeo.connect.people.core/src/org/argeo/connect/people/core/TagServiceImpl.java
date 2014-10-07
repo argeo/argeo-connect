@@ -262,9 +262,10 @@ public class TagServiceImpl implements TagService {
 							+ " and adding " + newValue + " on " + node, ee);
 		}
 	}
-	
+
 	@Override
-	public long countMembers(Node tag, String tagableParentPath, String tagableType, String tagPropName) {
+	public long countMembers(Node tag, String tagableParentPath,
+			String tagableType, String tagPropName) {
 		Query query;
 		NodeIterator nit;
 		try {

@@ -30,11 +30,11 @@ public interface PeopleTypes {
 	/* GROUPS */
 	public final static String PEOPLE_GROUP = "people:group";
 	public final static String PEOPLE_MAILING_LIST = "people:mailingList";
+	// TODO implement this.
+	public final static String PEOPLE_TAG = "people:tag";
+	public final static String PEOPLE_TAG_RESOURCE_PARENT = "people:tagResourceParent";
 
 	/* GROUP MEMBERS */
-	// @Deprecated
-	// public final static String PEOPLE_MAILING_LIST_ITEM =
-	// "people:mailingListItem";
 	public final static String PEOPLE_POSITION = "people:position";
 	public final static String PEOPLE_JOB = "people:job";
 	public final static String PEOPLE_MEMBER = "people:member";

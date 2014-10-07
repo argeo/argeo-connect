@@ -146,10 +146,10 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 		}
 
 		// Tags
-		String tags = PeopleLabelsUtils.getTagLikeValues(person,
+		String tags = PeopleLabelsUtils.getTagLikeValues(peopleService, person,
 				PeopleNames.PEOPLE_TAGS, "#");
-		String mailingLists = PeopleLabelsUtils.getTagLikeValues(person,
-				PeopleNames.PEOPLE_MAILING_LISTS, "@");
+		String mailingLists = PeopleLabelsUtils.getTagLikeValues(peopleService,
+				person, PeopleNames.PEOPLE_MAILING_LISTS, "@");
 		if (isSmallList) {
 			builder.append(tags);
 			if (CommonsJcrUtils.checkNotEmptyString(tags)
