@@ -16,7 +16,7 @@ import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleImages;
-import org.argeo.connect.people.rap.PeopleUiConstants;
+import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleUiService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.commands.OpenSearchEntityEditor;
@@ -528,8 +528,8 @@ public class PeopleUiUtils {
 	 */
 	public static Button createDeleteButton(Composite parent) {
 		Button button = new Button(parent, SWT.FLAT);
-		button.setData(PeopleUiConstants.CUSTOM_VARIANT,
-				PeopleUiConstants.PEOPLE_CLASS_FLAT_BTN);
+		button.setData(PeopleRapConstants.CUSTOM_VARIANT,
+				PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 		button.setImage(PeopleImages.DELETE_BTN_LEFT);
 		RowData rd = new RowData();
 		rd.height = 16;
@@ -616,8 +616,8 @@ public class PeopleUiUtils {
 		Table table = viewer.getTable();
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
-		table.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(PeopleUiConstants.CUSTOM_ITEM_HEIGHT,
+		table.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
+		table.setData(PeopleRapConstants.CUSTOM_ITEM_HEIGHT,
 				Integer.valueOf(customItemHeight));
 	}
 

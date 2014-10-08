@@ -33,7 +33,7 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.rap.PeopleUiConstants;
+import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleUiService;
 import org.argeo.connect.people.rap.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
@@ -171,7 +171,7 @@ public class PickUpContactableDialog extends TrayDialog {
 		// Text Area for the filter
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
 				| SWT.ICON_CANCEL);
-		filterTxt.setMessage(PeopleUiConstants.FILTER_HELP_MSG);
+		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 				| GridData.HORIZONTAL_ALIGN_FILL));
 		filterTxt.addModifyListener(new ModifyListener() {

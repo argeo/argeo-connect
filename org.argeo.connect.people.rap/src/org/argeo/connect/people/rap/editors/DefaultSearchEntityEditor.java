@@ -20,7 +20,7 @@ import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
 import org.argeo.connect.people.rap.editors.utils.AbstractSearchEntityEditor;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
@@ -45,7 +45,7 @@ import org.eclipse.ui.forms.widgets.Section;
  */
 public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".defaultSearchEntityEditor";
 
 	// Default column

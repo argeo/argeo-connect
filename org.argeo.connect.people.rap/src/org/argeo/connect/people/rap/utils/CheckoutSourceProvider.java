@@ -3,7 +3,7 @@ package org.argeo.connect.people.rap.utils;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.eclipse.ui.AbstractSourceProvider;
 import org.eclipse.ui.ISources;
 
@@ -13,7 +13,7 @@ import org.eclipse.ui.ISources;
  * How_can_I_get_my_views_and_editors_to_coordinate_with_each_other.3F
  */
 public class CheckoutSourceProvider extends AbstractSourceProvider {
-	public final static String CHECKOUT_STATE = PeopleUiPlugin.PLUGIN_ID
+	public final static String CHECKOUT_STATE = PeopleRapPlugin.PLUGIN_ID
 			+ ".checkOutState";
 	private final static String CHECKED_OUT = "checkedOut";
 	private final static String NOT_CHECKED_OUT = "notCheckedOut";

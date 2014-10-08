@@ -11,7 +11,7 @@ import javax.jcr.Session;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.ActivitiesImages;
-import org.argeo.connect.people.rap.PeopleUiConstants;
+import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.dialogs.PickUpGroupDialog;
 import org.argeo.connect.people.rap.utils.PeopleUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -159,8 +159,8 @@ public class NewSimpleTaskWizard extends Wizard {
 			final Text assignedToTxt = new Text(parent, SWT.BORDER
 					| SWT.NO_FOCUS);
 			assignedToTxt.setMessage("Assign a group to manage this task");
-			assignedToTxt.setData(PeopleUiConstants.CUSTOM_VARIANT,
-					PeopleUiConstants.PEOPLE_CLASS_FORCE_BORDER);
+			assignedToTxt.setData(PeopleRapConstants.CUSTOM_VARIANT,
+					PeopleRapConstants.PEOPLE_CLASS_FORCE_BORDER);
 
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
 			assignedToTxt.setLayoutData(gd);

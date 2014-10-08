@@ -6,7 +6,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -26,7 +26,7 @@ public class RemoveEntityReference extends AbstractHandler {
 	// private final static Log log = LogFactory
 	// .getLog(RemoveEntityReference.class);
 
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".removeEntityReference";
 	public final static String DEFAULT_LABEL = "Delete";
 	public final static String PARAM_VERSIONABLE_PARENT_JCR_ID = "param.versionableParentJcrId";

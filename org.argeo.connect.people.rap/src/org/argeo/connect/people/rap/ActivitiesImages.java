@@ -36,24 +36,24 @@ public class ActivitiesImages {
 
 	// Activities icons
 	// NOTE
-	public final static Image NOTE = PeopleUiPlugin.getImageDescriptor(
+	public final static Image NOTE = PeopleRapPlugin.getImageDescriptor(
 			PREFIX + "note.gif").createImage();
 
 	// FIXME We use contact images for the time being
 	// SENT EMAIL
-	public final static Image SENT_MAIL = PeopleUiPlugin.getImageDescriptor(
+	public final static Image SENT_MAIL = PeopleRapPlugin.getImageDescriptor(
 			"icons/contacts/mail_black.png").createImage();
 
 	// PHONE CALL
-	public final static Image PHONE_CALL = PeopleUiPlugin.getImageDescriptor(
+	public final static Image PHONE_CALL = PeopleRapPlugin.getImageDescriptor(
 			"icons/contacts/telephone.png").createImage();
 
 	// SEND FAX
-	public final static Image SENT_FAX = PeopleUiPlugin.getImageDescriptor(
+	public final static Image SENT_FAX = PeopleRapPlugin.getImageDescriptor(
 			"icons/contacts/fax.png").createImage();
 
 	// FIXME find icons for other types:
-	private final static Image DUMMY_UNDEFINED = PeopleUiPlugin
+	private final static Image DUMMY_UNDEFINED = PeopleRapPlugin
 			.getImageDescriptor(PREFIX + "noImage.gif").createImage();
 	public final static Image MEETING = DUMMY_UNDEFINED;
 	public final static Image POST_MAIL = DUMMY_UNDEFINED;
@@ -65,12 +65,12 @@ public class ActivitiesImages {
 
 	// TASKS icons
 	// Task
-	public final static Image DONE_TASK = PeopleUiPlugin.getImageDescriptor(
+	public final static Image DONE_TASK = PeopleRapPlugin.getImageDescriptor(
 			PREFIX + "doneTask.png").createImage();
 
-	public final static Image TODO = PeopleUiPlugin.getImageDescriptor(
+	public final static Image TODO = PeopleRapPlugin.getImageDescriptor(
 			PREFIX + "todo.gif").createImage();
 
-	public final static ImageDescriptor TODO_IMGDESC = PeopleUiPlugin.getImageDescriptor(
+	public final static ImageDescriptor TODO_IMGDESC = PeopleRapPlugin.getImageDescriptor(
 			PREFIX + "todo.gif");
 }

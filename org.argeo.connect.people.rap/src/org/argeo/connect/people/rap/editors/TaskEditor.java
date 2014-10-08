@@ -11,8 +11,8 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.rap.PeopleImages;
-import org.argeo.connect.people.rap.PeopleUiConstants;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.dialogs.PickUpGroupDialog;
 import org.argeo.connect.people.rap.dialogs.PickUpRelatedDialog;
@@ -55,7 +55,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 	final static Log log = LogFactory.getLog(TaskEditor.class);
 
 	// local constants
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".taskEditor";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".taskEditor";
 	// private DateFormat dateFormat = new SimpleDateFormat(
 	// PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
@@ -218,8 +218,8 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 								Button deleteBtn = new Button(relatedCmp,
 										SWT.FLAT);
 								deleteBtn.setData(
-										PeopleUiConstants.CUSTOM_VARIANT,
-										PeopleUiConstants.PEOPLE_CLASS_FLAT_BTN);
+										PeopleRapConstants.CUSTOM_VARIANT,
+										PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 								deleteBtn.setImage(PeopleImages.DELETE_BTN);
 								RowData rd = new RowData();
 								rd.height = 16;
@@ -388,7 +388,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 		String tooltip = "Activities and tasks related to "
 				+ JcrUtils.get(task, Property.JCR_TITLE);
 		Composite innerPannel = addTabToFolder(tabFolder, CTAB_COMP_STYLE,
-				"Activity log", PeopleUiConstants.PANEL_ACTIVITY_LOG, tooltip);
+				"Activity log", PeopleRapConstants.PANEL_ACTIVITY_LOG, tooltip);
 		activityTK.populateActivityLogPanel(innerPannel, task);
 	}
 

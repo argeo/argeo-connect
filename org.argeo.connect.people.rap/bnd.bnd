@@ -1,5 +1,5 @@
 Bundle-SymbolicName: org.argeo.connect.people.rap;singleton:=true
-Bundle-Activator: org.argeo.connect.people.rap.PeopleUiPlugin
+Bundle-Activator: org.argeo.connect.people.rap.PeopleRapPlugin
 Require-Bundle: org.eclipse.rap.ui,\
  org.eclipse.rap.ui.workbench
 Import-Package:*,\

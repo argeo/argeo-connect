@@ -3,14 +3,11 @@ package org.argeo.connect.people.ui;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.TagService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
@@ -21,7 +18,10 @@ import org.argeo.connect.people.utils.ResourcesJcrUtils;
  */
 public class PeopleUiSnippets {
 
-	/** creates a full monty name snippet for overview panels */
+	/**
+	 * Creates a snippet with all information we have about the name of a given
+	 * person
+	 */
 	public static String getFullMontyName(Node node) {
 		String salutation = CommonsJcrUtils.get(node,
 				PeopleNames.PEOPLE_SALUTATION);

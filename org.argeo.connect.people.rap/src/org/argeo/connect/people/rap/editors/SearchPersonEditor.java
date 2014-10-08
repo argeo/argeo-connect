@@ -17,7 +17,7 @@ import javax.jcr.query.qom.Selector;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.utils.AbstractSearchEntityEditor;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -32,7 +32,7 @@ import org.eclipse.ui.PartInitException;
  */
 public class SearchPersonEditor extends AbstractSearchEntityEditor {
 
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".searchPersonEditor";
 
 	// Default column

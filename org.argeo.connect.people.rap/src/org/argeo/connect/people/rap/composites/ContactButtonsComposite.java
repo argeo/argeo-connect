@@ -7,7 +7,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleImages;
-import org.argeo.connect.people.rap.PeopleUiConstants;
+import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleUiService;
 import org.argeo.connect.people.rap.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -77,8 +77,8 @@ public class ContactButtonsComposite extends Composite {
 
 	private Button createCategoryButton(Composite parent) {
 		Button btn = new Button(parent, SWT.FLAT);
-		btn.setData(PeopleUiConstants.CUSTOM_VARIANT,
-				PeopleUiConstants.PEOPLE_CLASS_FLAT_BTN);
+		btn.setData(PeopleRapConstants.CUSTOM_VARIANT,
+				PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 
 		btn.setImage(peopleUiService.getIconForType(contactNode));
 		GridData gd = new GridData();
@@ -118,8 +118,8 @@ public class ContactButtonsComposite extends Composite {
 
 	private Button createDeleteButton(Composite parent) {
 		Button btn = new Button(parent, SWT.FLAT | SWT.BOTTOM);
-		btn.setData(PeopleUiConstants.CUSTOM_VARIANT,
-				PeopleUiConstants.PEOPLE_CLASS_FLAT_BTN);
+		btn.setData(PeopleRapConstants.CUSTOM_VARIANT,
+				PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 		btn.setImage(PeopleImages.DELETE_BTN);
 		GridData gd = new GridData();
 		gd.widthHint = 16;
@@ -131,8 +131,8 @@ public class ContactButtonsComposite extends Composite {
 	private Button createPrimaryButton(Composite parent) {
 		try {
 			Button btn = new Button(parent, SWT.FLAT);
-			btn.setData(PeopleUiConstants.CUSTOM_VARIANT,
-					PeopleUiConstants.PEOPLE_CLASS_FLAT_BTN);
+			btn.setData(PeopleRapConstants.CUSTOM_VARIANT,
+					PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 
 			// update image
 			boolean isPrimary = (contactNode

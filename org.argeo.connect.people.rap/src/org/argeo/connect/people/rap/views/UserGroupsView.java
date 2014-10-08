@@ -22,7 +22,7 @@ import javax.jcr.observation.EventIterator;
 import javax.jcr.observation.EventListener;
 
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleUiService;
 import org.argeo.connect.people.rap.composites.UserGroupTableComposite;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
@@ -38,7 +38,7 @@ import org.eclipse.ui.part.ViewPart;
 
 /** Display a filtered table with user groups. */
 public class UserGroupsView extends ViewPart implements Refreshable {
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".userGroupsView";
 
 	private Session session;

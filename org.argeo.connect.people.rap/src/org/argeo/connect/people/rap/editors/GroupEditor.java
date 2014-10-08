@@ -7,8 +7,8 @@ import javax.jcr.PropertyType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.rap.PeopleUiConstants;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.providers.GroupLabelProvider;
 import org.argeo.connect.people.rap.toolkits.GroupToolkit;
@@ -34,7 +34,7 @@ import org.eclipse.ui.forms.AbstractFormPart;
 public class GroupEditor extends AbstractEntityCTabEditor {
 	final static Log log = LogFactory.getLog(GroupEditor.class);
 
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".groupEditor";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".groupEditor";
 
 	// Main business Objects
 	private Node group;
@@ -79,7 +79,7 @@ public class GroupEditor extends AbstractEntityCTabEditor {
 		String tooltip = "Members of group "
 				+ JcrUtils.get(group, Property.JCR_TITLE);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
-				"Members", PeopleUiConstants.PANEL_MEMBERS, tooltip);
+				"Members", PeopleRapConstants.PANEL_MEMBERS, tooltip);
 		groupToolkit.createMemberList(innerPannel, group);
 	}
 
@@ -97,9 +97,9 @@ public class GroupEditor extends AbstractEntityCTabEditor {
 			// Add a label with info provided by the FilmOverviewLabelProvider
 			final Label titleROLbl = toolkit.createLabel(roPanelCmp, "",
 					SWT.WRAP);
-			titleROLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
+			titleROLbl.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider groupTitleLP = new GroupLabelProvider(
-					PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE);
+					PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE);
 
 			// EDIT PANEL
 			final Composite editPanel = toolkit.createComposite(parent,

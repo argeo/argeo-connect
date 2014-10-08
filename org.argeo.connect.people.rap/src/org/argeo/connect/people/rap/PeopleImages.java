@@ -38,56 +38,56 @@ public class PeopleImages {
 	final private static String MISC_PATH = BASE_PATH + "miscellaneous/";
 
 	// Entities
-	public final static Image ICON_PERSON = PeopleUiPlugin.getImageDescriptor(
+	public final static Image ICON_PERSON = PeopleRapPlugin.getImageDescriptor(
 			ENTITY_PATH + "person.png").createImage();
-	public final static Image ICON_ORG = PeopleUiPlugin.getImageDescriptor(
+	public final static Image ICON_ORG = PeopleRapPlugin.getImageDescriptor(
 			ENTITY_PATH + "company.png").createImage();
-	public final static Image ICON_FILM = PeopleUiPlugin.getImageDescriptor(
+	public final static Image ICON_FILM = PeopleRapPlugin.getImageDescriptor(
 			ENTITY_PATH + "film.png").createImage();
-	public final static Image ICON_MAILING_LIST = PeopleUiPlugin
+	public final static Image ICON_MAILING_LIST = PeopleRapPlugin
 			.getImageDescriptor(ENTITY_PATH + "mailingList.gif").createImage();
-	public final static Image ICON_GROUP = PeopleUiPlugin.getImageDescriptor(
+	public final static Image ICON_GROUP = PeopleRapPlugin.getImageDescriptor(
 			ENTITY_PATH + "group.gif").createImage();
 
 	// Miscellaneous
-	public final static Image LOGO = PeopleUiPlugin.getImageDescriptor(
+	public final static Image LOGO = PeopleRapPlugin.getImageDescriptor(
 			"icons/logo.gif").createImage();
 
-	public final static Image LOGO_SMALL = PeopleUiPlugin.getImageDescriptor(
+	public final static Image LOGO_SMALL = PeopleRapPlugin.getImageDescriptor(
 			"icons/smallerOrnamentLogo.png").createImage();
 
-	public final static Image NO_PICTURE = PeopleUiPlugin.getImageDescriptor(
+	public final static Image NO_PICTURE = PeopleRapPlugin.getImageDescriptor(
 			"icons/noPicture.gif").createImage();
 
-	public final static Image PERSON = PeopleUiPlugin.getImageDescriptor(
+	public final static Image PERSON = PeopleRapPlugin.getImageDescriptor(
 			"icons/person.gif").createImage();
 
-	public final static Image DELETE_BTN = PeopleUiPlugin.getImageDescriptor(
+	public final static Image DELETE_BTN = PeopleRapPlugin.getImageDescriptor(
 			"icons/delete.gif").createImage();
 
-	public final static Image DELETE_BTN_LEFT = PeopleUiPlugin
+	public final static Image DELETE_BTN_LEFT = PeopleRapPlugin
 			.getImageDescriptor("icons/delete_left.gif").createImage();
 
-	public final static Image ADD_BTN = PeopleUiPlugin.getImageDescriptor(
+	public final static Image ADD_BTN = PeopleRapPlugin.getImageDescriptor(
 			"icons/add.gif").createImage();
 
-	public final static Image PRIMARY_BTN = PeopleUiPlugin.getImageDescriptor(
+	public final static Image PRIMARY_BTN = PeopleRapPlugin.getImageDescriptor(
 			"icons/primary.gif").createImage();
 
-	public final static Image PRIMARY_NOT_BTN = PeopleUiPlugin
+	public final static Image PRIMARY_NOT_BTN = PeopleRapPlugin
 			.getImageDescriptor("icons/primaryNOT.gif").createImage();
 
-	public final static Image ORIGINAL_BTN = PeopleUiPlugin.getImageDescriptor(
+	public final static Image ORIGINAL_BTN = PeopleRapPlugin.getImageDescriptor(
 			"icons/first.png").createImage();
 
 	// Check box icons
-	public final static Image CHECKED = PeopleUiPlugin.getImageDescriptor(
+	public final static Image CHECKED = PeopleRapPlugin.getImageDescriptor(
 			"icons/checked.gif").createImage();
-	public final static Image UNCHECKED = PeopleUiPlugin.getImageDescriptor(
+	public final static Image UNCHECKED = PeopleRapPlugin.getImageDescriptor(
 			"icons/unchecked.gif").createImage();
 
 	// User Management
-	public final static Image ROLE_CHECKED = PeopleUiPlugin.getImageDescriptor(
+	public final static Image ROLE_CHECKED = PeopleRapPlugin.getImageDescriptor(
 			"icons/security.gif").createImage();
 
 }

@@ -7,7 +7,7 @@ import javax.jcr.Session;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.wizards.NewSimpleTaskWizard;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
@@ -22,7 +22,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
  */
 public class CreateSimpleTask extends AbstractHandler {
 
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".createSimpleTask";
 
 	/* DEPENDENCY INJECTION */

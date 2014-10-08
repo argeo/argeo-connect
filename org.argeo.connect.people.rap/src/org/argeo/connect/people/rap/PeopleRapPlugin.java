@@ -7,18 +7,18 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class PeopleUiPlugin extends AbstractUIPlugin {
+public class PeopleRapPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.argeo.connect.people.rap"; //$NON-NLS-1$
 
 	// The shared instance
-	private static PeopleUiPlugin plugin;
+	private static PeopleRapPlugin plugin;
 	
 	/**
 	 * The constructor
 	 */
-	public PeopleUiPlugin() {
+	public PeopleRapPlugin() {
 	}
 
 	/*
@@ -44,7 +44,7 @@ public class PeopleUiPlugin extends AbstractUIPlugin {
 	 *
 	 * @return the shared instance
 	 */
-	public static PeopleUiPlugin getDefault() {
+	public static PeopleRapPlugin getDefault() {
 		return plugin;
 	}
 

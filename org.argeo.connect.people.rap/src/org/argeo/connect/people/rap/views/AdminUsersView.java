@@ -24,7 +24,7 @@ import javax.jcr.observation.EventIterator;
 import javax.jcr.observation.EventListener;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.commands.OpenPeopleUserEditor;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
@@ -44,7 +44,7 @@ import org.eclipse.ui.part.ViewPart;
 
 /** List all users with filter. */
 public class AdminUsersView extends ViewPart implements ArgeoNames {
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".adminUsersView";
 
 	/* DEPENDENCY INJECTION */

@@ -1,21 +1,20 @@
 package org.argeo.connect.people.ui;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 
-/** Helper methods for People Web UI */
+/** Helper methods for various People UIs */
 public class PeopleUiUtils {
-	private final static Log log = LogFactory.getLog(PeopleUiUtils.class);
+	// private final static Log log = LogFactory.getLog(PeopleUiUtils.class);
 
 	/**
 	 * Cleans a String by replacing any '&' by its HTML encoding '&#38;' to
 	 * avoid <code>SAXParseException</code> while rendering HTML with RWT
 	 */
 	public static String replaceAmpersand(String value) {
-		value = value.replaceAll("&(?![#a-zA-Z0-9]+;)", "&#38;");
+		value = value.replaceAll("&(?![#a-zA-Z0-9]+;)",
+				PeopleUiConstants.AMPERSAND);
 		return value;
 	}
 

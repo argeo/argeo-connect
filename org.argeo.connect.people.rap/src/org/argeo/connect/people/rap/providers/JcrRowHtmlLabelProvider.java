@@ -1,6 +1,6 @@
 package org.argeo.connect.people.rap.providers;
 
-import org.argeo.connect.people.rap.utils.PeopleHtmlUtils;
+import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 
 /**
@@ -16,6 +16,6 @@ public class JcrRowHtmlLabelProvider extends SimpleJcrRowLabelProvider {
 
 	@Override
 	public String getText(Object element) {
-		return PeopleHtmlUtils.cleanHtmlString(super.getText(element));
+		return PeopleRapSnippets.cleanHtmlString(super.getText(element));
 	}
 }

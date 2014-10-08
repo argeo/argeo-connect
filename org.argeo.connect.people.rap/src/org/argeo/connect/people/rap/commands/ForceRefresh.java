@@ -1,6 +1,6 @@
 package org.argeo.connect.people.rap.commands;
 
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -16,7 +16,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
  */
 public class ForceRefresh extends AbstractHandler {
 
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".forceRefresh";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".forceRefresh";
 	public final static String PARAM_VIEW_ID = "param.viewId";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {

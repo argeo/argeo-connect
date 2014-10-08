@@ -11,8 +11,8 @@ import javax.jcr.Session;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.rap.PeopleUiConstants;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.security.ui.admin.UserTableComposite;
@@ -26,7 +26,7 @@ import org.eclipse.ui.PartInitException;
 
 public class UserGroupEditor extends GroupEditor {
 
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".userGroupEditor";
 
 	private UserTableComposite userTableCmp;
@@ -50,7 +50,7 @@ public class UserGroupEditor extends GroupEditor {
 		String tooltip = "Members of group "
 				+ JcrUtils.get(group, Property.JCR_TITLE);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
-				"Members", PeopleUiConstants.PANEL_MEMBERS, tooltip);
+				"Members", PeopleRapConstants.PANEL_MEMBERS, tooltip);
 		createBottomPart(innerPannel);
 	}
 

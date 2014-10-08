@@ -10,8 +10,8 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.rap.PeopleImages;
-import org.argeo.connect.people.rap.PeopleUiConstants;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.dialogs.PickUpRelatedDialog;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
@@ -50,7 +50,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 	final static Log log = LogFactory.getLog(ActivityEditor.class);
 
 	// local constants
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".activityEditor";
 
 	// Main business Objects
@@ -162,8 +162,8 @@ public class ActivityEditor extends AbstractPeopleEditor {
 								Button deleteBtn = new Button(relatedCmp,
 										SWT.FLAT);
 								deleteBtn.setData(
-										PeopleUiConstants.CUSTOM_VARIANT,
-										PeopleUiConstants.PEOPLE_CLASS_FLAT_BTN);
+										PeopleRapConstants.CUSTOM_VARIANT,
+										PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 								deleteBtn.setImage(PeopleImages.DELETE_BTN);
 								RowData rd = new RowData();
 								rd.height = 16;

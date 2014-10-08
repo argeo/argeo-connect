@@ -13,8 +13,8 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleUiConstants;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.composites.ContactPanelComposite;
 import org.argeo.connect.people.rap.composites.TagListComposite;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
@@ -56,7 +56,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 	final static Log log = LogFactory.getLog(PersonEditor.class);
 
 	// local constants
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".personEditor";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".personEditor";
 	// Main business Objects
 	private Node person;
 
@@ -130,7 +130,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		String tooltip = "Contact information for "
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
-				"Contact details", PeopleUiConstants.PANEL_CONTACT_DETAILS,
+				"Contact details", PeopleRapConstants.PANEL_CONTACT_DETAILS,
 				tooltip);
 		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		ContactPanelComposite cpc = new ContactPanelComposite(innerPannel,
@@ -142,14 +142,14 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		tooltip = "Activities and tasks related to "
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
-				PeopleUiConstants.PANEL_ACTIVITY_LOG, tooltip);
+				PeopleRapConstants.PANEL_ACTIVITY_LOG, tooltip);
 		activityTK.populateActivityLogPanel(innerPannel, person);
 
 		// Jobs panel
 		tooltip = "Organisations linked to "
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Organisations",
-				PeopleUiConstants.PANEL_JOBS, tooltip);
+				PeopleRapConstants.PANEL_JOBS, tooltip);
 		listTK.populateJobsPanel(innerPannel, person);
 
 		// History panel
@@ -157,7 +157,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		tooltip = "History of information about "
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "History",
-				PeopleUiConstants.PANEL_HISTORY, tooltip);
+				PeopleRapConstants.PANEL_HISTORY, tooltip);
 		historyTK.populateHistoryPanel(innerPannel);
 		folder.layout();
 	}
@@ -174,9 +174,9 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		// Add a label with info provided by the PersonOverviewLabelProvider
 		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
 				SWT.WRAP);
-		readOnlyInfoLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
+		readOnlyInfoLbl.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
 		final ColumnLabelProvider personLP = new PersonOverviewLabelProvider(
-				PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE, getPeopleService());
+				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE, getPeopleService());
 
 		// EDIT
 		final Composite editPanel = toolkit.createComposite(parent,

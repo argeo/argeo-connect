@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.rap.PeopleUiConstants;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleUiService;
 import org.argeo.connect.people.rap.exports.calc.ITableProvider;
 import org.argeo.connect.people.rap.exports.calc.RowsToCalcWriter;
@@ -28,7 +28,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * must implement ICalcExtractProvider interface.
  */
 public class GetCalcExport extends AbstractHandler {
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".getCalcExport";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".getCalcExport";
 	public final static String PARAM_EXPORT_ID = "param.exportId";
 
 	private final static DateFormat df = new SimpleDateFormat(
@@ -41,7 +41,7 @@ public class GetCalcExport extends AbstractHandler {
 		String exportId = event.getParameter(PARAM_EXPORT_ID);
 		// force default
 		if (CommonsJcrUtils.isEmptyString(exportId))
-			exportId = PeopleUiConstants.DEFAULT_CALC_EXPORT;
+			exportId = PeopleRapConstants.DEFAULT_CALC_EXPORT;
 
 		try {
 			IWorkbenchPart iwp = HandlerUtil.getActiveWorkbenchWindow(event)

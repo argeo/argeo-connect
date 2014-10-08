@@ -3,7 +3,7 @@ package org.argeo.connect.people.rap.commands;
 import java.net.URL;
 
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -16,7 +16,7 @@ import org.eclipse.ui.PlatformUI;
  */
 public class OpenUrl extends AbstractHandler {
 
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".openUrl";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".openUrl";
 	public final static String PARAM_URL_VALUE = "param.urlValue";
 	public final static String PARAM_URL_TYPE = "param.urlType";
 

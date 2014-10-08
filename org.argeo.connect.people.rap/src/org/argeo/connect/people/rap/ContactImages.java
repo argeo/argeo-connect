@@ -34,53 +34,53 @@ public class ContactImages {
 	private final static String PREFIX = "icons/contacts/";
 	// Contact icons
 	// EMAIL
-	public final static Image DEFAULT_MAIL = PeopleUiPlugin.getImageDescriptor(
+	public final static Image DEFAULT_MAIL = PeopleRapPlugin.getImageDescriptor(
 			PREFIX + "mail_black.png").createImage();
 
 	// PHONE
-	public final static Image DEFAULT_PHONE = PeopleUiPlugin
+	public final static Image DEFAULT_PHONE = PeopleRapPlugin
 			.getImageDescriptor(PREFIX + "phone_vintage.png").createImage();
 
-	public final static Image PHONE_DIRECT = PeopleUiPlugin.getImageDescriptor(
+	public final static Image PHONE_DIRECT = PeopleRapPlugin.getImageDescriptor(
 			PREFIX + "telephone.png").createImage();
 
-	public final static Image FAX = PeopleUiPlugin.getImageDescriptor(
+	public final static Image FAX = PeopleRapPlugin.getImageDescriptor(
 			PREFIX + "fax.png").createImage();
 
-	public final static Image MOBILE = PeopleUiPlugin.getImageDescriptor(
+	public final static Image MOBILE = PeopleRapPlugin.getImageDescriptor(
 			PREFIX + "mobile.png").createImage();
 
 	// ADDRESS
-	public final static Image DEFAULT_ADDRESS = PeopleUiPlugin
+	public final static Image DEFAULT_ADDRESS = PeopleRapPlugin
 			.getImageDescriptor(PREFIX + "home.png").createImage();
 
-	public final static Image WORK = PeopleUiPlugin.getImageDescriptor(
+	public final static Image WORK = PeopleRapPlugin.getImageDescriptor(
 			PREFIX + "company.png").createImage();
 
 	// URL
-	public final static Image DEFAULT_URL = PeopleUiPlugin.getImageDescriptor(
+	public final static Image DEFAULT_URL = PeopleRapPlugin.getImageDescriptor(
 			PREFIX + "link.png").createImage();
 
-	public final static Image PRIVATE_HOME_PAGE = PeopleUiPlugin
+	public final static Image PRIVATE_HOME_PAGE = PeopleRapPlugin
 			.getImageDescriptor(PREFIX + "house_link.png").createImage();
 
 	// SOCIAL MEDIA
-	public final static Image DEFAULT_SOCIAL_MEDIA = PeopleUiPlugin
+	public final static Image DEFAULT_SOCIAL_MEDIA = PeopleRapPlugin
 			.getImageDescriptor(PREFIX + "socialmedia.png").createImage();
 
-	public final static Image GOOGLEPLUS = PeopleUiPlugin.getImageDescriptor(
+	public final static Image GOOGLEPLUS = PeopleRapPlugin.getImageDescriptor(
 			PREFIX + "googleplus.png").createImage();
 
-	public final static Image LINKEDIN = PeopleUiPlugin.getImageDescriptor(
+	public final static Image LINKEDIN = PeopleRapPlugin.getImageDescriptor(
 			PREFIX + "linkedin.png").createImage();
 
-	public final static Image FACEBOOK = PeopleUiPlugin.getImageDescriptor(
+	public final static Image FACEBOOK = PeopleRapPlugin.getImageDescriptor(
 			PREFIX + "facebook.png").createImage();
 
-	public final static Image XING = PeopleUiPlugin.getImageDescriptor(
+	public final static Image XING = PeopleRapPlugin.getImageDescriptor(
 			PREFIX + "xing" + ".png").createImage();
 
 	// IMPP
-	public final static Image DEFAULT_IMPP = PeopleUiPlugin.getImageDescriptor(
+	public final static Image DEFAULT_IMPP = PeopleRapPlugin.getImageDescriptor(
 			PREFIX + "impp.png").createImage();
 }

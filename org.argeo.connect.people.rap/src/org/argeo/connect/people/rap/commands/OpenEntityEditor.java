@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.ActivityEditor;
 import org.argeo.connect.people.rap.editors.GroupEditor;
 import org.argeo.connect.people.rap.editors.OrgEditor;
@@ -34,7 +34,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 public class OpenEntityEditor extends AbstractHandler {
 	private final static Log log = LogFactory.getLog(OpenEntityEditor.class);
 
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".openEntityEditor";
 
 	/* DEPENDENCY INJECTION */

@@ -1,6 +1,6 @@
 package org.argeo.connect.people.rap.commands;
 
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.utils.IVersionedItemEditor;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -12,7 +12,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * Discard all pending changes of the current item and check it in.
  */
 public class CancelAndCheckInItem extends AbstractHandler {
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".cancelAndCheckInItem";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {

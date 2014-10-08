@@ -33,7 +33,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleUiConstants;
+import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.rap.providers.EntitySingleColumnLabelProvider;
 import org.argeo.connect.people.rap.utils.PeopleUiUtils;
@@ -188,8 +188,8 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 		// The chosen item
 		selectedItemTxt = createLT(dialogarea, chosenItemLbl);
 		selectedItemTxt.setEnabled(false);
-		selectedItemTxt.setData(PeopleUiConstants.CUSTOM_VARIANT,
-				PeopleUiConstants.PEOPLE_CLASS_FORCE_BORDER);
+		selectedItemTxt.setData(PeopleRapConstants.CUSTOM_VARIANT,
+				PeopleRapConstants.PEOPLE_CLASS_FORCE_BORDER);
 
 		if (isBackward) {
 			selectedItemTxt.setText(CommonsJcrUtils.get(oldReferencing,
@@ -372,8 +372,8 @@ public class EditEntityRefWithPositionDialog extends TrayDialog {
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
 		// Enable markups
-		table.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(PeopleUiConstants.CUSTOM_ITEM_HEIGHT, Integer.valueOf(20));
+		table.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
+		table.setData(PeopleRapConstants.CUSTOM_ITEM_HEIGHT, Integer.valueOf(20));
 
 		// Providers and listeners
 		v.setContentProvider(new BasicNodeListContentProvider());

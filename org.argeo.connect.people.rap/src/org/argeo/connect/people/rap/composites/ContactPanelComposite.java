@@ -13,7 +13,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleUiConstants;
+import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleUiService;
 import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
@@ -601,8 +601,8 @@ public class ContactPanelComposite extends Composite {
 			catCmb.select(0);
 
 			final Text valueTxt = createRowDataLT(parent, "Linked company", 200);
-			valueTxt.setData(PeopleUiConstants.CUSTOM_VARIANT,
-					PeopleUiConstants.PEOPLE_CLASS_FORCE_BORDER);
+			valueTxt.setData(PeopleRapConstants.CUSTOM_VARIANT,
+					PeopleRapConstants.PEOPLE_CLASS_FORCE_BORDER);
 			valueTxt.setEnabled(false);
 
 			final Link chooseOrgLk = new Link(parent, SWT.BOTTOM);

@@ -11,7 +11,7 @@ import javax.jcr.Session;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleImages;
-import org.argeo.connect.people.rap.PeopleUiConstants;
+import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleUiService;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.providers.BasicNodeListContentProvider;
@@ -199,8 +199,8 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 			GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 			gd.heightHint = 250;
 			table.setLayoutData(gd);
-			table.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
-			table.setData(PeopleUiConstants.CUSTOM_ITEM_HEIGHT,
+			table.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
+			table.setData(PeopleRapConstants.CUSTOM_ITEM_HEIGHT,
 					Integer.valueOf(20));
 
 			itemsViewer = new TableViewer(table);
@@ -311,7 +311,7 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 			// Text Area for the filter
 			filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH
 					| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
-			filterTxt.setMessage(PeopleUiConstants.FILTER_HELP_MSG);
+			filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
 			filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 					| GridData.HORIZONTAL_ALIGN_FILL));
 			filterTxt.addModifyListener(new ModifyListener() {

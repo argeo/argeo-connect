@@ -19,7 +19,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -39,7 +39,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 public class DeleteEntity extends AbstractHandler {
 	private final static Log log = LogFactory.getLog(DeleteEntity.class);
 
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".deleteEntity";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".deleteEntity";
 	public final static String DEFAULT_LABEL = "Delete";
 	public final static String PARAM_TOREMOVE_JCR_ID = "param.toRemoveJcrId";
 	// In many cases, the edited node is a versionable child of a more generic

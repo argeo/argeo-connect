@@ -7,7 +7,7 @@ import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.dialogs.CreateEntityRefWithPositionDialog;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityEditor;
 import org.argeo.jcr.JcrUtils;
@@ -24,9 +24,9 @@ import org.eclipse.ui.handlers.HandlerUtil;
  */
 @Deprecated
 public class AddEntityReferenceWithPosition extends AbstractHandler {
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".addEntityReferenceWithPosition";
-	public final static ImageDescriptor DEFAULT_IMG_DESCRIPTOR = PeopleUiPlugin
+	public final static ImageDescriptor DEFAULT_IMG_DESCRIPTOR = PeopleRapPlugin
 			.getImageDescriptor("icons/add.png");
 	public final static String DEFAULT_LABEL = "Add...";
 	public final static String PARAM_REFERENCING_JCR_ID = "param.referencingJcrId";

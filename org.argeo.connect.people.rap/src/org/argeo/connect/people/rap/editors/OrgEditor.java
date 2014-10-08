@@ -11,8 +11,8 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleUiConstants;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.composites.ContactPanelComposite;
 import org.argeo.connect.people.rap.composites.TagListComposite;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
@@ -46,7 +46,7 @@ import org.eclipse.ui.forms.AbstractFormPart;
 public class OrgEditor extends AbstractEntityCTabEditor {
 	final static Log log = LogFactory.getLog(OrgEditor.class);
 
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".orgEditor";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".orgEditor";
 
 	// Main business Objects
 	private Node org;
@@ -112,7 +112,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		String tooltip = "Contact information for "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
-				"Details", PeopleUiConstants.PANEL_CONTACT_DETAILS, tooltip);
+				"Details", PeopleRapConstants.PANEL_CONTACT_DETAILS, tooltip);
 		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		ContactPanelComposite cpc = new ContactPanelComposite(innerPannel,
 				SWT.NO_FOCUS, toolkit, getManagedForm(), getNode(),
@@ -123,21 +123,21 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		tooltip = "Activities and tasks related to "
 				+ JcrUtils.get(org, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
-				PeopleUiConstants.PANEL_ACTIVITY_LOG, tooltip);
+				PeopleRapConstants.PANEL_ACTIVITY_LOG, tooltip);
 		activityTK.populateActivityLogPanel(innerPannel, org);
 
 		// Employees
 		tooltip = "Known employees of "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Team",
-				PeopleUiConstants.PANEL_EMPLOYEES, tooltip);
+				PeopleRapConstants.PANEL_EMPLOYEES, tooltip);
 		listTK.populateEmployeesPanel(innerPannel, org);
 
 		// Legal informations
 		tooltip = "Legal information for "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Admin.",
-				PeopleUiConstants.PANEL_LEGAL_INFO, tooltip);
+				PeopleRapConstants.PANEL_LEGAL_INFO, tooltip);
 		legalTK.populateLegalInfoPanel(innerPannel);
 	}
 
@@ -154,7 +154,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 			final Label orgInfoROLbl = toolkit.createLabel(roPanelCmp, "",
 					SWT.WRAP);
 			orgInfoROLbl
-					.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
+					.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider orgLP = new OrgOverviewLabelProvider(
 					false, getPeopleService());
 

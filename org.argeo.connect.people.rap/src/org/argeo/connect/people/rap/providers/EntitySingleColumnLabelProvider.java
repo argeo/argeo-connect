@@ -7,9 +7,9 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleUiConstants;
+import org.argeo.connect.people.rap.PeopleRapSnippets;
+import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleUiService;
-import org.argeo.connect.people.rap.utils.PeopleHtmlUtils;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
@@ -25,7 +25,7 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 	private OrgListLabelProvider orgLp;
 	private PersonListLabelProvider personLp;
 	private GroupLabelProvider groupLp = new GroupLabelProvider(
-			PeopleUiConstants.LIST_TYPE_SMALL);
+			PeopleRapConstants.LIST_TYPE_SMALL);
 	private TagLabelProvider mlInstanceLp;
 
 	public EntitySingleColumnLabelProvider(PeopleService peopleService,
@@ -33,7 +33,7 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 		personLp = new PersonListLabelProvider(peopleService);
 		orgLp = new OrgListLabelProvider(peopleService);
 		mlInstanceLp = new TagLabelProvider(peopleService.getTagService(),
-				PeopleUiConstants.LIST_TYPE_SMALL,
+				PeopleRapConstants.LIST_TYPE_SMALL,
 				peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
 				PEOPLE_MAILING_LISTS);
 	}
@@ -53,7 +53,7 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 				result = groupLp.getText(element);
 			else
 				result = "";
-			return PeopleHtmlUtils.cleanHtmlString(result);
+			return PeopleRapSnippets.cleanHtmlString(result);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to get formatted value for node",
 					re);

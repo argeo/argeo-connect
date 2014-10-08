@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.argeo.connect</groupId>
@@ -12,7 +13,7 @@
 	<packaging>jar</packaging>
 	<dependencies>
 		<!-- RAP Specific bundles -->
-		<!--  Dropdown widget from rap addons -->
+		<!-- Dropdown widget from rap addons -->
 		<dependency>
 			<groupId>org.argeo.tp.rap.addons</groupId>
 			<artifactId>org.eclipse.rap.addons.dropdown</artifactId>
@@ -20,6 +21,12 @@
 		</dependency>
 
 		<!-- People -->
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.people.ui</artifactId>
+			<version>2.1.10-SNAPSHOT</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.people.services</artifactId>
@@ -40,14 +47,14 @@
 			<version>${version.argeo-commons}</version>
 			<scope>provided</scope>
 		</dependency>
-	
+
 		<!-- Base Argeo Eclipse Utilities -->
 		<dependency>
 			<groupId>org.argeo.commons.base</groupId>
 			<artifactId>org.argeo.eclipse.ui</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
-	
+
 		<dependency>
 			<groupId>org.argeo.commons.base</groupId>
 			<artifactId>org.argeo.eclipse.ui.jcr</artifactId>

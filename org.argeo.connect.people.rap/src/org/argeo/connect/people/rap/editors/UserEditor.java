@@ -31,7 +31,7 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.rap.PeopleImages;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.composites.UserGroupTableComposite;
 import org.argeo.connect.people.rap.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -79,7 +79,7 @@ public class UserEditor extends FormEditor {
 	// private final static Log log = LogFactory.getLog(UserEditor.class);
 	private static final long serialVersionUID = 270486756895365730L;
 
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".userEditor";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".userEditor";
 
 	/* DEPENDENCY INJECTION */
 	private UserAdminService userAdminService;

@@ -23,8 +23,8 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleImages;
-import org.argeo.connect.people.rap.PeopleUiConstants;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleUiService;
 import org.argeo.connect.people.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
@@ -60,7 +60,7 @@ import org.eclipse.ui.part.ViewPart;
 public class PeopleDefaultView extends ViewPart {
 	// private final static Log log = LogFactory.getLog(QuickSearchView.class);
 
-	public static final String ID = PeopleUiPlugin.PLUGIN_ID
+	public static final String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".peopleDefaultView";
 
 	private final static Integer ROW_LIMIT = 100;
@@ -108,13 +108,13 @@ public class PeopleDefaultView extends ViewPart {
 		Composite logoCmp = new Composite(parent, SWT.NO_FOCUS);
 		FormData fdBg = PeopleUiUtils.createformData(0, 20, 100, 75);
 		logoCmp.setLayoutData(fdBg);
-		logoCmp.setData(PeopleUiConstants.CUSTOM_VARIANT,
+		logoCmp.setData(PeopleRapConstants.CUSTOM_VARIANT,
 				"people-logoComposite");
 
 		// The Image
 		Label logoLbl = new Label(parent, SWT.NO_FOCUS);
 		logoLbl.setImage(PeopleImages.LOGO_SMALL);
-		logoLbl.setData(PeopleUiConstants.CUSTOM_VARIANT, "people-logo");
+		logoLbl.setData(PeopleRapConstants.CUSTOM_VARIANT, "people-logo");
 		logoLbl.setSize(130, 131);
 		FormData fdImg = new FormData();
 		fdImg.top = new FormAttachment(0, 0);
@@ -125,7 +125,7 @@ public class PeopleDefaultView extends ViewPart {
 		// The links
 		Composite linksCmp = new Composite(parent, SWT.NO_FOCUS);
 		linksCmp.setLayoutData(PeopleUiUtils.createformData(75, 25, 98, 73));
-		linksCmp.setData(PeopleUiConstants.CUSTOM_VARIANT, "people-logoTable");
+		linksCmp.setData(PeopleRapConstants.CUSTOM_VARIANT, "people-logoTable");
 		linksCmp.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		addLink(linksCmp, "Search Entities",
@@ -156,8 +156,8 @@ public class PeopleDefaultView extends ViewPart {
 		link.setText("<a>" + label + "</a>");
 		if (tooltip != null)
 			link.setToolTipText(tooltip);
-		link.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
-		link.setData(PeopleUiConstants.CUSTOM_VARIANT, "people-logoTable");
+		link.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
+		link.setData(PeopleRapConstants.CUSTOM_VARIANT, "people-logoTable");
 
 		link.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
@@ -201,8 +201,8 @@ public class PeopleDefaultView extends ViewPart {
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
 		// Enable markups
-		table.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(PeopleUiConstants.CUSTOM_ITEM_HEIGHT, Integer.valueOf(24));
+		table.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
+		table.setData(PeopleRapConstants.CUSTOM_ITEM_HEIGHT, Integer.valueOf(24));
 
 		v.setContentProvider(new BasicNodeListContentProvider());
 		v.addDoubleClickListener(new PeopleJcrViewerDClickListener(

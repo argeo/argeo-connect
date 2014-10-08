@@ -21,7 +21,7 @@ import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleUiService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.utils.ActivityViewerComparator;
@@ -50,7 +50,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.part.ViewPart;
 
 public class MyTasksView extends ViewPart implements Refreshable {
-	public static final String ID = PeopleUiPlugin.PLUGIN_ID + ".myTasksView";
+	public static final String ID = PeopleRapPlugin.PLUGIN_ID + ".myTasksView";
 
 	/* DEPENDENCY INJECTION */
 	// private PeopleService peopleService;

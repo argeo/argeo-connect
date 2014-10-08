@@ -20,7 +20,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.rap.PeopleImages;
-import org.argeo.connect.people.rap.PeopleUiConstants;
+import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleUiService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
@@ -165,19 +165,19 @@ public class TagListComposite extends Composite {
 						tagCmp.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 						Link link = new Link(tagCmp, SWT.NONE);
 
-						link.setData(PeopleUiConstants.MARKUP_ENABLED,
+						link.setData(PeopleRapConstants.MARKUP_ENABLED,
 								Boolean.TRUE);
 						if (tagPropName.equals(PeopleNames.PEOPLE_TAGS)) {
 							link.setText(" #<a>" + tagValue + "</a>");
 							link.setData(
-									PeopleUiConstants.CUSTOM_VARIANT,
-									PeopleUiConstants.PEOPLE_CLASS_ENTITY_HEADER);
+									PeopleRapConstants.CUSTOM_VARIANT,
+									PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
 						} else if (tagPropName
 								.equals(PeopleNames.PEOPLE_MAILING_LISTS)) {
 							link.setText(" @<a>" + tagValue + "</a>");
 							link.setData(
-									PeopleUiConstants.CUSTOM_VARIANT,
-									PeopleUiConstants.PEOPLE_CLASS_ENTITY_HEADER);
+									PeopleRapConstants.CUSTOM_VARIANT,
+									PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
 						} else
 							link.setText(" <a>" + tagValue + "</a>");
 
@@ -289,8 +289,8 @@ public class TagListComposite extends Composite {
 	private void addDeleteButton(final AbstractFormPart part, Composite parent,
 			final Value value) {
 		final Button deleteBtn = new Button(parent, SWT.FLAT);
-		deleteBtn.setData(PeopleUiConstants.CUSTOM_VARIANT,
-				PeopleUiConstants.PEOPLE_CLASS_FLAT_BTN);
+		deleteBtn.setData(PeopleRapConstants.CUSTOM_VARIANT,
+				PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 		deleteBtn
 				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		deleteBtn.setImage(PeopleImages.DELETE_BTN_LEFT);

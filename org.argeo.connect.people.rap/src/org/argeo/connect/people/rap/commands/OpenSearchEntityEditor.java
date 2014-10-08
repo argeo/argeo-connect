@@ -2,7 +2,7 @@ package org.argeo.connect.people.rap.commands;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.DefaultSearchEntityEditor;
 import org.argeo.connect.people.rap.editors.SearchPersonEditor;
 import org.argeo.connect.people.rap.editors.utils.SearchNodeEditorInput;
@@ -16,7 +16,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * Open an editor that display a filtered table for a given JCR Node type
  */
 public class OpenSearchEntityEditor extends AbstractHandler {
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".openSearchEntityEditor";
 
 	public final static String PARAM_NODE_TYPE = "param.nodeType";

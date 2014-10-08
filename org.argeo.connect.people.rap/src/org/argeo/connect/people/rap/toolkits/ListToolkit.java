@@ -14,8 +14,9 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleImages;
-import org.argeo.connect.people.rap.PeopleUiConstants;
+import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleUiService;
 import org.argeo.connect.people.rap.commands.EditJob;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
@@ -28,7 +29,6 @@ import org.argeo.connect.people.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.rap.providers.RoleListLabelProvider;
 import org.argeo.connect.people.rap.utils.AbstractPanelFormPart;
-import org.argeo.connect.people.rap.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.rap.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
@@ -181,10 +181,10 @@ public class ListToolkit {
 					Node link = (Node) element;
 					Node person = link.getParent().getParent();
 					if (CommonsJcrUtils.isNodeCheckedOutByMe(entity))
-						return PeopleHtmlUtils.getEditJobSnippetForLists(link,
+						return PeopleRapSnippets.getEditJobSnippetForLists(link,
 								false)
 								+ " <br />"
-								+ PeopleHtmlUtils
+								+ PeopleRapSnippets
 										.getRemoveReferenceSnippetForLists(
 												link, person);
 					else
@@ -314,7 +314,7 @@ public class ListToolkit {
 		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT,
 				bounds[1]);
 		col.setLabelProvider(new PersonOverviewLabelProvider(
-				PeopleUiConstants.LIST_TYPE_MEDIUM, peopleService));
+				PeopleRapConstants.LIST_TYPE_MEDIUM, peopleService));
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
 				200, 80, true));
 
@@ -334,10 +334,10 @@ public class ListToolkit {
 					Node person = link.getParent().getParent();
 
 					if (CommonsJcrUtils.isNodeCheckedOutByMe(entity)) {
-						String tmp = PeopleHtmlUtils.getEditJobSnippetForLists(
+						String tmp = PeopleRapSnippets.getEditJobSnippetForLists(
 								link, true)
 								+ " <br />"
-								+ PeopleHtmlUtils
+								+ PeopleRapSnippets
 										.getRemoveReferenceSnippetForLists(
 												link, person);
 						return tmp;

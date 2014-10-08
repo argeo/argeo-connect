@@ -15,14 +15,14 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleImages;
-import org.argeo.connect.people.rap.PeopleUiConstants;
+import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.commands.CancelAndCheckInItem;
 import org.argeo.connect.people.rap.commands.CheckOutItem;
 import org.argeo.connect.people.rap.commands.DeleteEntity;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.utils.CheckoutSourceProvider;
-import org.argeo.connect.people.rap.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.rap.utils.PeopleUiUtils;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -183,13 +183,13 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 				true));
 		final Label readOnlyInfoLbl = toolkit.createLabel(lastUpdateCmp, "",
 				SWT.WRAP);
-		readOnlyInfoLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
+		readOnlyInfoLbl.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
 		final ColumnLabelProvider lastUpdateLP = new ColumnLabelProvider() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public String getText(Object element) {
-				return PeopleHtmlUtils.getLastUpdateSnippet((Node) element);
+				return PeopleRapSnippets.getLastUpdateSnippet((Node) element);
 			}
 		};
 

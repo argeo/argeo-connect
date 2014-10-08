@@ -6,7 +6,7 @@ import java.util.Map;
 import org.argeo.connect.people.PeopleTypes;
 
 /** Defines some constants that are used all across the user interface **/
-public interface PeopleUiConstants {
+public interface PeopleRapConstants {
 
 	/* Default formats */
 	public final static String DEFAULT_SHORT_DATE_FORMAT = "dd/MM/yyyy";

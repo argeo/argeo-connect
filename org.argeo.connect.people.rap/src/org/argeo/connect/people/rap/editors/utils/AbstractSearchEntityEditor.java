@@ -13,7 +13,7 @@ import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.rap.PeopleUiConstants;
+import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleUiService;
 import org.argeo.connect.people.rap.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
@@ -168,7 +168,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		parent.setLayout(new GridLayout());
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
 				| SWT.ICON_CANCEL);
-		filterTxt.setMessage(PeopleUiConstants.FILTER_HELP_MSG);
+		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 				| GridData.HORIZONTAL_ALIGN_FILL));
 		filterTxt.addModifyListener(new ModifyListener() {

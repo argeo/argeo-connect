@@ -15,7 +15,7 @@
  */
 package org.argeo.connect.people.rap.commands;
 
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.UserEditor;
 import org.argeo.security.ui.admin.editors.ArgeoUserEditorInput;
 import org.eclipse.core.commands.AbstractHandler;
@@ -26,7 +26,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 /** Command handler to set visible or open a People specific user editor. */
 public class OpenPeopleUserEditor extends AbstractHandler {
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".openPeopleUserEditor";
 	public final static String PARAM_USERNAME = "param.username";
 

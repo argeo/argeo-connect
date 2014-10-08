@@ -4,9 +4,9 @@ import java.util.List;
 
 import javax.jcr.query.Row;
 
+import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleImages;
-import org.argeo.connect.people.rap.PeopleUiConstants;
-import org.argeo.connect.people.rap.utils.PeopleHtmlUtils;
+import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.utils.PeopleUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;
@@ -133,7 +133,7 @@ public class MailingListToolkit {
 		@Override
 		public String getText(Object element) {
 			String text = super.getText(element);
-			return PeopleHtmlUtils.cleanHtmlString(text);
+			return PeopleRapSnippets.cleanHtmlString(text);
 		}
 
 	}
@@ -201,7 +201,7 @@ public class MailingListToolkit {
 		// Text Area for the filter
 		final Text filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH
 				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
-		filterTxt.setMessage(PeopleUiConstants.FILTER_HELP_MSG);
+		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 				| GridData.HORIZONTAL_ALIGN_FILL));
 		filterTxt.addModifyListener(new ModifyListener() {

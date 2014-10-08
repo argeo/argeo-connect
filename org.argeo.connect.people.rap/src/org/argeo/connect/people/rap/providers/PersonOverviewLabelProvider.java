@@ -9,8 +9,9 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleUiConstants;
-import org.argeo.connect.people.rap.utils.PeopleHtmlUtils;
+import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapSnippets;
+import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -51,22 +52,22 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 						+ "Cannot display film information");
 			String result;
 			switch (listType) {
-			case PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE:
+			case PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE:
 				result = getOverviewTitle(entity);
 				break;
-//			case PeopleUiConstants.LIST_TYPE_OVERVIEW_DETAIL:
-//				result = getOverviewDetails(entity);
-//				break;
-			case PeopleUiConstants.LIST_TYPE_SMALL:
+			// case PeopleUiConstants.LIST_TYPE_OVERVIEW_DETAIL:
+			// result = getOverviewDetails(entity);
+			// break;
+			case PeopleRapConstants.LIST_TYPE_SMALL:
 				result = getOverviewForList(entity, true);
 				break;
-			case PeopleUiConstants.LIST_TYPE_MEDIUM:
+			case PeopleRapConstants.LIST_TYPE_MEDIUM:
 				result = getOverviewForList(entity, false);
 				break;
 			default:
 				throw new PeopleException("Unable to provide text for person");
 			}
-			return PeopleHtmlUtils.cleanHtmlString(result);
+			return PeopleRapSnippets.cleanHtmlString(result);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot create organizations content", re);
 		}
@@ -74,17 +75,17 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 
 	private String getOverviewTitle(Node person) throws RepositoryException {
 		StringBuilder builder = new StringBuilder();
-		builder.append("<span " + PeopleUiConstants.PEOPLE_STYLE_ENTITY_HEADER
+		builder.append("<span " + PeopleRapConstants.PEOPLE_STYLE_ENTITY_HEADER
 				+ " >");
 		// first line
 		builder.append("<b><big> ");
 		String displayName = peopleService.getDisplayName(person);
 		builder.append(displayName);
 		builder.append("</big></b>");
-		String fmn = PeopleHtmlUtils.getFullMontyName(person);
-		String local = PeopleHtmlUtils.getLocalisationInfo(peopleService,
+		String fmn = PeopleUiSnippets.getFullMontyName(person);
+		String local = PeopleRapSnippets.getLocalisationInfo(peopleService,
 				person);
-		String primaryContacts = PeopleHtmlUtils.getPrimaryContacts(person);
+		String primaryContacts = PeopleRapSnippets.getPrimaryContacts(person);
 		Boolean politeFormFlag = CommonsJcrUtils.getBooleanValue(person,
 				PEOPLE_USE_POLITE_FORM);
 		List<String> spokenLanguages = CommonsJcrUtils.getMultiAsList(person,
@@ -144,20 +145,20 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		builder.append("<b><big> ");
 		builder.append(peopleService.getDisplayName(person));
 		builder.append("</big> </b> ");
-		String local = PeopleHtmlUtils.getLocalisationInfo(peopleService,
+		String local = PeopleRapSnippets.getLocalisationInfo(peopleService,
 				person);
 		if (CommonsJcrUtils.checkNotEmptyString(local))
 			builder.append(local);
 		builder.append("<br/>");
 
 		// Contacts
-		String primContactsStr = PeopleHtmlUtils.getPrimaryContacts(person);
+		String primContactsStr = PeopleRapSnippets.getPrimaryContacts(person);
 		if (CommonsJcrUtils.checkNotEmptyString(primContactsStr))
 			builder.append(primContactsStr).append("<br/>");
 
 		// Tags
-		if (PeopleHtmlUtils.getTags(person) != null)
-			builder.append(PeopleHtmlUtils.getTags(person)).append("<br/>");
+		if (PeopleRapSnippets.getTags(person) != null)
+			builder.append(PeopleRapSnippets.getTags(person)).append("<br/>");
 
 		builder.append("</span>");
 

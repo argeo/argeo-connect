@@ -6,7 +6,7 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.utils.PeopleHtmlUtils;
+import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
@@ -50,7 +50,7 @@ public class RoleListLabelProvider extends ColumnLabelProvider implements
 					builder.append("Department: ").append(dep);
 
 			}
-			return PeopleHtmlUtils.cleanHtmlString(builder.toString());
+			return PeopleRapSnippets.cleanHtmlString(builder.toString());
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot create organizations content", re);
 		}

@@ -25,8 +25,8 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleUiConstants;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleUiService;
 import org.argeo.connect.people.rap.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.rap.dialogs.AskTitleDescriptionDialog;
@@ -68,7 +68,7 @@ import org.eclipse.ui.part.EditorPart;
 public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		Refreshable {
 
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".searchTagsEditor";
 
 	/* DEPENDENCY INJECTION */
@@ -141,7 +141,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		parent.setLayout(new GridLayout(2, false));
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
 				| SWT.ICON_CANCEL);
-		filterTxt.setMessage(PeopleUiConstants.FILTER_HELP_MSG);
+		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		filterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 5003010530960334977L;
@@ -259,11 +259,11 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 				String jcrId = currNode.getIdentifier();
 				StringBuilder builder = new StringBuilder();
 				if (canEdit())
-					builder.append("<a " + PeopleUiConstants.PEOPLE_STYLE_LINK
+					builder.append("<a " + PeopleRapConstants.PEOPLE_STYLE_LINK
 							+ " href=\"edit/" + jcrId
 							+ "\" target=\"_rwt\">Edit</a> ");
 				if (canDelete(currNode))
-					builder.append("<a " + PeopleUiConstants.PEOPLE_STYLE_LINK
+					builder.append("<a " + PeopleRapConstants.PEOPLE_STYLE_LINK
 							+ " href=\"delete/" + jcrId
 							+ "\" target=\"_rwt\">Delete</a> ");
 				return builder.toString();

@@ -28,8 +28,8 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.UserManagementService;
-import org.argeo.connect.people.rap.PeopleUiConstants;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleUiService;
 import org.argeo.connect.people.rap.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
@@ -77,7 +77,7 @@ import org.eclipse.ui.part.EditorPart;
  */
 public class MailingListEditor extends EditorPart implements PeopleNames,
 		Refreshable {
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".mailingListEditor";
 
 	/* DEPENDENCY INJECTION */
@@ -168,11 +168,11 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 	protected void populateHeader(final Composite parent) {
 		parent.setLayout(new GridLayout(2, false));
 		final Label titleROLbl = toolkit.createLabel(parent, "", SWT.WRAP);
-		titleROLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
+		titleROLbl.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
 
 		final ColumnLabelProvider mlTitleLP = new TagLabelProvider(
 				peopleService.getTagService(),
-				PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE,
+				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE,
 				peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
 				PEOPLE_MAILING_LISTS);
 		titleROLbl.setText(mlTitleLP.getText(mailingList));
@@ -518,7 +518,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 	private Text createFilterText(Composite parent) {
 		Text filterTxt = toolkit.createText(parent, "", SWT.BORDER | SWT.SEARCH
 				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
-		filterTxt.setMessage(PeopleUiConstants.FILTER_HELP_MSG);
+		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		return filterTxt;
 	}

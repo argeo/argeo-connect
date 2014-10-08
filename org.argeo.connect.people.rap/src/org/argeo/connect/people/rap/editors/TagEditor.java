@@ -29,8 +29,8 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.UserManagementService;
-import org.argeo.connect.people.rap.PeopleUiConstants;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleUiService;
 import org.argeo.connect.people.rap.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
@@ -73,7 +73,7 @@ import org.eclipse.ui.part.EditorPart;
  * Editor that display a filtered list of entities that have a given Tag.
  */
 public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".tagEditor";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".tagEditor";
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
@@ -150,10 +150,10 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 	protected void populateHeader(final Composite parent) {
 		parent.setLayout(new GridLayout(2, false));
 		final Label titleROLbl = toolkit.createLabel(parent, "", SWT.WRAP);
-		titleROLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
+		titleROLbl.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
 		final ColumnLabelProvider groupTitleLP = new TagLabelProvider(
 				peopleService.getTagService(),
-				PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE,
+				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE,
 				peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
 				PEOPLE_TAGS);
 		titleROLbl.setText(groupTitleLP.getText(getNode()));
@@ -223,7 +223,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 	private Text createFilterText(Composite parent) {
 		Text filterTxt = toolkit.createText(parent, "", SWT.BORDER | SWT.SEARCH
 				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
-		filterTxt.setMessage(PeopleUiConstants.FILTER_HELP_MSG);
+		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		filterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 5003010530960334977L;

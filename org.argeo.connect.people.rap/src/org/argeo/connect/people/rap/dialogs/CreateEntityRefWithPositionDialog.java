@@ -32,7 +32,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.rap.PeopleUiConstants;
+import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.rap.providers.EntitySingleColumnLabelProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -205,7 +205,7 @@ public class CreateEntityRefWithPositionDialog extends TrayDialog {
 		// Text Area for the filter
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
 				| SWT.ICON_CANCEL);
-		filterTxt.setMessage(PeopleUiConstants.FILTER_HELP_MSG);
+		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 				| GridData.HORIZONTAL_ALIGN_FILL));
 		filterTxt.addModifyListener(new ModifyListener() {
@@ -242,8 +242,8 @@ public class CreateEntityRefWithPositionDialog extends TrayDialog {
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
 		// Enable markups
-		table.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(PeopleUiConstants.CUSTOM_ITEM_HEIGHT, Integer.valueOf(20));
+		table.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
+		table.setData(PeopleRapConstants.CUSTOM_ITEM_HEIGHT, Integer.valueOf(20));
 
 		// Prtoviders and listeners
 		v.setContentProvider(new BasicNodeListContentProvider());

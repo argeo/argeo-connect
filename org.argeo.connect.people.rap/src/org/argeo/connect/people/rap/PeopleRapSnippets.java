@@ -1,4 +1,4 @@
-package org.argeo.connect.people.rap.utils;
+package org.argeo.connect.people.rap;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -13,7 +13,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleUiConstants;
 import org.argeo.connect.people.rap.commands.DeleteEntity;
 import org.argeo.connect.people.rap.commands.EditEntityReference;
 import org.argeo.connect.people.rap.commands.EditEntityReferenceWithPosition;
@@ -25,7 +24,7 @@ import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
 
 /** Some helper methods to generate html snippets */
-public class PeopleHtmlUtils {
+public class PeopleRapSnippets {
 	private final static DateFormat df = new SimpleDateFormat(
 			"EEE, dd MMM yyyy 'at' HH:mm");
 
@@ -49,53 +48,53 @@ public class PeopleHtmlUtils {
 		}
 	}
 
-	/** creates a full monty name snippet for overview panels */
-	public static String getFullMontyName(Node node) {
-		String salutation = getHtml(node, PeopleNames.PEOPLE_SALUTATION);
-		String firstName = getHtml(node, PeopleNames.PEOPLE_FIRST_NAME);
-		String lastName = getHtml(node, PeopleNames.PEOPLE_LAST_NAME);
-		String title = getHtml(node, PeopleNames.PEOPLE_HONORIFIC_TITLE);
-		String suffix = getHtml(node, PeopleNames.PEOPLE_NAME_SUFFIX);
-		String nickName = getHtml(node, PeopleNames.PEOPLE_NICKNAME);
-		String maidenName = getHtml(node, PeopleNames.PEOPLE_MAIDEN_NAME);
-		String middleName = getHtml(node, PeopleNames.PEOPLE_MIDDLE_NAME);
-
-		if (CommonsJcrUtils.checkNotEmptyString(salutation)
-				|| CommonsJcrUtils.checkNotEmptyString(title)
-				|| CommonsJcrUtils.checkNotEmptyString(suffix)
-				|| CommonsJcrUtils.checkNotEmptyString(nickName)
-				|| CommonsJcrUtils.checkNotEmptyString(maidenName)
-				|| CommonsJcrUtils.checkNotEmptyString(middleName)) {
-			StringBuilder builder = new StringBuilder();
-			// builder.append("<i>");
-			builder.append(salutation);
-			if (CommonsJcrUtils.checkNotEmptyString(title))
-				builder.append(" ").append(title);
-			builder.append(" ").append(firstName);
-			if (CommonsJcrUtils.checkNotEmptyString(middleName))
-				builder.append(" \"").append(middleName).append("\" ");
-			builder.append(" ").append(lastName);
-			builder.append(" ").append(suffix);
-
-			if (CommonsJcrUtils.checkNotEmptyString(maidenName)
-					|| CommonsJcrUtils.checkNotEmptyString(nickName)) {
-				builder.append(" <i>(");
-				if (CommonsJcrUtils.checkNotEmptyString(maidenName))
-					builder.append("Born: ").append(maidenName);
-
-				if (CommonsJcrUtils.checkNotEmptyString(maidenName)
-						&& CommonsJcrUtils.checkNotEmptyString(nickName))
-					builder.append(", ");
-				if (CommonsJcrUtils.checkNotEmptyString(nickName))
-					builder.append("aka: ").append(nickName);
-				builder.append(")</i>");
-			}
-			// builder.append("</i>");
-			return builder.toString();
-		} // useless otherwise
-		else
-			return "";
-	}
+	// /** creates a full monty name snippet for overview panels */
+	// public static String getFullMontyName(Node node) {
+	// String salutation = getHtml(node, PeopleNames.PEOPLE_SALUTATION);
+	// String firstName = getHtml(node, PeopleNames.PEOPLE_FIRST_NAME);
+	// String lastName = getHtml(node, PeopleNames.PEOPLE_LAST_NAME);
+	// String title = getHtml(node, PeopleNames.PEOPLE_HONORIFIC_TITLE);
+	// String suffix = getHtml(node, PeopleNames.PEOPLE_NAME_SUFFIX);
+	// String nickName = getHtml(node, PeopleNames.PEOPLE_NICKNAME);
+	// String maidenName = getHtml(node, PeopleNames.PEOPLE_MAIDEN_NAME);
+	// String middleName = getHtml(node, PeopleNames.PEOPLE_MIDDLE_NAME);
+	//
+	// if (CommonsJcrUtils.checkNotEmptyString(salutation)
+	// || CommonsJcrUtils.checkNotEmptyString(title)
+	// || CommonsJcrUtils.checkNotEmptyString(suffix)
+	// || CommonsJcrUtils.checkNotEmptyString(nickName)
+	// || CommonsJcrUtils.checkNotEmptyString(maidenName)
+	// || CommonsJcrUtils.checkNotEmptyString(middleName)) {
+	// StringBuilder builder = new StringBuilder();
+	// // builder.append("<i>");
+	// builder.append(salutation);
+	// if (CommonsJcrUtils.checkNotEmptyString(title))
+	// builder.append(" ").append(title);
+	// builder.append(" ").append(firstName);
+	// if (CommonsJcrUtils.checkNotEmptyString(middleName))
+	// builder.append(" \"").append(middleName).append("\" ");
+	// builder.append(" ").append(lastName);
+	// builder.append(" ").append(suffix);
+	//
+	// if (CommonsJcrUtils.checkNotEmptyString(maidenName)
+	// || CommonsJcrUtils.checkNotEmptyString(nickName)) {
+	// builder.append(" <i>(");
+	// if (CommonsJcrUtils.checkNotEmptyString(maidenName))
+	// builder.append("Born: ").append(maidenName);
+	//
+	// if (CommonsJcrUtils.checkNotEmptyString(maidenName)
+	// && CommonsJcrUtils.checkNotEmptyString(nickName))
+	// builder.append(", ");
+	// if (CommonsJcrUtils.checkNotEmptyString(nickName))
+	// builder.append("aka: ").append(nickName);
+	// builder.append(")</i>");
+	// }
+	// // builder.append("</i>");
+	// return builder.toString();
+	// } // useless otherwise
+	// else
+	// return "";
+	// }
 
 	/** creates the display ReadOnly HTML snippet for various contacts */
 	public static String getContactDisplaySnippet(PeopleService peopleService,
@@ -113,7 +112,7 @@ public class PeopleHtmlUtils {
 						|| node.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA)) {
 					builder.append(getUrlLink(value));
 				} else if (node.isNodeType(PeopleTypes.PEOPLE_EMAIL)) {
-					builder.append("<a " + PeopleUiConstants.PEOPLE_STYLE_LINK);
+					builder.append("<a " + PeopleRapConstants.PEOPLE_STYLE_LINK);
 					builder.append(" href=\"mailto:" + value + "\">" + value
 							+ " </a>");
 				} else if (node.isNodeType(PeopleTypes.PEOPLE_IMPP)
@@ -148,7 +147,7 @@ public class PeopleHtmlUtils {
 		value = cleanHtmlString(value);
 		if (!(value.startsWith("http://") || value.startsWith("https://")))
 			value = "http://" + value;
-		builder.append("<a ").append(PeopleUiConstants.PEOPLE_STYLE_LINK)
+		builder.append("<a ").append(PeopleRapConstants.PEOPLE_STYLE_LINK)
 				.append(" href=\"");
 		builder.append(value + "\" target=\"_blank\" >" + label + "</a>");
 		return builder.toString();
@@ -162,7 +161,7 @@ public class PeopleHtmlUtils {
 		StringBuilder builder = new StringBuilder();
 
 		String value = cleanHtmlString(address);
-		builder.append("<a ").append(PeopleUiConstants.PEOPLE_STYLE_LINK)
+		builder.append("<a ").append(PeopleRapConstants.PEOPLE_STYLE_LINK)
 				.append(" href=\"http://");
 		builder.append(value + "\" target=\"_blank\" >" + value + "</a>");
 		return builder.toString();
@@ -317,7 +316,7 @@ public class PeopleHtmlUtils {
 					tags.append("#").append(cleanHtmlString(value.getString()))
 							.append(" ");
 			}
-			return PeopleHtmlUtils.cleanHtmlString(tags.toString());
+			return PeopleRapSnippets.cleanHtmlString(tags.toString());
 		} catch (RepositoryException e) {
 			throw new PeopleException("Error while getting tags for entity", e);
 		}
@@ -353,7 +352,7 @@ public class PeopleHtmlUtils {
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_EMAIL);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
-			builder.append("<a " + PeopleUiConstants.PEOPLE_STYLE_LINK
+			builder.append("<a " + PeopleRapConstants.PEOPLE_STYLE_LINK
 					+ " href=\"mailto:");
 			builder.append(tmpStr).append("\">");
 			builder.append(tmpStr);
@@ -362,7 +361,7 @@ public class PeopleHtmlUtils {
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_URL);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
-			builder.append("<a " + PeopleUiConstants.PEOPLE_STYLE_LINK
+			builder.append("<a " + PeopleRapConstants.PEOPLE_STYLE_LINK
 					+ " href=\"http://");
 			builder.append(cleanHtmlString(tmpStr)).append("\"")
 					.append(" target=\"_blank\" ").append(">");
@@ -410,7 +409,7 @@ public class PeopleHtmlUtils {
 					+ RemoveEntityReference.PARAM_TOREMOVE_JCR_ID + "="
 					+ toRemoveJcrId;
 
-			return "<a " + PeopleUiConstants.PEOPLE_STYLE_LINK + " href=\""
+			return "<a " + PeopleRapConstants.PEOPLE_STYLE_LINK + " href=\""
 					+ uri + "\" target=\"_rwt\">Delete</a>";
 		} catch (RepositoryException re) {
 			throw new PeopleException(
@@ -433,7 +432,7 @@ public class PeopleHtmlUtils {
 					+ "/" + DeleteEntity.PARAM_REMOVE_ALSO_PARENT + "="
 					+ removeParent;
 
-			return "<a " + PeopleUiConstants.PEOPLE_STYLE_LINK + " href=\""
+			return "<a " + PeopleRapConstants.PEOPLE_STYLE_LINK + " href=\""
 					+ uri + "\" target=\"_rwt\">Delete</a>";
 		} catch (RepositoryException re) {
 			throw new PeopleException(
@@ -458,7 +457,7 @@ public class PeopleHtmlUtils {
 					+ EditEntityReference.PARAM_TOEDIT_JCR_ID + "="
 					+ toEditJcrId;
 
-			return "<a" + PeopleUiConstants.PEOPLE_STYLE_LINK + "href=\"" + uri
+			return "<a" + PeopleRapConstants.PEOPLE_STYLE_LINK + "href=\"" + uri
 					+ "\" target=\"_rwt\">Edit</a>";
 		} catch (RepositoryException re) {
 			throw new PeopleException(
@@ -478,7 +477,7 @@ public class PeopleHtmlUtils {
 			String uri = EditJob.ID + "/" + EditJob.PUBLIC_RELEVANT_NODE_JCR_ID
 					+ "=" + toEditJcrId + "/" + EditJob.PARAM_IS_BACKWARD + "="
 					+ isBackward;
-			return "<a " + PeopleUiConstants.PEOPLE_STYLE_LINK + " href=\""
+			return "<a " + PeopleRapConstants.PEOPLE_STYLE_LINK + " href=\""
 					+ uri + "\" target=\"_rwt\">Edit</a>";
 		} catch (RepositoryException re) {
 			throw new PeopleException(
@@ -503,7 +502,7 @@ public class PeopleHtmlUtils {
 					+ isBackward + "/"
 					+ EditEntityReferenceWithPosition.PARAM_TO_SEARCH_NODE_TYPE
 					+ "=" + toSearchNodeType;
-			return "<a " + PeopleUiConstants.PEOPLE_STYLE_LINK + " href=\""
+			return "<a " + PeopleRapConstants.PEOPLE_STYLE_LINK + " href=\""
 					+ uri + "\" target=\"_rwt\">Edit</a>";
 		} catch (RepositoryException re) {
 			throw new PeopleException(
@@ -521,7 +520,7 @@ public class PeopleHtmlUtils {
 			String toEditJcrId = relevantNode.getIdentifier();
 			String uri = commandId + "/" + OpenEntityEditor.PARAM_JCR_ID + "="
 					+ toEditJcrId;
-			return "<a " + PeopleUiConstants.PEOPLE_STYLE_LINK + " href=\""
+			return "<a " + PeopleRapConstants.PEOPLE_STYLE_LINK + " href=\""
 					+ uri + "\" target=\"_rwt\">" + value + "</a>";
 		} catch (RepositoryException re) {
 			throw new PeopleException(
@@ -581,7 +580,7 @@ public class PeopleHtmlUtils {
 			tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 					PeopleTypes.PEOPLE_EMAIL);
 			if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
-				builder.append("<a " + PeopleUiConstants.PEOPLE_STYLE_LINK
+				builder.append("<a " + PeopleRapConstants.PEOPLE_STYLE_LINK
 						+ " href=\"mailto:");
 				builder.append(tmpStr).append("\">");
 				builder.append(tmpStr).append("</a><br/>");

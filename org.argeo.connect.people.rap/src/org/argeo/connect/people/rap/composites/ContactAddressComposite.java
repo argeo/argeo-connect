@@ -11,11 +11,11 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleUiConstants;
+import org.argeo.connect.people.rap.PeopleRapSnippets;
+import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleUiService;
 import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
-import org.argeo.connect.people.rap.utils.PeopleHtmlUtils;
 import org.argeo.connect.people.rap.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
@@ -97,7 +97,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
 				SWT.WRAP);
-		readOnlyInfoLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
+		readOnlyInfoLbl.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
 		String addressHtml = "";
 		String refUid = CommonsJcrUtils.get(contactNode,
 				PeopleNames.PEOPLE_REF_UID);
@@ -106,10 +106,10 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 				&& CommonsJcrUtils.checkNotEmptyString(refUid)) {
 			Node referencedEntity = peopleService.getEntityByUid(
 					CommonsJcrUtils.getSession(contactNode), refUid);
-			addressHtml = PeopleHtmlUtils.getWorkAddressDisplaySnippet(
+			addressHtml = PeopleRapSnippets.getWorkAddressDisplaySnippet(
 					peopleService, contactNode, referencedEntity);
 		} else
-			addressHtml = PeopleHtmlUtils.getContactDisplaySnippet(
+			addressHtml = PeopleRapSnippets.getContactDisplaySnippet(
 					peopleService, contactNode);
 		readOnlyInfoLbl.setText(addressHtml);
 	}

@@ -11,7 +11,7 @@ import javax.jcr.Session;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.rap.PeopleUiPlugin;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleUiService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
@@ -32,8 +32,8 @@ import org.eclipse.ui.handlers.HandlerUtil;
 public class CreateEntity extends AbstractHandler {
 	// private final static Log log = LogFactory.getLog(CreateEntity.class);
 
-	public final static String ID = PeopleUiPlugin.PLUGIN_ID + ".createEntity";
-	public final static ImageDescriptor DEFAULT_IMG_DESCRIPTOR = PeopleUiPlugin
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".createEntity";
+	public final static ImageDescriptor DEFAULT_IMG_DESCRIPTOR = PeopleRapPlugin
 			.getImageDescriptor("icons/add.png");
 	public final static String DEFAULT_LABEL = "Create";
 	public final static String PARAM_TARGET_NODE_TYPE = "param.targetNodeType";
