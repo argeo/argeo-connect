@@ -19,14 +19,13 @@
 			<version>${version.rap.addons}</version>
 		</dependency>
 
-		<!-- CONNECT -->
+		<!-- People -->
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.people.services</artifactId>
 			<version>2.1.10-SNAPSHOT</version>
 		</dependency>
 
-		<!-- People model -->
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.people.core</artifactId>
