@@ -83,7 +83,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleUiService;
+	private PeopleWorkbenchService peopleWorkbenchService;
 
 	// Business objects
 	private Node mailingList;
@@ -131,8 +131,8 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		colDefs = new ArrayList<PeopleColumnDefinition>();
 		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
 				Property.JCR_TITLE, PropertyType.STRING, "Display Name",
-				new TitleWithIconLP(peopleUiService, PeopleTypes.PEOPLE_ENTITY,
-						Property.JCR_TITLE), 300));
+				new TitleWithIconLP(peopleWorkbenchService,
+						PeopleTypes.PEOPLE_ENTITY, Property.JCR_TITLE), 300));
 		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
 				PEOPLE_CACHE_PMAIL, PropertyType.STRING, "Primary mail",
 				new JcrRowHtmlLabelProvider(PeopleTypes.PEOPLE_ENTITY,
@@ -196,7 +196,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 
 					Wizard wizard = new EditTagWizard(
 							peopleService,
-							peopleUiService,
+							peopleWorkbenchService,
 							mailingList,
 							PeopleTypes.PEOPLE_MAILING_LIST,
 							peopleService
@@ -358,7 +358,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 
 		// Double click
 		PeopleJcrViewerDClickListener ndcl = new PeopleJcrViewerDClickListener(
-				PeopleTypes.PEOPLE_ENTITY, peopleUiService);
+				PeopleTypes.PEOPLE_ENTITY, peopleWorkbenchService);
 		membersViewer.addDoubleClickListener(ndcl);
 	}
 
@@ -425,7 +425,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		TableViewer tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-				PeopleTypes.PEOPLE_ENTITY, peopleUiService));
+				PeopleTypes.PEOPLE_ENTITY, peopleWorkbenchService));
 		return tableViewer;
 	}
 
@@ -583,8 +583,9 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
-		this.peopleUiService = peopleUiService;
+	public void setPeopleWorkbenchService(
+			PeopleWorkbenchService peopleWorkbenchService) {
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
 }

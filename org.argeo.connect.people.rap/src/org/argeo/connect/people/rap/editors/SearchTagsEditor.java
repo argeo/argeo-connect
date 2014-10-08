@@ -73,7 +73,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 	/* DEPENDENCY INJECTION */
 	private Session session;
-	private PeopleWorkbenchService peopleUiService;
+	private PeopleWorkbenchService peopleWorkbenchService;
 	private PeopleService peopleService;
 
 	// Context
@@ -186,7 +186,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-				entityType, peopleUiService));
+				entityType, peopleWorkbenchService));
 		tableViewer.getTable().addSelectionListener(new HtmlRwtAdapter());
 	}
 
@@ -207,7 +207,8 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 							.getValueFactory().createValue("*" + token + "*"));
 					Constraint currC = factory.fullTextSearch(
 							source.getSelectorName(), null, so);
-					defaultC = PeopleRapUtils.localAnd(factory, defaultC, currC);
+					defaultC = PeopleRapUtils
+							.localAnd(factory, defaultC, currC);
 				}
 			}
 
@@ -301,9 +302,9 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 					if ("edit".equals(token[0])) {
 						Wizard wizard = new EditTagWizard(peopleService,
-								peopleUiService, node, entityType, basePath,
-								PeopleTypes.PEOPLE_ENTITY, propertyName,
-								peopleService.getBasePath(null));
+								peopleWorkbenchService, node, entityType,
+								basePath, PeopleTypes.PEOPLE_ENTITY,
+								propertyName, peopleService.getBasePath(null));
 						WizardDialog dialog = new WizardDialog(
 								event.display.getActiveShell(), wizard);
 						int result = dialog.open();
@@ -349,8 +350,9 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		session = CommonsJcrUtils.login(repository);
 	}
 
-	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
-		this.peopleUiService = peopleUiService;
+	public void setPeopleWorkbenchService(
+			PeopleWorkbenchService peopleWorkbenchService) {
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
 	public void setPeopleService(PeopleService peopleService) {

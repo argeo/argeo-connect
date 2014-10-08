@@ -79,7 +79,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 	private Repository repository;
 	private Session session;
 	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleUiService;
+	private PeopleWorkbenchService peopleWorkbenchService;
 
 	// this page widgets.
 	private List<PeopleColumnDefinition> colDefs;
@@ -117,7 +117,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		colDefs = new ArrayList<PeopleColumnDefinition>();
 		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
 				Property.JCR_TITLE, PropertyType.STRING, "Display Name",
-				new TitleWithIconLP(peopleUiService, PeopleTypes.PEOPLE_ENTITY,
+				new TitleWithIconLP(peopleWorkbenchService, PeopleTypes.PEOPLE_ENTITY,
 						Property.JCR_TITLE), 300));
 		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
 				PEOPLE_TAGS, PropertyType.STRING, "Tags",
@@ -179,7 +179,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 					Wizard wizard = new EditTagWizard(
 							peopleService,
-							peopleUiService,
+							peopleWorkbenchService,
 							getNode(),
 							NodeType.NT_UNSTRUCTURED,
 							peopleService
@@ -216,7 +216,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 		// Double click
 		PeopleJcrViewerDClickListener ndcl = new PeopleJcrViewerDClickListener(
-				PeopleTypes.PEOPLE_ENTITY, peopleUiService);
+				PeopleTypes.PEOPLE_ENTITY, peopleWorkbenchService);
 		membersViewer.addDoubleClickListener(ndcl);
 	}
 
@@ -288,7 +288,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		TableViewer tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-				PeopleTypes.PEOPLE_ENTITY, peopleUiService));
+				PeopleTypes.PEOPLE_ENTITY, peopleWorkbenchService));
 		return tableViewer;
 	}
 
@@ -374,8 +374,8 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
-		this.peopleUiService = peopleUiService;
+	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
 	public void setRepository(Repository repository) {
