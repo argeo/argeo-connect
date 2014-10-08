@@ -6,11 +6,12 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
+import org.argeo.connect.people.web.PeopleWebSnippets;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
@@ -62,14 +63,14 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 		builder.append(peopleService.getDisplayName(orga));
 		builder.append("</b></big> ");
 
-		String local = PeopleUiSnippets.getLocalisationInfo(peopleService,
-				orga);
+		String local = PeopleUiSnippets
+				.getLocalisationInfo(peopleService, orga);
 		if (CommonsJcrUtils.checkNotEmptyString(local))
 			builder.append(local);
 
 		builder.append("<br/>");
 
-		String tmpStr = PeopleUiSnippets.getPrimaryContactsSnippet(orga);
+		String tmpStr = PeopleUiSnippets.getPrimaryContacts(orga);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
 			builder.append(tmpStr);
 		}
@@ -90,28 +91,30 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 		if (!isSmallList)
 			builder.append("</big>");
 
-		String local = PeopleUiSnippets.getLocalisationInfo(peopleService,
-				orga);
+		String local = PeopleUiSnippets
+				.getLocalisationInfo(peopleService, orga);
 		if (CommonsJcrUtils.checkNotEmptyString(local))
 			builder.append(local);
 
 		if (isSmallList)
-			builder.append(PeopleUiConstants.NB_SPACE + PeopleUiConstants.NB_SPACE);
+			builder.append(PeopleUiConstants.NB_SPACE
+					+ PeopleUiConstants.NB_SPACE);
 		else
 			builder.append("<br/>");
 
-		String tmpStr = PeopleUiSnippets.getPrimaryContactsSnippet(orga);
+		String tmpStr = PeopleUiSnippets.getPrimaryContacts(orga);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
 			builder.append(tmpStr);
 		}
 
-		String tags = PeopleUiSnippets.getTagLikeValues(peopleService, orga,
+		String tags = PeopleWebSnippets.getTagLikeValues(peopleService, orga,
 				PeopleNames.PEOPLE_TAGS, "#");
-		String mailingLists = PeopleUiSnippets.getTagLikeValues(peopleService, orga,
-				PeopleNames.PEOPLE_MAILING_LISTS, "@");
+		String mailingLists = PeopleWebSnippets.getTagLikeValues(peopleService,
+				orga, PeopleNames.PEOPLE_MAILING_LISTS, "@");
 
 		if (isSmallList) {
-			builder.append(PeopleUiConstants.NB_SPACE + PeopleUiConstants.NB_SPACE)
+			builder.append(
+					PeopleUiConstants.NB_SPACE + PeopleUiConstants.NB_SPACE)
 					.append(tags.trim());
 			if (CommonsJcrUtils.checkNotEmptyString(tags)
 					&& CommonsJcrUtils.checkNotEmptyString(mailingLists))

@@ -89,11 +89,11 @@ public class PeopleUiSnippets {
 						PeopleNames.PEOPLE_CONTACT_VALUE);
 				if (node.isNodeType(PeopleTypes.PEOPLE_URL)
 						|| node.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA))
-					builder.append(getUrlLinkSnippet(value));
+					builder.append(getUrlLink(value));
 				else if (node.isNodeType(PeopleTypes.PEOPLE_EMAIL))
-					builder.append(getMailLinkSnippet(value));
+					builder.append(getMailLink(value));
 				else if (node.isNodeType(PeopleTypes.PEOPLE_PHONE))
-					builder.append(getPhoneLinkSnippet(value));
+					builder.append(getPhoneLink(value));
 				else
 					// if (node.isNodeType(PeopleTypes.PEOPLE_IMPP))
 					builder.append(value);
@@ -108,8 +108,8 @@ public class PeopleUiSnippets {
 	}
 
 	/** creates the display ReadOnly HTML snippet for a work address */
-	public static String getWorkAddressDisplaySnippet(
-			PeopleService peopleService, Node contactNode, Node referencedEntity) {
+	public static String getWorkAddress(PeopleService peopleService,
+			Node contactNode, Node referencedEntity) {
 		StringBuilder builder = new StringBuilder();
 		// the referenced org
 		if (referencedEntity != null)
@@ -246,61 +246,27 @@ public class PeopleUiSnippets {
 			return "";
 	}
 
-	/** a snippet to display tags that are linked to the current entity */
-	public static String getTagLikeValues(PeopleService peopleService,
-			Node entity, String propertyName, String prefix) {
-		StringBuilder builder = new StringBuilder();
-
-		TagService tagService = peopleService.getTagService();
-		try {
-			Session session = entity.getSession();
-			String tagParentPath = null;
-			// TODO fix this
-			if (PeopleNames.PEOPLE_MAILING_LISTS.equals(propertyName))
-				tagParentPath = peopleService
-						.getResourceBasePath(PeopleTypes.PEOPLE_MAILING_LIST);
-			else
-				tagParentPath = peopleService
-						.getResourceBasePath(PeopleTypes.PEOPLE_TAG);
-			if (entity.hasProperty(propertyName)) {
-				for (Value value : entity.getProperty((propertyName))
-						.getValues()) {
-					String valueStr = value.getString();
-					Node tag = tagService.getRegisteredTag(session,
-							tagParentPath, valueStr);
-					builder.append(prefix);
-					builder.append("<a href=\"#" + tag.getPath() + "\">")
-							.append(valueStr).append("</a> ");
-				}
-			}
-		} catch (RepositoryException e) {
-			throw new PeopleException("Error while tag like property "
-					+ propertyName + " values for node " + entity, e);
-		}
-		return PeopleUiUtils.replaceAmpersand(builder.toString().trim());
-	}
-
 	/** Returns primary contacts (phone, mail, website) as links if they exist */
-	public static String getPrimaryContactsSnippet(Node entity) {
+	public static String getPrimaryContacts(Node entity) {
 		StringBuilder builder = new StringBuilder();
 
 		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_PHONE);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
-			builder.append(getPhoneLinkSnippet(tmpStr)).append(
+			builder.append(getPhoneLink(tmpStr)).append(
 					PeopleUiConstants.NB_DOUBLE_SPACE);
 		}
 
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_EMAIL);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
-			builder.append(getMailLinkSnippet(tmpStr)).append(
+			builder.append(getMailLink(tmpStr)).append(
 					PeopleUiConstants.NB_DOUBLE_SPACE);
 
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_URL);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
-			builder.append(getUrlLinkSnippet(tmpStr)).append(
+			builder.append(getUrlLink(tmpStr)).append(
 					PeopleUiConstants.NB_DOUBLE_SPACE);
 
 		String result = builder.toString();
@@ -314,8 +280,8 @@ public class PeopleUiSnippets {
 	 * Creates the read-only HTML snippet to display in a label with styling
 	 * enabled in order to provide a click-able phone number
 	 */
-	public static String getPhoneLinkSnippet(String value) {
-		return getPhoneLinkSnippet(value, value);
+	public static String getPhoneLink(String value) {
+		return getPhoneLink(value, value);
 	}
 
 	/**
@@ -327,7 +293,7 @@ public class PeopleUiSnippets {
 	 *            a potentially distinct label
 	 * @return
 	 */
-	public static String getPhoneLinkSnippet(String value, String label) {
+	public static String getPhoneLink(String value, String label) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<a href=\"tel:");
 		builder.append(value).append("\" target=\"_blank\" >").append(label)
@@ -339,8 +305,8 @@ public class PeopleUiSnippets {
 	 * Creates the read-only HTML snippet to display in a label with styling
 	 * enabled in order to provide a click-able mail
 	 */
-	public static String getMailLinkSnippet(String value) {
-		return getMailLinkSnippet(value, value);
+	public static String getMailLink(String value) {
+		return getMailLink(value, value);
 	}
 
 	/**
@@ -352,7 +318,7 @@ public class PeopleUiSnippets {
 	 *            a potentially distinct label
 	 * @return
 	 */
-	public static String getMailLinkSnippet(String value, String label) {
+	public static String getMailLink(String value, String label) {
 		StringBuilder builder = new StringBuilder();
 		value = PeopleUiUtils.replaceAmpersand(value);
 		builder.append("<a href=\"mailto:");
@@ -364,15 +330,15 @@ public class PeopleUiSnippets {
 	 * Creates the read-only HTML snippet to display in a label with styling
 	 * enabled in order to provide a click-able link
 	 */
-	public static String getUrlLinkSnippet(String value) {
-		return getUrlLinkSnippet(value, value);
+	public static String getUrlLink(String value) {
+		return getUrlLink(value, value);
 	}
 
 	/**
 	 * Creates the read-only HTML snippet to display in a label with styling
 	 * enabled in order to provide a click-able link
 	 */
-	public static String getUrlLinkSnippet(String value, String label) {
+	public static String getUrlLink(String value, String label) {
 		StringBuilder builder = new StringBuilder();
 
 		value = PeopleUiUtils.replaceAmpersand(value);
@@ -390,7 +356,7 @@ public class PeopleUiSnippets {
 	 *            an optional label to be displayed first
 	 * @return
 	 */
-	public static String getEntityContactSnippet(PeopleService peopleService,
+	public static String getEntityContact(PeopleService peopleService,
 			Node entity, String label) {
 		try {
 			// local cache
@@ -410,7 +376,6 @@ public class PeopleUiSnippets {
 				org = entity;
 
 			StringBuilder builder = new StringBuilder();
-			// builder.append("<span>");
 
 			builder.append("<b>");
 			if (CommonsJcrUtils.checkNotEmptyString(label))
@@ -426,19 +391,14 @@ public class PeopleUiSnippets {
 			// phone
 			String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 					PeopleTypes.PEOPLE_PHONE);
-			if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
-				builder.append(tmpStr);
-				builder.append("<br/>");
-			}
+			if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+				builder.append(getPhoneLink(tmpStr)).append("<br/>");
 
 			// mail
 			tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 					PeopleTypes.PEOPLE_EMAIL);
-			if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
-				builder.append("<a  href=\"mailto:");
-				builder.append(tmpStr).append("\">");
-				builder.append(tmpStr).append("</a><br/>");
-			}
+			if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+				builder.append(getMailLink(tmpStr)).append("<br/>");
 
 			return PeopleUiUtils.replaceAmpersand(builder.toString());
 		} catch (RepositoryException re) {

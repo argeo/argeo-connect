@@ -8,12 +8,13 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
+import org.argeo.connect.people.web.PeopleWebSnippets;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
@@ -68,8 +69,7 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 		String fmn = PeopleUiSnippets.getFullMontyName(person);
 		String localisationStr = PeopleUiSnippets.getLocalisationInfo(
 				peopleService, person);
-		String primContactStr = PeopleUiSnippets
-				.getPrimaryContactsSnippet(person);
+		String primContactStr = PeopleUiSnippets.getPrimaryContacts(person);
 		Boolean politeFormFlag = CommonsJcrUtils.getBooleanValue(person,
 				PEOPLE_USE_POLITE_FORM);
 		List<String> spokenLanguages = CommonsJcrUtils.getMultiAsList(person,
@@ -136,8 +136,7 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 			builder.append("<br/>");
 
 		// Contacts
-		String primContactStr = PeopleUiSnippets
-				.getPrimaryContactsSnippet(person);
+		String primContactStr = PeopleUiSnippets.getPrimaryContacts(person);
 		if (CommonsJcrUtils.checkNotEmptyString(primContactStr)) {
 			builder.append(primContactStr.trim());
 			if (isSmallList)
@@ -147,9 +146,9 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 		}
 
 		// Tags
-		String tags = PeopleUiSnippets.getTagLikeValues(peopleService, person,
+		String tags = PeopleWebSnippets.getTagLikeValues(peopleService, person,
 				PeopleNames.PEOPLE_TAGS, "#");
-		String mailingLists = PeopleUiSnippets.getTagLikeValues(peopleService,
+		String mailingLists = PeopleWebSnippets.getTagLikeValues(peopleService,
 				person, PeopleNames.PEOPLE_MAILING_LISTS, "@");
 		if (isSmallList) {
 			builder.append(tags);
