@@ -48,7 +48,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	/* DEPENDENCY INJECTION */
 	private Session session;
-	private PeopleWorkbenchService peopleUiService;
+	private PeopleWorkbenchService peopleWorkbenchService;
 	private PeopleService peopleService;
 
 	// Business Objects
@@ -160,7 +160,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-				getEntityType(), peopleUiService));
+				getEntityType(), peopleWorkbenchService));
 	}
 
 	/** Refresh the table viewer based on the free text search field */
@@ -247,10 +247,10 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	}
 
 	protected PeopleWorkbenchService getPeopleUiService() {
-		return peopleUiService;
+		return peopleWorkbenchService;
 	}
-	
-	protected TableViewer getTableViewer(){
+
+	protected TableViewer getTableViewer() {
 		return tableViewer;
 	}
 
@@ -290,19 +290,6 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		return label;
 	}
 
-	/* DEPENDENCY INJECTION */
-	public void setRepository(Repository repository) {
-		session = CommonsJcrUtils.login(repository);
-	}
-
-	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
-		this.peopleUiService = peopleUiService;
-	}
-
-	public void setPeopleService(PeopleService peopleService) {
-		this.peopleService = peopleService;
-	}
-
 	// Compulsory unused methods
 	@Override
 	public void doSave(IProgressMonitor monitor) {
@@ -320,5 +307,19 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	@Override
 	public boolean isSaveAsAllowed() {
 		return false;
+	}
+
+	/* DEPENDENCY INJECTION */
+	public void setRepository(Repository repository) {
+		session = CommonsJcrUtils.login(repository);
+	}
+
+	public void setPeopleService(PeopleService peopleService) {
+		this.peopleService = peopleService;
+	}
+
+	public void setPeopleWorkbenchService(
+			PeopleWorkbenchService peopleWorkbenchService) {
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 }
