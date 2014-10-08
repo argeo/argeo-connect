@@ -13,7 +13,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.ActivitiesImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.dialogs.PickUpGroupDialog;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
@@ -147,7 +147,7 @@ public class NewSimpleTaskWizard extends Wizard {
 			parent.setLayout(new GridLayout(4, false));
 
 			// TITLE
-			PeopleUiUtils.createBoldLabel(parent, "Title");
+			PeopleRapUtils.createBoldLabel(parent, "Title");
 			titleTxt = new Text(parent, SWT.BORDER);
 			titleTxt.setMessage("A title for the new task");
 			GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -155,7 +155,7 @@ public class NewSimpleTaskWizard extends Wizard {
 			titleTxt.setLayoutData(gd);
 
 			// ASSIGNED TO
-			PeopleUiUtils.createBoldLabel(parent, "Assigned to");
+			PeopleRapUtils.createBoldLabel(parent, "Assigned to");
 			final Text assignedToTxt = new Text(parent, SWT.BORDER
 					| SWT.NO_FOCUS);
 			assignedToTxt.setMessage("Assign a group to manage this task");
@@ -201,14 +201,14 @@ public class NewSimpleTaskWizard extends Wizard {
 			});
 
 			// DUE DATE
-			PeopleUiUtils.createBoldLabel(parent, "Due date");
+			PeopleRapUtils.createBoldLabel(parent, "Due date");
 			dueDateDt = new DateTime(parent, SWT.RIGHT | SWT.DATE | SWT.MEDIUM
 					| SWT.DROP_DOWN);
 			// dueDateDt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false,
 			// false));
 
 			// WAKE UP DATE
-			PeopleUiUtils.createBoldLabel(parent, "Wake up date");
+			PeopleRapUtils.createBoldLabel(parent, "Wake up date");
 			wakeUpDateDt = new DateTime(parent, SWT.RIGHT | SWT.DATE
 					| SWT.MEDIUM | SWT.DROP_DOWN);
 

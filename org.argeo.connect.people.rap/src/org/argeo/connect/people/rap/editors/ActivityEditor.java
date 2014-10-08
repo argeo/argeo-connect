@@ -15,7 +15,7 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.dialogs.PickUpRelatedDialog;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
@@ -82,25 +82,25 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		parent.setLayout(layout);
 
 		// 1st line (NOTE: it defines the grid data layout of this part)
-		PeopleUiUtils.createBoldLabel(toolkit, parent, "Type");
+		PeopleRapUtils.createBoldLabel(toolkit, parent, "Type");
 		final Label typeLbl = toolkit.createLabel(parent, "");
 		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false);
 		typeLbl.setLayoutData(gd);
 
-		PeopleUiUtils.createBoldLabel(toolkit, parent, "Manager");
+		PeopleRapUtils.createBoldLabel(toolkit, parent, "Manager");
 		final Label managerLbl = toolkit.createLabel(parent, "");
 		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false);
 		managerLbl.setLayoutData(gd);
 
 		// ACTIVITY DATE
-		PeopleUiUtils.createBoldLabel(toolkit, parent, "Date");
+		PeopleRapUtils.createBoldLabel(toolkit, parent, "Date");
 		final DateTime activityDateDt = new DateTime(parent, SWT.RIGHT
 				| SWT.DATE | SWT.MEDIUM | SWT.DROP_DOWN);
 		activityDateDt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true,
 				false));
 
 		// 2nd line - RELATED ENTITIES
-		Label label = PeopleUiUtils.createBoldLabel(toolkit, parent,
+		Label label = PeopleRapUtils.createBoldLabel(toolkit, parent,
 				"Related entities");
 		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 
@@ -128,7 +128,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 					if (CommonsJcrUtils.checkNotEmptyString(manager))
 						managerLbl.setText(manager);
 
-					PeopleUiUtils.refreshFormDateTimeWidget(activityDateDt,
+					PeopleRapUtils.refreshFormDateTimeWidget(activityDateDt,
 							activity, PeopleNames.PEOPLE_ACTIVITY_DATE);
 
 					boolean isCO = CommonsJcrUtils
@@ -211,7 +211,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		headerPart.initialize(getManagedForm());
 		getManagedForm().addPart(headerPart);
 
-		PeopleUiUtils.addSelectionListener(activityDateDt, activity,
+		PeopleRapUtils.addSelectionListener(activityDateDt, activity,
 				PeopleNames.PEOPLE_ACTIVITY_DATE, headerPart);
 	}
 
@@ -273,7 +273,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		gd.horizontalSpan = 3;
 		titleGrp.setLayoutData(gd);
 		titleGrp.setText("Title");
-		titleGrp.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		titleGrp.setLayout(PeopleRapUtils.noSpaceGridLayout());
 		final Text titleTxt = toolkit.createText(titleGrp, "", SWT.BORDER
 				| SWT.MULTI | SWT.WRAP);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -285,7 +285,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		gd.horizontalSpan = 3;
 		descGrp.setLayoutData(gd);
 		descGrp.setText("Description");
-		descGrp.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		descGrp.setLayout(PeopleRapUtils.noSpaceGridLayout());
 		final Text descTxt = toolkit.createText(descGrp, "", SWT.BORDER
 				| SWT.MULTI | SWT.WRAP);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -294,16 +294,16 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		final AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
-				PeopleUiUtils.refreshFormTextWidget(titleTxt, activity,
+				PeopleRapUtils.refreshFormTextWidget(titleTxt, activity,
 						Property.JCR_TITLE);
-				PeopleUiUtils.refreshFormTextWidget(descTxt, activity,
+				PeopleRapUtils.refreshFormTextWidget(descTxt, activity,
 						Property.JCR_DESCRIPTION);
 			}
 		};
 
-		PeopleUiUtils.addModifyListener(titleTxt, activity, Property.JCR_TITLE,
+		PeopleRapUtils.addModifyListener(titleTxt, activity, Property.JCR_TITLE,
 				formPart);
-		PeopleUiUtils.addModifyListener(descTxt, activity,
+		PeopleRapUtils.addModifyListener(descTxt, activity,
 				Property.JCR_DESCRIPTION, formPart);
 
 		parent.layout();

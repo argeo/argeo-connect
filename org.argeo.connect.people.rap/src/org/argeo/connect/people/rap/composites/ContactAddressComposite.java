@@ -11,12 +11,12 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
@@ -56,8 +56,9 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 	public ContactAddressComposite(Composite parent, int style,
 			FormToolkit toolkit, AbstractFormPart formPart,
-			PeopleService peopleService, PeopleWorkbenchService peopleUiService,
-			Node contactNode, Node parentVersionableNode) {
+			PeopleService peopleService,
+			PeopleWorkbenchService peopleUiService, Node contactNode,
+			Node parentVersionableNode) {
 		super(parent, style);
 		this.peopleService = peopleService;
 		this.peopleUiService = peopleUiService;
@@ -73,7 +74,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 	private void populate() {
 		// Initialization
 		final Composite parent = this;
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
+		parent.setLayout(PeopleRapUtils.noSpaceGridLayout(2));
 
 		// BUTTONS
 		Composite buttCmp = new ContactButtonsComposite(parent, SWT.NONE,
@@ -97,7 +98,8 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
 				SWT.WRAP);
-		readOnlyInfoLbl.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
+		readOnlyInfoLbl
+				.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
 		String addressHtml = "";
 		String refUid = CommonsJcrUtils.get(contactNode,
 				PeopleNames.PEOPLE_REF_UID);
@@ -137,13 +139,13 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			// Label lbl = toolkit.createLabel(parent, "Address of:",
 			// SWT.BOTTOM);
 
-			final Text valueTxt = PeopleUiUtils.createRDText(toolkit, parent,
+			final Text valueTxt = PeopleRapUtils.createRDText(toolkit, parent,
 					"Chosen org.", "", 0);
 			valueTxt.setEnabled(false);
 
 			final Link chooseOrgLk = new Link(parent, SWT.LEFT);
 
-			final Text labelTxt = PeopleUiUtils.createRDText(toolkit, parent,
+			final Text labelTxt = PeopleRapUtils.createRDText(toolkit, parent,
 					"A custom label", "A custom label", 120);
 
 			toolkit.adapt(chooseOrgLk, false, false);
@@ -154,13 +156,13 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 							.getParent());
 
 			// REFRESH VALUES
-			PeopleUiUtils.refreshFormTextWidget(labelTxt, contactNode,
+			PeopleRapUtils.refreshFormTextWidget(labelTxt, contactNode,
 					PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
 			catCmb.setItems(peopleService.getContactService()
 					.getContactPossibleValues(contactNode,
 							PEOPLE_CONTACT_CATEGORY));
 			catCmb.select(0);
-			PeopleUiUtils.refreshFormComboValue(catCmb, contactNode,
+			PeopleRapUtils.refreshFormComboValue(catCmb, contactNode,
 					PeopleNames.PEOPLE_CONTACT_CATEGORY);
 
 			if (contactNode.hasProperty(PeopleNames.PEOPLE_REF_UID)) {
@@ -174,12 +176,12 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			}
 
 			// Listeners
-			PeopleUiUtils.addTxtModifyListener(formPart, valueTxt, contactNode,
+			PeopleRapUtils.addTxtModifyListener(formPart, valueTxt, contactNode,
 					PeopleNames.PEOPLE_CONTACT_VALUE, PropertyType.STRING);
-			PeopleUiUtils.addTxtModifyListener(formPart, labelTxt, contactNode,
+			PeopleRapUtils.addTxtModifyListener(formPart, labelTxt, contactNode,
 					PeopleNames.PEOPLE_CONTACT_LABEL, PropertyType.STRING);
 			if (catCmb != null)
-				PeopleUiUtils.addComboSelectionListener(formPart, catCmb,
+				PeopleRapUtils.addComboSelectionListener(formPart, catCmb,
 						contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY,
 						PropertyType.STRING);
 
@@ -221,17 +223,17 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 		if (isCheckedOut) {
 			// specific for addresses
-			final Text streetTxt = PeopleUiUtils.createRDText(toolkit, parent,
+			final Text streetTxt = PeopleRapUtils.createRDText(toolkit, parent,
 					"Street", "Street", 0);
-			final Text street2Txt = PeopleUiUtils.createRDText(toolkit, parent,
+			final Text street2Txt = PeopleRapUtils.createRDText(toolkit, parent,
 					"Street Complement", "", 0);
-			final Text zipTxt = PeopleUiUtils.createRDText(toolkit, parent,
+			final Text zipTxt = PeopleRapUtils.createRDText(toolkit, parent,
 					"Zip code", "", 0);
-			final Text cityTxt = PeopleUiUtils.createRDText(toolkit, parent,
+			final Text cityTxt = PeopleRapUtils.createRDText(toolkit, parent,
 					"City", "", 0);
-			final Text stateTxt = PeopleUiUtils.createRDText(toolkit, parent,
+			final Text stateTxt = PeopleRapUtils.createRDText(toolkit, parent,
 					"State", "", 0);
-			Text countryTxt = PeopleUiUtils.createRDText(toolkit, parent,
+			Text countryTxt = PeopleRapUtils.createRDText(toolkit, parent,
 					"Country", "", 110);
 
 			// The country drop down
@@ -239,23 +241,24 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					.getResourceBasePath(PeopleConstants.RESOURCE_COUNTRY);
 			Session session = CommonsJcrUtils.getSession(contactNode);
 			final SimpleResourceDropDown countryDD = new SimpleResourceDropDown(
-					peopleUiService, session, countryBP, countryTxt);
+					peopleService.getLabelService(), session, countryBP,
+					countryTxt);
 
-			final Text geoPointTxt = PeopleUiUtils.createRDText(toolkit,
+			final Text geoPointTxt = PeopleRapUtils.createRDText(toolkit,
 					parent, "Geopoint", "", 0);
 
 			// Refresh
-			PeopleUiUtils.refreshFormTextWidget(streetTxt, contactNode,
+			PeopleRapUtils.refreshFormTextWidget(streetTxt, contactNode,
 					PeopleNames.PEOPLE_STREET, "Street");
-			PeopleUiUtils.refreshFormTextWidget(street2Txt, contactNode,
+			PeopleRapUtils.refreshFormTextWidget(street2Txt, contactNode,
 					PeopleNames.PEOPLE_STREET_COMPLEMENT, "Street complement");
-			PeopleUiUtils.refreshFormTextWidget(zipTxt, contactNode,
+			PeopleRapUtils.refreshFormTextWidget(zipTxt, contactNode,
 					PeopleNames.PEOPLE_ZIP_CODE, "Zip code");
-			PeopleUiUtils.refreshFormTextWidget(cityTxt, contactNode,
+			PeopleRapUtils.refreshFormTextWidget(cityTxt, contactNode,
 					PeopleNames.PEOPLE_CITY, "City");
-			PeopleUiUtils.refreshFormTextWidget(stateTxt, contactNode,
+			PeopleRapUtils.refreshFormTextWidget(stateTxt, contactNode,
 					PeopleNames.PEOPLE_STATE, "State");
-			PeopleUiUtils.refreshFormTextWidget(geoPointTxt, contactNode,
+			PeopleRapUtils.refreshFormTextWidget(geoPointTxt, contactNode,
 					PeopleNames.PEOPLE_GEOPOINT, "Geo point");
 
 			// add listeners
@@ -269,7 +272,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					PeopleNames.PEOPLE_CITY, PropertyType.STRING);
 			addAddressTxtModifyListener(formPart, stateTxt, contactNode,
 					PeopleNames.PEOPLE_STATE, PropertyType.STRING);
-			PeopleUiUtils.addTxtModifyListener(formPart, geoPointTxt,
+			PeopleRapUtils.addTxtModifyListener(formPart, geoPointTxt,
 					contactNode, PeopleNames.PEOPLE_GEOPOINT,
 					PropertyType.STRING);
 

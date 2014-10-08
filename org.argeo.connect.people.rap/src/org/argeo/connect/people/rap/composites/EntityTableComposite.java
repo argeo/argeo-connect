@@ -20,7 +20,7 @@ import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
@@ -162,7 +162,7 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 		// initialization
 		Composite parent = this;
 		// Main Layout
-		GridLayout layout = PeopleUiUtils.noSpaceGridLayout();
+		GridLayout layout = PeopleRapUtils.noSpaceGridLayout();
 		layout.verticalSpacing = 5;
 		this.setLayout(layout);
 		if (hasFilter)

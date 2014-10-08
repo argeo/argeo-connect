@@ -5,7 +5,7 @@ import java.util.List;
 import javax.jcr.query.Row;
 
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.ArgeoNames;
@@ -45,7 +45,7 @@ public class PeopleVirtualTableViewer extends Composite implements ArgeoNames {
 		// initialization
 		Composite parent = this;
 		// Main Layout
-		GridLayout layout = PeopleUiUtils.noSpaceGridLayout();
+		GridLayout layout = PeopleRapUtils.noSpaceGridLayout();
 		this.setLayout(layout);
 		createTableViewer(parent);
 		EclipseUiSpecificUtils.enableToolTipSupport(viewer);

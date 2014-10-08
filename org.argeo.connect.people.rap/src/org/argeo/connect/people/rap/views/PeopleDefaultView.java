@@ -30,7 +30,7 @@ import org.argeo.connect.people.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.rap.providers.EntitySingleColumnLabelProvider;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
@@ -81,7 +81,7 @@ public class PeopleDefaultView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
 
 		// Header
 		Composite cmp = new Composite(parent, SWT.NO_FOCUS);
@@ -106,7 +106,7 @@ public class PeopleDefaultView extends ViewPart {
 
 		// The BackGround
 		Composite logoCmp = new Composite(parent, SWT.NO_FOCUS);
-		FormData fdBg = PeopleUiUtils.createformData(0, 20, 100, 75);
+		FormData fdBg = PeopleRapUtils.createformData(0, 20, 100, 75);
 		logoCmp.setLayoutData(fdBg);
 		logoCmp.setData(PeopleRapConstants.CUSTOM_VARIANT,
 				"people-logoComposite");
@@ -124,9 +124,9 @@ public class PeopleDefaultView extends ViewPart {
 
 		// The links
 		Composite linksCmp = new Composite(parent, SWT.NO_FOCUS);
-		linksCmp.setLayoutData(PeopleUiUtils.createformData(75, 25, 98, 73));
+		linksCmp.setLayoutData(PeopleRapUtils.createformData(75, 25, 98, 73));
 		linksCmp.setData(PeopleRapConstants.CUSTOM_VARIANT, "people-logoTable");
-		linksCmp.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		linksCmp.setLayout(PeopleRapUtils.noSpaceGridLayout());
 
 		addLink(linksCmp, "Search Entities",
 				"Open an editor to narrow you search", CMD_OPEN_SEARCH_EDITOR);

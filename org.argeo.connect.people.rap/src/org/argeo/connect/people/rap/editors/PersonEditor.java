@@ -22,7 +22,7 @@ import org.argeo.connect.people.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.rap.toolkits.ActivityToolkit;
 import org.argeo.connect.people.rap.toolkits.HistoryToolkit;
 import org.argeo.connect.people.rap.toolkits.ListToolkit;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -98,7 +98,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 
 	@Override
 	protected void populateHeader(Composite parent) {
-		GridLayout gl = PeopleUiUtils.noSpaceGridLayout();
+		GridLayout gl = PeopleRapUtils.noSpaceGridLayout();
 		gl.marginBottom = 10;
 		parent.setLayout(gl);
 
@@ -132,7 +132,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Contact details", PeopleRapConstants.PANEL_CONTACT_DETAILS,
 				tooltip);
-		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		innerPannel.setLayout(PeopleRapUtils.noSpaceGridLayout());
 		ContactPanelComposite cpc = new ContactPanelComposite(innerPannel,
 				SWT.NO_FOCUS, toolkit, getManagedForm(), getNode(),
 				getPeopleService(), getPeopleUiService());
@@ -168,7 +168,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		// READ ONLY
 		final Composite readOnlyPanel = toolkit.createComposite(parent,
 				SWT.NO_FOCUS);
-		PeopleUiUtils.setSwitchingFormData(readOnlyPanel);
+		PeopleRapUtils.setSwitchingFormData(readOnlyPanel);
 		readOnlyPanel.setLayout(new GridLayout());
 
 		// Add a label with info provided by the PersonOverviewLabelProvider
@@ -181,10 +181,10 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		// EDIT
 		final Composite editPanel = toolkit.createComposite(parent,
 				SWT.NO_FOCUS);
-		PeopleUiUtils.setSwitchingFormData(editPanel);
+		PeopleRapUtils.setSwitchingFormData(editPanel);
 		// editPanel.setData(RWT.CUSTOM_VARIANT,
 		// PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
-		editPanel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		editPanel.setLayout(PeopleRapUtils.noSpaceGridLayout());
 
 		// First Line - display Name management
 		Composite firstCmp = toolkit.createComposite(editPanel, SWT.NO_FOCUS);
@@ -213,40 +213,40 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		fourthCmp.setLayout(new GridLayout(4, false));
 
 		// Create edit text
-		final Text displayNameTxt = PeopleUiUtils.createRDText(toolkit,
+		final Text displayNameTxt = PeopleRapUtils.createRDText(toolkit,
 				firstCmp, "Display name",
 				"Default display name for this person", 300);
 		final Button defineDistinctBtn = toolkit.createButton(firstCmp,
 				"Define a distinct display name", SWT.CHECK);
 		defineDistinctBtn.setToolTipText("Default is \"Firstname LASTNAME\"");
 
-		final Text salutationTxt = PeopleUiUtils.createRDText(toolkit,
+		final Text salutationTxt = PeopleRapUtils.createRDText(toolkit,
 				secondCmp, "Salutation", "Mr, Mrs...", 60);
-		final Text firstNameTxt = PeopleUiUtils.createRDText(toolkit,
+		final Text firstNameTxt = PeopleRapUtils.createRDText(toolkit,
 				secondCmp, "First Name", "Usual first name for this person",
 				100);
-		final Text middleNameTxt = PeopleUiUtils.createRDText(toolkit,
+		final Text middleNameTxt = PeopleRapUtils.createRDText(toolkit,
 				secondCmp, "Middle Name", "The second name if it exists", 100);
-		final Text lastNameTxt = PeopleUiUtils.createRDText(toolkit, secondCmp,
+		final Text lastNameTxt = PeopleRapUtils.createRDText(toolkit, secondCmp,
 				"Last Name", "Usual last name for this person", 100);
-		final Text suffixTxt = PeopleUiUtils.createRDText(toolkit, secondCmp,
+		final Text suffixTxt = PeopleRapUtils.createRDText(toolkit, secondCmp,
 				"Suffix", "Junior, the third...", 80);
 
 		// final Text genderTxt = entityTK.createText(thirdCmp, "Gender", "...",
 		// 80);
-		final Text titleTxt = PeopleUiUtils.createRDText(toolkit, thirdCmp,
+		final Text titleTxt = PeopleRapUtils.createRDText(toolkit, thirdCmp,
 				"Title", "Doc., Sir...", 60);
-		final Text maidenNameTxt = PeopleUiUtils.createRDText(toolkit,
+		final Text maidenNameTxt = PeopleRapUtils.createRDText(toolkit,
 				thirdCmp, "Maiden Name", "Birth Name before getting maried",
 				100);
-		final Text nickNameTxt = PeopleUiUtils.createRDText(toolkit, thirdCmp,
+		final Text nickNameTxt = PeopleRapUtils.createRDText(toolkit, thirdCmp,
 				"Nickame", "A pseudonym...", 100);
-		final Text latinPhoneticTxt = PeopleUiUtils.createRDText(toolkit,
+		final Text latinPhoneticTxt = PeopleRapUtils.createRDText(toolkit,
 				thirdCmp, "Latin Phonetic",
 				"A helper to know how to pronounce this name", 100);
 
 		// Fourth Line
-		PeopleUiUtils.createBoldLabel(toolkit, fourthCmp, "Form Of Address");
+		PeopleRapUtils.createBoldLabel(toolkit, fourthCmp, "Form Of Address");
 		Composite politeCmp = toolkit.createComposite(fourthCmp, SWT.NO_FOCUS);
 		politeCmp
 				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
@@ -258,7 +258,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		final Button informalBtn = new Button(politeCmp, SWT.RADIO);
 		informalBtn.setText("Informal");
 
-		PeopleUiUtils.createBoldLabel(toolkit, fourthCmp, "Language");
+		PeopleRapUtils.createBoldLabel(toolkit, fourthCmp, "Language");
 		Composite languageCmp = toolkit
 				.createComposite(fourthCmp, SWT.NO_FOCUS);
 		languageCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true,
@@ -275,7 +275,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 			public void refresh() { // update display value
 				super.refresh();
 				// EDIT PART
-				PeopleUiUtils.refreshTextWidgetValue(displayNameTxt, person,
+				PeopleRapUtils.refreshTextWidgetValue(displayNameTxt, person,
 						Property.JCR_TITLE);
 
 				Boolean defineDistinct = CommonsJcrUtils.getBooleanValue(
@@ -285,25 +285,25 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				displayNameTxt.setEnabled(defineDistinct);
 				defineDistinctBtn.setSelection(defineDistinct);
 
-				PeopleUiUtils.refreshTextWidgetValue(salutationTxt, person,
+				PeopleRapUtils.refreshTextWidgetValue(salutationTxt, person,
 						PEOPLE_SALUTATION);
-				PeopleUiUtils.refreshTextWidgetValue(firstNameTxt, person,
+				PeopleRapUtils.refreshTextWidgetValue(firstNameTxt, person,
 						PEOPLE_FIRST_NAME);
-				PeopleUiUtils.refreshTextWidgetValue(middleNameTxt, person,
+				PeopleRapUtils.refreshTextWidgetValue(middleNameTxt, person,
 						PEOPLE_MIDDLE_NAME);
-				PeopleUiUtils.refreshTextWidgetValue(lastNameTxt, person,
+				PeopleRapUtils.refreshTextWidgetValue(lastNameTxt, person,
 						PEOPLE_LAST_NAME);
-				PeopleUiUtils.refreshTextWidgetValue(nickNameTxt, person,
+				PeopleRapUtils.refreshTextWidgetValue(nickNameTxt, person,
 						PEOPLE_NICKNAME);
 				// PeopleUiUtils.refreshTextValue(genderTxt, person,
 				// PEOPLE_GENDER);
-				PeopleUiUtils.refreshTextWidgetValue(maidenNameTxt, person,
+				PeopleRapUtils.refreshTextWidgetValue(maidenNameTxt, person,
 						PEOPLE_MAIDEN_NAME);
-				PeopleUiUtils.refreshTextWidgetValue(titleTxt, person,
+				PeopleRapUtils.refreshTextWidgetValue(titleTxt, person,
 						PEOPLE_HONORIFIC_TITLE);
-				PeopleUiUtils.refreshTextWidgetValue(suffixTxt, person,
+				PeopleRapUtils.refreshTextWidgetValue(suffixTxt, person,
 						PEOPLE_NAME_SUFFIX);
-				PeopleUiUtils.refreshTextWidgetValue(latinPhoneticTxt, person,
+				PeopleRapUtils.refreshTextWidgetValue(latinPhoneticTxt, person,
 						PEOPLE_LATIN_PHONETIC_SPELLING);
 
 				refreshFormalRadio(formalBtn, person);
@@ -422,23 +422,23 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 			}
 		});
 
-		PeopleUiUtils.addTxtModifyListener(editPart, salutationTxt, person,
+		PeopleRapUtils.addTxtModifyListener(editPart, salutationTxt, person,
 				PEOPLE_SALUTATION, PropertyType.STRING);
-		PeopleUiUtils.addTxtModifyListener(editPart, middleNameTxt, person,
+		PeopleRapUtils.addTxtModifyListener(editPart, middleNameTxt, person,
 				PEOPLE_MIDDLE_NAME, PropertyType.STRING);
-		PeopleUiUtils.addTxtModifyListener(editPart, lastNameTxt, person,
+		PeopleRapUtils.addTxtModifyListener(editPart, lastNameTxt, person,
 				PEOPLE_LAST_NAME, PropertyType.STRING);
-		PeopleUiUtils.addTxtModifyListener(editPart, nickNameTxt, person,
+		PeopleRapUtils.addTxtModifyListener(editPart, nickNameTxt, person,
 				PEOPLE_NICKNAME, PropertyType.STRING);
 		// entityTK.addTxtModifyListener(editPart, genderTxt, person,
 		// PEOPLE_GENDER, PropertyType.STRING);
-		PeopleUiUtils.addTxtModifyListener(editPart, maidenNameTxt, person,
+		PeopleRapUtils.addTxtModifyListener(editPart, maidenNameTxt, person,
 				PEOPLE_MAIDEN_NAME, PropertyType.STRING);
-		PeopleUiUtils.addTxtModifyListener(editPart, titleTxt, person,
+		PeopleRapUtils.addTxtModifyListener(editPart, titleTxt, person,
 				PEOPLE_HONORIFIC_TITLE, PropertyType.STRING);
-		PeopleUiUtils.addTxtModifyListener(editPart, suffixTxt, person,
+		PeopleRapUtils.addTxtModifyListener(editPart, suffixTxt, person,
 				PEOPLE_NAME_SUFFIX, PropertyType.STRING);
-		PeopleUiUtils.addTxtModifyListener(editPart, latinPhoneticTxt, person,
+		PeopleRapUtils.addTxtModifyListener(editPart, latinPhoneticTxt, person,
 				PEOPLE_LATIN_PHONETIC_SPELLING, PropertyType.STRING);
 
 		Listener formalRadioListener = new Listener() {

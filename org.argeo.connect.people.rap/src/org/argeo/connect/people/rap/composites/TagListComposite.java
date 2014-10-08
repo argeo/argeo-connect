@@ -24,7 +24,7 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -74,8 +74,9 @@ public class TagListComposite extends Composite {
 	// TODO document this
 	public TagListComposite(Composite parent, int style, FormToolkit toolkit,
 			IManagedForm form, PeopleService peopleService,
-			PeopleWorkbenchService peopleUiService, Node tagable, String tagPropName,
-			String tagsParentPath, String resourceType, String newTagMsg) {
+			PeopleWorkbenchService peopleUiService, Node tagable,
+			String tagPropName, String tagsParentPath, String resourceType,
+			String newTagMsg) {
 		super(parent, style);
 		this.toolkit = toolkit;
 		this.form = form;
@@ -162,7 +163,7 @@ public class TagListComposite extends Composite {
 
 						Composite tagCmp = toolkit.createComposite(parentCmp,
 								SWT.NO_FOCUS);
-						tagCmp.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
+						tagCmp.setLayout(PeopleRapUtils.noSpaceGridLayout(2));
 						Link link = new Link(tagCmp, SWT.NONE);
 
 						link.setData(PeopleRapConstants.MARKUP_ENABLED,
@@ -234,8 +235,8 @@ public class TagListComposite extends Composite {
 					tagTxt.setLayoutData(rd);
 
 					final SimpleResourceDropDown tagDD = new SimpleResourceDropDown(
-							peopleUiService, tagable.getSession(),
-							tagsParentPath, tagTxt);
+							peopleService.getLabelService(),
+							tagable.getSession(), tagsParentPath, tagTxt);
 
 					tagTxt.addTraverseListener(new TraverseListener() {
 						private static final long serialVersionUID = 1L;

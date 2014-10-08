@@ -20,7 +20,7 @@ import org.argeo.connect.people.rap.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.rap.providers.RoleListLabelProvider;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -79,7 +79,7 @@ public class GroupToolkit {
 		TableColumnLayout tableColumnLayout = createMembersTableColumns(
 				tableComp, viewer);
 		tableComp.setLayout(tableColumnLayout);
-		PeopleUiUtils.setTableDefaultStyle(viewer, 60);
+		PeopleRapUtils.setTableDefaultStyle(viewer, 60);
 
 		// compulsory content provider
 		viewer.setContentProvider(new BasicNodeListContentProvider());

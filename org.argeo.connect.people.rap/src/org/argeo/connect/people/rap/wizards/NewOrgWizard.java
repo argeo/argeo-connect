@@ -9,7 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
@@ -122,14 +122,14 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 			parent.setLayout(new GridLayout(2, false));
 
 			// Legal Name
-			PeopleUiUtils.createBoldLabel(parent, "Legal Name");
+			PeopleRapUtils.createBoldLabel(parent, "Legal Name");
 			legalNameTxt = new Text(parent, SWT.BORDER);
 			legalNameTxt.setMessage("the legal name");
 			legalNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 					false));
 
 			// Legal Form
-			PeopleUiUtils.createBoldLabel(parent, "Legal Form");
+			PeopleRapUtils.createBoldLabel(parent, "Legal Form");
 			legalFormTxt = new Text(parent, SWT.BORDER);
 			legalFormTxt.setMessage("the legal name (Ltd, Org, GmbH...) ");
 			legalFormTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
@@ -142,7 +142,7 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 			defineDistinctDisplayBtn.setLayoutData(new GridData(SWT.FILL,
 					SWT.CENTER, true, false, 2, 1));
 
-			PeopleUiUtils.createBoldLabel(parent, "Display Name");
+			PeopleRapUtils.createBoldLabel(parent, "Display Name");
 			displayNameTxt = new Text(parent, SWT.BORDER);
 			displayNameTxt.setMessage("an optional display name");
 			displayNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,

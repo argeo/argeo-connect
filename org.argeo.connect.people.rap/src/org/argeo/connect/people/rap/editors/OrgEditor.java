@@ -20,7 +20,7 @@ import org.argeo.connect.people.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.rap.toolkits.ActivityToolkit;
 import org.argeo.connect.people.rap.toolkits.LegalInfoToolkit;
 import org.argeo.connect.people.rap.toolkits.ListToolkit;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -82,7 +82,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void populateHeader(Composite parent) {
-		GridLayout gl = PeopleUiUtils.noSpaceGridLayout();
+		GridLayout gl = PeopleRapUtils.noSpaceGridLayout();
 		gl.marginBottom = 10;
 		parent.setLayout(gl);
 
@@ -113,7 +113,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Details", PeopleRapConstants.PANEL_CONTACT_DETAILS, tooltip);
-		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		innerPannel.setLayout(PeopleRapUtils.noSpaceGridLayout());
 		ContactPanelComposite cpc = new ContactPanelComposite(innerPannel,
 				SWT.NO_FOCUS, toolkit, getManagedForm(), getNode(),
 				getPeopleService(), getPeopleUiService());
@@ -147,7 +147,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 			// READ ONLY
 			final Composite roPanelCmp = toolkit.createComposite(parent,
 					SWT.NO_FOCUS);
-			PeopleUiUtils.setSwitchingFormData(roPanelCmp);
+			PeopleRapUtils.setSwitchingFormData(roPanelCmp);
 			roPanelCmp.setLayout(new GridLayout());
 
 			// Add a label with info provided by the OrgOverviewLabelProvider
@@ -161,11 +161,11 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 			// EDIT
 			final Composite editPanelCmp = toolkit.createComposite(parent,
 					SWT.NONE);
-			PeopleUiUtils.setSwitchingFormData(editPanelCmp);
+			PeopleRapUtils.setSwitchingFormData(editPanelCmp);
 			editPanelCmp.setLayout(new GridLayout(2, false));
 
 			// Create edit text
-			final Text displayNameTxt = PeopleUiUtils.createGDText(toolkit,
+			final Text displayNameTxt = PeopleRapUtils.createGDText(toolkit,
 					editPanelCmp, "Display name",
 					"Display name used for this organisation", 300, 1);
 			final Button useDistinctDisplayBtn = toolkit.createButton(
@@ -178,16 +178,16 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				public void refresh() {
 					super.refresh();
 					// EDIT PART
-					boolean useDistinct = PeopleUiUtils.refreshCheckBoxWidget(
+					boolean useDistinct = PeopleRapUtils.refreshCheckBoxWidget(
 							useDistinctDisplayBtn, org,
 							PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 
 					if (useDistinct) {
-						PeopleUiUtils.refreshTextWidgetValue(displayNameTxt,
+						PeopleRapUtils.refreshTextWidgetValue(displayNameTxt,
 								org, Property.JCR_TITLE);
 						displayNameTxt.setEnabled(true);
 					} else {
-						PeopleUiUtils.refreshTextWidgetValue(displayNameTxt,
+						PeopleRapUtils.refreshTextWidgetValue(displayNameTxt,
 								org, PeopleNames.PEOPLE_LEGAL_NAME);
 						displayNameTxt.setEnabled(false);
 					}
@@ -204,7 +204,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				}
 			};
 
-			PeopleUiUtils.addModifyListener(displayNameTxt, org,
+			PeopleRapUtils.addModifyListener(displayNameTxt, org,
 					Property.JCR_TITLE, editPart);
 
 			useDistinctDisplayBtn.addSelectionListener(new SelectionAdapter() {

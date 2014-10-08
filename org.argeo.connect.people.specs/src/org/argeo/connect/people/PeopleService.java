@@ -147,8 +147,14 @@ public interface PeopleService {
 	/** Returns the corresponding {@link TagService} */
 	public TagService getTagService();
 
+	/** Returns the corresponding {@link LebelService} */
+	public LabelService getLabelService();
+
 	/* MISCELLANEOUS */
-	/** Retrieves a context specific property used to configure the current system*/
+	/**
+	 * Retrieves a context specific property used to configure the current
+	 * system
+	 */
 	public String getConfigProperty(String key);
-	
+
 }

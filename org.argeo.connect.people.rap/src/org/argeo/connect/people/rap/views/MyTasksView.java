@@ -25,7 +25,7 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.utils.ActivityViewerComparator;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -53,10 +53,9 @@ public class MyTasksView extends ViewPart implements Refreshable {
 	public static final String ID = PeopleRapPlugin.PLUGIN_ID + ".myTasksView";
 
 	/* DEPENDENCY INJECTION */
-	// private PeopleService peopleService;
 	private Session session;
 	private ActivityService activityService;
-	private PeopleWorkbenchService peopleUiService;
+	private PeopleWorkbenchService peopleWorkbenchService;
 
 	// private String openEntityEditorCmdId = OpenEntityEditor.ID;
 
@@ -64,7 +63,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		GridLayout layout = PeopleUiUtils.noSpaceGridLayout();
+		GridLayout layout = PeopleRapUtils.noSpaceGridLayout();
 		layout.verticalSpacing = 5;
 		parent.setLayout(layout);
 		tableViewer = createTableViewer(parent);
@@ -304,7 +303,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 					String jcrId = ((Node) obj).getIdentifier();
 					String paramName = OpenEntityEditor.PARAM_JCR_ID;
 					CommandUtils.callCommand(
-							peopleUiService.getOpenEntityEditorCmdId(),
+							peopleWorkbenchService.getOpenEntityEditorCmdId(),
 							paramName, jcrId);
 				} catch (RepositoryException e) {
 					throw new ArgeoException("Cannot open user editor", e);
@@ -322,8 +321,9 @@ public class MyTasksView extends ViewPart implements Refreshable {
 		this.session = CommonsJcrUtils.login(repository);
 	}
 
-	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
-		this.peopleUiService = peopleUiService;
+	public void setPeopleWorkbenchService(
+			PeopleWorkbenchService peopleWorkbenchService) {
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
 }

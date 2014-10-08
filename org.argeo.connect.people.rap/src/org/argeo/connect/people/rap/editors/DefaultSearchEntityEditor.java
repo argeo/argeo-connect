@@ -24,7 +24,7 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
 import org.argeo.connect.people.rap.editors.utils.AbstractSearchEntityEditor;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.eclipse.swt.SWT;
@@ -68,7 +68,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 
 	/** Override this to provide type specific static filters */
 	protected void populateStaticFilters(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
 
 		// Configure the Twistie section
 		Section headerSection = new Section(parent, Section.TITLE_BAR
@@ -85,8 +85,10 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 
 		Text tagTxt = createBoldLT(body, "Tag", "",
 				"Select from list to find entities that are categorised with this tag");
-		tagDD = new SimpleResourceDropDown(getPeopleUiService(), getSession(),
-				getPeopleService().getResourceBasePath(PeopleConstants.RESOURCE_TAG), tagTxt);
+		tagDD = new SimpleResourceDropDown(
+				getPeopleService().getLabelService(), getSession(),
+				getPeopleService().getResourceBasePath(
+						PeopleConstants.RESOURCE_TAG), tagTxt);
 
 		Button goBtn = new Button(body, SWT.PUSH);
 		goBtn.setText("Search");
@@ -131,7 +133,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 						source.getSelectorName(), PEOPLE_TAGS);
 				Constraint currC = factory.comparison(dyo,
 						QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
-				defaultC = PeopleUiUtils.localAnd(factory, defaultC, currC);
+				defaultC = PeopleRapUtils.localAnd(factory, defaultC, currC);
 			}
 
 			// TODO handle the case where no TITLE prop is available

@@ -1,8 +1,10 @@
 package org.argeo.connect.people;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
+import javax.jcr.Session;
 
 /**
  * Provides method interfaces to manage labels in various people contexts.
@@ -46,4 +48,13 @@ public interface LabelService {
 	 * Repository. Throws an exception if the corresponding list is not found.
 	 **/
 	public Map<String, String> getDefinedValueMap(Node node, String propertyName);
+	
+	public List<String> getValueList(Session session, String basePath,
+			String filter);
+
+	public List<String> getValueList(Session session, String nodeType,
+			String basePath, String filter);
+
+	public List<String> getInstancePropCatalog(Session session,
+			String resourcePath, String propertyName, String filter);
 }

@@ -9,7 +9,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -58,7 +58,7 @@ public class ContactComposite extends Composite {
 	private void populate() {
 		// Initialization
 		Composite parent = this;
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
+		parent.setLayout(PeopleRapUtils.noSpaceGridLayout(2));
 
 		// buttons
 		Composite buttCmp = new ContactButtonsComposite(parent, SWT.NO_FOCUS,
@@ -110,21 +110,21 @@ public class ContactComposite extends Composite {
 			catCmb.select(0);
 		}
 
-		PeopleUiUtils.refreshFormTextWidget(labelTxt, contactNode,
+		PeopleRapUtils.refreshFormTextWidget(labelTxt, contactNode,
 				PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
-		PeopleUiUtils.refreshFormTextWidget(valueTxt, contactNode,
+		PeopleRapUtils.refreshFormTextWidget(valueTxt, contactNode,
 				PeopleNames.PEOPLE_CONTACT_VALUE, "Value");
 		if (catCmb != null)
-			PeopleUiUtils.refreshFormComboValue(catCmb, contactNode,
+			PeopleRapUtils.refreshFormComboValue(catCmb, contactNode,
 					PeopleNames.PEOPLE_CONTACT_CATEGORY);
 
 		// Listeners
-		PeopleUiUtils.addTxtModifyListener(formPart, valueTxt, contactNode,
+		PeopleRapUtils.addTxtModifyListener(formPart, valueTxt, contactNode,
 				PeopleNames.PEOPLE_CONTACT_VALUE, PropertyType.STRING);
-		PeopleUiUtils.addTxtModifyListener(formPart, labelTxt, contactNode,
+		PeopleRapUtils.addTxtModifyListener(formPart, labelTxt, contactNode,
 				PeopleNames.PEOPLE_CONTACT_LABEL, PropertyType.STRING);
 		if (catCmb != null)
-			PeopleUiUtils.addComboSelectionListener(formPart, catCmb,
+			PeopleRapUtils.addComboSelectionListener(formPart, catCmb,
 					contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY,
 					PropertyType.STRING);
 	}

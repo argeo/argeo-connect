@@ -59,7 +59,7 @@ import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.services.IServiceLocator;
 
 /** Some helper methods that factorize widely used snippets in people UI */
-public class PeopleUiUtils {
+public class PeopleRapUtils {
 
 	// Some methods that must be factorized in Commons Layers soon
 
@@ -758,7 +758,7 @@ public class PeopleUiUtils {
 						.createValue("*" + token + "*"));
 				Constraint currC = factory.fullTextSearch(
 						source.getSelectorName(), null, so);
-				defaultC = PeopleUiUtils.localAnd(factory, defaultC, currC);
+				defaultC = PeopleRapUtils.localAnd(factory, defaultC, currC);
 			}
 		}
 		return defaultC;

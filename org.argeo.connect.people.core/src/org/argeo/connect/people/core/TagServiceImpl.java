@@ -23,7 +23,7 @@ import org.argeo.connect.people.TagService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 
-/** Concrete access to people services */
+/** Concrete access to people TagServices */
 public class TagServiceImpl implements TagService {
 	private final static Log log = LogFactory.getLog(TagServiceImpl.class);
 

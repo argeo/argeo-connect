@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.jcr.Session;
 
-import org.argeo.connect.people.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.LabelService;
 import org.eclipse.swt.widgets.Text;
 
 /**
@@ -14,13 +14,13 @@ import org.eclipse.swt.widgets.Text;
 public class SimpleResourceDropDown extends PeopleAbstractDropDown {
 
 	private final Session session;
-	private final PeopleWorkbenchService peopleUiService;
+	private final LabelService labelService;
 	private final String resourceBasePath;
 
-	public SimpleResourceDropDown(PeopleWorkbenchService peopleUiService,
-			Session session, String resourceBasePath, Text text) {
+	public SimpleResourceDropDown(LabelService labelService, Session session,
+			String resourceBasePath, Text text) {
 		super(text);
-		this.peopleUiService = peopleUiService;
+		this.labelService = labelService;
 		this.session = session;
 		this.resourceBasePath = resourceBasePath;
 		init();
@@ -28,7 +28,7 @@ public class SimpleResourceDropDown extends PeopleAbstractDropDown {
 
 	@Override
 	protected List<String> getFilteredValues(String filter) {
-		List<String> values = peopleUiService.getValueList(session,
+		List<String> values = labelService.getValueList(session,
 				resourceBasePath, filter);
 		return values;
 	}

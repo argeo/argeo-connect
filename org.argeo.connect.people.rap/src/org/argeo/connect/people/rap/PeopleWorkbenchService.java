@@ -35,15 +35,6 @@ public interface PeopleWorkbenchService {
 	 */
 	public Wizard getCreationWizard(PeopleService peopleService, Node node);
 
-	public List<String> getValueList(Session session, String basePath,
-			String filter);
-
-	public List<String> getValueList(Session session, String nodeType,
-			String basePath, String filter);
-
-	public List<String> getInstancePropCatalog(Session session,
-			String resourcePath, String propertyName, String filter);
-
 	/** Centralize icon management for a given app */
 	public Image getIconForType(Node entity);
 }

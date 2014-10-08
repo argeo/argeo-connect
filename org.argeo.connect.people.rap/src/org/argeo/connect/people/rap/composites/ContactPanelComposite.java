@@ -17,7 +17,7 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.eclipse.swt.SWT;
@@ -74,7 +74,7 @@ public class ContactPanelComposite extends Composite {
 
 	private void populate() {
 		Composite parent = this;
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
 
 		// Add a scrolled container
 		ScrolledComposite container = new ScrolledComposite(parent,
@@ -87,7 +87,7 @@ public class ContactPanelComposite extends Composite {
 
 		container.setExpandHorizontal(true);
 		container.setExpandVertical(false);
-		container.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		container.setLayout(PeopleRapUtils.noSpaceGridLayout());
 		innerCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		formPart.initialize(form);
@@ -182,7 +182,7 @@ public class ContactPanelComposite extends Composite {
 	/** Manage display and update of existing contact Nodes */
 	private void populateDisplayContactPanel(final Composite parent,
 			boolean isCheckedOut) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
 		try {
 
 			String[] knownTypes = peopleService.getContactService()
@@ -216,8 +216,8 @@ public class ContactPanelComposite extends Composite {
 	}
 
 	private void populateNotePanel(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
-		Label label = PeopleUiUtils.createBoldLabel(toolkit, parent, "Notes: ");
+		parent.setLayout(PeopleRapUtils.noSpaceGridLayout(2));
+		Label label = PeopleRapUtils.createBoldLabel(toolkit, parent, "Notes: ");
 
 		GridData gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
 		gd.verticalIndent = 3;
@@ -226,9 +226,9 @@ public class ContactPanelComposite extends Composite {
 		Text notesTxt = toolkit.createText(parent, "", SWT.BORDER | SWT.MULTI
 				| SWT.WRAP);
 		notesTxt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		PeopleUiUtils.refreshFormTextWidget(notesTxt, entity,
+		PeopleRapUtils.refreshFormTextWidget(notesTxt, entity,
 				Property.JCR_DESCRIPTION);
-		PeopleUiUtils.addTxtModifyListener(formPart, notesTxt, entity,
+		PeopleRapUtils.addTxtModifyListener(formPart, notesTxt, entity,
 				Property.JCR_DESCRIPTION, PropertyType.STRING);
 	}
 
@@ -519,7 +519,7 @@ public class ContactPanelComposite extends Composite {
 				.getResourceBasePath(PeopleConstants.RESOURCE_COUNTRY);
 		Session session = CommonsJcrUtils.getSession(entity);
 		final SimpleResourceDropDown countryDD = new SimpleResourceDropDown(
-				peopleUiService, session, countryBP, countryTxt);
+				peopleService.getLabelService(), session, countryBP, countryTxt);
 
 		// final Text geoPointTxt = createRowDataLT(parent, "Geopoint", 200);
 		final Text labelTxt = createRowDataLT(parent, "Label", 120);

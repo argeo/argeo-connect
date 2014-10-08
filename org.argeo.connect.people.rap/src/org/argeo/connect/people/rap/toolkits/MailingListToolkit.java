@@ -7,7 +7,7 @@ import javax.jcr.query.Row;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
@@ -50,7 +50,7 @@ public class MailingListToolkit {
 	 **/
 	public TableViewer createItemsViewerWithCheckBox(Composite parent,
 			List<Row> selectedItems, List<ColumnDefinition> columns) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
 
 		// TODO clean this: we must 1st create the composite for the filter,
 		// then the table, then the filter itself
@@ -107,7 +107,7 @@ public class MailingListToolkit {
 			col.setLabelProvider(new HtmlJcrRowLabelProvider(colDef
 					.getSelectorName(), colDef.getPropertyName()));
 			col.getColumn().addSelectionListener(
-					PeopleUiUtils.getSelectionAdapter(i,
+					PeopleRapUtils.getSelectionAdapter(i,
 							colDef.getPropertyType(), colDef.getSelectorName(),
 							colDef.getPropertyName(), comparator, itemsViewer));
 			i++;
@@ -197,7 +197,7 @@ public class MailingListToolkit {
 	}
 
 	public Text addFilterPanel(Composite parent, final TableViewer viewer) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
 		// Text Area for the filter
 		final Text filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH
 				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);

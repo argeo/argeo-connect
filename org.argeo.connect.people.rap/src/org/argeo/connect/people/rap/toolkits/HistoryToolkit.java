@@ -26,7 +26,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.PropertyDiff;
@@ -69,7 +69,7 @@ public class HistoryToolkit {
 
 	public void populateHistoryPanel(Composite parent) {
 		try {
-			parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+			parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
 
 			UserManagementService userService = peopleService
 					.getUserManagementService();

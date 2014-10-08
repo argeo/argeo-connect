@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ContactService;
+import org.argeo.connect.people.LabelService;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -45,6 +46,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private ActivityService activityService = new ActivityServiceImpl(this,
 			userManagementService);
 	private TagService tagService = new TagServiceImpl(this);
+	private LabelService labelService = new LabelServiceImpl(this);
 
 	// private Repository repository;
 
@@ -726,6 +728,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	@Override
 	public TagService getTagService() {
 		return tagService;
+	}
+
+	@Override
+	public LabelService getLabelService() {
+		return labelService;
 	}
 
 	@Override

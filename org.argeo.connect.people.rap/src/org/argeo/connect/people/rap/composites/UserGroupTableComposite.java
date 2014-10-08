@@ -21,7 +21,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
@@ -258,7 +258,7 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 	/* MANAGE FILTER */
 	private void createFilterPart(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NO_FOCUS);
-		composite.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
+		composite.setLayout(PeopleRapUtils.noSpaceGridLayout(2));
 		composite
 				.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 

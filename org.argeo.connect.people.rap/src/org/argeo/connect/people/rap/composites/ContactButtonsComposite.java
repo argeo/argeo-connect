@@ -9,7 +9,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.eclipse.swt.SWT;
@@ -58,7 +58,7 @@ public class ContactButtonsComposite extends Composite {
 	private void populate() {
 		// Initialization
 		Composite buttCmp = this;
-		GridLayout gl = PeopleUiUtils.noSpaceGridLayout(3);
+		GridLayout gl = PeopleRapUtils.noSpaceGridLayout(3);
 		buttCmp.setLayout(gl);
 
 		// final Button categoryBtn =

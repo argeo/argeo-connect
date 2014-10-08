@@ -38,7 +38,7 @@ import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.providers.JcrRowHtmlLabelProvider;
 import org.argeo.connect.people.rap.providers.TagLabelProvider;
 import org.argeo.connect.people.rap.providers.TitleWithIconLP;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.rap.wizards.EditTagWizard;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -154,7 +154,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 	}
 
 	protected void createMainLayout(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
 		// The header
 		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		header.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -313,7 +313,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 	// }
 
 	public void createMembersList(Composite parent, final Node entity) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
 
 		// First line: search Text and buttons
 		Composite buttonsCmp = toolkit.createComposite(parent);
@@ -383,7 +383,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 
 			Constraint subTree = factory.descendantNode(
 					source.getSelectorName(), peopleService.getBasePath(null));
-			constraint = PeopleUiUtils.localAnd(factory, constraint, subTree);
+			constraint = PeopleRapUtils.localAnd(factory, constraint, subTree);
 
 			if (CommonsJcrUtils.checkNotEmptyString(filter)) {
 				String[] strs = filter.trim().split(" ");
@@ -392,7 +392,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 							.getValueFactory().createValue("*" + token + "*"));
 					Constraint currC = factory.fullTextSearch(
 							source.getSelectorName(), null, soTmp);
-					constraint = PeopleUiUtils.localAnd(factory, constraint,
+					constraint = PeopleRapUtils.localAnd(factory, constraint,
 							currC);
 				}
 			}

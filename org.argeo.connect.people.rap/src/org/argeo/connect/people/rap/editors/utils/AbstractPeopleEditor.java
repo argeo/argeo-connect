@@ -24,7 +24,7 @@ import org.argeo.connect.people.rap.commands.CancelAndCheckInItem;
 import org.argeo.connect.people.rap.commands.CheckOutItem;
 import org.argeo.connect.people.rap.commands.DeleteEntity;
 import org.argeo.connect.people.rap.utils.CheckoutSourceProvider;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
@@ -129,13 +129,13 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	}
 
 	protected void createMainLayout(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
 
 		// Internal main Layout
 		// The header
 		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS
 				| SWT.NO_SCROLL | SWT.NO_TRIM);
-		GridLayout gl = PeopleUiUtils.noSpaceGridLayout(2);
+		GridLayout gl = PeopleRapUtils.noSpaceGridLayout(2);
 		// So that the buttons are not too close to the right border of the
 		// composite.
 		gl.marginRight = 5;
@@ -158,7 +158,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 		// the body
 		Composite body = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		body.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		body.setLayout(PeopleRapUtils.noSpaceGridLayout());
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		populateBody(body);
 	}
@@ -195,7 +195,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		// READ ONLY PANEL
 		final Composite roPanelCmp = toolkit.createComposite(buttons,
 				SWT.NO_FOCUS);
-		PeopleUiUtils.setSwitchingFormData(roPanelCmp);
+		PeopleRapUtils.setSwitchingFormData(roPanelCmp);
 		roPanelCmp.setLayout(new RowLayout(SWT.VERTICAL));
 
 		// Do not show the edit button if the user does not have sufficient
@@ -231,7 +231,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		// EDIT PANEL
 		final Composite editPanelCmp = toolkit.createComposite(buttons,
 				SWT.NONE);
-		PeopleUiUtils.setSwitchingFormData(editPanelCmp);
+		PeopleRapUtils.setSwitchingFormData(editPanelCmp);
 		editPanelCmp.setLayout(new RowLayout(SWT.VERTICAL));
 
 		Button saveBtn = toolkit.createButton(editPanelCmp, "Save", SWT.PUSH);

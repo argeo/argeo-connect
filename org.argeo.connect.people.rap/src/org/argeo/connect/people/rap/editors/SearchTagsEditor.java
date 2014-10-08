@@ -34,7 +34,7 @@ import org.argeo.connect.people.rap.editors.utils.SearchNodeEditorInput;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.providers.JcrRowHtmlLabelProvider;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.rap.wizards.EditTagWizard;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -123,7 +123,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 	// MAIN LAYOUT
 	public void createPartControl(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
 		// the generic free search part
 		Composite searchCmp = new Composite(parent, SWT.NO_FOCUS);
 		populateSearchPanel(searchCmp);
@@ -207,11 +207,11 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 							.getValueFactory().createValue("*" + token + "*"));
 					Constraint currC = factory.fullTextSearch(
 							source.getSelectorName(), null, so);
-					defaultC = PeopleUiUtils.localAnd(factory, defaultC, currC);
+					defaultC = PeopleRapUtils.localAnd(factory, defaultC, currC);
 				}
 			}
 
-			defaultC = PeopleUiUtils.localAnd(factory, defaultC,
+			defaultC = PeopleRapUtils.localAnd(factory, defaultC,
 					factory.descendantNode(source.getSelectorName(), basePath));
 
 			Ordering order = factory.ascending(factory.propertyValue(

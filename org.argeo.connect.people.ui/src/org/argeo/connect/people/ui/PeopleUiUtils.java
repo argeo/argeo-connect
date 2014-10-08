@@ -3,6 +3,8 @@ package org.argeo.connect.people.ui;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 /** Helper methods for various People UIs */
 public class PeopleUiUtils {
@@ -60,5 +62,19 @@ public class PeopleUiUtils {
 		GridLayout gl = new GridLayout(nbOfCol, false);
 		gl.marginWidth = gl.marginHeight = gl.horizontalSpacing = gl.verticalSpacing = 0;
 		return gl;
+	}
+
+	/**
+	 * Dispose all control children of this composite. Useful for violent
+	 * refreshes.
+	 * 
+	 * @param parent
+	 */
+	public static void disposeAllChildren(Composite parent) {
+		// We redraw the full control at each refresh, might be a more
+		// efficient way to do
+		Control[] oldChildren = parent.getChildren();
+		for (Control child : oldChildren)
+			child.dispose();
 	}
 }

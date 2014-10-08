@@ -23,7 +23,7 @@ import org.argeo.connect.people.rap.commands.CheckOutItem;
 import org.argeo.connect.people.rap.commands.DeleteEntity;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.utils.CheckoutSourceProvider;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
@@ -172,11 +172,11 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	 * current object
 	 */
 	protected void populateMainInfoDetails(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
 
 		final Composite lastUpdateCmp = toolkit.createComposite(parent,
 				SWT.NO_FOCUS);
-		GridLayout gl = PeopleUiUtils.noSpaceGridLayout();
+		GridLayout gl = PeopleRapUtils.noSpaceGridLayout();
 		gl.marginTop = 8;
 		lastUpdateCmp.setLayout(gl);
 		lastUpdateCmp.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true,
@@ -227,16 +227,16 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	}
 
 	protected void createMainLayout(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
 		// Internal main Layout
 		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS
 				| SWT.NO_SCROLL | SWT.NO_TRIM);
-		header.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		header.setLayout(PeopleRapUtils.noSpaceGridLayout());
 		header.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		createHeaderPart(header);
 
 		Composite body = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		body.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		body.setLayout(PeopleRapUtils.noSpaceGridLayout());
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		createBodyPart(body);
 
@@ -315,7 +315,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	// }
 
 	protected void createMainInfoPanel(final Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
 
 		// First row: Title + Buttons.
 		Composite firstRow = toolkit.createComposite(parent, SWT.NO_FOCUS);
@@ -352,8 +352,8 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		// READ ONLY PANEL
 		final Composite roPanelCmp = toolkit.createComposite(buttons,
 				SWT.NO_FOCUS);
-		PeopleUiUtils.setSwitchingFormData(roPanelCmp);
-		roPanelCmp.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		PeopleRapUtils.setSwitchingFormData(roPanelCmp);
+		roPanelCmp.setLayout(PeopleRapUtils.noSpaceGridLayout());
 
 		// Add a level to right align the buttons
 		final Composite roSubPanelCmp = toolkit.createComposite(roPanelCmp,
@@ -399,7 +399,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		// EDIT PANEL
 		final Composite editPanelCmp = toolkit.createComposite(buttons,
 				SWT.NONE);
-		PeopleUiUtils.setSwitchingFormData(editPanelCmp);
+		PeopleRapUtils.setSwitchingFormData(editPanelCmp);
 		editPanelCmp.setLayout(new RowLayout(SWT.HORIZONTAL));
 
 		Button saveBtn = toolkit.createButton(editPanelCmp, "Save", SWT.PUSH);

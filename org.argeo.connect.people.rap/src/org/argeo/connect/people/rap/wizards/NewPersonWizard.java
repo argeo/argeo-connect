@@ -8,7 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
@@ -109,7 +109,7 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 			parent.setLayout(new GridLayout(2, false));
 
 			// LastName
-			PeopleUiUtils.createBoldLabel(parent, "Last Name");
+			PeopleRapUtils.createBoldLabel(parent, "Last Name");
 			lastNameTxt = new Text(parent, SWT.BORDER);
 			lastNameTxt.setMessage("a last name");
 			lastNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
@@ -117,7 +117,7 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 
 			// FirstName
 			// LastName
-			PeopleUiUtils.createBoldLabel(parent, "First Name");
+			PeopleRapUtils.createBoldLabel(parent, "First Name");
 			firstNameTxt = new Text(parent, SWT.BORDER);
 			firstNameTxt.setMessage("a first name");
 			firstNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,

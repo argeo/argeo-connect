@@ -3,7 +3,7 @@ package org.argeo.connect.people.rap.composites;
 import javax.jcr.Node;
 
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -41,36 +41,36 @@ public class BankAccountComposite extends Composite {
 		this.setLayout(new GridLayout(6, false));
 
 		// Main Info
-		PeopleUiUtils.createBoldLabel(toolkit, parent, "Account Holder");
+		PeopleRapUtils.createBoldLabel(toolkit, parent, "Account Holder");
 		final Text holderTxt = toolkit.createText(parent, "", SWT.BORDER);
 		holderTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		PeopleUiUtils.createBoldLabel(toolkit, parent, "Bank Name");
+		PeopleRapUtils.createBoldLabel(toolkit, parent, "Bank Name");
 		final Text bankNameTxt = toolkit.createText(parent, "", SWT.BORDER);
 		bankNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		PeopleUiUtils.createBoldLabel(toolkit, parent, "Currency");
+		PeopleRapUtils.createBoldLabel(toolkit, parent, "Currency");
 		final Text currencyTxt = toolkit.createText(parent, "", SWT.BORDER);
 		GridData gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
 		gd.widthHint = 50;
 		currencyTxt.setLayoutData(gd);
 
 		// Bank number
-		PeopleUiUtils.createBoldLabel(toolkit, parent, "Account Number");
+		PeopleRapUtils.createBoldLabel(toolkit, parent, "Account Number");
 		final Text accNbTxt = toolkit.createText(parent, "", SWT.BORDER);
 		accNbTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		PeopleUiUtils.createBoldLabel(toolkit, parent, "Bank Number");
+		PeopleRapUtils.createBoldLabel(toolkit, parent, "Bank Number");
 		final Text bankNbTxt = toolkit.createText(parent, "", SWT.BORDER);
 		bankNbTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3,
 				1));
 
 		// BIC / IBAN
-		PeopleUiUtils.createBoldLabel(toolkit, parent, "BIC");
+		PeopleRapUtils.createBoldLabel(toolkit, parent, "BIC");
 		final Text bicTxt = toolkit.createText(parent, "", SWT.BORDER);
 		bicTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		PeopleUiUtils.createBoldLabel(toolkit, parent, "IBAN");
+		PeopleRapUtils.createBoldLabel(toolkit, parent, "IBAN");
 		final Text ibanTxt = toolkit.createText(parent, "", SWT.BORDER);
 		ibanTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
@@ -79,38 +79,38 @@ public class BankAccountComposite extends Composite {
 				super.refresh();
 
 				if (!holderTxt.isDisposed()) {
-					PeopleUiUtils.refreshFormTextWidget(holderTxt, currAccount,
+					PeopleRapUtils.refreshFormTextWidget(holderTxt, currAccount,
 							PeopleNames.PEOPLE_ACCOUNT_HOLDER);
-					PeopleUiUtils.refreshFormTextWidget(bankNameTxt,
+					PeopleRapUtils.refreshFormTextWidget(bankNameTxt,
 							currAccount, PeopleNames.PEOPLE_BANK_NAME);
-					PeopleUiUtils.refreshFormTextWidget(currencyTxt,
+					PeopleRapUtils.refreshFormTextWidget(currencyTxt,
 							currAccount, PeopleNames.PEOPLE_CURRENCY);
-					PeopleUiUtils.refreshFormTextWidget(accNbTxt, currAccount,
+					PeopleRapUtils.refreshFormTextWidget(accNbTxt, currAccount,
 							PeopleNames.PEOPLE_ACCOUNT_NB);
-					PeopleUiUtils.refreshFormTextWidget(bankNbTxt, currAccount,
+					PeopleRapUtils.refreshFormTextWidget(bankNbTxt, currAccount,
 							PeopleNames.PEOPLE_BANK_NB);
-					PeopleUiUtils.refreshFormTextWidget(bicTxt, currAccount,
+					PeopleRapUtils.refreshFormTextWidget(bicTxt, currAccount,
 							PeopleNames.PEOPLE_BIC);
-					PeopleUiUtils.refreshFormTextWidget(ibanTxt, currAccount,
+					PeopleRapUtils.refreshFormTextWidget(ibanTxt, currAccount,
 							PeopleNames.PEOPLE_IBAN);
 				}
 			}
 		};
 
 		// Listeners
-		PeopleUiUtils.addModifyListener(holderTxt, currAccount,
+		PeopleRapUtils.addModifyListener(holderTxt, currAccount,
 				PeopleNames.PEOPLE_ACCOUNT_HOLDER, formPart);
-		PeopleUiUtils.addModifyListener(bankNameTxt, currAccount,
+		PeopleRapUtils.addModifyListener(bankNameTxt, currAccount,
 				PeopleNames.PEOPLE_BANK_NAME, formPart);
-		PeopleUiUtils.addModifyListener(currencyTxt, currAccount,
+		PeopleRapUtils.addModifyListener(currencyTxt, currAccount,
 				PeopleNames.PEOPLE_CURRENCY, formPart);
-		PeopleUiUtils.addModifyListener(accNbTxt, currAccount,
+		PeopleRapUtils.addModifyListener(accNbTxt, currAccount,
 				PeopleNames.PEOPLE_ACCOUNT_NB, formPart);
-		PeopleUiUtils.addModifyListener(bankNbTxt, currAccount,
+		PeopleRapUtils.addModifyListener(bankNbTxt, currAccount,
 				PeopleNames.PEOPLE_BANK_NB, formPart);
-		PeopleUiUtils.addModifyListener(bicTxt, currAccount,
+		PeopleRapUtils.addModifyListener(bicTxt, currAccount,
 				PeopleNames.PEOPLE_BIC, formPart);
-		PeopleUiUtils.addModifyListener(ibanTxt, currAccount,
+		PeopleRapUtils.addModifyListener(ibanTxt, currAccount,
 				PeopleNames.PEOPLE_IBAN, formPart);
 
 		// Superstition?

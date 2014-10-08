@@ -19,7 +19,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.ActivityTableComposite;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.rap.wizards.NewSimpleTaskWizard;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
@@ -138,12 +138,12 @@ public class ActivityToolkit {
 		toolkit.adapt(typeCmb, true, true);
 
 		// Title
-		final Text titleTxt = PeopleUiUtils.createGDText(toolkit,
+		final Text titleTxt = PeopleRapUtils.createGDText(toolkit,
 				addActivityBar, "Title",
 				"Enter a short title for the activity to create", 150, 1);
 
 		// Description
-		final Text descTxt = PeopleUiUtils.createGDText(toolkit,
+		final Text descTxt = PeopleRapUtils.createGDText(toolkit,
 				addActivityBar, "Description",
 				"Enter a description for the activity to create", 300, 1);
 

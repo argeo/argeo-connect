@@ -10,7 +10,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.composites.BankAccountComposite;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.OrgJcrUtils;
 import org.eclipse.swt.SWT;
@@ -63,38 +63,38 @@ public class LegalInfoToolkit {
 		parent.setLayout(new GridLayout(4, false));
 
 		// Legal Name
-		PeopleUiUtils.createBoldLabel(toolkit, parent, "Legal Name");
+		PeopleRapUtils.createBoldLabel(toolkit, parent, "Legal Name");
 		final Text legalNameTxt = toolkit.createText(parent, "", SWT.BORDER);
 		legalNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,
 				3, 1));
 
 		// Legal form
-		PeopleUiUtils.createBoldLabel(toolkit, parent, "Legal Form");
+		PeopleRapUtils.createBoldLabel(toolkit, parent, "Legal Form");
 		final Text legalFormTxt = toolkit.createText(parent, "", SWT.BORDER);
 		legalFormTxt
 				.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// VAT ID Number
-		PeopleUiUtils.createBoldLabel(toolkit, parent, "VAT ID");
+		PeopleRapUtils.createBoldLabel(toolkit, parent, "VAT ID");
 		final Text vatIDTxt = toolkit.createText(parent, "", SWT.BORDER);
 		vatIDTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		final AbstractFormPart notePart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
-				PeopleUiUtils.refreshFormTextWidget(legalNameTxt, entity,
+				PeopleRapUtils.refreshFormTextWidget(legalNameTxt, entity,
 						PeopleNames.PEOPLE_LEGAL_NAME);
-				PeopleUiUtils.refreshFormTextWidget(legalFormTxt, entity,
+				PeopleRapUtils.refreshFormTextWidget(legalFormTxt, entity,
 						PeopleNames.PEOPLE_LEGAL_FORM);
-				PeopleUiUtils.refreshFormTextWidget(vatIDTxt, entity,
+				PeopleRapUtils.refreshFormTextWidget(vatIDTxt, entity,
 						PeopleNames.PEOPLE_VAT_ID_NB);
 			}
 		};
 
 		// Listeners
-		PeopleUiUtils.addModifyListener(legalFormTxt, entity,
+		PeopleRapUtils.addModifyListener(legalFormTxt, entity,
 				PeopleNames.PEOPLE_LEGAL_FORM, notePart);
-		PeopleUiUtils.addModifyListener(vatIDTxt, entity,
+		PeopleRapUtils.addModifyListener(vatIDTxt, entity,
 				PeopleNames.PEOPLE_VAT_ID_NB, notePart);
 
 		// Specific listeners to manage correctly display name
@@ -128,11 +128,11 @@ public class LegalInfoToolkit {
 	}
 
 	private void populateBankAccountGroup(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
 		final Group group = new Group(parent, 0);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		group.setText("Payment account");
-		group.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		group.setLayout(PeopleRapUtils.noSpaceGridLayout());
 
 		AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {

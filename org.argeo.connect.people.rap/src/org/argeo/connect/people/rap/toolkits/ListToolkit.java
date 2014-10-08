@@ -29,7 +29,7 @@ import org.argeo.connect.people.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.rap.providers.RoleListLabelProvider;
 import org.argeo.connect.people.rap.utils.AbstractPanelFormPart;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
@@ -105,7 +105,7 @@ public class ListToolkit {
 			TableColumnLayout tableColumnLayout = createJobsTableColumns(
 					entity, tableComp, jobsViewer, JobsPanelPart.this);
 			tableComp.setLayout(tableColumnLayout);
-			PeopleUiUtils.setTableDefaultStyle(jobsViewer, 60);
+			PeopleRapUtils.setTableDefaultStyle(jobsViewer, 60);
 
 			jobsViewer.setContentProvider(new BasicNodeListContentProvider());
 			jobsViewer
@@ -238,7 +238,7 @@ public class ListToolkit {
 			TableColumnLayout tableColumnLayout = createEmployeesTableColumns(
 					entity, tableComp, employeesViewer);
 			tableComp.setLayout(tableColumnLayout);
-			PeopleUiUtils.setTableDefaultStyle(employeesViewer, 70);
+			PeopleRapUtils.setTableDefaultStyle(employeesViewer, 70);
 
 			employeesViewer
 					.setContentProvider(new BasicNodeListContentProvider());

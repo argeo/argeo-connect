@@ -12,7 +12,7 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.providers.GroupLabelProvider;
 import org.argeo.connect.people.rap.toolkits.GroupToolkit;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -91,7 +91,7 @@ public class GroupEditor extends AbstractEntityCTabEditor {
 			// READ ONLY PANEL
 			final Composite roPanelCmp = toolkit.createComposite(parent,
 					SWT.NO_FOCUS);
-			PeopleUiUtils.setSwitchingFormData(roPanelCmp);
+			PeopleRapUtils.setSwitchingFormData(roPanelCmp);
 			roPanelCmp.setLayout(new GridLayout());
 
 			// Add a label with info provided by the FilmOverviewLabelProvider
@@ -104,22 +104,22 @@ public class GroupEditor extends AbstractEntityCTabEditor {
 			// EDIT PANEL
 			final Composite editPanel = toolkit.createComposite(parent,
 					SWT.NO_FOCUS);
-			PeopleUiUtils.setSwitchingFormData(editPanel);
+			PeopleRapUtils.setSwitchingFormData(editPanel);
 
 			// intern layout
 			editPanel.setLayout(new GridLayout(1, false));
-			final Text titleTxt = PeopleUiUtils.createGDText(toolkit,
+			final Text titleTxt = PeopleRapUtils.createGDText(toolkit,
 					editPanel, "A title", "The title of this group", 200, 1);
-			final Text descTxt = PeopleUiUtils.createGDText(toolkit, editPanel,
+			final Text descTxt = PeopleRapUtils.createGDText(toolkit, editPanel,
 					"A Description", "", 400, 1);
 
 			AbstractFormPart editPart = new AbstractFormPart() {
 				public void refresh() {
 					super.refresh();
 					// EDIT PART
-					PeopleUiUtils.refreshTextWidgetValue(titleTxt, group,
+					PeopleRapUtils.refreshTextWidgetValue(titleTxt, group,
 							Property.JCR_TITLE);
-					PeopleUiUtils.refreshTextWidgetValue(descTxt, group,
+					PeopleRapUtils.refreshTextWidgetValue(descTxt, group,
 							Property.JCR_DESCRIPTION);
 
 					// READ ONLY PART
@@ -134,9 +134,9 @@ public class GroupEditor extends AbstractEntityCTabEditor {
 			};
 
 			// Listeners
-			PeopleUiUtils.addTxtModifyListener(editPart, titleTxt, group,
+			PeopleRapUtils.addTxtModifyListener(editPart, titleTxt, group,
 					Property.JCR_TITLE, PropertyType.STRING);
-			PeopleUiUtils.addTxtModifyListener(editPart, descTxt, group,
+			PeopleRapUtils.addTxtModifyListener(editPart, descTxt, group,
 					Property.JCR_DESCRIPTION, PropertyType.STRING);
 
 			// compulsory because we broke normal life cycle while implementing

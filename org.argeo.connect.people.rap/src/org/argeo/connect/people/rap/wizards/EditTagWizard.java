@@ -27,7 +27,7 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.providers.TitleWithIconLP;
-import org.argeo.connect.people.rap.utils.PeopleUiUtils;
+import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ILazyContentProvider;
@@ -200,7 +200,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			body.setLayout(new GridLayout(2, false));
 
 			// New Title Value
-			PeopleUiUtils.createBoldLabel(body, "Title");
+			PeopleRapUtils.createBoldLabel(body, "Title");
 			newTitleTxt = new Text(body, SWT.BORDER);
 			newTitleTxt.setMessage("was: "
 					+ CommonsJcrUtils.get(tagLikeInstanceNode,
@@ -211,7 +211,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 					false));
 
 			// New Description Value
-			PeopleUiUtils.createBoldLabel(body, "Description", SWT.TOP);
+			PeopleRapUtils.createBoldLabel(body, "Description", SWT.TOP);
 			newDescTxt = new Text(body, SWT.BORDER | SWT.MULTI | SWT.WRAP);
 			newDescTxt.setMessage("was: "
 					+ CommonsJcrUtils.get(tagLikeInstanceNode,
@@ -237,7 +237,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 
 		public void createControl(Composite parent) {
 			Composite body = new Composite(parent, SWT.NONE);
-			body.setLayout(PeopleUiUtils.noSpaceGridLayout());
+			body.setLayout(PeopleRapUtils.noSpaceGridLayout());
 			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 			colDefs.add(new PeopleColumnDefinition(taggableNodeType,
 					Property.JCR_TITLE, PropertyType.STRING, "Display Name",
@@ -280,7 +280,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 
 			Constraint subTree = factory.descendantNode(
 					source.getSelectorName(), taggableParentPath);
-			constraint = PeopleUiUtils.localAnd(factory, constraint, subTree);
+			constraint = PeopleRapUtils.localAnd(factory, constraint, subTree);
 
 			Ordering order = factory.ascending(factory.propertyValue(
 					source.getSelectorName(), Property.JCR_TITLE));

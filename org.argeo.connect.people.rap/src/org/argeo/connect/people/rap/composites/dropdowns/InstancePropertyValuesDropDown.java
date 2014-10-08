@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.jcr.Session;
 
-import org.argeo.connect.people.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.LabelService;
 import org.eclipse.swt.widgets.Text;
 
 /**
@@ -14,21 +14,21 @@ import org.eclipse.swt.widgets.Text;
 public class InstancePropertyValuesDropDown extends PeopleAbstractDropDown {
 
 	private final Session session;
-	private final PeopleWorkbenchService peopleUiService;
+	private final LabelService labelService;
 	private final String resourcePath;
 	private final String propertyName;
 
 	/**
-	 * @param peopleUiService
+	 * @param peopleService
 	 * @param session
 	 * @param resourcePath
 	 * @param propertyName
 	 * @param text
 	 */
-	public InstancePropertyValuesDropDown(PeopleWorkbenchService peopleUiService,
+	public InstancePropertyValuesDropDown(LabelService labelService,
 			Session session, String resourcePath, String propertyName, Text text) {
 		super(text);
-		this.peopleUiService = peopleUiService;
+		this.labelService = labelService;
 		this.session = session;
 		this.resourcePath = resourcePath;
 		this.propertyName = propertyName;
@@ -37,7 +37,7 @@ public class InstancePropertyValuesDropDown extends PeopleAbstractDropDown {
 
 	@Override
 	protected List<String> getFilteredValues(String filter) {
-		List<String> values = peopleUiService.getInstancePropCatalog(session,
+		List<String> values = labelService.getInstancePropCatalog(session,
 				resourcePath, propertyName, filter);
 		return values;
 	}
