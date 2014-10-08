@@ -17,12 +17,14 @@ import org.argeo.connect.people.rap.editors.OrgEditor;
 import org.argeo.connect.people.rap.editors.PersonEditor;
 import org.argeo.connect.people.rap.editors.TaskEditor;
 import org.argeo.connect.people.rap.editors.UserGroupEditor;
+import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
@@ -30,6 +32,12 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * Open the corresponding editor given a node. Centralize here mapping between a
  * node type and an editor Corresponding node can be retrieved either using the
  * JCR ID or a business defined UID
+ * 
+ * If the parameter param.cTabId is set, if the opened editor is of type
+ * {@link AbstractEntityCTabEditor}, and if a tab with such an id exists, it is
+ * opened, otherwise it fails silently and open the default state of the
+ * corresponding editor
+ * 
  */
 public class OpenEntityEditor extends AbstractHandler {
 	private final static Log log = LogFactory.getLog(OpenEntityEditor.class);
@@ -41,8 +49,10 @@ public class OpenEntityEditor extends AbstractHandler {
 	private Repository repository;
 	private PeopleService peopleService;
 
-	public final static String PARAM_ENTITY_UID = "param.entityUid";
 	public final static String PARAM_JCR_ID = "param.jcrId";
+	public final static String PARAM_CTAB_ID = "param.cTabId";
+	@Deprecated
+	public final static String PARAM_ENTITY_UID = "param.entityUid";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
@@ -73,9 +83,16 @@ public class OpenEntityEditor extends AbstractHandler {
 			}
 
 			String editorId = getEditorIdFromNode(entity);
-			if (editorId != null)
-				HandlerUtil.getActiveWorkbenchWindow(event).getActivePage()
+			if (editorId != null) {
+				IEditorPart editor = HandlerUtil
+						.getActiveWorkbenchWindow(event).getActivePage()
 						.openEditor(eei, editorId);
+
+				String tabId = event.getParameter(PARAM_CTAB_ID);
+				if (CommonsJcrUtils.checkNotEmptyString(tabId)
+						&& editor instanceof AbstractEntityCTabEditor)
+					((AbstractEntityCTabEditor) editor).openTabItem(tabId);
+			}
 		} catch (PartInitException pie) {
 			throw new PeopleException(
 					"Unexpected PartInitException while opening entity editor",

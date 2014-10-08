@@ -15,8 +15,8 @@ import org.eclipse.swt.widgets.Control;
  * is bound to it. It provides a header with some meta informations and a body
  * to add tabs with further details.
  */
-public abstract class AbstractEntityCTabEditor extends AbstractPeopleWithImgEditor
-		implements IVersionedItemEditor {
+public abstract class AbstractEntityCTabEditor extends
+		AbstractPeopleWithImgEditor implements IVersionedItemEditor {
 	// private final static Log log = LogFactory
 	// .getLog(AbstractEntityEditor.class);
 
@@ -77,7 +77,7 @@ public abstract class AbstractEntityCTabEditor extends AbstractPeopleWithImgEdit
 		return item;
 	}
 
-	/** create or open the corresponding tab */
+	/** Open the corresponding tab if it has been defined */
 	public void openTabItem(String id) {
 		CTabItem[] items = folder.getItems();
 		for (CTabItem item : items) {
@@ -87,8 +87,8 @@ public abstract class AbstractEntityCTabEditor extends AbstractPeopleWithImgEdit
 				return;
 			}
 		}
-		CTabItem item = createCTab(folder, id);
-		folder.setSelection(item);
+		// CTabItem item = createCTab(folder, id);
+		// folder.setSelection(item);
 	}
 
 	/* UTILITES */
