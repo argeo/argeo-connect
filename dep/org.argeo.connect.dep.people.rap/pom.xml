@@ -11,10 +11,10 @@
 	<name>Connect People RAP Dependencies</name>
 	
 	<dependencies>
-		<!--  Connect People UI -->
+		<!--  Connect People RAP Workbench -->
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.people.ui</artifactId>
+			<artifactId>org.argeo.connect.people.rap</artifactId>
 			<version>2.1.10-SNAPSHOT</version>
 		</dependency>
 

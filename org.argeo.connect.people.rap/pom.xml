@@ -7,13 +7,12 @@
 		<version>2.1.10-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
-	<artifactId>org.argeo.connect.people.ui</artifactId>
-	<name>Connect People Workbench UI</name>
+	<artifactId>org.argeo.connect.people.rap</artifactId>
+	<name>Connect People RAP Workbench UI</name>
 	<packaging>jar</packaging>
 	<dependencies>
 		<!-- RAP Specific bundles -->
-		<!-- TODO clean this, current bundle contains many rap specific piece of code. 
-			(among other the rap specific Dropdown widget) -->
+		<!--  Dropdown widget from rap addons -->
 		<dependency>
 			<groupId>org.argeo.tp.rap.addons</groupId>
 			<artifactId>org.eclipse.rap.addons.dropdown</artifactId>
@@ -35,21 +34,21 @@
 		</dependency>
 
 		<!-- COMMONS -->
-		<!-- Base Argeo Eclipse Utilities -->
-		<dependency>
-			<groupId>org.argeo.commons.base</groupId>
-			<artifactId>org.argeo.eclipse.ui</artifactId>
-			<version>${version.argeo-commons}</version>
-		</dependency>
-
-		<!-- RAP only dependency, needed at compile time -->
+		<!-- RAP only dependencies -->
 		<dependency>
 			<groupId>org.argeo.commons.base</groupId>
 			<artifactId>org.argeo.eclipse.ui.rap</artifactId>
 			<version>${version.argeo-commons}</version>
 			<scope>provided</scope>
 		</dependency>
-
+	
+		<!-- Base Argeo Eclipse Utilities -->
+		<dependency>
+			<groupId>org.argeo.commons.base</groupId>
+			<artifactId>org.argeo.eclipse.ui</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+	
 		<dependency>
 			<groupId>org.argeo.commons.base</groupId>
 			<artifactId>org.argeo.eclipse.ui.jcr</artifactId>

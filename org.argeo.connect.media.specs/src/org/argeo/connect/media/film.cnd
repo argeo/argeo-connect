@@ -52,6 +52,8 @@
 - film:filmId (STRING) // a business specific film ID
 - film:type (STRING) // Feature, Mid-Length, Short
 - film:website (STRING) 
+- film:trailerUrl (STRING) // Rather use a URI property?
+
 
 - film:prodYear (LONG)
 - film:prodCountries (STRING) * // A list of countries as defined in ISO 3166-1

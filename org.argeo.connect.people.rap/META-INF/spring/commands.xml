@@ -6,14 +6,14 @@
 
 	<!-- Centralizes the intelligence to open the correct editor depending on 
 		the node type -->
-	<bean id="openEntityEditor" class="org.argeo.connect.people.ui.commands.OpenEntityEditor"
+	<bean id="openEntityEditor" class="org.argeo.connect.people.rap.commands.OpenEntityEditor"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
 	</bean>
 
 	<!-- Persons and Organisations -->
-	<bean id="editJob" class="org.argeo.connect.people.ui.commands.EditJob"
+	<bean id="editJob" class="org.argeo.connect.people.rap.commands.EditJob"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
@@ -21,45 +21,45 @@
 	</bean>
 
 	<!-- Entity References CRUD -->
-	<bean id="addEntityReference" class="org.argeo.connect.people.ui.commands.AddEntityReference"
+	<bean id="addEntityReference" class="org.argeo.connect.people.rap.commands.AddEntityReference"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
 	</bean>
 
 	<bean id="editEntityReference"
-		class="org.argeo.connect.people.ui.commands.EditEntityReference"
+		class="org.argeo.connect.people.rap.commands.EditEntityReference"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<!-- <property name="peopleService" ref="peopleService" /> -->
 	</bean>
 
 	<bean id="editEntityReferenceWithPosition"
-		class="org.argeo.connect.people.ui.commands.EditEntityReferenceWithPosition"
+		class="org.argeo.connect.people.rap.commands.EditEntityReferenceWithPosition"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
 	</bean>
 
 	<bean id="removeEntityReference"
-		class="org.argeo.connect.people.ui.commands.RemoveEntityReference"
+		class="org.argeo.connect.people.rap.commands.RemoveEntityReference"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 	</bean>
 
-	<bean id="deleteEntity" class="org.argeo.connect.people.ui.commands.DeleteEntity"
+	<bean id="deleteEntity" class="org.argeo.connect.people.rap.commands.DeleteEntity"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
 	</bean>
 
 	<!-- USER MANAGEMENT -->
-	<bean id="createUserGroup" class="org.argeo.connect.people.ui.commands.CreateUserGroup"
+	<bean id="createUserGroup" class="org.argeo.connect.people.rap.commands.CreateUserGroup"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
 	</bean>
-	<bean id="createPeopleUser" class="org.argeo.connect.people.ui.commands.CreatePeopleUser"
+	<bean id="createPeopleUser" class="org.argeo.connect.people.rap.commands.CreatePeopleUser"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />
@@ -68,31 +68,31 @@
 	</bean>
 
 	<!-- TASKS AND ACTIVITIES -->
-	<bean id="createSimpleTask" class="org.argeo.connect.people.ui.commands.CreateSimpleTask"
+	<bean id="createSimpleTask" class="org.argeo.connect.people.rap.commands.CreateSimpleTask"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
 	</bean>
 
 	<!-- Tag management -->
-	<!-- <bean id="forceTagCacheRefresh" class="org.argeo.connect.people.ui.commands.ForceTagCacheRefresh" 
+	<!-- <bean id="forceTagCacheRefresh" class="org.argeo.connect.people.rap.commands.ForceTagCacheRefresh" 
 		scope="prototype"> <property name="peopleService" ref="peopleService" /> 
 		<property name="repository" ref="repository" /> </bean> -->
 
 	<!-- TODO Check and eventually remove following commands after cleaning. -->
 	<bean id="importPeople"
-		class="org.argeo.connect.people.ui.commands.ImportPeopleHandler"
+		class="org.argeo.connect.people.rap.commands.ImportPeopleHandler"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 	</bean>
 
 	<bean id="addEntityReferences"
-		class="org.argeo.connect.people.ui.commands.AddEntityReferences"
+		class="org.argeo.connect.people.rap.commands.AddEntityReferences"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 	</bean>
 	<bean id="addEntityReferenceWithPosition"
-		class="org.argeo.connect.people.ui.commands.AddEntityReferenceWithPosition"
+		class="org.argeo.connect.people.rap.commands.AddEntityReferenceWithPosition"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 	</bean>

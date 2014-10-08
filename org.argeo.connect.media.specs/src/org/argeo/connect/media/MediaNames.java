@@ -50,6 +50,7 @@ public interface MediaNames {
 
 	public final static String FILM_PREMIERE = "film:premiere";
 	public final static String FILM_WEBSITE = "film:website";
+	public final static String FILM_TRAILER_URL = "film:trailerUrl";
 	public final static String FILM_LENGTH = "film:length";
 
 	public final static String FILM_CATEGORIES = "film:categories";

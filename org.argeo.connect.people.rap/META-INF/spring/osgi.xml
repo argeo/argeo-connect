@@ -21,8 +21,8 @@
 	<reference id="peopleService" interface="org.argeo.connect.people.PeopleService" />
 
 	<!-- LOCAL BEANS -->
-	<beans:bean id="peopleUiService" class="org.argeo.connect.people.ui.PeopleUiServiceImpl"
-		scope="prototype">
+	<beans:bean id="peopleUiService"
+		class="org.argeo.connect.people.rap.PeopleUiServiceImpl" scope="prototype">
 	</beans:bean>
 
 </beans:beans>

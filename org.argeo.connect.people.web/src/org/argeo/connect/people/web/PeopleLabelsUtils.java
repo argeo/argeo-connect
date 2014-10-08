@@ -311,7 +311,7 @@ public class PeopleLabelsUtils {
 	}
 
 	/**
-	 * creates the read-only HTML snippet to display in a label with styling
+	 * Creates the read-only HTML snippet to display in a label with styling
 	 * enabled in order to provide a click-able phone number
 	 */
 	public static String getPhoneLinkSnippet(String value) {
@@ -319,7 +319,7 @@ public class PeopleLabelsUtils {
 	}
 
 	/**
-	 * creates the read-only HTML snippet to display in a label with styling
+	 * Creates the read-only HTML snippet to display in a label with styling
 	 * enabled in order to provide a click-able phone number
 	 * 
 	 * @param value
@@ -336,7 +336,7 @@ public class PeopleLabelsUtils {
 	}
 
 	/**
-	 * creates the read-only HTML snippet to display in a label with styling
+	 * Creates the read-only HTML snippet to display in a label with styling
 	 * enabled in order to provide a click-able mail
 	 */
 	public static String getMailLinkSnippet(String value) {
@@ -344,6 +344,8 @@ public class PeopleLabelsUtils {
 	}
 
 	/**
+	 * Creates the read-only HTML snippet to display in a label with styling
+	 * enabled in order to provide a click-able mail
 	 * 
 	 * @param value
 	 * @param label
@@ -359,7 +361,7 @@ public class PeopleLabelsUtils {
 	}
 
 	/**
-	 * creates the read-only HTML snippet to display in a label with styling
+	 * Creates the read-only HTML snippet to display in a label with styling
 	 * enabled in order to provide a click-able link
 	 */
 	public static String getUrlLinkSnippet(String value) {
@@ -367,7 +369,7 @@ public class PeopleLabelsUtils {
 	}
 
 	/**
-	 * creates the read-only HTML snippet to display in a label with styling
+	 * Creates the read-only HTML snippet to display in a label with styling
 	 * enabled in order to provide a click-able link
 	 */
 	public static String getUrlLinkSnippet(String value, String label) {

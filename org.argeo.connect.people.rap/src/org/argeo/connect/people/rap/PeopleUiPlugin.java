@@ -10,7 +10,7 @@ import org.osgi.framework.BundleContext;
 public class PeopleUiPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.argeo.connect.people.ui"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "org.argeo.connect.people.rap"; //$NON-NLS-1$
 
 	// The shared instance
 	private static PeopleUiPlugin plugin;
