@@ -11,6 +11,8 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.TagService;
+import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.PeopleWebUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
@@ -144,7 +146,7 @@ public class PeopleLabelsUtils {
 		if (CommonsJcrUtils.checkNotEmptyString(nature)
 				|| CommonsJcrUtils.checkNotEmptyString(category)
 				|| CommonsJcrUtils.checkNotEmptyString(label)) {
-			builder.append(PeopleWebUtils.NB_DOUBLE_SPACE + "[");
+			builder.append(PeopleUiConstants.NB_DOUBLE_SPACE + "[");
 
 			if (CommonsJcrUtils.checkNotEmptyString(nature)) {
 				builder.append(nature).append(
@@ -288,25 +290,25 @@ public class PeopleLabelsUtils {
 				PeopleTypes.PEOPLE_PHONE);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
 			builder.append(getPhoneLinkSnippet(tmpStr)).append(
-					PeopleWebUtils.NB_DOUBLE_SPACE);
+					PeopleUiConstants.NB_DOUBLE_SPACE);
 		}
 
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_EMAIL);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
 			builder.append(getMailLinkSnippet(tmpStr)).append(
-					PeopleWebUtils.NB_DOUBLE_SPACE);
+					PeopleUiConstants.NB_DOUBLE_SPACE);
 
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 				PeopleTypes.PEOPLE_URL);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
 			builder.append(getUrlLinkSnippet(tmpStr)).append(
-					PeopleWebUtils.NB_DOUBLE_SPACE);
+					PeopleUiConstants.NB_DOUBLE_SPACE);
 
 		String result = builder.toString();
-		if (result.lastIndexOf(PeopleWebUtils.NB_DOUBLE_SPACE) > 0)
+		if (result.lastIndexOf(PeopleUiConstants.NB_DOUBLE_SPACE) > 0)
 			result = result.substring(0,
-					result.lastIndexOf(PeopleWebUtils.NB_DOUBLE_SPACE));
+					result.lastIndexOf(PeopleUiConstants.NB_DOUBLE_SPACE));
 		return PeopleWebUtils.replaceAmpersand(result);
 	}
 

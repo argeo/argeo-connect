@@ -6,10 +6,11 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.ui.PeopleWebUtils;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.web.PeopleLabelsUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
-import org.argeo.connect.people.web.PeopleWebUtils;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
@@ -95,7 +96,7 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 			builder.append(local);
 
 		if (isSmallList)
-			builder.append(PeopleWebUtils.NB_SPACE + PeopleWebUtils.NB_SPACE);
+			builder.append(PeopleUiConstants.NB_SPACE + PeopleUiConstants.NB_SPACE);
 		else
 			builder.append("<br/>");
 
@@ -110,11 +111,11 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 				PeopleNames.PEOPLE_MAILING_LISTS, "@");
 
 		if (isSmallList) {
-			builder.append(PeopleWebUtils.NB_SPACE + PeopleWebUtils.NB_SPACE)
+			builder.append(PeopleUiConstants.NB_SPACE + PeopleUiConstants.NB_SPACE)
 					.append(tags.trim());
 			if (CommonsJcrUtils.checkNotEmptyString(tags)
 					&& CommonsJcrUtils.checkNotEmptyString(mailingLists))
-				builder.append(PeopleWebUtils.NB_SPACE);
+				builder.append(PeopleUiConstants.NB_SPACE);
 			builder.append(mailingLists.trim());
 		} else {
 			builder.append("<br/>").append(tags.trim());

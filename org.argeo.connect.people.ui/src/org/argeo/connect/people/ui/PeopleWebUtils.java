@@ -1,4 +1,4 @@
-package org.argeo.connect.people.web;
+package org.argeo.connect.people.ui;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,10 +18,6 @@ public class PeopleWebUtils {
 		value = value.replaceAll("&(?![#a-zA-Z0-9]+;)", "&#38;");
 		return value;
 	}
-
-	/** Centralizes management of no-break space character */
-	public static String NB_SPACE = "&#160;";
-	public static String NB_DOUBLE_SPACE = "&#160;&#160;";
 
 	/**
 	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,

@@ -8,11 +8,12 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.ui.PeopleWebUtils;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.argeo.connect.people.web.PeopleLabelsUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
-import org.argeo.connect.people.web.PeopleWebUtils;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
@@ -79,8 +80,8 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 			builder.append("<br/>").append(fmn);
 			if (CommonsJcrUtils.checkNotEmptyString(fmn)
 					&& CommonsJcrUtils.checkNotEmptyString(localisationStr))
-				builder.append(PeopleWebUtils.NB_SPACE
-						+ PeopleWebUtils.NB_SPACE);
+				builder.append(PeopleUiConstants.NB_SPACE
+						+ PeopleUiConstants.NB_SPACE);
 			builder.append(localisationStr);
 		}
 		if (CommonsJcrUtils.checkNotEmptyString(primContactStr))
@@ -125,12 +126,12 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 		String local = PeopleLabelsUtils.getLocalisationInfo(peopleService,
 				person);
 		if (CommonsJcrUtils.checkNotEmptyString(local)) {
-			builder.append(PeopleWebUtils.NB_DOUBLE_SPACE);
+			builder.append(PeopleUiConstants.NB_DOUBLE_SPACE);
 			builder.append(local);
 		}
 
 		if (isSmallList)
-			builder.append(PeopleWebUtils.NB_DOUBLE_SPACE);
+			builder.append(PeopleUiConstants.NB_DOUBLE_SPACE);
 		else
 			builder.append("<br/>");
 
@@ -140,7 +141,7 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 		if (CommonsJcrUtils.checkNotEmptyString(primContactStr)) {
 			builder.append(primContactStr.trim());
 			if (isSmallList)
-				builder.append(PeopleWebUtils.NB_DOUBLE_SPACE);
+				builder.append(PeopleUiConstants.NB_DOUBLE_SPACE);
 			else
 				builder.append("<br/>");
 		}
@@ -154,7 +155,7 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 			builder.append(tags);
 			if (CommonsJcrUtils.checkNotEmptyString(tags)
 					&& CommonsJcrUtils.checkNotEmptyString(mailingLists))
-				builder.append(PeopleWebUtils.NB_SPACE);
+				builder.append(PeopleUiConstants.NB_SPACE);
 			builder.append(mailingLists);
 		} else {
 			builder.append("<br/>").append(tags);

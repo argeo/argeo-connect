@@ -5,8 +5,8 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsUiProvider;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.ui.PeopleWebUtils;
 import org.argeo.connect.people.web.PeopleLabelsUtils;
-import org.argeo.connect.people.web.PeopleWebUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
