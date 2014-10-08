@@ -6,12 +6,12 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
 	<!-- Views -->
-	<bean id="peopleBrowserView" class="org.argeo.connect.people.rap.views.PeopleBrowserView"
-	scope="prototype">
+	<bean id="peopleBrowserView" class="org.argeo.connect.people.ui.views.PeopleBrowserView"
+		scope="prototype">
 		<property name="repository" ref="repository" />
 	</bean>
 	
-	<bean id="peopleDefaultView" class="org.argeo.connect.people.rap.views.PeopleDefaultView"
+	<bean id="peopleDefaultView" class="org.argeo.connect.people.ui.views.PeopleDefaultView"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
@@ -20,27 +20,27 @@
 
 
 	<!-- USERS, GROUPS AND ACTIVITIES -->
-	<bean id="myTasksView" class="org.argeo.connect.people.rap.views.MyTasksView"
+	<bean id="myTasksView" class="org.argeo.connect.people.ui.views.MyTasksView"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
 
-	<bean id="userGroupsView" class="org.argeo.connect.people.rap.views.UserGroupsView"
+	<bean id="userGroupsView" class="org.argeo.connect.people.ui.views.UserGroupsView"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
 
-	<bean id="adminUsersView" class="org.argeo.connect.people.rap.views.AdminUsersView"
+	<bean id="adminUsersView" class="org.argeo.connect.people.ui.views.AdminUsersView"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 	</bean>
 
 
 
-	<bean id="categorizedSearchView" class="org.argeo.connect.people.rap.views.CategorizedSearchView"
+	<bean id="categorizedSearchView" class="org.argeo.connect.people.ui.views.CategorizedSearchView"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />

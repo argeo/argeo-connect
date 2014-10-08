@@ -4,60 +4,60 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="listValuesEditor" class="org.argeo.connect.people.rap.editors.ListValuesEditor"
+	<bean id="listValuesEditor" class="org.argeo.connect.people.ui.editors.ListValuesEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
 
-	<bean id="searchByTagEditor" class="org.argeo.connect.people.rap.editors.SearchByTagEditor"
+	<bean id="searchByTagEditor" class="org.argeo.connect.people.ui.editors.SearchByTagEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
 
-	<bean id="defaultSearchEntityEditor" class="org.argeo.connect.people.rap.editors.DefaultSearchEntityEditor"
+	<bean id="defaultSearchEntityEditor" class="org.argeo.connect.people.ui.editors.DefaultSearchEntityEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
 
-	<bean id="searchPersonEditor" class="org.argeo.connect.people.rap.editors.SearchPersonEditor"
+	<bean id="searchPersonEditor" class="org.argeo.connect.people.ui.editors.SearchPersonEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
 
 	<!-- User and groups -->
-	<bean id="userEditor" class="org.argeo.connect.people.rap.editors.UserEditor"
+	<bean id="userEditor" class="org.argeo.connect.people.ui.editors.UserEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />
 		<property name="peopleService" ref="peopleService" />
 	</bean>
 
-	<bean id="groupEditor" class="org.argeo.connect.people.rap.editors.GroupEditor"
+	<bean id="groupEditor" class="org.argeo.connect.people.ui.editors.GroupEditor"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
 	</bean>
 
-	<bean id="userGroupEditor" class="org.argeo.connect.people.rap.editors.UserGroupEditor"
+	<bean id="userGroupEditor" class="org.argeo.connect.people.ui.editors.UserGroupEditor"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
 	</bean>
 
 	<!-- DEFAULT PEOPLE EDITORS -->
-	<bean id="personEditor" class="org.argeo.connect.people.rap.editors.PersonEditor"
+	<bean id="personEditor" class="org.argeo.connect.people.ui.editors.PersonEditor"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
 
-	<bean id="orgEditor" class="org.argeo.connect.people.rap.editors.OrgEditor"
+	<bean id="orgEditor" class="org.argeo.connect.people.ui.editors.OrgEditor"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
@@ -65,14 +65,14 @@
 	</bean>
 
 	<!-- DEFAULT ACTIVITIES EDITORS -->
-	<bean id="activityEditor" class="org.argeo.connect.people.rap.editors.ActivityEditor"
+	<bean id="activityEditor" class="org.argeo.connect.people.ui.editors.ActivityEditor"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
 
-	<bean id="taskEditor" class="org.argeo.connect.people.rap.editors.TaskEditor"
+	<bean id="taskEditor" class="org.argeo.connect.people.ui.editors.TaskEditor"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
