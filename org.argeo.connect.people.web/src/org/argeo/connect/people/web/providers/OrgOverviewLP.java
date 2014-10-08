@@ -6,10 +6,10 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.PeopleWebUtils;
+import org.argeo.connect.people.ui.PeopleUiSnippets;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.web.PeopleLabelsUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -49,7 +49,7 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 			default:
 				throw new PeopleException("Unable to provide text for person");
 			}
-			return PeopleWebUtils.replaceAmpersand(result);
+			return PeopleUiUtils.replaceAmpersand(result);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot create organizations content", re);
 		}
@@ -62,14 +62,14 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 		builder.append(peopleService.getDisplayName(orga));
 		builder.append("</b></big> ");
 
-		String local = PeopleLabelsUtils.getLocalisationInfo(peopleService,
+		String local = PeopleUiSnippets.getLocalisationInfo(peopleService,
 				orga);
 		if (CommonsJcrUtils.checkNotEmptyString(local))
 			builder.append(local);
 
 		builder.append("<br/>");
 
-		String tmpStr = PeopleLabelsUtils.getPrimaryContactsSnippet(orga);
+		String tmpStr = PeopleUiSnippets.getPrimaryContactsSnippet(orga);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
 			builder.append(tmpStr);
 		}
@@ -90,7 +90,7 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 		if (!isSmallList)
 			builder.append("</big>");
 
-		String local = PeopleLabelsUtils.getLocalisationInfo(peopleService,
+		String local = PeopleUiSnippets.getLocalisationInfo(peopleService,
 				orga);
 		if (CommonsJcrUtils.checkNotEmptyString(local))
 			builder.append(local);
@@ -100,14 +100,14 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 		else
 			builder.append("<br/>");
 
-		String tmpStr = PeopleLabelsUtils.getPrimaryContactsSnippet(orga);
+		String tmpStr = PeopleUiSnippets.getPrimaryContactsSnippet(orga);
 		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
 			builder.append(tmpStr);
 		}
 
-		String tags = PeopleLabelsUtils.getTagLikeValues(peopleService, orga,
+		String tags = PeopleUiSnippets.getTagLikeValues(peopleService, orga,
 				PeopleNames.PEOPLE_TAGS, "#");
-		String mailingLists = PeopleLabelsUtils.getTagLikeValues(peopleService, orga,
+		String mailingLists = PeopleUiSnippets.getTagLikeValues(peopleService, orga,
 				PeopleNames.PEOPLE_MAILING_LISTS, "@");
 
 		if (isSmallList) {

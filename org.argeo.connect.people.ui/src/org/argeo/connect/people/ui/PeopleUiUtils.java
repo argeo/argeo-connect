@@ -7,8 +7,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 
 /** Helper methods for People Web UI */
-public class PeopleWebUtils {
-	private final static Log log = LogFactory.getLog(PeopleWebUtils.class);
+public class PeopleUiUtils {
+	private final static Log log = LogFactory.getLog(PeopleUiUtils.class);
 
 	/**
 	 * Cleans a String by replacing any '&' by its HTML encoding '&#38;' to

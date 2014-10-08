@@ -4,7 +4,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsUiProvider;
-import org.argeo.connect.people.ui.PeopleWebUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.web.parts.ActivitiesPart;
 import org.argeo.connect.people.web.parts.ContactsWithNotePart;
 import org.argeo.connect.people.web.parts.OrgHeaderPart;
@@ -31,21 +31,21 @@ public class OrgPage implements CmsUiProvider {
 		// TODO use a scrollable composite
 		Composite body = new Composite(parent, SWT.NO_FOCUS);
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		body.setLayout(PeopleWebUtils.noSpaceGridLayout());
+		body.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// header
 		Composite headerCmp = new Composite(body, SWT.NO_FOCUS);
-		headerCmp.setLayoutData(PeopleWebUtils.horizontalFillData());
+		headerCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
 		orgHeaderPart.createUi(headerCmp, context);
 
 		// contacts
 		Composite contactCmp = new Composite(body, SWT.NO_FOCUS);
-		contactCmp.setLayoutData(PeopleWebUtils.horizontalFillData());
+		contactCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
 		contactsWithNotePart.createUi(contactCmp, context);
 
 		// activities
 		Composite activitiesCmp = new Composite(body, SWT.NO_FOCUS);
-		activitiesCmp.setLayoutData(PeopleWebUtils.horizontalFillData());
+		activitiesCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
 		activitiesPart.createUi(activitiesCmp, context);
 
 		parent.layout();

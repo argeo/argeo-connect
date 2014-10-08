@@ -8,11 +8,11 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.PeopleWebUtils;
+import org.argeo.connect.people.ui.PeopleUiSnippets;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
-import org.argeo.connect.people.web.PeopleLabelsUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -51,7 +51,7 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 			default:
 				throw new PeopleException("Unable to provide text for person");
 			}
-			return PeopleWebUtils.replaceAmpersand(result);
+			return PeopleUiUtils.replaceAmpersand(result);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot create organizations content", re);
 		}
@@ -65,10 +65,10 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 		String displayName = peopleService.getDisplayName(person);
 		builder.append(displayName);
 		builder.append("</big></b>");
-		String fmn = PeopleLabelsUtils.getFullMontyName(person);
-		String localisationStr = PeopleLabelsUtils.getLocalisationInfo(
+		String fmn = PeopleUiSnippets.getFullMontyName(person);
+		String localisationStr = PeopleUiSnippets.getLocalisationInfo(
 				peopleService, person);
-		String primContactStr = PeopleLabelsUtils
+		String primContactStr = PeopleUiSnippets
 				.getPrimaryContactsSnippet(person);
 		Boolean politeFormFlag = CommonsJcrUtils.getBooleanValue(person,
 				PEOPLE_USE_POLITE_FORM);
@@ -123,7 +123,7 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 			builder.append("</big></b>");
 		}
 
-		String local = PeopleLabelsUtils.getLocalisationInfo(peopleService,
+		String local = PeopleUiSnippets.getLocalisationInfo(peopleService,
 				person);
 		if (CommonsJcrUtils.checkNotEmptyString(local)) {
 			builder.append(PeopleUiConstants.NB_DOUBLE_SPACE);
@@ -136,7 +136,7 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 			builder.append("<br/>");
 
 		// Contacts
-		String primContactStr = PeopleLabelsUtils
+		String primContactStr = PeopleUiSnippets
 				.getPrimaryContactsSnippet(person);
 		if (CommonsJcrUtils.checkNotEmptyString(primContactStr)) {
 			builder.append(primContactStr.trim());
@@ -147,9 +147,9 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 		}
 
 		// Tags
-		String tags = PeopleLabelsUtils.getTagLikeValues(peopleService, person,
+		String tags = PeopleUiSnippets.getTagLikeValues(peopleService, person,
 				PeopleNames.PEOPLE_TAGS, "#");
-		String mailingLists = PeopleLabelsUtils.getTagLikeValues(peopleService,
+		String mailingLists = PeopleUiSnippets.getTagLikeValues(peopleService,
 				person, PeopleNames.PEOPLE_MAILING_LISTS, "@");
 		if (isSmallList) {
 			builder.append(tags);

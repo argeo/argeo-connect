@@ -4,7 +4,7 @@ import javax.jcr.Node;
 
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.PeopleWebUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -45,7 +45,7 @@ public class EntitySingleLineLabelProvider implements ILabelProvider {
 			builder.append("<b>");
 			builder.append(peopleService.getDisplayName(entity));
 			builder.append("</b>");
-			return PeopleWebUtils.replaceAmpersand(builder.toString());
+			return PeopleUiUtils.replaceAmpersand(builder.toString());
 		}
 	}
 

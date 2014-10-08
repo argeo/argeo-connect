@@ -4,7 +4,7 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.people.ui.PeopleWebUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -21,26 +21,26 @@ public class ContactsWithNotePart extends ContactsPart {
 	@Override
 	public Control createUi(Composite parent, Node context)
 			throws RepositoryException {
-		parent.setLayout(PeopleWebUtils.noSpaceGridLayout(2));
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 		Composite left = new Composite(parent, SWT.NO_FOCUS);
-		left.setLayoutData(PeopleWebUtils.horizontalFillData());
+		left.setLayoutData(PeopleUiUtils.horizontalFillData());
 		createContactPanel(left, context);
 
 		Composite right = new Composite(parent, SWT.NO_FOCUS);
-		right.setLayoutData(PeopleWebUtils.fillGridData());
+		right.setLayoutData(PeopleUiUtils.fillGridData());
 		createNotePanel(right, context);
 		return parent;
 	}
 
 	private void createNotePanel(Composite parent, Node context)
 			throws RepositoryException {
-		parent.setLayout(PeopleWebUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// FIXME add description in the demo data and change the below
 		if (context.hasProperty(Property.JCR_TITLE)) {
 			Group group = new Group(parent, SWT.NO_FOCUS);
-			group.setLayout(PeopleWebUtils.noSpaceGridLayout());
-			group.setLayoutData(PeopleWebUtils.fillGridData());
+			group.setLayout(PeopleUiUtils.noSpaceGridLayout());
+			group.setLayoutData(PeopleUiUtils.fillGridData());
 
 			group.setText("Note");
 			Label label = new Label(group, SWT.WRAP);

@@ -5,8 +5,8 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsUiProvider;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.PeopleWebUtils;
-import org.argeo.connect.people.web.PeopleLabelsUtils;
+import org.argeo.connect.people.ui.PeopleUiSnippets;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
@@ -38,10 +38,10 @@ public class SingleContactPart implements CmsUiProvider {
 
 	protected void populateReadOnlyPanel(final Composite readOnlyPanel,
 			Node context) {
-		readOnlyPanel.setLayout(PeopleWebUtils.noSpaceGridLayout());
+		readOnlyPanel.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		Label label = new Label(readOnlyPanel, SWT.WRAP);
 		label.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		String addressHtml = PeopleLabelsUtils.getContactDisplaySnippet(
+		String addressHtml = PeopleUiSnippets.getContactDisplaySnippet(
 				peopleService, context);
 		label.setText(addressHtml);
 	}

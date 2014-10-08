@@ -1,4 +1,4 @@
-package org.argeo.connect.people.web;
+package org.argeo.connect.people.ui;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -11,8 +11,6 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.TagService;
-import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleWebUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
@@ -21,7 +19,7 @@ import org.argeo.connect.people.utils.ResourcesJcrUtils;
  * Some helper methods to generate html snippets TODO refactor this once the
  * internationalization has been implemented.
  */
-public class PeopleLabelsUtils {
+public class PeopleUiSnippets {
 
 	/** creates a full monty name snippet for overview panels */
 	public static String getFullMontyName(Node node) {
@@ -72,7 +70,7 @@ public class PeopleLabelsUtils {
 					builder.append("aka: ").append(nickName);
 				builder.append(")</i>");
 			}
-			return PeopleWebUtils.replaceAmpersand(builder.toString());
+			return PeopleUiUtils.replaceAmpersand(builder.toString());
 		} // useless otherwise
 		else
 			return "";
@@ -101,7 +99,7 @@ public class PeopleLabelsUtils {
 					builder.append(value);
 			}
 			builder.append(getContactMetaData(node));
-			return PeopleWebUtils.replaceAmpersand(builder.toString());
+			return PeopleUiUtils.replaceAmpersand(builder.toString());
 
 		} catch (RepositoryException re) {
 			throw new PeopleException("Error while generating contact "
@@ -129,7 +127,7 @@ public class PeopleLabelsUtils {
 						primaryAddress));
 			}
 		}
-		return PeopleWebUtils.replaceAmpersand(builder.toString());
+		return PeopleUiUtils.replaceAmpersand(builder.toString());
 	}
 
 	/** creates the display ReadOnly HTML snippet for various contact metadata */
@@ -165,7 +163,7 @@ public class PeopleLabelsUtils {
 			}
 			builder.append("]");
 		}
-		return PeopleWebUtils.replaceAmpersand(builder.toString());
+		return PeopleUiUtils.replaceAmpersand(builder.toString());
 	}
 
 	/** creates an address Display value */
@@ -279,7 +277,7 @@ public class PeopleLabelsUtils {
 			throw new PeopleException("Error while tag like property "
 					+ propertyName + " values for node " + entity, e);
 		}
-		return PeopleWebUtils.replaceAmpersand(builder.toString().trim());
+		return PeopleUiUtils.replaceAmpersand(builder.toString().trim());
 	}
 
 	/** Returns primary contacts (phone, mail, website) as links if they exist */
@@ -309,7 +307,7 @@ public class PeopleLabelsUtils {
 		if (result.lastIndexOf(PeopleUiConstants.NB_DOUBLE_SPACE) > 0)
 			result = result.substring(0,
 					result.lastIndexOf(PeopleUiConstants.NB_DOUBLE_SPACE));
-		return PeopleWebUtils.replaceAmpersand(result);
+		return PeopleUiUtils.replaceAmpersand(result);
 	}
 
 	/**
@@ -356,7 +354,7 @@ public class PeopleLabelsUtils {
 	 */
 	public static String getMailLinkSnippet(String value, String label) {
 		StringBuilder builder = new StringBuilder();
-		value = PeopleWebUtils.replaceAmpersand(value);
+		value = PeopleUiUtils.replaceAmpersand(value);
 		builder.append("<a href=\"mailto:");
 		builder.append(value).append("\" >").append(label).append("</a>");
 		return builder.toString();
@@ -377,7 +375,7 @@ public class PeopleLabelsUtils {
 	public static String getUrlLinkSnippet(String value, String label) {
 		StringBuilder builder = new StringBuilder();
 
-		value = PeopleWebUtils.replaceAmpersand(value);
+		value = PeopleUiUtils.replaceAmpersand(value);
 		if (!(value.startsWith("http://") || value.startsWith("https://")))
 			value = "http://" + value;
 		builder.append("<a href=\"");
@@ -442,7 +440,7 @@ public class PeopleLabelsUtils {
 				builder.append(tmpStr).append("</a><br/>");
 			}
 
-			return PeopleWebUtils.replaceAmpersand(builder.toString());
+			return PeopleUiUtils.replaceAmpersand(builder.toString());
 		} catch (RepositoryException re) {
 			throw new PeopleException(
 					"Unable to create contact snippet for node " + entity, re);

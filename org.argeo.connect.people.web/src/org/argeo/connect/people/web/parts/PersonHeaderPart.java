@@ -10,7 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.argeo.cms.CmsUiProvider;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.PeopleWebUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.providers.PersonOverviewLP;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -56,7 +56,7 @@ public class PersonHeaderPart implements CmsUiProvider {
 			parent.setLayout(new GridLayout(2, false));
 			Composite imgCmp = new Composite(parent, SWT.NO_FOCUS
 					| SWT.NO_SCROLL | SWT.NO_TRIM);
-			imgCmp.setLayout(PeopleWebUtils.noSpaceGridLayout());
+			imgCmp.setLayout(PeopleUiUtils.noSpaceGridLayout());
 			imgCmp.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
 			new ImageLabel(imgCmp, SWT.NO_FOCUS, itemPicture);
 
@@ -74,13 +74,13 @@ public class PersonHeaderPart implements CmsUiProvider {
 		readOnlyInfoLbl.setText(personLP.getText(context));
 
 		Composite tagsCmp = new Composite(parent, SWT.NO_FOCUS);
-		tagsCmp.setLayoutData(PeopleWebUtils.horizontalFillData());
-		tagsCmp.setLayout(PeopleWebUtils.noSpaceGridLayout());
+		tagsCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		tagsCmp.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		tagsPart.createUi(tagsCmp, context);
 
 		Composite mlCmp = new Composite(parent, SWT.NO_FOCUS);
-		mlCmp.setLayoutData(PeopleWebUtils.horizontalFillData());
-		mlCmp.setLayout(PeopleWebUtils.noSpaceGridLayout());
+		mlCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		mlCmp.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		mailingListsPart.createUi(mlCmp, context);
 
 		return parent;

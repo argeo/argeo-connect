@@ -6,7 +6,7 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsUiProvider;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.ui.PeopleWebUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -25,14 +25,14 @@ public class ContactsPart implements CmsUiProvider {
 
 	protected void createContactPanel(Composite parent, Node context)
 			throws RepositoryException {
-		parent.setLayout(PeopleWebUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		if (context.hasNode(PeopleNames.PEOPLE_CONTACTS)) {
 			NodeIterator nit = context.getNode(PeopleNames.PEOPLE_CONTACTS)
 					.getNodes();
 			while (nit.hasNext()) {
 				Composite contactCmp = new Composite(parent, SWT.NO_FOCUS);
-				contactCmp.setLayoutData(PeopleWebUtils.horizontalFillData());
+				contactCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
 				singleContactPart.createUi(contactCmp, nit.nextNode());
 			}
 		}
