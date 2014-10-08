@@ -8,46 +8,33 @@
 		the node type -->
 	<bean id="openEntityEditor" class="org.argeo.connect.people.rap.commands.OpenEntityEditor"
 		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
+		<property name="peopleService" ref="peopleService" />
 	</bean>
 
 	<!-- Persons and Organisations -->
 	<bean id="editJob" class="org.argeo.connect.people.rap.commands.EditJob"
 		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
-		<property name="peopleUiService" ref="peopleUiService" />
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
 	<!-- Entity References CRUD -->
 	<bean id="addEntityReference"
 		class="org.argeo.connect.people.rap.commands.AddEntityReference"
 		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
-		<property name="repository" ref="repository" />
-	</bean>
-
-	<bean id="editEntityReference"
-		class="org.argeo.connect.people.rap.commands.EditEntityReference"
-		scope="prototype">
-		<property name="repository" ref="repository" />
-		<!-- <property name="peopleService" ref="peopleService" /> -->
-	</bean>
-
-	<bean id="editEntityReferenceWithPosition"
-		class="org.argeo.connect.people.rap.commands.EditEntityReferenceWithPosition"
-		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
 	</bean>
 
-	<bean id="removeEntityReference"
-		class="org.argeo.connect.people.rap.commands.RemoveEntityReference"
-		scope="prototype">
-		<property name="repository" ref="repository" />
-	</bean>
-
+	<!-- <bean id="editEntityReference" class="org.argeo.connect.people.rap.commands.EditEntityReference" 
+		scope="prototype"> <property name="repository" ref="repository" /> </bean> 
+		<bean id="editEntityReferenceWithPosition" class="org.argeo.connect.people.rap.commands.EditEntityReferenceWithPosition" 
+		scope="prototype"> <property name="repository" ref="repository" /> <property 
+		name="peopleService" ref="peopleService" /> </bean> <bean id="removeEntityReference" 
+		class="org.argeo.connect.people.rap.commands.RemoveEntityReference" scope="prototype"> 
+		<property name="repository" ref="repository" /> </bean> -->
 	<bean id="deleteEntity" class="org.argeo.connect.people.rap.commands.DeleteEntity"
 		scope="prototype">
 		<property name="repository" ref="repository" />
@@ -87,15 +74,10 @@
 		<property name="repository" ref="repository" />
 	</bean>
 
-	<bean id="addEntityReferences"
-		class="org.argeo.connect.people.rap.commands.AddEntityReferences"
-		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
-	</bean>
-	<bean id="addEntityReferenceWithPosition"
-		class="org.argeo.connect.people.rap.commands.AddEntityReferenceWithPosition"
-		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
-	</bean>
+	<!-- <bean id="addEntityReferences" class="org.argeo.connect.people.rap.commands.AddEntityReferences" 
+		scope="prototype"> <property name="peopleService" ref="peopleService" /> 
+		</bean> <bean id="addEntityReferenceWithPosition" class="org.argeo.connect.people.rap.commands.AddEntityReferenceWithPosition" 
+		scope="prototype"> <property name="peopleService" ref="peopleService" /> 
+		</bean> -->
 	<!-- until there -->
 </beans>

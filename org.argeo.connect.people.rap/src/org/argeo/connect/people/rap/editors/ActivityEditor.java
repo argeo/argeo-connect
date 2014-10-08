@@ -161,9 +161,10 @@ public class ActivityEditor extends AbstractPeopleEditor {
 							if (isCO) {
 								Button deleteBtn = new Button(relatedCmp,
 										SWT.FLAT);
-								deleteBtn.setData(
-										PeopleRapConstants.CUSTOM_VARIANT,
-										PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
+								deleteBtn
+										.setData(
+												PeopleRapConstants.CUSTOM_VARIANT,
+												PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 								deleteBtn.setImage(PeopleImages.DELETE_BTN);
 								RowData rd = new RowData();
 								rd.height = 16;
@@ -226,7 +227,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 
 		@Override
 		public void widgetSelected(final SelectionEvent event) {
-			CommandUtils.callCommand(getPeopleUiService()
+			CommandUtils.callCommand(getPeopleWorkbenchService()
 					.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
 					jcrId);
 		}
@@ -301,8 +302,8 @@ public class ActivityEditor extends AbstractPeopleEditor {
 			}
 		};
 
-		PeopleRapUtils.addModifyListener(titleTxt, activity, Property.JCR_TITLE,
-				formPart);
+		PeopleRapUtils.addModifyListener(titleTxt, activity,
+				Property.JCR_TITLE, formPart);
 		PeopleRapUtils.addModifyListener(descTxt, activity,
 				Property.JCR_DESCRIPTION, formPart);
 

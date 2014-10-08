@@ -66,7 +66,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleUiService;
+	private PeopleWorkbenchService peopleWorkbenchService;
 	// We use a one session per editor pattern to secure various nodes and
 	// changes life cycle
 	private Repository repository;
@@ -328,8 +328,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		return peopleService;
 	}
 
-	protected PeopleWorkbenchService getPeopleUiService() {
-		return peopleUiService;
+	protected PeopleWorkbenchService getPeopleWorkbenchService() {
+		return peopleWorkbenchService;
 	}
 
 	protected Session getSession() {
@@ -540,8 +540,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
-		this.peopleUiService = peopleUiService;
+	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
 	public void setRepository(Repository repository) {

@@ -78,7 +78,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 	@Override
 	protected void createToolkits() {
 		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
-				getPeopleService(), getPeopleUiService());
+				getPeopleService(), getPeopleWorkbenchService());
 	}
 
 	@Override
@@ -168,8 +168,8 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 							PeopleNames.PEOPLE_TASK_STATUS);
 					PeopleRapUtils.refreshFormDateTimeWidget(dueDateDt, task,
 							PeopleNames.PEOPLE_DUE_DATE);
-					PeopleRapUtils.refreshFormDateTimeWidget(wakeUpDateDt, task,
-							PeopleNames.PEOPLE_WAKE_UP_DATE);
+					PeopleRapUtils.refreshFormDateTimeWidget(wakeUpDateDt,
+							task, PeopleNames.PEOPLE_WAKE_UP_DATE);
 
 					PeopleRapUtils.refreshFormTextWidget(titleTxt, task,
 							Property.JCR_TITLE);
@@ -217,9 +217,10 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 							if (isCO) {
 								Button deleteBtn = new Button(relatedCmp,
 										SWT.FLAT);
-								deleteBtn.setData(
-										PeopleRapConstants.CUSTOM_VARIANT,
-										PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
+								deleteBtn
+										.setData(
+												PeopleRapConstants.CUSTOM_VARIANT,
+												PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 								deleteBtn.setImage(PeopleImages.DELETE_BTN);
 								RowData rd = new RowData();
 								rd.height = 16;
@@ -333,7 +334,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 
 		@Override
 		public void widgetSelected(final SelectionEvent event) {
-			CommandUtils.callCommand(getPeopleUiService()
+			CommandUtils.callCommand(getPeopleWorkbenchService()
 					.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
 					jcrId);
 		}

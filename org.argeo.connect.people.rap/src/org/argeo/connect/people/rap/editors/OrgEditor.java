@@ -74,10 +74,10 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 	@Override
 	protected void createToolkits() {
 		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
-				getPeopleUiService());
+				getPeopleWorkbenchService());
 		legalTK = new LegalInfoToolkit(toolkit, getManagedForm(), org);
 		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
-				getPeopleService(), getPeopleUiService());
+				getPeopleService(), getPeopleWorkbenchService());
 	}
 
 	@Override
@@ -92,16 +92,18 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 
 		// Tag Management
 		Composite tagsCmp = new TagListComposite(parent, SWT.NO_FOCUS, toolkit,
-				getManagedForm(), getPeopleService(), getPeopleUiService(),
-				org, PeopleNames.PEOPLE_TAGS, getPeopleService()
-						.getResourceBasePath(PeopleConstants.RESOURCE_TAG),
+				getManagedForm(), getPeopleService(),
+				getPeopleWorkbenchService(), org, PeopleNames.PEOPLE_TAGS,
+				getPeopleService().getResourceBasePath(
+						PeopleConstants.RESOURCE_TAG),
 				NodeType.NT_UNSTRUCTURED, "Add a tag");
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// Mailing list management
 		Composite mlCmp = new TagListComposite(parent, SWT.NO_FOCUS, toolkit,
-				getManagedForm(), getPeopleService(), getPeopleUiService(),
-				org, PeopleNames.PEOPLE_MAILING_LISTS, getPeopleService()
+				getManagedForm(), getPeopleService(),
+				getPeopleWorkbenchService(), org,
+				PeopleNames.PEOPLE_MAILING_LISTS, getPeopleService()
 						.getResourceBasePath(PeopleTypes.PEOPLE_MAILING_LIST),
 				PeopleTypes.PEOPLE_MAILING_LIST, "Add a mailing");
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
@@ -116,7 +118,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		innerPannel.setLayout(PeopleRapUtils.noSpaceGridLayout());
 		ContactPanelComposite cpc = new ContactPanelComposite(innerPannel,
 				SWT.NO_FOCUS, toolkit, getManagedForm(), getNode(),
-				getPeopleService(), getPeopleUiService());
+				getPeopleService(), getPeopleWorkbenchService());
 		cpc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		// Activities and tasks
@@ -153,8 +155,8 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 			// Add a label with info provided by the OrgOverviewLabelProvider
 			final Label orgInfoROLbl = toolkit.createLabel(roPanelCmp, "",
 					SWT.WRAP);
-			orgInfoROLbl
-					.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
+			orgInfoROLbl.setData(PeopleRapConstants.MARKUP_ENABLED,
+					Boolean.TRUE);
 			final ColumnLabelProvider orgLP = new OrgOverviewLabelProvider(
 					false, getPeopleService());
 

@@ -1,9 +1,6 @@
 package org.argeo.connect.people.rap;
 
-import java.util.List;
-
 import javax.jcr.Node;
-import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleService;
 import org.eclipse.jface.wizard.Wizard;

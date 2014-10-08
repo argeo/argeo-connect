@@ -89,9 +89,9 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 	@Override
 	protected void createToolkits() {
 		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
-				getPeopleService(), getPeopleUiService());
+				getPeopleService(), getPeopleWorkbenchService());
 		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
-				getPeopleUiService());
+				getPeopleWorkbenchService());
 		historyTK = new HistoryToolkit(toolkit, getManagedForm(),
 				getRepository(), getPeopleService(), person);
 	}
@@ -109,17 +109,19 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 
 		// Tag Management
 		Composite tagsCmp = new TagListComposite(parent, SWT.NO_FOCUS, toolkit,
-				getManagedForm(), getPeopleService(), getPeopleUiService(),
-				person, PEOPLE_TAGS, getPeopleService().getResourceBasePath(
+				getManagedForm(), getPeopleService(),
+				getPeopleWorkbenchService(), person, PEOPLE_TAGS,
+				getPeopleService().getResourceBasePath(
 						PeopleConstants.RESOURCE_TAG),
 				NodeType.NT_UNSTRUCTURED, "Add a tag");
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// Mailing list management
 		Composite mlCmp = new TagListComposite(parent, SWT.NO_FOCUS, toolkit,
-				getManagedForm(), getPeopleService(), getPeopleUiService(),
-				person, PEOPLE_MAILING_LISTS, getPeopleService()
-						.getResourceBasePath(PeopleTypes.PEOPLE_MAILING_LIST),
+				getManagedForm(), getPeopleService(),
+				getPeopleWorkbenchService(), person, PEOPLE_MAILING_LISTS,
+				getPeopleService().getResourceBasePath(
+						PeopleTypes.PEOPLE_MAILING_LIST),
 				PeopleTypes.PEOPLE_MAILING_LIST, "Add a mailing");
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 	}
@@ -135,7 +137,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		innerPannel.setLayout(PeopleRapUtils.noSpaceGridLayout());
 		ContactPanelComposite cpc = new ContactPanelComposite(innerPannel,
 				SWT.NO_FOCUS, toolkit, getManagedForm(), getNode(),
-				getPeopleService(), getPeopleUiService());
+				getPeopleService(), getPeopleWorkbenchService());
 		cpc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		// Activities and tasks
@@ -174,7 +176,8 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		// Add a label with info provided by the PersonOverviewLabelProvider
 		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
 				SWT.WRAP);
-		readOnlyInfoLbl.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
+		readOnlyInfoLbl
+				.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
 		final ColumnLabelProvider personLP = new PersonOverviewLabelProvider(
 				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE, getPeopleService());
 
@@ -227,8 +230,8 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				100);
 		final Text middleNameTxt = PeopleRapUtils.createRDText(toolkit,
 				secondCmp, "Middle Name", "The second name if it exists", 100);
-		final Text lastNameTxt = PeopleRapUtils.createRDText(toolkit, secondCmp,
-				"Last Name", "Usual last name for this person", 100);
+		final Text lastNameTxt = PeopleRapUtils.createRDText(toolkit,
+				secondCmp, "Last Name", "Usual last name for this person", 100);
 		final Text suffixTxt = PeopleRapUtils.createRDText(toolkit, secondCmp,
 				"Suffix", "Junior, the third...", 80);
 
@@ -404,8 +407,8 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 			public void widgetSelected(SelectionEvent e) {
 				boolean defineDistinct = defineDistinctBtn.getSelection();
 				if (CommonsJcrUtils.setJcrProperty(person,
-						PEOPLE_USE_DISTINCT_DISPLAY_NAME,
-						PropertyType.BOOLEAN, defineDistinct)) {
+						PEOPLE_USE_DISTINCT_DISPLAY_NAME, PropertyType.BOOLEAN,
+						defineDistinct)) {
 					if (!defineDistinct) {
 						String displayName = getPeopleService().getDisplayName(
 								person);

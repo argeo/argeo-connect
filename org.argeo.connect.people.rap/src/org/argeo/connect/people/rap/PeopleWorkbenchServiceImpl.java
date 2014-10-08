@@ -21,7 +21,7 @@ import org.eclipse.swt.graphics.Image;
  * the name of the command to open editors so that it is easily extended by
  * specific extensions
  */
-public class PeopleUiServiceImpl implements PeopleWorkbenchService {
+public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 
 	/**
 	 * Provide the plugin specific ID of the {@code OpenEntityEditor} command

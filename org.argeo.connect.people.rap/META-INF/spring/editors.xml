@@ -7,26 +7,27 @@
 	<bean id="listValuesEditor" class="org.argeo.connect.people.rap.editors.ListValuesEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="peopleUiService" ref="peopleUiService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
 	<bean id="searchByTagEditor" class="org.argeo.connect.people.rap.editors.SearchByTagEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="peopleUiService" ref="peopleUiService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
-	<bean id="defaultSearchEntityEditor" class="org.argeo.connect.people.rap.editors.DefaultSearchEntityEditor"
+	<bean id="defaultSearchEntityEditor"
+		class="org.argeo.connect.people.rap.editors.DefaultSearchEntityEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
-		<property name="peopleUiService" ref="peopleUiService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
 	<bean id="searchPersonEditor" class="org.argeo.connect.people.rap.editors.SearchPersonEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="peopleUiService" ref="peopleUiService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
 	<!-- User and groups -->
@@ -52,30 +53,30 @@
 	<!-- DEFAULT PEOPLE EDITORS -->
 	<bean id="personEditor" class="org.argeo.connect.people.rap.editors.PersonEditor"
 		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
-		<property name="peopleUiService" ref="peopleUiService" />
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
 	<bean id="orgEditor" class="org.argeo.connect.people.rap.editors.OrgEditor"
 		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
-		<property name="peopleUiService" ref="peopleUiService" />
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
 	<!-- DEFAULT ACTIVITIES EDITORS -->
 	<bean id="activityEditor" class="org.argeo.connect.people.rap.editors.ActivityEditor"
 		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
-		<property name="peopleUiService" ref="peopleUiService" />
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
 	<bean id="taskEditor" class="org.argeo.connect.people.rap.editors.TaskEditor"
 		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
-		<property name="peopleUiService" ref="peopleUiService" />
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 </beans>
