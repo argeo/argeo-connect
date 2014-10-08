@@ -21,7 +21,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.rap.PeopleImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
 import org.argeo.connect.people.rap.utils.PeopleUiUtils;
@@ -57,7 +57,7 @@ public class TagListComposite extends Composite {
 	// Business objects
 	private PeopleService peopleService;
 	private UserManagementService userService;
-	private PeopleUiService peopleUiService;
+	private PeopleWorkbenchService peopleUiService;
 	private final Node tagable;
 	private final String tagPropName;
 	private final String tagsParentPath;
@@ -74,7 +74,7 @@ public class TagListComposite extends Composite {
 	// TODO document this
 	public TagListComposite(Composite parent, int style, FormToolkit toolkit,
 			IManagedForm form, PeopleService peopleService,
-			PeopleUiService peopleUiService, Node tagable, String tagPropName,
+			PeopleWorkbenchService peopleUiService, Node tagable, String tagPropName,
 			String tagsParentPath, String resourceType, String newTagMsg) {
 		super(parent, style);
 		this.toolkit = toolkit;

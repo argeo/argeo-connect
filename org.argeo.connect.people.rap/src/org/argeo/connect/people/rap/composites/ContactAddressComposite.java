@@ -13,7 +13,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.rap.utils.PeopleUiUtils;
@@ -47,7 +47,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 	private static final long serialVersionUID = 4475049051062923873L;
 
 	private final PeopleService peopleService;
-	private final PeopleUiService peopleUiService;
+	private final PeopleWorkbenchService peopleUiService;
 	private final Node contactNode;
 	private final Node parentVersionableNode;
 	private final AbstractFormPart formPart;
@@ -56,7 +56,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 	public ContactAddressComposite(Composite parent, int style,
 			FormToolkit toolkit, AbstractFormPart formPart,
-			PeopleService peopleService, PeopleUiService peopleUiService,
+			PeopleService peopleService, PeopleWorkbenchService peopleUiService,
 			Node contactNode, Node parentVersionableNode) {
 		super(parent, style);
 		this.peopleService = peopleService;

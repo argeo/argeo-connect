@@ -27,7 +27,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.rap.dialogs.AskTitleDescriptionDialog;
 import org.argeo.connect.people.rap.editors.utils.SearchNodeEditorInput;
@@ -73,7 +73,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 	/* DEPENDENCY INJECTION */
 	private Session session;
-	private PeopleUiService peopleUiService;
+	private PeopleWorkbenchService peopleUiService;
 	private PeopleService peopleService;
 
 	// Context
@@ -349,7 +349,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		session = CommonsJcrUtils.login(repository);
 	}
 
-	public void setPeopleUiService(PeopleUiService peopleUiService) {
+	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
 		this.peopleUiService = peopleUiService;
 	}
 

@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.jcr.Session;
 
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.eclipse.swt.widgets.Text;
 
 /**
@@ -14,10 +14,10 @@ import org.eclipse.swt.widgets.Text;
 public class SimpleResourceDropDown extends PeopleAbstractDropDown {
 
 	private final Session session;
-	private final PeopleUiService peopleUiService;
+	private final PeopleWorkbenchService peopleUiService;
 	private final String resourceBasePath;
 
-	public SimpleResourceDropDown(PeopleUiService peopleUiService,
+	public SimpleResourceDropDown(PeopleWorkbenchService peopleUiService,
 			Session session, String resourceBasePath, Text text) {
 		super(text);
 		this.peopleUiService = peopleUiService;

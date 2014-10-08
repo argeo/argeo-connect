@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.jcr.Session;
 
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.eclipse.swt.widgets.Text;
 
 /**
@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Text;
 public class InstancePropertyValuesDropDown extends PeopleAbstractDropDown {
 
 	private final Session session;
-	private final PeopleUiService peopleUiService;
+	private final PeopleWorkbenchService peopleUiService;
 	private final String resourcePath;
 	private final String propertyName;
 
@@ -25,7 +25,7 @@ public class InstancePropertyValuesDropDown extends PeopleAbstractDropDown {
 	 * @param propertyName
 	 * @param text
 	 */
-	public InstancePropertyValuesDropDown(PeopleUiService peopleUiService,
+	public InstancePropertyValuesDropDown(PeopleWorkbenchService peopleUiService,
 			Session session, String resourcePath, String propertyName, Text text) {
 		super(text);
 		this.peopleUiService = peopleUiService;

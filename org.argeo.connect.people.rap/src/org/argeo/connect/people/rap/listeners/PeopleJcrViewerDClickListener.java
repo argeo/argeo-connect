@@ -5,7 +5,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.query.Row;
 
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -22,7 +22,7 @@ public class PeopleJcrViewerDClickListener implements IDoubleClickListener {
 	private final String openEntityEditorCmdId;
 
 	public PeopleJcrViewerDClickListener(String selectorName,
-			PeopleUiService peopleUiService) {
+			PeopleWorkbenchService peopleUiService) {
 		this.selectorName = selectorName;
 		this.openEntityEditorCmdId = peopleUiService.getOpenEntityEditorCmdId();
 	}
@@ -31,7 +31,7 @@ public class PeopleJcrViewerDClickListener implements IDoubleClickListener {
 	 * Double click listener for NODES only, to manage JCR row use
 	 * PeopleJcrViewerDClickListener(String selectorName)
 	 **/
-	public PeopleJcrViewerDClickListener(PeopleUiService peopleUiService) {
+	public PeopleJcrViewerDClickListener(PeopleWorkbenchService peopleUiService) {
 		selectorName = null;
 		this.openEntityEditorCmdId = peopleUiService.getOpenEntityEditorCmdId();
 	}

@@ -23,7 +23,7 @@ import javax.jcr.observation.EventListener;
 
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.UserGroupTableComposite;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.utils.Refreshable;
@@ -42,7 +42,7 @@ public class UserGroupsView extends ViewPart implements Refreshable {
 			+ ".userGroupsView";
 
 	private Session session;
-	private PeopleUiService peopleUiService;
+	private PeopleWorkbenchService peopleUiService;
 
 	private JcrUserListener userStructureListener;
 	private JcrUserListener userPropertiesListener;
@@ -137,7 +137,7 @@ public class UserGroupsView extends ViewPart implements Refreshable {
 		this.session = CommonsJcrUtils.login(repository);
 	}
 
-	public void setPeopleUiService(PeopleUiService peopleUiService) {
+	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
 		this.peopleUiService = peopleUiService;
 	}
 

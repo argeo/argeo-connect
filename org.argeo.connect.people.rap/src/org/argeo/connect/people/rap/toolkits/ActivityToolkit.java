@@ -16,7 +16,7 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.ActivityTableComposite;
 import org.argeo.connect.people.rap.utils.PeopleUiUtils;
@@ -55,11 +55,11 @@ public class ActivityToolkit {
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 	private final PeopleService peopleService;
-	private final PeopleUiService peopleUiService;
+	private final PeopleWorkbenchService peopleUiService;
 	private final ActivityService activityService;
 
 	public ActivityToolkit(FormToolkit toolkit, IManagedForm form,
-			PeopleService peopleService, PeopleUiService peopleUiService) {
+			PeopleService peopleService, PeopleWorkbenchService peopleUiService) {
 		this.toolkit = toolkit;
 		this.form = form;
 		this.peopleService = peopleService;

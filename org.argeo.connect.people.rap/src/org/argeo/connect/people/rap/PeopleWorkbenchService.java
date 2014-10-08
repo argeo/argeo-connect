@@ -14,7 +14,7 @@ import org.eclipse.swt.graphics.Image;
  * name of the command to open editors or default editor
  */
 
-public interface PeopleUiService {
+public interface PeopleWorkbenchService {
 	/**
 	 * Provide the plugin specific ID of the {@code OpenEntityEditor} command
 	 * and thus enable the opening plugin specific editors

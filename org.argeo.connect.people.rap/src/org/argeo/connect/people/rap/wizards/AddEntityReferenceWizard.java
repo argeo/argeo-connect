@@ -12,7 +12,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.rap.providers.EntitySingleColumnLabelProvider;
@@ -56,7 +56,7 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 	private final Repository repository;
 	private Session currSession;
 	private PeopleService peopleService;
-	private PeopleUiService peopleUiService;
+	private PeopleWorkbenchService peopleUiService;
 	private IWorkbench workbench;
 
 	// Business objects
@@ -67,7 +67,7 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 	protected TableViewer itemsViewer;
 
 	public AddEntityReferenceWizard(Repository repository,
-			PeopleService peopleService, PeopleUiService peopleUiService,
+			PeopleService peopleService, PeopleWorkbenchService peopleUiService,
 			IWorkbench workbench) {
 		this.repository = repository;
 		this.currSession = CommonsJcrUtils.login(repository);
@@ -112,7 +112,7 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 		return peopleService;
 	}
 
-	protected PeopleUiService getPeopleUiService() {
+	protected PeopleWorkbenchService getPeopleUiService() {
 		return peopleUiService;
 	}
 

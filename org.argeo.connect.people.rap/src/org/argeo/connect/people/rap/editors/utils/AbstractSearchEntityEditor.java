@@ -14,7 +14,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
@@ -48,7 +48,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	/* DEPENDENCY INJECTION */
 	private Session session;
-	private PeopleUiService peopleUiService;
+	private PeopleWorkbenchService peopleUiService;
 	private PeopleService peopleService;
 
 	// Business Objects
@@ -246,7 +246,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		return peopleService;
 	}
 
-	protected PeopleUiService getPeopleUiService() {
+	protected PeopleWorkbenchService getPeopleUiService() {
 		return peopleUiService;
 	}
 	
@@ -295,7 +295,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		session = CommonsJcrUtils.login(repository);
 	}
 
-	public void setPeopleUiService(PeopleUiService peopleUiService) {
+	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
 		this.peopleUiService = peopleUiService;
 	}
 

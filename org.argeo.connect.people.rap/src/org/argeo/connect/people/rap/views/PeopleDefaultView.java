@@ -25,7 +25,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.providers.BasicNodeListContentProvider;
@@ -68,7 +68,7 @@ public class PeopleDefaultView extends ViewPart {
 	/* DEPENDENCY INJECTION */
 	private Session session;
 	private PeopleService peopleService;
-	private PeopleUiService peopleUiService;
+	private PeopleWorkbenchService peopleUiService;
 	// private Repository repository;
 
 	// This page widgets
@@ -298,7 +298,7 @@ public class PeopleDefaultView extends ViewPart {
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleUiService(PeopleUiService peopleUiService) {
+	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
 		this.peopleUiService = peopleUiService;
 	}
 

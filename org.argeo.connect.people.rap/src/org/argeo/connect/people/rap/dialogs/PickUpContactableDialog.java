@@ -34,7 +34,7 @@ import javax.jcr.query.qom.Selector;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.providers.TitleWithIconLP;
@@ -77,7 +77,7 @@ public class PickUpContactableDialog extends TrayDialog {
 	private TableViewer tableViewer;
 
 	public PickUpContactableDialog(Shell parentShell, String title,
-			Session session, PeopleUiService peopleUiService, String nodeType) {
+			Session session, PeopleWorkbenchService peopleUiService, String nodeType) {
 		super(parentShell);
 		this.title = title;
 		this.session = session;

@@ -19,7 +19,7 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.CancelAndCheckInItem;
 import org.argeo.connect.people.rap.commands.CheckOutItem;
 import org.argeo.connect.people.rap.commands.DeleteEntity;
@@ -66,7 +66,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
-	private PeopleUiService peopleUiService;
+	private PeopleWorkbenchService peopleUiService;
 	// We use a one session per editor pattern to secure various nodes and
 	// changes life cycle
 	private Repository repository;
@@ -328,7 +328,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		return peopleService;
 	}
 
-	protected PeopleUiService getPeopleUiService() {
+	protected PeopleWorkbenchService getPeopleUiService() {
 		return peopleUiService;
 	}
 
@@ -540,7 +540,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleUiService(PeopleUiService peopleUiService) {
+	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
 		this.peopleUiService = peopleUiService;
 	}
 

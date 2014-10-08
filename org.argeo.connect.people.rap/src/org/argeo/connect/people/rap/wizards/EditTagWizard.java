@@ -23,7 +23,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.providers.TitleWithIconLP;
@@ -54,7 +54,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 
 	// Context
 	private PeopleService peopleService;
-	private PeopleUiService peopleUiService;
+	private PeopleWorkbenchService peopleUiService;
 
 	private Node tagLikeInstanceNode;
 
@@ -80,7 +80,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 	 * @param taggableParentPath
 	 */
 	public EditTagWizard(PeopleService peopleService,
-			PeopleUiService peopleUiService, Node tagInstanceNode,
+			PeopleWorkbenchService peopleUiService, Node tagInstanceNode,
 			String tagNodeType, String resourceInstancesParentPath,
 			String taggableNodeType, String tagPropName,
 			String taggableParentPath) {

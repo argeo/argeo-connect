@@ -17,7 +17,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.PeopleAbstractDropDown;
@@ -473,7 +473,7 @@ public class PeopleUiUtils {
 	 * @return
 	 */
 	public static Link createOpenSearchEditorLink(
-			final PeopleUiService peopleUiService, Composite parent,
+			final PeopleWorkbenchService peopleUiService, Composite parent,
 			final String label, final String nodeType, final String basePath) {
 		Link link = new Link(parent, SWT.NONE);
 		link.setText("<a>" + label + "</a>");
@@ -503,7 +503,7 @@ public class PeopleUiUtils {
 	 * @return
 	 */
 	public static Link createOpenEntityEditorLink(
-			final PeopleUiService peopleUiService, Composite parent,
+			final PeopleWorkbenchService peopleUiService, Composite parent,
 			final String label, final Node entity) {
 		Link link = new Link(parent, SWT.NONE);
 		link.setText("<a>" + label + "</a>");

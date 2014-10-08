@@ -30,7 +30,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
@@ -83,7 +83,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private PeopleService peopleService;
-	private PeopleUiService peopleUiService;
+	private PeopleWorkbenchService peopleUiService;
 
 	// Business objects
 	private Node mailingList;
@@ -583,7 +583,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleUiService(PeopleUiService peopleUiService) {
+	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
 		this.peopleUiService = peopleUiService;
 	}
 

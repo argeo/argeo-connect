@@ -4,7 +4,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.query.Row;
 
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -16,10 +16,10 @@ public class TitleWithIconLP extends JcrRowHtmlLabelProvider {
 	// WAS public class TitleWithIconLP extends JcrRowHtmlLabelProvider {
 	private static final long serialVersionUID = 6064779874148619776L;
 
-	private final PeopleUiService peopleUiService;
+	private final PeopleWorkbenchService peopleUiService;
 	private final String selectorName;
 
-	public TitleWithIconLP(PeopleUiService peopleUiService,
+	public TitleWithIconLP(PeopleWorkbenchService peopleUiService,
 			String selectorName, String propertyName) {
 		super(selectorName, propertyName);
 		this.peopleUiService = peopleUiService;

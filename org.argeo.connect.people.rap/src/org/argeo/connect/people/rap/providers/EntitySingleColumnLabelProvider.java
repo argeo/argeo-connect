@@ -9,7 +9,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
@@ -29,7 +29,7 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 	private TagLabelProvider mlInstanceLp;
 
 	public EntitySingleColumnLabelProvider(PeopleService peopleService,
-			PeopleUiService peopleUiService) {
+			PeopleWorkbenchService peopleUiService) {
 		personLp = new PersonListLabelProvider(peopleService);
 		orgLp = new OrgListLabelProvider(peopleService);
 		mlInstanceLp = new TagLabelProvider(peopleService.getTagService(),

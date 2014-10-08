@@ -22,7 +22,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.utils.ActivityViewerComparator;
 import org.argeo.connect.people.rap.utils.PeopleUiUtils;
@@ -56,7 +56,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 	// private PeopleService peopleService;
 	private Session session;
 	private ActivityService activityService;
-	private PeopleUiService peopleUiService;
+	private PeopleWorkbenchService peopleUiService;
 
 	// private String openEntityEditorCmdId = OpenEntityEditor.ID;
 
@@ -322,7 +322,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 		this.session = CommonsJcrUtils.login(repository);
 	}
 
-	public void setPeopleUiService(PeopleUiService peopleUiService) {
+	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
 		this.peopleUiService = peopleUiService;
 	}
 

@@ -31,7 +31,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
@@ -79,7 +79,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 	private Repository repository;
 	private Session session;
 	private PeopleService peopleService;
-	private PeopleUiService peopleUiService;
+	private PeopleWorkbenchService peopleUiService;
 
 	// this page widgets.
 	private List<PeopleColumnDefinition> colDefs;
@@ -374,7 +374,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleUiService(PeopleUiService peopleUiService) {
+	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
 		this.peopleUiService = peopleUiService;
 	}
 

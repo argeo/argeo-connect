@@ -12,7 +12,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
@@ -41,7 +41,7 @@ public class CreateEntity extends AbstractHandler {
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private PeopleService peopleService;
-	private PeopleUiService peopleUiService;
+	private PeopleWorkbenchService peopleUiService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
@@ -88,7 +88,7 @@ public class CreateEntity extends AbstractHandler {
 		return repository;
 	}
 
-	protected PeopleUiService getPeopleUiService() {
+	protected PeopleWorkbenchService getPeopleUiService() {
 		return peopleUiService;
 	}
 
@@ -105,7 +105,7 @@ public class CreateEntity extends AbstractHandler {
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleUiService(PeopleUiService peopleUiService) {
+	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
 		this.peopleUiService = peopleUiService;
 	}
 }

@@ -33,7 +33,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.rap.providers.EntitySingleColumnLabelProvider;
 import org.argeo.connect.people.rap.utils.PeopleUiUtils;
@@ -97,7 +97,7 @@ public class EditJobDialog extends TrayDialog {
 
 	private Session session;
 	private PeopleService peopleService;
-	private PeopleUiService peopleUiService;
+	private PeopleWorkbenchService peopleUiService;
 
 	private boolean isBackward;
 	private String toSearchNodeType;
@@ -123,7 +123,7 @@ public class EditJobDialog extends TrayDialog {
 	 *            (if false) node
 	 */
 	public EditJobDialog(Shell parentShell, String title,
-			PeopleService peopleService, PeopleUiService peopleUiService,
+			PeopleService peopleService, PeopleWorkbenchService peopleUiService,
 			Node oldLink, Node toUpdateNode, boolean isBackward) {
 		// , String toSearchNodeType
 		super(parentShell);

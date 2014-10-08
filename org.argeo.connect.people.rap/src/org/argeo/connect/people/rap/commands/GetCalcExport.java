@@ -10,7 +10,7 @@ import java.util.Map;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.exports.calc.ITableProvider;
 import org.argeo.connect.people.rap.exports.calc.RowsToCalcWriter;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -35,7 +35,7 @@ public class GetCalcExport extends AbstractHandler {
 			"yyyy-MM-dd_HH-mm");
 
 	/* DEPENDENCY INJECTION */
-	private PeopleUiService peopleUiService;
+	private PeopleWorkbenchService peopleUiService;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		String exportId = event.getParameter(PARAM_EXPORT_ID);
@@ -98,7 +98,7 @@ public class GetCalcExport extends AbstractHandler {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setPeopleUiService(PeopleUiService peopleUiService) {
+	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
 		this.peopleUiService = peopleUiService;
 	}
 }

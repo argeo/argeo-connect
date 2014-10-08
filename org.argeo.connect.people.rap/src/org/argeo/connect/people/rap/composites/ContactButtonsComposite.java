@@ -8,7 +8,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
@@ -31,7 +31,7 @@ public class ContactButtonsComposite extends Composite {
 
 	// Context
 	private final PeopleService peopleService;
-	private final PeopleUiService peopleUiService;
+	private final PeopleWorkbenchService peopleUiService;
 	private final Node contactNode;
 	private final boolean isCheckedOut;
 	private final Node parentVersionableNode;
@@ -42,7 +42,7 @@ public class ContactButtonsComposite extends Composite {
 
 	public ContactButtonsComposite(Composite parent, int style,
 			FormToolkit toolkit, AbstractFormPart formPart, Node contactNode,
-			Node parentVersionableNode, PeopleUiService peopleUiService,
+			Node parentVersionableNode, PeopleWorkbenchService peopleUiService,
 			PeopleService peopleService) {
 		super(parent, style);
 		this.peopleService = peopleService;

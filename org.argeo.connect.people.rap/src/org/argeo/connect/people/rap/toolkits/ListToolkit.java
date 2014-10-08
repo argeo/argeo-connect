@@ -17,7 +17,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.EditJob;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.editors.utils.BooleanEditingSupport;
@@ -64,7 +64,7 @@ public class ListToolkit {
 	private final String openEntityEditorCmdId;
 
 	public ListToolkit(FormToolkit toolkit, IManagedForm form,
-			PeopleService peopleService, PeopleUiService peopleUiService) {
+			PeopleService peopleService, PeopleWorkbenchService peopleUiService) {
 		this.toolkit = toolkit;
 		this.form = form;
 		this.peopleService = peopleService;

@@ -8,7 +8,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.utils.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.swt.SWT;
@@ -32,7 +32,7 @@ public class ContactComposite extends Composite {
 	private static final long serialVersionUID = -789885142022513273L;
 
 	private final PeopleService peopleService;
-	private final PeopleUiService peopleUiService;
+	private final PeopleWorkbenchService peopleUiService;
 	private final Node contactNode;
 	private final Node parentVersionableNode;
 	private final FormToolkit toolkit;
@@ -41,7 +41,7 @@ public class ContactComposite extends Composite {
 
 	public ContactComposite(Composite parent, int style, FormToolkit toolkit,
 			AbstractFormPart formPart, Node contactNode,
-			Node parentVersionableNode, PeopleUiService peopleUiService,
+			Node parentVersionableNode, PeopleWorkbenchService peopleUiService,
 			PeopleService peopleService) {
 		super(parent, style);
 		this.peopleService = peopleService;

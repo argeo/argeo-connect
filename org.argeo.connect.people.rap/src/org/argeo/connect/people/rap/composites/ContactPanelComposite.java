@@ -14,7 +14,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.PeopleUiService;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.rap.utils.PeopleUiUtils;
@@ -51,7 +51,7 @@ public class ContactPanelComposite extends Composite {
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 	private final PeopleService peopleService;
-	private final PeopleUiService peopleUiService;
+	private final PeopleWorkbenchService peopleUiService;
 	private final Node entity;
 	private ContactFormPart formPart;
 
@@ -62,7 +62,7 @@ public class ContactPanelComposite extends Composite {
 
 	public ContactPanelComposite(Composite parent, int style,
 			FormToolkit toolkit, IManagedForm form, Node entityNode,
-			PeopleService peopleService, PeopleUiService peopleUiService) {
+			PeopleService peopleService, PeopleWorkbenchService peopleUiService) {
 		super(parent, style);
 		this.toolkit = toolkit;
 		this.form = form;
