@@ -25,8 +25,8 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.utils.ActivityViewerComparator;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.rap.utils.Refreshable;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
@@ -63,7 +63,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		GridLayout layout = PeopleRapUtils.noSpaceGridLayout();
+		GridLayout layout = PeopleUiUtils.noSpaceGridLayout();
 		layout.verticalSpacing = 5;
 		parent.setLayout(layout);
 		tableViewer = createTableViewer(parent);

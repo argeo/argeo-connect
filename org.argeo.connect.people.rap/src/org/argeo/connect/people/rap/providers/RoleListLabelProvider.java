@@ -6,7 +6,7 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleRapSnippets;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
@@ -31,8 +31,7 @@ public class RoleListLabelProvider extends ColumnLabelProvider implements
 				throw new PeopleException("Unvalid node type. "
 						+ "Cannot display role information");
 
-			String pos = CommonsJcrUtils.get(link,
-					PeopleNames.PEOPLE_ROLE);
+			String pos = CommonsJcrUtils.get(link, PeopleNames.PEOPLE_ROLE);
 
 			// ROLE
 			StringBuilder builder = new StringBuilder();
@@ -50,7 +49,7 @@ public class RoleListLabelProvider extends ColumnLabelProvider implements
 					builder.append("Department: ").append(dep);
 
 			}
-			return PeopleRapSnippets.cleanHtmlString(builder.toString());
+			return PeopleUiUtils.replaceAmpersand(builder.toString());
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot create organizations content", re);
 		}

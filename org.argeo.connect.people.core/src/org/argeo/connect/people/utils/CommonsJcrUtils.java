@@ -20,6 +20,10 @@ import javax.jcr.ValueFactory;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
+import javax.jcr.query.qom.Constraint;
+import javax.jcr.query.qom.QueryObjectModelFactory;
+import javax.jcr.query.qom.Selector;
+import javax.jcr.query.qom.StaticOperand;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -951,5 +955,36 @@ public class CommonsJcrUtils {
 
 	/* PREVENT INSTANTIATION */
 	private CommonsJcrUtils() {
+	}
+
+	/* QOM HELPERS */
+	/**
+	 * returns and(constraintA, constraintB) if constraintA != null, or
+	 * constraintB otherwise (that cannot be null)
+	 */
+	public static Constraint localAnd(QueryObjectModelFactory factory,
+			Constraint defaultC, Constraint newC) throws RepositoryException {
+		if (defaultC == null)
+			return newC;
+		else
+			return factory.and(defaultC, newC);
+	}
+
+	/** widely used pattern in various UI Parts */
+	public static Constraint getFreeTextConstraint(Session session,
+			QueryObjectModelFactory factory, Selector source, String filter)
+			throws RepositoryException {
+		Constraint defaultC = null;
+		if (checkNotEmptyString(filter)) {
+			String[] strs = filter.trim().split(" ");
+			for (String token : strs) {
+				StaticOperand so = factory.literal(session.getValueFactory()
+						.createValue("*" + token + "*"));
+				Constraint currC = factory.fullTextSearch(
+						source.getSelectorName(), null, so);
+				defaultC = localAnd(factory, defaultC, currC);
+			}
+		}
+		return defaultC;
 	}
 }

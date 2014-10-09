@@ -30,10 +30,10 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserManagementService;
-import org.argeo.connect.people.rap.PeopleImages;
+import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.composites.UserGroupTableComposite;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.ArgeoNames;
@@ -209,7 +209,7 @@ public class UserEditor extends FormEditor {
 			ScrolledForm form = mf.getForm();
 			form.setText("Group Management");
 			Composite body = form.getBody();
-			body.setLayout(PeopleRapUtils.noSpaceGridLayout());
+			body.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 			Label lbl = new Label(body, SWT.NONE);
 			lbl.setFont(EclipseUiUtils.getBoldFont(body));
@@ -313,7 +313,7 @@ public class UserEditor extends FormEditor {
 					Node currNode = (Node) element;
 
 					if (selectedGroups.contains(currNode))
-						return PeopleImages.ROLE_CHECKED;
+						return PeopleRapImages.ROLE_CHECKED;
 					else
 						return null;
 				}

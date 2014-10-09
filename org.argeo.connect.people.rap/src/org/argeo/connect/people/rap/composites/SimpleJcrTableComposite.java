@@ -20,7 +20,7 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
@@ -134,7 +134,7 @@ public class SimpleJcrTableComposite extends Composite implements ArgeoNames {
 		// initialization
 		Composite parent = this;
 		// Main Layout
-		this.setLayout(PeopleRapUtils.noSpaceGridLayout());
+		this.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		if (hasFilter)
 			createFilterPart(parent);
 		tableViewer = createTableViewer(parent);

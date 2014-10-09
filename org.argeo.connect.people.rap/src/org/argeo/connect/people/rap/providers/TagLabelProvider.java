@@ -6,8 +6,8 @@ import javax.jcr.Property;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.TagService;
-import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
@@ -52,7 +52,7 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 			throw new PeopleException(
 					"Undefined list type - Unable to provide text for group");
 		}
-		return PeopleRapSnippets.cleanHtmlString(result);
+		return PeopleUiUtils.replaceAmpersand(result);
 	}
 
 	private String getOverviewTitle(Node entity) {

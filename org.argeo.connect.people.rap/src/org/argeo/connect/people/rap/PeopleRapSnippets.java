@@ -19,6 +19,7 @@ import org.argeo.connect.people.rap.commands.EditEntityReferenceWithPosition;
 import org.argeo.connect.people.rap.commands.EditJob;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.commands.RemoveEntityReference;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
@@ -103,8 +104,9 @@ public class PeopleRapSnippets {
 			StringBuilder builder = new StringBuilder();
 
 			if (node.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
-				builder.append(cleanHtmlString(getAddressDisplayValue(
-						peopleService, node)));
+				builder.append(PeopleUiUtils
+						.replaceAmpersand(getAddressDisplayValue(peopleService,
+								node)));
 			} else {
 				String value = CommonsJcrUtils.get(node,
 						PeopleNames.PEOPLE_CONTACT_VALUE);
@@ -144,7 +146,7 @@ public class PeopleRapSnippets {
 	public static String getUrlLink(String value, String label) {
 		StringBuilder builder = new StringBuilder();
 
-		value = cleanHtmlString(value);
+		value = PeopleUiUtils.replaceAmpersand(value);
 		if (!(value.startsWith("http://") || value.startsWith("https://")))
 			value = "http://" + value;
 		builder.append("<a ").append(PeopleRapConstants.PEOPLE_STYLE_LINK)
@@ -160,7 +162,7 @@ public class PeopleRapSnippets {
 	public static String getWebsiteSnippet(String address) {
 		StringBuilder builder = new StringBuilder();
 
-		String value = cleanHtmlString(address);
+		String value = PeopleUiUtils.replaceAmpersand(address);
 		builder.append("<a ").append(PeopleRapConstants.PEOPLE_STYLE_LINK)
 				.append(" href=\"http://");
 		builder.append(value + "\" target=\"_blank\" >" + value + "</a>");
@@ -173,7 +175,7 @@ public class PeopleRapSnippets {
 		StringBuilder builder = new StringBuilder();
 		// the referenced org
 		if (referencedEntity != null)
-			builder.append(cleanHtmlString(CommonsJcrUtils.get(
+			builder.append(PeopleUiUtils.replaceAmpersand(CommonsJcrUtils.get(
 					referencedEntity, Property.JCR_TITLE)));
 		// current contact meta data
 		builder.append(getContactMetaData(contactNode));
@@ -183,8 +185,9 @@ public class PeopleRapSnippets {
 					referencedEntity, PeopleTypes.PEOPLE_ADDRESS);
 			if (primaryAddress != null) {
 				builder.append("<br />");
-				builder.append(cleanHtmlString(getAddressDisplayValue(
-						peopleService, primaryAddress)));
+				builder.append(PeopleUiUtils
+						.replaceAmpersand(getAddressDisplayValue(peopleService,
+								primaryAddress)));
 			}
 		}
 		return builder.toString();
@@ -194,11 +197,11 @@ public class PeopleRapSnippets {
 	public static String getContactMetaData(Node node) {
 		StringBuilder builder = new StringBuilder();
 
-		String nature = cleanHtmlString(CommonsJcrUtils.get(node,
-				PeopleNames.PEOPLE_CONTACT_NATURE));
-		String category = cleanHtmlString(CommonsJcrUtils.get(node,
-				PeopleNames.PEOPLE_CONTACT_CATEGORY));
-		String label = cleanHtmlString(CommonsJcrUtils.get(node,
+		String nature = PeopleUiUtils.replaceAmpersand(CommonsJcrUtils.get(
+				node, PeopleNames.PEOPLE_CONTACT_NATURE));
+		String category = PeopleUiUtils.replaceAmpersand(CommonsJcrUtils.get(
+				node, PeopleNames.PEOPLE_CONTACT_CATEGORY));
+		String label = PeopleUiUtils.replaceAmpersand(CommonsJcrUtils.get(node,
 				PeopleNames.PEOPLE_CONTACT_LABEL));
 
 		if (CommonsJcrUtils.checkNotEmptyString(nature)
@@ -313,63 +316,48 @@ public class PeopleRapSnippets {
 			if (entity.hasProperty(PeopleNames.PEOPLE_TAGS)) {
 				for (Value value : entity
 						.getProperty((PeopleNames.PEOPLE_TAGS)).getValues())
-					tags.append("#").append(cleanHtmlString(value.getString()))
-							.append(" ");
+					tags.append("#")
+							.append(PeopleUiUtils.replaceAmpersand(value
+									.getString())).append(" ");
 			}
-			return PeopleRapSnippets.cleanHtmlString(tags.toString());
+			return PeopleUiUtils.replaceAmpersand(tags.toString());
 		} catch (RepositoryException e) {
 			throw new PeopleException("Error while getting tags for entity", e);
 		}
 	}
 
-	// public static String getBranches(Node orga) {
-	// try {
-	// StringBuilder tags = new StringBuilder();
-	// if (orga.hasProperty(PeopleNames.PEOPLE_ORG_BRANCHES)) {
-	// for (Value value : orga.getProperty(
-	// PeopleNames.PEOPLE_ORG_BRANCHES).getValues())
-	// tags.append("#").append(cleanHtmlString(value.getString()))
-	// .append(" ");
+	// /** a snippet to display primary contact information for this entity */
+	// public static String getPrimaryContacts(Node entity) {
+	// StringBuilder builder = new StringBuilder();
+	//
+	// String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
+	// PeopleTypes.PEOPLE_PHONE);
+	// if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
+	// builder.append(PeopleUiUtils.replaceAmpersand(tmpStr));
+	// builder.append("&#160;&#160;&#160;");
 	// }
-	// return PeopleHtmlUtils.cleanHtmlString(tags.toString());
-	// } catch (RepositoryException e) {
-	// throw new PeopleException("Error while getting branches for node "
-	// + orga, e);
+	//
+	// tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
+	// PeopleTypes.PEOPLE_EMAIL);
+	// if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
+	// builder.append("<a " + PeopleRapConstants.PEOPLE_STYLE_LINK
+	// + " href=\"mailto:");
+	// builder.append(tmpStr).append("\">");
+	// builder.append(tmpStr);
+	// builder.append("</a>&#160;&#160;&#160;");
 	// }
+	// tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
+	// PeopleTypes.PEOPLE_URL);
+	// if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
+	// builder.append("<a " + PeopleRapConstants.PEOPLE_STYLE_LINK
+	// + " href=\"http://");
+	// builder.append(PeopleUiUtils.replaceAmpersand(tmpStr)).append("\"")
+	// .append(" target=\"_blank\" ").append(">");
+	// builder.append(tmpStr);
+	// builder.append("</a>&#160;&#160;&#160;");
 	// }
-
-	/** a snippet to display primary contact information for this entity */
-	public static String getPrimaryContacts(Node entity) {
-		StringBuilder builder = new StringBuilder();
-
-		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
-				PeopleTypes.PEOPLE_PHONE);
-		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
-			builder.append(cleanHtmlString(tmpStr));
-			builder.append("&#160;&#160;&#160;");
-		}
-
-		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
-				PeopleTypes.PEOPLE_EMAIL);
-		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
-			builder.append("<a " + PeopleRapConstants.PEOPLE_STYLE_LINK
-					+ " href=\"mailto:");
-			builder.append(tmpStr).append("\">");
-			builder.append(tmpStr);
-			builder.append("</a>&#160;&#160;&#160;");
-		}
-		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
-				PeopleTypes.PEOPLE_URL);
-		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
-			builder.append("<a " + PeopleRapConstants.PEOPLE_STYLE_LINK
-					+ " href=\"http://");
-			builder.append(cleanHtmlString(tmpStr)).append("\"")
-					.append(" target=\"_blank\" ").append(">");
-			builder.append(tmpStr);
-			builder.append("</a>&#160;&#160;&#160;");
-		}
-		return builder.toString();
-	}
+	// return builder.toString();
+	// }
 
 	/**
 	 * Calls <code>CommonsJcrUtils.get(Node node, String propName)</code> method
@@ -379,19 +367,19 @@ public class PeopleRapSnippets {
 	 */
 	public static String getHtml(Node node, String propName) {
 		String value = CommonsJcrUtils.get(node, propName);
-		value = cleanHtmlString(value);
+		value = PeopleUiUtils.replaceAmpersand(value);
 		return value;
 	}
 
-	/**
-	 * Cleans a String by replacing any '&' by its html encoding '&#38;' to
-	 * avoid <code>IllegalArgumentException</code> while rendering html
-	 * read-only snippets
-	 */
-	public static String cleanHtmlString(String value) {
-		value = value.replaceAll("&(?![#a-zA-Z0-9]+;)", "&#38;");
-		return value;
-	}
+	// /**
+	// * Cleans a String by replacing any '&' by its html encoding '&#38;' to
+	// * avoid <code>IllegalArgumentException</code> while rendering html
+	// * read-only snippets
+	// */
+	// public static String PeopleUiUtils.replaceAmpersand(String value) {
+	// value = value.replaceAll("&(?![#a-zA-Z0-9]+;)", "&#38;");
+	// return value;
+	// }
 
 	/**
 	 * Create the text value of a link that enable calling the
@@ -457,8 +445,8 @@ public class PeopleRapSnippets {
 					+ EditEntityReference.PARAM_TOEDIT_JCR_ID + "="
 					+ toEditJcrId;
 
-			return "<a" + PeopleRapConstants.PEOPLE_STYLE_LINK + "href=\"" + uri
-					+ "\" target=\"_rwt\">Edit</a>";
+			return "<a" + PeopleRapConstants.PEOPLE_STYLE_LINK + "href=\""
+					+ uri + "\" target=\"_rwt\">Edit</a>";
 		} catch (RepositoryException re) {
 			throw new PeopleException(
 					"Error getting edit snippet for list item for node "
@@ -587,7 +575,7 @@ public class PeopleRapSnippets {
 			}
 			// builder.append("</span>");
 
-			return cleanHtmlString(builder.toString());
+			return PeopleUiUtils.replaceAmpersand(builder.toString());
 
 		} catch (RepositoryException re) {
 			throw new PeopleException(

@@ -18,14 +18,15 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.CancelAndCheckInItem;
 import org.argeo.connect.people.rap.commands.CheckOutItem;
 import org.argeo.connect.people.rap.commands.DeleteEntity;
 import org.argeo.connect.people.rap.utils.CheckoutSourceProvider;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
@@ -129,13 +130,13 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	}
 
 	protected void createMainLayout(Composite parent) {
-		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// Internal main Layout
 		// The header
 		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS
 				| SWT.NO_SCROLL | SWT.NO_TRIM);
-		GridLayout gl = PeopleRapUtils.noSpaceGridLayout(2);
+		GridLayout gl = PeopleUiUtils.noSpaceGridLayout(2);
 		// So that the buttons are not too close to the right border of the
 		// composite.
 		gl.marginRight = 5;
@@ -158,7 +159,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 		// the body
 		Composite body = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		body.setLayout(PeopleRapUtils.noSpaceGridLayout());
+		body.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		populateBody(body);
 	}

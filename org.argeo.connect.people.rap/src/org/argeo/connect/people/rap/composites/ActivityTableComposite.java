@@ -30,7 +30,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.ActivitiesImages;
 import org.argeo.connect.people.rap.utils.ActivityViewerComparator;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
@@ -80,7 +80,7 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 	/** Must be called immediately after creation */
 	public void populate() {
 		Composite parent = this;
-		GridLayout layout = PeopleRapUtils.noSpaceGridLayout();
+		GridLayout layout = PeopleUiUtils.noSpaceGridLayout();
 		layout.verticalSpacing = 5;
 		this.setLayout(layout);
 		tableViewer = createTableViewer(parent);

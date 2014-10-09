@@ -63,13 +63,13 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 	public Image getIconForType(Node entity) {
 		try {
 			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
-				return PeopleImages.ICON_PERSON;
+				return PeopleRapImages.ICON_PERSON;
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
-				return PeopleImages.ICON_ORG;
+				return PeopleRapImages.ICON_ORG;
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST))
-				return PeopleImages.ICON_MAILING_LIST;
+				return PeopleRapImages.ICON_MAILING_LIST;
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_GROUP))
-				return PeopleImages.ICON_GROUP;
+				return PeopleRapImages.ICON_GROUP;
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_CONTACT))
 				return getContactIcon(entity);
 			else

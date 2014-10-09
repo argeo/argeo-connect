@@ -9,10 +9,11 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
+import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.providers.GroupLabelProvider;
 import org.argeo.connect.people.rap.toolkits.GroupToolkit;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -118,9 +119,9 @@ public class GroupEditor extends AbstractEntityCTabEditor {
 				public void refresh() {
 					super.refresh();
 					// EDIT PART
-					PeopleRapUtils.refreshTextWidgetValue(titleTxt, group,
+					PeopleUiUtils.refreshTextWidgetValue(titleTxt, group,
 							Property.JCR_TITLE);
-					PeopleRapUtils.refreshTextWidgetValue(descTxt, group,
+					PeopleUiUtils.refreshTextWidgetValue(descTxt, group,
 							Property.JCR_DESCRIPTION);
 
 					// READ ONLY PART

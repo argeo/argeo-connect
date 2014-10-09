@@ -18,7 +18,7 @@ package org.argeo.connect.people.rap.dialogs;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -53,7 +53,7 @@ public class PickUpDateDialog extends TrayDialog {
 
 	protected Control createDialogArea(Composite parent) {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
-		dialogArea.setLayout(PeopleRapUtils.noSpaceGridLayout());
+		dialogArea.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		dateTimeCtl = new DateTime(dialogArea, SWT.CALENDAR);
 		dateTimeCtl.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true,

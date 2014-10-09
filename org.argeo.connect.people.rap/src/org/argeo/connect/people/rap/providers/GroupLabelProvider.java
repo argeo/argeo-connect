@@ -8,8 +8,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
@@ -49,7 +49,7 @@ public class GroupLabelProvider extends ColumnLabelProvider implements
 			throw new PeopleException(
 					"Undefined list type - Unable to provide text for group");
 		}
-		return PeopleRapSnippets.cleanHtmlString(result);
+		return PeopleUiUtils.replaceAmpersand(result);
 	}
 
 	private String getOverviewTitle(Node entity) {
@@ -64,7 +64,8 @@ public class GroupLabelProvider extends ColumnLabelProvider implements
 			if (entity.hasNode(PEOPLE_MEMBERS)) { // Nb of members
 
 				long start = System.currentTimeMillis();
-				int membersNb = -1; //countMembers(entity.getNode(PEOPLE_MEMBERS), 0);
+				int membersNb = -1; // countMembers(entity.getNode(PEOPLE_MEMBERS),
+									// 0);
 				long end = System.currentTimeMillis();
 
 				if (log.isDebugEnabled())
@@ -87,37 +88,37 @@ public class GroupLabelProvider extends ColumnLabelProvider implements
 	}
 
 	/** recursivly count members in the sub tree */
-//	private int countMembers(Node node, int currCount) {
-//		try {
-//			NodeIterator ni = node.getNodes();
-//			while (ni.hasNext()) {
-//				currCount = countMembers(ni.nextNode(), currCount);
-//			}
-//			if (CommonsJcrUtils.isNodeType(node,
-//					PeopleTypes.PEOPLE_MAILING_LIST_ITEM)) {
-//				currCount++;
-//			}
-//			return currCount;
-//		} catch (RepositoryException re) {
-//			throw new PeopleException("Unable to count members for node "
-//					+ node, re);
-//		}
-//	}
+	// private int countMembers(Node node, int currCount) {
+	// try {
+	// NodeIterator ni = node.getNodes();
+	// while (ni.hasNext()) {
+	// currCount = countMembers(ni.nextNode(), currCount);
+	// }
+	// if (CommonsJcrUtils.isNodeType(node,
+	// PeopleTypes.PEOPLE_MAILING_LIST_ITEM)) {
+	// currCount++;
+	// }
+	// return currCount;
+	// } catch (RepositoryException re) {
+	// throw new PeopleException("Unable to count members for node "
+	// + node, re);
+	// }
+	// }
 
 	private String getOneLineLabel(Node entity) {
-		//try {
-			StringBuilder builder = new StringBuilder();
-			builder.append("<b>");
-			builder.append(CommonsJcrUtils.get(entity, Property.JCR_TITLE));
-			builder.append("</b>");
+		// try {
+		StringBuilder builder = new StringBuilder();
+		builder.append("<b>");
+		builder.append(CommonsJcrUtils.get(entity, Property.JCR_TITLE));
+		builder.append("</b>");
 
-			// Nb of members
-//			if (entity.hasNode(PEOPLE_MEMBERS)) {
-//				int membersNb = countMembers(entity.getNode(PEOPLE_MEMBERS), 0);
-//				builder.append("<i>(").append(membersNb)
-//						.append(" members)</i>");
-//			}
-			return builder.toString();
+		// Nb of members
+		// if (entity.hasNode(PEOPLE_MEMBERS)) {
+		// int membersNb = countMembers(entity.getNode(PEOPLE_MEMBERS), 0);
+		// builder.append("<i>(").append(membersNb)
+		// .append(" members)</i>");
+		// }
+		return builder.toString();
 		// } catch (RepositoryException e) {
 		// throw new PeopleException("Unable to get small text for link", e);
 		// }

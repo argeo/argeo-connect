@@ -10,7 +10,7 @@ import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.rap.PeopleImages;
+import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
@@ -244,9 +244,9 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 				@Override
 				public Image getImage(Object element) {
 					if (selectedItems.contains(element)) {
-						return PeopleImages.CHECKED;
+						return PeopleRapImages.CHECKED;
 					} else {
-						return PeopleImages.UNCHECKED;
+						return PeopleRapImages.UNCHECKED;
 					}
 				}
 			});

@@ -1,4 +1,4 @@
-package org.argeo.connect.people.rap.utils;
+package org.argeo.connect.people.rap;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -8,19 +8,12 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
-import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.rap.PeopleImages;
-import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.PeopleAbstractDropDown;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
@@ -41,7 +34,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -59,10 +51,11 @@ import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.services.IServiceLocator;
 
-/** Some helper methods that factorize widely used snippets in people UI */
+/**
+ * Some helper methods to simplify UI implementation in a Rap Workbench People
+ * context
+ */
 public class PeopleRapUtils {
-
-	// Some methods that must be factorized in Commons Layers soon
 
 	/**
 	 * TODO Use commandUtils equivalent as soon as Commons v2.1.9 is released.
@@ -91,18 +84,6 @@ public class PeopleRapUtils {
 			cci.setId(contributionId);
 			menuManager.add(cci);
 		}
-	}
-
-	/**
-	 * Shortcut to refresh the value of a <code>Text</code> given a Node and a
-	 * property Name
-	 */
-	public static String refreshTextWidgetValue(Text text, Node entity,
-			String propName) {
-		String tmpStr = CommonsJcrUtils.get(entity, propName);
-		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
-			text.setText(tmpStr);
-		return tmpStr;
 	}
 
 	/**
@@ -151,7 +132,7 @@ public class PeopleRapUtils {
 	 * a property Name. Also manages its enable state and set a default message
 	 * if corresponding Text value is empty
 	 */
-	public static String refreshFormTextWidget(Text text, Node entity,
+	public static String refreshFormText(Text text, Node entity,
 			String propName, String defaultMsg) {
 		String tmpStr = refreshFormTextWidget(text, entity, propName);
 		if (CommonsJcrUtils.isEmptyString(tmpStr)
@@ -164,8 +145,7 @@ public class PeopleRapUtils {
 	 * Shortcut to select an item of a <code>Combo</code> widget given a Node in
 	 * a form, a property Name. Also manages its enable state.
 	 */
-	public static void refreshFormComboValue(Combo combo, Node node,
-			String propName) {
+	public static void refreshFormCombo(Combo combo, Node node, String propName) {
 		String currValue = CommonsJcrUtils.get(node, propName);
 		if (CommonsJcrUtils.checkNotEmptyString(currValue))
 			combo.select(combo.indexOf(currValue));
@@ -176,7 +156,7 @@ public class PeopleRapUtils {
 	 * Shortcut to refresh a Check box <code>Button</code> widget given a Node
 	 * in a form and a property Name.
 	 */
-	public static boolean refreshCheckBoxWidget(Button button, Node entity,
+	public static boolean refreshFormCheckBox(Button button, Node entity,
 			String propName) {
 		Boolean tmp = null;
 		try {
@@ -197,7 +177,7 @@ public class PeopleRapUtils {
 	 * Shortcut to refresh the text underlying a DropDown widget given a Node
 	 * and a property Name.
 	 */
-	public static String refreshDropDownWidget(PeopleAbstractDropDown dropDown,
+	public static String refreshDropDown(PeopleAbstractDropDown dropDown,
 			Node entity, String propName) {
 		String tmp = null;
 		try {
@@ -217,7 +197,7 @@ public class PeopleRapUtils {
 	 * Shortcut to refresh a radio <code>Button</code> widget given a Node in a
 	 * form and a property Name. Also manage its enabled state
 	 */
-	public static void refreshRadioWidget(Button button, Node entity,
+	public static void refreshFormRadio(Button button, Node entity,
 			String propName) {
 		Boolean tmp = null;
 		try {
@@ -431,7 +411,7 @@ public class PeopleRapUtils {
 
 			public void modifyText(ModifyEvent event) {
 				String lengthStr = text.getText();
-				if (!isNumbers(lengthStr)) {
+				if (!PeopleUiUtils.isNumbers(lengthStr)) {
 					text.setBackground(new Color(text.getDisplay(), 250, 200,
 							150));
 					decoration.show();
@@ -450,17 +430,6 @@ public class PeopleRapUtils {
 				}
 			}
 		});
-	}
-
-	private static boolean isNumbers(String content) {
-		int length = content.length();
-		for (int i = 0; i < length; i++) {
-			char ch = content.charAt(i);
-			if (!Character.isDigit(ch)) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	/**
@@ -531,7 +500,7 @@ public class PeopleRapUtils {
 		Button button = new Button(parent, SWT.FLAT);
 		button.setData(RWT.CUSTOM_VARIANT,
 				PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
-		button.setImage(PeopleImages.DELETE_BTN_LEFT);
+		button.setImage(PeopleRapImages.DELETE_BTN_LEFT);
 		RowData rd = new RowData();
 		rd.height = 16;
 		rd.width = 16;
@@ -552,7 +521,8 @@ public class PeopleRapUtils {
 	}
 
 	/**
-	 * Creates the basic right aligned bold label that is used in various forms.
+	 * Creates the basic right aligned bold label that is used in various forms
+	 * using a pre-defined toolkit.
 	 */
 	public static Label createBoldLabel(FormToolkit toolkit, Composite parent,
 			String value) {
@@ -563,9 +533,8 @@ public class PeopleRapUtils {
 	}
 
 	/**
-	 * Creates a basic right aligned vertical centered bold label with no
+	 * Creates a basic right-aligned vertical-centered bold label with no
 	 * specific toolkit.
-	 * 
 	 */
 	public static Label createBoldLabel(Composite parent, String value) {
 		Label label = new Label(parent, SWT.RIGHT);
@@ -618,8 +587,7 @@ public class PeopleRapUtils {
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT,
-				Integer.valueOf(customItemHeight));
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(customItemHeight));
 	}
 
 	// /////////////////////////////
@@ -652,116 +620,5 @@ public class PeopleRapUtils {
 		formData.right = new FormAttachment(right, 0);
 		formData.bottom = new FormAttachment(bottom, 0);
 		return formData;
-	}
-
-	/**
-	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
-	 * SWT.FILL, true, true.
-	 */
-	public static GridData fillGridData() {
-		return new GridData(SWT.FILL, SWT.FILL, true, true);
-	}
-
-	/**
-	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
-	 * SWT.CENTER, true, false.
-	 */
-	public static GridData horizontalFillData() {
-		return new GridData(SWT.FILL, SWT.CENTER, true, false);
-	}
-
-	/**
-	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
-	 * SWT.CENTER, true, false, horizontalSpan, 1.
-	 */
-	public static GridData horizontalFillData(int horizontalSpan) {
-		return new GridData(SWT.FILL, SWT.CENTER, true, false, horizontalSpan,
-				1);
-	}
-
-	/**
-	 * Shortcut to create a {@link GridLayout} with no margin and no spacing
-	 * (default are normally 5 px).
-	 */
-	public static GridLayout noSpaceGridLayout() {
-		return noSpaceGridLayout(1);
-	}
-
-	/**
-	 * Shortcut to create a {@link GridLayout} with the given column number with
-	 * no margin and no spacing (default are normally 5 px).
-	 * makeColumnsEqualWidth parameter is set to false.
-	 */
-	public static GridLayout noSpaceGridLayout(int nbOfCol) {
-		GridLayout gl = new GridLayout(nbOfCol, false);
-		gl.marginWidth = gl.marginHeight = gl.horizontalSpacing = gl.verticalSpacing = 0;
-		return gl;
-	}
-
-	/* LENGHT AND DURATION MANAGEMENT */
-	/** returns corresponding seconds for a HH:MM:SS representation */
-	public static long getSecondsFromLength(long lengthInSeconds) {
-		return lengthInSeconds % 60;
-	}
-
-	/** returns corresponding minutes for a HH:MM:SS representation */
-	public static long getMinutesFromLength(long lengthInSeconds) {
-		return (lengthInSeconds / 60) % 60;
-	}
-
-	/** returns corresponding hours for a HH:MM:SS representation */
-	public static long getHoursFromLength(long lengthInSeconds) {
-		return (lengthInSeconds / (60 * 60)) % 60;
-	}
-
-	public static long getLengthFromHMS(int hours, int min, int secs) {
-		return 60 * 60 * hours + 60 * min + secs;
-	}
-
-	/** Approximate the length in seconds in minute, round to the closest minute */
-	public static long roundSecondsToMinutes(long lengthInSeconds) {
-		long grounded = (lengthInSeconds / 60);
-		if (getSecondsFromLength(lengthInSeconds) > 30)
-			grounded++;
-		return grounded;
-	}
-
-	/** format a duration in second using a hh:mm:ss pattern */
-	public static String getLengthFormattedAsString(long lengthInSeconds) {
-		return String.format("%02d:%02d:%02d",
-				getHoursFromLength(lengthInSeconds),
-				getMinutesFromLength(lengthInSeconds),
-				getSecondsFromLength(lengthInSeconds));
-	}
-
-	/* QOM HELPERS */
-	/**
-	 * returns and(constraintA, constraintB) if constraintA != null, or
-	 * constraintB otherwise (that cannot be null)
-	 */
-	public static Constraint localAnd(QueryObjectModelFactory factory,
-			Constraint defaultC, Constraint newC) throws RepositoryException {
-		if (defaultC == null)
-			return newC;
-		else
-			return factory.and(defaultC, newC);
-	}
-
-	/** widely used pattern in various UI Parts */
-	public static Constraint getFreeTextConstraint(Session session,
-			QueryObjectModelFactory factory, Selector source, String filter)
-			throws RepositoryException {
-		Constraint defaultC = null;
-		if (CommonsJcrUtils.checkNotEmptyString(filter)) {
-			String[] strs = filter.trim().split(" ");
-			for (String token : strs) {
-				StaticOperand so = factory.literal(session.getValueFactory()
-						.createValue("*" + token + "*"));
-				Constraint currC = factory.fullTextSearch(
-						source.getSelectorName(), null, so);
-				defaultC = PeopleRapUtils.localAnd(factory, defaultC, currC);
-			}
-		}
-		return defaultC;
 	}
 }

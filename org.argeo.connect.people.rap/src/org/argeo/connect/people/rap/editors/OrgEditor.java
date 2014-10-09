@@ -13,6 +13,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
+import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.composites.ContactPanelComposite;
 import org.argeo.connect.people.rap.composites.TagListComposite;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
@@ -20,7 +21,7 @@ import org.argeo.connect.people.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.rap.toolkits.ActivityToolkit;
 import org.argeo.connect.people.rap.toolkits.LegalInfoToolkit;
 import org.argeo.connect.people.rap.toolkits.ListToolkit;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -83,7 +84,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void populateHeader(Composite parent) {
-		GridLayout gl = PeopleRapUtils.noSpaceGridLayout();
+		GridLayout gl = PeopleUiUtils.noSpaceGridLayout();
 		gl.marginBottom = 10;
 		parent.setLayout(gl);
 
@@ -116,7 +117,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Details", PeopleRapConstants.CTAB_CONTACT_DETAILS, tooltip);
-		innerPannel.setLayout(PeopleRapUtils.noSpaceGridLayout());
+		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		ContactPanelComposite cpc = new ContactPanelComposite(innerPannel,
 				SWT.NO_FOCUS, toolkit, getManagedForm(), getNode(),
 				getPeopleService(), getPeopleWorkbenchService());
@@ -180,16 +181,16 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				public void refresh() {
 					super.refresh();
 					// EDIT PART
-					boolean useDistinct = PeopleRapUtils.refreshCheckBoxWidget(
+					boolean useDistinct = PeopleRapUtils.refreshFormCheckBox(
 							useDistinctDisplayBtn, org,
 							PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 
 					if (useDistinct) {
-						PeopleRapUtils.refreshTextWidgetValue(displayNameTxt,
+						PeopleUiUtils.refreshTextWidgetValue(displayNameTxt,
 								org, Property.JCR_TITLE);
 						displayNameTxt.setEnabled(true);
 					} else {
-						PeopleRapUtils.refreshTextWidgetValue(displayNameTxt,
+						PeopleUiUtils.refreshTextWidgetValue(displayNameTxt,
 								org, PeopleNames.PEOPLE_LEGAL_NAME);
 						displayNameTxt.setEnabled(false);
 					}

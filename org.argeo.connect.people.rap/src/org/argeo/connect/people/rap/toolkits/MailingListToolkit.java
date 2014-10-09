@@ -4,10 +4,10 @@ import java.util.List;
 
 import javax.jcr.query.Row;
 
-import org.argeo.connect.people.rap.PeopleRapSnippets;
-import org.argeo.connect.people.rap.PeopleImages;
+import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.rap.PeopleRapUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
@@ -50,7 +50,7 @@ public class MailingListToolkit {
 	 **/
 	public TableViewer createItemsViewerWithCheckBox(Composite parent,
 			List<Row> selectedItems, List<ColumnDefinition> columns) {
-		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// TODO clean this: we must 1st create the composite for the filter,
 		// then the table, then the filter itself
@@ -69,7 +69,7 @@ public class MailingListToolkit {
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		
+
 		RowViewerComparator comparator = new RowViewerComparator();
 
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -93,9 +93,9 @@ public class MailingListToolkit {
 			@Override
 			public Image getImage(Object element) {
 				if (selectedItems.contains(element)) {
-					return PeopleImages.CHECKED;
+					return PeopleRapImages.CHECKED;
 				} else {
-					return PeopleImages.UNCHECKED;
+					return PeopleRapImages.UNCHECKED;
 				}
 			}
 		});
@@ -133,7 +133,7 @@ public class MailingListToolkit {
 		@Override
 		public String getText(Object element) {
 			String text = super.getText(element);
-			return PeopleRapSnippets.cleanHtmlString(text);
+			return PeopleUiUtils.replaceAmpersand(text);
 		}
 
 	}
@@ -197,7 +197,7 @@ public class MailingListToolkit {
 	}
 
 	public Text addFilterPanel(Composite parent, final TableViewer viewer) {
-		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		// Text Area for the filter
 		final Text filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH
 				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);

@@ -38,7 +38,6 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.providers.TitleWithIconLP;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -191,7 +190,7 @@ public class PickUpContactableDialog extends TrayDialog {
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
 			Selector source = factory.selector(nodeType, nodeType);
 
-			Constraint defaultC = PeopleRapUtils.getFreeTextConstraint(session,
+			Constraint defaultC = CommonsJcrUtils.getFreeTextConstraint(session,
 					factory, source, filterTxt.getText());
 
 			Ordering order = factory.ascending(factory.propertyValue(

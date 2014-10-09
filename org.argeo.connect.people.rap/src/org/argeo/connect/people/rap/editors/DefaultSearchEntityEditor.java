@@ -24,7 +24,7 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
 import org.argeo.connect.people.rap.editors.utils.AbstractSearchEntityEditor;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.eclipse.swt.SWT;
@@ -68,7 +68,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 
 	/** Override this to provide type specific static filters */
 	protected void populateStaticFilters(Composite parent) {
-		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// Configure the Twistie section
 		Section headerSection = new Section(parent, Section.TITLE_BAR
@@ -133,7 +133,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 						source.getSelectorName(), PEOPLE_TAGS);
 				Constraint currC = factory.comparison(dyo,
 						QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
-				defaultC = PeopleRapUtils.localAnd(factory, defaultC, currC);
+				defaultC = CommonsJcrUtils.localAnd(factory, defaultC, currC);
 			}
 
 			// TODO handle the case where no TITLE prop is available

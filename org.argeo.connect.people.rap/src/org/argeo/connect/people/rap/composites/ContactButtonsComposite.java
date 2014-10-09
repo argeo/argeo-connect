@@ -6,10 +6,10 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.rap.PeopleImages;
+import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.eclipse.rap.rwt.RWT;
@@ -59,7 +59,7 @@ public class ContactButtonsComposite extends Composite {
 	private void populate() {
 		// Initialization
 		Composite buttCmp = this;
-		GridLayout gl = PeopleRapUtils.noSpaceGridLayout(3);
+		GridLayout gl = PeopleUiUtils.noSpaceGridLayout(3);
 		buttCmp.setLayout(gl);
 
 		// final Button categoryBtn =
@@ -121,7 +121,7 @@ public class ContactButtonsComposite extends Composite {
 		Button btn = new Button(parent, SWT.FLAT | SWT.BOTTOM);
 		btn.setData(RWT.CUSTOM_VARIANT,
 				PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
-		btn.setImage(PeopleImages.DELETE_BTN);
+		btn.setImage(PeopleRapImages.DELETE_BTN);
 		GridData gd = new GridData();
 		gd.widthHint = 16;
 		gd.heightHint = 16;
@@ -140,9 +140,9 @@ public class ContactButtonsComposite extends Composite {
 					.hasProperty(PeopleNames.PEOPLE_IS_PRIMARY) && contactNode
 					.getProperty(PeopleNames.PEOPLE_IS_PRIMARY).getBoolean());
 			if (isPrimary)
-				btn.setImage(PeopleImages.PRIMARY_BTN);
+				btn.setImage(PeopleRapImages.PRIMARY_BTN);
 			else
-				btn.setImage(PeopleImages.PRIMARY_NOT_BTN);
+				btn.setImage(PeopleRapImages.PRIMARY_NOT_BTN);
 			btn.setEnabled(isCheckedOut);
 			// primaryBtn.setGrayed(false);
 

@@ -12,10 +12,11 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
+import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
@@ -74,7 +75,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 	private void populate() {
 		// Initialization
 		final Composite parent = this;
-		parent.setLayout(PeopleRapUtils.noSpaceGridLayout(2));
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 
 		// BUTTONS
 		Composite buttCmp = new ContactButtonsComposite(parent, SWT.NONE,
@@ -155,13 +156,13 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 							.getParent());
 
 			// REFRESH VALUES
-			PeopleRapUtils.refreshFormTextWidget(labelTxt, contactNode,
+			PeopleRapUtils.refreshFormText(labelTxt, contactNode,
 					PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
 			catCmb.setItems(peopleService.getContactService()
 					.getContactPossibleValues(contactNode,
 							PEOPLE_CONTACT_CATEGORY));
 			catCmb.select(0);
-			PeopleRapUtils.refreshFormComboValue(catCmb, contactNode,
+			PeopleRapUtils.refreshFormCombo(catCmb, contactNode,
 					PeopleNames.PEOPLE_CONTACT_CATEGORY);
 
 			if (contactNode.hasProperty(PeopleNames.PEOPLE_REF_UID)) {
@@ -249,17 +250,17 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					parent, "Geopoint", "", 0);
 
 			// Refresh
-			PeopleRapUtils.refreshFormTextWidget(streetTxt, contactNode,
+			PeopleRapUtils.refreshFormText(streetTxt, contactNode,
 					PeopleNames.PEOPLE_STREET, "Street");
-			PeopleRapUtils.refreshFormTextWidget(street2Txt, contactNode,
+			PeopleRapUtils.refreshFormText(street2Txt, contactNode,
 					PeopleNames.PEOPLE_STREET_COMPLEMENT, "Street complement");
-			PeopleRapUtils.refreshFormTextWidget(zipTxt, contactNode,
+			PeopleRapUtils.refreshFormText(zipTxt, contactNode,
 					PeopleNames.PEOPLE_ZIP_CODE, "Zip code");
-			PeopleRapUtils.refreshFormTextWidget(cityTxt, contactNode,
+			PeopleRapUtils.refreshFormText(cityTxt, contactNode,
 					PeopleNames.PEOPLE_CITY, "City");
-			PeopleRapUtils.refreshFormTextWidget(stateTxt, contactNode,
+			PeopleRapUtils.refreshFormText(stateTxt, contactNode,
 					PeopleNames.PEOPLE_STATE, "State");
-			PeopleRapUtils.refreshFormTextWidget(geoPointTxt, contactNode,
+			PeopleRapUtils.refreshFormText(geoPointTxt, contactNode,
 					PeopleNames.PEOPLE_GEOPOINT, "Geo point");
 
 			// add listeners

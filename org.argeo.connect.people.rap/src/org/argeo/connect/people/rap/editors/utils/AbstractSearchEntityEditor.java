@@ -18,8 +18,8 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.rap.utils.Refreshable;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -73,7 +73,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	@Override
 	public void createPartControl(Composite parent) {
-		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// the generic free search part
 		Composite searchCmp = new Composite(parent, SWT.NO_FOCUS);
@@ -205,7 +205,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 						.createValue("*" + token + "*"));
 				Constraint currC = factory.fullTextSearch(
 						source.getSelectorName(), null, so);
-				defaultC = PeopleRapUtils.localAnd(factory, defaultC, currC);
+				defaultC = CommonsJcrUtils.localAnd(factory, defaultC, currC);
 			}
 		}
 		return defaultC;

@@ -7,8 +7,8 @@ import javax.jcr.Property;
 
 import org.apache.commons.io.IOUtils;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.rap.PeopleImages;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.rap.PeopleRapImages;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -52,7 +52,7 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
 
 	@Override
 	protected void createMainLayout(Composite parent) {
-		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// Internal main Layout
 		// The header
@@ -61,9 +61,9 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
 
 		GridLayout gl;
 		if (displayImage())
-			gl = PeopleRapUtils.noSpaceGridLayout(3);
+			gl = PeopleUiUtils.noSpaceGridLayout(3);
 		else
-			gl = PeopleRapUtils.noSpaceGridLayout(2);
+			gl = PeopleUiUtils.noSpaceGridLayout(2);
 
 		// So that the buttons are not too close to the right border of the
 		// composite.
@@ -94,7 +94,7 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
 
 		// the body
 		Composite body = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		body.setLayout(PeopleRapUtils.noSpaceGridLayout());
+		body.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		populateBody(body);
 	}
@@ -128,7 +128,7 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
 	@Override
 	public void dispose() {
 		// Free the resources.
-		if (itemPicture != null && !itemPicture.equals(PeopleImages.NO_PICTURE))
+		if (itemPicture != null && !itemPicture.equals(PeopleRapImages.NO_PICTURE))
 			itemPicture.dispose();
 		super.dispose();
 	}

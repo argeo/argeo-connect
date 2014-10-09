@@ -15,6 +15,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
+import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.composites.ContactPanelComposite;
 import org.argeo.connect.people.rap.composites.TagListComposite;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
@@ -22,7 +23,7 @@ import org.argeo.connect.people.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.rap.toolkits.ActivityToolkit;
 import org.argeo.connect.people.rap.toolkits.HistoryToolkit;
 import org.argeo.connect.people.rap.toolkits.ListToolkit;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -99,7 +100,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 
 	@Override
 	protected void populateHeader(Composite parent) {
-		GridLayout gl = PeopleRapUtils.noSpaceGridLayout();
+		GridLayout gl = PeopleUiUtils.noSpaceGridLayout();
 		gl.marginBottom = 10;
 		parent.setLayout(gl);
 
@@ -135,7 +136,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Contact details", PeopleRapConstants.CTAB_CONTACT_DETAILS,
 				tooltip);
-		innerPannel.setLayout(PeopleRapUtils.noSpaceGridLayout());
+		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		ContactPanelComposite cpc = new ContactPanelComposite(innerPannel,
 				SWT.NO_FOCUS, toolkit, getManagedForm(), getNode(),
 				getPeopleService(), getPeopleWorkbenchService());
@@ -187,7 +188,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		PeopleRapUtils.setSwitchingFormData(editPanel);
 		// editPanel.setData(RWT.CUSTOM_VARIANT,
 		// PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
-		editPanel.setLayout(PeopleRapUtils.noSpaceGridLayout());
+		editPanel.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// First Line - display Name management
 		Composite firstCmp = toolkit.createComposite(editPanel, SWT.NO_FOCUS);
@@ -278,7 +279,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 			public void refresh() { // update display value
 				super.refresh();
 				// EDIT PART
-				PeopleRapUtils.refreshTextWidgetValue(displayNameTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(displayNameTxt, person,
 						Property.JCR_TITLE);
 
 				Boolean defineDistinct = CommonsJcrUtils.getBooleanValue(
@@ -288,25 +289,25 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				displayNameTxt.setEnabled(defineDistinct);
 				defineDistinctBtn.setSelection(defineDistinct);
 
-				PeopleRapUtils.refreshTextWidgetValue(salutationTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(salutationTxt, person,
 						PEOPLE_SALUTATION);
-				PeopleRapUtils.refreshTextWidgetValue(firstNameTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(firstNameTxt, person,
 						PEOPLE_FIRST_NAME);
-				PeopleRapUtils.refreshTextWidgetValue(middleNameTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(middleNameTxt, person,
 						PEOPLE_MIDDLE_NAME);
-				PeopleRapUtils.refreshTextWidgetValue(lastNameTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(lastNameTxt, person,
 						PEOPLE_LAST_NAME);
-				PeopleRapUtils.refreshTextWidgetValue(nickNameTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(nickNameTxt, person,
 						PEOPLE_NICKNAME);
 				// PeopleUiUtils.refreshTextValue(genderTxt, person,
 				// PEOPLE_GENDER);
-				PeopleRapUtils.refreshTextWidgetValue(maidenNameTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(maidenNameTxt, person,
 						PEOPLE_MAIDEN_NAME);
-				PeopleRapUtils.refreshTextWidgetValue(titleTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(titleTxt, person,
 						PEOPLE_HONORIFIC_TITLE);
-				PeopleRapUtils.refreshTextWidgetValue(suffixTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(suffixTxt, person,
 						PEOPLE_NAME_SUFFIX);
-				PeopleRapUtils.refreshTextWidgetValue(latinPhoneticTxt, person,
+				PeopleUiUtils.refreshTextWidgetValue(latinPhoneticTxt, person,
 						PEOPLE_LATIN_PHONETIC_SPELLING);
 
 				refreshFormalRadio(formalBtn, person);

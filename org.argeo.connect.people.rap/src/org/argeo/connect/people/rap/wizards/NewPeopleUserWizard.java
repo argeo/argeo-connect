@@ -25,7 +25,7 @@ import javax.jcr.Session;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.UserManagementService;
-import org.argeo.connect.people.rap.PeopleImages;
+import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.composites.UserGroupTableComposite;
 import org.argeo.eclipse.ui.ErrorFeedback;
 import org.argeo.jcr.JcrUtils;
@@ -286,7 +286,7 @@ public class NewPeopleUserWizard extends Wizard {
 				public Image getImage(Object element) {
 					String role = element.toString();
 					if (roles.contains(role)) {
-						return PeopleImages.ROLE_CHECKED;
+						return PeopleRapImages.ROLE_CHECKED;
 					} else {
 						return null;
 					}

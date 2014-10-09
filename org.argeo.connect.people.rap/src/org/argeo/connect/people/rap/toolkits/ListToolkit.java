@@ -14,9 +14,10 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleRapSnippets;
-import org.argeo.connect.people.rap.PeopleImages;
+import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapSnippets;
+import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.EditJob;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
@@ -29,7 +30,6 @@ import org.argeo.connect.people.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.rap.providers.RoleListLabelProvider;
 import org.argeo.connect.people.rap.utils.AbstractPanelFormPart;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
@@ -147,8 +147,8 @@ public class ListToolkit {
 				viewer, part, entity, PeopleNames.PEOPLE_IS_PRIMARY);
 		col.setEditingSupport(editingSupport);
 		col.setLabelProvider(new BooleanFlagLabelProvider(
-				PeopleNames.PEOPLE_IS_PRIMARY, PeopleImages.PRIMARY_BTN,
-				PeopleImages.PRIMARY_NOT_BTN));
+				PeopleNames.PEOPLE_IS_PRIMARY, PeopleRapImages.PRIMARY_BTN,
+				PeopleRapImages.PRIMARY_NOT_BTN));
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
 				10, 15, true));
 

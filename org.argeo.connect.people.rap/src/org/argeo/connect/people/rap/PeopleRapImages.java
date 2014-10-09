@@ -1,35 +1,13 @@
-/*
- * Argeo Connect - Data management and communications
- * Copyright (C) 2012 Argeo GmbH
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>
- *
- * Additional permission under GNU GPL version 3 section 7
- *
- * If you modify this Program, or any covered work, by linking or combining it
- * with software covered by the terms of the Eclipse Public License, the
- * licensors of this Program grant you additional permission to convey the
- * resulting work. Corresponding Source for a non-source form of such a
- * combination shall include the source code for the parts of such software
- * which are used as well as that of the covered work.
- */
 package org.argeo.connect.people.rap;
 
 import org.eclipse.swt.graphics.Image;
 
-/** Shared icons. */
-public class PeopleImages {
+/**
+ * Shared icons specific to the People Rap Workbench UI
+ * 
+ * TODO Factorize icons that are not specific to the rap workbench
+ */
+public class PeopleRapImages {
 
 	// order images in various folder to ease their management
 	final private static String BASE_PATH = "icons/";
@@ -77,8 +55,8 @@ public class PeopleImages {
 	public final static Image PRIMARY_NOT_BTN = PeopleRapPlugin
 			.getImageDescriptor("icons/primaryNOT.gif").createImage();
 
-	public final static Image ORIGINAL_BTN = PeopleRapPlugin.getImageDescriptor(
-			"icons/first.png").createImage();
+	public final static Image ORIGINAL_BTN = PeopleRapPlugin
+			.getImageDescriptor("icons/first.png").createImage();
 
 	// Check box icons
 	public final static Image CHECKED = PeopleRapPlugin.getImageDescriptor(
@@ -87,7 +65,7 @@ public class PeopleImages {
 			"icons/unchecked.gif").createImage();
 
 	// User Management
-	public final static Image ROLE_CHECKED = PeopleRapPlugin.getImageDescriptor(
-			"icons/security.gif").createImage();
+	public final static Image ROLE_CHECKED = PeopleRapPlugin
+			.getImageDescriptor("icons/security.gif").createImage();
 
 }

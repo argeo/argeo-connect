@@ -10,15 +10,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.rap.PeopleImages;
+import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
+import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.dialogs.PickUpGroupDialog;
 import org.argeo.connect.people.rap.dialogs.PickUpRelatedDialog;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.toolkits.ActivityToolkit;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
@@ -135,7 +136,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 				.createComposite(parent, SWT.NO_FOCUS);
 		gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
 		relEntitiesCmp.setLayoutData(gd);
-		relEntitiesCmp.setLayout(PeopleRapUtils.noSpaceGridLayout(2));
+		relEntitiesCmp.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 
 		// Parent composite with related entities and add link
 		final Composite relatedCmp = toolkit.createComposite(relEntitiesCmp,
@@ -165,7 +166,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 				try {
 					super.refresh();
 
-					PeopleRapUtils.refreshFormComboValue(statusCmb, task,
+					PeopleRapUtils.refreshFormCombo(statusCmb, task,
 							PeopleNames.PEOPLE_TASK_STATUS);
 					PeopleRapUtils.refreshFormDateTimeWidget(dueDateDt, task,
 							PeopleNames.PEOPLE_DUE_DATE);
@@ -222,7 +223,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 										.setData(
 												RWT.CUSTOM_VARIANT,
 												PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
-								deleteBtn.setImage(PeopleImages.DELETE_BTN);
+								deleteBtn.setImage(PeopleRapImages.DELETE_BTN);
 								RowData rd = new RowData();
 								rd.height = 16;
 								rd.width = 16;

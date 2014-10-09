@@ -9,13 +9,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.rap.PeopleImages;
+import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
+import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.dialogs.PickUpRelatedDialog;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
@@ -166,7 +167,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 										.setData(
 												RWT.CUSTOM_VARIANT,
 												PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
-								deleteBtn.setImage(PeopleImages.DELETE_BTN);
+								deleteBtn.setImage(PeopleRapImages.DELETE_BTN);
 								RowData rd = new RowData();
 								rd.height = 16;
 								rd.width = 16;
@@ -275,7 +276,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		gd.horizontalSpan = 3;
 		titleGrp.setLayoutData(gd);
 		titleGrp.setText("Title");
-		titleGrp.setLayout(PeopleRapUtils.noSpaceGridLayout());
+		titleGrp.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		final Text titleTxt = toolkit.createText(titleGrp, "", SWT.BORDER
 				| SWT.MULTI | SWT.WRAP);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -287,7 +288,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		gd.horizontalSpan = 3;
 		descGrp.setLayoutData(gd);
 		descGrp.setText("Description");
-		descGrp.setLayout(PeopleRapUtils.noSpaceGridLayout());
+		descGrp.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		final Text descTxt = toolkit.createText(descGrp, "", SWT.BORDER
 				| SWT.MULTI | SWT.WRAP);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);

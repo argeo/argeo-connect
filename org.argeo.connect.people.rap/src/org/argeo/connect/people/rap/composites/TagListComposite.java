@@ -19,12 +19,12 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserManagementService;
-import org.argeo.connect.people.rap.PeopleImages;
+import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -164,7 +164,7 @@ public class TagListComposite extends Composite {
 
 						Composite tagCmp = toolkit.createComposite(parentCmp,
 								SWT.NO_FOCUS);
-						tagCmp.setLayout(PeopleRapUtils.noSpaceGridLayout(2));
+						tagCmp.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 						Link link = new Link(tagCmp, SWT.NONE);
 
 						link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
@@ -294,7 +294,7 @@ public class TagListComposite extends Composite {
 				PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 		deleteBtn
 				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-		deleteBtn.setImage(PeopleImages.DELETE_BTN_LEFT);
+		deleteBtn.setImage(PeopleRapImages.DELETE_BTN_LEFT);
 		deleteBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 

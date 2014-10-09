@@ -7,8 +7,9 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
+import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -58,7 +59,7 @@ public class ContactComposite extends Composite {
 	private void populate() {
 		// Initialization
 		Composite parent = this;
-		parent.setLayout(PeopleRapUtils.noSpaceGridLayout(2));
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 
 		// buttons
 		Composite buttCmp = new ContactButtonsComposite(parent, SWT.NO_FOCUS,
@@ -110,12 +111,12 @@ public class ContactComposite extends Composite {
 			catCmb.select(0);
 		}
 
-		PeopleRapUtils.refreshFormTextWidget(labelTxt, contactNode,
+		PeopleRapUtils.refreshFormText(labelTxt, contactNode,
 				PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
-		PeopleRapUtils.refreshFormTextWidget(valueTxt, contactNode,
+		PeopleRapUtils.refreshFormText(valueTxt, contactNode,
 				PeopleNames.PEOPLE_CONTACT_VALUE, "Value");
 		if (catCmb != null)
-			PeopleRapUtils.refreshFormComboValue(catCmb, contactNode,
+			PeopleRapUtils.refreshFormCombo(catCmb, contactNode,
 					PeopleNames.PEOPLE_CONTACT_CATEGORY);
 
 		// Listeners

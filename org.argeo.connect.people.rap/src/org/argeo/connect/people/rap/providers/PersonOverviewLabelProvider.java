@@ -12,6 +12,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -67,7 +68,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 			default:
 				throw new PeopleException("Unable to provide text for person");
 			}
-			return PeopleRapSnippets.cleanHtmlString(result);
+			return PeopleUiUtils.replaceAmpersand(result);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot create organizations content", re);
 		}
@@ -85,7 +86,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		String fmn = PeopleUiSnippets.getFullMontyName(person);
 		String local = PeopleRapSnippets.getLocalisationInfo(peopleService,
 				person);
-		String primaryContacts = PeopleRapSnippets.getPrimaryContacts(person);
+		String primaryContacts = PeopleUiSnippets.getPrimaryContacts(person);
 		Boolean politeFormFlag = CommonsJcrUtils.getBooleanValue(person,
 				PEOPLE_USE_POLITE_FORM);
 		List<String> spokenLanguages = CommonsJcrUtils.getMultiAsList(person,
@@ -152,7 +153,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		builder.append("<br/>");
 
 		// Contacts
-		String primContactsStr = PeopleRapSnippets.getPrimaryContacts(person);
+		String primContactsStr = PeopleUiSnippets.getPrimaryContacts(person);
 		if (CommonsJcrUtils.checkNotEmptyString(primContactsStr))
 			builder.append(primContactsStr).append("<br/>");
 

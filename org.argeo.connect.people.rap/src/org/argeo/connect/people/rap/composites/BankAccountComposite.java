@@ -3,7 +3,7 @@ package org.argeo.connect.people.rap.composites;
 import javax.jcr.Node;
 
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;

@@ -14,10 +14,11 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.eclipse.rap.rwt.RWT;
@@ -75,7 +76,7 @@ public class ContactPanelComposite extends Composite {
 
 	private void populate() {
 		Composite parent = this;
-		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		// Add a scrolled container
 		ScrolledComposite container = new ScrolledComposite(parent,
@@ -88,7 +89,7 @@ public class ContactPanelComposite extends Composite {
 
 		container.setExpandHorizontal(true);
 		container.setExpandVertical(false);
-		container.setLayout(PeopleRapUtils.noSpaceGridLayout());
+		container.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		innerCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		formPart.initialize(form);
@@ -183,7 +184,7 @@ public class ContactPanelComposite extends Composite {
 	/** Manage display and update of existing contact Nodes */
 	private void populateDisplayContactPanel(final Composite parent,
 			boolean isCheckedOut) {
-		parent.setLayout(PeopleRapUtils.noSpaceGridLayout());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		try {
 
 			String[] knownTypes = peopleService.getContactService()
@@ -217,7 +218,7 @@ public class ContactPanelComposite extends Composite {
 	}
 
 	private void populateNotePanel(Composite parent) {
-		parent.setLayout(PeopleRapUtils.noSpaceGridLayout(2));
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 		Label label = PeopleRapUtils
 				.createBoldLabel(toolkit, parent, "Notes: ");
 

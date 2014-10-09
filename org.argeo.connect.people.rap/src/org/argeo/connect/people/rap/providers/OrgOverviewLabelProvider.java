@@ -8,8 +8,10 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapSnippets;
+import org.argeo.connect.people.ui.PeopleUiSnippets;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
@@ -52,8 +54,7 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 				builder.append("<span>");
 			else
 				builder.append("<span "
-						+ PeopleRapConstants.PEOPLE_STYLE_ENTITY_HEADER
-						+ " >");
+						+ PeopleRapConstants.PEOPLE_STYLE_ENTITY_HEADER + " >");
 			builder.append("<big><b>");
 			builder.append(CommonsJcrUtils.get(orga, Property.JCR_TITLE));
 			builder.append("</b></big> ");
@@ -72,12 +73,12 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 					builder.append(tmpStr).append("<br/>");
 			}
 
-			tmpStr = PeopleRapSnippets.getPrimaryContacts(orga);
+			tmpStr = PeopleUiSnippets.getPrimaryContacts(orga);
 			if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
 				builder.append(tmpStr);
 			}
 			builder.append("</span>");
-			String result = PeopleRapSnippets.cleanHtmlString(builder.toString());
+			String result = PeopleUiUtils.replaceAmpersand(builder.toString());
 			return result;
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot create organizations content", re);

@@ -8,7 +8,7 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleRapSnippets;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.viewers.LabelProvider;
 
@@ -54,7 +54,7 @@ public class PersonListLabelProvider extends LabelProvider implements
 		} catch (RepositoryException re) {
 			// Cannot get corresponding jobs, fail silently
 		}
-		String result = PeopleRapSnippets.cleanHtmlString(builder.toString());
+		String result = PeopleUiUtils.replaceAmpersand(builder.toString());
 		return result;
 	}
 }

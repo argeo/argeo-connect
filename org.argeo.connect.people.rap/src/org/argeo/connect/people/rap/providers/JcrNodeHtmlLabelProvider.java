@@ -1,6 +1,6 @@
 package org.argeo.connect.people.rap.providers;
 
-import org.argeo.connect.people.rap.PeopleRapSnippets;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 
 /**
@@ -16,6 +16,6 @@ public class JcrNodeHtmlLabelProvider extends SimpleJcrNodeLabelProvider {
 
 	@Override
 	public String getText(Object element) {
-		return PeopleRapSnippets.cleanHtmlString(super.getText(element));
+		return PeopleUiUtils.replaceAmpersand(super.getText(element));
 	}
 }

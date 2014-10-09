@@ -23,11 +23,12 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.PeopleVirtualTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.providers.TitleWithIconLP;
-import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ILazyContentProvider;
@@ -237,7 +238,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 
 		public void createControl(Composite parent) {
 			Composite body = new Composite(parent, SWT.NONE);
-			body.setLayout(PeopleRapUtils.noSpaceGridLayout());
+			body.setLayout(PeopleUiUtils.noSpaceGridLayout());
 			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 			colDefs.add(new PeopleColumnDefinition(taggableNodeType,
 					Property.JCR_TITLE, PropertyType.STRING, "Display Name",
@@ -280,7 +281,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 
 			Constraint subTree = factory.descendantNode(
 					source.getSelectorName(), taggableParentPath);
-			constraint = PeopleRapUtils.localAnd(factory, constraint, subTree);
+			constraint = CommonsJcrUtils.localAnd(factory, constraint, subTree);
 
 			Ordering order = factory.ascending(factory.propertyValue(
 					source.getSelectorName(), Property.JCR_TITLE));
