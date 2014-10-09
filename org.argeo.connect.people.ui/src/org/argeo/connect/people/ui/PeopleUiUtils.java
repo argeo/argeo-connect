@@ -142,4 +142,16 @@ public class PeopleUiUtils {
 		return tmpStr;
 	}
 
+	/**
+	 * Calls <code>CommonsJcrUtils.get(Node node, String propName)</code> method
+	 * and replace any '&' by its html encoding '&amp;' to avoid
+	 * <code>IllegalArgumentException</code> while rendering html read only
+	 * snippets
+	 */
+	public static String getRwtCompliantString(Node node, String propName) {
+		String value = CommonsJcrUtils.get(node, propName);
+		value = replaceAmpersand(value);
+		return value;
+	}
+
 }

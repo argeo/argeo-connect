@@ -6,9 +6,9 @@ import javax.jcr.PropertyType;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.rap.rwt.RWT;
@@ -79,12 +79,10 @@ public class ContactComposite extends Composite {
 
 	protected void populateReadOnlyPanel(final Composite readOnlyPanel) {
 		readOnlyPanel.setLayout(new GridLayout());
-
-		// TODO RAP specific, refactor.
 		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
 				SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		String addressHtml = PeopleRapSnippets.getContactDisplaySnippet(
+		String addressHtml = PeopleUiSnippets.getContactDisplaySnippet(
 				peopleService, contactNode);
 		readOnlyInfoLbl.setText(addressHtml);
 	}

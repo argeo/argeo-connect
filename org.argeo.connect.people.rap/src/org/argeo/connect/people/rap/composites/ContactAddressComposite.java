@@ -11,11 +11,11 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
+import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
@@ -108,10 +108,10 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 				&& CommonsJcrUtils.checkNotEmptyString(refUid)) {
 			Node referencedEntity = peopleService.getEntityByUid(
 					CommonsJcrUtils.getSession(contactNode), refUid);
-			addressHtml = PeopleRapSnippets.getWorkAddressDisplaySnippet(
-					peopleService, contactNode, referencedEntity);
+			addressHtml = PeopleUiSnippets.getWorkAddress(peopleService,
+					contactNode, referencedEntity);
 		} else
-			addressHtml = PeopleRapSnippets.getContactDisplaySnippet(
+			addressHtml = PeopleUiSnippets.getContactDisplaySnippet(
 					peopleService, contactNode);
 		readOnlyInfoLbl.setText(addressHtml);
 	}

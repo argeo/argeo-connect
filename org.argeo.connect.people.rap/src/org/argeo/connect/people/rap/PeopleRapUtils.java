@@ -19,10 +19,7 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;
 import org.argeo.eclipse.ui.utils.CommandUtils;
-import org.eclipse.jface.action.IContributionItem;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.fieldassist.ControlDecoration;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -47,44 +44,12 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.menus.CommandContributionItem;
-import org.eclipse.ui.menus.CommandContributionItemParameter;
-import org.eclipse.ui.services.IServiceLocator;
 
 /**
  * Some helper methods to simplify UI implementation in a Rap Workbench People
  * context
  */
 public class PeopleRapUtils {
-
-	/**
-	 * TODO Use commandUtils equivalent as soon as Commons v2.1.9 is released.
-	 */
-	@Deprecated
-	public static void refreshParameterizedCommand(IMenuManager menuManager,
-			IServiceLocator locator, String contributionId, String commandId,
-			String label, ImageDescriptor icon, boolean showCommand,
-			Map<String, String> params) {
-		IContributionItem ici = menuManager.find(contributionId);
-		if (ici != null)
-			menuManager.remove(ici);
-		if (showCommand) {
-			CommandContributionItemParameter contributionItemParameter = new CommandContributionItemParameter(
-					locator, null, commandId, SWT.PUSH);
-
-			// Set Params
-			contributionItemParameter.label = label;
-			contributionItemParameter.icon = icon;
-
-			if (params != null)
-				contributionItemParameter.parameters = params;
-
-			CommandContributionItem cci = new CommandContributionItem(
-					contributionItemParameter);
-			cci.setId(contributionId);
-			menuManager.add(cci);
-		}
-	}
 
 	/**
 	 * Shortcut to refresh a <code>DateTime</code> widget given a Node in a form
