@@ -153,5 +153,4 @@ public class PeopleUiUtils {
 		value = replaceAmpersand(value);
 		return value;
 	}
-
 }

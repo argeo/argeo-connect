@@ -174,19 +174,6 @@ public class CommonsJcrUtils {
 		}
 	}
 
-	/**
-	 * Concisely get the identifier of a node in Ui listener for instance
-	 */
-	@Deprecated
-	public static String getIdentifierQuietly(Node node) {
-		try {
-			return node.getIdentifier();
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get identifier for node " + node,
-					e);
-		}
-	}
-
 	/* VERSIONING MANAGEMENT */
 	/**
 	 * For the time being, same as isNodeCheckedOut(Node node).
@@ -882,16 +869,6 @@ public class CommonsJcrUtils {
 
 	/* MISCELLANEOUS */
 
-	/**
-	 * Clean a String to remove or replace chars that are known to be
-	 * problematic
-	 */
-	// public static String cleanString(String string) {
-	// String cleanStr = string;
-	// cleanStr.replaceAll("&", "&amp;");
-	// return cleanStr;
-	// }
-
 	/* WIDELY USED PATTERNS */
 	/**
 	 * Browses a {@code RowIterator} to build the corresponding row array.
@@ -974,6 +951,23 @@ public class CommonsJcrUtils {
 			return cleanRes;
 		}
 		return temp;
+	}
+
+	/**
+	 * concatenate 2 strings with given separator if they are both not empty
+	 */
+	public static String concatIfNotEmpty(String str1, String str2,
+			String separator) {
+		StringBuilder builder = new StringBuilder();
+		if (checkNotEmptyString(str1))
+			builder.append(str1);
+
+		if (checkNotEmptyString(str1) && checkNotEmptyString(str2))
+			builder.append(separator);
+
+		if (checkNotEmptyString(str2))
+			builder.append(str2);
+		return builder.toString();
 	}
 
 	/* PREVENT INSTANTIATION */
