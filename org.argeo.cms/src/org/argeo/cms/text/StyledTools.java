@@ -3,12 +3,6 @@ package org.argeo.cms.text;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
-import org.argeo.cms.CmsEditable;
-import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsNames;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -18,7 +12,6 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
@@ -27,26 +20,26 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 	private final static String[] DEFAULT_TEXT_STYLES = {
 			TextStyles.TEXT_DEFAULT, TextStyles.TEXT_PRE, TextStyles.TEXT_QUOTE };
 
-	private final CmsEditable cmsEditable;
+	private final TextViewer textViewer;
 
 	private static final long serialVersionUID = -3826246895162050331L;
-	private EditableTextPart source;
 	private List<StyleButton> styleButtons = new ArrayList<StyledTools.StyleButton>();
 
 	private Label deleteButton, publishButton, editButton;
 
-	public StyledTools(Display display, CmsEditable cmsEditable) {
-		super(display, SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
-		this.cmsEditable = cmsEditable;
+	private EditableTextPart currentTextPart;
 
+	public StyledTools(TextViewer textViewer) {
+		super(textViewer.getPage().getDisplay(), SWT.NO_TRIM | SWT.BORDER
+				| SWT.ON_TOP);
+		this.textViewer = textViewer;
 		setLayout(new GridLayout());
 		setData(RWT.CUSTOM_VARIANT, TEXT_STYLED_TOOLS_DIALOG);
 
 		StyledToolMouseListener stml = new StyledToolMouseListener();
-		if (cmsEditable.isEditing()) {
-
+		if (textViewer.getCmsEditable().isEditing()) {
 			for (String style : DEFAULT_TEXT_STYLES) {
-				StyleButton styleButton = new StyleButton(this, SWT.NONE);
+				StyleButton styleButton = new StyleButton(this, SWT.WRAP);
 				styleButton.setData(RWT.CUSTOM_VARIANT, style);
 				styleButton.setData(RWT.MARKUP_ENABLED, true);
 				styleButton.addMouseListener(stml);
@@ -62,14 +55,12 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 			publishButton = new Label(this, SWT.NONE);
 			publishButton.setText("Publish");
 			publishButton.addMouseListener(stml);
-		} else if (cmsEditable.canEdit()) {
+		} else if (textViewer.getCmsEditable().canEdit()) {
 			// Edit
 			editButton = new Label(this, SWT.NONE);
 			editButton.setText("Edit");
 			editButton.addMouseListener(stml);
-
 		}
-
 		addShellListener(new ToolsShellListener());
 	}
 
@@ -77,15 +68,13 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 		if (isVisible())
 			setVisible(false);
 
-		this.source = source;
+		this.currentTextPart = source;
 
 		if (source instanceof StyledComposite) {
-			StyledComposite sc = (StyledComposite) source;
-			final int size = 16;
-			String text = sc.getText();
-			String textToShow = text.length() > size ? sc.getText().substring(
-					0, size - 3)
-					+ "..." : text;
+			final int size = 32;
+			String text = textViewer.getRawParagraphText(currentTextPart);
+			String textToShow = text.length() > size ? text.substring(0,
+					size - 3) + "..." : text;
 			for (StyleButton styleButton : styleButtons) {
 				styleButton.setText(textToShow);
 			}
@@ -114,32 +103,13 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 			if (eventSource instanceof StyleButton) {
 				StyleButton sb = (StyleButton) e.getSource();
 				String style = sb.getData(RWT.CUSTOM_VARIANT).toString();
-				StyledComposite sc = (StyledComposite) source;
-				sc.setTextStyle(style);
-				try {
-					Node paragraphNode = sc.getParagraphNode();
-					paragraphNode.setProperty(CMS_STYLE, style);
-					paragraphNode.getSession().save();
-				} catch (RepositoryException e1) {
-					throw new CmsException("Cannot set style " + style + " on "
-							+ sc, e1);
-				}
+				textViewer.setParagraphStyle(currentTextPart, style);
 			} else if (eventSource == deleteButton) {
-				StyledComposite sc = (StyledComposite) source;
-				try {
-					Node paragraphNode = sc.getParagraphNode();
-					Session session = paragraphNode.getSession();
-					paragraphNode.remove();
-					session.save();
-					source.dispose();
-					// page.layout(true, true);
-				} catch (RepositoryException e1) {
-					throw new CmsException("Cannot delete " + sc, e1);
-				}
+				textViewer.deleteParagraph(currentTextPart);
 			} else if (eventSource == editButton) {
-				cmsEditable.startEditing();
+				textViewer.getCmsEditable().startEditing();
 			} else if (eventSource == publishButton) {
-				cmsEditable.stopEditing();
+				textViewer.getCmsEditable().stopEditing();
 			}
 			setVisible(false);
 		}

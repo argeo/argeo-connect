@@ -1,5 +1,7 @@
 package org.argeo.cms.text;
 
+import javax.jcr.Property;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -10,13 +12,15 @@ abstract class EditableTextPart extends Composite {
 		super(parent, style);
 	}
 
-	protected abstract void startEditing();
+	public abstract void startEditing();
 
-	protected abstract void stopEditing();
+	public abstract void stopEditing();
 
-	protected void clear() {
-		for (Control control : getChildren())
-			control.dispose();
+	public abstract Control getControl();
+
+	public abstract void setStyle(String style);
+
+	public String getNodePath() {
+		return (String) getData(Property.JCR_PATH);
 	}
-
 }

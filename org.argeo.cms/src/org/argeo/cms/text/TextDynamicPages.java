@@ -14,7 +14,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 
 /** Display the text of the context, and provide an editor if the user can edit. */
 public class TextDynamicPages implements CmsUiProvider, CmsNames {

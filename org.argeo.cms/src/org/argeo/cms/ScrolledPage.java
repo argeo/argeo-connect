@@ -5,7 +5,6 @@ import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -25,8 +24,6 @@ public class ScrolledPage extends Composite {
 
 		scrolledComposite.setExpandVertical(true);
 		scrolledComposite.setExpandHorizontal(true);
-		scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				true));
 		scrolledComposite.addControlListener(new ScrollControlListener());
 	}
 
@@ -42,8 +39,14 @@ public class ScrolledPage extends Composite {
 		scrolledComposite.setMinHeight(preferredSize.y);
 	}
 
-	public ScrolledComposite getScrolledComposite() {
-		return this.scrolledComposite;
+	// public ScrolledComposite getScrolledComposite() {
+	// return this.scrolledComposite;
+	// }
+
+	/** Set it on the wrapping scrolled composite */
+	@Override
+	public void setLayoutData(Object layoutData) {
+		scrolledComposite.setLayoutData(layoutData);
 	}
 
 	private class ScrollControlListener extends

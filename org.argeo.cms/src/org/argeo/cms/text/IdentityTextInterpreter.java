@@ -2,7 +2,6 @@ package org.argeo.cms.text;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 
 import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsNames;
@@ -12,30 +11,27 @@ import org.argeo.cms.CmsTypes;
 public class IdentityTextInterpreter implements TextInterpreter, CmsNames {
 
 	@Override
-	public Node write(Session session, String nodePath, String content) {
+	public void write(Node node, String content) {
 		try {
-			Node node = session.getNode(nodePath);
 			if (node.isNodeType(CmsTypes.CMS_STYLED)) {
 				String raw = convertToStorage(node, content);
 				node.setProperty(CMS_CONTENT, raw);
 			} else {
 				throw new CmsException("Don't know how to interpret " + node);
 			}
-			session.save();
-			return node;
+			node.getSession().save();
 		} catch (RepositoryException e) {
-			throw new CmsException("Cannot set content on " + nodePath, e);
+			throw new CmsException("Cannot set content on " + node, e);
 		}
 	}
 
 	@Override
-	public String read(Session session, String nodePath) {
+	public String read(Node node) {
 		try {
-			Node node = session.getNode(nodePath);
 			String raw = raw(node);
 			return convertFromStorage(node, raw);
 		} catch (RepositoryException e) {
-			throw new CmsException("Cannot get " + nodePath + " for edit", e);
+			throw new CmsException("Cannot get " + node + " for edit", e);
 		}
 	}
 

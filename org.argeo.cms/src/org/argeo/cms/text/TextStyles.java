@@ -21,5 +21,9 @@ public interface TextStyles {
 	public final static String TEXT_PRE = "text_pre";
 	/** Quote */
 	public final static String TEXT_QUOTE = "text_quote";
+	/** Title */
+	public final static String TEXT_TITLE = "text_title";
+	/** Header (to be dynamically completed with the depth, e.g. text_h1) */
+	public final static String TEXT_H = "text_h";
 
 }

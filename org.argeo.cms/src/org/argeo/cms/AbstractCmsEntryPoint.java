@@ -248,6 +248,10 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 		return exception;
 	}
 
+	protected void resetException() {
+		exception = null;
+	}
+
 	protected Session getSession() {
 		return session;
 	}

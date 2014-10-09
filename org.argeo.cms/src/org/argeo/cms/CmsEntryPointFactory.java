@@ -197,6 +197,7 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 				exception.printStackTrace(new PrintWriter(sw));
 				errorText.setText(sw.toString());
 				IOUtils.closeQuietly(sw);
+				resetException();
 				// TODO report
 			} else {
 				String state = getState();
