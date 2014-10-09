@@ -17,7 +17,6 @@ import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsNames;
 import org.argeo.cms.CmsTypes;
 import org.argeo.cms.CmsUtils;
-import org.argeo.cms.ScrolledNodeSubTree;
 import org.argeo.cms.ScrolledPage;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.swt.SWT;
@@ -37,7 +36,7 @@ import org.eclipse.swt.widgets.Widget;
 public class TextViewer extends StructuredViewer implements CmsNames {
 	private static final long serialVersionUID = 6536978175844375304L;
 
-	private final ScrolledNodeSubTree page;
+	private final ScrolledText page;
 
 	private StyledTools styledTools;
 	private TextPartListener textPartListener;
@@ -49,7 +48,7 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 	private CmsEditable cmsEditable = CmsEditable.NON_EDITABLE;
 
 	public TextViewer(Composite parent, int style) {
-		this.page = new ScrolledNodeSubTree(parent, style);
+		this.page = new ScrolledText(parent, style);
 		page.setLayout(CmsUtils.noSpaceGridLayout());
 	}
 
@@ -66,6 +65,10 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 		}
 	}
 
+	/*
+	 * STRUCTURED CONTROLLER IMPLEMENTATION
+	 */
+
 	@Override
 	protected Widget doFindInputItem(Object element) {
 		if (element == null || element.equals(getInput()))
@@ -81,6 +84,14 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 
 	@Override
 	protected void doUpdateItem(Widget item, Object element, boolean fullMap) {
+		try {
+			Node node = (Node) element;
+			if (node.isNodeType(CmsTypes.CMS_STYLED)) {
+				updateParagraph((EditableTextPart) item, node);
+			}
+		} catch (Exception e) {
+			throw new CmsException("Cannot update " + element, e);
+		}
 	}
 
 	@Override
@@ -118,6 +129,69 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 		// TODO optimize
 		// page.layout(true, true);
 	}
+
+	@Override
+	protected void inputChanged(Object input, Object oldInput) {
+		try {
+			if (styledTools != null) {
+				styledTools.dispose();
+				styledTools = null;
+			}
+			textPartListener = null;
+
+			Node node = (Node) input;
+			page.setData(Property.JCR_PATH, node.getPath());
+			if (cmsEditable.canEdit()) {
+				textPartListener = new TextPartListener();
+				textTraverseListener = new TextTraverseListener();
+				styledTools = new StyledTools(this);
+			}
+		} catch (RepositoryException e) {
+			throw new CmsException("Cannot set root element", e);
+		}
+	}
+
+	@Override
+	public void reveal(Object element) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected void setSelectionToWidget(List l, boolean reveal) {
+		if (l.size() > 0)
+			page.select((Node) l.get(0));
+	}
+
+	@Override
+	protected List<?> getSelectionFromWidget() {
+		ArrayList<Node> res = new ArrayList<Node>();
+		EditableTextPart etp = page.getSelected();
+		if (etp == null)
+			return res;
+		try {
+			Node node = getSession().getNode(etp.getNodePath());
+			res.add(node);
+			return res;
+		} catch (RepositoryException e) {
+			throw new CmsException("Cannot get selection from "
+					+ etp.getNodePath(), e);
+		}
+	}
+
+	@Override
+	public Control getControl() {
+		return page;
+	}
+
+	public ScrolledPage getPage() {
+		return (ScrolledPage) getControl();
+	}
+
+	/*
+	 * MODEL TO VIEW
+	 */
 
 	protected void refreshSection(Composite sectionComposite, Node sectionNode,
 			int depth) throws RepositoryException {
@@ -178,54 +252,6 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 				text.addTraverseListener(textTraverseListener);
 		}
 		// paragraph.layout(true, true);
-	}
-
-	@Override
-	protected void inputChanged(Object input, Object oldInput) {
-		try {
-			if (styledTools != null) {
-				styledTools.dispose();
-				styledTools = null;
-			}
-			textPartListener = null;
-
-			Node node = (Node) input;
-			page.setData(Property.JCR_PATH, node.getPath());
-			if (cmsEditable.canEdit()) {
-				textPartListener = new TextPartListener();
-				textTraverseListener = new TextTraverseListener();
-				styledTools = new StyledTools(this);
-			}
-		} catch (RepositoryException e) {
-			throw new CmsException("Cannot set root element", e);
-		}
-	}
-
-	@Override
-	public void reveal(Object element) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Override
-	protected void setSelectionToWidget(List l, boolean reveal) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	protected List<?> getSelectionFromWidget() {
-		return new ArrayList<Object>();
-	}
-
-	@Override
-	public Control getControl() {
-		return page;
-	}
-
-	public ScrolledPage getPage() {
-		return (ScrolledPage) getControl();
 	}
 
 	//
@@ -318,15 +344,18 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 
 		@Override
 		public void mouseDoubleClick(MouseEvent e) {
-			EditableTextPart etp = getEtp(e.getSource());
-			if (cmsEditable.isEditing()) {
-				if (edited != null)
-					stopEditing(edited);
+			if (e.button == 1) {
+				EditableTextPart etp = getEtp(e.getSource());
+				page.select(etp);
+				if (cmsEditable.isEditing()) {
+					if (edited != null)
+						stopEditing(edited);
 
-				edited = etp;
-				startEditing(edited);
+					edited = etp;
+					startEditing(edited);
 
-				page.layout(true, true);
+					page.layout(true, true);
+				}
 			}
 		}
 
@@ -334,6 +363,7 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 		public void mouseDown(MouseEvent e) {
 			EditableTextPart etp = getEtp(e.getSource());
 			if (e.button == 1) {
+				page.select(etp);
 				if (cmsEditable.isEditing()) {
 					if (edited != null && etp != edited) {
 						stopEditing(edited);
