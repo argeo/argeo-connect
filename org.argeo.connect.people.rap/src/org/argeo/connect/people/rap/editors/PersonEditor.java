@@ -27,6 +27,7 @@ import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.ModifyEvent;
@@ -132,7 +133,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		String tooltip = "Contact information for "
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
-				"Contact details", PeopleRapConstants.PANEL_CONTACT_DETAILS,
+				"Contact details", PeopleRapConstants.CTAB_CONTACT_DETAILS,
 				tooltip);
 		innerPannel.setLayout(PeopleRapUtils.noSpaceGridLayout());
 		ContactPanelComposite cpc = new ContactPanelComposite(innerPannel,
@@ -144,14 +145,14 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		tooltip = "Activities and tasks related to "
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
-				PeopleRapConstants.PANEL_ACTIVITY_LOG, tooltip);
+				PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 		activityTK.populateActivityLogPanel(innerPannel, person);
 
 		// Jobs panel
 		tooltip = "Organisations linked to "
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Organisations",
-				PeopleRapConstants.PANEL_JOBS, tooltip);
+				PeopleRapConstants.CTAB_JOBS, tooltip);
 		listTK.populateJobsPanel(innerPannel, person);
 
 		// History panel
@@ -159,7 +160,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		tooltip = "History of information about "
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "History",
-				PeopleRapConstants.PANEL_HISTORY, tooltip);
+				PeopleRapConstants.CTAB_HISTORY, tooltip);
 		historyTK.populateHistoryPanel(innerPannel);
 		folder.layout();
 	}
@@ -176,8 +177,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		// Add a label with info provided by the PersonOverviewLabelProvider
 		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
 				SWT.WRAP);
-		readOnlyInfoLbl
-				.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
+		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		final ColumnLabelProvider personLP = new PersonOverviewLabelProvider(
 				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE, getPeopleService());
 

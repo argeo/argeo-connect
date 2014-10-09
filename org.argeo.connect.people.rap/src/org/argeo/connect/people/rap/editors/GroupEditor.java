@@ -16,6 +16,7 @@ import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.layout.FormLayout;
@@ -79,7 +80,7 @@ public class GroupEditor extends AbstractEntityCTabEditor {
 		String tooltip = "Members of group "
 				+ JcrUtils.get(group, Property.JCR_TITLE);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
-				"Members", PeopleRapConstants.PANEL_MEMBERS, tooltip);
+				"Members", PeopleRapConstants.CTAB_MEMBERS, tooltip);
 		groupToolkit.createMemberList(innerPannel, group);
 	}
 
@@ -97,7 +98,7 @@ public class GroupEditor extends AbstractEntityCTabEditor {
 			// Add a label with info provided by the FilmOverviewLabelProvider
 			final Label titleROLbl = toolkit.createLabel(roPanelCmp, "",
 					SWT.WRAP);
-			titleROLbl.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
+			titleROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider groupTitleLP = new GroupLabelProvider(
 					PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE);
 
@@ -110,8 +111,8 @@ public class GroupEditor extends AbstractEntityCTabEditor {
 			editPanel.setLayout(new GridLayout(1, false));
 			final Text titleTxt = PeopleRapUtils.createGDText(toolkit,
 					editPanel, "A title", "The title of this group", 200, 1);
-			final Text descTxt = PeopleRapUtils.createGDText(toolkit, editPanel,
-					"A Description", "", 400, 1);
+			final Text descTxt = PeopleRapUtils.createGDText(toolkit,
+					editPanel, "A Description", "", 400, 1);
 
 			AbstractFormPart editPart = new AbstractFormPart() {
 				public void refresh() {

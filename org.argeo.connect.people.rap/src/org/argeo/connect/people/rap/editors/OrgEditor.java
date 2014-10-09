@@ -24,6 +24,7 @@ import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -114,7 +115,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		String tooltip = "Contact information for "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
-				"Details", PeopleRapConstants.PANEL_CONTACT_DETAILS, tooltip);
+				"Details", PeopleRapConstants.CTAB_CONTACT_DETAILS, tooltip);
 		innerPannel.setLayout(PeopleRapUtils.noSpaceGridLayout());
 		ContactPanelComposite cpc = new ContactPanelComposite(innerPannel,
 				SWT.NO_FOCUS, toolkit, getManagedForm(), getNode(),
@@ -125,21 +126,21 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		tooltip = "Activities and tasks related to "
 				+ JcrUtils.get(org, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
-				PeopleRapConstants.PANEL_ACTIVITY_LOG, tooltip);
+				PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 		activityTK.populateActivityLogPanel(innerPannel, org);
 
 		// Employees
 		tooltip = "Known employees of "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Team",
-				PeopleRapConstants.PANEL_EMPLOYEES, tooltip);
+				PeopleRapConstants.CTAB_EMPLOYEES, tooltip);
 		listTK.populateEmployeesPanel(innerPannel, org);
 
 		// Legal informations
 		tooltip = "Legal information for "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Admin.",
-				PeopleRapConstants.PANEL_LEGAL_INFO, tooltip);
+				PeopleRapConstants.CTAB_LEGAL_INFO, tooltip);
 		legalTK.populateLegalInfoPanel(innerPannel);
 	}
 
@@ -155,8 +156,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 			// Add a label with info provided by the OrgOverviewLabelProvider
 			final Label orgInfoROLbl = toolkit.createLabel(roPanelCmp, "",
 					SWT.WRAP);
-			orgInfoROLbl.setData(PeopleRapConstants.MARKUP_ENABLED,
-					Boolean.TRUE);
+			orgInfoROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider orgLP = new OrgOverviewLabelProvider(
 					false, getPeopleService());
 

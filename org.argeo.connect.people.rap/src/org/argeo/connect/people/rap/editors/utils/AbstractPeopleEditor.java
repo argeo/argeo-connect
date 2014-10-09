@@ -18,7 +18,6 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.CancelAndCheckInItem;
 import org.argeo.connect.people.rap.commands.CheckOutItem;
@@ -26,6 +25,7 @@ import org.argeo.connect.people.rap.commands.DeleteEntity;
 import org.argeo.connect.people.rap.utils.CheckoutSourceProvider;
 import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.rap.utils.Refreshable;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
@@ -77,7 +77,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	protected final static int SHORT_NAME_LENGHT = 10;
 
 	private final static DateFormat df = new SimpleDateFormat(
-			PeopleRapConstants.DEFAULT_DATE_TIME_FORMAT);
+			PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
 	// Business Objects
 	private Node node;

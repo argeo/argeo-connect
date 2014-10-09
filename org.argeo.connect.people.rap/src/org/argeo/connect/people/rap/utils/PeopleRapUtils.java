@@ -31,6 +31,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -528,7 +529,7 @@ public class PeopleRapUtils {
 	 */
 	public static Button createDeleteButton(Composite parent) {
 		Button button = new Button(parent, SWT.FLAT);
-		button.setData(PeopleRapConstants.CUSTOM_VARIANT,
+		button.setData(RWT.CUSTOM_VARIANT,
 				PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 		button.setImage(PeopleImages.DELETE_BTN_LEFT);
 		RowData rd = new RowData();
@@ -616,8 +617,8 @@ public class PeopleRapUtils {
 		Table table = viewer.getTable();
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
-		table.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(PeopleRapConstants.CUSTOM_ITEM_HEIGHT,
+		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT,
 				Integer.valueOf(customItemHeight));
 	}
 

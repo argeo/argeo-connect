@@ -28,6 +28,7 @@ import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -166,18 +167,17 @@ public class TagListComposite extends Composite {
 						tagCmp.setLayout(PeopleRapUtils.noSpaceGridLayout(2));
 						Link link = new Link(tagCmp, SWT.NONE);
 
-						link.setData(PeopleRapConstants.MARKUP_ENABLED,
-								Boolean.TRUE);
+						link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 						if (tagPropName.equals(PeopleNames.PEOPLE_TAGS)) {
 							link.setText(" #<a>" + tagValue + "</a>");
 							link.setData(
-									PeopleRapConstants.CUSTOM_VARIANT,
+									RWT.CUSTOM_VARIANT,
 									PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
 						} else if (tagPropName
 								.equals(PeopleNames.PEOPLE_MAILING_LISTS)) {
 							link.setText(" @<a>" + tagValue + "</a>");
 							link.setData(
-									PeopleRapConstants.CUSTOM_VARIANT,
+									RWT.CUSTOM_VARIANT,
 									PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
 						} else
 							link.setText(" <a>" + tagValue + "</a>");
@@ -290,7 +290,7 @@ public class TagListComposite extends Composite {
 	private void addDeleteButton(final AbstractFormPart part, Composite parent,
 			final Value value) {
 		final Button deleteBtn = new Button(parent, SWT.FLAT);
-		deleteBtn.setData(PeopleRapConstants.CUSTOM_VARIANT,
+		deleteBtn.setData(RWT.CUSTOM_VARIANT,
 				PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 		deleteBtn
 				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));

@@ -25,8 +25,8 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserManagementService;
-import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.utils.PeopleRapUtils;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.PropertyDiff;
@@ -56,7 +56,7 @@ public class HistoryToolkit {
 	private Node entity;
 
 	private DateFormat dateTimeFormat = new SimpleDateFormat(
-			PeopleRapConstants.DEFAULT_DATE_TIME_FORMAT);
+			PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
 	public HistoryToolkit(FormToolkit toolkit, IManagedForm form,
 			Repository repository, PeopleService peopleService, Node entity) {

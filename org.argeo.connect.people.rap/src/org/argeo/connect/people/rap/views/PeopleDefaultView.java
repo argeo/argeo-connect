@@ -38,6 +38,7 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -108,13 +109,13 @@ public class PeopleDefaultView extends ViewPart {
 		Composite logoCmp = new Composite(parent, SWT.NO_FOCUS);
 		FormData fdBg = PeopleRapUtils.createformData(0, 20, 100, 75);
 		logoCmp.setLayoutData(fdBg);
-		logoCmp.setData(PeopleRapConstants.CUSTOM_VARIANT,
+		logoCmp.setData(RWT.CUSTOM_VARIANT,
 				"people-logoComposite");
 
 		// The Image
 		Label logoLbl = new Label(parent, SWT.NO_FOCUS);
 		logoLbl.setImage(PeopleImages.LOGO_SMALL);
-		logoLbl.setData(PeopleRapConstants.CUSTOM_VARIANT, "people-logo");
+		logoLbl.setData(RWT.CUSTOM_VARIANT, "people-logo");
 		logoLbl.setSize(130, 131);
 		FormData fdImg = new FormData();
 		fdImg.top = new FormAttachment(0, 0);
@@ -125,7 +126,7 @@ public class PeopleDefaultView extends ViewPart {
 		// The links
 		Composite linksCmp = new Composite(parent, SWT.NO_FOCUS);
 		linksCmp.setLayoutData(PeopleRapUtils.createformData(75, 25, 98, 73));
-		linksCmp.setData(PeopleRapConstants.CUSTOM_VARIANT, "people-logoTable");
+		linksCmp.setData(RWT.CUSTOM_VARIANT, "people-logoTable");
 		linksCmp.setLayout(PeopleRapUtils.noSpaceGridLayout());
 
 		addLink(linksCmp, "Search Entities",
@@ -156,8 +157,8 @@ public class PeopleDefaultView extends ViewPart {
 		link.setText("<a>" + label + "</a>");
 		if (tooltip != null)
 			link.setToolTipText(tooltip);
-		link.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
-		link.setData(PeopleRapConstants.CUSTOM_VARIANT, "people-logoTable");
+		link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		link.setData(RWT.CUSTOM_VARIANT, "people-logoTable");
 
 		link.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
@@ -201,8 +202,9 @@ public class PeopleDefaultView extends ViewPart {
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
 		// Enable markups
-		table.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(PeopleRapConstants.CUSTOM_ITEM_HEIGHT, Integer.valueOf(24));
+		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT,
+				Integer.valueOf(24));
 
 		v.setContentProvider(new BasicNodeListContentProvider());
 		v.addDoubleClickListener(new PeopleJcrViewerDClickListener(

@@ -19,6 +19,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -159,7 +160,7 @@ public class NewSimpleTaskWizard extends Wizard {
 			final Text assignedToTxt = new Text(parent, SWT.BORDER
 					| SWT.NO_FOCUS);
 			assignedToTxt.setMessage("Assign a group to manage this task");
-			assignedToTxt.setData(PeopleRapConstants.CUSTOM_VARIANT,
+			assignedToTxt.setData(RWT.CUSTOM_VARIANT,
 					PeopleRapConstants.PEOPLE_CLASS_FORCE_BORDER);
 
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);

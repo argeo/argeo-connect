@@ -25,6 +25,7 @@ import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -219,7 +220,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 										SWT.FLAT);
 								deleteBtn
 										.setData(
-												PeopleRapConstants.CUSTOM_VARIANT,
+												RWT.CUSTOM_VARIANT,
 												PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 								deleteBtn.setImage(PeopleImages.DELETE_BTN);
 								RowData rd = new RowData();
@@ -389,7 +390,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 		String tooltip = "Activities and tasks related to "
 				+ JcrUtils.get(task, Property.JCR_TITLE);
 		Composite innerPannel = addTabToFolder(tabFolder, CTAB_COMP_STYLE,
-				"Activity log", PeopleRapConstants.PANEL_ACTIVITY_LOG, tooltip);
+				"Activity log", PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 		activityTK.populateActivityLogPanel(innerPannel, task);
 	}
 

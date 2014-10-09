@@ -21,6 +21,7 @@ import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -163,7 +164,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 										SWT.FLAT);
 								deleteBtn
 										.setData(
-												PeopleRapConstants.CUSTOM_VARIANT,
+												RWT.CUSTOM_VARIANT,
 												PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 								deleteBtn.setImage(PeopleImages.DELETE_BTN);
 								RowData rd = new RowData();

@@ -168,7 +168,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 	protected void populateHeader(final Composite parent) {
 		parent.setLayout(new GridLayout(2, false));
 		final Label titleROLbl = toolkit.createLabel(parent, "", SWT.WRAP);
-		titleROLbl.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
+		titleROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 
 		final ColumnLabelProvider mlTitleLP = new TagLabelProvider(
 				peopleService.getTagService(),

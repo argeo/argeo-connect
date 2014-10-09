@@ -15,9 +15,8 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleImages;
-import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.commands.CancelAndCheckInItem;
 import org.argeo.connect.people.rap.commands.CheckOutItem;
 import org.argeo.connect.people.rap.commands.DeleteEntity;
@@ -32,6 +31,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -105,9 +105,9 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 			EntityEditorInput sei = (EntityEditorInput) getEditorInput();
 			entity = getSession().getNodeByIdentifier(sei.getUid());
 
-//			if (entity.hasProperty(PeopleNames.PEOPLE_IS_DRAFT))
-//				isDraft = entity.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
-//						.getBoolean();
+			// if (entity.hasProperty(PeopleNames.PEOPLE_IS_DRAFT))
+			// isDraft = entity.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
+			// .getBoolean();
 
 			InputStream is = null;
 			try {
@@ -183,7 +183,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 				true));
 		final Label readOnlyInfoLbl = toolkit.createLabel(lastUpdateCmp, "",
 				SWT.WRAP);
-		readOnlyInfoLbl.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
+		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		final ColumnLabelProvider lastUpdateLP = new ColumnLabelProvider() {
 			private static final long serialVersionUID = 1L;
 
@@ -615,22 +615,22 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	@Override
 	public void cancelAndCheckInItem() {
 		// TODO best effort to keep a clean repository
-//		try {
-//			if (entity.hasProperty(PeopleNames.PEOPLE_IS_DRAFT)
-//					&& entity.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
-//							.getBoolean()) {
-//				String path = entity.getPath();
-//				session.removeItem(path);
-//				session.save();
-//				entity = null;
-//				// close current editor
-//				this.getSite().getWorkbenchWindow().getActivePage()
-//						.closeEditor(this, false);
-//
-//			} else {
-				CommonsJcrUtils.cancelAndCheckin(entity);
-				notifyCheckOutStateChange();
-				firePropertyChange(PROP_DIRTY);
+		// try {
+		// if (entity.hasProperty(PeopleNames.PEOPLE_IS_DRAFT)
+		// && entity.getProperty(PeopleNames.PEOPLE_IS_DRAFT)
+		// .getBoolean()) {
+		// String path = entity.getPath();
+		// session.removeItem(path);
+		// session.save();
+		// entity = null;
+		// // close current editor
+		// this.getSite().getWorkbenchWindow().getActivePage()
+		// .closeEditor(this, false);
+		//
+		// } else {
+		CommonsJcrUtils.cancelAndCheckin(entity);
+		notifyCheckOutStateChange();
+		firePropertyChange(PROP_DIRTY);
 		// }
 		// } catch (RepositoryException re) {
 		// throw new PeopleException(

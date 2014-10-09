@@ -11,7 +11,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
@@ -20,6 +19,7 @@ import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.ResourcesJcrUtils;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -98,8 +98,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
 				SWT.WRAP);
-		readOnlyInfoLbl
-				.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
+		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		String addressHtml = "";
 		String refUid = CommonsJcrUtils.get(contactNode,
 				PeopleNames.PEOPLE_REF_UID);
@@ -176,10 +175,12 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			}
 
 			// Listeners
-			PeopleRapUtils.addTxtModifyListener(formPart, valueTxt, contactNode,
-					PeopleNames.PEOPLE_CONTACT_VALUE, PropertyType.STRING);
-			PeopleRapUtils.addTxtModifyListener(formPart, labelTxt, contactNode,
-					PeopleNames.PEOPLE_CONTACT_LABEL, PropertyType.STRING);
+			PeopleRapUtils.addTxtModifyListener(formPart, valueTxt,
+					contactNode, PeopleNames.PEOPLE_CONTACT_VALUE,
+					PropertyType.STRING);
+			PeopleRapUtils.addTxtModifyListener(formPart, labelTxt,
+					contactNode, PeopleNames.PEOPLE_CONTACT_LABEL,
+					PropertyType.STRING);
 			if (catCmb != null)
 				PeopleRapUtils.addComboSelectionListener(formPart, catCmb,
 						contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY,
@@ -225,8 +226,8 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			// specific for addresses
 			final Text streetTxt = PeopleRapUtils.createRDText(toolkit, parent,
 					"Street", "Street", 0);
-			final Text street2Txt = PeopleRapUtils.createRDText(toolkit, parent,
-					"Street Complement", "", 0);
+			final Text street2Txt = PeopleRapUtils.createRDText(toolkit,
+					parent, "Street Complement", "", 0);
 			final Text zipTxt = PeopleRapUtils.createRDText(toolkit, parent,
 					"Zip code", "", 0);
 			final Text cityTxt = PeopleRapUtils.createRDText(toolkit, parent,

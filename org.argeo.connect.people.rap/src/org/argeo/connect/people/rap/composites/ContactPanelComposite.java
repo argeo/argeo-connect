@@ -20,6 +20,7 @@ import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -217,7 +218,8 @@ public class ContactPanelComposite extends Composite {
 
 	private void populateNotePanel(Composite parent) {
 		parent.setLayout(PeopleRapUtils.noSpaceGridLayout(2));
-		Label label = PeopleRapUtils.createBoldLabel(toolkit, parent, "Notes: ");
+		Label label = PeopleRapUtils
+				.createBoldLabel(toolkit, parent, "Notes: ");
 
 		GridData gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
 		gd.verticalIndent = 3;
@@ -601,7 +603,7 @@ public class ContactPanelComposite extends Composite {
 			catCmb.select(0);
 
 			final Text valueTxt = createRowDataLT(parent, "Linked company", 200);
-			valueTxt.setData(PeopleRapConstants.CUSTOM_VARIANT,
+			valueTxt.setData(RWT.CUSTOM_VARIANT,
 					PeopleRapConstants.PEOPLE_CLASS_FORCE_BORDER);
 			valueTxt.setEnabled(false);
 

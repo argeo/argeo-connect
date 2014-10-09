@@ -51,6 +51,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -117,8 +118,8 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		colDefs = new ArrayList<PeopleColumnDefinition>();
 		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
 				Property.JCR_TITLE, PropertyType.STRING, "Display Name",
-				new TitleWithIconLP(peopleWorkbenchService, PeopleTypes.PEOPLE_ENTITY,
-						Property.JCR_TITLE), 300));
+				new TitleWithIconLP(peopleWorkbenchService,
+						PeopleTypes.PEOPLE_ENTITY, Property.JCR_TITLE), 300));
 		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
 				PEOPLE_TAGS, PropertyType.STRING, "Tags",
 				new SimpleJcrRowLabelProvider(PeopleTypes.PEOPLE_ENTITY,
@@ -150,7 +151,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 	protected void populateHeader(final Composite parent) {
 		parent.setLayout(new GridLayout(2, false));
 		final Label titleROLbl = toolkit.createLabel(parent, "", SWT.WRAP);
-		titleROLbl.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
+		titleROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		final ColumnLabelProvider groupTitleLP = new TagLabelProvider(
 				peopleService.getTagService(),
 				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE,
@@ -374,7 +375,8 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
+	public void setPeopleWorkbenchService(
+			PeopleWorkbenchService peopleWorkbenchService) {
 		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 

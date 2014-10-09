@@ -12,6 +12,7 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -77,7 +78,7 @@ public class ContactButtonsComposite extends Composite {
 
 	private Button createCategoryButton(Composite parent) {
 		Button btn = new Button(parent, SWT.FLAT);
-		btn.setData(PeopleRapConstants.CUSTOM_VARIANT,
+		btn.setData(RWT.CUSTOM_VARIANT,
 				PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 
 		btn.setImage(peopleUiService.getIconForType(contactNode));
@@ -118,7 +119,7 @@ public class ContactButtonsComposite extends Composite {
 
 	private Button createDeleteButton(Composite parent) {
 		Button btn = new Button(parent, SWT.FLAT | SWT.BOTTOM);
-		btn.setData(PeopleRapConstants.CUSTOM_VARIANT,
+		btn.setData(RWT.CUSTOM_VARIANT,
 				PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 		btn.setImage(PeopleImages.DELETE_BTN);
 		GridData gd = new GridData();
@@ -131,7 +132,7 @@ public class ContactButtonsComposite extends Composite {
 	private Button createPrimaryButton(Composite parent) {
 		try {
 			Button btn = new Button(parent, SWT.FLAT);
-			btn.setData(PeopleRapConstants.CUSTOM_VARIANT,
+			btn.setData(RWT.CUSTOM_VARIANT,
 					PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 
 			// update image

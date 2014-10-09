@@ -50,7 +50,7 @@ public class UserGroupEditor extends GroupEditor {
 		String tooltip = "Members of group "
 				+ JcrUtils.get(group, Property.JCR_TITLE);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
-				"Members", PeopleRapConstants.PANEL_MEMBERS, tooltip);
+				"Members", PeopleRapConstants.CTAB_MEMBERS, tooltip);
 		createBottomPart(innerPannel);
 	}
 

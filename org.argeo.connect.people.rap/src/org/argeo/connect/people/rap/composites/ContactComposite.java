@@ -7,10 +7,10 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
-import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.utils.PeopleRapUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -82,7 +82,7 @@ public class ContactComposite extends Composite {
 		// TODO RAP specific, refactor.
 		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
 				SWT.WRAP);
-		readOnlyInfoLbl.setData(PeopleRapConstants.MARKUP_ENABLED, Boolean.TRUE);
+		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		String addressHtml = PeopleRapSnippets.getContactDisplaySnippet(
 				peopleService, contactNode);
 		readOnlyInfoLbl.setText(addressHtml);
