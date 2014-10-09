@@ -79,6 +79,29 @@ public class CommonsJcrUtils {
 	}
 
 	/**
+	 * Centralizes exception management to call
+	 * {@link Session#getNodeByIdentifier(String)}
+	 */
+	public static Node getNodeByIdentifier(Session session, String identifier) {
+		try {
+			return session.getNodeByIdentifier(identifier);
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Unable to retrieve node by identifier with " + identifier,
+					re);
+		}
+	}
+
+	/**
+	 * Centralizes exception management to call
+	 * {@link Session#getNodeByIdentifier(String)}. The session is retrieves
+	 * using the passed node
+	 */
+	public static Node getNodeByIdentifier(Node sessionNode, String identifier) {
+		return getNodeByIdentifier(getSession(sessionNode), identifier);
+	}
+
+	/**
 	 * Call {@link Row#getNode()} catching {@link RepositoryException}
 	 */
 	public static Node getNode(Row row, String selectorName) {

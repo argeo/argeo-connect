@@ -1,8 +1,12 @@
 package org.argeo.connect.people.ui;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
+import javax.jcr.nodetype.NodeType;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -404,6 +408,29 @@ public class PeopleUiSnippets {
 		} catch (RepositoryException re) {
 			throw new PeopleException(
 					"Unable to create contact snippet for node " + entity, re);
+		}
+	}
+
+	/** shortcut to set form data while dealing with switching panel */
+	private final static DateFormat df = new SimpleDateFormat(
+			PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
+
+	public static String getLastUpdateSnippet(Node entity) {
+		StringBuilder builder = new StringBuilder();
+		try {
+			if (entity.isNodeType(NodeType.MIX_LAST_MODIFIED)) {
+				builder.append("<i>").append("Last updated on ");
+				builder.append(df.format(entity
+						.getProperty(Property.JCR_LAST_MODIFIED).getDate()
+						.getTime()));
+				builder.append(", by ");
+				builder.append(entity
+						.getProperty(Property.JCR_LAST_MODIFIED_BY).getString());
+				builder.append(". </i>");
+			}
+			return builder.toString();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Cannot create organizations content", re);
 		}
 	}
 }

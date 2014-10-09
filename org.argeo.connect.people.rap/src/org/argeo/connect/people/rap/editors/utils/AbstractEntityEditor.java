@@ -16,7 +16,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapImages;
-import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.commands.CancelAndCheckInItem;
 import org.argeo.connect.people.rap.commands.CheckOutItem;
@@ -24,6 +23,7 @@ import org.argeo.connect.people.rap.commands.DeleteEntity;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.utils.CheckoutSourceProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;
+import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
@@ -190,7 +190,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 
 			@Override
 			public String getText(Object element) {
-				return PeopleRapSnippets.getLastUpdateSnippet((Node) element);
+				return PeopleUiSnippets.getLastUpdateSnippet((Node) element);
 			}
 		};
 
