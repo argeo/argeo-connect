@@ -85,49 +85,28 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 	@Override
 	protected void doUpdateItem(Widget item, Object element, boolean fullMap) {
 		try {
-			Node node = (Node) element;
+			Node node;
+			Property property = null;
+			if (element instanceof Node) {
+				node = (Node) element;
+			} else {
+				property = (Property) element;
+				node = property.getParent();
+			}
+
 			if (node.isNodeType(CmsTypes.CMS_STYLED)) {
 				updateParagraph((EditableTextPart) item, node);
+			} else if (node.isNodeType(CmsTypes.CMS_SECTION)) {
+				if (property != null) {
+					if (property.getName().equals("jcr:title"))
+						updateSectionTitle((EditableTextPart) item, property);
+				} else {
+					updateSection((Composite) item, node);
+				}
 			}
 		} catch (Exception e) {
 			throw new CmsException("Cannot update " + element, e);
 		}
-	}
-
-	@Override
-	protected void internalRefresh(Object element) {
-		internalRefresh(element, true);
-	}
-
-	@Override
-	protected void internalRefresh(Object element, boolean updateLabels) {
-		try {
-			Widget item = findItem(element);
-			if (item == null || !(item instanceof Composite))
-				throw new CmsException("No composite found for " + element);
-			Composite composite = (Composite) item;
-			Node node = element != null ? (Node) element : getTextNode();
-
-			int depth = node.getDepth() - getTextNode().getDepth();
-			if (node.isNodeType(CmsTypes.CMS_SECTION)) {
-				// clear
-				for (Control child : composite.getChildren())
-					child.dispose();
-				refreshSection(composite, node, depth);
-				composite.layout(true, true);
-			} else if (node.isNodeType(CmsTypes.CMS_STYLED)) {
-				updateParagraph((EditableTextPart) composite, node);
-				composite.getParent().layout(true, true);
-			} else {
-				throw new CmsException("Unsupported node " + node);
-			}
-
-		} catch (RepositoryException e) {
-			throw new CmsException("Cannot refresh", e);
-		}
-
-		// TODO optimize
-		// page.layout(true, true);
 	}
 
 	@Override
@@ -189,20 +168,54 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 		return (ScrolledPage) getControl();
 	}
 
+	@Override
+	protected void internalRefresh(Object element) {
+		internalRefresh(element, true);
+	}
+
+	@Override
+	protected void internalRefresh(Object element, boolean updateLabels) {
+		try {
+			Widget item = findItem(element);
+			if (item == null || !(item instanceof Composite))
+				throw new CmsException("No composite found for " + element);
+			Composite composite = (Composite) item;
+			Node node = element != null ? (Node) element : getTextNode();
+
+			if (node.isNodeType(CmsTypes.CMS_SECTION)) {
+				// clear
+				for (Control child : composite.getChildren())
+					child.dispose();
+				updateSection(composite, node);
+				composite.layout(true, true);
+			} else if (node.isNodeType(CmsTypes.CMS_STYLED)) {
+				updateParagraph((EditableTextPart) composite, node);
+				composite.getParent().layout(true, true);
+			} else {
+				throw new CmsException("Unsupported node " + node);
+			}
+
+		} catch (RepositoryException e) {
+			throw new CmsException("Cannot refresh", e);
+		}
+	}
+
 	/*
 	 * MODEL TO VIEW
 	 */
 
-	protected void refreshSection(Composite sectionComposite, Node sectionNode,
-			int depth) throws RepositoryException {
+	protected void updateSection(Composite sectionComposite, Node sectionNode)
+			throws RepositoryException {
 		// title
 		if (sectionNode.hasProperty(Property.JCR_TITLE)) {
-			String title = sectionNode.getProperty(Property.JCR_TITLE)
-					.getString();
+			int relativeDepth = sectionNode.getDepth()
+					- getTextNode().getDepth();
+			Property title = sectionNode.getProperty(Property.JCR_TITLE);
 			SectionTitle sectionTitle = new SectionTitle(sectionComposite,
-					SWT.NONE, title, depth);
+					SWT.NONE, title, relativeDepth);
 			sectionTitle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 					false));
+			updateSectionTitle(sectionTitle.getEditableTextPart(), title);
 		}
 
 		for (NodeIterator ni = sectionNode.getNodes(); ni.hasNext();) {
@@ -213,7 +226,7 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 						false));
 				composite.setData(Property.JCR_PATH, child.getPath());
 				composite.setLayout(CmsUtils.noSpaceGridLayout());
-				refreshSection(composite, child, depth + 1);
+				updateSection(composite, child);
 			} else if (child.isNodeType(CmsTypes.CMS_STYLED)) {
 				StyledComposite styledComposite = new StyledComposite(
 						sectionComposite, SWT.NONE, child);
@@ -224,7 +237,7 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 		}
 	}
 
-	public void updateParagraph(EditableTextPart paragraph, Node node)
+	protected void updateParagraph(EditableTextPart paragraph, Node node)
 			throws RepositoryException {
 		if (!node.getPath().equals(paragraph.getNodePath()))
 			throw new CmsException("Trying to update paragraph "
@@ -242,8 +255,10 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 			String content = textInterpreter.raw(node);
 			Label label = (Label) control;
 			label.setText(content);
-			if (textPartListener != null)
+			if (textPartListener != null) {
+				label.removeMouseListener(textPartListener);
 				label.addMouseListener(textPartListener);
+			}
 		} else if (control instanceof Text) {
 			String content = textInterpreter.read(node);
 			Text text = (Text) control;
@@ -251,7 +266,24 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 			if (textTraverseListener != null)
 				text.addTraverseListener(textTraverseListener);
 		}
-		// paragraph.layout(true, true);
+	}
+
+	protected void updateSectionTitle(EditableTextPart paragraph,
+			Property property) throws RepositoryException {
+		Control control = paragraph.getControl();
+		if (control instanceof Label) {
+			Label label = (Label) control;
+			label.setText(property.getString());
+			if (textPartListener != null) {
+				label.removeMouseListener(textPartListener);
+				label.addMouseListener(textPartListener);
+			}
+		} else if (control instanceof Text) {
+			Text text = (Text) control;
+			text.setText(property.getString());
+			if (textTraverseListener != null)
+				text.addTraverseListener(textTraverseListener);
+		}
 	}
 
 	//
@@ -293,7 +325,7 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 			Node paragraphNode = getSession().getNode(etp.getNodePath());
 			return textInterpreter.raw(paragraphNode);
 		} catch (RepositoryException e1) {
-			throw new CmsException("Cannot delete " + etp, e1);
+			throw new CmsException("Cannot get raw text " + etp, e1);
 		}
 	}
 
@@ -305,9 +337,9 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 
 	protected void startEditing(EditableTextPart etp) {
 		try {
-			Node node = getSession().getNode(etp.getNodePath());
+			Item jcrItem = getSession().getItem(etp.getNodePath());
 			etp.startEditing();
-			updateParagraph(etp, node);
+			doUpdateItem(etp, jcrItem, true);
 			etp.layout();
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot start editing", e);
@@ -316,11 +348,16 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 
 	protected void stopEditing(EditableTextPart etp) {
 		try {
-			Node node = getSession().getNode(etp.getNodePath());
+			Item jcrItem = getSession().getItem(etp.getNodePath());
 			String content = ((Text) etp.getControl()).getText();
-			textInterpreter.write(node, content);
+			if (jcrItem instanceof Node) {
+				textInterpreter.write((Node) jcrItem, content);
+			} else {// property
+				((Property) jcrItem).setValue(content);
+				getSession().save();
+			}
 			etp.stopEditing();
-			updateParagraph(etp, node);
+			doUpdateItem(etp, jcrItem, true);
 			etp.layout();
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot start editing", e);

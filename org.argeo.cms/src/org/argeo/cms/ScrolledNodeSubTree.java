@@ -19,20 +19,20 @@ public class ScrolledNodeSubTree extends ScrolledPage {
 	 * Returns the composite related to this item in the composite tree, or null
 	 * if not found.
 	 */
-	public Composite find(Item node) {
+	public Composite find(Item item) {
 		try {
 			Object basePath = getData(Property.JCR_PATH);
 			if (basePath == null)
 				throw new CmsException("Base path must be set");
-			Node baseNode = node.getSession().getNode(basePath.toString());
-			if (!node.getAncestor(baseNode.getDepth()).getPath()
+			Node baseNode = item.getSession().getNode(basePath.toString());
+			if (!item.getAncestor(baseNode.getDepth()).getPath()
 					.equals(baseNode.getPath()))
-				throw new CmsException(node + " is not a descendant of "
+				throw new CmsException(item + " is not a descendant of "
 						+ baseNode);
-			
+
 			Composite currComposite = this;
-			for (int i = baseNode.getDepth() + 1; i <= node.getDepth(); i++) {
-				currComposite = findChild(currComposite, node.getAncestor(i)
+			for (int i = baseNode.getDepth() + 1; i <= item.getDepth(); i++) {
+				currComposite = findChild(currComposite, item.getAncestor(i)
 						.getPath());
 				// not found if one of the parent is not found
 				if (currComposite == null)
@@ -40,7 +40,7 @@ public class ScrolledNodeSubTree extends ScrolledPage {
 			}
 			return currComposite;
 		} catch (RepositoryException e) {
-			throw new CmsException("Cannot find composite for " + node, e);
+			throw new CmsException("Cannot find composite for " + item, e);
 		}
 	}
 

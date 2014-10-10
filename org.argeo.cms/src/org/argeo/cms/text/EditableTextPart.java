@@ -36,4 +36,8 @@ abstract class EditableTextPart extends Composite {
 	public String getNodePath() {
 		return (String) getData(Property.JCR_PATH);
 	}
+
+	public String toString() {
+		return getClass().getName() + "#" + getNodePath();
+	}
 }

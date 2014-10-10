@@ -1,6 +1,6 @@
 package org.argeo.cms.text;
 
-import javax.jcr.Node;
+import javax.jcr.Item;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
@@ -22,7 +22,7 @@ class StyledComposite extends EditableTextPart implements CmsNames, TextStyles {
 	private Composite container;
 	private Composite box;
 
-	public StyledComposite(Composite parent, int swtStyle, Node node)
+	public StyledComposite(Composite parent, int swtStyle, Item node)
 			throws RepositoryException {
 		super(parent, swtStyle);
 		setLayout(CmsUtils.noSpaceGridLayout());
