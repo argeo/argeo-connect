@@ -74,14 +74,17 @@
 // Subnode with film prints
 + film:prints (nt:unstructured)
 
-// maybe too specific - should be moved to client specific project 
+// maybe too specific 
 - film:isStudentProject (BOOLEAN)
 - film:isDebutFilm (BOOLEAN)
 - film:hasTrailer (BOOLEAN)
 - film:allowExcerptsOnTv (BOOLEAN)
 - film:allowExcerptsOnWeb (BOOLEAN)
-- film:submittedFor (STRING)
 - film:shootingFormat (STRING)
+
+// DEPRECATED - to be removed in a near future
+- film:submittedFor (STRING)
+
 
 //
 // FILM PRINT

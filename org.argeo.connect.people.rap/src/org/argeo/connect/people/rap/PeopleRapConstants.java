@@ -43,6 +43,7 @@ public interface PeopleRapConstants {
 	public final static String CTAB_EMPLOYEES = "people:employees";
 	public final static String CTAB_MEMBERS = "people:members";
 	public final static String CTAB_HISTORY = "people:history";
+	public final static String CTAB_EDIT_CATALOGUE = "people:editCatalogue";
 
 	/* CUSTOM STYLING */
 
@@ -61,4 +62,8 @@ public interface PeopleRapConstants {
 	public final static String PEOPLE_STYLE_ENTITY_HEADER = "style='font-size:14px;'";
 	// TODO rather use the general URL Styling via the application
 	public final static String PEOPLE_STYLE_LINK = " style='color:#383838; text-decoration:none;' ";
+
+	// the separator used in the various href local values to provide internal
+	// browsing using links in table / label / trees
+	public final String HREF_SEPARATOR = "/";
 }

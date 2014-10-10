@@ -93,6 +93,18 @@ public class CommonsJcrUtils {
 	}
 
 	/**
+	 * Centralizes exception management to call {@link Node#getParent()}
+	 */
+	public static Node getParent(Node child) {
+		try {
+			return child.getParent();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to retrieve parent node for "
+					+ child, re);
+		}
+	}
+
+	/**
 	 * Centralizes exception management to call
 	 * {@link Session#getNodeByIdentifier(String)}. The session is retrieves
 	 * using the passed node
@@ -505,8 +517,8 @@ public class CommonsJcrUtils {
 	}
 
 	/**
-	 * Concisely get a list with the values of a multi valued string property
-	 * return an empty list if the property does not exist
+	 * Concisely gets a list with the values of a multi-valued String property.
+	 * Returns an empty list if the property does not exist.
 	 */
 	public static List<String> getMultiAsList(Node node, String propertyName) {
 		List<String> results = new ArrayList<String>();

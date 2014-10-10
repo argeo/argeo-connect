@@ -18,10 +18,15 @@ public interface MediaNames {
 	// public final static String FILM_CACHE_PROD_COUNTRIES =
 	// "film:cacheProdCountries";
 
-	// Various parent nodes for films specific sub-concepts
+	/* VARIOUS PARENT NODES */
+
+	// generic map sub-concepts
 	public final static String MAP_TITLES = "map:titles";// various langs
 	public final static String MAP_TIMESTAMPS = "map:timestamps";
 	public final static String MAP_SYNOPSES = "map:synopses";
+
+	// films specific sub-concepts
+	public final static String FILM_PRINTS = "film:prints";
 
 	/* TITLES */
 	public final static String MAP_TITLE_VALUE = "map:titleValue";
@@ -39,7 +44,6 @@ public interface MediaNames {
 	public final static String MAP_AWARD_COUNTRY_ISO = "map:awardCountryIso";
 
 	/* FILMS */
-	// specific business film ID
 	public final static String FILM_TYPE = "film:type";
 
 	public final static String FILM_PROD_YEAR = "film:prodYear";
@@ -59,21 +63,20 @@ public interface MediaNames {
 	public final static String FILM_SOUND_TYPE = "film:soundType";
 	public final static String FILM_COLOUR_TYPE = "film:colourType";
 
-	// TODO implement corresponding concept
-	// this property is not yet in the cnd, just there as a reminder.
-	public final static String FILM_ASSIGNED_EDITION = "film:assignedEdition";
-
-	// Maybe too specific - should be moved to client project
+	// Maybe too specific ??
 	public final static String FILM_IS_PREMIERE = "film:isPremiere";
 	public final static String FILM_IS_STUDENT_PROJECT = "film:isStudentProject";
 	public final static String FILM_IS_DEBUT_FILM = "film:isDebutFilm";
 	public final static String FILM_HAS_TRAILER = "film:hasTrailer";
 	public final static String FILM_ALLOW_EXCERPTS_ON_TV = "film:allowExcerptsOnTv";
 	public final static String FILM_ALLOW_EXCERPTS_ON_WEB = "film:allowExcerptsOnWeb";
-	public final static String FILM_SUBMITTED_FOR = "film:submittedFor";
 	public final static String FILM_SHOOTING_FORMAT = "film:shootingFormat";
 
-	public final static String FILM_PRINTS = "film:prints";
+	// TODO implement corresponding concept
+	// TODO move this to client project
+	// this property is not yet in the cnd, just there as a reminder.
+	// public final static String FILM_ASSIGNED_EDITION = "film:assignedEdition";
+	// public final static String FILM_SUBMITTED_FOR = "film:submittedFor";
 
 	/* FILM PRINTS */// [film:print] > nt:unstructured, mix:title,
 						// people:orderable

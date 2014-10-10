@@ -321,6 +321,10 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		return node;
 	}
 
+	protected FormToolkit getFormToolkit() {
+		return toolkit;
+	}
+
 	protected IManagedForm getManagedForm() {
 		return mForm;
 	}
@@ -467,8 +471,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		return true;
 	}
 
-	// ///////////////////////////////
-	// // EDITOR life cycle management
+	/* EDITOR LIFE CYCLE MANAGEMENT */
 
 	@Override
 	public void dispose() {
@@ -541,7 +544,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
+	public void setPeopleWorkbenchService(
+			PeopleWorkbenchService peopleWorkbenchService) {
 		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 

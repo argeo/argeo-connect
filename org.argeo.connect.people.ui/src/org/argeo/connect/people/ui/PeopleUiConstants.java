@@ -12,6 +12,12 @@ public interface PeopleUiConstants {
 	public final static String CRUD_EDIT = "Edit";
 	public final static String CRUD_DELETE = "Delete";
 
+	/* UI WIDGETS DATA KEYS */
+	// We often need to store an ordered list of arbitrary objects that goes together
+	// with the array of String that is displayed to the end user. Thus the
+	// selected object will be retrieved using this:
+	public final static String COMBO_BUSINESS_OBJECTS = "comboBusinessList";
+
 	// Default English date and numbers formats
 	public final static String DEFAULT_SHORT_DATE_FORMAT = "dd/MM/yyyy";
 	public final static String DEFAULT_DATE_FORMAT = "MMM, dd yyyy";
