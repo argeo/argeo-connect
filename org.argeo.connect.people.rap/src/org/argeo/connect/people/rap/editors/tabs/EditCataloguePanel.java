@@ -7,7 +7,6 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
@@ -162,7 +161,7 @@ public class EditCataloguePanel extends Composite {
 
 			@Override
 			public String getText(Object element) {
-				return (String) element;
+				return PeopleUiUtils.replaceAmpersand((String) element);
 			}
 		});
 
@@ -173,7 +172,8 @@ public class EditCataloguePanel extends Composite {
 
 				@Override
 				public String getText(Object element) {
-					String value = (String) element;
+					String value = PeopleUiUtils
+							.replaceAmpersand((String) element);
 					String editLink = PeopleRapSnippets
 							.getRWTLink(
 									PeopleUiConstants.CRUD_EDIT
@@ -276,59 +276,43 @@ public class EditCataloguePanel extends Composite {
 	}
 
 	public class EditTagWizard extends Wizard implements PeopleNames {
-		// private final static Log log =
-		// LogFactory.getLog(EditTagWizard.class);
 
 		// Context
 		private PeopleService peopleService;
 		private PeopleWorkbenchService peopleUiService;
 
-		private Node tagLikeInstanceNode;
+		private Node templateNode;
+		private String propertyName;
+		private String oldValue;
 
-		private String resourceNodeType;
-		private String resourceInstancesParentPath;
+		// private String resourceInstancesParentPath;
 		private String taggableNodeType;
-		private String tagPropName;
 		private String taggableParentPath;
 
 		// This part widgets
-		private Text newTitleTxt;
-		private Text newDescTxt;
+		private Text newValueTxt;
 
-		/**
-		 * 
-		 * @param peopleService
-		 * @param peopleUiService
-		 * @param tagInstanceNode
-		 * @param tagNodeType
-		 * @param resourceInstancesParentPath
-		 * @param taggableNodeType
-		 * @param tagPropName
-		 * @param taggableParentPath
-		 */
 		public EditTagWizard(PeopleService peopleService,
-				PeopleWorkbenchService peopleUiService, Node tagInstanceNode,
-				String tagNodeType, String resourceInstancesParentPath,
-				String taggableNodeType, String tagPropName,
+				PeopleWorkbenchService peopleUiService, Node templateNode,
+				String propertyName, String oldValue, String taggableNodeType,
 				String taggableParentPath) {
+			// String resourceInstancesParentPath,
+			// ) {
 
 			this.peopleService = peopleService;
 			this.peopleUiService = peopleUiService;
-			this.tagLikeInstanceNode = tagInstanceNode;
-			this.resourceNodeType = tagNodeType;
-			this.resourceInstancesParentPath = resourceInstancesParentPath;
-			this.taggableParentPath = taggableParentPath;
-			this.tagPropName = tagPropName;
+			this.templateNode = templateNode;
+			this.oldValue = oldValue;
+			this.propertyName = propertyName;
 			this.taggableNodeType = taggableNodeType;
+			// this.resourceInstancesParentPath = resourceInstancesParentPath;
+			this.taggableParentPath = taggableParentPath;
 		}
 
 		@Override
 		public void addPages() {
 			try {
-				// configure container
-				setWindowTitle("Update Title");
-				// setNeedsProgressMonitor(false);
-
+				setWindowTitle("Update wizard");
 				MainInfoPage inputPage = new MainInfoPage("Configure");
 				addPage(inputPage);
 				RecapPage recapPage = new RecapPage("Validate and launch");
@@ -344,65 +328,65 @@ public class EditCataloguePanel extends Composite {
 		 */
 		@Override
 		public boolean performFinish() {
-			try {
-				String oldTitle = CommonsJcrUtils.get(tagLikeInstanceNode,
-						Property.JCR_TITLE);
-				String newTitle = newTitleTxt.getText();
-				String newDesc = newDescTxt.getText();
+			// try {
+			String newTitle = newValueTxt.getText();
 
-				// Sanity checks
-				String errMsg = null;
-				if (CommonsJcrUtils.isEmptyString(newTitle))
-					errMsg = "New value cannot be blank or an empty string";
-				else if (oldTitle.equals(newTitle))
-					errMsg = "New value is the same as old one.\n"
-							+ "Either enter a new one or press cancel.";
-				else if (peopleService.getTagService().getRegisteredTag(
-						tagLikeInstanceNode.getSession(),
-						resourceInstancesParentPath, newTitle) != null)
-					errMsg = "The new chosen value is already used.\n"
-							+ "Either enter a new one or press cancel.";
+			// Sanity checks
+			String errMsg = null;
+			if (CommonsJcrUtils.isEmptyString(newTitle))
+				errMsg = "New value cannot be blank or an empty string";
+			else if (oldValue.equals(newTitle))
+				errMsg = "New value is the same as old one.\n"
+						+ "Either enter a new one or press cancel.";
+			// TODO check for dupplicates
+			// else if (peopleService.getTagService().getRegisteredTag(
+			// templateNode.getSession(),
+			// resourceInstancesParentPath, newTitle) != null)
+			// errMsg = "The new chosen value is already used.\n"
+			// + "Either enter a new one or press cancel.";
 
-				if (errMsg != null) {
-					MessageDialog.openError(getShell(), "Unvalid information",
-							errMsg);
-					return false;
-				}
-
-				// TODO use transaction
-				boolean isVersionable = tagLikeInstanceNode
-						.isNodeType(NodeType.MIX_VERSIONABLE);
-				boolean isCheckedIn = isVersionable
-						&& !CommonsJcrUtils
-								.isNodeCheckedOutByMe(tagLikeInstanceNode);
-				if (isCheckedIn)
-					CommonsJcrUtils.checkout(tagLikeInstanceNode);
-				peopleService.getTagService().updateTagTitle(
-						tagLikeInstanceNode, resourceNodeType,
-						resourceInstancesParentPath, newTitle,
-						taggableNodeType, tagPropName, taggableParentPath);
-				if (CommonsJcrUtils.checkNotEmptyString(newDesc))
-					tagLikeInstanceNode.setProperty(Property.JCR_DESCRIPTION,
-							newDesc);
-				else if (tagLikeInstanceNode
-						.hasProperty(Property.JCR_DESCRIPTION))
-					// force reset
-					tagLikeInstanceNode.setProperty(Property.JCR_DESCRIPTION,
-							"");
-				if (isCheckedIn)
-					CommonsJcrUtils.saveAndCheckin(tagLikeInstanceNode);
-				else if (isVersionable) // workaround versionnable node should
-										// have
-					// been commited on last update
-					CommonsJcrUtils.saveAndCheckin(tagLikeInstanceNode);
-				else
-					tagLikeInstanceNode.getSession().save();
-				return true;
-			} catch (RepositoryException re) {
-				throw new PeopleException(
-						"unable to update title for tag like resource "
-								+ tagLikeInstanceNode, re);
+			if (errMsg != null) {
+				MessageDialog.openError(getShell(), "Unvalid information",
+						errMsg);
+				return false;
 			}
+
+			MessageDialog.openWarning(getShell(), "Implement This", errMsg);
+
+			// // TODO use transaction
+			// boolean isVersionable = templateNode
+			// .isNodeType(NodeType.MIX_VERSIONABLE);
+			// boolean isCheckedIn = isVersionable
+			// && !CommonsJcrUtils
+			// .isNodeCheckedOutByMe(templateNode);
+			// if (isCheckedIn)
+			// CommonsJcrUtils.checkout(templateNode);
+			// peopleService.getTagService().updateTagTitle(
+			// templateNode, resourceNodeType,
+			// resourceInstancesParentPath, newTitle,
+			// taggableNodeType, propertyName, taggableParentPath);
+			// if (CommonsJcrUtils.checkNotEmptyString(newDesc))
+			// templateNode.setProperty(Property.JCR_DESCRIPTION,
+			// newDesc);
+			// else if (templateNode
+			// .hasProperty(Property.JCR_DESCRIPTION))
+			// // force reset
+			// templateNode.setProperty(Property.JCR_DESCRIPTION,
+			// "");
+			// if (isCheckedIn)
+			// CommonsJcrUtils.saveAndCheckin(templateNode);
+			// else if (isVersionable) // workaround versionnable node should
+			// // have
+			// // been commited on last update
+			// CommonsJcrUtils.saveAndCheckin(templateNode);
+			// else
+			// templateNode.getSession().save();
+			return true;
+			// } catch (RepositoryException re) {
+			// throw new PeopleException(
+			// "unable to update title for tag like resource "
+			// + templateNode, re);
+			// }
 		}
 
 		@Override
@@ -421,9 +405,7 @@ public class EditCataloguePanel extends Composite {
 			public MainInfoPage(String pageName) {
 				super(pageName);
 				setTitle("Enter a new title");
-				setMessage("As reminder, former value was: "
-						+ CommonsJcrUtils.get(tagLikeInstanceNode,
-								Property.JCR_TITLE));
+				setMessage("As reminder, former value was: " + oldValue);
 			}
 
 			public void createControl(Composite parent) {
@@ -431,29 +413,13 @@ public class EditCataloguePanel extends Composite {
 				body.setLayout(new GridLayout(2, false));
 
 				// New Title Value
-				PeopleRapUtils.createBoldLabel(body, "Title");
-				newTitleTxt = new Text(body, SWT.BORDER);
-				newTitleTxt.setMessage("was: "
-						+ CommonsJcrUtils.get(tagLikeInstanceNode,
-								Property.JCR_TITLE));
-				newTitleTxt.setText(CommonsJcrUtils.get(tagLikeInstanceNode,
-						Property.JCR_TITLE));
-				newTitleTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
-						true, false));
-
-				// New Description Value
-				PeopleRapUtils.createBoldLabel(body, "Description", SWT.TOP);
-				newDescTxt = new Text(body, SWT.BORDER | SWT.MULTI | SWT.WRAP);
-				newDescTxt.setMessage("was: "
-						+ CommonsJcrUtils.get(tagLikeInstanceNode,
-								Property.JCR_DESCRIPTION));
-				newDescTxt.setText(CommonsJcrUtils.get(tagLikeInstanceNode,
-						Property.JCR_DESCRIPTION));
-				newDescTxt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-						true));
-
+				PeopleRapUtils.createBoldLabel(body, "New Value");
+				newValueTxt = new Text(body, SWT.BORDER);
+				newValueTxt.setMessage("was: " + oldValue);
+				newValueTxt.setText(oldValue);
+				newValueTxt.setLayoutData(PeopleUiUtils.horizontalFillData());
 				setControl(body);
-				newTitleTxt.setFocus();
+				newValueTxt.setFocus();
 			}
 		}
 
@@ -490,10 +456,10 @@ public class EditCataloguePanel extends Composite {
 
 		/** Refresh the table viewer based on the free text search field */
 		protected void refreshFilteredList(TableViewer membersViewer) {
-			String currVal = CommonsJcrUtils.get(tagLikeInstanceNode,
+			String currVal = CommonsJcrUtils.get(templateNode,
 					Property.JCR_TITLE);
 			try {
-				Session session = tagLikeInstanceNode.getSession();
+				Session session = templateNode.getSession();
 				QueryManager queryManager = session.getWorkspace()
 						.getQueryManager();
 				QueryObjectModelFactory factory = queryManager.getQOMFactory();
@@ -505,7 +471,7 @@ public class EditCataloguePanel extends Composite {
 				StaticOperand so = factory.literal(session.getValueFactory()
 						.createValue(currVal));
 				DynamicOperand dyo = factory.propertyValue(
-						source.getSelectorName(), tagPropName);
+						source.getSelectorName(), propertyName);
 				Constraint constraint = factory.comparison(dyo,
 						QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
 
