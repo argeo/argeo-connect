@@ -1,4 +1,4 @@
-package org.argeo.cms;
+package org.argeo.cms.widgets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;

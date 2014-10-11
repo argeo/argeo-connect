@@ -1,18 +1,33 @@
-package org.argeo.cms;
+package org.argeo.cms.widgets;
 
 import javax.jcr.Item;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
+import org.argeo.cms.CmsException;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 public class ScrolledNodeSubTree extends ScrolledPage {
 	private static final long serialVersionUID = 4566882270649377366L;
 
+	private String basePath = null;
+
+	private int itemCount;
+	private ItemItem[] items;
+
 	public ScrolledNodeSubTree(Composite parent, int style) {
 		super(parent, style);
+	}
+
+	public String getBasePath() {
+		return basePath.toString();
+	}
+
+	public void setBasePath(String basePath) {
+		this.basePath = basePath;
+		setData(Property.JCR_PATH, basePath);
 	}
 
 	/**
@@ -21,10 +36,9 @@ public class ScrolledNodeSubTree extends ScrolledPage {
 	 */
 	public Composite find(Item item) {
 		try {
-			Object basePath = getData(Property.JCR_PATH);
 			if (basePath == null)
 				throw new CmsException("Base path must be set");
-			Node baseNode = item.getSession().getNode(basePath.toString());
+			Node baseNode = item.getSession().getNode(basePath);
 			if (!item.getAncestor(baseNode.getDepth()).getPath()
 					.equals(baseNode.getPath()))
 				throw new CmsException(item + " is not a descendant of "
@@ -65,4 +79,56 @@ public class ScrolledNodeSubTree extends ScrolledPage {
 		}
 		return null;
 	}
+
+	/*
+	 * HACKED FROM SWT TREE
+	 */
+	void createItem(ItemItem item, int index) {
+		if (itemCount == items.length) {
+			/*
+			 * Grow the array faster when redraw is off or the table is not
+			 * visible. When the table is painted, the items array is resized to
+			 * be smaller to reduce memory usage.
+			 */
+			boolean small = /* drawCount == 0 && */isVisible();
+			int length = small ? items.length + 4 : Math.max(4,
+					items.length * 3 / 2);
+			ItemItem[] newItems = new ItemItem[length];
+			System.arraycopy(items, 0, newItems, 0, items.length);
+			items = newItems;
+		}
+		System.arraycopy(items, index, items, index + 1, itemCount - index);
+		items[index] = item;
+		itemCount++;
+		adjustItemIndices(index);
+	}
+
+	void destroyItem(ItemItem treeItem, int index) {
+		itemCount--;
+		if (itemCount == 0) {
+			setTreeEmpty();
+		} else {
+			System.arraycopy(items, index + 1, items, index, itemCount - index);
+			items[itemCount] = null;
+		}
+		adjustItemIndices(index);
+	}
+
+	private void adjustItemIndices(int start) {
+		for (int i = start; i < itemCount; i++) {
+			if (items[i] != null) {
+				items[i].index = i;
+			}
+		}
+	}
+
+	private void setTreeEmpty() {
+		items = new ItemItem[4];
+	}
+
+	public int getItemCount() {
+		checkWidget();
+		return itemCount;
+	}
+
 }

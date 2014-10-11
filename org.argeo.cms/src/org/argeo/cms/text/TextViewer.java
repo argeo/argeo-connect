@@ -17,7 +17,7 @@ import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsNames;
 import org.argeo.cms.CmsTypes;
 import org.argeo.cms.CmsUtils;
-import org.argeo.cms.ScrolledPage;
+import org.argeo.cms.widgets.ScrolledPage;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;

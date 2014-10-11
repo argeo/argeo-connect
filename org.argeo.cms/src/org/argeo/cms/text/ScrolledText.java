@@ -3,7 +3,7 @@ package org.argeo.cms.text;
 import javax.jcr.Node;
 
 import org.argeo.cms.CmsException;
-import org.argeo.cms.ScrolledNodeSubTree;
+import org.argeo.cms.widgets.ScrolledNodeSubTree;
 import org.eclipse.swt.widgets.Composite;
 
 public class ScrolledText extends ScrolledNodeSubTree {
