@@ -1,45 +1,42 @@
 package org.argeo.cms.widgets;
 
-import javax.jcr.Item;
-import javax.jcr.RepositoryException;
-
 import org.argeo.cms.CmsException;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Composite;
 
 public class ItemItem extends org.eclipse.swt.widgets.Item {
 	private static final long serialVersionUID = 1963083581296980852L;
 
-	private final ScrolledNodeSubTree parent;
-	private final String path;
+	final NodeSubTree parent;
+	final String path;
 
-	private final ItemItem parentItem;
-	private ItemItem[] items;
-	private int itemCount;
-	private int depth;
+	final ItemItem parentItem;
+	ItemItem[] items;
+	int itemCount;
+	int depth;
 	int index;
-	private boolean expanded;
+	boolean expanded;
 
-	public ItemItem(ScrolledNodeSubTree parent, int style, int index, Item item)
-			throws RepositoryException {
-		this(parent, null, style, index, item.getPath(), true);
+	Composite composite;
+	Composite childrenComposite;
+
+	public ItemItem(NodeSubTree parent, int style, int index, String path) {
+		this(parent, null, style, index, path, true);
 	}
 
-	public ItemItem(ScrolledNodeSubTree parent, int style, Item item)
-			throws RepositoryException {
+	public ItemItem(NodeSubTree parent, int style, String path) {
 		this(parent, null, style, parent == null ? 0 : parent.getItemCount(),
-				item.getPath(), true);
+				path, true);
 	}
 
-	public ItemItem(ItemItem parentItem, int style, int index, Item item)
-			throws RepositoryException {
-		this(parentItem.parent, parentItem, style, index, item.getPath(), true);
+	public ItemItem(ItemItem parentItem, int style, int index, String path) {
+		this(parentItem.parent, parentItem, style, index, path, true);
 	}
 
-	public ItemItem(ItemItem parentItem, int style, Item item)
-			throws RepositoryException {
+	public ItemItem(ItemItem parentItem, int style, String path) {
 		this(parentItem == null ? null : parentItem.parent, parentItem, style,
-				parentItem == null ? 0 : parentItem.itemCount, item.getPath(),
-				true);
+				parentItem == null ? 0 : parentItem.itemCount, path, true);
 	}
 
 	protected void checkPath(String parentPath, String itemPath) {
@@ -48,15 +45,33 @@ public class ItemItem extends org.eclipse.swt.widgets.Item {
 					+ itemPath);
 	}
 
+	public Rectangle getBounds() {
+		if (composite != null)
+			return composite.getBounds();
+		else
+			throw new CmsException("Item is not realized");
+		// TODO estimate bounds?
+	}
+
 	/*
 	 * HACKED FROM TREE ITEM
 	 */
 
-	ItemItem(ScrolledNodeSubTree parent, ItemItem parentItem, int style,
-			int index, String path, boolean create) {
+	@Override
+	public void dispose() {
+		if (parentItem != null) {
+			parentItem.destroyItem(this, index);
+		} else {
+			parent.destroyItem(this, index);
+		}
+		super.dispose();
+	}
+
+	ItemItem(NodeSubTree parent, ItemItem parentItem, int style, int index,
+			String path, boolean create) {
 		super(parent, style);
-		if(parent==null)
-			throw new CmsException("Parnet control cannot be null");
+		if (parent == null)
+			throw new CmsException("Parent control cannot be null");
 		this.parent = parent;
 		this.parentItem = parentItem;
 		this.index = index;
@@ -107,6 +122,13 @@ public class ItemItem extends org.eclipse.swt.widgets.Item {
 		items[index] = item;
 		itemCount++;
 		adjustItemIndices(index);
+
+		// related UI
+		if (composite != null) {
+			item.composite = new Composite(
+					childrenComposite != null ? childrenComposite : composite,
+					SWT.NONE);
+		}
 	}
 
 	private void destroyItem(ItemItem item, int index) {
@@ -118,6 +140,12 @@ public class ItemItem extends org.eclipse.swt.widgets.Item {
 			items[itemCount] = null;
 		}
 		adjustItemIndices(index);
+
+		// related UI
+		if (item.childrenComposite != null)
+			item.childrenComposite.dispose();
+		if (item.composite != null)
+			item.composite.dispose();
 	}
 
 	private void adjustItemIndices(int start) {
@@ -159,4 +187,53 @@ public class ItemItem extends org.eclipse.swt.widgets.Item {
 			// parent.updateAllItems();
 		}
 	}
+
+	public int indexOf(ItemItem item) {
+		checkWidget();
+		if (item == null) {
+			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		}
+		if (item.isDisposed()) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+		return item.parentItem == this ? item.index : -1;
+	}
+
+	public ItemItem getItem(int index) {
+		checkWidget();
+		if (index < 0 || index >= itemCount) {
+			SWT.error(SWT.ERROR_INVALID_RANGE);
+		}
+		return _getItem(index);
+	}
+
+	ItemItem _getItem(int index) {
+		if (parent.isVirtual() && items[index] == null) {
+			// FIXME path
+			items[index] = new ItemItem(parent, this, SWT.NONE, index, null,
+					false);
+		}
+		return items[index];
+	}
+
+	/*
+	 * ACCESSORS
+	 */
+
+	public ItemItem[] getItems() {
+		return items;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public int getItemCount() {
+		return itemCount;
+	}
+
+	public NodeSubTree getParent() {
+		return parent;
+	}
+
 }

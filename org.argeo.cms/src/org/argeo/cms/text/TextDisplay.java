@@ -9,7 +9,7 @@ import org.argeo.cms.CmsEditable;
 import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsNames;
 import org.argeo.cms.CmsUtils;
-import org.argeo.cms.JcrContentProvider;
+import org.argeo.cms.viewers.JcrContentProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -43,11 +43,14 @@ public class TextDisplay implements CmsEditable, CmsNames, TextStyles {
 			teh.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		}
 		textViewer = new TextViewer(parent, SWT.NONE);
-		textViewer.getPage().setLayoutData(
-				new GridData(SWT.FILL, SWT.FILL, true, true));
+		textViewer.setCmsEditable(this);
+
+		// textViewer = new CompositeViewer(new ScrolledPage(parent, SWT.NONE));
+		// textViewer.setLabelProvider(new TextLabelProvider());
 
 		textViewer.setContentProvider(new JcrContentProvider());
-		textViewer.setCmsEditable(this);
+		textViewer.getControl().setLayoutData(
+				new GridData(SWT.FILL, SWT.FILL, true, true));
 		textViewer.setInput(textNode);
 		textViewer.refresh();
 	}
@@ -67,7 +70,7 @@ public class TextDisplay implements CmsEditable, CmsNames, TextStyles {
 	}
 
 	public void setLayoutData(Object layoutData) {
-		textViewer.getPage().setLayoutData(layoutData);
+		textViewer.getControl().setLayoutData(layoutData);
 	}
 
 	private class TextEditHeader extends Composite {
