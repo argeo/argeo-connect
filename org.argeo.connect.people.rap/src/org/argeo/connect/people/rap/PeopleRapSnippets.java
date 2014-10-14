@@ -7,8 +7,6 @@ import javax.jcr.Value;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.rap.commands.DeleteEntity;
-import org.argeo.connect.people.rap.commands.EditEntityReference;
-import org.argeo.connect.people.rap.commands.EditEntityReferenceWithPosition;
 import org.argeo.connect.people.rap.commands.EditJob;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.commands.RemoveEntityReference;
@@ -62,21 +60,21 @@ public class PeopleRapSnippets {
 		return getRWTLink(href, PeopleUiConstants.CRUD_DELETE);
 	}
 
-	/**
-	 * Create the text value of a link that enable calling the
-	 * <code>EditEntityReference</command> from a cell of a HTML list
-	 */
-	public static String getEditSnippetForLists(Node currNode,
-			Node parentVersionableNode) {
-		String toEditJcrId = CommonsJcrUtils.getIdentifier(currNode);
-		String versionableParJcrId = CommonsJcrUtils
-				.getIdentifier(parentVersionableNode);
-		String href = EditEntityReference.ID + "/"
-				+ EditEntityReference.PARAM_VERSIONABLE_PARENT_JCR_ID + "="
-				+ versionableParJcrId + "/"
-				+ EditEntityReference.PARAM_TOEDIT_JCR_ID + "=" + toEditJcrId;
-		return getRWTLink(href, PeopleUiConstants.CRUD_EDIT);
-	}
+	// /**
+	// * Create the text value of a link that enable calling the
+	// * <code>EditEntityReference</command> from a cell of a HTML list
+	// */
+	// public static String getEditSnippetForLists(Node currNode,
+	// Node parentVersionableNode) {
+	// String toEditJcrId = CommonsJcrUtils.getIdentifier(currNode);
+	// String versionableParJcrId = CommonsJcrUtils
+	// .getIdentifier(parentVersionableNode);
+	// String href = EditEntityReference.ID + "/"
+	// + EditEntityReference.PARAM_VERSIONABLE_PARENT_JCR_ID + "="
+	// + versionableParJcrId + "/"
+	// + EditEntityReference.PARAM_TOEDIT_JCR_ID + "=" + toEditJcrId;
+	// return getRWTLink(href, PeopleUiConstants.CRUD_EDIT);
+	// }
 
 	/**
 	 * Create the text value of a link that enable calling the
@@ -95,19 +93,19 @@ public class PeopleRapSnippets {
 	 * Create the text value of a link that enable calling the
 	 * <code>EditEntityReferenceWithPosition</command> from a cell of a HTML list
 	 */
-	public static String getEditWithPosSnippetForLists(Node linkNode,
-			boolean isBackward, String toSearchNodeType) {
-		String toEditJcrId = CommonsJcrUtils.getIdentifier(linkNode);
-
-		String href = EditEntityReferenceWithPosition.ID + "/"
-				+ EditEntityReferenceWithPosition.PARAM_OLD_LINK_JCR_ID + "="
-				+ toEditJcrId + "/"
-				+ EditEntityReferenceWithPosition.PARAM_IS_BACKWARD + "="
-				+ isBackward + "/"
-				+ EditEntityReferenceWithPosition.PARAM_TO_SEARCH_NODE_TYPE
-				+ "=" + toSearchNodeType;
-		return getRWTLink(href, PeopleUiConstants.CRUD_EDIT);
-	}
+	// public static String getEditWithPosSnippetForLists(Node linkNode,
+	// boolean isBackward, String toSearchNodeType) {
+	// String toEditJcrId = CommonsJcrUtils.getIdentifier(linkNode);
+	//
+	// String href = EditEntityReferenceWithPosition.ID + "/"
+	// + EditEntityReferenceWithPosition.PARAM_OLD_LINK_JCR_ID + "="
+	// + toEditJcrId + "/"
+	// + EditEntityReferenceWithPosition.PARAM_IS_BACKWARD + "="
+	// + isBackward + "/"
+	// + EditEntityReferenceWithPosition.PARAM_TO_SEARCH_NODE_TYPE
+	// + "=" + toSearchNodeType;
+	// return getRWTLink(href, PeopleUiConstants.CRUD_EDIT);
+	// }
 
 	/**
 	 * Create the text value of a link that enable calling the

@@ -8,6 +8,7 @@ import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.wizards.NewSimpleTaskWizard;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
@@ -28,7 +29,7 @@ public class CreateSimpleTask extends AbstractHandler {
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private ActivityService activityService;
-	private String openEntityEditorCmdId = OpenEntityEditor.ID;
+	private PeopleWorkbenchService peopleWorkbenchService;
 
 	/**
 	 * Overwrite to provide a plugin specific open editor command and thus be
@@ -40,7 +41,7 @@ public class CreateSimpleTask extends AbstractHandler {
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Session session = null;
-		String uuid = null;
+		String jcrId = null;
 		try {
 			session = repository.login();
 			NewSimpleTaskWizard wizard = new NewSimpleTaskWizard(session,
@@ -50,16 +51,17 @@ public class CreateSimpleTask extends AbstractHandler {
 			int result = dialog.open();
 			if (result == WizardDialog.OK) {
 				// CommonsJcrUtils.saveAndCheckin(wizard.getCreatedTask());
-				uuid = wizard.getCreatedTask().getIdentifier();
+				jcrId = wizard.getCreatedTask().getIdentifier();
 			}
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to create task node", e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}
-		if (uuid != null)
-			CommandUtils.callCommand(getOpenEntityEditorCmdId(),
-					OpenEntityEditor.PARAM_ENTITY_UID, uuid);
+		if (jcrId != null)
+			CommandUtils.callCommand(
+					peopleWorkbenchService.getOpenEntityEditorCmdId(),
+					OpenEntityEditor.PARAM_JCR_ID, jcrId);
 		return null;
 	}
 
@@ -72,8 +74,8 @@ public class CreateSimpleTask extends AbstractHandler {
 		this.activityService = peopleService.getActivityService();
 	}
 
-	public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
-		this.openEntityEditorCmdId = openEntityEditorCmdId;
+	public void setPeopleWorkbenchService(
+			PeopleWorkbenchService peopleWorkbenchService) {
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
-
 }

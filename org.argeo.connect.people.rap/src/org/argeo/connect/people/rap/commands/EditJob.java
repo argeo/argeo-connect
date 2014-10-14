@@ -43,7 +43,7 @@ public class EditJob extends AbstractHandler {
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleUiService;
+	private PeopleWorkbenchService peopleWorkbenchService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
@@ -63,13 +63,13 @@ public class EditJob extends AbstractHandler {
 				isBackward = new Boolean(event.getParameter(PARAM_IS_BACKWARD));
 				diag = new EditJobDialog(HandlerUtil.getActiveShell(event),
 						"Edit employee information", peopleService,
-						peopleUiService, relevantNode, null, isBackward);
+						peopleWorkbenchService, relevantNode, null, isBackward);
 			} else {
 				// Create a new job
 				isBackward = relevantNode
 						.isNodeType(PeopleTypes.PEOPLE_ORG);
 				diag = new EditJobDialog(HandlerUtil.getActiveShell(event),
-						"Edit position", peopleService, peopleUiService, null,
+						"Edit position", peopleService, peopleWorkbenchService, null,
 						relevantNode, isBackward);
 			}
 
@@ -94,8 +94,8 @@ public class EditJob extends AbstractHandler {
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
-		this.peopleUiService = peopleUiService;
+	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
 	public void setRepository(Repository repository) {

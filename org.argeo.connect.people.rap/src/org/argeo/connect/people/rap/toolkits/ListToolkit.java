@@ -14,8 +14,8 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
@@ -61,21 +61,22 @@ public class ListToolkit {
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 	private final PeopleService peopleService;
-	private final String openEntityEditorCmdId;
+	private final PeopleWorkbenchService peopleWorkbenchService;
 
 	public ListToolkit(FormToolkit toolkit, IManagedForm form,
-			PeopleService peopleService, PeopleWorkbenchService peopleUiService) {
+			PeopleService peopleService,
+			PeopleWorkbenchService peopleWorkbenchService) {
 		this.toolkit = toolkit;
 		this.form = form;
 		this.peopleService = peopleService;
-		this.openEntityEditorCmdId = peopleUiService.getOpenEntityEditorCmdId();
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
 	/**
 	 * The jobs for a person
 	 */
 	public void populateJobsPanel(Composite parent, final Node entity) {
-		parent.setLayout(new GridLayout()); // PeopleUiUtils.gridLayoutNoBorder());
+		parent.setLayout(new GridLayout());
 		AbstractPanelFormPart mainInfoPart = new JobsPanelPart(parent, entity);
 		mainInfoPart.refresh();
 		mainInfoPart.initialize(form);
@@ -181,8 +182,8 @@ public class ListToolkit {
 					Node link = (Node) element;
 					Node person = link.getParent().getParent();
 					if (CommonsJcrUtils.isNodeCheckedOutByMe(entity))
-						return PeopleRapSnippets.getEditJobSnippetForLists(link,
-								false)
+						return PeopleRapSnippets.getEditJobSnippetForLists(
+								link, false)
 								+ " <br />"
 								+ PeopleRapSnippets
 										.getRemoveReferenceSnippetForLists(
@@ -334,8 +335,8 @@ public class ListToolkit {
 					Node person = link.getParent().getParent();
 
 					if (CommonsJcrUtils.isNodeCheckedOutByMe(entity)) {
-						String tmp = PeopleRapSnippets.getEditJobSnippetForLists(
-								link, true)
+						String tmp = PeopleRapSnippets
+								.getEditJobSnippetForLists(link, true)
 								+ " <br />"
 								+ PeopleRapSnippets
 										.getRemoveReferenceSnippetForLists(
@@ -415,26 +416,44 @@ public class ListToolkit {
 
 		@Override
 		protected void processDoubleClick(Object obj) {
+			// if (obj instanceof Node) {
+			// Node link = (Node) obj;
+
 			if (obj instanceof Node) {
 				Node link = (Node) obj;
+				Node toOpen;
 				if (isBackward) {
-					// we open editor for the parent entity
-					try {
-						link = link.getParent().getParent();
-						CommandUtils.callCommand(openEntityEditorCmdId,
-								OpenEntityEditor.PARAM_ENTITY_UID,
-								CommonsJcrUtils.get(link,
-										PeopleNames.PEOPLE_UID));
-					} catch (RepositoryException e) {
-						throw new PeopleException("unable to get related "
-								+ "film for entity " + obj, e);
-					}
-				} else
-					// We open editor for the referenced entity
-					CommandUtils.callCommand(openEntityEditorCmdId,
-							OpenEntityEditor.PARAM_ENTITY_UID, CommonsJcrUtils
-									.get(link, PeopleNames.PEOPLE_REF_UID));
+					toOpen = CommonsJcrUtils.getParent(CommonsJcrUtils
+							.getParent(link));
+				} else {
+					toOpen = peopleService.getEntityByUid(CommonsJcrUtils
+							.getSession(link), CommonsJcrUtils.get(link,
+							PeopleNames.PEOPLE_REF_UID));
+				}
+				CommandUtils.callCommand(
+						peopleWorkbenchService.getOpenEntityEditorCmdId(),
+						OpenEntityEditor.PARAM_JCR_ID,
+						CommonsJcrUtils.getIdentifier(toOpen));
 			}
+
+			// if (isBackward) {
+			// // we open editor for the parent entity
+			// try {
+			// link = link.getParent().getParent();
+			// CommandUtils.callCommand(openEntityEditorCmdId,
+			// OpenEntityEditor.PARAM_ENTITY_UID,
+			// CommonsJcrUtils.get(link,
+			// PeopleNames.PEOPLE_UID));
+			// } catch (RepositoryException e) {
+			// throw new PeopleException("unable to get related "
+			// + "film for entity " + obj, e);
+			// }
+			// } else
+			// // We open editor for the referenced entity
+			// CommandUtils.callCommand(openEntityEditorCmdId,
+			// OpenEntityEditor.PARAM_ENTITY_UID, CommonsJcrUtils
+			// .get(link, PeopleNames.PEOPLE_REF_UID));
+			// }
 		}
 	}
 

@@ -338,7 +338,7 @@ public class EditCataloguePanel extends Composite {
 			else if (oldValue.equals(newTitle))
 				errMsg = "New value is the same as old one.\n"
 						+ "Either enter a new one or press cancel.";
-			// TODO check for dupplicates
+			// TODO check for duplicates
 			// else if (peopleService.getTagService().getRegisteredTag(
 			// templateNode.getSession(),
 			// resourceInstancesParentPath, newTitle) != null)

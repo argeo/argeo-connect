@@ -1,9 +1,7 @@
 package org.argeo.connect.people.rap.toolkits;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -14,24 +12,17 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleRapUtils;
-import org.argeo.connect.people.rap.commands.AddEntityReferenceWithPosition;
-import org.argeo.connect.people.rap.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.rap.providers.RoleListLabelProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -68,8 +59,8 @@ public class GroupToolkit {
 		// Create new button
 		final Button addBtn = toolkit.createButton(parent, "Add member",
 				SWT.PUSH);
-		configureAddMemberButton(addBtn, entity,
-				"Add a new member to this group", PeopleTypes.PEOPLE_PERSON);
+//		configureAddMemberButton(addBtn, entity,
+//				"Add a new member to this group", PeopleTypes.PEOPLE_PERSON);
 
 		// Corresponding list
 		Composite tableComp = toolkit.createComposite(parent);
@@ -141,35 +132,37 @@ public class GroupToolkit {
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
 				200, 80, true));
 
-		// Edit & Remove links
-		viewer.getTable().addSelectionListener(new HtmlListRwtAdapter());
-		col = ViewerUtils.createTableViewerColumn(viewer, "Edit/Remove links",
-				SWT.NONE, 60);
-		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
-				40, 40, true));
-		col.setLabelProvider(new ColumnLabelProvider() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public String getText(Object element) {
-				try {
-					// get the corresponding person
-					Node link = (Node) element;
-					Node person = link.getParent().getParent();
-
-					return PeopleRapSnippets.getEditWithPosSnippetForLists(link,
-							false, PeopleTypes.PEOPLE_PERSON)
-							+ " <br />"
-							+ PeopleRapSnippets
-									.getRemoveReferenceSnippetForLists(link,
-											person);
-				} catch (RepositoryException e) {
-					throw new PeopleException(
-							"Error while getting versionable parent", e);
-				}
-
-			}
-		});
+		// // Edit & Remove links
+		// viewer.getTable().addSelectionListener(new HtmlListRwtAdapter());
+		// col = ViewerUtils.createTableViewerColumn(viewer,
+		// "Edit/Remove links",
+		// SWT.NONE, 60);
+		// tableColumnLayout.setColumnData(col.getColumn(), new
+		// ColumnWeightData(
+		// 40, 40, true));
+		// col.setLabelProvider(new ColumnLabelProvider() {
+		// private static final long serialVersionUID = 1L;
+		//
+		// @Override
+		// public String getText(Object element) {
+		// try {
+		// // get the corresponding person
+		// Node link = (Node) element;
+		// Node person = link.getParent().getParent();
+		//
+		// return PeopleRapSnippets.getEditWithPosSnippetForLists(link,
+		// false, PeopleTypes.PEOPLE_PERSON)
+		// + " <br />"
+		// + PeopleRapSnippets
+		// .getRemoveReferenceSnippetForLists(link,
+		// person);
+		// } catch (RepositoryException e) {
+		// throw new PeopleException(
+		// "Error while getting versionable parent", e);
+		// }
+		//
+		// }
+		// });
 
 		return tableColumnLayout;
 	}
@@ -177,36 +170,37 @@ public class GroupToolkit {
 	// ///////////////////////
 	// HELPERS
 
-	private void configureAddMemberButton(Button button, final Node targetNode,
-			String tooltip, final String nodeTypeToSearch) {
-		button.setToolTipText(tooltip);
-		button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
-
-		button.addSelectionListener(new SelectionListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Map<String, String> params = new HashMap<String, String>();
-				try {
-					params.put(
-							AddEntityReferenceWithPosition.PARAM_REFERENCING_JCR_ID,
-							targetNode.getIdentifier());
-					params.put(
-							AddEntityReferenceWithPosition.PARAM_TO_SEARCH_NODE_TYPE,
-							nodeTypeToSearch);
-
-					CommandUtils.callCommand(AddEntityReferenceWithPosition.ID,
-							params);
-				} catch (RepositoryException e1) {
-					throw new PeopleException(
-							"Unable to get parent Jcr identifier", e1);
-				}
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-	}
+	// private void configureAddMemberButton(Button button, final Node
+	// targetNode,
+	// String tooltip, final String nodeTypeToSearch) {
+	// button.setToolTipText(tooltip);
+	// button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
+	//
+	// button.addSelectionListener(new SelectionListener() {
+	// private static final long serialVersionUID = 1L;
+	//
+	// @Override
+	// public void widgetSelected(SelectionEvent e) {
+	// Map<String, String> params = new HashMap<String, String>();
+	// try {
+	// params.put(
+	// AddEntityReferenceWithPosition.PARAM_REFERENCING_JCR_ID,
+	// targetNode.getIdentifier());
+	// params.put(
+	// AddEntityReferenceWithPosition.PARAM_TO_SEARCH_NODE_TYPE,
+	// nodeTypeToSearch);
+	//
+	// CommandUtils.callCommand(AddEntityReferenceWithPosition.ID,
+	// params);
+	// } catch (RepositoryException e1) {
+	// throw new PeopleException(
+	// "Unable to get parent Jcr identifier", e1);
+	// }
+	// }
+	//
+	// @Override
+	// public void widgetDefaultSelected(SelectionEvent e) {
+	// }
+	// });
+	// }
 }

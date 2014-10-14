@@ -60,6 +60,7 @@
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
 	<!-- Tag management -->
