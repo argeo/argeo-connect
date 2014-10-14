@@ -10,6 +10,7 @@ import javax.jcr.Session;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
+import javax.jcr.query.RowIterator;
 import javax.jcr.query.qom.Constraint;
 import javax.jcr.query.qom.DynamicOperand;
 import javax.jcr.query.qom.Ordering;
@@ -41,7 +42,10 @@ import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILazyContentProvider;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -79,6 +83,7 @@ public class EditCataloguePanel extends Composite {
 	private final PeopleService peopleService;
 	private final Node templateNode;
 	private final String propertyName;
+	private final String taggableType;
 
 	// this page UI Objects
 	private final MyFormPart myFormPart;
@@ -88,14 +93,15 @@ public class EditCataloguePanel extends Composite {
 	public EditCataloguePanel(FormToolkit toolkit, Composite parent, int style,
 			IManagedForm form, PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, Node templateNode,
-			String propertyName) {
+			String propertyName, String taggableType) {
 		super(parent, style);
 		this.toolkit = toolkit;
 		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.templateNode = templateNode;
 		this.propertyName = propertyName;
-
+		this.taggableType = taggableType;
+		this.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		myFormPart = new MyFormPart(this);
 		myFormPart.initialize(form);
 		form.addPart(myFormPart);
@@ -103,6 +109,7 @@ public class EditCataloguePanel extends Composite {
 
 	private class MyFormPart extends AbstractPanelFormPart {
 		private TableViewer valuesViewer;
+		private TableViewer instancesViewer;
 
 		public MyFormPart(Composite parent) {
 			super(parent, templateNode);
@@ -116,16 +123,47 @@ public class EditCataloguePanel extends Composite {
 				addBtn = toolkit.createButton(panel, "Add a value", SWT.PUSH);
 				configureAddValueBtn(this, addBtn);
 			} else {
-				panel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+				GridLayout gl = PeopleUiUtils.noSpaceGridLayout();
+				gl.verticalSpacing = 5;
+				panel.setLayout(gl);
 			}
 
 			// Item list
-			valuesViewer = createValuesViewer(panel);
+			Composite valuesCmp = new Composite(panel, SWT.NO_FOCUS);
+			GridData gd = PeopleUiUtils.horizontalFillData();
+			gd.heightHint = 150;
+			valuesCmp.setLayoutData(gd);
+			valuesViewer = createValuesViewer(valuesCmp);
 			valuesViewer.setContentProvider(new ValuesTableCP());
 			valuesViewer.getTable().addSelectionListener(
 					new MyEditRemoveAdapter(MyFormPart.this));
-			refreshContent(panel, editionInfo);
 
+			Composite instancesCmp = new Composite(panel, SWT.NO_FOCUS);
+			instancesCmp.setLayoutData(PeopleUiUtils.fillGridData());
+			instancesViewer = createInstancesViewer(instancesCmp);
+			instancesViewer.setContentProvider(new InstancesTableCP(
+					instancesViewer));
+			instancesViewer.addDoubleClickListener(new InstanceDClickAdapter());
+
+			// enables update of the bottom table when one of the value is
+			// selected
+			valuesViewer
+					.addSelectionChangedListener(new ISelectionChangedListener() {
+						@Override
+						public void selectionChanged(SelectionChangedEvent event) {
+							IStructuredSelection selection = (IStructuredSelection) event
+									.getSelection();
+							if (!selection.isEmpty()) {
+								String currSelected = (String) selection
+										.getFirstElement();
+								RowIterator rit = query(currSelected);
+								setViewerInput(instancesViewer,
+										CommonsJcrUtils.rowIteratorToArray(rit));
+							}
+						}
+					});
+
+			refreshContent(panel, editionInfo);
 		}
 
 		protected void refreshContent(Composite parent, Node editionInfo) {
@@ -133,6 +171,7 @@ public class EditCataloguePanel extends Composite {
 				valuesViewer.setInput(CommonsJcrUtils.getMultiAsList(
 						templateNode, propertyName).toArray(new String[0]));
 				valuesViewer.refresh();
+				setViewerInput(instancesViewer, null);
 				if (editionInfo.getSession().hasPendingChanges())
 					MyFormPart.this.markDirty();
 			} catch (RepositoryException e) {
@@ -142,8 +181,42 @@ public class EditCataloguePanel extends Composite {
 		}
 	}
 
+	/**
+	 * Retrieves all instances of the repository that have this value, overwrite
+	 * to provide a more relevant request
+	 */
+	protected RowIterator query(String currVal) {
+		try {
+			Session session = templateNode.getSession();
+			QueryManager queryManager = session.getWorkspace()
+					.getQueryManager();
+			QueryObjectModelFactory factory = queryManager.getQOMFactory();
+			Selector source = factory.selector(taggableType, taggableType);
+
+			StaticOperand so = factory.literal(session.getValueFactory()
+					.createValue(currVal));
+			DynamicOperand dyo = factory.propertyValue(
+					source.getSelectorName(), propertyName);
+			Constraint constraint = factory.comparison(dyo,
+					QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
+
+			Ordering order = factory.ascending(factory.propertyValue(
+					source.getSelectorName(), Property.JCR_TITLE));
+			Ordering[] orderings = { order };
+			QueryObjectModel query = factory.createQuery(source, constraint,
+					orderings, null);
+			QueryResult result = query.execute();
+			return result.getRows();
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to list entities with property "
+					+ currVal + " for property " + propertyName + " of "
+					+ templateNode, e);
+		}
+	}
+
 	/** Displays existing values for this property */
 	private TableViewer createValuesViewer(Composite parent) {
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		final Table table = new Table(parent, SWT.SINGLE | SWT.V_SCROLL
 				| SWT.H_SCROLL);
 		table.setHeaderVisible(true);
@@ -155,7 +228,7 @@ public class EditCataloguePanel extends Composite {
 		TableViewer viewer = new TableViewer(table);
 
 		TableViewerColumn col = ViewerUtils.createTableViewerColumn(viewer,
-				"Name", SWT.NONE, 200);
+				"Name", SWT.NONE, 400);
 		col.setLabelProvider(new ColumnLabelProvider() {
 			private static final long serialVersionUID = 1L;
 
@@ -194,87 +267,6 @@ public class EditCataloguePanel extends Composite {
 		return viewer;
 	}
 
-	private class ValuesTableCP implements IStructuredContentProvider {
-		private static final long serialVersionUID = 1L;
-
-		private String[] elements;
-
-		/** Expects a list of nodes as a new input */
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			elements = (String[]) newInput;
-		}
-
-		public Object[] getElements(Object arg0) {
-			return elements;
-		}
-
-		@Override
-		public void dispose() {
-		}
-	}
-
-	private void configureAddValueBtn(final AbstractFormPart formPart,
-			final Button button) {
-		String tooltip = "Create a new value for this catalogue";
-		button.setToolTipText(tooltip);
-		button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
-
-		button.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				String value = SingleValue
-						.ask("New value",
-								"Provide a value to be addded in the current catalogue.");
-				if (CommonsJcrUtils.checkNotEmptyString(value)) {
-					String errMsg = CommonsJcrUtils.addMultiPropertyValue(
-							templateNode, propertyName, value);
-					if (CommonsJcrUtils.isEmptyString(errMsg)) {
-						formPart.markDirty();
-						formPart.refresh();
-					} else
-						MessageDialog.openError(button.getShell(),
-								"Dupplicate value", errMsg);
-				}
-
-			}
-		});
-	}
-
-	// TODO implement this
-	@SuppressWarnings("unused")
-	private class OccurrenceTableCP implements IStructuredContentProvider {
-		private static final long serialVersionUID = 1L;
-
-		private Node[] nodes;
-
-		/** Expects a list of nodes as a new input */
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			nodes = (Node[]) newInput;
-		}
-
-		public Object[] getElements(Object arg0) {
-			return nodes;
-		}
-
-		@Override
-		public void dispose() {
-		}
-	}
-
-	@SuppressWarnings("unused")
-	private class OccurrenceDClickAdapter extends PeopleDoubleClickAdapter {
-		@Override
-		protected void processDoubleClick(Object obj) {
-			Node occurrence = ((Node) obj);
-			CommandUtils.callCommand(
-					peopleWorkbenchService.getOpenEntityEditorCmdId(),
-					OpenEntityEditor.PARAM_JCR_ID,
-					CommonsJcrUtils.getIdentifier(occurrence));
-		}
-	}
-
 	private class MyEditRemoveAdapter extends SelectionAdapter {
 		private static final long serialVersionUID = 1L;
 		private final AbstractFormPart part;
@@ -311,42 +303,129 @@ public class EditCataloguePanel extends Composite {
 			}
 		}
 	}
-	
-	
-	
 
-	public class EditTagWizard extends Wizard implements PeopleNames {
+	private class ValuesTableCP implements IStructuredContentProvider {
+		private static final long serialVersionUID = 1L;
+
+		private String[] elements;
+
+		/** Expects a list of nodes as a new input */
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			elements = (String[]) newInput;
+		}
+
+		public Object[] getElements(Object arg0) {
+			return elements;
+		}
+
+		@Override
+		public void dispose() {
+		}
+	}
+
+	private TableViewer createInstancesViewer(Composite parent) {
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
+		colDefs.add(new PeopleColumnDefinition(taggableType,
+				Property.JCR_TITLE, PropertyType.STRING, "Instances",
+				new TitleWithIconLP(peopleWorkbenchService, taggableType,
+						Property.JCR_TITLE), 400));
+		PeopleVirtualTableViewer tableCmp = new PeopleVirtualTableViewer(
+				parent, SWT.MULTI, colDefs);
+		tableCmp.setLayoutData(PeopleUiUtils.fillGridData());
+		TableViewer viewer = tableCmp.getTableViewer();
+		viewer.setContentProvider(new InstancesTableCP(viewer));
+		return viewer;
+	}
+
+	private class InstanceDClickAdapter extends PeopleDoubleClickAdapter {
+		@Override
+		protected void processDoubleClick(Object obj) {
+			Node occurrence = CommonsJcrUtils.getNode((Row) obj, taggableType);
+			CommandUtils.callCommand(
+					peopleWorkbenchService.getOpenEntityEditorCmdId(),
+					OpenEntityEditor.PARAM_JCR_ID,
+					CommonsJcrUtils.getIdentifier(occurrence));
+		}
+	}
+
+	private class InstancesTableCP implements ILazyContentProvider {
+		private static final long serialVersionUID = 1L;
+		private TableViewer viewer;
+		private Row[] elements;
+
+		public InstancesTableCP(TableViewer viewer) {
+			this.viewer = viewer;
+		}
+
+		public void dispose() {
+		}
+
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			// IMPORTANT: don't forget this: an exception will be thrown if
+			// a selected object is not part of the results anymore.
+			viewer.setSelection(null);
+			if (newInput == null)
+				elements = null;
+			else
+				this.elements = (Row[]) newInput;
+		}
+
+		public void updateElement(int index) {
+			viewer.replace(elements[index], index);
+		}
+	}
+
+	/** Use this method to update the instances tables */
+	private void setViewerInput(TableViewer viewer, Row[] rows) {
+		viewer.setInput(rows);
+		// we must explicitly set the items count
+		int count = 0;
+		if (rows != null)
+			count = rows.length;
+		viewer.setItemCount(count);
+		viewer.refresh();
+	}
+
+	private void configureAddValueBtn(final AbstractFormPart formPart,
+			final Button button) {
+		String tooltip = "Create a new value for this catalogue";
+		button.setToolTipText(tooltip);
+		button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
+
+		button.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String value = SingleValue
+						.ask("New value",
+								"Provide a value to be addded in the current catalogue.");
+				if (CommonsJcrUtils.checkNotEmptyString(value)) {
+					String errMsg = CommonsJcrUtils.addMultiPropertyValue(
+							templateNode, propertyName, value);
+					if (CommonsJcrUtils.isEmptyString(errMsg)) {
+						formPart.markDirty();
+						formPart.refresh();
+					} else
+						MessageDialog.openError(button.getShell(),
+								"Dupplicate value", errMsg);
+				}
+
+			}
+		});
+	}
+
+	public class EditValueWizard extends Wizard implements PeopleNames {
 
 		// Context
-		private PeopleService peopleService;
-		private PeopleWorkbenchService peopleUiService;
-
-		private Node templateNode;
-		private String propertyName;
-		private String oldValue;
-
-		// private String resourceInstancesParentPath;
-		private String taggableNodeType;
-		private String taggableParentPath;
+		private final String oldValue;
 
 		// This part widgets
 		private Text newValueTxt;
 
-		public EditTagWizard(PeopleService peopleService,
-				PeopleWorkbenchService peopleUiService, Node templateNode,
-				String propertyName, String oldValue, String taggableNodeType,
-				String taggableParentPath) {
-			// String resourceInstancesParentPath,
-			// ) {
-
-			this.peopleService = peopleService;
-			this.peopleUiService = peopleUiService;
-			this.templateNode = templateNode;
+		public EditValueWizard(String oldValue) {
 			this.oldValue = oldValue;
-			this.propertyName = propertyName;
-			this.taggableNodeType = taggableNodeType;
-			// this.resourceInstancesParentPath = resourceInstancesParentPath;
-			this.taggableParentPath = taggableParentPath;
 		}
 
 		@Override
@@ -368,7 +447,6 @@ public class EditCataloguePanel extends Composite {
 		 */
 		@Override
 		public boolean performFinish() {
-			// try {
 			String newTitle = newValueTxt.getText();
 
 			// Sanity checks
@@ -474,101 +552,57 @@ public class EditCataloguePanel extends Composite {
 
 			public void createControl(Composite parent) {
 				Composite body = new Composite(parent, SWT.NONE);
-				body.setLayout(PeopleUiUtils.noSpaceGridLayout());
-				ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
-				colDefs.add(new PeopleColumnDefinition(taggableNodeType,
-						Property.JCR_TITLE, PropertyType.STRING,
-						"Display Name", new TitleWithIconLP(peopleUiService,
-								taggableNodeType, Property.JCR_TITLE), 300));
-
-				PeopleVirtualTableViewer tableCmp = new PeopleVirtualTableViewer(
-						body, SWT.MULTI, colDefs);
-				TableViewer membersViewer = tableCmp.getTableViewer();
-				membersViewer.setContentProvider(new MyLazyContentProvider(
-						membersViewer));
-				refreshFilteredList(membersViewer);
+				TableViewer membersViewer = createInstancesViewer(body);
+				RowIterator rit = query(oldValue);
 				GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
-				gd.heightHint = 400;
-				tableCmp.setLayoutData(gd);
+				// gd.heightHint = 400;
+				// tableCmp.setLayoutData(gd);
 				setControl(body);
 			}
 		}
 
-		/** Refresh the table viewer based on the free text search field */
-		protected void refreshFilteredList(TableViewer membersViewer) {
-			String currVal = CommonsJcrUtils.get(templateNode,
-					Property.JCR_TITLE);
-			try {
-				Session session = templateNode.getSession();
-				QueryManager queryManager = session.getWorkspace()
-						.getQueryManager();
-				QueryObjectModelFactory factory = queryManager.getQOMFactory();
-				Selector source = factory.selector(taggableNodeType,
-						taggableNodeType);
-				// factory.selector(tagLikeInstanceNode.getPrimaryNodeType().getName(),
-				// tagLikeInstanceNode.getPrimaryNodeType().getName());
-
-				StaticOperand so = factory.literal(session.getValueFactory()
-						.createValue(currVal));
-				DynamicOperand dyo = factory.propertyValue(
-						source.getSelectorName(), propertyName);
-				Constraint constraint = factory.comparison(dyo,
-						QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
-
-				Constraint subTree = factory.descendantNode(
-						source.getSelectorName(), taggableParentPath);
-				constraint = CommonsJcrUtils.localAnd(factory, constraint,
-						subTree);
-
-				Ordering order = factory.ascending(factory.propertyValue(
-						source.getSelectorName(), Property.JCR_TITLE));
-				Ordering[] orderings = { order };
-				QueryObjectModel query = factory.createQuery(source,
-						constraint, orderings, null);
-				QueryResult result = query.execute();
-				Row[] rows = CommonsJcrUtils.rowIteratorToArray(result
-						.getRows());
-				setViewerInput(membersViewer, rows);
-
-			} catch (RepositoryException e) {
-				throw new PeopleException(
-						"Unable to list entities for tag like property instance "
-								+ currVal, e);
-			}
-		}
-
-		/** Use this method to update the result table */
-		protected void setViewerInput(TableViewer membersViewer, Row[] rows) {
-			membersViewer.setInput(rows);
-			// we must explicitly set the items count
-			membersViewer.setItemCount(rows.length);
-			membersViewer.refresh();
-		}
-
-		private class MyLazyContentProvider implements ILazyContentProvider {
-			private static final long serialVersionUID = 1L;
-			private TableViewer viewer;
-			private Row[] elements;
-
-			public MyLazyContentProvider(TableViewer viewer) {
-				this.viewer = viewer;
-			}
-
-			public void dispose() {
-			}
-
-			public void inputChanged(Viewer viewer, Object oldInput,
-					Object newInput) {
-				// IMPORTANT: don't forget this: an exception will be thrown if
-				// a
-				// selected object is not part of the results anymore.
-				viewer.setSelection(null);
-				this.elements = (Row[]) newInput;
-			}
-
-			public void updateElement(int index) {
-				viewer.replace(elements[index], index);
-			}
-		}
+		// /** Refresh the table viewer based on the free text search field */
+		// protected void refreshFilteredList(TableViewer membersViewer) {
+		// String currVal = CommonsJcrUtils.get(templateNode,
+		// Property.JCR_TITLE);
+		// try {
+		// Session session = templateNode.getSession();
+		// QueryManager queryManager = session.getWorkspace()
+		// .getQueryManager();
+		// QueryObjectModelFactory factory = queryManager.getQOMFactory();
+		// Selector source = factory.selector(taggableNodeType,
+		// taggableNodeType);
+		// //
+		// factory.selector(tagLikeInstanceNode.getPrimaryNodeType().getName(),
+		// // tagLikeInstanceNode.getPrimaryNodeType().getName());
+		//
+		// StaticOperand so = factory.literal(session.getValueFactory()
+		// .createValue(currVal));
+		// DynamicOperand dyo = factory.propertyValue(
+		// source.getSelectorName(), propertyName);
+		// Constraint constraint = factory.comparison(dyo,
+		// QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
+		//
+		// Constraint subTree = factory.descendantNode(
+		// source.getSelectorName(), taggableParentPath);
+		// constraint = CommonsJcrUtils.localAnd(factory, constraint,
+		// subTree);
+		//
+		// Ordering order = factory.ascending(factory.propertyValue(
+		// source.getSelectorName(), Property.JCR_TITLE));
+		// Ordering[] orderings = { order };
+		// QueryObjectModel query = factory.createQuery(source,
+		// constraint, orderings, null);
+		// QueryResult result = query.execute();
+		// Row[] rows = CommonsJcrUtils.rowIteratorToArray(result
+		// .getRows());
+		// setViewerInput(membersViewer, rows);
+		//
+		// } catch (RepositoryException e) {
+		// throw new PeopleException(
+		// "Unable to list entities for tag like property instance "
+		// + currVal, e);
+		// }
+		// }
 	}
 }
