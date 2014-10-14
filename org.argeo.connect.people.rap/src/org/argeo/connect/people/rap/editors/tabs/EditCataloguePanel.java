@@ -66,9 +66,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * catalogue from a given template.
  * 
  * This might be extended to provide a specific request that will limit the
- * perimeter on which the current catalogue might apply (typically, modifying
- * the values of the "Submitted for" categories catalogue of a given edition
- * should only impact the films that are bound to this film edition)
+ * perimeter on which the current catalogue might apply (typically, if we use
+ * two distinct nomenclature for a same property that are bound to a given
+ * projects)
  */
 public class EditCataloguePanel extends Composite {
 	private static final long serialVersionUID = -5018569293721397600L;
@@ -122,8 +122,8 @@ public class EditCataloguePanel extends Composite {
 			// Item list
 			valuesViewer = createValuesViewer(panel);
 			valuesViewer.setContentProvider(new ValuesTableCP());
-			// occurrencesViewer.getTable().addSelectionListener(
-			// new EditRemoveListener(MyFormPart.this));
+			valuesViewer.getTable().addSelectionListener(
+					new MyEditRemoveAdapter(MyFormPart.this));
 			refreshContent(panel, editionInfo);
 
 		}
@@ -142,7 +142,7 @@ public class EditCataloguePanel extends Composite {
 		}
 	}
 
-	/** Displays existing submitted for categories */
+	/** Displays existing values for this property */
 	private TableViewer createValuesViewer(Composite parent) {
 		final Table table = new Table(parent, SWT.SINGLE | SWT.V_SCROLL
 				| SWT.H_SCROLL);
@@ -274,6 +274,46 @@ public class EditCataloguePanel extends Composite {
 					CommonsJcrUtils.getIdentifier(occurrence));
 		}
 	}
+
+	private class MyEditRemoveAdapter extends SelectionAdapter {
+		private static final long serialVersionUID = 1L;
+		private final AbstractFormPart part;
+
+		public MyEditRemoveAdapter(AbstractFormPart part) {
+			this.part = part;
+		}
+
+		public void widgetSelected(SelectionEvent event) {
+			if (event.detail == RWT.HYPERLINK) {
+				String href = event.text;
+				String[] val = href.split(PeopleRapConstants.HREF_SEPARATOR);
+				if (PeopleUiConstants.CRUD_DELETE.equals(val[0])) {
+					String msg = "Are you sure you want to remove \"" + val[1]
+							+ "\" from this template catalogue? ";
+					// TODO also manage removing various corresponding
+					// references from the business entities
+					boolean result = MessageDialog.openConfirm(
+							EditCataloguePanel.this.getShell(),
+							"Confirm value removal", msg);
+					if (result) {
+						CommonsJcrUtils.removeMultiPropertyValue(templateNode,
+								propertyName, val[1]);
+						part.markDirty();
+						part.refresh();
+					}
+				} else if (PeopleUiConstants.CRUD_EDIT.equals(val[0])) {
+					MessageDialog.openWarning(
+							EditCataloguePanel.this.getShell(), "Boom",
+							"implement this");
+					// part.markDirty();
+					// part.refresh();
+				}
+			}
+		}
+	}
+	
+	
+	
 
 	public class EditTagWizard extends Wizard implements PeopleNames {
 
