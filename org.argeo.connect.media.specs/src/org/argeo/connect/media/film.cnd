@@ -26,6 +26,7 @@
 - map:synopsisContent (STRING)
 - map:synopsisContentShort (STRING)
 - map:logLine (STRING)
+- map:relatedBiography (STRING)
 
 
 [map:title] > nt:unstructured, people:language, people:orderable

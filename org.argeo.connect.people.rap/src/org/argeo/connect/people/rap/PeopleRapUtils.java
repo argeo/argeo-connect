@@ -491,7 +491,10 @@ public class PeopleRapUtils {
 	 */
 	public static Label createBoldLabel(FormToolkit toolkit, Composite parent,
 			String value) {
-		Label label = toolkit.createLabel(parent, value, SWT.RIGHT);
+
+		// We add a blank space before to workaround the cropping of the word
+		// first letter in some OS/Browsers (typically MAC/Firefox 31 )
+		Label label = toolkit.createLabel(parent, " "+ value, SWT.RIGHT);
 		label.setFont(EclipseUiUtils.getBoldFont(parent));
 		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 		return label;

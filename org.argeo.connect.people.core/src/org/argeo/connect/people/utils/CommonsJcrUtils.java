@@ -671,14 +671,12 @@ public class CommonsJcrUtils {
 			if (node.hasProperty(propName)) {
 				values = node.getProperty(propName).getValues();
 
-				// Check dupplicate
-				for (Value jcrId : values) {
-					String currRef = jcrId.getString();
-					if (value.equals(currRef)) {
-						errMsg = CommonsJcrUtils
-								.get(node.getSession().getNodeByIdentifier(
-										value), Property.JCR_TITLE)
-								+ " is already in the list and thus could not be added.";
+				// Check duplicate
+				for (Value currVal : values) {
+					String currStr = currVal.getString();
+					if (value.equals(currStr)) {
+						errMsg = value + " is already in the list and thus "
+								+ "could not be added.";
 						return errMsg;
 					}
 				}

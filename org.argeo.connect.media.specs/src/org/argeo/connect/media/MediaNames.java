@@ -21,7 +21,7 @@ public interface MediaNames {
 	/* VARIOUS PARENT NODES */
 
 	// generic map sub-concepts
-	public final static String MAP_TITLES = "map:titles";// various langs
+	public final static String MAP_TITLES = "map:titles";// various languages
 	public final static String MAP_TIMESTAMPS = "map:timestamps";
 	public final static String MAP_SYNOPSES = "map:synopses";
 
@@ -38,6 +38,7 @@ public interface MediaNames {
 	public final static String MAP_LOG_LINE = "map:logLine";
 	public final static String MAP_SYNOPSIS_CONTENT = "map:synopsisContent";
 	public final static String MAP_SYNOPSIS_CONTENT_SHORT = "map:synopsisContentShort";
+	public final static String MAP_SYNOPSIS_RELATED_BIO = "map:relatedBiography";
 
 	/* TIME STAMPS & AWARDS */
 	public final static String MAP_TIMESTAMP_VALUE = "map:timestampValue";
@@ -72,14 +73,8 @@ public interface MediaNames {
 	public final static String FILM_ALLOW_EXCERPTS_ON_WEB = "film:allowExcerptsOnWeb";
 	public final static String FILM_SHOOTING_FORMAT = "film:shootingFormat";
 
-	// TODO implement corresponding concept
-	// TODO move this to client project
-	// this property is not yet in the cnd, just there as a reminder.
-	// public final static String FILM_ASSIGNED_EDITION = "film:assignedEdition";
-	// public final static String FILM_SUBMITTED_FOR = "film:submittedFor";
-
-	/* FILM PRINTS */// [film:print] > nt:unstructured, mix:title,
-						// people:orderable
+	/* FILM PRINTS */
+	// [film:print] > nt:unstructured, mix:title, people:orderable
 	public final static String FILM_PRINT_TYPE = "film:printType";// (STRING)
 	public final static String FILM_PRINT_NUMBER = "film:printNumber";// (STRING)
 	// length in seconds
