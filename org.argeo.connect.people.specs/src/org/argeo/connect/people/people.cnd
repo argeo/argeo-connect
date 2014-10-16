@@ -357,7 +357,7 @@ mixin
 - people:city (STRING)
 - people:state (STRING)
 - people:country (STRING)
-// An optionnal Geopoint. Should be refined
+// An optional Geopoint. Should be refined
 - people:geoPoint (STRING)
 
 
