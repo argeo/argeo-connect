@@ -3,11 +3,14 @@ package org.argeo.cms.viewers;
 import java.util.List;
 
 import org.argeo.cms.CmsUtils;
+import org.argeo.cms.text.TextViewerEditor;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.ViewerRow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.TreeListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
@@ -21,9 +24,10 @@ public class CompositeViewer extends AbstractTreeViewer {
 
 	public CompositeViewer(Composite composite) {
 		this.tree = composite;
-		tree.setData(CompositeItem.ITEM_DATAKEY, new CompositeItem(tree,
+		tree.setData(CompositeItem.ITEM_DATA_KEY, new CompositeItem(tree,
 				SWT.NONE));
 		composite.setLayout(CmsUtils.noSpaceGridLayout());
+		hookControl(tree);
 	}
 
 	@Override
@@ -42,6 +46,25 @@ public class CompositeViewer extends AbstractTreeViewer {
 			return tree;
 		else
 			return null;
+	}
+
+	@Override
+	protected void createTreeItem(Widget parent, Object element, int index) {
+		Item item = newItem(parent, SWT.NULL, index);
+		addControls(((CompositeItem) item).getComposite(), element);
+		updateItem(item, element);
+		updatePlus(item, element);
+	}
+
+	@Override
+	protected void inputChanged(Object input, Object oldInput) {
+		super.inputChanged(input, oldInput);
+		CompositeItem.getItem(tree).setData(input);
+	}
+
+	/** Does nothing by default */
+	protected void addControls(Composite parent, Object element) {
+
 	}
 
 	@Override
@@ -84,7 +107,11 @@ public class CompositeViewer extends AbstractTreeViewer {
 
 	@Override
 	protected Item[] getSelection(Control control) {
-		return new Item[0];
+		CompositeItem item = findSelectedItem(tree, null);
+		if (item != null)
+			return new Item[] { findSelectedItem(tree, null) };
+		else
+			return new Item[0];
 	}
 
 	@Override
@@ -103,6 +130,48 @@ public class CompositeViewer extends AbstractTreeViewer {
 			}
 			return new CompositeItem(CompositeItem.getItem(tree), style);
 		}
+	}
+
+	@Override
+	protected Item getItemAt(Point point) {
+		return findItem(tree, point);
+	}
+
+	private Item findItem(Composite parent, Point point) {
+		if (!parent.getBounds().contains(point))
+			return null;
+		CompositeItem lastItemSeen = null;
+		for (Control child : parent.getChildren()) {
+			if (child instanceof Composite && child.getBounds().contains(point)) {
+				Object item = child.getData(CompositeItem.ITEM_DATA_KEY);
+				if (item != null)
+					lastItemSeen = (CompositeItem) item;
+				item = findItem((Composite) child, point);
+				if (item != null)
+					lastItemSeen = (CompositeItem) item;
+				break;// no need to look further
+			}
+		}
+		return lastItemSeen;
+	}
+
+	private CompositeItem findSelectedItem(Composite parent, CompositeItem last) {
+		CompositeItem lastItemSeen = last;
+		for (Control child : parent.getChildren()) {
+			Object item = child.getData(CompositeItem.ITEM_DATA_KEY);
+			if (item != null)
+				lastItemSeen = (CompositeItem) item;
+			if (child.isFocusControl())
+				return lastItemSeen;
+			if (child instanceof Composite) {
+				item = findSelectedItem((Composite) child, lastItemSeen);
+				if (item != null) {
+					lastItemSeen = (CompositeItem) item;
+					return lastItemSeen;
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -131,7 +200,6 @@ public class CompositeViewer extends AbstractTreeViewer {
 
 	@Override
 	protected ColumnViewerEditor createViewerEditor() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

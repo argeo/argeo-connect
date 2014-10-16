@@ -3,6 +3,7 @@ package org.argeo.cms.text;
 import javax.jcr.Property;
 
 import org.argeo.cms.CmsException;
+import org.argeo.cms.widgets.ScrolledPage;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -40,4 +41,5 @@ abstract class EditableTextPart extends Composite {
 	public String toString() {
 		return getClass().getName() + "#" + getNodePath();
 	}
+
 }

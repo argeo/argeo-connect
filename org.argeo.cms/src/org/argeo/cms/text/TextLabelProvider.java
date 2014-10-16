@@ -11,7 +11,6 @@ import org.argeo.cms.CmsUtils;
 import org.argeo.cms.viewers.CompositeItem;
 import org.argeo.cms.viewers.CompositeLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Label;
@@ -26,12 +25,8 @@ public class TextLabelProvider extends CompositeLabelProvider implements
 		Node node = (Node) cell.getElement();
 		try {
 			if (node.isNodeType(CmsTypes.CMS_STYLED)) {
-				Label label = new Label(item.getComposite(), SWT.LEAD
-						| SWT.WRAP);
+				Label label = (Label) item.getComposite().getChildren()[0];
 				label.setText(node.getProperty(CMS_CONTENT).getString());
-				label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-						false));
-				label.setData(RWT.MARKUP_ENABLED, true);
 				if (node.hasProperty(CMS_STYLE))
 					CmsUtils.style(label, node.getProperty(CMS_STYLE)
 							.getString());
@@ -39,14 +34,14 @@ public class TextLabelProvider extends CompositeLabelProvider implements
 					CmsUtils.style(label, TextStyles.TEXT_DEFAULT);
 			} else if (node.isNodeType(CmsTypes.CMS_SECTION)) {
 				if (node.hasProperty(Property.JCR_TITLE)) {
-					Label label = new Label(item.getComposite(), SWT.LEAD
-							| SWT.WRAP);
+					Label label = (Label) item.getComposite().getChildren()[0];
 					label.setText(node.getProperty(Property.JCR_TITLE)
 							.getString());
 					label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 							false));
 				}
 			}
+			super.update(cell);
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot update viewer cell for " + node, e);
 		}

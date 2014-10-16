@@ -19,8 +19,8 @@ public class JcrContentProvider implements ITreeContentProvider {
 
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-//		if (newInput == null)
-//			return;
+		if (newInput == null)
+			return;
 		if (!(newInput instanceof Node))
 			throw new CmsException("Input " + newInput + " must be a node");
 	}

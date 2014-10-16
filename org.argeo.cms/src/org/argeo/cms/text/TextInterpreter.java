@@ -1,12 +1,12 @@
 package org.argeo.cms.text;
 
-import javax.jcr.Node;
+import javax.jcr.Item;
 
 /** Convert from/to data layer to/from presentation layer. */
 public interface TextInterpreter {
-	public String raw(Node node);
+	public String raw(Item item);
 
-	public String read(Node node);
+	public String read(Item item);
 
-	public void write(Node node, String content);
+	public void write(Item item, String content);
 }

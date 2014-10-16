@@ -8,6 +8,8 @@ import org.argeo.cms.CmsNames;
 import org.argeo.cms.CmsUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -22,14 +24,26 @@ class StyledComposite extends EditableTextPart implements CmsNames, TextStyles {
 	private Composite container;
 	private Composite box;
 
+	private TextInterpreter textInterpreter = new IdentityTextInterpreter();
+
+	private MouseListener mouseListener;
+	private TraverseListener traverseListener;
+
 	public StyledComposite(Composite parent, int swtStyle, Item node)
 			throws RepositoryException {
 		super(parent, swtStyle);
 		setLayout(CmsUtils.noSpaceGridLayout());
+		setData(node);
 		setData(Property.JCR_PATH, node.getPath());
 		setData(RWT.CUSTOM_VARIANT, TEXT_STYLED_COMPOSITE);
 		clear(true);
 		child = createLabel(null);
+	}
+
+	public StyledComposite(Composite parent, int swtStyle) {
+		super(parent, swtStyle);
+		setLayout(CmsUtils.noSpaceGridLayout());
+		setData(RWT.CUSTOM_VARIANT, TEXT_STYLED_COMPOSITE);
 	}
 
 	protected Label createLabel(String style) {
@@ -37,6 +51,10 @@ class StyledComposite extends EditableTextPart implements CmsNames, TextStyles {
 		lbl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		lbl.setData(RWT.MARKUP_ENABLED, true);
 		lbl.setData(RWT.CUSTOM_VARIANT, style);
+		if (mouseListener != null)
+			lbl.addMouseListener(mouseListener);
+		if (traverseListener != null)
+			lbl.addTraverseListener(traverseListener);
 		return lbl;
 	}
 
@@ -47,6 +65,10 @@ class StyledComposite extends EditableTextPart implements CmsNames, TextStyles {
 		text.setLayoutData(textLayoutData);
 		text.setData(RWT.CUSTOM_VARIANT, style);
 		text.setFocus();
+		if (mouseListener != null)
+			text.addMouseListener(mouseListener);
+		if (traverseListener != null)
+			text.addTraverseListener(traverseListener);
 		return text;
 	}
 
@@ -76,12 +98,14 @@ class StyledComposite extends EditableTextPart implements CmsNames, TextStyles {
 
 	@Override
 	public void setStyle(String style) {
-		Object currentStyle = child.getData(RWT.CUSTOM_VARIANT);
+		Object currentStyle = null;
+		if (child != null)
+			currentStyle = child.getData(RWT.CUSTOM_VARIANT);
 		if (currentStyle != null && currentStyle.equals(style))
 			return;
 
 		clear(true);
-		if (child instanceof Label)
+		if (child == null || child instanceof Label)
 			child = createLabel(style);
 		else if (child instanceof Text)
 			child = createText(style, child.getSize().y);
@@ -100,4 +124,28 @@ class StyledComposite extends EditableTextPart implements CmsNames, TextStyles {
 			child.dispose();
 		}
 	}
+
+	public void setText(Item item) {
+		if (child instanceof Label)
+			((Label) child).setText(textInterpreter.raw(item));
+		else if (child instanceof Text)
+			((Text) child).setText(textInterpreter.read(item));
+	}
+
+	public void save(Item item) {
+		textInterpreter.write(item, ((Text) child).getText());
+	}
+
+	public void setMouseListener(MouseListener mouseListener) {
+		this.mouseListener = mouseListener;
+		if (child != null)
+			child.addMouseListener(mouseListener);
+	}
+
+	public void setTraverseListener(TraverseListener traverseListener) {
+		this.traverseListener = traverseListener;
+		if (child != null)
+			child.addTraverseListener(traverseListener);
+	}
+
 }

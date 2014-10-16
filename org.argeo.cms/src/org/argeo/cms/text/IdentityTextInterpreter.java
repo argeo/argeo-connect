@@ -1,6 +1,8 @@
 package org.argeo.cms.text;
 
+import javax.jcr.Item;
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsException;
@@ -11,52 +13,65 @@ import org.argeo.cms.CmsTypes;
 public class IdentityTextInterpreter implements TextInterpreter, CmsNames {
 
 	@Override
-	public void write(Node node, String content) {
+	public void write(Item item, String content) {
 		try {
-			if (node.isNodeType(CmsTypes.CMS_STYLED)) {
-				String raw = convertToStorage(node, content);
-				node.setProperty(CMS_CONTENT, raw);
-			} else {
-				throw new CmsException("Don't know how to interpret " + node);
+			if (item instanceof Node) {
+				Node node = (Node) item;
+				if (node.isNodeType(CmsTypes.CMS_STYLED)) {
+					String raw = convertToStorage(node, content);
+					node.setProperty(CMS_CONTENT, raw);
+				} else {
+					throw new CmsException("Don't know how to interpret "
+							+ node);
+				}
+			} else {// property
+				Property property = (Property) item;
+				property.setValue(content);
 			}
-			node.getSession().save();
+			item.getSession().save();
 		} catch (RepositoryException e) {
-			throw new CmsException("Cannot set content on " + node, e);
+			throw new CmsException("Cannot set content on " + item, e);
 		}
 	}
 
 	@Override
-	public String read(Node node) {
+	public String read(Item item) {
 		try {
-			String raw = raw(node);
-			return convertFromStorage(node, raw);
+			String raw = raw(item);
+			return convertFromStorage(item, raw);
 		} catch (RepositoryException e) {
-			throw new CmsException("Cannot get " + node + " for edit", e);
+			throw new CmsException("Cannot get " + item + " for edit", e);
 		}
 	}
 
 	@Override
-	public String raw(Node node) {
+	public String raw(Item item) {
 		try {
-			if (node.isNodeType(CmsTypes.CMS_STYLED)) {
-				return node.getProperty(CMS_CONTENT).getString();
-			} else {
-				throw new CmsException("Don't know how to interpret " + node);
+			if (item instanceof Node) {
+				Node node = (Node) item;
+				if (node.isNodeType(CmsTypes.CMS_STYLED)) {
+					return node.getProperty(CMS_CONTENT).getString();
+				} else {
+					throw new CmsException("Don't know how to interpret "
+							+ node);
+				}
+			} else {// property
+				Property property = (Property) item;
+				return property.getString();
 			}
 		} catch (RepositoryException e) {
-			throw new CmsException("Cannot get " + node + " content", e);
+			throw new CmsException("Cannot get " + item + " content", e);
 		}
 	}
 
-	protected String convertToStorage(Node node, String content)
+	protected String convertToStorage(Item item, String content)
 			throws RepositoryException {
 		return content;
 
 	}
 
-	protected String convertFromStorage(Node node, String content)
+	protected String convertFromStorage(Item item, String content)
 			throws RepositoryException {
 		return content;
-
 	}
 }

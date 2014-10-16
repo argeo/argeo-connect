@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Item;
 
 public class CompositeItem extends Item {
 	private static final long serialVersionUID = -3339865943635985288L;
-	public final static String ITEM_DATAKEY = "item";
+	public final static String ITEM_DATA_KEY = "item";
 
 	private CompositeItem parentItem;
 	private boolean expanded = true;
@@ -62,7 +62,7 @@ public class CompositeItem extends Item {
 		}
 
 		if (composite != null)
-			composite.setData(ITEM_DATAKEY, this);
+			composite.setData(ITEM_DATA_KEY, this);
 	}
 
 	public Rectangle getBounds() {
@@ -171,6 +171,6 @@ public class CompositeItem extends Item {
 	}
 
 	public static CompositeItem getItem(Control composite) {
-		return (CompositeItem) composite.getData(ITEM_DATAKEY);
+		return (CompositeItem) composite.getData(ITEM_DATA_KEY);
 	}
 }

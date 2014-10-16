@@ -215,7 +215,7 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 					SWT.NONE, title, relativeDepth);
 			sectionTitle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 					false));
-			updateSectionTitle(sectionTitle.getEditableTextPart(), title);
+			updateSectionTitle(sectionTitle.getTitle(), title);
 		}
 
 		for (NodeIterator ni = sectionNode.getNodes(); ni.hasNext();) {
