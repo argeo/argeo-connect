@@ -218,11 +218,12 @@ mixin
 // catalogues of pre-defined possible values for some given String properties
 // the name of the type template is generally the corresponding type
 [people:typeTemplate] > nt:unstructured, mix:title
+- people:templateId (STRING) // Generally the corresponding node type but might something else if necessary.
 
 
 // Defines the parent of a sub tree that enable definition of a nomenclature for a tag like property 
 [people:tagParent] > nt:unstructured, mix:title
-- people:tagId (STRING) // An optional ID to differentiate distinct parent that might be similar
+- people:tagId (STRING) // Generally the corresponding node type but might something else if necessary
 - people:tagInstanceType (STRING) // The node type of the corresponding resources
 - people:codePropName (STRING) // the name of the property that provide the code 
 // that is stored  in the tagged node ("people:code" for default encode tag  instance type)
