@@ -50,6 +50,12 @@ public class IdentityTextInterpreter implements TextInterpreter, CmsNames {
 			if (item instanceof Node) {
 				Node node = (Node) item;
 				if (node.isNodeType(CmsTypes.CMS_STYLED)) {
+					// WORKAROUND FOR BROKEN PARARAPHS
+					if (!node.hasProperty(CMS_CONTENT)) {
+						node.setProperty(CMS_CONTENT, "");
+						node.getSession().save();
+					}
+					
 					return node.getProperty(CMS_CONTENT).getString();
 				} else {
 					throw new CmsException("Don't know how to interpret "

@@ -8,6 +8,8 @@ import org.argeo.cms.CmsNames;
 import org.argeo.cms.CmsUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.GridData;
@@ -40,10 +42,12 @@ class StyledComposite extends EditableTextPart implements CmsNames, TextStyles {
 		child = createLabel(null);
 	}
 
-	public StyledComposite(Composite parent, int swtStyle) {
+	public StyledComposite(Composite parent, int swtStyle,
+			TextInterpreter textInterpreter) {
 		super(parent, swtStyle);
 		setLayout(CmsUtils.noSpaceGridLayout());
 		setData(RWT.CUSTOM_VARIANT, TEXT_STYLED_COMPOSITE);
+		this.textInterpreter = textInterpreter;
 	}
 
 	protected Label createLabel(String style) {
@@ -53,8 +57,20 @@ class StyledComposite extends EditableTextPart implements CmsNames, TextStyles {
 		lbl.setData(RWT.CUSTOM_VARIANT, style);
 		if (mouseListener != null)
 			lbl.addMouseListener(mouseListener);
-		if (traverseListener != null)
-			lbl.addTraverseListener(traverseListener);
+		lbl.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusLost(FocusEvent event) {
+			}
+
+			@Override
+			public void focusGained(FocusEvent event) {
+				System.out.println(event);
+
+			}
+		});
+		// if (traverseListener != null)
+		// lbl.addTraverseListener(traverseListener);
 		return lbl;
 	}
 
@@ -65,10 +81,10 @@ class StyledComposite extends EditableTextPart implements CmsNames, TextStyles {
 		text.setLayoutData(textLayoutData);
 		text.setData(RWT.CUSTOM_VARIANT, style);
 		text.setFocus();
-		if (mouseListener != null)
-			text.addMouseListener(mouseListener);
-		if (traverseListener != null)
-			text.addTraverseListener(traverseListener);
+		// if (mouseListener != null)
+		// text.addMouseListener(mouseListener);
+		// if (traverseListener != null)
+		// text.addTraverseListener(traverseListener);
 		return text;
 	}
 
@@ -94,6 +110,14 @@ class StyledComposite extends EditableTextPart implements CmsNames, TextStyles {
 
 	public Control getControl() {
 		return child;
+	}
+
+	public Text getAsText() {
+		return (Text) getControl();
+	}
+
+	public Label getAsLabel() {
+		return (Label) getControl();
 	}
 
 	@Override

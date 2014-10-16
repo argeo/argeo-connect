@@ -20,17 +20,17 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 	private final static String[] DEFAULT_TEXT_STYLES = {
 			TextStyles.TEXT_DEFAULT, TextStyles.TEXT_PRE, TextStyles.TEXT_QUOTE };
 
-	private final TextViewer textViewer;
+	private final TextViewer3 textViewer;
 
 	private static final long serialVersionUID = -3826246895162050331L;
 	private List<StyleButton> styleButtons = new ArrayList<StyledTools.StyleButton>();
 
 	private Label deleteButton, publishButton, editButton;
 
-	private EditableTextPart currentTextPart;
+	private Composite currentTextPart;
 
-	public StyledTools(TextViewer textViewer) {
-		super(textViewer.getPage().getDisplay(), SWT.NO_TRIM | SWT.BORDER
+	public StyledTools(TextViewer3 textViewer) {
+		super(textViewer.getControl().getDisplay(), SWT.NO_TRIM | SWT.BORDER
 				| SWT.ON_TOP);
 		this.textViewer = textViewer;
 		setLayout(new GridLayout());
@@ -64,7 +64,7 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 		addShellListener(new ToolsShellListener());
 	}
 
-	public void show(EditableTextPart source, Point location) {
+	public void show(Composite source, Point location) {
 		if (isVisible())
 			setVisible(false);
 
@@ -72,7 +72,8 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 
 		if (source instanceof StyledComposite) {
 			final int size = 32;
-			String text = textViewer.getRawParagraphText(currentTextPart);
+			String text = textViewer
+					.getRawParagraphText((Paragraph) currentTextPart);
 			String textToShow = text.length() > size ? text.substring(0,
 					size - 3) + "..." : text;
 			for (StyleButton styleButton : styleButtons) {
@@ -103,9 +104,10 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 			if (eventSource instanceof StyleButton) {
 				StyleButton sb = (StyleButton) e.getSource();
 				String style = sb.getData(RWT.CUSTOM_VARIANT).toString();
-				textViewer.setParagraphStyle(currentTextPart, style);
+				textViewer
+						.setParagraphStyle((Paragraph) currentTextPart, style);
 			} else if (eventSource == deleteButton) {
-				textViewer.deleteParagraph(currentTextPart);
+				textViewer.deleteParagraph((Paragraph) currentTextPart);
 			} else if (eventSource == editButton) {
 				textViewer.getCmsEditable().startEditing();
 			} else if (eventSource == publishButton) {

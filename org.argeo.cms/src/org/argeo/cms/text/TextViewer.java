@@ -123,7 +123,7 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 			if (cmsEditable.canEdit()) {
 				textPartListener = new TextPartListener();
 				textTraverseListener = new TextTraverseListener();
-				styledTools = new StyledTools(this);
+//				styledTools = new StyledTools(this);
 			}
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot set root element", e);
@@ -211,11 +211,11 @@ public class TextViewer extends StructuredViewer implements CmsNames {
 			int relativeDepth = sectionNode.getDepth()
 					- getTextNode().getDepth();
 			Property title = sectionNode.getProperty(Property.JCR_TITLE);
-			SectionTitle sectionTitle = new SectionTitle(sectionComposite,
-					SWT.NONE, title, relativeDepth);
-			sectionTitle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-					false));
-			updateSectionTitle(sectionTitle.getTitle(), title);
+//			SectionTitle sectionTitle = new SectionTitle(sectionComposite,
+//					SWT.NONE, title, relativeDepth);
+//			sectionTitle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+//					false));
+//			updateSectionTitle(sectionTitle.getTitle(), title);
 		}
 
 		for (NodeIterator ni = sectionNode.getNodes(); ni.hasNext();) {

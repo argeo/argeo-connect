@@ -1,5 +1,6 @@
 package org.argeo.cms.text;
 
+import javax.jcr.Item;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
@@ -13,6 +14,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -21,11 +23,10 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 		MouseListener {
 	private static final long serialVersionUID = -5933796173755739207L;
 
-	private TextViewer3 textViewer;
+	private final TextViewer3 textViewer;
+	private final Section parentSection;
 
 	private SectionTitle sectionTitle;
-
-	private TextInterpreter textInterpreter = new IdentityTextInterpreter();
 
 	public Section(TextViewer3 textViewer, int style, Node node)
 			throws RepositoryException {
@@ -41,12 +42,16 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 			throws RepositoryException {
 		super(parent, style);
 		this.textViewer = textViewer;
+		if (parent instanceof Section)
+			this.parentSection = (Section) parent;
+		else
+			this.parentSection = null;
 		setLayout(CmsUtils.noSpaceGridLayout());
 		setData(node);
 	}
 
 	public void updateContent() throws RepositoryException {
-		Node node = (Node) getData();
+		// Node node = (Node) getData();
 		// if (node.hasProperty(Property.JCR_TITLE)) {
 		// title.setText(node.getProperty(Property.JCR_TITLE));
 		// }
@@ -57,7 +62,6 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 				((SectionTitle) child).updateContent();
 
 		}
-		layout();
 	}
 
 	public void refresh(Boolean updateContent, Boolean deep)
@@ -71,9 +75,13 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 			Property title = getNode().getProperty(Property.JCR_TITLE);
 			sectionTitle = new SectionTitle(this, SWT.NONE, title,
 					relativeDepth);
+			sectionTitle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+					false));
 			sectionTitle.refresh(updateContent);
-			sectionTitle.getTitle().setMouseListener(this);
-			sectionTitle.getTitle().setTraverseListener(this);
+			if (getViewer().getCmsEditable().canEdit()) {
+				sectionTitle.getTitle().setMouseListener(this);
+				sectionTitle.getTitle().setTraverseListener(this);
+			}
 		}
 
 		for (NodeIterator ni = node.getNodes(); ni.hasNext();) {
@@ -90,16 +98,29 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 				Paragraph paragraph = new Paragraph(this, SWT.NONE, child);
 				paragraph.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 						false));
-				paragraph.setMouseListener(this);
-				paragraph.setTraverseListener(this);
 				paragraph.refresh(updateContent);
+				if (getViewer().getCmsEditable().canEdit()) {
+					paragraph.setMouseListener(this);
+					paragraph.setTraverseListener(this);
+				}
 			}
 		}
 
 		// if (updateContent)
 		// updateContent();
 
-		layout();
+		getViewer().layout(this);
+	}
+
+	protected Composite getChild(Item node) {
+		for (Control child : getChildren()) {
+			if (child instanceof Composite && child.getData() != null) {
+				Item currNode = (Item) child.getData();
+				if (currNode.equals(node))
+					return (Composite) child;
+			}
+		}
+		return null;
 	}
 
 	// protected void updateParagraph(StyledComposite paragraph)
@@ -137,28 +158,30 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 	@Override
 	public void keyTraversed(TraverseEvent e) {
 		System.out.println(e);
-		Composite composite = findDataParent(e.getSource());
-		if (e.detail == SWT.TRAVERSE_TAB_NEXT) {
-			Control[] children = getChildren();
-			for (int i = 0; i < children.length; i++) {
-				if (composite == children[i] && i + 1 < children.length) {
-					getViewer().edit((Composite) children[i + 1]);
-					break;
-				}
-			}
-		} else if (e.detail == SWT.TRAVERSE_TAB_PREVIOUS) {
-			Control[] children = getChildren();
-			for (int i = 0; i < children.length; i++) {
-				if (composite == children[i] && i != 0) {
-					getViewer().edit((Composite) children[i - 1]);
-					break;
-				}
-			}
-		} else if (e.detail == SWT.TRAVERSE_ESCAPE) {
-			getViewer().cancelEdit();
-		} else if (e.detail == SWT.TRAVERSE_RETURN) {
-			getViewer().saveEdit();
-		}
+		// Composite composite = findDataParent(e.getSource());
+		// if (e.detail == SWT.TRAVERSE_TAB_NEXT) {
+		// Control[] children = getChildren();
+		// for (int i = 0; i < children.length; i++) {
+		// if (composite == children[i] && i + 1 < children.length) {
+		// Composite nextEdited = (Composite) children[i + 1];
+		// System.out.println(nextEdited.isVisible());
+		// getViewer().edit(nextEdited);
+		// break;
+		// }
+		// }
+		// } else if (e.detail == SWT.TRAVERSE_TAB_PREVIOUS) {
+		// Control[] children = getChildren();
+		// for (int i = 0; i < children.length; i++) {
+		// if (composite == children[i] && i != 0) {
+		// getViewer().edit((Composite) children[i - 1]);
+		// break;
+		// }
+		// }
+		// } else if (e.detail == SWT.TRAVERSE_ESCAPE) {
+		// getViewer().cancelEdit();
+		// } else if (e.detail == SWT.TRAVERSE_RETURN) {
+		// getViewer().splitEdit();
+		// }
 	}
 
 	@Override
@@ -168,10 +191,13 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 	@Override
 	public void mouseDown(MouseEvent e) {
 		if (e.button == 1) {
+			Control source = (Control) e.getSource();
+			Composite composite = findDataParent(source);
+			Point point = new Point(e.x, e.y);
+			getViewer().edit(composite, source.toDisplay(point));
+		} else if (e.button == 3) {
 			Composite composite = findDataParent(e.getSource());
-			getViewer().edit(composite);
-		} else if (e.button == 2) {
-
+			getViewer().getStyledTools().show(composite, new Point(e.x, e.y));
 		}
 	}
 
@@ -197,5 +223,9 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 
 	protected Node getTextNode() {
 		return getViewer().getMainSection().getNode();
+	}
+
+	public Section getParentSection() {
+		return parentSection;
 	}
 }

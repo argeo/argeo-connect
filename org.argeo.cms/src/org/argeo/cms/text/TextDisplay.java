@@ -72,14 +72,14 @@ public class TextDisplay implements CmsEditable, CmsNames, TextStyles {
 		// textViewer.setInput(textNode);
 		// textViewer.refresh();
 
-//		try {
-//			ScrolledPage page = new ScrolledPage(parent, SWT.NONE);
-//			Section mainSection = new Section(page, SWT.NONE, textNode);
-//			mainSection.refresh(true, true);
-//		} catch (RepositoryException e) {
-//			throw new CmsException("Cannot load main section", e);
-//		}
-		textViewer = new TextViewer3(parent, textNode);
+		// try {
+		// ScrolledPage page = new ScrolledPage(parent, SWT.NONE);
+		// Section mainSection = new Section(page, SWT.NONE, textNode);
+		// mainSection.refresh(true, true);
+		// } catch (RepositoryException e) {
+		// throw new CmsException("Cannot load main section", e);
+		// }
+		textViewer = new TextViewer3(parent, textNode, this);
 	}
 
 	//

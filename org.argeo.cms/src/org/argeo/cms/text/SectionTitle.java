@@ -16,7 +16,7 @@ public class SectionTitle extends Composite {
 	private StyledComposite title;
 	private int relativeDepth;
 
-	public SectionTitle(Composite parent, int style, Property title,
+	public SectionTitle(Section parent, int style, Property title,
 			int relativeDepth) throws RepositoryException {
 		super(parent, style);
 		this.relativeDepth = relativeDepth;
@@ -39,7 +39,8 @@ public class SectionTitle extends Composite {
 		for (Control child : getChildren())
 			child.dispose();
 		if (getProperty() != null) {
-			title = new StyledComposite(this, SWT.NONE);
+			title = new StyledComposite(this, SWT.NONE, getViewer()
+					.getTextInterpreter());
 			title.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			if (updateContent)
 				updateContent();
@@ -65,4 +66,11 @@ public class SectionTitle extends Composite {
 		return title;
 	}
 
+	public Section getSection() {
+		return (Section) getParent();
+	}
+
+	public TextViewer3 getViewer() {
+		return getSection().getViewer();
+	}
 }
