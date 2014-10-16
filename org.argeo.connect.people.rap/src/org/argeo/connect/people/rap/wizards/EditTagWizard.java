@@ -131,7 +131,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			else if (oldTitle.equals(newTitle))
 				errMsg = "New value is the same as old one.\n"
 						+ "Either enter a new one or press cancel.";
-			else if (peopleService.getTagService().getRegisteredTag(
+			else if (peopleService.getResourceService().getRegisteredTag(
 					tagLikeInstanceNode.getSession(),
 					resourceInstancesParentPath, newTitle) != null)
 				errMsg = "The new chosen value is already used.\n"
@@ -151,7 +151,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 							.isNodeCheckedOutByMe(tagLikeInstanceNode);
 			if (isCheckedIn)
 				CommonsJcrUtils.checkout(tagLikeInstanceNode);
-			peopleService.getTagService().updateTagTitle(tagLikeInstanceNode,
+			peopleService.getResourceService().updateTagTitle(tagLikeInstanceNode,
 					resourceNodeType, resourceInstancesParentPath, newTitle,
 					taggableNodeType, tagPropName, taggableParentPath);
 			if (CommonsJcrUtils.checkNotEmptyString(newDesc))

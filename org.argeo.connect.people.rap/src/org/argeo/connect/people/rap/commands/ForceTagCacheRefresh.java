@@ -46,7 +46,7 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 
 		try {
 			session = repository.login();
-			peopleService.getTagService().refreshKnownTags(
+			peopleService.getResourceService().refreshKnownTags(
 					session,
 					NodeType.NT_UNSTRUCTURED,
 					peopleService
@@ -55,7 +55,7 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 					peopleService.getBasePath(null));
 
 			peopleService
-					.getTagService()
+					.getResourceService()
 					.refreshKnownTags(
 							session,
 							PeopleTypes.PEOPLE_MAILING_LIST,

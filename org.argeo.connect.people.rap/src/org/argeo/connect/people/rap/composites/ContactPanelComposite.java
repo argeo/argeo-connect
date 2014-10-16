@@ -522,7 +522,8 @@ public class ContactPanelComposite extends Composite {
 				.getResourceBasePath(PeopleConstants.RESOURCE_COUNTRY);
 		Session session = CommonsJcrUtils.getSession(entity);
 		final SimpleResourceDropDown countryDD = new SimpleResourceDropDown(
-				peopleService.getLabelService(), session, countryBP, countryTxt);
+				peopleService.getResourceService(), session, countryBP,
+				countryTxt);
 
 		// final Text geoPointTxt = createRowDataLT(parent, "Geopoint", 200);
 		final Text labelTxt = createRowDataLT(parent, "Label", 120);

@@ -77,7 +77,7 @@ public class DemoDataImport implements PeopleConstants {
 			log.info("Demo data have been imported");
 
 			// Initialise Tag cache
-			peopleService.getTagService().refreshKnownTags(
+			peopleService.getResourceService().refreshKnownTags(
 					adminSession,
 					NodeType.NT_UNSTRUCTURED,
 					peopleService
@@ -87,7 +87,7 @@ public class DemoDataImport implements PeopleConstants {
 
 			// Initialise Mailing List cache
 			peopleService
-					.getTagService()
+					.getResourceService()
 					.refreshKnownTags(
 							adminSession,
 							PeopleTypes.PEOPLE_MAILING_LIST,

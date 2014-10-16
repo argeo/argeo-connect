@@ -19,8 +19,8 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserManagementService;
-import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
@@ -188,7 +188,7 @@ public class TagListComposite extends Composite {
 							@Override
 							public void widgetSelected(
 									final SelectionEvent event) {
-								Node tag = peopleService.getTagService()
+								Node tag = peopleService.getResourceService()
 										.getRegisteredTag(
 												CommonsJcrUtils
 														.getSession(tagable),
@@ -235,7 +235,7 @@ public class TagListComposite extends Composite {
 					tagTxt.setLayoutData(rd);
 
 					final SimpleResourceDropDown tagDD = new SimpleResourceDropDown(
-							peopleService.getLabelService(),
+							peopleService.getResourceService(),
 							tagable.getSession(), tagsParentPath, tagTxt);
 
 					tagTxt.addTraverseListener(new TraverseListener() {
@@ -328,8 +328,8 @@ public class TagListComposite extends Composite {
 		try {
 			Session session = tagable.getSession();
 			// Check if such a tag is already registered
-			Node registered = peopleService.getTagService().getRegisteredTag(
-					session, tagsParentPath, newTag);
+			Node registered = peopleService.getResourceService()
+					.getRegisteredTag(session, tagsParentPath, newTag);
 
 			if (registered == null) {
 				boolean canAdd = !"true"
@@ -346,8 +346,9 @@ public class TagListComposite extends Composite {
 							+ "\" is not yet registered.\n Are you sure you want to create it?";
 					if (MessageDialog.openConfirm(shell, "Confirm creation",
 							msg)) {
-						registered = peopleService.getTagService().registerTag(
-								session, resourceType, tagsParentPath, newTag);
+						registered = peopleService.getResourceService()
+								.registerTag(session, resourceType,
+										tagsParentPath, newTag);
 						if (registered.isNodeType(NodeType.MIX_VERSIONABLE))
 							createdTagPath.add(registered.getPath());
 					} else

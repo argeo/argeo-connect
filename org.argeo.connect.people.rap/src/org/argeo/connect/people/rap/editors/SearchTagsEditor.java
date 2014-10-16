@@ -162,7 +162,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 						e.display.getActiveShell(), "Create");
 				if (Dialog.OK == dialog.open()) {
 					try {
-						Node tag = peopleService.getTagService().registerTag(
+						Node tag = peopleService.getResourceService().registerTag(
 								session, resourceType, basePath,
 								dialog.getTitle());
 						if (tag.isNodeType(NodeType.MIX_VERSIONABLE))
@@ -243,7 +243,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		@Override
 		public String getText(Object element) {
 			Node currNode = CommonsJcrUtils.getNode((Row) element, entityType);
-			long count = peopleService.getTagService().countMembers(currNode,
+			long count = peopleService.getResourceService().countMembers(currNode,
 					peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
 					propertyName);
 			return "" + count;
@@ -283,7 +283,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 	}
 
 	private boolean canDelete(Node currNode) {
-		long currCount = peopleService.getTagService().countMembers(currNode,
+		long currCount = peopleService.getResourceService().countMembers(currNode,
 				peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
 				propertyName);
 

@@ -32,7 +32,7 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 			PeopleWorkbenchService peopleUiService) {
 		personLp = new PersonListLabelProvider(peopleService);
 		orgLp = new OrgListLabelProvider(peopleService);
-		mlInstanceLp = new TagLabelProvider(peopleService.getTagService(),
+		mlInstanceLp = new TagLabelProvider(peopleService.getResourceService(),
 				PeopleRapConstants.LIST_TYPE_SMALL,
 				peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
 				PEOPLE_MAILING_LISTS);

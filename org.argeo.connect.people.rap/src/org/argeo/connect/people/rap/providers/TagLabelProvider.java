@@ -5,7 +5,7 @@ import javax.jcr.Property;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.TagService;
+import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -25,9 +25,9 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 	private final String tagableParentPath;
 	private final String tagableType;
 	private final String tagPropName;
-	private final TagService tagService;
+	private final ResourceService tagService;
 
-	public TagLabelProvider(TagService tagService, int listType,
+	public TagLabelProvider(ResourceService tagService, int listType,
 			String tagableParentPath, String tagableType, String tagPropName) {
 		this.tagService = tagService;
 		this.listType = listType;

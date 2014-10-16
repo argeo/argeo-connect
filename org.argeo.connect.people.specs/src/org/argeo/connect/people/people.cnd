@@ -121,20 +121,11 @@
 // MIGHT BE a person, an organisation or another group
 - people:refUid (STRING) nofulltext  //was mandatory m
 
-//
-// MAILING LIST 
-//
-
-// TODO - Enhance to provide additional services like tracking of sent newsletters 
-// The fact that a contactable entity belongs to this mailing list is stored in
-// the corresponding node via the people:mailingListInstances multivalued property
-[people:mailingList] > people:entity
-
-
-
 // 
-// TAGABLE
+// TAGGABLE
 //
+
+// TODO change this mixin to people:taggable
 [people:tagable] 
 mixin
 - people:tags (STRING) *
@@ -220,6 +211,55 @@ mixin
 + people:activities (nt:unstructured)
 
 //
+// RESOURCE MANAGEMENT
+// 
+
+// Defines the template of a given node type in the system, with, among others, the various
+// catalogues of pre-defined possible values for some given String properties
+// the name of the type template is generally the corresponding type
+[people:typeTemplate] > nt:unstructured, mix:title
+
+
+// Defines the parent of a sub tree that enable definition of a nomenclature for a tag like property 
+[people:tagParent] > nt:unstructured, mix:title
+- people:tagId (STRING) // An optional ID to differentiate distinct parent that might be similar
+- people:tagInstanceType (STRING) // The node type of the corresponding resources
+- people:codePropName (STRING) // the name of the property that provide the code 
+// that is stored  in the tagged node ("people:code" for default encode tag  instance type)
+// if not present, then we use the JCR_TITLE that is the name and the label at the same time
+
+// Should the 3 below property be multiple ?
+// They enable to narrow the taggable part of the whole repo and thus fasten the requests, among others
+- people:taggableParentPath (STRING) // Absolute path to parent of the taggable nodes
+- people:taggableNodeType (STRING) // Node type of the taggable nodes
+- people:taggablePropName (STRING) // Name of the multi value property of the taggable node in which the corresponding tag is stored
+
+// DEFAULT TAG TYPES
+[people:tagInstance] > nt:unstructured, mix:title
+
+[people:encodedTagInstance] > nt:unstructured, mix:title
+- people:code (STRING) // m??? 
+
+
+// MAILING LIST 
+// TODO - Enhance to provide additional services like tracking of sent newsletters 
+// The fact that a contactable entity belongs to this mailing list is stored in
+// the corresponding node via the people:mailingListInstances multivalued property
+[people:mailingList] > people:entity
+
+
+// The two below types are useless and should be removed, use people:encodedTagInstance instead
+
+// a reference for a given language
+[people:isoLanguage] > nt:unstructured, mix:title
+- people:isoCode (STRING) m 
+
+// a reference for a given country
+[people:isoCountry] > nt:unstructured, mix:title
+- people:isoCode (STRING) m
+
+
+//
 // LANGUAGES AND COUNTRIES
 //
 [people:multiLang]
@@ -236,13 +276,7 @@ mixin
 // jcr:language properties are implementation specific
 
 
-// a reference for a given language
-[people:isoLanguage] > nt:unstructured, mix:title
-- people:isoCode (STRING) m 
 
-// a reference for a given country
-[people:isoCountry] > nt:unstructured, mix:title
-- people:isoCode (STRING) m
 
 // 
 // ORDERABLE

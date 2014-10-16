@@ -9,7 +9,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.TagService;
+import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 
 public class PeopleWebSnippets {
@@ -18,7 +18,7 @@ public class PeopleWebSnippets {
 			Node entity, String propertyName, String prefix) {
 		StringBuilder builder = new StringBuilder();
 
-		TagService tagService = peopleService.getTagService();
+		ResourceService tagService = peopleService.getResourceService();
 		try {
 			Session session = entity.getSession();
 			String tagParentPath = null;

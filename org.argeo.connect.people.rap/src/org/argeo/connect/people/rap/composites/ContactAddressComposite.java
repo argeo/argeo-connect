@@ -243,7 +243,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					.getResourceBasePath(PeopleConstants.RESOURCE_COUNTRY);
 			Session session = CommonsJcrUtils.getSession(contactNode);
 			final SimpleResourceDropDown countryDD = new SimpleResourceDropDown(
-					peopleService.getLabelService(), session, countryBP,
+					peopleService.getResourceService(), session, countryBP,
 					countryTxt);
 
 			final Text geoPointTxt = PeopleRapUtils.createRDText(toolkit,

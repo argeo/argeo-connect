@@ -144,11 +144,8 @@ public interface PeopleService {
 	/** Returns the corresponding {@link UserManagementService} */
 	public UserManagementService getUserManagementService();
 
-	/** Returns the corresponding {@link TagService} */
-	public TagService getTagService();
-
-	/** Returns the corresponding {@link LebelService} */
-	public LabelService getLabelService();
+	/** Returns the corresponding {@link ResourceService} */
+	public ResourceService getResourceService();
 
 	/* MISCELLANEOUS */
 	/**

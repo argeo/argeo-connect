@@ -85,10 +85,9 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 
 		Text tagTxt = createBoldLT(body, "Tag", "",
 				"Select from list to find entities that are categorised with this tag");
-		tagDD = new SimpleResourceDropDown(
-				getPeopleService().getLabelService(), getSession(),
-				getPeopleService().getResourceBasePath(
-						PeopleConstants.RESOURCE_TAG), tagTxt);
+		tagDD = new SimpleResourceDropDown(getPeopleService()
+				.getResourceService(), getSession(), getPeopleService()
+				.getResourceBasePath(PeopleConstants.RESOURCE_TAG), tagTxt);
 
 		Button goBtn = new Button(body, SWT.PUSH);
 		goBtn.setText("Search");
