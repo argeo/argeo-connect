@@ -3,10 +3,6 @@ package org.argeo.connect.people;
 /** JCR names managed by Connect People. */
 public interface PeopleNames {
 
-	// workaround to manage draft concept.
-	// TODO clean this
-	// public static String PEOPLE_IS_DRAFT = "people:isDraft";
-
 	/**
 	 * An implementation specific UID, might be a JCR node Identifier but it is
 	 * not compulsory We personally use the type 4 (pseudo randomly generated)
@@ -21,12 +17,12 @@ public interface PeopleNames {
 	public final static String PEOPLE_HOME = "people:home";
 
 	// Main concepts parent node names
-	public final static String PEOPLE_PERSONS = "people:persons";
-	public final static String PEOPLE_ORGS = "people:orgs";
-	public final static String PEOPLE_FILMS = "people:films";
-	public final static String PEOPLE_PROJECTS = "people:projects";
-	public final static String PEOPLE_ACTIVITIES = "people:activities";
-	public final static String PEOPLE_RESOURCES = "people:resources";
+	public final static String PEOPLE_PERSONS = "persons";
+	public final static String PEOPLE_ORGS = "orgs";
+	public final static String PEOPLE_FILMS = "films";
+	public final static String PEOPLE_PROJECTS = "projects";
+	public final static String PEOPLE_ACTIVITIES = "activities";
+	public final static String PEOPLE_RESOURCES = "resources";
 
 	// Resources parent node names
 	public final static String PEOPLE_TAGS = "people:tags";
@@ -74,13 +70,10 @@ public interface PeopleNames {
 	public final static String PEOPLE_USE_POLITE_FORM = "people:usePoliteForm"; // (BOOLEAN)
 	public final static String PEOPLE_SPOKEN_LANGUAGES = "people:spokenLanguages"; // STRING*
 
-	// public final static String PEOPLE_PSEUDONYM = "people:pseudonym";
-
 	/* ORGANIZATIONS */
 	public final static String PEOPLE_LEGAL_NAME = "people:legalName";
 	public final static String PEOPLE_LEGAL_FORM = "people:legalForm";
 	public final static String PEOPLE_VAT_ID_NB = "people:vatIdNb";
-	// public final static String PEOPLE_ORG_BRANCHES = "people:orgBranches";
 
 	/* USER MANAGEMENT */
 	// REFERENCE * towards people:person types
@@ -89,6 +82,18 @@ public interface PeopleNames {
 	public final static String PEOPLE_USER_GROUPS = "people:userGroups";
 	public final static String PEOPLE_GROUP_ID = "people:groupId";
 	public final static String PEOPLE_IS_SINGLE_USER_GROUP = "people:isSingleUserGroup";
+
+	/* RESOURCES */
+	// Generally the corresponding node type but might something else if
+	// necessary.
+	public final static String PEOPLE_TEMPLATE_ID = "people:templateId"; // (STRING)
+	public final static String PEOPLE_TAG_ID = "people:tagId"; // (STRING)
+	public final static String PEOPLE_TAG_INSTANCE_TYPE = "people:tagInstanceType"; // (STRING)
+	public final static String PEOPLE_TAG_CODE_PROP_NAME = "people:codePropName"; // (STRING)
+	public final static String PEOPLE_TAGGABLE_PARENT_TYPE = "people:taggableParentPath"; // (STRING)
+	public final static String PEOPLE_TAGGABLE_NODE_TYPE = "people:taggableNodeType"; // (STRING)
+	public final static String PEOPLE_TAGGABLE_PROP_NAME = "people:taggablePropName"; // (STRING)
+	public final static String PEOPLE_CODE = "people:code"; // (STRING) // m???
 
 	/* ACTIVITIES AND TASKS */
 	public final static String PEOPLE_MANAGER = "people:manager";

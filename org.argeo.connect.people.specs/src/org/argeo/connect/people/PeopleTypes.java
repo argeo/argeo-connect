@@ -7,8 +7,23 @@ public interface PeopleTypes {
 	public final static String PEOPLE_ANONYMOUS_PERSON = "people:anonymousPerson";
 
 	/* RESOURCES */
+	public final static String PEOPLE_NODE_TEMPLATE = "people:nodeTemplate";
+
+	public final static String PEOPLE_TAG_PARENT = "people:tagParent";
+	public final static String PEOPLE_TAG_INSTANCE = "people:tagInstance";
+	public final static String PEOPLE_TAG_ENCODED_INSTANCE = "people:encodedTagInstance";
+
+	// Specific resources tag like resources instance types.
+	public final static String PEOPLE_MAILING_LIST = "people:mailingList";
+
+	// The two below types are useless and should be removed, use
+	// people:encodedTagInstance instead
 	public final static String PEOPLE_ISO_COUNTRY = "people:isoCountry";
 	public final static String PEOPLE_ISO_LANGUAGE = "people:isoLanguage";
+
+	// implement this ... or not ??
+	public final static String PEOPLE_TAG = "people:tag";
+	public final static String PEOPLE_TAG_RESOURCE_PARENT = "people:tagResourceParent";
 
 	/* COMMON CONCEPTS */
 	// Parent base type
@@ -29,10 +44,6 @@ public interface PeopleTypes {
 
 	/* GROUPS */
 	public final static String PEOPLE_GROUP = "people:group";
-	public final static String PEOPLE_MAILING_LIST = "people:mailingList";
-	// TODO implement this.
-	public final static String PEOPLE_TAG = "people:tag";
-	public final static String PEOPLE_TAG_RESOURCE_PARENT = "people:tagResourceParent";
 
 	/* GROUP MEMBERS */
 	public final static String PEOPLE_POSITION = "people:position";

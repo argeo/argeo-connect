@@ -17,6 +17,7 @@ import javax.jcr.query.Query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -70,20 +71,48 @@ public class ResourceServiceImpl implements ResourceService {
 	@Override
 	public List<String> getPossibleValues(Session session, String templateId,
 			String propertyName, String filter) {
-		// TODO Auto-generated method stub
-		return null;
+		Node node = getNodeTemplate(session, templateId);
+		if (node != null)
+			return getPossibleValues(node, propertyName, filter);
+		else
+			// we have the contract to always return a list, even empty
+			return new ArrayList<String>();
 	}
 
 	@Override
-	public List<String> getPossibleValues(Node templateNode,
-			String propertyName, String filter) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<String> getPossibleValues(Node node, String propertyName,
+			String filter) {
+		List<String> result = new ArrayList<String>();
+		try {
+			if (node.hasProperty(propertyName)) {
+				Value[] values = node.getProperty(propertyName).getValues();
+				for (Value value : values) {
+					String curr = value.getString();
+					if (CommonsJcrUtils.isEmptyString(filter)
+							|| CommonsJcrUtils.checkNotEmptyString(curr)
+							&& curr.toLowerCase()
+									.contains(filter.toLowerCase()))
+						result.add(curr);
+				}
+			}
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to get " + propertyName
+					+ " values for template " + node, re);
+		}
+		return result;
 	}
 
 	@Override
 	public Node getNodeTemplate(Session session, String templateId) {
-		// TODO Auto-generated method stub
+		String path = getPathForId(RESOURCE_TYPE_TEMPLATE, templateId);
+		try {
+			if (session.nodeExists(path)) {
+				return session.getNode(path);
+			}
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to retrieve template instance "
+					+ "at path " + path + " for templateId " + templateId, e);
+		}
 		return null;
 	}
 
@@ -92,8 +121,29 @@ public class ResourceServiceImpl implements ResourceService {
 	@Override
 	public Node createTemplateForType(Session session, String nodeType,
 			String templateId) {
-		// TODO Auto-generated method stub
-		return null;
+		String currId = templateId == null ? nodeType : templateId;
+		Node node = getNodeTemplate(session, currId);
+		if (node != null)
+			return node;
+		else {
+			String path = getPathForId(RESOURCE_TYPE_TEMPLATE, currId);
+			String parPath = JcrUtils.parentPath(path);
+			try {
+				if (session.nodeExists(parPath))
+					throw new PeopleException( "Default tree structure "
+									+ "for template resources must have been created. "
+									+ "Please fix this before trying to create template "
+									+ currId);
+				Node parent = session.getNode(parPath);
+				Node template = parent.addNode(currId,
+						PeopleTypes.PEOPLE_NODE_TEMPLATE);
+				template.setProperty(PeopleNames.PEOPLE_TEMPLATE_ID, currId);
+				return template;
+			} catch (RepositoryException e) {
+				throw new PeopleException("Unable to create new temaple "
+						+ currId + " at path " + path, e);
+			}
+		}
 	}
 
 	@Override
@@ -477,4 +527,21 @@ public class ResourceServiceImpl implements ResourceService {
 		}
 	}
 
+	private final static String RESOURCE_TYPE_TEMPLATE = "resource.template";
+	private final static String RESOURCE_TYPE_TAG_LIKE = "resource.tagLike";
+
+	private final static String RESOURCE_TEMPLATE = "templates";
+	private final static String RESOURCE_TAG_LIKE = "tags";
+
+	private String getPathForId(String resourceType, String id) {
+		if (RESOURCE_TYPE_TEMPLATE.equals(resourceType))
+			return peopleService.getBasePath(PeopleConstants.PEOPLE_RESOURCE)
+					+ "/" + RESOURCE_TEMPLATE + "/" + id;
+		else if (RESOURCE_TYPE_TAG_LIKE.equals(resourceType))
+			return peopleService.getBasePath(PeopleConstants.PEOPLE_RESOURCE)
+					+ "/" + RESOURCE_TAG_LIKE + "/" + id;
+		else
+			throw new PeopleException("Unknown resource type " + resourceType
+					+ " for id " + id);
+	}
 }

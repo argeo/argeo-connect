@@ -214,10 +214,11 @@ mixin
 // RESOURCE MANAGEMENT
 // 
 
-// Defines the template of a given node type in the system, with, among others, the various
-// catalogues of pre-defined possible values for some given String properties
-// the name of the type template is generally the corresponding type
-[people:typeTemplate] > nt:unstructured, mix:title
+// Defines the template of a given type of node in the system, with, 
+// among others, the various catalogues of pre-defined possible values 
+// for some given String properties.
+// The name of the template for a type of node is generally the corresponding JCR node type
+[people:nodeTemplate] > nt:unstructured, mix:title
 - people:templateId (STRING) // Generally the corresponding node type but might something else if necessary.
 
 
