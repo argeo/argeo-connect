@@ -34,6 +34,14 @@ public class PeopleUiUtils {
 
 	/**
 	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
+	 * SWT.FILL, true, true, horizontalSpan, 1.
+	 */
+	public static GridData fillGridData(int horizontalSpan) {
+		return new GridData(SWT.FILL, SWT.FILL, true, true, horizontalSpan, 1);
+	}
+
+	/**
+	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
 	 * SWT.CENTER, true, false.
 	 */
 	public static GridData horizontalFillData() {
