@@ -3,7 +3,6 @@ package org.argeo.connect.people.rap.editors;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
-import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,7 +14,7 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.composites.ContactPanelComposite;
-import org.argeo.connect.people.rap.composites.TagListComposite;
+import org.argeo.connect.people.rap.editors.parts.TagLikeListPart;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.rap.toolkits.ActivityToolkit;
@@ -93,21 +92,19 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		populateTitleComposite(titleCmp);
 
 		// Tag Management
-		Composite tagsCmp = new TagListComposite(parent, SWT.NO_FOCUS, toolkit,
+		Composite tagsCmp = new TagLikeListPart(parent, SWT.NO_FOCUS, toolkit,
 				getManagedForm(), getPeopleService(),
-				getPeopleWorkbenchService(), org, PeopleNames.PEOPLE_TAGS,
-				getPeopleService().getResourceBasePath(
-						PeopleConstants.RESOURCE_TAG),
-				NodeType.NT_UNSTRUCTURED, "Add a tag");
+				getPeopleWorkbenchService(), PeopleConstants.RESOURCE_TAG, org,
+				PeopleNames.PEOPLE_TAGS, "Enter a new tag");
+
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// Mailing list management
-		Composite mlCmp = new TagListComposite(parent, SWT.NO_FOCUS, toolkit,
+		Composite mlCmp = new TagLikeListPart(parent, SWT.NO_FOCUS, toolkit,
 				getManagedForm(), getPeopleService(),
-				getPeopleWorkbenchService(), org,
-				PeopleNames.PEOPLE_MAILING_LISTS, getPeopleService()
-						.getResourceBasePath(PeopleTypes.PEOPLE_MAILING_LIST),
-				PeopleTypes.PEOPLE_MAILING_LIST, "Add a mailing");
+				getPeopleWorkbenchService(), PeopleTypes.PEOPLE_MAILING_LIST,
+				org, PeopleNames.PEOPLE_MAILING_LISTS, "Add a mailing");
+
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 	}
 

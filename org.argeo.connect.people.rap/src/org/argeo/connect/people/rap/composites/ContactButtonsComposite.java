@@ -87,34 +87,6 @@ public class ContactButtonsComposite extends Composite {
 		gd.heightHint = 16;
 		btn.setLayoutData(gd);
 		return btn;
-
-		// try {
-		//
-		//
-		// String category = null;
-		// if (contactNode.hasProperty(PeopleNames.PEOPLE_CONTACT_CATEGORY))
-		// category = CommonsJcrUtils.get(contactNode,
-		// PeopleNames.PEOPLE_CONTACT_CATEGORY);
-		// String nature = null;
-		// if (contactNode.hasProperty(PeopleNames.PEOPLE_CONTACT_NATURE))
-		// nature = CommonsJcrUtils.get(contactNode,
-		// PeopleNames.PEOPLE_CONTACT_NATURE);
-		//
-		// String contactType = contactNode.getPrimaryNodeType().getName();
-		// String entityType = contactNode.getParent().getParent()
-		// .getPrimaryNodeType().getName();
-		//
-		// // btn.setImage(imageProvider.getContactIcon(entityType, contactType,
-		// // nature, category));
-		//
-		// GridData gd = new GridData();
-		// gd.widthHint = 16;
-		// gd.heightHint = 16;
-		// btn.setLayoutData(gd);
-		// return btn;
-		// } catch (RepositoryException re) {
-		// throw new PeopleException("unable to get image for contact");
-		// }
 	}
 
 	private Button createDeleteButton(Composite parent) {
@@ -203,5 +175,4 @@ public class ContactButtonsComposite extends Composite {
 	public boolean setFocus() {
 		return true;
 	}
-
 }

@@ -110,6 +110,8 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 					return ContactImages.WORK;
 				else
 					return ContactImages.DEFAULT_ADDRESS;
+			else
+				return ContactImages.WORK;
 		}
 		// URL
 		else if (entity.isNodeType(PeopleTypes.PEOPLE_URL)) {
