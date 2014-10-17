@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.jcr.query.Row;
 
-import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;

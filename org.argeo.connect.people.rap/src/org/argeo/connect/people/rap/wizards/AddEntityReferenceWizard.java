@@ -10,8 +10,8 @@ import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.providers.BasicNodeListContentProvider;

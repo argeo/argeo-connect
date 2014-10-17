@@ -5,9 +5,11 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
@@ -96,8 +98,9 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 			if (!spokenLanguages.isEmpty()) {
 				for (String str : spokenLanguages) {
 					builder.append(
-							ResourcesJcrUtils.getLangEnLabelFromIso(
-									peopleService, person.getSession(), str))
+							peopleService.getResourceService()
+									.getEncodedTagValue(person.getSession(),
+											PeopleConstants.RESOURCE_LANG, str))
 							.append(", ");
 				}
 				// remove last occurence of the separator
@@ -146,10 +149,10 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 		}
 
 		// Tags
-		String tags = PeopleWebSnippets.getTagLikeValues(peopleService, person,
+		String tags = PeopleWebSnippets.getTagLikeValues(peopleService, PeopleConstants.RESOURCE_TAG, person,
 				PeopleNames.PEOPLE_TAGS, "#");
 		String mailingLists = PeopleWebSnippets.getTagLikeValues(peopleService,
-				person, PeopleNames.PEOPLE_MAILING_LISTS, "@");
+				PeopleTypes.PEOPLE_MAILING_LIST, person, PeopleNames.PEOPLE_MAILING_LISTS, "@");
 		if (isSmallList) {
 			builder.append(tags);
 			if (CommonsJcrUtils.checkNotEmptyString(tags)

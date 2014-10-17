@@ -3,9 +3,11 @@ package org.argeo.connect.people.web.providers;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
@@ -107,10 +109,10 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 			builder.append(tmpStr);
 		}
 
-		String tags = PeopleWebSnippets.getTagLikeValues(peopleService, orga,
+		String tags = PeopleWebSnippets.getTagLikeValues(peopleService, PeopleConstants.RESOURCE_TAG, orga,
 				PeopleNames.PEOPLE_TAGS, "#");
 		String mailingLists = PeopleWebSnippets.getTagLikeValues(peopleService,
-				orga, PeopleNames.PEOPLE_MAILING_LISTS, "@");
+				PeopleTypes.PEOPLE_MAILING_LIST,orga, PeopleNames.PEOPLE_MAILING_LISTS, "@");
 
 		if (isSmallList) {
 			builder.append(

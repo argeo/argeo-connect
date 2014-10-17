@@ -7,7 +7,6 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsUiProvider;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleTypes;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -28,8 +27,10 @@ public class PeopleDynamicPages implements CmsUiProvider {
 		}
 		
 		// FIXME : implement a specific NodeType for Tags
-		if (context.getPath().lastIndexOf("people:resources/people:tags") != -1)
-			return dynamicPages.get(PeopleTypes.PEOPLE_TAG).createUi(parent, context);
+		// if (context.getPath().lastIndexOf("people:resources/people:tags") !=
+		// -1)
+		// return dynamicPages.get(PeopleTypes.PEOPLE_TAG).createUi(parent,
+		// context);
 		
 		throw new PeopleException("No dynamic pages defined for " + context);
 	}
