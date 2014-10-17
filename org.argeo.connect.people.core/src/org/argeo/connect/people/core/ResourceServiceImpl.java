@@ -432,7 +432,7 @@ public class ResourceServiceImpl implements ResourceService {
 			}
 			String propClause = builder.toString();
 			if (propClause.endsWith(" OR "))
-				propClause.substring(0, propClause.length() - 4);
+				propClause = propClause.substring(0, propClause.length() - 4);
 
 			// TODO will it fails if propNames is empty?
 			QueryManager qm = tagParent.getSession().getWorkspace()
