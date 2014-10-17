@@ -186,6 +186,18 @@ public class CommonsJcrUtils {
 		}
 	}
 
+	/**
+	 * Replace the generic namespace with the local "jcr:" value. It is a
+	 * workaround that must be later cleaned
+	 */
+	public static String getLocalJcrItemName(String name) {
+		String prefix = "{http://www.jcp.org/jcr/1.0}";
+		if (name.startsWith(prefix))
+			return "jcr:" + name.substring(prefix.length());
+		else
+			throw new PeopleException("Unknown prefix for " + name);
+	}
+
 	/* VERSIONING MANAGEMENT */
 	/**
 	 * For the time being, same as isNodeCheckedOut(Node node).

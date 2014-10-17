@@ -230,11 +230,12 @@ mixin
 // that is stored  in the tagged node ("people:code" for default encode tag  instance type)
 // if not present, then we use the JCR_TITLE that is the name and the label at the same time
 
-// Should the 3 below property be multiple ?
-// They enable to narrow the taggable part of the whole repo and thus fasten the requests, among others
+// The 3 below properties enable to narrow the taggable part of the whole repo and
+// thus fasten the requests, among others
+- people:taggablePropNames (STRING) * // Names of the multi value property of the taggable node in which the corresponding tag is stored
+// Should also the 2 below property be multiple ?
 - people:taggableParentPath (STRING) // Absolute path to parent of the taggable nodes
 - people:taggableNodeType (STRING) // Node type of the taggable nodes
-- people:taggablePropName (STRING) // Name of the multi value property of the taggable node in which the corresponding tag is stored
 
 // DEFAULT TAG TYPES
 [people:tagInstance] > nt:unstructured, mix:title

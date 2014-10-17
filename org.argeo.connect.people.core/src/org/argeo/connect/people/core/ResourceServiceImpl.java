@@ -9,11 +9,13 @@ import java.util.UUID;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
+import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -116,8 +118,6 @@ public class ResourceServiceImpl implements ResourceService {
 		return null;
 	}
 
-	/* TAG LIKE INSTANCES MANAGEMENT */
-
 	@Override
 	public Node createTemplateForType(Session session, String nodeType,
 			String templateId) {
@@ -130,7 +130,8 @@ public class ResourceServiceImpl implements ResourceService {
 			String parPath = JcrUtils.parentPath(path);
 			try {
 				if (session.nodeExists(parPath))
-					throw new PeopleException( "Default tree structure "
+					throw new PeopleException(
+							"Default tree structure "
 									+ "for template resources must have been created. "
 									+ "Please fix this before trying to create template "
 									+ currId);
@@ -146,45 +147,277 @@ public class ResourceServiceImpl implements ResourceService {
 		}
 	}
 
+	/* TAG LIKE INSTANCES MANAGEMENT */
 	@Override
 	public Node createTagLikeResourceParent(Session session, String tagId,
 			String tagInstanceType, String codePropName,
 			String taggableParentPath, String taggableNodeType,
 			String taggablePropName) {
-		// TODO Auto-generated method stub
-		return null;
+		List<String> names = new ArrayList<String>();
+		names.add(taggablePropName);
+		return createTagLikeResourceParent(session, tagId, tagInstanceType,
+				codePropName, taggableParentPath, taggableNodeType, names);
+	}
+
+	public Node createTagLikeResourceParent(Session session, String tagId,
+			String tagInstanceType, String codePropName,
+			String taggableParentPath, String taggableNodeType,
+			List<String> taggablePropNames) {
+		String currId = tagId == null ? tagInstanceType : tagId;
+		Node node = getTagLikeResourceParent(session, currId);
+		if (node != null)
+			return node;
+		else {
+			String path = getPathForId(RESOURCE_TYPE_TAG_LIKE, currId);
+			String parPath = JcrUtils.parentPath(path);
+			try {
+				if (session.nodeExists(parPath))
+					throw new PeopleException("Default tree structure "
+							+ "for tag like resources must have been created. "
+							+ "Please fix this before trying to create "
+							+ "tag like resource parent " + currId);
+				Node parent = session.getNode(parPath);
+				Node tagLikeParent = parent.addNode(currId,
+						PeopleTypes.PEOPLE_TAG_PARENT);
+				tagLikeParent.setProperty(PeopleNames.PEOPLE_TAG_ID, currId);
+				tagLikeParent.setProperty(PeopleNames.PEOPLE_TAG_INSTANCE_TYPE,
+						tagInstanceType);
+				// If this property is not set, the key property of the tag
+				// instance is the JCR_TITLE Property
+				if (CommonsJcrUtils.checkNotEmptyString(codePropName))
+					tagLikeParent
+							.setProperty(PeopleNames.PEOPLE_TAG_CODE_PROP_NAME,
+									codePropName);
+				tagLikeParent.setProperty(
+						PeopleNames.PEOPLE_TAGGABLE_PARENT_PATH, currId);
+				tagLikeParent.setProperty(
+						PeopleNames.PEOPLE_TAGGABLE_NODE_TYPE,
+						taggableParentPath);
+				tagLikeParent.setProperty(
+						PeopleNames.PEOPLE_TAGGABLE_PROP_NAME,
+						taggablePropNames.toArray(new String[0]));
+				return tagLikeParent;
+			} catch (RepositoryException e) {
+				throw new PeopleException("Unable to create new temaple "
+						+ currId + " at path " + path, e);
+			}
+		}
 	}
 
 	@Override
-	public Node getTagInstanceParent(Session session, String tagId) {
-		// TODO Auto-generated method stub
+	public Node getTagLikeResourceParent(Session session, String tagId) {
+		String path = getPathForId(RESOURCE_TYPE_TAG_LIKE, tagId);
+		try {
+			if (session.nodeExists(path)) {
+				return session.getNode(path);
+			}
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to retrieve tag like parent "
+					+ "at path " + path + " for tagId " + tagId, e);
+		}
 		return null;
-	}
-
-	@Override
-	public NodeIterator getTaggedEntities(Session session, String tagId,
-			String value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public NodeIterator getTaggedEntities(Node tagInstancesParent, String value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void refreshKnownTags(Node tagParent) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public Node registerTag(Session session, String tagId, String tagValue)
 			throws RepositoryException {
-		// TODO Auto-generated method stub
-		return null;
+		Node tagInstance = getRegisteredTag(session, tagId, tagValue);
+		if (tagInstance != null) {
+			// Tag already exists, we do nothing.
+			if (log.isTraceEnabled()) {
+				String registeredKey = CommonsJcrUtils.get(
+						tagInstance,
+						getTagKeyPropName(getTagLikeResourceParent(session,
+								tagId)));
+				log.debug("Tag [" + tagId + "] with key " + tagValue
+						+ " already exists (registered key is ["
+						+ registeredKey + "]), nothing has been done.");
+			}
+			return tagInstance;
+		} else {
+			Node newTag = createTagInstanceInternal(
+					getExistingTagLikeParent(session, tagId), tagValue);
+			return newTag;
+		}
+	}
+
+	@Override
+	public Node registerTag(Session session, String tagId, String tagCode,
+			String tagValue) throws RepositoryException {
+		// Check if such a tag already exists
+		Node tagInstance = getRegisteredTag(session, tagId, tagCode);
+		if (tagInstance != null) {
+			// Tag already exists, we do nothing.
+			if (log.isTraceEnabled()) {
+				String registeredKey = CommonsJcrUtils.get(
+						tagInstance,
+						getTagKeyPropName(getTagLikeResourceParent(session,
+								tagId)));
+				log.debug("Tag [" + tagId + "] with key " + tagCode
+						+ " already exists (registered key is ["
+						+ registeredKey + "]), nothing has been done.");
+			}
+			return tagInstance;
+		} else {
+			Node newTag = createTagInstanceInternal(
+					getExistingTagLikeParent(session, tagId), tagCode);
+			// remove trailing and starting space
+			tagValue = tagValue.trim();
+			CommonsJcrUtils.setJcrProperty(newTag, Property.JCR_TITLE,
+					PropertyType.STRING, tagValue);
+			return newTag;
+		}
+	}
+
+	@Override
+	public Node getRegisteredTag(Session session, String tagId,
+			String instanceKey) {
+		return getRegisteredTag(getExistingTagLikeParent(session, tagId),
+				instanceKey);
+	}
+
+	@Override
+	public Node getRegisteredTag(Node tagParent, String instanceKey) {
+		try {
+			String relPath = getTagRelPath(instanceKey);
+			if (tagParent.hasNode(relPath)) {
+				Node existing = tagParent.getNode(relPath);
+				String existingValue = CommonsJcrUtils.get(existing,
+						getTagKeyPropName(tagParent));
+				if (instanceKey.equalsIgnoreCase(CommonsJcrUtils.get(existing,
+						existingValue))) {
+					return existing;
+				}
+			}
+			return null;
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to retrieve existing tag "
+					+ tagParent + " for key " + instanceKey, e);
+		}
+	}
+
+	@Override
+	public NodeIterator getTaggedEntities(Session session, String tagId,
+			String key) {
+		Node tagParent = getExistingTagLikeParent(session, tagId);
+		return getTaggedEntities(tagParent, key);
+	}
+
+	@Override
+	public NodeIterator getTaggedEntities(Node tagParent, String key) {
+		try {
+			String nodeType = tagParent.getProperty(
+					PeopleNames.PEOPLE_TAGGABLE_NODE_TYPE).getString();
+			String parentPath = tagParent.getProperty(
+					PeopleNames.PEOPLE_TAGGABLE_PARENT_PATH).getString();
+			List<String> propNames = CommonsJcrUtils.getMultiAsList(tagParent,
+					PeopleNames.PEOPLE_TAGGABLE_PROP_NAME);
+
+			String sName = "nodes";
+			StringBuilder builder = new StringBuilder();
+			for (String propName : propNames) {
+				builder.append(sName);
+				builder.append(".[" + propName + "] = ");
+				builder.append("'" + key + "'");
+				builder.append(" OR ");
+			}
+			String propClause = builder.toString();
+			if (propClause.endsWith(" OR "))
+				propClause.substring(0, propClause.length() - 4);
+
+			// TODO will it fails if propNames is empty?
+			QueryManager qm = tagParent.getSession().getWorkspace()
+					.getQueryManager();
+			Query query = qm.createQuery("select * from [" + nodeType
+					+ "] as nodes where ISDESCENDANTNODE('" + parentPath
+					+ "') AND (" + propClause + ") ", Query.JCR_SQL2);
+			return query.execute().getNodes();
+		} catch (RepositoryException ee) {
+			throw new PeopleException(
+					"Unable to retrieve tagged entities for key " + key
+							+ " on parent " + tagParent, ee);
+		}
+	}
+
+	@Override
+	public void refreshKnownTags(Session session, String tagId) {
+		refreshKnownTags(getExistingTagLikeParent(session, tagId));
+	}
+
+	@Override
+	public void refreshKnownTags(Node tagParent) {
+		try {
+			// Initialisation
+			List<String> existingValues = new ArrayList<String>();
+			List<String> registeredTags = new ArrayList<String>();
+			Session session = tagParent.getSession();
+
+			String keyPropName = getTagKeyPropName(tagParent);
+			String taggableNodeType = tagParent.getProperty(
+					PeopleNames.PEOPLE_TAGGABLE_NODE_TYPE).getString();
+			String taggableParentPath = tagParent.getProperty(
+					PeopleNames.PEOPLE_TAGGABLE_PARENT_PATH).getString();
+			String codeProp = CommonsJcrUtils.get(tagParent,
+					PeopleNames.PEOPLE_CODE);
+			List<String> propNames = CommonsJcrUtils.getMultiAsList(tagParent,
+					PeopleNames.PEOPLE_TAGGABLE_PROP_NAME);
+
+			NodeIterator nit = getRegisteredTags(tagParent, null);
+			while (nit.hasNext()) {
+				Node currNode = nit.nextNode();
+				String currKey = CommonsJcrUtils.get(currNode, keyPropName);
+				if (CommonsJcrUtils.checkNotEmptyString(currKey)
+						&& !registeredTags.contains(currKey))
+					registeredTags.add(currKey);
+			}
+
+			// Look for not yet registered tags
+			Query query = session
+					.getWorkspace()
+					.getQueryManager()
+					.createQuery(
+							"select * from [" + taggableNodeType
+									+ "] as instances where ISDESCENDANTNODE('"
+									+ taggableParentPath + "') ",
+							Query.JCR_SQL2);
+			nit = query.execute().getNodes();
+			while (nit.hasNext()) {
+				Node currNode = nit.nextNode();
+				for (String propName : propNames) {
+					if (currNode.hasProperty(propName)) {
+						Value[] tags = currNode.getProperty(propName)
+								.getValues();
+						for (Value tagV : tags) {
+							String currTag = tagV.getString().trim();
+							if (CommonsJcrUtils.checkNotEmptyString(currTag)
+									&& !registeredTags.contains(currTag))
+								existingValues.add(currTag);
+						}
+					}
+				}
+			}
+			// Add the newly found tags.
+			if (CommonsJcrUtils.checkNotEmptyString(codeProp))
+				for (String tag : existingValues) {
+					createTagInstanceInternal(tagParent, tag);
+					session.save();
+				}
+			else {
+				for (String tag : existingValues) {
+					Node curr = createTagInstanceInternal(tagParent, tag);
+					CommonsJcrUtils.setJcrProperty(curr, Property.JCR_TITLE,
+							PropertyType.STRING, tag);
+					session.save();
+				}
+				log.warn("We refreshed an encoded tag like subtree, for "
+						+ tagParent + ". All tag values have been set "
+						+ "with the same value as the code because we "
+						+ "have no information on the corresponding label.");
+			}
+		} catch (RepositoryException ee) {
+			throw new PeopleException("Unable to refresh cache of known tags",
+					ee);
+		}
 	}
 
 	@Override
@@ -202,16 +435,135 @@ public class ResourceServiceImpl implements ResourceService {
 
 	@Override
 	public long countMembers(Node tag) {
-		// TODO Auto-generated method stub
-		return 0;
+		Node parent = retrieveTagParentFromTag(tag);
+		String keyPropName = getTagKeyPropName(parent);
+		NodeIterator nit = getTaggedEntities(parent,
+				CommonsJcrUtils.get(tag, keyPropName));
+		return nit.getSize();
 	}
 
 	@Override
 	public List<String> getRegisteredTagValueList(Session session,
 			String tagId, String filter) {
-		// TODO Auto-generated method stub
-		return null;
+		Node tagParent = getTagLikeResourceParent(session, tagId);
+		List<String> values = new ArrayList<String>();
+		try {
+			NodeIterator nit = getRegisteredTags(tagParent, filter);
+			while (nit.hasNext()) {
+				Node curr = nit.nextNode();
+				if (curr.hasProperty(Property.JCR_TITLE))
+					values.add(curr.getProperty(Property.JCR_TITLE).getString());
+			}
+			return values;
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to get values for tag of ID "
+					+ tagId, re);
+		}
 	}
+
+	// HELPERS FOR TAGS
+	/** Already existing check must have been done before */
+	private Node createTagInstanceInternal(Node tagParent, String tagKey) {
+		try {
+			// retrieve parameters for this tag
+			String relPath = getTagRelPath(tagKey);
+			String instanceType = tagParent.getProperty(
+					PeopleNames.PEOPLE_TAG_INSTANCE_TYPE).getString();
+			// create and set props
+			Node newTag = JcrUtils.mkdirs(tagParent, relPath, instanceType);
+			newTag.setProperty(getTagKeyPropName(tagParent), tagKey);
+			if (newTag.isNodeType(PeopleTypes.PEOPLE_ENTITY)) {
+				String uuid = UUID.randomUUID().toString();
+				newTag.setProperty(PeopleNames.PEOPLE_UID, uuid);
+			}
+			return newTag;
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to create tag instance " + tagKey
+					+ " for tag " + tagParent, e);
+		}
+	}
+
+	protected String getTagRelPath(String tag) {
+		// remove trailing and starting space
+		tag = tag.trim();
+		String cleanedTag = JcrUtils.replaceInvalidChars(tag).trim();
+		String relPath = JcrUtils.firstCharsToPath(cleanedTag, 2);
+		return relPath + "/" + cleanedTag;
+	}
+
+	protected Node retrieveTagParentFromTag(Node tag) {
+		Node parent = tag;
+		while (!CommonsJcrUtils.isNodeType(parent,
+				PeopleTypes.PEOPLE_TAG_RESOURCE_PARENT))
+			parent = CommonsJcrUtils.getParent(parent);
+		return parent;
+	}
+
+	protected String getTagKeyPropName(Node tagParent) {
+		try {
+			if (tagParent.hasProperty(PeopleNames.PEOPLE_TAG_CODE_PROP_NAME))
+				return tagParent.getProperty(
+						PeopleNames.PEOPLE_TAG_CODE_PROP_NAME).getString();
+			else
+				return CommonsJcrUtils.getLocalJcrItemName(Property.JCR_TITLE);
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"unable to retrieve key property name for " + tagParent);
+		}
+	}
+
+	// Helper that will throw an exception if the tag parent is not found
+	private Node getExistingTagLikeParent(Session session, String tagId) {
+		Node tagInstanceParent = getTagLikeResourceParent(session, tagId);
+		if (tagInstanceParent == null)
+			throw new PeopleException("Tag like resource with ID " + tagId
+					+ " does not exist. Cannot process current action.");
+		else
+			return tagInstanceParent;
+	}
+
+	private NodeIterator getRegisteredTags(Node tagParent, String filter) {
+		try {
+			String nodeType = tagParent.getProperty(
+					PeopleNames.PEOPLE_TAG_INSTANCE_TYPE).getString();
+			String queryStr = "select * from [" + nodeType
+					+ "] as nodes where ISDESCENDANTNODE('"
+					+ tagParent.getPath() + "')";
+			if (CommonsJcrUtils.checkNotEmptyString(filter))
+				queryStr += " AND LOWER(nodes.[" + Property.JCR_TITLE
+						+ "]) like \"%" + filter.toLowerCase() + "%\"";
+			queryStr += " ORDER BY nodes.[" + Property.JCR_TITLE + "]";
+
+			Query query = tagParent.getSession().getWorkspace()
+					.getQueryManager().createQuery(queryStr, Query.JCR_SQL2);
+			return query.execute().getNodes();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to get values for " + tagParent
+					+ " with filter " + filter, re);
+		}
+	}
+
+	// @Override
+	// public Node getRegisteredTag(Session session, String tagParentPath,
+	// String tag) {
+	// try {
+	// // remove trailing and starting space
+	// tag = tag.trim();
+	// String path = tagParentPath + "/" + getTagRelPath(tag);
+	//
+	// if (session.nodeExists(path)) {
+	// Node existing = session.getNode(path);
+	// if (tag.equalsIgnoreCase(CommonsJcrUtils.get(existing,
+	// Property.JCR_TITLE))) {
+	// return existing;
+	// }
+	// }
+	// } catch (RepositoryException ee) {
+	// throw new PeopleException("Unable to get registered tag " + tag
+	// + " under " + tagParentPath);
+	// }
+	// return null;
+	// }
 
 	/* LEGACY, TO BE REMOVED */
 	@Override
@@ -273,72 +625,9 @@ public class ResourceServiceImpl implements ResourceService {
 	}
 
 	@Override
-	public Node getRegisteredTag(Session session, String tagParentPath,
-			String tag) {
-		try {
-			// remove trailing and starting space
-			tag = tag.trim();
-			String path = tagParentPath + "/" + getTagRelPath(tag);
-
-			if (session.nodeExists(path)) {
-				Node existing = session.getNode(path);
-				if (tag.equalsIgnoreCase(CommonsJcrUtils.get(existing,
-						Property.JCR_TITLE))) {
-					return existing;
-				}
-			}
-		} catch (RepositoryException ee) {
-			throw new PeopleException("Unable to get registered tag " + tag
-					+ " under " + tagParentPath);
-		}
-		return null;
-	}
-
-	@Override
-	public Node registerTag(Session session, String resourceType,
-			String tagParentPath, String tag) throws RepositoryException {
-		// remove trailing and starting space
-		tag = tag.trim();
-
-		String path = tagParentPath + "/" + getTagRelPath(tag);
-		if (session.nodeExists(path)) {
-			Node existing = session.getNode(path);
-			if (tag.equalsIgnoreCase(CommonsJcrUtils.get(existing,
-					Property.JCR_TITLE))) {
-				// Tag already exists, we do nothing.
-				if (log.isTraceEnabled())
-					log.debug("Tag ["
-							+ CommonsJcrUtils.get(existing, Property.JCR_TITLE)
-							+ "] already exists. Cannot add [" + tag
-							+ "], nothing has been done.");
-				return existing;
-			}
-		}
-		Node newTag = JcrUtils.mkdirs(session, path, resourceType);
-		if (!newTag.isNodeType(NodeType.MIX_TITLE))
-			newTag.addMixin(NodeType.MIX_TITLE);
-		newTag.setProperty(Property.JCR_TITLE, tag);
-
-		if (newTag.isNodeType(PeopleTypes.PEOPLE_ENTITY)) {
-			String uuid = UUID.randomUUID().toString();
-			newTag.setProperty(PeopleNames.PEOPLE_UID, uuid);
-		}
-
-		return newTag;
-	}
-
-	@Override
 	public void unregisterTag(Session session, String tagParentPath,
 			String tag, String tagableParentPath) {
 		throw new PeopleException("unimplemented method.");
-	}
-
-	protected String getTagRelPath(String tag) {
-		// remove trailing and starting space
-		tag = tag.trim();
-		String cleanedTag = JcrUtils.replaceInvalidChars(tag).trim();
-		String relPath = JcrUtils.firstCharsToPath(cleanedTag, 2);
-		return relPath + "/" + cleanedTag;
 	}
 
 	@Override
@@ -521,6 +810,7 @@ public class ResourceServiceImpl implements ResourceService {
 					session.save();
 				}
 			}
+
 		} catch (RepositoryException ee) {
 			throw new PeopleException("Unable to refresh cache of known tags",
 					ee);

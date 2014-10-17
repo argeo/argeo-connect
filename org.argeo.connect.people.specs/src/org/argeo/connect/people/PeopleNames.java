@@ -90,9 +90,9 @@ public interface PeopleNames {
 	public final static String PEOPLE_TAG_ID = "people:tagId"; // (STRING)
 	public final static String PEOPLE_TAG_INSTANCE_TYPE = "people:tagInstanceType"; // (STRING)
 	public final static String PEOPLE_TAG_CODE_PROP_NAME = "people:codePropName"; // (STRING)
-	public final static String PEOPLE_TAGGABLE_PARENT_TYPE = "people:taggableParentPath"; // (STRING)
+	public final static String PEOPLE_TAGGABLE_PARENT_PATH = "people:taggableParentPath"; // (STRING)
 	public final static String PEOPLE_TAGGABLE_NODE_TYPE = "people:taggableNodeType"; // (STRING)
-	public final static String PEOPLE_TAGGABLE_PROP_NAME = "people:taggablePropName"; // (STRING)
+	public final static String PEOPLE_TAGGABLE_PROP_NAME = "people:taggablePropNames"; // (STRING) * 
 	public final static String PEOPLE_CODE = "people:code"; // (STRING) // m???
 
 	/* ACTIVITIES AND TASKS */

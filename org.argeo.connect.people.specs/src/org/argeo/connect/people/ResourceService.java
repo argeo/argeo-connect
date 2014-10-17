@@ -121,6 +121,33 @@ public interface ResourceService {
 			String taggablePropName);
 
 	/**
+	 * @param session
+	 *            with write rights
+	 * @param tagId
+	 *            An optional ID to differentiate distinct parent that might be
+	 *            similar
+	 * @param tagInstanceType
+	 *            The node type of the corresponding resources. It defines the
+	 *            created parent if tagId is null
+	 * @param codePropName
+	 *            The name of the property that provides the code in case the
+	 *            string we store in the taggable multi value property is not
+	 *            the label that has to be displayed
+	 * @param taggableParentPath
+	 *            Absolute path to parent of the taggable nodes
+	 * @param taggableNodeType
+	 *            Node type of the taggable nodes
+	 * @param taggablePropNames
+	 *            Names of the multi value property of the taggable node in
+	 *            which the corresponding tag is stored
+	 * @return the newly created parent for tag instances
+	 */
+	public Node createTagLikeResourceParent(Session session, String tagId,
+			String tagInstanceType, String codePropName,
+			String taggableParentPath, String taggableNodeType,
+			List<String> taggablePropNames);
+
+	/**
 	 * Retrieves the parent for tag instances that correspond to this ID or null
 	 * if non has been found
 	 * 
@@ -128,31 +155,8 @@ public interface ResourceService {
 	 * @param tagId
 	 * @return
 	 */
-	public Node getTagInstanceParent(Session session, String tagId);
-
-	/**
-	 * Retrieves all entities that have this tag value
-	 */
-	public NodeIterator getTaggedEntities(Session session, String tagId,
-			String value);
-
-	/**
-	 * Retrieves all entities that have this tag value
-	 */
-	public NodeIterator getTaggedEntities(Node tagInstancesParent, String value);
-
-	/**
-	 * Browses the repository using the parameters stored in the tagParent node
-	 * and creates a new tag instance for all new value found in the taggable
-	 * property of one of the valid node. It is meant to update the tag
-	 * referential after importing entity instances that are tagged.
-	 * 
-	 * Please note that newly created encoded tags will be created by default
-	 * with a label that is also the code. For the time being, this must be
-	 * later manually fixed via the system UI.
-	 */
-	public void refreshKnownTags(Node tagParent);
-
+	public Node getTagLikeResourceParent(Session session, String tagId);
+	
 	/**
 	 * Register a new tag if such a tag does not exist, does nothing otherwise.
 	 * Corresponding session is not saved
@@ -170,8 +174,8 @@ public interface ResourceService {
 			throws RepositoryException;
 
 	/**
-	 * Register a new tag if a tag with such a code does not yet exist, does
-	 * nothing otherwise. Corresponding session is not saved
+	 * Register a new tag if a tag with such a code does not yet exist, returns
+	 * the existing one otherwise. Corresponding session is not saved
 	 * 
 	 * Comparison of the code is case *sensitive*.
 	 * 
@@ -188,6 +192,24 @@ public interface ResourceService {
 			String tagValue) throws RepositoryException;
 
 	/**
+	 * Retrieve the instance node given its value or code if it is an encodedTag
+	 * or null if such a tag has not yet been registered
+	 * 
+	 * Comparison is case insensitive and a trim() is applied on the passed
+	 * String for not encoded tag
+	 */
+	public Node getRegisteredTag(Session session, String tagId, String tag);
+
+	/**
+	 * Retrieve the instance node given its value or code if it is an encodedTag
+	 * or null if such a tag has not yet been registered
+	 * 
+	 * Comparison is case insensitive and a trim() is applied on the passed
+	 * String for not encoded tag
+	 */
+	public Node getRegisteredTag(Node tagInstanceParent, String tag);
+
+	/**
 	 * Change the value of an already registered tag that does not rely on a
 	 * code (e.g. the value that is stored in the various corresponding
 	 * multi-value property). It also updates this value in all business objects
@@ -200,24 +222,54 @@ public interface ResourceService {
 			throws RepositoryException;
 
 	/**
-	 * Retrieve the instance node given its value or code if it is an encodedTag
-	 * or null if such a tag has not yet been registered
-	 * 
-	 * Comparison is case insensitive and a trim() is applied on the passed
-	 * String for not encoded tag
-	 */
-	public Node getRegisteredTag(Session session, String tagId, String tag);
-
-	/**
 	 * Unregister an existing tag and remove all references to this tag on all
 	 * nodes under the tagableParentPath that have this tag
 	 */
 	public void unregisterTag(Session session, String tagId, String tag);
 
 	/**
-	 * Count members that have such a tag in the corresponding taggable sub tree
+	 * Retrieves all entities that have this tag key
+	 * 
+	 * @param key
+	 *            the code in case of an encoded tag, the value itself otherwise
+	 * @return null if the corresponding tag parent is not found, and a node
+	 *         iterator (that might be empty) otherwise
 	 */
-	public long countMembers(Node tag);
+	public NodeIterator getTaggedEntities(Session session, String tagId,
+			String key);
+
+	/**
+	 * Retrieves all entities that have this key
+	 * 
+	 * @param key
+	 *            the code in case of an encoded tag, the value itself otherwise
+	 */
+	public NodeIterator getTaggedEntities(Node tagInstancesParent, String key);
+
+	/**
+	 * Browses the repository using the parameters stored in the tagParent node
+	 * and creates a new tag instance for all new value found in the taggable
+	 * property of one of the valid node. It is meant to update the tag
+	 * referential after importing entity instances that are tagged.
+	 * 
+	 * Please note that newly created encoded tags will be created by default
+	 * with a label that is also the code. For the time being, this must be
+	 * later manually fixed via the system UI.
+	 */
+	public void refreshKnownTags(Session session, String tagId);	
+	
+	
+	/**
+	 * Browses the repository using the parameters stored in the tagParent node
+	 * and creates a new tag instance for all new value found in the taggable
+	 * property of one of the valid node. It is meant to update the tag
+	 * referential after importing entity instances that are tagged.
+	 * 
+	 * Please note that newly created encoded tags will be created by default
+	 * with a label that is also the code. For the time being, this must be
+	 * later manually fixed via the system UI.
+	 */
+	public void refreshKnownTags(Node tagParent);
 
 	/**
 	 * 
@@ -230,6 +282,11 @@ public interface ResourceService {
 	 */
 	public List<String> getRegisteredTagValueList(Session session,
 			String tagId, String filter);
+
+	/**
+	 * Count members that have such a tag in the corresponding taggable sub tree
+	 */
+	public long countMembers(Node tag);
 
 	/* TODO LEGACY - remove the below methods */
 	/** Count members that have such a tag in the taggable sub tree */
