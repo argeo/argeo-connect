@@ -5,6 +5,7 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -14,7 +15,6 @@ import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
 /**
@@ -111,10 +111,11 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 				builder.append(" / ");
 			if (!spokenLanguages.isEmpty()) {
 				for (String str : spokenLanguages) {
-					builder.append(
-							ResourcesJcrUtils.getLangEnLabelFromIso(
-									peopleService, person.getSession(), str))
-							.append(", ");
+					String language = peopleService.getResourceService()
+							.getEncodedTagValue(
+									CommonsJcrUtils.getSession(person),
+									PeopleConstants.RESOURCE_LANG, str);
+					builder.append(language).append(", ");
 				}
 				// remove last occurence of the separator
 				builder.delete(builder.length() - 2, builder.length());

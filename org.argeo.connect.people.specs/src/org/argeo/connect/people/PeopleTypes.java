@@ -22,8 +22,9 @@ public interface PeopleTypes {
 	public final static String PEOPLE_ISO_LANGUAGE = "people:isoLanguage";
 
 	// implement this ... or not ??
-	public final static String PEOPLE_TAG = "people:tag";
-	public final static String PEOPLE_TAG_RESOURCE_PARENT = "people:tagResourceParent";
+	// public final static String PEOPLE_TAG = "people:tag";
+	// public final static String PEOPLE_TAG_RESOURCE_PARENT =
+	// "people:tagResourceParent";
 
 	/* COMMON CONCEPTS */
 	// Parent base type

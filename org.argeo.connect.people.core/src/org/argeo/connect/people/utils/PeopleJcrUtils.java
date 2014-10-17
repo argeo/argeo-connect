@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.ContactValueCatalogs;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -351,10 +352,12 @@ public class PeopleJcrUtils implements PeopleNames {
 						countryStr = CommonsJcrUtils.get(primaryChild,
 								PEOPLE_COUNTRY);
 						if (CommonsJcrUtils.checkNotEmptyString(countryStr))
-							countryStr = ResourcesJcrUtils
-									.getCountryEnLabelFromIso(peopleService,
+							countryStr = peopleService
+									.getResourceService()
+									.getEncodedTagValue(
 											CommonsJcrUtils
 													.getSession(primaryChild),
+											PeopleConstants.RESOURCE_COUNTRY,
 											countryStr);
 
 					}

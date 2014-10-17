@@ -34,6 +34,8 @@ public class CountriesCsvFileParser extends CsvParserWithLinesAsMap {
 		try {
 			String enName = line.get(EN_SHORT_NAME);
 			String isoCode = line.get(ISO_CODE);
+			
+			
 			Node country;
 			String relPath = isoCode.substring(0, 1) + "/" + isoCode;
 			if (!adminSession.nodeExists(countries.getPath() + "/" + relPath)) {

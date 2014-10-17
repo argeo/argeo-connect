@@ -6,7 +6,6 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.QueryObjectModel;
@@ -20,6 +19,7 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.core.imports.GroupsCsvFileParser;
 import org.argeo.connect.people.core.imports.OrgCsvFileParser;
 import org.argeo.connect.people.core.imports.PersonCsvFileParser;
@@ -76,26 +76,24 @@ public class DemoDataImport implements PeopleConstants {
 
 			log.info("Demo data have been imported");
 
-			// Initialise Tag cache
-			peopleService.getResourceService().refreshKnownTags(
-					adminSession,
-					NodeType.NT_UNSTRUCTURED,
-					peopleService
-							.getResourceBasePath(PeopleConstants.RESOURCE_TAG),
-					PeopleTypes.PEOPLE_BASE, PeopleNames.PEOPLE_TAGS,
-					peopleService.getBasePath(null));
+			ResourceService resourceService = peopleService
+					.getResourceService();
 
-			// Initialise Mailing List cache
-			peopleService
-					.getResourceService()
-					.refreshKnownTags(
-							adminSession,
-							PeopleTypes.PEOPLE_MAILING_LIST,
-							peopleService
-									.getResourceBasePath(PeopleTypes.PEOPLE_MAILING_LIST),
-							PeopleTypes.PEOPLE_BASE,
-							PeopleNames.PEOPLE_MAILING_LISTS,
-							peopleService.getBasePath(null));
+			// Create tags
+			Node tagParent = resourceService.createTagLikeResourceParent(
+					adminSession, PeopleConstants.RESOURCE_TAG,
+					PeopleTypes.PEOPLE_TAG_INSTANCE, null,
+					peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
+					PeopleNames.PEOPLE_TAGS);
+			resourceService.refreshKnownTags(tagParent);
+
+			// Create Mailing lists
+			Node mlParent = resourceService.createTagLikeResourceParent(
+					adminSession, null, PeopleTypes.PEOPLE_MAILING_LIST, null,
+					peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
+					PeopleNames.PEOPLE_MAILING_LISTS);
+			resourceService.refreshKnownTags(mlParent);
+
 		} catch (Exception e) {
 			throw new ArgeoException("Cannot initialize backend", e);
 		}

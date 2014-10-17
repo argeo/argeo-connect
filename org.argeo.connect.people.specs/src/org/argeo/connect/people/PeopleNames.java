@@ -23,6 +23,9 @@ public interface PeopleNames {
 	public final static String PEOPLE_PROJECTS = "projects";
 	public final static String PEOPLE_ACTIVITIES = "activities";
 	public final static String PEOPLE_RESOURCES = "resources";
+	// Corresponding subnodes for resources
+	public final static String PEOPLE_RESOURCE_TEMPLATE = "templates";
+	public final static String PEOPLE_RESOURCE_TAG_LIKE = "tags";
 
 	// Resources parent node names
 	public final static String PEOPLE_TAGS = "people:tags";
@@ -92,7 +95,8 @@ public interface PeopleNames {
 	public final static String PEOPLE_TAG_CODE_PROP_NAME = "people:codePropName"; // (STRING)
 	public final static String PEOPLE_TAGGABLE_PARENT_PATH = "people:taggableParentPath"; // (STRING)
 	public final static String PEOPLE_TAGGABLE_NODE_TYPE = "people:taggableNodeType"; // (STRING)
-	public final static String PEOPLE_TAGGABLE_PROP_NAME = "people:taggablePropNames"; // (STRING) * 
+	public final static String PEOPLE_TAGGABLE_PROP_NAME = "people:taggablePropNames"; // (STRING)
+																						// *
 	public final static String PEOPLE_CODE = "people:code"; // (STRING) // m???
 
 	/* ACTIVITIES AND TASKS */
@@ -175,4 +179,5 @@ public interface PeopleNames {
 	public final static String PEOPLE_BANK_NB = "people:bankNb";
 	public final static String PEOPLE_IBAN = "people:iban";
 	public final static String PEOPLE_BIC = "people:bic";
+
 }

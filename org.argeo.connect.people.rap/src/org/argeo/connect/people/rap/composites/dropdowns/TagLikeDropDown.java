@@ -8,28 +8,28 @@ import org.argeo.connect.people.ResourceService;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Simple DropDown that displays the list of possible resource values at the
- * given base bath
+ * Simple DropDown that displays the list of registered values of a tag like
+ * resource
  */
-public class SimpleResourceDropDown extends PeopleAbstractDropDown {
+public class TagLikeDropDown extends PeopleAbstractDropDown {
 
 	private final Session session;
 	private final ResourceService resourceService;
-	private final String resourceBasePath;
+	private final String tagId;
 
-	public SimpleResourceDropDown(ResourceService resourceService,
-			Session session, String resourceBasePath, Text text) {
+	public TagLikeDropDown(Session session, ResourceService resourceService,
+			String tagId, Text text) {
 		super(text);
 		this.resourceService = resourceService;
 		this.session = session;
-		this.resourceBasePath = resourceBasePath;
+		this.tagId = tagId;
 		init();
 	}
 
 	@Override
 	protected List<String> getFilteredValues(String filter) {
-		List<String> values = resourceService.getValueList(session,
-				resourceBasePath, filter);
+		List<String> values = resourceService.getRegisteredTagValueList(
+				session, tagId, filter);
 		return values;
 	}
 }

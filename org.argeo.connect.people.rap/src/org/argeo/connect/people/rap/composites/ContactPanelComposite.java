@@ -16,7 +16,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
+import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -518,11 +518,9 @@ public class ContactPanelComposite extends Composite {
 		final Text stateTxt = createRowDataLT(parent, "State", 150);
 		Text countryTxt = createRowDataLT(parent, "Country", 150);
 
-		String countryBP = peopleService
-				.getResourceBasePath(PeopleConstants.RESOURCE_COUNTRY);
 		Session session = CommonsJcrUtils.getSession(entity);
-		final SimpleResourceDropDown countryDD = new SimpleResourceDropDown(
-				peopleService.getResourceService(), session, countryBP,
+		final TagLikeDropDown countryDD = new TagLikeDropDown(
+				session, peopleService.getResourceService(), PeopleConstants.RESOURCE_COUNTRY,
 				countryTxt);
 
 		// final Text geoPointTxt = createRowDataLT(parent, "Geopoint", 200);

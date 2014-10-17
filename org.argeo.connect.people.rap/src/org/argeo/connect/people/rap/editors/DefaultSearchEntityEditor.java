@@ -21,7 +21,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
-import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
+import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.rap.editors.utils.AbstractSearchEntityEditor;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiUtils;
@@ -50,7 +50,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 
 	// Default column
 	private List<PeopleColumnDefinition> colDefs;
-	private SimpleResourceDropDown tagDD;
+	private TagLikeDropDown tagDD;
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
@@ -85,9 +85,9 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 
 		Text tagTxt = createBoldLT(body, "Tag", "",
 				"Select from list to find entities that are categorised with this tag");
-		tagDD = new SimpleResourceDropDown(getPeopleService()
-				.getResourceService(), getSession(), getPeopleService()
-				.getResourceBasePath(PeopleConstants.RESOURCE_TAG), tagTxt);
+		tagDD = new TagLikeDropDown(getSession(), getPeopleService()
+						.getResourceService(),
+				PeopleConstants.RESOURCE_TAG, tagTxt);
 
 		Button goBtn = new Button(body, SWT.PUSH);
 		goBtn.setText("Search");

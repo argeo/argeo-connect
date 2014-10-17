@@ -19,6 +19,10 @@ public interface PeopleConstants {
 	public final static String RESOURCE_COUNTRY = "people:country";
 	public final static String RESOURCE_LANG = "people:language";
 
+	// Known resources IDs
+	public final static String RESOURCE_TYPE_ID_TEMPLATE = "people.resourceId.template";
+	public final static String RESOURCE_TYPE_ID_TAG_LIKE = "people.resourceId.tagLike";
+
 	// Known types
 	public static final List<String> PEOPLE_KNOWN_PARENT_NAMES = asList(
 			//
@@ -61,5 +65,10 @@ public interface PeopleConstants {
 	// String used in the various paths to replace an empty value
 	// Typically /?/john
 	public final static String UNKNOWN_NAME = "?";
+
+	// Import Constants
+	public static final String IMPORT_CATALOGUE_KEY_COL = "Field";
+	public static final String IMPORT_CATALOGUE_VALUES_COL = "Values";
+	public static final String IMPORT_CATALOGUE_VALUES_SEPARATOR = "; ";
 
 }

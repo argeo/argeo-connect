@@ -4,6 +4,7 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 
@@ -13,6 +14,7 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleRapUtils;
@@ -25,7 +27,6 @@ import org.argeo.connect.people.rap.toolkits.HistoryToolkit;
 import org.argeo.connect.people.rap.toolkits.ListToolkit;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
@@ -469,10 +470,12 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				try {
 					if (!btn.getSelection())
 						return;
-					String newValueIso = ResourcesJcrUtils
-							.getLangIsoFromEnLabel(getPeopleService(),
-									getSession(), btn.getText());
 
+					Session session = CommonsJcrUtils.getSession(person);
+					String newValueIso = getPeopleService()
+							.getResourceService().getEncodedTagCodeFromValue(
+									session, PeopleConstants.RESOURCE_COUNTRY,
+									btn.getText());
 					String oldValueIso = null;
 					if (person.hasProperty(PEOPLE_SPOKEN_LANGUAGES)) {
 						Value[] values = person.getProperty(
@@ -527,9 +530,10 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				String isoVal = null;
 				if (values[0] != null)
 					isoVal = values[0].getString();
+				ResourceService rs = getPeopleService().getResourceService();
 				if (isoVal != null
-						&& ResourcesJcrUtils.getLangEnLabelFromIso(
-								getPeopleService(), getSession(), isoVal)
+						&& rs.getEncodedTagValue(getSession(),
+								PeopleConstants.RESOURCE_COUNTRY, isoVal)
 								.equals(button.getText()))
 					tmp = true;
 			}

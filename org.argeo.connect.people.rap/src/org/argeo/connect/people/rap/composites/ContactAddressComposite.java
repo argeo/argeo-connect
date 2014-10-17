@@ -13,13 +13,12 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
+import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
-import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -239,12 +238,10 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					"Country", "", 110);
 
 			// The country drop down
-			String countryBP = peopleService
-					.getResourceBasePath(PeopleConstants.RESOURCE_COUNTRY);
 			Session session = CommonsJcrUtils.getSession(contactNode);
-			final SimpleResourceDropDown countryDD = new SimpleResourceDropDown(
-					peopleService.getResourceService(), session, countryBP,
-					countryTxt);
+			final TagLikeDropDown countryDD = new TagLikeDropDown(session,
+					peopleService.getResourceService(),
+					PeopleConstants.RESOURCE_COUNTRY, countryTxt);
 
 			final Text geoPointTxt = PeopleRapUtils.createRDText(toolkit,
 					parent, "Geopoint", "", 0);
@@ -279,13 +276,15 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					PropertyType.STRING);
 
 			// specific for drop downs
-			String countryVal = CommonsJcrUtils.get(contactNode,
+			String countryIso = CommonsJcrUtils.get(contactNode,
 					PeopleNames.PEOPLE_COUNTRY);
-			if (CommonsJcrUtils.checkNotEmptyString(countryVal))
-				countryDD.reset(ResourcesJcrUtils.getCountryEnLabelFromIso(
-						peopleService, session, countryVal));
+			if (CommonsJcrUtils.checkNotEmptyString(countryIso)) {
+				String countryVal = peopleService.getResourceService()
+						.getEncodedTagValue(session,
+								PeopleConstants.RESOURCE_COUNTRY, countryIso);
+				countryDD.reset(countryVal);
+			}
 			addCountryTxtModifyListener(formPart, countryTxt);
-
 		}
 	}
 
@@ -301,10 +300,10 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 				String label = text.getText();
 				if (CommonsJcrUtils.isEmptyString(label))
 					return;
-
-				String iso = ResourcesJcrUtils.getCountryIsoFromEnLabel(
-						peopleService, CommonsJcrUtils.getSession(contactNode),
-						label);
+				Session session = CommonsJcrUtils.getSession(contactNode);
+				String iso = peopleService.getResourceService()
+						.getEncodedTagCodeFromValue(session,
+								PeopleConstants.RESOURCE_COUNTRY, label);
 				if (CommonsJcrUtils.checkNotEmptyString(iso)
 						&& CommonsJcrUtils.setJcrProperty(contactNode,
 								PeopleNames.PEOPLE_COUNTRY,

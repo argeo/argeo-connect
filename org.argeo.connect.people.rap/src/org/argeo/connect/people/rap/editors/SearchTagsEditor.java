@@ -25,6 +25,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
@@ -73,8 +74,10 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 	/* DEPENDENCY INJECTION */
 	private Session session;
-	private PeopleWorkbenchService peopleWorkbenchService;
 	private PeopleService peopleService;
+	private ResourceService resourceService;
+
+	private PeopleWorkbenchService peopleWorkbenchService;
 
 	// Context
 	private String basePath;
@@ -98,17 +101,19 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		basePath = ((SearchNodeEditorInput) getEditorInput()).getBasePath();
 		entityType = ((SearchNodeEditorInput) getEditorInput()).getNodeType();
 
-		// TODO this info should be stored in the parent path
-		String testStr = basePath.substring(basePath.lastIndexOf(":") + 1);
-		if ("tags".equals(testStr)) {
-			propertyName = PeopleNames.PEOPLE_TAGS;
-			resourceType = NodeType.NT_UNSTRUCTURED;
-		} else if ("mailingLists".equals(testStr)) {
-			propertyName = PeopleNames.PEOPLE_MAILING_LISTS;
-			resourceType = PeopleTypes.PEOPLE_MAILING_LIST;
-		} else
-			throw new PeopleException("Unknown tag like property at base path "
-					+ basePath);
+		this.resourceService = peopleService.getResourceService();
+
+		// // TODO this info should be stored in the parent path
+		// String testStr = basePath.substring(basePath.lastIndexOf(":") + 1);
+		// if ("tags".equals(testStr)) {
+		// propertyName = PeopleNames.PEOPLE_TAGS;
+		// resourceType = NodeType.NT_UNSTRUCTURED;
+		// } else if ("mailingLists".equals(testStr)) {
+		// propertyName = PeopleNames.PEOPLE_MAILING_LISTS;
+		// resourceType = PeopleTypes.PEOPLE_MAILING_LIST;
+		// } else
+		// throw new PeopleException("Unknown tag like property at base path "
+		// + basePath);
 
 		colDefs.add(new PeopleColumnDefinition(entityType, Property.JCR_TITLE,
 				PropertyType.STRING, "Title", new JcrRowHtmlLabelProvider(
@@ -162,9 +167,8 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 						e.display.getActiveShell(), "Create");
 				if (Dialog.OK == dialog.open()) {
 					try {
-						Node tag = peopleService.getResourceService().registerTag(
-								session, resourceType, basePath,
-								dialog.getTitle());
+						Node tag = resourceService.registerTag(session,
+								resourceType, basePath, dialog.getTitle());
 						if (tag.isNodeType(NodeType.MIX_VERSIONABLE))
 							CommonsJcrUtils.saveAndCheckin(tag);
 						else
@@ -207,8 +211,8 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 							.getValueFactory().createValue("*" + token + "*"));
 					Constraint currC = factory.fullTextSearch(
 							source.getSelectorName(), null, so);
-					defaultC = CommonsJcrUtils
-							.localAnd(factory, defaultC, currC);
+					defaultC = CommonsJcrUtils.localAnd(factory, defaultC,
+							currC);
 				}
 			}
 
@@ -243,9 +247,11 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		@Override
 		public String getText(Object element) {
 			Node currNode = CommonsJcrUtils.getNode((Row) element, entityType);
-			long count = peopleService.getResourceService().countMembers(currNode,
-					peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
-					propertyName);
+
+			long count = resourceService.countMembers(currNode);
+			// peopleService.getResourceService().countMembers(currNode,
+			// peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
+			// propertyName);
 			return "" + count;
 		}
 	}
@@ -283,10 +289,9 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 	}
 
 	private boolean canDelete(Node currNode) {
-		long currCount = peopleService.getResourceService().countMembers(currNode,
-				peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
-				propertyName);
-
+		long currCount = resourceService.countMembers(currNode);
+		// currNode, peopleService.getBasePath(null),
+		// PeopleTypes.PEOPLE_ENTITY, propertyName);
 		return canEdit() && currCount == 0;
 	}
 

@@ -172,9 +172,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 
 		final ColumnLabelProvider mlTitleLP = new TagLabelProvider(
 				peopleService.getResourceService(),
-				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE,
-				peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
-				PEOPLE_MAILING_LISTS);
+				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE);
 		titleROLbl.setText(mlTitleLP.getText(mailingList));
 		titleROLbl
 				.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));

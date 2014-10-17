@@ -154,9 +154,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		titleROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		final ColumnLabelProvider groupTitleLP = new TagLabelProvider(
 				peopleService.getResourceService(),
-				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE,
-				peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
-				PEOPLE_TAGS);
+				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE);
 		titleROLbl.setText(groupTitleLP.getText(getNode()));
 		titleROLbl
 				.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));

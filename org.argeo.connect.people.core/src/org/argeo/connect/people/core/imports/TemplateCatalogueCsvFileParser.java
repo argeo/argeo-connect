@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.util.CsvParserWithLinesAsMap;
@@ -18,14 +19,11 @@ import org.argeo.util.CsvParserWithLinesAsMap;
  * 
  * Found values are stored in a multi-String property with this name
  **/
-public class InstanceValueCatalogCsvFileParser extends CsvParserWithLinesAsMap {
+public class TemplateCatalogueCsvFileParser extends CsvParserWithLinesAsMap {
 
-	private final String KEY_COL = "Field";
-	private final String VALUES_COL = "Values";
-	private final String SEPARATOR = "; ";
 	private final Node node;
 
-	public InstanceValueCatalogCsvFileParser(Node node) {
+	public TemplateCatalogueCsvFileParser(Node node) {
 		super();
 		this.node = node;
 	}
@@ -33,10 +31,10 @@ public class InstanceValueCatalogCsvFileParser extends CsvParserWithLinesAsMap {
 	@Override
 	protected void processLine(Integer lineNumber, Map<String, String> line) {
 		try {
-			String propName = line.get(KEY_COL);
-			String valuesStr = line.get(VALUES_COL);
+			String propName = line.get(PeopleConstants.IMPORT_CATALOGUE_KEY_COL);
+			String valuesStr = line.get(PeopleConstants.IMPORT_CATALOGUE_VALUES_COL);
 			String[] values = CommonsJcrUtils.parseAndClean(valuesStr,
-					SEPARATOR, true);
+					PeopleConstants.IMPORT_CATALOGUE_VALUES_SEPARATOR, true);
 			node.setProperty(propName, values);
 		} catch (RepositoryException e) {
 			throw new PeopleException("Cannot process line " + lineNumber + " "

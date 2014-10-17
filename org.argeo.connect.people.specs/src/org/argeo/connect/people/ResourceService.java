@@ -16,6 +16,13 @@ import javax.jcr.Session;
  */
 public interface ResourceService {
 
+	/**
+	 * Initialise the current repository with parent nodes for known resources
+	 * the corresponding admin session is not saved.
+	 **/
+	public void initialiseResources(Session adminSession)
+			throws RepositoryException;
+
 	/* LABEL FOR NODE TYPES AND PROPERTY NAMES MANAGEMENT */
 	/**
 	 * Returns a canonical English label for each of the JCR Property or node
@@ -51,8 +58,8 @@ public interface ResourceService {
 	 * @param filter
 	 * @return
 	 */
-	public List<String> getPossibleValues(Session session, String templateId,
-			String propertyName, String filter);
+	public List<String> getTemplateCatalogue(Session session,
+			String templateId, String propertyName, String filter);
 
 	/**
 	 * Returns the predefined possible English values as defined in the passed
@@ -68,7 +75,7 @@ public interface ResourceService {
 	 * @param filter
 	 * @return
 	 */
-	public List<String> getPossibleValues(Node templateNode,
+	public List<String> getTemplateCatalogue(Node templateNode,
 			String propertyName, String filter);
 
 	/**
@@ -156,7 +163,7 @@ public interface ResourceService {
 	 * @return
 	 */
 	public Node getTagLikeResourceParent(Session session, String tagId);
-	
+
 	/**
 	 * Register a new tag if such a tag does not exist, does nothing otherwise.
 	 * Corresponding session is not saved
@@ -181,6 +188,10 @@ public interface ResourceService {
 	 * 
 	 * A trim() is applied on the passed tagValue before it is stored
 	 * 
+	 * TODO also make a check if a tag already has such a value and prevent
+	 * creation in this case. It is not blocker yet because we only use encode
+	 * tags for country and languages that should not be manually updated
+	 * 
 	 * @param session
 	 * @param tagId
 	 * @param tagCode
@@ -201,13 +212,39 @@ public interface ResourceService {
 	public Node getRegisteredTag(Session session, String tagId, String tag);
 
 	/**
-	 * Retrieve the instance node given its value or code if it is an encodedTag
-	 * or null if such a tag has not yet been registered
+	 * Retrieves the instance node given its value or code if it is an
+	 * encodedTag or null if such a tag has not yet been registered
 	 * 
 	 * Comparison is case insensitive and a trim() is applied on the passed
 	 * String for not encoded tag
 	 */
 	public Node getRegisteredTag(Node tagInstanceParent, String tag);
+
+	/**
+	 * Retrieves the value of an encoded tag or null if such a tag has not yet
+	 * been registered
+	 */
+	public String getEncodedTagValue(Session session, String tagId, String code);
+
+	/**
+	 * Retrieves the code of an encoded tag given its English value or null if
+	 * no such tag exists.
+	 * 
+	 * WARNING: if two tags have the same value first found code will be
+	 * returned see {@link registerTag(Session session, String tagId, String
+	 * tagCode, String tagValue)}
+	 */
+	public String getEncodedTagCodeFromValue(Session session, String tagId,
+			String value);
+
+	/**
+	 * Shortcut to retrieve a string that concatenates the corresponding values
+	 * of a multi value property that refers to multiple encoded tags
+	 * 
+	 * @return
+	 */
+	public String getEncodedTagValuesAsString(String tagId, Node taggedNode,
+			String propertyName, String separator);
 
 	/**
 	 * Change the value of an already registered tag that does not rely on a
@@ -256,9 +293,8 @@ public interface ResourceService {
 	 * with a label that is also the code. For the time being, this must be
 	 * later manually fixed via the system UI.
 	 */
-	public void refreshKnownTags(Session session, String tagId);	
-	
-	
+	public void refreshKnownTags(Session session, String tagId);
+
 	/**
 	 * Browses the repository using the parameters stored in the tagParent node
 	 * and creates a new tag instance for all new value found in the taggable
@@ -288,67 +324,66 @@ public interface ResourceService {
 	 */
 	public long countMembers(Node tag);
 
-	/* TODO LEGACY - remove the below methods */
-	/** Count members that have such a tag in the taggable sub tree */
-	@Deprecated
-	public long countMembers(Node tag, String tagableParentPath,
-			String tagableType, String tagPropName);
-
-	/**
-	 * Unregister an existing tag and remove all references to this tag on all
-	 * nodes under the tagableParentPath that have this tag
-	 */
-	@Deprecated
-	public void unregisterTag(Session session, String tagParentPath,
-			String tag, String tagableParentPath);
-
-	/**
-	 * @param session
-	 *            with write rights
-	 * @param resourceNodeType
-	 *            The nodeType of the cached instance if needed (used for
-	 *            instance for the mailing lists)
-	 * @param resourceInstancesParentPath
-	 *            the application specific path to the parent of all cached
-	 *            instance for this tag-like property
-	 * @param taggableNodeType
-	 *            the NodeType of the taggable object for instance people:base
-	 * @param tagPropName
-	 *            the multi-value property of the taggable node: for instance
-	 *            people:tags
-	 * @param taggableParentPath
-	 *            reduce search of taggable objects in a sub tree of the
-	 *            repository
-	 */
-	@Deprecated
-	public void refreshKnownTags(Session session, String resourceNodeType,
-			String resourceInstancesParentPath, String taggableNodeType,
-			String tagPropName, String taggableParentPath);
-
-	/**
-	 * Change the title (e.g. the value that is stored in the various
-	 * corresponding multi-value property) of an already registered tag. It also
-	 * updates this value in all business objects of the repository that have
-	 * this tag.
-	 * 
-	 * TODO do this in a transaction and revert if the process is unsuccessful.
-	 * 
-	 */
-	@Deprecated
-	public boolean updateTagTitle(Node tagInstance, String resourceType,
-			String tagParentPath, String tag, String taggableNodeType,
-			String tagPropName, String taggableParentPath)
-			throws RepositoryException;
-
-	@Deprecated
-	public List<String> getValueList(Session session, String basePath,
-			String filter);
-
-	@Deprecated
-	public List<String> getValueList(Session session, String nodeType,
-			String basePath, String filter);
-
-	@Deprecated
-	public NodeIterator getTaggedEntities(Session session, String nodeType,
-			String parentPath, String propertyName, String value);
+	// /** Count members that have such a tag in the taggable sub tree */
+	// @Deprecated
+	// public long countMembers(Node tag, String tagableParentPath,
+	// String tagableType, String tagPropName);
+	//
+	// /**
+	// * Unregister an existing tag and remove all references to this tag on all
+	// * nodes under the tagableParentPath that have this tag
+	// */
+	// @Deprecated
+	// public void unregisterTag(Session session, String tagParentPath,
+	// String tag, String tagableParentPath);
+	//
+	// /**
+	// * @param session
+	// * with write rights
+	// * @param resourceNodeType
+	// * The nodeType of the cached instance if needed (used for
+	// * instance for the mailing lists)
+	// * @param resourceInstancesParentPath
+	// * the application specific path to the parent of all cached
+	// * instance for this tag-like property
+	// * @param taggableNodeType
+	// * the NodeType of the taggable object for instance people:base
+	// * @param tagPropName
+	// * the multi-value property of the taggable node: for instance
+	// * people:tags
+	// * @param taggableParentPath
+	// * reduce search of taggable objects in a sub tree of the
+	// * repository
+	// */
+	// @Deprecated
+	// public void refreshKnownTags(Session session, String resourceNodeType,
+	// String resourceInstancesParentPath, String taggableNodeType,
+	// String tagPropName, String taggableParentPath);
+	//
+	// /**
+	// * Change the title (e.g. the value that is stored in the various
+	// * corresponding multi-value property) of an already registered tag. It
+	// also
+	// * updates this value in all business objects of the repository that have
+	// * this tag.
+	// *
+	// *
+	// */
+	// @Deprecated
+	// public boolean updateTagTitle(Node tagInstance, String resourceType,
+	// String tagParentPath, String tag, String taggableNodeType,
+	// String tagPropName, String taggableParentPath)
+	// throws RepositoryException;
+	//
+	// @Deprecated
+	// public List<String> getValueList(Session session, String basePath,
+	// String filter);
+	//
+	// @Deprecated
+	// public List<String> getValueList(Session session, String nodeType,
+	// String basePath, String filter);
+	//
+	// @Deprecated
+	// public NodeIterator getTaggedEntities(Session session, String nodeType,
+	// String parentPath, String propertyName, String value);
 }

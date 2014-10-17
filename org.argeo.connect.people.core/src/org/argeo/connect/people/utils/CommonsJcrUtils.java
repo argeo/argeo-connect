@@ -191,9 +191,12 @@ public class CommonsJcrUtils {
 	 * workaround that must be later cleaned
 	 */
 	public static String getLocalJcrItemName(String name) {
-		String prefix = "{http://www.jcp.org/jcr/1.0}";
-		if (name.startsWith(prefix))
-			return "jcr:" + name.substring(prefix.length());
+		String jcr = "{http://www.jcp.org/jcr/1.0}";
+		String nt = "{http://www.jcp.org/jcr/nt/1.0}";
+		if (name.startsWith(jcr))
+			return "jcr:" + name.substring(jcr.length());
+		else if (name.startsWith(nt))
+			return "nt:" + name.substring(nt.length());
 		else
 			throw new PeopleException("Unknown prefix for " + name);
 	}

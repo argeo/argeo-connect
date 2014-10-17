@@ -8,13 +8,13 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeType;
 
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
-import org.argeo.connect.people.utils.ResourcesJcrUtils;
 
 /**
  * Some helper methods to generate html snippets TODO refactor this once the
@@ -214,8 +214,9 @@ public class PeopleUiSnippets {
 		}
 
 		if (CommonsJcrUtils.checkNotEmptyString(country)) {
-			country = ResourcesJcrUtils.getCountryEnLabelFromIso(peopleService,
-					CommonsJcrUtils.getSession(node), country);
+			country = peopleService.getResourceService().getEncodedTagValue(
+					CommonsJcrUtils.getSession(node),
+					PeopleConstants.RESOURCE_COUNTRY, country);
 
 			if (builder.length() > 0)
 				builder.append(", ");
@@ -239,9 +240,9 @@ public class PeopleUiSnippets {
 					builder.append(", ");
 			}
 			if (!CommonsJcrUtils.isEmptyString(country)) {
-				country = ResourcesJcrUtils.getCountryEnLabelFromIso(
-						peopleService, CommonsJcrUtils.getSession(entity),
-						country);
+				country = peopleService.getResourceService()
+						.getEncodedTagValue(CommonsJcrUtils.getSession(entity),
+								PeopleConstants.RESOURCE_COUNTRY, country);
 				builder.append(country);
 			}
 			builder.append("]");

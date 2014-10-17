@@ -151,9 +151,8 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 							.isNodeCheckedOutByMe(tagLikeInstanceNode);
 			if (isCheckedIn)
 				CommonsJcrUtils.checkout(tagLikeInstanceNode);
-			peopleService.getResourceService().updateTagTitle(tagLikeInstanceNode,
-					resourceNodeType, resourceInstancesParentPath, newTitle,
-					taggableNodeType, tagPropName, taggableParentPath);
+			peopleService.getResourceService().updateTag(tagLikeInstanceNode,
+					newTitle);
 			if (CommonsJcrUtils.checkNotEmptyString(newDesc))
 				tagLikeInstanceNode.setProperty(Property.JCR_DESCRIPTION,
 						newDesc);

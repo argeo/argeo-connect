@@ -23,7 +23,7 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
-import org.argeo.connect.people.rap.composites.dropdowns.SimpleResourceDropDown;
+import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
@@ -234,9 +234,10 @@ public class TagListComposite extends Composite {
 					RowData rd = new RowData(120, SWT.DEFAULT);
 					tagTxt.setLayoutData(rd);
 
-					final SimpleResourceDropDown tagDD = new SimpleResourceDropDown(
-							peopleService.getResourceService(),
-							tagable.getSession(), tagsParentPath, tagTxt);
+					final TagLikeDropDown tagDD = new TagLikeDropDown(
+							tagable.getSession(),
+							peopleService.getResourceService(), PeopleConstants.RESOURCE_TAG,
+							tagTxt);
 
 					tagTxt.addTraverseListener(new TraverseListener() {
 						private static final long serialVersionUID = 1L;

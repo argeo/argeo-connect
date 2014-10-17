@@ -22,19 +22,11 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 	private static final long serialVersionUID = 9156065705311297011L;
 	private final int listType;
 
-	private final String tagableParentPath;
-	private final String tagableType;
-	private final String tagPropName;
 	private final ResourceService tagService;
 
-	public TagLabelProvider(ResourceService tagService, int listType,
-			String tagableParentPath, String tagableType, String tagPropName) {
-		this.tagService = tagService;
+	public TagLabelProvider(ResourceService resourceService, int listType) {
+		this.tagService = resourceService;
 		this.listType = listType;
-		this.tagableParentPath = tagableParentPath;
-		this.tagableType = tagableType;
-		this.tagPropName = tagPropName;
-
 	}
 
 	@Override
@@ -65,8 +57,7 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 		builder.append("<b><big> ");
 		builder.append(CommonsJcrUtils.get(entity, Property.JCR_TITLE));
 		builder.append("</big></b>");
-		long membersNb = tagService.countMembers(entity, tagableParentPath,
-				tagableType, tagPropName);
+		long membersNb = tagService.countMembers(entity);
 		builder.append(" <i>(").append(membersNb).append(" members)</i>");
 
 		// Description
@@ -83,8 +74,7 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 		builder.append("<b>");
 		builder.append(CommonsJcrUtils.get(entity, Property.JCR_TITLE));
 		builder.append("</b>");
-		long membersNb = tagService.countMembers(entity, tagableParentPath,
-				tagableType, tagPropName);
+		long membersNb = tagService.countMembers(entity);
 		builder.append(" <i>(").append(membersNb).append(" members)</i>");
 		return builder.toString();
 	}

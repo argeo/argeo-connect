@@ -8,37 +8,37 @@ import org.argeo.connect.people.ResourceService;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * DropDown that displays the list of possible values for the given property of
- * a given node type business instance
+ * DropDown that displays the list of possible values for a property given a
+ * template ID and a propertyName a given node type business instance
  */
-public class InstancePropertyValuesDropDown extends PeopleAbstractDropDown {
+public class TemplateCatalogueDropDown extends PeopleAbstractDropDown {
 
 	private final Session session;
 	private final ResourceService resourceService;
-	private final String resourcePath;
+	private final String templateId;
 	private final String propertyName;
 
 	/**
-	 * @param peopleService
 	 * @param session
-	 * @param resourcePath
+	 * @param templateId
 	 * @param propertyName
 	 * @param text
+	 * @param peopleService
 	 */
-	public InstancePropertyValuesDropDown(ResourceService resourceService,
-			Session session, String resourcePath, String propertyName, Text text) {
+	public TemplateCatalogueDropDown(Session session,
+			ResourceService resourceService, String templateId, String propertyName, Text text) {
 		super(text);
 		this.resourceService = resourceService;
 		this.session = session;
-		this.resourcePath = resourcePath;
+		this.templateId = templateId;
 		this.propertyName = propertyName;
 		init();
 	}
 
 	@Override
 	protected List<String> getFilteredValues(String filter) {
-		List<String> values = resourceService.getPossibleValues(session,
-				resourcePath, propertyName, filter);
+		List<String> values = resourceService.getTemplateCatalogue(session,
+				templateId, propertyName, filter);
 		return values;
 	}
 }

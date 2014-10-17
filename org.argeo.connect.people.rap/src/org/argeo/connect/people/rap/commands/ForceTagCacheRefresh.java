@@ -1,16 +1,13 @@
 package org.argeo.connect.people.rap.commands;
 
 import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 
 import org.argeo.connect.people.PeopleConstants;
-import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -20,8 +17,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
- * Browse all tagable items of the injected repository and updates the tag cache
- * if needed.
+ * Browse all taggable items of the injected repository and updates the tag
+ * cache if needed.
  */
 public class ForceTagCacheRefresh extends AbstractHandler {
 
@@ -45,28 +42,34 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 			return null;
 
 		try {
-			session = repository.login();
-			peopleService.getResourceService().refreshKnownTags(
-					session,
-					NodeType.NT_UNSTRUCTURED,
-					peopleService
-							.getResourceBasePath(PeopleConstants.RESOURCE_TAG),
-					PeopleTypes.PEOPLE_BASE, PeopleNames.PEOPLE_TAGS,
-					peopleService.getBasePath(null));
+			session = CommonsJcrUtils.login(repository);
+			peopleService.getResourceService().refreshKnownTags(session,
+					PeopleConstants.RESOURCE_TAG);
+			//
+			//
+			// session,
+			// NodeType.NT_UNSTRUCTURED,
+			// peopleService
+			// .getResourceBasePath(PeopleConstants.RESOURCE_TAG),
+			// PeopleTypes.PEOPLE_BASE, PeopleNames.PEOPLE_TAGS,
+			// peopleService.getBasePath(null));
 
-			peopleService
-					.getResourceService()
-					.refreshKnownTags(
-							session,
-							PeopleTypes.PEOPLE_MAILING_LIST,
-							peopleService
-									.getResourceBasePath(PeopleTypes.PEOPLE_MAILING_LIST),
-							PeopleTypes.PEOPLE_BASE,
-							PeopleNames.PEOPLE_MAILING_LISTS,
-							peopleService.getBasePath(null));
+			peopleService.getResourceService().refreshKnownTags(session,
+					PeopleTypes.PEOPLE_MAILING_LIST);
+			//
+			// peopleService
+			// .getResourceService()
+			// .refreshKnownTags(
+			// session,
+			// PeopleTypes.PEOPLE_MAILING_LIST,
+			// peopleService
+			// .getResourceBasePath(PeopleTypes.PEOPLE_MAILING_LIST),
+			// PeopleTypes.PEOPLE_BASE,
+			// PeopleNames.PEOPLE_MAILING_LISTS,
+			// peopleService.getBasePath(null));
 
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to log in the repository", e);
+			// } catch (RepositoryException e) {
+			// throw new PeopleException("Unable to log in the repository", e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}
