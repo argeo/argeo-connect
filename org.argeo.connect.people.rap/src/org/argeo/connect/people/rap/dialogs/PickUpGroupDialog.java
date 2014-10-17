@@ -100,9 +100,10 @@ public class PickUpGroupDialog extends TrayDialog {
 	class MySelectionChangedListener implements ISelectionChangedListener {
 		@Override
 		public void selectionChanged(SelectionChangedEvent event) {
-			if (event.getSelection().isEmpty())
+			if (event.getSelection().isEmpty()){
+				selectedNode = null;
 				return;
-
+			}
 			Object obj = ((IStructuredSelection) event.getSelection())
 					.getFirstElement();
 			if (obj instanceof Node) {

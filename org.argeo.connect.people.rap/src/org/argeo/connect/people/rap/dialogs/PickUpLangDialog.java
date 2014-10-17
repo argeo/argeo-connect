@@ -60,7 +60,7 @@ public class PickUpLangDialog extends TrayDialog {
 
 	private List<ColumnDefinition> colDefs = new ArrayList<ColumnDefinition>();
 	{ // By default, it displays only title
-		colDefs.add(new ColumnDefinition(null, PeopleNames.PEOPLE_ISO_CODE,
+		colDefs.add(new ColumnDefinition(null, PeopleNames.PEOPLE_CODE,
 				PropertyType.STRING, "Iso Code", 100));
 		colDefs.add(new ColumnDefinition(null, Property.JCR_TITLE,
 				PropertyType.STRING, "Label", 300));
@@ -115,26 +115,29 @@ public class PickUpLangDialog extends TrayDialog {
 		@Override
 		public void selectionChanged(SelectionChangedEvent event) {
 			if (event.getSelection().isEmpty())
-				return;
-
-			Object obj = ((IStructuredSelection) event.getSelection())
-					.getFirstElement();
-			if (obj instanceof Node) {
-				selectedNode = (Node) obj;
+				selectedNode = null;
+			else {
+				Object obj = ((IStructuredSelection) event.getSelection())
+						.getFirstElement();
+				if (obj instanceof Node) {
+					selectedNode = (Node) obj;
+				}
 			}
 		}
 	}
 
 	class MyDoubleClickListener implements IDoubleClickListener {
 		public void doubleClick(DoubleClickEvent evt) {
-			if (evt.getSelection().isEmpty())
+			if (evt.getSelection().isEmpty()) {
+				selectedNode = null;
 				return;
-
-			Object obj = ((IStructuredSelection) evt.getSelection())
-					.getFirstElement();
-			if (obj instanceof Node) {
-				selectedNode = (Node) obj;
-				okPressed();
+			} else {
+				Object obj = ((IStructuredSelection) evt.getSelection())
+						.getFirstElement();
+				if (obj instanceof Node) {
+					selectedNode = (Node) obj;
+					okPressed();
+				}
 			}
 		}
 	}

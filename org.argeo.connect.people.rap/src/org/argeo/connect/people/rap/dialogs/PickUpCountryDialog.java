@@ -114,8 +114,10 @@ public class PickUpCountryDialog extends TrayDialog {
 	class MySelectionChangedListener implements ISelectionChangedListener {
 		@Override
 		public void selectionChanged(SelectionChangedEvent event) {
-			if (event.getSelection().isEmpty())
+			if (event.getSelection().isEmpty()) {
+				selectedNode = null;
 				return;
+			}
 
 			Object obj = ((IStructuredSelection) event.getSelection())
 					.getFirstElement();
@@ -127,8 +129,10 @@ public class PickUpCountryDialog extends TrayDialog {
 
 	class MyDoubleClickListener implements IDoubleClickListener {
 		public void doubleClick(DoubleClickEvent evt) {
-			if (evt.getSelection().isEmpty())
+			if (evt.getSelection().isEmpty()) {
+				selectedNode = null;
 				return;
+			}
 
 			Object obj = ((IStructuredSelection) evt.getSelection())
 					.getFirstElement();
