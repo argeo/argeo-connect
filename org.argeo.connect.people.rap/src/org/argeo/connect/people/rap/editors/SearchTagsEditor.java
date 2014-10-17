@@ -39,6 +39,7 @@ import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.rap.wizards.EditTagWizard;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -348,6 +349,12 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 	@Override
 	public void setFocus() {
 		filterTxt.setFocus();
+	}
+
+	@Override
+	public void dispose() {
+		JcrUtils.logoutQuietly(session);
+		super.dispose();
 	}
 
 	/* DEPENDENCY INJECTION */
