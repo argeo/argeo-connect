@@ -519,11 +519,11 @@ public class ContactPanelComposite extends Composite {
 		Text countryTxt = createRowDataLT(parent, "Country", 150);
 
 		Session session = CommonsJcrUtils.getSession(entity);
-		final TagLikeDropDown countryDD = new TagLikeDropDown(
-				session, peopleService.getResourceService(), PeopleConstants.RESOURCE_COUNTRY,
-				countryTxt);
+		final TagLikeDropDown countryDD = new TagLikeDropDown(session,
+				peopleService.getResourceService(),
+				PeopleConstants.RESOURCE_COUNTRY, countryTxt);
 
-		// final Text geoPointTxt = createRowDataLT(parent, "Geopoint", 200);
+		final Text geoPointTxt = createRowDataLT(parent, "Geopoint", 200);
 		final Text labelTxt = createRowDataLT(parent, "Label", 120);
 
 		final Button primaryChk = toolkit.createButton(parent, "Primary",
@@ -544,9 +544,8 @@ public class ContactPanelComposite extends Composite {
 				Node node = PeopleJcrUtils.createAddress(peopleService, entity,
 						streetTxt.getText(), street2Txt.getText(),
 						zipTxt.getText(), cityTxt.getText(),
-						stateTxt.getText(), countryDD.getText(), null,
-						isPrimary, nature, cat, label);
-				// geoPointTxt.getText()
+						stateTxt.getText(), countryDD.getText(),
+						geoPointTxt.getText(), isPrimary, nature, cat, label);
 				PeopleJcrUtils.updateDisplayAddress(node);
 				formPart.markDirty();
 				formPart.refresh();
@@ -568,9 +567,9 @@ public class ContactPanelComposite extends Composite {
 					Node node = PeopleJcrUtils.createAddress(peopleService,
 							entity, streetTxt.getText(), street2Txt.getText(),
 							zipTxt.getText(), cityTxt.getText(),
-							stateTxt.getText(), countryDD.getText(), null,
-							isPrimary, nature, cat, label);
-					// geoPointTxt.getText()
+							stateTxt.getText(), countryDD.getText(),
+							geoPointTxt.getText(), isPrimary, nature, cat,
+							label);
 					PeopleJcrUtils.updateDisplayAddress(node);
 					formPart.markDirty();
 					formPart.refresh();
@@ -584,7 +583,7 @@ public class ContactPanelComposite extends Composite {
 		cityTxt.addTraverseListener(travList);
 		stateTxt.addTraverseListener(travList);
 		countryTxt.addTraverseListener(travList);
-		// geoPointTxt.addTraverseListener(travList);
+		geoPointTxt.addTraverseListener(travList);
 		labelTxt.addTraverseListener(travList);
 		catCmb.addTraverseListener(travList);
 
