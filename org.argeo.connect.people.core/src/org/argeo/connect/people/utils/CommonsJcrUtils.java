@@ -54,9 +54,7 @@ public class CommonsJcrUtils {
 		}
 	}
 
-	/**
-	 * Call {@link Node#getSession()} without exceptions
-	 */
+	/** Centralizes exception management to call {@link Node#getSession()} */
 	public static Session getSession(Node node) {
 		try {
 			return node.getSession();
@@ -66,14 +64,22 @@ public class CommonsJcrUtils {
 		}
 	}
 
-	/**
-	 * Call {@link Node#getIdentifier()} without exceptions
-	 */
+	/** Centralizes exception management to call {@link Node#getIdentifier()} */
 	public static String getIdentifier(Node node) {
 		try {
 			return node.getIdentifier();
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to retrieve identifier for node "
+					+ node, re);
+		}
+	}
+
+	/** Centralizes exception management to call {@link Node#getPath()} */
+	public static String getPath(Node node) {
+		try {
+			return node.getPath();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to retrieve path for node "
 					+ node, re);
 		}
 	}
@@ -92,9 +98,7 @@ public class CommonsJcrUtils {
 		}
 	}
 
-	/**
-	 * Centralizes exception management to call {@link Node#getParent()}
-	 */
+	/** Centralizes exception management to call {@link Node#getParent()} */
 	public static Node getParent(Node child) {
 		try {
 			return child.getParent();

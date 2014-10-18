@@ -18,8 +18,8 @@ public interface PeopleTypes {
 
 	// The two below types are useless and should be removed, use
 	// people:encodedTagInstance instead
-	public final static String PEOPLE_ISO_COUNTRY = "people:isoCountry";
-	public final static String PEOPLE_ISO_LANGUAGE = "people:isoLanguage";
+	// public final static String PEOPLE_ISO_COUNTRY = "people:isoCountry";
+	// public final static String PEOPLE_ISO_LANGUAGE = "people:isoLanguage";
 
 	// implement this ... or not ??
 	// public final static String PEOPLE_TAG = "people:tag";

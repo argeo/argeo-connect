@@ -47,7 +47,7 @@ public interface PeopleNames {
 	public final static String PEOPLE_LANG = "people:lang";
 	public final static String PEOPLE_PICTURE = "people:picture";
 	// the iso code of a given resource
-	public final static String PEOPLE_ISO_CODE = "people:isoCode";
+	// public final static String PEOPLE_ISO_CODE = "people:isoCode";
 	// Reference an other entity using the implementation specific UID
 	public final static String PEOPLE_REF_UID = "people:refUid";
 	// Primary boolean flag

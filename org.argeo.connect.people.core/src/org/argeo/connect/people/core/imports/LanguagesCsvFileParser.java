@@ -14,7 +14,11 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.util.CsvParserWithLinesAsMap;
 
-/** Base utility to load the iso language list in an empty repository **/
+/**
+ * Base utility to load the iso language list in an empty repository
+ * 
+ * @deprecated
+ * **/
 public class LanguagesCsvFileParser extends CsvParserWithLinesAsMap {
 	private final static String EN_SHORT_NAME = "Language name";
 	private final static String ISO_CODE = "639-1";
@@ -36,9 +40,9 @@ public class LanguagesCsvFileParser extends CsvParserWithLinesAsMap {
 			String relPath = isoCode.substring(0, 1) + "/" + isoCode;
 			if (!adminSession.nodeExists(langs.getPath() + "/" + relPath)) {
 				Node lang = JcrUtils.mkdirs(langs, relPath,
-						PeopleTypes.PEOPLE_ISO_LANGUAGE,
+						PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE,
 						NodeType.NT_UNSTRUCTURED);
-				lang.setProperty(PeopleNames.PEOPLE_ISO_CODE, isoCode);
+				lang.setProperty(PeopleNames.PEOPLE_CODE, isoCode);
 				lang.setProperty(Property.JCR_TITLE, enName);
 			}
 		} catch (RepositoryException e) {

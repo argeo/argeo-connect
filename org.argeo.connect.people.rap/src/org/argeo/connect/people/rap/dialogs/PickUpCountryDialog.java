@@ -60,7 +60,7 @@ public class PickUpCountryDialog extends TrayDialog {
 
 	private List<ColumnDefinition> colDefs = new ArrayList<ColumnDefinition>();
 	{ // By default, it displays only title
-		colDefs.add(new ColumnDefinition(null, PeopleNames.PEOPLE_ISO_CODE,
+		colDefs.add(new ColumnDefinition(null, PeopleNames.PEOPLE_CODE,
 				PropertyType.STRING, "Iso Code", 100));
 		colDefs.add(new ColumnDefinition(null, Property.JCR_TITLE,
 				PropertyType.STRING, "Label", 240));
@@ -81,11 +81,14 @@ public class PickUpCountryDialog extends TrayDialog {
 	protected Control createDialogArea(Composite parent) {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
+		Node langTagParent = peopleService.getResourceService()
+				.getTagLikeResourceParent(session,
+						PeopleConstants.RESOURCE_LANG);
+
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
 		tableCmp = new SimpleJcrTableComposite(dialogArea, style, session,
-				peopleService
-						.getResourceBasePath(PeopleConstants.RESOURCE_COUNTRY),
-				PeopleTypes.PEOPLE_ISO_COUNTRY, colDefs, true, false);
+				CommonsJcrUtils.getPath(langTagParent),
+				PeopleTypes.PEOPLE_TAG_INSTANCE, colDefs, true, false);
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		// Add listeners
@@ -100,8 +103,7 @@ public class PickUpCountryDialog extends TrayDialog {
 
 	public String getSelected() {
 		if (selectedNode != null)
-			return CommonsJcrUtils.get(selectedNode,
-					PeopleNames.PEOPLE_ISO_CODE);
+			return CommonsJcrUtils.get(selectedNode, PeopleNames.PEOPLE_CODE);
 		else
 			return null;
 	}

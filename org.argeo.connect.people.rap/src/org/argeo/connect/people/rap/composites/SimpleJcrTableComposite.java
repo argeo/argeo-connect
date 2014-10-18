@@ -41,6 +41,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
@@ -134,7 +135,9 @@ public class SimpleJcrTableComposite extends Composite implements ArgeoNames {
 		// initialization
 		Composite parent = this;
 		// Main Layout
-		this.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		GridLayout gl = PeopleUiUtils.noSpaceGridLayout();
+		gl.verticalSpacing = 5;
+		this.setLayout(gl);
 		if (hasFilter)
 			createFilterPart(parent);
 		tableViewer = createTableViewer(parent);
