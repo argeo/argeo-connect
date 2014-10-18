@@ -516,13 +516,11 @@ public class ContactPanelComposite extends Composite {
 		final Text zipTxt = createRowDataLT(parent, "Zip code", 60);
 		final Text cityTxt = createRowDataLT(parent, "City", 150);
 		final Text stateTxt = createRowDataLT(parent, "State", 150);
+		// Country: dropdown + text
 		Text countryTxt = createRowDataLT(parent, "Country", 150);
-
-		Session session = CommonsJcrUtils.getSession(entity);
-		final TagLikeDropDown countryDD = new TagLikeDropDown(session,
+		final TagLikeDropDown countryDD = new TagLikeDropDown(CommonsJcrUtils.getSession(entity),
 				peopleService.getResourceService(),
 				PeopleConstants.RESOURCE_COUNTRY, countryTxt);
-
 		final Text geoPointTxt = createRowDataLT(parent, "Geopoint", 200);
 		final Text labelTxt = createRowDataLT(parent, "Label", 120);
 

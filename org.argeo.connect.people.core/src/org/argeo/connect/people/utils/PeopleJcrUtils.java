@@ -656,10 +656,12 @@ public class PeopleJcrUtils implements PeopleNames {
 			if (!CommonsJcrUtils.isEmptyString(country))
 				address.setProperty(PEOPLE_COUNTRY, country);
 
+			if (!CommonsJcrUtils.isEmptyString(geopoint))
+				address.setProperty(PEOPLE_GEOPOINT, geopoint);
+
 			// update primary flag after contact creation
 			if (primary)
 				markAsPrimary(peopleService, parentNode, address);
-
 			return address;
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to add a new address node", re);
