@@ -28,6 +28,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.composites.SimpleJcrTableComposite;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.eclipse.jface.dialogs.TrayDialog;
@@ -38,7 +39,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -81,15 +81,15 @@ public class PickUpCountryDialog extends TrayDialog {
 	protected Control createDialogArea(Composite parent) {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
-		Node langTagParent = peopleService.getResourceService()
+		Node tagParent = peopleService.getResourceService()
 				.getTagLikeResourceParent(session,
-						PeopleConstants.RESOURCE_LANG);
+						PeopleConstants.RESOURCE_COUNTRY);
 
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
 		tableCmp = new SimpleJcrTableComposite(dialogArea, style, session,
-				CommonsJcrUtils.getPath(langTagParent),
-				PeopleTypes.PEOPLE_TAG_INSTANCE, colDefs, true, false);
-		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+				CommonsJcrUtils.getPath(tagParent),
+				PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE, colDefs, true, false);
+		tableCmp.setLayoutData(PeopleUiUtils.fillGridData());
 
 		// Add listeners
 		tableCmp.getTableViewer().addDoubleClickListener(
