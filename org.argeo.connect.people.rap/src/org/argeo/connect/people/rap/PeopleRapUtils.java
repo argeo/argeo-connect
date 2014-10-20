@@ -86,8 +86,13 @@ public class PeopleRapUtils {
 	public static String refreshFormTextWidget(Text text, Node entity,
 			String propName) {
 		String tmpStr = CommonsJcrUtils.get(entity, propName);
-		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
-			text.setText(tmpStr);
+		// Check if there is no side effect.
+		// Commented out to manage the following case in a film header:
+		// Primary Title has a latin pronunciation,
+		// we define another primary title that has no such value,
+		// the text must be reset to blank.
+		// if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+		text.setText(tmpStr);
 		text.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
 		return tmpStr;
 	}
@@ -400,7 +405,7 @@ public class PeopleRapUtils {
 	/**
 	 * Simply create a link to open a search editor with the given parameters
 	 * 
-	 * @param peopleUiService
+	 * @param peopleWorkbenchService
 	 * @param parent
 	 * @param label
 	 * @param nodeType
@@ -408,8 +413,9 @@ public class PeopleRapUtils {
 	 * @return
 	 */
 	public static Link createOpenSearchEditorLink(
-			final PeopleWorkbenchService peopleUiService, Composite parent,
-			final String label, final String nodeType, final String basePath) {
+			final PeopleWorkbenchService peopleWorkbenchService,
+			Composite parent, final String label, final String nodeType,
+			final String basePath) {
 		Link link = new Link(parent, SWT.NONE);
 		link.setText("<a>" + label + "</a>");
 		link.addSelectionListener(new SelectionAdapter() {
@@ -422,7 +428,7 @@ public class PeopleRapUtils {
 				params.put(OpenSearchEntityEditor.PARAM_EDITOR_NAME, label);
 				params.put(OpenSearchEntityEditor.PARAM_BASE_PATH, basePath);
 				CommandUtils.callCommand(
-						peopleUiService.getOpenSearchEntityEditorCmdId(),
+						peopleWorkbenchService.getOpenSearchEntityEditorCmdId(),
 						params);
 			}
 		});
@@ -494,7 +500,7 @@ public class PeopleRapUtils {
 
 		// We add a blank space before to workaround the cropping of the word
 		// first letter in some OS/Browsers (typically MAC/Firefox 31 )
-		Label label = toolkit.createLabel(parent, " "+ value, SWT.RIGHT);
+		Label label = toolkit.createLabel(parent, " " + value, SWT.RIGHT);
 		label.setFont(EclipseUiUtils.getBoldFont(parent));
 		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 		return label;
