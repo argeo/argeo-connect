@@ -35,7 +35,7 @@ public class GetCalcExport extends AbstractHandler {
 			"yyyy-MM-dd_HH-mm");
 
 	/* DEPENDENCY INJECTION */
-	private PeopleWorkbenchService peopleUiService;
+	private PeopleWorkbenchService peopleWorkbenchService;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		String exportId = event.getParameter(PARAM_EXPORT_ID);
@@ -66,7 +66,7 @@ public class GetCalcExport extends AbstractHandler {
 					params.put(OpenFile.PARAM_FILE_URI,
 							"file://" + tmpFile.getAbsolutePath());
 					CommandUtils.callCommand(
-							peopleUiService.getOpenFileCmdId(), params);
+							peopleWorkbenchService.getOpenFileCmdId(), params);
 				}
 			} else
 				throw new PeopleException(iwp.toString()
@@ -98,7 +98,7 @@ public class GetCalcExport extends AbstractHandler {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
-		this.peopleUiService = peopleUiService;
+	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 }
