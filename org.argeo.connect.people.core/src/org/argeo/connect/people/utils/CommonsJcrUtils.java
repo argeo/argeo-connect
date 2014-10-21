@@ -740,20 +740,30 @@ public class CommonsJcrUtils {
 	/* INTERNATIONALISATION HELPERS */
 
 	/**
-	 * Concisely get the node for the translation of a property given a language
-	 * and the rel path to corresponding alternative properties.
+	 * Concisely gets the node for the translation of some main properties of
+	 * the current node given a language by default such a name is at
+	 * {@link PeopleNames#PEOPLE_ALT_LANGS}/lang
 	 */
-	public static Node getAltPropertyNode(Node parent, String relPath,
+	public static Node getAltLangNode(Node currentNode, String lang) {
+		return getAltLangNode(currentNode, PeopleNames.PEOPLE_ALT_LANGS, lang);
+	}
+
+	/**
+	 * Concisely gets the node for the translation of some main properties of
+	 * the current node given a language and the name of an intermediary node
+	 * 
+	 * If no rel path is given, we use the default
+	 * {@link PeopleNames#PEOPLE_ALT_LANGS}
+	 */
+	public static Node getAltLangNode(Node currentNode, String relPath,
 			String lang) {
 		try {
-			if (!parent.hasNode(relPath))
+			if (isEmptyString(relPath))
+				relPath = PeopleNames.PEOPLE_ALT_LANGS;
+			if (!currentNode.hasNode(relPath + "/" + lang))
 				return null;
 			else {
-				parent = parent.getNode(relPath);
-				if (parent.hasNode(lang))
-					return parent.getNode(lang);
-				else
-					return null;
+				return currentNode.getNode(relPath + "/" + lang);
 			}
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Cannot get alt property for " + lang, e);
@@ -761,17 +771,50 @@ public class CommonsJcrUtils {
 	}
 
 	/**
-	 * Returns the corresponding sub node for the given language. Create such a
-	 * Node if it does not yet exist. By default it is a nt:unstructured node
-	 * with mix:title mixin
+	 * Returns the corresponding sub node for the given language at default rel
+	 * path * If no rel path is given, we use the default
+	 * {@link PeopleNames#PEOPLE_ALT_LANGS}. It creates such a Node if it does
+	 * not yet exist. By default it is a nt:unstructured node with mix:title
+	 * mixin
 	 * */
-	public static Node getOrCreateAltLanguageNode(Node node, String lang) {
+	// public static Node getOrCreateAltLanguageNode(Node node, String lang) {
+	// return getOrCreateAltLanguageNode(node, PeopleNames.PEOPLE_ALT_LANGS,
+	// lang);
+	// }
+
+	private static Node getOrCreateAltLanguageNode(Node node, String relPath,
+			String lang) {
 		try {
 			Node child = JcrUtils.mkdirs(node.getSession(), node.getPath()
-					+ "/" + PeopleNames.PEOPLE_ALT_LANGS + "/" + lang,
-					NodeType.NT_UNSTRUCTURED, NodeType.NT_UNSTRUCTURED, false);
+					+ "/" + relPath + "/" + lang, NodeType.NT_UNSTRUCTURED,
+					NodeType.NT_UNSTRUCTURED, false);
 			child.addMixin(NodeType.MIX_TITLE);
 			child.addMixin(NodeType.MIX_LANGUAGE);
+			child.setProperty(Property.JCR_LANGUAGE, lang);
+			return child;
+		} catch (RepositoryException e) {
+			throw new PeopleException("Cannot create child for language "
+					+ lang, e);
+		}
+	}
+
+	public static Node getOrCreateAltLanguageNode(Node node, String lang,
+			List<String> mixins) {
+		return getOrCreateAltLanguageNode(node, PeopleNames.PEOPLE_ALT_LANGS,
+				lang, mixins);
+	}
+
+	public static Node getOrCreateAltLanguageNode(Node node, String relPath,
+			String lang, List<String> mixins) {
+		try {
+			Node child = JcrUtils.mkdirs(node.getSession(), node.getPath()
+					+ "/" + relPath + "/" + lang, NodeType.NT_UNSTRUCTURED,
+					NodeType.NT_UNSTRUCTURED, false);
+			child.addMixin(NodeType.MIX_LANGUAGE);
+			if (mixins != null && !mixins.isEmpty())
+				for (String mixin : mixins)
+					child.addMixin(mixin);
+
 			child.setProperty(Property.JCR_LANGUAGE, lang);
 			return child;
 		} catch (RepositoryException e) {
