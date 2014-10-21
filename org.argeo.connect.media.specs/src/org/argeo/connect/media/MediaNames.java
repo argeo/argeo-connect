@@ -35,7 +35,8 @@ public interface MediaNames {
 	public final static String MAP_TITLE_IS_ORIG = "map:titleIsOrig";
 
 	/* SYNOPSES */
-	public final static String MAP_LOG_LINE = "map:logLine";
+	// TODO change this to map:logline
+	public final static String MAP_LOGLINE = "map:logLine";
 	public final static String MAP_SYNOPSIS_CONTENT = "map:synopsisContent";
 	public final static String MAP_SYNOPSIS_CONTENT_SHORT = "map:synopsisContentShort";
 	public final static String MAP_SYNOPSIS_RELATED_BIO = "map:relatedBiography";

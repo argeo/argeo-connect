@@ -512,7 +512,7 @@ public class PeopleRapUtils {
 	 */
 	public static Label createBoldLabel(Composite parent, String value) {
 		Label label = new Label(parent, SWT.RIGHT);
-		label.setText(value);
+		label.setText(" " + value);
 		label.setFont(EclipseUiUtils.getBoldFont(parent));
 		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 		return label;
@@ -525,7 +525,7 @@ public class PeopleRapUtils {
 	public static Label createBoldLabel(Composite parent, String value,
 			int verticalAlign) {
 		Label label = new Label(parent, SWT.RIGHT);
-		label.setText(value);
+		label.setText(" " + value);
 		label.setFont(EclipseUiUtils.getBoldFont(parent));
 		label.setLayoutData(new GridData(SWT.RIGHT, verticalAlign, false, false));
 		return label;
