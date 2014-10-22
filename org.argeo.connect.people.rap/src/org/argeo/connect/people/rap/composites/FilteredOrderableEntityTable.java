@@ -46,8 +46,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
-/** Almost canonic implementation of a table that display entities */
-public class EntityTableComposite extends Composite implements ArgeoNames {
+/** Almost canonical implementation of a table that display entities */
+public class FilteredOrderableEntityTable extends Composite implements ArgeoNames {
 	// private final static Log log =
 	// LogFactory.getLog(EntityTableComposite.class);
 	private static final long serialVersionUID = 1262369448445021926L;
@@ -86,7 +86,7 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 	 *            the style of the table
 	 * @param session
 	 */
-	public EntityTableComposite(Composite parent, int style, Session session) {
+	public FilteredOrderableEntityTable(Composite parent, int style, Session session) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.session = session;
@@ -104,7 +104,7 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 	 * @param addFilter
 	 * @param addSelection
 	 */
-	public EntityTableComposite(Composite parent, int style, Session session,
+	public FilteredOrderableEntityTable(Composite parent, int style, Session session,
 			boolean addFilter, boolean addSelection) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
@@ -122,7 +122,7 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 	 * @param session
 	 * @param colDefs
 	 */
-	public EntityTableComposite(Composite parent, int style, Session session,
+	public FilteredOrderableEntityTable(Composite parent, int style, Session session,
 			List<ColumnDefinition> colDefs) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
@@ -143,7 +143,7 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 	 * @param addFilter
 	 * @param addSelection
 	 */
-	public EntityTableComposite(Composite parent, int style, Session session,
+	public FilteredOrderableEntityTable(Composite parent, int style, Session session,
 			String nodeType, List<ColumnDefinition> colDefs, boolean addFilter,
 			boolean addSelection) {
 		super(parent, SWT.NONE);
@@ -201,13 +201,14 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 			tableStyle = tableStyle | SWT.CHECK;
 
 		Table table = new Table(parent, tableStyle);
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		table.setLayoutData(PeopleUiUtils.fillGridData());
 
 		TableViewer viewer;
 		if (hasSelectionColumn)
 			viewer = new CheckboxTableViewer(table);
 		else
 			viewer = new TableViewer(table);
+
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 
@@ -362,8 +363,10 @@ public class EntityTableComposite extends Composite implements ArgeoNames {
 					defaultC = factory.and(defaultC, currC);
 			}
 		}
-
-		Ordering[] orderings = null;
+		// Entity should normally always be a mix:title
+		Ordering order = factory.ascending(factory.propertyValue(
+				source.getSelectorName(), Property.JCR_TITLE));
+		Ordering[] orderings = { order };
 		QueryObjectModel query = factory.createQuery(source, defaultC,
 				orderings, null);
 		// TODO rather implement a virtual viewer

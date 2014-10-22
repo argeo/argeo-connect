@@ -15,13 +15,12 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 
 /** Utility class that wraps a virtual table viewer to display JCR rows */
-public class PeopleVirtualTableViewer extends Composite implements ArgeoNames {
+public class VirtualRowTableViewer extends Composite implements ArgeoNames {
 	private static final long serialVersionUID = 1L;
 	private TableViewer viewer;
 
@@ -33,7 +32,7 @@ public class PeopleVirtualTableViewer extends Composite implements ArgeoNames {
 	}
 
 	// CONSTRUCTOR
-	public PeopleVirtualTableViewer(Composite parent, int style,
+	public VirtualRowTableViewer(Composite parent, int style,
 			List<PeopleColumnDefinition> columns) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
@@ -65,7 +64,7 @@ public class PeopleVirtualTableViewer extends Composite implements ArgeoNames {
 		// Configure
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		table.setLayoutData(PeopleUiUtils.fillGridData());
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 
 		// Create columns
@@ -95,7 +94,7 @@ public class PeopleVirtualTableViewer extends Composite implements ArgeoNames {
 			// IMPORTANT: don't forget this: an exception will be thrown if a
 			// selected object is not part of the results anymore.
 			viewer.setSelection(null);
-			
+
 			this.elements = (Row[]) newInput;
 		}
 

@@ -18,7 +18,7 @@ package org.argeo.connect.people.rap.dialogs;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
-import org.argeo.connect.people.rap.composites.EntityTableComposite;
+import org.argeo.connect.people.rap.composites.FilteredVirtualEntityTable;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -36,7 +36,7 @@ import org.eclipse.swt.widgets.Shell;
  * Dialog with a filtered list to add reference to some "business" jcr Node.
  * Choosable nodes are all nodes of the NodeType that is given upon creation.
  * This nodeType must inherit from people:base nodeType, so that the created
- * table finds information it expects to display in the table. 
+ * table finds information it expects to display in the table.
  */
 public class PickUpByNodeTypeDialog extends TrayDialog {
 	private static final long serialVersionUID = -2526572299370624808L;
@@ -47,7 +47,7 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 	private Node selectedNode;
 
 	// this page widgets and UI objects
-	private EntityTableComposite tableCmp;
+	private FilteredVirtualEntityTable tableCmp;
 	private final String title;
 
 	public PickUpByNodeTypeDialog(Shell parentShell, String title,
@@ -66,7 +66,7 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-		tableCmp = new EntityTableComposite(dialogArea, style, session,
+		tableCmp = new FilteredVirtualEntityTable(dialogArea, style, session,
 				nodeType, null, true, false);
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 

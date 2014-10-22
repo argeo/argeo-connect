@@ -19,7 +19,7 @@ import javax.jcr.Node;
 import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.composites.EntityTableComposite;
+import org.argeo.connect.people.rap.composites.FilteredVirtualEntityTable;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -34,7 +34,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * Dialog with a filtered list to add reference to some related business entity(ies)
+ * Dialog with a filtered list to add reference to some related business
+ * entity(ies)
  */
 public class PickUpRelatedDialog extends TrayDialog {
 	private static final long serialVersionUID = -2526572299370624808L;
@@ -44,11 +45,11 @@ public class PickUpRelatedDialog extends TrayDialog {
 	private Node selectedNode;
 
 	// this page widgets and UI objects
-	private EntityTableComposite tableCmp;
+	private FilteredVirtualEntityTable tableCmp;
 	private final String title;
 
-	public PickUpRelatedDialog(Shell parentShell, String title, Session session,
-			Node referencingNode) {
+	public PickUpRelatedDialog(Shell parentShell, String title,
+			Session session, Node referencingNode) {
 		super(parentShell);
 		this.title = title;
 		// this.referencingNode = referencingNode;
@@ -66,7 +67,7 @@ public class PickUpRelatedDialog extends TrayDialog {
 		// seeAllChk.setText("See all organisation");
 
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-		tableCmp = new EntityTableComposite(dialogArea, style, session,
+		tableCmp = new FilteredVirtualEntityTable(dialogArea, style, session,
 				PeopleTypes.PEOPLE_ENTITY, null, true, false);
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 

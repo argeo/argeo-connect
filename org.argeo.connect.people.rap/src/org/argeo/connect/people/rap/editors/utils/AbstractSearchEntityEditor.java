@@ -15,7 +15,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.composites.PeopleVirtualTableViewer;
+import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.utils.Refreshable;
@@ -155,7 +155,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	protected void createListPart(Composite parent) {
 		parent.setLayout(new GridLayout());
-		PeopleVirtualTableViewer tableCmp = new PeopleVirtualTableViewer(
+		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(
 				parent, SWT.MULTI, getColumnDefinition(null));
 		tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

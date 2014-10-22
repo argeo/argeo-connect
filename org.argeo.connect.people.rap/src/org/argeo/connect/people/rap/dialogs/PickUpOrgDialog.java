@@ -19,7 +19,7 @@ import javax.jcr.Node;
 import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.composites.EntityTableComposite;
+import org.argeo.connect.people.rap.composites.FilteredVirtualEntityTable;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -44,7 +44,7 @@ public class PickUpOrgDialog extends TrayDialog {
 	private Node selectedNode;
 
 	// this page widgets and UI objects
-	private EntityTableComposite tableCmp;
+	private FilteredVirtualEntityTable tableCmp;
 	private final String title;
 
 	public PickUpOrgDialog(Shell parentShell, String title, Session session,
@@ -66,7 +66,7 @@ public class PickUpOrgDialog extends TrayDialog {
 		// seeAllChk.setText("See all organisation");
 
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-		tableCmp = new EntityTableComposite(dialogArea, style, session,
+		tableCmp = new FilteredVirtualEntityTable(dialogArea, style, session,
 				PeopleTypes.PEOPLE_ORG, null, true, false);
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 

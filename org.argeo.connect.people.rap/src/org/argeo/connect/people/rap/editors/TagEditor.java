@@ -32,7 +32,7 @@ import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.composites.PeopleVirtualTableViewer;
+import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
@@ -282,7 +282,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 	private TableViewer createTableViewer(Composite parent) {
 		parent.setLayout(new GridLayout());
-		PeopleVirtualTableViewer tableCmp = new PeopleVirtualTableViewer(
+		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(
 				parent, SWT.MULTI, colDefs);
 		TableViewer tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

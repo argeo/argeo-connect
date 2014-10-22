@@ -15,13 +15,15 @@
  */
 package org.argeo.connect.people.rap.dialogs;
 
+import java.util.List;
+
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Constraint;
 import javax.jcr.query.qom.QueryObjectModel;
 import javax.jcr.query.qom.QueryObjectModelFactory;
@@ -34,7 +36,6 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.rap.providers.EntitySingleColumnLabelProvider;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -45,16 +46,17 @@ import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -172,18 +174,19 @@ public class EditJobDialog extends TrayDialog {
 	protected Control createDialogArea(Composite parent) {
 		// MAIN LAYOUT
 		Composite dialogarea = (Composite) super.createDialogArea(parent);
-		dialogarea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		// dialogarea.setLayoutData(PeopleUiUtils.fillGridData());
 		dialogarea.setLayout(new GridLayout(2, false));
 
 		// the filter
 		Composite filterCmp = new Composite(dialogarea, SWT.NONE);
-		filterCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2,
-				1));
+		filterCmp.setLayoutData(PeopleUiUtils.horizontalFillData(2));
 		addFilterPanel(filterCmp);
 
 		// the list
 		Composite listCmp = new Composite(dialogarea, SWT.NONE);
-		listCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+		GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1);
+		gd.heightHint = 200;
+		listCmp.setLayoutData(gd);
 		entityViewer = createListPart(listCmp,
 				new EntitySingleColumnLabelProvider(peopleService,
 						peopleUiService));
@@ -219,18 +222,17 @@ public class EditJobDialog extends TrayDialog {
 		departmentTxt.setText(oldDepartment);
 
 		// Is primary
-
 		// Display primary check box only when editing a position from a person
 		// perspective
 		if (!isBackward) {
 			isPrimaryBtn = createLC(dialogarea, primaryLbl);
 			isPrimaryBtn.setSelection(wasPrimary);
 		}
-		parent.pack();
 
+		parent.pack();
+		parent.layout();
 		// Set the focus on the first field.
 		filterTxt.setFocus();
-
 		return dialogarea;
 	}
 
@@ -341,13 +343,13 @@ public class EditJobDialog extends TrayDialog {
 		});
 	}
 
-	protected TableViewer createListPart(Composite parent,
+	protected TableViewer createListPart(Composite tableComposite,
 			ILabelProvider labelProvider) {
-		parent.setLayout(new FillLayout());
+		// parent.setLayout(new FillLayout());
 
-		Composite tableComposite = new Composite(parent, SWT.NONE);
-		TableViewer v = new TableViewer(tableComposite, SWT.V_SCROLL
-				| SWT.SINGLE);
+		// Composite tableComposite = new Composite(parent, SWT.NONE);
+		TableViewer v = new TableViewer(tableComposite, SWT.VIRTUAL
+				| SWT.V_SCROLL | SWT.SINGLE);
 		v.setLabelProvider(labelProvider);
 
 		TableColumn singleColumn = new TableColumn(v.getTable(), SWT.LEFT);
@@ -361,11 +363,10 @@ public class EditJobDialog extends TrayDialog {
 		table.setHeaderVisible(false);
 		// Enable markups
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT,
-				Integer.valueOf(20));
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(20));
 
 		// Providers and listeners
-		v.setContentProvider(new BasicNodeListContentProvider());
+		v.setContentProvider(new MyLazyContentProvider(v));
 		v.addSelectionChangedListener(new ISelectionChangedListener() {
 
 			@Override
@@ -395,11 +396,41 @@ public class EditJobDialog extends TrayDialog {
 				positionTxt.setFocus();
 			}
 		});
-
 		return v;
 	}
 
+	private class MyLazyContentProvider implements ILazyContentProvider {
+		private static final long serialVersionUID = 1L;
+		private TableViewer viewer;
+		private Object[] elements;
+
+		public MyLazyContentProvider(TableViewer viewer) {
+			this.viewer = viewer;
+		}
+
+		public void dispose() {
+		}
+
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			// IMPORTANT: don't forget this: an exception will be thrown if a
+			// selected object is not part of the results anymore.
+			viewer.setSelection(null);
+			this.elements = (Object[]) newInput;
+		}
+
+		public void updateElement(int index) {
+			viewer.replace(elements[index], index);
+		}
+	}
+
 	protected void refreshFilteredList(String nodeType) {
+		List<Node> nodes = JcrUtils.nodeIteratorToList(query(nodeType));
+		entityViewer.setInput(nodes.toArray());
+		entityViewer.setItemCount(nodes.size());
+		entityViewer.refresh();
+	}
+
+	protected NodeIterator query(String nodeType) {
 		try {
 			String filter = filterTxt.getText();
 			QueryManager queryManager = session.getWorkspace()
@@ -431,18 +462,8 @@ public class EditJobDialog extends TrayDialog {
 			}
 			QueryObjectModel query;
 			query = factory.createQuery(source, defaultC, null, null);
-			// Kind of small hack: display only 15 results so that we avoid the
-			// scroll bar bug; that is: showing the vertical scroll always
-			// triggers appearance of horizontal scroll bar
-			if (isBackward)
-				query.setLimit(13); // no primary check box, the table gets
-									// bigger
-			else
-				query.setLimit(12);
 
-			QueryResult result = query.execute();
-			entityViewer
-					.setInput(JcrUtils.nodeIteratorToList(result.getNodes()));
+			return query.execute().getNodes();
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list entities", e);
 		}

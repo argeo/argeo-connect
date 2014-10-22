@@ -29,7 +29,7 @@ import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.composites.PeopleVirtualTableViewer;
+import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.dialogs.AskTitleDescriptionDialog;
 import org.argeo.connect.people.rap.editors.utils.SearchNodeEditorInput;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
@@ -186,7 +186,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 	protected void createListPart(Composite parent) {
 		parent.setLayout(new GridLayout());
-		PeopleVirtualTableViewer tableCmp = new PeopleVirtualTableViewer(
+		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(
 				parent, SWT.MULTI, colDefs);
 		tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
