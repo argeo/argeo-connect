@@ -247,8 +247,7 @@ public class TagLikeListPart extends Composite {
 
 					final TagLikeDropDown tagDD = new TagLikeDropDown(
 							taggable.getSession(),
-							peopleService.getResourceService(),
-							PeopleConstants.RESOURCE_TAG, tagTxt);
+							peopleService.getResourceService(), tagId, tagTxt);
 
 					tagTxt.addTraverseListener(new TraverseListener() {
 						private static final long serialVersionUID = 1L;

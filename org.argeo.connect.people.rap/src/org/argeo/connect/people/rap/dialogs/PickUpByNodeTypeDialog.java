@@ -18,7 +18,9 @@ package org.argeo.connect.people.rap.dialogs;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
-import org.argeo.connect.people.rap.composites.FilteredVirtualEntityTable;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.rap.composites.FilterEntitiesVirtualTable;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -27,7 +29,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -43,32 +44,35 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 
 	// Business objects
 	private final Session session;
+	private final PeopleWorkbenchService peopleWorkbenchService;
 	private final String nodeType;
 	private Node selectedNode;
 
 	// this page widgets and UI objects
-	private FilteredVirtualEntityTable tableCmp;
+	private FilterEntitiesVirtualTable tableCmp;
 	private final String title;
 
 	public PickUpByNodeTypeDialog(Shell parentShell, String title,
-			Session session, String nodeType) {
+			Session session, PeopleWorkbenchService peopleWorkbenchService,
+			String nodeType) {
 		super(parentShell);
 		this.title = title;
-		this.nodeType = nodeType;
 		this.session = session;
+		this.peopleWorkbenchService = peopleWorkbenchService;
+		this.nodeType = nodeType;
 	}
 
 	protected Point getInitialSize() {
-		return new Point(800, 600);
+		return new Point(400, 600);
 	}
 
 	protected Control createDialogArea(Composite parent) {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
-		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-		tableCmp = new FilteredVirtualEntityTable(dialogArea, style, session,
-				nodeType, null, true, false);
-		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		int style = SWT.V_SCROLL | SWT.SINGLE;
+		tableCmp = new FilterEntitiesVirtualTable(dialogArea, style, session,
+				peopleWorkbenchService, nodeType);
+		tableCmp.setLayoutData(PeopleUiUtils.fillGridData());
 
 		// Add listeners
 		tableCmp.getTableViewer().addDoubleClickListener(

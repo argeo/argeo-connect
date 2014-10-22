@@ -122,7 +122,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				getManagedForm(), getPeopleService(),
 				getPeopleWorkbenchService(), PeopleTypes.PEOPLE_MAILING_LIST,
 				person, PEOPLE_MAILING_LISTS, "Add a mailing");
-		
+
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 	}
 
@@ -388,9 +388,8 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				boolean useDefault = defineDistinctBtn.getSelection();
-				// if use default, do nothing
-				if (!useDefault)
+				boolean defineDistinct = defineDistinctBtn.getSelection();
+				if (defineDistinct)
 					if (CommonsJcrUtils.setJcrProperty(person,
 							Property.JCR_TITLE, PropertyType.STRING,
 							displayNameTxt.getText())) {
@@ -471,7 +470,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 					Session session = CommonsJcrUtils.getSession(person);
 					String newValueIso = getPeopleService()
 							.getResourceService().getEncodedTagCodeFromValue(
-									session, PeopleConstants.RESOURCE_COUNTRY,
+									session, PeopleConstants.RESOURCE_LANG,
 									btn.getText());
 					String oldValueIso = null;
 					if (person.hasProperty(PEOPLE_SPOKEN_LANGUAGES)) {

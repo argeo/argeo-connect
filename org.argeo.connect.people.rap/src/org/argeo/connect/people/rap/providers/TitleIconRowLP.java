@@ -12,24 +12,24 @@ import org.eclipse.swt.graphics.Image;
  * the selector name. It uses a JcrRowHtmlLabelProvider rather than a
  * SimpleJcrRowLabelProvider: TO BE VALIDATED
  */
-public class TitleWithIconLP extends JcrRowHtmlLabelProvider {
+public class TitleIconRowLP extends JcrRowHtmlLabelProvider {
 	// WAS public class TitleWithIconLP extends JcrRowHtmlLabelProvider {
 	private static final long serialVersionUID = 6064779874148619776L;
 
-	private final PeopleWorkbenchService peopleUiService;
+	private final PeopleWorkbenchService peopleWorkbenchService;
 	private final String selectorName;
 
-	public TitleWithIconLP(PeopleWorkbenchService peopleUiService,
+	public TitleIconRowLP(PeopleWorkbenchService peopleUiService,
 			String selectorName, String propertyName) {
 		super(selectorName, propertyName);
-		this.peopleUiService = peopleUiService;
+		this.peopleWorkbenchService = peopleUiService;
 		this.selectorName = selectorName;
 	}
 
 	@Override
 	public Image getImage(Object element) {
 		try {
-			return peopleUiService.getIconForType(((Row) element)
+			return peopleWorkbenchService.getIconForType(((Row) element)
 					.getNode(selectorName));
 			// WAS return peopleUiService.getIconForType(((Row) element)
 			// .getNode(PeopleTypes.PEOPLE_ENTITY));
@@ -38,5 +38,4 @@ public class TitleWithIconLP extends JcrRowHtmlLabelProvider {
 					"unable to retrieve image for " + element, e);
 		}
 	}
-
 }

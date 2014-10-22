@@ -352,7 +352,8 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 			public void widgetSelected(final SelectionEvent event) {
 				try {
 					PickUpRelatedDialog diag = new PickUpRelatedDialog(shell,
-							"Choose an entity", task.getSession(), task);
+							"Choose an entity", task.getSession(),
+							getPeopleWorkbenchService(), task);
 
 					int result = diag.open();
 					if (Window.OK == result) {

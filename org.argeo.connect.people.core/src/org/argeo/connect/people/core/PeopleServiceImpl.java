@@ -209,9 +209,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 		Boolean defineDistinctDefaultDisplay = CommonsJcrUtils.getBooleanValue(
 				org, PEOPLE_USE_DISTINCT_DISPLAY_NAME);
-
 		String displayName;
-
 		if (defineDistinctDefaultDisplay == null
 				|| !defineDistinctDefaultDisplay) {
 			displayName = getDisplayName(org);

@@ -31,7 +31,7 @@ import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.listeners.PeopleDoubleClickAdapter;
-import org.argeo.connect.people.rap.providers.TitleWithIconLP;
+import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.rap.utils.AbstractPanelFormPart;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
@@ -328,7 +328,7 @@ public class EditCataloguePanel extends Composite {
 		ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 		colDefs.add(new PeopleColumnDefinition(taggableType,
 				Property.JCR_TITLE, PropertyType.STRING, "Instances",
-				new TitleWithIconLP(peopleWorkbenchService, taggableType,
+				new TitleIconRowLP(peopleWorkbenchService, taggableType,
 						Property.JCR_TITLE), 400));
 		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(
 				parent, SWT.MULTI, colDefs);

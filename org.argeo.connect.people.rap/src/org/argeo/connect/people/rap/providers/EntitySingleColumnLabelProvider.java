@@ -22,6 +22,8 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 
 	private static final long serialVersionUID = 1L;
 
+	private PeopleWorkbenchService peopleWorkbenchService;
+
 	private OrgListLabelProvider orgLp;
 	private PersonListLabelProvider personLp;
 	private GroupLabelProvider groupLp = new GroupLabelProvider(
@@ -29,7 +31,8 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 	private TagLabelProvider mlInstanceLp;
 
 	public EntitySingleColumnLabelProvider(PeopleService peopleService,
-			PeopleWorkbenchService peopleUiService) {
+			PeopleWorkbenchService peopleWorkbenchService) {
+		this.peopleWorkbenchService = peopleWorkbenchService;
 		personLp = new PersonListLabelProvider(peopleService);
 		orgLp = new OrgListLabelProvider(peopleService);
 		mlInstanceLp = new TagLabelProvider(peopleService.getResourceService(),
@@ -61,6 +64,6 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 	/** Overwrite this method to provide project specific images */
 	@Override
 	public Image getImage(Object element) {
-		return null;
+		return peopleWorkbenchService.getIconForType((Node) element);
 	}
 }

@@ -243,7 +243,8 @@ public class ActivityEditor extends AbstractPeopleEditor {
 			public void widgetSelected(final SelectionEvent event) {
 				try {
 					PickUpRelatedDialog diag = new PickUpRelatedDialog(shell,
-							"Choose an entity", activity.getSession(), activity);
+							"Choose an entity", activity.getSession(),
+							getPeopleWorkbenchService(), activity);
 					int result = diag.open();
 					if (Window.OK == result) {
 						Node node = diag.getSelected();

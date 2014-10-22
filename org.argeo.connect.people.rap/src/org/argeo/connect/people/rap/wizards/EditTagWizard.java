@@ -27,7 +27,7 @@ import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
-import org.argeo.connect.people.rap.providers.TitleWithIconLP;
+import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -241,7 +241,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 			colDefs.add(new PeopleColumnDefinition(taggableNodeType,
 					Property.JCR_TITLE, PropertyType.STRING, "Display Name",
-					new TitleWithIconLP(peopleUiService, taggableNodeType,
+					new TitleIconRowLP(peopleUiService, taggableNodeType,
 							Property.JCR_TITLE), 300));
 
 			VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(

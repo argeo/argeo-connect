@@ -37,7 +37,7 @@ import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.providers.TagLabelProvider;
-import org.argeo.connect.people.rap.providers.TitleWithIconLP;
+import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.rap.wizards.EditTagWizard;
 import org.argeo.connect.people.ui.PeopleUiUtils;
@@ -118,7 +118,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		colDefs = new ArrayList<PeopleColumnDefinition>();
 		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
 				Property.JCR_TITLE, PropertyType.STRING, "Display Name",
-				new TitleWithIconLP(peopleWorkbenchService,
+				new TitleIconRowLP(peopleWorkbenchService,
 						PeopleTypes.PEOPLE_ENTITY, Property.JCR_TITLE), 300));
 		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
 				PEOPLE_TAGS, PropertyType.STRING, "Tags",

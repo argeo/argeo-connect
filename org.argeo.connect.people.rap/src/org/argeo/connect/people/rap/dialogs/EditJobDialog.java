@@ -185,7 +185,7 @@ public class EditJobDialog extends TrayDialog {
 		// the list
 		Composite listCmp = new Composite(dialogarea, SWT.NONE);
 		GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1);
-		gd.heightHint = 200;
+		gd.heightHint = 250;
 		listCmp.setLayoutData(gd);
 		entityViewer = createListPart(listCmp,
 				new EntitySingleColumnLabelProvider(peopleService,
@@ -332,8 +332,7 @@ public class EditJobDialog extends TrayDialog {
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
 				| SWT.ICON_CANCEL);
 		filterTxt.setMessage("Search and choose a corresponding entity");
-		filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
-				| GridData.HORIZONTAL_ALIGN_FILL));
+		filterTxt.setLayoutData(PeopleUiUtils.horizontalFillData());
 		filterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 5003010530960334977L;
 

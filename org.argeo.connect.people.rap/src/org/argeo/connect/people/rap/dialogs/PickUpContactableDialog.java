@@ -37,7 +37,7 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
-import org.argeo.connect.people.rap.providers.TitleWithIconLP;
+import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -84,7 +84,7 @@ public class PickUpContactableDialog extends TrayDialog {
 
 		colDefs = new ArrayList<PeopleColumnDefinition>();
 		colDefs.add(new PeopleColumnDefinition(nodeType, Property.JCR_TITLE,
-				PropertyType.STRING, "Display Name", new TitleWithIconLP(
+				PropertyType.STRING, "Display Name", new TitleIconRowLP(
 						peopleUiService, nodeType, Property.JCR_TITLE), 300));
 	}
 

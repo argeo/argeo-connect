@@ -19,7 +19,9 @@ import javax.jcr.Node;
 import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.composites.FilteredVirtualEntityTable;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.rap.composites.FilterEntitiesVirtualTable;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -42,18 +44,21 @@ public class PickUpRelatedDialog extends TrayDialog {
 
 	// Business objects
 	private final Session session;
+	private final PeopleWorkbenchService peopleWorkbenchService;
 	private Node selectedNode;
 
 	// this page widgets and UI objects
-	private FilteredVirtualEntityTable tableCmp;
+	private FilterEntitiesVirtualTable tableCmp;
 	private final String title;
 
 	public PickUpRelatedDialog(Shell parentShell, String title,
-			Session session, Node referencingNode) {
+			Session session, PeopleWorkbenchService peopleWorkbenchService,
+			Node referencingNode) {
 		super(parentShell);
 		this.title = title;
 		// this.referencingNode = referencingNode;
 		this.session = session;
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
 	protected Point getInitialSize() {
@@ -67,9 +72,9 @@ public class PickUpRelatedDialog extends TrayDialog {
 		// seeAllChk.setText("See all organisation");
 
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-		tableCmp = new FilteredVirtualEntityTable(dialogArea, style, session,
-				PeopleTypes.PEOPLE_ENTITY, null, true, false);
-		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		tableCmp = new FilterEntitiesVirtualTable(dialogArea, style, session,
+				peopleWorkbenchService, PeopleTypes.PEOPLE_ENTITY);
+		tableCmp.setLayoutData(PeopleUiUtils.fillGridData());
 
 		// Add listeners
 		tableCmp.getTableViewer().addDoubleClickListener(
