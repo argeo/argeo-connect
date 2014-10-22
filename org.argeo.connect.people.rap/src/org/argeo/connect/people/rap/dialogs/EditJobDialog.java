@@ -25,6 +25,7 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.qom.Constraint;
+import javax.jcr.query.qom.Ordering;
 import javax.jcr.query.qom.QueryObjectModel;
 import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
@@ -460,8 +461,11 @@ public class EditJobDialog extends TrayDialog {
 				}
 			}
 			QueryObjectModel query;
-			query = factory.createQuery(source, defaultC, null, null);
-
+			// Entity should normally always be a mix:title
+			Ordering order = factory.ascending(factory.propertyValue(
+					source.getSelectorName(), Property.JCR_TITLE));
+			Ordering[] orderings = { order };
+			query = factory.createQuery(source, defaultC, orderings, null);
 			return query.execute().getNodes();
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list entities", e);

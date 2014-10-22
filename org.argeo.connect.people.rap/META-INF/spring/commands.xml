@@ -32,9 +32,12 @@
 		scope="prototype"> <property name="repository" ref="repository" /> </bean> 
 		<bean id="editEntityReferenceWithPosition" class="org.argeo.connect.people.rap.commands.EditEntityReferenceWithPosition" 
 		scope="prototype"> <property name="repository" ref="repository" /> <property 
-		name="peopleService" ref="peopleService" /> </bean> <bean id="removeEntityReference" 
-		class="org.argeo.connect.people.rap.commands.RemoveEntityReference" scope="prototype"> 
-		<property name="repository" ref="repository" /> </bean> -->
+		name="peopleService" ref="peopleService" /> </bean> -->
+	<bean id="removeEntityReference"
+		class="org.argeo.connect.people.rap.commands.RemoveEntityReference"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+	</bean>
 	<bean id="deleteEntity" class="org.argeo.connect.people.rap.commands.DeleteEntity"
 		scope="prototype">
 		<property name="repository" ref="repository" />

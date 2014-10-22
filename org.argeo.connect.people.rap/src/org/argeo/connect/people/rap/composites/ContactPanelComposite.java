@@ -53,7 +53,7 @@ public class ContactPanelComposite extends Composite {
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 	private final PeopleService peopleService;
-	private final PeopleWorkbenchService peopleUiService;
+	private final PeopleWorkbenchService peopleWorkbenchService;
 	private final Node entity;
 	private ContactFormPart formPart;
 
@@ -70,7 +70,7 @@ public class ContactPanelComposite extends Composite {
 		this.form = form;
 		this.entity = entityNode;
 		this.peopleService = peopleService;
-		this.peopleUiService = peopleUiService;
+		this.peopleWorkbenchService = peopleUiService;
 		populate();
 	}
 
@@ -202,11 +202,11 @@ public class ContactPanelComposite extends Composite {
 								PeopleTypes.PEOPLE_ADDRESS))
 							new ContactAddressComposite(parent, SWT.NO_FOCUS,
 									toolkit, formPart, peopleService,
-									peopleUiService, currNode, entity);
+									peopleWorkbenchService, currNode, entity);
 						else
 							new ContactComposite(parent, SWT.NO_FOCUS, toolkit,
 									formPart, currNode, entity,
-									peopleUiService, peopleService);
+									peopleWorkbenchService, peopleService);
 					}
 				}
 			}
@@ -610,7 +610,7 @@ public class ContactPanelComposite extends Composite {
 			chooseOrgLk.setText("<a>Pick up</a>");
 			final PickUpOrgDialog diag = new PickUpOrgDialog(
 					chooseOrgLk.getShell(), "Choose an organisation",
-					entity.getSession(), entity);
+					entity.getSession(), peopleWorkbenchService, entity);
 
 			final Text labelTxt = createRowDataLT(parent, "A custom label", 120);
 

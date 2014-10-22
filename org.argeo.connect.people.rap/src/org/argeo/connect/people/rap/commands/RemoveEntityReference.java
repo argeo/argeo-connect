@@ -74,8 +74,9 @@ public class RemoveEntityReference extends AbstractHandler {
 				((AbstractEntityCTabEditor) iep).forceRefresh();
 
 		} catch (RepositoryException e) {
-			throw new PeopleException("unexpected JCR error while opening "
-					+ "editor for newly created programm", e);
+			throw new PeopleException("Unable to remove JCR ID "
+					+ toRemoveJcrId + " on parent versionnable node "
+					+ versParentJcrId, e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}

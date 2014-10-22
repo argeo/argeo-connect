@@ -47,7 +47,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 	private static final long serialVersionUID = 4475049051062923873L;
 
 	private final PeopleService peopleService;
-	private final PeopleWorkbenchService peopleUiService;
+	private final PeopleWorkbenchService peopleWorkbenchService;
 	private final Node contactNode;
 	private final Node parentVersionableNode;
 	private final AbstractFormPart formPart;
@@ -61,7 +61,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			Node parentVersionableNode) {
 		super(parent, style);
 		this.peopleService = peopleService;
-		this.peopleUiService = peopleUiService;
+		this.peopleWorkbenchService = peopleUiService;
 		this.contactNode = contactNode;
 		this.toolkit = toolkit;
 		this.formPart = formPart;
@@ -79,7 +79,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		// BUTTONS
 		Composite buttCmp = new ContactButtonsComposite(parent, SWT.NONE,
 				toolkit, formPart, contactNode, parentVersionableNode,
-				peopleUiService, peopleService);
+				peopleWorkbenchService, peopleService);
 		toolkit.adapt(buttCmp, false, false);
 		buttCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
@@ -151,7 +151,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 			final PickUpOrgDialog diag = new PickUpOrgDialog(
 					chooseOrgLk.getShell(), "Choose an organisation",
-					contactNode.getSession(), contactNode.getParent()
+					contactNode.getSession(), peopleWorkbenchService, contactNode.getParent()
 							.getParent());
 
 			// REFRESH VALUES
