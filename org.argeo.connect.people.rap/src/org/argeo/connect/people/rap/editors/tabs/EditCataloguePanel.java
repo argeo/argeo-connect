@@ -259,8 +259,10 @@ public class EditCataloguePanel extends Composite {
 											+ PeopleRapConstants.HREF_SEPARATOR
 											+ value,
 									PeopleUiConstants.CRUD_DELETE);
-					return editLink + PeopleUiConstants.NB_DOUBLE_SPACE
-							+ removeLink;
+					// TODO implement edition and uncomment this
+					return removeLink;
+					// return editLink + PeopleUiConstants.NB_DOUBLE_SPACE
+					// + removeLink;
 				}
 			});
 		}
@@ -330,8 +332,8 @@ public class EditCataloguePanel extends Composite {
 				Property.JCR_TITLE, PropertyType.STRING, "Instances",
 				new TitleIconRowLP(peopleWorkbenchService, taggableType,
 						Property.JCR_TITLE), 400));
-		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(
-				parent, SWT.MULTI, colDefs);
+		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(parent,
+				SWT.MULTI, colDefs);
 		tableCmp.setLayoutData(PeopleUiUtils.fillGridData());
 		TableViewer viewer = tableCmp.getTableViewer();
 		viewer.setContentProvider(new InstancesTableCP(viewer));

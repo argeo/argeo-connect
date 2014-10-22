@@ -532,8 +532,87 @@ public class ResourceServiceImpl implements ResourceService {
 	@Override
 	public boolean updateTag(Node tagInstance, String newValue)
 			throws RepositoryException {
-		// TODO Auto-generated method stub
-		return false;
+		// TODO double check and clean
+
+		Node tagParent = retrieveTagParentFromTag(tagInstance);
+
+		Value[] values = tagParent.getProperty(
+				PeopleNames.PEOPLE_TAGGABLE_PROP_NAME).getValues();
+		if (values.length > 1)
+			// unimplemented multiple value
+			return false;
+		String propName = values[0].getString();
+
+		String oldValue = tagInstance.getProperty(Property.JCR_TITLE)
+				.getString();
+
+		boolean wasCheckedIn = false;
+		if (tagInstance.isNodeType(NodeType.MIX_VERSIONABLE)
+				&& !CommonsJcrUtils.isNodeCheckedOutByMe(tagInstance)) {
+			wasCheckedIn = true;
+			CommonsJcrUtils.checkout(tagInstance);
+		}
+
+		Session session = tagInstance.getSession();
+		// TODO use a transaction
+		// Retrieve all node that reference this tag and update them
+		NodeIterator nit = getTaggedEntities(tagParent, oldValue);
+		while (nit.hasNext())
+			updateOneTag(nit.nextNode(), propName, oldValue, newValue);
+
+		// update the tag
+		String newPath = tagParent.getPath() + "/" + getTagRelPath(newValue);
+		// insure the parent node is already existing
+		JcrUtils.mkdirs(session, JcrUtils.parentPath(newPath));
+		session.move(tagInstance.getPath(), newPath);
+		tagInstance.setProperty(Property.JCR_TITLE, newValue);
+
+		if (wasCheckedIn)
+			CommonsJcrUtils.saveAndCheckin(tagInstance);
+		else
+			tagInstance.getSession().save();
+		return true;
+	}
+
+	/**
+	 * Save the session for each node in order to manage the version. Should be
+	 * cleaned when we handle transaction.
+	 * 
+	 * @param taggable
+	 * @param tagPropName
+	 * @param oldValue
+	 * @param newValue
+	 */
+	private void updateOneTag(Node taggable, String tagPropName,
+			String oldValue, String newValue) {
+		try {
+			boolean wasCheckedIn = false;
+			if (taggable.isNodeType(NodeType.MIX_VERSIONABLE)
+					&& !CommonsJcrUtils.isNodeCheckedOutByMe(taggable)) {
+				wasCheckedIn = true;
+				CommonsJcrUtils.checkout(taggable);
+			}
+			List<String> oldValues = CommonsJcrUtils.getMultiAsList(taggable,
+					tagPropName);
+			List<String> newValues = new ArrayList<String>();
+			for (String val : oldValues) {
+				if (oldValue.equals(val))
+					newValues.add(newValue);
+				else
+					newValues.add(val);
+			}
+			taggable.setProperty(tagPropName, newValues.toArray(new String[0]));
+
+			if (wasCheckedIn)
+				CommonsJcrUtils.saveAndCheckin(taggable);
+			else
+				taggable.getSession().save();
+		} catch (RepositoryException ee) {
+			throw new PeopleException(
+					"Unable to update tag like multiple value property "
+							+ tagPropName + " removing " + oldValue
+							+ " and adding " + newValue + " on " + taggable, ee);
+		}
 	}
 
 	@Override

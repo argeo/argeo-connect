@@ -181,10 +181,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 							peopleWorkbenchService,
 							getNode(),
 							NodeType.NT_UNSTRUCTURED,
-							peopleService
-									.getResourceBasePath(PeopleConstants.RESOURCE_TAG),
-							PeopleTypes.PEOPLE_ENTITY, PeopleNames.PEOPLE_TAGS,
-							peopleService.getBasePath(null));
+							PeopleNames.PEOPLE_TAGS);
 					WizardDialog dialog = new WizardDialog(titleROLbl
 							.getShell(), wizard);
 					int result = dialog.open();

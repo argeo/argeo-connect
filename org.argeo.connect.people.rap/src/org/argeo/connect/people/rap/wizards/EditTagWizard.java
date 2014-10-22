@@ -23,6 +23,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
@@ -57,12 +58,15 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 	private PeopleService peopleService;
 	private PeopleWorkbenchService peopleUiService;
 
-	private Node tagLikeInstanceNode;
-
-	private String resourceNodeType;
-	private String resourceInstancesParentPath;
-	private String taggableNodeType;
+	private String tagId;
+	private Node tagInstance;
 	private String tagPropName;
+
+	// Cache to ease implementation
+	private Session session;
+	private ResourceService resourceService;
+	private Node tagParent;
+	private String taggableNodeType;
 	private String taggableParentPath;
 
 	// This part widgets
@@ -74,26 +78,26 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 	 * @param peopleService
 	 * @param peopleUiService
 	 * @param tagInstanceNode
-	 * @param tagNodeType
-	 * @param resourceInstancesParentPath
-	 * @param taggableNodeType
+	 * @param tagId
 	 * @param tagPropName
-	 * @param taggableParentPath
 	 */
 	public EditTagWizard(PeopleService peopleService,
 			PeopleWorkbenchService peopleUiService, Node tagInstanceNode,
-			String tagNodeType, String resourceInstancesParentPath,
-			String taggableNodeType, String tagPropName,
-			String taggableParentPath) {
+			String tagId, String tagPropName) {
 
 		this.peopleService = peopleService;
 		this.peopleUiService = peopleUiService;
-		this.tagLikeInstanceNode = tagInstanceNode;
-		this.resourceNodeType = tagNodeType;
-		this.resourceInstancesParentPath = resourceInstancesParentPath;
-		this.taggableParentPath = taggableParentPath;
+		this.tagId = tagId;
+		this.tagInstance = tagInstanceNode;
 		this.tagPropName = tagPropName;
-		this.taggableNodeType = taggableNodeType;
+
+		session = CommonsJcrUtils.getSession(tagInstance);
+		resourceService = peopleService.getResourceService();
+		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
+		taggableNodeType = CommonsJcrUtils.get(tagParent,
+				PEOPLE_TAGGABLE_NODE_TYPE);
+		taggableParentPath = CommonsJcrUtils.get(tagParent,
+				PEOPLE_TAGGABLE_PARENT_PATH);
 	}
 
 	@Override
@@ -119,7 +123,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 	@Override
 	public boolean performFinish() {
 		try {
-			String oldTitle = CommonsJcrUtils.get(tagLikeInstanceNode,
+			String oldTitle = CommonsJcrUtils.get(tagInstance,
 					Property.JCR_TITLE);
 			String newTitle = newTitleTxt.getText();
 			String newDesc = newDescTxt.getText();
@@ -132,8 +136,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 				errMsg = "New value is the same as old one.\n"
 						+ "Either enter a new one or press cancel.";
 			else if (peopleService.getResourceService().getRegisteredTag(
-					tagLikeInstanceNode.getSession(),
-					resourceInstancesParentPath, newTitle) != null)
+					tagInstance.getSession(), tagId, newTitle) != null)
 				errMsg = "The new chosen value is already used.\n"
 						+ "Either enter a new one or press cancel.";
 
@@ -144,33 +147,33 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			}
 
 			// TODO use transaction
-			boolean isVersionable = tagLikeInstanceNode
+			boolean isVersionable = tagInstance
 					.isNodeType(NodeType.MIX_VERSIONABLE);
 			boolean isCheckedIn = isVersionable
-					&& !CommonsJcrUtils
-							.isNodeCheckedOutByMe(tagLikeInstanceNode);
+					&& !CommonsJcrUtils.isNodeCheckedOutByMe(tagInstance);
 			if (isCheckedIn)
-				CommonsJcrUtils.checkout(tagLikeInstanceNode);
-			peopleService.getResourceService().updateTag(tagLikeInstanceNode,
-					newTitle);
+				CommonsJcrUtils.checkout(tagInstance);
+
+			resourceService.updateTag(tagInstance, newTitle);
+
 			if (CommonsJcrUtils.checkNotEmptyString(newDesc))
-				tagLikeInstanceNode.setProperty(Property.JCR_DESCRIPTION,
-						newDesc);
-			else if (tagLikeInstanceNode.hasProperty(Property.JCR_DESCRIPTION))
+				tagInstance.setProperty(Property.JCR_DESCRIPTION, newDesc);
+			else if (tagInstance.hasProperty(Property.JCR_DESCRIPTION))
 				// force reset
-				tagLikeInstanceNode.setProperty(Property.JCR_DESCRIPTION, "");
+				tagInstance.setProperty(Property.JCR_DESCRIPTION, "");
+
 			if (isCheckedIn)
-				CommonsJcrUtils.saveAndCheckin(tagLikeInstanceNode);
-			else if (isVersionable) // workaround versionnable node should have
+				CommonsJcrUtils.saveAndCheckin(tagInstance);
+			else if (isVersionable) // workaround versionable node should have
 				// been commited on last update
-				CommonsJcrUtils.saveAndCheckin(tagLikeInstanceNode);
+				CommonsJcrUtils.saveAndCheckin(tagInstance);
 			else
-				tagLikeInstanceNode.getSession().save();
+				tagInstance.getSession().save();
 			return true;
 		} catch (RepositoryException re) {
 			throw new PeopleException(
 					"unable to update title for tag like resource "
-							+ tagLikeInstanceNode, re);
+							+ tagInstance, re);
 		}
 	}
 
@@ -191,8 +194,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			super(pageName);
 			setTitle("Enter a new title");
 			setMessage("As reminder, former value was: "
-					+ CommonsJcrUtils.get(tagLikeInstanceNode,
-							Property.JCR_TITLE));
+					+ CommonsJcrUtils.get(tagInstance, Property.JCR_TITLE));
 		}
 
 		public void createControl(Composite parent) {
@@ -203,9 +205,8 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			PeopleRapUtils.createBoldLabel(body, "Title");
 			newTitleTxt = new Text(body, SWT.BORDER);
 			newTitleTxt.setMessage("was: "
-					+ CommonsJcrUtils.get(tagLikeInstanceNode,
-							Property.JCR_TITLE));
-			newTitleTxt.setText(CommonsJcrUtils.get(tagLikeInstanceNode,
+					+ CommonsJcrUtils.get(tagInstance, Property.JCR_TITLE));
+			newTitleTxt.setText(CommonsJcrUtils.get(tagInstance,
 					Property.JCR_TITLE));
 			newTitleTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 					false));
@@ -214,9 +215,9 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			PeopleRapUtils.createBoldLabel(body, "Description", SWT.TOP);
 			newDescTxt = new Text(body, SWT.BORDER | SWT.MULTI | SWT.WRAP);
 			newDescTxt.setMessage("was: "
-					+ CommonsJcrUtils.get(tagLikeInstanceNode,
-							Property.JCR_DESCRIPTION));
-			newDescTxt.setText(CommonsJcrUtils.get(tagLikeInstanceNode,
+					+ CommonsJcrUtils
+							.get(tagInstance, Property.JCR_DESCRIPTION));
+			newDescTxt.setText(CommonsJcrUtils.get(tagInstance,
 					Property.JCR_DESCRIPTION));
 			newDescTxt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 					true));
@@ -244,8 +245,8 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 					new TitleIconRowLP(peopleUiService, taggableNodeType,
 							Property.JCR_TITLE), 300));
 
-			VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(
-					body, SWT.MULTI, colDefs);
+			VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(body,
+					SWT.MULTI, colDefs);
 			TableViewer membersViewer = tableCmp.getTableViewer();
 			membersViewer.setContentProvider(new MyLazyContentProvider(
 					membersViewer));
@@ -259,17 +260,13 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 
 	/** Refresh the table viewer based on the free text search field */
 	protected void refreshFilteredList(TableViewer membersViewer) {
-		String currVal = CommonsJcrUtils.get(tagLikeInstanceNode,
-				Property.JCR_TITLE);
+		String currVal = CommonsJcrUtils.get(tagInstance, Property.JCR_TITLE);
 		try {
-			Session session = tagLikeInstanceNode.getSession();
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
 			Selector source = factory.selector(taggableNodeType,
 					taggableNodeType);
-			// factory.selector(tagLikeInstanceNode.getPrimaryNodeType().getName(),
-			// tagLikeInstanceNode.getPrimaryNodeType().getName());
 
 			StaticOperand so = factory.literal(session.getValueFactory()
 					.createValue(currVal));

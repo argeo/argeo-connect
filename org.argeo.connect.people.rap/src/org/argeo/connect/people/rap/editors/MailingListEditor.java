@@ -192,16 +192,10 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
 
-					Wizard wizard = new EditTagWizard(
-							peopleService,
-							peopleWorkbenchService,
-							mailingList,
+					Wizard wizard = new EditTagWizard(peopleService,
+							peopleWorkbenchService, mailingList,
 							PeopleTypes.PEOPLE_MAILING_LIST,
-							peopleService
-									.getResourceBasePath(PeopleTypes.PEOPLE_MAILING_LIST),
-							PeopleTypes.PEOPLE_ENTITY,
-							PeopleNames.PEOPLE_MAILING_LISTS, peopleService
-									.getBasePath(null));
+							PeopleNames.PEOPLE_MAILING_LISTS);
 
 					WizardDialog dialog = new WizardDialog(titleROLbl
 							.getShell(), wizard);
@@ -418,8 +412,8 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 
 	private TableViewer createTableViewer(Composite parent) {
 		parent.setLayout(new GridLayout());
-		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(
-				parent, SWT.MULTI, colDefs);
+		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(parent,
+				SWT.MULTI, colDefs);
 		TableViewer tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(

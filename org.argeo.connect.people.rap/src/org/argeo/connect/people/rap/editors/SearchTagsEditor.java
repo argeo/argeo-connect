@@ -77,14 +77,15 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 	private Session session;
 	private PeopleService peopleService;
 	private ResourceService resourceService;
-
 	private PeopleWorkbenchService peopleWorkbenchService;
 
 	// Context
-	private String basePath;
-	private String entityType;
+	private Node tagParent;
+	private String tagId;
+	// private String basePath;
+	private String tagInstanceType;
 	private String propertyName;
-	private String resourceType;
+	// private String resourceType;
 	private List<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 
 	// This page widget
@@ -99,30 +100,43 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		String label = ((SearchNodeEditorInput) getEditorInput()).getName();
 		setPartName(label);
 
-		basePath = ((SearchNodeEditorInput) getEditorInput()).getBasePath();
-		entityType = ((SearchNodeEditorInput) getEditorInput()).getNodeType();
-
 		this.resourceService = peopleService.getResourceService();
+		String basePath = ((SearchNodeEditorInput) getEditorInput())
+				.getBasePath();
+		try {
+			tagParent = session.getNode(basePath);
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"Unable to retrieve tag parent with path " + basePath
+							+ "\nUnable to open search editor.", e);
+		}
+		// tagInstanceType = ((SearchNodeEditorInput)
+		// getEditorInput()).getNodeType();
+		tagInstanceType = CommonsJcrUtils.get(tagParent,
+				PEOPLE_TAG_INSTANCE_TYPE);
+		tagId = CommonsJcrUtils.get(tagParent, PEOPLE_TAG_ID);
 
-		// // TODO this info should be stored in the parent path
-		// String testStr = basePath.substring(basePath.lastIndexOf(":") + 1);
-		// if ("tags".equals(testStr)) {
-		// propertyName = PeopleNames.PEOPLE_TAGS;
-		// resourceType = NodeType.NT_UNSTRUCTURED;
-		// } else if ("mailingLists".equals(testStr)) {
-		// propertyName = PeopleNames.PEOPLE_MAILING_LISTS;
-		// resourceType = PeopleTypes.PEOPLE_MAILING_LIST;
-		// } else
-		// throw new PeopleException("Unknown tag like property at base path "
-		// + basePath);
+		// TODO this info should be stored in the parent path
+		if (tagId.equals(PeopleConstants.RESOURCE_TAG)) {
+			propertyName = PeopleNames.PEOPLE_TAGS;
+		} else if (PeopleTypes.PEOPLE_MAILING_LIST.equals(tagId)) {
+			propertyName = PeopleNames.PEOPLE_MAILING_LISTS;
+		} else
+			throw new PeopleException("Unknown tag like property at base path "
+					+ basePath);
 
-		colDefs.add(new PeopleColumnDefinition(entityType, Property.JCR_TITLE,
-				PropertyType.STRING, "Title", new JcrRowHtmlLabelProvider(
-						entityType, Property.JCR_TITLE), 300));
-		colDefs.add(new PeopleColumnDefinition(entityType, Property.JCR_TITLE,
-				PropertyType.STRING, "Member count", new CountMemberLP(), 85));
+		colDefs.add(new PeopleColumnDefinition(
+				tagInstanceType,
+				Property.JCR_TITLE,
+				PropertyType.STRING,
+				"Title",
+				new JcrRowHtmlLabelProvider(tagInstanceType, Property.JCR_TITLE),
+				300));
+		colDefs.add(new PeopleColumnDefinition(tagInstanceType,
+				Property.JCR_TITLE, PropertyType.STRING, "Member count",
+				new CountMemberLP(), 85));
 		if (canEdit())
-			colDefs.add(new PeopleColumnDefinition(entityType,
+			colDefs.add(new PeopleColumnDefinition(tagInstanceType,
 					Property.JCR_TITLE, PropertyType.STRING, "",
 					new EditLabelProvider(), 200));
 	}
@@ -133,12 +147,12 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		// the generic free search part
 		Composite searchCmp = new Composite(parent, SWT.NO_FOCUS);
 		populateSearchPanel(searchCmp);
-		searchCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		searchCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
 
 		// The table itself
 		Composite tableCmp = new Composite(parent, SWT.NO_FOCUS);
 		createListPart(tableCmp);
-		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		tableCmp.setLayoutData(PeopleUiUtils.fillGridData());
 		refreshStaticFilteredList();
 	}
 
@@ -168,8 +182,8 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 						e.display.getActiveShell(), "Create");
 				if (Dialog.OK == dialog.open()) {
 					try {
-						Node tag = resourceService.registerTag(session,
-								resourceType, basePath, dialog.getTitle());
+						Node tag = resourceService.registerTag(session, tagId,
+								dialog.getTitle());
 						if (tag.isNodeType(NodeType.MIX_VERSIONABLE))
 							CommonsJcrUtils.saveAndCheckin(tag);
 						else
@@ -186,12 +200,12 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 	protected void createListPart(Composite parent) {
 		parent.setLayout(new GridLayout());
-		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(
-				parent, SWT.MULTI, colDefs);
+		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(parent,
+				SWT.MULTI, colDefs);
 		tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-				entityType, peopleWorkbenchService));
+				tagInstanceType, peopleWorkbenchService));
 		tableViewer.getTable().addSelectionListener(new HtmlRwtAdapter());
 	}
 
@@ -201,7 +215,8 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			Selector source = factory.selector(entityType, entityType);
+			Selector source = factory
+					.selector(tagInstanceType, tagInstanceType);
 
 			String filter = filterTxt.getText();
 			Constraint defaultC = null;
@@ -217,8 +232,11 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 				}
 			}
 
-			defaultC = CommonsJcrUtils.localAnd(factory, defaultC,
-					factory.descendantNode(source.getSelectorName(), basePath));
+			defaultC = CommonsJcrUtils.localAnd(
+					factory,
+					defaultC,
+					factory.descendantNode(source.getSelectorName(),
+							tagParent.getPath()));
 
 			Ordering order = factory.ascending(factory.propertyValue(
 					source.getSelectorName(), Property.JCR_TITLE));
@@ -230,7 +248,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 			setViewerInput(rows);
 
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to list " + entityType, e);
+			throw new PeopleException("Unable to list " + tagInstanceType, e);
 		}
 	}
 
@@ -247,7 +265,8 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 		@Override
 		public String getText(Object element) {
-			Node currNode = CommonsJcrUtils.getNode((Row) element, entityType);
+			Node currNode = CommonsJcrUtils.getNode((Row) element,
+					tagInstanceType);
 
 			long count = resourceService.countMembers(currNode);
 			// peopleService.getResourceService().countMembers(currNode,
@@ -262,7 +281,8 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 		@Override
 		public String getText(Object element) {
-			Node currNode = CommonsJcrUtils.getNode((Row) element, entityType);
+			Node currNode = CommonsJcrUtils.getNode((Row) element,
+					tagInstanceType);
 			try {
 				String jcrId = currNode.getIdentifier();
 				StringBuilder builder = new StringBuilder();
@@ -308,9 +328,8 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 					if ("edit".equals(token[0])) {
 						Wizard wizard = new EditTagWizard(peopleService,
-								peopleWorkbenchService, node, entityType,
-								basePath, PeopleTypes.PEOPLE_ENTITY,
-								propertyName, peopleService.getBasePath(null));
+								peopleWorkbenchService, node, tagId,
+								propertyName);
 						WizardDialog dialog = new WizardDialog(
 								event.display.getActiveShell(), wizard);
 						int result = dialog.open();
