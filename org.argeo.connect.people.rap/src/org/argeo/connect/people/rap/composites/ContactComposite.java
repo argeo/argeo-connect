@@ -90,6 +90,7 @@ public class ContactComposite extends Composite {
 	protected void populateEditPanel(final Composite parent) {
 		RowLayout rl = new RowLayout(SWT.WRAP);
 		rl.type = SWT.HORIZONTAL;
+		rl.center = true;
 		rl.marginWidth = 0;
 		parent.setLayout(rl);
 

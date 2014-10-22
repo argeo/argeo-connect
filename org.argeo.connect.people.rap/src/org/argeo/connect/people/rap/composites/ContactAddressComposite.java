@@ -85,7 +85,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 		// DATA
 		Composite dataCmp = toolkit.createComposite(parent);
-		dataCmp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		dataCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
 
 		if (!isCheckedOut) // READ ONLY
 			populateReadOnlyPanel(dataCmp);
@@ -118,6 +118,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 	protected void populateEditPanel(Composite parent) {
 		RowLayout rl = new RowLayout(SWT.WRAP);
 		rl.type = SWT.HORIZONTAL;
+		rl.center = true;
 		parent.setLayout(rl);
 
 		String refUid = CommonsJcrUtils.get(contactNode,
@@ -132,23 +133,22 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 	private void populateWorkAdresseCmp(Composite parent, final Node contactNode) {
 		try {
-			// The widgets
-			final Combo catCmb = new Combo(parent, SWT.NONE);
-
-			// Label lbl = toolkit.createLabel(parent, "Address of:",
-			// SWT.BOTTOM);
-
 			final Text valueTxt = PeopleRapUtils.createRDText(toolkit, parent,
 					"Chosen org.", "", 0);
 			valueTxt.setEnabled(false);
 
-			final Link chooseOrgLk = new Link(parent, SWT.LEFT);
+			Link chooseOrgLk = new Link(parent, SWT.LEFT | SWT.BOTTOM);
+			chooseOrgLk.setText("<a>Change</a>");
+			// toolkit.adapt(chooseOrgLk, false, false);
 
-			final Text labelTxt = PeopleRapUtils.createRDText(toolkit, parent,
+			Text labelTxt = PeopleRapUtils.createRDText(toolkit, parent,
 					"A custom label", "A custom label", 120);
 
-			toolkit.adapt(chooseOrgLk, false, false);
-			chooseOrgLk.setText("<a>Change</a>");
+			Combo catCmb = new Combo(parent, SWT.BOTTOM | SWT.READ_ONLY);
+			catCmb.setItems(peopleService.getContactService()
+					.getContactPossibleValues(contactNode,
+							PEOPLE_CONTACT_CATEGORY));
+
 			final PickUpOrgDialog diag = new PickUpOrgDialog(
 					chooseOrgLk.getShell(), "Choose an organisation",
 					contactNode.getSession(), contactNode.getParent()
@@ -157,10 +157,6 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			// REFRESH VALUES
 			PeopleRapUtils.refreshFormText(labelTxt, contactNode,
 					PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
-			catCmb.setItems(peopleService.getContactService()
-					.getContactPossibleValues(contactNode,
-							PEOPLE_CONTACT_CATEGORY));
-			catCmb.select(0);
 			PeopleRapUtils.refreshFormCombo(catCmb, contactNode,
 					PeopleNames.PEOPLE_CONTACT_CATEGORY);
 
@@ -181,10 +177,9 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			PeopleRapUtils.addTxtModifyListener(formPart, labelTxt,
 					contactNode, PeopleNames.PEOPLE_CONTACT_LABEL,
 					PropertyType.STRING);
-			if (catCmb != null)
-				PeopleRapUtils.addComboSelectionListener(formPart, catCmb,
-						contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY,
-						PropertyType.STRING);
+			PeopleRapUtils.addComboSelectionListener(formPart, catCmb,
+					contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY,
+					PropertyType.STRING);
 
 			chooseOrgLk.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = -7118320199160680131L;
@@ -207,10 +202,9 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			});
 
 			parent.pack(true);
-			// parent.layout();
 		} catch (RepositoryException e1) {
 			throw new PeopleException(
-					"unable to refresh edit work address panel ", e1);
+					"Unable to refresh editable panel for work address", e1);
 		}
 	}
 
@@ -245,6 +239,13 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 			final Text geoPointTxt = PeopleRapUtils.createRDText(toolkit,
 					parent, "Geopoint", "", 0);
+			final Text labelTxt = PeopleRapUtils.createRDText(toolkit, parent,
+					"Label", "", 0);
+
+			Combo catCmb = new Combo(parent, SWT.READ_ONLY);
+			catCmb.setItems(peopleService.getContactService()
+					.getContactPossibleValues(contactNode,
+							PEOPLE_CONTACT_CATEGORY));
 
 			// Refresh
 			PeopleRapUtils.refreshFormText(streetTxt, contactNode,
@@ -259,6 +260,10 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					PeopleNames.PEOPLE_STATE, "State");
 			PeopleRapUtils.refreshFormText(geoPointTxt, contactNode,
 					PeopleNames.PEOPLE_GEOPOINT, "Geo point");
+			PeopleRapUtils.refreshFormText(labelTxt, contactNode,
+					PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
+			PeopleRapUtils.refreshFormCombo(catCmb, contactNode,
+					PeopleNames.PEOPLE_CONTACT_CATEGORY);
 
 			// add listeners
 			addAddressTxtModifyListener(formPart, streetTxt, contactNode,
@@ -273,6 +278,12 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					PeopleNames.PEOPLE_STATE, PropertyType.STRING);
 			PeopleRapUtils.addTxtModifyListener(formPart, geoPointTxt,
 					contactNode, PeopleNames.PEOPLE_GEOPOINT,
+					PropertyType.STRING);
+			PeopleRapUtils.addTxtModifyListener(formPart, labelTxt,
+					contactNode, PeopleNames.PEOPLE_CONTACT_LABEL,
+					PropertyType.STRING);
+			PeopleRapUtils.addComboSelectionListener(formPart, catCmb,
+					contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY,
 					PropertyType.STRING);
 
 			// specific for drop downs
