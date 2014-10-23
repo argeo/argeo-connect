@@ -97,11 +97,11 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 
 		// 1st line (NOTE: it defines the grid data layout of this part)
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Status");
-		final Combo statusCmb = new Combo(parent, SWT.NONE);
+		final Combo statusCmb = new Combo(parent, SWT.READ_ONLY);
 		statusCmb.setItems(getPeopleService().getActivityService()
 				.getStatusList(task));
 		statusCmb.select(0);
-		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false);
+		gd = PeopleUiUtils.horizontalFillData();
 		gd.widthHint = 100;
 		statusCmb.setLayoutData(gd);
 
@@ -109,14 +109,12 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Due date");
 		final DateTime dueDateDt = new DateTime(parent, SWT.RIGHT | SWT.DATE
 				| SWT.MEDIUM | SWT.DROP_DOWN);
-		dueDateDt
-				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
+		dueDateDt.setLayoutData(PeopleUiUtils.horizontalFillData());
 
 		// ASSIGNED TO
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Assigned to");
 		final Link changeAssignationLk = new Link(parent, SWT.NONE);
-		changeAssignationLk.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
-				true, false));
+		changeAssignationLk.setLayoutData(PeopleUiUtils.horizontalFillData());
 
 		// WAKE UP DATE
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Wake up date");
@@ -128,21 +126,15 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 		// RELATED ENTITIES
 		// Label label =
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Related entities");
-		// gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
-		// gd.verticalIndent = 10;
-		// label.setLayoutData(gd);
-
 		Composite relEntitiesCmp = toolkit
 				.createComposite(parent, SWT.NO_FOCUS);
-		gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
-		relEntitiesCmp.setLayoutData(gd);
+		relEntitiesCmp.setLayoutData(PeopleUiUtils.horizontalFillData(3));
 		relEntitiesCmp.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 
 		// Parent composite with related entities and add link
 		final Composite relatedCmp = toolkit.createComposite(relEntitiesCmp,
 				SWT.NO_FOCUS);
-		gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		relatedCmp.setLayoutData(gd);
+		relatedCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = true;
 		rl.marginLeft = 5;
@@ -158,8 +150,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 		// Description
 		PeopleRapUtils.createBoldLabel(parent, "Description");
 		final Text descTxt = toolkit.createText(parent, "", SWT.BORDER);
-		gd = new GridData(SWT.FILL, SWT.CENTER, false, true, 3, 1);
-		descTxt.setLayoutData(gd);
+		descTxt.setLayoutData(PeopleUiUtils.horizontalFillData(3));
 
 		headerPart = new AbstractFormPart() {
 			public void refresh() {
@@ -322,7 +313,6 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 				}
 			}
 		});
-
 	}
 
 	private class MyOpenEditorAdapter extends SelectionAdapter {
