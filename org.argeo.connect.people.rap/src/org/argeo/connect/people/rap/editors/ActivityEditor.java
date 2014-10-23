@@ -98,8 +98,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Date");
 		final DateTime activityDateDt = new DateTime(parent, SWT.RIGHT
 				| SWT.DATE | SWT.MEDIUM | SWT.DROP_DOWN);
-		activityDateDt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true,
-				false));
+		activityDateDt.setLayoutData(PeopleUiUtils.horizontalFillData());
 
 		// 2nd line - RELATED ENTITIES
 		Label label = PeopleRapUtils.createBoldLabel(toolkit, parent,
@@ -108,8 +107,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 
 		final Composite relatedCmp = toolkit.createComposite(parent,
 				SWT.NO_FOCUS);
-		gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 5, 1);
-		relatedCmp.setLayoutData(gd);
+		relatedCmp.setLayoutData(PeopleUiUtils.horizontalFillData(5));
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = true;
 		rl.marginLeft = 5;
