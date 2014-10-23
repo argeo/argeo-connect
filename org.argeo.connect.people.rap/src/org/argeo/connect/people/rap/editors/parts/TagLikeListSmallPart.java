@@ -269,7 +269,7 @@ public class TagLikeListSmallPart extends Composite {
 					final Text tagTxt = toolkit.createText(parentCmp, "",
 							SWT.BORDER);
 					tagTxt.setMessage(newTagMsg);
-					RowData rd = new RowData(120, SWT.DEFAULT);
+					RowData rd = new RowData(80, SWT.DEFAULT);
 					tagTxt.setLayoutData(rd);
 
 					final TagLikeDropDown tagDD = new TagLikeDropDown(session,
@@ -290,11 +290,16 @@ public class TagLikeListSmallPart extends Composite {
 							}
 						}
 					});
-
-					// tagTxt.getParent().layout();
+					// we must call this so that the row data can copute the OK
+					// button size.
+					tagTxt.getParent().layout();
 
 					Button okBtn = toolkit.createButton(parentCmp, "OK",
 							SWT.BORDER | SWT.PUSH | SWT.BOTTOM);
+					// Button okBtn = new Button(parentCmp, SWT.BORDER |
+					// SWT.PUSH
+					// | SWT.BOTTOM);
+					// okBtn.setText("OK");
 					rd = new RowData(SWT.DEFAULT, tagTxt.getSize().y - 2);
 					okBtn.setLayoutData(rd);
 
@@ -311,11 +316,9 @@ public class TagLikeListSmallPart extends Composite {
 										newTag);
 						}
 					});
-
 				}
-				parentCmp.layout(false);
+				parentCmp.layout();
 				parentCmp.getParent().getParent().layout();
-
 			} catch (RepositoryException re) {
 				throw new PeopleException(
 						"Error while refreshing tag like list for " + taggable,
@@ -326,10 +329,8 @@ public class TagLikeListSmallPart extends Composite {
 		private void addTag(Shell shell, final AbstractFormPart part,
 				String newTag) {
 			String msg = null;
-
 			try {
 				Session session = taggable.getSession();
-
 				// Retrieve code from value
 				if (tagCodePropName != null)
 					newTag = resourceService.getEncodedTagCodeFromValue(
@@ -347,7 +348,6 @@ public class TagLikeListSmallPart extends Composite {
 									.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
 							|| userService
 									.isUserInRole(PeopleConstants.ROLE_ADMIN);
-
 					if (canAdd) {
 						// Ask end user if we create a new tag
 						msg = "\""
@@ -449,5 +449,4 @@ public class TagLikeListSmallPart extends Composite {
 			}
 		});
 	}
-
 }
