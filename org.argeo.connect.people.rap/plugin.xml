@@ -306,7 +306,7 @@
   	 		</commandParameter>
 		</command>
 
-		<command
+		<!-- <command
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       		id="org.argeo.connect.people.rap.editEntityReferenceWithPosition"
             name="Edit Entity References With Position">
@@ -322,10 +322,10 @@
          		id="param.toSearchNodeType"
          		name="type of node to search for">
   	 		</commandParameter>
-    	</command>
+    	</command> -->
     	
     	<!-- TODO remove the 2 following commands --> 
-    	<command
+    	<!-- <command
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       		id="org.argeo.connect.people.rap.addEntityReferences"
             name="Add Entity References">
@@ -358,7 +358,7 @@
          		id="param.dialogId"
          		name="ID of the corresponding dialog">
   	 		</commandParameter>
-    	</command>
+    	</command> -->
     	<!-- Until there --> 
 
     	<!-- Tags Management -->  
