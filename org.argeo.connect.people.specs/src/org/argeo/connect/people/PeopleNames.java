@@ -19,13 +19,15 @@ public interface PeopleNames {
 	// Main concepts parent node names
 	public final static String PEOPLE_PERSONS = "persons";
 	public final static String PEOPLE_ORGS = "orgs";
-	public final static String PEOPLE_FILMS = "films";
 	public final static String PEOPLE_PROJECTS = "projects";
 	public final static String PEOPLE_ACTIVITIES = "activities";
 	public final static String PEOPLE_RESOURCES = "resources";
 	// Corresponding subnodes for resources
 	public final static String PEOPLE_RESOURCE_TEMPLATE = "templates";
 	public final static String PEOPLE_RESOURCE_TAG_LIKE = "tags";
+
+	// TODO Should not be there
+	public final static String PEOPLE_FILMS = "films";
 
 	// Resources parent node names
 	public final static String PEOPLE_TAGS = "people:tags";

@@ -10,10 +10,11 @@ public interface PeopleConstants {
 	public final static String PEOPLE_PREFIX = "people";
 
 	// Base path
-	public final static String PEOPLE_BASE_PATH = "/people:system";
-	public final static String PEOPLE_TMP_PATH = "/people:tmp";
+	public final static String PEOPLE_BASE_PATH = "/people";
+	public final static String PEOPLE_TMP_PATH = "/draft";
 
 	// Types that do not correspond to a Jcr type
+	public final static String PEOPLE_PROJECT = "people:project";
 	public final static String PEOPLE_RESOURCE = "people:resource";
 	public final static String RESOURCE_TAG = "people:tag";
 	public final static String RESOURCE_COUNTRY = "people:country";

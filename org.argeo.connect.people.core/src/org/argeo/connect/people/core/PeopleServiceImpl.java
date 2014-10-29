@@ -1,6 +1,8 @@
 package org.argeo.connect.people.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,12 +71,15 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		if (entityType == null)
 			return PeopleConstants.PEOPLE_BASE_PATH;
 
-		String parentName = getParentNameFromType(entityType);
-		if (PeopleConstants.PEOPLE_KNOWN_PARENT_NAMES.contains(parentName))
-			return getBasePath(null) + "/" + parentName;
+		if (BUSINESS_REL_PATHES.containsKey(entityType))
+			return getBasePath(null) + "/"
+					+ BUSINESS_REL_PATHES.get(entityType);
+		// String parentName = getParentNameFromType(entityType);
+		// if (PeopleConstants.PEOPLE_KNOWN_PARENT_NAMES.contains(parentName))
+		// return getBasePath(null) + "/" + parentName;
 		else
-			throw new PeopleException("Unable to find base path for type: "
-					+ parentName);
+			throw new PeopleException("Unable to find base path with ID "
+					+ entityType);
 	}
 
 	@Override
@@ -131,6 +136,44 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		String path = getBasePath(nodeType) + "/";
 		path += JcrUtils.firstCharsToPath(peopleUid, 2);
 		return path;
+	}
+
+	/* DEFINITION OF THE PEOPLE DEFAULT TREE STRUCTURE */
+
+	/** Creates various useful parent nodes if needed */
+	protected void initialiseModel(Session adminSession)
+			throws RepositoryException {
+		JcrUtils.mkdirs(adminSession, getBasePath(null));// Root business node
+		JcrUtils.mkdirs(adminSession, getTmpPath());// Root tmp node
+
+		// Various business parents
+		JcrUtils.mkdirs(adminSession, getBasePath(PeopleTypes.PEOPLE_PERSON));
+		JcrUtils.mkdirs(adminSession, getBasePath(PeopleTypes.PEOPLE_ORG));
+		JcrUtils.mkdirs(adminSession, getBasePath(PeopleTypes.PEOPLE_ACTIVITY));
+		JcrUtils.mkdirs(adminSession,
+				getBasePath(PeopleConstants.PEOPLE_RESOURCE)); // Resources
+
+		if (adminSession.hasPendingChanges()) {
+			adminSession.save();
+			log.info("Repository has been initialised "
+					+ "with default People's model");
+		}
+	}
+
+	// Defines a mapping between main people concepts and their base path in the
+	// system
+	private static final Map<String, String> BUSINESS_REL_PATHES;
+	static {
+		Map<String, String> tmpMap = new HashMap<String, String>();
+		tmpMap.put(PeopleTypes.PEOPLE_ACTIVITY, PeopleNames.PEOPLE_ACTIVITIES);
+		tmpMap.put(PeopleTypes.PEOPLE_PERSON, PeopleNames.PEOPLE_PERSONS);
+		tmpMap.put(PeopleTypes.PEOPLE_ORG, PeopleNames.PEOPLE_ORGS);
+		tmpMap.put(PeopleConstants.PEOPLE_RESOURCE,
+				PeopleNames.PEOPLE_RESOURCES);
+		tmpMap.put(PeopleConstants.PEOPLE_PROJECT, PeopleNames.PEOPLE_PROJECTS);
+		tmpMap.put(PeopleTypes.PEOPLE_USER_GROUP,
+				PeopleNames.PEOPLE_USER_GROUPS);
+		BUSINESS_REL_PATHES = Collections.unmodifiableMap(tmpMap);
 	}
 
 	/* ENTITY SERVICES */
@@ -579,6 +622,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	// return repository;
 	// }
 
+	// HELPERS
+
 	/* MISCEALLENEOUS */
 	@Override
 	/** Override to define app specific properties that are not system properties */
@@ -587,10 +632,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	// /* DEPENDENCY INJECTION */
-	// public void setRepository(Repository repository) {
-	// this.repository = repository;
-	// }
-
 	// TODO remove this unused method and the corresponding injection in the
 	// spring XML files.
 	public void setBusinessCatalogs(Map<String, Object> businessCatalogs) {

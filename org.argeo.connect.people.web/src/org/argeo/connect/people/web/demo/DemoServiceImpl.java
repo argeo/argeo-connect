@@ -1,20 +1,25 @@
 package org.argeo.connect.people.web.demo;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.core.PeopleServiceImpl;
-import org.argeo.connect.people.core.imports.CountriesCsvFileParser;
-import org.argeo.connect.people.core.imports.LanguagesCsvFileParser;
+import org.argeo.connect.people.core.imports.EncodedTagCsvFileParser;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.security.UserAdminService;
 import org.argeo.security.jcr.JcrSecurityModel;
@@ -39,7 +44,7 @@ public class DemoServiceImpl extends PeopleServiceImpl implements
 		try {
 			adminSession = repository.login(workspaceName);
 			// Initialization of the model if needed
-			initializeModel(adminSession);
+			initialiseModel(adminSession);
 			addModelResources(adminSession, initResources);
 
 			// Demo specific Initializes the system with dummy data
@@ -62,15 +67,13 @@ public class DemoServiceImpl extends PeopleServiceImpl implements
 
 	// HELPERS
 	/** Creates various usefull parent nodes if needed */
-	protected void initializeModel(Session adminSession) throws Exception {
-		JcrUtils.mkdirs(adminSession, getBasePath(null)); // Root business node
-		JcrUtils.mkdirs(adminSession, getTmpPath()); // Root temporary node
+	@Override
+	protected void initialiseModel(Session adminSession)
+			throws RepositoryException {
+		super.initialiseModel(adminSession);
 
-		// Various business parents
-		JcrUtils.mkdirs(adminSession, getBasePath(PeopleTypes.PEOPLE_PERSON));
-		JcrUtils.mkdirs(adminSession, getBasePath(PeopleTypes.PEOPLE_ORG));
-		JcrUtils.mkdirs(adminSession, getBasePath(PeopleTypes.PEOPLE_ACTIVITY));
-		JcrUtils.mkdirs(adminSession, getResourceBasePath(null)); // Resources
+		// The resources
+		getResourceService().initialiseResources(adminSession);
 
 		if (adminSession.hasPendingChanges()) {
 			adminSession.save();
@@ -80,29 +83,58 @@ public class DemoServiceImpl extends PeopleServiceImpl implements
 
 	// MODEL INITIALISATION
 	// Import resources
-	private void addModelResources(Session adminSession,
+	protected void addModelResources(Session adminSession,
 			Map<String, Resource> initResources) throws Exception {
-		// Languages and countries
+
+		// initialisation
+		ResourceService resourceService = getResourceService();
 
 		Resource resource = initResources.get("Countries");
-		if (!adminSession
-				.nodeExists(getResourceBasePath(PeopleConstants.RESOURCE_COUNTRY))
-				&& resource != null) {
-			Node countries = JcrUtils.mkdirs(adminSession,
-					getResourceBasePath(PeopleConstants.RESOURCE_COUNTRY));
-			new CountriesCsvFileParser(adminSession, countries).parse(
-					resource.getInputStream(), "UTF-8");
+		if (resourceService.getTagLikeResourceParent(adminSession,
+				PeopleConstants.RESOURCE_COUNTRY) == null && resource != null) {
+			resourceService.createTagLikeResourceParent(adminSession,
+					PeopleConstants.RESOURCE_COUNTRY,
+					PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE,
+					PeopleNames.PEOPLE_CODE, getBasePath(null), CommonsJcrUtils
+							.getLocalJcrItemName(NodeType.NT_UNSTRUCTURED),
+					new ArrayList<String>());
+			String EN_SHORT_NAME = "English short name (upper-lower case)";
+			String ISO_CODE = "Alpha-2 code";
+			new EncodedTagCsvFileParser(resourceService, adminSession,
+					PeopleConstants.RESOURCE_COUNTRY, ISO_CODE, EN_SHORT_NAME)
+					.parse(resource.getInputStream(), "UTF-8");
 		}
 
 		resource = initResources.get("Languages");
-		if (!adminSession
-				.nodeExists(getResourceBasePath(PeopleConstants.RESOURCE_LANG))
-				&& resource != null) {
-			Node languages = JcrUtils.mkdirs(adminSession,
-					getResourceBasePath(PeopleConstants.RESOURCE_LANG));
-			new LanguagesCsvFileParser(adminSession, languages).parse(
-					resource.getInputStream(), "UTF-8");
+		if (resourceService.getTagLikeResourceParent(adminSession,
+				PeopleConstants.RESOURCE_LANG) == null && resource != null) {
+			resourceService.createTagLikeResourceParent(adminSession,
+					PeopleConstants.RESOURCE_LANG,
+					PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE,
+					PeopleNames.PEOPLE_CODE, getBasePath(null), CommonsJcrUtils
+							.getLocalJcrItemName(NodeType.NT_UNSTRUCTURED),
+					new ArrayList<String>());
+			String EN_SHORT_NAME = "Language name";
+			String ISO_CODE = "639-1";
+			new EncodedTagCsvFileParser(resourceService, adminSession,
+					PeopleConstants.RESOURCE_LANG, ISO_CODE, EN_SHORT_NAME)
+					.parse(resource.getInputStream(), "UTF-8");
 		}
+
+		// Create tag & mailing list parents
+		if (resourceService.getTagLikeResourceParent(adminSession,
+				PeopleConstants.RESOURCE_TAG) == null)
+			resourceService.createTagLikeResourceParent(adminSession,
+					PeopleConstants.RESOURCE_TAG,
+					PeopleTypes.PEOPLE_TAG_INSTANCE, null, getBasePath(null),
+					PeopleTypes.PEOPLE_ENTITY, PeopleNames.PEOPLE_TAGS);
+		if (resourceService.getTagLikeResourceParent(adminSession,
+				PeopleTypes.PEOPLE_MAILING_LIST) == null)
+			resourceService
+					.createTagLikeResourceParent(adminSession, null,
+							PeopleTypes.PEOPLE_MAILING_LIST, null,
+							getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
+							PeopleNames.PEOPLE_MAILING_LISTS);
 
 		if (adminSession.hasPendingChanges()) {
 			adminSession.save();

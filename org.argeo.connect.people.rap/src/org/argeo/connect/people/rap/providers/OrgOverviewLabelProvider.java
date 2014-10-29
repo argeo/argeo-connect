@@ -44,6 +44,10 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 			else if (node.isNodeType(PeopleTypes.PEOPLE_JOB)) {
 				orga = peopleService.getEntityByUid(node.getSession(), node
 						.getProperty(PeopleNames.PEOPLE_REF_UID).getString());
+				// TODO manage this more cleanly
+				if (orga == null)
+					return "Broken link. This organisation does not exist anymore. "
+							+ "It should have been deleted.";
 			} else
 				throw new PeopleException("Unvalid node type. "
 						+ "Cannot display org information");
