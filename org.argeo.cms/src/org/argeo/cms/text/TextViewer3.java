@@ -55,6 +55,9 @@ public class TextViewer3 extends ContentViewer implements CmsNames, KeyListener 
 				styledTools = new StyledTools(this);
 			}
 
+//			if (!textNode.hasNodes())
+//				textNode.addNode(CMS_P, CmsTypes.CMS_STYLED);
+
 			refresh();
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot load main section", e);
@@ -126,11 +129,11 @@ public class TextViewer3 extends ContentViewer implements CmsNames, KeyListener 
 
 	public void edit(Composite composite, Object caretPosition) {
 		try {
-			if (edited != null && edited != composite)
-				stopEditing(true);
-
 			if (edited == composite)
 				return;
+
+			if (edited != null && edited != composite)
+				stopEditing(true);
 
 			if (composite instanceof Paragraph) {
 				Paragraph paragraph = (Paragraph) composite;
