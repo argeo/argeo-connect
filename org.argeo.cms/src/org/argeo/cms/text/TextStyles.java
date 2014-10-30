@@ -9,6 +9,10 @@ public interface TextStyles {
 	public final static String TEXT_EDITOR = "text_editor";
 	/** The styled composite for editing the text */
 	public final static String TEXT_STYLED_COMPOSITE = "text_styled_composite";
+	/** A section */
+	public final static String TEXT_SECTION = "text_section";
+	/** A paragraph */
+	public final static String TEXT_PARAGRAPH = "text_paragraph";
 	/** The dialog to edit styled paragraph */
 	public final static String TEXT_STYLED_TOOLS_DIALOG = "text_styled_tools_dialog";
 

@@ -7,6 +7,7 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsNames;
+import org.argeo.cms.CmsStyles;
 import org.argeo.cms.CmsTypes;
 import org.argeo.cms.CmsUtils;
 import org.eclipse.swt.SWT;
@@ -48,6 +49,7 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 			this.parentSection = null;
 		setLayout(CmsUtils.noSpaceGridLayout());
 		setData(node);
+		CmsUtils.style(this, TextStyles.TEXT_SECTION);
 	}
 
 	public void updateContent() throws RepositoryException {
@@ -112,11 +114,11 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 		getViewer().layout(this);
 	}
 
-	protected Composite getChild(Item node) {
+	protected Composite getChild(Item node) throws RepositoryException {
 		for (Control child : getChildren()) {
 			if (child instanceof Composite && child.getData() != null) {
 				Item currNode = (Item) child.getData();
-				if (currNode.equals(node))
+				if (currNode.getPath().equals(node.getPath()))
 					return (Composite) child;
 			}
 		}
@@ -211,6 +213,13 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 			return (Composite) control;
 		return findDataParent(control.getParent());
 
+	}
+
+	@Override
+	public String toString() {
+		if (parentSection == null)
+			return "Main section " + getData();
+		return "Section " + getData();
 	}
 
 	protected TextViewer3 getViewer() {

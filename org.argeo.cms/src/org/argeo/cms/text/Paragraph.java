@@ -14,6 +14,7 @@ public class Paragraph extends StyledComposite {
 		super(parent, style, parent.getViewer().getTextInterpreter());
 		setLayout(CmsUtils.noSpaceGridLayout());
 		setData(node);
+		CmsUtils.style(this, TextStyles.TEXT_PARAGRAPH);
 	}
 
 	public void refresh(Boolean updateContent) throws RepositoryException {
@@ -36,7 +37,8 @@ public class Paragraph extends StyledComposite {
 		// retrieve control AFTER setting style, since it may have been reset
 		setText(node);
 
-		getViewer().layout(this);
+		// getViewer().layout(this);
+		layout();
 	}
 
 	protected Node getNode() {
@@ -77,5 +79,10 @@ public class Paragraph extends StyledComposite {
 				}
 		}
 		return null;
+	}
+
+	@Override
+	public String toString() {
+		return "Paragraph " + getData();
 	}
 }
