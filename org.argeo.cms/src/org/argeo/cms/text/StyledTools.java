@@ -12,6 +12,7 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
@@ -29,9 +30,8 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 
 	private Composite currentTextPart;
 
-	public StyledTools(TextViewer textViewer) {
-		super(textViewer.getControl().getDisplay(), SWT.NO_TRIM | SWT.BORDER
-				| SWT.ON_TOP);
+	public StyledTools(TextViewer textViewer, Display display) {
+		super(display, SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
 		this.textViewer = textViewer;
 		setLayout(new GridLayout());
 		setData(RWT.CUSTOM_VARIANT, TEXT_STYLED_TOOLS_DIALOG);

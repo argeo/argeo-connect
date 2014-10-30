@@ -11,7 +11,7 @@ public class Paragraph extends StyledComposite {
 	private static final long serialVersionUID = 3746457776229542887L;
 
 	public Paragraph(Section parent, int style, Node node) {
-		super(parent, style, parent.getViewer().getTextInterpreter());
+		super(parent, style, parent.getTextInterpreter());
 		setLayout(CmsUtils.noSpaceGridLayout());
 		setData(node);
 		CmsUtils.style(this, TextStyles.TEXT_PARAGRAPH);
@@ -47,10 +47,6 @@ public class Paragraph extends StyledComposite {
 
 	protected Section getSection() {
 		return (Section) getParent();
-	}
-
-	protected TextViewer getViewer() {
-		return getSection().getViewer();
 	}
 
 	public Paragraph nextParagraph() {

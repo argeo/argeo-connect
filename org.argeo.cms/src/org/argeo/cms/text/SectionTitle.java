@@ -39,7 +39,7 @@ public class SectionTitle extends Composite {
 		for (Control child : getChildren())
 			child.dispose();
 		if (getProperty() != null) {
-			title = new StyledComposite(this, SWT.NONE, getViewer()
+			title = new StyledComposite(this, SWT.NONE, getSection()
 					.getTextInterpreter());
 			title.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			if (updateContent)
@@ -70,7 +70,7 @@ public class SectionTitle extends Composite {
 		return (Section) getParent();
 	}
 
-	public TextViewer getViewer() {
-		return getSection().getViewer();
-	}
+	// public TextViewer getViewer() {
+	// return getSection().getViewer();
+	// }
 }

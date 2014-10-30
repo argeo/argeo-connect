@@ -27,7 +27,7 @@ public class TextDisplay implements CmsEditable, CmsNames, TextStyles {
 	private final String textNodePath;// cache
 	private VersionManager versionManager;
 
-	private TextViewer textViewer;
+	private ComplexTextEditor textViewer;
 
 	private Boolean canEdit = false;
 
@@ -76,7 +76,7 @@ public class TextDisplay implements CmsEditable, CmsNames, TextStyles {
 		// } catch (RepositoryException e) {
 		// throw new CmsException("Cannot load main section", e);
 		// }
-		textViewer = new TextViewer(parent, textNode, this);
+		textViewer = new ComplexTextEditor(parent, textNode, this);
 	}
 
 	//

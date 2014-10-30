@@ -7,21 +7,17 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsNames;
-import org.argeo.cms.CmsStyles;
 import org.argeo.cms.CmsTypes;
 import org.argeo.cms.CmsUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public class Section extends Composite implements CmsNames, TraverseListener,
-		MouseListener {
+public class Section extends Composite implements CmsNames, MouseListener {
 	private static final long serialVersionUID = -5933796173755739207L;
 
 	private final TextViewer textViewer;
@@ -29,10 +25,10 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 
 	private SectionTitle sectionTitle;
 
-	public Section(TextViewer textViewer, int style, Node node)
-			throws RepositoryException {
-		this(textViewer, (Composite) textViewer.getControl(), style, node);
-	}
+	// public Section(TextViewer textViewer, int style, Node node)
+	// throws RepositoryException {
+	// this(textViewer, (Composite) textViewer.getControl(), style, node);
+	// }
 
 	public Section(Section parent, int style, Node node)
 			throws RepositoryException {
@@ -82,7 +78,6 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 			sectionTitle.refresh(updateContent);
 			if (getViewer().getCmsEditable().canEdit()) {
 				sectionTitle.getTitle().setMouseListener(this);
-				sectionTitle.getTitle().setTraverseListener(this);
 			}
 		}
 
@@ -103,7 +98,6 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 				paragraph.refresh(updateContent);
 				if (getViewer().getCmsEditable().canEdit()) {
 					paragraph.setMouseListener(this);
-					paragraph.setTraverseListener(this);
 				}
 			}
 		}
@@ -123,67 +117,6 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 			}
 		}
 		return null;
-	}
-
-	// protected void updateParagraph(StyledComposite paragraph)
-	// throws RepositoryException {
-	// // if (!node.getPath().equals(paragraph.getNodePath()))
-	// // throw new CmsException("Trying to update paragraph "
-	// // + paragraph.getNodePath() + " with " + node);
-	// Node node = (Node) paragraph.getData();
-	// String style;
-	// if (node.hasProperty(CMS_STYLE))
-	// style = node.getProperty(CMS_STYLE).getString();
-	// else
-	// style = TextStyles.TEXT_DEFAULT;
-	// paragraph.setStyle(style);
-	//
-	// // retrieve control AFTER setting style, since it may have been reset
-	// Control control = paragraph.getControl();
-	// if (control instanceof Label) {
-	// String content = textInterpreter.raw(node);
-	// Label label = (Label) control;
-	// label.setText(content);
-	// if (textPartListener != null) {
-	// label.removeMouseListener(textPartListener);
-	// label.addMouseListener(textPartListener);
-	// }
-	// } else if (control instanceof Text) {
-	// String content = textInterpreter.read(node);
-	// Text text = (Text) control;
-	// text.setText(content);
-	// text.addTraverseListener(this);
-	// }
-	//
-	// }
-
-	@Override
-	public void keyTraversed(TraverseEvent e) {
-		System.out.println(e);
-		// Composite composite = findDataParent(e.getSource());
-		// if (e.detail == SWT.TRAVERSE_TAB_NEXT) {
-		// Control[] children = getChildren();
-		// for (int i = 0; i < children.length; i++) {
-		// if (composite == children[i] && i + 1 < children.length) {
-		// Composite nextEdited = (Composite) children[i + 1];
-		// System.out.println(nextEdited.isVisible());
-		// getViewer().edit(nextEdited);
-		// break;
-		// }
-		// }
-		// } else if (e.detail == SWT.TRAVERSE_TAB_PREVIOUS) {
-		// Control[] children = getChildren();
-		// for (int i = 0; i < children.length; i++) {
-		// if (composite == children[i] && i != 0) {
-		// getViewer().edit((Composite) children[i - 1]);
-		// break;
-		// }
-		// }
-		// } else if (e.detail == SWT.TRAVERSE_ESCAPE) {
-		// getViewer().cancelEdit();
-		// } else if (e.detail == SWT.TRAVERSE_RETURN) {
-		// getViewer().splitEdit();
-		// }
 	}
 
 	@Override
@@ -222,19 +155,23 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 		return "Section " + getData();
 	}
 
-	protected TextViewer getViewer() {
+	private TextViewer getViewer() {
 		return textViewer;
 	}
 
-	protected Node getNode() {
+	public Node getNode() {
 		return (Node) getData();
 	}
 
-	protected Node getTextNode() {
+	private Node getTextNode() {
 		return getViewer().getMainSection().getNode();
 	}
 
 	public Section getParentSection() {
 		return parentSection;
+	}
+
+	public TextInterpreter getTextInterpreter() {
+		return getViewer().getTextInterpreter();
 	}
 }

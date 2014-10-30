@@ -1,17 +1,12 @@
 package org.argeo.cms.text;
 
 import javax.jcr.Item;
-import javax.jcr.Property;
-import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsNames;
 import org.argeo.cms.CmsUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -26,21 +21,20 @@ class StyledComposite extends EditableTextPart implements CmsNames, TextStyles {
 	private Composite container;
 	private Composite box;
 
-	private TextInterpreter textInterpreter = new IdentityTextInterpreter();
+	private final TextInterpreter textInterpreter;
 
 	private MouseListener mouseListener;
-	private TraverseListener traverseListener;
 
-	public StyledComposite(Composite parent, int swtStyle, Item node)
-			throws RepositoryException {
-		super(parent, swtStyle);
-		setLayout(CmsUtils.noSpaceGridLayout());
-		setData(node);
-		setData(Property.JCR_PATH, node.getPath());
-		setData(RWT.CUSTOM_VARIANT, TEXT_STYLED_COMPOSITE);
-		clear(true);
-		child = createLabel(null);
-	}
+	// public StyledComposite(Composite parent, int swtStyle, Item node)
+	// throws RepositoryException {
+	// super(parent, swtStyle);
+	// setLayout(CmsUtils.noSpaceGridLayout());
+	// setData(node);
+	// setData(Property.JCR_PATH, node.getPath());
+	// setData(RWT.CUSTOM_VARIANT, TEXT_STYLED_COMPOSITE);
+	// clear(true);
+	// child = createLabel(null);
+	// }
 
 	public StyledComposite(Composite parent, int swtStyle,
 			TextInterpreter textInterpreter) {
@@ -57,18 +51,6 @@ class StyledComposite extends EditableTextPart implements CmsNames, TextStyles {
 		lbl.setData(RWT.CUSTOM_VARIANT, style);
 		if (mouseListener != null)
 			lbl.addMouseListener(mouseListener);
-		lbl.addFocusListener(new FocusListener() {
-
-			@Override
-			public void focusLost(FocusEvent event) {
-			}
-
-			@Override
-			public void focusGained(FocusEvent event) {
-				System.out.println(event);
-
-			}
-		});
 		// if (traverseListener != null)
 		// lbl.addTraverseListener(traverseListener);
 		return lbl;
@@ -166,10 +148,10 @@ class StyledComposite extends EditableTextPart implements CmsNames, TextStyles {
 			child.addMouseListener(mouseListener);
 	}
 
-	public void setTraverseListener(TraverseListener traverseListener) {
-		this.traverseListener = traverseListener;
-		if (child != null)
-			child.addTraverseListener(traverseListener);
-	}
-
+	// public void setTraverseListener(TraverseListener traverseListener) {
+	// this.traverseListener = traverseListener;
+	// if (child != null)
+	// child.addTraverseListener(traverseListener);
+	// }
+	//
 }
