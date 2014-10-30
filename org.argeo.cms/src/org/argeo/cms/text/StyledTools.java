@@ -20,7 +20,7 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 	private final static String[] DEFAULT_TEXT_STYLES = {
 			TextStyles.TEXT_DEFAULT, TextStyles.TEXT_PRE, TextStyles.TEXT_QUOTE };
 
-	private final TextViewer3 textViewer;
+	private final TextViewer textViewer;
 
 	private static final long serialVersionUID = -3826246895162050331L;
 	private List<StyleButton> styleButtons = new ArrayList<StyledTools.StyleButton>();
@@ -29,7 +29,7 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 
 	private Composite currentTextPart;
 
-	public StyledTools(TextViewer3 textViewer) {
+	public StyledTools(TextViewer textViewer) {
 		super(textViewer.getControl().getDisplay(), SWT.NO_TRIM | SWT.BORDER
 				| SWT.ON_TOP);
 		this.textViewer = textViewer;

@@ -24,12 +24,12 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 		MouseListener {
 	private static final long serialVersionUID = -5933796173755739207L;
 
-	private final TextViewer3 textViewer;
+	private final TextViewer textViewer;
 	private final Section parentSection;
 
 	private SectionTitle sectionTitle;
 
-	public Section(TextViewer3 textViewer, int style, Node node)
+	public Section(TextViewer textViewer, int style, Node node)
 			throws RepositoryException {
 		this(textViewer, (Composite) textViewer.getControl(), style, node);
 	}
@@ -39,7 +39,7 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 		this(parent.textViewer, parent, style, node);
 	}
 
-	Section(TextViewer3 textViewer, Composite parent, int style, Node node)
+	Section(TextViewer textViewer, Composite parent, int style, Node node)
 			throws RepositoryException {
 		super(parent, style);
 		this.textViewer = textViewer;
@@ -222,7 +222,7 @@ public class Section extends Composite implements CmsNames, TraverseListener,
 		return "Section " + getData();
 	}
 
-	protected TextViewer3 getViewer() {
+	protected TextViewer getViewer() {
 		return textViewer;
 	}
 

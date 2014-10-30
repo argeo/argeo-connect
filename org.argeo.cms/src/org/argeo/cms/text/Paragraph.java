@@ -49,7 +49,7 @@ public class Paragraph extends StyledComposite {
 		return (Section) getParent();
 	}
 
-	protected TextViewer3 getViewer() {
+	protected TextViewer getViewer() {
 		return getSection().getViewer();
 	}
 

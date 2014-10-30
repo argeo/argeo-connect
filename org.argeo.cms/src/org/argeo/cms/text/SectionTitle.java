@@ -70,7 +70,7 @@ public class SectionTitle extends Composite {
 		return (Section) getParent();
 	}
 
-	public TextViewer3 getViewer() {
+	public TextViewer getViewer() {
 		return getSection().getViewer();
 	}
 }

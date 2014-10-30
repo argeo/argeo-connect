@@ -26,10 +26,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 
-public class TextViewer3 extends ContentViewer implements CmsNames, KeyListener {
+public class TextViewer extends ContentViewer implements CmsNames, KeyListener {
 	private static final long serialVersionUID = -2401274679492339668L;
 
-	private final static Log log = LogFactory.getLog(TextViewer3.class);
+	private final static Log log = LogFactory.getLog(TextViewer.class);
 
 	private ScrolledPage page;
 	private Section mainSection;
@@ -40,7 +40,7 @@ public class TextViewer3 extends ContentViewer implements CmsNames, KeyListener 
 	private TextInterpreter textInterpreter = new IdentityTextInterpreter();
 	private final CmsEditable cmsEditable;
 
-	public TextViewer3(Composite parent, Node textNode, CmsEditable cmsEditable) {
+	public TextViewer(Composite parent, Node textNode, CmsEditable cmsEditable) {
 		try {
 			page = new ScrolledPage(parent, SWT.NONE);
 			page.setLayout(CmsUtils.noSpaceGridLayout());
