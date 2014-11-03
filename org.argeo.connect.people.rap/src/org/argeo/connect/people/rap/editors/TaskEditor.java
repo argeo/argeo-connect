@@ -109,7 +109,8 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Due date");
 		final DateTime dueDateDt = new DateTime(parent, SWT.RIGHT | SWT.DATE
 				| SWT.MEDIUM | SWT.DROP_DOWN);
-		dueDateDt.setLayoutData(PeopleUiUtils.horizontalFillData());
+		dueDateDt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true,
+				false));
 
 		// ASSIGNED TO
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Assigned to");

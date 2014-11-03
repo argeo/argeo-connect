@@ -339,14 +339,24 @@ public class PeopleUiSnippets {
 		return getUrlLink(value, value);
 	}
 
+	// /**
+	// * Creates the read-only HTML snippet to display in a label with styling
+	// * enabled in order to provide a click-able link. It makes extra check to
+	// be
+	// * sure the URL would be rendering correctly
+	// */
+	// public static String getUrlLinkSafely(String value) {
+	// return getUrlLink(value, value);
+	// }
+
 	/**
 	 * Creates the read-only HTML snippet to display in a label with styling
 	 * enabled in order to provide a click-able link
 	 */
 	public static String getUrlLink(String value, String label) {
 		StringBuilder builder = new StringBuilder();
-
 		value = PeopleUiUtils.replaceAmpersand(value);
+		label = PeopleUiUtils.replaceAmpersand(label);
 		if (!(value.startsWith("http://") || value.startsWith("https://")))
 			value = "http://" + value;
 		builder.append("<a href=\"");
