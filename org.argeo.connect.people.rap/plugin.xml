@@ -149,8 +149,8 @@
 		point="org.eclipse.ui.commands">
 		<!-- Open correct editor given the node type --> 
     	<command
-			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
 			id="org.argeo.connect.people.rap.openEntityEditor"
+			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
 			name="Open Editor">
 			<commandParameter
          		id="param.jcrId"
@@ -168,8 +168,8 @@
 		</command>    
 
 		<command
-			defaultHandler="org.argeo.connect.people.rap.commands.OpenSearchEntityEditor"
 			id="org.argeo.connect.people.rap.openSearchEntityEditor"
+			defaultHandler="org.argeo.connect.people.rap.commands.OpenSearchEntityEditor"
 			name="Open Search Entity Editor">
 			 <commandParameter
          		id="param.nodeType"
@@ -188,9 +188,9 @@
 
 		<!-- Person and organisation management --> 
 		<command
-			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
-      		id="org.argeo.connect.people.rap.editJob"
-            name="Create or edit a job">
+			id="org.argeo.connect.people.rap.editJob"
+            defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		name="Create or edit a job">
             <commandParameter
          		id="param.relevantNodeJcrId"
          		name="Jcr ID of the node to edit">
@@ -204,19 +204,19 @@
 		
 		<!-- Users and Groups Management --> 
 		<command
-      		defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       		id="org.argeo.connect.people.rap.createPeopleUser"
-            name="New User Group">
+            defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		name="New User Group">
     	</command>
 		<command
-      		defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       		id="org.argeo.connect.people.rap.createUserGroup"
-            name="New User Group">
+            defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		name="New User Group">
     	</command>
 		<command
-      		defaultHandler="org.argeo.connect.people.rap.commands.OpenPeopleUserEditor"
       		id="org.argeo.connect.people.rap.openPeopleUserEditor"
-            name="Open user editor">
+            defaultHandler="org.argeo.connect.people.rap.commands.OpenPeopleUserEditor"
+      		name="Open user editor">
             <commandParameter
          		id="param.username"
          		name="the username">
@@ -225,9 +225,9 @@
     	
     	<!-- Activities and tasks management --> 
     	<command
-      		defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       		id="org.argeo.connect.people.rap.createSimpleTask"
-            name="Create simple task">
+            defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		name="Create simple task">
         </command>
     	
     	<!-- Generic Check in and out introduced by people -->
@@ -242,9 +242,9 @@
     	
     	<!-- Entity CRUD --> 
 		<command
-			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
-      		id="org.argeo.connect.people.rap.deleteEntity"
-            name="deleteEntity">
+			id="org.argeo.connect.people.rap.deleteEntity"
+            defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		name="deleteEntity">
             <commandParameter
          		id="param.toRemoveJcrId"
          		name="Jcr ID of the node to remove">
@@ -255,12 +255,11 @@
   	 		</commandParameter>
     	</command>
     
-		
 		<!-- Entity References CRUD --> 
 		<command
-			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
-      		id="org.argeo.connect.people.rap.removeEntityReference"
-            name="removeEntityReference">
+			id="org.argeo.connect.people.rap.removeEntityReference"
+        	defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      	    name="removeEntityReference">
             <commandParameter
          		id="param.versionableParentJcrId"
          		name="Jcr ID of the nearest versionable ancestor">
@@ -270,11 +269,10 @@
          		name="Jcr ID of the node to remove">
   	 		</commandParameter>
     	</command>
-    	
     	<command
-			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
-      		id="org.argeo.connect.people.rap.editEntityReference"
-            name="editEntityReference">
+			id="org.argeo.connect.people.rap.editEntityReference"
+        	defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      	    name="editEntityReference">
             <commandParameter
          		id="param.versionableParentJcrId"
          		name="Jcr ID of the nearest versionable ancestor">
@@ -284,10 +282,10 @@
          		name="Jcr ID of the node to edit">
   	 		</commandParameter>
     	</command>
-    	<command
-			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
-      		id="org.argeo.connect.people.rap.addEntityReference"
-            name="Add a link between 2 entities">
+    	<!-- <command
+			id="org.argeo.connect.people.rap.addEntityReference"
+        	defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      	    name="Add a link between 2 entities">
             <commandParameter
          		id="param.referencingJcrId"
          		name="Referencing node JCR identifier">
@@ -299,12 +297,12 @@
             <commandParameter
          		id="param.toSearchNodeType"
          		name="The type of node to search for">
-  	 		</commandParameter>
+  	 		</commandParameter> 
             <commandParameter
          		id="param.dialogId"
          		name="ID of the corresponding dialog">
   	 		</commandParameter>
-		</command>
+		</command>-->
 
 		<!-- <command
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
@@ -392,11 +390,11 @@
      			name="The type of the url">
  			</commandParameter>
   		</command>
-  		
+
   		<!-- Miscelleanous -->
   		<command
-			defaultHandler="org.argeo.connect.people.rap.commands.ForceRefresh"
 			id="org.argeo.connect.people.rap.forceRefresh"
+			defaultHandler="org.argeo.connect.people.rap.commands.ForceRefresh"
 			name="Force refresh of the current active part if such an action is possible">
 			<commandParameter
 					id="param.viewId"
@@ -406,8 +404,8 @@
 
   		<!-- Utility to provide sub menues when we don't want to define a default command for this menu -->
 		<command
-			defaultHandler="org.argeo.connect.people.rap.commands.DoNothing"
 			id="org.argeo.connect.people.rap.doNothing"
+			defaultHandler="org.argeo.connect.people.rap.commands.DoNothing"
 			name="Open menu">
 		</command>    
 	</extension>		

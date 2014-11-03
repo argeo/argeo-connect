@@ -107,10 +107,10 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 
 		// DUE DATE
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Due date");
-		final DateTime dueDateDt = new DateTime(parent, SWT.RIGHT | SWT.DATE
-				| SWT.MEDIUM | SWT.DROP_DOWN);
-		dueDateDt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true,
-				false));
+		final DateTime dueDateDt = new DateTime(parent, SWT.DATE | SWT.MEDIUM
+				| SWT.DROP_DOWN);
+		dueDateDt
+				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
 
 		// ASSIGNED TO
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Assigned to");
@@ -119,7 +119,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 
 		// WAKE UP DATE
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Wake up date");
-		final DateTime wakeUpDateDt = new DateTime(parent, SWT.RIGHT | SWT.DATE
+		final DateTime wakeUpDateDt = new DateTime(parent, SWT.DATE
 				| SWT.MEDIUM | SWT.DROP_DOWN);
 		wakeUpDateDt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false,
 				false));
