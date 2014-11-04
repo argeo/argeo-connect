@@ -37,7 +37,7 @@ public class EditJob extends AbstractHandler {
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".editJob";
 	public final static ImageDescriptor DEFAULT_IMG_DESCRIPTOR = PeopleRapPlugin
 			.getImageDescriptor("icons/add.png");
-	public final static String PUBLIC_RELEVANT_NODE_JCR_ID = "param.relevantNodeJcrId";
+	public final static String PARAM_RELEVANT_NODE_JCR_ID = "param.relevantNodeJcrId";
 	public final static String PARAM_IS_BACKWARD = "param.isBackward";
 
 	/* DEPENDENCY INJECTION */
@@ -48,7 +48,7 @@ public class EditJob extends AbstractHandler {
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
 		String relevantNodeJcrId = event
-				.getParameter(PUBLIC_RELEVANT_NODE_JCR_ID);
+				.getParameter(PARAM_RELEVANT_NODE_JCR_ID);
 
 		Session session = null;
 		try {

@@ -9,7 +9,6 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.rap.commands.DeleteEntity;
 import org.argeo.connect.people.rap.commands.EditJob;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.commands.RemoveEntityReference;
@@ -48,34 +47,18 @@ public class PeopleRapSnippets {
 		return getRWTLink(href, PeopleUiConstants.CRUD_DELETE);
 	}
 
-	/**
-	 * Create the text value of a link that enable calling the
-	 * <code>RemoveEntityReference</command> from a cell of a HTML list
-	 */
-	public static String getRemoveSnippetForLists(Node currNode,
-			boolean removeParent) {
-		String toRemoveJcrId = CommonsJcrUtils.getIdentifier(currNode);
-		String href = DeleteEntity.ID + "/"
-				+ DeleteEntity.PARAM_TOREMOVE_JCR_ID + "=" + toRemoveJcrId
-				+ "/" + DeleteEntity.PARAM_REMOVE_ALSO_PARENT + "="
-				+ removeParent;
-		return getRWTLink(href, PeopleUiConstants.CRUD_DELETE);
-	}
-
 	// /**
 	// * Create the text value of a link that enable calling the
-	// * <code>EditEntityReference</command> from a cell of a HTML list
+	// * <code>RemoveEntityReference</command> from a cell of a HTML list
 	// */
-	// public static String getEditSnippetForLists(Node currNode,
-	// Node parentVersionableNode) {
-	// String toEditJcrId = CommonsJcrUtils.getIdentifier(currNode);
-	// String versionableParJcrId = CommonsJcrUtils
-	// .getIdentifier(parentVersionableNode);
-	// String href = EditEntityReference.ID + "/"
-	// + EditEntityReference.PARAM_VERSIONABLE_PARENT_JCR_ID + "="
-	// + versionableParJcrId + "/"
-	// + EditEntityReference.PARAM_TOEDIT_JCR_ID + "=" + toEditJcrId;
-	// return getRWTLink(href, PeopleUiConstants.CRUD_EDIT);
+	// public static String getRemoveSnippetForLists(Node currNode,
+	// boolean removeParent) {
+	// String toRemoveJcrId = CommonsJcrUtils.getIdentifier(currNode);
+	// String href = DeleteEntity.ID + "/"
+	// + DeleteEntity.PARAM_TOREMOVE_JCR_ID + "=" + toRemoveJcrId
+	// + "/" + DeleteEntity.PARAM_REMOVE_ALSO_PARENT + "="
+	// + removeParent;
+	// return getRWTLink(href, PeopleUiConstants.CRUD_DELETE);
 	// }
 
 	/**
@@ -85,7 +68,7 @@ public class PeopleRapSnippets {
 	public static String getEditJobSnippetForLists(Node relevantNode,
 			boolean isBackward) {
 		String toEditJcrId = CommonsJcrUtils.getIdentifier(relevantNode);
-		String href = EditJob.ID + "/" + EditJob.PUBLIC_RELEVANT_NODE_JCR_ID
+		String href = EditJob.ID + "/" + EditJob.PARAM_RELEVANT_NODE_JCR_ID
 				+ "=" + toEditJcrId + "/" + EditJob.PARAM_IS_BACKWARD + "="
 				+ isBackward;
 		return getRWTLink(href, PeopleUiConstants.CRUD_EDIT);
@@ -151,7 +134,7 @@ public class PeopleRapSnippets {
 									CommonsJcrUtils.getSession(entity),
 									peopleService, peopleWorkbenchService,
 									PeopleConstants.RESOURCE_TAG,
-									value.getString())).append(" ");
+									value.getString())).append("  ");
 			}
 			return PeopleUiUtils.replaceAmpersand(tags.toString());
 		} catch (RepositoryException e) {

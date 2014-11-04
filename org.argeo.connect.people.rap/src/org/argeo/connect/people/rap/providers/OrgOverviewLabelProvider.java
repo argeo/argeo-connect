@@ -77,14 +77,14 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 			String tmpStr;
 			tmpStr = PeopleUiSnippets.getPrimaryContacts(orga);
 			if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
-				builder.append(tmpStr);
+				builder.append(tmpStr).append("<br/>");
 			}
 
 			if (isSmallList) {
 				tmpStr = PeopleRapSnippets.getTags(peopleService,
 						peopleWorkbenchService, orga);
 				if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
-					builder.append(tmpStr).append("<br/>");
+					builder.append(tmpStr);
 			}
 
 			builder.append("</span>");

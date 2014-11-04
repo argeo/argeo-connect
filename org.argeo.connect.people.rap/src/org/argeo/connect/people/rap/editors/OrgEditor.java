@@ -15,11 +15,11 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.composites.ContactPanelComposite;
 import org.argeo.connect.people.rap.editors.parts.TagLikeListPart;
+import org.argeo.connect.people.rap.editors.tabs.JobsList;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.rap.toolkits.ActivityToolkit;
 import org.argeo.connect.people.rap.toolkits.LegalInfoToolkit;
-import org.argeo.connect.people.rap.toolkits.ListToolkit;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -53,7 +53,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 	private Node org;
 
 	// Toolkits
-	private ListToolkit listTK;
+	// private ListToolkit listTK;
 	private LegalInfoToolkit legalTK;
 	private ActivityToolkit activityTK;
 
@@ -74,8 +74,9 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void createToolkits() {
-		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
-				getPeopleWorkbenchService());
+		// listTK = new ListToolkit(toolkit, getManagedForm(),
+		// getPeopleService(),
+		// getPeopleWorkbenchService());
 		legalTK = new LegalInfoToolkit(toolkit, getManagedForm(), org);
 		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
 				getPeopleService(), getPeopleWorkbenchService());
@@ -132,7 +133,11 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Team",
 				PeopleRapConstants.CTAB_EMPLOYEES, tooltip);
-		listTK.populateEmployeesPanel(innerPannel, org);
+		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		Composite employeesCmp = new JobsList(toolkit, getManagedForm(),
+				innerPannel, SWT.NONE, getPeopleService(),
+				getPeopleWorkbenchService(), org);
+		employeesCmp.setLayoutData(PeopleUiUtils.fillGridData());
 
 		// Legal informations
 		tooltip = "Legal information for "

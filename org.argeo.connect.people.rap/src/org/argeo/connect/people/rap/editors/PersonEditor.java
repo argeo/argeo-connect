@@ -19,11 +19,11 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.composites.ContactPanelComposite;
 import org.argeo.connect.people.rap.editors.parts.TagLikeListPart;
+import org.argeo.connect.people.rap.editors.tabs.JobsList;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.rap.toolkits.ActivityToolkit;
 import org.argeo.connect.people.rap.toolkits.HistoryToolkit;
-import org.argeo.connect.people.rap.toolkits.ListToolkit;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -64,7 +64,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 
 	// Usefull toolkits
 	private ActivityToolkit activityTK;
-	private ListToolkit listTK;
+	// private ListToolkit listTK;
 	private HistoryToolkit historyTK;
 
 	public void init(IEditorSite site, IEditorInput input)
@@ -92,8 +92,9 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 	protected void createToolkits() {
 		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
 				getPeopleService(), getPeopleWorkbenchService());
-		listTK = new ListToolkit(toolkit, getManagedForm(), getPeopleService(),
-				getPeopleWorkbenchService());
+		// listTK = new ListToolkit(toolkit, getManagedForm(),
+		// getPeopleService(),
+		// getPeopleWorkbenchService());
 		historyTK = new HistoryToolkit(toolkit, getManagedForm(),
 				getRepository(), getPeopleService(), person);
 	}
@@ -152,10 +153,13 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Organisations",
 				PeopleRapConstants.CTAB_JOBS, tooltip);
-		listTK.populateJobsPanel(innerPannel, person);
+		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		Composite crewCmp = new JobsList(toolkit, getManagedForm(),
+				innerPannel, SWT.NONE, getPeopleService(),
+				getPeopleWorkbenchService(), person);
+		crewCmp.setLayoutData(PeopleUiUtils.fillGridData());
 
 		// History panel
-		// TODO: make this dynamic
 		tooltip = "History of information about "
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "History",
