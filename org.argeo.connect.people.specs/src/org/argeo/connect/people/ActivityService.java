@@ -51,14 +51,14 @@ public interface ActivityService {
 
 	/* TASKS */
 	/**
-	 * Creates a new dafault task given some information. If no parent node is
+	 * Creates a new default task given some information. If no parent node is
 	 * provided, the task is created using the same path policy as all other
-	 * activity types eg, by instance:
+	 * activity types e.g. by instance:
 	 * people:system/people:activities/Y2014/M01/D14/H12/root/Task
 	 * 
 	 * Either a valid session or a parent Node should be provided
 	 * 
-	 * Manager is by default current logged in User
+	 * Reporter is by default current logged in User
 	 **/
 	public Node createTask(Session session, Node parentNode, String title,
 			String description, Node assignedTo, List<Node> relatedTo,

@@ -269,7 +269,7 @@
          		name="Jcr ID of the node to remove">
   	 		</commandParameter>
     	</command>
-    	<command
+    	<!-- <command
 			id="org.argeo.connect.people.rap.editEntityReference"
         	defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       	    name="editEntityReference">
@@ -281,7 +281,7 @@
          		id="param.toEditJcrId"
          		name="Jcr ID of the node to edit">
   	 		</commandParameter>
-    	</command>
+    	</command> -->
     	<!-- <command
 			id="org.argeo.connect.people.rap.addEntityReference"
         	defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"

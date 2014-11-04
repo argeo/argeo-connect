@@ -51,6 +51,7 @@ public class CreateSimpleTask extends AbstractHandler {
 			int result = dialog.open();
 			if (result == WizardDialog.OK) {
 				// CommonsJcrUtils.saveAndCheckin(wizard.getCreatedTask());
+				session.save();
 				jcrId = wizard.getCreatedTask().getIdentifier();
 			}
 		} catch (RepositoryException e) {

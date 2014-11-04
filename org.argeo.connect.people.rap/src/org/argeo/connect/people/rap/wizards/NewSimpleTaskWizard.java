@@ -14,6 +14,7 @@ import org.argeo.connect.people.rap.ActivitiesImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.dialogs.PickUpGroupDialog;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
@@ -36,8 +37,11 @@ import org.eclipse.swt.widgets.Text;
  * add some related entities after creation and before opening the wizard
  * dialog.
  * 
- * The newly created task might be retrieved after termination with Result
- * SWT.OK Corresponding session is not saved.
+ * The newly created task might be retrieved after termination if Dialog.open()
+ * return Window.OK.
+ * 
+ * Warning: the passed session is not saved: the task stays in a transient mode
+ * until the caller save the session.
  */
 
 public class NewSimpleTaskWizard extends Wizard {
@@ -117,6 +121,7 @@ public class NewSimpleTaskWizard extends Wizard {
 		createdTask = activityService.createTask(currSession, null,
 				titleTxt.getText(), descTxt.getText(), assignedToGroupNode,
 				relatedTo, dueDate, wakeUpDate);
+
 		return true;
 	}
 
@@ -178,19 +183,13 @@ public class NewSimpleTaskWizard extends Wizard {
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
 					try {
-						// PickUpByNodeTypeDialog diag = new
-						// PickUpByNodeTypeDialog(
-						// assignedToTxt.getShell(), "Choose a group",
-						// currSession, PeopleTypes.PEOPLE_USER_GROUP);
-						//
 						PickUpGroupDialog diag = new PickUpGroupDialog(
 								assignedToTxt.getShell(), "Choose a group",
 								currSession, null);
-						int result = diag.open();
-						if (Window.OK == result) {
-							// update display
+						if (diag.open() == Window.OK) {
 							assignedToGroupNode = diag.getSelected();
 							// TODO use correct group name
+							// update display
 							assignedToTxt.setText(assignedToGroupNode.getName());
 						}
 					} catch (RepositoryException e) {
@@ -203,15 +202,15 @@ public class NewSimpleTaskWizard extends Wizard {
 
 			// DUE DATE
 			PeopleRapUtils.createBoldLabel(parent, "Due date");
-			dueDateDt = new DateTime(parent, SWT.RIGHT | SWT.DATE | SWT.MEDIUM
+			dueDateDt = new DateTime(parent, SWT.DATE | SWT.MEDIUM
 					| SWT.DROP_DOWN);
 			// dueDateDt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false,
 			// false));
 
 			// WAKE UP DATE
 			PeopleRapUtils.createBoldLabel(parent, "Wake up date");
-			wakeUpDateDt = new DateTime(parent, SWT.RIGHT | SWT.DATE
-					| SWT.MEDIUM | SWT.DROP_DOWN);
+			wakeUpDateDt = new DateTime(parent, SWT.DATE | SWT.MEDIUM
+					| SWT.DROP_DOWN);
 
 			// DESCRIPTION
 			Label label = new Label(parent, SWT.RIGHT | SWT.TOP);
@@ -221,22 +220,13 @@ public class NewSimpleTaskWizard extends Wizard {
 
 			descTxt = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.WRAP);
 			descTxt.setMessage("A description");
-			gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+			gd = PeopleUiUtils.fillGridData();
 			gd.horizontalSpan = 3;
 			gd.heightHint = 150;
 			descTxt.setLayoutData(gd);
-
 			// Don't forget this.
 			setControl(titleTxt);
 			titleTxt.setFocus();
 		}
-
 	}
-
-	// private void createLabel(Composite parent, String text) {
-	// Label label = new Label(parent, SWT.RIGHT);
-	// label.setText(text);
-	// GridData gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
-	// label.setLayoutData(gd);
-	// }
 }
