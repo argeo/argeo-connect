@@ -46,7 +46,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
- * Centralizes creation of commonly used people activity controls (typically
+ * Centralise creation of commonly used people activity controls (typically
  * Text and composite widget) to be used in various forms.
  */
 public class ActivityToolkit {

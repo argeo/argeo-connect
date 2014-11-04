@@ -89,7 +89,7 @@ public class PartStateChanged implements IPartListener, IStartup {
 		// + part.getClass());
 		// we always remove checkOut button when the editor is left.
 		if (part instanceof IVersionedItemEditor) {
-			// TODO : enhence that to avoid npe when closing the application :
+			// TODO : enhance that to avoid NPE when closing the application :
 			IWorkbenchWindow window = part.getSite().getWorkbenchWindow();
 			// Get the service to enable / disable checkout button
 			ISourceProviderService sourceProviderService = (ISourceProviderService) window

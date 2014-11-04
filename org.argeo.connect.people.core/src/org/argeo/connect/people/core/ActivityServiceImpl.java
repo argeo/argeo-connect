@@ -181,7 +181,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	@Override
 	public boolean isTaskDone(Node taskNode) {
 		try {
-			// TODO enhence this
+			// TODO enhance this
 			return taskNode.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to get done status for task "

@@ -17,7 +17,7 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 
-/** Some helper methods to generate html snippets */
+/** Some helper methods to generate HTML snippet */
 public class PeopleRapSnippets {
 
 	/**

@@ -267,7 +267,7 @@ public class HistoryToolkit {
 
 	}
 
-	// /** Small hack to enhence prop label rendering **/
+	// /** Small hack to enhance prop label rendering **/
 	// public void setKnownPrefixes(List<String> knownPrefixes)
 	// {
 	// this.knownPrefixes = knownPrefixes;
