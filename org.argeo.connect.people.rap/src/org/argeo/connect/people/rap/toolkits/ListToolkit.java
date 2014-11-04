@@ -163,7 +163,8 @@ public class ListToolkit {
 		// Company
 		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT,
 				bounds[1]);
-		col.setLabelProvider(new OrgOverviewLabelProvider(true, peopleService));
+		col.setLabelProvider(new OrgOverviewLabelProvider(true, peopleService,
+				peopleWorkbenchService));
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
 				200, 80, true));
 
@@ -315,7 +316,8 @@ public class ListToolkit {
 		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT,
 				bounds[1]);
 		col.setLabelProvider(new PersonOverviewLabelProvider(
-				PeopleRapConstants.LIST_TYPE_MEDIUM, peopleService));
+				PeopleRapConstants.LIST_TYPE_MEDIUM, peopleService,
+				peopleWorkbenchService));
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
 				200, 80, true));
 

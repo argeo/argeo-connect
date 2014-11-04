@@ -2,10 +2,13 @@ package org.argeo.connect.people.rap;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.Value;
 
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.commands.DeleteEntity;
 import org.argeo.connect.people.rap.commands.EditJob;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
@@ -24,9 +27,8 @@ public class PeopleRapSnippets {
 	 * specific format of the value of this href attribute
 	 */
 	public static String getRWTLink(String href, String value) {
-		// TODO remove the hard coded fixed CSS style
-		return "<a " + PeopleRapConstants.PEOPLE_STYLE_LINK + " href=\"" + href
-				+ "\" target=\"_rwt\">" + value + "</a>";
+		// " + PeopleRapConstants.PEOPLE_STYLE_LINK + "
+		return "<a href=\"" + href + "\" target=\"_rwt\">" + value + "</a>";
 	}
 
 	/**
@@ -119,20 +121,62 @@ public class PeopleRapSnippets {
 		return getRWTLink(href, value);
 	}
 
-	/** a snippet to display tags that are linked to the current entity */
-	public static String getTags(Node entity) {
+	// /** a snippet to display tags that are linked to the current entity */
+	// public static String getTags(Node entity) {
+	// try {
+	// StringBuilder tags = new StringBuilder();
+	// if (entity.hasProperty(PeopleNames.PEOPLE_TAGS)) {
+	// for (Value value : entity
+	// .getProperty((PeopleNames.PEOPLE_TAGS)).getValues())
+	// tags.append("#").append(value.getString()).append(" ");
+	// }
+	// return PeopleUiUtils.replaceAmpersand(tags.toString());
+	// } catch (RepositoryException e) {
+	// throw new PeopleException("Error while getting tags for entity", e);
+	// }
+	// }
+
+	/**
+	 * a snippet to display clickable tags that are linked to the current entity
+	 */
+	public static String getTags(PeopleService peopleService,
+			PeopleWorkbenchService peopleWorkbenchService, Node entity) {
 		try {
 			StringBuilder tags = new StringBuilder();
 			if (entity.hasProperty(PeopleNames.PEOPLE_TAGS)) {
 				for (Value value : entity
 						.getProperty((PeopleNames.PEOPLE_TAGS)).getValues())
 					tags.append("#")
-							.append(PeopleUiUtils.replaceAmpersand(value
-									.getString())).append(" ");
+							.append(getTagLink(
+									CommonsJcrUtils.getSession(entity),
+									peopleService, peopleWorkbenchService,
+									PeopleConstants.RESOURCE_TAG,
+									value.getString())).append(" ");
 			}
 			return PeopleUiUtils.replaceAmpersand(tags.toString());
 		} catch (RepositoryException e) {
 			throw new PeopleException("Error while getting tags for entity", e);
 		}
 	}
+
+	/**
+	 * Generate a Href link that will call the openEntityEditor Command for this
+	 * tag if it is already registered. The corresponding Label / List must have
+	 * a HtmlRWTAdapter to catch when the user click on the link
+	 */
+	public static String getTagLink(Session session,
+			PeopleService peopleService,
+			PeopleWorkbenchService peopleWorkbenchService, String tagId,
+			String value) {
+		String commandId = peopleWorkbenchService.getOpenEntityEditorCmdId();
+		Node tag = peopleService.getResourceService().getRegisteredTag(session,
+				tagId, value);
+		if (tag == null)
+			return value;
+		String tagJcrId = CommonsJcrUtils.getIdentifier(tag);
+		String href = commandId + PeopleRapConstants.HREF_SEPARATOR;
+		href += OpenEntityEditor.PARAM_JCR_ID + "=" + tagJcrId;
+		return getRWTLink(href, value);
+	}
+
 }

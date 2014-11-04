@@ -10,6 +10,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -26,11 +27,14 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 
 	private boolean isSmallList;
 	private PeopleService peopleService;
+	private PeopleWorkbenchService peopleWorkbenchService;
 
 	public OrgOverviewLabelProvider(boolean isSmallList,
-			PeopleService peopleService) {
+			PeopleService peopleService,
+			PeopleWorkbenchService peopleWorkbenchService) {
 		this.isSmallList = isSmallList;
 		this.peopleService = peopleService;
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
 	@Override
@@ -71,16 +75,18 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 			builder.append("<br/>");
 
 			String tmpStr;
-			if (isSmallList) {
-				tmpStr = PeopleRapSnippets.getTags(orga);
-				if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
-					builder.append(tmpStr).append("<br/>");
-			}
-
 			tmpStr = PeopleUiSnippets.getPrimaryContacts(orga);
 			if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
 				builder.append(tmpStr);
 			}
+
+			if (isSmallList) {
+				tmpStr = PeopleRapSnippets.getTags(peopleService,
+						peopleWorkbenchService, orga);
+				if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+					builder.append(tmpStr).append("<br/>");
+			}
+
 			builder.append("</span>");
 			String result = PeopleUiUtils.replaceAmpersand(builder.toString());
 			return result;

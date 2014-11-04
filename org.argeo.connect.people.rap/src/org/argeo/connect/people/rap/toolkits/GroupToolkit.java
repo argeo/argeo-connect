@@ -11,10 +11,8 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.providers.BasicNodeListContentProvider;
-import org.argeo.connect.people.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.rap.providers.RoleListLabelProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -125,12 +123,13 @@ public class GroupToolkit {
 				80, 20, true));
 
 		// Person
-		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT,
-				bounds[1]);
-		col.setLabelProvider(new PersonOverviewLabelProvider(
-				PeopleRapConstants.LIST_TYPE_MEDIUM, peopleService));
-		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
-				200, 80, true));
+		// col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT,
+		// bounds[1]);
+		// col.setLabelProvider(new PersonOverviewLabelProvider(
+		// PeopleRapConstants.LIST_TYPE_MEDIUM, peopleService));
+		// tableColumnLayout.setColumnData(col.getColumn(), new
+		// ColumnWeightData(
+		// 200, 80, true));
 
 		// // Edit & Remove links
 		// viewer.getTable().addSelectionListener(new HtmlListRwtAdapter());

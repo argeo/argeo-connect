@@ -12,6 +12,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -30,10 +31,14 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 
 	// private boolean isSmallList = true;
 	private PeopleService peopleService;
+	private PeopleWorkbenchService peopleWorkbenchService;
 
-	public PersonOverviewLabelProvider(int listType, PeopleService peopleService) {
+	public PersonOverviewLabelProvider(int listType,
+			PeopleService peopleService,
+			PeopleWorkbenchService peopleWorkbenchService) {
 		this.listType = listType;
 		this.peopleService = peopleService;
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
 	@Override
@@ -159,8 +164,10 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 			builder.append(primContactsStr).append("<br/>");
 
 		// Tags
-		if (PeopleRapSnippets.getTags(person) != null)
-			builder.append(PeopleRapSnippets.getTags(person)).append("<br/>");
+		String clickableTags = PeopleRapSnippets.getTags(peopleService,
+				peopleWorkbenchService, person);
+		if (CommonsJcrUtils.checkNotEmptyString(clickableTags))
+			builder.append(clickableTags).append("<br/>");
 
 		builder.append("</span>");
 

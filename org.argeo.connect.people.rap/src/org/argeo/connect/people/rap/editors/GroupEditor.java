@@ -15,7 +15,6 @@ import org.argeo.connect.people.rap.providers.GroupLabelProvider;
 import org.argeo.connect.people.rap.toolkits.GroupToolkit;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -77,12 +76,12 @@ public class GroupEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void populateTabFolder(CTabFolder folder) {
-		// The member list
-		String tooltip = "Members of group "
-				+ JcrUtils.get(group, Property.JCR_TITLE);
-		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
-				"Members", PeopleRapConstants.CTAB_MEMBERS, tooltip);
-		groupToolkit.createMemberList(innerPannel, group);
+		// // The member list
+		// String tooltip = "Members of group "
+		// + JcrUtils.get(group, Property.JCR_TITLE);
+		// Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
+		// "Members", PeopleRapConstants.CTAB_MEMBERS, tooltip);
+		// groupToolkit.createMemberList(innerPannel, group);
 	}
 
 	@Override

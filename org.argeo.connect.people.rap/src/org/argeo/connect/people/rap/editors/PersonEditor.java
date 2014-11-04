@@ -178,7 +178,8 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		final ColumnLabelProvider personLP = new PersonOverviewLabelProvider(
-				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE, getPeopleService());
+				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE,
+				getPeopleService(), getPeopleWorkbenchService());
 
 		// EDIT
 		final Composite editPanel = toolkit.createComposite(parent,

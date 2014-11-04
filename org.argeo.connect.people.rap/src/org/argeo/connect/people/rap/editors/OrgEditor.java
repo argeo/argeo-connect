@@ -156,7 +156,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 					SWT.WRAP);
 			orgInfoROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider orgLP = new OrgOverviewLabelProvider(
-					false, getPeopleService());
+					false, getPeopleService(), getPeopleWorkbenchService());
 
 			// EDIT
 			final Composite editPanelCmp = toolkit.createComposite(parent,
