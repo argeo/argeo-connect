@@ -10,14 +10,13 @@
 		scope="prototype">
 		<property name="repository" ref="repository" />
 	</bean>
-	
+
 	<bean id="peopleDefaultView" class="org.argeo.connect.people.rap.views.PeopleDefaultView"
-	scope="prototype">
+		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
 		<property name="peopleUiService" ref="peopleUiService" />
 	</bean>
-
 
 	<!-- USERS, GROUPS AND ACTIVITIES -->
 	<bean id="myTasksView" class="org.argeo.connect.people.rap.views.MyTasksView"
@@ -38,9 +37,8 @@
 		<property name="repository" ref="repository" />
 	</bean>
 
-
-
-	<bean id="categorizedSearchView" class="org.argeo.connect.people.rap.views.CategorizedSearchView"
+	<bean id="categorizedSearchView"
+		class="org.argeo.connect.people.rap.views.CategorizedSearchView"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />

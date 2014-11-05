@@ -11,15 +11,13 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.contexts.IContextActivation;
 import org.eclipse.ui.services.ISourceProviderService;
 
-/**
- * Enable/disable CheckOut command depending on the active part.
- * 
- */
+/** Manage enable state of the CheckOut command depending on the active part */
 public class PartStateChanged implements IPartListener, IStartup {
 	private final static Log log = LogFactory.getLog(PartStateChanged.class);
 	IContextActivation contextActivation;
@@ -48,13 +46,17 @@ public class PartStateChanged implements IPartListener, IStartup {
 			log.trace("Part activated: " + part.getTitle() + " - "
 					+ part.getClass());
 
-		IWorkbenchWindow window = part.getSite().getWorkbenchWindow();
+		// Try to avoid NPE when closing the application
+		IWorkbenchPartSite site = part.getSite();
+		if (site == null)
+			return;
+		IWorkbenchWindow window = site.getWorkbenchWindow();
+		if (window == null)
+			return;
 
-		// Get the service to enable / disable checkout button
+		// Retrieve the service to enable/disable checkout button
 		ISourceProviderService sourceProviderService = (ISourceProviderService) window
 				.getService(ISourceProviderService.class);
-
-		// Now get my service
 		CheckoutSourceProvider esp = (CheckoutSourceProvider) sourceProviderService
 				.getSourceProvider(CheckoutSourceProvider.CHECKOUT_STATE);
 		if (part instanceof IVersionedItemEditor) {
@@ -84,17 +86,19 @@ public class PartStateChanged implements IPartListener, IStartup {
 
 	@Override
 	public void partDeactivated(IWorkbenchPart part) {
-		// if (log.isTraceEnabled())
-		// log.trace("part deactivated " + part.getTitle() + " - "
-		// + part.getClass());
-		// we always remove checkOut button when the editor is left.
+		// Always remove checkOut button when the editor is left.
 		if (part instanceof IVersionedItemEditor) {
-			// TODO : enhance that to avoid NPE when closing the application :
-			IWorkbenchWindow window = part.getSite().getWorkbenchWindow();
-			// Get the service to enable / disable checkout button
+			// Try to avoid NPE when closing the application
+			IWorkbenchPartSite site = part.getSite();
+			if (site == null)
+				return;
+			IWorkbenchWindow window = site.getWorkbenchWindow();
+			if (window == null)
+				return;
+
+			// Retrieve the service to enable/disable checkout button
 			ISourceProviderService sourceProviderService = (ISourceProviderService) window
 					.getService(ISourceProviderService.class);
-			// Now get my service
 			CheckoutSourceProvider esp = (CheckoutSourceProvider) sourceProviderService
 					.getSourceProvider(CheckoutSourceProvider.CHECKOUT_STATE);
 			esp.setIsCurrentItemCheckedOut(true);

@@ -13,27 +13,28 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 
 /**
- * Canonic double clic listener for a viewer that displays JCR Rows or Nodes. It
- * will call the OpenEditor command defined by the call back method.
+ * Canonic double-click listener for a viewer that displays JCR Rows or Nodes.
+ * Calls the OpenEditor command retrieved via the PeopleWorkbenchService
  */
 public class PeopleJcrViewerDClickListener implements IDoubleClickListener {
 
 	private final String selectorName;
-	private final String openEntityEditorCmdId;
+	private final PeopleWorkbenchService peopleWorkbenchService;
 
 	public PeopleJcrViewerDClickListener(String selectorName,
-			PeopleWorkbenchService peopleUiService) {
+			PeopleWorkbenchService peopleWorkbenchService) {
 		this.selectorName = selectorName;
-		this.openEntityEditorCmdId = peopleUiService.getOpenEntityEditorCmdId();
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
 	/**
 	 * Double click listener for NODES only, to manage JCR row use
 	 * PeopleJcrViewerDClickListener(String selectorName)
 	 **/
-	public PeopleJcrViewerDClickListener(PeopleWorkbenchService peopleUiService) {
+	public PeopleJcrViewerDClickListener(
+			PeopleWorkbenchService peopleWorkbenchService) {
 		selectorName = null;
-		this.openEntityEditorCmdId = peopleUiService.getOpenEntityEditorCmdId();
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
 	public void doubleClick(DoubleClickEvent event) {
@@ -51,9 +52,10 @@ public class PeopleJcrViewerDClickListener implements IDoubleClickListener {
 
 			if (currNode != null) {
 				CommandUtils
-						.callCommand(openEntityEditorCmdId,
-								OpenEntityEditor.PARAM_JCR_ID,
-								currNode.getIdentifier());
+						.callCommand(peopleWorkbenchService
+								.getOpenEntityEditorCmdId(),
+								OpenEntityEditor.PARAM_JCR_ID, currNode
+										.getIdentifier());
 			}
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to open editor for node", re);

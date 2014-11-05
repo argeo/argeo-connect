@@ -30,9 +30,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Shell;
 
-/**
- * Dialog with a calendar to choose a date
- */
+/** Dialog with a calendar to choose a date */
 public class PickUpDateDialog extends TrayDialog {
 	private static final long serialVersionUID = 3806120909726231133L;
 

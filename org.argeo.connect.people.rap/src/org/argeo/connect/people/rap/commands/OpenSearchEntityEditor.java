@@ -12,9 +12,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-/**
- * Open an editor that display a filtered table for a given JCR Node type
- */
+/** Open an editor to display a filtered table for a given JCR Node type */
 public class OpenSearchEntityEditor extends AbstractHandler {
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".openSearchEntityEditor";

@@ -15,7 +15,6 @@ public abstract class PeopleDoubleClickAdapter implements IDoubleClickListener {
 			return;
 		Object obj = ((IStructuredSelection) event.getSelection())
 				.getFirstElement();
-
 		processDoubleClick(obj);
 	}
 

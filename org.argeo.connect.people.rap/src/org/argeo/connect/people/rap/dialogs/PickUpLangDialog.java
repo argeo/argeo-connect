@@ -43,9 +43,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
-/**
- * Dialog with a filtered list to choose a language
- */
+/** Dialog with a filtered list to choose a language */
 public class PickUpLangDialog extends TrayDialog {
 	private static final long serialVersionUID = 3766899676609659573L;
 

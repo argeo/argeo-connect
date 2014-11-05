@@ -39,9 +39,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
-/**
- * Simple dialog to pick up a string value from a list
- */
+/** Simple dialog to pick up a string value from a list */
 public class PickUpFromListDialog extends TrayDialog {
 	private static final long serialVersionUID = 1L;
 

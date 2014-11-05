@@ -32,9 +32,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
-/**
- * Dialog with a group list to pick up one
- */
+/** Dialog with a group list to pick up one */
 public class PickUpGroupDialog extends TrayDialog {
 	private static final long serialVersionUID = -1420106871173920369L;
 
@@ -61,7 +59,8 @@ public class PickUpGroupDialog extends TrayDialog {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 		dialogArea.setLayout(new FillLayout());
 
-		tableCmp = new UserGroupTableComposite(dialogArea, SWT.NO_FOCUS, session);
+		tableCmp = new UserGroupTableComposite(dialogArea, SWT.NO_FOCUS,
+				session);
 		tableCmp.populate(true, false);
 
 		// Add listeners
@@ -100,7 +99,7 @@ public class PickUpGroupDialog extends TrayDialog {
 	class MySelectionChangedListener implements ISelectionChangedListener {
 		@Override
 		public void selectionChanged(SelectionChangedEvent event) {
-			if (event.getSelection().isEmpty()){
+			if (event.getSelection().isEmpty()) {
 				selectedNode = null;
 				return;
 			}

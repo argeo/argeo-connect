@@ -32,7 +32,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
  * Launch a wizard that enables creation of a new People user, enable among
- * other group assignation.
+ * other group membership definition.
  */
 
 public class CreatePeopleUser extends AbstractHandler {

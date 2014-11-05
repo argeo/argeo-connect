@@ -37,7 +37,6 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * {@link AbstractEntityCTabEditor}, and if a tab with such an id exists, it is
  * opened, otherwise it fails silently and open the default state of the
  * corresponding editor
- * 
  */
 public class OpenEntityEditor extends AbstractHandler {
 	private final static Log log = LogFactory.getLog(OpenEntityEditor.class);
@@ -51,8 +50,6 @@ public class OpenEntityEditor extends AbstractHandler {
 
 	public final static String PARAM_JCR_ID = "param.jcrId";
 	public final static String PARAM_CTAB_ID = "param.cTabId";
-	@Deprecated
-	public final static String PARAM_ENTITY_UID = "param.entityUid";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
@@ -67,19 +64,9 @@ public class OpenEntityEditor extends AbstractHandler {
 				entity = session.getNodeByIdentifier(jcrId);
 				eei = new EntityEditorInput(jcrId);
 			} else {
-				String entityUid = event.getParameter(PARAM_ENTITY_UID);
-				if (CommonsJcrUtils.isEmptyString(entityUid)) {
-					if (log.isTraceEnabled())
-						log.warn("Cannot open an editor with no UID");
-					return null;
-				}
-				entity = peopleService.getEntityByUid(session, entityUid);
-				if (entity == null) {
-					if (log.isTraceEnabled())
-						log.warn("No entity found for entity UID " + entityUid);
-					return null;
-				}
-				eei = new EntityEditorInput(entity.getIdentifier());
+				if (log.isTraceEnabled())
+					log.warn("Cannot open an editor with no JCR ID");
+				return null;
 			}
 
 			String editorId = getEditorIdFromNode(entity);

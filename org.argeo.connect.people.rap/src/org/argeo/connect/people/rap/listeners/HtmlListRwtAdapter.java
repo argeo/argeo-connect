@@ -10,6 +10,12 @@ import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 
+/**
+ * Listener to add to a tableViewer or a label that displays RWT link that
+ * conform to the syntax commandId/param1=value1/param2=value2/.../paramN=valueN
+ * 
+ * It will call the corresponding command with the given parameters.
+ */
 public class HtmlListRwtAdapter extends SelectionAdapter {
 	private static final long serialVersionUID = -3867410418907732579L;
 	private final static Log log = LogFactory.getLog(HtmlListRwtAdapter.class);

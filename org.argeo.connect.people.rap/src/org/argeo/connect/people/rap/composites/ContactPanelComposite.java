@@ -5,7 +5,6 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 
 import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleConstants;

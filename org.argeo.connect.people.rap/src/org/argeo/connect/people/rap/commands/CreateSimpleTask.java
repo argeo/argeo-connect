@@ -18,9 +18,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-/**
- * Opens the {@link NewSimpleTaskWizard}. No parameter is needed
- */
+/** Opens the {@link NewSimpleTaskWizard}. No parameter is needed */
 public class CreateSimpleTask extends AbstractHandler {
 
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID
@@ -30,14 +28,6 @@ public class CreateSimpleTask extends AbstractHandler {
 	private Repository repository;
 	private ActivityService activityService;
 	private PeopleWorkbenchService peopleWorkbenchService;
-
-	/**
-	 * Overwrite to provide a plugin specific open editor command and thus be
-	 * able to open plugin specific editors
-	 */
-	protected String getOpenEntityEditorCmdId() {
-		return OpenEntityEditor.ID;
-	}
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Session session = null;

@@ -34,9 +34,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
-/**
- * Dialog with a filtered list to add some members in a mailing list
- */
+/** Dialog with a filtered list to choose an organisation */
 public class PickUpOrgDialog extends TrayDialog {
 	private static final long serialVersionUID = -2526572299370624808L;
 
@@ -53,7 +51,6 @@ public class PickUpOrgDialog extends TrayDialog {
 			PeopleWorkbenchService peopleWorkbenchService, Node referencingNode) {
 		super(parentShell);
 		this.title = title;
-		// this.referencingNode = referencingNode;
 		this.session = session;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
