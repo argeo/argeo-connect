@@ -1,4 +1,4 @@
-package org.argeo.connect.people.rap.toolkits;
+package org.argeo.connect.people.rap.editors.tabs;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
-import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
@@ -28,7 +27,6 @@ import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.PropertyDiff;
 import org.argeo.jcr.VersionDiff;
 import org.eclipse.swt.SWT;
@@ -41,76 +39,80 @@ import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
-public class HistoryToolkit {
-	private final static Log log = LogFactory.getLog(HistoryToolkit.class);
-
-	private Repository repository;
-	private PeopleService peopleService;
-
-	// private List<String> relevantAttributeList;
-
-	// private List<String> knownPrefixes;
+/**
+ * A composite to include in a form and that displays the evolutions of a given
+ * versionable Node over the time.
+ */
+public class HistoryLog extends Composite {
+	private static final long serialVersionUID = -4736848221960630767L;
+	private final static Log log = LogFactory.getLog(HistoryLog.class);
 
 	private final FormToolkit toolkit;
-	private final IManagedForm form;
-	private Node entity;
-
+	private final PeopleService peopleService;
+	// private final PeopleWorkbenchService peopleWorkbenchService;
+	private final Node entity;
 	private DateFormat dateTimeFormat = new SimpleDateFormat(
 			PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
-	public HistoryToolkit(FormToolkit toolkit, IManagedForm form,
-			Repository repository, PeopleService peopleService, Node entity) {
+	// this page UI Objects
+	private MyFormPart myFormPart;
+
+	public HistoryLog(FormToolkit toolkit, IManagedForm form, Composite parent,
+			int style, PeopleService peopleService, Node entity) {
+		// PeopleWorkbenchService peopleWorkbenchService,
+		super(parent, style);
 		this.toolkit = toolkit;
-		this.form = form;
-		this.entity = entity;
 		this.peopleService = peopleService;
-		this.repository = repository;
+		// this.peopleWorkbenchService = peopleWorkbenchService;
+		this.entity = entity;
+
+		// Populate
+		populate(form, this);
 	}
 
-	public void populateHistoryPanel(Composite parent) {
-		try {
-			parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+	private void populate(IManagedForm form, Composite parent) {
 
-			UserManagementService userService = peopleService
-					.getUserManagementService();
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
-			if (userService.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
-					|| userService.isUserInRole(PeopleConstants.ROLE_ADMIN)) {
-				Label label = new Label(parent, SWT.NONE);
-				label.setText("People UID: "
-						+ CommonsJcrUtils.get(entity, PeopleNames.PEOPLE_UID));
-				GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
-				gd.verticalIndent = 3;
-				gd.horizontalIndent = 5;
-				label.setLayoutData(gd);
-			}
-			Composite historyCmp = new Composite(parent, SWT.NONE);
-			historyCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-					true));
-			historyCmp.setLayout(new FillLayout());
-			final Text styledText = toolkit.createText(historyCmp, "",
-					SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-			// styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-			// true));
-			refreshHistory(styledText);
-			// styledText.setEditable(false);
+		UserManagementService userService = peopleService
+				.getUserManagementService();
 
-			AbstractFormPart part = new AbstractFormPart() {
-				public void commit(boolean onSave) {
-					if (onSave)
-						super.commit(onSave);
-				}
+		if (userService.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
+				|| userService.isUserInRole(PeopleConstants.ROLE_ADMIN)) {
+			Label label = new Label(parent, SWT.NONE);
+			label.setText("People UID: "
+					+ CommonsJcrUtils.get(entity, PeopleNames.PEOPLE_UID));
+			GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
+			gd.verticalIndent = 3;
+			gd.horizontalIndent = 5;
+			label.setLayoutData(gd);
+		}
+		Composite historyCmp = new Composite(parent, SWT.NONE);
+		historyCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		historyCmp.setLayout(new FillLayout());
+		final Text styledText = toolkit.createText(historyCmp, "", SWT.BORDER
+				| SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+		// styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+		// true));
+		refreshHistory(styledText);
+		// styledText.setEditable(false);
 
-				public void refresh() {
-					super.refresh();
-					refreshHistory(styledText);
-				}
-			};
-			part.initialize(form);
-			form.addPart(part);
-		} catch (Exception e) {
-			throw new PeopleException(
-					"Unexpected error while creating history form part", e);
+		myFormPart = new MyFormPart(styledText);
+		myFormPart.initialize(form);
+		form.addPart(myFormPart);
+	}
+
+	private class MyFormPart extends AbstractFormPart {
+		private final Text text;
+
+		public MyFormPart(Text text) {
+			this.text = text;
+		}
+
+		@Override
+		public void refresh() {
+			super.refresh();
+			refreshHistory(text);
 		}
 	}
 
@@ -206,9 +208,8 @@ public class HistoryToolkit {
 	}
 
 	private List<VersionDiff> listHistoryDiff() {
-		Session session = null;
 		try {
-			session = repository.login();
+			Session session = entity.getSession();
 			List<VersionDiff> res = new ArrayList<VersionDiff>();
 			VersionManager versionManager = session.getWorkspace()
 					.getVersionManager();
@@ -260,11 +261,9 @@ public class HistoryToolkit {
 			}
 			return res;
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot generate history for entity", e);
-		} finally {
-			JcrUtils.logoutQuietly(session);
+			throw new PeopleException("Cannot generate history for node "
+					+ entity, e);
 		}
-
 	}
 
 	// /** Small hack to enhance prop label rendering **/
@@ -301,5 +300,4 @@ public class HistoryToolkit {
 		// return str;
 		// }
 	}
-
 }

@@ -16,10 +16,10 @@ import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.composites.ContactPanelComposite;
 import org.argeo.connect.people.rap.editors.parts.TagLikeListPart;
 import org.argeo.connect.people.rap.editors.tabs.JobsList;
+import org.argeo.connect.people.rap.editors.tabs.OrgAdminInfo;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.rap.toolkits.ActivityToolkit;
-import org.argeo.connect.people.rap.toolkits.LegalInfoToolkit;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -54,7 +54,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 
 	// Toolkits
 	// private ListToolkit listTK;
-	private LegalInfoToolkit legalTK;
+	// private LegalInfoToolkit legalTK;
 	private ActivityToolkit activityTK;
 
 	public void init(IEditorSite site, IEditorInput input)
@@ -77,7 +77,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		// listTK = new ListToolkit(toolkit, getManagedForm(),
 		// getPeopleService(),
 		// getPeopleWorkbenchService());
-		legalTK = new LegalInfoToolkit(toolkit, getManagedForm(), org);
+		// legalTK = new LegalInfoToolkit(toolkit, getManagedForm(), org);
 		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
 				getPeopleService(), getPeopleWorkbenchService());
 	}
@@ -144,7 +144,10 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Admin.",
 				PeopleRapConstants.CTAB_LEGAL_INFO, tooltip);
-		legalTK.populateLegalInfoPanel(innerPannel);
+		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		Composite legalCmp = new OrgAdminInfo(toolkit, getManagedForm(),
+				innerPannel, SWT.NONE, org);
+		legalCmp.setLayoutData(PeopleUiUtils.fillGridData());
 	}
 
 	protected void populateTitleComposite(final Composite parent) {

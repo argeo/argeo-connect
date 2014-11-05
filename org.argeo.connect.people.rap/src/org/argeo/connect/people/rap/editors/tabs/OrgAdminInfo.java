@@ -1,4 +1,4 @@
-package org.argeo.connect.people.rap.toolkits;
+package org.argeo.connect.people.rap.editors.tabs;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -27,40 +27,44 @@ import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
-public class LegalInfoToolkit {
+/**
+ * A composite to include in a form and that displays all administrative and
+ * legal information for a given organisation
+ * 
+ * TODO Legacy code. Should be reviewed and enhanced.
+ */
+public class OrgAdminInfo extends Composite {
+	private static final long serialVersionUID = -7033074223243935324L;
 
 	private final FormToolkit toolkit;
-	private final IManagedForm form;
-	private Node entity;
+	private final Node entity;
 
-	// private PeopleService peopleService;
+	// this page UI Objects
 
-	// private DateFormat dateTimeFormat = new SimpleDateFormat(
-	// PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
-
-	public LegalInfoToolkit(FormToolkit toolkit, IManagedForm form, Node entity) {
-		// PeopleService peopleService,
+	public OrgAdminInfo(FormToolkit toolkit, IManagedForm form,
+			Composite parent, int style, Node entity) {
+		super(parent, style);
 		this.toolkit = toolkit;
-		this.form = form;
 		this.entity = entity;
-		// this.peopleService = peopleService;
+
+		// Populate
+		populateLegalInfoPanel(form, this);
 	}
 
-	public void populateLegalInfoPanel(Composite parent) {
+	public void populateLegalInfoPanel(IManagedForm form, Composite parent) {
 		parent.setLayout(new GridLayout());
 
 		Composite adminInfoCmp = toolkit.createComposite(parent);
 		adminInfoCmp
 				.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		populateAdminInfoCmp(adminInfoCmp);
+		populateAdminInfoCmp(form, adminInfoCmp);
 
 		Composite payAccCmp = toolkit.createComposite(parent);
 		payAccCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		populateBankAccountGroup(payAccCmp);
-
+		populateBankAccountGroup(form, payAccCmp);
 	}
 
-	private void populateAdminInfoCmp(Composite parent) {
+	private void populateAdminInfoCmp(IManagedForm form, Composite parent) {
 		parent.setLayout(new GridLayout(4, false));
 
 		// Legal Name
@@ -128,7 +132,8 @@ public class LegalInfoToolkit {
 		form.addPart(notePart);
 	}
 
-	private void populateBankAccountGroup(Composite parent) {
+	private void populateBankAccountGroup(final IManagedForm form,
+			Composite parent) {
 		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		final Group group = new Group(parent, 0);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -170,4 +175,5 @@ public class LegalInfoToolkit {
 		formPart.initialize(form);
 		form.addPart(formPart);
 	}
+
 }
