@@ -13,9 +13,9 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleRapUtils;
-import org.argeo.connect.people.rap.composites.ContactPanelComposite;
 import org.argeo.connect.people.rap.editors.parts.TagLikeListPart;
-import org.argeo.connect.people.rap.editors.tabs.JobsList;
+import org.argeo.connect.people.rap.editors.tabs.ContactList;
+import org.argeo.connect.people.rap.editors.tabs.JobList;
 import org.argeo.connect.people.rap.editors.tabs.OrgAdminInfo;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.providers.OrgOverviewLabelProvider;
@@ -116,7 +116,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Details", PeopleRapConstants.CTAB_CONTACT_DETAILS, tooltip);
 		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
-		ContactPanelComposite cpc = new ContactPanelComposite(innerPannel,
+		ContactList cpc = new ContactList(innerPannel,
 				SWT.NO_FOCUS, toolkit, getManagedForm(), getNode(),
 				getPeopleService(), getPeopleWorkbenchService());
 		cpc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -134,7 +134,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Team",
 				PeopleRapConstants.CTAB_EMPLOYEES, tooltip);
 		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
-		Composite employeesCmp = new JobsList(toolkit, getManagedForm(),
+		Composite employeesCmp = new JobList(toolkit, getManagedForm(),
 				innerPannel, SWT.NONE, getPeopleService(),
 				getPeopleWorkbenchService(), org);
 		employeesCmp.setLayoutData(PeopleUiUtils.fillGridData());

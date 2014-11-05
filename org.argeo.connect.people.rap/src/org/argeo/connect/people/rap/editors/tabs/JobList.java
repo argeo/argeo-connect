@@ -55,7 +55,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * A composite to include in a form and that displays an editable list of jobs
  * or employees
  */
-public class JobsList extends Composite {
+public class JobList extends Composite {
 	private static final long serialVersionUID = -4736848221960630767L;
 
 	private final FormToolkit toolkit;
@@ -67,7 +67,7 @@ public class JobsList extends Composite {
 	// this page UI Objects
 	private MyFormPart myFormPart;
 
-	public JobsList(FormToolkit toolkit, IManagedForm form, Composite parent,
+	public JobList(FormToolkit toolkit, IManagedForm form, Composite parent,
 			int style, PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, Node entity) {
 		super(parent, style);

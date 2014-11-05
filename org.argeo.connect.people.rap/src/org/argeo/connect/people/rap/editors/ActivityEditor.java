@@ -45,9 +45,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
 
-/**
- * Default connect activity editor
- */
+/** Default People activity editor */
 public class ActivityEditor extends AbstractPeopleEditor {
 	final static Log log = LogFactory.getLog(ActivityEditor.class);
 
@@ -89,7 +87,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false);
 		typeLbl.setLayoutData(gd);
 
-		PeopleRapUtils.createBoldLabel(toolkit, parent, "Manager");
+		PeopleRapUtils.createBoldLabel(toolkit, parent, "Reported by");
 		final Label managerLbl = toolkit.createLabel(parent, "");
 		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false);
 		managerLbl.setLayoutData(gd);
@@ -102,7 +100,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 
 		// 2nd line - RELATED ENTITIES
 		Label label = PeopleRapUtils.createBoldLabel(toolkit, parent,
-				"Related entities");
+				"Related to");
 		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 
 		final Composite relatedCmp = toolkit.createComposite(parent,
@@ -288,10 +286,9 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		descGrp.setLayoutData(gd);
 		descGrp.setText("Description");
 		descGrp.setLayout(PeopleUiUtils.noSpaceGridLayout());
-		final Text descTxt = toolkit.createText(descGrp, "", SWT.BORDER
+		final Text descTxt = toolkit.createText(descGrp, "", SWT.NONE
 				| SWT.MULTI | SWT.WRAP);
-		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		descTxt.setLayoutData(gd);
+		descTxt.setLayoutData(PeopleUiUtils.fillGridData());
 
 		final AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {

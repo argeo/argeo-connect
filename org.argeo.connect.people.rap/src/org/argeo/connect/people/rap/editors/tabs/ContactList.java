@@ -1,4 +1,4 @@
-package org.argeo.connect.people.rap.composites;
+package org.argeo.connect.people.rap.editors.tabs;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -15,6 +15,8 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.rap.composites.ContactAddressComposite;
+import org.argeo.connect.people.rap.composites.ContactComposite;
 import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.ui.PeopleUiUtils;
@@ -43,7 +45,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /** A panel to display contacts */
-public class ContactPanelComposite extends Composite {
+public class ContactList extends Composite {
 	private static final long serialVersionUID = 58381532068661087L;
 
 	// private final static Log log = LogFactory
@@ -61,7 +63,7 @@ public class ContactPanelComposite extends Composite {
 	// Caches the add new contact combo
 	private Combo addContactCmb;
 
-	public ContactPanelComposite(Composite parent, int style,
+	public ContactList(Composite parent, int style,
 			FormToolkit toolkit, IManagedForm form, Node entityNode,
 			PeopleService peopleService, PeopleWorkbenchService peopleUiService) {
 		super(parent, style);
@@ -147,7 +149,7 @@ public class ContactPanelComposite extends Composite {
 				Composite noteCmp = toolkit.createComposite(innerCmp,
 						SWT.NO_FOCUS);
 				gd = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
-				gd.heightHint = 60;
+				gd.heightHint = 100;
 				noteCmp.setLayoutData(gd);
 				populateNotePanel(noteCmp);
 
@@ -157,7 +159,7 @@ public class ContactPanelComposite extends Composite {
 				innerCmp.layout();
 				innerCmp.getParent().pack(true);
 				innerCmp.getParent().layout();
-				ContactPanelComposite.this.layout();
+				ContactList.this.layout();
 			} catch (Exception e) {
 				throw new PeopleException(
 						"unexpected error while refreshing node " + entity, e);

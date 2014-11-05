@@ -74,7 +74,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * two distinct nomenclature for a same property that are bound to a given
  * projects)
  */
-public class EditCataloguePanel extends Composite {
+public class TemplateValueCatalogue extends Composite {
 	private static final long serialVersionUID = -5018569293721397600L;
 
 	// Context
@@ -90,7 +90,7 @@ public class EditCataloguePanel extends Composite {
 
 	// private TableViewer valuesViewer;
 
-	public EditCataloguePanel(FormToolkit toolkit, Composite parent, int style,
+	public TemplateValueCatalogue(FormToolkit toolkit, Composite parent, int style,
 			IManagedForm form, PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, Node templateNode,
 			String propertyName, String taggableType) {
@@ -287,7 +287,7 @@ public class EditCataloguePanel extends Composite {
 					// TODO also manage removing various corresponding
 					// references from the business entities
 					boolean result = MessageDialog.openConfirm(
-							EditCataloguePanel.this.getShell(),
+							TemplateValueCatalogue.this.getShell(),
 							"Confirm value removal", msg);
 					if (result) {
 						CommonsJcrUtils.removeMultiPropertyValue(templateNode,
@@ -297,7 +297,7 @@ public class EditCataloguePanel extends Composite {
 					}
 				} else if (PeopleUiConstants.CRUD_EDIT.equals(val[0])) {
 					MessageDialog.openWarning(
-							EditCataloguePanel.this.getShell(), "Boom",
+							TemplateValueCatalogue.this.getShell(), "Boom",
 							"implement this");
 					// part.markDirty();
 					// part.refresh();

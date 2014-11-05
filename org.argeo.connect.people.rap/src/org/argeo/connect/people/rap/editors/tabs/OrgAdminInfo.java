@@ -126,8 +126,6 @@ public class OrgAdminInfo extends Composite {
 				}
 			}
 		});
-
-		parent.layout();
 		notePart.initialize(form);
 		form.addPart(notePart);
 	}
@@ -175,5 +173,4 @@ public class OrgAdminInfo extends Composite {
 		formPart.initialize(form);
 		form.addPart(formPart);
 	}
-
 }
