@@ -79,12 +79,6 @@
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/search.png"
-			id="org.argeo.connect.people.rap.searchPersonEditor"
-			name="Persons">
-		</editor>
-		<editor
-			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/search.png"
 			id="org.argeo.connect.people.rap.searchByTagEditor"
 			name="Search by Tag">
 		</editor>

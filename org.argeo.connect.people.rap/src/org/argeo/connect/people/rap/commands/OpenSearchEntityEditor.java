@@ -1,10 +1,8 @@
 package org.argeo.connect.people.rap.commands;
 
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.DefaultSearchEntityEditor;
-import org.argeo.connect.people.rap.editors.SearchPersonEditor;
 import org.argeo.connect.people.rap.editors.utils.SearchNodeEditorInput;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -30,13 +28,8 @@ public class OpenSearchEntityEditor extends AbstractHandler {
 		try {
 			SearchNodeEditorInput eei = new SearchNodeEditorInput(entityType,
 					basePath, name);
-
-			if (entityType.equals(PeopleTypes.PEOPLE_PERSON)) {
-				HandlerUtil.getActiveWorkbenchWindow(event).getActivePage()
-						.openEditor(eei, SearchPersonEditor.ID);
-			} else
-				HandlerUtil.getActiveWorkbenchWindow(event).getActivePage()
-						.openEditor(eei, DefaultSearchEntityEditor.ID);
+			HandlerUtil.getActiveWorkbenchWindow(event).getActivePage()
+					.openEditor(eei, DefaultSearchEntityEditor.ID);
 		} catch (PartInitException pie) {
 			throw new PeopleException(
 					"Unexpected PartInitException while opening entity editor",

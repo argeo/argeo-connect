@@ -43,12 +43,6 @@
 		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
-	<bean id="searchPersonEditor" class="org.argeo.connect.people.rap.editors.SearchPersonEditor"
-		scope="prototype">
-		<property name="repository" ref="repository" />
-		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
-	</bean>
-
 	<!-- Users and groups management -->
 	<bean id="userEditor" class="org.argeo.connect.people.rap.editors.UserEditor"
 		scope="prototype">
