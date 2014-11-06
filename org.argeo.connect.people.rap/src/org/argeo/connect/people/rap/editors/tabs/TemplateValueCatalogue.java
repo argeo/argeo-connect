@@ -1,6 +1,9 @@
 package org.argeo.connect.people.rap.editors.tabs;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -23,6 +26,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleRapUtils;
@@ -40,7 +44,10 @@ import org.argeo.eclipse.ui.dialogs.SingleValue;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.DecorationOverlayIcon;
+import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -49,18 +56,23 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -78,6 +90,7 @@ public class TemplateValueCatalogue extends Composite {
 	private static final long serialVersionUID = -5018569293721397600L;
 
 	// Context
+	private final IWorkbench workbench;
 	private final FormToolkit toolkit;
 	private final PeopleWorkbenchService peopleWorkbenchService;
 	private final PeopleService peopleService;
@@ -90,11 +103,13 @@ public class TemplateValueCatalogue extends Composite {
 
 	// private TableViewer valuesViewer;
 
-	public TemplateValueCatalogue(FormToolkit toolkit, Composite parent, int style,
-			IManagedForm form, PeopleService peopleService,
+	public TemplateValueCatalogue(IWorkbench workbench, FormToolkit toolkit,
+			Composite parent, int style, IManagedForm form,
+			PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, Node templateNode,
 			String propertyName, String taggableType) {
 		super(parent, style);
+		this.workbench = workbench;
 		this.toolkit = toolkit;
 		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleWorkbenchService;
@@ -259,10 +274,8 @@ public class TemplateValueCatalogue extends Composite {
 											+ PeopleRapConstants.HREF_SEPARATOR
 											+ value,
 									PeopleUiConstants.CRUD_DELETE);
-					// TODO implement edition and uncomment this
-					return removeLink;
-					// return editLink + PeopleUiConstants.NB_DOUBLE_SPACE
-					// + removeLink;
+					return editLink + PeopleUiConstants.NB_DOUBLE_SPACE
+							+ removeLink;
 				}
 			});
 		}
@@ -281,26 +294,12 @@ public class TemplateValueCatalogue extends Composite {
 			if (event.detail == RWT.HYPERLINK) {
 				String href = event.text;
 				String[] val = href.split(PeopleRapConstants.HREF_SEPARATOR);
-				if (PeopleUiConstants.CRUD_DELETE.equals(val[0])) {
-					String msg = "Are you sure you want to remove \"" + val[1]
-							+ "\" from this template catalogue? ";
-					// TODO also manage removing various corresponding
-					// references from the business entities
-					boolean result = MessageDialog.openConfirm(
-							TemplateValueCatalogue.this.getShell(),
-							"Confirm value removal", msg);
-					if (result) {
-						CommonsJcrUtils.removeMultiPropertyValue(templateNode,
-								propertyName, val[1]);
-						part.markDirty();
-						part.refresh();
-					}
-				} else if (PeopleUiConstants.CRUD_EDIT.equals(val[0])) {
-					MessageDialog.openWarning(
-							TemplateValueCatalogue.this.getShell(), "Boom",
-							"implement this");
-					// part.markDirty();
-					// part.refresh();
+				EditValueWizard wizard = new EditValueWizard(val[0], val[1]);
+				WizardDialog dialog = new WizardDialog(
+						TemplateValueCatalogue.this.getShell(), wizard);
+				if (Window.OK == dialog.open()) {
+					myFormPart.markDirty();
+					myFormPart.refresh();
 				}
 			}
 		}
@@ -330,7 +329,7 @@ public class TemplateValueCatalogue extends Composite {
 		ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 		colDefs.add(new PeopleColumnDefinition(taggableType,
 				Property.JCR_TITLE, PropertyType.STRING, "Instances",
-				new TitleIconRowLP(peopleWorkbenchService, taggableType,
+				new MyTitleIconRowLP(peopleWorkbenchService, taggableType,
 						Property.JCR_TITLE), 400));
 		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(parent,
 				SWT.MULTI, colDefs);
@@ -421,12 +420,14 @@ public class TemplateValueCatalogue extends Composite {
 	public class EditValueWizard extends Wizard implements PeopleNames {
 
 		// Context
+		private final String actionType;
 		private final String oldValue;
 
 		// This part widgets
 		private Text newValueTxt;
 
-		public EditValueWizard(String oldValue) {
+		public EditValueWizard(String actionType, String oldValue) {
+			this.actionType = actionType;
 			this.oldValue = oldValue;
 		}
 
@@ -434,8 +435,10 @@ public class TemplateValueCatalogue extends Composite {
 		public void addPages() {
 			try {
 				setWindowTitle("Update wizard");
-				MainInfoPage inputPage = new MainInfoPage("Configure");
-				addPage(inputPage);
+				if (PeopleUiConstants.CRUD_EDIT.equals(actionType)) {
+					MainInfoPage inputPage = new MainInfoPage("Configure");
+					addPage(inputPage);
+				}
 				RecapPage recapPage = new RecapPage("Validate and launch");
 				addPage(recapPage);
 			} catch (Exception e) {
@@ -450,63 +453,32 @@ public class TemplateValueCatalogue extends Composite {
 		@Override
 		public boolean performFinish() {
 			String newTitle = newValueTxt.getText();
+			ResourceService rs = peopleService.getResourceService();
 
-			// Sanity checks
 			String errMsg = null;
-			if (CommonsJcrUtils.isEmptyString(newTitle))
-				errMsg = "New value cannot be blank or an empty string";
-			else if (oldValue.equals(newTitle))
-				errMsg = "New value is the same as old one.\n"
-						+ "Either enter a new one or press cancel.";
-			// TODO check for duplicates
-			// else if (peopleService.getTagService().getRegisteredTag(
-			// templateNode.getSession(),
-			// resourceInstancesParentPath, newTitle) != null)
-			// errMsg = "The new chosen value is already used.\n"
-			// + "Either enter a new one or press cancel.";
+			List<String> existingValues = rs.getTemplateCatalogue(templateNode,
+					propertyName, null);
 
+			// Sanity checks for update only
+			if (PeopleUiConstants.CRUD_EDIT.equals(actionType)) {
+				if (CommonsJcrUtils.isEmptyString(newTitle))
+					errMsg = "New value cannot be blank or an empty string";
+				else if (oldValue.equals(newTitle))
+					errMsg = "New value is the same as old one.\n"
+							+ "Either enter a new one or press cancel.";
+				else if (existingValues.contains(newTitle))
+					errMsg = "The new chosen value is already used.\n"
+							+ "Either enter a new one or press cancel.";
+			}
 			if (errMsg != null) {
 				MessageDialog.openError(getShell(), "Unvalid information",
 						errMsg);
 				return false;
 			}
 
-			MessageDialog.openWarning(getShell(), "Implement This", errMsg);
-
-			// // TODO use transaction
-			// boolean isVersionable = templateNode
-			// .isNodeType(NodeType.MIX_VERSIONABLE);
-			// boolean isCheckedIn = isVersionable
-			// && !CommonsJcrUtils
-			// .isNodeCheckedOutByMe(templateNode);
-			// if (isCheckedIn)
-			// CommonsJcrUtils.checkout(templateNode);
-			// peopleService.getTagService().updateTagTitle(
-			// templateNode, resourceNodeType,
-			// resourceInstancesParentPath, newTitle,
-			// taggableNodeType, propertyName, taggableParentPath);
-			// if (CommonsJcrUtils.checkNotEmptyString(newDesc))
-			// templateNode.setProperty(Property.JCR_DESCRIPTION,
-			// newDesc);
-			// else if (templateNode
-			// .hasProperty(Property.JCR_DESCRIPTION))
-			// // force reset
-			// templateNode.setProperty(Property.JCR_DESCRIPTION,
-			// "");
-			// if (isCheckedIn)
-			// CommonsJcrUtils.saveAndCheckin(templateNode);
-			// else if (isVersionable) // workaround versionnable node should
-			// // have
-			// // been commited on last update
-			// CommonsJcrUtils.saveAndCheckin(templateNode);
-			// else
-			// templateNode.getSession().save();
+			rs.updateCatalogueValue(templateNode, taggableType, propertyName,
+					oldValue, newTitle);
 			return true;
-			// } catch (RepositoryException re) {
-			// throw new PeopleException(
-			// "unable to update title for tag like resource "
-			// + templateNode, re);
-			// }
 		}
 
 		@Override
@@ -524,8 +496,9 @@ public class TemplateValueCatalogue extends Composite {
 
 			public MainInfoPage(String pageName) {
 				super(pageName);
-				setTitle("Enter a new title");
-				setMessage("As reminder, former value was: " + oldValue);
+				setTitle("Enter a new value for this catalogue's item");
+				setMessage("As reminder, former value was: \"" + oldValue
+						+ "\"");
 			}
 
 			public void createControl(Composite parent) {
@@ -545,66 +518,89 @@ public class TemplateValueCatalogue extends Composite {
 
 		protected class RecapPage extends WizardPage {
 			private static final long serialVersionUID = 1L;
+			private TableViewer membersViewer;
+			private Composite body;
 
 			public RecapPage(String pageName) {
 				super(pageName);
 				setTitle("Check and confirm");
-				setMessage("The below listed items will be impacted.\nAre you sure you want to procede ?");
+				setMessage("The below listed items will be impacted.\nAre you sure you want to procede?");
 			}
 
 			public void createControl(Composite parent) {
-				Composite body = new Composite(parent, SWT.NONE);
-				TableViewer membersViewer = createInstancesViewer(body);
-				RowIterator rit = query(oldValue);
-				GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
-				// gd.heightHint = 400;
-				// tableCmp.setLayoutData(gd);
+				body = new Composite(parent, SWT.NONE);
+				membersViewer = createInstancesViewer(body);
 				setControl(body);
 			}
+
+			@Override
+			public void setVisible(boolean visible) {
+				super.setVisible(visible);
+				if (visible == true) {
+					long checkoutItemNb = 0;
+					RowIterator rit = query(oldValue);
+					List<Row> rows = new ArrayList<Row>();
+					while (rit.hasNext()) {
+						Row currRow = rit.nextRow();
+						rows.add(currRow);
+						Node currNode = CommonsJcrUtils.getNode(currRow,
+								taggableType);
+						if (CommonsJcrUtils.isNodeCheckedOut(currNode))
+							checkoutItemNb++;
+					}
+					setViewerInput(membersViewer, rows.toArray(new Row[0]));
+					if (checkoutItemNb > 0)
+						setErrorMessage("Warning: "
+								+ checkoutItemNb
+								+ " entities are currently checked out. Updating might "
+								+ "prevent some users from saving their latest changes. "
+								+ "Are you sure you want to procede?");
+					else
+						setErrorMessage(null);
+				}
+			}
+		}
+	}
+
+	// Add a decorator to the checked out instances
+	private class MyTitleIconRowLP extends TitleIconRowLP {
+		private static final long serialVersionUID = 1L;
+		private final Map<Image, Image> images = new HashMap<Image, Image>();
+		private final ImageDescriptor failedDesc;
+		private final String selectorName;
+
+		public MyTitleIconRowLP(PeopleWorkbenchService peopleUiService,
+				String selectorName, String propertyName) {
+			super(peopleUiService, selectorName, propertyName);
+			this.selectorName = selectorName;
+			failedDesc = workbench.getSharedImages().getImageDescriptor(
+					ISharedImages.IMG_DEC_FIELD_ERROR);
 		}
 
-		// /** Refresh the table viewer based on the free text search field */
-		// protected void refreshFilteredList(TableViewer membersViewer) {
-		// String currVal = CommonsJcrUtils.get(templateNode,
-		// Property.JCR_TITLE);
-		// try {
-		// Session session = templateNode.getSession();
-		// QueryManager queryManager = session.getWorkspace()
-		// .getQueryManager();
-		// QueryObjectModelFactory factory = queryManager.getQOMFactory();
-		// Selector source = factory.selector(taggableNodeType,
-		// taggableNodeType);
-		// //
-		// factory.selector(tagLikeInstanceNode.getPrimaryNodeType().getName(),
-		// // tagLikeInstanceNode.getPrimaryNodeType().getName());
-		//
-		// StaticOperand so = factory.literal(session.getValueFactory()
-		// .createValue(currVal));
-		// DynamicOperand dyo = factory.propertyValue(
-		// source.getSelectorName(), propertyName);
-		// Constraint constraint = factory.comparison(dyo,
-		// QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
-		//
-		// Constraint subTree = factory.descendantNode(
-		// source.getSelectorName(), taggableParentPath);
-		// constraint = CommonsJcrUtils.localAnd(factory, constraint,
-		// subTree);
-		//
-		// Ordering order = factory.ascending(factory.propertyValue(
-		// source.getSelectorName(), Property.JCR_TITLE));
-		// Ordering[] orderings = { order };
-		// QueryObjectModel query = factory.createQuery(source,
-		// constraint, orderings, null);
-		// QueryResult result = query.execute();
-		// Row[] rows = CommonsJcrUtils.rowIteratorToArray(result
-		// .getRows());
-		// setViewerInput(membersViewer, rows);
-		//
-		// } catch (RepositoryException e) {
-		// throw new PeopleException(
-		// "Unable to list entities for tag like property instance "
-		// + currVal, e);
-		// }
-		// }
+		@Override
+		public Image getImage(Object element) {
+			Image image = super.getImage(element);
+			Node currEntity = CommonsJcrUtils.getNode((Row) element,
+					selectorName);
+			if (CommonsJcrUtils.isNodeCheckedOut(currEntity) && image != null) {
+				if (images.containsKey(image)) {
+					image = images.get(image);
+				} else {
+					Image descImage = new DecorationOverlayIcon(image,
+							failedDesc, IDecoration.BOTTOM_RIGHT).createImage();
+					images.put(image, descImage);
+					image = descImage;
+				}
+			}
+			return image;
+		}
+
+		@Override
+		public void dispose() {
+			// Free created image resources
+			for (Image image : images.values())
+				image.dispose();
+			super.dispose();
+		}
 	}
 }

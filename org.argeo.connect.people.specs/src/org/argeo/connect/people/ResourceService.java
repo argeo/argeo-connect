@@ -99,6 +99,29 @@ public interface ResourceService {
 	 */
 	public Node getNodeTemplate(Session session, String templateId);
 
+	/**
+	 * Retrieves all entities which property has the given value
+	 * 
+	 * @param session
+	 * @param entityType
+	 * @param propName
+	 * @param value
+	 * @return
+	 */
+	public NodeIterator getCatalogueValueInstances(Session session,
+			String entityType, String propName, String value);
+
+	/**
+	 * Change the value of a given template catalogue. It also updates this
+	 * value in all business objects of the repository that have this value.
+	 * 
+	 * If newValue is null it will only remove old value and unmark all entities
+	 * 
+	 * TODO do this in a transaction and revert if the process is unsuccessful.
+	 */
+	public void updateCatalogueValue(Node templateNode, String taggableType,
+			String propertyName, String oldValue, String newTitle);
+
 	/* TAG LIKE PROPERTIES MANAGEMENT */
 	/**
 	 * @param session

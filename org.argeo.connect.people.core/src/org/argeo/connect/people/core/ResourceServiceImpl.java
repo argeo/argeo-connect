@@ -168,6 +168,60 @@ public class ResourceServiceImpl implements ResourceService {
 		}
 	}
 
+	@Override
+	public NodeIterator getCatalogueValueInstances(Session session,
+			String entityType, String propName, String value) {
+		try {
+			QueryManager qm = session.getWorkspace().getQueryManager();
+			Query query = qm.createQuery("select * from [" + entityType
+					+ "] as nodes where [" + propName + "]='" + value + "'"
+					+ " ", Query.JCR_SQL2);
+			return query.execute().getNodes();
+		} catch (RepositoryException ee) {
+			throw new PeopleException(
+					"Unable to retrieve catalogue value instances for type "
+							+ entityType + " and property " + propName
+							+ " for value " + value, ee);
+		}
+	}
+
+	@Override
+	public void updateCatalogueValue(Node templateNode, String taggableType,
+			String propertyName, String oldValue, String newValue) {
+		try {
+
+			if (CommonsJcrUtils.isEmptyString(oldValue))
+				throw new PeopleException("Old value cannot be empty");
+
+			Value[] values = templateNode.getProperty(propertyName).getValues();
+			List<String> newValues = new ArrayList<String>();
+
+			for (Value value : values) {
+				String currValStr = value.getString();
+				if (oldValue.equals(currValStr)) {
+					if (CommonsJcrUtils.checkNotEmptyString(newValue))
+						newValues.add(newValue);
+				} else
+					newValues.add(currValStr);
+			}
+			templateNode.setProperty(propertyName,
+					newValues.toArray(new String[0]));
+
+			// TODO use a transaction
+			// Retrieve all node that reference this tag and update them
+			NodeIterator nit = getCatalogueValueInstances(
+					CommonsJcrUtils.getSession(templateNode), taggableType,
+					propertyName, oldValue);
+			while (nit.hasNext())
+				updateOneTag(nit.nextNode(), propertyName, oldValue, newValue);
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to update " + templateNode
+					+ " with values on " + taggableType + " for property "
+					+ propertyName + " with old value '" + oldValue
+					+ "' and new value '" + newValue + "'.", e);
+		}
+	}
+
 	/* TAG LIKE INSTANCES MANAGEMENT */
 	@Override
 	public Node createTagLikeResourceParent(Session session, String tagId,
@@ -437,8 +491,8 @@ public class ResourceServiceImpl implements ResourceService {
 			// TODO will it fails if propNames is empty?
 			QueryManager qm = tagParent.getSession().getWorkspace()
 					.getQueryManager();
-			Query query = qm.createQuery("select * from [" + nodeType
-					+ "] as nodes where ISDESCENDANTNODE('" + parentPath
+			Query query = qm.createQuery("select * from [" + nodeType + "] as "
+					+ sName + " where ISDESCENDANTNODE('" + parentPath
 					+ "') AND (" + propClause + ") ", Query.JCR_SQL2);
 			return query.execute().getNodes();
 		} catch (RepositoryException ee) {
@@ -592,16 +646,24 @@ public class ResourceServiceImpl implements ResourceService {
 				wasCheckedIn = true;
 				CommonsJcrUtils.checkout(taggable);
 			}
-			List<String> oldValues = CommonsJcrUtils.getMultiAsList(taggable,
-					tagPropName);
-			List<String> newValues = new ArrayList<String>();
-			for (String val : oldValues) {
-				if (oldValue.equals(val))
-					newValues.add(newValue);
-				else
-					newValues.add(val);
-			}
-			taggable.setProperty(tagPropName, newValues.toArray(new String[0]));
+
+			Property property = taggable.getProperty(tagPropName);
+
+			if (property.isMultiple()) {
+				List<String> oldValues = CommonsJcrUtils.getMultiAsList(
+						taggable, tagPropName);
+				List<String> newValues = new ArrayList<String>();
+				for (String val : oldValues) {
+					if (oldValue.equals(val))
+						if (newValue != null)
+							newValues.add(newValue);
+						else
+							newValues.add(val);
+				}
+				taggable.setProperty(tagPropName,
+						newValues.toArray(new String[0]));
+			} else
+				taggable.setProperty(tagPropName, newValue);
 
 			if (wasCheckedIn)
 				CommonsJcrUtils.saveAndCheckin(taggable);
