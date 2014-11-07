@@ -18,12 +18,12 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.editors.parts.TagLikeListPart;
+import org.argeo.connect.people.rap.editors.tabs.ActivityList;
 import org.argeo.connect.people.rap.editors.tabs.ContactList;
 import org.argeo.connect.people.rap.editors.tabs.HistoryLog;
 import org.argeo.connect.people.rap.editors.tabs.JobList;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.providers.PersonOverviewLabelProvider;
-import org.argeo.connect.people.rap.toolkits.ActivityToolkit;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -63,7 +63,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 	private Node person;
 
 	// Usefull toolkits
-	private ActivityToolkit activityTK;
+	// private ActivityToolkit activityTK;
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -88,8 +88,8 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 
 	@Override
 	protected void createToolkits() {
-		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
-				getPeopleService(), getPeopleWorkbenchService());
+		// activityTK = new ActivityToolkit(toolkit, getManagedForm(),
+		// getPeopleService(), getPeopleWorkbenchService());
 	}
 
 	@Override
@@ -129,9 +129,9 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				"Contact details", PeopleRapConstants.CTAB_CONTACT_DETAILS,
 				tooltip);
 		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
-		ContactList cpc = new ContactList(innerPannel,
-				SWT.NO_FOCUS, toolkit, getManagedForm(), getNode(),
-				getPeopleService(), getPeopleWorkbenchService());
+		ContactList cpc = new ContactList(innerPannel, SWT.NO_FOCUS, toolkit,
+				getManagedForm(), getNode(), getPeopleService(),
+				getPeopleWorkbenchService());
 		cpc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		// Activities and tasks
@@ -139,7 +139,11 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
 				PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
-		activityTK.populateActivityLogPanel(innerPannel, person);
+		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		Composite activitiesCmp = new ActivityList(toolkit, getManagedForm(),
+				innerPannel, SWT.NONE, getPeopleService(),
+				getPeopleWorkbenchService(), person);
+		activitiesCmp.setLayoutData(PeopleUiUtils.fillGridData());
 
 		// Jobs panel
 		tooltip = "Organisations linked to "
@@ -147,9 +151,9 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Organisations",
 				PeopleRapConstants.CTAB_JOBS, tooltip);
 		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
-		Composite crewCmp = new JobList(toolkit, getManagedForm(),
-				innerPannel, SWT.NONE, getPeopleService(),
-				getPeopleWorkbenchService(), person);
+		Composite crewCmp = new JobList(toolkit, getManagedForm(), innerPannel,
+				SWT.NONE, getPeopleService(), getPeopleWorkbenchService(),
+				person);
 		crewCmp.setLayoutData(PeopleUiUtils.fillGridData());
 
 		// History panel

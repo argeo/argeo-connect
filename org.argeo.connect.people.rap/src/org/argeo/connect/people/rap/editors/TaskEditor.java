@@ -17,8 +17,8 @@ import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.dialogs.PickUpGroupDialog;
 import org.argeo.connect.people.rap.dialogs.PickUpRelatedDialog;
+import org.argeo.connect.people.rap.editors.tabs.ActivityList;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
-import org.argeo.connect.people.rap.toolkits.ActivityToolkit;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -66,7 +66,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 	private Node task;
 
 	// Usefull toolkits
-	private ActivityToolkit activityTK;
+	// private ActivityToolkit activityTK;
 
 	// Form parts must be explicitly disposed
 	private AbstractFormPart headerPart;
@@ -79,8 +79,8 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void createToolkits() {
-		activityTK = new ActivityToolkit(toolkit, getManagedForm(),
-				getPeopleService(), getPeopleWorkbenchService());
+		// activityTK = new ActivityToolkit(toolkit, getManagedForm(),
+		// getPeopleService(), getPeopleWorkbenchService());
 	}
 
 	@Override
@@ -378,13 +378,16 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void populateTabFolder(CTabFolder tabFolder) {
-		// TODO Auto-generated method stub
 		// Activities and tasks
 		String tooltip = "Activities and tasks related to "
 				+ JcrUtils.get(task, Property.JCR_TITLE);
 		Composite innerPannel = addTabToFolder(tabFolder, CTAB_COMP_STYLE,
 				"Activity log", PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
-		activityTK.populateActivityLogPanel(innerPannel, task);
+		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		Composite activitiesCmp = new ActivityList(toolkit, getManagedForm(),
+				innerPannel, SWT.NONE, getPeopleService(),
+				getPeopleWorkbenchService(), task);
+		activitiesCmp.setLayoutData(PeopleUiUtils.fillGridData());
 	}
 
 }
