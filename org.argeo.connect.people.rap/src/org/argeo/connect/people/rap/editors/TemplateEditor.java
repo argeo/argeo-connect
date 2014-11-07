@@ -1,0 +1,165 @@
+package org.argeo.connect.people.rap.editors;
+
+import javax.jcr.Node;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
+import javax.jcr.RepositoryException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.ResourceService;
+import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
+import org.argeo.connect.people.rap.editors.tabs.TemplateValueCatalogue;
+import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
+import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.rap.rwt.RWT;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.forms.AbstractFormPart;
+
+/**
+ * Enable management of a given node template, among other static list
+ * (catalogue) management
+ */
+public class TemplateEditor extends AbstractEntityCTabEditor {
+	final static Log log = LogFactory.getLog(TemplateEditor.class);
+
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID
+			+ ".templateEditor";
+
+	/* DEPENDENCY INJECTION */
+	private ResourceService resourceService;
+
+	// Main business Objects
+	private Node nodeTemplate;
+
+	public void init(IEditorSite site, IEditorInput input)
+			throws PartInitException {
+		super.init(site, input);
+		nodeTemplate = getNode();
+		String shortName = resourceService
+				.getItemDefaultEnLabel(CommonsJcrUtils.get(nodeTemplate,
+						PeopleNames.PEOPLE_TEMPLATE_ID));
+		setPartName(shortName);
+		resourceService = getPeopleService().getResourceService();
+	}
+
+	protected void populateTabFolder(CTabFolder folder) {
+		String tooltip;
+		Composite innerPannel;
+
+		try {
+			PropertyIterator pit = nodeTemplate.getProperties();
+
+			loop: while (pit.hasNext()) {
+				Property property = pit.nextProperty();
+
+				// TODO make this more robust
+				if (!property.isMultiple())
+					continue loop;
+
+				String propName = property.getName();
+				// TODO enhance
+				String propLabel = propName;
+
+				tooltip = "Manage and edit the \"" + propLabel + "\" catalogue";
+				innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
+						propLabel, PeopleRapConstants.CTAB_EDIT_CATALOGUE + "/"
+								+ propName, tooltip);
+				innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+				Composite submittedForCmp = new TemplateValueCatalogue(
+						getSite().getWorkbenchWindow().getWorkbench(),
+						getFormToolkit(), innerPannel, SWT.NO_FOCUS,
+						getManagedForm(), getPeopleService(),
+						getPeopleWorkbenchService(), nodeTemplate, propName,
+						CommonsJcrUtils.get(nodeTemplate,
+								PeopleNames.PEOPLE_TEMPLATE_ID));
+				submittedForCmp.setLayoutData(PeopleUiUtils.fillGridData());
+			}
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"unable to create property tabs for node template "
+							+ nodeTemplate, e);
+		}
+	}
+
+	@Override
+	protected void populateHeader(final Composite parent) {
+
+		try {
+			parent.setLayout(new GridLayout());
+			final Label editionInfoROLbl = toolkit.createLabel(parent, "",
+					SWT.WRAP);
+			editionInfoROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+			final ColumnLabelProvider festivalLP = new EditionOLP();
+
+			final AbstractFormPart editPart = new AbstractFormPart() {
+				// Update values on refresh
+				public void refresh() {
+					super.refresh();
+					String roText = festivalLP.getText(nodeTemplate);
+					editionInfoROLbl.setText(roText);
+					parent.layout();
+				}
+			};
+			editPart.initialize(getManagedForm());
+			getManagedForm().addPart(editPart);
+		} catch (Exception e) {
+			throw new PeopleException("Cannot create main info section", e);
+		}
+	}
+
+	@Override
+	protected Boolean deleteParentOnRemove() {
+		return false;
+	}
+
+	@Override
+	protected boolean showDeleteButton() {
+		return false;
+	}
+
+	private class EditionOLP extends ColumnLabelProvider {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public String getText(Object element) {
+			Node node = (Node) element;
+
+			StringBuilder builder = new StringBuilder();
+			builder.append("<span style='font-size:15px;'>");
+
+			// first line
+			builder.append("<b><big>");
+			builder.append(CommonsJcrUtils.get(node,
+					PeopleNames.PEOPLE_TEMPLATE_ID));
+			builder.append("</big></b> ");
+			// builder.append("<br/><i>");
+			// builder.append(CommonsJcrUtils.get(editionInfo,
+			// Property.JCR_DESCRIPTION));
+			// builder.append("</i>");
+			// builder.append(getFromToSnippet(editionInfo));
+			builder.append("</span>");
+			return builder.toString();
+		}
+	}
+
+	@Override
+	public void setPeopleService(PeopleService peopleService) {
+		super.setPeopleService(peopleService);
+		resourceService = peopleService.getResourceService();
+	}
+}

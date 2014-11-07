@@ -40,8 +40,12 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
@@ -430,6 +434,42 @@ public class PeopleRapUtils {
 				CommandUtils.callCommand(
 						peopleWorkbenchService.getOpenSearchEntityEditorCmdId(),
 						params);
+			}
+		});
+		return link;
+	}
+
+	/**
+	 * Simply create a link to open whatever editor
+	 * 
+	 * @param iwPage
+	 * @param parent
+	 * @param editorInput
+	 * @param editorId
+	 * @param label
+	 * @return
+	 */
+	public static Link createOpenEditorLink(final IWorkbenchPage iwPage,
+			Composite parent, final IEditorInput editorInput,
+			final String editorId, final String label) {
+		Link link = new Link(parent, SWT.NONE);
+		link.setText("<a>" + label + "</a>");
+		link.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent event) {
+				try {
+					IEditorPart iep = iwPage.findEditor(editorInput);
+					if (iep == null) {
+						iwPage.openEditor(editorInput, editorId);
+					} else
+						iwPage.activate(iep);
+
+				} catch (PartInitException e) {
+					throw new PeopleException("Unable to open editor with ID "
+							+ editorId, e);
+				}
 			}
 		});
 		return link;

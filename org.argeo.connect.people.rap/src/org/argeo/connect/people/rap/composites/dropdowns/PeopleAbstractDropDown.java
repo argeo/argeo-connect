@@ -92,10 +92,23 @@ public abstract class PeopleAbstractDropDown {
 		});
 
 		// text.addListener(SWT.Traverse, new DDReturnListener());
+		// dropDown.addListener(SWT.CANCEL, new AllEventsListener());
+		// dropDown.addListener(SWT.CLOSE, new AllEventsListener());
+		// dropDown.addListener(SWT.CR, new AllEventsListener());
+		// dropDown.addListener(SWT.Selection, new AllEventsListener());
 		dropDown.addListener(SWT.Selection, new DDSelectionListener());
 		dropDown.addListener(SWT.DefaultSelection, new DDSelectionListener());
 	}
 
+	//
+	// private class AllEventsListener implements Listener {
+	// private static final long serialVersionUID = 1L;
+	//
+	// @Override
+	// public void handleEvent(Event event) {
+	// System.out.println("Event received: " + event.type);
+	// }
+	// }
 
 	// private class DDReturnListener implements Listener {
 	// private static final long serialVersionUID = 1L;

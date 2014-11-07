@@ -452,21 +452,23 @@ public class TemplateValueCatalogue extends Composite {
 		 */
 		@Override
 		public boolean performFinish() {
-			String newTitle = newValueTxt.getText();
+			String errMsg = null;
+			String newValue = null;
 			ResourceService rs = peopleService.getResourceService();
 
-			String errMsg = null;
 			List<String> existingValues = rs.getTemplateCatalogue(templateNode,
 					propertyName, null);
 
 			// Sanity checks for update only
 			if (PeopleUiConstants.CRUD_EDIT.equals(actionType)) {
-				if (CommonsJcrUtils.isEmptyString(newTitle))
+				newValue = newValueTxt.getText();
+
+				if (CommonsJcrUtils.isEmptyString(newValue))
 					errMsg = "New value cannot be blank or an empty string";
-				else if (oldValue.equals(newTitle))
+				else if (oldValue.equals(newValue))
 					errMsg = "New value is the same as old one.\n"
 							+ "Either enter a new one or press cancel.";
-				else if (existingValues.contains(newTitle))
+				else if (existingValues.contains(newValue))
 					errMsg = "The new chosen value is already used.\n"
 							+ "Either enter a new one or press cancel.";
 			}
@@ -477,7 +479,7 @@ public class TemplateValueCatalogue extends Composite {
 			}
 
 			rs.updateCatalogueValue(templateNode, taggableType, propertyName,
-					oldValue, newTitle);
+					oldValue, newValue);
 			return true;
 		}
 
