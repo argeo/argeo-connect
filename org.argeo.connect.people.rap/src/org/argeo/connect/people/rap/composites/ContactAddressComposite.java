@@ -13,12 +13,15 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -43,8 +46,10 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * 
  */
 public class ContactAddressComposite extends Composite implements PeopleNames {
-
 	private static final long serialVersionUID = 4475049051062923873L;
+
+	// private final static Log log = LogFactory
+	// .getLog(ContactAddressComposite.class);
 
 	private final PeopleService peopleService;
 	private final PeopleWorkbenchService peopleWorkbenchService;
@@ -93,26 +98,58 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			populateEditPanel(dataCmp);
 	}
 
-	protected void populateReadOnlyPanel(final Composite readOnlyPanel) {
+	protected void populateReadOnlyPanel(Composite readOnlyPanel) {
 		readOnlyPanel.setLayout(new GridLayout());
 
-		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
-				SWT.WRAP);
-		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		String addressHtml = "";
 		String refUid = CommonsJcrUtils.get(contactNode,
 				PeopleNames.PEOPLE_REF_UID);
 		if (CommonsJcrUtils.isNodeType(contactNode,
 				PeopleTypes.PEOPLE_CONTACT_REF)
 				&& CommonsJcrUtils.checkNotEmptyString(refUid)) {
-			Node referencedEntity = peopleService.getEntityByUid(
+
+			final Node referencedEntity = peopleService.getEntityByUid(
 					CommonsJcrUtils.getSession(contactNode), refUid);
-			addressHtml = PeopleUiSnippets.getWorkAddress(peopleService,
-					contactNode, referencedEntity);
-		} else
-			addressHtml = PeopleUiSnippets.getContactDisplaySnippet(
+
+			Link readOnlyInfoLk = new Link(readOnlyPanel, SWT.WRAP);
+			StringBuilder builder = new StringBuilder();
+			// the referenced org
+			if (referencedEntity != null) {
+				String label = CommonsJcrUtils.get(referencedEntity,
+						Property.JCR_TITLE);
+				builder.append("<a>").append(label).append("</a> ");
+			}
+			// current contact meta data
+			String meta = PeopleUiSnippets.getContactMetaData(contactNode);
+			// work around to remove the encoded space. To be cleaned.
+			if (meta.startsWith(PeopleUiConstants.NB_DOUBLE_SPACE))
+				meta = meta.substring(PeopleUiConstants.NB_DOUBLE_SPACE
+						.length());
+			builder.append(meta);
+
+			// Referenced org primary address
+			if (referencedEntity != null) {
+				Node primaryAddress = PeopleJcrUtils.getPrimaryContact(
+						referencedEntity, PeopleTypes.PEOPLE_ADDRESS);
+				if (primaryAddress != null) {
+					builder.append("\n");
+					builder.append(PeopleUiSnippets.getAddressDisplayValue(
+							peopleService, primaryAddress));
+				}
+			}
+			readOnlyInfoLk.setText(PeopleUiUtils.replaceAmpersand(builder
+					.toString()));
+
+			OrgLinkListener oll = new OrgLinkListener();
+			oll.setOrg(referencedEntity);
+			readOnlyInfoLk.addSelectionListener(oll);
+		} else {
+			Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
+					SWT.WRAP);
+			readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+			String addressHtml = PeopleUiSnippets.getContactDisplaySnippet(
 					peopleService, contactNode);
-		readOnlyInfoLbl.setText(addressHtml);
+			readOnlyInfoLbl.setText(addressHtml);
+		}
 	}
 
 	protected void populateEditPanel(Composite parent) {
@@ -133,13 +170,12 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 	private void populateWorkAdresseCmp(Composite parent, final Node contactNode) {
 		try {
-			final Text valueTxt = PeopleRapUtils.createRDText(toolkit, parent,
-					"Chosen org.", "", 0);
-			valueTxt.setEnabled(false);
+			final Link nameLk = new Link(parent, SWT.LEFT | SWT.BOTTOM);
+			final OrgLinkListener nameLkListener = new OrgLinkListener();
+			nameLk.addSelectionListener(nameLkListener);
 
 			Link chooseOrgLk = new Link(parent, SWT.LEFT | SWT.BOTTOM);
 			chooseOrgLk.setText("<a>Change</a>");
-			// toolkit.adapt(chooseOrgLk, false, false);
 
 			Text labelTxt = PeopleRapUtils.createRDText(toolkit, parent,
 					"A custom label", "A custom label", 120);
@@ -151,8 +187,8 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 			final PickUpOrgDialog diag = new PickUpOrgDialog(
 					chooseOrgLk.getShell(), "Choose an organisation",
-					contactNode.getSession(), peopleWorkbenchService, contactNode.getParent()
-							.getParent());
+					contactNode.getSession(), peopleWorkbenchService,
+					contactNode.getParent().getParent());
 
 			// REFRESH VALUES
 			PeopleRapUtils.refreshFormText(labelTxt, contactNode,
@@ -165,15 +201,16 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 						.getSession(),
 						contactNode.getProperty(PeopleNames.PEOPLE_REF_UID)
 								.getString());
-				if (linkedOrg != null)
-					valueTxt.setText(CommonsJcrUtils.get(linkedOrg,
-							Property.JCR_TITLE));
+				if (linkedOrg != null) {
+					nameLkListener.setOrg(linkedOrg);
+					nameLk.setText("<a>"
+							+ CommonsJcrUtils
+									.get(linkedOrg, Property.JCR_TITLE)
+							+ "</a>");
+				}
 			}
 
 			// Listeners
-			PeopleRapUtils.addTxtModifyListener(formPart, valueTxt,
-					contactNode, PeopleNames.PEOPLE_CONTACT_VALUE,
-					PropertyType.STRING);
 			PeopleRapUtils.addTxtModifyListener(formPart, labelTxt,
 					contactNode, PeopleNames.PEOPLE_CONTACT_LABEL,
 					PropertyType.STRING);
@@ -189,8 +226,11 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					diag.open();
 					Node currNode = diag.getSelected();
 					if (currNode != null) {
-						valueTxt.setText(CommonsJcrUtils.get(currNode,
-								Property.JCR_TITLE));
+						nameLkListener.setOrg(currNode);
+						nameLk.setText("<a>"
+								+ CommonsJcrUtils.get(currNode,
+										Property.JCR_TITLE) + "</a>");
+
 						String uid = CommonsJcrUtils.get(currNode,
 								PeopleNames.PEOPLE_UID);
 						if (CommonsJcrUtils.setJcrProperty(contactNode,
@@ -200,11 +240,30 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					}
 				}
 			});
-
 			parent.pack(true);
 		} catch (RepositoryException e1) {
 			throw new PeopleException(
 					"Unable to refresh editable panel for work address", e1);
+		}
+	}
+
+	private class OrgLinkListener extends SelectionAdapter {
+		private static final long serialVersionUID = 1L;
+		private Node org;
+
+		protected void setOrg(Node org) {
+			this.org = org;
+		}
+
+		@Override
+		public void widgetSelected(final SelectionEvent event) {
+			if (org != null) {
+				CommandUtils.callCommand(
+						peopleWorkbenchService.getOpenEntityEditorCmdId(),
+						OpenEntityEditor.PARAM_JCR_ID,
+						CommonsJcrUtils.getIdentifier(org));
+			}
+
 		}
 	}
 

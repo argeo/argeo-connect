@@ -318,8 +318,8 @@ public class ActivityTable extends Composite implements ArgeoNames {
 							}
 						}
 						if (builder.lastIndexOf(", ") != -1)
-							return builder.substring(0,
-									builder.lastIndexOf(", "));
+							return PeopleUiUtils.replaceAmpersand(builder
+									.substring(0, builder.lastIndexOf(", ")));
 					}
 
 				}
@@ -345,7 +345,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 							+ " - "
 							+ CommonsJcrUtils.get(currNode,
 									Property.JCR_DESCRIPTION);
-					return desc;
+					return PeopleUiUtils.replaceAmpersand(desc);
 				}
 				return "";
 			} catch (RepositoryException re) {

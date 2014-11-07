@@ -1,6 +1,7 @@
 package org.argeo.connect.people.rap;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
@@ -9,12 +10,15 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.commands.EditJob;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.commands.RemoveEntityReference;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.PeopleJcrUtils;
 
 /** Some helper methods to generate HTML snippet */
 public class PeopleRapSnippets {
@@ -73,24 +77,6 @@ public class PeopleRapSnippets {
 				+ isBackward;
 		return getRWTLink(href, PeopleUiConstants.CRUD_EDIT);
 	}
-
-	/**
-	 * Create the text value of a link that enable calling the
-	 * <code>EditEntityReferenceWithPosition</command> from a cell of a HTML list
-	 */
-	// public static String getEditWithPosSnippetForLists(Node linkNode,
-	// boolean isBackward, String toSearchNodeType) {
-	// String toEditJcrId = CommonsJcrUtils.getIdentifier(linkNode);
-	//
-	// String href = EditEntityReferenceWithPosition.ID + "/"
-	// + EditEntityReferenceWithPosition.PARAM_OLD_LINK_JCR_ID + "="
-	// + toEditJcrId + "/"
-	// + EditEntityReferenceWithPosition.PARAM_IS_BACKWARD + "="
-	// + isBackward + "/"
-	// + EditEntityReferenceWithPosition.PARAM_TO_SEARCH_NODE_TYPE
-	// + "=" + toSearchNodeType;
-	// return getRWTLink(href, PeopleUiConstants.CRUD_EDIT);
-	// }
 
 	/**
 	 * Create the text value of a link that enable calling the
@@ -160,6 +146,34 @@ public class PeopleRapSnippets {
 		String href = commandId + PeopleRapConstants.HREF_SEPARATOR;
 		href += OpenEntityEditor.PARAM_JCR_ID + "=" + tagJcrId;
 		return getRWTLink(href, value);
+	}
+
+	/** creates the display ReadOnly HTML snippet for a work address */
+	public static String getWorkAddressForList(PeopleService peopleService,
+			PeopleWorkbenchService peopleWorkbenchService, Node contactNode,
+			Node referencedEntity) {
+		StringBuilder builder = new StringBuilder();
+		// the referenced org
+		if (referencedEntity != null) {
+			String label = PeopleRapSnippets.getOpenEditorSnippet(
+					peopleWorkbenchService.getOpenEntityEditorCmdId(),
+					referencedEntity,
+					CommonsJcrUtils.get(referencedEntity, Property.JCR_TITLE));
+			builder.append(label);
+		}
+		// current contact meta data
+		builder.append(PeopleUiSnippets.getContactMetaData(contactNode));
+		// Referenced org primary address
+		if (referencedEntity != null) {
+			Node primaryAddress = PeopleJcrUtils.getPrimaryContact(
+					referencedEntity, PeopleTypes.PEOPLE_ADDRESS);
+			if (primaryAddress != null) {
+				builder.append("<br />");
+				builder.append(PeopleUiSnippets.getAddressDisplayValue(
+						peopleService, primaryAddress));
+			}
+		}
+		return PeopleUiUtils.replaceAmpersand(builder.toString());
 	}
 
 }
