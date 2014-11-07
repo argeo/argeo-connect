@@ -19,7 +19,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
-import org.argeo.connect.people.rap.composites.ActivityTableComposite;
+import org.argeo.connect.people.rap.editors.parts.ActivityTable;
 import org.argeo.connect.people.rap.wizards.NewSimpleTaskWizard;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -54,7 +54,7 @@ public class ActivityList extends Composite {
 	// Context
 	private final FormToolkit toolkit;
 	private final PeopleService peopleService;
-	private final PeopleWorkbenchService peopleUiService;
+	private final PeopleWorkbenchService peopleWorkbenchService;
 	private final ActivityService activityService;
 	private final Node entity;
 
@@ -69,7 +69,7 @@ public class ActivityList extends Composite {
 		this.toolkit = toolkit;
 		this.peopleService = peopleService;
 		activityService = peopleService.getActivityService();
-		this.peopleUiService = peopleWorkbenchService;
+		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.entity = entity;
 
 		// Populate
@@ -90,20 +90,19 @@ public class ActivityList extends Composite {
 			}
 
 			// The Table that displays corresponding activities
-			activityTable = new MyActivityTableCmp(parent,
-					SWT.MULTI, entity);
+			activityTable = new MyActivityTableCmp(parent, SWT.MULTI, entity);
 			activityTable.populate();
 			// TableViewer viewer = tmpCmp.getTableViewer();
 			activityTable.setLayoutData(PeopleUiUtils.fillGridData());
 
 			if (addCmp != null)
 				addNewActivityPanel(addCmp, entity,
-						peopleUiService.getOpenEntityEditorCmdId(),
+						peopleWorkbenchService.getOpenEntityEditorCmdId(),
 						activityTable);
 
 			// Doubleclick listener
 			activityTable.getTableViewer().addDoubleClickListener(
-					new ActivityTableDCL(peopleUiService
+					new ActivityTableDCL(peopleWorkbenchService
 							.getOpenEntityEditorCmdId()));
 		} catch (RepositoryException re) {
 			throw new PeopleException("unable to create activity log", re);
@@ -230,13 +229,13 @@ public class ActivityList extends Composite {
 		}
 	}
 
-	private class MyActivityTableCmp extends ActivityTableComposite {
+	private class MyActivityTableCmp extends ActivityTable {
 		private static final long serialVersionUID = 1L;
 		private Node entity;
 
 		public MyActivityTableCmp(Composite parent, int style, Node entity)
 				throws RepositoryException {
-			super(parent, style, entity.getSession(), activityService);
+			super(parent, style, peopleService, peopleWorkbenchService, entity);
 			this.entity = entity;
 		}
 
@@ -258,7 +257,7 @@ public class ActivityList extends Composite {
 	}
 
 	private Node createActivity(Node entity, Combo typeLbCmb, Text titleTxt,
-			Text descTxt, ActivityTableComposite table) {
+			Text descTxt, ActivityTable table) {
 		String typeLbl = typeLbCmb.getText();
 		String title = titleTxt.getText();
 		String desc = descTxt.getText();

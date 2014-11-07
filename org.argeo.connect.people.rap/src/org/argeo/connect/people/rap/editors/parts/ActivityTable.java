@@ -1,4 +1,4 @@
-package org.argeo.connect.people.rap.composites;
+package org.argeo.connect.people.rap.editors.parts;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -27,8 +27,13 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.ActivitiesImages;
+import org.argeo.connect.people.rap.PeopleRapSnippets;
+import org.argeo.connect.people.rap.PeopleRapUtils;
+import org.argeo.connect.people.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.rap.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.rap.utils.ActivityViewerComparator;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.ActivityJcrUtils;
@@ -45,18 +50,20 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 
 /** Basic implementation of a table that displays both activities and tasks */
-public class ActivityTableComposite extends Composite implements ArgeoNames {
+public class ActivityTable extends Composite implements ArgeoNames {
 	private static final long serialVersionUID = 1L;
 
 	private TableViewer tableViewer;
 	private Session session;
+	private Node entity;
 	private int tableStyle;
+	// private PeopleService peopleService,
+	private PeopleWorkbenchService peopleWorkbenchService;
 	private ActivityService activityService;
 
 	// CONSTRUCTORS
@@ -69,12 +76,15 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 	 *            the style of the table
 	 * @param session
 	 */
-	public ActivityTableComposite(Composite parent, int style, Session session,
-			ActivityService activityService) {
+	public ActivityTable(Composite parent, int style,
+			PeopleService peopleService,
+			PeopleWorkbenchService peopleWorkbenchService, Node entity) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
-		this.session = session;
-		this.activityService = activityService;
+		this.entity = entity;
+		session = CommonsJcrUtils.getSession(entity);
+		this.peopleWorkbenchService = peopleWorkbenchService;
+		activityService = peopleService.getActivityService();
 	}
 
 	/** Must be called immediately after creation */
@@ -96,9 +106,11 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 
 	private TableViewer createTableViewer(final Composite parent) {
 		Table table = new Table(parent, tableStyle);
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		table.setLayoutData(PeopleUiUtils.fillGridData());
 
 		TableViewer viewer = new TableViewer(table);
+		PeopleRapUtils.setTableDefaultStyle(viewer, 23);
+
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 
@@ -106,13 +118,12 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 
 		Map<String, ColumnLabelProvider> lpMap = new HashMap<String, ColumnLabelProvider>();
 		lpMap.put(PeopleNames.PEOPLE_ASSIGNED_TO, new ManagerLabelProvider());
-		lpMap.put(PeopleNames.PEOPLE_RELATED_TO, new RelatedToLabelProvider());
+		lpMap.put(PeopleNames.PEOPLE_RELATED_TO, new AlsoRelatedToLP());
 
 		ActivityViewerComparator comparator = new ActivityViewerComparator(
 				activityService, lpMap);
 
 		// Activity type: mail, note... todo or task
-		// TODO add icon to display activity type :
 		column = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE, 22);
 		column.setLabelProvider(new TypeLabelProvider());
 
@@ -138,9 +149,9 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 						comparator, viewer));
 
 		// Related to
-		column = ViewerUtils.createTableViewerColumn(viewer, "Related to",
+		column = ViewerUtils.createTableViewerColumn(viewer, "Also related to",
 				SWT.NONE, 140);
-		column.setLabelProvider(new RelatedToLabelProvider());
+		column.setLabelProvider(new AlsoRelatedToLP());
 		column.getColumn().addSelectionListener(
 				JcrUiUtils.getNodeSelectionAdapter(colIndex++,
 						PropertyType.STRING, PeopleNames.PEOPLE_RELATED_TO,
@@ -163,6 +174,7 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 				ActivityViewerComparator.RELEVANT_DATE);
 		viewer.setComparator(comparator);
 
+		table.addSelectionListener(new HtmlListRwtAdapter());
 		return viewer;
 	}
 
@@ -274,7 +286,7 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 		}
 	}
 
-	private class RelatedToLabelProvider extends ColumnLabelProvider {
+	private class AlsoRelatedToLP extends ColumnLabelProvider {
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -286,15 +298,28 @@ public class ActivityTableComposite extends Composite implements ArgeoNames {
 					Value[] refs = currNode.getProperty(
 							PeopleNames.PEOPLE_RELATED_TO).getValues();
 					if (refs.length > 0) {
+						String currEntityId = null;
+						if (entity != null)
+							currEntityId = entity.getIdentifier();
 						for (Value value : refs) {
 							String id = value.getString();
-							Node currReferenced = session
-									.getNodeByIdentifier(id);
-							builder.append(
-									CommonsJcrUtils.get(currReferenced,
-											Property.JCR_TITLE)).append(", ");
+							if (!id.equals(currEntityId)) {
+								Node currReferenced = session
+										.getNodeByIdentifier(id);
+								String label = PeopleRapSnippets
+										.getOpenEditorSnippet(
+												peopleWorkbenchService
+														.getOpenEntityEditorCmdId(),
+												currReferenced,
+												CommonsJcrUtils.get(
+														currReferenced,
+														Property.JCR_TITLE));
+								builder.append(label).append(", ");
+							}
 						}
-						return builder.substring(0, builder.lastIndexOf(", "));
+						if (builder.lastIndexOf(", ") != -1)
+							return builder.substring(0,
+									builder.lastIndexOf(", "));
 					}
 
 				}
