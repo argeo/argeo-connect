@@ -4,6 +4,8 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,6 +51,24 @@ public class TemplateEditor extends AbstractEntityCTabEditor {
 			throws PartInitException {
 		super.init(site, input);
 		nodeTemplate = getNode();
+		// TODO workaround to manually add missing mixin
+		try {
+			if (!nodeTemplate.isNodeType(NodeType.MIX_VERSIONABLE))
+				nodeTemplate.addMixin(NodeType.MIX_VERSIONABLE);
+			if (!nodeTemplate.isNodeType(NodeType.MIX_LAST_MODIFIED))
+				nodeTemplate.addMixin(NodeType.MIX_LAST_MODIFIED);
+			Session session = nodeTemplate.getSession();
+			if (session.hasPendingChanges()) {
+				session.save();
+				log.warn("Versionable and last modified mixins "
+						+ "have been added to " + nodeTemplate);
+			}
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"Unable to add missing mixins for node template: "
+							+ nodeTemplate, e);
+		}
+
 		String shortName = resourceService
 				.getItemDefaultEnLabel(CommonsJcrUtils.get(nodeTemplate,
 						PeopleNames.PEOPLE_TEMPLATE_ID));
@@ -66,11 +86,12 @@ public class TemplateEditor extends AbstractEntityCTabEditor {
 			loop: while (pit.hasNext()) {
 				Property property = pit.nextProperty();
 
+				String propName = property.getName();
+
 				// TODO make this more robust
-				if (!property.isMultiple())
+				if (!property.isMultiple() || propName.startsWith("jcr:"))
 					continue loop;
 
-				String propName = property.getName();
 				// TODO enhance
 				String propLabel = propName;
 

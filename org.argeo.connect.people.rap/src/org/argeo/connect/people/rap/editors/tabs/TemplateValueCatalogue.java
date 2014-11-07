@@ -151,7 +151,7 @@ public class TemplateValueCatalogue extends Composite {
 			valuesViewer = createValuesViewer(valuesCmp);
 			valuesViewer.setContentProvider(new ValuesTableCP());
 			valuesViewer.getTable().addSelectionListener(
-					new MyEditRemoveAdapter(MyFormPart.this));
+					new MyEditRemoveAdapter());
 
 			Composite instancesCmp = new Composite(panel, SWT.NO_FOCUS);
 			instancesCmp.setLayoutData(PeopleUiUtils.fillGridData());
@@ -238,7 +238,7 @@ public class TemplateValueCatalogue extends Composite {
 		table.setLinesVisible(true);
 		table.setLayoutData(PeopleUiUtils.fillGridData());
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(20));
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(23));
 
 		TableViewer viewer = new TableViewer(table);
 
@@ -284,10 +284,8 @@ public class TemplateValueCatalogue extends Composite {
 
 	private class MyEditRemoveAdapter extends SelectionAdapter {
 		private static final long serialVersionUID = 1L;
-		private final AbstractFormPart part;
 
-		public MyEditRemoveAdapter(AbstractFormPart part) {
-			this.part = part;
+		public MyEditRemoveAdapter() {
 		}
 
 		public void widgetSelected(SelectionEvent event) {

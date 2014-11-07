@@ -218,7 +218,10 @@ mixin
 // among others, the various catalogues of pre-defined possible values 
 // for some given String properties.
 // The name of the template for a type of node is generally the corresponding JCR node type
-[people:nodeTemplate] > nt:unstructured, mix:title, mix:versionable, mix:lastModified
+[people:nodeTemplate] > nt:unstructured, mix:title
+// TODO add the following mixin: problem will necessitate a migration of the existing clients.
+// For the time being, corresponding mixin are added when opening this node template editor for the first time. 
+//, mix:versionable, mix:lastModified
 - people:templateId (STRING) // Generally the corresponding node type but might something else if necessary.
 
 

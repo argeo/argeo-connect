@@ -111,7 +111,7 @@ public class TemplateList extends EditorPart implements PeopleNames,
 		// Name
 		col = ViewerUtils.createTableViewerColumn(tableViewer, "", SWT.LEFT,
 				bounds[0]);
-		col.setLabelProvider(new SimpleJcrNodeLabelProvider(
+		col.setLabelProvider(new NodeTypeLabelProvider(
 				PeopleNames.PEOPLE_TEMPLATE_ID));
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
 				100, 150, true));
@@ -165,18 +165,37 @@ public class TemplateList extends EditorPart implements PeopleNames,
 		super.dispose();
 	}
 
+	/**
+	 * Returns the assigned to display name given a row that contains a Task
+	 * selector
+	 */
+	private class NodeTypeLabelProvider extends SimpleJcrNodeLabelProvider {
+		private static final long serialVersionUID = 1L;
+
+		public NodeTypeLabelProvider(String propName) {
+			super(propName);
+		}
+
+		@Override
+		public String getText(Object element) {
+			return resourceService
+					.getItemDefaultEnLabel(super.getText(element));
+		}
+	}
+
 	/* DEPENDENCY INJECTION */
 	public void setRepository(Repository repository) {
 		session = CommonsJcrUtils.login(repository);
 	}
 
+	public void setPeopleService(PeopleService peopleService) {
+		this.peopleService = peopleService;
+		resourceService = peopleService.getResourceService();
+	}
+
 	public void setPeopleWorkbenchService(
 			PeopleWorkbenchService peopleWorkbenchService) {
 		this.peopleWorkbenchService = peopleWorkbenchService;
-	}
-
-	public void setPeopleService(PeopleService peopleService) {
-		this.peopleService = peopleService;
 	}
 
 	// Unused compulsory methods
@@ -197,5 +216,4 @@ public class TemplateList extends EditorPart implements PeopleNames,
 	public boolean isSaveAsAllowed() {
 		return false;
 	}
-
 }

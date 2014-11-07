@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
@@ -641,10 +642,29 @@ public class ResourceServiceImpl implements ResourceService {
 			String oldValue, String newValue) {
 		try {
 			boolean wasCheckedIn = false;
-			if (taggable.isNodeType(NodeType.MIX_VERSIONABLE)
-					&& !CommonsJcrUtils.isNodeCheckedOutByMe(taggable)) {
+			Node versionable = null;
+
+			if (taggable.isNodeType(NodeType.MIX_VERSIONABLE))
+				versionable = taggable;
+			else {
+				Node currNode = taggable;
+				loop: while (!currNode.isNodeType(NodeType.MIX_VERSIONABLE)) {
+					try {
+						currNode = currNode.getParent();
+					} catch (ItemNotFoundException infe) {
+						// root node: we are in a full unversioned sub tree
+						break loop;
+					}
+				}
+				if (currNode != null
+						&& currNode.isNodeType(NodeType.MIX_VERSIONABLE))
+					versionable = currNode;
+			}
+
+			if (versionable != null
+					&& !CommonsJcrUtils.isNodeCheckedOutByMe(versionable)) {
 				wasCheckedIn = true;
-				CommonsJcrUtils.checkout(taggable);
+				CommonsJcrUtils.checkout(versionable);
 			}
 
 			Property property = taggable.getProperty(tagPropName);
@@ -666,7 +686,7 @@ public class ResourceServiceImpl implements ResourceService {
 				taggable.setProperty(tagPropName, newValue);
 
 			if (wasCheckedIn)
-				CommonsJcrUtils.saveAndCheckin(taggable);
+				CommonsJcrUtils.saveAndCheckin(versionable);
 			else
 				taggable.getSession().save();
 		} catch (RepositoryException ee) {
