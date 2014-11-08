@@ -103,10 +103,8 @@ public class RssHtmlProvider implements RssNames {
 		// TESTING REVERT ONCE DONE
 		// builder.append("<span> <big> <a ")
 		// .append(StreamsWebStyles.CSS_URL_STYLE).append(" ");
-
 		builder.append("<span> <big> <a ")
 				.append(StreamsWebStyles.STREAMS_URL_STYLE).append(" ");
-
 		// UNTIL HERE
 
 		builder.append("href=\"");
@@ -138,7 +136,7 @@ public class RssHtmlProvider implements RssNames {
 		return builder.toString();
 	}
 
-	/** shortcut to set form data while dealing with switching panel */
+	/** Returns the formatted publication date */
 	public static String getPubDate(Node entity) {
 		StringBuilder builder = new StringBuilder();
 		try {
@@ -152,7 +150,7 @@ public class RssHtmlProvider implements RssNames {
 		}
 	}
 
-	/** shortcut to set form data while dealing with switching panel */
+	/** Formats and returns the last update date and user*/
 	public static String getLastUpdateSnippet(Node entity) {
 		StringBuilder builder = new StringBuilder();
 		try {
@@ -172,7 +170,7 @@ public class RssHtmlProvider implements RssNames {
 		}
 	}
 
-	/** a snippet to display tags that are linked to the current entity */
+	/** A snippet to display tags that are linked to the current entity */
 	public static String getTags(Node entity) {
 		try {
 			StringBuilder tags = new StringBuilder();
@@ -196,5 +194,4 @@ public class RssHtmlProvider implements RssNames {
 		string = StringEscapeUtils.escapeXml(string.trim());
 		return string;
 	}
-
 }
