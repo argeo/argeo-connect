@@ -76,7 +76,7 @@ public class Section extends Composite implements CmsNames, MouseListener {
 			sectionTitle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 					false));
 			sectionTitle.refresh(updateContent);
-			if (getViewer().getCmsEditable().canEdit()) {
+			if (getViewer().getCmsEditable().isEditing()) {
 				sectionTitle.getTitle().setMouseListener(this);
 			}
 		}
@@ -96,7 +96,7 @@ public class Section extends Composite implements CmsNames, MouseListener {
 				paragraph.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 						false));
 				paragraph.refresh(updateContent);
-				if (getViewer().getCmsEditable().canEdit()) {
+				if (getViewer().getCmsEditable().isEditing()) {
 					paragraph.setMouseListener(this);
 				}
 			}

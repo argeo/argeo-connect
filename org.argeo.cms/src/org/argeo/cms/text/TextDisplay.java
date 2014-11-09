@@ -16,6 +16,8 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -40,43 +42,15 @@ public class TextDisplay implements CmsEditable, CmsNames, TextStyles {
 				versionManager = textNode.getSession().getWorkspace()
 						.getVersionManager();
 			}
+			if (canEdit()) {
+				TextEditHeader teh = new TextEditHeader(parent, SWT.NONE);
+				teh.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+			}
+			textViewer = new ComplexTextEditor(parent, textNode, this);
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot initialize text display for "
 					+ textNode, e);
 		}
-
-		if (canEdit()) {
-			TextEditHeader teh = new TextEditHeader(parent, SWT.NONE);
-			teh.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		}
-		// textViewer = new TextViewer(parent, SWT.NONE);
-		// textViewer.setCmsEditable(this);
-
-		// textViewer = new TextViewer2(new ScrolledPage(parent, SWT.NONE));
-		// // textViewer.setLabelProvider(new TextLabelProvider());
-		// TextViewerColumn column = new TextViewerColumn(textViewer,
-		// textViewer.getControl());
-		// column.setEditingSupport(new TextEditingSupport(textViewer,
-		// new IdentityTextInterpreter()));
-		// column.setLabelProvider(new TextLabelProvider());
-		//
-		// textViewer.addDoubleClickListener(new DCListener());
-		// textViewer.addOpenListener(new OListener());
-		//
-		// textViewer.setContentProvider(new JcrContentProvider());
-		// textViewer.getControl().setLayoutData(
-		// new GridData(SWT.FILL, SWT.FILL, true, true));
-		// textViewer.setInput(textNode);
-		// textViewer.refresh();
-
-		// try {
-		// ScrolledPage page = new ScrolledPage(parent, SWT.NONE);
-		// Section mainSection = new Section(page, SWT.NONE, textNode);
-		// mainSection.refresh(true, true);
-		// } catch (RepositoryException e) {
-		// throw new CmsException("Cannot load main section", e);
-		// }
-		textViewer = new ComplexTextEditor(parent, textNode, this);
 	}
 
 	//
@@ -103,10 +77,29 @@ public class TextDisplay implements CmsEditable, CmsNames, TextStyles {
 		public TextEditHeader(Composite parent, int style) {
 			super(parent, style);
 			setLayout(CmsUtils.noSpaceGridLayout());
-			Button publish = new Button(this, SWT.NONE);
-			publish.setText("Publish");
+			final Button publish = new Button(this, SWT.FLAT);
+			publish.setText(getPublishButtonLabel());
+			publish.addSelectionListener(new SelectionAdapter() {
+				private static final long serialVersionUID = 2588976132036292904L;
+
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					if (isEditing()) {
+						stopEditing();
+					} else {
+						startEditing();
+					}
+					publish.setText(getPublishButtonLabel());
+				}
+			});
 		}
 
+		private String getPublishButtonLabel() {
+			if (isEditing())
+				return "Publish";
+			else
+				return "Edit";
+		}
 	}
 
 	@Override
@@ -130,7 +123,7 @@ public class TextDisplay implements CmsEditable, CmsNames, TextStyles {
 		try {
 			versionManager.checkin(textNodePath);
 		} catch (RepositoryException e1) {
-			throw new CmsException("Cannot publish " + textNodePath);
+			throw new CmsException("Cannot publish " + textNodePath, e1);
 		}
 		textViewer.refresh();
 	}
