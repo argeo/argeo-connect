@@ -163,6 +163,7 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 					node = addNode(session, state, null);
 				else
 					node = session.getNode(state);
+				page = "";
 			} else if (firstSlash > 0) {
 				String prefix = state.substring(0, firstSlash);
 				String path = state.substring(firstSlash);
@@ -194,8 +195,8 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 					else
 						throw new CmsException("Data " + path
 								+ " does not exist");
-					page = prefix;
 				}
+				page = prefix;
 			} else {
 				node = getDefaultNode(session);
 				if (state.equals("~"))
