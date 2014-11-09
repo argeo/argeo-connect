@@ -33,12 +33,13 @@ public interface ActivityService {
 	public Node createActivity(Session session, String type, String title,
 			String desc, List<Node> relatedTo);
 
-	/**
-	 * Creates a new simple activity using the default path
-	 */
+	/** Creates a new simple activity using the default path */
 	public Node createActivity(Session session, Calendar date,
 			String managerId, String type, String title, String desc,
 			List<Node> relatedTo);
+
+	/** Returns the default activity English Label if defined */
+	public String getActivityLabel(Node activity);
 
 	/**
 	 * Try to retrieve a date to display depending on the node type.

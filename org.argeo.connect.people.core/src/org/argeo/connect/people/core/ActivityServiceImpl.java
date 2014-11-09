@@ -17,6 +17,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.UserManagementService;
+import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.UserJcrUtils;
@@ -57,19 +58,15 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	public String getActivityParentCanonicalPath(Session session) {
 		String currentUser = session.getUserID();
 		Calendar currentTime = GregorianCalendar.getInstance();
-		String path = peopleService
-				.getBasePath(PeopleTypes.PEOPLE_ACTIVITY)
-				+ "/"
-				+ JcrUtils.dateAsPath(currentTime, true) + currentUser;
+		String path = peopleService.getBasePath(PeopleTypes.PEOPLE_ACTIVITY)
+				+ "/" + JcrUtils.dateAsPath(currentTime, true) + currentUser;
 		return path;
 	}
 
 	public String getActivityParentPath(Session session, Calendar date,
 			String managerId) {
-		String path = peopleService
-				.getBasePath(PeopleTypes.PEOPLE_ACTIVITY)
-				+ "/"
-				+ JcrUtils.dateAsPath(date, true) + managerId;
+		String path = peopleService.getBasePath(PeopleTypes.PEOPLE_ACTIVITY)
+				+ "/" + JcrUtils.dateAsPath(date, true) + managerId;
 		return path;
 	}
 
@@ -137,6 +134,12 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 		}
 	}
 
+	@Override
+	public String getActivityLabel(Node activity) {
+		return ActivityJcrUtils.getActivityTypeLbl(activity);
+	}
+
+	/* TASKS */
 	@Override
 	public List<Node> getMyTasks(Session session, boolean onlyOpenTasks) {
 		return getTasksForUser(session, session.getUserID(), onlyOpenTasks);
@@ -239,7 +242,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 				taskNode.setProperty(Property.JCR_DESCRIPTION, description);
 
 			Node userProfile = UserJcrUtils.getUserProfile(session, managerId);
-			
+
 			// TODO hard coded root management
 			if (userProfile == null && "admin".equals(managerId))
 				userProfile = UserJcrUtils.getUserProfile(session, "root");
@@ -282,5 +285,4 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			UserManagementService userManagementService) {
 		this.userManagementService = userManagementService;
 	}
-
 }

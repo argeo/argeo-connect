@@ -26,12 +26,12 @@ import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.ActivityService;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.ActivitiesImages;
+import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
-import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.rap.utils.ActivityViewerComparator;
@@ -39,20 +39,20 @@ import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
-import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
-import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
+import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 
 /** Basic implementation of a table that displays both activities and tasks */
 public class ActivityTable extends Composite implements ArgeoNames {
@@ -61,8 +61,8 @@ public class ActivityTable extends Composite implements ArgeoNames {
 	private TableViewer tableViewer;
 	private Session session;
 	private Node entity;
-	private int tableStyle;
-	// private PeopleService peopleService,
+	private PeopleService peopleService;
+	private ResourceService resourceService;
 	private PeopleWorkbenchService peopleWorkbenchService;
 	private ActivityService activityService;
 
@@ -80,41 +80,30 @@ public class ActivityTable extends Composite implements ArgeoNames {
 			PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, Node entity) {
 		super(parent, SWT.NONE);
-		this.tableStyle = style;
-		this.entity = entity;
 		session = CommonsJcrUtils.getSession(entity);
+		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		activityService = peopleService.getActivityService();
-	}
+		resourceService = peopleService.getResourceService();
+		this.entity = entity;
 
-	/** Must be called immediately after creation */
-	public void populate() {
-		Composite parent = this;
-		GridLayout layout = PeopleUiUtils.noSpaceGridLayout();
-		layout.verticalSpacing = 5;
-		this.setLayout(layout);
-		tableViewer = createTableViewer(parent);
-		EclipseUiSpecificUtils.enableToolTipSupport(tableViewer);
-		tableViewer.setContentProvider(new MyTableContentProvider());
+		this.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		Composite tableComp = new Composite(this, SWT.NO_FOCUS);
+		tableViewer = createActivityViewer(tableComp, style);
+		tableComp.setLayoutData(PeopleUiUtils.fillGridData());
 		refreshFilteredList();
 	}
 
-	/** Returns the User table viewer, typically to add doubleclick listener */
-	public TableViewer getTableViewer() {
-		return tableViewer;
-	}
+	private TableViewer createActivityViewer(final Composite parent, int style) {
+		TableViewer viewer = new TableViewer(parent, SWT.V_SCROLL | style);
+		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 
-	private TableViewer createTableViewer(final Composite parent) {
-		Table table = new Table(parent, tableStyle);
+		Table table = viewer.getTable();
 		table.setLayoutData(PeopleUiUtils.fillGridData());
-
-		TableViewer viewer = new TableViewer(table);
-		PeopleRapUtils.setTableDefaultStyle(viewer, 23);
-
-		table.setLinesVisible(true);
+		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(56));
 		table.setHeaderVisible(true);
-
-		TableViewerColumn column;
+		table.setLinesVisible(true);
 
 		Map<String, ColumnLabelProvider> lpMap = new HashMap<String, ColumnLabelProvider>();
 		lpMap.put(PeopleNames.PEOPLE_ASSIGNED_TO, new ManagerLabelProvider());
@@ -123,49 +112,59 @@ public class ActivityTable extends Composite implements ArgeoNames {
 		ActivityViewerComparator comparator = new ActivityViewerComparator(
 				activityService, lpMap);
 
-		// Activity type: mail, note... todo or task
-		column = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE, 22);
-		column.setLabelProvider(new TypeLabelProvider());
+		TableColumn col;
+		TableViewerColumn tvCol;
+		int colIndex = 0;
 
-		int colIndex = 1; // eases change of below columns order
+		// Types
+		col = new TableColumn(table, SWT.LEFT);
+		tableColumnLayout
+				.setColumnData(col, new ColumnWeightData(60, 60, true));
+		tvCol = new TableViewerColumn(viewer, col);
+		tvCol.setLabelProvider(new TypeLabelProvider());
+		col.addSelectionListener(JcrUiUtils.getNodeSelectionAdapter(colIndex++,
+				PropertyType.STRING, Property.JCR_PRIMARY_TYPE, comparator,
+				viewer));
 
-		// Date
-		column = ViewerUtils.createTableViewerColumn(viewer, "Date", SWT.RIGHT,
-				75);
-		column.setLabelProvider(new DateLabelProvider());
-		column.getColumn().addSelectionListener(
-				JcrUiUtils.getNodeSelectionAdapter(colIndex++,
-						PropertyType.DATE,
-						ActivityViewerComparator.RELEVANT_DATE, comparator,
-						viewer));
+		// Dates
+		col = new TableColumn(table, SWT.LEFT);
+		tableColumnLayout
+				.setColumnData(col, new ColumnWeightData(60, 60, true));
+		tvCol = new TableViewerColumn(viewer, col);
+		tvCol.setLabelProvider(new DateLabelProvider());
+		col.addSelectionListener(JcrUiUtils.getNodeSelectionAdapter(colIndex++,
+				PropertyType.DATE, ActivityViewerComparator.RELEVANT_DATE,
+				comparator, viewer));
 
-		// Manager
-		column = ViewerUtils.createTableViewerColumn(viewer, "Manager",
-				SWT.NONE, 100);
-		column.setLabelProvider(new ManagerLabelProvider());
-		column.getColumn().addSelectionListener(
-				JcrUiUtils.getNodeSelectionAdapter(colIndex++,
-						PropertyType.STRING, PeopleNames.PEOPLE_ASSIGNED_TO,
-						comparator, viewer));
+		// relevant users
+		col = new TableColumn(table, SWT.LEFT);
+		col.setText("Reported by");
+		col.addSelectionListener(JcrUiUtils.getNodeSelectionAdapter(colIndex++,
+				PropertyType.STRING, PeopleNames.PEOPLE_ASSIGNED_TO,
+				comparator, viewer));
+		tableColumnLayout
+				.setColumnData(col, new ColumnWeightData(60, 60, true));
+		tvCol = new TableViewerColumn(viewer, col);
+		tvCol.setLabelProvider(new ManagerLabelProvider());
 
-		// Related to
-		column = ViewerUtils.createTableViewerColumn(viewer, "Also related to",
-				SWT.NONE, 140);
-		column.setLabelProvider(new AlsoRelatedToLP());
-		column.getColumn().addSelectionListener(
-				JcrUiUtils.getNodeSelectionAdapter(colIndex++,
-						PropertyType.STRING, PeopleNames.PEOPLE_RELATED_TO,
-						comparator, viewer));
+		// Also related to
+		col = new TableColumn(table, SWT.LEFT | SWT.WRAP);
+		col.setText("Also related to");
+		tableColumnLayout
+				.setColumnData(col, new ColumnWeightData(80, 80, true));
+		tvCol = new TableViewerColumn(viewer, col);
+		tvCol.setLabelProvider(new AlsoRelatedToLP());
 
 		// Title / description
-		column = ViewerUtils.createTableViewerColumn(viewer, "Content",
-				SWT.NONE, 360);
-		column.setLabelProvider(new TitleDescLabelProvider());
-		column.getColumn().addSelectionListener(
-				JcrUiUtils.getNodeSelectionAdapter(colIndex++,
-						PropertyType.STRING, Property.JCR_TITLE, comparator,
-						viewer));
+		col = new TableColumn(table, SWT.LEFT | SWT.WRAP);
+		tableColumnLayout.setColumnData(col, new ColumnWeightData(200, 150,
+				true));
+		// col.addSelectionListener(JcrUiUtils.getNodeSelectionAdapter(colIndex++,
+		// PropertyType.STRING, Property.JCR_TITLE, comparator, viewer));
+		tvCol = new TableViewerColumn(viewer, col);
+		tvCol.setLabelProvider(new TitleDescLabelProvider());
 
+		//
 		// IMPORTANT: initialize comparator before setting it
 		comparator.setColumn(PropertyType.DATE,
 				ActivityViewerComparator.RELEVANT_DATE);
@@ -175,6 +174,11 @@ public class ActivityTable extends Composite implements ArgeoNames {
 		viewer.setComparator(comparator);
 
 		table.addSelectionListener(new HtmlListRwtAdapter());
+		// EclipseUiSpecificUtils.enableToolTipSupport(viewer);
+		viewer.setContentProvider(new MyTableContentProvider());
+
+		// Warning: don't forget to set the generated layout.
+		parent.setLayout(tableColumnLayout);
 		return viewer;
 	}
 
@@ -190,6 +194,11 @@ public class ActivityTable extends Composite implements ArgeoNames {
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Unable to list activities", e);
 		}
+	}
+
+	/** Returns the User table viewer, typically to add doubleclick listener */
+	public TableViewer getTableViewer() {
+		return tableViewer;
 	}
 
 	/**
@@ -236,32 +245,49 @@ public class ActivityTable extends Composite implements ArgeoNames {
 	private class TypeLabelProvider extends ColumnLabelProvider {
 		private static final long serialVersionUID = 1L;
 
-		@Override
-		public Image getImage(Object element) {
-			try {
-				Node currNode = (Node) element;
-				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
-					return ActivitiesImages.TODO;
-				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_NOTE)) {
-					return ActivitiesImages.NOTE;
-				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_SENT_EMAIL)) {
-					return ActivitiesImages.SENT_MAIL;
-				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_CALL)) {
-					return ActivitiesImages.PHONE_CALL;
-				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_SENT_FAX)) {
-					return ActivitiesImages.SENT_FAX;
-				} else
-					return null;
-				// TODO implement all types.
-			} catch (RepositoryException re) {
-				throw new ArgeoException("Unable to get date from node "
-						+ element, re);
-			}
-		}
+		// @Override
+		// public Image getImage(Object element) {
+		// try {
+		// Node currNode = (Node) element;
+		// if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
+		// return ActivitiesImages.TODO;
+		// } else if (currNode.isNodeType(PeopleTypes.PEOPLE_NOTE)) {
+		// return ActivitiesImages.NOTE;
+		// } else if (currNode.isNodeType(PeopleTypes.PEOPLE_SENT_EMAIL)) {
+		// return ActivitiesImages.SENT_MAIL;
+		// } else if (currNode.isNodeType(PeopleTypes.PEOPLE_CALL)) {
+		// return ActivitiesImages.PHONE_CALL;
+		// } else if (currNode.isNodeType(PeopleTypes.PEOPLE_SENT_FAX)) {
+		// return ActivitiesImages.SENT_FAX;
+		// } else
+		// return null;
+		// // TODO implement all types.
+		// } catch (RepositoryException re) {
+		// throw new ArgeoException("Unable to get date from node "
+		// + element, re);
+		// }
+		// }
 
 		@Override
 		public String getText(Object element) {
-			return "";
+			Node currNode = (Node) element;
+
+			try {
+				StringBuilder builder = new StringBuilder();
+				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
+					builder.append(CommonsJcrUtils.get(currNode,
+							PeopleNames.PEOPLE_TASK_STATUS));
+					builder.append("<br />");
+					builder.append(resourceService
+							.getItemDefaultEnLabel(currNode
+									.getPrimaryNodeType().getName()));
+				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
+					builder.append(activityService.getActivityLabel(currNode));
+				return builder.toString();
+			} catch (RepositoryException re) {
+				throw new ArgeoException("Unable to get type snippet for "
+						+ currNode, re);
+			}
 		}
 	}
 
@@ -270,18 +296,55 @@ public class ActivityTable extends Composite implements ArgeoNames {
 
 		@Override
 		public String getText(Object element) {
+			Node activityNode = (Node) element;
 			try {
-				Node currNode = (Node) element;
-				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
-					return ActivityJcrUtils.getAssignedToDisplayName(currNode);
-				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-					return ActivityJcrUtils
-							.getActivityManagerDisplayName(currNode);
+				String value = "";
+				StringBuilder builder = new StringBuilder();
+				if (activityNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
+					// done task
+					if (activityService.isTaskDone(activityNode)) {
+
+						value = ActivityJcrUtils
+								.getActivityManagerDisplayName(activityNode);
+						if (CommonsJcrUtils.checkNotEmptyString(value))
+							builder.append("Done by: ").append(value)
+									.append("<br />");
+
+						value = ActivityJcrUtils
+								.getAssignedToDisplayName(activityNode);
+						if (CommonsJcrUtils.checkNotEmptyString(value))
+							builder.append("Assigned to: ").append(value)
+									.append("<br />");
+					} else {
+
+						value = ActivityJcrUtils
+								.getAssignedToDisplayName(activityNode);
+						if (CommonsJcrUtils.checkNotEmptyString(value))
+							builder.append("Assigned to: ").append(value)
+									.append("<br />");
+
+						if (activityNode
+								.hasProperty(Property.JCR_LAST_MODIFIED_BY)) {
+							builder.append("Last update by: ").append(
+									activityNode.getProperty(
+											Property.JCR_LAST_MODIFIED_BY)
+											.getString());
+						}
+
+					}
+				} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
+
+					value = ActivityJcrUtils
+							.getActivityManagerDisplayName(activityNode);
+					if (CommonsJcrUtils.checkNotEmptyString(value))
+						builder.append("Reported by: ").append(value)
+								.append("<br />");
 				}
-				return "";
-			} catch (RepositoryException re) {
-				throw new ArgeoException("Unable to get date from node "
-						+ element, re);
+				return builder.toString();
+			} catch (RepositoryException e) {
+				throw new PeopleException(
+						"Unable to get related users snippet for "
+								+ activityNode, e);
 			}
 		}
 	}
@@ -317,9 +380,12 @@ public class ActivityTable extends Composite implements ArgeoNames {
 								builder.append(label).append(", ");
 							}
 						}
-						if (builder.lastIndexOf(", ") != -1)
-							return PeopleUiUtils.replaceAmpersand(builder
-									.substring(0, builder.lastIndexOf(", ")));
+						if (builder.lastIndexOf(", ") != -1) {
+							String value = PeopleUiUtils
+									.replaceAmpersand(builder.substring(0,
+											builder.lastIndexOf(", ")));
+							return wrapThis(value);
+						}
 					}
 
 				}
@@ -345,7 +411,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 							+ " - "
 							+ CommonsJcrUtils.get(currNode,
 									Property.JCR_DESCRIPTION);
-					return PeopleUiUtils.replaceAmpersand(desc);
+					return wrapThis(desc);
 				}
 				return "";
 			} catch (RepositoryException re) {
@@ -358,31 +424,117 @@ public class ActivityTable extends Composite implements ArgeoNames {
 	private class DateLabelProvider extends ColumnLabelProvider {
 		private static final long serialVersionUID = 1L;
 
-		private DateFormat todayFormat = new SimpleDateFormat("HH:mm");
-		private DateFormat inMonthFormat = new SimpleDateFormat("dd MMM");
-		private DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-
 		@Override
 		public String getText(Object element) {
-			Node currNode = (Node) element;
+			Node activityNode = (Node) element;
+			try {
+				Calendar date = null;
+				StringBuilder builder = new StringBuilder();
+				// VARIOUS WF LAYOUT
+				if (activityNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
+					// done task
+					if (activityNode.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE)) {
+						date = activityNode.getProperty(
+								PeopleNames.PEOPLE_CLOSE_DATE).getDate();
+						builder.append("Done on: ").append(funkyFormat(date))
+								.append("<br />");
 
-			Calendar dateToDisplay = activityService
-					.getActivityRelevantDate(currNode);
-			if (dateToDisplay == null)
-				return "";
+						if (activityNode
+								.hasProperty(PeopleNames.PEOPLE_DUE_DATE)) {
+							date = activityNode.getProperty(
+									PeopleNames.PEOPLE_DUE_DATE).getDate();
+							builder.append("Due date: ").append(
+									funkyFormat(date));
 
-			Calendar now = GregorianCalendar.getInstance();
-			if (dateToDisplay.get(Calendar.YEAR) == now.get(Calendar.YEAR)
-					&& dateToDisplay.get(Calendar.MONTH) == now
-							.get(Calendar.MONTH))
-				if (dateToDisplay.get(Calendar.DAY_OF_MONTH) == now
-						.get(Calendar.DAY_OF_MONTH))
-					return todayFormat.format(dateToDisplay.getTime());
-				else
-					return inMonthFormat.format(dateToDisplay.getTime());
-			else
-				return dateFormat.format(dateToDisplay.getTime());
+						}
+					} else if (activityNode
+							.hasProperty(PeopleNames.PEOPLE_DUE_DATE)) {
+						date = activityNode.getProperty(
+								PeopleNames.PEOPLE_DUE_DATE).getDate();
+						builder.append("Due date: ").append(funkyFormat(date))
+								.append("<br />");
+
+						boolean sleeping = false;
+						if (activityNode
+								.hasProperty(PeopleNames.PEOPLE_WAKE_UP_DATE)) {
+							date = activityNode.getProperty(
+									PeopleNames.PEOPLE_WAKE_UP_DATE).getDate();
+							Calendar now = GregorianCalendar.getInstance();
+							if (date.after(now)) {
+								builder.append("Sleep until: ").append(
+										funkyFormat(date));
+								sleeping = true;
+							}
+						}
+
+						if (activityNode
+								.hasProperty(Property.JCR_LAST_MODIFIED)
+								&& !sleeping) {
+							date = activityNode.getProperty(
+									Property.JCR_LAST_MODIFIED).getDate();
+							builder.append("Last update: ").append(
+									funkyFormat(date));
+						}
+					} else {
+						if (activityNode
+								.hasProperty(Property.JCR_LAST_MODIFIED)) {
+							date = activityNode.getProperty(
+									Property.JCR_LAST_MODIFIED).getDate();
+							builder.append("Last update: ")
+									.append(funkyFormat(date)).append("<br />");
+						}
+
+						if (activityNode.hasProperty(Property.JCR_CREATED)) {
+							date = activityNode.getProperty(
+									Property.JCR_CREATED).getDate();
+							builder.append("Created on: ").append(
+									funkyFormat(date));
+						}
+					}
+				} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
+
+					date = activityNode.getProperty(
+							PeopleNames.PEOPLE_ACTIVITY_DATE).getDate();
+					builder.append("Date: ").append(funkyFormat(date))
+							.append("<br />");
+
+					if (activityNode.hasProperty(Property.JCR_LAST_MODIFIED)) {
+						date = activityNode.getProperty(
+								Property.JCR_LAST_MODIFIED).getDate();
+						builder.append("Last update: ").append(
+								funkyFormat(date));
+					} else if (activityNode.hasProperty(Property.JCR_CREATED)) {
+						date = activityNode.getProperty(Property.JCR_CREATED)
+								.getDate();
+						builder.append("Created on: ")
+								.append(funkyFormat(date));
+					}
+				}
+				return builder.toString();
+
+			} catch (RepositoryException e) {
+				throw new PeopleException("Unable to get date label for "
+						+ activityNode, e);
+			}
 		}
+	}
+
+	private DateFormat todayFormat = new SimpleDateFormat("HH:mm");
+	private DateFormat inMonthFormat = new SimpleDateFormat("dd MMM");
+	private DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+
+	private String funkyFormat(Calendar date) {
+		Calendar now = GregorianCalendar.getInstance();
+		if (date.get(Calendar.YEAR) == now.get(Calendar.YEAR)
+				&& date.get(Calendar.MONTH) == now.get(Calendar.MONTH))
+			if (date.get(Calendar.DAY_OF_MONTH) == now
+					.get(Calendar.DAY_OF_MONTH))
+				return todayFormat.format(date.getTime());
+			else
+				return inMonthFormat.format(date.getTime());
+		else
+			return dateFormat.format(date.getTime());
+
 	}
 
 	private class MyTableContentProvider implements IStructuredContentProvider {
@@ -397,6 +549,14 @@ public class ActivityTable extends Composite implements ArgeoNames {
 
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		}
+	}
+
+	private final String LIST_WRAP_STYLE = "style='float:left;padding:0px;white-space:pre-wrap;'";
+
+	private String wrapThis(String value) {
+		String wrapped = "<span " + LIST_WRAP_STYLE + " >"
+				+ PeopleUiUtils.replaceAmpersand(value) + "</span>";
+		return wrapped;
 	}
 
 	// //////////////////////

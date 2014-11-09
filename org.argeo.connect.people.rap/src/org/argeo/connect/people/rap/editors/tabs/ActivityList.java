@@ -14,6 +14,7 @@ import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ActivityValueCatalogs;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapUtils;
@@ -77,22 +78,17 @@ public class ActivityList extends Composite {
 	}
 
 	private void populate(IManagedForm form, Composite parent) {
-
-		parent.setLayout(new GridLayout()); // .gridLayoutNoBorder());
+		parent.setLayout(new GridLayout());
 		try {
 			Composite addCmp = null;
-
 			if (peopleService.getUserManagementService().isUserInRole(
 					PeopleConstants.ROLE_MEMBER)) {
 				addCmp = toolkit.createComposite(parent);
-				addCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
-						false));
+				addCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
 			}
 
 			// The Table that displays corresponding activities
 			activityTable = new MyActivityTableCmp(parent, SWT.MULTI, entity);
-			activityTable.populate();
-			// TableViewer viewer = tmpCmp.getTableViewer();
 			activityTable.setLayoutData(PeopleUiUtils.fillGridData());
 
 			if (addCmp != null)
@@ -231,22 +227,22 @@ public class ActivityList extends Composite {
 
 	private class MyActivityTableCmp extends ActivityTable {
 		private static final long serialVersionUID = 1L;
-		private Node entity;
 
 		public MyActivityTableCmp(Composite parent, int style, Node entity)
 				throws RepositoryException {
 			super(parent, style, peopleService, peopleWorkbenchService, entity);
-			this.entity = entity;
 		}
 
 		protected void refreshFilteredList() {
 			try {
 				List<Node> nodes = new ArrayList<Node>();
-				PropertyIterator pit = entity.getReferences(null);
+				PropertyIterator pit = entity
+						.getReferences(PeopleNames.PEOPLE_RELATED_TO);
 				while (pit.hasNext()) {
 					Property currProp = pit.nextProperty();
 					Node currNode = currProp.getParent();
-					if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
+					if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)
+							&& !nodes.contains(currNode))
 						nodes.add(currNode);
 				}
 				getTableViewer().setInput(nodes.toArray());

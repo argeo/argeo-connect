@@ -597,7 +597,10 @@ public class PeopleRapUtils {
 
 	public static void setTableDefaultStyle(TableViewer viewer,
 			int customItemHeight) {
-		Table table = viewer.getTable();
+		setTableDefaultStyle(viewer.getTable(), customItemHeight);
+	}
+
+	public static void setTableDefaultStyle(Table table, int customItemHeight) {
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
