@@ -15,6 +15,9 @@ import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.eclipse.rap.rwt.application.EntryPointFactory;
 import org.eclipse.rap.rwt.application.ExceptionHandler;
 import org.eclipse.rap.rwt.client.WebClient;
+import org.eclipse.rap.rwt.lifecycle.PhaseEvent;
+import org.eclipse.rap.rwt.lifecycle.PhaseId;
+import org.eclipse.rap.rwt.lifecycle.PhaseListener;
 import org.eclipse.rap.rwt.service.ResourceLoader;
 import org.osgi.framework.BundleContext;
 import org.springframework.osgi.context.BundleContextAware;
@@ -94,6 +97,8 @@ public class CmsApplication implements ApplicationConfiguration,
 
 			}
 
+			application.addPhaseListener(new CmsPhaseListener());
+
 			// registerClientScriptingResources(application);
 		} catch (RuntimeException e) {
 			// Easier access to initialisation errors
@@ -163,6 +168,27 @@ public class CmsApplication implements ApplicationConfiguration,
 			CmsSession.current.get().exception(throwable);
 		}
 
+	}
+
+	class CmsPhaseListener implements PhaseListener {
+		private static final long serialVersionUID = -1966645586738534609L;
+
+		@Override
+		public PhaseId getPhaseId() {
+			return PhaseId.RENDER;
+		}
+
+		@Override
+		public void beforePhase(PhaseEvent event) {
+			CmsSession cmsSession = CmsSession.current.get();
+			String state = cmsSession.getState();
+			if (state == null)
+				cmsSession.navigateTo("~");
+		}
+
+		@Override
+		public void afterPhase(PhaseEvent event) {
+		}
 	}
 
 	/*

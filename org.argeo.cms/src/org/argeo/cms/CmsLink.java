@@ -36,7 +36,7 @@ public class CmsLink implements CmsUiProvider, InitializingBean,
 	private int verticalAlignment = SWT.CENTER;
 
 	// internal
-	private Boolean isUrl = false;
+	//private Boolean isUrl = false;
 	private Integer imageWidth, imageHeight;
 
 	private BundleContext bundleContext;
@@ -59,13 +59,18 @@ public class CmsLink implements CmsUiProvider, InitializingBean,
 
 	@Override
 	public void afterPropertiesSet() {
-		if (target != null)
-			try {
-				new URL(target);
-				isUrl = true;
-			} catch (MalformedURLException e1) {
-				isUrl = false;
-			}
+//		if (target != null) {
+//			if (target.startsWith("/")) {
+//				isUrl = true;
+//			} else {
+//				try {
+//					new URL(target);
+//					isUrl = true;
+//				} catch (MalformedURLException e1) {
+//					isUrl = false;
+//				}
+//			}
+//		}
 
 		if (image != null) {
 			ImageData image = loadImage();
@@ -103,8 +108,8 @@ public class CmsLink implements CmsUiProvider, InitializingBean,
 		if (target != null) {
 			labelText
 					.append("<a style='color:inherit;text-decoration:inherit;' href=\"");
-			if (!isUrl)
-				labelText.append('#');
+//			if (!isUrl)
+//				labelText.append('#');
 			labelText.append(target);
 			labelText.append("\">");
 		}

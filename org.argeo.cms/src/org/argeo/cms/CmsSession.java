@@ -11,6 +11,10 @@ public interface CmsSession {
 	public void authChange();
 
 	public void exception(Throwable e);
-	
+
 	public Object local(Msg msg);
+
+	public String getState();
+
+	// public String getPage();
 }

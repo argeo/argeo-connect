@@ -1,8 +1,10 @@
 package org.argeo.cms;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,8 +43,9 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 	private CmsLogin cmsLogin;
 
 	private CmsUiProvider header;
-	private CmsUiProvider dynamicPages;
-	private Map<String, CmsUiProvider> staticPages;
+	// private CmsUiProvider dynamicPages;
+	// private Map<String, CmsUiProvider> staticPages;
+	private Map<String, CmsUiProvider> pages = new HashMap<String, CmsUiProvider>();
 
 	private Integer headerHeight = 40;
 
@@ -97,12 +100,20 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 		this.header = header;
 	}
 
-	public void setDynamicPages(CmsUiProvider dynamicPages) {
-		this.dynamicPages = dynamicPages;
+	public void setPages(Map<String, CmsUiProvider> pages) {
+		this.pages = pages;
 	}
 
+	@Deprecated
+	public void setDynamicPages(CmsUiProvider dynamicPages) {
+		log.warn("'dynamicPages' is deprecated, use 'pages' instead, with \"\" as key");
+		pages.put("", dynamicPages);
+	}
+
+	@Deprecated
 	public void setStaticPages(Map<String, CmsUiProvider> staticPages) {
-		this.staticPages = staticPages;
+		log.warn("'staticPages' is deprecated, use 'pages' instead");
+		pages.putAll(staticPages);
 	}
 
 	public void setBasePath(String basePath) {
@@ -152,6 +163,20 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 						true));
 				bodyArea.setBackgroundMode(SWT.INHERIT_DEFAULT);
 				bodyArea.setLayout(CmsUtils.noSpaceGridLayout());
+				//
+				// HttpServletRequest httpRequest = RWT.getRequest();
+				// String contextPath = httpRequest.getContextPath();
+				// String pathInfo = httpRequest.getPathInfo();
+				// String queryString = httpRequest.getQueryString();
+				// String requestUrl = httpRequest.getRequestURL().toString();
+				// String servletPath = httpRequest.getServletPath();
+				// JavaScriptExecutor jse = RWT.getClient().getService(
+				// JavaScriptExecutor.class);
+				// BrowserNavigation bn = RWT.getClient().getService(
+				// BrowserNavigation.class);
+				//
+				// if (log.isDebugEnabled())
+				// log.debug(requestUrl);
 			} catch (Exception e) {
 				throw new CmsException("Cannot create entrypoint contents", e);
 			}
@@ -180,6 +205,9 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 				child.dispose();
 			bodyArea.setLayout(CmsUtils.noSpaceGridLayout());
 
+			if (log.isDebugEnabled())
+				log.debug("Refresh body - state=" + getState());
+
 			// Exception
 			Throwable exception = getException();
 			if (exception != null) {
@@ -204,17 +232,23 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 				String page = getPage();
 				try {
 					if (state == null)
-						log.debug("null state");
-					else if (state.length() == 0)
-						log.debug("empty state");
-					else if (page == null)
-						dynamicPages.createUi(bodyArea, getNode());
-					else if (page != null && staticPages.containsKey(page))
-						staticPages.get(page).createUi(bodyArea, getNode());
-					else
-						log.error("Unsupported state " + state);
+						throw new CmsException("State cannot be null");
+					if (page == null)
+						throw new CmsException("Page cannot be null");
+					// else if (state.length() == 0)
+					// log.debug("empty state");
+					else if (pages.containsKey(page))
+						pages.get(page).createUi(bodyArea, getNode());
+					else {
+						try {
+							RWT.getResponse().sendError(404);
+						} catch (IOException e) {
+							log.error("Cannot send 404 code", e);
+						}
+						throw new CmsException("Unsupported state " + state);
+					}
 				} catch (RepositoryException e) {
-					log.error("Cannot refresh body", e);
+					throw new CmsException("Cannot refresh body", e);
 				}
 			}
 			bodyArea.layout(true, true);

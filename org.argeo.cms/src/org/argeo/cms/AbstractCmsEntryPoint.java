@@ -149,14 +149,12 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 	}
 
 	/** Sets the state of the entry point and retrieve the related JCR node. */
-	protected void setState(String state) {
-		// String previousPage = page;
-		// Node previousNode = node;
+	protected synchronized void setState(String newState) {
 		String previousState = this.state;
 
 		node = null;
 		page = null;
-		this.state = state;
+		this.state = newState;
 
 		try {
 			int firstSlash = state.indexOf('/');
@@ -200,8 +198,16 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 				}
 			} else {
 				node = getDefaultNode(session);
-				page = state;
+				if (state.equals("~"))
+					page = "";
+				else
+					page = state;
 			}
+
+			if (log.isDebugEnabled())
+				log.debug("page=" + page + ", node=" + node + ", state="
+						+ state);
+
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot retrieve node", e);
 		}
@@ -212,31 +218,14 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 		return JcrUtils.mkdirs(session, path, nodeType != null ? nodeType
 				: getDefaultNewNodeType(), getDefaultNewFolderType(), false);
 		// not saved, so that the UI can discard it later on
-
-		// String parentPath = JcrUtils.parentPath(path);
-		// // FIXME Bug in JcrUtils?
-		// if (parentPath.trim().equals(""))
-		// parentPath = "/";
-		// if (!session.nodeExists(parentPath))
-		// throw new CmsException("Parent of " + path
-		// + " does not exist, create it first.");
-		// Node parent = session.getNode(parentPath);
-		// return parent.addNode(JcrUtils.lastPathElement(path), nodeType);
 	}
-
-	// protected Node retrieveNode(Session session, String path)
-	// throws RepositoryException {
-	// if (session.itemExists(path))
-	// return session.getNode(path);
-	// else
-	// throw new CmsException("Data " + path + " does not exist");
-	// }
 
 	protected Node getNode() {
 		return node;
 	}
 
-	protected String getState() {
+	@Override
+	public String getState() {
 		return state;
 	}
 
