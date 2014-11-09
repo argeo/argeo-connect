@@ -79,20 +79,12 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 
 	@Override
 	public void refresh() {
-		Runnable loadingThread = new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					mainSection.refresh(true, true);
-					page.layout();
-				} catch (RepositoryException e) {
-					throw new CmsException("Cannot refresh", e);
-				}
-			}
-
-		};
-		page.getDisplay().asyncExec(loadingThread);
+		try {
+			mainSection.refresh(true, true);
+			page.layout();
+		} catch (RepositoryException e) {
+			throw new CmsException("Cannot refresh", e);
+		}
 	}
 
 	@Override
@@ -222,15 +214,20 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 				int caretPosition = text.getCaretPosition();
 				Section section = sectionTitle.getSection();
 				Node sectionNode = section.getNode();
-				Node node = sectionNode.addNode(CMS_P, CmsTypes.CMS_STYLED);
-				textInterpreter.write(node, txt.substring(caretPosition));
+				Node paragraphNode = sectionNode.addNode(CMS_P,
+						CmsTypes.CMS_STYLED);
+				textInterpreter.write(paragraphNode,
+						txt.substring(caretPosition));
 				textInterpreter.write(
 						sectionNode.getProperty(Property.JCR_TITLE),
 						txt.substring(0, caretPosition));
-				sectionNode.orderBefore(CMS_P + '[' + node.getIndex() + ']',
-						CMS_P + "[1]");
+				sectionNode.orderBefore(CMS_P + '[' + paragraphNode.getIndex()
+						+ ']', CMS_P + "[1]");
 				sectionNode.getSession().save();
 				section.refresh(true, true);
+				Paragraph paragraph = (Paragraph) section
+						.getChild(paragraphNode);
+				edit(paragraph, 0);
 			}
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot split " + edited, e);
