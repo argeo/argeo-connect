@@ -8,6 +8,7 @@ import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsNames;
 import org.argeo.cms.CmsUtils;
 import org.argeo.cms.viewers.JcrVersionCmsEditable;
+import org.argeo.cms.widgets.ScrolledPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -26,6 +27,7 @@ public class TextDisplay implements CmsNames, TextStyles {
 	private ComplexTextEditor textViewer;
 
 	// private Boolean canEdit = false;
+	private ScrolledPage page;
 
 	public TextDisplay(Composite parent, Node textNode) {
 		try {
@@ -41,7 +43,10 @@ public class TextDisplay implements CmsNames, TextStyles {
 				TextEditHeader teh = new TextEditHeader(parent, SWT.NONE);
 				teh.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			}
-			textViewer = new ComplexTextEditor(parent, textNode, cmsEditable);
+
+			page = new ScrolledPage(parent, SWT.NONE);
+			page.setLayout(CmsUtils.noSpaceGridLayout());
+			textViewer = new ComplexTextEditor(page, textNode, cmsEditable);
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot initialize text display for "
 					+ textNode, e);
@@ -49,7 +54,7 @@ public class TextDisplay implements CmsNames, TextStyles {
 	}
 
 	public void setLayoutData(Object layoutData) {
-		textViewer.getControl().setLayoutData(layoutData);
+		page.setLayoutData(layoutData);
 	}
 
 	private class TextEditHeader extends Composite {

@@ -6,18 +6,17 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
+import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsNames;
 import org.argeo.cms.CmsTypes;
 import org.argeo.cms.CmsUtils;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public class Section extends Composite implements CmsNames, MouseListener {
+public class Section extends Composite implements CmsNames {
 	private static final long serialVersionUID = -5933796173755739207L;
 
 	private final TextViewer textViewer;
@@ -30,9 +29,31 @@ public class Section extends Composite implements CmsNames, MouseListener {
 	// this(textViewer, (Composite) textViewer.getControl(), style, node);
 	// }
 
-	public Section(Section parent, int style, Node node)
+	public Section(Composite parent, int style, Node node)
 			throws RepositoryException {
-		this(parent.textViewer, parent, style, node);
+		this(((Section) findParentData(parent, node)).getViewer(), parent,
+				style, node);
+	}
+
+	private static Composite findParentData(Control parent, Node node) {
+		if (parent instanceof Composite && parent.getData() != null) {
+			Node parentNode = (Node) parent.getData();
+			if (node != null) {
+				try {
+					String parentPath = parentNode.getPath();
+					if (!parentPath.equals(node.getParent().getPath()))
+						throw new CmsException("Parent " + parentPath
+								+ " not compatible ");
+				} catch (RepositoryException e) {
+					throw new CmsException("Cannot check parent data", e);
+				}
+			}
+			return (Composite) parent;
+		}
+		if (parent.getParent() != null)
+			return findParentData(parent.getParent(), node);
+		else
+			throw new CmsException("No data parent found for " + node);
 	}
 
 	Section(TextViewer textViewer, Composite parent, int style, Node node)
@@ -76,9 +97,9 @@ public class Section extends Composite implements CmsNames, MouseListener {
 			sectionTitle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 					false));
 			sectionTitle.refresh(updateContent);
-			if (getViewer().getCmsEditable().isEditing()) {
-				sectionTitle.getTitle().setMouseListener(this);
-			}
+			if (getViewer().getCmsEditable().isEditing())
+				sectionTitle.getTitle().setMouseListener(
+						(MouseListener) getViewer());
 		}
 
 		for (NodeIterator ni = node.getNodes(); ni.hasNext();) {
@@ -96,9 +117,8 @@ public class Section extends Composite implements CmsNames, MouseListener {
 				paragraph.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 						false));
 				paragraph.refresh(updateContent);
-				if (getViewer().getCmsEditable().isEditing()) {
-					paragraph.setMouseListener(this);
-				}
+				if (getViewer().getCmsEditable().isEditing())
+					paragraph.setMouseListener((MouseListener) getViewer());
 			}
 		}
 
@@ -119,34 +139,36 @@ public class Section extends Composite implements CmsNames, MouseListener {
 		return null;
 	}
 
-	@Override
-	public void mouseDoubleClick(MouseEvent e) {
-	}
+	// @Override
+	// public void mouseDoubleClick(MouseEvent e) {
+	// }
+	//
+	// @Override
+	// public void mouseDown(MouseEvent e) {
+	// if (e.button == 1) {
+	// Control source = (Control) e.getSource();
+	// Composite composite = findParentData(source, null);
+	// Point point = new Point(e.x, e.y);
+	// getViewer().edit(composite, source.toDisplay(point));
+	// } else if (e.button == 3) {
+	// Composite composite = findParentData((Control) e.getSource(), null);
+	// if (getViewer() instanceof VersatileTextViewer)
+	// ((VersatileTextViewer) getViewer()).getStyledTools().show(
+	// composite, new Point(e.x, e.y));
+	// }
+	// }
+	//
+	// @Override
+	// public void mouseUp(MouseEvent e) {
+	// }
 
-	@Override
-	public void mouseDown(MouseEvent e) {
-		if (e.button == 1) {
-			Control source = (Control) e.getSource();
-			Composite composite = findDataParent(source);
-			Point point = new Point(e.x, e.y);
-			getViewer().edit(composite, source.toDisplay(point));
-		} else if (e.button == 3) {
-			Composite composite = findDataParent(e.getSource());
-			getViewer().getStyledTools().show(composite, new Point(e.x, e.y));
-		}
-	}
-
-	@Override
-	public void mouseUp(MouseEvent e) {
-	}
-
-	protected Composite findDataParent(Object source) {
-		Control control = (Control) source;
-		if (control.getData() != null)
-			return (Composite) control;
-		return findDataParent(control.getParent());
-
-	}
+	// protected Composite findDataParent(Object source) {
+	// Control control = (Control) source;
+	// if (control.getData() != null)
+	// return (Composite) control;
+	// return findDataParent(control.getParent());
+	//
+	// }
 
 	@Override
 	public String toString() {

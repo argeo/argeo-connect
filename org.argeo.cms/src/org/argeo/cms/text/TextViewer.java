@@ -12,23 +12,15 @@ public interface TextViewer {
 
 	public void edit(Composite composite, Object caretPosition);
 
-	//protected void prepare(StyledComposite st, Object caretPosition);
-
-	public void saveEdit();
-
-	public void splitEdit();
-
-	public void mergeWithPrevious();
-
-	public void mergeWithNext();
-
-	public void cancelEdit();
-
-	//protected void stopEditing(Boolean save) throws RepositoryException;
-
-	public void deepen();
-
-	public void undeepen();
+//	public void saveEdit();
+//
+//	public void splitEdit();
+//
+//	public void mergeWithPrevious();
+//
+//	public void mergeWithNext();
+//
+//	public void cancelEdit();
 
 	public void layout(Composite composite);
 
@@ -37,7 +29,4 @@ public interface TextViewer {
 	public TextInterpreter getTextInterpreter();
 
 	public CmsEditable getCmsEditable();
-
-	public StyledTools getStyledTools();
-
 }

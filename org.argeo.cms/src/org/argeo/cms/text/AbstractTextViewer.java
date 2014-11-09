@@ -15,7 +15,6 @@ import org.argeo.cms.CmsEditable;
 import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsNames;
 import org.argeo.cms.CmsTypes;
-import org.argeo.cms.CmsUtils;
 import org.argeo.cms.widgets.ScrolledPage;
 import org.eclipse.jface.viewers.ContentViewer;
 import org.eclipse.jface.viewers.ISelection;
@@ -23,6 +22,8 @@ import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -31,26 +32,22 @@ import org.eclipse.swt.widgets.Text;
 
 /** Base class for all text viewers/editors. */
 public abstract class AbstractTextViewer extends ContentViewer implements
-		TextViewer, CmsNames, KeyListener, Observer {
+		TextViewer, CmsNames, KeyListener, MouseListener, Observer {
 	private static final long serialVersionUID = -2401274679492339668L;
 
 	private final static Log log = LogFactory.getLog(AbstractTextViewer.class);
 
-	private ScrolledPage page;
 	private Section mainSection;
 
 	private Composite edited;
 
-	private StyledTools styledTools;
 	private TextInterpreter textInterpreter = new IdentityTextInterpreter();
 	private final CmsEditable cmsEditable;
 
 	public AbstractTextViewer(Composite parent, Node textNode,
 			CmsEditable cmsEditable) {
 		try {
-			page = new ScrolledPage(parent, SWT.NONE);
-			page.setLayout(CmsUtils.noSpaceGridLayout());
-			mainSection = new Section(this, page, SWT.NONE, textNode);
+			mainSection = new Section(this, parent, SWT.NONE, textNode);
 			mainSection.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 					false));
 
@@ -59,8 +56,6 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 					: cmsEditable;
 			if (this.cmsEditable instanceof Observable)
 				((Observable) this.cmsEditable).addObserver(this);
-			if (this.cmsEditable.canEdit())
-				styledTools = new StyledTools(this, page.getDisplay());
 
 			// if (!textNode.hasNodes())
 			// textNode.addNode(CMS_P, CmsTypes.CMS_STYLED);
@@ -79,7 +74,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 
 	@Override
 	public Control getControl() {
-		return page;
+		return mainSection;
 	}
 
 	@Override
@@ -91,10 +86,24 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 	public void refresh() {
 		try {
 			mainSection.refresh(true, true);
-			page.layout();
+			mainSection.getParent().layout();
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot refresh", e);
 		}
+	}
+
+	public void layout(Composite composite) {
+		composite.layout();
+		parentLayout(composite.getParent());
+	}
+
+	private void parentLayout(Composite parent) {
+		if (parent == null)
+			return;
+		// TODO make it more robust
+		parent.layout(true, false);
+		if (!(parent instanceof ScrolledPage))
+			parentLayout(parent.getParent());
 	}
 
 	@Override
@@ -202,9 +211,8 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 				// means there are some in between and we can take the one at
 				// index+1 for the re-order
 				if (secondNode.getIndex() > firstNode.getIndex() + 1) {
-					sectionNode.orderBefore(CMS_P + '[' + secondNode.getIndex()
-							+ ']', CMS_P + '[' + (firstNode.getIndex() + 1)
-							+ ']');
+					sectionNode.orderBefore(p(secondNode.getIndex()),
+							p(firstNode.getIndex() + 1));
 				}
 
 				// if we die in between, at least we still have the whole text
@@ -231,8 +239,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 				textInterpreter.write(
 						sectionNode.getProperty(Property.JCR_TITLE),
 						txt.substring(0, caretPosition));
-				sectionNode.orderBefore(CMS_P + '[' + paragraphNode.getIndex()
-						+ ']', CMS_P + "[1]");
+				sectionNode.orderBefore(p(paragraphNode.getIndex()), p(1));
 				sectionNode.getSession().save();
 				section.refresh(true, true);
 				Paragraph paragraph = (Paragraph) section
@@ -254,8 +261,8 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 			if (paragraphNode.getIndex() == 1)
 				return;// do nothing
 			Node sectionNode = paragraphNode.getParent();
-			Node previousNode = sectionNode.getNode(CMS_P + '['
-					+ (paragraphNode.getIndex() - 1) + ']');
+			Node previousNode = sectionNode
+					.getNode(p(paragraphNode.getIndex() - 1));
 			String previousTxt = textInterpreter.read(previousNode);
 			textInterpreter.write(previousNode, previousTxt + txt);
 
@@ -285,8 +292,8 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 			long size = paragraphNodes.getSize();
 			if (paragraphNode.getIndex() == size)
 				return;// do nothing
-			Node nextNode = sectionNode.getNode(CMS_P + '['
-					+ (paragraphNode.getIndex() + 1) + ']');
+			Node nextNode = sectionNode
+					.getNode(p(paragraphNode.getIndex() + 1));
 			String nextTxt = textInterpreter.read(nextNode);
 			textInterpreter.write(paragraphNode, txt + nextTxt);
 
@@ -334,100 +341,12 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 		}
 	}
 
-	public void deepen() {
-		checkEdited();
-		try {
-			if (edited instanceof Paragraph) {
-				Paragraph paragraph = (Paragraph) edited;
-				Text text = (Text) paragraph.getControl();
-				String txt = text.getText();
-				Node paragraphNode = paragraph.getNode();
-				Section section = paragraph.getSection();
-				Node sectionNode = section.getNode();
-				Node newSectionNode = sectionNode.addNode(CMS_H,
-						CmsTypes.CMS_SECTION);
-				sectionNode.orderBefore(CMS_H + '[' + newSectionNode.getIndex()
-						+ ']', CMS_P + '[' + paragraphNode.getIndex() + ']');
-				paragraphNode.remove();
-				// create property
-				newSectionNode.setProperty(Property.JCR_TITLE, "");
-				textInterpreter.write(
-						newSectionNode.getProperty(Property.JCR_TITLE), txt);
-				section.refresh(true, true);
-			} else if (edited instanceof SectionTitle) {
-				SectionTitle sectionTitle = (SectionTitle) edited;
-				Section section = sectionTitle.getSection();
-				Section parentSection = section.getParentSection();
-				if (parentSection == null)
-					return;// cannot deepen main section
-				Node sectionNode = section.getNode();
-				Node parentSectionNode = parentSection.getNode();
-				if (sectionNode.getIndex() == 1)
-					return;// cannot deepen first section
-				Node previousNode = parentSectionNode.getNode(CMS_H + '['
-						+ (sectionNode.getIndex() - 1) + ']');
-				previousNode.getSession().move(sectionNode.getPath(),
-						previousNode.getPath() + "/" + CMS_H);
-				previousNode.getSession().save();
-				parentSection.refresh(true, true);
-			}
-		} catch (RepositoryException e) {
-			throw new CmsException("Cannot deepen " + edited, e);
-		}
+	protected void deepen() {
+
 	}
 
-	public void undeepen() {
-		checkEdited();
-		try {
-			if (edited instanceof Paragraph) {
+	protected void undeepen() {
 
-			} else if (edited instanceof SectionTitle) {
-				SectionTitle sectionTitle = (SectionTitle) edited;
-				Section section = sectionTitle.getSection();
-				Node sectionNode = section.getNode();
-				Section parentSection = section.getParentSection();
-				if (parentSection == null)
-					return;// cannot undeepen main section
-				Node parentSectionNode = parentSection.getNode();
-				Section parentParentSection = parentSection.getParentSection();
-				if (parentParentSection == null) {// first level
-					Node newParagrapheNode = parentSectionNode.addNode(CMS_P,
-							CmsTypes.CMS_STYLED);
-					parentSectionNode.orderBefore(CMS_P + '['
-							+ newParagrapheNode.getIndex() + ']', CMS_H + '['
-							+ sectionNode.getIndex() + ']');
-					String txt = textInterpreter.read(sectionNode
-							.getProperty(Property.JCR_TITLE));
-					section.getNode().remove();
-					textInterpreter.write(newParagrapheNode, txt);
-
-					parentSection.refresh(true, true);
-				} else {
-					Node parentParentSectionNode = parentParentSection
-							.getNode();
-					parentParentSectionNode.getSession().move(
-							sectionNode.getPath(),
-							parentParentSectionNode.getPath() + "/" + CMS_H);
-					NodeIterator sections = parentParentSectionNode
-							.getNodes(CMS_H);
-
-					// move it behind its former parent
-					Node movedNode = null;
-					while (sections.hasNext()) {
-						movedNode = sections.nextNode();
-					}
-					parentParentSectionNode.orderBefore(
-							CMS_H + '[' + movedNode.getIndex() + ']', CMS_H
-									+ '[' + (parentSectionNode.getIndex() + 1)
-									+ ']');
-
-					parentParentSectionNode.getSession().save();
-					parentParentSection.refresh(true, true);
-				}
-			}
-		} catch (RepositoryException e) {
-			throw new CmsException("Cannot undeepen " + edited, e);
-		}
 	}
 
 	@Override
@@ -437,49 +356,41 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 
 		if (edited == null)
 			return;
-		boolean shiftPressed = (e.stateMask & SWT.SHIFT) != 0;
 		boolean altPressed = (e.stateMask & SWT.ALT) != 0;
+		boolean shiftPressed = (e.stateMask & SWT.SHIFT) != 0;
 
-		if (edited instanceof Paragraph) {
-			Paragraph paragraph = (Paragraph) edited;
-			if (e.character == '\t') {
-				if (!shiftPressed) {
-					deepen();
-				} else if (shiftPressed) {
-					undeepen();
-				}
-			} else if (altPressed && e.keyCode == SWT.ARROW_RIGHT) {
-				edit(paragraph.nextParagraph(), 0);
-			} else if (altPressed && e.keyCode == SWT.ARROW_LEFT) {
-				edit(paragraph.previousParagraph(), 0);
-
-			} else if (e.keyCode == SWT.ESC) {
-				cancelEdit();
-			} else if (e.character == '\r') {
-				splitEdit();
-			} else if (e.character == SWT.BS) {
-				Text text = (Text) paragraph.getControl();
-				int caretPosition = text.getCaretPosition();
-				if (caretPosition == 0) {
-					mergeWithPrevious();
-				}
-			} else if (e.character == SWT.DEL) {
-				Text text = (Text) paragraph.getControl();
-				int caretPosition = text.getCaretPosition();
-				int charcount = text.getCharCount();
-				if (caretPosition == charcount) {
-					mergeWithNext();
-				}
+		// Common
+		if (e.keyCode == SWT.ESC) {
+			cancelEdit();
+		} else if (e.character == '\r') {
+			splitEdit();
+		} else if (e.character == '\t') {
+			if (!shiftPressed) {
+				deepen();
+			} else if (shiftPressed) {
+				undeepen();
 			}
-		} else if (edited instanceof SectionTitle) {
-			if (e.character == '\t') {
-				if (!shiftPressed) {
-					deepen();
-				} else if (shiftPressed) {
-					undeepen();
+		} else {
+			if (edited instanceof Paragraph) {
+				Paragraph paragraph = (Paragraph) edited;
+				if (altPressed && e.keyCode == SWT.ARROW_RIGHT) {
+					edit(paragraph.nextParagraph(), 0);
+				} else if (altPressed && e.keyCode == SWT.ARROW_LEFT) {
+					edit(paragraph.previousParagraph(), 0);
+				} else if (e.character == SWT.BS) {
+					Text text = (Text) paragraph.getControl();
+					int caretPosition = text.getCaretPosition();
+					if (caretPosition == 0) {
+						mergeWithPrevious();
+					}
+				} else if (e.character == SWT.DEL) {
+					Text text = (Text) paragraph.getControl();
+					int caretPosition = text.getCaretPosition();
+					int charcount = text.getCharCount();
+					if (caretPosition == charcount) {
+						mergeWithNext();
+					}
 				}
-			} else if (e.character == '\r') {
-				splitEdit();
 			}
 		}
 	}
@@ -488,22 +399,52 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 	public void keyReleased(KeyEvent e) {
 	}
 
-	private void checkEdited() {
+	@Override
+	public void mouseDoubleClick(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseDown(MouseEvent e) {
+		if (e.button == 1) {
+			Control source = (Control) e.getSource();
+			Composite composite = findDataParent(source);
+			Point point = new Point(e.x, e.y);
+			edit(composite, source.toDisplay(point));
+		} else if (e.button == 3) {
+			Composite composite = findDataParent((Control) e.getSource());
+			if (getStyledTools() != null)
+				getStyledTools().show(composite, new Point(e.x, e.y));
+		}
+	}
+
+	private Composite findDataParent(Control parent) {
+		if (parent instanceof Composite && parent.getData() != null) {
+			return (Composite) parent;
+		}
+		if (parent.getParent() != null)
+			return findDataParent(parent.getParent());
+		else
+			throw new CmsException("No data parent found");
+	}
+
+	@Override
+	public void mouseUp(MouseEvent e) {
+	}
+
+	protected void checkEdited() {
 		if (edited == null || edited.isDisposed())
 			throw new CmsException(
 					"Edited should not be null or disposed at this stage");
 	}
 
-	public void layout(Composite composite) {
-		composite.layout();
-		parentLayout(composite.getParent());
+	protected String p(Integer index) {
+		StringBuilder sb = new StringBuilder(6);
+		sb.append(CMS_P).append('[').append(index).append(']');
+		return sb.toString();
 	}
 
-	private void parentLayout(Composite parent) {
-		// TODO make it more robust
-		parent.layout(true, false);
-		if (!(parent instanceof ScrolledPage))
-			parentLayout(parent.getParent());
+	protected Composite getEdited() {
+		return edited;
 	}
 
 	public Section getMainSection() {
@@ -519,7 +460,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 	}
 
 	public StyledTools getStyledTools() {
-		return styledTools;
+		return null;
 	}
 
 }
