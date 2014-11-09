@@ -1,5 +1,8 @@
 package org.argeo.cms.text;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
@@ -28,7 +31,7 @@ import org.eclipse.swt.widgets.Text;
 
 /** Base class for all text viewers/editors. */
 public abstract class AbstractTextViewer extends ContentViewer implements
-		TextViewer, CmsNames, KeyListener {
+		TextViewer, CmsNames, KeyListener, Observer {
 	private static final long serialVersionUID = -2401274679492339668L;
 
 	private final static Log log = LogFactory.getLog(AbstractTextViewer.class);
@@ -50,13 +53,14 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 			mainSection = new Section(this, page, SWT.NONE, textNode);
 			mainSection.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 					false));
-			if (cmsEditable == null)
-				this.cmsEditable = CmsEditable.NON_EDITABLE;
-			else
-				this.cmsEditable = cmsEditable;
-			if (this.cmsEditable.canEdit()) {
+
+			// CMS Editable
+			this.cmsEditable = cmsEditable == null ? CmsEditable.NON_EDITABLE
+					: cmsEditable;
+			if (this.cmsEditable instanceof Observable)
+				((Observable) this.cmsEditable).addObserver(this);
+			if (this.cmsEditable.canEdit())
 				styledTools = new StyledTools(this, page.getDisplay());
-			}
 
 			// if (!textNode.hasNodes())
 			// textNode.addNode(CMS_P, CmsTypes.CMS_STYLED);
@@ -65,6 +69,12 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot load main section", e);
 		}
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// CmsEditionEvent evt = (CmsEditionEvent) arg;
+		refresh();
 	}
 
 	@Override
