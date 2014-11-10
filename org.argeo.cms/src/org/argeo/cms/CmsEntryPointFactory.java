@@ -1,6 +1,5 @@
 package org.argeo.cms;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
@@ -240,11 +239,11 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 					else if (pages.containsKey(page))
 						pages.get(page).createUi(bodyArea, getNode());
 					else {
-						try {
-							RWT.getResponse().sendError(404);
-						} catch (IOException e) {
-							log.error("Cannot send 404 code", e);
-						}
+//						try {
+//							RWT.getResponse().sendError(404);
+//						} catch (IOException e) {
+//							log.error("Cannot send 404 code", e);
+//						}
 						throw new CmsException("Unsupported state " + state);
 					}
 				} catch (RepositoryException e) {
