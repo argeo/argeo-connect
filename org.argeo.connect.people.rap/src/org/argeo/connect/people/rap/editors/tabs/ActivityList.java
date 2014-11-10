@@ -286,7 +286,8 @@ public class ActivityList extends Composite {
 			// Node createdTask = wizard.getCreatedTask();
 			session.save();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to create task node", e);
+			throw new PeopleException("Unable to create task node related to "
+					+ relatedEntity, e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}

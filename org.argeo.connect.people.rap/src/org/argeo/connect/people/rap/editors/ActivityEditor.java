@@ -35,7 +35,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
@@ -49,15 +48,15 @@ import org.eclipse.ui.forms.AbstractFormPart;
 public class ActivityEditor extends AbstractPeopleEditor {
 	final static Log log = LogFactory.getLog(ActivityEditor.class);
 
-	// local constants
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".activityEditor";
 
-	// Main business Objects
+	// Context
 	private Node activity;
 
-	// Form parts must be explicitly disposed
+	// UI objects
 	private AbstractFormPart headerPart;
+	private int firstColWHint = 85;
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -66,23 +65,19 @@ public class ActivityEditor extends AbstractPeopleEditor {
 	}
 
 	@Override
-	protected void createToolkits() {
-	}
-
-	@Override
 	protected Boolean deleteParentOnRemove() {
 		return new Boolean(false);
 	}
 
 	protected void populateHeader(Composite parent) {
-		GridLayout layout;
-		GridData gd;
-
-		layout = new GridLayout(6, false);
-		parent.setLayout(layout);
+		parent.setLayout(new GridLayout(6, false));
 
 		// 1st line (NOTE: it defines the grid data layout of this part)
-		PeopleRapUtils.createBoldLabel(toolkit, parent, "Type");
+		// Work around to be able to kind of also align bold labels of the body
+		Label label = PeopleRapUtils.createBoldLabel(toolkit, parent, "Type");
+		GridData gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
+		gd.widthHint = firstColWHint;
+		label.setLayoutData(gd);
 		final Label typeLbl = toolkit.createLabel(parent, "");
 		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false);
 		typeLbl.setLayoutData(gd);
@@ -94,14 +89,16 @@ public class ActivityEditor extends AbstractPeopleEditor {
 
 		// ACTIVITY DATE
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Date");
-		final DateTime activityDateDt = new DateTime(parent, SWT.RIGHT
-				| SWT.DATE | SWT.MEDIUM | SWT.DROP_DOWN);
-		activityDateDt.setLayoutData(PeopleUiUtils.horizontalFillData());
+		final DateTime activityDateDt = new DateTime(parent, SWT.DATE
+				| SWT.MEDIUM | SWT.DROP_DOWN);
+		activityDateDt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true,
+				false));
 
 		// 2nd line - RELATED ENTITIES
-		Label label = PeopleRapUtils.createBoldLabel(toolkit, parent,
-				"Related to");
-		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		label = PeopleRapUtils.createBoldLabel(toolkit, parent, "Related to");
+		gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
+		gd.verticalIndent = 2;
+		label.setLayoutData(gd);
 
 		final Composite relatedCmp = toolkit.createComposite(parent,
 				SWT.NO_FOCUS);
@@ -120,7 +117,6 @@ public class ActivityEditor extends AbstractPeopleEditor {
 					typeLbl.setText(ActivityJcrUtils
 							.getActivityTypeLbl(activity));
 
-					// TODO display correct display name instead of ID
 					String manager = ActivityJcrUtils
 							.getActivityManagerDisplayName(activity);
 					if (CommonsJcrUtils.checkNotEmptyString(manager))
@@ -266,27 +262,23 @@ public class ActivityEditor extends AbstractPeopleEditor {
 
 	@Override
 	protected void populateBody(Composite parent) {
+		parent.setLayout(new GridLayout(2, false));
 		// 3rd line: title
-		Group titleGrp = new Group(parent, 0);
-		GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
-		gd.heightHint = 60;
-		gd.horizontalSpan = 3;
-		titleGrp.setLayoutData(gd);
-		titleGrp.setText("Title");
-		titleGrp.setLayout(PeopleUiUtils.noSpaceGridLayout());
-		final Text titleTxt = toolkit.createText(titleGrp, "", SWT.BORDER
-				| SWT.MULTI | SWT.WRAP);
-		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		titleTxt.setLayoutData(gd);
+		Label label = PeopleRapUtils.createBoldLabel(toolkit, parent, "Title");
+		GridData gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
+		gd.widthHint = firstColWHint;
+		label.setLayoutData(gd);
+		final Text titleTxt = toolkit.createText(parent, "", SWT.BORDER
+				| SWT.SINGLE);
+		titleTxt.setLayoutData(PeopleUiUtils.horizontalFillData());
 
 		// Bottom part: description
-		Group descGrp = new Group(parent, 0);
-		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.horizontalSpan = 3;
-		descGrp.setLayoutData(gd);
-		descGrp.setText("Description");
-		descGrp.setLayout(PeopleUiUtils.noSpaceGridLayout());
-		final Text descTxt = toolkit.createText(descGrp, "", SWT.NONE
+		label = PeopleRapUtils.createBoldLabel(toolkit, parent, "Description");
+		gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
+		gd.widthHint = firstColWHint;
+		gd.verticalIndent = 2;
+		label.setLayoutData(gd);
+		final Text descTxt = toolkit.createText(parent, "", SWT.BORDER
 				| SWT.MULTI | SWT.WRAP);
 		descTxt.setLayoutData(PeopleUiUtils.fillGridData());
 
@@ -305,7 +297,6 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		PeopleRapUtils.addModifyListener(descTxt, activity,
 				Property.JCR_DESCRIPTION, formPart);
 
-		parent.layout();
 		formPart.initialize(getManagedForm());
 		getManagedForm().addPart(formPart);
 	}

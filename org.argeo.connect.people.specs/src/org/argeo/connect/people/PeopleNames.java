@@ -103,6 +103,7 @@ public interface PeopleNames {
 
 	/* ACTIVITIES AND TASKS */
 	public final static String PEOPLE_MANAGER = "people:manager";
+	public final static String PEOPLE_REPORTED_BY = "people:reportedBy";
 	public final static String PEOPLE_RELATED_TO = "people:relatedTo";
 	public final static String PEOPLE_BOUND_ACTIVITIES = "people:boundActivities";
 	public final static String PEOPLE_ATTACHEMENTS = "people:attachments";
@@ -113,6 +114,7 @@ public interface PeopleNames {
 	public final static String PEOPLE_ASSIGNED_TO = "people:assignedTo";
 	public final static String PEOPLE_DUE_DATE = "people:dueDate";
 	public final static String PEOPLE_CLOSE_DATE = "people:closeDate";
+	public final static String PEOPLE_CLOSED_BY = "people:closedBy";
 	public final static String PEOPLE_WAKE_UP_DATE = "people:wakeUpDate";
 	public final static String PEOPLE_DEPENDS_ON = "people:dependsOn";
 	public final static String PEOPLE_TASKS = "people:tasks";

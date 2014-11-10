@@ -1,10 +1,9 @@
 package org.argeo.connect.people.rap.editors.utils;
 
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -36,6 +35,7 @@ public abstract class AbstractEntityCTabEditor extends
 	 */
 	@Override
 	protected final void populateBody(Composite parent) {
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		// NO_FOCUS to solve our "tab browsing" issue
 		folder = createCTabFolder(parent, SWT.NO_FOCUS);
 		populateTabFolder(folder);
@@ -45,9 +45,7 @@ public abstract class AbstractEntityCTabEditor extends
 	/* MANAGE TAB FOLDER */
 	protected CTabFolder createCTabFolder(Composite parent, int style) {
 		CTabFolder tabFolder = new CTabFolder(parent, style);
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		// gd.grabExcessVerticalSpace = true;
-		tabFolder.setLayoutData(gd);
+		tabFolder.setLayoutData(PeopleUiUtils.fillGridData());
 		return tabFolder;
 	}
 
@@ -59,22 +57,47 @@ public abstract class AbstractEntityCTabEditor extends
 		item.setToolTipText(tooltip);
 		Composite innerPannel = toolkit
 				.createComposite(tabFolder, SWT.V_SCROLL);
-		// GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		// innerPannel.setLayoutData(gd);
 		// must set control
 		item.setControl(innerPannel);
 		return innerPannel;
 	}
 
-	protected CTabItem createCTab(CTabFolder tabFolder, String tabId) {
-		CTabItem item = new CTabItem(tabFolder, SWT.NO_FOCUS);
-		item.setData(CTAB_INSTANCE_ID, tabId);
-		item.setText(tabId);
-		Composite body = toolkit.createComposite(tabFolder);
-		body.setLayout(new GridLayout(1, false));
-		toolkit.createLabel(body, "Add content here.");
-		item.setControl(body);
-		return item;
+	/**
+	 * 
+	 * @param tabFolder
+	 * @param style
+	 * @param label
+	 * @param id
+	 * @param tooltip
+	 * @param afterTabId
+	 *            the tab will be added after the tab that has this Id if such a
+	 *            tab exists.
+	 * @return
+	 */
+	protected Composite addTabToFolder(CTabFolder tabFolder, int style,
+			String label, String id, String tooltip, String afterTabId) {
+		// retrieve index of the existing tab
+		CTabItem[] items = folder.getItems();
+		int i = 0;
+		loop: for (CTabItem item : items) {
+			String currId = (String) item.getData(CTAB_INSTANCE_ID);
+			i++;
+			if (currId != null && currId.equals(afterTabId))
+				break loop;
+		}
+		CTabItem item;
+		if (i == items.length)
+			item = new CTabItem(tabFolder, style);
+		else
+			item = new CTabItem(tabFolder, style, i);
+		item.setData(CTAB_INSTANCE_ID, id);
+		item.setText(label);
+		item.setToolTipText(tooltip);
+		Composite innerPannel = toolkit
+				.createComposite(tabFolder, SWT.V_SCROLL);
+		// must set control
+		item.setControl(innerPannel);
+		return innerPannel;
 	}
 
 	/** Open the corresponding tab if it has been defined */
@@ -87,8 +110,6 @@ public abstract class AbstractEntityCTabEditor extends
 				return;
 			}
 		}
-		// CTabItem item = createCTab(folder, id);
-		// folder.setSelection(item);
 	}
 
 	/* UTILITES */

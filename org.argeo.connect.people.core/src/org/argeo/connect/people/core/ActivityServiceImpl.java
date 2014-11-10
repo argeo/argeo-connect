@@ -20,7 +20,6 @@ import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.jcr.UserJcrUtils;
 
 public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	// private final static Log log =
@@ -73,25 +72,24 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	@Override
 	public Node createActivity(Session session, String type, String title,
 			String desc, List<Node> relatedTo) {
-		return createActivity(session, new GregorianCalendar(),
-				session.getUserID(), type, title, desc, relatedTo);
+		return createActivity(session, session.getUserID(), type, title, desc,
+				relatedTo, new GregorianCalendar());
 	}
 
 	@Override
-	public Node createActivity(Session session, Calendar date,
-			String managerId, String type, String title, String desc,
-			List<Node> relatedTo) {
+	public Node createActivity(Session session, String reporterId, String type,
+			String title, String desc, List<Node> relatedTo, Calendar date) {
 
 		try {
 			Node parent = JcrUtils.mkdirs(session,
-					getActivityParentPath(session, date, managerId));
+					getActivityParentPath(session, date, reporterId));
 			Node activity = parent.addNode(type, PeopleTypes.PEOPLE_ACTIVITY);
 			activity.addMixin(type);
-			Node userProfile = UserJcrUtils.getUserProfile(session, managerId);
-			activity.setProperty(PeopleNames.PEOPLE_MANAGER, userProfile);
+			activity.setProperty(PeopleNames.PEOPLE_REPORTED_BY, reporterId);
 
 			// Activity Date
-			activity.setProperty(PeopleNames.PEOPLE_ACTIVITY_DATE, date);
+			if (date != null)
+				activity.setProperty(PeopleNames.PEOPLE_ACTIVITY_DATE, date);
 
 			// related to
 			if (relatedTo != null && !relatedTo.isEmpty())
@@ -111,22 +109,40 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	@Override
 	public Calendar getActivityRelevantDate(Node activityNode) {
 		try {
-			Calendar dateToDisplay = null;
+			Calendar relevantDate = null;
 			if (activityNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
 				if (activityNode.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE))
-					dateToDisplay = activityNode.getProperty(
+					relevantDate = activityNode.getProperty(
 							PeopleNames.PEOPLE_CLOSE_DATE).getDate();
 				else if (activityNode.hasProperty(PeopleNames.PEOPLE_DUE_DATE))
-					dateToDisplay = activityNode.getProperty(
+					relevantDate = activityNode.getProperty(
 							PeopleNames.PEOPLE_DUE_DATE).getDate();
-				else
-					dateToDisplay = activityNode.getProperty(
+				else if (activityNode
+						.hasProperty(PeopleNames.PEOPLE_WAKE_UP_DATE))
+					relevantDate = activityNode.getProperty(
+							PeopleNames.PEOPLE_WAKE_UP_DATE).getDate();
+				else if (activityNode
+						.hasProperty(PeopleNames.PEOPLE_ACTIVITY_DATE))
+					relevantDate = activityNode.getProperty(
 							PeopleNames.PEOPLE_ACTIVITY_DATE).getDate();
+				else if (activityNode.hasProperty(Property.JCR_LAST_MODIFIED))
+					relevantDate = activityNode.getProperty(
+							Property.JCR_LAST_MODIFIED).getDate();
+				else if (activityNode.hasProperty(Property.JCR_CREATED))
+					relevantDate = activityNode.getProperty(
+							Property.JCR_CREATED).getDate();
 			} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-				dateToDisplay = activityNode.getProperty(
-						PeopleNames.PEOPLE_ACTIVITY_DATE).getDate();
+				if (activityNode.hasProperty(PeopleNames.PEOPLE_ACTIVITY_DATE))
+					relevantDate = activityNode.getProperty(
+							PeopleNames.PEOPLE_ACTIVITY_DATE).getDate();
+				else if (activityNode.hasProperty(Property.JCR_LAST_MODIFIED))
+					relevantDate = activityNode.getProperty(
+							Property.JCR_LAST_MODIFIED).getDate();
+				else if (activityNode.hasProperty(Property.JCR_CREATED))
+					relevantDate = activityNode.getProperty(
+							Property.JCR_CREATED).getDate();
 			}
-			return dateToDisplay;
+			return relevantDate;
 		} catch (RepositoryException re) {
 			throw new PeopleException(
 					"unable to get relevant date for activity " + activityNode,
@@ -203,18 +219,18 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	}
 
 	@Override
-	public Node createTask(Session session, Node parentNode, String managerId,
+	public Node createTask(Session session, Node parentNode, String reporterId,
 			String title, String description, Node assignedTo,
 			List<Node> relatedTo, Calendar creationDate, Calendar dueDate,
 			Calendar wakeUpDate) {
 		return createTask(session, parentNode, PeopleTypes.PEOPLE_TASK,
-				managerId, title, description, assignedTo, relatedTo,
+				reporterId, title, description, assignedTo, relatedTo,
 				creationDate, dueDate, wakeUpDate);
 	}
 
 	@Override
 	public Node createTask(Session session, Node parentNode,
-			String taskNodeType, String managerId, String title,
+			String taskNodeType, String reporterId, String title,
 			String description, Node assignedTo, List<Node> relatedTo,
 			Calendar creationDate, Calendar dueDate, Calendar wakeUpDate) {
 
@@ -231,7 +247,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 				parentNode = JcrUtils
 						.mkdirs(session,
 								getActivityParentPath(session, creationDate,
-										managerId));
+										reporterId));
 
 			Node taskNode = parentNode.addNode(taskNodeType, taskNodeType);
 
@@ -241,12 +257,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			if (CommonsJcrUtils.checkNotEmptyString(description))
 				taskNode.setProperty(Property.JCR_DESCRIPTION, description);
 
-			Node userProfile = UserJcrUtils.getUserProfile(session, managerId);
-
-			// TODO hard coded root management
-			if (userProfile == null && "admin".equals(managerId))
-				userProfile = UserJcrUtils.getUserProfile(session, "root");
-			taskNode.setProperty(PeopleNames.PEOPLE_MANAGER, userProfile);
+			taskNode.setProperty(PeopleNames.PEOPLE_REPORTED_BY, reporterId);
 
 			if (assignedTo != null)
 				taskNode.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO, assignedTo);
@@ -255,6 +266,10 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 				CommonsJcrUtils.setMultipleReferences(taskNode,
 						PeopleNames.PEOPLE_RELATED_TO, relatedTo);
 
+			if (creationDate == null)
+				creationDate = new GregorianCalendar();
+			taskNode.setProperty(PeopleNames.PEOPLE_ACTIVITY_DATE, creationDate);
+
 			if (dueDate != null) {
 				taskNode.setProperty(PeopleNames.PEOPLE_DUE_DATE, dueDate);
 			}
@@ -262,7 +277,6 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 				taskNode.setProperty(PeopleNames.PEOPLE_WAKE_UP_DATE,
 						wakeUpDate);
 			}
-			taskNode.setProperty(PeopleNames.PEOPLE_ACTIVITY_DATE, creationDate);
 			return taskNode;
 		} catch (RepositoryException e) {
 			throw new PeopleException(

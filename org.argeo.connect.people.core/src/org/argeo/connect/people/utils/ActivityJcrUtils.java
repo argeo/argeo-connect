@@ -60,23 +60,26 @@ public class ActivityJcrUtils {
 		}
 	}
 
-	/**
-	 * Get the display name for the manager of an activity.
-	 * 
-	 * @return
-	 */
+	/** Get the display name for the manager of an activity. */
 	public static String getActivityManagerDisplayName(Node activityNode) {
-		try {
-			if (activityNode.hasProperty(PeopleNames.PEOPLE_MANAGER)) {
+		// TODO return display name rather than ID
+		String manager = CommonsJcrUtils.get(activityNode,
+				PeopleNames.PEOPLE_REPORTED_BY);
 
-				Node referencedManager = activityNode.getProperty(
-						PeopleNames.PEOPLE_MANAGER).getNode();
-				return referencedManager.getParent().getName();
-			} else
-				return "";
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to get type for activity "
-					+ activityNode, e);
+		if (CommonsJcrUtils.isEmptyString(manager)) {
+			// TODO workaround to try to return a manager name in case we are in
+			// a legacy context
+			try {
+				if (activityNode.hasProperty(PeopleNames.PEOPLE_MANAGER)) {
+					Node referencedManager = activityNode.getProperty(
+							PeopleNames.PEOPLE_MANAGER).getNode();
+					manager = referencedManager.getParent().getName();
+				}
+			} catch (RepositoryException e) {
+				throw new PeopleException("Unable to legacy get "
+						+ "manager name for activity " + activityNode, e);
+			}
 		}
+		return manager;
 	}
 }

@@ -159,8 +159,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 		// the body
 		Composite body = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		body.setLayout(PeopleUiUtils.noSpaceGridLayout());
-		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		body.setLayoutData(PeopleUiUtils.fillGridData());
 		populateBody(body);
 	}
 

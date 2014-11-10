@@ -48,7 +48,7 @@ public interface PeopleConstants {
 	public final static Integer TARGET_LINK_REF = 1;
 
 	// default query limit
-	public final static long QUERY_DEFAULT_LIMIT = 30;
+	public final static long QUERY_DEFAULT_LIMIT = 50;
 
 	/*
 	 * USER ROLES

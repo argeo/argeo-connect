@@ -33,10 +33,16 @@ public interface ActivityService {
 	public Node createActivity(Session session, String type, String title,
 			String desc, List<Node> relatedTo);
 
-	/** Creates a new simple activity using the default path */
-	public Node createActivity(Session session, Calendar date,
-			String managerId, String type, String title, String desc,
-			List<Node> relatedTo);
+	/**
+	 * Creates a new simple activity using the default path
+	 * 
+	 * We use a distinct manager and activity date rather than JCR_CREATED and
+	 * JCR_CREATED_BY fields because we cannot force these fields for the time
+	 * being and set these property. It is problematic for instance in case of
+	 * import of old tasks
+	 * */
+	public Node createActivity(Session session, String reporterId, String type,
+			String title, String desc, List<Node> relatedTo, Calendar date);
 
 	/** Returns the default activity English Label if defined */
 	public String getActivityLabel(Node activity);
@@ -74,7 +80,7 @@ public interface ActivityService {
 	 * Either a valid session or a parent Node should be provided
 	 * 
 	 **/
-	public Node createTask(Session session, Node parentNode, String managerId,
+	public Node createTask(Session session, Node parentNode, String reporterId,
 			String title, String description, Node assignedTo,
 			List<Node> relatedTo, Calendar creationDate, Calendar dueDate,
 			Calendar wakeUpDate);
@@ -89,7 +95,7 @@ public interface ActivityService {
 	 * 
 	 **/
 	public Node createTask(Session session, Node parentNode,
-			String taskNodeType, String managerId, String title,
+			String taskNodeType, String reporterId, String title,
 			String description, Node assignedTo, List<Node> relatedTo,
 			Calendar creationDate, Calendar dueDate, Calendar wakeUpDate);
 

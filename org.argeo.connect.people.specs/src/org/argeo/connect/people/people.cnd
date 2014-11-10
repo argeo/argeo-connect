@@ -150,17 +150,25 @@ mixin
 
 // Activities
 [people:activity] > people:base
-// reference the user that has created this activity. Might be redundant with jcr:createdBy property ?
-- people:manager (REFERENCE) //was mandatory m
 // reference the relevant date for this activity, generally, the creation date. 
 - people:activityDate (DATE)
+// track the user that has reported (and generally created) this activity. 
+// It is used instead of jcr:createdBy because we cannot force the JCR protected property;
+// which is useful, among others, in case of an import 
+- people:reportedBy (STRING)
 
-// a list of related entities like persons, orgs or ...
+// a list of related entities like persons, orgs or various business objects
 - people:relatedTo (REFERENCE) * 
 // an optional list of related documents
 + people:attachments (nt:unstructured) 
-// Enable linking activities together, especially enable referencement of related tasks and workflow.
+// Enable linking activities together, especially enable referencing  of related tasks and workflows.
 - people:boundActivities (REFERENCE) *
+
+
+// Legacy: we used this instead of the people:createdBy property in v2.1.11- 
+// TODO remove during next model update
+- people:manager (REFERENCE) 
+
 
 // Various activity types, we use mixin to be able to later enrich the model
 [people:note]
@@ -201,9 +209,9 @@ mixin
 - people:taskStatus (String) // mandatory or not?
 // reference to a group
 - people:assignedTo (REFERENCE)
-// - people:relatedTo (REFERENCE) * 
 - people:dueDate (DATE) 
 - people:closeDate (DATE) 
+- people:closedBy (STRING) // The id of the user who closed this task
 - people:wakeUpDate (DATE) 
 //various sub nodes
 - people:dependsOn (REFERENCE) *
