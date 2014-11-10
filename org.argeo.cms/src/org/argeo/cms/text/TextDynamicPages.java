@@ -9,8 +9,8 @@ import org.argeo.cms.CmsLink;
 import org.argeo.cms.CmsNames;
 import org.argeo.cms.CmsTypes;
 import org.argeo.cms.CmsUiProvider;
+import org.argeo.cms.CmsUtils;
 import org.argeo.jcr.JcrUtils;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -27,7 +27,7 @@ public class TextDynamicPages implements CmsUiProvider, CmsNames {
 			Node indexNode = JcrUtils.getOrAdd(context, CMS_INDEX,
 					CmsTypes.CMS_TEXT);
 			TextDisplay textDisplay = new TextDisplay(parent, indexNode);
-			GridData textGd = new GridData(SWT.FILL, SWT.FILL, true, false);
+			GridData textGd = CmsUtils.fillWidth();
 			textGd.heightHint = 400;
 			textDisplay.setLayoutData(textGd);
 

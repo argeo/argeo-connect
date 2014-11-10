@@ -44,6 +44,7 @@ public class UserMenu extends Shell implements CmsStyles {
 				source.getSize().y));
 
 		addShellListener(new ShellAdapter() {
+			private static final long serialVersionUID = 5178980294808435833L;
 
 			@Override
 			public void shellDeactivated(ShellEvent e) {
@@ -63,7 +64,7 @@ public class UserMenu extends Shell implements CmsStyles {
 		Label l = new Label(this, SWT.NONE);
 		l.setData(RWT.CUSTOM_VARIANT, CMS_USER_MENU_ITEM);
 		l.setData(RWT.MARKUP_ENABLED, true);
-		l.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		l.setLayoutData(CmsUtils.fillWidth());
 		l.setText("<b>" + username + "</b>");
 
 		final CmsSession cmsSession = (CmsSession) getDisplay().getData(
@@ -71,11 +72,13 @@ public class UserMenu extends Shell implements CmsStyles {
 		l = new Label(this, SWT.NONE);
 		l.setData(RWT.CUSTOM_VARIANT, CMS_USER_MENU_ITEM);
 		l.setText(CmsMsg.logout.lead());
-		GridData lData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		GridData lData = CmsUtils.fillWidth();
 		lData.widthHint = 120;
 		l.setLayoutData(lData);
 
 		l.addMouseListener(new MouseAdapter() {
+			private static final long serialVersionUID = 6444395812777413116L;
+
 			public void mouseDown(MouseEvent e) {
 				SecurityContextHolder.getContext().setAuthentication(null);
 				close();
@@ -93,14 +96,14 @@ public class UserMenu extends Shell implements CmsStyles {
 		new Label(this, SWT.NONE).setText(CmsMsg.username.lead());
 		final Text username = new Text(this, SWT.BORDER);
 		username.setData(RWT.CUSTOM_VARIANT, CMS_LOGIN_DIALOG_USERNAME);
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+		GridData gd = CmsUtils.fillWidth();
 		gd.widthHint = textWidth;
 		username.setLayoutData(gd);
 
 		new Label(this, SWT.NONE).setText(CmsMsg.password.lead());
 		final Text password = new Text(this, SWT.BORDER | SWT.PASSWORD);
 		password.setData(RWT.CUSTOM_VARIANT, CMS_LOGIN_DIALOG_PASSWORD);
-		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+		gd = CmsUtils.fillWidth();
 		gd.widthHint = textWidth;
 		password.setLayoutData(gd);
 

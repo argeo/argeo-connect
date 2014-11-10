@@ -2,6 +2,7 @@ package org.argeo.cms;
 
 import java.util.EventObject;
 
+/** Notify of the edition lifecycle */
 public class CmsEditionEvent extends EventObject {
 	private static final long serialVersionUID = 950914736016693110L;
 
@@ -13,6 +14,10 @@ public class CmsEditionEvent extends EventObject {
 	public CmsEditionEvent(Object source, Integer type) {
 		super(source);
 		this.type = type;
+	}
+
+	public Integer getType() {
+		return type;
 	}
 
 }

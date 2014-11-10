@@ -5,8 +5,8 @@ public interface TextStyles {
 
 	/** The whole page area */
 	public final static String TEXT_AREA = "text_area";
-	/** The text field for adding text */
-	public final static String TEXT_EDITOR = "text_editor";
+	/** Area providing controls for editing text */
+	public final static String TEXT_EDITOR_HEADER = "text_editor_header";
 	/** The styled composite for editing the text */
 	public final static String TEXT_STYLED_COMPOSITE = "text_styled_composite";
 	/** A section */

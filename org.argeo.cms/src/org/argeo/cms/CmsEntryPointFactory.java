@@ -204,9 +204,6 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 				child.dispose();
 			bodyArea.setLayout(CmsUtils.noSpaceGridLayout());
 
-			if (log.isDebugEnabled())
-				log.debug("Refresh body - state=" + getState());
-
 			// Exception
 			Throwable exception = getException();
 			if (exception != null) {

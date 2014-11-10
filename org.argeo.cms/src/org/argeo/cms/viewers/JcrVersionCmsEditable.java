@@ -10,7 +10,6 @@ import javax.jcr.version.VersionManager;
 import org.argeo.cms.CmsEditable;
 import org.argeo.cms.CmsEditionEvent;
 import org.argeo.cms.CmsException;
-import org.eclipse.jface.viewers.ContentViewer;
 
 /** Provides the CmsEditable semantic based on JCR versioning. */
 public class JcrVersionCmsEditable extends Observable implements CmsEditable {

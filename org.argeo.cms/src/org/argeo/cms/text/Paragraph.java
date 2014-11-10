@@ -4,25 +4,34 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsUtils;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 public class Paragraph extends StyledComposite {
 	private static final long serialVersionUID = 3746457776229542887L;
 
-	public Paragraph(Section parent, int style, Node node) {
+	private final Section section;
+
+	public Paragraph(Section parent, int style, Node node,
+			MouseListener mouseListener) throws RepositoryException {
 		super(parent, style, parent.getTextInterpreter());
 		setLayout(CmsUtils.noSpaceGridLayout());
 		setData(node);
+		if (mouseListener != null) {
+			setMouseListener(mouseListener);
+		}
 		CmsUtils.style(this, TextStyles.TEXT_PARAGRAPH);
+		section = parent;
+		updateContent();
 	}
 
-	public void refresh(Boolean updateContent) throws RepositoryException {
-		clear(true);
-		createLabel(TextStyles.TEXT_DEFAULT);
-		if (updateContent)
-			updateContent();
-	}
+	// private void refresh(Boolean updateContent) throws RepositoryException {
+	// clear(true);
+	// createLabel(TextStyles.TEXT_DEFAULT);
+	// if (updateContent)
+	// updateContent();
+	// }
 
 	public void updateContent() throws RepositoryException {
 		Node node = getNode();
@@ -37,16 +46,18 @@ public class Paragraph extends StyledComposite {
 		// retrieve control AFTER setting style, since it may have been reset
 		setText(node);
 
+		// if (section.getViewer().getCmsEditable().canEdit())
+		// setMouseListener((MouseListener) section.getViewer());
 		// getViewer().layout(this);
-		layout();
+		// layout();
 	}
 
-	protected Node getNode() {
-		return (Node) getData();
+	public Node getNode() {
+		return (Node) CmsUtils.getDataItem(this, null);
 	}
 
-	protected Section getSection() {
-		return (Section) getParent();
+	public Section getSection() {
+		return section;
 	}
 
 	public Paragraph nextParagraph() {

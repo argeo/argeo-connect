@@ -11,7 +11,6 @@ public abstract class AbstractStructuredTextViewer extends AbstractTextViewer {
 	public AbstractStructuredTextViewer(Composite parent, Node textNode,
 			CmsEditable cmsEditable) {
 		super(parent, textNode, cmsEditable);
-		// TODO Auto-generated constructor stub
 	}
 
 }

@@ -21,13 +21,19 @@ public class ComplexTextEditor extends AbstractStructuredTextViewer {
 			CmsEditable cmsEditable) throws RepositoryException {
 		super(parent, textNode, cmsEditable);
 
-		if (!textNode.hasProperty(Property.JCR_TITLE)) {
-			textNode.setProperty(Property.JCR_TITLE, textNode.getName());
-			refresh();
-		}
+		// if (!textNode.hasProperty(Property.JCR_TITLE)) {
+		// textNode.setProperty(Property.JCR_TITLE, textNode.getName());
+		// refresh();
+		// }
 
 		if (getCmsEditable().canEdit())
 			styledTools = new StyledTools(this, parent.getDisplay());
+	}
+
+	@Override
+	protected void initModel() throws RepositoryException {
+		mainSection.getNode().setProperty(Property.JCR_TITLE,
+				mainSection.getNode());
 	}
 
 	@Override
@@ -47,14 +53,25 @@ public class ComplexTextEditor extends AbstractStructuredTextViewer {
 				Node sectionNode = section.getNode();
 				Node newSectionNode = sectionNode.addNode(CMS_H,
 						CmsTypes.CMS_SECTION);
+				int paragraphIndex = paragraphNode.getIndex();
 				sectionNode.orderBefore(h(newSectionNode.getIndex()),
-						p(paragraphNode.getIndex()));
-				paragraphNode.remove();
+						p(paragraphIndex));
+				String sectionPath = sectionNode.getPath();
+				String newSectionPath = newSectionNode.getPath();
+				for (int i = 1; sectionNode.hasNode(p(i + paragraphIndex)); i++) {
+					sectionNode.getSession().move(
+							sectionPath + p(i + paragraphIndex),
+							newSectionPath + p(i));
+
+				}
 				// create property
 				newSectionNode.setProperty(Property.JCR_TITLE, "");
 				getTextInterpreter().write(
 						newSectionNode.getProperty(Property.JCR_TITLE), txt);
-				section.refresh(true, true);
+				// section.refresh(true, true);
+
+				paragraphNode.remove();
+				layout(section);
 			} else if (getEdited() instanceof SectionTitle) {
 				SectionTitle sectionTitle = (SectionTitle) getEdited();
 				Section section = sectionTitle.getSection();
@@ -70,7 +87,7 @@ public class ComplexTextEditor extends AbstractStructuredTextViewer {
 				previousNode.getSession().move(sectionNode.getPath(),
 						previousNode.getPath() + "/" + CMS_H);
 				previousNode.getSession().save();
-				parentSection.refresh(true, true);
+
 			}
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot deepen " + getEdited(), e);
@@ -102,7 +119,7 @@ public class ComplexTextEditor extends AbstractStructuredTextViewer {
 					section.getNode().remove();
 					getTextInterpreter().write(newParagrapheNode, txt);
 
-					parentSection.refresh(true, true);
+					// parentSection.refresh(true, true);
 				} else {
 					Node parentParentSectionNode = parentParentSection
 							.getNode();
@@ -122,7 +139,7 @@ public class ComplexTextEditor extends AbstractStructuredTextViewer {
 							h(parentSectionNode.getIndex() + 1));
 
 					parentParentSectionNode.getSession().save();
-					parentParentSection.refresh(true, true);
+//					parentParentSection.refresh(true, true);
 				}
 			}
 		} catch (RepositoryException e) {

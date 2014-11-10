@@ -1,45 +1,23 @@
 package org.argeo.cms.text;
 
-import javax.jcr.Property;
+import javax.jcr.Item;
+import javax.jcr.RepositoryException;
 
-import org.argeo.cms.CmsException;
-import org.argeo.cms.widgets.ScrolledPage;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-abstract class EditableTextPart extends Composite {
-	private static final long serialVersionUID = -6296987108397319506L;
+public interface EditableTextPart {
+	public void startEditing();
 
-	private Boolean selected = false;
+	public void stopEditing();
 
-	public EditableTextPart(Composite parent, int style) {
-		super(parent, style);
-	}
+	public Control getControl();
 
-	public abstract void startEditing();
 
-	public abstract void stopEditing();
+	public void updateContent() throws RepositoryException;
 
-	public abstract Control getControl();
+	public void save(Item item);
 
-	public abstract void setStyle(String style);
+	//public Section getSection();
 
-	public Boolean isSelected() {
-		return selected;
-	}
-
-	public void selected(Boolean selected) {
-		if (!this.selected && !selected)
-			throw new CmsException("Was not selected");
-		this.selected = selected;
-	}
-
-	public String getNodePath() {
-		return (String) getData(Property.JCR_PATH);
-	}
-
-	public String toString() {
-		return getClass().getName() + "#" + getNodePath();
-	}
-
+	// public abstract void setStyle(String style);
 }

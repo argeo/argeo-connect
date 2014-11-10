@@ -10,10 +10,6 @@ import org.argeo.cms.CmsUtils;
 import org.argeo.cms.viewers.JcrVersionCmsEditable;
 import org.argeo.cms.widgets.ScrolledPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
 /** Read-only display of text. */
@@ -24,7 +20,7 @@ public class TextDisplay implements CmsNames, TextStyles {
 	// private final String textNodePath;// cache
 	// private VersionManager versionManager;
 
-	private ComplexTextEditor textViewer;
+	// private ComplexTextEditor textViewer;
 
 	// private Boolean canEdit = false;
 	private ScrolledPage page;
@@ -40,13 +36,14 @@ public class TextDisplay implements CmsNames, TextStyles {
 			// }
 			cmsEditable = new JcrVersionCmsEditable(textNode);
 			if (cmsEditable.canEdit()) {
-				TextEditHeader teh = new TextEditHeader(parent, SWT.NONE);
-				teh.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+				TextEditorHeader teh = new TextEditorHeader(cmsEditable,
+						parent, SWT.NONE);
+				teh.setLayoutData(CmsUtils.fillWidth());
 			}
 
 			page = new ScrolledPage(parent, SWT.NONE);
 			page.setLayout(CmsUtils.noSpaceGridLayout());
-			textViewer = new ComplexTextEditor(page, textNode, cmsEditable);
+			new ComplexTextEditor(page, textNode, cmsEditable);
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot initialize text display for "
 					+ textNode, e);
@@ -57,36 +54,36 @@ public class TextDisplay implements CmsNames, TextStyles {
 		page.setLayoutData(layoutData);
 	}
 
-	private class TextEditHeader extends Composite {
-		private static final long serialVersionUID = 4186756396045701253L;
-
-		public TextEditHeader(Composite parent, int style) {
-			super(parent, style);
-			setLayout(CmsUtils.noSpaceGridLayout());
-			final Button publish = new Button(this, SWT.FLAT);
-			publish.setText(getPublishButtonLabel());
-			publish.addSelectionListener(new SelectionAdapter() {
-				private static final long serialVersionUID = 2588976132036292904L;
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					if (cmsEditable.isEditing()) {
-						cmsEditable.stopEditing();
-					} else {
-						cmsEditable.startEditing();
-					}
-					publish.setText(getPublishButtonLabel());
-				}
-			});
-		}
-
-		private String getPublishButtonLabel() {
-			if (cmsEditable.isEditing())
-				return "Publish";
-			else
-				return "Edit";
-		}
-	}
+	// private class TextEditHeader extends Composite {
+	// private static final long serialVersionUID = 4186756396045701253L;
+	//
+	// public TextEditHeader(Composite parent, int style) {
+	// super(parent, style);
+	// setLayout(CmsUtils.noSpaceGridLayout());
+	// final Button publish = new Button(this, SWT.FLAT);
+	// publish.setText(getPublishButtonLabel());
+	// publish.addSelectionListener(new SelectionAdapter() {
+	// private static final long serialVersionUID = 2588976132036292904L;
+	//
+	// @Override
+	// public void widgetSelected(SelectionEvent e) {
+	// if (cmsEditable.isEditing()) {
+	// cmsEditable.stopEditing();
+	// } else {
+	// cmsEditable.startEditing();
+	// }
+	// publish.setText(getPublishButtonLabel());
+	// }
+	// });
+	// }
+	//
+	// private String getPublishButtonLabel() {
+	// if (cmsEditable.isEditing())
+	// return "Publish";
+	// else
+	// return "Edit";
+	// }
+	// }
 
 	//
 	// CMS EDITABLE IMPLEMENTATION

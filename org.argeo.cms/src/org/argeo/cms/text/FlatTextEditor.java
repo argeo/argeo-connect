@@ -15,7 +15,6 @@ public class FlatTextEditor extends AbstractTextViewer {
 	public FlatTextEditor(Composite parent, Node textNode,
 			CmsEditable cmsEditable) {
 		super(parent, textNode, cmsEditable);
-		// TODO Auto-generated constructor stub
 	}
 
 }
