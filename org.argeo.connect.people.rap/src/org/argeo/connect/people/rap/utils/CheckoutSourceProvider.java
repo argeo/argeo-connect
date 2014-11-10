@@ -8,8 +8,9 @@ import org.eclipse.ui.AbstractSourceProvider;
 import org.eclipse.ui.ISources;
 
 /**
- * Used to manage the checkout state of a node for various ui editors. TODO:
- * check this to simplify: http://wiki.eclipse.org/RCP_FAQ#
+ * Used to manage the checkout state of a node for various ui editors.
+ * 
+ * TODO: check this to simplify: http://wiki.eclipse.org/RCP_FAQ#
  * How_can_I_get_my_views_and_editors_to_coordinate_with_each_other.3F
  */
 public class CheckoutSourceProvider extends AbstractSourceProvider {

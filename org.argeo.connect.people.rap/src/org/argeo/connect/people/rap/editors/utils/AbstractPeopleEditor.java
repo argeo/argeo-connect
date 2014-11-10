@@ -413,8 +413,9 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		try {
 			peopleService.saveEntity(node, true);
 			mForm.commit(true);
-			// FIXME necessary duplicate call to the commit
-			// (used to check-in newly created versionable tags)
+			// TODO Why do we have to call the commit for each part.
+			// (Problematic use case might be when trying to check-in newly
+			// created versionable tags)
 			// Why is it not done automagicaly ?
 			for (IFormPart part : mForm.getParts()) {
 				part.commit(true);

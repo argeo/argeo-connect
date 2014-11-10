@@ -37,9 +37,6 @@ public class RoleListLabelProvider extends ColumnLabelProvider implements
 			StringBuilder builder = new StringBuilder();
 			if (CommonsJcrUtils.checkNotEmptyString(pos))
 				builder.append("<b>").append(pos).append("</b> <br/>");
-			// TODO ? manage multiple roles
-			// for (String token : pos.split(","))
-			// builder.append(token).append("<br/>");
 
 			// DEPARTMENT
 			if (link.isNodeType(PeopleTypes.PEOPLE_JOB)) {

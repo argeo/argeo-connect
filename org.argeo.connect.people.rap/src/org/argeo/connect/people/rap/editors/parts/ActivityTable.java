@@ -246,29 +246,6 @@ public class ActivityTable extends Composite implements ArgeoNames {
 	private class TypeLabelProvider extends ColumnLabelProvider {
 		private static final long serialVersionUID = 1L;
 
-		// @Override
-		// public Image getImage(Object element) {
-		// try {
-		// Node currNode = (Node) element;
-		// if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
-		// return ActivitiesImages.TODO;
-		// } else if (currNode.isNodeType(PeopleTypes.PEOPLE_NOTE)) {
-		// return ActivitiesImages.NOTE;
-		// } else if (currNode.isNodeType(PeopleTypes.PEOPLE_SENT_EMAIL)) {
-		// return ActivitiesImages.SENT_MAIL;
-		// } else if (currNode.isNodeType(PeopleTypes.PEOPLE_CALL)) {
-		// return ActivitiesImages.PHONE_CALL;
-		// } else if (currNode.isNodeType(PeopleTypes.PEOPLE_SENT_FAX)) {
-		// return ActivitiesImages.SENT_FAX;
-		// } else
-		// return null;
-		// // TODO implement all types.
-		// } catch (RepositoryException re) {
-		// throw new ArgeoException("Unable to get date from node "
-		// + element, re);
-		// }
-		// }
-
 		@Override
 		public String getText(Object element) {
 			Node currNode = (Node) element;
