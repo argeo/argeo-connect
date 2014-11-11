@@ -86,7 +86,6 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 			section.createHeader();
 			if (node.hasProperty(Property.JCR_TITLE)) {
 				SectionTitle title = newSectionTitle(section, node);
-				title.setData(node.getProperty(Property.JCR_TITLE));
 				title.setLayoutData(CmsUtils.fillWidth());
 				updateContent(title);
 			}
@@ -164,7 +163,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 			throws RepositoryException {
 		SectionTitle sectionTitle = new SectionTitle(parent.getHeader(),
 				parent.getStyle());
-		sectionTitle.setData(node.getProperty(Property.JCR_TITLE));
+		// sectionTitle.setData(node.getProperty(Property.JCR_TITLE));
 		updateContent(sectionTitle);
 		sectionTitle.setMouseListener(mouseListener);
 		return sectionTitle;
@@ -502,8 +501,8 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 	//
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (log.isDebugEnabled())
-			log.debug(e);
+		if (log.isTraceEnabled())
+			log.trace(e);
 
 		if (edited == null)
 			return;
