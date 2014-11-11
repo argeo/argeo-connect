@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import javax.jcr.AccessDeniedException;
 import javax.jcr.InvalidItemStateException;
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
 import javax.jcr.PropertyType;
@@ -30,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.core.versioning.ItemDiff;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.PropertyDiff;
 
@@ -782,21 +784,21 @@ public class CommonsJcrUtils {
 	// lang);
 	// }
 
-	private static Node getOrCreateAltLanguageNode(Node node, String relPath,
-			String lang) {
-		try {
-			Node child = JcrUtils.mkdirs(node.getSession(), node.getPath()
-					+ "/" + relPath + "/" + lang, NodeType.NT_UNSTRUCTURED,
-					NodeType.NT_UNSTRUCTURED, false);
-			child.addMixin(NodeType.MIX_TITLE);
-			child.addMixin(NodeType.MIX_LANGUAGE);
-			child.setProperty(Property.JCR_LANGUAGE, lang);
-			return child;
-		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot create child for language "
-					+ lang, e);
-		}
-	}
+	// private static Node getOrCreateAltLanguageNode(Node node, String relPath,
+	// String lang) {
+	// try {
+	// Node child = JcrUtils.mkdirs(node.getSession(), node.getPath()
+	// + "/" + relPath + "/" + lang, NodeType.NT_UNSTRUCTURED,
+	// NodeType.NT_UNSTRUCTURED, false);
+	// child.addMixin(NodeType.MIX_TITLE);
+	// child.addMixin(NodeType.MIX_LANGUAGE);
+	// child.setProperty(Property.JCR_LANGUAGE, lang);
+	// return child;
+	// } catch (RepositoryException e) {
+	// throw new PeopleException("Cannot create child for language "
+	// + lang, e);
+	// }
+	// }
 
 	public static Node getOrCreateAltLanguageNode(Node node, String lang,
 			List<String> mixins) {
@@ -825,11 +827,53 @@ public class CommonsJcrUtils {
 
 	/* HISTORY MANAGEMENT */
 
-	public static Map<String, PropertyDiff> diffProperties(Node reference,
-			Node observed) {
-		Map<String, PropertyDiff> diffs = new TreeMap<String, PropertyDiff>();
-		diffPropertiesLevel(diffs, null, reference, observed);
+	public static Map<String, ItemDiff> diffItems(Node reference, Node observed) {
+		Map<String, ItemDiff> diffs = new TreeMap<String, ItemDiff>();
+		diffNodes(diffs, null, reference, observed);
 		return diffs;
+	}
+
+	/** Recursively compares 2 nodes */
+	static void diffNodes(Map<String, ItemDiff> diffs, String relPath,
+			Node reference, Node observed) {
+		try {
+			diffPropertiesLevel(diffs, relPath, reference, observed);
+
+			// Removed and modified Node
+			NodeIterator nit = reference.getNodes();
+			while (nit.hasNext()) {
+				Node n = nit.nextNode();
+				String refRelPath = getRelPath(reference, n);
+
+				String currNodePath = (relPath != null ? relPath + "/" : "")
+						+ refRelPath;
+
+				if (observed.hasNode(refRelPath))
+					diffNodes(diffs, currNodePath, n,
+							observed.getNode(refRelPath));
+				else {
+					ItemDiff iDiff = new ItemDiff(ItemDiff.REMOVED,
+							currNodePath, n, null);
+					diffs.put(currNodePath, iDiff);
+				}
+			}
+			// Added nodes
+			nit = observed.getNodes();
+			while (nit.hasNext()) {
+				Node n = nit.nextNode();
+				String obsRelPath = getRelPath(observed, n);
+				String currNodePath = (relPath != null ? relPath + "/" : "")
+						+ obsRelPath;
+				if (!reference.hasNode(obsRelPath)) {
+					ItemDiff iDiff = new ItemDiff(ItemDiff.ADDED, currNodePath,
+							null, n);
+					diffs.put(currNodePath, iDiff);
+				}
+			}
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Cannot diff " + reference + " and "
+					+ observed, e);
+		}
 	}
 
 	/**
@@ -840,25 +884,21 @@ public class CommonsJcrUtils {
 	 * description properties, among other. Filtering must be applied afterwards
 	 * to only keep relevant properties.
 	 */
-	static void diffPropertiesLevel(Map<String, PropertyDiff> diffs,
+	static void diffPropertiesLevel(Map<String, ItemDiff> diffs,
 			String baseRelPath, Node reference, Node observed) {
 		try {
-			// check removed and modified
+			// Removed and modified properties
 			PropertyIterator pit = reference.getProperties();
-			while (pit.hasNext()) {
+			props: while (pit.hasNext()) {
 				Property p = pit.nextProperty();
 				String name = p.getName();
-				// if (name.startsWith("jcr:"))
-				// continue props;
-
 				if (!observed.hasProperty(name)) {
 					String relPath = propertyRelPath(baseRelPath, name);
-					PropertyDiff pDiff = new PropertyDiff(PropertyDiff.REMOVED,
-							relPath, p.getValue(), null);
+					ItemDiff pDiff = new ItemDiff(PropertyDiff.REMOVED,
+							relPath, p, null);
 					diffs.put(relPath, pDiff);
 				} else {
 					if (p.isMultiple()) {
-						int i = 0;
 
 						Value[] refValues = p.getValues();
 						Value[] newValues = observed.getProperty(name)
@@ -869,10 +909,13 @@ public class CommonsJcrUtils {
 								if (refValue.equals(newValue))
 									continue refValues;
 							}
-							PropertyDiff pDiff = new PropertyDiff(
-									PropertyDiff.REMOVED, relPath, refValue,
-									null);
-							diffs.put(relPath + "_" + i++, pDiff);
+							// We remove at least one of the values, this
+							// property has been modified.
+							ItemDiff iDiff = new ItemDiff(
+									PropertyDiff.MODIFIED, relPath, p,
+									observed.getProperty(name));
+							diffs.put(relPath, iDiff);
+							continue props;
 						}
 
 						newValues: for (Value newValue : newValues) {
@@ -880,54 +923,59 @@ public class CommonsJcrUtils {
 								if (refValue.equals(newValue))
 									continue newValues;
 							}
-							PropertyDiff pDiff = new PropertyDiff(
-									PropertyDiff.ADDED, relPath, null, newValue);
-							diffs.put(relPath + "_" + i++, pDiff);
+							// We added at least one new value, this property
+							// has been modified.
+							// We remove at least one of the values, this
+							// property has been modified.
+							ItemDiff iDiff = new ItemDiff(
+									PropertyDiff.MODIFIED, relPath, p,
+									observed.getProperty(name));
+							diffs.put(relPath, iDiff);
+							continue props;
 						}
-
 					} else {
 						Value referenceValue = p.getValue();
 						Value newValue = observed.getProperty(name).getValue();
 						if (!referenceValue.equals(newValue)) {
 							String relPath = propertyRelPath(baseRelPath, name);
-							PropertyDiff pDiff = new PropertyDiff(
-									PropertyDiff.MODIFIED, relPath,
-									referenceValue, newValue);
-							diffs.put(relPath, pDiff);
+							ItemDiff iDiff = new ItemDiff(
+									PropertyDiff.MODIFIED, relPath, p,
+									observed.getProperty(name));
+							diffs.put(relPath, iDiff);
 						}
 					}
 				}
 			}
-			// check added
+			// Added properties
 			pit = observed.getProperties();
-			// props:
 			while (pit.hasNext()) {
 				Property p = pit.nextProperty();
 				String name = p.getName();
-				// if (name.startsWith("jcr:"))
-				// continue props;
 				if (!reference.hasProperty(name)) {
 					String relPath = propertyRelPath(baseRelPath, name);
-					if (p.isMultiple()) {
-						Value[] newValues = observed.getProperty(name)
-								.getValues();
-						int i = 0;
-						for (Value newValue : newValues) {
-							PropertyDiff pDiff = new PropertyDiff(
-									PropertyDiff.ADDED, relPath, null, newValue);
-							diffs.put(relPath + "_" + i++, pDiff);
-						}
-					} else {
-						PropertyDiff pDiff = new PropertyDiff(
-								PropertyDiff.ADDED, relPath, null, p.getValue());
-						diffs.put(relPath, pDiff);
-					}
+
+					ItemDiff pDiff = new ItemDiff(PropertyDiff.ADDED, relPath,
+							null, p);
+					diffs.put(relPath, pDiff);
 				}
 			}
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Cannot diff " + reference + " and "
 					+ observed, e);
 		}
+	}
+
+	private static String getRelPath(Node parent, Node descendant)
+			throws RepositoryException {
+		String pPath = parent.getPath();
+		String dPath = descendant.getPath();
+		if (!dPath.startsWith(pPath))
+			throw new PeopleException("Cannot get rel path for " + descendant
+					+ ". It is not a descendant of " + parent);
+		String relPath = dPath.substring(pPath.length());
+		if (relPath.startsWith("/"))
+			relPath = relPath.substring(1);
+		return relPath;
 	}
 
 	/** Builds a property relPath to be used in the diff. */

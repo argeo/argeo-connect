@@ -3,6 +3,7 @@ package org.argeo.connect.people.rap.editors.tabs;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -24,11 +25,12 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserManagementService;
+import org.argeo.connect.people.core.versioning.ItemDiff;
+import org.argeo.connect.people.core.versioning.VersionDiff;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.PropertyDiff;
-import org.argeo.jcr.VersionDiff;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -117,94 +119,196 @@ public class HistoryLog extends Composite {
 	}
 
 	protected void refreshHistory(Text styledText) {
-		try {
-			List<VersionDiff> lst = listHistoryDiff();
-			StringBuffer main = new StringBuffer("");
+		// try {
+		// List<VersionDiff> lst = listHistoryDiff();
+		// StringBuffer main = new StringBuffer("");
+		//
+		// for (int i = lst.size() - 1; i >= 0; i--) {
+		// if (i == 0)
+		// main.append("Creation (");
+		// else
+		// main.append("Update " + i + " (");
+		//
+		// if (lst.get(i).getUserId() != null)
+		// main.append("User : "
+		// + peopleService.getUserManagementService()
+		// .getUserDisplayName(lst.get(i).getUserId())
+		// + ", ");
+		// if (lst.get(i).getUpdateTime() != null) {
+		// main.append("Date : ");
+		// main.append(dateTimeFormat.format(lst.get(i)
+		// .getUpdateTime().getTime()));
+		// }
+		// main.append(")\n");
+		//
+		// StringBuilder buf = new StringBuilder();
+		// Map<String, ItemDiff> diffs = lst.get(i).getDiffs();
+		// loop: for (String prop : diffs.keySet()) {
+		//
+		// ItemDiff pd = diffs.get(prop);
+		//
+		// String propName = pd.getRelPath();
+		// if ("jcr:uuid".equals(propName))
+		// continue loop;
+		// // TODO Check if current property is part of the relevant
+		// // fields.
+		// // if (!relevantAttributeList.contains(propName))
+		// // continue props;
+		//
+		// Item refItem = pd.getReferenceItem();
+		// Item newItem = pd.getObservedItem();
+		//
+		// Item tmpItem = refItem==null?newItem:refItem;
+		//
+		// if (refItem != null)
+		// if (refItem instanceof Property)
+		// refValueStr = getValueAsString(((Property) refItem)
+		// .getValue());
+		// else if (refItem instanceof Node)
+		// refValueStr = ((Node) refItem).getName();
+		//
+		// if (newItem != null)
+		// if (newItem instanceof Property)
+		// newValueStr = getValueAsString(((Property) newItem)
+		// .getValue());
+		// else if (newItem instanceof Node)
+		// newValueStr = ((Node) newItem).getName();
+		//
+		//
+		// if (tmpItem instanceof Property)
+		// if (((Property)tmpItem).isMultiple())
+		// ; // TODO TappendMultiplePropertyModif(buf, (Property) newItem,
+		// (Property) refItem);
+		// else{
+		// if (refItem != null)
+		// refValueStr = getValueAsString(((Property) refItem)
+		// .getValue());
+		//
+		// if (newItem != null)
+		// if (newItem instanceof Property)
+		// newValueStr = getValueAsString(((Property) newItem)
+		// .getValue());
+		// else if (newItem instanceof Node)
+		// newValueStr = ((Node) newItem).getName();
+		//
+		//
+		//
+		// }
+		// appendPropDiff();
+		// else
+		// appendNodeDiff();
+		//
+		// String refValueStr = "";
+		// String newValueStr = "";
+		//
+		// if (refItem != null)
+		// if (refItem instanceof Property)
+		// refValueStr = getValueAsString(((Property) refItem)
+		// .getValue());
+		// else if (refItem instanceof Node)
+		// refValueStr = ((Node) refItem).getName();
+		//
+		// if (newItem != null)
+		// if (newItem instanceof Property)
+		// newValueStr = getValueAsString(((Property) newItem)
+		// .getValue());
+		// else if (newItem instanceof Node)
+		// newValueStr = ((Node) newItem).getName();
+		//
+		// if (pd.getType() == PropertyDiff.MODIFIED) {
+		// buf.append(propLabel(propName)).append(": ");
+		// buf.append(refValueStr);
+		// buf.append(" > ");
+		// buf.append(newValueStr);
+		// buf.append("\n");
+		// } else if (pd.getType() == PropertyDiff.ADDED
+		// && !"".equals(newValueStr)) {
+		// // we don't list property that have been added with an
+		// // empty string as value
+		// buf.append(propLabel(propName)).append(": ");
+		// buf.append(" + ");
+		// buf.append(newValueStr);
+		// buf.append("\n");
+		// } else if (pd.getType() == PropertyDiff.REMOVED) {
+		// buf.append(propLabel(propName)).append(": ");
+		// buf.append(" - ");
+		// buf.append(refValueStr);
+		// buf.append("\n");
+		// }
+		//
+		// }
+		// buf.append("\n");
+		//
+		// main.append(buf);
+		// }
+		// styledText.setText(main.toString());
+		// } catch (RepositoryException e) {
+		// throw new PeopleException(
+		// "Cannot generate history for current entity.", e);
+		// }
 
-			for (int i = lst.size() - 1; i >= 0; i--) {
-				if (i == 0)
-					main.append("Creation (");
-				else
-					main.append("Update " + i + " (");
+	}
 
-				if (lst.get(i).getUserId() != null)
-					main.append("User : "
-							+ peopleService.getUserManagementService()
-									.getUserDisplayName(lst.get(i).getUserId())
-							+ ", ");
-				if (lst.get(i).getUpdateTime() != null) {
-					main.append("Date : ");
-					main.append(dateTimeFormat.format(lst.get(i)
-							.getUpdateTime().getTime()));
-				}
-				main.append(")\n");
+	private String getValueAsString(Value refValue) throws RepositoryException {
+		String refValueStr;
+		if (refValue.getType() == PropertyType.DATE) {
+			refValueStr = dateTimeFormat.format(refValue.getDate().getTime());
+		}
+		// TODO implement other type formatting if needed.
+		else
+			refValueStr = refValue.getString();
 
-				StringBuffer buf = new StringBuffer("");
-				Map<String, PropertyDiff> diffs = lst.get(i).getDiffs();
-				props: for (String prop : diffs.keySet()) {
-					PropertyDiff pd = diffs.get(prop);
+		return refValueStr;
+	}
 
-					String propName = pd.getRelPath();
-					if ("jcr:uuid".equals(propName))
-						continue props;
+	private void appendModif(StringBuilder buf, Integer type, String label,
+			String oldValue, String newValue) {
 
-					Value refValue = pd.getReferenceValue();
-					Value newValue = pd.getNewValue();
-					String refValueStr = "";
-					String newValueStr = "";
+		if (type == PropertyDiff.MODIFIED) {
+			buf.append(label).append(": ");
+			buf.append(oldValue);
+			buf.append(" > ");
+			buf.append(newValue);
+			buf.append("\n");
+		} else if (type == PropertyDiff.ADDED && !"".equals(newValue)) {
+			// we don't list property that have been added with an
+			// empty string as value
+			buf.append(label).append(": ");
+			buf.append(" + ");
+			buf.append(newValue);
+			buf.append("\n");
+		} else if (type == PropertyDiff.REMOVED) {
+			buf.append(label).append(": ");
+			buf.append(" - ");
+			buf.append(oldValue);
+			buf.append("\n");
+		}
+	}
 
-					if (refValue != null) {
-						if (refValue.getType() == PropertyType.DATE) {
-							refValueStr = dateTimeFormat.format(refValue
-									.getDate().getTime());
-						} else
-							refValueStr = refValue.getString();
-					}
-					if (newValue != null) {
-						if (newValue.getType() == PropertyType.DATE) {
-							newValueStr = dateTimeFormat.format(newValue
-									.getDate().getTime());
-						} else
-							newValueStr = newValue.getString();
-					}
+	private void appendMultiplePropertyModif(StringBuilder builder,
+			Property obsProp, Property refProp) throws RepositoryException {
 
-					// TODO Check if current property is part of the relevant
-					// fields.
-					// if (!relevantAttributeList.contains(propName))
-					// continue props;
-
-					if (pd.getType() == PropertyDiff.MODIFIED) {
-						buf.append(propLabel(propName)).append(": ");
-						buf.append(refValueStr);
-						buf.append(" > ");
-						buf.append(newValueStr);
-						buf.append("\n");
-					} else if (pd.getType() == PropertyDiff.ADDED
-							&& !"".equals(newValueStr)) {
-						// we don't list property that have been added with an
-						// empty string as value
-						buf.append(propLabel(propName)).append(": ");
-						buf.append(" + ");
-						buf.append(newValueStr);
-						buf.append("\n");
-					} else if (pd.getType() == PropertyDiff.REMOVED) {
-						buf.append(propLabel(propName)).append(": ");
-						buf.append(" - ");
-						buf.append(refValueStr);
-						buf.append("\n");
-					}
-
-				}
-				buf.append("\n");
-
-				main.append(buf);
+		Value[] refValues = refProp.getValues();
+		Value[] newValues = obsProp.getValues();
+		refValues: for (Value refValue : refValues) {
+			for (Value newValue : newValues) {
+				if (refValue.equals(newValue))
+					continue refValues;
 			}
-			styledText.setText(main.toString());
-		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Cannot generate history for current entity.", e);
+			appendModif(builder, PropertyDiff.REMOVED,
+					propLabel(refProp.getName()), getValueAsString(refValue),
+					null);
 		}
 
+		newValues: for (Value newValue : newValues) {
+			for (Value refValue : refValues) {
+				if (refValue.equals(newValue))
+					continue newValues;
+			}
+			appendModif(builder, PropertyDiff.ADDED,
+					propLabel(refProp.getName()), null,
+					getValueAsString(newValue));
+		}
 	}
 
 	private List<VersionDiff> listHistoryDiff() {
@@ -217,45 +321,32 @@ public class HistoryLog extends Composite {
 					.getVersionHistory(entity.getPath());
 
 			VersionIterator vit = versionHistory.getAllLinearVersions();
-			boolean first = true;
+			// boolean first = true;
 			while (vit.hasNext()) {
 				Version version = vit.nextVersion();
 				Node node = version.getFrozenNode();
-
-				if (first && node != null && log.isTraceEnabled()) {
-					// Helper to easily find the path of the technical
-					// node under jcr:system/jcr:versionStorage that
-					// manage versioning
-					if (log.isTraceEnabled())
-						log.trace("Retrieving history using frozenNode : "
-								+ node);
-					first = false;
-				}
 
 				Version predecessor = null;
 				try {
 					predecessor = version.getLinearPredecessor();
 				} catch (Exception e) {
-					// no predecessor seems to throw an exception even if it
-					// shouldn't...
+					// no predecessor throw an exception even if it shouldn't...
 					// e.printStackTrace();
 				}
 				if (predecessor == null) {// original
 				} else {
-					Map<String, PropertyDiff> diffs = CommonsJcrUtils
-							.diffProperties(predecessor.getFrozenNode(), node);
+					Map<String, ItemDiff> diffs = CommonsJcrUtils.diffItems(
+							predecessor.getFrozenNode(), node);
 					if (!diffs.isEmpty()) {
-						VersionDiff vd;
-						vd = new VersionDiff(
-								node.hasProperty(Property.JCR_LAST_MODIFIED_BY) ? node
-										.getProperty(
-												Property.JCR_LAST_MODIFIED_BY)
-										.getString() : null,
-								node.hasProperty(Property.JCR_LAST_MODIFIED) ? node
-										.getProperty(Property.JCR_LAST_MODIFIED)
-										.getDate()
-										: null, diffs);
-						res.add(vd);
+						String userid = node
+								.hasProperty(Property.JCR_LAST_MODIFIED_BY) ? node
+								.getProperty(Property.JCR_LAST_MODIFIED_BY)
+								.getString() : null;
+						Calendar updateTime = node
+								.hasProperty(Property.JCR_LAST_MODIFIED) ? node
+								.getProperty(Property.JCR_LAST_MODIFIED)
+								.getDate() : null;
+						res.add(new VersionDiff(null, userid, updateTime, diffs));
 					}
 				}
 			}
@@ -266,12 +357,7 @@ public class HistoryLog extends Composite {
 		}
 	}
 
-	// /** Small hack to enhance prop label rendering **/
-	// public void setKnownPrefixes(List<String> knownPrefixes)
-	// {
-	// this.knownPrefixes = knownPrefixes;
-	// }
-
+	/** Small hack to enhance prop label rendering **/
 	protected String propLabel(String str) {
 		if (str.lastIndexOf(":") < 2)
 			return str;
@@ -291,13 +377,5 @@ public class HistoryLog extends Composite {
 		}
 
 		return builder.toString();
-
-		// try {
-		// String prop = str.substring("people:".length());
-		// return PeopleUiPlugin.getMessage("extractLbl." + prop);
-		// } catch (Exception e) {
-		// // property not listed in internationalization file
-		// return str;
-		// }
 	}
 }
