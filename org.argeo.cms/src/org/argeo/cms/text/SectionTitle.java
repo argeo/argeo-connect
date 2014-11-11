@@ -13,22 +13,7 @@ public class SectionTitle extends StyledComposite {
 		section = Section.findSection(this);
 	}
 
-//	public void updateContent() throws RepositoryException {
-//		if (section.getRelativeDepth() == 0)
-//			setStyle(TextStyles.TEXT_TITLE);
-//		else
-//			setStyle(TextStyles.TEXT_H + section.getRelativeDepth());
-//
-//		// retrieve control AFTER setting style, since
-//		// it may have been reset
-//		setText((Property) getData());
-//
-//		// if (section.getViewer().getCmsEditable().canEdit())
-//		// setMouseListener((MouseListener) section.getViewer());
-//	}
-
 	public Section getSection() {
 		return section;
 	}
-
 }

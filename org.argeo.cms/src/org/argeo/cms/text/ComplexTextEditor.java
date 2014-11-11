@@ -21,12 +21,6 @@ public class ComplexTextEditor extends AbstractStructuredTextViewer {
 	public ComplexTextEditor(Composite parent, Node textNode,
 			CmsEditable cmsEditable) throws RepositoryException {
 		super(parent, textNode, cmsEditable);
-
-		// if (!textNode.hasProperty(Property.JCR_TITLE)) {
-		// textNode.setProperty(Property.JCR_TITLE, textNode.getName());
-		// refresh();
-		// }
-
 		if (getCmsEditable().canEdit())
 			styledTools = new StyledTools(this, parent.getDisplay());
 	}
@@ -70,7 +64,6 @@ public class ComplexTextEditor extends AbstractStructuredTextViewer {
 				newSectionNode.setProperty(Property.JCR_TITLE, "");
 				getTextInterpreter().write(
 						newSectionNode.getProperty(Property.JCR_TITLE), txt);
-				// section.refresh(true, true);
 
 				paragraphNode.remove();
 				layout(section);
@@ -121,7 +114,6 @@ public class ComplexTextEditor extends AbstractStructuredTextViewer {
 					section.getNode().remove();
 					getTextInterpreter().write(newParagrapheNode, txt);
 
-					// parentSection.refresh(true, true);
 				} else {
 					Node parentParentSectionNode = parentParentSection
 							.getNode();
@@ -141,7 +133,6 @@ public class ComplexTextEditor extends AbstractStructuredTextViewer {
 							h(parentSectionNode.getIndex() + 1));
 
 					parentParentSectionNode.getSession().save();
-					// parentParentSection.refresh(true, true);
 				}
 			}
 		} catch (RepositoryException e) {

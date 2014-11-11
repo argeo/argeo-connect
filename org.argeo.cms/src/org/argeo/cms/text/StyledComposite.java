@@ -19,26 +19,12 @@ class StyledComposite extends Composite implements EditableTextPart, CmsNames,
 	private Composite container;
 	private Composite box;
 
-	// private final TextInterpreter textInterpreter;
-
 	private MouseListener mouseListener;
-
-	// public StyledComposite(Composite parent, int swtStyle, Item node)
-	// throws RepositoryException {
-	// super(parent, swtStyle);
-	// setLayout(CmsUtils.noSpaceGridLayout());
-	// setData(node);
-	// setData(Property.JCR_PATH, node.getPath());
-	// setData(RWT.CUSTOM_VARIANT, TEXT_STYLED_COMPOSITE);
-	// clear(true);
-	// child = createLabel(null);
-	// }
 
 	public StyledComposite(Composite parent, int swtStyle) {
 		super(parent, swtStyle);
 		setLayout(CmsUtils.noSpaceGridLayout());
 		setData(TEXT_STYLE, TEXT_STYLED_COMPOSITE);
-		// this.textInterpreter = textInterpreter;
 	}
 
 	protected Label createLabel(String style) {
@@ -48,8 +34,6 @@ class StyledComposite extends Composite implements EditableTextPart, CmsNames,
 		lbl.setData(TEXT_STYLE, style);
 		if (mouseListener != null)
 			lbl.addMouseListener(mouseListener);
-		// if (traverseListener != null)
-		// lbl.addTraverseListener(traverseListener);
 		return lbl;
 	}
 
@@ -60,10 +44,6 @@ class StyledComposite extends Composite implements EditableTextPart, CmsNames,
 		text.setLayoutData(textLayoutData);
 		text.setData(TEXT_STYLE, style);
 		text.setFocus();
-		// if (mouseListener != null)
-		// text.addMouseListener(mouseListener);
-		// if (traverseListener != null)
-		// text.addTraverseListener(traverseListener);
 		return text;
 	}
 
@@ -126,17 +106,6 @@ class StyledComposite extends Composite implements EditableTextPart, CmsNames,
 		}
 	}
 
-	// public void setText(Item item) {
-	// if (child instanceof Label)
-	// ((Label) child).setText(textInterpreter.raw(item));
-	// else if (child instanceof Text)
-	// ((Text) child).setText(textInterpreter.read(item));
-	// }
-
-	// public void save(Item item) {
-	// textInterpreter.write(item, ((Text) child).getText());
-	// }
-
 	public void setMouseListener(MouseListener mouseListener) {
 		if (this.mouseListener != null && child != null)
 			child.removeMouseListener(this.mouseListener);
@@ -144,11 +113,4 @@ class StyledComposite extends Composite implements EditableTextPart, CmsNames,
 		if (child != null && this.mouseListener != null)
 			child.addMouseListener(mouseListener);
 	}
-
-	// public void setTraverseListener(TraverseListener traverseListener) {
-	// this.traverseListener = traverseListener;
-	// if (child != null)
-	// child.addTraverseListener(traverseListener);
-	// }
-	//
 }

@@ -14,37 +14,9 @@ public class Paragraph extends StyledComposite {
 	public Paragraph(Section parent, int style) {
 		super(parent, style);
 		setLayout(CmsUtils.noSpaceGridLayout());
-		// setData(node);
 		CmsUtils.style(this, TextStyles.TEXT_PARAGRAPH);
 		section = parent;
-		// updateContent();
 	}
-
-	// private void refresh(Boolean updateContent) throws RepositoryException {
-	// clear(true);
-	// createLabel(TextStyles.TEXT_DEFAULT);
-	// if (updateContent)
-	// updateContent();
-	// }
-
-	// public void updateContent() throws RepositoryException {
-	// Node node = getNode();
-	//
-	// String style;
-	// if (node.hasProperty(CMS_STYLE))
-	// style = node.getProperty(CMS_STYLE).getString();
-	// else
-	// style = TextStyles.TEXT_DEFAULT;
-	// setStyle(style);
-	//
-	// // retrieve control AFTER setting style, since it may have been reset
-	// setText(node);
-	//
-	// // if (section.getViewer().getCmsEditable().canEdit())
-	// // setMouseListener((MouseListener) section.getViewer());
-	// // getViewer().layout(this);
-	// // layout();
-	// }
 
 	public Node getNode() {
 		return (Node) CmsUtils.getDataItem(this, null);

@@ -8,12 +8,4 @@ public interface EditableTextPart {
 	public void stopEditing();
 
 	public Control getControl();
-
-	// public void updateContent() throws RepositoryException;
-	//
-	// public void save(Item item);
-
-	// public Section getSection();
-
-	// public abstract void setStyle(String style);
 }
