@@ -204,9 +204,9 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 		for (NodeIterator ni = node.getNodes(CMS_H); ni.hasNext();) {
 			Node child = ni.nextNode();
 			if (child.isNodeType(CmsTypes.CMS_SECTION)) {
-				Section composite = new Section(section, SWT.NONE, child);
-				composite.setLayoutData(CmsUtils.fillWidth());
-				refresh(section);
+				Section newSection = new Section(section, SWT.NONE, child);
+				newSection.setLayoutData(CmsUtils.fillWidth());
+				refresh(newSection);
 			}
 		}
 
