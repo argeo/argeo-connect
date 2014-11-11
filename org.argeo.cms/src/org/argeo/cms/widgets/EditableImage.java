@@ -9,21 +9,20 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-/** Editable text part displaying styled text. */
-public class EditableText extends StyledControl {
-	private static final long serialVersionUID = -6372283442330912755L;
+public class EditableImage extends StyledControl {
+	private static final long serialVersionUID = -5689145523114022890L;
 
-	public EditableText(Composite parent, int swtStyle) {
+	public EditableImage(Composite parent, int swtStyle) {
 		super(parent, swtStyle);
-		setLayout(CmsUtils.noSpaceGridLayout());
 	}
 
 	@Override
 	protected Control createControl(Composite box, String style) {
-		if (isEditing())
-			return createText(box, style);
-		else
+		if (isEditing()) {
+			return createImageChooser(box, style);
+		} else {
 			return createLabel(box, style);
+		}
 	}
 
 	protected Label createLabel(Composite box, String style) {
@@ -36,7 +35,7 @@ public class EditableText extends StyledControl {
 		return lbl;
 	}
 
-	protected Text createText(Composite box, String style) {
+	protected Control createImageChooser(Composite box, String style) {
 		final Text text = new Text(box, getStyle() | SWT.MULTI | SWT.WRAP);
 		GridData textLayoutData = CmsUtils.fillWidth();
 		// textLayoutData.minimumHeight = height;
@@ -44,27 +43,6 @@ public class EditableText extends StyledControl {
 		text.setData(STYLE, style);
 		text.setFocus();
 		return text;
-	}
-
-	// public void startEditing() {
-	// int height = child.getSize().y;
-	// String style = (String) child.getData(STYLE);
-	// clear(false);
-	// child = createText(style, height);
-	// }
-	//
-	// public void stopEditing() {
-	// String style = (String) child.getData(STYLE);
-	// clear(false);
-	// child = createLabel(style);
-	// }
-
-	public Text getAsText() {
-		return (Text) getControl();
-	}
-
-	public Label getAsLabel() {
-		return (Label) getControl();
 	}
 
 }
