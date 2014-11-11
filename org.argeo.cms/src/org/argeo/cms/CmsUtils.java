@@ -14,7 +14,9 @@ import org.eclipse.swt.widgets.Widget;
 
 /** Static utilities for the CMS framework. */
 public class CmsUtils {
-	// public static RowData ROW_DATA_16px = new RowData(16, 16);
+	/** @deprecated Use rowData16px() instead. GridData should not be reused. */
+	@Deprecated
+	public static RowData ROW_DATA_16px = new RowData(16, 16);
 
 	public static GridLayout noSpaceGridLayout() {
 		return noSpaceGridLayout(new GridLayout());
