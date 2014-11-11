@@ -205,8 +205,8 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 					page = state;
 			}
 
-			if (log.isDebugEnabled())
-				log.debug("page=" + page + ", node=" + node + ", state="
+			if (log.isTraceEnabled())
+				log.trace("page=" + page + ", node=" + node + ", state="
 						+ state);
 
 		} catch (RepositoryException e) {

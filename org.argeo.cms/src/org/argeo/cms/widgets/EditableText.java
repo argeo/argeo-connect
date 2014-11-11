@@ -1,7 +1,9 @@
-package org.argeo.cms.text;
+package org.argeo.cms.widgets;
 
+import org.argeo.cms.CmsConstants;
 import org.argeo.cms.CmsNames;
 import org.argeo.cms.CmsUtils;
+import org.argeo.cms.text.TextStyles;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.GridData;
@@ -11,8 +13,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 /** Editable text part displaying styled text. */
-class StyledComposite extends Composite implements EditableTextPart, CmsNames,
-		TextStyles {
+public class EditableText extends Composite implements CmsConstants,
+		CmsNames, TextStyles {
 	private static final long serialVersionUID = -6372283442330912755L;
 	private Control child;
 
@@ -21,28 +23,28 @@ class StyledComposite extends Composite implements EditableTextPart, CmsNames,
 
 	private MouseListener mouseListener;
 
-	public StyledComposite(Composite parent, int swtStyle) {
+	public EditableText(Composite parent, int swtStyle) {
 		super(parent, swtStyle);
 		setLayout(CmsUtils.noSpaceGridLayout());
-		setData(TEXT_STYLE, TEXT_STYLED_COMPOSITE);
+		setData(STYLE, TEXT_STYLED_COMPOSITE);
 	}
 
 	protected Label createLabel(String style) {
-		Label lbl = new Label(box, SWT.LEAD | SWT.WRAP);
+		Label lbl = new Label(box, getStyle() | SWT.WRAP);
 		lbl.setLayoutData(CmsUtils.fillWidth());
-		lbl.setData(CmsUtils.MARKUP_DATAKEY, true);
-		lbl.setData(TEXT_STYLE, style);
+		lbl.setData(CmsConstants.MARKUP, true);
+		lbl.setData(STYLE, style);
 		if (mouseListener != null)
 			lbl.addMouseListener(mouseListener);
 		return lbl;
 	}
 
 	protected Text createText(String style, int height) {
-		final Text text = new Text(box, SWT.MULTI | SWT.WRAP);
+		final Text text = new Text(box, getStyle() | SWT.MULTI | SWT.WRAP);
 		GridData textLayoutData = CmsUtils.fillWidth();
 		textLayoutData.minimumHeight = height;
 		text.setLayoutData(textLayoutData);
-		text.setData(TEXT_STYLE, style);
+		text.setData(STYLE, style);
 		text.setFocus();
 		return text;
 	}
@@ -56,13 +58,13 @@ class StyledComposite extends Composite implements EditableTextPart, CmsNames,
 
 	public void startEditing() {
 		int height = child.getSize().y;
-		String style = (String) child.getData(TEXT_STYLE);
+		String style = (String) child.getData(STYLE);
 		clear(false);
 		child = createText(style, height);
 	}
 
 	public void stopEditing() {
-		String style = (String) child.getData(TEXT_STYLE);
+		String style = (String) child.getData(STYLE);
 		clear(false);
 		child = createLabel(style);
 	}
@@ -82,7 +84,7 @@ class StyledComposite extends Composite implements EditableTextPart, CmsNames,
 	public void setStyle(String style) {
 		Object currentStyle = null;
 		if (child != null)
-			currentStyle = child.getData(TEXT_STYLE);
+			currentStyle = child.getData(STYLE);
 		if (currentStyle != null && currentStyle.equals(style))
 			return;
 
@@ -91,8 +93,8 @@ class StyledComposite extends Composite implements EditableTextPart, CmsNames,
 			child = createLabel(style);
 		else if (child instanceof Text)
 			child = createText(style, child.getSize().y);
-		child.getParent().setData(TEXT_STYLE, style + "_box");
-		child.getParent().getParent().setData(TEXT_STYLE, style + "_container");
+		child.getParent().setData(STYLE, style + "_box");
+		child.getParent().getParent().setData(STYLE, style + "_container");
 	}
 
 	protected void clear(boolean deep) {

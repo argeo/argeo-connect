@@ -12,6 +12,7 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -28,7 +29,7 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 
 	private Label deleteButton, publishButton, editButton;
 
-	private Composite currentTextPart;
+	private EditableTextPart currentTextPart;
 
 	public StyledTools(AbstractTextViewer textViewer, Display display) {
 		super(display, SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
@@ -64,13 +65,13 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 		addShellListener(new ToolsShellListener());
 	}
 
-	public void show(Composite source, Point location) {
+	public void show(EditableTextPart source, Point location) {
 		if (isVisible())
 			setVisible(false);
 
 		this.currentTextPart = source;
 
-		if (source instanceof StyledComposite) {
+		if (currentTextPart instanceof Paragraph) {
 			final int size = 32;
 			String text = textViewer
 					.getRawParagraphText((Paragraph) currentTextPart);
@@ -82,7 +83,8 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 		}
 		pack();
 		layout();
-		setLocation(source.toDisplay(location.x, location.y));
+		if (source instanceof Control)
+			setLocation(((Control) source).toDisplay(location.x, location.y));
 		open();
 	}
 

@@ -9,11 +9,12 @@ import org.argeo.cms.CmsEditable;
 import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsTypes;
 import org.argeo.cms.CmsUtils;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 /** Text editor where sections and subsections can be managed by the user. */
-public class ComplexTextEditor extends AbstractStructuredTextViewer {
+public class ComplexTextEditor extends FlatTextEditor {
 	private static final long serialVersionUID = 6049661610883342325L;
 
 	private StyledTools styledTools;
@@ -31,6 +32,20 @@ public class ComplexTextEditor extends AbstractStructuredTextViewer {
 				mainSection.getNode());
 	}
 
+	protected void refresh(Section section) throws RepositoryException {
+		super.refresh(section);
+
+		for (NodeIterator ni = section.getNode().getNodes(CMS_H); ni.hasNext();) {
+			Node child = ni.nextNode();
+			if (child.isNodeType(CmsTypes.CMS_SECTION)) {
+				Section newSection = new Section(section, SWT.NONE, child);
+				newSection.setLayoutData(CmsUtils.fillWidth());
+				refresh(newSection);
+			}
+		}
+
+	}
+
 	@Override
 	public StyledTools getStyledTools() {
 		return styledTools;
@@ -43,8 +58,7 @@ public class ComplexTextEditor extends AbstractStructuredTextViewer {
 				Paragraph paragraph = (Paragraph) getEdited();
 				Text text = (Text) paragraph.getControl();
 				String txt = text.getText();
-				Node paragraphNode = (Node) CmsUtils.getDataItem(paragraph,
-						mainSection.getNode());
+				Node paragraphNode = paragraph.getNode();
 				Section section = paragraph.getSection();
 				Node sectionNode = section.getNode();
 				Node newSectionNode = sectionNode.addNode(CMS_H,

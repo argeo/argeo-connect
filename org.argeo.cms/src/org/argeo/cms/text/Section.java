@@ -1,5 +1,9 @@
 package org.argeo.cms.text;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
@@ -19,17 +23,52 @@ public class Section extends Composite implements CmsNames {
 
 	public Section(Composite parent, int style, Node node)
 			throws RepositoryException {
+		this(parent, findSection(parent), style, node);
+	}
+
+	public Section(Section section, int style, Node node)
+			throws RepositoryException {
+		this(section, section, style, node);
+	}
+
+	private Section(Composite parent, Section parentSection, int style,
+			Node node) throws RepositoryException {
 		super(parent, style);
 		setData(node);
-		parentSection = findSection(parent);
-		if (parentSection != null)
+		this.parentSection = parentSection;
+		if (parentSection != null) {
 			relativeDepth = getNode().getDepth()
 					- parentSection.getNode().getDepth();
-		else
+		} else {
 			relativeDepth = 0;
-
+		}
 		setLayout(CmsUtils.noSpaceGridLayout());
 		CmsUtils.style(this, TextStyles.TEXT_SECTION);
+	}
+
+	public Map<String, Section> getSubSections() throws RepositoryException {
+		LinkedHashMap<String, Section> result = new LinkedHashMap<String, Section>();
+		children: for (Control child : getChildren()) {
+			if (child instanceof Composite) {
+				if (child == sectionHeader || child instanceof EditableTextPart)
+					continue children;
+				collectDirectSubSections((Composite) child, result);
+			}
+		}
+		return Collections.unmodifiableMap(result);
+	}
+
+	private void collectDirectSubSections(Composite composite,
+			LinkedHashMap<String, Section> subSections)
+			throws RepositoryException {
+		if (composite instanceof Section) {
+			Section section = (Section) composite;
+			subSections.put(section.getNode().getIdentifier(), section);
+			return;
+		}
+		for (Control child : composite.getChildren())
+			if (child instanceof Composite)
+				collectDirectSubSections((Composite) child, subSections);
 	}
 
 	public void createHeader() {
@@ -45,13 +84,11 @@ public class Section extends Composite implements CmsNames {
 		return sectionHeader;
 	}
 
-	Paragraph getParagraph(Node node) throws RepositoryException {
+	SectionPart getParagraph(String nodeId) {
 		for (Control child : getChildren()) {
-			if (child instanceof Paragraph) {
-				Paragraph paragraph = (Paragraph) child;
-				Node currNode = (Node) CmsUtils.getDataItem(paragraph,
-						getNode());
-				if (currNode.getIdentifier().equals(node.getIdentifier()))
+			if (child instanceof SectionPart) {
+				SectionPart paragraph = (SectionPart) child;
+				if (paragraph.getNodeId().equals(nodeId))
 					return paragraph;
 			}
 		}

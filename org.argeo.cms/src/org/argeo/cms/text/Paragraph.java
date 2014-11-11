@@ -1,25 +1,40 @@
 package org.argeo.cms.text;
 
 import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsUtils;
+import org.argeo.cms.widgets.EditableText;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public class Paragraph extends StyledComposite {
+public class Paragraph extends EditableText implements SectionPart {
 	private static final long serialVersionUID = 3746457776229542887L;
 
 	private final Section section;
 
-	public Paragraph(Section parent, int style) {
-		super(parent, style);
+	private transient Node node;
+	private String nodeId;
+
+	public Paragraph(Section section, int style, Node node)
+			throws RepositoryException {
+		super(section, style);
+		if (SWT.READ_ONLY != (style & SWT.READ_ONLY)) {
+			this.node = node;
+		}
+		this.nodeId = node.getIdentifier();
+		this.section = section;
 		setLayout(CmsUtils.noSpaceGridLayout());
 		CmsUtils.style(this, TextStyles.TEXT_PARAGRAPH);
-		section = parent;
 	}
 
-	public Node getNode() {
-		return (Node) CmsUtils.getDataItem(this, null);
+	public Node getNode() throws RepositoryException {
+		return node;
+	}
+
+	public String getNodeId() {
+		return nodeId;
 	}
 
 	public Section getSection() {
