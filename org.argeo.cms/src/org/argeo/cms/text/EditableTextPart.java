@@ -1,8 +1,5 @@
 package org.argeo.cms.text;
 
-import javax.jcr.Item;
-import javax.jcr.RepositoryException;
-
 import org.eclipse.swt.widgets.Control;
 
 public interface EditableTextPart {
@@ -12,12 +9,11 @@ public interface EditableTextPart {
 
 	public Control getControl();
 
+	// public void updateContent() throws RepositoryException;
+	//
+	// public void save(Item item);
 
-	public void updateContent() throws RepositoryException;
-
-	public void save(Item item);
-
-	//public Section getSection();
+	// public Section getSection();
 
 	// public abstract void setStyle(String style);
 }

@@ -8,6 +8,7 @@ import javax.jcr.RepositoryException;
 import org.argeo.cms.CmsEditable;
 import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsTypes;
+import org.argeo.cms.CmsUtils;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
@@ -48,7 +49,8 @@ public class ComplexTextEditor extends AbstractStructuredTextViewer {
 				Paragraph paragraph = (Paragraph) getEdited();
 				Text text = (Text) paragraph.getControl();
 				String txt = text.getText();
-				Node paragraphNode = paragraph.getNode();
+				Node paragraphNode = (Node) CmsUtils.getDataItem(paragraph,
+						mainSection.getNode());
 				Section section = paragraph.getSection();
 				Node sectionNode = section.getNode();
 				Node newSectionNode = sectionNode.addNode(CMS_H,
@@ -139,7 +141,7 @@ public class ComplexTextEditor extends AbstractStructuredTextViewer {
 							h(parentSectionNode.getIndex() + 1));
 
 					parentParentSectionNode.getSession().save();
-//					parentParentSection.refresh(true, true);
+					// parentParentSection.refresh(true, true);
 				}
 			}
 		} catch (RepositoryException e) {

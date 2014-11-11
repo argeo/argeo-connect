@@ -1,7 +1,10 @@
 package org.argeo.cms.text;
 
+import org.argeo.cms.CmsUtils;
+
 /** Styles references in the CSS. */
 public interface TextStyles {
+	public final static String TEXT_STYLE = CmsUtils.STYLE_DATAKEY;
 
 	/** The whole page area */
 	public final static String TEXT_AREA = "text_area";

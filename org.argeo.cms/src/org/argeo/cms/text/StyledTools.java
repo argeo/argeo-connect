@@ -21,7 +21,7 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 	private final static String[] DEFAULT_TEXT_STYLES = {
 			TextStyles.TEXT_DEFAULT, TextStyles.TEXT_PRE, TextStyles.TEXT_QUOTE };
 
-	private final TextViewer textViewer;
+	private final AbstractTextViewer textViewer;
 
 	private static final long serialVersionUID = -3826246895162050331L;
 	private List<StyleButton> styleButtons = new ArrayList<StyledTools.StyleButton>();
@@ -30,7 +30,7 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 
 	private Composite currentTextPart;
 
-	public StyledTools(TextViewer textViewer, Display display) {
+	public StyledTools(AbstractTextViewer textViewer, Display display) {
 		super(display, SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
 		this.textViewer = textViewer;
 		setLayout(new GridLayout());

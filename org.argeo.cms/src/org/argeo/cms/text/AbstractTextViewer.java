@@ -3,6 +3,7 @@ package org.argeo.cms.text;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.jcr.Item;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
@@ -29,11 +30,12 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 /** Base class for all text viewers/editors. */
 public abstract class AbstractTextViewer extends ContentViewer implements
-		TextViewer, CmsNames, KeyListener, Observer {
+		CmsNames, KeyListener, Observer {
 	private static final long serialVersionUID = -2401274679492339668L;
 
 	private final static Log log = LogFactory.getLog(AbstractTextViewer.class);
@@ -61,7 +63,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 				mouseListener = new ML();
 
 			page = findPage(parent);
-			mainSection = new Section(this, parent, SWT.NONE, textNode);
+			mainSection = new Section(parent, SWT.NONE, textNode);
 			mainSection.setLayoutData(CmsUtils.fillWidth());
 
 			if (!textNode.hasProperty(Property.JCR_TITLE)
@@ -70,7 +72,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 					initModel();
 
 			// page.layout(true, true);
-			// refresh();
+			refresh();
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot load main section", e);
 		}
@@ -93,9 +95,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 
 	@Override
 	public void update(Observable o, Object arg) {
-		// CmsEditionEvent evt = (CmsEditionEvent) arg;
 		refresh();
-		// FIXME notify cms editable change
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 		try {
 			if (cmsEditable.canEdit())
 				mouseListener = new ML();
-			mainSection.refresh();
+			refresh(mainSection);
 			layout(mainSection);
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot refresh", e);
@@ -138,6 +138,104 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 	public void setSelection(ISelection selection, boolean reveal) {
 	}
 
+	// CRUD
+	protected Paragraph newParagraph(Section parent, Node node)
+			throws RepositoryException {
+		Paragraph paragraph = new Paragraph(parent, SWT.NONE);
+		paragraph.setData(node);
+		updateContent(paragraph);
+		paragraph.setMouseListener(mouseListener);
+		return paragraph;
+	}
+
+	protected SectionTitle newSectionTitle(Section parent, Node node)
+			throws RepositoryException {
+		SectionTitle sectionTitle = new SectionTitle(parent, SWT.NONE);
+		sectionTitle.setData(node.getProperty(Property.JCR_TITLE));
+		updateContent(sectionTitle);
+		sectionTitle.setMouseListener(mouseListener);
+		return sectionTitle;
+	}
+
+	protected void updateContent(EditableTextPart part)
+			throws RepositoryException {
+		Item item = CmsUtils.getDataItem((Composite) part,
+				mainSection.getNode());
+		if (part instanceof Paragraph) {
+			Node node = (Node) item;
+			Paragraph paragraph = (Paragraph) part;
+			String style = node.hasProperty(CMS_STYLE) ? node.getProperty(
+					CMS_STYLE).getString() : TextStyles.TEXT_DEFAULT;
+			paragraph.setStyle(style);
+			// retrieve control AFTER setting style, since it may have been
+			// reset
+			setText(paragraph, node);
+		} else if (part instanceof SectionTitle) {
+			SectionTitle sectionTitle = (SectionTitle) part;
+			Integer relativeDepth = sectionTitle.getSection()
+					.getRelativeDepth();
+			String style = relativeDepth == 0 ? TextStyles.TEXT_TITLE
+					: TextStyles.TEXT_H + relativeDepth;
+			sectionTitle.setStyle(style);
+			// retrieve control AFTER setting style, since
+			// it may have been reset
+			setText(sectionTitle, (Property) item);
+		}
+	}
+
+	protected void setText(StyledComposite textPart, Item item) {
+		Control child = textPart.getControl();
+		if (child instanceof Label)
+			((Label) child).setText(textInterpreter.raw(item));
+		else if (child instanceof Text)
+			((Text) child).setText(textInterpreter.read(item));
+	}
+
+	protected void refresh(Section section) throws RepositoryException {
+		CmsUtils.clear(section);
+
+		Node node = section.getNode();
+		if (hasHeader(section)) {
+			Composite sectionHeader = new Composite(section, SWT.NONE);
+			sectionHeader.setLayoutData(CmsUtils.fillWidth());
+			sectionHeader.setLayout(CmsUtils.noSpaceGridLayout());
+
+			boolean hasProperty = node.hasProperty(Property.JCR_TITLE);
+			if (hasProperty) {
+				SectionTitle title = newSectionTitle(section, node);
+				title.setData(node.getProperty(Property.JCR_TITLE));
+				title.setLayoutData(CmsUtils.fillWidth());
+				updateContent(title);
+			}
+		}
+
+		for (NodeIterator ni = node.getNodes(CMS_P); ni.hasNext();) {
+			Node child = ni.nextNode();
+			if (child.isNodeType(CmsTypes.CMS_STYLED)) {
+				Paragraph paragraph = newParagraph(section, child);
+				paragraph.setLayoutData(CmsUtils.fillWidth());
+			}
+		}
+
+		for (NodeIterator ni = node.getNodes(CMS_H); ni.hasNext();) {
+			Node child = ni.nextNode();
+			if (child.isNodeType(CmsTypes.CMS_SECTION)) {
+				Section composite = new Section(section, SWT.NONE, child);
+				composite.setLayoutData(CmsUtils.fillWidth());
+				refresh(section);
+				// if (deep)
+				// composite.refresh(deep, updateContent);
+				// if (updateContent)
+				// composite.updateContent();
+			}
+		}
+
+	}
+
+	protected Boolean hasHeader(Section section) throws RepositoryException {
+		return section.getNode().hasProperty(Property.JCR_TITLE);
+	}
+
 	// GENERIC EDITION
 
 	public void edit(Composite composite, Object caretPosition) {
@@ -151,7 +249,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 			if (composite instanceof EditableTextPart) {
 				EditableTextPart paragraph = (EditableTextPart) composite;
 				paragraph.startEditing();
-				paragraph.updateContent();
+				updateContent(paragraph);
 				prepare(paragraph, caretPosition);
 				edited = composite;
 				layout(paragraph.getControl());
@@ -168,6 +266,12 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot edit " + composite, e);
 		}
+	}
+
+	protected void save(EditableTextPart part) {
+		Item item = CmsUtils.getDataItem((Composite) part,
+				mainSection.getNode());
+		textInterpreter.write(item, ((Text) part.getControl()).getText());
 	}
 
 	public void saveEdit() {
@@ -197,10 +301,9 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 		if (edited instanceof EditableTextPart) {
 			EditableTextPart paragraph = (EditableTextPart) edited;
 			if (save)
-				paragraph.save(CmsUtils.getDataItem(edited,
-						mainSection.getNode()));
+				save(paragraph);
 			paragraph.stopEditing();
-			paragraph.updateContent();
+			updateContent(paragraph);
 			layout(((EditableTextPart) edited).getControl());
 			edited = null;
 		}
@@ -239,7 +342,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 			Node paragraphNode = paragraph.getNode();
 			paragraphNode.setProperty(CMS_STYLE, style);
 			paragraphNode.getSession().save();
-			paragraph.updateContent();
+			updateContent(paragraph);
 			layout(paragraph);
 		} catch (RepositoryException e1) {
 			throw new CmsException("Cannot set style " + style + " on "
@@ -410,9 +513,8 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 	protected Paragraph paragraphSplitted(Paragraph paragraph, Node newNode)
 			throws RepositoryException {
 		Section section = paragraph.getSection();
-		paragraph.updateContent();
-		Paragraph newParagraph = new Paragraph(section, SWT.NONE, newNode,
-				getMouseListener());
+		updateContent(paragraph);
+		Paragraph newParagraph = newParagraph(section, newNode);
 		newParagraph.setLayoutData(CmsUtils.fillWidth());
 		newParagraph.moveBelow(paragraph);
 		layout(paragraph.getControl(), newParagraph.getControl());
@@ -422,9 +524,9 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 
 	protected Paragraph sectionTitleSplitted(SectionTitle sectionTitle,
 			Node newNode) throws RepositoryException {
-		sectionTitle.updateContent();
-		Paragraph newParagraph = new Paragraph(sectionTitle.getSection(),
-				SWT.NONE, newNode, getMouseListener());
+		updateContent(sectionTitle);
+		Paragraph newParagraph = newParagraph(sectionTitle.getSection(),
+				newNode);
 		// we assume beforeFirst is not null since there was a sectionTitle
 		newParagraph.moveBelow(sectionTitle.getSection().getBeforeFirst());
 		layout(sectionTitle.getControl(), newParagraph.getControl());
@@ -437,7 +539,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 		removed.dispose();
 
 		Paragraph paragraph = section.getParagraph(remaining);
-		paragraph.updateContent();
+		updateContent(paragraph);
 		layout(paragraph.getControl());
 		return paragraph;
 	}
@@ -445,7 +547,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 	protected void paragraphMergedWithNext(Paragraph remaining,
 			Paragraph removed) throws RepositoryException {
 		removed.dispose();
-		remaining.updateContent();
+		updateContent(remaining);
 		layout(remaining.getControl());
 	}
 

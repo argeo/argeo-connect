@@ -1,11 +1,7 @@
 package org.argeo.cms.text;
 
-import javax.jcr.Item;
-import javax.jcr.RepositoryException;
-
 import org.argeo.cms.CmsNames;
 import org.argeo.cms.CmsUtils;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.GridData;
@@ -23,7 +19,7 @@ class StyledComposite extends Composite implements EditableTextPart, CmsNames,
 	private Composite container;
 	private Composite box;
 
-	private final TextInterpreter textInterpreter;
+	// private final TextInterpreter textInterpreter;
 
 	private MouseListener mouseListener;
 
@@ -38,19 +34,18 @@ class StyledComposite extends Composite implements EditableTextPart, CmsNames,
 	// child = createLabel(null);
 	// }
 
-	public StyledComposite(Composite parent, int swtStyle,
-			TextInterpreter textInterpreter) {
+	public StyledComposite(Composite parent, int swtStyle) {
 		super(parent, swtStyle);
 		setLayout(CmsUtils.noSpaceGridLayout());
-		setData(RWT.CUSTOM_VARIANT, TEXT_STYLED_COMPOSITE);
-		this.textInterpreter = textInterpreter;
+		setData(TEXT_STYLE, TEXT_STYLED_COMPOSITE);
+		// this.textInterpreter = textInterpreter;
 	}
 
 	protected Label createLabel(String style) {
 		Label lbl = new Label(box, SWT.LEAD | SWT.WRAP);
 		lbl.setLayoutData(CmsUtils.fillWidth());
-		lbl.setData(RWT.MARKUP_ENABLED, true);
-		lbl.setData(RWT.CUSTOM_VARIANT, style);
+		lbl.setData(CmsUtils.MARKUP_DATAKEY, true);
+		lbl.setData(TEXT_STYLE, style);
 		if (mouseListener != null)
 			lbl.addMouseListener(mouseListener);
 		// if (traverseListener != null)
@@ -63,7 +58,7 @@ class StyledComposite extends Composite implements EditableTextPart, CmsNames,
 		GridData textLayoutData = CmsUtils.fillWidth();
 		textLayoutData.minimumHeight = height;
 		text.setLayoutData(textLayoutData);
-		text.setData(RWT.CUSTOM_VARIANT, style);
+		text.setData(TEXT_STYLE, style);
 		text.setFocus();
 		// if (mouseListener != null)
 		// text.addMouseListener(mouseListener);
@@ -81,17 +76,17 @@ class StyledComposite extends Composite implements EditableTextPart, CmsNames,
 
 	public void startEditing() {
 		int height = child.getSize().y;
-		String style = (String) child.getData(RWT.CUSTOM_VARIANT);
+		String style = (String) child.getData(TEXT_STYLE);
 		clear(false);
 		child = createText(style, height);
 	}
 
 	public void stopEditing() {
-		String style = (String) child.getData(RWT.CUSTOM_VARIANT);
+		String style = (String) child.getData(TEXT_STYLE);
 		clear(false);
 		child = createLabel(style);
 	}
-	
+
 	public Control getControl() {
 		return child;
 	}
@@ -107,7 +102,7 @@ class StyledComposite extends Composite implements EditableTextPart, CmsNames,
 	public void setStyle(String style) {
 		Object currentStyle = null;
 		if (child != null)
-			currentStyle = child.getData(RWT.CUSTOM_VARIANT);
+			currentStyle = child.getData(TEXT_STYLE);
 		if (currentStyle != null && currentStyle.equals(style))
 			return;
 
@@ -116,9 +111,8 @@ class StyledComposite extends Composite implements EditableTextPart, CmsNames,
 			child = createLabel(style);
 		else if (child instanceof Text)
 			child = createText(style, child.getSize().y);
-		child.getParent().setData(RWT.CUSTOM_VARIANT, style + "_box");
-		child.getParent().getParent()
-				.setData(RWT.CUSTOM_VARIANT, style + "_container");
+		child.getParent().setData(TEXT_STYLE, style + "_box");
+		child.getParent().getParent().setData(TEXT_STYLE, style + "_container");
 	}
 
 	protected void clear(boolean deep) {
@@ -132,25 +126,22 @@ class StyledComposite extends Composite implements EditableTextPart, CmsNames,
 		}
 	}
 
-	public void setText(Item item) {
-		if (child instanceof Label)
-			((Label) child).setText(textInterpreter.raw(item));
-		else if (child instanceof Text)
-			((Text) child).setText(textInterpreter.read(item));
-	}
+	// public void setText(Item item) {
+	// if (child instanceof Label)
+	// ((Label) child).setText(textInterpreter.raw(item));
+	// else if (child instanceof Text)
+	// ((Text) child).setText(textInterpreter.read(item));
+	// }
 
-	public void save(Item item) {
-		textInterpreter.write(item, ((Text) child).getText());
-	}
+	// public void save(Item item) {
+	// textInterpreter.write(item, ((Text) child).getText());
+	// }
 
-	@Override
-	public void updateContent() throws RepositoryException {
-	}
-
-
-	protected void setMouseListener(MouseListener mouseListener) {
+	public void setMouseListener(MouseListener mouseListener) {
+		if (this.mouseListener != null && child != null)
+			child.removeMouseListener(this.mouseListener);
 		this.mouseListener = mouseListener;
-		if (child != null)
+		if (child != null && this.mouseListener != null)
 			child.addMouseListener(mouseListener);
 	}
 
