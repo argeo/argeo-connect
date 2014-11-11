@@ -12,25 +12,43 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
 /** Adds editing capabilities to a page editing text */
-public class TextEditorHeader extends Composite implements SelectionListener,
-		Observer {
+public class TextEditorHeader implements SelectionListener, Observer {
 	private static final long serialVersionUID = 4186756396045701253L;
 
 	private final CmsEditable cmsEditable;
-	private final Button publish;
+	private Button publish;
+
+	private Composite parent;
+	private Composite display;
+	private Object layoutData;
 
 	public TextEditorHeader(CmsEditable cmsEditable, Composite parent, int style) {
-		super(parent, style);
+		// super(parent, style);
 		this.cmsEditable = cmsEditable;
+		this.parent = parent;
 		if (this.cmsEditable instanceof Observable)
 			((Observable) this.cmsEditable).addObserver(this);
+		// setLayout(CmsUtils.noSpaceGridLayout());
+		refresh();
+	}
 
-		setLayout(CmsUtils.noSpaceGridLayout());
-		CmsUtils.style(this, TextStyles.TEXT_EDITOR_HEADER);
-		publish = new Button(this, SWT.FLAT | SWT.PUSH);
-		publish.setText(getPublishButtonLabel());
-		CmsUtils.style(publish, TextStyles.TEXT_EDITOR_HEADER);
-		publish.addSelectionListener(this);
+	protected void refresh() {
+		if (display != null && !display.isDisposed())
+			display.dispose();
+		display = null;
+		publish = null;
+		if (cmsEditable.isEditing()) {
+			display = new Composite(parent, SWT.NONE);
+			display.setLayoutData(layoutData);
+			display.setLayout(CmsUtils.noSpaceGridLayout());
+			CmsUtils.style(display, TextStyles.TEXT_EDITOR_HEADER);
+			publish = new Button(display, SWT.FLAT | SWT.PUSH);
+			publish.setText(getPublishButtonLabel());
+			CmsUtils.style(publish, TextStyles.TEXT_EDITOR_HEADER);
+			publish.addSelectionListener(this);
+			display.moveAbove(parent.getChildren()[0]);
+		}
+		parent.layout();
 	}
 
 	private String getPublishButtonLabel() {
@@ -59,8 +77,13 @@ public class TextEditorHeader extends Composite implements SelectionListener,
 	@Override
 	public void update(Observable o, Object arg) {
 		if (o == cmsEditable) {
-			publish.setText(getPublishButtonLabel());
+			// publish.setText(getPublishButtonLabel());
+			refresh();
 		}
+	}
+
+	public void setLayoutData(Object layoutData) {
+		this.layoutData = layoutData;
 	}
 
 }
