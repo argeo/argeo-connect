@@ -177,18 +177,15 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 			Paragraph paragraph = (Paragraph) part;
 			Node node = paragraph.getNode();
 			String style = node.hasProperty(CMS_STYLE) ? node.getProperty(
-					CMS_STYLE).getString() : TextStyles.TEXT_DEFAULT;
+					CMS_STYLE).getString() : paragraph.getSection()
+					.getDefaultTextStyle();
 			paragraph.setStyle(style);
 			// retrieve control AFTER setting style, since it may have been
 			// reset
 			setText(paragraph, node);
 		} else if (part instanceof SectionTitle) {
 			SectionTitle sectionTitle = (SectionTitle) part;
-			Integer relativeDepth = sectionTitle.getSection()
-					.getRelativeDepth();
-			String style = relativeDepth == 0 ? TextStyles.TEXT_TITLE
-					: TextStyles.TEXT_H + relativeDepth;
-			sectionTitle.setStyle(style);
+			sectionTitle.setStyle(sectionTitle.getSection().getTitleStyle());
 			// retrieve control AFTER setting style, since
 			// it may have been reset
 			setText(sectionTitle, sectionTitle.getProperty());

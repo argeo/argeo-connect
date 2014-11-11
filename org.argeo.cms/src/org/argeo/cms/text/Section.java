@@ -21,6 +21,9 @@ public class Section extends Composite implements CmsNames {
 	private Composite sectionHeader;
 	private final Integer relativeDepth;
 
+	private String defaultTextStyle = TextStyles.TEXT_DEFAULT;
+	private String titleStyle;
+
 	public Section(Composite parent, int style, Node node)
 			throws RepositoryException {
 		this(parent, findSection(parent), style, node);
@@ -93,6 +96,27 @@ public class Section extends Composite implements CmsNames {
 			}
 		}
 		return null;
+	}
+
+	public String getDefaultTextStyle() {
+		return defaultTextStyle;
+	}
+
+	public String getTitleStyle() {
+		if (titleStyle != null)
+			return titleStyle;
+		// TODO make base H styles configurable
+		Integer relativeDepth = getRelativeDepth();
+		return relativeDepth == 0 ? TextStyles.TEXT_TITLE : TextStyles.TEXT_H
+				+ relativeDepth;
+	}
+
+	public void setDefaultTextStyle(String defaultTextStyle) {
+		this.defaultTextStyle = defaultTextStyle;
+	}
+
+	public void setTitleStyle(String titleStyle) {
+		this.titleStyle = titleStyle;
 	}
 
 	@Override
