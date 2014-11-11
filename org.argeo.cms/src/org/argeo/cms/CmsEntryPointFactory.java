@@ -12,6 +12,7 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.security.Privilege;
+import javax.jcr.version.VersionManager;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -66,6 +67,9 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 		Session session = null;
 		try {
 			session = JcrUtils.loginOrCreateWorkspace(repository, workspace);
+			VersionManager vm = session.getWorkspace().getVersionManager();
+			if (!vm.isCheckedOut("/"))
+				vm.checkout("/");
 			// session = repository.login(workspace);
 			JcrUtils.mkdirs(session, basePath);
 			for (String principal : rwPrincipals)
