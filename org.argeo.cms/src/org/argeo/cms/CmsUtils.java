@@ -1,6 +1,7 @@
 package org.argeo.cms;
 
 import javax.jcr.Item;
+import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
@@ -91,6 +92,34 @@ public class CmsUtils {
 	public static void clear(Composite composite) {
 		for (Control child : composite.getChildren())
 			child.dispose();
+	}
+
+	//
+	// JCR
+	//
+	public static Node child(Node parent, Enum<?> en)
+			throws RepositoryException {
+		return parent.getNode(en.name());
+	}
+
+	public static Boolean has(Node parent, Enum<?> en)
+			throws RepositoryException {
+		return parent.hasNode(en.name());
+	}
+
+	public static Node getOrAdd(Node parent, Enum<?> en)
+			throws RepositoryException {
+		return getOrAdd(parent, en, null);
+	}
+
+	public static Node getOrAdd(Node parent, Enum<?> en, String primaryType)
+			throws RepositoryException {
+		if (has(parent, en))
+			return child(parent, en);
+		else if (primaryType == null)
+			return parent.addNode(en.name());
+		else
+			return parent.addNode(en.name(), primaryType);
 	}
 
 	private CmsUtils() {
