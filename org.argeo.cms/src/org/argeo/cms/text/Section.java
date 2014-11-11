@@ -3,8 +3,10 @@ package org.argeo.cms.text;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
+import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsNames;
 import org.argeo.cms.CmsUtils;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -30,7 +32,16 @@ public class Section extends Composite implements CmsNames {
 		CmsUtils.style(this, TextStyles.TEXT_SECTION);
 	}
 
-	public Control getBeforeFirst() {
+	public void createHeader() {
+		if (sectionHeader != null)
+			throw new CmsException("Seciton header was already created");
+
+		sectionHeader = new Composite(this, SWT.NONE);
+		sectionHeader.setLayoutData(CmsUtils.fillWidth());
+		sectionHeader.setLayout(CmsUtils.noSpaceGridLayout());
+	}
+
+	public Composite getHeader() {
 		return sectionHeader;
 	}
 

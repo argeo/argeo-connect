@@ -134,7 +134,8 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 
 	protected SectionTitle newSectionTitle(Section parent, Node node)
 			throws RepositoryException {
-		SectionTitle sectionTitle = new SectionTitle(parent, SWT.NONE);
+		SectionTitle sectionTitle = new SectionTitle(parent.getHeader(),
+				SWT.NONE);
 		sectionTitle.setData(node.getProperty(Property.JCR_TITLE));
 		updateContent(sectionTitle);
 		sectionTitle.setMouseListener(mouseListener);
@@ -180,12 +181,8 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 
 		Node node = section.getNode();
 		if (hasHeader(section)) {
-			Composite sectionHeader = new Composite(section, SWT.NONE);
-			sectionHeader.setLayoutData(CmsUtils.fillWidth());
-			sectionHeader.setLayout(CmsUtils.noSpaceGridLayout());
-
-			boolean hasProperty = node.hasProperty(Property.JCR_TITLE);
-			if (hasProperty) {
+			section.createHeader();
+			if (node.hasProperty(Property.JCR_TITLE)) {
 				SectionTitle title = newSectionTitle(section, node);
 				title.setData(node.getProperty(Property.JCR_TITLE));
 				title.setLayoutData(CmsUtils.fillWidth());
@@ -471,7 +468,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 		Paragraph newParagraph = newParagraph(sectionTitle.getSection(),
 				newNode);
 		// we assume beforeFirst is not null since there was a sectionTitle
-		newParagraph.moveBelow(sectionTitle.getSection().getBeforeFirst());
+		newParagraph.moveBelow(sectionTitle.getSection().getHeader());
 		layout(sectionTitle.getControl(), newParagraph.getControl());
 		return newParagraph;
 	}
