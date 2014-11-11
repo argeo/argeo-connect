@@ -5,6 +5,7 @@ import java.util.Observable;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.VersionManager;
 
 import org.argeo.cms.CmsEditable;
@@ -17,24 +18,20 @@ public class JcrVersionCmsEditable extends Observable implements CmsEditable {
 	private final VersionManager versionManager;
 	private final Boolean canEdit;
 
-	public JcrVersionCmsEditable(Node node) {
-		try {
-			// if (node.isNodeType(NodeType.MIX_VERSIONABLE))
-			// throw new CmsException(node + " is not versionable");
-
-			this.nodePath = node.getPath();
-			if (node.getSession().hasPermission(node.getPath(),
-					Session.ACTION_ADD_NODE)) {
-				canEdit = true;
-				versionManager = node.getSession().getWorkspace()
-						.getVersionManager();
-			} else {
-				canEdit = false;
-				versionManager = null;
+	public JcrVersionCmsEditable(Node node) throws RepositoryException {
+		this.nodePath = node.getPath();
+		if (node.getSession().hasPermission(node.getPath(),
+				Session.ACTION_ADD_NODE)) {
+			canEdit = true;
+			if (!node.isNodeType(NodeType.MIX_VERSIONABLE)) {
+				node.addMixin(NodeType.MIX_VERSIONABLE);
+				node.getSession().save();
 			}
-		} catch (RepositoryException e) {
-			throw new CmsException(
-					"Cannot initialize CMS editable for " + node, e);
+			versionManager = node.getSession().getWorkspace()
+					.getVersionManager();
+		} else {
+			canEdit = false;
+			versionManager = null;
 		}
 	}
 
@@ -58,6 +55,7 @@ public class JcrVersionCmsEditable extends Observable implements CmsEditable {
 	public void startEditing() {
 		try {
 			versionManager.checkout(nodePath);
+			setChanged();
 		} catch (RepositoryException e1) {
 			throw new CmsException("Cannot publish " + nodePath);
 		}
@@ -69,6 +67,7 @@ public class JcrVersionCmsEditable extends Observable implements CmsEditable {
 	public void stopEditing() {
 		try {
 			versionManager.checkin(nodePath);
+			setChanged();
 		} catch (RepositoryException e1) {
 			throw new CmsException("Cannot publish " + nodePath, e1);
 		}

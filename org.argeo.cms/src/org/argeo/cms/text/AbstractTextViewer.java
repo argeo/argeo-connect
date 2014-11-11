@@ -121,7 +121,14 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 
 	@Override
 	public void update(Observable o, Object arg) {
-		refresh();
+		if (o == cmsEditable) {
+			editingStateChanged(cmsEditable);
+		}
+	}
+
+	/** Does nothing, to be overridden */
+	protected void editingStateChanged(CmsEditable cmsEditable) {
+
 	}
 
 	@Override
