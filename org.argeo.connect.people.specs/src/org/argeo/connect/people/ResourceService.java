@@ -56,7 +56,7 @@ public interface ResourceService {
 	 *            generally, the corresponding NodeType
 	 * @param propertyName
 	 * @param filter
-	 * @return
+	 * @return a <code>List<String></code> of status
 	 */
 	public List<String> getTemplateCatalogue(Session session,
 			String templateId, String propertyName, String filter);
@@ -73,7 +73,7 @@ public interface ResourceService {
 	 *            the template, must not be null
 	 * @param propertyName
 	 * @param filter
-	 * @return
+	 * @return a <code>List<String></code> of status
 	 */
 	public List<String> getTemplateCatalogue(Node templateNode,
 			String propertyName, String filter);

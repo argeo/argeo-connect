@@ -44,7 +44,13 @@ public interface ActivityService {
 	public Node createActivity(Session session, String reporterId, String type,
 			String title, String desc, List<Node> relatedTo, Calendar date);
 
-	/** Returns the default activity English Label if defined */
+	/**
+	 * Returns the default activity English Label if defined.
+	 * 
+	 * It relies on the mixin of this node. If an activity Node is having more
+	 * than one "activity type" mixin, the first found will be used to return
+	 * type label.
+	 */
 	public String getActivityLabel(Node activity);
 
 	/**
@@ -55,6 +61,9 @@ public interface ActivityService {
 	 * @return
 	 */
 	public Calendar getActivityRelevantDate(Node activityNode);
+
+	/** Get the display name for the manager of an activity. */
+	public String getActivityManagerDisplayName(Node activityNode);
 
 	/* TASKS */
 	/**
@@ -109,17 +118,24 @@ public interface ActivityService {
 	public List<Node> getTasksForUser(Session session, String username,
 			boolean onlyOpenTasks);
 
+	/** Get the display name of the assigned to group for this task */
+	public String getAssignedToDisplayName(Node taskNode);
+
 	/**
-	 * Determines wether a task has been done. Application should override or
+	 * Update the status of this task to the new passed status. It is also in
+	 * charge of updating other task properties, typically after determining if
+	 * the closed status of the task has changed.
+	 * 
+	 * It will return true if anything has changed
+	 */
+	public boolean updateStatus(String templateId, Node taskNode,
+			String newStatus);
+
+	/**
+	 * Determines whether a task has been done. Application should override or
 	 * extends this to provide specific behaviour
 	 */
 	public boolean isTaskDone(Node taskNode);
-
-	/**
-	 * Retrieves valid possible status for a given task. if task == null,
-	 * returns default possible values for a simple task.
-	 */
-	public String[] getStatusList(Node task);
 
 	/* MISCELLANEOUS */
 }

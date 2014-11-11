@@ -7,6 +7,7 @@ import javax.jcr.Value;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.rap.PeopleRapConstants;
@@ -17,7 +18,6 @@ import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.dialogs.PickUpRelatedDialog;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -114,10 +114,12 @@ public class ActivityEditor extends AbstractPeopleEditor {
 				try {
 					super.refresh();
 
-					typeLbl.setText(ActivityJcrUtils
-							.getActivityTypeLbl(activity));
+					ActivityService activityService = getPeopleService()
+							.getActivityService();
 
-					String manager = ActivityJcrUtils
+					typeLbl.setText(activityService.getActivityLabel(activity));
+
+					String manager = activityService
 							.getActivityManagerDisplayName(activity);
 					if (CommonsJcrUtils.checkNotEmptyString(manager))
 						managerLbl.setText(manager);

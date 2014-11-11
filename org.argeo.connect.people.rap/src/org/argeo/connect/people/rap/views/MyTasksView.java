@@ -27,7 +27,6 @@ import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.utils.ActivityViewerComparator;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
@@ -37,13 +36,12 @@ import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
@@ -68,7 +66,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 		parent.setLayout(layout);
 		tableViewer = createTableViewer(parent);
 		EclipseUiSpecificUtils.enableToolTipSupport(tableViewer);
-		tableViewer.setContentProvider(new MyTableContentProvider());
+		tableViewer.setContentProvider(new MyLazyCP(tableViewer));
 		tableViewer.addDoubleClickListener(new ViewDoubleClickListener());
 
 		refreshFilteredList();
@@ -77,8 +75,6 @@ public class MyTasksView extends ViewPart implements Refreshable {
 
 	@Override
 	public void setFocus() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -98,9 +94,9 @@ public class MyTasksView extends ViewPart implements Refreshable {
 	}
 
 	private TableViewer createTableViewer(final Composite parent) {
-		int tableStyle = SWT.SINGLE;
+		int tableStyle = SWT.SINGLE | SWT.VIRTUAL;
 		Table table = new Table(parent, tableStyle);
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		table.setLayoutData(PeopleUiUtils.fillGridData());
 
 		TableViewer viewer = new TableViewer(table);
 		table.setLinesVisible(true);
@@ -114,11 +110,6 @@ public class MyTasksView extends ViewPart implements Refreshable {
 
 		ActivityViewerComparator comparator = new ActivityViewerComparator(
 				activityService, lpMap);
-
-		// TODO : add an icon depending on the task type and/or status ??
-		// column = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE,
-		// 22);
-		// column.setLabelProvider(new TypeLabelProvider());
 
 		// Date
 		column = ViewerUtils.createTableViewerColumn(viewer, "Due Date",
@@ -139,7 +130,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 
 		// Assigned to
 		column = ViewerUtils.createTableViewerColumn(viewer, "Assigned to",
-				SWT.NONE, 100);
+				SWT.NONE, 150);
 		column.setLabelProvider(new AssignedToLabelProvider());
 		column.getColumn().addSelectionListener(
 				JcrUiUtils.getNodeSelectionAdapter(2, PropertyType.STRING,
@@ -147,18 +138,15 @@ public class MyTasksView extends ViewPart implements Refreshable {
 
 		// Related to
 		column = ViewerUtils.createTableViewerColumn(viewer, "Related to",
-				SWT.NONE, 140);
+				SWT.NONE, 250);
 		column.setLabelProvider(new RelatedToLabelProvider());
 		column.getColumn().addSelectionListener(
 				JcrUiUtils.getNodeSelectionAdapter(3, PropertyType.STRING,
 						PeopleNames.PEOPLE_RELATED_TO, comparator, viewer));
 
-		// IMPORTANT: initialize comparator before setting it
+		// Warning: initialise comparator before setting it
 		comparator.setColumn(PropertyType.DATE,
 				ActivityViewerComparator.RELEVANT_DATE);
-		// 2 times to force descending
-		// comparator.setColumn(PropertyType.DATE,
-		// MyTaskListComparator.RELEVANT_DATE);
 
 		viewer.setComparator(comparator);
 
@@ -172,6 +160,8 @@ public class MyTasksView extends ViewPart implements Refreshable {
 	protected void refreshFilteredList() {
 		List<Node> tasks = activityService.getMyTasks(session, true);
 		tableViewer.setInput(tasks.toArray());
+		tableViewer.setItemCount(tasks.size());
+		tableViewer.refresh();
 	}
 
 	private class AssignedToLabelProvider extends ColumnLabelProvider {
@@ -182,9 +172,9 @@ public class MyTasksView extends ViewPart implements Refreshable {
 			try {
 				Node currNode = (Node) element;
 				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
-					return ActivityJcrUtils.getAssignedToDisplayName(currNode);
+					return activityService.getAssignedToDisplayName(currNode);
 				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-					return ActivityJcrUtils
+					return activityService
 							.getActivityManagerDisplayName(currNode);
 				}
 				return "";
@@ -277,17 +267,27 @@ public class MyTasksView extends ViewPart implements Refreshable {
 		}
 	}
 
-	private class MyTableContentProvider implements IStructuredContentProvider {
-		private static final long serialVersionUID = 7164029504991808317L;
+	private class MyLazyCP implements ILazyContentProvider {
+		private static final long serialVersionUID = 1L;
+		private TableViewer viewer;
+		private Object[] elements;
 
-		public Object[] getElements(Object inputElement) {
-			return (Object[]) inputElement;
+		public MyLazyCP(TableViewer viewer) {
+			this.viewer = viewer;
 		}
 
 		public void dispose() {
 		}
 
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			// IMPORTANT: don't forget this: an exception will be thrown if a
+			// selected object is not part of the results anymore.
+			viewer.setSelection(null);
+			this.elements = (Object[]) newInput;
+		}
+
+		public void updateElement(int index) {
+			viewer.replace(elements[index], index);
 		}
 	}
 

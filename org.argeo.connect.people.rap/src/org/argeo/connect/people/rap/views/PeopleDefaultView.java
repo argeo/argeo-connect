@@ -69,7 +69,7 @@ public class PeopleDefaultView extends ViewPart {
 	/* DEPENDENCY INJECTION */
 	private Session session;
 	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleUiService;
+	private PeopleWorkbenchService peopleWorkbenchService;
 	// private Repository repository;
 
 	// This page widgets
@@ -97,7 +97,7 @@ public class PeopleDefaultView extends ViewPart {
 		cmp = new Composite(parent, SWT.NO_FOCUS);
 		cmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		personViewer = createListPart(cmp, new EntitySingleColumnLabelProvider(
-				peopleService, peopleUiService));
+				peopleService, peopleWorkbenchService));
 
 		refreshFilteredList();
 	}
@@ -146,7 +146,7 @@ public class PeopleDefaultView extends ViewPart {
 			params.put(OpenSearchEntityEditor.PARAM_EDITOR_NAME, "Search");
 			params.put(OpenSearchEntityEditor.PARAM_BASE_PATH, "/");
 			CommandUtils.callCommand(
-					peopleUiService.getOpenSearchEntityEditorCmdId(), params);
+					peopleWorkbenchService.getOpenSearchEntityEditorCmdId(), params);
 		} else if (CMD_LOGOUT.equals(commandId))
 			CommandUtils.callCommand(CMD_LOGOUT);
 	}
@@ -208,7 +208,7 @@ public class PeopleDefaultView extends ViewPart {
 
 		v.setContentProvider(new BasicNodeListContentProvider());
 		v.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-				peopleUiService));
+				peopleWorkbenchService));
 		return v;
 	}
 
@@ -300,8 +300,8 @@ public class PeopleDefaultView extends ViewPart {
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
-		this.peopleUiService = peopleUiService;
+	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
 }

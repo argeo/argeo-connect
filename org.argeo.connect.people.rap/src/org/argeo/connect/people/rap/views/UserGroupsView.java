@@ -42,7 +42,7 @@ public class UserGroupsView extends ViewPart implements Refreshable {
 			+ ".userGroupsView";
 
 	private Session session;
-	private PeopleWorkbenchService peopleUiService;
+	private PeopleWorkbenchService peopleWorkbenchService;
 
 	private JcrUserListener userStructureListener;
 	private JcrUserListener userPropertiesListener;
@@ -59,7 +59,7 @@ public class UserGroupsView extends ViewPart implements Refreshable {
 
 		// Configure
 		userTableCmp.getTableViewer().addDoubleClickListener(
-				new PeopleJcrViewerDClickListener(peopleUiService));
+				new PeopleJcrViewerDClickListener(peopleWorkbenchService));
 		getViewSite().setSelectionProvider(userTableCmp.getTableViewer());
 
 		// Add listener to refresh the list when something changes
@@ -137,8 +137,9 @@ public class UserGroupsView extends ViewPart implements Refreshable {
 		this.session = CommonsJcrUtils.login(repository);
 	}
 
-	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
-		this.peopleUiService = peopleUiService;
+	public void setPeopleWorkbenchService(
+			PeopleWorkbenchService peopleWorkbenchService) {
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
 }

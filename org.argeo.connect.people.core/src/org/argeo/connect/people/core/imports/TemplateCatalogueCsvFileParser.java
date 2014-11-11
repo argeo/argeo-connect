@@ -17,11 +17,16 @@ import org.argeo.util.CsvParserWithLinesAsMap;
  * Expected file format is a Csv with 2 columns, the first with the property
  * names and the second with a '; ' separated list of String values.
  * 
- * Found values are stored in a multi-String property with this name
+ * By default, found values are stored in a multi-String property with this
+ * name.
+ * 
+ * If the property name has been prefixed by "single:", found value is stored as
+ * a regular STRING Property
  **/
 public class TemplateCatalogueCsvFileParser extends CsvParserWithLinesAsMap {
 
 	private final Node node;
+	private final static String SINGLE_VALUE_PROP_PREFIX = "single:";
 
 	public TemplateCatalogueCsvFileParser(Node node) {
 		super();
@@ -31,11 +36,23 @@ public class TemplateCatalogueCsvFileParser extends CsvParserWithLinesAsMap {
 	@Override
 	protected void processLine(Integer lineNumber, Map<String, String> line) {
 		try {
-			String propName = line.get(PeopleConstants.IMPORT_CATALOGUE_KEY_COL);
-			String valuesStr = line.get(PeopleConstants.IMPORT_CATALOGUE_VALUES_COL);
-			String[] values = CommonsJcrUtils.parseAndClean(valuesStr,
-					PeopleConstants.IMPORT_CATALOGUE_VALUES_SEPARATOR, true);
-			node.setProperty(propName, values);
+			String propName = line
+					.get(PeopleConstants.IMPORT_CATALOGUE_KEY_COL);
+			String valuesStr = line
+					.get(PeopleConstants.IMPORT_CATALOGUE_VALUES_COL);
+
+			if (propName.startsWith(SINGLE_VALUE_PROP_PREFIX)) {
+				node.setProperty(
+						propName.substring(SINGLE_VALUE_PROP_PREFIX.length()),
+						valuesStr);
+			} else {
+				String[] values = CommonsJcrUtils
+						.parseAndClean(
+								valuesStr,
+								PeopleConstants.IMPORT_CATALOGUE_VALUES_SEPARATOR,
+								true);
+				node.setProperty(propName, values);
+			}
 		} catch (RepositoryException e) {
 			throw new PeopleException("Cannot process line " + lineNumber + " "
 					+ line, e);

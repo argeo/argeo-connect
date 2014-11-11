@@ -12,12 +12,13 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.connect.people.ActivityService;
+import org.argeo.connect.people.ActivityValueCatalogs;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.UserManagementService;
-import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 
@@ -152,7 +153,41 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 
 	@Override
 	public String getActivityLabel(Node activity) {
-		return ActivityJcrUtils.getActivityTypeLbl(activity);
+		try {
+			for (String type : ActivityValueCatalogs.MAPS_ACTIVITY_TYPES
+					.keySet()) {
+				if (activity.isNodeType(type))
+					return ActivityValueCatalogs.MAPS_ACTIVITY_TYPES.get(type);
+			}
+			throw new PeopleException("Undefined type for activity: "
+					+ activity);
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to get type for activity "
+					+ activity, e);
+		}
+	}
+
+	/** Get the display name for the manager of an activity. */
+	public String getActivityManagerDisplayName(Node activityNode) {
+		// TODO return display name rather than ID
+		String manager = CommonsJcrUtils.get(activityNode,
+				PeopleNames.PEOPLE_REPORTED_BY);
+
+		if (CommonsJcrUtils.isEmptyString(manager)) {
+			// TODO workaround to try to return a manager name in case we are in
+			// a legacy context
+			try {
+				if (activityNode.hasProperty(PeopleNames.PEOPLE_MANAGER)) {
+					Node referencedManager = activityNode.getProperty(
+							PeopleNames.PEOPLE_MANAGER).getNode();
+					manager = referencedManager.getParent().getName();
+				}
+			} catch (RepositoryException e) {
+				throw new PeopleException("Unable to legacy get "
+						+ "manager name for activity " + activityNode, e);
+			}
+		}
+		return manager;
 	}
 
 	/* TASKS */
@@ -198,9 +233,60 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	}
 
 	@Override
+	public boolean updateStatus(String templateId, Node taskNode,
+			String newStatus) {
+		try {
+			Session session = taskNode.getSession();
+
+			String oldStatus = CommonsJcrUtils.get(taskNode,
+					PeopleNames.PEOPLE_TASK_STATUS);
+
+			if (CommonsJcrUtils.checkNotEmptyString(oldStatus)
+					&& oldStatus.equals(newStatus))
+				return false;
+
+			taskNode.setProperty(PeopleNames.PEOPLE_TASK_STATUS, newStatus);
+
+			ResourceService resourceService = peopleService
+					.getResourceService();
+			List<String> closingStatus = resourceService.getTemplateCatalogue(
+					session, templateId,
+					PeopleNames.PEOPLE_TASK_CLOSING_STATUSES, null);
+			if (closingStatus.contains(newStatus)) {
+				if (closingStatus.contains(oldStatus)) {
+					// Already closed, nothing to do
+				} else {
+					taskNode.setProperty(PeopleNames.PEOPLE_CLOSE_DATE,
+							new GregorianCalendar());
+					taskNode.setProperty(PeopleNames.PEOPLE_CLOSED_BY,
+							session.getUserID());
+				}
+			} else {
+				if (!closingStatus.contains(oldStatus)) {
+					// Already open, nothing to do
+				} else {
+					if (taskNode.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE))
+						taskNode.getProperty(PeopleNames.PEOPLE_CLOSE_DATE)
+								.remove();
+					if (taskNode.hasProperty(PeopleNames.PEOPLE_CLOSED_BY))
+						taskNode.getProperty(PeopleNames.PEOPLE_CLOSED_BY)
+								.remove();
+				}
+			}
+			return true;
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to set new status " + newStatus
+					+ " status for task " + taskNode + " of template ID "
+					+ templateId, re);
+		}
+
+	}
+
+	@Override
 	public boolean isTaskDone(Node taskNode) {
 		try {
-			// TODO enhance this
+			// We only rely on the non-nullity of the closed date for the time
+			// being.
 			return taskNode.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to get done status for task "
@@ -208,7 +294,23 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 		}
 	}
 
-	/* TASKS */
+	/** Get the display name of the assigned to group for this task */
+	@Override
+	public String getAssignedToDisplayName(Node taskNode) {
+		try {
+			if (taskNode.hasProperty(PeopleNames.PEOPLE_ASSIGNED_TO)) {
+				Node referencedManager = taskNode.getProperty(
+						PeopleNames.PEOPLE_ASSIGNED_TO).getNode();
+				return CommonsJcrUtils.get(referencedManager,
+						Property.JCR_TITLE);
+			} else
+				return "";
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"Unable to get name of group assigned to " + taskNode, e);
+		}
+	}
+
 	@Override
 	public Node createTask(Session session, Node parentNode, String title,
 			String description, Node assignedTo, List<Node> relatedTo,
@@ -277,21 +379,23 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 				taskNode.setProperty(PeopleNames.PEOPLE_WAKE_UP_DATE,
 						wakeUpDate);
 			}
+
+			// Default status management
+			ResourceService resourceService = peopleService
+					.getResourceService();
+			Node template = resourceService.getNodeTemplate(session,
+					taskNodeType);
+			String defaultStatus = CommonsJcrUtils.get(template,
+					PEOPLE_TASK_DEFAULT_STATUS);
+			if (CommonsJcrUtils.checkNotEmptyString(defaultStatus))
+				taskNode.setProperty(PEOPLE_TASK_STATUS, defaultStatus);
+
 			return taskNode;
 		} catch (RepositoryException e) {
 			throw new PeopleException(
 					"Unable to create task of type " + taskNodeType + " named "
 							+ title + " under " + parentNode, e);
 		}
-	}
-
-	// TODO implement this cleanly
-	private static final String[] ARRAY_TASK_STATUS = { "New", "Done",
-			"Sleeping", "Canceled" };
-
-	@Override
-	public String[] getStatusList(Node task) {
-		return ARRAY_TASK_STATUS;
 	}
 
 	/* DEPENDENCY INJECTION */

@@ -1,5 +1,7 @@
 package org.argeo.connect.people.rap.editors;
 
+import java.util.List;
+
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
@@ -20,7 +22,6 @@ import org.argeo.connect.people.rap.dialogs.PickUpRelatedDialog;
 import org.argeo.connect.people.rap.editors.tabs.ActivityList;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.utils.CommandUtils;
 import org.argeo.jcr.JcrUtils;
@@ -77,10 +78,15 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 		task = getNode();
 	}
 
-	@Override
-	protected void createToolkits() {
-		// activityTK = new ActivityToolkit(toolkit, getManagedForm(),
-		// getPeopleService(), getPeopleWorkbenchService());
+	protected String getCurrentTaskType() {
+		try {
+			// we rely on the task primary type.
+			return task.getPrimaryNodeType().getName();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to determine task type for "
+					+ task, re);
+		}
+
 	}
 
 	@Override
@@ -89,21 +95,18 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 	}
 
 	protected void populateHeader(Composite parent) {
-		GridLayout layout;
+		parent.setLayout(new GridLayout(4, false));
+
 		GridData gd;
-
-		layout = new GridLayout(4, false);
-		parent.setLayout(layout);
-
 		// 1st line (NOTE: it defines the grid data layout of this part)
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Status");
 		final Combo statusCmb = new Combo(parent, SWT.READ_ONLY);
-		statusCmb.setItems(getPeopleService().getActivityService()
-				.getStatusList(task));
-		statusCmb.select(0);
-		gd = PeopleUiUtils.horizontalFillData();
-		gd.widthHint = 100;
-		statusCmb.setLayoutData(gd);
+		List<String> values = getPeopleService().getResourceService()
+				.getTemplateCatalogue(getSession(), getCurrentTaskType(),
+						PeopleNames.PEOPLE_TASK_STATUS, null);
+		statusCmb.setItems(values.toArray(new String[values.size()]));
+		statusCmb
+				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
 
 		// DUE DATE
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Due date");
@@ -174,7 +177,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 
 					// TODO clean this.
 					// update current assigned to group cache here
-					String manager = ActivityJcrUtils
+					String manager = getPeopleService().getActivityService()
 							.getAssignedToDisplayName(task);
 					if (task.hasProperty(PeopleNames.PEOPLE_ASSIGNED_TO))
 						assignedToNode = task.getProperty(
@@ -312,6 +315,26 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 					throw new PeopleException(
 							"Unable to change assignation for node " + task, re);
 				}
+			}
+		});
+	}
+
+	protected void addStatusCmbSelListener(final AbstractFormPart part,
+			final Combo combo, final Node entity, final String propName,
+			final int propType) {
+		combo.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				int index = combo.getSelectionIndex();
+				if (index != -1) {
+					String selectedCategory = combo.getItem(index);
+					if (getPeopleService().getActivityService().updateStatus(
+							getCurrentTaskType(), task, selectedCategory))
+						part.markDirty();
+				}
+
 			}
 		});
 	}

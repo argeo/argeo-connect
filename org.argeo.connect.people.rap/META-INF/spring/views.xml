@@ -15,7 +15,7 @@
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 		<property name="repository" ref="repository" />
-		<property name="peopleUiService" ref="peopleUiService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
 	<!-- USERS, GROUPS AND ACTIVITIES -->
@@ -23,13 +23,13 @@
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
-		<property name="peopleUiService" ref="peopleUiService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
 	<bean id="userGroupsView" class="org.argeo.connect.people.rap.views.UserGroupsView"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="peopleUiService" ref="peopleUiService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
 	<bean id="adminUsersView" class="org.argeo.connect.people.rap.views.AdminUsersView"

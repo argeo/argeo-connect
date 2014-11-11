@@ -118,7 +118,11 @@ public interface PeopleNames {
 	public final static String PEOPLE_WAKE_UP_DATE = "people:wakeUpDate";
 	public final static String PEOPLE_DEPENDS_ON = "people:dependsOn";
 	public final static String PEOPLE_TASKS = "people:tasks";
+	// definition of the task template
+	public final static String PEOPLE_TASK_CLOSING_STATUSES = "people:closingStatuses";
+	public final static String PEOPLE_TASK_DEFAULT_STATUS = "people:defaultStatus";
 
+	
 	// Workflow specific
 	public final static String PEOPLE_DATE_BEGIN = "people:dateBegin";
 	public final static String PEOPLE_DATE_END = "people:dateEnd";

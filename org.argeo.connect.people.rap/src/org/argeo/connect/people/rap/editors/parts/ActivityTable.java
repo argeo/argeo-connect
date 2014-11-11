@@ -36,7 +36,6 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.rap.utils.ActivityViewerComparator;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.ActivityJcrUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.jcr.ArgeoNames;
@@ -395,18 +394,18 @@ public class ActivityTable extends Composite implements ArgeoNames {
 				if (activityNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
 					// done task
 					if (activityService.isTaskDone(activityNode)) {
-						value = ActivityJcrUtils
+						value = activityService
 								.getActivityManagerDisplayName(activityNode);
 						if (CommonsJcrUtils.checkNotEmptyString(value))
 							builder.append("Done by: ").append(value)
 									.append("<br />");
-						value = ActivityJcrUtils
+						value = activityService
 								.getAssignedToDisplayName(activityNode);
 						if (CommonsJcrUtils.checkNotEmptyString(value))
 							builder.append("Assigned to: ").append(value)
 									.append("<br />");
 					} else {
-						value = ActivityJcrUtils
+						value = activityService
 								.getAssignedToDisplayName(activityNode);
 						if (CommonsJcrUtils.checkNotEmptyString(value))
 							builder.append("Assigned to: ").append(value)
@@ -421,7 +420,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 
 					}
 				} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-					String reporter = ActivityJcrUtils
+					String reporter = activityService
 							.getActivityManagerDisplayName(activityNode);
 					String updater = null;
 
