@@ -3,7 +3,7 @@ package org.argeo.cms;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +44,7 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 	private CmsUiProvider header;
 	// private CmsUiProvider dynamicPages;
 	// private Map<String, CmsUiProvider> staticPages;
-	private Map<String, CmsUiProvider> pages = new HashMap<String, CmsUiProvider>();
+	private Map<String, CmsUiProvider> pages = new LinkedHashMap<String, CmsUiProvider>();
 
 	private Integer headerHeight = 40;
 
@@ -74,13 +74,38 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 			for (String principal : roPrincipals)
 				JcrUtils.addPrivilege(session, basePath, principal,
 						Privilege.JCR_READ);
+
+			for (String pageName : pages.keySet()) {
+				try {
+					initPage(session, pages.get(pageName));
+					session.save();
+				} catch (Exception e) {
+					throw new CmsException(
+							"Cannot initialize page " + pageName, e);
+				}
+			}
+
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}
 	}
 
-	public void destroy() {
+	protected void initPage(Session adminSession, CmsUiProvider page)
+			throws RepositoryException {
+		if (page instanceof LifeCycleUiProvider)
+			((LifeCycleUiProvider) page).init(adminSession);
+	}
 
+	public void destroy() {
+		for (String pageName : pages.keySet()) {
+			try {
+				CmsUiProvider page = pages.get(pageName);
+				if (page instanceof LifeCycleUiProvider)
+					((LifeCycleUiProvider) page).destroy();
+			} catch (Exception e) {
+				log.error("Cannot destroy page " + pageName, e);
+			}
+		}
 	}
 
 	public void setRepository(Repository repository) {
@@ -236,11 +261,11 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 					else if (pages.containsKey(page))
 						pages.get(page).createUi(bodyArea, getNode());
 					else {
-//						try {
-//							RWT.getResponse().sendError(404);
-//						} catch (IOException e) {
-//							log.error("Cannot send 404 code", e);
-//						}
+						// try {
+						// RWT.getResponse().sendError(404);
+						// } catch (IOException e) {
+						// log.error("Cannot send 404 code", e);
+						// }
 						throw new CmsException("Unsupported state " + state);
 					}
 				} catch (RepositoryException e) {
