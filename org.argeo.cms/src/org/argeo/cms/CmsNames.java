@@ -20,4 +20,5 @@ public interface CmsNames {
 	 */
 	public final static String CMS_IMAGE_WIDTH = "cms:imageWidth";
 	public final static String CMS_IMAGE_HEIGHT = "cms:imageHeight";
+	public final static String CMS_DATA = "cms:data";
 }

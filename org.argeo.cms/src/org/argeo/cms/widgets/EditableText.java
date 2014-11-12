@@ -1,5 +1,8 @@
 package org.argeo.cms.widgets;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+
 import org.argeo.cms.CmsConstants;
 import org.argeo.cms.CmsUtils;
 import org.eclipse.swt.SWT;
@@ -15,7 +18,16 @@ public class EditableText extends StyledControl {
 
 	public EditableText(Composite parent, int swtStyle) {
 		super(parent, swtStyle);
-		setLayout(CmsUtils.noSpaceGridLayout());
+	}
+
+	public EditableText(Composite parent, int style, Node node)
+			throws RepositoryException {
+		this(parent, style, node, false);
+	}
+
+	public EditableText(Composite parent, int style, Node node,
+			boolean cacheImmediately) throws RepositoryException {
+		super(parent, style, node, cacheImmediately);
 	}
 
 	@Override

@@ -5,8 +5,16 @@ import java.io.InputStream;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Label;
+
 /** Read and write access to images. */
 public interface CmsImageManager {
+	public Boolean load(Node node, Label lbl, Point size)
+			throws RepositoryException;
+
+	public Point getSize(Node node) throws RepositoryException;
+
 	/** The related <img tag, with src, width and height set. */
 	public String getImageTag(Node node) throws RepositoryException;
 

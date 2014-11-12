@@ -1,5 +1,9 @@
 package org.argeo.cms.text;
 
-public interface SectionPart extends NodeTextPart {
+import org.argeo.cms.CmsNames;
+
+public interface SectionPart extends NodeTextPart, CmsNames {
 	public String getNodeId();
+
+	public Section getSection();
 }

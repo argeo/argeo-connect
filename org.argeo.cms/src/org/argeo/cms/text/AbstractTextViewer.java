@@ -106,7 +106,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 
 	/** Called if user can edit and model is not initialized */
 	protected void initModel() throws RepositoryException {
-		mainSection.getNode().addNode(CMS_P, CmsTypes.CMS_STYLED);
+		mainSection.getNode().addNode(CMS_P).addMixin(CmsTypes.CMS_STYLED);
 	}
 
 	private Composite findPage(Composite composite) {
@@ -166,6 +166,13 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 		return paragraph;
 	}
 
+	protected Img newImg(Section parent, Node node) throws RepositoryException {
+		Img img = new Img(parent, parent.getStyle(), node);
+		updateContent(img);
+		img.setMouseListener(mouseListener);
+		return img;
+	}
+
 	protected SectionTitle newSectionTitle(Section parent, Node node)
 			throws RepositoryException {
 		SectionTitle sectionTitle = new SectionTitle(parent.getHeader(),
@@ -208,24 +215,29 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 	}
 
 	// GENERIC EDITION
-	public void edit(EditableTextPart composite, Object caretPosition) {
+	public void edit(EditableTextPart part) {
+		edit(part, null);
+
+	}
+
+	public void edit(EditableTextPart part, Object caretPosition) {
 		try {
-			if (edited == composite)
+			if (edited == part)
 				return;
 
-			if (edited != null && edited != composite)
+			if (edited != null && edited != part)
 				stopEditing(true);
 
-			if (composite instanceof EditableTextPart) {
-				EditableTextPart paragraph = (EditableTextPart) composite;
+			if (part instanceof EditableTextPart) {
+				EditableTextPart paragraph = (EditableTextPart) part;
 				paragraph.startEditing();
 				updateContent(paragraph);
 				prepare(paragraph, caretPosition);
-				edited = composite;
+				edited = part;
 				layout(paragraph.getControl());
 			}
 		} catch (RepositoryException e) {
-			throw new CmsException("Cannot edit " + composite, e);
+			throw new CmsException("Cannot edit " + part, e);
 		}
 	}
 
@@ -344,8 +356,8 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 				Node firstNode = paragraph.getNode();
 				Node sectionNode = firstNode.getParent();
 				firstNode.setProperty(CMS_CONTENT, first);
-				Node secondNode = sectionNode.addNode(CMS_P,
-						CmsTypes.CMS_STYLED);
+				Node secondNode = sectionNode.addNode(CMS_P);
+				secondNode.addMixin(CmsTypes.CMS_STYLED);
 				// second node was create as last, if it is not the next one, it
 				// means there are some in between and we can take the one at
 				// index+1 for the re-order
@@ -369,8 +381,8 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 				int caretPosition = text.getCaretPosition();
 				Section section = sectionTitle.getSection();
 				Node sectionNode = section.getNode();
-				Node paragraphNode = sectionNode.addNode(CMS_P,
-						CmsTypes.CMS_STYLED);
+				Node paragraphNode = sectionNode.addNode(CMS_P);
+				paragraphNode.addMixin(CmsTypes.CMS_STYLED);
 				textInterpreter.write(paragraphNode,
 						txt.substring(caretPosition));
 				textInterpreter.write(
@@ -441,6 +453,37 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 			edit(paragraph, txt.length());
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot stop editing", e);
+		}
+	}
+
+	protected void upload(EditableTextPart part) {
+		try {
+			if (part instanceof SectionPart) {
+				SectionPart sectionPart = (SectionPart) part;
+				Node partNode = sectionPart.getNode();
+				int partIndex = partNode.getIndex();
+				Section section = sectionPart.getSection();
+				Node sectionNode = section.getNode();
+				if (part instanceof Paragraph) {
+					Node newNode = sectionNode.addNode(CMS_P,
+							CmsTypes.CMS_STYLED);
+					if (partIndex < newNode.getIndex() - 1) {
+						// was not last
+						sectionNode.orderBefore(p(newNode.getIndex()),
+								p(partIndex - 1));
+					}
+					sectionNode.orderBefore(p(partNode.getIndex()),
+							p(newNode.getIndex()));
+					Img img = newImg(section, newNode);
+					edit(img, null);
+					layout(img.getControl());
+				} else if (part instanceof Img) {
+					edit(part, null);
+					layout(((Img) part).getControl());
+				}
+			}
+		} catch (RepositoryException e) {
+			throw new CmsException("Cannot upload", e);
 		}
 	}
 
@@ -527,10 +570,11 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 		} else {
 			if (edited instanceof Paragraph) {
 				Paragraph paragraph = (Paragraph) edited;
+				Section section = paragraph.getSection();
 				if (altPressed && e.keyCode == SWT.ARROW_RIGHT) {
-					edit(paragraph.nextParagraph(), 0);
+					edit(section.nextSectionPart(paragraph), 0);
 				} else if (altPressed && e.keyCode == SWT.ARROW_LEFT) {
-					edit(paragraph.previousParagraph(), 0);
+					edit(section.previousSectionPart(paragraph), 0);
 				} else if (e.character == SWT.BS) {
 					Text text = (Text) paragraph.getControl();
 					int caretPosition = text.getCaretPosition();
@@ -595,8 +639,15 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 
 		@Override
 		public void mouseDoubleClick(MouseEvent e) {
-			if (cmsEditable.canEdit() && !cmsEditable.isEditing())
-				cmsEditable.startEditing();
+			if (cmsEditable.canEdit())
+				if (cmsEditable.isEditing()) {
+					if (e.button == 1) {
+						Control source = (Control) e.getSource();
+						EditableTextPart part = findDataParent(source);
+						upload(part);
+					}
+				} else
+					cmsEditable.startEditing();
 		}
 
 		@Override

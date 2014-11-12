@@ -9,12 +9,14 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsNames;
+import org.argeo.cms.CmsTypes;
 import org.argeo.cms.CmsUtils;
+import org.argeo.cms.widgets.NodeComposite;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public class Section extends Composite implements CmsNames {
+public class Section extends NodeComposite implements CmsNames {
 	private static final long serialVersionUID = -5933796173755739207L;
 
 	private final Section parentSection;
@@ -36,8 +38,7 @@ public class Section extends Composite implements CmsNames {
 
 	private Section(Composite parent, Section parentSection, int style,
 			Node node) throws RepositoryException {
-		super(parent, style);
-		setData(node);
+		super(parent, style, node);
 		this.parentSection = parentSection;
 		if (parentSection != null) {
 			relativeDepth = getNode().getDepth()
@@ -87,6 +88,7 @@ public class Section extends Composite implements CmsNames {
 		return sectionHeader;
 	}
 
+	// SECTION PARTS
 	SectionPart getParagraph(String nodeId) {
 		for (Control child : getChildren()) {
 			if (child instanceof SectionPart) {
@@ -94,6 +96,34 @@ public class Section extends Composite implements CmsNames {
 				if (paragraph.getNodeId().equals(nodeId))
 					return paragraph;
 			}
+		}
+		return null;
+	}
+
+	SectionPart nextSectionPart(SectionPart sectionPart) {
+		Control[] children = getChildren();
+		for (int i = 0; i < children.length; i++) {
+			if (sectionPart == children[i])
+				if (i + 1 < children.length) {
+					Composite next = (Composite) children[i + 1];
+					return (SectionPart) next;
+				} else {
+					// next section
+				}
+		}
+		return null;
+	}
+
+	SectionPart previousSectionPart(SectionPart sectionPart) {
+		Control[] children = getChildren();
+		for (int i = 0; i < children.length; i++) {
+			if (sectionPart == children[i])
+				if (i != 0) {
+					Composite previous = (Composite) children[i - 1];
+					return (SectionPart) previous;
+				} else {
+					// previous section
+				}
 		}
 		return null;
 	}
@@ -124,10 +154,6 @@ public class Section extends Composite implements CmsNames {
 		if (parentSection == null)
 			return "Main section " + getData();
 		return "Section " + getData();
-	}
-
-	public Node getNode() {
-		return (Node) getData();
 	}
 
 	public Section getParentSection() {

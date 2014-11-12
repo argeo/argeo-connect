@@ -1,5 +1,8 @@
 package org.argeo.cms.file;
 
+import static javax.jcr.nodetype.NodeType.NT_FILE;
+import static org.argeo.cms.CmsTypes.CMS_STYLED;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,29 +45,48 @@ public class JcrFileUploadReceiver extends FileUploadReceiver implements
 			byte[] arr = IOUtils.toByteArray(stream);
 			String fileName = nodeName != null ? nodeName : details
 					.getFileName();
-			Node fileNode = JcrUtils.copyBytesAsFile(parentNode, fileName, arr);
+
+			Node fileNode;
+			if (parentNode.hasNode(fileName)) {
+				fileNode = parentNode.getNode(fileName);
+				if (fileNode.isNodeType(NT_FILE)) {
+
+				} else if (fileNode.isNodeType(CMS_STYLED)) {
+					JcrUtils.setBinaryAsBytes(fileNode, CMS_DATA, arr);
+				} else {
+					if (!fileNode.isNodeType(NT_FILE))
+						fileNode.remove();
+					fileNode = JcrUtils.copyBytesAsFile(parentNode, fileName,
+							arr);
+				}
+			} else {
+				fileNode = JcrUtils.copyBytesAsFile(parentNode, fileName, arr);
+			}
 			String contentType = details.getContentType();
 			if (contentType != null) {
 				fileNode.addMixin(NodeType.MIX_MIMETYPE);
 				fileNode.setProperty(Property.JCR_MIMETYPE, contentType);
 			}
-
-			String ext = FilenameUtils.getExtension(details.getFileName());
 			// image
 
-			if (ext != null
-					&& (ext.equals("png") || ext.equalsIgnoreCase("jpg"))) {
+			if (isImage(details.getFileName(), contentType)) {
 				InputStream inputStream = new ByteArrayInputStream(arr);
 				ImageData id = new ImageData(inputStream);
 				fileNode.addMixin(CmsTypes.CMS_IMAGE);
 				fileNode.setProperty(CMS_IMAGE_WIDTH, id.width);
 				fileNode.setProperty(CMS_IMAGE_HEIGHT, id.height);
-				processNewFile(fileNode);
-				fileNode.getSession().save();
 			}
+			processNewFile(fileNode);
+			fileNode.getSession().save();
 		} catch (RepositoryException e) {
 			throw new CmsException("cannot receive " + details, e);
 		}
+	}
+
+	protected Boolean isImage(String fileName, String contentType) {
+		String ext = FilenameUtils.getExtension(fileName);
+		return ext != null
+				&& (ext.equals("png") || ext.equalsIgnoreCase("jpg"));
 	}
 
 	protected void processNewFile(Node node) {
