@@ -3,15 +3,11 @@ package org.argeo.connect.people.utils;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import javax.jcr.AccessDeniedException;
 import javax.jcr.InvalidItemStateException;
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
 import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -31,9 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.core.versioning.ItemDiff;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.jcr.PropertyDiff;
 
 /** Some static utilities methods that might be factorized in a near future */
 public class CommonsJcrUtils {
@@ -823,168 +817,6 @@ public class CommonsJcrUtils {
 			throw new PeopleException("Cannot create child for language "
 					+ lang, e);
 		}
-	}
-
-	/* HISTORY MANAGEMENT */
-
-	public static Map<String, ItemDiff> diffItems(Node reference, Node observed) {
-		Map<String, ItemDiff> diffs = new TreeMap<String, ItemDiff>();
-		diffNodes(diffs, null, reference, observed);
-		return diffs;
-	}
-
-	/** Recursively compares 2 nodes */
-	static void diffNodes(Map<String, ItemDiff> diffs, String relPath,
-			Node reference, Node observed) {
-		try {
-			diffPropertiesLevel(diffs, relPath, reference, observed);
-
-			// Removed and modified Node
-			NodeIterator nit = reference.getNodes();
-			while (nit.hasNext()) {
-				Node n = nit.nextNode();
-				String refRelPath = getRelPath(reference, n);
-
-				String currNodePath = (relPath != null ? relPath + "/" : "")
-						+ refRelPath;
-
-				if (observed.hasNode(refRelPath))
-					diffNodes(diffs, currNodePath, n,
-							observed.getNode(refRelPath));
-				else {
-					ItemDiff iDiff = new ItemDiff(ItemDiff.REMOVED,
-							currNodePath, n, null);
-					diffs.put(currNodePath, iDiff);
-				}
-			}
-			// Added nodes
-			nit = observed.getNodes();
-			while (nit.hasNext()) {
-				Node n = nit.nextNode();
-				String obsRelPath = getRelPath(observed, n);
-				String currNodePath = (relPath != null ? relPath + "/" : "")
-						+ obsRelPath;
-				if (!reference.hasNode(obsRelPath)) {
-					ItemDiff iDiff = new ItemDiff(ItemDiff.ADDED, currNodePath,
-							null, n);
-					diffs.put(currNodePath, iDiff);
-				}
-			}
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot diff " + reference + " and "
-					+ observed, e);
-		}
-	}
-
-	/**
-	 * Compare the properties of two nodes. Extends
-	 * <code>JcrUtils.diffPropertiesLevel</code> to also track differences in
-	 * multiple value properties and sub graph. No property is skipped (among
-	 * other all technical jcr:... properties) to be able to track jcr:title and
-	 * description properties, among other. Filtering must be applied afterwards
-	 * to only keep relevant properties.
-	 */
-	static void diffPropertiesLevel(Map<String, ItemDiff> diffs,
-			String baseRelPath, Node reference, Node observed) {
-		try {
-			// Removed and modified properties
-			PropertyIterator pit = reference.getProperties();
-			props: while (pit.hasNext()) {
-				Property p = pit.nextProperty();
-				String name = p.getName();
-				if (!observed.hasProperty(name)) {
-					String relPath = propertyRelPath(baseRelPath, name);
-					ItemDiff pDiff = new ItemDiff(PropertyDiff.REMOVED,
-							relPath, p, null);
-					diffs.put(relPath, pDiff);
-				} else {
-					if (p.isMultiple()) {
-
-						Value[] refValues = p.getValues();
-						Value[] newValues = observed.getProperty(name)
-								.getValues();
-						String relPath = propertyRelPath(baseRelPath, name);
-						refValues: for (Value refValue : refValues) {
-							for (Value newValue : newValues) {
-								if (refValue.equals(newValue))
-									continue refValues;
-							}
-							// We remove at least one of the values, this
-							// property has been modified.
-							ItemDiff iDiff = new ItemDiff(
-									PropertyDiff.MODIFIED, relPath, p,
-									observed.getProperty(name));
-							diffs.put(relPath, iDiff);
-							continue props;
-						}
-
-						newValues: for (Value newValue : newValues) {
-							for (Value refValue : refValues) {
-								if (refValue.equals(newValue))
-									continue newValues;
-							}
-							// We added at least one new value, this property
-							// has been modified.
-							// We remove at least one of the values, this
-							// property has been modified.
-							ItemDiff iDiff = new ItemDiff(
-									PropertyDiff.MODIFIED, relPath, p,
-									observed.getProperty(name));
-							diffs.put(relPath, iDiff);
-							continue props;
-						}
-					} else {
-						Value referenceValue = p.getValue();
-						Value newValue = observed.getProperty(name).getValue();
-						if (!referenceValue.equals(newValue)) {
-							String relPath = propertyRelPath(baseRelPath, name);
-							ItemDiff iDiff = new ItemDiff(
-									PropertyDiff.MODIFIED, relPath, p,
-									observed.getProperty(name));
-							diffs.put(relPath, iDiff);
-						}
-					}
-				}
-			}
-			// Added properties
-			pit = observed.getProperties();
-			while (pit.hasNext()) {
-				Property p = pit.nextProperty();
-				String name = p.getName();
-				if (!reference.hasProperty(name)) {
-					String relPath = propertyRelPath(baseRelPath, name);
-
-					ItemDiff pDiff = new ItemDiff(PropertyDiff.ADDED, relPath,
-							null, p);
-					diffs.put(relPath, pDiff);
-				}
-			}
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot diff " + reference + " and "
-					+ observed, e);
-		}
-	}
-
-	private static String getRelPath(Node parent, Node descendant)
-			throws RepositoryException {
-		String pPath = parent.getPath();
-		String dPath = descendant.getPath();
-		if (!dPath.startsWith(pPath))
-			throw new PeopleException("Cannot get rel path for " + descendant
-					+ ". It is not a descendant of " + parent);
-		String relPath = dPath.substring(pPath.length());
-		if (relPath.startsWith("/"))
-			relPath = relPath.substring(1);
-		return relPath;
-	}
-
-	/** Builds a property relPath to be used in the diff. */
-	private static String propertyRelPath(String baseRelPath,
-			String propertyName) {
-		if (baseRelPath == null)
-			return propertyName;
-		else
-			return baseRelPath + '/' + propertyName;
 	}
 
 	/* MISCELLANEOUS */

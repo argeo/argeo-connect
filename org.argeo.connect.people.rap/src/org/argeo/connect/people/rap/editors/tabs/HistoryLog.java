@@ -1,5 +1,7 @@
 package org.argeo.connect.people.rap.editors.tabs;
 
+import static java.util.Arrays.asList;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,7 +12,6 @@ import java.util.Map;
 import javax.jcr.Item;
 import javax.jcr.Node;
 import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -27,6 +28,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.core.versioning.ItemDiff;
 import org.argeo.connect.people.core.versioning.VersionDiff;
+import org.argeo.connect.people.core.versioning.VersionUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -58,6 +60,12 @@ public class HistoryLog extends Composite {
 
 	// this page UI Objects
 	private MyFormPart myFormPart;
+
+	// Filtered properties
+	public static final List<String> FILTERED_OUT_PROP_NAMES = asList(
+			"jcr:uuid", "jcr:frozenUuid", "jcr:frozenPrimaryType",
+			"jcr:primaryType", "jcr:lastModified", "jcr:lastModifiedBy",
+			Property.JCR_LAST_MODIFIED_BY);
 
 	public HistoryLog(FormToolkit toolkit, IManagedForm form, Composite parent,
 			int style, PeopleService peopleService, Node entity) {
@@ -121,45 +129,42 @@ public class HistoryLog extends Composite {
 	protected void refreshHistory(Text styledText) {
 		try {
 			List<VersionDiff> lst = listHistoryDiff();
-			StringBuffer main = new StringBuffer("");
+			StringBuilder main = new StringBuilder();
 
 			for (int i = lst.size() - 1; i >= 0; i--) {
+
+				StringBuilder firstL = new StringBuilder();
 				if (i == 0)
-					main.append("Creation (");
+					firstL.append("Creation (");
 				else
-					main.append("Update " + i + " (");
+					firstL.append("Update " + i + " (");
 
 				if (lst.get(i).getUserId() != null)
-					main.append("User : "
+					firstL.append("User : "
 							+ peopleService.getUserManagementService()
 									.getUserDisplayName(lst.get(i).getUserId())
 							+ ", ");
 				if (lst.get(i).getUpdateTime() != null) {
-					main.append("Date : ");
-					main.append(dateTimeFormat.format(lst.get(i)
+					firstL.append("Date : ");
+					firstL.append(dateTimeFormat.format(lst.get(i)
 							.getUpdateTime().getTime()));
 				}
-				main.append(")\n");
+				firstL.append(")");
+				String fl = firstL.toString();
+				main.append(fl).append("\n");
+				for (int j = 0; j < fl.length(); j++)
+					main.append("=");
+				main.append("\n");
 
 				StringBuilder buf = new StringBuilder();
 				Map<String, ItemDiff> diffs = lst.get(i).getDiffs();
-				loop: for (String prop : diffs.keySet()) {
+				for (String prop : diffs.keySet()) {
 
-					ItemDiff pd = diffs.get(prop);
+					ItemDiff diff = diffs.get(prop);
 
-					String propName = pd.getRelPath();
-					if (propName.endsWith("jcr:uuid"))
-						continue loop;
-					// TODO Check if current property is part of the relevant
-					// fields.
-					// if (!relevantAttributeList.contains(propName))
-					// continue props;
-
-					Item refItem = pd.getReferenceItem();
-					Item newItem = pd.getObservedItem();
-
+					Item refItem = diff.getReferenceItem();
+					Item newItem = diff.getObservedItem();
 					Item tmpItem = refItem == null ? newItem : refItem;
-
 					if (tmpItem instanceof Property)
 						if (((Property) tmpItem).isMultiple())
 							appendMultiplePropertyModif(buf,
@@ -167,15 +172,14 @@ public class HistoryLog extends Composite {
 						else {
 							String refValueStr = "";
 							String newValueStr = "";
-
 							if (refItem != null)
 								refValueStr = getValueAsString(((Property) refItem)
 										.getValue());
 							if (newItem != null)
 								newValueStr = getValueAsString(((Property) newItem)
 										.getValue());
-							appendModif(buf, pd.getType(),
-									propLabel(pd.getRelPath()), refValueStr,
+							appendPropModif(buf, diff.getType(),
+									propLabel(diff.getRelPath()), refValueStr,
 									newValueStr);
 						}
 					else { // node
@@ -183,14 +187,8 @@ public class HistoryLog extends Composite {
 								: ((Node) refItem).getName();
 						String obsStr = newItem == null ? null
 								: ((Node) newItem).getName();
-						appendModif(buf, pd.getType(), pd.getRelPath(), refStr,
-								obsStr);
-						if (pd.getType() == ItemDiff.ADDED)
-							appendNodeProperties(buf, ItemDiff.ADDED,
-									(Node) newItem);
-						else if (pd.getType() == ItemDiff.REMOVED)
-							appendNodeProperties(buf, ItemDiff.REMOVED,
-									(Node) refItem);
+						appendNodeModif(buf, diff.getType(), diff.getRelPath(),
+								refStr, obsStr);
 					}
 				}
 				buf.append("\n");
@@ -216,33 +214,11 @@ public class HistoryLog extends Composite {
 		return refValueStr;
 	}
 
-	private void appendNodeProperties(StringBuilder buf, Integer type, Node node)
-			throws RepositoryException {
-		PropertyIterator pit = node.getProperties();
-		loop: while (pit.hasNext()) {
-			Property prop = pit.nextProperty();
-			String propName = prop.getName();
-			if (propName.endsWith("jcr:uuid"))
-				continue loop;
-
-			if (prop.isMultiple())
-				; // TODO
-			else {
-				buf.append("\t");
-				buf.append(propLabel(propName)).append(": ");
-				buf.append(type == ItemDiff.ADDED ? " + " : " - ");
-				buf.append(getValueAsString(prop.getValue()));
-				buf.append("\n");
-			}
-
-		}
-
-	}
-
-	private void appendModif(StringBuilder buf, Integer type, String label,
+	private void appendPropModif(StringBuilder buf, Integer type, String label,
 			String oldValue, String newValue) {
 
-		if (type == PropertyDiff.MODIFIED) {
+		if (type == ItemDiff.MODIFIED) {
+			buf.append("\t");
 			buf.append(label).append(": ");
 			buf.append(oldValue);
 			buf.append(" > ");
@@ -251,14 +227,34 @@ public class HistoryLog extends Composite {
 		} else if (type == PropertyDiff.ADDED && !"".equals(newValue)) {
 			// we don't list property that have been added with an
 			// empty string as value
+			buf.append("\t");
 			buf.append(label).append(": ");
 			buf.append(" + ");
 			buf.append(newValue);
 			buf.append("\n");
 		} else if (type == PropertyDiff.REMOVED) {
+			buf.append("\t");
 			buf.append(label).append(": ");
 			buf.append(" - ");
 			buf.append(oldValue);
+			buf.append("\n");
+		}
+	}
+
+	private void appendNodeModif(StringBuilder buf, Integer type, String label,
+			String oldValue, String newValue) {
+
+		if (type == PropertyDiff.MODIFIED) {
+			buf.append("Node ");
+			buf.append(label).append(" modified: ");
+			buf.append("\n");
+		} else if (type == PropertyDiff.ADDED) {
+			buf.append("Node ");
+			buf.append(label).append(" added: ");
+			buf.append("\n");
+		} else if (type == PropertyDiff.REMOVED) {
+			buf.append("Node ");
+			buf.append(label).append(" removed: ");
 			buf.append("\n");
 		}
 	}
@@ -280,7 +276,7 @@ public class HistoryLog extends Composite {
 						if (refValue.equals(newValue))
 							continue refValues;
 					}
-				appendModif(builder, PropertyDiff.REMOVED,
+				appendPropModif(builder, PropertyDiff.REMOVED,
 						propLabel(refProp.getName()),
 						getValueAsString(refValue), null);
 			}
@@ -291,7 +287,7 @@ public class HistoryLog extends Composite {
 						if (refValue.equals(newValue))
 							continue newValues;
 					}
-				appendModif(builder, PropertyDiff.ADDED,
+				appendPropModif(builder, PropertyDiff.ADDED,
 						propLabel(obsProp.getName()), null,
 						getValueAsString(newValue));
 			}
@@ -321,8 +317,9 @@ public class HistoryLog extends Composite {
 				}
 				if (predecessor == null) {// original
 				} else {
-					Map<String, ItemDiff> diffs = CommonsJcrUtils.diffItems(
-							predecessor.getFrozenNode(), node);
+					Map<String, ItemDiff> diffs = VersionUtils.compareNodes(
+							predecessor.getFrozenNode(), node,
+							FILTERED_OUT_PROP_NAMES);
 					if (!diffs.isEmpty()) {
 						String userid = node
 								.hasProperty(Property.JCR_LAST_MODIFIED_BY) ? node
