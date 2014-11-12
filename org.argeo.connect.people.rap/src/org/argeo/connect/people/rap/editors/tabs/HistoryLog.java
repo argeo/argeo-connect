@@ -7,8 +7,10 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+import javax.jcr.Item;
 import javax.jcr.Node;
 import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -18,8 +20,6 @@ import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -47,7 +47,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  */
 public class HistoryLog extends Composite {
 	private static final long serialVersionUID = -4736848221960630767L;
-	private final static Log log = LogFactory.getLog(HistoryLog.class);
+	// private final static Log log = LogFactory.getLog(HistoryLog.class);
 
 	private final FormToolkit toolkit;
 	private final PeopleService peopleService;
@@ -119,133 +119,88 @@ public class HistoryLog extends Composite {
 	}
 
 	protected void refreshHistory(Text styledText) {
-		// try {
-		// List<VersionDiff> lst = listHistoryDiff();
-		// StringBuffer main = new StringBuffer("");
-		//
-		// for (int i = lst.size() - 1; i >= 0; i--) {
-		// if (i == 0)
-		// main.append("Creation (");
-		// else
-		// main.append("Update " + i + " (");
-		//
-		// if (lst.get(i).getUserId() != null)
-		// main.append("User : "
-		// + peopleService.getUserManagementService()
-		// .getUserDisplayName(lst.get(i).getUserId())
-		// + ", ");
-		// if (lst.get(i).getUpdateTime() != null) {
-		// main.append("Date : ");
-		// main.append(dateTimeFormat.format(lst.get(i)
-		// .getUpdateTime().getTime()));
-		// }
-		// main.append(")\n");
-		//
-		// StringBuilder buf = new StringBuilder();
-		// Map<String, ItemDiff> diffs = lst.get(i).getDiffs();
-		// loop: for (String prop : diffs.keySet()) {
-		//
-		// ItemDiff pd = diffs.get(prop);
-		//
-		// String propName = pd.getRelPath();
-		// if ("jcr:uuid".equals(propName))
-		// continue loop;
-		// // TODO Check if current property is part of the relevant
-		// // fields.
-		// // if (!relevantAttributeList.contains(propName))
-		// // continue props;
-		//
-		// Item refItem = pd.getReferenceItem();
-		// Item newItem = pd.getObservedItem();
-		//
-		// Item tmpItem = refItem==null?newItem:refItem;
-		//
-		// if (refItem != null)
-		// if (refItem instanceof Property)
-		// refValueStr = getValueAsString(((Property) refItem)
-		// .getValue());
-		// else if (refItem instanceof Node)
-		// refValueStr = ((Node) refItem).getName();
-		//
-		// if (newItem != null)
-		// if (newItem instanceof Property)
-		// newValueStr = getValueAsString(((Property) newItem)
-		// .getValue());
-		// else if (newItem instanceof Node)
-		// newValueStr = ((Node) newItem).getName();
-		//
-		//
-		// if (tmpItem instanceof Property)
-		// if (((Property)tmpItem).isMultiple())
-		// ; // TODO TappendMultiplePropertyModif(buf, (Property) newItem,
-		// (Property) refItem);
-		// else{
-		// if (refItem != null)
-		// refValueStr = getValueAsString(((Property) refItem)
-		// .getValue());
-		//
-		// if (newItem != null)
-		// if (newItem instanceof Property)
-		// newValueStr = getValueAsString(((Property) newItem)
-		// .getValue());
-		// else if (newItem instanceof Node)
-		// newValueStr = ((Node) newItem).getName();
-		//
-		//
-		//
-		// }
-		// appendPropDiff();
-		// else
-		// appendNodeDiff();
-		//
-		// String refValueStr = "";
-		// String newValueStr = "";
-		//
-		// if (refItem != null)
-		// if (refItem instanceof Property)
-		// refValueStr = getValueAsString(((Property) refItem)
-		// .getValue());
-		// else if (refItem instanceof Node)
-		// refValueStr = ((Node) refItem).getName();
-		//
-		// if (newItem != null)
-		// if (newItem instanceof Property)
-		// newValueStr = getValueAsString(((Property) newItem)
-		// .getValue());
-		// else if (newItem instanceof Node)
-		// newValueStr = ((Node) newItem).getName();
-		//
-		// if (pd.getType() == PropertyDiff.MODIFIED) {
-		// buf.append(propLabel(propName)).append(": ");
-		// buf.append(refValueStr);
-		// buf.append(" > ");
-		// buf.append(newValueStr);
-		// buf.append("\n");
-		// } else if (pd.getType() == PropertyDiff.ADDED
-		// && !"".equals(newValueStr)) {
-		// // we don't list property that have been added with an
-		// // empty string as value
-		// buf.append(propLabel(propName)).append(": ");
-		// buf.append(" + ");
-		// buf.append(newValueStr);
-		// buf.append("\n");
-		// } else if (pd.getType() == PropertyDiff.REMOVED) {
-		// buf.append(propLabel(propName)).append(": ");
-		// buf.append(" - ");
-		// buf.append(refValueStr);
-		// buf.append("\n");
-		// }
-		//
-		// }
-		// buf.append("\n");
-		//
-		// main.append(buf);
-		// }
-		// styledText.setText(main.toString());
-		// } catch (RepositoryException e) {
-		// throw new PeopleException(
-		// "Cannot generate history for current entity.", e);
-		// }
+		try {
+			List<VersionDiff> lst = listHistoryDiff();
+			StringBuffer main = new StringBuffer("");
+
+			for (int i = lst.size() - 1; i >= 0; i--) {
+				if (i == 0)
+					main.append("Creation (");
+				else
+					main.append("Update " + i + " (");
+
+				if (lst.get(i).getUserId() != null)
+					main.append("User : "
+							+ peopleService.getUserManagementService()
+									.getUserDisplayName(lst.get(i).getUserId())
+							+ ", ");
+				if (lst.get(i).getUpdateTime() != null) {
+					main.append("Date : ");
+					main.append(dateTimeFormat.format(lst.get(i)
+							.getUpdateTime().getTime()));
+				}
+				main.append(")\n");
+
+				StringBuilder buf = new StringBuilder();
+				Map<String, ItemDiff> diffs = lst.get(i).getDiffs();
+				loop: for (String prop : diffs.keySet()) {
+
+					ItemDiff pd = diffs.get(prop);
+
+					String propName = pd.getRelPath();
+					if (propName.endsWith("jcr:uuid"))
+						continue loop;
+					// TODO Check if current property is part of the relevant
+					// fields.
+					// if (!relevantAttributeList.contains(propName))
+					// continue props;
+
+					Item refItem = pd.getReferenceItem();
+					Item newItem = pd.getObservedItem();
+
+					Item tmpItem = refItem == null ? newItem : refItem;
+
+					if (tmpItem instanceof Property)
+						if (((Property) tmpItem).isMultiple())
+							appendMultiplePropertyModif(buf,
+									(Property) newItem, (Property) refItem);
+						else {
+							String refValueStr = "";
+							String newValueStr = "";
+
+							if (refItem != null)
+								refValueStr = getValueAsString(((Property) refItem)
+										.getValue());
+							if (newItem != null)
+								newValueStr = getValueAsString(((Property) newItem)
+										.getValue());
+							appendModif(buf, pd.getType(),
+									propLabel(pd.getRelPath()), refValueStr,
+									newValueStr);
+						}
+					else { // node
+						String refStr = refItem == null ? null
+								: ((Node) refItem).getName();
+						String obsStr = newItem == null ? null
+								: ((Node) newItem).getName();
+						appendModif(buf, pd.getType(), pd.getRelPath(), refStr,
+								obsStr);
+						if (pd.getType() == ItemDiff.ADDED)
+							appendNodeProperties(buf, ItemDiff.ADDED,
+									(Node) newItem);
+						else if (pd.getType() == ItemDiff.REMOVED)
+							appendNodeProperties(buf, ItemDiff.REMOVED,
+									(Node) refItem);
+					}
+				}
+				buf.append("\n");
+				main.append(buf);
+			}
+			styledText.setText(main.toString());
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"Cannot generate history for current entity.", e);
+		}
 
 	}
 
@@ -259,6 +214,29 @@ public class HistoryLog extends Composite {
 			refValueStr = refValue.getString();
 
 		return refValueStr;
+	}
+
+	private void appendNodeProperties(StringBuilder buf, Integer type, Node node)
+			throws RepositoryException {
+		PropertyIterator pit = node.getProperties();
+		loop: while (pit.hasNext()) {
+			Property prop = pit.nextProperty();
+			String propName = prop.getName();
+			if (propName.endsWith("jcr:uuid"))
+				continue loop;
+
+			if (prop.isMultiple())
+				; // TODO
+			else {
+				buf.append("\t");
+				buf.append(propLabel(propName)).append(": ");
+				buf.append(type == ItemDiff.ADDED ? " + " : " - ");
+				buf.append(getValueAsString(prop.getValue()));
+				buf.append("\n");
+			}
+
+		}
+
 	}
 
 	private void appendModif(StringBuilder buf, Integer type, String label,
@@ -288,27 +266,35 @@ public class HistoryLog extends Composite {
 	private void appendMultiplePropertyModif(StringBuilder builder,
 			Property obsProp, Property refProp) throws RepositoryException {
 
-		Value[] refValues = refProp.getValues();
-		Value[] newValues = obsProp.getValues();
-		refValues: for (Value refValue : refValues) {
-			for (Value newValue : newValues) {
-				if (refValue.equals(newValue))
-					continue refValues;
-			}
-			appendModif(builder, PropertyDiff.REMOVED,
-					propLabel(refProp.getName()), getValueAsString(refValue),
-					null);
-		}
+		Value[] refValues = null;
+		if (refProp != null)
+			refValues = refProp.getValues();
 
-		newValues: for (Value newValue : newValues) {
-			for (Value refValue : refValues) {
-				if (refValue.equals(newValue))
-					continue newValues;
+		Value[] newValues = null;
+		if (obsProp != null)
+			newValues = obsProp.getValues();
+		if (refProp != null)
+			refValues: for (Value refValue : refValues) {
+				if (obsProp != null)
+					for (Value newValue : newValues) {
+						if (refValue.equals(newValue))
+							continue refValues;
+					}
+				appendModif(builder, PropertyDiff.REMOVED,
+						propLabel(refProp.getName()),
+						getValueAsString(refValue), null);
 			}
-			appendModif(builder, PropertyDiff.ADDED,
-					propLabel(refProp.getName()), null,
-					getValueAsString(newValue));
-		}
+		if (obsProp != null)
+			newValues: for (Value newValue : newValues) {
+				if (refProp != null)
+					for (Value refValue : refValues) {
+						if (refValue.equals(newValue))
+							continue newValues;
+					}
+				appendModif(builder, PropertyDiff.ADDED,
+						propLabel(obsProp.getName()), null,
+						getValueAsString(newValue));
+			}
 	}
 
 	private List<VersionDiff> listHistoryDiff() {
