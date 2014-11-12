@@ -14,3 +14,7 @@ orderable
 
 [cms:text] > cms:section, mix:versionable
 
+[cms:image] > mix:title, mix:mimeType
+mixin
+- cms:imageWidth (STRING) m
+- cms:imageHeight (STRING) m

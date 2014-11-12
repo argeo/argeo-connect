@@ -5,7 +5,10 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
+import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.service.ResourceManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
@@ -14,7 +17,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Widget;
 
 /** Static utilities for the CMS framework. */
-public class CmsUtils {
+public class CmsUtils implements CmsConstants {
 	/** @deprecated Use rowData16px() instead. GridData should not be reused. */
 	@Deprecated
 	public static RowData ROW_DATA_16px = new RowData(16, 16);
@@ -35,7 +38,13 @@ public class CmsUtils {
 	// GRID DATA
 	//
 	public static GridData fillWidth() {
-		return new GridData(SWT.FILL, SWT.FILL, true, false);
+		return grabWidth(SWT.FILL, SWT.FILL);
+	}
+
+	public static GridData grabWidth(int horizontalAlignment,
+			int verticalAlignment) {
+		return new GridData(horizontalAlignment, horizontalAlignment, true,
+				false);
 	}
 
 	public static RowData rowData16px() {
@@ -66,27 +75,6 @@ public class CmsUtils {
 
 		return null;
 	}
-
-	/** @return the data, never null */
-	// public static Item getDataItem(Widget widget, Item context) {
-	// // JCR item
-	// Object data = widget.getData();
-	// if (data != null && data instanceof Item) {
-	// return (Item) data;
-	// }
-	//
-	// // JCR path
-	// data = widget.getData(Property.JCR_PATH);
-	// try {
-	// if (data != null && context != null)
-	// return context.getSession().getItem(data.toString());
-	// } catch (RepositoryException e) {
-	// throw new CmsException("Problem when looking for data item of "
-	// + data + " for " + widget);
-	// }
-	//
-	// throw new CmsException("Cannot find data item for " + widget);
-	// }
 
 	/** Dispose all children of a Composite */
 	public static void clear(Composite composite) {
@@ -120,6 +108,27 @@ public class CmsUtils {
 			return parent.addNode(en.name());
 		else
 			return parent.addNode(en.name(), primaryType);
+	}
+
+	// IMAGES
+	public static String img(String src, String width, String height) {
+		return imgBuilder(src, width, height).append("/>").toString();
+	}
+
+	public static String img(String src, Point size) {
+		return img(src, Integer.toString(size.x), Integer.toString(size.y));
+	}
+
+	public static StringBuilder imgBuilder(String src, String width,
+			String height) {
+		return new StringBuilder(64).append("<img width='").append(width)
+				.append("' height='").append(height).append("' src='")
+				.append(src).append("'");
+	}
+
+	public static String noImg(Point size) {
+		ResourceManager rm = RWT.getResourceManager();
+		return CmsUtils.img(rm.getLocation(NO_IMAGE), size);
 	}
 
 	private CmsUtils() {

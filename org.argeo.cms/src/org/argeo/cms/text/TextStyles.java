@@ -1,6 +1,5 @@
 package org.argeo.cms.text;
 
-
 /** Styles references in the CSS. */
 public interface TextStyles {
 	/** The whole page area */
@@ -29,5 +28,8 @@ public interface TextStyles {
 	public final static String TEXT_TITLE = "text_title";
 	/** Header (to be dynamically completed with the depth, e.g. text_h1) */
 	public final static String TEXT_H = "text_h";
+
+	/** Default style for images */
+	public final static String TEXT_IMAGE = "text_image";
 
 }

@@ -23,7 +23,7 @@ import org.osgi.framework.BundleContext;
 import org.springframework.osgi.context.BundleContextAware;
 
 /** Configures an Argeo CMS RWT application. */
-public class CmsApplication implements ApplicationConfiguration,
+public class CmsApplication implements CmsConstants, ApplicationConfiguration,
 		BundleContextAware {
 	final static Log log = LogFactory.getLog(CmsApplication.class);
 
@@ -41,9 +41,12 @@ public class CmsApplication implements ApplicationConfiguration,
 			application.setOperationMode(OperationMode.SWT_COMPATIBILITY);
 			application.setExceptionHandler(new CmsExceptionHandler());
 
-			// loading gif
-			application.addResource("icons/loading.gif",
-					createResourceLoader("icons/loading.gif"));
+			// TODO load all pics under icons
+			// loading animated gif
+			application.addResource(LOADING_IMAGE,
+					createResourceLoader(LOADING_IMAGE));
+			// empty image
+			application.addResource(NO_IMAGE, createResourceLoader(NO_IMAGE));
 
 			for (String resource : resources) {
 				// URL res = bundleContext.getBundle().getResource(resource);

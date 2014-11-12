@@ -16,5 +16,5 @@ public interface CmsSession {
 
 	public String getState();
 
-	// public String getPage();
+	public CmsImageManager getImageManager();
 }

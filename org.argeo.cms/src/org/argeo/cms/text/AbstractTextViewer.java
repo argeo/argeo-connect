@@ -496,7 +496,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 		layout(remaining.getControl());
 	}
 
-	protected void layout(Control... controls) {
+	public void layout(Control... controls) {
 		page.layout(controls);
 	}
 

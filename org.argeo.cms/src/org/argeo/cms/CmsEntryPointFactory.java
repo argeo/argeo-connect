@@ -17,6 +17,7 @@ import javax.jcr.version.VersionManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.internal.SimpleImageManager;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.EntryPoint;
@@ -48,6 +49,9 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 	private Map<String, CmsUiProvider> pages = new LinkedHashMap<String, CmsUiProvider>();
 
 	private Integer headerHeight = 40;
+
+	// Managers
+	private CmsImageManager imageManager = new SimpleImageManager();
 
 	@Override
 	public EntryPoint create() {
@@ -191,20 +195,6 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 						true));
 				bodyArea.setBackgroundMode(SWT.INHERIT_DEFAULT);
 				bodyArea.setLayout(CmsUtils.noSpaceGridLayout());
-				//
-				// HttpServletRequest httpRequest = RWT.getRequest();
-				// String contextPath = httpRequest.getContextPath();
-				// String pathInfo = httpRequest.getPathInfo();
-				// String queryString = httpRequest.getQueryString();
-				// String requestUrl = httpRequest.getRequestURL().toString();
-				// String servletPath = httpRequest.getServletPath();
-				// JavaScriptExecutor jse = RWT.getClient().getService(
-				// JavaScriptExecutor.class);
-				// BrowserNavigation bn = RWT.getClient().getService(
-				// BrowserNavigation.class);
-				//
-				// if (log.isDebugEnabled())
-				// log.debug(requestUrl);
 			} catch (Exception e) {
 				throw new CmsException("Cannot create entrypoint contents", e);
 			}
@@ -294,6 +284,11 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 					throw new CmsException("Unauthorized");
 			}
 			return session.getNode(basePath);
+		}
+
+		@Override
+		public CmsImageManager getImageManager() {
+			return imageManager;
 		}
 
 	}

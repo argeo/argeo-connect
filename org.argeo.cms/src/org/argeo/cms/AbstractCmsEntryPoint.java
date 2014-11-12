@@ -11,6 +11,7 @@ import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.internal.SimpleImageManager;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
@@ -30,6 +31,7 @@ public abstract class AbstractCmsEntryPoint extends AbstractEntryPoint
 	private String workspace;
 	private Session session;
 
+	// current state
 	private Node node;
 	private String state;
 	private String page;
