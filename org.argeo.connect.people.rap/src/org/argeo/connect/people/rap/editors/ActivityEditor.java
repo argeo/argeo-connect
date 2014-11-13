@@ -16,6 +16,7 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.dialogs.PickUpRelatedDialog;
+import org.argeo.connect.people.rap.editors.parts.DateTextPart;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -34,7 +35,6 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
@@ -89,10 +89,9 @@ public class ActivityEditor extends AbstractPeopleEditor {
 
 		// ACTIVITY DATE
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Date");
-		final DateTime activityDateDt = new DateTime(parent, SWT.DATE
-				| SWT.MEDIUM | SWT.DROP_DOWN);
-		activityDateDt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true,
-				false));
+		final DateTextPart dateComposite = new DateTextPart(parent, SWT.NO_FOCUS,
+				toolkit, headerPart, activity, PeopleNames.PEOPLE_ACTIVITY_DATE);
+		dateComposite.setLayoutData(PeopleUiUtils.horizontalFillData());
 
 		// 2nd line - RELATED ENTITIES
 		label = PeopleRapUtils.createBoldLabel(toolkit, parent, "Related to");
@@ -124,8 +123,9 @@ public class ActivityEditor extends AbstractPeopleEditor {
 					if (CommonsJcrUtils.checkNotEmptyString(manager))
 						managerLbl.setText(manager);
 
-					PeopleRapUtils.refreshFormDateTimeWidget(activityDateDt,
-							activity, PeopleNames.PEOPLE_ACTIVITY_DATE);
+					dateComposite.refresh();
+					// PeopleRapUtils.refreshFormDateTimeWidget(activityDateDt,
+					// activity, PeopleNames.PEOPLE_ACTIVITY_DATE);
 
 					boolean isCO = CommonsJcrUtils
 							.isNodeCheckedOutByMe(activity);
@@ -208,8 +208,10 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		headerPart.initialize(getManagedForm());
 		getManagedForm().addPart(headerPart);
 
-		PeopleRapUtils.addSelectionListener(activityDateDt, activity,
-				PeopleNames.PEOPLE_ACTIVITY_DATE, headerPart);
+		dateComposite.setFormPart(headerPart);
+
+		// PeopleRapUtils.addSelectionListener(activityDateDt, activity,
+		// PeopleNames.PEOPLE_ACTIVITY_DATE, headerPart);
 	}
 
 	private class MyOpenEditorAdapter extends SelectionAdapter {

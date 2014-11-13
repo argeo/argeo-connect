@@ -58,6 +58,9 @@ public class PeopleRapImages {
 	public final static Image ORIGINAL_BTN = PeopleRapPlugin
 			.getImageDescriptor("icons/first.png").createImage();
 
+	public final static Image CALENDAR_BTN = PeopleRapPlugin
+			.getImageDescriptor("icons/calendar.gif").createImage();
+
 	// Check box icons
 	public final static Image CHECKED = PeopleRapPlugin.getImageDescriptor(
 			"icons/checked.gif").createImage();

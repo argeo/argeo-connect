@@ -1,7 +1,5 @@
 package org.argeo.connect.people.rap.wizards;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -13,6 +11,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.ActivitiesImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapUtils;
+import org.argeo.connect.people.rap.composites.DateText;
 import org.argeo.connect.people.rap.dialogs.PickUpGroupDialog;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -27,7 +26,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
@@ -68,8 +66,11 @@ public class NewSimpleTaskWizard extends Wizard {
 	// This page widgets
 	protected Text titleTxt;
 	protected Text descTxt;
-	private DateTime dueDateDt;
-	private DateTime wakeUpDateDt;
+	// private DateTime dueDateDt;
+	// private DateTime wakeUpDateDt;
+
+	private DateText dueDateCmp;
+	private DateText wakeUpDateCmp;
 
 	protected TableViewer itemsViewer;
 
@@ -110,17 +111,10 @@ public class NewSimpleTaskWizard extends Wizard {
 			return false;
 		}
 
-		Calendar dueDate = GregorianCalendar.getInstance();
-		dueDate.set(dueDateDt.getYear(), dueDateDt.getMonth(),
-				dueDateDt.getDay());
-
-		Calendar wakeUpDate = GregorianCalendar.getInstance();
-		wakeUpDate.set(wakeUpDateDt.getYear(), wakeUpDateDt.getMonth(),
-				wakeUpDateDt.getDay());
-
 		createdTask = activityService.createTask(currSession, null,
 				titleTxt.getText(), descTxt.getText(), assignedToGroupNode,
-				relatedTo, dueDate, wakeUpDate);
+				relatedTo, dueDateCmp.getCalendar(),
+				wakeUpDateCmp.getCalendar());
 
 		return true;
 	}
@@ -202,15 +196,18 @@ public class NewSimpleTaskWizard extends Wizard {
 
 			// DUE DATE
 			PeopleRapUtils.createBoldLabel(parent, "Due date");
-			dueDateDt = new DateTime(parent, SWT.DATE | SWT.MEDIUM
-					| SWT.DROP_DOWN);
+			dueDateCmp = new DateText(parent, SWT.NO_FOCUS);
+			// dueDateDt = new DateTime(parent, SWT.DATE | SWT.MEDIUM
+			// | SWT.DROP_DOWN);
 			// dueDateDt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false,
 			// false));
 
 			// WAKE UP DATE
 			PeopleRapUtils.createBoldLabel(parent, "Wake up date");
-			wakeUpDateDt = new DateTime(parent, SWT.DATE | SWT.MEDIUM
-					| SWT.DROP_DOWN);
+			wakeUpDateCmp = new DateText(parent, SWT.NO_FOCUS);
+
+			// wakeUpDateDt = new DateTime(parent, SWT.DATE | SWT.MEDIUM
+			// | SWT.DROP_DOWN);
 
 			// DESCRIPTION
 			Label label = new Label(parent, SWT.RIGHT | SWT.TOP);

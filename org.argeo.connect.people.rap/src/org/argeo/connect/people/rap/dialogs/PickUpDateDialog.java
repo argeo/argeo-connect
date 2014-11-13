@@ -24,7 +24,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
@@ -54,8 +53,7 @@ public class PickUpDateDialog extends TrayDialog {
 		dialogArea.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		dateTimeCtl = new DateTime(dialogArea, SWT.CALENDAR);
-		dateTimeCtl.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true,
-				true));
+		dateTimeCtl.setLayoutData(PeopleUiUtils.fillGridData());
 
 		dateTimeCtl.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = -8414377364434281112L;

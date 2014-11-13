@@ -19,6 +19,7 @@ import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.dialogs.PickUpGroupDialog;
 import org.argeo.connect.people.rap.dialogs.PickUpRelatedDialog;
+import org.argeo.connect.people.rap.editors.parts.DateTextPart;
 import org.argeo.connect.people.rap.editors.tabs.ActivityList;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
@@ -41,7 +42,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -110,10 +110,9 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 
 		// DUE DATE
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Due date");
-		final DateTime dueDateDt = new DateTime(parent, SWT.DATE | SWT.MEDIUM
-				| SWT.DROP_DOWN);
-		dueDateDt
-				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
+		final DateTextPart dueDateCmp = new DateTextPart(parent, SWT.NO_FOCUS,
+				toolkit, headerPart, task, PeopleNames.PEOPLE_DUE_DATE);
+		dueDateCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
 
 		// ASSIGNED TO
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Assigned to");
@@ -122,10 +121,10 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 
 		// WAKE UP DATE
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Wake up date");
-		final DateTime wakeUpDateDt = new DateTime(parent, SWT.DATE
-				| SWT.MEDIUM | SWT.DROP_DOWN);
-		wakeUpDateDt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false,
-				false));
+		final DateTextPart wakeUpDateCmp = new DateTextPart(parent,
+				SWT.NO_FOCUS, toolkit, headerPart, task,
+				PeopleNames.PEOPLE_WAKE_UP_DATE);
+		wakeUpDateCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
 
 		// RELATED ENTITIES
 		// Label label =
@@ -163,15 +162,13 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 
 					PeopleRapUtils.refreshFormCombo(statusCmb, task,
 							PeopleNames.PEOPLE_TASK_STATUS);
-					PeopleRapUtils.refreshFormDateTimeWidget(dueDateDt, task,
-							PeopleNames.PEOPLE_DUE_DATE);
-					PeopleRapUtils.refreshFormDateTimeWidget(wakeUpDateDt,
-							task, PeopleNames.PEOPLE_WAKE_UP_DATE);
-
 					PeopleRapUtils.refreshFormTextWidget(titleTxt, task,
 							Property.JCR_TITLE);
 					PeopleRapUtils.refreshFormTextWidget(descTxt, task,
 							Property.JCR_DESCRIPTION);
+
+					dueDateCmp.refresh();
+					wakeUpDateCmp.refresh();
 
 					boolean isCO = CommonsJcrUtils.isNodeCheckedOutByMe(task);
 
@@ -272,10 +269,9 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 		headerPart.initialize(getManagedForm());
 		getManagedForm().addPart(headerPart);
 
-		PeopleRapUtils.addSelectionListener(dueDateDt, task,
-				PeopleNames.PEOPLE_DUE_DATE, headerPart);
-		PeopleRapUtils.addSelectionListener(wakeUpDateDt, task,
-				PeopleNames.PEOPLE_WAKE_UP_DATE, headerPart);
+		dueDateCmp.setFormPart(headerPart);
+		wakeUpDateCmp.setFormPart(headerPart);
+
 		PeopleRapUtils.addComboSelectionListener(headerPart, statusCmb, task,
 				PeopleNames.PEOPLE_TASK_STATUS, PropertyType.STRING);
 		PeopleRapUtils.addModifyListener(titleTxt, task, Property.JCR_TITLE,
