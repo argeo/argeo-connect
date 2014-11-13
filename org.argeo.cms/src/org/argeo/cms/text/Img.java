@@ -3,17 +3,15 @@ package org.argeo.cms.text;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsImageManager;
 import org.argeo.cms.CmsSession;
 import org.argeo.cms.CmsTypes;
 import org.argeo.cms.CmsUtils;
-import org.argeo.cms.file.JcrFileUploadReceiver;
+import org.argeo.cms.internal.JcrFileUploadReceiver;
+import org.argeo.cms.viewers.Section;
+import org.argeo.cms.viewers.SectionPart;
 import org.argeo.cms.widgets.EditableImage;
-import org.eclipse.rap.addons.fileupload.FileDetails;
-import org.eclipse.rap.addons.fileupload.FileUploadEvent;
 import org.eclipse.rap.addons.fileupload.FileUploadHandler;
 import org.eclipse.rap.addons.fileupload.FileUploadListener;
 import org.eclipse.rap.addons.fileupload.FileUploadReceiver;
@@ -25,23 +23,25 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 
+/** An image within the Argeo Text framework */
 public class Img extends EditableImage implements SectionPart {
 	private static final long serialVersionUID = 6233572783968188476L;
 
-	private final static Log log = LogFactory.getLog(Img.class);
+	// private final static Log log = LogFactory.getLog(Img.class);
 
-	private final Section section;
+	private final TextSection section;
 
 	private final CmsImageManager imageManager;
+	private FileUploadListener fileUploadListener;
 
 	public Img(Composite parent, int swtStyle, Node imgNode)
 			throws RepositoryException {
-		this(Section.findSection(parent), parent, swtStyle, imgNode);
+		this((TextSection) TextSection.findSection(parent), parent, swtStyle,
+				imgNode);
 	}
 
-	Img(Section section, Composite parent, int swtStyle, Node imgNode)
+	Img(TextSection section, Composite parent, int swtStyle, Node imgNode)
 			throws RepositoryException {
 		super(parent, swtStyle, imgNode, false);
 		this.section = section;
@@ -49,7 +49,8 @@ public class Img extends EditableImage implements SectionPart {
 	}
 
 	@Override
-	protected Control createControl(Composite box, String style) {
+	protected Control createControl(Composite box, String style,
+			Integer preferredHeight) {
 		if (isEditing()) {
 			try {
 				return createImageChooser(box, style);
@@ -59,6 +60,12 @@ public class Img extends EditableImage implements SectionPart {
 		} else {
 			return createLabel(box, style);
 		}
+	}
+
+	@Override
+	public synchronized void stopEditing() {
+		super.stopEditing();
+		fileUploadListener = null;
 	}
 
 	@Override
@@ -76,7 +83,7 @@ public class Img extends EditableImage implements SectionPart {
 	}
 
 	@Override
-	protected synchronized Boolean load(Label lbl) {
+	protected synchronized Boolean load(Control lbl) {
 		try {
 			Node imgNode = getNode();
 			boolean loaded = imageManager
@@ -91,16 +98,17 @@ public class Img extends EditableImage implements SectionPart {
 
 	protected Control createImageChooser(Composite box, String style)
 			throws RepositoryException {
-		createLabel(box, style);
+		// createLabel(box, style);
 
 		JcrFileUploadReceiver receiver = new JcrFileUploadReceiver(getNode()
 				.getParent(), getNode().getName());
 		final FileUploadHandler uploadHandler = prepareUpload(receiver);
 		final ServerPushSession pushSession = new ServerPushSession();
 		final FileUpload fileUpload = new FileUpload(box, SWT.NONE);
-		fileUpload.moveAbove(null);
+		// fileUpload.moveAbove(null);
 		CmsUtils.style(fileUpload, style);
-		fileUpload.setText("...");
+		CmsUtils.markup(fileUpload);
+		// fileUpload.setText("...");
 		fileUpload.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true,
 				true));
 		fileUpload.addSelectionListener(new SelectionAdapter() {
@@ -115,33 +123,20 @@ public class Img extends EditableImage implements SectionPart {
 		return fileUpload;
 	}
 
-	protected static FileUploadHandler prepareUpload(FileUploadReceiver receiver) {
+	protected FileUploadHandler prepareUpload(FileUploadReceiver receiver) {
 		final FileUploadHandler uploadHandler = new FileUploadHandler(receiver);
-		uploadHandler.addUploadListener(new FileUploadListener() {
-
-			public void uploadProgress(FileUploadEvent event) {
-				// handle upload progress
-			}
-
-			public void uploadFailed(FileUploadEvent event) {
-				throw new CmsException("Upload failed " + event, event
-						.getException());
-			}
-
-			public void uploadFinished(FileUploadEvent event) {
-				for (FileDetails file : event.getFileDetails()) {
-					if (log.isDebugEnabled())
-						log.debug("Received: " + file.getFileName());
-				}
-				uploadHandler.dispose();
-			}
-		});
+		if (fileUploadListener != null)
+			uploadHandler.addUploadListener(fileUploadListener);
 		return uploadHandler;
 	}
 
 	@Override
 	public Section getSection() {
 		return section;
+	}
+
+	public void setFileUploadListener(FileUploadListener fileUploadListener) {
+		this.fileUploadListener = fileUploadListener;
 	}
 
 }

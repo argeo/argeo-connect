@@ -3,7 +3,6 @@ package org.argeo.cms.widgets;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.cms.CmsConstants;
 import org.argeo.cms.CmsUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -31,45 +30,43 @@ public class EditableText extends StyledControl {
 	}
 
 	@Override
-	protected Control createControl(Composite box, String style) {
+	protected Control createControl(Composite box, String style,
+			Integer preferredHeight) {
 		if (isEditing())
-			return createText(box, style);
+			return createText(box, style, preferredHeight);
 		else
-			return createLabel(box, style);
+			return createLabel(box, style, preferredHeight);
 	}
 
-	protected Label createLabel(Composite box, String style) {
+	protected Label createLabel(Composite box, String style,
+			Integer preferredHeight) {
 		Label lbl = new Label(box, getStyle() | SWT.WRAP);
 		lbl.setLayoutData(CmsUtils.fillWidth());
-		lbl.setData(CmsConstants.MARKUP, true);
-		lbl.setData(STYLE, style);
+		CmsUtils.style(lbl, style);
+		CmsUtils.markup(lbl);
 		if (mouseListener != null)
 			lbl.addMouseListener(mouseListener);
 		return lbl;
 	}
 
-	protected Text createText(Composite box, String style) {
+	protected Text createText(Composite box, String style,
+			Integer preferredHeight) {
 		final Text text = new Text(box, getStyle() | SWT.MULTI | SWT.WRAP);
 		GridData textLayoutData = CmsUtils.fillWidth();
-		// textLayoutData.minimumHeight = height;
+		textLayoutData.heightHint = preferredHeight;
 		text.setLayoutData(textLayoutData);
-		text.setData(STYLE, style);
+		CmsUtils.style(text, style);
 		text.setFocus();
 		return text;
 	}
 
-	// public void startEditing() {
-	// int height = child.getSize().y;
-	// String style = (String) child.getData(STYLE);
-	// clear(false);
-	// child = createText(style, height);
-	// }
-	//
-	// public void stopEditing() {
-	// String style = (String) child.getData(STYLE);
-	// clear(false);
-	// child = createLabel(style);
-	// }
+	public void setText(String text) {
+		Control child = getControl();
+		if (child instanceof Label)
+			((Label) child).setText(text);
+		else if (child instanceof Text)
+			((Text) child).setText(text);
+	}
 
 	public Text getAsText() {
 		return (Text) getControl();

@@ -3,21 +3,22 @@ package org.argeo.cms.text;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
+import org.argeo.cms.widgets.EditablePart;
 import org.argeo.cms.widgets.EditableText;
 import org.eclipse.swt.widgets.Composite;
 
 /** The title of a section. */
-public class SectionTitle extends EditableText implements PropertyTextPart {
+public class SectionTitle extends EditableText implements EditablePart {
 	private static final long serialVersionUID = -1787983154946583171L;
 
-	private final Section section;
+	private final TextSection section;
 
 	public SectionTitle(Composite parent, int swtStyle) {
 		super(parent, swtStyle);
-		section = Section.findSection(this);
+		section = (TextSection) TextSection.findSection(this);
 	}
 
-	public Section getSection() {
+	public TextSection getSection() {
 		return section;
 	}
 

@@ -3,7 +3,6 @@ package org.argeo.cms.text;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.jcr.Item;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
@@ -14,13 +13,26 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.CmsEditable;
 import org.argeo.cms.CmsException;
+import org.argeo.cms.CmsImageManager;
 import org.argeo.cms.CmsNames;
+import org.argeo.cms.CmsSession;
 import org.argeo.cms.CmsTypes;
 import org.argeo.cms.CmsUtils;
+import org.argeo.cms.IdentityTextInterpreter;
+import org.argeo.cms.TextInterpreter;
+import org.argeo.cms.viewers.Section;
+import org.argeo.cms.viewers.SectionPart;
+import org.argeo.cms.widgets.EditableImage;
+import org.argeo.cms.widgets.EditablePart;
 import org.argeo.cms.widgets.EditableText;
 import org.argeo.cms.widgets.ScrolledPage;
+import org.argeo.cms.widgets.StyledControl;
 import org.eclipse.jface.viewers.ContentViewer;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.rap.addons.fileupload.FileDetails;
+import org.eclipse.rap.addons.fileupload.FileUploadEvent;
+import org.eclipse.rap.addons.fileupload.FileUploadHandler;
+import org.eclipse.rap.addons.fileupload.FileUploadListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
@@ -31,26 +43,31 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 
 /** Base class for all text viewers/editors. */
-public abstract class AbstractTextViewer extends ContentViewer implements
-		CmsNames, KeyListener, Observer {
+abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
+		KeyListener, Observer {
 	private static final long serialVersionUID = -2401274679492339668L;
 
 	private final static Log log = LogFactory.getLog(AbstractTextViewer.class);
 
-	protected final Section mainSection;
+	protected final TextSection mainSection;
 	/** The basis for the layouts, typically a ScrolledPage. */
 	protected final Composite page;
 
-	private EditableTextPart edited;
+	private final CmsEditable cmsEditable;
 
 	private TextInterpreter textInterpreter = new IdentityTextInterpreter();
+	private CmsImageManager imageManager = CmsSession.current.get()
+			.getImageManager();
+
 	private MouseListener mouseListener;
-	private final CmsEditable cmsEditable;
+	private FileUploadListener fileUploadListener;
+
+	// THE edited part
+	private EditablePart edited;
 
 	public AbstractTextViewer(Composite parent, Node textNode,
 			CmsEditable cmsEditable) {
@@ -61,11 +78,13 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 			if (this.cmsEditable instanceof Observable)
 				((Observable) this.cmsEditable).addObserver(this);
 
-			if (cmsEditable.canEdit())
+			if (cmsEditable.canEdit()) {
 				mouseListener = new ML();
+				fileUploadListener = new FUL();
+			}
 
 			page = findPage(parent);
-			mainSection = new Section(parent, SWT.NONE, textNode);
+			mainSection = new TextSection(parent, SWT.NONE, textNode);
 			mainSection.setLayoutData(CmsUtils.fillWidth());
 
 			if (!textNode.hasProperty(Property.JCR_TITLE)
@@ -78,7 +97,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 		}
 	}
 
-	protected void refresh(Section section) throws RepositoryException {
+	protected void refresh(TextSection section) throws RepositoryException {
 		CmsUtils.clear(section);
 
 		Node node = section.getNode();
@@ -100,7 +119,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 		}
 	}
 
-	protected Boolean hasHeader(Section section) throws RepositoryException {
+	protected Boolean hasHeader(TextSection section) throws RepositoryException {
 		return section.getNode().hasProperty(Property.JCR_TITLE);
 	}
 
@@ -121,9 +140,8 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 
 	@Override
 	public void update(Observable o, Object arg) {
-		if (o == cmsEditable) {
+		if (o == cmsEditable)
 			editingStateChanged(cmsEditable);
-		}
 	}
 
 	/** Does nothing, to be overridden */
@@ -158,7 +176,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 	}
 
 	// CRUD
-	protected Paragraph newParagraph(Section parent, Node node)
+	protected Paragraph newParagraph(TextSection parent, Node node)
 			throws RepositoryException {
 		Paragraph paragraph = new Paragraph(parent, parent.getStyle(), node);
 		updateContent(paragraph);
@@ -166,61 +184,77 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 		return paragraph;
 	}
 
-	protected Img newImg(Section parent, Node node) throws RepositoryException {
+	protected Img newImg(TextSection parent, Node node)
+			throws RepositoryException {
 		Img img = new Img(parent, parent.getStyle(), node);
 		updateContent(img);
 		img.setMouseListener(mouseListener);
 		return img;
 	}
 
-	protected SectionTitle newSectionTitle(Section parent, Node node)
+	protected SectionTitle newSectionTitle(TextSection parent, Node node)
 			throws RepositoryException {
 		SectionTitle sectionTitle = new SectionTitle(parent.getHeader(),
 				parent.getStyle());
-		// sectionTitle.setData(node.getProperty(Property.JCR_TITLE));
 		updateContent(sectionTitle);
 		sectionTitle.setMouseListener(mouseListener);
 		return sectionTitle;
 	}
 
-	protected void updateContent(EditableTextPart part)
-			throws RepositoryException {
-		// Item item = CmsUtils.getDataItem((Composite) part,
-		// mainSection.getNode());
-		if (part instanceof Paragraph) {
-			Paragraph paragraph = (Paragraph) part;
-			Node node = paragraph.getNode();
-			String style = node.hasProperty(CMS_STYLE) ? node.getProperty(
-					CMS_STYLE).getString() : paragraph.getSection()
-					.getDefaultTextStyle();
-			paragraph.setStyle(style);
-			// retrieve control AFTER setting style, since it may have been
-			// reset
-			setText(paragraph, node);
+	protected void updateContent(EditablePart part) throws RepositoryException {
+		if (part instanceof SectionPart) {
+			SectionPart sectionPart = (SectionPart) part;
+			Node partNode = sectionPart.getNode();
+			TextSection section = (TextSection) sectionPart.getSection();
+
+			if (part instanceof StyledControl) {
+				StyledControl styledControl = (StyledControl) part;
+				if (partNode.isNodeType(CmsTypes.CMS_STYLED)) {
+					String style = partNode.hasProperty(CMS_STYLE) ? partNode
+							.getProperty(CMS_STYLE).getString() : section
+							.getDefaultTextStyle();
+					styledControl.setStyle(style);
+				}
+			}
+			// use control AFTER setting style, since it may have been reset
+
+			if (part instanceof EditableText) {
+				EditableText paragraph = (EditableText) part;
+				if (paragraph == edited)
+					paragraph.setText(textInterpreter.read(partNode));
+				else
+					paragraph.setText(textInterpreter.raw(partNode));
+			} else if (part instanceof EditableImage) {
+				imageManager.load(partNode, part.getControl(), null);
+			}
 		} else if (part instanceof SectionTitle) {
 			SectionTitle sectionTitle = (SectionTitle) part;
 			sectionTitle.setStyle(sectionTitle.getSection().getTitleStyle());
-			// retrieve control AFTER setting style, since
-			// it may have been reset
-			setText(sectionTitle, sectionTitle.getProperty());
+			// use control AFTER setting style
+			if (sectionTitle == edited)
+				sectionTitle.setText(textInterpreter.read(sectionTitle
+						.getProperty()));
+			else
+				sectionTitle.setText(textInterpreter.raw(sectionTitle
+						.getProperty()));
 		}
 	}
 
-	protected void setText(EditableText textPart, Item item) {
-		Control child = textPart.getControl();
-		if (child instanceof Label)
-			((Label) child).setText(textInterpreter.raw(item));
-		else if (child instanceof Text)
-			((Text) child).setText(textInterpreter.read(item));
-	}
+	// protected void setText(EditableText textPart, Item item) {
+	// Control child = textPart.getControl();
+	// if (child instanceof Text) {
+	// ((Label) child).setText(textInterpreter.raw(item));
+	// } else {
+	// ((Text) child).setText(textInterpreter.read(item));
+	// }
+	// }
 
 	// GENERIC EDITION
-	public void edit(EditableTextPart part) {
+	public void edit(EditablePart part) {
 		edit(part, null);
-
 	}
 
-	public void edit(EditableTextPart part, Object caretPosition) {
+	public void edit(EditablePart part, Object caretPosition) {
 		try {
 			if (edited == part)
 				return;
@@ -228,20 +262,17 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 			if (edited != null && edited != part)
 				stopEditing(true);
 
-			if (part instanceof EditableTextPart) {
-				EditableTextPart paragraph = (EditableTextPart) part;
-				paragraph.startEditing();
-				updateContent(paragraph);
-				prepare(paragraph, caretPosition);
-				edited = part;
-				layout(paragraph.getControl());
-			}
+			part.startEditing();
+			updateContent(part);
+			prepare(part, caretPosition);
+			edited = part;
+			layout(part.getControl());
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot edit " + part, e);
 		}
 	}
 
-	protected void save(EditableTextPart part) throws RepositoryException {
+	protected void save(EditablePart part) throws RepositoryException {
 		if (part instanceof Paragraph) {
 			textInterpreter.write(((Paragraph) part).getNode(),
 					((Text) part.getControl()).getText());
@@ -275,20 +306,22 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 			return;
 		}
 
-		if (edited instanceof EditableTextPart) {
-			EditableTextPart paragraph = (EditableTextPart) edited;
-			if (save) {
-				save(paragraph);
-			}
-			paragraph.stopEditing();
-			updateContent(paragraph);
-			layout(((EditableTextPart) edited).getControl());
-			edited = null;
+		if (edited == null) {
+			log.warn("Told to stop editing while not editing anything");
+			return;
 		}
+
+		if (save)
+			save(edited);
+
+		edited.stopEditing();
+		updateContent(edited);
+		layout(((EditablePart) edited).getControl());
+		edited = null;
 	}
 
-	protected void prepare(EditableTextPart st, Object caretPosition) {
-		Control control = st.getControl();
+	protected void prepare(EditablePart part, Object caretPosition) {
+		Control control = part.getControl();
 		if (control instanceof Text) {
 			Text text = (Text) control;
 			if (caretPosition != null)
@@ -304,6 +337,8 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 			text.setData(RWT.CANCEL_KEYS, new String[] { "ALT+ARROW_LEFT",
 					"ALT+ARROW_RIGHT" });
 			text.addKeyListener(this);
+		} else if (part instanceof Img) {
+			((Img) part).setFileUploadListener(fileUploadListener);
 		}
 	}
 
@@ -443,7 +478,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 			textInterpreter.write(paragraphNode, txt + nextTxt);
 
 			Section section = paragraph.getSection();
-			Paragraph removed = (Paragraph) section.getParagraph(nextNode
+			Paragraph removed = (Paragraph) section.getSectionPart(nextNode
 					.getIdentifier());
 
 			nextNode.remove();
@@ -456,7 +491,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 		}
 	}
 
-	protected void upload(EditableTextPart part) {
+	protected void upload(EditablePart part) {
 		try {
 			if (part instanceof SectionPart) {
 				SectionPart sectionPart = (SectionPart) part;
@@ -464,6 +499,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 				int partIndex = partNode.getIndex();
 				Section section = sectionPart.getSection();
 				Node sectionNode = section.getNode();
+
 				if (part instanceof Paragraph) {
 					Node newNode = sectionNode.addNode(CMS_P,
 							CmsTypes.CMS_STYLED);
@@ -474,7 +510,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 					}
 					sectionNode.orderBefore(p(partNode.getIndex()),
 							p(newNode.getIndex()));
-					Img img = newImg(section, newNode);
+					Img img = newImg((TextSection) section, newNode);
 					edit(img, null);
 					layout(img.getControl());
 				} else if (part instanceof Img) {
@@ -502,7 +538,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 			throws RepositoryException {
 		Section section = paragraph.getSection();
 		updateContent(paragraph);
-		Paragraph newParagraph = newParagraph(section, newNode);
+		Paragraph newParagraph = newParagraph((TextSection) section, newNode);
 		newParagraph.setLayoutData(CmsUtils.fillWidth());
 		newParagraph.moveBelow(paragraph);
 		layout(paragraph.getControl(), newParagraph.getControl());
@@ -525,7 +561,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 		Section section = removed.getSection();
 		removed.dispose();
 
-		Paragraph paragraph = (Paragraph) section.getParagraph(remaining
+		Paragraph paragraph = (Paragraph) section.getSectionPart(remaining
 				.getIdentifier());
 		updateContent(paragraph);
 		layout(paragraph.getControl());
@@ -610,11 +646,11 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 		return sb.toString();
 	}
 
-	protected EditableTextPart getEdited() {
+	protected EditablePart getEdited() {
 		return edited;
 	}
 
-	public Section getMainSection() {
+	public TextSection getMainSection() {
 		return mainSection;
 	}
 
@@ -643,7 +679,7 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 				if (cmsEditable.isEditing()) {
 					if (e.button == 1) {
 						Control source = (Control) e.getSource();
-						EditableTextPart part = findDataParent(source);
+						EditablePart part = findDataParent(source);
 						upload(part);
 					}
 				} else
@@ -655,11 +691,11 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 			if (cmsEditable.isEditing()) {
 				if (e.button == 1) {
 					Control source = (Control) e.getSource();
-					EditableTextPart composite = findDataParent(source);
+					EditablePart composite = findDataParent(source);
 					Point point = new Point(e.x, e.y);
 					edit(composite, source.toDisplay(point));
 				} else if (e.button == 3) {
-					EditableTextPart composite = findDataParent((Control) e
+					EditablePart composite = findDataParent((Control) e
 							.getSource());
 					if (getStyledTools() != null)
 						getStyledTools().show(composite, new Point(e.x, e.y));
@@ -667,9 +703,9 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 			}
 		}
 
-		private EditableTextPart findDataParent(Control parent) {
-			if (parent instanceof EditableTextPart) {
-				return (EditableTextPart) parent;
+		private EditablePart findDataParent(Control parent) {
+			if (parent instanceof EditablePart) {
+				return (EditablePart) parent;
 			}
 			if (parent.getParent() != null)
 				return findDataParent(parent.getParent());
@@ -679,6 +715,34 @@ public abstract class AbstractTextViewer extends ContentViewer implements
 
 		@Override
 		public void mouseUp(MouseEvent e) {
+		}
+
+	}
+
+	private class FUL implements FileUploadListener {
+		public void uploadProgress(FileUploadEvent event) {
+			// handle upload progress
+		}
+
+		public void uploadFailed(FileUploadEvent event) {
+			throw new CmsException("Upload failed " + event,
+					event.getException());
+		}
+
+		public void uploadFinished(FileUploadEvent event) {
+			for (FileDetails file : event.getFileDetails()) {
+				if (log.isDebugEnabled())
+					log.debug("Received: " + file.getFileName());
+			}
+			FileUploadHandler uploadHandler = (FileUploadHandler) event
+					.getSource();
+			uploadHandler.dispose();
+
+			try {
+				stopEditing(true);
+			} catch (RepositoryException e) {
+				throw new CmsException("Cannot stop editing", e);
+			}
 		}
 
 	}

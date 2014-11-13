@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.argeo.cms.CmsNames;
+import org.argeo.cms.widgets.EditablePart;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -29,7 +30,7 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 
 	private Label deleteButton, publishButton, editButton;
 
-	private EditableTextPart currentTextPart;
+	private EditablePart currentTextPart;
 
 	public StyledTools(AbstractTextViewer textViewer, Display display) {
 		super(display, SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
@@ -65,7 +66,7 @@ class StyledTools extends Shell implements CmsNames, TextStyles {
 		addShellListener(new ToolsShellListener());
 	}
 
-	public void show(EditableTextPart source, Point location) {
+	public void show(EditablePart source, Point location) {
 		if (isVisible())
 			setVisible(false);
 

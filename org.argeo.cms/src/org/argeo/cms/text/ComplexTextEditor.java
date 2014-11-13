@@ -9,6 +9,7 @@ import org.argeo.cms.CmsEditable;
 import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsTypes;
 import org.argeo.cms.CmsUtils;
+import org.argeo.cms.viewers.Section;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -32,13 +33,14 @@ public class ComplexTextEditor extends FlatTextEditor {
 				mainSection.getNode());
 	}
 
-	protected void refresh(Section section) throws RepositoryException {
+	protected void refresh(TextSection section) throws RepositoryException {
 		super.refresh(section);
 
 		for (NodeIterator ni = section.getNode().getNodes(CMS_H); ni.hasNext();) {
 			Node child = ni.nextNode();
 			if (child.isNodeType(CmsTypes.CMS_SECTION)) {
-				Section newSection = new Section(section, SWT.NONE, child);
+				TextSection newSection = new TextSection(section, SWT.NONE,
+						child);
 				newSection.setLayoutData(CmsUtils.fillWidth());
 				refresh(newSection);
 			}

@@ -1,4 +1,4 @@
-package org.argeo.cms.file;
+package org.argeo.cms.internal;
 
 import static javax.jcr.nodetype.NodeType.NT_FILE;
 import static org.argeo.cms.CmsTypes.CMS_STYLED;

@@ -5,11 +5,10 @@ import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.cms.CmsConstants;
 import org.argeo.cms.CmsUtils;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
@@ -30,21 +29,24 @@ public abstract class EditableImage extends StyledControl {
 		super(parent, style, node, cacheImmediately);
 	}
 
-	protected abstract String createImgTag() throws RepositoryException;
+	/** To be overriden. */
+	protected String createImgTag() throws RepositoryException {
+		return CmsUtils
+				.noImg(preferredSize != null ? preferredSize : getSize());
+	}
 
 	protected Label createLabel(Composite box, String style) {
-		Label lbl = new Label(box, getStyle() | SWT.WRAP);
+		Label lbl = new Label(box, getStyle());
 		lbl.setLayoutData(CmsUtils.fillWidth());
-		lbl.setData(CmsConstants.MARKUP, true);
+		CmsUtils.markup(lbl);
 		CmsUtils.style(lbl, style);
-		load(lbl);
-		getParent().layout();
 		if (mouseListener != null)
 			lbl.addMouseListener(mouseListener);
 		return lbl;
 	}
 
-	protected synchronized Boolean load(Label lbl) {
+	/** To be overriden. */
+	protected synchronized Boolean load(Control control) {
 		String imgTag;
 		try {
 			imgTag = createImgTag();
@@ -60,10 +62,12 @@ public abstract class EditableImage extends StyledControl {
 			imgTag = CmsUtils.noImg(preferredSize);
 		} else
 			loaded = true;
-		if (lbl != null)
-			lbl.setText(imgTag);
-		else
+		if (control != null) {
+			((Label) control).setText(imgTag);
+			control.setSize(preferredSize != null ? preferredSize : getSize());
+		} else {
 			loaded = false;
+		}
 		getParent().layout();
 		return loaded;
 	}

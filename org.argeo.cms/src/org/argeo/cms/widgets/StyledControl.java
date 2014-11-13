@@ -39,7 +39,8 @@ public abstract class StyledControl extends NodeComposite implements
 		super(parent, style, node, cacheImmediately);
 	}
 
-	protected abstract Control createControl(Composite box, String style);
+	protected abstract Control createControl(Composite box, String style,
+			Integer preferredHeight);
 
 	protected Composite createBox(Composite parent) {
 		Composite container = new Composite(parent, SWT.INHERIT_DEFAULT);
@@ -59,10 +60,10 @@ public abstract class StyledControl extends NodeComposite implements
 	public synchronized void startEditing() {
 		assert !isEditing();
 		editing = true;
-		// int height = child.getSize().y;
+		int height = control.getSize().y;
 		String style = (String) control.getData(STYLE);
 		clear(false);
-		control = createControl(box, style);
+		control = createControl(box, style, height);
 	}
 
 	public synchronized void stopEditing() {
@@ -70,7 +71,7 @@ public abstract class StyledControl extends NodeComposite implements
 		editing = false;
 		String style = (String) control.getData(STYLE);
 		clear(false);
-		control = createControl(box, style);
+		control = createControl(box, style, null);
 	}
 
 	public void setStyle(String style) {
@@ -81,11 +82,8 @@ public abstract class StyledControl extends NodeComposite implements
 			return;
 
 		clear(true);
-		control = createControl(box, style);
-		// if (child == null || child instanceof Label)
-		// child = createLabel(style);
-		// else if (child instanceof Text)
-		// child = createText(style, child.getSize().y);
+		Integer preferredHeight = control != null ? control.getSize().y : null;
+		control = createControl(box, style, preferredHeight);
 		control.getParent().setData(STYLE, style + "_box");
 		control.getParent().getParent().setData(STYLE, style + "_container");
 	}

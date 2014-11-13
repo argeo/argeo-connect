@@ -55,6 +55,10 @@ public class CmsUtils implements CmsConstants {
 		widget.setData(CmsConstants.STYLE, style);
 	}
 
+	public static void markup(Widget widget) {
+		widget.setData(CmsConstants.MARKUP, Boolean.TRUE);
+	}
+
 	/** @return the path or null if not instrumented */
 	public static String getDataPath(Widget widget) {
 		// JCR item

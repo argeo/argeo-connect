@@ -1,4 +1,4 @@
-package org.argeo.cms.text;
+package org.argeo.cms;
 
 import javax.jcr.Item;
 

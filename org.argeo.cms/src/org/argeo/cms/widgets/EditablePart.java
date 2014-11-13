@@ -1,8 +1,8 @@
-package org.argeo.cms.text;
+package org.argeo.cms.widgets;
 
 import org.eclipse.swt.widgets.Control;
 
-public interface EditableTextPart {
+public interface EditablePart {
 	public void startEditing();
 
 	public void stopEditing();

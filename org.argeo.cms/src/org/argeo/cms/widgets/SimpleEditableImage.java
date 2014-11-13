@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 
+/** NOT working yet. */
 public class SimpleEditableImage extends EditableImage {
 	private static final long serialVersionUID = -5689145523114022890L;
 
@@ -17,6 +18,8 @@ public class SimpleEditableImage extends EditableImage {
 
 	public SimpleEditableImage(Composite parent, int swtStyle) {
 		super(parent, swtStyle);
+		// load(getControl());
+		getParent().layout();
 	}
 
 	public SimpleEditableImage(Composite parent, int swtStyle, String src,
@@ -32,7 +35,8 @@ public class SimpleEditableImage extends EditableImage {
 	}
 
 	@Override
-	protected Control createControl(Composite box, String style) {
+	protected Control createControl(Composite box, String style,
+			Integer preferredHeight) {
 		if (isEditing()) {
 			return createText(box, style);
 		} else {

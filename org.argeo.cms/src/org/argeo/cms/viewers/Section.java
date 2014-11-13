@@ -1,4 +1,4 @@
-package org.argeo.cms.text;
+package org.argeo.cms.viewers;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -9,8 +9,8 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsNames;
-import org.argeo.cms.CmsTypes;
 import org.argeo.cms.CmsUtils;
+import org.argeo.cms.widgets.EditablePart;
 import org.argeo.cms.widgets.NodeComposite;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -23,9 +23,6 @@ public class Section extends NodeComposite implements CmsNames {
 	private Composite sectionHeader;
 	private final Integer relativeDepth;
 
-	private String defaultTextStyle = TextStyles.TEXT_DEFAULT;
-	private String titleStyle;
-
 	public Section(Composite parent, int style, Node node)
 			throws RepositoryException {
 		this(parent, findSection(parent), style, node);
@@ -36,7 +33,7 @@ public class Section extends NodeComposite implements CmsNames {
 		this(section, section, style, node);
 	}
 
-	private Section(Composite parent, Section parentSection, int style,
+	protected Section(Composite parent, Section parentSection, int style,
 			Node node) throws RepositoryException {
 		super(parent, style, node);
 		this.parentSection = parentSection;
@@ -47,14 +44,13 @@ public class Section extends NodeComposite implements CmsNames {
 			relativeDepth = 0;
 		}
 		setLayout(CmsUtils.noSpaceGridLayout());
-		CmsUtils.style(this, TextStyles.TEXT_SECTION);
 	}
 
 	public Map<String, Section> getSubSections() throws RepositoryException {
 		LinkedHashMap<String, Section> result = new LinkedHashMap<String, Section>();
 		children: for (Control child : getChildren()) {
 			if (child instanceof Composite) {
-				if (child == sectionHeader || child instanceof EditableTextPart)
+				if (child == sectionHeader || child instanceof EditablePart)
 					continue children;
 				collectDirectSubSections((Composite) child, result);
 			}
@@ -82,6 +78,8 @@ public class Section extends NodeComposite implements CmsNames {
 		sectionHeader = new Composite(this, SWT.NONE);
 		sectionHeader.setLayoutData(CmsUtils.fillWidth());
 		sectionHeader.setLayout(CmsUtils.noSpaceGridLayout());
+		sectionHeader.moveAbove(null);
+		layout();
 	}
 
 	public Composite getHeader() {
@@ -89,7 +87,7 @@ public class Section extends NodeComposite implements CmsNames {
 	}
 
 	// SECTION PARTS
-	SectionPart getParagraph(String nodeId) {
+	public SectionPart getSectionPart(String nodeId) {
 		for (Control child : getChildren()) {
 			if (child instanceof SectionPart) {
 				SectionPart paragraph = (SectionPart) child;
@@ -100,7 +98,7 @@ public class Section extends NodeComposite implements CmsNames {
 		return null;
 	}
 
-	SectionPart nextSectionPart(SectionPart sectionPart) {
+	public SectionPart nextSectionPart(SectionPart sectionPart) {
 		Control[] children = getChildren();
 		for (int i = 0; i < children.length; i++) {
 			if (sectionPart == children[i])
@@ -114,7 +112,7 @@ public class Section extends NodeComposite implements CmsNames {
 		return null;
 	}
 
-	SectionPart previousSectionPart(SectionPart sectionPart) {
+	public SectionPart previousSectionPart(SectionPart sectionPart) {
 		Control[] children = getChildren();
 		for (int i = 0; i < children.length; i++) {
 			if (sectionPart == children[i])
@@ -126,27 +124,6 @@ public class Section extends NodeComposite implements CmsNames {
 				}
 		}
 		return null;
-	}
-
-	public String getDefaultTextStyle() {
-		return defaultTextStyle;
-	}
-
-	public String getTitleStyle() {
-		if (titleStyle != null)
-			return titleStyle;
-		// TODO make base H styles configurable
-		Integer relativeDepth = getRelativeDepth();
-		return relativeDepth == 0 ? TextStyles.TEXT_TITLE : TextStyles.TEXT_H
-				+ relativeDepth;
-	}
-
-	public void setDefaultTextStyle(String defaultTextStyle) {
-		this.defaultTextStyle = defaultTextStyle;
-	}
-
-	public void setTitleStyle(String titleStyle) {
-		this.titleStyle = titleStyle;
 	}
 
 	@Override
