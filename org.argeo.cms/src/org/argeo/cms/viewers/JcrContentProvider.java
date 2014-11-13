@@ -10,7 +10,8 @@ import org.argeo.cms.CmsException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-public class JcrContentProvider implements ITreeContentProvider {
+@Deprecated
+class JcrContentProvider implements ITreeContentProvider {
 	private static final long serialVersionUID = -1333678161322488674L;
 
 	@Override
