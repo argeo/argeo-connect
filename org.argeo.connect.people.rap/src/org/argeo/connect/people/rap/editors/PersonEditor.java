@@ -87,12 +87,6 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 	}
 
 	@Override
-	protected void createToolkits() {
-		// activityTK = new ActivityToolkit(toolkit, getManagedForm(),
-		// getPeopleService(), getPeopleWorkbenchService());
-	}
-
-	@Override
 	protected void populateHeader(Composite parent) {
 		GridLayout gl = PeopleUiUtils.noSpaceGridLayout();
 		gl.marginBottom = 10;
@@ -166,7 +160,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				innerPannel, SWT.NONE, getPeopleService(), person);
 		historyLogCmp.setLayoutData(PeopleUiUtils.fillGridData());
 
-		folder.layout();
+		// folder.layout();
 	}
 
 	protected void populateTitleComposite(Composite parent) {
@@ -217,7 +211,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 
 		// Fourth Line: Polite form & spoken languages
 		Composite fourthCmp = toolkit.createComposite(editPanel, SWT.NO_FOCUS);
-		fourthCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		fourthCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
 		fourthCmp.setLayout(new GridLayout(4, false));
 
 		// Create edit text
@@ -535,7 +529,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				ResourceService rs = getPeopleService().getResourceService();
 				if (isoVal != null
 						&& rs.getEncodedTagValue(getSession(),
-								PeopleConstants.RESOURCE_COUNTRY, isoVal)
+								PeopleConstants.RESOURCE_LANG, isoVal)
 								.equals(button.getText()))
 					tmp = true;
 			}
