@@ -20,7 +20,6 @@ import org.eclipse.rap.rwt.widgets.FileUpload;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -33,6 +32,8 @@ public class Img extends EditableImage implements SectionPart {
 	private final TextSection section;
 
 	private final CmsImageManager imageManager;
+
+	private FileUploadHandler currentUploadHandler = null;
 	private FileUploadListener fileUploadListener;
 
 	public Img(Composite parent, int swtStyle, Node imgNode)
@@ -86,8 +87,8 @@ public class Img extends EditableImage implements SectionPart {
 	protected synchronized Boolean load(Control lbl) {
 		try {
 			Node imgNode = getNode();
-			boolean loaded = imageManager
-					.load(imgNode, lbl, getPreferredSize());
+			boolean loaded = imageManager.load(imgNode, lbl,
+					getPreferredImageSize());
 			getParent().layout();
 			return loaded;
 		} catch (RepositoryException e) {
@@ -98,26 +99,26 @@ public class Img extends EditableImage implements SectionPart {
 
 	protected Control createImageChooser(Composite box, String style)
 			throws RepositoryException {
-		// createLabel(box, style);
-
+		// FileDialog fileDialog = new FileDialog(getShell());
+		// fileDialog.open();
+		// String fileName = fileDialog.getFileName();
+		CmsImageManager imageManager = CmsSession.current.get()
+				.getImageManager();
 		JcrFileUploadReceiver receiver = new JcrFileUploadReceiver(getNode()
-				.getParent(), getNode().getName());
-		final FileUploadHandler uploadHandler = prepareUpload(receiver);
+				.getParent(), getNode().getName(), imageManager);
+		if (currentUploadHandler != null)
+			currentUploadHandler.dispose();
+		currentUploadHandler = prepareUpload(receiver);
 		final ServerPushSession pushSession = new ServerPushSession();
 		final FileUpload fileUpload = new FileUpload(box, SWT.NONE);
-		// fileUpload.moveAbove(null);
 		CmsUtils.style(fileUpload, style);
-		CmsUtils.markup(fileUpload);
-		// fileUpload.setText("...");
-		fileUpload.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true,
-				true));
 		fileUpload.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = -9158471843941668562L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				pushSession.start();
-				fileUpload.submit(uploadHandler.getUploadUrl());
+				fileUpload.submit(currentUploadHandler.getUploadUrl());
 			}
 		});
 		return fileUpload;
@@ -137,6 +138,8 @@ public class Img extends EditableImage implements SectionPart {
 
 	public void setFileUploadListener(FileUploadListener fileUploadListener) {
 		this.fileUploadListener = fileUploadListener;
+		if (currentUploadHandler != null)
+			currentUploadHandler.addUploadListener(fileUploadListener);
 	}
 
 }

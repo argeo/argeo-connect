@@ -1,5 +1,7 @@
 package org.argeo.cms.text;
 
+import static org.argeo.cms.CmsUtils.fillWidth;
+
 import java.util.Observable;
 import java.util.Observer;
 
@@ -46,7 +48,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 
-/** Base class for all text viewers/editors. */
+/** Base class for text viewers and editors. */
 abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 		KeyListener, Observer {
 	private static final long serialVersionUID = -2401274679492339668L;
@@ -89,8 +91,10 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 
 			if (!textNode.hasProperty(Property.JCR_TITLE)
 					&& !textNode.hasNodes())
-				if (cmsEditable.canEdit())
+				if (cmsEditable.canEdit()) {
 					initModel();
+					textNode.getSession().save();
+				}
 			refresh();
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot load main section", e);
@@ -180,6 +184,7 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 			throws RepositoryException {
 		Paragraph paragraph = new Paragraph(parent, parent.getStyle(), node);
 		updateContent(paragraph);
+		paragraph.setLayoutData(fillWidth());
 		paragraph.setMouseListener(mouseListener);
 		return paragraph;
 	}
@@ -187,6 +192,7 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 	protected Img newImg(TextSection parent, Node node)
 			throws RepositoryException {
 		Img img = new Img(parent, parent.getStyle(), node);
+		// img.setLayoutData(fillWidth());
 		updateContent(img);
 		img.setMouseListener(mouseListener);
 		return img;
@@ -194,11 +200,11 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 
 	protected SectionTitle newSectionTitle(TextSection parent, Node node)
 			throws RepositoryException {
-		SectionTitle sectionTitle = new SectionTitle(parent.getHeader(),
+		SectionTitle title = new SectionTitle(parent.getHeader(),
 				parent.getStyle());
-		updateContent(sectionTitle);
-		sectionTitle.setMouseListener(mouseListener);
-		return sectionTitle;
+		updateContent(title);
+		title.setMouseListener(mouseListener);
+		return title;
 	}
 
 	protected void updateContent(EditablePart part) throws RepositoryException {
@@ -225,36 +231,23 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 				else
 					paragraph.setText(textInterpreter.raw(partNode));
 			} else if (part instanceof EditableImage) {
-				imageManager.load(partNode, part.getControl(), null);
+				EditableImage editableImage = (EditableImage) part;
+				imageManager.load(partNode, part.getControl(),
+						editableImage.getPreferredImageSize());
 			}
 		} else if (part instanceof SectionTitle) {
-			SectionTitle sectionTitle = (SectionTitle) part;
-			sectionTitle.setStyle(sectionTitle.getSection().getTitleStyle());
+			SectionTitle title = (SectionTitle) part;
+			title.setStyle(title.getSection().getTitleStyle());
 			// use control AFTER setting style
-			if (sectionTitle == edited)
-				sectionTitle.setText(textInterpreter.read(sectionTitle
-						.getProperty()));
+			if (title == edited)
+				title.setText(textInterpreter.read(title.getProperty()));
 			else
-				sectionTitle.setText(textInterpreter.raw(sectionTitle
-						.getProperty()));
+				title.setText(textInterpreter.raw(title.getProperty()));
 		}
 	}
 
-	// protected void setText(EditableText textPart, Item item) {
-	// Control child = textPart.getControl();
-	// if (child instanceof Text) {
-	// ((Label) child).setText(textInterpreter.raw(item));
-	// } else {
-	// ((Text) child).setText(textInterpreter.read(item));
-	// }
-	// }
-
-	// GENERIC EDITION
-	public void edit(EditablePart part) {
-		edit(part, null);
-	}
-
-	public void edit(EditablePart part, Object caretPosition) {
+	// LOW LEVEL EDITION
+	private void edit(EditablePart part, Object caretPosition) {
 		try {
 			if (edited == part)
 				return;
@@ -272,7 +265,7 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 		}
 	}
 
-	protected void save(EditablePart part) throws RepositoryException {
+	private void save(EditablePart part) throws RepositoryException {
 		if (part instanceof Paragraph) {
 			textInterpreter.write(((Paragraph) part).getNode(),
 					((Text) part.getControl()).getText());
@@ -282,32 +275,16 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 		}
 	}
 
-	public void saveEdit() {
-		try {
-			if (edited != null)
-				stopEditing(true);
-		} catch (RepositoryException e) {
-			throw new CmsException("Cannot stop editing", e);
-		}
-	}
-
-	public void cancelEdit() {
-		try {
-			if (edited != null)
-				stopEditing(false);
-		} catch (RepositoryException e) {
-			throw new CmsException("Cannot stop editing", e);
-		}
-	}
-
-	protected void stopEditing(Boolean save) throws RepositoryException {
+	private void stopEditing(Boolean save) throws RepositoryException {
 		if (edited instanceof Widget && ((Widget) edited).isDisposed()) {
 			edited = null;
 			return;
 		}
 
+		assert edited != null;
 		if (edited == null) {
-			log.warn("Told to stop editing while not editing anything");
+			if (log.isTraceEnabled())
+				log.warn("Told to stop editing while not editing anything");
 			return;
 		}
 
@@ -332,8 +309,8 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 				}
 			text.setData(RWT.ACTIVE_KEYS, new String[] { "BACKSPACE", "ESC",
 					"TAB", "SHIFT+TAB", "ALT+ARROW_LEFT", "ALT+ARROW_RIGHT",
-					"ALT+ARROW_UP", "ALT+ARROW_DOWN", "RETURN", "ENTER",
-					"DELETE" });
+					"ALT+ARROW_UP", "ALT+ARROW_DOWN", "RETURN", "CTRL+RETURN",
+					"ENTER", "DELETE" });
 			text.setData(RWT.CANCEL_KEYS, new String[] { "ALT+ARROW_LEFT",
 					"ALT+ARROW_RIGHT" });
 			text.addKeyListener(this);
@@ -342,7 +319,8 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 		}
 	}
 
-	public void setParagraphStyle(Paragraph paragraph, String style) {
+	// REQUIRED BY STYLED TOOLS
+	void setParagraphStyle(Paragraph paragraph, String style) {
 		try {
 			Node paragraphNode = paragraph.getNode();
 			paragraphNode.setProperty(CMS_STYLE, style);
@@ -355,7 +333,7 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 		}
 	}
 
-	public void deleteParagraph(Paragraph paragraph) {
+	void deleteParagraph(Paragraph paragraph) {
 		try {
 			Node paragraphNode = paragraph.getNode();
 			Section section = paragraph.getSection();
@@ -369,8 +347,7 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 		}
 	}
 
-	// TEXT SPECIFIC EDITION
-	public String getRawParagraphText(Paragraph paragraph) {
+	String getRawParagraphText(Paragraph paragraph) {
 		try {
 			return textInterpreter.raw(paragraph.getNode());
 		} catch (RepositoryException e) {
@@ -378,7 +355,26 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 		}
 	}
 
-	public void splitEdit() {
+	// METHODS AVAILABLE TO EXTENDING CLASSES
+	protected void saveEdit() {
+		try {
+			if (edited != null)
+				stopEditing(true);
+		} catch (RepositoryException e) {
+			throw new CmsException("Cannot stop editing", e);
+		}
+	}
+
+	protected void cancelEdit() {
+		try {
+			if (edited != null)
+				stopEditing(false);
+		} catch (RepositoryException e) {
+			throw new CmsException("Cannot cancel editing", e);
+		}
+	}
+
+	protected void splitEdit() {
 		checkEdited();
 		try {
 			if (edited instanceof Paragraph) {
@@ -428,6 +424,7 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 
 				Paragraph paragraph = sectionTitleSplitted(sectionTitle,
 						paragraphNode);
+				// section.layout();
 				edit(paragraph, 0);
 			}
 		} catch (RepositoryException e) {
@@ -435,7 +432,7 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 		}
 	}
 
-	public void mergeWithPrevious() {
+	protected void mergeWithPrevious() {
 		checkEdited();
 		try {
 			Paragraph paragraph = (Paragraph) edited;
@@ -460,7 +457,7 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 		}
 	}
 
-	public void mergeWithNext() {
+	protected void mergeWithNext() {
 		checkEdited();
 		try {
 			Paragraph paragraph = (Paragraph) edited;
@@ -491,7 +488,7 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 		}
 	}
 
-	protected void upload(EditablePart part) {
+	protected synchronized void upload(EditablePart part) {
 		try {
 			if (part instanceof SectionPart) {
 				SectionPart sectionPart = (SectionPart) part;
@@ -514,8 +511,10 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 					edit(img, null);
 					layout(img.getControl());
 				} else if (part instanceof Img) {
+					if (edited == part)
+						return;
 					edit(part, null);
-					layout(((Img) part).getControl());
+					layout(part.getControl());
 				}
 			}
 		} catch (RepositoryException e) {
@@ -580,7 +579,7 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 	}
 
 	//
-	// LISTENERS
+	// KEY LISTENER
 	//
 	@Override
 	public void keyPressed(KeyEvent e) {
@@ -591,12 +590,16 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 			return;
 		boolean altPressed = (e.stateMask & SWT.ALT) != 0;
 		boolean shiftPressed = (e.stateMask & SWT.SHIFT) != 0;
+		boolean ctrlPressed = (e.stateMask & SWT.CTRL) != 0;
 
 		// Common
 		if (e.keyCode == SWT.ESC) {
 			cancelEdit();
 		} else if (e.character == '\r') {
 			splitEdit();
+		} else if (e.character == 'S') {
+			if (ctrlPressed)
+				saveEdit();
 		} else if (e.character == '\t') {
 			if (!shiftPressed) {
 				deepen();
@@ -633,6 +636,7 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 	public void keyReleased(KeyEvent e) {
 	}
 
+	// UTILITIES
 	protected void checkEdited() {
 		if (edited == null || (edited instanceof Widget)
 				&& ((Widget) edited).isDisposed())
@@ -666,7 +670,7 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 		return cmsEditable;
 	}
 
-	public StyledTools getStyledTools() {
+	protected StyledTools getStyledTools() {
 		return null;
 	}
 
@@ -675,15 +679,19 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 
 		@Override
 		public void mouseDoubleClick(MouseEvent e) {
-			if (cmsEditable.canEdit())
-				if (cmsEditable.isEditing()) {
-					if (e.button == 1) {
-						Control source = (Control) e.getSource();
+			if (e.button == 1) {
+				Control source = (Control) e.getSource();
+				if (cmsEditable.canEdit()) {
+					if (cmsEditable.isEditing() && !(edited instanceof Img)) {
+						if (source == mainSection)
+							return;
 						EditablePart part = findDataParent(source);
 						upload(part);
+					} else {
+						cmsEditable.startEditing();
 					}
-				} else
-					cmsEditable.startEditing();
+				}
+			}
 		}
 
 		@Override
@@ -693,7 +701,8 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 					Control source = (Control) e.getSource();
 					EditablePart composite = findDataParent(source);
 					Point point = new Point(e.x, e.y);
-					edit(composite, source.toDisplay(point));
+					if (!(composite instanceof Img))
+						edit(composite, source.toDisplay(point));
 				} else if (e.button == 3) {
 					EditablePart composite = findDataParent((Control) e
 							.getSource());
@@ -734,15 +743,22 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 				if (log.isDebugEnabled())
 					log.debug("Received: " + file.getFileName());
 			}
+
+			mainSection.getDisplay().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						stopEditing(true);
+					} catch (RepositoryException e) {
+						throw new CmsException("Cannot stop editing", e);
+					}
+				}
+			});
+
 			FileUploadHandler uploadHandler = (FileUploadHandler) event
 					.getSource();
 			uploadHandler.dispose();
 
-			try {
-				stopEditing(true);
-			} catch (RepositoryException e) {
-				throw new CmsException("Cannot stop editing", e);
-			}
 		}
 
 	}

@@ -11,6 +11,11 @@ import javax.jcr.version.VersionManager;
 import org.argeo.cms.CmsEditable;
 import org.argeo.cms.CmsEditionEvent;
 import org.argeo.cms.CmsException;
+import org.eclipse.rap.rwt.RWT;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 
 /** Provides the CmsEditable semantic based on JCR versioning. */
 public class JcrVersionCmsEditable extends Observable implements CmsEditable {
@@ -32,6 +37,24 @@ public class JcrVersionCmsEditable extends Observable implements CmsEditable {
 		} else {
 			canEdit = false;
 			versionManager = null;
+		}
+
+		// bind keys
+		if (canEdit) {
+			Display display = Display.getCurrent();
+			display.setData(RWT.ACTIVE_KEYS, new String[] { "CTRL+RETURN",
+					"CTRL+E" });
+			display.addFilter(SWT.KeyDown, new Listener() {
+				private static final long serialVersionUID = -4378653870463187318L;
+
+				public void handleEvent(Event e) {
+					boolean ctrlPressed = (e.stateMask & SWT.CTRL) != 0;
+					if (ctrlPressed && e.keyCode == '\r')
+						stopEditing();
+					else if (ctrlPressed && e.keyCode == 'E')
+						stopEditing();
+				}
+			});
 		}
 	}
 

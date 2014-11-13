@@ -3,7 +3,7 @@ package org.argeo.cms;
 /** API NOT STABLE (yet). */
 public interface CmsEditable {
 
-	/** Whether the calling thread can edit */
+	/** Whether the calling thread can edit, the value is immutable */
 	public Boolean canEdit();
 
 	public Boolean isEditing();

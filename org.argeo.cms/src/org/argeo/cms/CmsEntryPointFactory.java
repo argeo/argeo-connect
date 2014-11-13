@@ -17,7 +17,7 @@ import javax.jcr.version.VersionManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.cms.internal.SimpleImageManager;
+import org.argeo.cms.internal.ImageManagerImpl;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.EntryPoint;
@@ -51,7 +51,7 @@ public class CmsEntryPointFactory implements EntryPointFactory {
 	private Integer headerHeight = 40;
 
 	// Managers
-	private CmsImageManager imageManager = new SimpleImageManager();
+	private CmsImageManager imageManager = new ImageManagerImpl();
 
 	@Override
 	public EntryPoint create() {

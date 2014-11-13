@@ -2,9 +2,11 @@ package org.argeo.cms;
 
 import java.io.InputStream;
 
+import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 
@@ -35,6 +37,10 @@ public interface CmsImageManager {
 	 * needed) @return null if not available
 	 */
 	public String getImageUrl(Node node) throws RepositoryException;
+
+	public Binary getImageBinary(Node node) throws RepositoryException;
+
+	public Image getSwtImage(Node node) throws RepositoryException;
 
 	/** @return URL */
 	public String uploadImage(Node parentNode, String fileName, InputStream in)

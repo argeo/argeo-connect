@@ -26,13 +26,15 @@ import org.argeo.jcr.JcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.service.ResourceManager;
 import org.eclipse.rap.rwt.widgets.FileUpload;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 /** Manages only public images so far. */
-public class SimpleImageManager implements CmsImageManager, CmsNames {
+public class ImageManagerImpl implements CmsImageManager, CmsNames {
 	// private final static Log log =
 	// LogFactory.getLog(SimpleImageManager.class);
 	private MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();
@@ -49,7 +51,8 @@ public class SimpleImageManager implements CmsImageManager, CmsNames {
 				size = imageSize;
 			} else {
 				// no image if not completely known
-				size = resizeTo(NO_IMAGE_SIZE,preferredSize!=null?preferredSize: imageSize);
+				size = resizeTo(NO_IMAGE_SIZE,
+						preferredSize != null ? preferredSize : imageSize);
 				imgTag = CmsUtils.noImg(size);
 			}
 
@@ -66,28 +69,39 @@ public class SimpleImageManager implements CmsImageManager, CmsNames {
 		}
 
 		boolean loaded = false;
-		if (imgTag == null) {
-			// IMAGE RETRIEVED HERE
-			imgTag = getImageTag(node);
-			//
-			if (imgTag == null)
-				imgTag = CmsUtils.noImg(size);
-			else
-				loaded = true;
-		}
+		if (control == null)
+			return loaded;
 
-		// set on Label
-		if (control != null) {
-			if (control instanceof Label) {
-				Label lbl = (Label) control;
-				lbl.setText(imgTag);
-				lbl.setSize(size);
-			} else if (control instanceof FileUpload) {
-				FileUpload lbl = (FileUpload) control;
-				lbl.setText(imgTag);
-				lbl.setSize(size);
-			} else
-				loaded = false;
+		if (control instanceof Label) {
+			if (imgTag == null) {
+				// IMAGE RETRIEVED HERE
+				imgTag = getImageTag(node);
+				//
+				if (imgTag == null)
+					imgTag = CmsUtils.noImg(size);
+				else
+					loaded = true;
+			}
+
+			Label lbl = (Label) control;
+			lbl.setText(imgTag);
+			lbl.setSize(size);
+		} else if (control instanceof FileUpload) {
+			FileUpload lbl = (FileUpload) control;
+			lbl.setImage(CmsUtils.noImage(size));
+			lbl.setSize(size);
+			return loaded;
+			// if (imgTag != null) {
+			// lbl.setText("...");
+			// return loaded;
+			// }
+			//
+			// Image image = getSwtImage(node);
+			// if(image==null)
+			// return loaded;
+			// loaded = true;
+			// lbl.setImage(image);
+			// lbl.setSize(size);
 		} else
 			loaded = false;
 
@@ -162,17 +176,10 @@ public class SimpleImageManager implements CmsImageManager, CmsNames {
 		ResourceManager resourceManager = RWT.getResourceManager();
 		if (!resourceManager.isRegistered(name)) {
 			InputStream inputStream = null;
-			Binary binary = null;
+			Binary binary = getImageBinary(node);
+			if (binary == null)
+				return null;
 			try {
-				if (node.isNodeType(NT_FILE))
-					binary = node.getNode(JCR_CONTENT).getProperty(JCR_DATA)
-							.getBinary();
-				else if (node.isNodeType(CMS_STYLED)
-						&& node.hasProperty(CMS_DATA)) {
-					binary = node.getProperty(CMS_DATA).getBinary();
-				} else {
-					return null;
-				}
 				inputStream = binary.getStream();
 				resourceManager.register(name, inputStream);
 			} finally {
@@ -186,6 +193,30 @@ public class SimpleImageManager implements CmsImageManager, CmsNames {
 	protected String getResourceName(Node node) throws RepositoryException {
 		String workspace = node.getSession().getWorkspace().getName();
 		return workspace + '_' + node.getIdentifier();
+	}
+
+	public Binary getImageBinary(Node node) throws RepositoryException {
+		if (node.isNodeType(NT_FILE))
+			return node.getNode(JCR_CONTENT).getProperty(JCR_DATA).getBinary();
+		else if (node.isNodeType(CMS_STYLED) && node.hasProperty(CMS_DATA)) {
+			return node.getProperty(CMS_DATA).getBinary();
+		} else {
+			return null;
+		}
+	}
+
+	public Image getSwtImage(Node node) throws RepositoryException {
+		InputStream inputStream = null;
+		Binary binary = getImageBinary(node);
+		if (binary == null)
+			return null;
+		try {
+			inputStream = binary.getStream();
+			return new Image(Display.getCurrent(), inputStream);
+		} finally {
+			IOUtils.closeQuietly(inputStream);
+			JcrUtils.closeQuietly(binary);
+		}
 	}
 
 	@Override
@@ -205,6 +236,13 @@ public class SimpleImageManager implements CmsImageManager, CmsNames {
 				fileNode.setProperty(Property.JCR_MIMETYPE,
 						fileTypeMap.getContentType(fileName));
 			fileNode.getSession().save();
+
+			// sync resource manager
+			String name = getResourceName(fileNode);
+			ResourceManager resourceManager = RWT.getResourceManager();
+			if (resourceManager.isRegistered(name)) {
+				resourceManager.unregister(name);
+			}
 			return getImageUrl(fileNode);
 		} catch (IOException e) {
 			throw new CmsException("Cannot upload image " + fileName + " in "

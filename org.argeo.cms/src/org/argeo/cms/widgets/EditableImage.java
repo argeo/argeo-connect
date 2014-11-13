@@ -1,5 +1,7 @@
 package org.argeo.cms.widgets;
 
+import static org.argeo.cms.CmsUtils.fillAll;
+
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
@@ -17,11 +19,21 @@ public abstract class EditableImage extends StyledControl {
 
 	private final static Log log = LogFactory.getLog(EditableImage.class);
 
-	private Point preferredSize;
+	private Point preferredImageSize;
 	private Boolean loaded = false;
 
 	public EditableImage(Composite parent, int swtStyle) {
 		super(parent, swtStyle);
+	}
+
+	@Override
+	protected void setContainerLayoutData(Composite composite) {
+		composite.setLayoutData(fillAll());
+	}
+
+	@Override
+	protected void setControlLayoutData(Control control) {
+		control.setLayoutData(fillAll());
 	}
 
 	public EditableImage(Composite parent, int style, Node node,
@@ -31,8 +43,8 @@ public abstract class EditableImage extends StyledControl {
 
 	/** To be overriden. */
 	protected String createImgTag() throws RepositoryException {
-		return CmsUtils
-				.noImg(preferredSize != null ? preferredSize : getSize());
+		return CmsUtils.noImg(preferredImageSize != null ? preferredImageSize
+				: getSize());
 	}
 
 	protected Label createLabel(Composite box, String style) {
@@ -53,18 +65,19 @@ public abstract class EditableImage extends StyledControl {
 		} catch (Exception e) {
 			// throw new CmsException("Cannot retrieve image", e);
 			log.error("Cannot retrieve image", e);
-			imgTag = CmsUtils.noImg(preferredSize);
+			imgTag = CmsUtils.noImg(preferredImageSize);
 			loaded = false;
 		}
 
 		if (imgTag == null) {
 			loaded = false;
-			imgTag = CmsUtils.noImg(preferredSize);
+			imgTag = CmsUtils.noImg(preferredImageSize);
 		} else
 			loaded = true;
 		if (control != null) {
 			((Label) control).setText(imgTag);
-			control.setSize(preferredSize != null ? preferredSize : getSize());
+			control.setSize(preferredImageSize != null ? preferredImageSize
+					: getSize());
 		} else {
 			loaded = false;
 		}
@@ -73,9 +86,9 @@ public abstract class EditableImage extends StyledControl {
 	}
 
 	public void setPreferredSize(Point size) {
-		this.preferredSize = size;
+		this.preferredImageSize = size;
 		if (!loaded) {
-			setSize(preferredSize);
+			setSize(preferredImageSize);
 			load((Label) getControl());
 		}
 	}
@@ -86,8 +99,8 @@ public abstract class EditableImage extends StyledControl {
 		return text;
 	}
 
-	public Point getPreferredSize() {
-		return preferredSize;
+	public Point getPreferredImageSize() {
+		return preferredImageSize;
 	}
 
 }

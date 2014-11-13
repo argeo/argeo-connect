@@ -1,19 +1,25 @@
 package org.argeo.cms;
 
+import java.io.InputStream;
+
 import javax.jcr.Item;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.service.ResourceManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Widget;
 
 /** Static utilities for the CMS framework. */
@@ -39,6 +45,10 @@ public class CmsUtils implements CmsConstants {
 	//
 	public static GridData fillWidth() {
 		return grabWidth(SWT.FILL, SWT.FILL);
+	}
+
+	public static GridData fillAll() {
+		return new GridData(SWT.FILL, SWT.FILL, true, true);
 	}
 
 	public static GridData grabWidth(int horizontalAlignment,
@@ -133,6 +143,20 @@ public class CmsUtils implements CmsConstants {
 	public static String noImg(Point size) {
 		ResourceManager rm = RWT.getResourceManager();
 		return CmsUtils.img(rm.getLocation(NO_IMAGE), size);
+	}
+
+	public static Image noImage(Point size) {
+		ResourceManager rm = RWT.getResourceManager();
+		InputStream in = null;
+		try {
+			in = rm.getRegisteredContent(NO_IMAGE);
+			ImageData id = new ImageData(in);
+			ImageData scaled = id.scaledTo(size.x, size.y);
+			Image image = new Image(Display.getCurrent(), scaled);
+			return image;
+		} finally {
+			IOUtils.closeQuietly(in);
+		}
 	}
 
 	private CmsUtils() {

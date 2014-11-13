@@ -44,7 +44,7 @@ public abstract class StyledControl extends NodeComposite implements
 
 	protected Composite createBox(Composite parent) {
 		Composite container = new Composite(parent, SWT.INHERIT_DEFAULT);
-		container.setLayoutData(CmsUtils.fillWidth());
+		setContainerLayoutData(container);
 		container.setLayout(CmsUtils.noSpaceGridLayout());
 		return container;
 	}
@@ -64,6 +64,7 @@ public abstract class StyledControl extends NodeComposite implements
 		String style = (String) control.getData(STYLE);
 		clear(false);
 		control = createControl(box, style, height);
+		setControlLayoutData(control);
 	}
 
 	public synchronized void stopEditing() {
@@ -72,6 +73,7 @@ public abstract class StyledControl extends NodeComposite implements
 		String style = (String) control.getData(STYLE);
 		clear(false);
 		control = createControl(box, style, null);
+		setControlLayoutData(control);
 	}
 
 	public void setStyle(String style) {
@@ -81,11 +83,23 @@ public abstract class StyledControl extends NodeComposite implements
 		if (currentStyle != null && currentStyle.equals(style))
 			return;
 
-		clear(true);
 		Integer preferredHeight = control != null ? control.getSize().y : null;
+		clear(true);
 		control = createControl(box, style, preferredHeight);
+		setControlLayoutData(control);
+
 		control.getParent().setData(STYLE, style + "_box");
 		control.getParent().getParent().setData(STYLE, style + "_container");
+	}
+
+	/** To be overridden */
+	protected void setControlLayoutData(Control control) {
+		control.setLayoutData(CmsUtils.fillWidth());
+	}
+
+	/** To be overridden */
+	protected void setContainerLayoutData(Composite composite) {
+		composite.setLayoutData(CmsUtils.fillWidth());
 	}
 
 	protected void clear(boolean deep) {
