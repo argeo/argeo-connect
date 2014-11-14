@@ -23,12 +23,10 @@ public class TextEditorHeader implements SelectionListener, Observer {
 	private Object layoutData;
 
 	public TextEditorHeader(CmsEditable cmsEditable, Composite parent, int style) {
-		// super(parent, style);
 		this.cmsEditable = cmsEditable;
 		this.parent = parent;
 		if (this.cmsEditable instanceof Observable)
 			((Observable) this.cmsEditable).addObserver(this);
-		// setLayout(CmsUtils.noSpaceGridLayout());
 		refresh();
 	}
 
@@ -39,6 +37,7 @@ public class TextEditorHeader implements SelectionListener, Observer {
 		publish = null;
 		if (cmsEditable.isEditing()) {
 			display = new Composite(parent, SWT.NONE);
+			// display.setBackgroundMode(SWT.INHERIT_NONE);
 			display.setLayoutData(layoutData);
 			display.setLayout(CmsUtils.noSpaceGridLayout());
 			CmsUtils.style(display, TextStyles.TEXT_EDITOR_HEADER);
@@ -46,7 +45,7 @@ public class TextEditorHeader implements SelectionListener, Observer {
 			publish.setText(getPublishButtonLabel());
 			CmsUtils.style(publish, TextStyles.TEXT_EDITOR_HEADER);
 			publish.addSelectionListener(this);
-			display.moveAbove(parent.getChildren()[0]);
+			display.moveAbove(null);
 		}
 		parent.layout();
 	}
@@ -84,6 +83,8 @@ public class TextEditorHeader implements SelectionListener, Observer {
 
 	public void setLayoutData(Object layoutData) {
 		this.layoutData = layoutData;
+		if (display != null && !display.isDisposed())
+			display.setLayoutData(layoutData);
 	}
 
 }
