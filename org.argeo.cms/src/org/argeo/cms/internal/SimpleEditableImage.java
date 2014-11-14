@@ -1,6 +1,5 @@
 package org.argeo.cms.internal;
 
-import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsUtils;
@@ -28,11 +27,6 @@ public class SimpleEditableImage extends EditableImage {
 		super(parent, swtStyle);
 		this.src = src;
 		this.imageSize = imageSize;
-	}
-
-	public SimpleEditableImage(Composite parent, int style, Node node,
-			boolean cacheImmediately) throws RepositoryException {
-		super(parent, style, node, cacheImmediately);
 	}
 
 	@Override

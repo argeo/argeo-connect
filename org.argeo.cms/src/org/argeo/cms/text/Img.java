@@ -6,7 +6,6 @@ import javax.jcr.RepositoryException;
 import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsImageManager;
 import org.argeo.cms.CmsSession;
-import org.argeo.cms.CmsTypes;
 import org.argeo.cms.CmsUtils;
 import org.argeo.cms.internal.JcrFileUploadReceiver;
 import org.argeo.cms.viewers.NodePart;
@@ -21,6 +20,7 @@ import org.eclipse.rap.rwt.widgets.FileUpload;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -34,14 +34,22 @@ public class Img extends EditableImage implements SectionPart, NodePart {
 	private FileUploadHandler currentUploadHandler = null;
 	private FileUploadListener fileUploadListener;
 
-	public Img(Composite parent, int swtStyle, Node imgNode)
-			throws RepositoryException {
-		this(Section.findSection(parent), parent, swtStyle, imgNode);
+	public Img(Composite parent, int swtStyle, Node imgNode,
+			Point preferredImageSize) throws RepositoryException {
+		this(Section.findSection(parent), parent, swtStyle, imgNode,
+				preferredImageSize);
+		setStyle(TextStyles.TEXT_IMAGE);
 	}
 
-	Img(Section section, Composite parent, int swtStyle, Node imgNode)
+	public Img(Composite parent, int swtStyle, Node imgNode)
 			throws RepositoryException {
-		super(parent, swtStyle, imgNode, false);
+		this(Section.findSection(parent), parent, swtStyle, imgNode, null);
+		setStyle(TextStyles.TEXT_IMAGE);
+	}
+
+	Img(Section section, Composite parent, int swtStyle, Node imgNode,
+			Point preferredImageSize) throws RepositoryException {
+		super(parent, swtStyle, imgNode, false, preferredImageSize);
 		this.section = section;
 		imageManager = CmsSession.current.get().getImageManager();
 		CmsUtils.style(this, TextStyles.TEXT_IMG);
@@ -64,20 +72,6 @@ public class Img extends EditableImage implements SectionPart, NodePart {
 	public synchronized void stopEditing() {
 		super.stopEditing();
 		fileUploadListener = null;
-	}
-
-	@Override
-	protected String createImgTag() throws RepositoryException {
-		Node imgNode = getNode();
-
-		String imgTag;
-		if (imgNode.isNodeType(CmsTypes.CMS_IMAGE)) {
-			imgTag = imageManager.getImageTag(imgNode);
-		} else {
-			imgTag = CmsUtils.noImg(NO_IMAGE_SIZE);
-		}
-
-		return imgTag;
 	}
 
 	@Override

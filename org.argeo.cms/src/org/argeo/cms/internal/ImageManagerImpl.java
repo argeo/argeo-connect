@@ -85,23 +85,12 @@ public class ImageManagerImpl implements CmsImageManager, CmsNames {
 
 			Label lbl = (Label) control;
 			lbl.setText(imgTag);
-			//lbl.setSize(size);
+			// lbl.setSize(size);
 		} else if (control instanceof FileUpload) {
 			FileUpload lbl = (FileUpload) control;
 			lbl.setImage(CmsUtils.noImage(size));
 			lbl.setSize(size);
 			return loaded;
-			// if (imgTag != null) {
-			// lbl.setText("...");
-			// return loaded;
-			// }
-			//
-			// Image image = getSwtImage(node);
-			// if(image==null)
-			// return loaded;
-			// loaded = true;
-			// lbl.setImage(image);
-			// lbl.setSize(size);
 		} else
 			loaded = false;
 
@@ -192,7 +181,10 @@ public class ImageManagerImpl implements CmsImageManager, CmsNames {
 
 	protected String getResourceName(Node node) throws RepositoryException {
 		String workspace = node.getSession().getWorkspace().getName();
-		return workspace + '_' + node.getIdentifier();
+		if (node.isNodeType(NT_FILE))
+			return workspace + '_' + node.getNode(JCR_CONTENT).getIdentifier();
+		else
+			return workspace + '_' + node.getIdentifier();
 	}
 
 	public Binary getImageBinary(Node node) throws RepositoryException {
@@ -224,6 +216,12 @@ public class ImageManagerImpl implements CmsImageManager, CmsNames {
 			throws RepositoryException {
 		InputStream inputStream = null;
 		try {
+			String previousResourceName = null;
+			if (parentNode.hasNode(fileName)) {
+				Node node = parentNode.getNode(fileName);
+				previousResourceName = getResourceName(node);
+			}
+
 			byte[] arr = IOUtils.toByteArray(in);
 			Node fileNode = JcrUtils.copyBytesAsFile(parentNode, fileName, arr);
 			fileNode.addMixin(CmsTypes.CMS_IMAGE);
@@ -232,17 +230,14 @@ public class ImageManagerImpl implements CmsImageManager, CmsNames {
 			ImageData id = new ImageData(inputStream);
 			fileNode.setProperty(CMS_IMAGE_WIDTH, id.width);
 			fileNode.setProperty(CMS_IMAGE_HEIGHT, id.height);
-			if (!fileNode.hasProperty(Property.JCR_MIMETYPE))
-				fileNode.setProperty(Property.JCR_MIMETYPE,
-						fileTypeMap.getContentType(fileName));
+			fileNode.setProperty(Property.JCR_MIMETYPE,
+					fileTypeMap.getContentType(fileName));
 			fileNode.getSession().save();
 
-			// sync resource manager
-			String name = getResourceName(fileNode);
+			// reset resource manager
 			ResourceManager resourceManager = RWT.getResourceManager();
-			if (resourceManager.isRegistered(name)) {
-				resourceManager.unregister(name);
-			}
+			if (resourceManager.isRegistered(previousResourceName))
+				resourceManager.unregister(previousResourceName);
 			return getImageUrl(fileNode);
 		} catch (IOException e) {
 			throw new CmsException("Cannot upload image " + fileName + " in "

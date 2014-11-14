@@ -170,7 +170,8 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 			SectionPart sectionPart = (SectionPart) part;
 			Node partNode = sectionPart.getNode();
 
-			if (part instanceof StyledControl) {
+			if (part instanceof StyledControl
+					&& (sectionPart.getSection() instanceof TextSection)) {
 				TextSection section = (TextSection) sectionPart.getSection();
 				StyledControl styledControl = (StyledControl) part;
 				if (partNode.isNodeType(CmsTypes.CMS_STYLED)) {
@@ -714,7 +715,7 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 	// FILE UPLOAD LISTENER
 	private class FUL implements FileUploadListener {
 		public void uploadProgress(FileUploadEvent event) {
-			// handle upload progress
+			// TODO Monitor upload progress
 		}
 
 		public void uploadFailed(FileUploadEvent event) {

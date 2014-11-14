@@ -8,6 +8,7 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.apache.commons.io.IOUtils;
+import org.argeo.jcr.JcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.service.ResourceManager;
 import org.eclipse.swt.SWT;
@@ -99,6 +100,10 @@ public class CmsUtils implements CmsConstants {
 	//
 	// JCR
 	//
+	public static Node getOrAddEmptyFile(Node parent, Enum<?> child) {
+		return JcrUtils.copyBytesAsFile(parent, child.name(), new byte[0]);
+	}
+
 	public static Node child(Node parent, Enum<?> en)
 			throws RepositoryException {
 		return parent.getNode(en.name());
