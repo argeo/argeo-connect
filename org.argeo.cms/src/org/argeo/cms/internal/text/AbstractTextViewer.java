@@ -3,8 +3,10 @@ package org.argeo.cms.internal.text;
 import static javax.jcr.Property.JCR_TITLE;
 import static org.argeo.cms.CmsUtils.fillWidth;
 
+import java.util.ArrayList;
 import java.util.Observer;
 
+import javax.jcr.Item;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
@@ -27,6 +29,8 @@ import org.argeo.cms.text.Paragraph;
 import org.argeo.cms.text.TextSection;
 import org.argeo.cms.viewers.AbstractPageViewer;
 import org.argeo.cms.viewers.EditablePart;
+import org.argeo.cms.viewers.NodePart;
+import org.argeo.cms.viewers.PropertyPart;
 import org.argeo.cms.viewers.Section;
 import org.argeo.cms.viewers.SectionPart;
 import org.argeo.cms.widgets.EditableImage;
@@ -211,13 +215,61 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 	// OVERRIDDEN FROM PARENT VIEWER
 	@Override
 	protected void save(EditablePart part) throws RepositoryException {
-		if (part instanceof Paragraph) {
-			textInterpreter.write(((Paragraph) part).getNode(),
-					((Text) part.getControl()).getText());
-		} else if (part instanceof SectionTitle) {
-			textInterpreter.write(((SectionTitle) part).getProperty(),
-					((Text) part.getControl()).getText());
+		if (part instanceof EditableText) {
+			EditableText et = (EditableText) part;
+			String text = ((Text) et.getControl()).getText();
+
+			String[] lines = text.split("[\r\n]+");
+			assert lines.length != 0;
+			saveLine(part, lines[0]);
+			if (lines.length > 1) {
+				ArrayList<Control> toLayout = new ArrayList<Control>();
+				if (part instanceof Paragraph) {
+					Paragraph currentParagraph = (Paragraph) et;
+					Section section = currentParagraph.getSection();
+					Node sectionNode = section.getNode();
+					Node currentParagraphN = currentParagraph.getNode();
+					for (int i = 1; i < lines.length; i++) {
+						Node newNode = sectionNode.addNode(CMS_P);
+						newNode.addMixin(CmsTypes.CMS_STYLED);
+						saveLine(newNode, lines[i]);
+						// second node was create as last, if it is not the next
+						// one, it
+						// means there are some in between and we can take the
+						// one at
+						// index+1 for the re-order
+						if (newNode.getIndex() > currentParagraphN.getIndex() + 1) {
+							sectionNode.orderBefore(p(newNode.getIndex()),
+									p(currentParagraphN.getIndex() + 1));
+						}
+						Paragraph newParagraph = newParagraph(
+								(TextSection) section, newNode);
+						newParagraph.moveBelow(currentParagraph);
+						toLayout.add(newParagraph);
+
+						currentParagraph = newParagraph;
+						currentParagraphN = newNode;
+					}
+				}
+				// TODO or rather return the created paragarphs?
+				layout(toLayout.toArray(new Control[toLayout.size()]));
+			}
 		}
+	}
+
+	protected void saveLine(EditablePart part, String line) {
+		if (part instanceof NodePart) {
+			saveLine(((NodePart) part).getNode(), line);
+		} else if (part instanceof PropertyPart) {
+			saveLine(((PropertyPart) part).getProperty(), line);
+		} else {
+			throw new CmsException("Unsupported part " + part);
+		}
+	}
+
+	protected void saveLine(Item item, String line) {
+		line = line.trim();
+		textInterpreter.write(item, line);
 	}
 
 	@Override
