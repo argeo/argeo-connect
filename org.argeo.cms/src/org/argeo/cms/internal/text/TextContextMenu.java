@@ -7,6 +7,7 @@ import org.argeo.cms.CmsNames;
 import org.argeo.cms.text.Paragraph;
 import org.argeo.cms.text.TextStyles;
 import org.argeo.cms.viewers.EditablePart;
+import org.argeo.cms.viewers.SectionPart;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -112,7 +113,7 @@ class TextContextMenu extends Shell implements CmsNames, TextStyles {
 				textViewer
 						.setParagraphStyle((Paragraph) currentTextPart, style);
 			} else if (eventSource == deleteButton) {
-				textViewer.deleteParagraph((Paragraph) currentTextPart);
+				textViewer.deletePart((SectionPart) currentTextPart);
 			} else if (eventSource == editButton) {
 				textViewer.getCmsEditable().startEditing();
 			} else if (eventSource == publishButton) {

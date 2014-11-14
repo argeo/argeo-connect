@@ -14,6 +14,7 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,6 +39,7 @@ import org.argeo.cms.viewers.SectionPart;
 import org.argeo.cms.widgets.EditableImage;
 import org.argeo.cms.widgets.EditableText;
 import org.argeo.cms.widgets.StyledControl;
+import org.argeo.jcr.JcrUtils;
 import org.eclipse.rap.addons.fileupload.FileDetails;
 import org.eclipse.rap.addons.fileupload.FileUploadEvent;
 import org.eclipse.rap.addons.fileupload.FileUploadHandler;
@@ -50,6 +52,7 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 
@@ -110,7 +113,8 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 			for (NodeIterator ni = node.getNodes(CMS_P); ni.hasNext();) {
 				Node child = ni.nextNode();
 				final SectionPart sectionPart;
-				if (child.isNodeType(CmsTypes.CMS_IMAGE)) {
+				if (child.isNodeType(CmsTypes.CMS_IMAGE)
+						|| child.isNodeType(NodeType.NT_FILE)) {
 					sectionPart = newImg(textSection, child);
 				} else if (child.isNodeType(CmsTypes.CMS_STYLED)) {
 					sectionPart = newParagraph(textSection, child);
@@ -159,8 +163,22 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 
 	protected Img newImg(TextSection parent, Node node)
 			throws RepositoryException {
-		Img img = new Img(parent, parent.getStyle(), node);
-		// img.setLayoutData(fillWidth());
+		Img img = new Img(parent, parent.getStyle(), node) {
+			private static final long serialVersionUID = 1297900641952417540L;
+
+			@Override
+			protected void setContainerLayoutData(Composite composite) {
+				composite.setLayoutData(CmsUtils.grabWidth(SWT.CENTER,
+						SWT.DEFAULT));
+			}
+
+			@Override
+			protected void setControlLayoutData(Control control) {
+				control.setLayoutData(CmsUtils.grabWidth(SWT.CENTER,
+						SWT.DEFAULT));
+			}
+		};
+		img.setLayoutData(CmsUtils.grabWidth(SWT.CENTER, SWT.DEFAULT));
 		updateContent(img);
 		img.setMouseListener(getMouseListener());
 		return img;
@@ -326,14 +344,15 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 		}
 	}
 
-	void deleteParagraph(Paragraph paragraph) {
+	void deletePart(SectionPart paragraph) {
 		try {
 			Node paragraphNode = paragraph.getNode();
 			Section section = paragraph.getSection();
 			Session session = paragraphNode.getSession();
 			paragraphNode.remove();
 			session.save();
-			paragraph.dispose();
+			if (paragraph instanceof Control)
+				((Control) paragraph).dispose();
 			layout(section);
 		} catch (RepositoryException e1) {
 			throw new CmsException("Cannot delete " + paragraph, e1);
@@ -469,15 +488,18 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 				Node sectionNode = section.getNode();
 
 				if (part instanceof Paragraph) {
-					Node newNode = sectionNode.addNode(CMS_P,
-							CmsTypes.CMS_STYLED);
+					Node newNode = sectionNode.addNode(CMS_P, NodeType.NT_FILE);
+					newNode.addNode(Node.JCR_CONTENT, NodeType.NT_RESOURCE);
+					JcrUtils.copyBytesAsFile(sectionNode,
+							p(newNode.getIndex()), new byte[0]);
 					if (partIndex < newNode.getIndex() - 1) {
 						// was not last
 						sectionNode.orderBefore(p(newNode.getIndex()),
 								p(partIndex - 1));
 					}
-					sectionNode.orderBefore(p(partNode.getIndex()),
-							p(newNode.getIndex()));
+					// sectionNode.orderBefore(p(partNode.getIndex()),
+					// p(newNode.getIndex()));
+					sectionNode.getSession().save();
 					Img img = newImg((TextSection) section, newNode);
 					edit(img, null);
 					layout(img.getControl());
@@ -584,7 +606,7 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 		checkEdited();
 		try {
 			if (getEdited() instanceof Paragraph) {
-
+				upload(getEdited());
 			} else if (getEdited() instanceof SectionTitle) {
 				SectionTitle sectionTitle = (SectionTitle) getEdited();
 				Section section = sectionTitle.getSection();

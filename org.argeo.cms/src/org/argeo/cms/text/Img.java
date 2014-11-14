@@ -95,8 +95,10 @@ public class Img extends EditableImage implements SectionPart, NodePart {
 		// String fileName = fileDialog.getFileName();
 		CmsImageManager imageManager = CmsSession.current.get()
 				.getImageManager();
-		JcrFileUploadReceiver receiver = new JcrFileUploadReceiver(getNode()
-				.getParent(), getNode().getName(), imageManager);
+		Node node = getNode();
+		JcrFileUploadReceiver receiver = new JcrFileUploadReceiver(
+				node.getParent(), node.getName() + '[' + node.getIndex() + ']',
+				imageManager);
 		if (currentUploadHandler != null)
 			currentUploadHandler.dispose();
 		currentUploadHandler = prepareUpload(receiver);
