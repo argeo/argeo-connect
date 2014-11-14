@@ -21,7 +21,7 @@ public class JcrComposite extends Composite {
 	private String property = null;
 	private Node cache;
 
-	/** Regular composite constructor */
+	/** Regular composite constructor. No layout is set. */
 	public JcrComposite(Composite parent, int style) {
 		super(parent, style);
 		session = null;
@@ -61,10 +61,14 @@ public class JcrComposite extends Composite {
 		setLayout(CmsUtils.noSpaceGridLayout());
 	}
 
-	public synchronized Node getNode() throws RepositoryException {
-		if (!itemIsNode())
-			throw new CmsException("Item is not a Node");
-		return getNodeInternal();
+	public synchronized Node getNode() {
+		try {
+			if (!itemIsNode())
+				throw new CmsException("Item is not a Node");
+			return getNodeInternal();
+		} catch (RepositoryException e) {
+			throw new CmsException("Cannot get node " + nodeId, e);
+		}
 	}
 
 	private synchronized Node getNodeInternal() throws RepositoryException {
@@ -79,14 +83,19 @@ public class JcrComposite extends Composite {
 			return null;
 	}
 
-	public synchronized Property getProperty() throws RepositoryException {
-		if (itemIsNode())
-			throw new CmsException("Item is not a Property");
-		Node node = getNodeInternal();
-		if (!node.hasProperty(property))
-			throw new CmsException("Property " + property + " is not set on "
-					+ node);
-		return node.getProperty(property);
+	public synchronized Property getProperty() {
+		try {
+			if (itemIsNode())
+				throw new CmsException("Item is not a Property");
+			Node node = getNodeInternal();
+			if (!node.hasProperty(property))
+				throw new CmsException("Property " + property
+						+ " is not set on " + node);
+			return node.getProperty(property);
+		} catch (RepositoryException e) {
+			throw new CmsException("Cannot get property " + property
+					+ " from node " + nodeId, e);
+		}
 	}
 
 	public synchronized Boolean itemIsNode() {

@@ -20,7 +20,7 @@ public class TextSection extends Section implements CmsNames {
 
 	public TextSection(TextSection section, int style, Node node)
 			throws RepositoryException {
-		this(section, section, style, node);
+		this(section, section.getParentSection(), style, node);
 	}
 
 	private TextSection(Composite parent, Section parentSection, int style,

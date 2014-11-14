@@ -36,8 +36,7 @@ public class SimpleEditableImage extends EditableImage {
 	}
 
 	@Override
-	protected Control createControl(Composite box, String style,
-			Integer preferredHeight) {
+	protected Control createControl(Composite box, String style) {
 		if (isEditing()) {
 			return createText(box, style);
 		} else {

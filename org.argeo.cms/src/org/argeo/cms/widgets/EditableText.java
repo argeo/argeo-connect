@@ -30,16 +30,14 @@ public class EditableText extends StyledControl {
 	}
 
 	@Override
-	protected Control createControl(Composite box, String style,
-			Integer preferredHeight) {
+	protected Control createControl(Composite box, String style) {
 		if (isEditing())
-			return createText(box, style, preferredHeight);
+			return createText(box, style);
 		else
-			return createLabel(box, style, preferredHeight);
+			return createLabel(box, style);
 	}
 
-	protected Label createLabel(Composite box, String style,
-			Integer preferredHeight) {
+	protected Label createLabel(Composite box, String style) {
 		Label lbl = new Label(box, getStyle() | SWT.WRAP);
 		lbl.setLayoutData(CmsUtils.fillWidth());
 		CmsUtils.style(lbl, style);
@@ -49,11 +47,10 @@ public class EditableText extends StyledControl {
 		return lbl;
 	}
 
-	protected Text createText(Composite box, String style,
-			Integer preferredHeight) {
+	protected Text createText(Composite box, String style) {
 		final Text text = new Text(box, getStyle() | SWT.MULTI | SWT.WRAP);
 		GridData textLayoutData = CmsUtils.fillWidth();
-		textLayoutData.heightHint = preferredHeight;
+		// textLayoutData.heightHint = preferredHeight;
 		text.setLayoutData(textLayoutData);
 		CmsUtils.style(text, style);
 		text.setFocus();

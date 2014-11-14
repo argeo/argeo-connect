@@ -85,7 +85,7 @@ public class ImageManagerImpl implements CmsImageManager, CmsNames {
 
 			Label lbl = (Label) control;
 			lbl.setText(imgTag);
-			lbl.setSize(size);
+			//lbl.setSize(size);
 		} else if (control instanceof FileUpload) {
 			FileUpload lbl = (FileUpload) control;
 			lbl.setImage(CmsUtils.noImage(size));

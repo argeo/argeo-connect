@@ -1,4 +1,4 @@
-package org.argeo.cms.widgets;
+package org.argeo.cms.viewers;
 
 import org.eclipse.swt.widgets.Control;
 

@@ -12,6 +12,8 @@ public interface TextStyles {
 	public final static String TEXT_SECTION = "text_section";
 	/** A paragraph */
 	public final static String TEXT_PARAGRAPH = "text_paragraph";
+	/** An image */
+	public final static String TEXT_IMG = "text_img";
 	/** The dialog to edit styled paragraph */
 	public final static String TEXT_STYLED_TOOLS_DIALOG = "text_styled_tools_dialog";
 

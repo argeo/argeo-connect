@@ -3,8 +3,8 @@ package org.argeo.cms.text;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
+import org.argeo.cms.viewers.EditablePart;
 import org.argeo.cms.viewers.PropertyPart;
-import org.argeo.cms.widgets.EditablePart;
 import org.argeo.cms.widgets.EditableText;
 import org.eclipse.swt.widgets.Composite;
 

@@ -39,14 +39,14 @@ public abstract class StyledControl extends JcrComposite implements
 		super(parent, style, item, cacheImmediately);
 	}
 
-	protected abstract Control createControl(Composite box, String style,
-			Integer preferredHeight);
+	protected abstract Control createControl(Composite box, String style);
 
 	protected Composite createBox(Composite parent) {
-		Composite container = new Composite(parent, SWT.INHERIT_DEFAULT);
-		setContainerLayoutData(container);
-		container.setLayout(CmsUtils.noSpaceGridLayout());
-		return container;
+		Composite box = new Composite(parent, SWT.INHERIT_DEFAULT);
+		setContainerLayoutData(box);
+		box.setLayout(CmsUtils.noSpaceGridLayout());
+		// new Label(box, SWT.NONE).setText("BOX");
+		return box;
 	}
 
 	public Control getControl() {
@@ -60,10 +60,10 @@ public abstract class StyledControl extends JcrComposite implements
 	public synchronized void startEditing() {
 		assert !isEditing();
 		editing = true;
-		int height = control.getSize().y;
+		// int height = control.getSize().y;
 		String style = (String) control.getData(STYLE);
 		clear(false);
-		control = createControl(box, style, height);
+		control = createControl(box, style);
 		setControlLayoutData(control);
 	}
 
@@ -72,7 +72,7 @@ public abstract class StyledControl extends JcrComposite implements
 		editing = false;
 		String style = (String) control.getData(STYLE);
 		clear(false);
-		control = createControl(box, style, null);
+		control = createControl(box, style);
 		setControlLayoutData(control);
 	}
 
@@ -83,9 +83,10 @@ public abstract class StyledControl extends JcrComposite implements
 		if (currentStyle != null && currentStyle.equals(style))
 			return;
 
-		Integer preferredHeight = control != null ? control.getSize().y : null;
+		// Integer preferredHeight = control != null ? control.getSize().y :
+		// null;
 		clear(true);
-		control = createControl(box, style, preferredHeight);
+		control = createControl(box, style);
 		setControlLayoutData(control);
 
 		control.getParent().setData(STYLE, style + "_box");

@@ -28,7 +28,7 @@ public class TextDisplay implements CmsNames, TextStyles {
 
 			page = new ScrolledPage(parent, SWT.NONE);
 			page.setLayout(CmsUtils.noSpaceGridLayout());
-			new ComplexTextEditor(page, textNode, cmsEditable);
+			new StandardTextEditor(page, SWT.NONE, textNode, cmsEditable);
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot initialize text display for "
 					+ textNode, e);

@@ -28,31 +28,27 @@ import org.eclipse.swt.widgets.Control;
 public class Img extends EditableImage implements SectionPart, NodePart {
 	private static final long serialVersionUID = 6233572783968188476L;
 
-	// private final static Log log = LogFactory.getLog(Img.class);
-
-	private final TextSection section;
+	private final Section section;
 
 	private final CmsImageManager imageManager;
-
 	private FileUploadHandler currentUploadHandler = null;
 	private FileUploadListener fileUploadListener;
 
 	public Img(Composite parent, int swtStyle, Node imgNode)
 			throws RepositoryException {
-		this((TextSection) TextSection.findSection(parent), parent, swtStyle,
-				imgNode);
+		this(Section.findSection(parent), parent, swtStyle, imgNode);
 	}
 
-	Img(TextSection section, Composite parent, int swtStyle, Node imgNode)
+	Img(Section section, Composite parent, int swtStyle, Node imgNode)
 			throws RepositoryException {
 		super(parent, swtStyle, imgNode, false);
 		this.section = section;
 		imageManager = CmsSession.current.get().getImageManager();
+		CmsUtils.style(this, TextStyles.TEXT_IMG);
 	}
 
 	@Override
-	protected Control createControl(Composite box, String style,
-			Integer preferredHeight) {
+	protected Control createControl(Composite box, String style) {
 		if (isEditing()) {
 			try {
 				return createImageChooser(box, style);
@@ -90,7 +86,7 @@ public class Img extends EditableImage implements SectionPart, NodePart {
 			Node imgNode = getNode();
 			boolean loaded = imageManager.load(imgNode, lbl,
 					getPreferredImageSize());
-			getParent().layout();
+			// getParent().layout();
 			return loaded;
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot load " + getNodeId()

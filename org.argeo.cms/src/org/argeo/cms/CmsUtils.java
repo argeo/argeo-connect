@@ -66,7 +66,7 @@ public class CmsUtils implements CmsConstants {
 	}
 
 	public static void markup(Widget widget) {
-		widget.setData(CmsConstants.MARKUP, Boolean.TRUE);
+		widget.setData(CmsConstants.MARKUP, true);
 	}
 
 	/** @return the path or null if not instrumented */
@@ -143,6 +143,10 @@ public class CmsUtils implements CmsConstants {
 	public static String noImg(Point size) {
 		ResourceManager rm = RWT.getResourceManager();
 		return CmsUtils.img(rm.getLocation(NO_IMAGE), size);
+	}
+
+	public static String noImg() {
+		return noImg(NO_IMAGE_SIZE);
 	}
 
 	public static Image noImage(Point size) {

@@ -1,7 +1,5 @@
 package org.argeo.cms.widgets;
 
-import static org.argeo.cms.CmsUtils.fillAll;
-
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
@@ -26,15 +24,15 @@ public abstract class EditableImage extends StyledControl {
 		super(parent, swtStyle);
 	}
 
-	@Override
-	protected void setContainerLayoutData(Composite composite) {
-		composite.setLayoutData(fillAll());
-	}
-
-	@Override
-	protected void setControlLayoutData(Control control) {
-		control.setLayoutData(fillAll());
-	}
+//	@Override
+//	protected void setContainerLayoutData(Composite composite) {
+//		composite.setLayoutData(fillWidth());
+//	}
+//
+//	@Override
+//	protected void setControlLayoutData(Control control) {
+//		control.setLayoutData(fillWidth());
+//	}
 
 	public EditableImage(Composite parent, int style, Node node,
 			boolean cacheImmediately) throws RepositoryException {
@@ -49,7 +47,7 @@ public abstract class EditableImage extends StyledControl {
 
 	protected Label createLabel(Composite box, String style) {
 		Label lbl = new Label(box, getStyle());
-		lbl.setLayoutData(CmsUtils.fillWidth());
+		// lbl.setLayoutData(CmsUtils.fillWidth());
 		CmsUtils.markup(lbl);
 		CmsUtils.style(lbl, style);
 		if (mouseListener != null)
@@ -88,7 +86,6 @@ public abstract class EditableImage extends StyledControl {
 	public void setPreferredSize(Point size) {
 		this.preferredImageSize = size;
 		if (!loaded) {
-			setSize(preferredImageSize);
 			load((Label) getControl());
 		}
 	}

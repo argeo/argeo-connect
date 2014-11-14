@@ -10,7 +10,6 @@ import javax.jcr.RepositoryException;
 import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsNames;
 import org.argeo.cms.CmsUtils;
-import org.argeo.cms.widgets.EditablePart;
 import org.argeo.cms.widgets.JcrComposite;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -48,10 +47,8 @@ public class Section extends JcrComposite implements CmsNames {
 
 	public Map<String, Section> getSubSections() throws RepositoryException {
 		LinkedHashMap<String, Section> result = new LinkedHashMap<String, Section>();
-		children: for (Control child : getChildren()) {
+		for (Control child : getChildren()) {
 			if (child instanceof Composite) {
-				if (child == sectionHeader || child instanceof EditablePart)
-					continue children;
 				collectDirectSubSections((Composite) child, result);
 			}
 		}
@@ -61,11 +58,14 @@ public class Section extends JcrComposite implements CmsNames {
 	private void collectDirectSubSections(Composite composite,
 			LinkedHashMap<String, Section> subSections)
 			throws RepositoryException {
+		if (composite == sectionHeader || composite instanceof EditablePart)
+			return;
 		if (composite instanceof Section) {
 			Section section = (Section) composite;
-			subSections.put(section.getNode().getIdentifier(), section);
+			subSections.put(section.getNodeId(), section);
 			return;
 		}
+
 		for (Control child : composite.getChildren())
 			if (child instanceof Composite)
 				collectDirectSubSections((Composite) child, subSections);
@@ -73,13 +73,13 @@ public class Section extends JcrComposite implements CmsNames {
 
 	public void createHeader() {
 		if (sectionHeader != null)
-			throw new CmsException("Seciton header was already created");
+			throw new CmsException("Section header was already created");
 
 		sectionHeader = new Composite(this, SWT.NONE);
 		sectionHeader.setLayoutData(CmsUtils.fillWidth());
 		sectionHeader.setLayout(CmsUtils.noSpaceGridLayout());
-		sectionHeader.moveAbove(null);
-		layout();
+		// sectionHeader.moveAbove(null);
+		// layout();
 	}
 
 	public Composite getHeader() {
@@ -129,8 +129,8 @@ public class Section extends JcrComposite implements CmsNames {
 	@Override
 	public String toString() {
 		if (parentSection == null)
-			return "Main section " + getData();
-		return "Section " + getData();
+			return "Main section " + getNode();
+		return "Section " + getNode();
 	}
 
 	public Section getParentSection() {
