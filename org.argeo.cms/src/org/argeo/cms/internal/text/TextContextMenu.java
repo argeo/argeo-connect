@@ -1,9 +1,11 @@
-package org.argeo.cms.text;
+package org.argeo.cms.internal.text;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.argeo.cms.CmsNames;
+import org.argeo.cms.text.Paragraph;
+import org.argeo.cms.text.TextStyles;
 import org.argeo.cms.viewers.EditablePart;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;

@@ -1,4 +1,4 @@
-package org.argeo.cms.text;
+package org.argeo.cms.internal.text;
 
 import static javax.jcr.Property.JCR_TITLE;
 import static org.argeo.cms.CmsUtils.fillWidth;
@@ -22,6 +22,9 @@ import org.argeo.cms.CmsTypes;
 import org.argeo.cms.CmsUtils;
 import org.argeo.cms.IdentityTextInterpreter;
 import org.argeo.cms.TextInterpreter;
+import org.argeo.cms.text.Img;
+import org.argeo.cms.text.Paragraph;
+import org.argeo.cms.text.TextSection;
 import org.argeo.cms.viewers.AbstractPageViewer;
 import org.argeo.cms.viewers.EditablePart;
 import org.argeo.cms.viewers.Section;

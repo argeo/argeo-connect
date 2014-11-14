@@ -6,6 +6,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsEditable;
+import org.argeo.cms.internal.text.AbstractTextViewer;
 import org.argeo.cms.viewers.Section;
 import org.eclipse.swt.widgets.Composite;
 
@@ -25,5 +26,10 @@ public class CustomTextEditor extends AbstractTextViewer {
 			CmsEditable cmsEditable) throws RepositoryException {
 		super(mainSection, style, cmsEditable);
 		mainSection.setLayoutData(fillWidth());
+	}
+
+	@Override
+	public Section getMainSection() {
+		return super.getMainSection();
 	}
 }
