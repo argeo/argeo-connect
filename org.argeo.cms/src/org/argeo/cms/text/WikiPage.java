@@ -5,11 +5,14 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeType;
 
+import org.argeo.cms.CmsEditable;
 import org.argeo.cms.CmsLink;
 import org.argeo.cms.CmsNames;
 import org.argeo.cms.CmsTypes;
 import org.argeo.cms.CmsUiProvider;
 import org.argeo.cms.CmsUtils;
+import org.argeo.cms.viewers.JcrVersionCmsEditable;
+import org.argeo.cms.widgets.ScrolledPage;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -17,22 +20,29 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /** Display the text of the context, and provide an editor if the user can edit. */
-public class TextDynamicPages implements CmsUiProvider, CmsNames {
+public class WikiPage implements CmsUiProvider, CmsNames {
 	@Override
 	public Control createUi(Composite parent, Node context)
 			throws RepositoryException {
+		CmsEditable cmsEditable = new JcrVersionCmsEditable(context);
+		if (cmsEditable.canEdit())
+			new TextEditorHeader(cmsEditable, parent, SWT.NONE)
+					.setLayoutData(CmsUtils.fillWidth());
+
+		ScrolledPage page = new ScrolledPage(parent, SWT.NONE);
+		page.setLayout(CmsUtils.noSpaceGridLayout());
+		GridData textGd = CmsUtils.fillWidth();
+		textGd.heightHint = 400;
+		page.setLayoutData(textGd);
+
 		if (context.isNodeType(CmsTypes.CMS_TEXT)) {
-			new TextDisplay(parent, context);
+			new StandardTextEditor(page, SWT.NONE, context, cmsEditable);
 		} else if (context.isNodeType(NodeType.NT_FOLDER)
 				|| context.getPath().equals("/")) {
-			// parent.setLayoutData(CmsUtils.fillWidth());
 			parent.setBackgroundMode(SWT.INHERIT_NONE);
 			Node indexNode = JcrUtils.getOrAdd(context, CMS_INDEX,
 					CmsTypes.CMS_TEXT);
-			TextDisplay textDisplay = new TextDisplay(parent, indexNode);
-			GridData textGd = CmsUtils.fillWidth();
-			textGd.heightHint = 400;
-			textDisplay.setLayoutData(textGd);
+			new StandardTextEditor(page, SWT.NONE, indexNode, cmsEditable);
 
 			for (NodeIterator ni = context.getNodes(); ni.hasNext();) {
 				Node textNode = ni.nextNode();
@@ -48,7 +58,6 @@ public class TextDynamicPages implements CmsUiProvider, CmsNames {
 							.createUi(parent, textNode);
 			}
 		}
-
-		return null;
+		return page;
 	}
 }
