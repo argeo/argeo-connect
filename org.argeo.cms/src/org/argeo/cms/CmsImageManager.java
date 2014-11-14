@@ -17,7 +17,7 @@ public interface CmsImageManager {
 			throws RepositoryException;
 
 	/** @return (0,0) if not available */
-	public Point getSize(Node node) throws RepositoryException;
+	public Point getImageSize(Node node) throws RepositoryException;
 
 	/**
 	 * The related <img tag, with src, width and height set. @return null if not
@@ -29,7 +29,7 @@ public interface CmsImageManager {
 	 * The related <img tag, with url, width and height set. Caller must close
 	 * the tag (or add additional attributes). @return null if not available
 	 */
-	public StringBuilder getImageTagBuilder(Node node)
+	public StringBuilder getImageTagBuilder(Node node, Point size)
 			throws RepositoryException;
 
 	/**

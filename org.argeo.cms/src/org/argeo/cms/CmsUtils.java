@@ -100,7 +100,10 @@ public class CmsUtils implements CmsConstants {
 	//
 	// JCR
 	//
-	public static Node getOrAddEmptyFile(Node parent, Enum<?> child) {
+	public static Node getOrAddEmptyFile(Node parent, Enum<?> child)
+			throws RepositoryException {
+		if (has(parent, child))
+			return child(parent, child);
 		return JcrUtils.copyBytesAsFile(parent, child.name(), new byte[0]);
 	}
 

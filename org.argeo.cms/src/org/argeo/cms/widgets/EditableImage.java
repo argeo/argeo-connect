@@ -1,7 +1,5 @@
 package org.argeo.cms.widgets;
 
-import static org.argeo.cms.CmsUtils.fillWidth;
-
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
@@ -14,9 +12,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+/** A stylable and editable image. */
 public abstract class EditableImage extends StyledControl {
 	private static final long serialVersionUID = -5689145523114022890L;
-
 	private final static Log log = LogFactory.getLog(EditableImage.class);
 
 	private Point preferredImageSize;
@@ -41,12 +39,12 @@ public abstract class EditableImage extends StyledControl {
 
 	@Override
 	protected void setContainerLayoutData(Composite composite) {
-		composite.setLayoutData(fillWidth());
+		// composite.setLayoutData(fillWidth());
 	}
 
 	@Override
 	protected void setControlLayoutData(Control control) {
-		control.setLayoutData(fillWidth());
+		// control.setLayoutData(fillWidth());
 	}
 
 	/** To be overriden. */

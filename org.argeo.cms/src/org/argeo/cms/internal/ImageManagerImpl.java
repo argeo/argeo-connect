@@ -3,6 +3,7 @@ package org.argeo.cms.internal;
 import static javax.jcr.Node.JCR_CONTENT;
 import static javax.jcr.Property.JCR_DATA;
 import static javax.jcr.nodetype.NodeType.NT_FILE;
+import static javax.jcr.nodetype.NodeType.NT_RESOURCE;
 import static org.argeo.cms.CmsConstants.NO_IMAGE_SIZE;
 import static org.argeo.cms.CmsTypes.CMS_STYLED;
 
@@ -15,8 +16,11 @@ import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
+import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsImageManager;
 import org.argeo.cms.CmsNames;
@@ -35,13 +39,12 @@ import org.eclipse.swt.widgets.Label;
 
 /** Manages only public images so far. */
 public class ImageManagerImpl implements CmsImageManager, CmsNames {
-	// private final static Log log =
-	// LogFactory.getLog(SimpleImageManager.class);
+	private final static Log log = LogFactory.getLog(ImageManagerImpl.class);
 	private MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();
 
 	public Boolean load(Node node, Control control, Point preferredSize)
 			throws RepositoryException {
-		Point imageSize = getSize(node);
+		Point imageSize = getImageSize(node);
 		Point size;
 		String imgTag = null;
 		if (preferredSize == null || imageSize.x == 0 || imageSize.y == 0
@@ -75,7 +78,7 @@ public class ImageManagerImpl implements CmsImageManager, CmsNames {
 		if (control instanceof Label) {
 			if (imgTag == null) {
 				// IMAGE RETRIEVED HERE
-				imgTag = getImageTag(node);
+				imgTag = getImageTag(node, size);
 				//
 				if (imgTag == null)
 					imgTag = CmsUtils.noImg(size);
@@ -121,7 +124,7 @@ public class ImageManagerImpl implements CmsImageManager, CmsNames {
 		return ((float) a) / ((float) b);
 	}
 
-	public Point getSize(Node node) throws RepositoryException {
+	public Point getImageSize(Node node) throws RepositoryException {
 		return new Point(node.hasProperty(CMS_IMAGE_WIDTH) ? (int) node
 				.getProperty(CMS_IMAGE_WIDTH).getLong() : 0,
 				node.hasProperty(CMS_IMAGE_WIDTH) ? (int) node.getProperty(
@@ -131,7 +134,12 @@ public class ImageManagerImpl implements CmsImageManager, CmsNames {
 	/** @return null if not available */
 	@Override
 	public String getImageTag(Node node) throws RepositoryException {
-		StringBuilder buf = getImageTagBuilder(node);
+		return getImageTag(node, getImageSize(node));
+	}
+
+	private String getImageTag(Node node, Point size)
+			throws RepositoryException {
+		StringBuilder buf = getImageTagBuilder(node, size);
 		if (buf == null)
 			return null;
 		return buf.append("/>").toString();
@@ -139,18 +147,14 @@ public class ImageManagerImpl implements CmsImageManager, CmsNames {
 
 	/** @return null if not available */
 	@Override
-	public StringBuilder getImageTagBuilder(Node node)
+	public StringBuilder getImageTagBuilder(Node node, Point size)
 			throws RepositoryException {
-		String url = getImageUrl(node);
-		if (url == null)
-			return null;
-		// we then assume that we will find the properties
-		return CmsUtils.imgBuilder(url, node.getProperty(CMS_IMAGE_WIDTH)
-				.getString(), node.getProperty(CMS_IMAGE_HEIGHT).getString());
+		return getImageTagBuilder(node, Integer.toString(size.x),
+				Integer.toString(size.y));
 	}
 
 	/** @return null if not available */
-	public StringBuilder getImageTagBuilder(Node node, String width,
+	private StringBuilder getImageTagBuilder(Node node, String width,
 			String height) throws RepositoryException {
 		String url = getImageUrl(node);
 		if (url == null)
@@ -175,13 +179,15 @@ public class ImageManagerImpl implements CmsImageManager, CmsNames {
 				IOUtils.closeQuietly(inputStream);
 				JcrUtils.closeQuietly(binary);
 			}
+			if (log.isDebugEnabled())
+				log.debug("Registered image " + name);
 		}
 		return resourceManager.getLocation(name);
 	}
 
 	protected String getResourceName(Node node) throws RepositoryException {
 		String workspace = node.getSession().getWorkspace().getName();
-		if (node.isNodeType(NT_FILE))
+		if (node.hasNode(JCR_CONTENT))
 			return workspace + '_' + node.getNode(JCR_CONTENT).getIdentifier();
 		else
 			return workspace + '_' + node.getIdentifier();
@@ -220,6 +226,10 @@ public class ImageManagerImpl implements CmsImageManager, CmsNames {
 			if (parentNode.hasNode(fileName)) {
 				Node node = parentNode.getNode(fileName);
 				previousResourceName = getResourceName(node);
+				if (node.hasNode(JCR_CONTENT)){
+					node.getNode(JCR_CONTENT).remove();
+					node.addNode(JCR_CONTENT, NT_RESOURCE);
+				}
 			}
 
 			byte[] arr = IOUtils.toByteArray(in);
@@ -236,8 +246,11 @@ public class ImageManagerImpl implements CmsImageManager, CmsNames {
 
 			// reset resource manager
 			ResourceManager resourceManager = RWT.getResourceManager();
-			if (resourceManager.isRegistered(previousResourceName))
+			if (resourceManager.isRegistered(previousResourceName)) {
 				resourceManager.unregister(previousResourceName);
+				if (log.isDebugEnabled())
+					log.debug("Unregistered image " + previousResourceName);
+			}
 			return getImageUrl(fileNode);
 		} catch (IOException e) {
 			throw new CmsException("Cannot upload image " + fileName + " in "
