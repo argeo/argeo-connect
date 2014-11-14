@@ -137,5 +137,11 @@ public interface ActivityService {
 	 */
 	public boolean isTaskDone(Node taskNode);
 
+	/**
+	 * Determines whether is sleeping. Application should override or extends
+	 * this to provide specific behaviour
+	 */
+	public boolean isTaskSleeping(Node taskNode);
+
 	/* MISCELLANEOUS */
 }

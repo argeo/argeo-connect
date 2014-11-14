@@ -35,6 +35,7 @@ import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.rap.utils.ActivityViewerComparator;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
@@ -100,7 +101,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 		Table table = viewer.getTable();
 		table.setLayoutData(PeopleUiUtils.fillGridData());
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(56));
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(54));
 		table.setHeaderVisible(false);
 		table.setLinesVisible(true);
 
@@ -346,6 +347,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 						}
 					}
 				} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
+					Calendar happened = null;
 					Calendar created = null;
 					Calendar lastMod = null;
 					if (activityNode.hasProperty(Property.JCR_LAST_MODIFIED))
@@ -354,7 +356,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 
 					if (activityNode
 							.hasProperty(PeopleNames.PEOPLE_ACTIVITY_DATE))
-						created = activityNode.getProperty(
+						happened = activityNode.getProperty(
 								PeopleNames.PEOPLE_ACTIVITY_DATE).getDate();
 					else if (activityNode.hasProperty(Property.JCR_CREATED))
 						created = activityNode
@@ -367,7 +369,10 @@ public class ActivityTable extends Composite implements ArgeoNames {
 						if (lastMod != null)
 							addUpdateDt = lastMod.after(date);
 					}
-					if (created != null)
+					if (happened != null)
+						builder.append("Done on: ")
+								.append(funkyFormat(happened)).append("<br />");
+					else if (created != null)
 						builder.append("Created on: ")
 								.append(funkyFormat(created)).append("<br />");
 					if (addUpdateDt)
@@ -525,7 +530,8 @@ public class ActivityTable extends Composite implements ArgeoNames {
 
 	private DateFormat todayFormat = new SimpleDateFormat("HH:mm");
 	private DateFormat inMonthFormat = new SimpleDateFormat("dd MMM");
-	private DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+	private DateFormat dateFormat = new SimpleDateFormat(
+			PeopleUiConstants.DEFAULT_SHORT_DATE_FORMAT);
 
 	private String funkyFormat(Calendar date) {
 		Calendar now = GregorianCalendar.getInstance();

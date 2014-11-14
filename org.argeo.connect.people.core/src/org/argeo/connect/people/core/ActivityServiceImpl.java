@@ -218,7 +218,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 					Node currNode = currProp.getParent();
 					if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
 						if (onlyOpenTasks) {
-							if (!isTaskDone(currNode))
+							if (!isTaskDone(currNode) && !isTaskSleeping(currNode) )
 								tasks.add(currNode);
 						} else
 							tasks.add(currNode);
@@ -290,6 +290,24 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			return taskNode.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to get done status for task "
+					+ taskNode, re);
+		}
+	}
+
+	@Override
+	public boolean isTaskSleeping(Node taskNode) {
+		try {
+			if (taskNode.hasProperty(PeopleNames.PEOPLE_WAKE_UP_DATE)) {
+				Calendar wuDate = taskNode.getProperty(
+						PeopleNames.PEOPLE_WAKE_UP_DATE).getDate();
+				Calendar now = new GregorianCalendar();
+				// Add a day: the task is awake as from 00:01AM on the given day
+				now.add(Calendar.DAY_OF_YEAR, 1);
+				return wuDate.after(now);
+			} else
+				return false;
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to get sleeping status for task "
 					+ taskNode, re);
 		}
 	}
