@@ -11,6 +11,7 @@ import org.argeo.cms.CmsTypes;
 import org.argeo.cms.CmsUiProvider;
 import org.argeo.cms.CmsUtils;
 import org.argeo.jcr.JcrUtils;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -24,6 +25,8 @@ public class TextDynamicPages implements CmsUiProvider, CmsNames {
 			new TextDisplay(parent, context);
 		} else if (context.isNodeType(NodeType.NT_FOLDER)
 				|| context.getPath().equals("/")) {
+			// parent.setLayoutData(CmsUtils.fillWidth());
+			parent.setBackgroundMode(SWT.INHERIT_NONE);
 			Node indexNode = JcrUtils.getOrAdd(context, CMS_INDEX,
 					CmsTypes.CMS_TEXT);
 			TextDisplay textDisplay = new TextDisplay(parent, indexNode);
