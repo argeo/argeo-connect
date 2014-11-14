@@ -31,8 +31,7 @@ public class WikiPage implements CmsUiProvider, CmsNames {
 
 		ScrolledPage page = new ScrolledPage(parent, SWT.NONE);
 		page.setLayout(CmsUtils.noSpaceGridLayout());
-		GridData textGd = CmsUtils.fillWidth();
-		textGd.heightHint = 400;
+		GridData textGd = CmsUtils.fillAll();
 		page.setLayoutData(textGd);
 
 		if (context.isNodeType(CmsTypes.CMS_TEXT)) {
@@ -43,6 +42,7 @@ public class WikiPage implements CmsUiProvider, CmsNames {
 			Node indexNode = JcrUtils.getOrAdd(context, CMS_INDEX,
 					CmsTypes.CMS_TEXT);
 			new StandardTextEditor(page, SWT.NONE, indexNode, cmsEditable);
+			textGd.heightHint = 400;
 
 			for (NodeIterator ni = context.getNodes(); ni.hasNext();) {
 				Node textNode = ni.nextNode();

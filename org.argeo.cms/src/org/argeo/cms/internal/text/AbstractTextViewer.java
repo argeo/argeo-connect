@@ -4,6 +4,8 @@ import static javax.jcr.Property.JCR_TITLE;
 import static org.argeo.cms.CmsUtils.fillWidth;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Observer;
 
 import javax.jcr.Item;
@@ -96,7 +98,8 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 			Node node = section.getNode();
 			TextSection textSection = (TextSection) section;
 			if (node.hasProperty(Property.JCR_TITLE)) {
-				section.createHeader();
+				if (section.getHeader() == null)
+					section.createHeader();
 				if (node.hasProperty(Property.JCR_TITLE)) {
 					SectionTitle title = newSectionTitle(textSection, node);
 					title.setLayoutData(CmsUtils.fillWidth());
@@ -136,7 +139,7 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 			for (Section s : section.getSubSections().values())
 				refresh(s);
 		}
-		section.layout();
+		// section.layout();
 	}
 
 	/** To be overridden in order to provide additional SectionPart types */
@@ -170,6 +173,20 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 		updateContent(title);
 		title.setMouseListener(getMouseListener());
 		return title;
+	}
+
+	protected SectionTitle prepareSectionTitle(Section newSection,
+			String titleText) throws RepositoryException {
+		Node sectionNode = newSection.getNode();
+		if (!sectionNode.hasProperty(JCR_TITLE))
+			sectionNode.setProperty(Property.JCR_TITLE, "");
+		getTextInterpreter().write(sectionNode.getProperty(Property.JCR_TITLE),
+				titleText);
+		if (newSection.getHeader() == null)
+			newSection.createHeader();
+		SectionTitle sectionTitle = newSectionTitle((TextSection) newSection,
+				sectionNode);
+		return sectionTitle;
 	}
 
 	protected void updateContent(EditablePart part) throws RepositoryException {
@@ -476,7 +493,7 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 		}
 	}
 
-	public void deepen() {
+	protected void deepen() {
 		if (flat)
 			return;
 		checkEdited();
@@ -488,49 +505,80 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 				Node paragraphNode = paragraph.getNode();
 				Section section = paragraph.getSection();
 				Node sectionNode = section.getNode();
+				// main title
+				if (section == mainSection && section instanceof TextSection
+						&& paragraphNode.getIndex() == 1
+						&& !sectionNode.hasProperty(JCR_TITLE)) {
+					SectionTitle sectionTitle = prepareSectionTitle(section,
+							txt);
+					edit(sectionTitle, 0);
+					return;
+				}
 				Node newSectionNode = sectionNode.addNode(CMS_H,
 						CmsTypes.CMS_SECTION);
+				sectionNode.orderBefore(h(newSectionNode.getIndex()), h(1));
+
 				int paragraphIndex = paragraphNode.getIndex();
-				sectionNode.orderBefore(h(newSectionNode.getIndex()),
-						p(paragraphIndex));
 				String sectionPath = sectionNode.getPath();
 				String newSectionPath = newSectionNode.getPath();
-				for (int i = 1; sectionNode.hasNode(p(i + paragraphIndex)); i++) {
+				while (sectionNode.hasNode(p(paragraphIndex + 1))) {
+					Node parag = sectionNode.getNode(p(paragraphIndex + 1));
 					sectionNode.getSession().move(
-							sectionPath + p(i + paragraphIndex),
-							newSectionPath + p(i));
-
+							sectionPath + '/' + p(paragraphIndex + 1),
+							newSectionPath + '/' + CMS_P);
+					SectionPart sp = section.getSectionPart(parag
+							.getIdentifier());
+					if (sp instanceof Control)
+						((Control) sp).dispose();
 				}
 				// create property
 				newSectionNode.setProperty(Property.JCR_TITLE, "");
 				getTextInterpreter().write(
 						newSectionNode.getProperty(Property.JCR_TITLE), txt);
 
+				TextSection newSection = new TextSection(section,
+						section.getStyle(), newSectionNode);
+				newSection.setLayoutData(CmsUtils.fillWidth());
+				newSection.moveBelow(paragraph);
+
+				// dispose
 				paragraphNode.remove();
-				layout(section);
+				paragraph.dispose();
+
+				refresh(newSection);
+				newSection.getParent().layout();
+				layout(newSection);
+				newSectionNode.getSession().save();
 			} else if (getEdited() instanceof SectionTitle) {
 				SectionTitle sectionTitle = (SectionTitle) getEdited();
 				Section section = sectionTitle.getSection();
 				Section parentSection = section.getParentSection();
 				if (parentSection == null)
 					return;// cannot deepen main section
-				Node sectionNode = section.getNode();
-				Node parentSectionNode = parentSection.getNode();
-				if (sectionNode.getIndex() == 1)
+				Node sectionN = section.getNode();
+				Node parentSectionN = parentSection.getNode();
+				if (sectionN.getIndex() == 1)
 					return;// cannot deepen first section
-				Node previousNode = parentSectionNode.getNode(h(sectionNode
+				Node previousSectionN = parentSectionN.getNode(h(sectionN
 						.getIndex() - 1));
-				previousNode.getSession().move(sectionNode.getPath(),
-						previousNode.getPath() + "/" + CMS_H);
-				previousNode.getSession().save();
-
+				NodeIterator subSections = previousSectionN.getNodes(CMS_H);
+				int subsectionsCount = (int) subSections.getSize();
+				previousSectionN.getSession().move(
+						sectionN.getPath(),
+						previousSectionN.getPath() + "/"
+								+ h(subsectionsCount + 1));
+				section.dispose();
+				TextSection newSection = new TextSection(section,
+						section.getStyle(), sectionN);
+				refresh(newSection);
+				previousSectionN.getSession().save();
 			}
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot deepen " + getEdited(), e);
 		}
 	}
 
-	public void undeepen() {
+	protected void undeepen() {
 		if (flat)
 			return;
 		checkEdited();
@@ -544,39 +592,62 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 				Section parentSection = section.getParentSection();
 				if (parentSection == null)
 					return;// cannot undeepen main section
-				Node parentSectionNode = parentSection.getNode();
-				Section parentParentSection = parentSection.getParentSection();
-				if (parentParentSection == null) {// first level
-					Node newParagrapheNode = parentSectionNode.addNode(CMS_P,
-							CmsTypes.CMS_STYLED);
-					parentSectionNode.orderBefore(
-							p(newParagrapheNode.getIndex()),
-							h(sectionNode.getIndex()));
-					String txt = getTextInterpreter().read(
-							sectionNode.getProperty(Property.JCR_TITLE));
-					section.getNode().remove();
-					getTextInterpreter().write(newParagrapheNode, txt);
 
-				} else {
-					Node parentParentSectionNode = parentParentSection
-							.getNode();
-					parentParentSectionNode.getSession().move(
-							sectionNode.getPath(),
-							parentParentSectionNode.getPath() + "/" + CMS_H);
-					NodeIterator sections = parentParentSectionNode
-							.getNodes(CMS_H);
-
-					// move it behind its former parent
-					Node movedNode = null;
-					while (sections.hasNext()) {
-						movedNode = sections.nextNode();
-					}
-					parentParentSectionNode.orderBefore(
-							h(movedNode.getIndex()),
-							h(parentSectionNode.getIndex() + 1));
-
-					parentParentSectionNode.getSession().save();
+				// choose in which section to merge
+				Section mergedSection;
+				if (sectionNode.getIndex() == 1)
+					mergedSection = section.getParentSection();
+				else {
+					Map<String, Section> parentSubsections = parentSection
+							.getSubSections();
+					ArrayList<Section> lst = new ArrayList<Section>(
+							parentSubsections.values());
+					mergedSection = lst.get(sectionNode.getIndex() - 1);
 				}
+				Node mergedNode = mergedSection.getNode();
+				boolean mergedHasSubSections = mergedNode.hasNode(CMS_H);
+
+				// title as paragraph
+				Node newParagrapheNode = mergedNode.addNode(CMS_P);
+				newParagrapheNode.addMixin(CmsTypes.CMS_STYLED);
+				if (mergedHasSubSections)
+					mergedNode.orderBefore(p(newParagrapheNode.getIndex()),
+							h(1));
+				String txt = getTextInterpreter().read(
+						sectionNode.getProperty(Property.JCR_TITLE));
+				getTextInterpreter().write(newParagrapheNode, txt);
+				// move
+				NodeIterator paragraphs = sectionNode.getNodes(CMS_P);
+				while (paragraphs.hasNext()) {
+					Node p = paragraphs.nextNode();
+					SectionPart sp = section.getSectionPart(p.getIdentifier());
+					if (sp instanceof Control)
+						((Control) sp).dispose();
+					mergedNode.getSession().move(p.getPath(),
+							mergedNode.getPath() + '/' + CMS_P);
+					if (mergedHasSubSections)
+						mergedNode.orderBefore(p(p.getIndex()), h(1));
+				}
+
+				Iterator<Section> subsections = section.getSubSections()
+						.values().iterator();
+				// NodeIterator sections = sectionNode.getNodes(CMS_H);
+				while (subsections.hasNext()) {
+					Section subsection = subsections.next();
+					Node s = subsection.getNode();
+					mergedNode.getSession().move(s.getPath(),
+							mergedNode.getPath() + '/' + CMS_H);
+					subsection.dispose();
+				}
+
+				// remove section
+				section.getNode().remove();
+				section.dispose();
+
+				refresh(mergedSection);
+				mergedSection.getParent().layout();
+				layout(mergedSection);
+				mergedNode.getSession().save();
 			}
 		} catch (RepositoryException e) {
 			throw new CmsException("Cannot undeepen " + getEdited(), e);

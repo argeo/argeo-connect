@@ -83,6 +83,8 @@ public class Section extends JcrComposite implements CmsNames {
 	}
 
 	public Composite getHeader() {
+		if (sectionHeader != null && sectionHeader.isDisposed())
+			sectionHeader = null;
 		return sectionHeader;
 	}
 

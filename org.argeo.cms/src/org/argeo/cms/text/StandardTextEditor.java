@@ -8,6 +8,7 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsEditable;
 import org.argeo.cms.CmsTypes;
+import org.argeo.cms.CmsUtils;
 import org.argeo.cms.internal.text.AbstractTextViewer;
 import org.argeo.cms.viewers.Section;
 import org.eclipse.swt.widgets.Composite;
@@ -20,6 +21,7 @@ public class StandardTextEditor extends AbstractTextViewer {
 			CmsEditable cmsEditable) throws RepositoryException {
 		super(new TextSection(parent, style, textNode), style, cmsEditable);
 		refresh();
+		getMainSection().setLayoutData(CmsUtils.fillWidth());
 	}
 
 	@Override
