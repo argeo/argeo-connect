@@ -25,7 +25,17 @@ public class Paragraph extends EditableText implements SectionPart {
 	}
 
 	@Override
+	public String getPartId() {
+		return getNodeId();
+	}
+
+	@Override
+	public Node getItem() throws RepositoryException {
+		return getNode();
+	}
+
+	@Override
 	public String toString() {
-		return "Paragraph " + getData();
+		return "Paragraph #" + getPartId();
 	}
 }

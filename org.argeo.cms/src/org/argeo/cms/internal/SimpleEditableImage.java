@@ -1,9 +1,10 @@
-package org.argeo.cms.widgets;
+package org.argeo.cms.internal;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsUtils;
+import org.argeo.cms.widgets.EditableImage;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;

@@ -1,5 +1,6 @@
 package org.argeo.cms.text;
 
+import static javax.jcr.Property.JCR_TITLE;
 import static org.argeo.cms.CmsUtils.fillWidth;
 
 import java.util.Observable;
@@ -201,7 +202,7 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 	protected SectionTitle newSectionTitle(TextSection parent, Node node)
 			throws RepositoryException {
 		SectionTitle title = new SectionTitle(parent.getHeader(),
-				parent.getStyle());
+				parent.getStyle(), node.getProperty(JCR_TITLE));
 		updateContent(title);
 		title.setMouseListener(mouseListener);
 		return title;
@@ -211,9 +212,9 @@ abstract class AbstractTextViewer extends ContentViewer implements CmsNames,
 		if (part instanceof SectionPart) {
 			SectionPart sectionPart = (SectionPart) part;
 			Node partNode = sectionPart.getNode();
-			TextSection section = (TextSection) sectionPart.getSection();
 
 			if (part instanceof StyledControl) {
+				TextSection section = (TextSection) sectionPart.getSection();
 				StyledControl styledControl = (StyledControl) part;
 				if (partNode.isNodeType(CmsTypes.CMS_STYLED)) {
 					String style = partNode.hasProperty(CMS_STYLE) ? partNode

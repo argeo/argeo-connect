@@ -1,6 +1,6 @@
 package org.argeo.cms.widgets;
 
-import javax.jcr.Node;
+import javax.jcr.Item;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsUtils;
@@ -19,14 +19,14 @@ public class EditableText extends StyledControl {
 		super(parent, swtStyle);
 	}
 
-	public EditableText(Composite parent, int style, Node node)
+	public EditableText(Composite parent, int style, Item item)
 			throws RepositoryException {
-		this(parent, style, node, false);
+		this(parent, style, item, false);
 	}
 
-	public EditableText(Composite parent, int style, Node node,
+	public EditableText(Composite parent, int style, Item item,
 			boolean cacheImmediately) throws RepositoryException {
-		super(parent, style, node, cacheImmediately);
+		super(parent, style, item, cacheImmediately);
 	}
 
 	@Override

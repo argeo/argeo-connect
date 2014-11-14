@@ -11,12 +11,12 @@ import org.argeo.cms.CmsException;
 import org.argeo.cms.CmsNames;
 import org.argeo.cms.CmsUtils;
 import org.argeo.cms.widgets.EditablePart;
-import org.argeo.cms.widgets.NodeComposite;
+import org.argeo.cms.widgets.JcrComposite;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public class Section extends NodeComposite implements CmsNames {
+public class Section extends JcrComposite implements CmsNames {
 	private static final long serialVersionUID = -5933796173755739207L;
 
 	private final Section parentSection;
@@ -87,11 +87,11 @@ public class Section extends NodeComposite implements CmsNames {
 	}
 
 	// SECTION PARTS
-	public SectionPart getSectionPart(String nodeId) {
+	public SectionPart getSectionPart(String partId) {
 		for (Control child : getChildren()) {
 			if (child instanceof SectionPart) {
 				SectionPart paragraph = (SectionPart) child;
-				if (paragraph.getNodeId().equals(nodeId))
+				if (paragraph.getPartId().equals(partId))
 					return paragraph;
 			}
 		}

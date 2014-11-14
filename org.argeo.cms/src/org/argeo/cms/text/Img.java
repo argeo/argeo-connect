@@ -9,6 +9,7 @@ import org.argeo.cms.CmsSession;
 import org.argeo.cms.CmsTypes;
 import org.argeo.cms.CmsUtils;
 import org.argeo.cms.internal.JcrFileUploadReceiver;
+import org.argeo.cms.viewers.NodePart;
 import org.argeo.cms.viewers.Section;
 import org.argeo.cms.viewers.SectionPart;
 import org.argeo.cms.widgets.EditableImage;
@@ -24,7 +25,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /** An image within the Argeo Text framework */
-public class Img extends EditableImage implements SectionPart {
+public class Img extends EditableImage implements SectionPart, NodePart {
 	private static final long serialVersionUID = 6233572783968188476L;
 
 	// private final static Log log = LogFactory.getLog(Img.class);
@@ -140,6 +141,21 @@ public class Img extends EditableImage implements SectionPart {
 		this.fileUploadListener = fileUploadListener;
 		if (currentUploadHandler != null)
 			currentUploadHandler.addUploadListener(fileUploadListener);
+	}
+
+	@Override
+	public Node getItem() throws RepositoryException {
+		return getNode();
+	}
+
+	@Override
+	public String getPartId() {
+		return getNodeId();
+	}
+
+	@Override
+	public String toString() {
+		return "Img #" + getPartId();
 	}
 
 }

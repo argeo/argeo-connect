@@ -1,4 +1,4 @@
-package org.argeo.cms.viewers;
+package org.argeo.cms.internal;
 
 import java.util.ArrayList;
 

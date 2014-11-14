@@ -1,6 +1,6 @@
 package org.argeo.cms.widgets;
 
-import javax.jcr.Node;
+import javax.jcr.Item;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsConstants;
@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /** Editable text part displaying styled text. */
-public abstract class StyledControl extends NodeComposite implements
+public abstract class StyledControl extends JcrComposite implements
 		CmsConstants, CmsNames {
 	private static final long serialVersionUID = -6372283442330912755L;
 	private Control control;
@@ -29,14 +29,14 @@ public abstract class StyledControl extends NodeComposite implements
 		setLayout(CmsUtils.noSpaceGridLayout());
 	}
 
-	public StyledControl(Composite parent, int style, Node node)
+	public StyledControl(Composite parent, int style, Item item)
 			throws RepositoryException {
-		super(parent, style, node);
+		super(parent, style, item);
 	}
 
-	public StyledControl(Composite parent, int style, Node node,
+	public StyledControl(Composite parent, int style, Item item,
 			boolean cacheImmediately) throws RepositoryException {
-		super(parent, style, node, cacheImmediately);
+		super(parent, style, item, cacheImmediately);
 	}
 
 	protected abstract Control createControl(Composite box, String style,
