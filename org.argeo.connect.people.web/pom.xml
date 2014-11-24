@@ -12,9 +12,9 @@
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
-			<groupId>org.argeo.connect</groupId>
+			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.cms</artifactId>
-			<version>2.1.13-SNAPSHOT</version>
+			<version>${version.argeo-commons}</version>
 		</dependency>
 
 		<!-- Common People UI Utils -->
@@ -37,8 +37,8 @@
 			<version>2.1.13-SNAPSHOT</version>
 		</dependency>
 
-		<!-- <dependency> <groupId>org.argeo.commons.server</groupId> <artifactId>org.argeo.server.jcr</artifactId> 
-			<version>${version.argeo-commons}</version> </dependency> <dependency> <groupId>org.argeo.commons.security</groupId> 
+		<!-- <dependency> <groupId>org.argeo.commons</groupId> <artifactId>org.argeo.server.jcr</artifactId> 
+			<version>${version.argeo-commons}</version> </dependency> <dependency> <groupId>org.argeo.commons</groupId> 
 			<artifactId>org.argeo.security.core</artifactId> <version>${version.argeo-commons}</version> 
 			</dependency> -->
 	</dependencies>

@@ -41,7 +41,7 @@
 		<!-- COMMONS -->
 		<!-- RAP only dependencies -->
 		<dependency>
-			<groupId>org.argeo.commons.base</groupId>
+			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.eclipse.ui.rap</artifactId>
 			<version>${version.argeo-commons}</version>
 			<scope>provided</scope>
@@ -49,26 +49,26 @@
 
 		<!-- Base Argeo Eclipse Utilities -->
 		<dependency>
-			<groupId>org.argeo.commons.base</groupId>
+			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.eclipse.ui</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.argeo.commons.base</groupId>
+			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.eclipse.ui.jcr</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.argeo.commons.server</groupId>
+			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.server.jcr</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
 
 		<!-- Extended by People to provide business specific user management -->
 		<dependency>
-			<groupId>org.argeo.commons.security</groupId>
+			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.security.ui.admin</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>

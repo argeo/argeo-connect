@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.argeo.commons</groupId>
 		<artifactId>argeo-commons</artifactId>
-		<version>2.1.11</version>
+		<version>2.1.12-SNAPSHOT</version>
 	</parent>
 	<groupId>org.argeo.connect</groupId>
 	<artifactId>argeo-connect</artifactId>
@@ -15,7 +15,6 @@
 		<version.connect>2.1.13-SNAPSHOT</version.connect>
 	</properties>
 	<modules>
-		<module>org.argeo.cms</module>
 		<module>org.argeo.connect.people.specs</module>
 		<module>org.argeo.connect.media.specs</module>
 		<module>org.argeo.connect.people.core</module>
@@ -67,32 +66,6 @@ which are used as well as that of the covered work.]]>
 			</comments>
 		</license>
 	</licenses>
-	<developers>
-		<developer>
-			<id>mbaudier</id>
-			<name>Mathieu Baudier</name>
-			<email><![CDATA[http://mailhide.recaptcha.net/d?k=01EM7GpnvY3k8woQ2tnnZLUA==&c=crsNpHjhOBDPswHG6HD_gXaqymhC69wmBf7wlagcSHw=]]></email>
-			<organization>Argeo</organization>
-			<organizationUrl>http://www.argeo.org</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-				<role>QA</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>bsinou</id>
-			<name>Bruno Sinou</name>
-			<email><![CDATA[http://www.google.com/recaptcha/mailhide/d?k=01SZoYvDnJzcw0KOR7M7u6Qg==&c=SVgEjXA_Uu9ZrNzLES92w1ght6puLFiVpoNUddCfSU8=]]></email>
-			<organization>Argeo</organization>
-			<organizationUrl>http://www.argeo.org</organizationUrl>
-			<roles>
-				<role>architect</role>
-				<role>developer</role>
-				<role>QA</role>
-			</roles>
-		</developer>
-	</developers>
 	<repositories>
 		<repository>
 			<id>argeo-commons</id>
@@ -103,10 +76,6 @@ which are used as well as that of the covered work.]]>
 				<checksumPolicy>warn</checksumPolicy>
 			</releases>
 		</repository>
-		<!-- LOCAL REPOSITORY TO PROVIDE ADDITIONNAL EXPERIMENTAL THIRD PARTIES -->
-		<!-- <repository> <id>argeo-localtesting</id> <url>http://localhost:7070/data/public/java/org.argeo.tp-2.1</url> 
-			<releases> <enabled>true</enabled> <updatePolicy>daily</updatePolicy> <checksumPolicy>warn</checksumPolicy> 
-			</releases> </repository> -->
 	</repositories>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
@@ -149,13 +118,6 @@ which are used as well as that of the covered work.]]>
 					</instructions>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-				<configuration>
-					<header>license-GPLwithException-header.txt</header>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 	<dependencyManagement>
@@ -169,7 +131,6 @@ which are used as well as that of the covered work.]]>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
 	<distributionManagement>
 		<repository>
 			<id>staging</id>
@@ -177,8 +138,4 @@ which are used as well as that of the covered work.]]>
 			<uniqueVersion>false</uniqueVersion>
 		</repository>
 	</distributionManagement>
-	<issueManagement>
-		<system>Bugzilla</system>
-		<url>https://www.argeo.org/bugzilla</url>
-	</issueManagement>
 </project>

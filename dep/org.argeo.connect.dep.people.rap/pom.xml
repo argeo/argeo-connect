@@ -20,7 +20,7 @@
 
 		<!--  Force the use of the rap provided eclipse.osgi bundle. -->
 		<dependency>
-			<groupId>org.argeo.commons.security</groupId>
+			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.security.dep.node.rap</artifactId>
 			<version>${version.argeo-commons}</version>
 			<exclusions>
@@ -29,7 +29,7 @@
 					<artifactId>org.eclipse.osgi</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>org.argeo.commons.server</groupId>
+					<groupId>org.argeo.commons</groupId>
 					<artifactId>org.argeo.server.dep.tomcat</artifactId>
 				</exclusion>
 			</exclusions>
