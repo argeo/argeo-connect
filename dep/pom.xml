@@ -12,6 +12,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>org.argeo.connect.dep.people</module>
+		<module>org.argeo.connect.dep.people.web</module>
 		<module>org.argeo.connect.dep.people.rap</module>
 	</modules>
 	<build>
