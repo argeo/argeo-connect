@@ -1,8 +1,7 @@
 package org.argeo.photo.manager;
 
-import junit.framework.TestCase;
 
-public class FormatTest extends TestCase {
+public class FormatTest {
 
 	public void testParse() throws Exception {
 		// Long setId = new Long(5);// 0
