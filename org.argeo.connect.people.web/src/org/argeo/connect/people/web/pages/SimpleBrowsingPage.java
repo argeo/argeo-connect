@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 public class SimpleBrowsingPage implements CmsUiProvider {
-	private final static String BROWSE_PREFIX = "browse";
+	private final static String BROWSE_PREFIX = "#browse";
 
 	@Override
 	public Control createUi(Composite parent, Node context)

@@ -8,7 +8,7 @@
 	<bean id="peopleDemoService" class="org.argeo.connect.people.web.demo.DemoServiceImpl"
 		init-method="init" destroy-method="destroy">
 		<property name="repository" ref="peopleRepository" />
-		<property name="workspaceName" value="people" />
+		<property name="workspaceName" value="main" />
 		<property name="demoBusinessData" ref="demoBusinessData" />
 		<property name="initResources" ref="initResources" />
 		<property name="userAdminService" ref="userAdminService" />
