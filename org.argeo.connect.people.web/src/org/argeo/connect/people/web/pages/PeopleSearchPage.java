@@ -110,7 +110,7 @@ public class PeopleSearchPage implements CmsUiProvider {
 				Node node = (Node) ((IStructuredSelection) event.getSelection())
 						.getFirstElement();
 				try {
-					cmsSession.navigateTo(node.getPath());
+					cmsSession.navigateTo(node.getPath()); //"display"+
 				} catch (RepositoryException e) {
 					throw new ArgeoException("unable to get path for node "
 							+ node + " in the PeopleSearchPage", e);
