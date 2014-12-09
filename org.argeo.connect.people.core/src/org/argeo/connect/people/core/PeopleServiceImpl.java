@@ -390,11 +390,15 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	@Override
 	public Node getEntityFromNodeReference(Node node, String propName) {
 		try {
-			return getEntityByUid(node.getSession(), node.getProperty(propName)
-					.getString());
+			String peopleUid = CommonsJcrUtils.get(node, propName);
+			if (CommonsJcrUtils.isEmptyString(peopleUid))
+				return null;
+			else
+				return getEntityByUid(node.getSession(), peopleUid);
 		} catch (RepositoryException re) {
 			throw new PeopleException(
-					"unable to get entity from reference node", re);
+					"unable to get entity from reference node " + node
+							+ " with ref property " + propName, re);
 		}
 	}
 

@@ -75,28 +75,23 @@ public interface PeopleService {
 			String position, String department, boolean isPrimary);
 
 	/* GENERIC */
-	// /**
-	// * returns the list of predefined values for a given property or null if
-	// * none has been defined.
-	// */
-	// public Map<String, String> getMapValuesForProperty(String propertyName);
-
 	/**
-	 * Returns the corresponding entity or null if not found. Uid is
+	 * Returns the corresponding entity or null if not found. This Uid is
 	 * implementation specific and is not a JCR Identifier
-	 * */
+	 */
 	public Node getEntityByUid(Session session, String uid);
 
 	/**
-	 * Returns the corresponding entity or null if not found using the UID that
-	 * is stored under propName.
-	 * */
+	 * Returns the corresponding people entity using the People UID that is
+	 * stored under propName. Returns null if the property is undefined or if
+	 * there is no entity with this people UID
+	 */
 	public Node getEntityFromNodeReference(Node node, String propName);
 
 	/**
 	 * Creates and returns a model specific Node to store a reference, depending
 	 * on the two object we want to link together
-	 * */
+	 */
 	public Node createEntityReference(Node referencingNode,
 			Node referencedNode, String role);
 
