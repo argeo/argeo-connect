@@ -51,13 +51,9 @@
 		<!-- Base Argeo Eclipse Utilities -->
 		<dependency>
 			<groupId>org.argeo.commons</groupId>
-			<artifactId>org.argeo.eclipse.ui</artifactId>
+			<artifactId>org.argeo.eclipse.ui.workbench</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
-
-		<!-- Merged with preceding before commons 1.4 release. <dependency> <groupId>org.argeo.commons</groupId> 
-			<artifactId>org.argeo.eclipse.ui.jcr</artifactId> <version>${version.argeo-commons}</version> 
-			</dependency> -->
 
 		<dependency>
 			<groupId>org.argeo.commons</groupId>
