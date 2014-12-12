@@ -25,7 +25,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.ArgeoNames;
-import org.argeo.security.ui.admin.UserTableComposite;
+import org.argeo.eclipse.ui.parts.UsersTable;
 import org.eclipse.jface.dialogs.IPageChangeProvider;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.dialogs.PageChangedEvent;
@@ -156,7 +156,7 @@ public class NewUserGroupWizard extends Wizard {
 	private class ChooseUsersWizardPage extends WizardPage implements
 			IPageChangedListener {
 		private static final long serialVersionUID = 1L;
-		private UserTableComposite userTableCmp;
+		private UsersTable userTableCmp;
 		private Composite container;
 		private Session session;
 
@@ -170,7 +170,7 @@ public class NewUserGroupWizard extends Wizard {
 		public void createControl(Composite parent) {
 			container = new Composite(parent, SWT.NONE);
 			container.setLayout(new FillLayout());
-			userTableCmp = new UserTableComposite(container, SWT.NO_FOCUS,
+			userTableCmp = new UsersTable(container, SWT.NO_FOCUS,
 					session);
 			userTableCmp.populate(true, true);
 			setControl(container);
@@ -210,7 +210,7 @@ public class NewUserGroupWizard extends Wizard {
 			return userTableCmp.getSelectedUsers();
 		}
 
-		// private class MyUserTableCmp extends UserTableComposite {
+		// private class MyUserTableCmp extends UsersTable {
 		//
 		// private static final long serialVersionUID = 1L;
 		//
@@ -248,7 +248,7 @@ public class NewUserGroupWizard extends Wizard {
 	private class ValidateAndLaunchWizardPage extends WizardPage implements
 			IPageChangedListener {
 		private static final long serialVersionUID = 1L;
-		private UserTableComposite userTableCmp;
+		private UsersTable userTableCmp;
 		private Session session;
 
 		public ValidateAndLaunchWizardPage(Session session) {
@@ -268,7 +268,7 @@ public class NewUserGroupWizard extends Wizard {
 				((IPageChangeProvider) container).addPageChangedListener(this);
 			}
 
-			userTableCmp = new UserTableComposite(mainCmp, SWT.NO_FOCUS,
+			userTableCmp = new UsersTable(mainCmp, SWT.NO_FOCUS,
 					session);
 			userTableCmp.populate(false, false);
 			setControl(mainCmp);
@@ -291,7 +291,7 @@ public class NewUserGroupWizard extends Wizard {
 			}
 		}
 
-		// private class MyUserTableCmp extends UserTableComposite {
+		// private class MyUserTableCmp extends UsersTable {
 		// public MyUserTableCmp(Composite parent, int style, Session session) {
 		// super(parent, style, session);
 		// }

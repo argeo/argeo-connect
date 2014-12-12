@@ -15,7 +15,7 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.security.ui.admin.UserTableComposite;
+import org.argeo.eclipse.ui.parts.UsersTable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.layout.FillLayout;
@@ -29,7 +29,7 @@ public class UserGroupEditor extends GroupEditor {
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".userGroupEditor";
 
-	private UserTableComposite userTableCmp;
+	private UsersTable userTableCmp;
 
 	// Main business Objects
 	private Node group;
@@ -58,7 +58,7 @@ public class UserGroupEditor extends GroupEditor {
 		parent.setLayout(new FillLayout());
 
 		// Create the composite that displays the list and a filter
-		userTableCmp = new MyUserTableComposite(parent, SWT.NO_FOCUS,
+		userTableCmp = new MyUsersTable(parent, SWT.NO_FOCUS,
 				getSession());
 		userTableCmp.populate(true, false);
 
@@ -66,10 +66,10 @@ public class UserGroupEditor extends GroupEditor {
 		getSite().setSelectionProvider(userTableCmp.getTableViewer());
 	}
 
-	private class MyUserTableComposite extends UserTableComposite {
+	private class MyUsersTable extends UsersTable {
 		private static final long serialVersionUID = 1L;
 
-		public MyUserTableComposite(Composite parent, int style, Session session) {
+		public MyUsersTable(Composite parent, int style, Session session) {
 			super(parent, style, session);
 		}
 

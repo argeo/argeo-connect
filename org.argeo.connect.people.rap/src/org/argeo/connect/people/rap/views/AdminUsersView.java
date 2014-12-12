@@ -32,7 +32,7 @@ import org.argeo.jcr.ArgeoJcrConstants;
 import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.ArgeoTypes;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.security.ui.admin.UserTableComposite;
+import org.argeo.eclipse.ui.parts.UsersTable;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -50,7 +50,7 @@ public class AdminUsersView extends ViewPart implements ArgeoNames {
 	/* DEPENDENCY INJECTION */
 	private Session session;
 
-	private UserTableComposite userTableCmp;
+	private UsersTable userTableCmp;
 	private JcrUserListener userStructureListener;
 	private JcrUserListener userPropertiesListener;
 
@@ -59,7 +59,7 @@ public class AdminUsersView extends ViewPart implements ArgeoNames {
 		parent.setLayout(new FillLayout());
 
 		// Create the composite that displays the list and a filter
-		userTableCmp = new UserTableComposite(parent, SWT.NO_FOCUS, session);
+		userTableCmp = new UsersTable(parent, SWT.NO_FOCUS, session);
 		userTableCmp.populate(true, false);
 
 		// Configure
