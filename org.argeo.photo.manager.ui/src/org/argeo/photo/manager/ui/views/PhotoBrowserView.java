@@ -6,7 +6,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeType;
 
 import org.argeo.ArgeoException;
-import org.argeo.eclipse.ui.ErrorFeedback;
+import org.argeo.eclipse.ui.workbench.ErrorFeedback;
 import org.argeo.photo.manager.PictureManager;
 import org.argeo.photo.manager.ui.PhotoManagerImages;
 import org.argeo.photo.manager.ui.PhotoManagerUiPlugin;
