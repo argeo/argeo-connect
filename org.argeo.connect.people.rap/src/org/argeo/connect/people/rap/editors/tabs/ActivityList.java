@@ -24,7 +24,7 @@ import org.argeo.connect.people.rap.editors.parts.ActivityTable;
 import org.argeo.connect.people.rap.wizards.NewSimpleTaskWizard;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.eclipse.ui.utils.CommandUtils;
+import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;

@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.composites.UserGroupTableComposite;
-import org.argeo.eclipse.ui.ErrorFeedback;
+import org.argeo.eclipse.ui.workbench.ErrorFeedback;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.UserJcrUtils;
 import org.argeo.security.UserAdminService;

@@ -15,7 +15,7 @@ import org.argeo.connect.people.rap.exports.calc.ITableProvider;
 import org.argeo.connect.people.rap.exports.calc.RowsToCalcWriter;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.specific.OpenFile;
-import org.argeo.eclipse.ui.utils.CommandUtils;
+import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
