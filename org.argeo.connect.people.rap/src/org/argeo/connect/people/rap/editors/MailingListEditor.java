@@ -209,101 +209,6 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 
 	}
 
-	// protected void populateHeader(Composite parent) {
-	// parent.setLayout(new FormLayout());
-	//
-	// // READ ONLY PANEL
-	// final Composite roPanelCmp = toolkit.createComposite(parent,
-	// SWT.NO_FOCUS);
-	// PeopleUiUtils.setSwitchingFormData(roPanelCmp);
-	// roPanelCmp.setLayout(new GridLayout());
-	//
-	// // Add a label with info provided by the FilmOverviewLabelProvider
-	// final Label titleROLbl = toolkit.createLabel(roPanelCmp, "", SWT.WRAP);
-	// titleROLbl.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
-	//
-	// final ColumnLabelProvider groupTitleLP = new TagLabelProvider(
-	// PeopleUiConstants.LIST_TYPE_OVERVIEW_TITLE, getPeopleService()
-	// .getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
-	// PEOPLE_MAILING_LISTS);
-	//
-	// // EDIT PANEL
-	// final Composite editPanel = toolkit.createComposite(parent,
-	// SWT.NO_FOCUS);
-	// PeopleUiUtils.setSwitchingFormData(editPanel);
-	//
-	// // intern layout
-	// editPanel.setLayout(new GridLayout(2, false));
-	// final Label editTitle = toolkit.createLabel(editPanel, "");
-	// editTitle.setData(PeopleUiConstants.MARKUP_ENABLED, Boolean.TRUE);
-	// editTitle.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-	//
-	// Link editTitleLink = null;
-	// if (userService.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
-	// || userService.isUserInRole(PeopleConstants.ROLE_ADMIN)) {
-	// editTitleLink = new Link(editPanel, SWT.NONE);
-	// editTitleLink.setText("<a>Edit Mailing List Title...</a>");
-	// } else
-	// toolkit.createLabel(editPanel, "");
-	//
-	// final Text descTxt = PeopleUiUtils.createGDText(toolkit, editPanel,
-	// "A Description", "", 400, 2);
-	//
-	// final AbstractFormPart editPart = new AbstractFormPart() {
-	// public void refresh() {
-	// super.refresh();
-	// // EDIT PART
-	// String title = "<b><big> "
-	// + CommonsJcrUtils.get(mailingList, Property.JCR_TITLE)
-	// + "</big></b>";
-	// editTitle.setText(title);
-	// PeopleUiUtils.refreshTextWidgetValue(descTxt, mailingList,
-	// Property.JCR_DESCRIPTION);
-	//
-	// // READ ONLY PART
-	// titleROLbl.setText(groupTitleLP.getText(mailingList));
-	// // Manage switch
-	// if (CommonsJcrUtils.isNodeCheckedOutByMe(mailingList))
-	// editPanel.moveAbove(roPanelCmp);
-	// else
-	// editPanel.moveBelow(roPanelCmp);
-	// editPanel.getParent().layout();
-	// }
-	// };
-	//
-	// PeopleUiUtils.addTxtModifyListener(editPart, descTxt, mailingList,
-	// Property.JCR_DESCRIPTION, PropertyType.STRING);
-	//
-	// if (editTitleLink != null) {
-	// editTitleLink.addSelectionListener(new SelectionAdapter() {
-	// private static final long serialVersionUID = 1L;
-	//
-	// @Override
-	// public void widgetSelected(final SelectionEvent event) {
-	//
-	// Wizard wizard = new EditTagWizard(getPeopleService(),
-	// getPeopleUiService(), mailingList,
-	// PeopleTypes.PEOPLE_MAILING_LIST, getPeopleService()
-	// .getResourceBasePath(
-	// PeopleTypes.PEOPLE_MAILING_LIST),
-	// PeopleTypes.PEOPLE_ENTITY,
-	// PeopleNames.PEOPLE_MAILING_LISTS,
-	// getPeopleService().getBasePath(null));
-	// WizardDialog dialog = new WizardDialog(descTxt.getShell(),
-	// wizard);
-	// // dialog.setText();
-	// int result = dialog.open();
-	// if (result == WizardDialog.OK) {
-	// editPart.markDirty();
-	// editPart.refresh();
-	// }
-	// }
-	// });
-	// }
-	// editPart.initialize(getManagedForm());
-	// getManagedForm().addPart(editPart);
-	// }
-
 	public void createMembersList(Composite parent, final Node entity) {
 		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
@@ -543,8 +448,17 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		super.dispose();
 	}
 
+	// Expose to extending classes
 	public PeopleService getPeopleService() {
 		return peopleService;
+	}
+
+	public PeopleWorkbenchService getPeopleWorkbenchService() {
+		return peopleWorkbenchService;
+	}
+
+	public Node getNode() {
+		return mailingList;
 	}
 
 	// Compulsory unused methods.

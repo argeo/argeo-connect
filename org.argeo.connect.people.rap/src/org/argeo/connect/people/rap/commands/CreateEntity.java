@@ -48,13 +48,14 @@ public class CreateEntity extends AbstractHandler {
 		String nodeType = event.getParameter(PARAM_TARGET_NODE_TYPE);
 
 		Session session = null;
+		Node newNode = null;
 		try {
 			session = repository.login();
 			String draftPath = peopleService.getTmpPath();
 			String datePath = JcrUtils.dateAsPath(Calendar.getInstance(), true);
 
 			Node parent = JcrUtils.mkdirs(session, draftPath + "/" + datePath);
-			Node newNode = parent.addNode(nodeType, nodeType);
+			newNode = parent.addNode(nodeType, nodeType);
 			String uuid = UUID.randomUUID().toString();
 			newNode.setProperty(PeopleNames.PEOPLE_UID, uuid);
 			// newNode.setProperty(PeopleNames.PEOPLE_IS_DRAFT, true);
@@ -70,10 +71,11 @@ public class CreateEntity extends AbstractHandler {
 				CommandUtils.callCommand(
 						peopleUiService.getOpenEntityEditorCmdId(),
 						OpenEntityEditor.PARAM_JCR_ID, jcrId);
-			} else
+				return newNode.getPath();
+			} else{
 				// remove tmp Node
 				CommonsJcrUtils.cancelAndCheckin(newNode);
-
+			}
 		} catch (RepositoryException e) {
 			throw new PeopleException("unexpected JCR error while opening "
 					+ "editor for newly created programm", e);
