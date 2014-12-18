@@ -8,6 +8,7 @@ import java.util.Locale;
 import javax.jcr.PropertyType;
 import javax.jcr.query.Row;
 
+import jxl.Cell;
 import jxl.SheetSettings;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
@@ -28,6 +29,7 @@ import jxl.write.biff.RowsExceededException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
@@ -169,6 +171,8 @@ public class RowsToCalcWriter {
 			currentRow++;
 		}
 		resizeColumns(sheet);
+		// TODO does not work yet.
+		// resizeRows(sheet);
 
 	}
 
@@ -244,7 +248,7 @@ public class RowsToCalcWriter {
 			// throw new PeopleException("Unable to get value for label: "
 			// + currCol.getHeaderLabel(), e);
 		} catch (RowsExceededException e) {
-			throw new PeopleException("Two many rows", e);
+			throw new PeopleException("Too many rows", e);
 		} catch (WriteException e) {
 			throw new PeopleException(
 					"Error while generating the body of the extract", e);
@@ -261,6 +265,43 @@ public class RowsToCalcWriter {
 					maxWidth = currentWidth;
 			}
 			sheet.setColumnView(i, maxWidth + 1);
+		}
+	}
+
+	// TODO does not work yet.
+	protected void resizeRows(WritableSheet sheet) {
+		boolean hasContent = true;
+		int j = 1;
+		while (hasContent) {
+			hasContent = false;
+			int maxHeigth = 0;
+			loop: for (int i = 0; i < columnDefs.size(); i++) {
+				Cell currCell = sheet.getCell(i, j);
+
+				// We only manage heigth for label for the time being
+				if (!(currCell instanceof Label))
+					continue loop;
+				Label currLabel = (Label) currCell;
+				String currentContent = currCell.getContents();
+				if ("".equals(currentContent.trim()))
+					continue loop;
+				else
+					hasContent = true;
+				String[] lines = currentContent.split("\n");
+				int size = currLabel.getCellFormat().getFont().getPointSize();
+				int currentHeigth = lines.length * size;
+
+				if (currentHeigth > maxHeigth)
+					maxHeigth = currentHeigth;
+			}
+			try {
+				// sheet.getRow(j).
+				// sheet.setRowView(j, 20);
+				sheet.setRowView(j, maxHeigth + 1);
+			} catch (RowsExceededException re) {
+				throw new ArgeoException("unable to resize row " + j, re);
+			}
+			j++;
 		}
 	}
 

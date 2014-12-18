@@ -96,7 +96,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				refreshStaticFilteredList();
+				refreshFilteredList();
 			}
 		});
 
@@ -113,7 +113,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 	}
 
 	/** Refresh the table viewer based on the free text search field */
-	protected void refreshStaticFilteredList() {
+	protected void refreshFilteredList() {
 		try {
 			QueryManager queryManager = getSession().getWorkspace()
 					.getQueryManager();

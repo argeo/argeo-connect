@@ -170,11 +170,14 @@ public class SimpleJcrTableComposite extends Composite implements ArgeoNames {
 	}
 
 	private TableViewer createTableViewer(final Composite parent) {
+		// TODO make it virtual
+		// tableStyle = tableStyle | SWT.VIRTUAL;
+		
 		if (hasSelectionColumn)
 			tableStyle = tableStyle | SWT.CHECK;
 
 		Table table = new Table(parent, tableStyle);
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		table.setLayoutData(PeopleUiUtils.fillGridData());
 
 		TableViewer viewer;
 		if (hasSelectionColumn)

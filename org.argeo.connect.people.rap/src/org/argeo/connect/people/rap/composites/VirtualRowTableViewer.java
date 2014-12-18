@@ -9,6 +9,7 @@ import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.ArgeoNames;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -27,6 +28,8 @@ public class VirtualRowTableViewer extends Composite implements ArgeoNames {
 	private List<PeopleColumnDefinition> colDefs;
 	private int tableStyle;
 
+	private boolean hasCheckBoxes = false;
+
 	public List<PeopleColumnDefinition> getColumnsDef() {
 		return colDefs;
 	}
@@ -37,6 +40,15 @@ public class VirtualRowTableViewer extends Composite implements ArgeoNames {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.colDefs = columns;
+		populate();
+	}
+
+	public VirtualRowTableViewer(Composite parent, int style,
+			List<PeopleColumnDefinition> columns, boolean addCheckBoxes) {
+		super(parent, SWT.NONE);
+		this.tableStyle = style;
+		this.colDefs = columns;
+		hasCheckBoxes = addCheckBoxes;
 		populate();
 	}
 
@@ -57,15 +69,22 @@ public class VirtualRowTableViewer extends Composite implements ArgeoNames {
 
 	private void createTableViewer(final Composite parent) {
 		// Creates objects
-		viewer = new TableViewer(parent, SWT.VIRTUAL | tableStyle);
-		Table table = viewer.getTable();
-		// comparator = new MyViewerComparator();
 
-		// Configure
+		int swtStyle = tableStyle | SWT.VIRTUAL;
+
+		if (hasCheckBoxes)
+			swtStyle = swtStyle | SWT.CHECK;
+
+		Table table = new Table(parent, swtStyle);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		table.setLayoutData(PeopleUiUtils.fillGridData());
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+
+		if (hasCheckBoxes)
+			viewer = new CheckboxTableViewer(table);
+		else
+			viewer = new TableViewer(table);
 
 		// Create columns
 		TableViewerColumn column;

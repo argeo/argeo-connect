@@ -197,32 +197,39 @@ public class FilteredVirtualEntityTable extends Composite implements ArgeoNames 
 	}
 
 	private TableViewer createTableViewer(final Composite parent) {
+		tableStyle = tableStyle | SWT.VIRTUAL;
+
 		if (hasSelectionColumn)
 			tableStyle = tableStyle | SWT.CHECK;
 
-		// Table table = new Table(parent, SWT.VIRTUAL | tableStyle);
-		// TableViewer viewer;
-		// if (hasSelectionColumn)
-		// viewer = new CheckboxTableViewer(table);
-		// else
-		// viewer = new TableViewer(table);
-
-		TableViewer viewer;
-		if (hasSelectionColumn)
-			viewer = new CheckboxTableViewer(parent, SWT.VIRTUAL | tableStyle);
-		else
-			viewer = new TableViewer(parent, SWT.VIRTUAL | tableStyle);
-		Table table = viewer.getTable();
-
+		Table table = new Table(parent, tableStyle);
 		table.setLayoutData(PeopleUiUtils.fillGridData());
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
+
+		TableViewer viewer;
+		if (hasSelectionColumn)
+			viewer = new CheckboxTableViewer(table);
+		else
+			viewer = new TableViewer(table);
+
+		// TableViewer viewer;
+		// if (hasSelectionColumn)
+		// viewer = new CheckboxTableViewer(table); // parent, SWT.VIRTUAL |
+		// tableStyle);
+		// else
+		// viewer = new TableViewer(parent, SWT.VIRTUAL | tableStyle);
+		// Table table = viewer.getTable();
+		//
+		// table.setLayoutData(PeopleUiUtils.fillGridData());
+		// table.setLinesVisible(true);
+		// table.setHeaderVisible(true);
 		// table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 
 		TableViewerColumn column;
-		int offset = 0;
+		// int offset = 0;
 		if (hasSelectionColumn) {
-			offset = 1;
+			// offset = 1;
 			column = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE,
 					25);
 			column.setLabelProvider(new ColumnLabelProvider() {
@@ -248,7 +255,7 @@ public class FilteredVirtualEntityTable extends Composite implements ArgeoNames 
 		}
 
 		// NodeViewerComparator comparator = new NodeViewerComparator();
-		int i = offset;
+		// int i = offset;
 		for (ColumnDefinition colDef : colDefs) {
 			column = ViewerUtils.createTableViewerColumn(viewer,
 					colDef.getHeaderLabel(), SWT.NONE, colDef.getColumnSize());
@@ -257,7 +264,7 @@ public class FilteredVirtualEntityTable extends Composite implements ArgeoNames 
 			// JcrUiUtils.getNodeSelectionAdapter(i,
 			// colDef.getPropertyType(), colDef.getPropertyName(),
 			// comparator, viewer));
-			i++;
+			// i++;
 		}
 
 		// IMPORTANT: initialize comparator before setting it

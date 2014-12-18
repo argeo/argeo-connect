@@ -11,6 +11,7 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
@@ -19,17 +20,25 @@ import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.utils.Refreshable;
+import org.argeo.connect.people.rap.wizards.AddTagWizard;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
@@ -84,18 +93,26 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		if (showStaticFilterSection()) {
 			Composite filterSection = new Composite(parent, SWT.NO_FOCUS);
 			populateStaticFilters(filterSection);
-			filterSection.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
-					false));
+			filterSection.setLayoutData(PeopleUiUtils.horizontalFillData());
+		}
+
+		// A menu with various actions on selected items
+		if (hasCheckBoxes()) {
+			Composite menuCmp = new Composite(parent, SWT.NO_FOCUS);
+			createCheckBoxMenu(menuCmp);
+			menuCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
 		}
 
 		// The table itself
 		Composite tableCmp = new Composite(parent, SWT.NO_FOCUS);
 		createListPart(tableCmp);
-		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		tableCmp.setLayoutData(PeopleUiUtils.fillGridData());
 
 		// initialize table
-		refreshStaticFilteredList();
+		refreshFilteredList();
 	}
+
+	protected abstract void refreshFilteredList();
 
 	/**
 	 * Overwrite to false if implementation has no static filter session.
@@ -106,9 +123,44 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	}
 
 	/** Override this to provide type specific static filters */
-	protected abstract void populateStaticFilters(Composite body);
+	protected void populateStaticFilters(Composite body) {
+	}
 
-	protected abstract void refreshStaticFilteredList();
+	/**
+	 * Overwrite to true to use a CheckBoxTableViewer and provide selection
+	 * abilities.
+	 */
+	protected boolean hasCheckBoxes() {
+		return false;
+	}
+
+	protected void createCheckBoxMenu(Composite parent) {
+		RowLayout layout = new RowLayout(SWT.HORIZONTAL);
+		layout.pack = false;
+		parent.setLayout(layout);
+
+		final Button addTag = new Button(parent, SWT.PUSH);
+		addTag.setText("Add tag");
+		addTag.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 649044488879071736L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				CheckboxTableViewer viewer = (CheckboxTableViewer) tableViewer;
+				Row[] rows = (Row[]) viewer.getCheckedElements();
+
+				Wizard wizard = new AddTagWizard(peopleService,
+						peopleWorkbenchService, session, rows,
+						PeopleConstants.RESOURCE_TAG, PeopleNames.PEOPLE_TAGS);
+				WizardDialog dialog = new WizardDialog(addTag.getShell(),
+						wizard);
+				int result = dialog.open();
+				if (result == WizardDialog.OK) {
+					refreshFilteredList();
+				}
+			}
+		});
+	}
 
 	/** Overwrite to set the correct row height */
 	protected int getCurrRowHeight() {
@@ -136,7 +188,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	 * free text search field
 	 */
 	protected void resetFilterText() {
-		filterTxt.setText("");
+		getFilterText().setText("");
 	}
 
 	/**
@@ -155,8 +207,8 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	protected void createListPart(Composite parent) {
 		parent.setLayout(new GridLayout());
-		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(
-				parent, SWT.MULTI, getColumnDefinition(null));
+		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(parent,
+				SWT.MULTI, getColumnDefinition(null), hasCheckBoxes());
 		tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
@@ -175,14 +227,25 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 			private static final long serialVersionUID = 5003010530960334977L;
 
 			public void modifyText(ModifyEvent event) {
-				refreshStaticFilteredList();
+				refreshFilteredList();
 			}
 		});
+	}
+
+	/** Overwrite to customise the filtering widgets */
+	protected Text getFilterText() {
+		return filterTxt;
 	}
 
 	/** Use this method to update the result table */
 	protected void setViewerInput(Row[] rows) {
 		this.rows = rows;
+		CheckboxTableViewer ctv = null;
+		if (tableViewer instanceof CheckboxTableViewer) {
+			ctv = (CheckboxTableViewer) tableViewer;
+			ctv.setAllChecked(false);
+		}
+
 		tableViewer.setInput(rows);
 		// we must explicitly set the items count
 		tableViewer.setItemCount(rows.length);
@@ -196,7 +259,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	protected Constraint getFreeTextConstraint(QueryObjectModelFactory factory,
 			Selector source) throws RepositoryException {
-		String filter = filterTxt.getText();
+		String filter = getFilterText().getText();
 		Constraint defaultC = null;
 		if (CommonsJcrUtils.checkNotEmptyString(filter)) {
 			String[] strs = filter.trim().split(" ");
@@ -214,7 +277,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	// Life cycle management
 	@Override
 	public void setFocus() {
-		filterTxt.forceFocus();
+		getFilterText().forceFocus();
 	}
 
 	@Override
@@ -225,7 +288,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	@Override
 	public void forceRefresh(Object object) {
-		refreshStaticFilteredList();
+		refreshFilteredList();
 	}
 
 	// /////////////////////////

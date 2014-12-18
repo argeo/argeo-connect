@@ -9,7 +9,6 @@ import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
@@ -175,12 +174,9 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
-
-					Wizard wizard = new EditTagWizard(
-							peopleService,
-							peopleWorkbenchService,
-							getNode(),
-							NodeType.NT_UNSTRUCTURED,
+					Wizard wizard = new EditTagWizard(peopleService,
+							peopleWorkbenchService, getNode(),
+							PeopleConstants.RESOURCE_TAG,
 							PeopleNames.PEOPLE_TAGS);
 					WizardDialog dialog = new WizardDialog(titleROLbl
 							.getShell(), wizard);
@@ -279,8 +275,8 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 	private TableViewer createTableViewer(Composite parent) {
 		parent.setLayout(new GridLayout());
-		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(
-				parent, SWT.MULTI, colDefs);
+		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(parent,
+				SWT.MULTI, colDefs);
 		TableViewer tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
