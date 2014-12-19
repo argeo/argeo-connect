@@ -14,6 +14,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
@@ -26,6 +27,7 @@ import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.Wizard;
@@ -42,6 +44,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -139,27 +142,88 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		layout.pack = false;
 		parent.setLayout(layout);
 
-		final Button addTag = new Button(parent, SWT.PUSH);
-		addTag.setText("Add tag");
-		addTag.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 649044488879071736L;
+		Button selectAllBtn = new Button(parent, SWT.PUSH);
+		selectAllBtn.setText("Select all");
+		selectAllBtn.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				CheckboxTableViewer viewer = (CheckboxTableViewer) tableViewer;
-				Row[] rows = (Row[]) viewer.getCheckedElements();
+				viewer.setAllChecked(true);
+			}
+		});
 
-				Wizard wizard = new AddTagWizard(peopleService,
-						peopleWorkbenchService, session, rows,
-						PeopleConstants.RESOURCE_TAG, PeopleNames.PEOPLE_TAGS);
-				WizardDialog dialog = new WizardDialog(addTag.getShell(),
-						wizard);
-				int result = dialog.open();
-				if (result == WizardDialog.OK) {
-					refreshFilteredList();
+		Button unselectAllBtn = new Button(parent, SWT.PUSH);
+		unselectAllBtn.setText("Unselect all");
+		unselectAllBtn.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				CheckboxTableViewer viewer = (CheckboxTableViewer) tableViewer;
+				viewer.setAllChecked(false);
+			}
+		});
+
+		final Button addTagBtn = new Button(parent, SWT.PUSH);
+		addTagBtn.setText("Add tag");
+		addBtnListener(addTagBtn, PeopleConstants.RESOURCE_TAG,
+				PeopleNames.PEOPLE_TAGS, AddTagWizard.TYPE_ADD);
+
+		final Button removeTagBtn = new Button(parent, SWT.PUSH);
+		removeTagBtn.setText("Remove tag");
+		addBtnListener(removeTagBtn, PeopleConstants.RESOURCE_TAG,
+				PeopleNames.PEOPLE_TAGS, AddTagWizard.TYPE_REMOVE);
+
+		final Button addMLBtn = new Button(parent, SWT.PUSH);
+		addMLBtn.setText("Add mailing list");
+		addBtnListener(addMLBtn, PeopleTypes.PEOPLE_MAILING_LIST,
+				PeopleNames.PEOPLE_MAILING_LISTS, AddTagWizard.TYPE_ADD);
+
+		final Button removeMLBtn = new Button(parent, SWT.PUSH);
+		removeMLBtn.setText("Remove mailing list");
+		addBtnListener(removeMLBtn, PeopleTypes.PEOPLE_MAILING_LIST,
+				PeopleNames.PEOPLE_MAILING_LISTS, AddTagWizard.TYPE_REMOVE);
+	}
+
+	private void addBtnListener(final Button button, final String tagId,
+			final String taggablePropName, final int actionType) {
+		button.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 2236384303910015747L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				CheckboxTableViewer viewer = (CheckboxTableViewer) tableViewer;
+				Row[] rows = castAsRows(viewer.getCheckedElements());
+
+				Shell shell = button.getShell();
+
+				if (rows.length == 0)
+					MessageDialog.openInformation(shell, "Unvalid selection",
+							"No item is selected. Nothing has been done.");
+				else {
+
+					Wizard wizard = new AddTagWizard(peopleService,
+							peopleWorkbenchService, session, rows,
+							getEntityType(), tagId, taggablePropName,
+							actionType);
+					WizardDialog dialog = new WizardDialog(shell, wizard);
+					int result = dialog.open();
+					if (result == WizardDialog.OK) {
+						refreshFilteredList();
+					}
 				}
 			}
 		});
+	}
+
+	private Row[] castAsRows(Object[] objs) {
+		int i = 0;
+		Row[] rows = new Row[objs.length];
+		for (Object obj : objs)
+			rows[i++] = (Row) obj;
+		return rows;
 	}
 
 	/** Overwrite to set the correct row height */

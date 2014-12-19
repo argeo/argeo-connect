@@ -37,7 +37,6 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
 
 /**
  * Generic wizard to add a tag like property entities retrieved in the passed
@@ -50,6 +49,14 @@ import org.eclipse.swt.widgets.Text;
 public class AddTagWizard extends Wizard implements PeopleNames {
 	// private final static Log log = LogFactory.getLog(EditTagWizard.class);
 
+	// To be cleaned:
+	public final static int TYPE_ADD = 1;
+	public final static int TYPE_REMOVE = 2;
+
+	// various labels
+	// private final static String ADD_CONFIRM_MSG = "";
+	// private final static String REMOVE_CONFIRM_MSG = "";
+
 	// Context
 	private PeopleService peopleService;
 	private PeopleWorkbenchService peopleUiService;
@@ -60,18 +67,17 @@ public class AddTagWizard extends Wizard implements PeopleNames {
 	private String tagPropName;
 
 	private Row[] rows;
+	private final String selectorName;
+	private final int actionType;
 
 	// Cache to ease implementation
 	private Session session;
 	private ResourceService resourceService;
 	private Node tagParent;
-	private String taggableNodeType;
 	private String tagInstanceType;
-	private String taggableParentPath;
+	// private String taggableParentPath;
+	// private String taggableNodeType;
 
-	// This part widgets
-	private Text newTitleTxt;
-	private Text newDescTxt;
 
 	/**
 	 * 
@@ -83,7 +89,8 @@ public class AddTagWizard extends Wizard implements PeopleNames {
 	 */
 	public AddTagWizard(PeopleService peopleService,
 			PeopleWorkbenchService peopleUiService, Session session,
-			Row[] rows, String tagId, String tagPropName) {
+			Row[] rows, String selectorName, String tagId, String tagPropName,
+			int actionType) {
 
 		this.peopleService = peopleService;
 		this.peopleUiService = peopleUiService;
@@ -92,23 +99,28 @@ public class AddTagWizard extends Wizard implements PeopleNames {
 
 		this.session = session;
 		this.rows = rows;
+		this.selectorName = selectorName;
+
+		this.actionType = actionType;
+
 		resourceService = peopleService.getResourceService();
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
-		taggableNodeType = CommonsJcrUtils.get(tagParent,
-				PEOPLE_TAGGABLE_NODE_TYPE);
 		tagInstanceType = CommonsJcrUtils.get(tagParent,
 				PEOPLE_TAG_INSTANCE_TYPE);
-
-		taggableParentPath = CommonsJcrUtils.get(tagParent,
-				PEOPLE_TAGGABLE_PARENT_PATH);
+		//
+		// taggableNodeType = CommonsJcrUtils.get(tagParent,
+		// PEOPLE_TAGGABLE_NODE_TYPE);
+		// taggableParentPath = CommonsJcrUtils.get(tagParent,
+		// PEOPLE_TAGGABLE_PARENT_PATH);
 	}
 
 	@Override
 	public void addPages() {
 		try {
 			// configure container
-			setWindowTitle("Update Title");
-			// setNeedsProgressMonitor(false);
+			String title = "Batch "
+					+ (actionType == TYPE_ADD ? "addition" : "remove");
+			setWindowTitle(title);
 
 			MainInfoPage inputPage = new MainInfoPage("Configure");
 			addPage(inputPage);
@@ -126,25 +138,11 @@ public class AddTagWizard extends Wizard implements PeopleNames {
 	@Override
 	public boolean performFinish() {
 		try {
-			String oldTitle = CommonsJcrUtils.get(tagInstance,
-					Property.JCR_TITLE);
-			String newTitle = newTitleTxt.getText();
-			String newDesc = newDescTxt.getText();
-
-			if (true)
-				return false;
 
 			// Sanity checks
 			String errMsg = null;
-			if (CommonsJcrUtils.isEmptyString(newTitle))
-				errMsg = "New value cannot be blank or an empty string";
-			else if (oldTitle.equals(newTitle))
-				errMsg = "New value is the same as old one.\n"
-						+ "Either enter a new one or press cancel.";
-			else if (peopleService.getResourceService().getRegisteredTag(
-					tagInstance.getSession(), tagId, newTitle) != null)
-				errMsg = "The new chosen value is already used.\n"
-						+ "Either enter a new one or press cancel.";
+			if (tagInstance == null)
+				errMsg = "Please choose the tag to use";
 
 			if (errMsg != null) {
 				MessageDialog.openError(getShell(), "Unvalid information",
@@ -160,26 +158,34 @@ public class AddTagWizard extends Wizard implements PeopleNames {
 			if (isCheckedIn)
 				CommonsJcrUtils.checkout(tagInstance);
 
-			resourceService.updateTag(tagInstance, newTitle);
+			// TODO hardcoded prop name
+			String value = tagInstance.getProperty(Property.JCR_TITLE)
+					.getString();
 
-			if (CommonsJcrUtils.checkNotEmptyString(newDesc))
-				tagInstance.setProperty(Property.JCR_DESCRIPTION, newDesc);
-			else if (tagInstance.hasProperty(Property.JCR_DESCRIPTION))
-				// force reset
-				tagInstance.setProperty(Property.JCR_DESCRIPTION, "");
-
-			if (isCheckedIn)
-				CommonsJcrUtils.saveAndCheckin(tagInstance);
-			else if (isVersionable) // workaround versionable node should have
-				// been commited on last update
-				CommonsJcrUtils.saveAndCheckin(tagInstance);
-			else
-				tagInstance.getSession().save();
+			for (Row row : rows) {
+				Node currNode = row.getNode(selectorName);
+				boolean wasCO = CommonsJcrUtils.isNodeCheckedOutByMe(currNode);
+				if (!wasCO)
+					CommonsJcrUtils.checkout(currNode);
+				if (actionType == TYPE_ADD) {
+					// Duplication will return an error message that we ignore
+					CommonsJcrUtils.addStringToMultiValuedProp(currNode,
+							tagPropName, value);
+				} else if (actionType == TYPE_REMOVE) {
+					// Duplication will return an error message that we ignore
+					CommonsJcrUtils.removeStringFromMultiValuedProp(currNode,
+							tagPropName, value);
+				}
+				if (!wasCO)
+					CommonsJcrUtils.saveAndCheckin(currNode);
+				else
+					currNode.getSession().save();
+			}
 			return true;
 		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"unable to update title for tag like resource "
-							+ tagInstance, re);
+			throw new PeopleException("unable to batch update " + tagId
+					+ " for " + selectorName + " row list with "
+					+ tagInstanceType, re);
 		}
 	}
 
@@ -201,7 +207,7 @@ public class AddTagWizard extends Wizard implements PeopleNames {
 		private List<ColumnDefinition> colDefs = new ArrayList<ColumnDefinition>();
 		{ // By default, it displays only title
 			colDefs.add(new ColumnDefinition(null, Property.JCR_TITLE,
-					PropertyType.STRING, "Label", 300));
+					PropertyType.STRING, "Label", 420));
 		};
 
 		public MainInfoPage(String pageName) {
@@ -210,14 +216,17 @@ public class AddTagWizard extends Wizard implements PeopleNames {
 		}
 
 		public void createControl(Composite parent) {
-			parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+			Composite body = new Composite(parent, SWT.NONE);
+			body.setLayout(PeopleUiUtils.noSpaceGridLayout());
 			Node tagParent = peopleService.getResourceService()
 					.getTagLikeResourceParent(session, tagId);
 			int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-			tableCmp = new SimpleJcrTableComposite(parent, style, session,
+			tableCmp = new SimpleJcrTableComposite(body, style, session,
 					CommonsJcrUtils.getPath(tagParent), tagInstanceType,
 					colDefs, true, false);
-			tableCmp.setLayoutData(PeopleUiUtils.fillGridData());
+			GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+			gd.heightHint = 400;
+			tableCmp.setLayoutData(gd);
 
 			// Add listeners
 			tableCmp.getTableViewer().addDoubleClickListener(
@@ -225,38 +234,8 @@ public class AddTagWizard extends Wizard implements PeopleNames {
 			tableCmp.getTableViewer().addSelectionChangedListener(
 					new MySelectionChangedListener());
 
-			//
-			//
-			// FilteredVirtualEntityTable fvet = new
-			// FilteredVirtualEntityTable(body, SWT.SINGLE, session);
-			//
-			// // New Title Value
-			// PeopleRapUtils.createBoldLabel(body, "Title");
-			// newTitleTxt = new Text(body, SWT.BORDER);
-			// newTitleTxt.setMessage("was: "
-			// + CommonsJcrUtils.get(tagInstance, Property.JCR_TITLE));
-			// newTitleTxt.setText(CommonsJcrUtils.get(tagInstance,
-			// Property.JCR_TITLE));
-			// newTitleTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
-			// true,
-			// false));
-			//
-			//
-			//
-			// // New Description Value
-			// PeopleRapUtils.createBoldLabel(body, "Description", SWT.TOP);
-			// newDescTxt = new Text(body, SWT.BORDER | SWT.MULTI | SWT.WRAP);
-			// newDescTxt.setMessage("was: "
-			// + CommonsJcrUtils
-			// .get(tagInstance, Property.JCR_DESCRIPTION));
-			// newDescTxt.setText(CommonsJcrUtils.get(tagInstance,
-			// Property.JCR_DESCRIPTION));
-			// newDescTxt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-			// true));
-
-			setControl(tableCmp);
+			setControl(body);
 			tableCmp.setFocus();
-			// newTitleTxt.setFocus();
 		}
 
 		class MySelectionChangedListener implements ISelectionChangedListener {
@@ -304,13 +283,13 @@ public class AddTagWizard extends Wizard implements PeopleNames {
 			Composite body = new Composite(parent, SWT.NONE);
 			body.setLayout(PeopleUiUtils.noSpaceGridLayout());
 			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
-			colDefs.add(new PeopleColumnDefinition(taggableNodeType,
+			colDefs.add(new PeopleColumnDefinition(selectorName,
 					Property.JCR_TITLE, PropertyType.STRING, "Display Name",
-					new TitleIconRowLP(peopleUiService, taggableNodeType,
+					new TitleIconRowLP(peopleUiService, selectorName,
 							Property.JCR_TITLE), 300));
 
 			VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(body,
-					SWT.MULTI, colDefs);
+					SWT.READ_ONLY, colDefs);
 			TableViewer membersViewer = tableCmp.getTableViewer();
 			membersViewer.setContentProvider(new MyLazyContentProvider(
 					membersViewer));
