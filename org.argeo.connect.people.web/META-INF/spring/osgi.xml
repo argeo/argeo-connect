@@ -20,7 +20,7 @@
 		filter="(argeo.jcr.repository.alias=people)" />
 
 	<reference id="authenticationManager"
-		interface="org.springframework.security.AuthenticationManager" />
+		interface="org.springframework.security.authentication.AuthenticationManager" />
 
 	<reference id="userAdminService" interface="org.argeo.security.UserAdminService" />
 

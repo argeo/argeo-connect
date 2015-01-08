@@ -23,7 +23,7 @@
 		/> -->
 
 	<reference id="authenticationManager"
-		interface="org.springframework.security.AuthenticationManager" />
+		interface="org.springframework.security.authentication.AuthenticationManager" />
 
 	<!-- SERVICES -->
 	<service ref="application"

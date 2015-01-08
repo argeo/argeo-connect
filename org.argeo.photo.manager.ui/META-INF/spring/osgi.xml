@@ -19,6 +19,6 @@
 		filter="(argeo.jcr.repository.alias=node)" />
 	<reference id="repositoryFactory" interface="javax.jcr.RepositoryFactory" />
 	<reference id="authenticationManager"
-		interface="org.springframework.security.AuthenticationManager" />
+		interface="org.springframework.security.authentication.AuthenticationManager" />
 
 </beans:beans>
