@@ -53,7 +53,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.springframework.security.GrantedAuthority;
+import org.springframework.security.core.GrantedAuthority;
 
 /** Wizard to create a new user in a connect People application. */
 public class NewPeopleUserWizard extends Wizard {
@@ -122,8 +122,9 @@ public class NewPeopleUserWizard extends Wizard {
 			mainUserInfo.mapToProfileNode(userProfile);
 			String password = mainUserInfo.getPassword();
 
+			List<GrantedAuthority> authoritiesList = new ArrayList<GrantedAuthority>();
 			JcrUserDetails jcrUserDetails = new JcrUserDetails(userProfile,
-					password, new GrantedAuthority[0]);
+					password, authoritiesList);
 			// Add roles. might exist a cleaner way to do.
 			if (!userRolesPage.getRoles().isEmpty())
 				jcrUserDetails = jcrUserDetails.cloneWithNewRoles(userRolesPage

@@ -72,7 +72,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.springframework.security.GrantedAuthority;
+import org.springframework.security.core.GrantedAuthority;
 
 /** People specific user Editor. Adds among other group management. */
 public class UserEditor extends FormEditor {
@@ -110,10 +110,10 @@ public class UserEditor extends FormEditor {
 			userDetails = (JcrUserDetails) userAdminService
 					.loadUserByUsername(username);
 		} else {
-			GrantedAuthority[] authorities = {};
+			List<GrantedAuthority> authoritiesList = new ArrayList<GrantedAuthority>();
 			try {
 				userDetails = new JcrUserDetails(session, username, null,
-						authorities);
+						authoritiesList);
 			} catch (RepositoryException e) {
 				throw new ArgeoException("Cannot retrieve disabled JCR profile");
 			}

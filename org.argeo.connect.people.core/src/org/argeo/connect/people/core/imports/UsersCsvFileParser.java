@@ -1,6 +1,8 @@
 package org.argeo.connect.people.core.imports;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
@@ -18,7 +20,7 @@ import org.argeo.jcr.UserJcrUtils;
 import org.argeo.security.UserAdminService;
 import org.argeo.security.jcr.JcrSecurityModel;
 import org.argeo.security.jcr.JcrUserDetails;
-import org.springframework.security.GrantedAuthority;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
  * Base utility to load users demo data in Mr Schilling manager. All passwords
@@ -67,8 +69,9 @@ public class UsersCsvFileParser extends AbstractPeopleCsvFileParser {
 			if (CommonsJcrUtils.checkNotEmptyString(desc))
 				userProfile.setProperty(Property.JCR_DESCRIPTION, desc);
 
+			List<GrantedAuthority> authoritiesList = new ArrayList<GrantedAuthority>();
 			JcrUserDetails jcrUserDetails = new JcrUserDetails(userProfile,
-					"demo", new GrantedAuthority[0]);
+					"demo", authoritiesList);
 			jcrUserDetails = jcrUserDetails.cloneWithNewRoles(Arrays
 					.asList(role.split(", ")));
 

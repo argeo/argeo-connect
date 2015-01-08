@@ -21,7 +21,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.util.CsvParserWithLinesAsMap;
 import org.springframework.core.io.Resource;
-import org.springframework.osgi.io.OsgiBundleResource;
+import org.eclipse.gemini.blueprint.io.OsgiBundleResource;
 
 /** Base utility to load CSV data in a People repository **/
 public abstract class AbstractPeopleCsvFileParser extends

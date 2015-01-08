@@ -15,29 +15,18 @@
 		<Import-Package> *, org.argeo.eclipse.spring, org.h2, javax.jcr.nodetype 
 		</Import-Package> </instructions> </configuration> </plugin> </plugins> </build> -->
 	<dependencies>
-		<dependency>
-			<groupId>org.argeo.tp</groupId>
-			<artifactId>org.apache.commons.io</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp</groupId>
-			<artifactId>org.apache.commons.exec</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp</groupId>
-			<artifactId>org.springframework.beans</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp</groupId>
-			<artifactId>org.h2</artifactId>
-		</dependency>
-
+		<!-- <dependency> <groupId>org.argeo.tp.apache.commons</groupId> <artifactId>org.apache.commons.io</artifactId> 
+			</dependency> <dependency> <groupId>org.argeo.tp.apache.commons</groupId> 
+			<artifactId>org.apache.commons.exec</artifactId> </dependency> <dependency> 
+			<groupId>org.argeo.tp.spring</groupId> <artifactId>org.springframework.beans</artifactId> 
+			</dependency> <dependency> <groupId>org.argeo.tp</groupId> <artifactId>org.h2</artifactId> 
+			</dependency> -->
 		<dependency>
 			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.eclipse.ui.workbench</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.server.jcr</artifactId>
@@ -45,7 +34,7 @@
 		</dependency>
 
 		<!-- RCP only dependency, needed at compile time -->
-  		<dependency>
+		<dependency>
 			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.eclipse.dep.rcp</artifactId>
 			<version>${version.argeo-commons}</version>
@@ -54,10 +43,10 @@
 		</dependency>
 
 		<!-- TODO remove this dependency -->
-		<dependency>
+		<!--  <dependency>
 			<groupId>org.argeo.tp</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
-		</dependency>
+		</dependency> -->
 	</dependencies>
 </project>

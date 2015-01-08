@@ -34,9 +34,9 @@
 		</dependency>
 
 		<!-- Used in development mode to enable loading of demo data -->
-		<dependency>
+		<!--  <dependency>
 			<groupId>org.argeo.tp</groupId>
 			<artifactId>org.springframework.osgi.io</artifactId>
-		</dependency>
+		</dependency>  -->
 	</dependencies>
 </project>

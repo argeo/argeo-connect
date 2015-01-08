@@ -14,6 +14,7 @@
 	<version>2.1.13-SNAPSHOT</version>
 	<properties>
 		<version.connect>2.1.13-SNAPSHOT</version.connect>
+		<version.argeo-distribution-extras>0.1.1</version.argeo-distribution-extras>
 	</properties>
 	<modules>
 		<module>org.argeo.connect.people.specs</module>
@@ -23,9 +24,12 @@
 		<module>org.argeo.connect.people.ui</module>
 		<module>org.argeo.connect.people.rap</module>
 		<module>org.argeo.connect.people.web</module>
-		<module>org.argeo.photo.manager.ui</module>
+		<!-- Depends on org.eclipse.ui.form that must be added to eclipse RCP repo -->
+		<!-- <module>org.argeo.photo.manager.ui</module> -->
 		<module>org.argeo.connect.files</module>
-		<module>org.argeo.connect.streams</module>
+		<!-- Depends on com.sun.syndication that must be added to argeo-extras 
+			repo -->
+		<!-- <module>org.argeo.connect.streams</module> -->
 		<module>dep</module>
 	</modules>
 	<url>${site.urlBase}/${developmentCycle.connect}</url>
@@ -77,7 +81,24 @@ which are used as well as that of the covered work.]]>
 				<checksumPolicy>warn</checksumPolicy>
 			</releases>
 		</repository>
+		<repository>
+			<id>argeo-extras</id>
+			<url>http://localhost:7080/data/public/java/argeo-extras-0.1</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+		</repository>
 	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>org.argeo.tp.extras</groupId>
+			<artifactId>argeo-extras</artifactId>
+			<version>${version.argeo-distribution-extras}</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
