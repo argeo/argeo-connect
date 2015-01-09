@@ -14,7 +14,7 @@
 	<version>2.1.13-SNAPSHOT</version>
 	<properties>
 		<version.connect>2.1.13-SNAPSHOT</version.connect>
-		<version.argeo-distribution-extras>0.1.1</version.argeo-distribution-extras>
+		<version.argeo-tp-extras>2.1.2</version.argeo-tp-extras>
 	</properties>
 	<modules>
 		<module>org.argeo.connect.people.specs</module>
@@ -82,8 +82,8 @@ which are used as well as that of the covered work.]]>
 			</releases>
 		</repository>
 		<repository>
-			<id>argeo-extras</id>
-			<url>http://localhost:7080/data/public/java/argeo-extras-0.1</url>
+			<id>argeo-tp-extras</id>
+			<url>https://forge.argeo.org/data/public/java/argeo-tp-extras-2.1</url>
 			<releases>
 				<enabled>true</enabled>
 				<updatePolicy>daily</updatePolicy>
@@ -94,12 +94,12 @@ which are used as well as that of the covered work.]]>
 	<dependencies>
 		<dependency>
 			<groupId>org.argeo.tp.extras</groupId>
-			<artifactId>argeo-extras</artifactId>
-			<version>${version.argeo-distribution-extras}</version>
+			<artifactId>argeo-tp-extras</artifactId>
+			<version>${version.argeo-tp-extras}</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
-	<dependencyManagement>
+	<!--  <dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>org.argeo.tp.rap.platform</groupId>
@@ -109,7 +109,7 @@ which are used as well as that of the covered work.]]>
 				<scope>import</scope>
 			</dependency>
 		</dependencies>
-	</dependencyManagement>
+	</dependencyManagement>  -->
 	<distributionManagement>
 		<repository>
 			<id>staging</id>

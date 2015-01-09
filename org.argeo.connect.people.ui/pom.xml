@@ -18,7 +18,7 @@
 		</dependency>
 
 		<!-- Needed at compile time provided by the plateform -->
-		<dependency>
+		<!--  <dependency>
 			<groupId>org.argeo.tp.rap.platform</groupId>
 			<artifactId>org.eclipse.rap.rwt</artifactId>
 			<scope>provided</scope>
@@ -27,6 +27,6 @@
 			<groupId>org.argeo.tp.rap.platform</groupId>
 			<artifactId>org.eclipse.rap.jface</artifactId>
 			<scope>provided</scope>
-		</dependency>
+		</dependency>  -->
 	</dependencies>
 </project>

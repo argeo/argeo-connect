@@ -14,11 +14,11 @@
 	<dependencies>
 		<!-- RAP Specific bundles -->
 		<!-- Dropdown widget from rap addons -->
-		<dependency>
+		<!--  <dependency>
 			<groupId>org.argeo.tp.rap.addons</groupId>
 			<artifactId>org.eclipse.rap.addons.dropdown</artifactId>
+		</dependency> -->
 			<!-- <version>${version.rap.addons}</version> -->
-		</dependency>
 
 		<!-- People -->
 		<dependency>
