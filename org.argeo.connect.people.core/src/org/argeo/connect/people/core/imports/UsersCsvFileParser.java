@@ -22,10 +22,7 @@ import org.argeo.security.jcr.JcrSecurityModel;
 import org.argeo.security.jcr.JcrUserDetails;
 import org.springframework.security.core.GrantedAuthority;
 
-/**
- * Base utility to load users demo data in Mr Schilling manager. All passwords
- * are set to "demo" by default
- **/
+/** Base utility to load users demo data **/
 public class UsersCsvFileParser extends AbstractPeopleCsvFileParser {
 	private final static Log log = LogFactory.getLog(UsersCsvFileParser.class);
 
