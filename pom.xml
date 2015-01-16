@@ -14,7 +14,7 @@
 	<version>2.1.13-SNAPSHOT</version>
 	<properties>
 		<version.connect>2.1.13-SNAPSHOT</version.connect>
-		<version.argeo-tp-extras>2.1.2</version.argeo-tp-extras>
+		<version.argeo-tp-extras>2.1.3</version.argeo-tp-extras>
 	</properties>
 	<modules>
 		<module>org.argeo.connect.people.specs</module>
@@ -90,6 +90,16 @@ which are used as well as that of the covered work.]]>
 				<checksumPolicy>warn</checksumPolicy>
 			</releases>
 		</repository>
+		<!--  <repository>
+			<id>argeo-tp-extras-local</id>
+			<url>http://localhost:7080/data/public/java/argeo-tp-extras-2.1</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+		</repository>
+		 -->
 	</repositories>
 	<dependencies>
 		<dependency>
