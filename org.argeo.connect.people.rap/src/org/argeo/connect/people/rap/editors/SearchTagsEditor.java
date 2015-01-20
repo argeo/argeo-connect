@@ -238,8 +238,8 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 					factory.descendantNode(source.getSelectorName(),
 							tagParent.getPath()));
 
-			Ordering order = factory.ascending(factory.propertyValue(
-					source.getSelectorName(), Property.JCR_TITLE));
+			Ordering order = factory.ascending(factory.upperCase(factory.propertyValue(
+					source.getSelectorName(), Property.JCR_TITLE)));
 			Ordering[] orderings = { order };
 			QueryObjectModel query = factory.createQuery(source, defaultC,
 					orderings, null);
