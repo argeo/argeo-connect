@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.jcr.query.Row;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
@@ -22,6 +24,8 @@ import org.eclipse.swt.widgets.Table;
 
 /** Utility class that wraps a virtual table viewer to display JCR rows */
 public class VirtualRowTableViewer extends Composite implements ArgeoNames {
+	private final static Log log = LogFactory.getLog(VirtualRowTableViewer.class);
+	
 	private static final long serialVersionUID = 1L;
 	private TableViewer viewer;
 
@@ -119,6 +123,8 @@ public class VirtualRowTableViewer extends Composite implements ArgeoNames {
 
 		public void updateElement(int index) {
 			viewer.replace(elements[index], index);
+			// if (index %100 == 0 && log.isTraceEnabled())
+			// log.trace("updating element "+ index);
 		}
 	}
 
