@@ -179,7 +179,16 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	/* ENTITY SERVICES */
 	public void saveEntity(Node entity, boolean commit) throws PeopleException {
 		try {
-			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
+
+			if (entity.isNodeType(PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE)
+					|| entity.isNodeType(PeopleTypes.PEOPLE_TAG_INSTANCE)
+					|| entity.isNodeType(PeopleTypes.PEOPLE_NODE_TEMPLATE)) {
+				// Known types that does not have a specific save strategy
+				if (commit)
+					CommonsJcrUtils.saveAndCheckin(entity);
+				else
+					entity.getSession().save();
+			} else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
 				savePerson(entity, commit);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
 				saveOrganisation(entity, commit);

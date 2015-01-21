@@ -31,12 +31,14 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.rap.commands.CancelAndCheckInItem;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.rap.utils.AbstractPanelFormPart;
+import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -71,8 +73,10 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -215,8 +219,8 @@ public class TemplateValueCatalogue extends Composite {
 			Constraint constraint = factory.comparison(dyo,
 					QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
 
-			Ordering order = factory.ascending(factory.propertyValue(
-					source.getSelectorName(), Property.JCR_TITLE));
+			Ordering order = factory.ascending(factory.upperCase(factory.propertyValue(
+					source.getSelectorName(), Property.JCR_TITLE)));
 			Ordering[] orderings = { order };
 			QueryObjectModel query = factory.createQuery(source, constraint,
 					orderings, null);
@@ -296,8 +300,46 @@ public class TemplateValueCatalogue extends Composite {
 				WizardDialog dialog = new WizardDialog(
 						TemplateValueCatalogue.this.getShell(), wizard);
 				if (Window.OK == dialog.open()) {
-					myFormPart.markDirty();
-					myFormPart.refresh();
+					// myFormPart.markDirty();
+					// myFormPart.refresh();
+
+					// Small workaround to keep the calling editor in a clean a
+					// logical state regarding its check out status
+					IWorkbench wb = PlatformUI.getWorkbench();
+					IEditorPart editor = wb.getActiveWorkbenchWindow()
+							.getActivePage().getActiveEditor();
+					if (editor != null && editor instanceof Refreshable) {
+						CommandUtils.callCommand(CancelAndCheckInItem.ID);
+						((Refreshable) editor).forceRefresh(null);
+
+						// Node currNode = null;
+						//
+						// IVersionedItemEditor currEd = (IVersionedItemEditor)
+						// editor;
+						// if (currEd.isCheckedOutByMe())
+						// currEd.saveAndCheckInItem();
+						//
+						//
+						// if (currNode.getSession().hasPendingChanges())
+						// CommandUtils
+						// .callCommand(IWorkbenchCommandConstants.FILE_SAVE);
+						// else
+						// CommandUtils.callCommand(CancelAndCheckInItem.ID);
+						//
+						// }
+						// && editor instanceof A) {
+						// if (node.getSession().hasPendingChanges())
+						// CommandUtils
+						// .callCommand(IWorkbenchCommandConstants.FILE_SAVE);
+						// else
+						// CommandUtils.callCommand(CancelAndCheckInItem.ID);
+						//
+						// IVersionedItemEditor currEd = (IVersionedItemEditor)
+						// editor;
+						// if (currEd.isCheckedOutByMe())
+						// currEd.saveAndCheckInItem();
+						// }
+					}
 				}
 			}
 		}

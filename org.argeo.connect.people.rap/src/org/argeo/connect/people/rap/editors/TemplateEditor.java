@@ -17,6 +17,7 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.tabs.TemplateValueCatalogue;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
+import org.argeo.connect.people.rap.editors.utils.IVersionedItemEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -35,7 +36,7 @@ import org.eclipse.ui.forms.AbstractFormPart;
  * Enable management of a given node template, among other static list
  * (catalogue) management
  */
-public class TemplateEditor extends AbstractEntityCTabEditor {
+public class TemplateEditor extends AbstractEntityCTabEditor implements IVersionedItemEditor {
 	final static Log log = LogFactory.getLog(TemplateEditor.class);
 
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID
