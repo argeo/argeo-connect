@@ -28,7 +28,6 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -67,7 +66,8 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	// private String entityType;
 
 	// This page widgets
-	private TableViewer tableViewer;
+	private VirtualRowTableViewer tableCmp;
+	// private TableViewer tableViewer;
 	private Text filterTxt;
 
 	// Locally cache what is displayed in the UI. Enable exports among others.
@@ -149,8 +149,9 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				CheckboxTableViewer viewer = (CheckboxTableViewer) tableViewer;
-				viewer.setAllChecked(true);
+				tableCmp.setAllChecked(true);
+//				CheckboxTableViewer viewer = (CheckboxTableViewer) tableViewer;
+//				viewer.setAllChecked(true);
 			}
 		});
 
@@ -161,8 +162,9 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				CheckboxTableViewer viewer = (CheckboxTableViewer) tableViewer;
-				viewer.setAllChecked(false);
+				tableCmp.setAllChecked(false);
+//				CheckboxTableViewer viewer = (CheckboxTableViewer) tableViewer;
+//				viewer.setAllChecked(false);
 			}
 		});
 
@@ -194,8 +196,10 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				CheckboxTableViewer viewer = (CheckboxTableViewer) tableViewer;
-				Row[] rows = castAsRows(viewer.getCheckedElements());
+				Row[] rows = tableCmp.getSelectedElements();
+
+				// CheckboxTableViewer viewer = (CheckboxTableViewer) tableViewer;
+				// Row[] rows = castAsRows(viewer.getCheckedElements());
 
 				Shell shell = button.getShell();
 
@@ -218,13 +222,13 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		});
 	}
 
-	private Row[] castAsRows(Object[] objs) {
-		int i = 0;
-		Row[] rows = new Row[objs.length];
-		for (Object obj : objs)
-			rows[i++] = (Row) obj;
-		return rows;
-	}
+//	private Row[] castAsRows(Object[] objs) {
+//		int i = 0;
+//		Row[] rows = new Row[objs.length];
+//		for (Object obj : objs)
+//			rows[i++] = (Row) obj;
+//		return rows;
+//	}
 
 	/** Overwrite to set the correct row height */
 	protected int getCurrRowHeight() {
@@ -271,9 +275,9 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	protected void createListPart(Composite parent) {
 		parent.setLayout(new GridLayout());
-		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(parent,
-				SWT.MULTI, getColumnDefinition(null), hasCheckBoxes());
-		tableViewer = tableCmp.getTableViewer();
+		tableCmp = new VirtualRowTableViewer(parent, SWT.MULTI,
+				getColumnDefinition(null), hasCheckBoxes());
+		TableViewer tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
 				getEntityType(), peopleWorkbenchService));
@@ -304,11 +308,13 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	/** Use this method to update the result table */
 	protected void setViewerInput(Row[] rows) {
 		this.rows = rows;
-		CheckboxTableViewer ctv = null;
-		if (tableViewer instanceof CheckboxTableViewer) {
-			ctv = (CheckboxTableViewer) tableViewer;
-			ctv.setAllChecked(false);
-		}
+		TableViewer tableViewer = tableCmp.getTableViewer();
+		
+//		CheckboxTableViewer ctv = null;
+//		if (tableViewer instanceof CheckboxTableViewer) {
+//			ctv = (CheckboxTableViewer) tableViewer;
+//			ctv.setAllChecked(false);
+//		}
 
 		tableViewer.setInput(rows);
 		// we must explicitly set the items count
@@ -377,9 +383,9 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		return peopleWorkbenchService;
 	}
 
-	protected TableViewer getTableViewer() {
-		return tableViewer;
-	}
+//	protected TableViewer getTableViewer() {
+//		return tableViewer;
+//	}
 
 	// Local Methods
 	protected Text createBoldLT(Composite parent, String title, String message,
