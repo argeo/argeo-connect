@@ -219,8 +219,9 @@ public class TemplateValueCatalogue extends Composite {
 			Constraint constraint = factory.comparison(dyo,
 					QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
 
-			Ordering order = factory.ascending(factory.upperCase(factory.propertyValue(
-					source.getSelectorName(), Property.JCR_TITLE)));
+			Ordering order = factory
+					.ascending(factory.upperCase(factory.propertyValue(
+							source.getSelectorName(), Property.JCR_TITLE)));
 			Ordering[] orderings = { order };
 			QueryObjectModel query = factory.createQuery(source, constraint,
 					orderings, null);
@@ -302,6 +303,16 @@ public class TemplateValueCatalogue extends Composite {
 				if (Window.OK == dialog.open()) {
 					// myFormPart.markDirty();
 					// myFormPart.refresh();
+
+					try {
+						// Session is not saved when no object is linked to this
+						// catalogue value.
+						if (templateNode.getSession().hasPendingChanges())
+							templateNode.getSession().save();
+					} catch (RepositoryException re) {
+						throw new PeopleException("Unable to save session for "
+								+ templateNode, re);
+					}
 
 					// Small workaround to keep the calling editor in a clean a
 					// logical state regarding its check out status
