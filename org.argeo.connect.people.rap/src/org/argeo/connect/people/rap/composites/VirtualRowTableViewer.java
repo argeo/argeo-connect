@@ -159,7 +159,7 @@ public class VirtualRowTableViewer extends Composite implements ArgeoNames {
 			viewer.setSelection(null);
 			selectedElements.clear();
 			elements = (Row[]) newInput;
-			loadedFlags = new boolean[elements.length];
+			loadedFlags = new boolean[elements==null?0:elements.length];
 		}
 
 		public void updateElement(int index) {
