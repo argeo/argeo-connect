@@ -17,7 +17,7 @@ public interface PersonService {
 	public String getDisplayName(Node person);
 	
 	/**
-	 * Try to save and optionally commit a person or an organisationbusiness after applying
+	 * Try to save and optionally commit a person or an organisation after applying
 	 * context specific rules and special behaviours (typically cache updates).
 	 * 
 	 * @param entity
