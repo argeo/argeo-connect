@@ -72,8 +72,9 @@ public class CreateEntity extends AbstractHandler {
 						peopleUiService.getOpenEntityEditorCmdId(),
 						OpenEntityEditor.PARAM_JCR_ID, jcrId);
 				return newNode.getPath();
-			} else{
-				// remove tmp Node
+			} else {
+				// This will try to remove the newly created temporary Node it
+				// the process fails before first save
 				CommonsJcrUtils.cancelAndCheckin(newNode);
 			}
 		} catch (RepositoryException e) {

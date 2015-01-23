@@ -275,7 +275,7 @@ public class EditJobDialog extends TrayDialog {
 		}
 
 		// Real update
-		peopleService.createOrUpdateJob(oldLinkNode, person, organisation,
+		peopleService.getPersonService().createOrUpdateJob(oldLinkNode, person, organisation,
 				position, department, isPrimary);
 		return true;
 	}

@@ -3,6 +3,7 @@ package org.argeo.connect.people;
 import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 /** Provides method interfaces to manage a people repository */
@@ -51,30 +52,27 @@ public interface PeopleService {
 	 */
 	public String getDefaultPathForEntity(String peopleUid, String nodeType);
 
-	/* PERSONS AND ORGANISATIONS */
-
 	/**
-	 * 
-	 * Creates or update a job of a person in an organisation
-	 * 
-	 * @param oldJob
-	 *            null if creation
-	 * @param person
-	 *            cannot be null
-	 * @param organisation
-	 *            cannot be null
-	 * @param position
-	 *            can be null
-	 * @param department
-	 *            can be null
-	 * @param isPrimary
-	 *            pass false by default
-	 * @return
+	 * Typically used to move temporary import nodes to the main business
+	 * repository
 	 */
-	public Node createOrUpdateJob(Node oldJob, Node person, Node organisation,
-			String position, String department, boolean isPrimary);
+	public void checkPathAndMoveIfNeeded(Node entity, String entityNodeType)
+			throws RepositoryException;
 
 	/* GENERIC */
+	/**
+	 * Try to save and optionally commit a business object after applying
+	 * context specific rules and special behaviours (typically cache updates).
+	 * 
+	 * @param entity
+	 * @param commit
+	 *            also commit the corresponding node
+	 * @throws PeopleException
+	 *             If one a the rule defined for this type is not respected. Use
+	 *             getMessage to display to the user if needed
+	 */
+	public void saveEntity(Node entity, boolean commit) throws PeopleException;
+
 	/**
 	 * Returns the corresponding entity or null if not found. This Uid is
 	 * implementation specific and is not a JCR Identifier
@@ -87,6 +85,15 @@ public interface PeopleService {
 	 * there is no entity with this people UID
 	 */
 	public Node getEntityFromNodeReference(Node node, String propName);
+
+	/**
+	 * Returns a display name that is app specific and that depends on one or
+	 * more of the entity properties. The user can always set a flag to force
+	 * the value to something else.
+	 * 
+	 * The Display name is usually stored in the JCR_TITLE property.
+	 */
+	public String getDisplayName(Node entity);
 
 	/**
 	 * Creates and returns a model specific Node to store a reference, depending
@@ -107,29 +114,21 @@ public interface PeopleService {
 	public List<Node> getRelatedEntities(Node entity, String linkNodeType,
 			String relatedEntityType);
 
+	/* MISCELLANEOUS */
 	/**
-	 * Try to save and optionally commit a business object after applying
-	 * context specific rules and special behaviours (typically cache updates).
-	 * 
-	 * @param entity
-	 * @param commit
-	 *            also commit the corresponding node
-	 * @throws PeopleException
-	 *             If one a the rule defined for this type is not respected. Use
-	 *             getMessage to display to the user if needed
+	 * Retrieves a context specific property used to configure the current
+	 * system
 	 */
-	public void saveEntity(Node entity, boolean commit) throws PeopleException;
+	public String getConfigProperty(String key);
 
-	/**
-	 * Returns a display name that is app specific and that depends on one or
-	 * more of the entity properties. The user can always set a flag to force
-	 * the value to something else.
-	 * 
-	 * The Display name is usually stored in the JCR_TITLE property.
-	 */
-	public String getDisplayName(Node entity);
+	/** Simply look for primary information and update primary cache if needed */
+	public void updatePrimaryCache(Node entity) throws PeopleException,
+			RepositoryException;
 
-	/* CONTEXT SERVICES */
+	/* EXPOSE THE VARIOUS BUSINESS SERVICES */
+	/** Returns the corresponding {@link PersonService} */
+	public PersonService getPersonService();
+
 	/** Returns the corresponding {@link ActivityService} */
 	public ActivityService getActivityService();
 
@@ -141,12 +140,5 @@ public interface PeopleService {
 
 	/** Returns the corresponding {@link ResourceService} */
 	public ResourceService getResourceService();
-
-	/* MISCELLANEOUS */
-	/**
-	 * Retrieves a context specific property used to configure the current
-	 * system
-	 */
-	public String getConfigProperty(String key);
 
 }

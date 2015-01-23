@@ -231,6 +231,29 @@ public class CommonsJcrUtils {
 	}
 
 	/**
+	 * Simplify the save strategy keeping the check-in status unchanged. Goes
+	 * together with <code>checkCOStatusAfterUpdate</code>
+	 */
+	public static boolean checkCOStatusBeforeUpdate(Node node) {
+		boolean wasCheckedOut = isNodeCheckedOutByMe(node);
+		if (!wasCheckedOut)
+			checkout(node);
+		return wasCheckedOut;
+	}
+
+	/**
+	 * Simplify the save strategy keeping the check-in status unchanged. Goes
+	 * together with <code>checkCOStatusBeforeUpdate</code>
+	 */
+	public static void checkCOStatusAfterUpdate(Node node, boolean wasCheckedOut)
+			throws RepositoryException {
+		if (!wasCheckedOut)
+			saveAndCheckin(node);
+		else
+			node.getSession().save();
+	}
+
+	/**
 	 * Wraps the versionMananger.checkedIn(path) method to adapt it to the
 	 * current check in / check out policy.
 	 * 

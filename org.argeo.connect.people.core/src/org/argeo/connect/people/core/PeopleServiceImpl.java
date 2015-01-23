@@ -30,6 +30,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.PersonService;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -43,7 +44,10 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	/* Other services */
 	private UserManagementService userManagementService = new UserManagementServiceImpl(
 			this);
+	private PersonService personService = new PersonServiceImpl(this);
+
 	private ContactService contactService = new ContactServiceImpl(this);
+
 	private ActivityService activityService = new ActivityServiceImpl(this,
 			userManagementService);
 	private ResourceService resourceService = new ResourceServiceImpl(this);
@@ -188,10 +192,13 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 					CommonsJcrUtils.saveAndCheckin(entity);
 				else
 					entity.getSession().save();
-			} else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
-				savePerson(entity, commit);
-			else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
-				saveOrganisation(entity, commit);
+			} else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)
+					|| entity.isNodeType(PeopleTypes.PEOPLE_ORG))
+				personService.saveEntity(entity, commit);
+			// else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
+			// savePerson(entity, commit);
+			// else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
+			// saveOrganisation(entity, commit);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
 				// TODO implement generic People behaviour for tasks and
 				// activities
@@ -207,89 +214,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	/**
-	 * Business specific save of a business object of type person. Among other,
-	 * it updates cache information. Extend to provide business specific rules
-	 * before save and commit
-	 */
-	protected void savePerson(Node person, boolean commit)
-			throws PeopleException, RepositoryException {
-		String lastName = CommonsJcrUtils.get(person,
-				PeopleNames.PEOPLE_LAST_NAME);
-		String firstName = CommonsJcrUtils.get(person,
-				PeopleNames.PEOPLE_FIRST_NAME);
-		Boolean defineDistinctDefaultDisplay = CommonsJcrUtils.getBooleanValue(
-				person, PEOPLE_USE_DISTINCT_DISPLAY_NAME);
-		String displayName = null;
-
-		// Update display name cache if needed
-		if (defineDistinctDefaultDisplay == null
-				|| !defineDistinctDefaultDisplay) {
-			displayName = getDisplayName(person);
-			person.setProperty(Property.JCR_TITLE, displayName);
-		} else
-			displayName = CommonsJcrUtils.get(person, Property.JCR_TITLE);
-
-		// Check validity of main info
-		if (CommonsJcrUtils.isEmptyString(lastName)
-				&& CommonsJcrUtils.isEmptyString(firstName)
-				&& CommonsJcrUtils.isEmptyString(displayName)) {
-			String msg = "Please note that you must define a first name, a "
-					+ "last name or a display name to be able to create or "
-					+ "update this person.";
-			throw new PeopleException(msg);
-		}
-
-		// Update cache
-		updatePrimaryCache(person);
-
-		checkPathAndMoveIfNeeded(person, PeopleTypes.PEOPLE_PERSON);
-		if (commit)
-			CommonsJcrUtils.saveAndCheckin(person);
-		else
-			person.getSession().save();
-	}
-
-	/** Override to provide business specific rules before save and commit */
-	protected void saveOrganisation(Node org, boolean commit)
-			throws PeopleException, RepositoryException {
-		// Update cache
-		updatePrimaryCache(org);
-
-		// Check validity of main info
-		String legalName = CommonsJcrUtils.get(org,
-				PeopleNames.PEOPLE_LEGAL_NAME);
-
-		Boolean defineDistinctDefaultDisplay = CommonsJcrUtils.getBooleanValue(
-				org, PEOPLE_USE_DISTINCT_DISPLAY_NAME);
-		String displayName;
-		if (defineDistinctDefaultDisplay == null
-				|| !defineDistinctDefaultDisplay) {
-			displayName = getDisplayName(org);
-			org.setProperty(Property.JCR_TITLE, legalName);
-		} else
-			displayName = CommonsJcrUtils.get(org, Property.JCR_TITLE);
-
-		if (CommonsJcrUtils.isEmptyString(legalName)
-				&& CommonsJcrUtils.isEmptyString(displayName)) {
-			String msg = "Please note that you must define a legal "
-					+ " or a display name to be able to create or "
-					+ "update this organisation.";
-			throw new PeopleException(msg);
-		}
-
-		// Finalise save process.
-		checkPathAndMoveIfNeeded(org, PeopleTypes.PEOPLE_ORG);
-		if (commit)
-			CommonsJcrUtils.saveAndCheckin(org);
-		else
-			org.getSession().save();
-	}
-
-	/**
 	 * Typically used to move temporary import nodes to the main business
 	 * repository
 	 */
-	protected void checkPathAndMoveIfNeeded(Node entity, String entityNodeType)
+	@Override
+	public void checkPathAndMoveIfNeeded(Node entity, String entityNodeType)
 			throws RepositoryException {
 		String peopleUid = entity.getProperty(PEOPLE_UID).getString();
 		String destPath = getDefaultPathForEntity(peopleUid, entityNodeType);
@@ -301,7 +230,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	/** Simply look for primary information and update primary cache if needed */
-	protected void updatePrimaryCache(Node entity) throws PeopleException,
+	@Override
+	public void updatePrimaryCache(Node entity) throws PeopleException,
 			RepositoryException {
 		if (CommonsJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)
 				|| CommonsJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG)) {
@@ -327,20 +257,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			if (defineDistinct)
 				displayName = CommonsJcrUtils.get(entity, Property.JCR_TITLE);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
-				String lastName = CommonsJcrUtils.get(entity, PEOPLE_LAST_NAME);
-				String firstName = CommonsJcrUtils.get(entity,
-						PEOPLE_FIRST_NAME);
-				if (CommonsJcrUtils.checkNotEmptyString(firstName)
-						|| CommonsJcrUtils.checkNotEmptyString(lastName)) {
-					displayName = lastName;
-					if (CommonsJcrUtils.checkNotEmptyString(firstName)
-							&& CommonsJcrUtils.checkNotEmptyString(lastName))
-						displayName += ", ";
-					displayName += firstName;
-				}
-			} else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG)) {
-				// Default display is simply the legal name
-				displayName = CommonsJcrUtils.get(entity, PEOPLE_LEGAL_NAME);
+				displayName = getPersonService().getDisplayName(entity);
 			} else if (entity.isNodeType(NodeType.MIX_TITLE))
 				displayName = CommonsJcrUtils.get(entity, Property.JCR_TITLE);
 			else
@@ -351,7 +268,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			throw new PeopleException("Unable to get display name for node "
 					+ entity, e);
 		}
-
 		return displayName;
 	}
 
@@ -528,92 +444,15 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	/* PERSONS AND ORGANISATIONS */
 
-	@Override
-	public Node createOrUpdateJob(Node oldJob, Node person, Node organisation,
-			String position, String department, boolean isPrimary) {
-		// A shortcut to have a node name even when no position is given
-		String newNodeName = CommonsJcrUtils.checkNotEmptyString(position) ? position
-				: "Unnamed_job";
-
-		// The job on which to update various info
-		Node newJob = null;
-
-		try {
-			// First check if we must remove the old job when linked person has
-			// changed
-			if (oldJob != null) {
-				Node oldPerson = oldJob.getParent().getParent();
-				String oldPath = oldPerson.getPath();
-				String newPath = person.getPath();
-				if (!newPath.equals(oldPath)) {
-					// remove old
-					boolean wasCO = checkCOStatusBeforeUpdate(oldPerson);
-					oldJob.remove();
-					checkCOStatusAfterUpdate(oldPerson, wasCO);
-				} else
-					newJob = oldJob;
-			}
-
-			boolean wasCO = checkCOStatusBeforeUpdate(person);
-			// Create node if necessary
-			if (newJob == null) {
-				Node parentNode = JcrUtils.mkdirs(person,
-						PeopleNames.PEOPLE_JOBS, NodeType.NT_UNSTRUCTURED);
-				newJob = parentNode
-						.addNode(newNodeName, PeopleTypes.PEOPLE_JOB);
-			}
-
-			// update properties
-
-			// Related org
-			newJob.setProperty(PeopleNames.PEOPLE_REF_UID, organisation
-					.getProperty(PeopleNames.PEOPLE_UID).getString());
-
-			// position
-			if (position == null)
-				position = ""; // to be able to remove an existing position
-			newJob.setProperty(PeopleNames.PEOPLE_ROLE, position);
-			// TODO update node name ??
-
-			// department
-			if (department == null)
-				department = "";
-			newJob.setProperty(PeopleNames.PEOPLE_DEPARTMENT, department);
-
-			// primary flag
-			if (isPrimary)
-				PeopleJcrUtils.markAsPrimary(this, person, newJob);
-			else
-				newJob.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, isPrimary);
-
-			checkCOStatusAfterUpdate(person, wasCO);
-		} catch (RepositoryException re) {
-			throw new PeopleException("unable to create or update job "
-					+ oldJob + " for person " + person + " and org "
-					+ organisation, re);
-		}
-		return null;
-	}
-
-	protected boolean checkCOStatusBeforeUpdate(Node node) {
-		boolean wasCheckedOut = CommonsJcrUtils.isNodeCheckedOutByMe(node);
-		if (!wasCheckedOut)
-			CommonsJcrUtils.checkout(node);
-		return wasCheckedOut;
-	}
-
-	protected void checkCOStatusAfterUpdate(Node node, boolean wasCheckedOut)
-			throws RepositoryException {
-		if (!wasCheckedOut)
-			CommonsJcrUtils.saveAndCheckin(node);
-		else
-			node.getSession().save();
-	}
-
 	/* EXPOSED SERVICES */
 	@Override
 	public ActivityService getActivityService() {
 		return activityService;
+	}
+
+	@Override
+	public PersonService getPersonService() {
+		return personService;
 	}
 
 	@Override
