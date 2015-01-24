@@ -323,7 +323,7 @@ mixin
 - people:contactValue (STRING) 
 // a shortcut to manage primary contact
 // should be refined
-// Only for person, Work, Home, Other
+// Only for person: Work, Home or Other
 - people:contactNature (STRING)
 // Category for the given type : for instance a Home phone can be:
 // Mobile, Direct, VoIP, Fax or other

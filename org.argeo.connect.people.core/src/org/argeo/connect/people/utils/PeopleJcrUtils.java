@@ -591,7 +591,7 @@ public class PeopleJcrUtils implements PeopleNames {
 		try {
 			Node address = createContact(peopleService, parentNode,
 					PeopleTypes.PEOPLE_ADDRESS, PeopleTypes.PEOPLE_ADDRESS, "",
-					false, ContactValueCatalogs.CONTACT_NATURE_PRO, category,
+					false, ContactValueCatalogs.CONTACT_NATURE_PRO, referencedOrg, category,
 					label);
 			address.addMixin(PeopleTypes.PEOPLE_CONTACT_REF);
 			// set reference field

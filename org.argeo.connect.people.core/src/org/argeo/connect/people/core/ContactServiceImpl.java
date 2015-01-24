@@ -69,13 +69,11 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 				} else if (contact.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
 					if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
 						if (CommonsJcrUtils.checkNotEmptyString(nature)
-								&& (nature
-										.equals(ContactValueCatalogs.CONTACT_NATURE_PRIVATE) || nature
-										.equals(ContactValueCatalogs.CONTACT_OTHER)))
-							return ContactValueCatalogs.ARRAY_PERSON_HOME_ADDRESSES;
+								&& nature
+										.equals(ContactValueCatalogs.CONTACT_NATURE_PRO))
+							return ContactValueCatalogs.ARRAY_PERSON_WORK_ADDRESSES;
 						else
 							return ContactValueCatalogs.ARRAY_PERSON_HOME_ADDRESSES;
-
 					else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
 						return ContactValueCatalogs.ARRAY_ORG_ADDRESSES;
 				} else if (entity.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA))
@@ -108,10 +106,9 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 		} else if (PeopleTypes.PEOPLE_ADDRESS.equals(contactType)) {
 			if (PeopleTypes.PEOPLE_PERSON.equals(contactableType)) {
 				if (CommonsJcrUtils.checkNotEmptyString(nature)
-						&& (nature
-								.equals(ContactValueCatalogs.CONTACT_NATURE_PRIVATE) || nature
-								.equals(ContactValueCatalogs.CONTACT_OTHER)))
-					return ContactValueCatalogs.ARRAY_PERSON_HOME_ADDRESSES;
+						&& nature
+								.equals(ContactValueCatalogs.CONTACT_NATURE_PRO))
+					return ContactValueCatalogs.ARRAY_PERSON_WORK_ADDRESSES;
 				else
 					return ContactValueCatalogs.ARRAY_PERSON_HOME_ADDRESSES;
 			} else if (PeopleTypes.PEOPLE_ORG.equals(contactableType))

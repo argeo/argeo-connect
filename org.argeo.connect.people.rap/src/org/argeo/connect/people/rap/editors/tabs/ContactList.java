@@ -6,6 +6,7 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
+import org.argeo.connect.people.ContactService;
 import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
@@ -63,9 +64,9 @@ public class ContactList extends Composite {
 	// Caches the add new contact combo
 	private Combo addContactCmb;
 
-	public ContactList(Composite parent, int style,
-			FormToolkit toolkit, IManagedForm form, Node entityNode,
-			PeopleService peopleService, PeopleWorkbenchService peopleUiService) {
+	public ContactList(Composite parent, int style, FormToolkit toolkit,
+			IManagedForm form, Node entityNode, PeopleService peopleService,
+			PeopleWorkbenchService peopleUiService) {
 		super(parent, style);
 		this.toolkit = toolkit;
 		this.form = form;
@@ -501,10 +502,10 @@ public class ContactList extends Composite {
 
 		final Combo catCmb = new Combo(parent, SWT.NONE);
 		try {
-			catCmb.setItems(peopleService.getContactService()
-					.getContactCategories(
-							entity.getPrimaryNodeType().getName(), contactType,
-							nature));
+			ContactService contactService = peopleService.getContactService();
+			String entityType = entity.getPrimaryNodeType().getName();
+			catCmb.setItems(contactService.getContactCategories(entityType,
+					contactType, nature));
 		} catch (RepositoryException e1) {
 			throw new PeopleException("unable to get category list for "
 					+ contactType + " & " + nature, e1);
@@ -519,7 +520,8 @@ public class ContactList extends Composite {
 		final Text stateTxt = createRowDataLT(parent, "State", 150);
 		// Country: dropdown + text
 		Text countryTxt = createRowDataLT(parent, "Country", 150);
-		final TagLikeDropDown countryDD = new TagLikeDropDown(CommonsJcrUtils.getSession(entity),
+		final TagLikeDropDown countryDD = new TagLikeDropDown(
+				CommonsJcrUtils.getSession(entity),
 				peopleService.getResourceService(),
 				PeopleConstants.RESOURCE_COUNTRY, countryTxt);
 		final Text geoPointTxt = createRowDataLT(parent, "Geopoint", 200);
