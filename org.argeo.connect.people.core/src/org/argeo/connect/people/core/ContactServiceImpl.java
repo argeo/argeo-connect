@@ -14,9 +14,9 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 
 /**
- * Canonical implementation of the People ContactService interface. Define among
- * other the various possible values of a given contact property given the
- * already defined property of this contact instance
+ * Canonical implementation of the People ContactService interface. Among
+ * others, it defines the various possible values of a given contact property
+ * given the already defined property of this contact instance
  */
 public class ContactServiceImpl implements ContactService, PeopleNames {
 
@@ -45,13 +45,14 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 		if (CommonsJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)
 				|| CommonsJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG))
 			return ContactValueCatalogs.ARRAY_CONTACT_TYPES;
-		return null;
+		else
+			return null;
 	}
 
 	@Override
 	public String[] getContactPossibleValues(Node contact, String property) {
 		try {
-			// retrieve info to ease decision
+			// Retrieves parent entity to enable decision
 			Node entity = contact.getParent().getParent();
 			String nature = CommonsJcrUtils.get(contact, PEOPLE_CONTACT_NATURE);
 			if (PEOPLE_CONTACT_CATEGORY.equals(property)) {
@@ -83,7 +84,7 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 			}
 			return new String[0];
 		} catch (RepositoryException re) {
-			throw new PeopleException("unable to get " + property
+			throw new PeopleException("Unable to get " + property
 					+ " value list for " + contact, re);
 		}
 	}

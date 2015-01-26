@@ -83,8 +83,7 @@ public class OrgJcrUtils implements PeopleNames {
 					+ " has been found.");
 	}
 
-	// ///////////////////////////
-	// PAYMENT MANAGEMENT
+	/* PAYMENT MANAGEMENT */
 	public static NodeIterator getPaymentAccounts(Node entity) {
 		try {
 			if (entity.hasNode(PEOPLE_PAYMENT_ACCOUNTS))
@@ -92,9 +91,8 @@ public class OrgJcrUtils implements PeopleNames {
 			else
 				return null;
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Error while getting payment accounts for node " + entity,
-					e);
+			throw new PeopleException("Error while getting "
+					+ "payment accounts for node " + entity, e);
 		}
 	}
 
@@ -107,7 +105,6 @@ public class OrgJcrUtils implements PeopleNames {
 					"Unable to get primary payment accounts for " + entity
 							+ ". Multiple accounts is not implemented and "
 							+ nit.getSize() + " accounts has been found.");
-
 		else
 			return nit.nextNode();
 	}
@@ -127,5 +124,4 @@ public class OrgJcrUtils implements PeopleNames {
 							+ entity, e);
 		}
 	}
-
 }

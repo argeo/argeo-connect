@@ -79,13 +79,12 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 				PeopleNames.PEOPLE_LAST_NAME);
 		String firstName = CommonsJcrUtils.get(person,
 				PeopleNames.PEOPLE_FIRST_NAME);
-		Boolean useDistinctDName = CommonsJcrUtils.getBooleanValue(
-				person, PEOPLE_USE_DISTINCT_DISPLAY_NAME);
+		Boolean useDistinctDName = CommonsJcrUtils.getBooleanValue(person,
+				PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 		String displayName = null;
 
 		// Update display name cache if needed
-		if (useDistinctDName == null
-				|| !useDistinctDName) {
+		if (useDistinctDName == null || !useDistinctDName) {
 			displayName = getDisplayName(person);
 			person.setProperty(Property.JCR_TITLE, displayName);
 		} else
@@ -106,7 +105,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 
 		peopleService.checkPathAndMoveIfNeeded(person,
 				PeopleTypes.PEOPLE_PERSON);
-		
+
 		if (commit)
 			CommonsJcrUtils.saveAndCheckin(person);
 		else
@@ -216,5 +215,4 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 		}
 		return null;
 	}
-
 }
