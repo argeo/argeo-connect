@@ -37,7 +37,7 @@ import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.jcr.JcrUtils;
 
-/** Concrete access to {@link PeopleService}  */
+/** Concrete access to {@link PeopleService} */
 public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private final static Log log = LogFactory.getLog(PeopleServiceImpl.class);
 
@@ -70,6 +70,25 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	/* PATH MANAGEMENT */
+	// TODO clean and generalize this
+	// Defines a mapping between main people concepts and their base path in the
+	// system
+	private static final Map<String, String> BUSINESS_REL_PATHES;
+	static {
+		Map<String, String> tmpMap = new HashMap<String, String>();
+		tmpMap.put(PeopleConstants.PEOPLE_RESOURCE,
+				PeopleConstants.PEOPLE_RESOURCES);
+		tmpMap.put(PeopleTypes.PEOPLE_ORG, PeopleConstants.PEOPLE_ORGS);
+		tmpMap.put(PeopleTypes.PEOPLE_PERSON, PeopleConstants.PEOPLE_PERSONS);
+		tmpMap.put(PeopleConstants.PEOPLE_PROJECT,
+				PeopleConstants.PEOPLE_PROJECTS);
+		tmpMap.put(PeopleTypes.PEOPLE_USER_GROUP,
+				PeopleConstants.PEOPLE_USER_GROUPS);
+		tmpMap.put(PeopleTypes.PEOPLE_ACTIVITY,
+				PeopleConstants.PEOPLE_ACTIVITIES);
+		BUSINESS_REL_PATHES = Collections.unmodifiableMap(tmpMap);
+	}
+
 	@Override
 	public String getBasePath(String entityType) {
 		if (entityType == null)
@@ -93,7 +112,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	@Override
 	public String getHomePath() {
-		return getBasePath(null) + "/" + PeopleNames.PEOPLE_HOME;
+		return getBasePath(null) + "/" + PeopleNames.PEOPLE_CONF;
 	}
 
 	@Override
@@ -101,12 +120,13 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		// resourceType
 		if (resourceType == null)
 			return getBasePath(PeopleConstants.PEOPLE_RESOURCE);
-
-		String parentName = getParentNameFromType(resourceType);
-		if (PeopleConstants.KNOWN_RESOURCE_NAMES.contains(parentName))
-			return getResourceBasePath(null) + "/" + parentName;
+		//
+		//
+		// String parentName = getParentNameFromType(resourceType);
+		// if (PeopleConstants.KNOWN_RESOURCE_NAMES.contains(parentName))
+		// return getResourceBasePath(null) + "/" + parentName;
 		else
-			throw new PeopleException("Undefined type: " + parentName);
+			throw new PeopleException("Undefined type: " + resourceType);
 	}
 
 	@Override
@@ -162,22 +182,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			log.info("Repository has been initialised "
 					+ "with default People's model");
 		}
-	}
-
-	// Defines a mapping between main people concepts and their base path in the
-	// system
-	private static final Map<String, String> BUSINESS_REL_PATHES;
-	static {
-		Map<String, String> tmpMap = new HashMap<String, String>();
-		tmpMap.put(PeopleTypes.PEOPLE_ACTIVITY, PeopleNames.PEOPLE_ACTIVITIES);
-		tmpMap.put(PeopleTypes.PEOPLE_PERSON, PeopleNames.PEOPLE_PERSONS);
-		tmpMap.put(PeopleTypes.PEOPLE_ORG, PeopleNames.PEOPLE_ORGS);
-		tmpMap.put(PeopleConstants.PEOPLE_RESOURCE,
-				PeopleNames.PEOPLE_RESOURCES);
-		tmpMap.put(PeopleConstants.PEOPLE_PROJECT, PeopleNames.PEOPLE_PROJECTS);
-		tmpMap.put(PeopleTypes.PEOPLE_USER_GROUP,
-				PeopleNames.PEOPLE_USER_GROUPS);
-		BUSINESS_REL_PATHES = Collections.unmodifiableMap(tmpMap);
 	}
 
 	/* ENTITY SERVICES */

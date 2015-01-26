@@ -52,9 +52,11 @@ public class ResourceServiceImpl implements ResourceService {
 			throws RepositoryException {
 		Node resourceParent = JcrUtils.mkdirs(adminSession,
 				peopleService.getBasePath(PeopleConstants.PEOPLE_RESOURCE));
-		JcrUtils.mkdirs(resourceParent, PeopleNames.PEOPLE_RESOURCE_TEMPLATE,
+		JcrUtils.mkdirs(resourceParent,
+				PeopleConstants.PEOPLE_RESOURCE_TEMPLATE,
 				NodeType.NT_UNSTRUCTURED);
-		JcrUtils.mkdirs(resourceParent, PeopleNames.PEOPLE_RESOURCE_TAG_LIKE,
+		JcrUtils.mkdirs(resourceParent,
+				PeopleConstants.PEOPLE_RESOURCE_TAG_LIKE,
 				NodeType.NT_UNSTRUCTURED);
 	}
 
@@ -816,10 +818,10 @@ public class ResourceServiceImpl implements ResourceService {
 	private String getPathForId(String resourceType, String id) {
 		if (PeopleConstants.RESOURCE_TYPE_ID_TEMPLATE.equals(resourceType))
 			return peopleService.getBasePath(PeopleConstants.PEOPLE_RESOURCE)
-					+ "/" + PeopleNames.PEOPLE_RESOURCE_TEMPLATE + "/" + id;
+					+ "/" + PeopleConstants.PEOPLE_RESOURCE_TEMPLATE + "/" + id;
 		else if (PeopleConstants.RESOURCE_TYPE_ID_TAG_LIKE.equals(resourceType))
 			return peopleService.getBasePath(PeopleConstants.PEOPLE_RESOURCE)
-					+ "/" + PeopleNames.PEOPLE_RESOURCE_TAG_LIKE + "/" + id;
+					+ "/" + PeopleConstants.PEOPLE_RESOURCE_TAG_LIKE + "/" + id;
 		else
 			throw new PeopleException("Unknown resource type " + resourceType
 					+ " for id " + id);

@@ -131,7 +131,7 @@ public class TemplateList extends EditorPart implements PeopleNames,
 			String path = peopleService
 					.getBasePath(PeopleConstants.PEOPLE_RESOURCE)
 					+ "/"
-					+ PeopleNames.PEOPLE_RESOURCE_TEMPLATE;
+					+ PeopleConstants.PEOPLE_RESOURCE_TEMPLATE;
 			Node parent = session.getNode(path);
 			List<Node> templates = new ArrayList<Node>();
 

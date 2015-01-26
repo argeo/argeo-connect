@@ -14,28 +14,19 @@ public interface PeopleNames {
 
 	// A default Node at the root of the business path to store information
 	// about current instance of the People repository
-	public final static String PEOPLE_HOME = "people:home";
-
-	// Main concepts parent node names
-	public final static String PEOPLE_PERSONS = "persons";
-	public final static String PEOPLE_ORGS = "orgs";
-	public final static String PEOPLE_PROJECTS = "projects";
-	public final static String PEOPLE_ACTIVITIES = "activities";
-	public final static String PEOPLE_RESOURCES = "resources";
-	// Corresponding subnodes for resources
-	public final static String PEOPLE_RESOURCE_TEMPLATE = "templates";
-	public final static String PEOPLE_RESOURCE_TAG_LIKE = "tags";
+	public final static String PEOPLE_CONF = "conf";
 
 	// TODO Should not be there
-	public final static String PEOPLE_FILMS = "films";
+	// public final static String PEOPLE_FILMS = "films";
 
 	// Resources parent node names
-	public final static String PEOPLE_TAGS = "people:tags";
-	public final static String PEOPLE_MAILING_LISTS = "people:mailingLists";
-	public final static String PEOPLE_COUNTRIES = "people:countries";
-	public final static String PEOPLE_LANGS = "people:languages";
+	// public final static String PEOPLE_COUNTRIES = "people:countries";
+	// public final static String PEOPLE_LANGS = "people:languages";
 
 	// Sub concepts parent node names
+	public final static String PEOPLE_TAGS = "people:tags";
+	public final static String PEOPLE_MAILING_LISTS = "people:mailingLists";
+
 	public final static String PEOPLE_PAYMENT_ACCOUNTS = "people:paymentAccounts";
 	public final static String PEOPLE_CONTACTS = "people:contacts";
 	public final static String PEOPLE_TITLES = "people:titles";
@@ -122,7 +113,6 @@ public interface PeopleNames {
 	public final static String PEOPLE_TASK_CLOSING_STATUSES = "people:closingStatuses";
 	public final static String PEOPLE_TASK_DEFAULT_STATUS = "people:defaultStatus";
 
-	
 	// Workflow specific
 	public final static String PEOPLE_DATE_BEGIN = "people:dateBegin";
 	public final static String PEOPLE_DATE_END = "people:dateEnd";
