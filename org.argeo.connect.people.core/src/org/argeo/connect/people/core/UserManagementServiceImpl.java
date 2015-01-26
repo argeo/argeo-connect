@@ -273,7 +273,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 		return userGp;
 	}
 
-	/** returns true if the current user is in the specified role */
+	/** Returns true if the current user is in the specified role */
 	@Override
 	public boolean isUserInRole(String role) {
 		Authentication authen = SecurityContextHolder.getContext()
@@ -286,7 +286,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 		// return currentUserService.getCurrentUser().getRoles().contains(role);
 	}
 
-	/** returns the current user ID **/
+	/** Returns the current user ID **/
 	@Override
 	public String getCurrentUserId() {
 		Authentication authen = SecurityContextHolder.getContext()
@@ -300,5 +300,4 @@ public class UserManagementServiceImpl implements UserManagementService {
 		// TODO Must use a commons utils
 		return userId;
 	}
-
 }

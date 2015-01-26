@@ -22,6 +22,7 @@ import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 
+/** Concrete access to People's {@link ActivityService} */
 public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	// private final static Log log =
 	// LogFactory.getLog(ActivityServiceImpl.class);
@@ -145,9 +146,8 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			}
 			return relevantDate;
 		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"unable to get relevant date for activity " + activityNode,
-					re);
+			throw new PeopleException("Unable to get relevant date "
+					+ "for activity " + activityNode, re);
 		}
 	}
 
@@ -218,7 +218,8 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 					Node currNode = currProp.getParent();
 					if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
 						if (onlyOpenTasks) {
-							if (!isTaskDone(currNode) && !isTaskSleeping(currNode) )
+							if (!isTaskDone(currNode)
+									&& !isTaskSleeping(currNode))
 								tasks.add(currNode);
 						} else
 							tasks.add(currNode);
@@ -279,7 +280,6 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 					+ " status for task " + taskNode + " of template ID "
 					+ templateId, re);
 		}
-
 	}
 
 	@Override

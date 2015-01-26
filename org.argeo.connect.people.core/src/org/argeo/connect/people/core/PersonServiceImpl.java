@@ -14,6 +14,7 @@ import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.jcr.JcrUtils;
 
+/** Concrete access to people {@link PersonService} */
 public class PersonServiceImpl implements PersonService, PeopleNames {
 
 	private PeopleService peopleService;

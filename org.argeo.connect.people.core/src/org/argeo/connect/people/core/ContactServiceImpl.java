@@ -14,7 +14,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 
 /**
- * Canonical implementation of the People ContactService interface. Among
+ * Canonical implementation of the People's {@link ContactService}. Among
  * others, it defines the various possible values of a given contact property
  * given the already defined property of this contact instance
  */
