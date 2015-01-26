@@ -461,7 +461,7 @@ public class TemplateValueCatalogue extends Composite {
 						formPart.refresh();
 					} else
 						MessageDialog.openError(button.getShell(),
-								"Dupplicate value", errMsg);
+								"Duplicate value", errMsg);
 				}
 
 			}
