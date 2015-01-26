@@ -1,11 +1,7 @@
 package org.argeo.connect.people.rap.editors.tabs;
 
-import static java.util.Arrays.asList;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -14,12 +10,7 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import javax.jcr.Value;
-import javax.jcr.version.Version;
-import javax.jcr.version.VersionHistory;
-import javax.jcr.version.VersionIterator;
-import javax.jcr.version.VersionManager;
 
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
@@ -60,12 +51,6 @@ public class HistoryLog extends Composite {
 
 	// this page UI Objects
 	private MyFormPart myFormPart;
-
-	// Filtered properties
-	public static final List<String> FILTERED_OUT_PROP_NAMES = asList(
-			"jcr:uuid", "jcr:frozenUuid", "jcr:frozenPrimaryType",
-			"jcr:primaryType", "jcr:lastModified", "jcr:lastModifiedBy",
-			Property.JCR_LAST_MODIFIED_BY);
 
 	public HistoryLog(FormToolkit toolkit, IManagedForm form, Composite parent,
 			int style, PeopleService peopleService, Node entity) {
@@ -128,7 +113,8 @@ public class HistoryLog extends Composite {
 
 	protected void refreshHistory(Text styledText) {
 		try {
-			List<VersionDiff> lst = listHistoryDiff();
+			List<VersionDiff> lst = VersionUtils.listHistoryDiff(entity,
+					VersionUtils.DEFAULT_FILTERED_OUT_PROP_NAMES);
 			StringBuilder main = new StringBuilder();
 
 			for (int i = lst.size() - 1; i >= 0; i--) {
@@ -291,53 +277,6 @@ public class HistoryLog extends Composite {
 						propLabel(obsProp.getName()), null,
 						getValueAsString(newValue));
 			}
-	}
-
-	private List<VersionDiff> listHistoryDiff() {
-		try {
-			Session session = entity.getSession();
-			List<VersionDiff> res = new ArrayList<VersionDiff>();
-			VersionManager versionManager = session.getWorkspace()
-					.getVersionManager();
-			VersionHistory versionHistory = versionManager
-					.getVersionHistory(entity.getPath());
-
-			VersionIterator vit = versionHistory.getAllLinearVersions();
-			// boolean first = true;
-			while (vit.hasNext()) {
-				Version version = vit.nextVersion();
-				Node node = version.getFrozenNode();
-
-				Version predecessor = null;
-				try {
-					predecessor = version.getLinearPredecessor();
-				} catch (Exception e) {
-					// no predecessor throw an exception even if it shouldn't...
-					// e.printStackTrace();
-				}
-				if (predecessor == null) {// original
-				} else {
-					Map<String, ItemDiff> diffs = VersionUtils.compareNodes(
-							predecessor.getFrozenNode(), node,
-							FILTERED_OUT_PROP_NAMES);
-					if (!diffs.isEmpty()) {
-						String userid = node
-								.hasProperty(Property.JCR_LAST_MODIFIED_BY) ? node
-								.getProperty(Property.JCR_LAST_MODIFIED_BY)
-								.getString() : null;
-						Calendar updateTime = node
-								.hasProperty(Property.JCR_LAST_MODIFIED) ? node
-								.getProperty(Property.JCR_LAST_MODIFIED)
-								.getDate() : null;
-						res.add(new VersionDiff(null, userid, updateTime, diffs));
-					}
-				}
-			}
-			return res;
-		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot generate history for node "
-					+ entity, e);
-		}
 	}
 
 	/** Small hack to enhance prop label rendering **/

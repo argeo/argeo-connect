@@ -1,5 +1,9 @@
 package org.argeo.connect.people.core.versioning;
 
+import static java.util.Arrays.asList;
+
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,13 +15,78 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.Value;
+import javax.jcr.version.Version;
+import javax.jcr.version.VersionHistory;
+import javax.jcr.version.VersionIterator;
+import javax.jcr.version.VersionManager;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 
 /** History management */
 public class VersionUtils {
+
+	// Filtered properties
+	public static final List<String> DEFAULT_FILTERED_OUT_PROP_NAMES = asList(
+			"jcr:uuid", "jcr:frozenUuid", "jcr:frozenPrimaryType",
+			"jcr:primaryType", "jcr:lastModified", "jcr:lastModifiedBy",
+			Property.JCR_LAST_MODIFIED_BY);
+
+	public static List<VersionDiff> listHistoryDiff(Node entity,
+			List<String> excludedProperties) {
+		try {
+			Session session = entity.getSession();
+			List<VersionDiff> res = new ArrayList<VersionDiff>();
+			VersionManager versionManager = session.getWorkspace()
+					.getVersionManager();
+
+			if (entity.hasProperty(Property.JCR_CREATED))
+				// Transient item. No history
+				return res;
+
+			VersionHistory versionHistory = versionManager
+					.getVersionHistory(entity.getPath());
+
+			VersionIterator vit = versionHistory.getAllLinearVersions();
+			// boolean first = true;
+			while (vit.hasNext()) {
+				Version version = vit.nextVersion();
+				Node node = version.getFrozenNode();
+
+				Version predecessor = null;
+				try {
+					predecessor = version.getLinearPredecessor();
+				} catch (Exception e) {
+					// no predecessor throw an exception even if it shouldn't...
+					// e.printStackTrace();
+				}
+				if (predecessor == null) {// original
+				} else {
+					Map<String, ItemDiff> diffs = VersionUtils.compareNodes(
+							predecessor.getFrozenNode(), node,
+							excludedProperties);
+					if (!diffs.isEmpty()) {
+						String userid = node
+								.hasProperty(Property.JCR_LAST_MODIFIED_BY) ? node
+								.getProperty(Property.JCR_LAST_MODIFIED_BY)
+								.getString() : null;
+						Calendar updateTime = node
+								.hasProperty(Property.JCR_LAST_MODIFIED) ? node
+								.getProperty(Property.JCR_LAST_MODIFIED)
+								.getDate() : null;
+						res.add(new VersionDiff(null, userid, updateTime, diffs));
+					}
+				}
+			}
+			return res;
+		} catch (RepositoryException e) {
+			throw new PeopleException("Cannot generate history for node "
+					+ entity, e);
+		}
+	}
+
 	/**
 	 * Returns an ordered map of differences, either on node or on their
 	 * properties
