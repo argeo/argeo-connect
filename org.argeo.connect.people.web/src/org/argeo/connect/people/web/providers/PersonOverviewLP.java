@@ -14,7 +14,6 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.utils.ResourcesJcrUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.PeopleWebSnippets;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -149,10 +148,12 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 		}
 
 		// Tags
-		String tags = PeopleWebSnippets.getTagLikeValues(peopleService, PeopleConstants.RESOURCE_TAG, person,
-				PeopleNames.PEOPLE_TAGS, "#");
+		String tags = PeopleWebSnippets.getTagLikeValues(peopleService,
+				PeopleConstants.RESOURCE_TAG, person, PeopleNames.PEOPLE_TAGS,
+				"#");
 		String mailingLists = PeopleWebSnippets.getTagLikeValues(peopleService,
-				PeopleTypes.PEOPLE_MAILING_LIST, person, PeopleNames.PEOPLE_MAILING_LISTS, "@");
+				PeopleTypes.PEOPLE_MAILING_LIST, person,
+				PeopleNames.PEOPLE_MAILING_LISTS, "@");
 		if (isSmallList) {
 			builder.append(tags);
 			if (CommonsJcrUtils.checkNotEmptyString(tags)
