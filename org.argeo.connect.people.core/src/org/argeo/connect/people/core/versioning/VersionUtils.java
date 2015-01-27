@@ -42,12 +42,23 @@ public class VersionUtils {
 			VersionManager versionManager = session.getWorkspace()
 					.getVersionManager();
 
-			if (entity.hasProperty(Property.JCR_CREATED))
-				// Transient item. No history
-				return res;
+			// if (!entity.hasProperty(Property.JCR_CREATED))
+			// // Transient item. No history
+			// return res;
 
-			VersionHistory versionHistory = versionManager
-					.getVersionHistory(entity.getPath());
+			VersionHistory versionHistory = null;
+			try {
+				versionHistory = versionManager.getVersionHistory(entity
+						.getPath());
+			} catch (Exception ise) {
+				// TODO clean this:
+				// Transient items that have just been created have no version
+				// history
+				// A jackrabbit specific NoSuchItemStateException is then
+				// thrown.
+				// We catch it and return an empty array
+				return res;
+			}
 
 			VersionIterator vit = versionHistory.getAllLinearVersions();
 			// boolean first = true;

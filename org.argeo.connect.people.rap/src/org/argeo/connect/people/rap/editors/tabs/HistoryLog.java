@@ -89,7 +89,7 @@ public class HistoryLog extends Composite {
 				| SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 		// styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 		// true));
-		refreshHistory(styledText);
+		//refreshHistory(styledText);
 		// styledText.setEditable(false);
 
 		myFormPart = new MyFormPart(styledText);
