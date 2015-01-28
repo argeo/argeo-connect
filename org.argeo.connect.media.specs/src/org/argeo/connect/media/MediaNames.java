@@ -45,33 +45,35 @@ public interface MediaNames {
 	public final static String MAP_TIMESTAMP_VALUE = "map:timestampValue";
 	public final static String MAP_AWARD_COUNTRY_ISO = "map:awardCountryIso";
 
+	/* MAPS */
+	public final static String MAP_TYPE = "map:type";
+	public final static String MAP_CATEGORIES = "map:categories";
+	public final static String MAP_GENRES = "map:genres";
+	public final static String MAP_LENGTH = "map:length";
+	
+	public final static String MAP_PROD_YEAR = "map:prodYear";
+	public final static String MAP_PROD_COUNTRIES = "map:prodCountries";
+	public final static String MAP_PROD_COSTS = "map:prodCosts";
+
+	public final static String MAP_WEBSITE = "map:website";
+	public final static String MAP_TRAILER_URL = "map:trailerUrl";
+	public final static String MAP_HAS_TRAILER = "map:hasTrailer";
+	public final static String MAP_ALLOW_EXCERPTS_ON_TV = "map:allowExcerptsOnTv";
+	public final static String MAP_ALLOW_EXCERPTS_ON_WEB = "map:allowExcerptsOnWeb";
+
+	public final static String MAP_ORIGINAL_LANGUAGES = "map:originalLanguages";
+	public final static String MAP_AVAILABLE_SUBTITLES = "map:availableSubtitles";
+
+	public final static String MAP_PREMIERE = "map:premiere";
+	public final static String MAP_IS_PREMIERE = "map:isPremiere";
+	public final static String MAP_IS_STUDENT_PROJECT = "map:isStudentProject";
+	
 	/* FILMS */
-	public final static String FILM_TYPE = "film:type";
-
-	public final static String FILM_PROD_YEAR = "film:prodYear";
-	public final static String FILM_PROD_COUNTRIES = "film:prodCountries";
-	public final static String FILM_PROD_COSTS = "film:prodCosts";
-	public final static String FILM_ORIGINAL_LANGUAGES = "film:originalLanguages";
-	public final static String FILM_AVAILABLE_SUBTITLES = "film:availableSubtitles";
-
-	public final static String FILM_PREMIERE = "film:premiere";
-	public final static String FILM_WEBSITE = "film:website";
-	public final static String FILM_TRAILER_URL = "film:trailerUrl";
-	public final static String FILM_LENGTH = "film:length";
-
-	public final static String FILM_CATEGORIES = "film:categories";
 	public final static String FILM_ANIMATION_TECHNIQUE = "film:animationTechnique";
-	public final static String FILM_GENRES = "film:genres";
 	public final static String FILM_SOUND_TYPE = "film:soundType";
 	public final static String FILM_COLOUR_TYPE = "film:colourType";
 
-	// Maybe too specific ??
-	public final static String FILM_IS_PREMIERE = "film:isPremiere";
-	public final static String FILM_IS_STUDENT_PROJECT = "film:isStudentProject";
 	public final static String FILM_IS_DEBUT_FILM = "film:isDebutFilm";
-	public final static String FILM_HAS_TRAILER = "film:hasTrailer";
-	public final static String FILM_ALLOW_EXCERPTS_ON_TV = "film:allowExcerptsOnTv";
-	public final static String FILM_ALLOW_EXCERPTS_ON_WEB = "film:allowExcerptsOnWeb";
 	public final static String FILM_SHOOTING_FORMAT = "film:shootingFormat";
 
 	/* FILM PRINTS */

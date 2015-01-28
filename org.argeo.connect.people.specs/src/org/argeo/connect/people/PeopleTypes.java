@@ -33,7 +33,7 @@ public interface PeopleTypes {
 	public final static String PEOPLE_EXTERNAL_ID = "people:externalId";
 
 	// Mixins
-	public final static String PEOPLE_TAGABLE = "people:tagable";
+	public final static String PEOPLE_TAGGABLE = "people:taggable";
 	public final static String PEOPLE_ORDERABLE = "people:orderable";
 	public final static String PEOPLE_CONTACTABLE = "people:contactable";
 

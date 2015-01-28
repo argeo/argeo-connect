@@ -21,20 +21,41 @@
 - map:cachePTitleLatin (STRING) IGNORE
 - map:cacheDirectors (String) * IGNORE
 
+// Generic properties for all type of Media or Artwork projects
+- map:type (STRING) // 
+- map:genres (STRING) *
+- map:categories (STRING) *
+- map:length (LONG) ='0' a // the length in seconds
 
+- map:website (STRING) 
+- map:hasTrailer (BOOLEAN)
+- map:trailerUrl (STRING) // Rather use a URI property?
+- map:allowExcerptsOnTv (BOOLEAN)
+- map:allowExcerptsOnWeb (BOOLEAN)
+- map:premiere (STRING)
+
+- map:prodYear (LONG)
+- map:prodCountries (STRING) * // A list of countries as defined in ISO 3166-1
+                               // primary production country must be the first of the list
+
+- map:prodCosts (STRING) // Approximative production costs. There is a festival specific list of possible choices.
+- map:originalLanguages (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
+- map:availableSubtitles (STRING) * // Tag like list of available subtitles
+
+// maybe too specific 
+- map:isStudentProject (BOOLEAN)
+
+// GENERIC SUBCONCEPTS FOR MAP
 [map:synopsis] > nt:unstructured, people:language
 - map:synopsisContent (STRING)
 - map:synopsisContentShort (STRING)
 - map:logLine (STRING)
 - map:relatedBiography (STRING)
 
-
 [map:title] > nt:unstructured, people:language, people:orderable
 - map:titleValue (STRING)
 - map:titleArticle (STRING)
-
-// Helper to be able to read the original title when it is in a foreign alphabet
-- map:titleLatinPronunciation (STRING)
+- map:titleLatinPronunciation (STRING) // Helper to be able to read the original title when it is in a foreign alphabet
 - map:titleIsOrig (BOOLEAN)
 
 // Time stamp
@@ -49,42 +70,65 @@
 // FILM
 //
 
-[film:film] > map:project
-- film:filmId (STRING) // a business specific film ID
-- film:type (STRING) // Feature, Mid-Length, Short
-- film:website (STRING) 
-- film:trailerUrl (STRING) // Rather use a URI property?
+[map:film] > map:project
 
-
-- film:prodYear (LONG)
-- film:prodCountries (STRING) * // A list of countries as defined in ISO 3166-1
-                                    // primary production country must be the first of the list
-- film:prodCosts (STRING) // Approximative production costs. There is a festival specific list of possible choices.
-- film:originalLanguages (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
-- film:availableSubtitles (STRING) * // Tag like list of available subtitles
-
-- film:length (LONG) ='0' m a // the length in seconds
-
-- film:genres (STRING) *
-- film:categories (STRING) *
+- film:isDebutFilm (BOOLEAN)
+- film:shootingFormat (STRING)
 - film:animationTechnique (STRING) // only if animation is in categories
 - film:soundType (STRING)
 - film:colourType (STRING)
-- film:premiere (STRING)
 
-// Subnode with film prints
-+ film:prints (nt:unstructured)
++ film:prints (nt:unstructured) // Subnode with film prints
+
+
+// Removed use map:projectId instead
+// - film:filmId (STRING) // a business specific film ID
+
+// Removed use map: instead
+// - film:type (STRING) // Feature, Mid-Length, Short
+// Removed use map: instead
+// - film:website (STRING) 
+// Removed use map: instead
+// - film:trailerUrl (STRING) // Rather use a URI property?
+
+// Removed use map: instead
+// - film:prodYear (LONG)
+// Removed use map: instead
+// - film:prodCountries (STRING) * // A list of countries as defined in ISO 3166-1
+                                    // primary production country must be the first of the list
+// Removed use map: instead
+// - film:prodCosts (STRING) // Approximative production costs. There is a festival specific list of possible choices.
+// Removed use map: instead
+// - film:originalLanguages (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
+// Removed use map: instead
+// - film:availableSubtitles (STRING) * // Tag like list of available subtitles
+
+// Removed use map: instead
+// - film:length (LONG) ='0' m a // the length in seconds
+// Removed use map: instead
+// - film:genres (STRING) *
+// Removed use map: instead
+// - film:categories (STRING) *
+
+// Removed use map: instead
+// - film:premiere (STRING)
+
 
 // maybe too specific 
-- film:isStudentProject (BOOLEAN)
-- film:isDebutFilm (BOOLEAN)
-- film:hasTrailer (BOOLEAN)
-- film:allowExcerptsOnTv (BOOLEAN)
-- film:allowExcerptsOnWeb (BOOLEAN)
-- film:shootingFormat (STRING)
+// Removed use map: instead
+// - film:isStudentProject (BOOLEAN)
+
+
+// Removed use map: instead
+// - film:hasTrailer (BOOLEAN)
+// Removed use map: instead
+// - film:allowExcerptsOnTv (BOOLEAN)
+// Removed use map: instead
+// - film:allowExcerptsOnWeb (BOOLEAN)
+
 
 // DEPRECATED - to be removed in a near future
-- film:submittedFor (STRING)
+// - film:submittedFor (STRING)
 
 
 //
