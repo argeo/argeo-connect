@@ -21,7 +21,7 @@ import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.utils.Refreshable;
-import org.argeo.connect.people.rap.wizards.AddTagWizard;
+import org.argeo.connect.people.rap.wizards.TagOrUntagInstancesWizard;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -150,8 +150,6 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				tableCmp.setAllChecked(true);
-//				CheckboxTableViewer viewer = (CheckboxTableViewer) tableViewer;
-//				viewer.setAllChecked(true);
 			}
 		});
 
@@ -163,30 +161,28 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				tableCmp.setAllChecked(false);
-//				CheckboxTableViewer viewer = (CheckboxTableViewer) tableViewer;
-//				viewer.setAllChecked(false);
 			}
 		});
 
 		final Button addTagBtn = new Button(parent, SWT.PUSH);
 		addTagBtn.setText("Add tag");
 		addBtnListener(addTagBtn, PeopleConstants.RESOURCE_TAG,
-				PeopleNames.PEOPLE_TAGS, AddTagWizard.TYPE_ADD);
+				PeopleNames.PEOPLE_TAGS, TagOrUntagInstancesWizard.TYPE_ADD);
 
 		final Button removeTagBtn = new Button(parent, SWT.PUSH);
 		removeTagBtn.setText("Remove tag");
 		addBtnListener(removeTagBtn, PeopleConstants.RESOURCE_TAG,
-				PeopleNames.PEOPLE_TAGS, AddTagWizard.TYPE_REMOVE);
+				PeopleNames.PEOPLE_TAGS, TagOrUntagInstancesWizard.TYPE_REMOVE);
 
 		final Button addMLBtn = new Button(parent, SWT.PUSH);
 		addMLBtn.setText("Add mailing list");
 		addBtnListener(addMLBtn, PeopleTypes.PEOPLE_MAILING_LIST,
-				PeopleNames.PEOPLE_MAILING_LISTS, AddTagWizard.TYPE_ADD);
+				PeopleNames.PEOPLE_MAILING_LISTS, TagOrUntagInstancesWizard.TYPE_ADD);
 
 		final Button removeMLBtn = new Button(parent, SWT.PUSH);
 		removeMLBtn.setText("Remove mailing list");
 		addBtnListener(removeMLBtn, PeopleTypes.PEOPLE_MAILING_LIST,
-				PeopleNames.PEOPLE_MAILING_LISTS, AddTagWizard.TYPE_REMOVE);
+				PeopleNames.PEOPLE_MAILING_LISTS, TagOrUntagInstancesWizard.TYPE_REMOVE);
 	}
 
 	private void addBtnListener(final Button button, final String tagId,
@@ -197,18 +193,13 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Row[] rows = tableCmp.getSelectedElements();
-
-				// CheckboxTableViewer viewer = (CheckboxTableViewer) tableViewer;
-				// Row[] rows = castAsRows(viewer.getCheckedElements());
-
 				Shell shell = button.getShell();
 
 				if (rows.length == 0)
 					MessageDialog.openInformation(shell, "Unvalid selection",
 							"No item is selected. Nothing has been done.");
 				else {
-
-					Wizard wizard = new AddTagWizard(peopleService,
+					Wizard wizard = new TagOrUntagInstancesWizard(peopleService,
 							peopleWorkbenchService, session, rows,
 							getEntityType(), tagId, taggablePropName,
 							actionType);
@@ -222,13 +213,13 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		});
 	}
 
-//	private Row[] castAsRows(Object[] objs) {
-//		int i = 0;
-//		Row[] rows = new Row[objs.length];
-//		for (Object obj : objs)
-//			rows[i++] = (Row) obj;
-//		return rows;
-//	}
+	// private Row[] castAsRows(Object[] objs) {
+	// int i = 0;
+	// Row[] rows = new Row[objs.length];
+	// for (Object obj : objs)
+	// rows[i++] = (Row) obj;
+	// return rows;
+	// }
 
 	/** Overwrite to set the correct row height */
 	protected int getCurrRowHeight() {
@@ -309,12 +300,12 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	protected void setViewerInput(Row[] rows) {
 		this.rows = rows;
 		TableViewer tableViewer = tableCmp.getTableViewer();
-		
-//		CheckboxTableViewer ctv = null;
-//		if (tableViewer instanceof CheckboxTableViewer) {
-//			ctv = (CheckboxTableViewer) tableViewer;
-//			ctv.setAllChecked(false);
-//		}
+
+		// CheckboxTableViewer ctv = null;
+		// if (tableViewer instanceof CheckboxTableViewer) {
+		// ctv = (CheckboxTableViewer) tableViewer;
+		// ctv.setAllChecked(false);
+		// }
 
 		tableViewer.setInput(rows);
 		// we must explicitly set the items count
@@ -383,9 +374,9 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		return peopleWorkbenchService;
 	}
 
-//	protected TableViewer getTableViewer() {
-//		return tableViewer;
-//	}
+	// protected TableViewer getTableViewer() {
+	// return tableViewer;
+	// }
 
 	// Local Methods
 	protected Text createBoldLT(Composite parent, String title, String message,

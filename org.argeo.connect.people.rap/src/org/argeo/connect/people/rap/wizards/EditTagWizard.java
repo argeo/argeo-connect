@@ -153,7 +153,8 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 				return false;
 			}
 
-			new UpdateTagAndInstancesJob("Updating", newTitle, newDesc).schedule();
+			new UpdateTagAndInstancesJob("Updating", newTitle, newDesc)
+					.schedule();
 
 			return true;
 			// // TODO use transaction
@@ -346,7 +347,8 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 
 		private String newTitle, newDesc;
 
-		public UpdateTagAndInstancesJob(String jobName, String newTitle, String newDesc) {
+		public UpdateTagAndInstancesJob(String jobName, String newTitle,
+				String newDesc) {
 			super(jobName);
 			this.newTitle = newTitle;
 			this.newDesc = newDesc;
@@ -392,7 +394,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 				}
 			} catch (Exception e) {
 				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
-						"Cannot fetch repository", e);
+						"Cannot edit tag and corresponding instances", e);
 			} finally {
 				// JcrUtils.logoutQuietly(session);
 				// IOUtils.closeQuietly(input);

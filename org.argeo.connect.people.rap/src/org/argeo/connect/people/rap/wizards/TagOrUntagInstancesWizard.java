@@ -6,15 +6,16 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Row;
 
+import org.argeo.ArgeoMonitor;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ResourceService;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.SimpleJcrTableComposite;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
@@ -22,7 +23,12 @@ import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseArgeoMonitor;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
+import org.argeo.security.ui.PrivilegedJob;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -46,7 +52,7 @@ import org.eclipse.swt.widgets.Composite;
  * underlying session is saved
  */
 
-public class AddTagWizard extends Wizard implements PeopleNames {
+public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 	// private final static Log log = LogFactory.getLog(EditTagWizard.class);
 
 	// To be cleaned:
@@ -75,9 +81,9 @@ public class AddTagWizard extends Wizard implements PeopleNames {
 	private ResourceService resourceService;
 	private Node tagParent;
 	private String tagInstanceType;
+
 	// private String taggableParentPath;
 	// private String taggableNodeType;
-
 
 	/**
 	 * 
@@ -87,7 +93,7 @@ public class AddTagWizard extends Wizard implements PeopleNames {
 	 * @param tagId
 	 * @param tagPropName
 	 */
-	public AddTagWizard(PeopleService peopleService,
+	public TagOrUntagInstancesWizard(PeopleService peopleService,
 			PeopleWorkbenchService peopleUiService, Session session,
 			Row[] rows, String selectorName, String tagId, String tagPropName,
 			int actionType) {
@@ -137,56 +143,59 @@ public class AddTagWizard extends Wizard implements PeopleNames {
 	 */
 	@Override
 	public boolean performFinish() {
-		try {
+		// try {
+		// Sanity checks
+		String errMsg = null;
+		if (tagInstance == null)
+			errMsg = "Please choose the tag to use";
 
-			// Sanity checks
-			String errMsg = null;
-			if (tagInstance == null)
-				errMsg = "Please choose the tag to use";
-
-			if (errMsg != null) {
-				MessageDialog.openError(getShell(), "Unvalid information",
-						errMsg);
-				return false;
-			}
-
-			// TODO use transaction
-			boolean isVersionable = tagInstance
-					.isNodeType(NodeType.MIX_VERSIONABLE);
-			boolean isCheckedIn = isVersionable
-					&& !CommonsJcrUtils.isNodeCheckedOutByMe(tagInstance);
-			if (isCheckedIn)
-				CommonsJcrUtils.checkout(tagInstance);
-
-			// TODO hardcoded prop name
-			String value = tagInstance.getProperty(Property.JCR_TITLE)
-					.getString();
-
-			for (Row row : rows) {
-				Node currNode = row.getNode(selectorName);
-				boolean wasCO = CommonsJcrUtils.isNodeCheckedOutByMe(currNode);
-				if (!wasCO)
-					CommonsJcrUtils.checkout(currNode);
-				if (actionType == TYPE_ADD) {
-					// Duplication will return an error message that we ignore
-					CommonsJcrUtils.addStringToMultiValuedProp(currNode,
-							tagPropName, value);
-				} else if (actionType == TYPE_REMOVE) {
-					// Duplication will return an error message that we ignore
-					CommonsJcrUtils.removeStringFromMultiValuedProp(currNode,
-							tagPropName, value);
-				}
-				if (!wasCO)
-					CommonsJcrUtils.saveAndCheckin(currNode);
-				else
-					currNode.getSession().save();
-			}
-			return true;
-		} catch (RepositoryException re) {
-			throw new PeopleException("unable to batch update " + tagId
-					+ " for " + selectorName + " row list with "
-					+ tagInstanceType, re);
+		if (errMsg != null) {
+			MessageDialog.openError(getShell(), "Unvalid information", errMsg);
+			return false;
 		}
+
+		new UpdateTagAndInstancesJob("Updating", actionType, rows,
+				selectorName, tagInstance, tagPropName).schedule();
+
+		return true;
+
+		// // TODO use transaction
+		// boolean isVersionable = tagInstance
+		// .isNodeType(NodeType.MIX_VERSIONABLE);
+		// boolean isCheckedIn = isVersionable
+		// && !CommonsJcrUtils.isNodeCheckedOutByMe(tagInstance);
+		// if (isCheckedIn)
+		// CommonsJcrUtils.checkout(tagInstance);
+		//
+		// // TODO hardcoded prop name
+		// String value = tagInstance.getProperty(Property.JCR_TITLE)
+		// .getString();
+		//
+		// for (Row row : rows) {
+		// Node currNode = row.getNode(selectorName);
+		// boolean wasCO = CommonsJcrUtils.isNodeCheckedOutByMe(currNode);
+		// if (!wasCO)
+		// CommonsJcrUtils.checkout(currNode);
+		// if (actionType == TYPE_ADD) {
+		// // Duplication will return an error message that we ignore
+		// CommonsJcrUtils.addStringToMultiValuedProp(currNode,
+		// tagPropName, value);
+		// } else if (actionType == TYPE_REMOVE) {
+		// // Duplication will return an error message that we ignore
+		// CommonsJcrUtils.removeStringFromMultiValuedProp(currNode,
+		// tagPropName, value);
+		// }
+		// if (!wasCO)
+		// CommonsJcrUtils.saveAndCheckin(currNode);
+		// else
+		// currNode.getSession().save();
+		// }
+		// return true;
+		// } catch (RepositoryException re) {
+		// throw new PeopleException("unable to batch update " + tagId
+		// + " for " + selectorName + " row list with "
+		// + tagInstanceType, re);
+		// }
 	}
 
 	@Override
@@ -330,6 +339,95 @@ public class AddTagWizard extends Wizard implements PeopleNames {
 
 		public void updateElement(int index) {
 			viewer.replace(elements[index], index);
+		}
+	}
+
+	/**
+	 * Define the privileged job that will be run asynchronously to perform the
+	 * import
+	 */
+	private class UpdateTagAndInstancesJob extends PrivilegedJob {
+
+		private Row[] toUpdateRows;
+		private Node targetTagInstance;
+		private int actionType;
+		private String selectorName;
+		private String tagPropName;
+
+		/**
+		 * 
+		 * @param jobName
+		 * @param actionType
+		 * @param toUpdateRows
+		 * @param selectorName
+		 * @param targetTagInstance
+		 * @param tagPropName
+		 */
+		public UpdateTagAndInstancesJob(String jobName, int actionType,
+				Row[] toUpdateRows, String selectorName,
+				Node targetTagInstance, String tagPropName) {
+			super(jobName);
+			this.toUpdateRows = toUpdateRows;
+			this.targetTagInstance = targetTagInstance;
+			this.actionType = actionType;
+			this.selectorName = selectorName;
+			this.tagPropName = tagPropName;
+
+			// Must be called *before* the job is scheduled so that a progress
+			// window appears.
+			setUser(true);
+		}
+
+		protected IStatus doRun(IProgressMonitor progressMonitor) {
+			try {
+				ArgeoMonitor monitor = new EclipseArgeoMonitor(progressMonitor);
+				if (monitor != null && !monitor.isCanceled()) {
+					monitor.beginTask("Updating objects", -1);
+
+					// TODO use transaction
+					boolean isVersionable = targetTagInstance
+							.isNodeType(NodeType.MIX_VERSIONABLE);
+					boolean isCheckedIn = isVersionable
+							&& !CommonsJcrUtils
+									.isNodeCheckedOutByMe(targetTagInstance);
+					if (isCheckedIn)
+						CommonsJcrUtils.checkout(targetTagInstance);
+
+					// TODO hardcoded prop name
+					String value = targetTagInstance.getProperty(
+							Property.JCR_TITLE).getString();
+
+					for (Row row : toUpdateRows) {
+						Node currNode = row.getNode(selectorName);
+						boolean wasCO = CommonsJcrUtils
+								.isNodeCheckedOutByMe(currNode);
+						if (!wasCO)
+							CommonsJcrUtils.checkout(currNode);
+						if (actionType == TYPE_ADD) {
+							// Duplication will return an error message that we
+							// ignore
+							CommonsJcrUtils.addStringToMultiValuedProp(
+									currNode, tagPropName, value);
+						} else if (actionType == TYPE_REMOVE) {
+							// Duplication will return an error message that we
+							// ignore
+							CommonsJcrUtils.removeStringFromMultiValuedProp(
+									currNode, tagPropName, value);
+						}
+						if (!wasCO)
+							CommonsJcrUtils.saveAndCheckin(currNode);
+						else
+							currNode.getSession().save();
+					}
+					monitor.worked(1);
+				}
+			} catch (Exception e) {
+				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
+						"unable to batch update " + tagId + " for "
+								+ selectorName + " row list with "
+								+ tagInstanceType, e);
+			}
+			return Status.OK_STATUS;
 		}
 	}
 }
