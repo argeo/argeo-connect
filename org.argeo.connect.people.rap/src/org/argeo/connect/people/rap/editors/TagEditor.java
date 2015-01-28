@@ -124,6 +124,12 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 				new SimpleJcrRowLabelProvider(PeopleTypes.PEOPLE_ENTITY,
 						PEOPLE_TAGS), 300));
 	}
+	
+	/* SPECIFIC CONFIGURATION */
+	/** Overwrite to add the batch update features */
+	protected boolean enableBatchUpdate(){
+		return false;
+	}
 
 	/* CONTENT CREATION */
 	@Override
@@ -274,9 +280,9 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 	}
 
 	private TableViewer createTableViewer(Composite parent) {
-		parent.setLayout(new GridLayout());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(parent,
-				SWT.MULTI, colDefs);
+				SWT.MULTI, colDefs, enableBatchUpdate());
 		TableViewer tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
