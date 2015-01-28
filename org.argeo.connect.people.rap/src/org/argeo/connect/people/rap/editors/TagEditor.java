@@ -329,8 +329,16 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 	/* EXPOSES TO CHILDREN CLASSES */
 	/** Returns the entity Node that is bound to this editor */
-	public Node getNode() {
+	protected Node getNode() {
 		return node;
+	}
+
+	protected PeopleService getPeopleService() {
+		return peopleService;
+	}
+
+	protected PeopleWorkbenchService getPeopleWorkbenchService() {
+		return peopleWorkbenchService;
 	}
 
 	/* UTILITES */
