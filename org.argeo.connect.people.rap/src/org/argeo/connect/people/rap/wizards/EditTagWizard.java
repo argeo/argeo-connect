@@ -1,6 +1,5 @@
 package org.argeo.connect.people.rap.wizards;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 
 import javax.jcr.Node;
@@ -154,7 +153,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 				return false;
 			}
 
-			new ProcessXmlJob("Importing", newTitle, newDesc).schedule();
+			new UpdateTagAndInstancesJob("Updating", newTitle, newDesc).schedule();
 
 			return true;
 			// // TODO use transaction
@@ -343,11 +342,11 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 	 * Define the privileged job that will be run asynchronously to perform the
 	 * import
 	 */
-	private class ProcessXmlJob extends PrivilegedJob {
+	private class UpdateTagAndInstancesJob extends PrivilegedJob {
 
 		private String newTitle, newDesc;
 
-		public ProcessXmlJob(String jobName, String newTitle, String newDesc) {
+		public UpdateTagAndInstancesJob(String jobName, String newTitle, String newDesc) {
 			super(jobName);
 			this.newTitle = newTitle;
 			this.newDesc = newDesc;
@@ -401,5 +400,4 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			return Status.OK_STATUS;
 		}
 	}
-
 }
