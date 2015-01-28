@@ -1,5 +1,6 @@
 package org.argeo.connect.people.rap.wizards;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import javax.jcr.Node;
@@ -20,10 +21,12 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.argeo.ArgeoMonitor;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ResourceService;
+import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
@@ -31,6 +34,11 @@ import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseArgeoMonitor;
+import org.argeo.security.ui.PrivilegedJob;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -146,30 +154,34 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 				return false;
 			}
 
-			// TODO use transaction
-			boolean isVersionable = tagInstance
-					.isNodeType(NodeType.MIX_VERSIONABLE);
-			boolean isCheckedIn = isVersionable
-					&& !CommonsJcrUtils.isNodeCheckedOutByMe(tagInstance);
-			if (isCheckedIn)
-				CommonsJcrUtils.checkout(tagInstance);
+			new ProcessXmlJob("Importing", newTitle, newDesc).schedule();
 
-			resourceService.updateTag(tagInstance, newTitle);
-
-			if (CommonsJcrUtils.checkNotEmptyString(newDesc))
-				tagInstance.setProperty(Property.JCR_DESCRIPTION, newDesc);
-			else if (tagInstance.hasProperty(Property.JCR_DESCRIPTION))
-				// force reset
-				tagInstance.setProperty(Property.JCR_DESCRIPTION, "");
-
-			if (isCheckedIn)
-				CommonsJcrUtils.saveAndCheckin(tagInstance);
-			else if (isVersionable) // workaround versionable node should have
-				// been commited on last update
-				CommonsJcrUtils.saveAndCheckin(tagInstance);
-			else
-				tagInstance.getSession().save();
 			return true;
+			// // TODO use transaction
+			// boolean isVersionable = tagInstance
+			// .isNodeType(NodeType.MIX_VERSIONABLE);
+			// boolean isCheckedIn = isVersionable
+			// && !CommonsJcrUtils.isNodeCheckedOutByMe(tagInstance);
+			// if (isCheckedIn)
+			// CommonsJcrUtils.checkout(tagInstance);
+			//
+			// resourceService.updateTag(tagInstance, newTitle);
+			//
+			// if (CommonsJcrUtils.checkNotEmptyString(newDesc))
+			// tagInstance.setProperty(Property.JCR_DESCRIPTION, newDesc);
+			// else if (tagInstance.hasProperty(Property.JCR_DESCRIPTION))
+			// // force reset
+			// tagInstance.setProperty(Property.JCR_DESCRIPTION, "");
+			//
+			// if (isCheckedIn)
+			// CommonsJcrUtils.saveAndCheckin(tagInstance);
+			// else if (isVersionable) // workaround versionable node should
+			// have
+			// // been commited on last update
+			// CommonsJcrUtils.saveAndCheckin(tagInstance);
+			// else
+			// tagInstance.getSession().save();
+			// return true;
 		} catch (RepositoryException re) {
 			throw new PeopleException(
 					"unable to update title for tag like resource "
@@ -326,4 +338,68 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			viewer.replace(elements[index], index);
 		}
 	}
+
+	/**
+	 * Define the privileged job that will be run asynchronously to perform the
+	 * import
+	 */
+	private class ProcessXmlJob extends PrivilegedJob {
+
+		private String newTitle, newDesc;
+
+		public ProcessXmlJob(String jobName, String newTitle, String newDesc) {
+			super(jobName);
+			this.newTitle = newTitle;
+			this.newDesc = newDesc;
+			// Must be called *before* the job is scheduled so that a progress
+			// window appears.
+			setUser(true);
+		}
+
+		protected IStatus doRun(IProgressMonitor progressMonitor) {
+			try {
+				ArgeoMonitor monitor = new EclipseArgeoMonitor(progressMonitor);
+				if (monitor != null && !monitor.isCanceled()) {
+					monitor.beginTask("Updating objects", -1);
+
+					// TODO use transaction
+					boolean isVersionable = tagInstance
+							.isNodeType(NodeType.MIX_VERSIONABLE);
+					boolean isCheckedIn = isVersionable
+							&& !CommonsJcrUtils
+									.isNodeCheckedOutByMe(tagInstance);
+					if (isCheckedIn)
+						CommonsJcrUtils.checkout(tagInstance);
+
+					resourceService.updateTag(tagInstance, newTitle);
+
+					if (CommonsJcrUtils.checkNotEmptyString(newDesc))
+						tagInstance.setProperty(Property.JCR_DESCRIPTION,
+								newDesc);
+					else if (tagInstance.hasProperty(Property.JCR_DESCRIPTION))
+						// force reset
+						tagInstance.setProperty(Property.JCR_DESCRIPTION, "");
+
+					if (isCheckedIn)
+						CommonsJcrUtils.saveAndCheckin(tagInstance);
+					else if (isVersionable) // workaround versionable node
+											// should have
+						// been commited on last update
+						CommonsJcrUtils.saveAndCheckin(tagInstance);
+					else
+						tagInstance.getSession().save();
+
+					monitor.worked(1);
+				}
+			} catch (Exception e) {
+				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
+						"Cannot fetch repository", e);
+			} finally {
+				// JcrUtils.logoutQuietly(session);
+				// IOUtils.closeQuietly(input);
+			}
+			return Status.OK_STATUS;
+		}
+	}
+
 }

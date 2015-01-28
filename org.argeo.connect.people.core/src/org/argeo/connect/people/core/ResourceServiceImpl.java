@@ -676,11 +676,10 @@ public class ResourceServiceImpl implements ResourceService {
 						taggable, tagPropName);
 				List<String> newValues = new ArrayList<String>();
 				for (String val : oldValues) {
-					if (oldValue.equals(val))
-						if (newValue != null)
-							newValues.add(newValue);
-						else
-							newValues.add(val);
+					if (oldValue.equals(val) && newValue != null)
+						newValues.add(newValue);
+					else
+						newValues.add(val);
 				}
 				taggable.setProperty(tagPropName,
 						newValues.toArray(new String[0]));

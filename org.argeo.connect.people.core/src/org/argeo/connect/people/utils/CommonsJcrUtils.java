@@ -564,8 +564,8 @@ public class CommonsJcrUtils {
 			if (!node.hasProperty(propertyName))
 				return results;
 			else {
-				Value[] langs = node.getProperty(propertyName).getValues();
-				for (Value val : langs) {
+				Value[] values = node.getProperty(propertyName).getValues();
+				for (Value val : values) {
 					results.add(val.getString());
 				}
 			}
