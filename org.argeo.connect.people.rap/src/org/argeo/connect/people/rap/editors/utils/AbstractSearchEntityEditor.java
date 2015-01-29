@@ -199,10 +199,10 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 					MessageDialog.openInformation(shell, "Unvalid selection",
 							"No item is selected. Nothing has been done.");
 				else {
-					Wizard wizard = new TagOrUntagInstancesWizard(peopleService,
-							peopleWorkbenchService, session, rows,
-							getEntityType(), tagId, taggablePropName,
-							actionType);
+					Wizard wizard = new TagOrUntagInstancesWizard(actionType,
+							session, peopleService, peopleWorkbenchService,
+							rows, getEntityType(), tagId,
+							taggablePropName);
 					WizardDialog dialog = new WizardDialog(shell, wizard);
 					int result = dialog.open();
 					if (result == WizardDialog.OK) {

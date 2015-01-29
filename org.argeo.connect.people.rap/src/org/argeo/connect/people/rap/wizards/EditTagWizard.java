@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
@@ -34,6 +35,7 @@ import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
+import org.argeo.jcr.JcrUtils;
 import org.argeo.security.ui.PrivilegedJob;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -112,8 +114,6 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 		try {
 			// configure container
 			setWindowTitle("Update Title");
-			// setNeedsProgressMonitor(false);
-
 			MainInfoPage inputPage = new MainInfoPage("Configure");
 			addPage(inputPage);
 			RecapPage recapPage = new RecapPage("Validate and launch");
@@ -153,35 +153,10 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 				return false;
 			}
 
-			new UpdateTagAndInstancesJob("Updating", newTitle, newDesc)
-					.schedule();
+			new UpdateTagAndInstancesJob(resourceService, tagInstance,
+					newTitle, newDesc).schedule();
 
 			return true;
-			// // TODO use transaction
-			// boolean isVersionable = tagInstance
-			// .isNodeType(NodeType.MIX_VERSIONABLE);
-			// boolean isCheckedIn = isVersionable
-			// && !CommonsJcrUtils.isNodeCheckedOutByMe(tagInstance);
-			// if (isCheckedIn)
-			// CommonsJcrUtils.checkout(tagInstance);
-			//
-			// resourceService.updateTag(tagInstance, newTitle);
-			//
-			// if (CommonsJcrUtils.checkNotEmptyString(newDesc))
-			// tagInstance.setProperty(Property.JCR_DESCRIPTION, newDesc);
-			// else if (tagInstance.hasProperty(Property.JCR_DESCRIPTION))
-			// // force reset
-			// tagInstance.setProperty(Property.JCR_DESCRIPTION, "");
-			//
-			// if (isCheckedIn)
-			// CommonsJcrUtils.saveAndCheckin(tagInstance);
-			// else if (isVersionable) // workaround versionable node should
-			// have
-			// // been commited on last update
-			// CommonsJcrUtils.saveAndCheckin(tagInstance);
-			// else
-			// tagInstance.getSession().save();
-			// return true;
 		} catch (RepositoryException re) {
 			throw new PeopleException(
 					"unable to update title for tag like resource "
@@ -339,29 +314,41 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 		}
 	}
 
-	/**
-	 * Define the privileged job that will be run asynchronously to perform the
-	 * import
-	 */
+	/** Privileged job that asynchronously performs the update */
 	private class UpdateTagAndInstancesJob extends PrivilegedJob {
 
+		private Repository repository;
+		private ResourceService resourceService;
+		private String tagPath;
 		private String newTitle, newDesc;
 
-		public UpdateTagAndInstancesJob(String jobName, String newTitle,
-				String newDesc) {
-			super(jobName);
-			this.newTitle = newTitle;
-			this.newDesc = newDesc;
+		public UpdateTagAndInstancesJob(ResourceService resourceService,
+				Node tagInstance, String newTitle, String newDesc) {
+			super("Updating");
 			// Must be called *before* the job is scheduled so that a progress
 			// window appears.
 			setUser(true);
+			this.resourceService = resourceService;
+			this.newTitle = newTitle;
+			this.newDesc = newDesc;
+			try {
+				repository = tagInstance.getSession().getRepository();
+				tagPath = tagInstance.getPath();
+			} catch (RepositoryException e) {
+				throw new PeopleException("Unable to init "
+						+ "tag instance batch update for " + tagId, e);
+			}
 		}
 
 		protected IStatus doRun(IProgressMonitor progressMonitor) {
+			Session session = null;
 			try {
 				ArgeoMonitor monitor = new EclipseArgeoMonitor(progressMonitor);
 				if (monitor != null && !monitor.isCanceled()) {
 					monitor.beginTask("Updating objects", -1);
+
+					session = repository.login();
+					Node tagInstance = session.getNode(tagPath);
 
 					// TODO use transaction
 					boolean isVersionable = tagInstance
@@ -396,8 +383,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
 						"Cannot edit tag and corresponding instances", e);
 			} finally {
-				// JcrUtils.logoutQuietly(session);
-				// IOUtils.closeQuietly(input);
+				JcrUtils.logoutQuietly(session);
 			}
 			return Status.OK_STATUS;
 		}

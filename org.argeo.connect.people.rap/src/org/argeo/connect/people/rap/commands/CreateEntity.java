@@ -91,7 +91,7 @@ public class CreateEntity extends AbstractHandler {
 		return repository;
 	}
 
-	protected PeopleWorkbenchService getPeopleUiService() {
+	protected PeopleWorkbenchService getPeopleWorkbenchService() {
 		return peopleUiService;
 	}
 
