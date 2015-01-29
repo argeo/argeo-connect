@@ -325,9 +325,10 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 		public UpdateTagAndInstancesJob(ResourceService resourceService,
 				Node tagInstance, String newTitle, String newDesc) {
 			super("Updating");
-			// Must be called *before* the job is scheduled so that a progress
-			// window appears.
-			setUser(true);
+			// // Must be called *before* the job is scheduled so that a
+			// progress
+			// // window appears.
+			// setUser(true);
 			this.resourceService = resourceService;
 			this.newTitle = newTitle;
 			this.newDesc = newDesc;

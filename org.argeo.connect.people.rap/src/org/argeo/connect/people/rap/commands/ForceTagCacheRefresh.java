@@ -64,7 +64,7 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 			super("Updating the tag and mailing list repository");
 			// Must be called *before* the job is scheduled so that a progress
 			// window appears.
-			setUser(true);
+			// setUser(true);
 			this.repository = repository;
 			this.peopleService = peopleService;
 		}

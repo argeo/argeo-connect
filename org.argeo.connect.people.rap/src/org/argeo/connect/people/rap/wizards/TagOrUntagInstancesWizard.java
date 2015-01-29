@@ -312,7 +312,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 			super("Updating");
 			// Must be called *before* the job is scheduled so that a progress
 			// window appears.
-			setUser(true);
+			// setUser(true);
 
 			this.actionType = actionType;
 			this.tagPropName = tagPropName;
