@@ -198,7 +198,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 					entity.getSession().save();
 			} else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)
 					|| entity.isNodeType(PeopleTypes.PEOPLE_ORG))
-				personService.saveEntity(entity, commit);
+				getPersonService().saveEntity(entity, commit);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
 				// TODO implement generic People behaviour for tasks and
 				// activities
