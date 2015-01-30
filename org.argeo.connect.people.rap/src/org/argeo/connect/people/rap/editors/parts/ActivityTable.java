@@ -253,14 +253,20 @@ public class ActivityTable extends Composite implements ArgeoNames {
 			try {
 				StringBuilder builder = new StringBuilder();
 				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
-					builder.append(CommonsJcrUtils.get(currNode,
-							PeopleNames.PEOPLE_TASK_STATUS));
-					builder.append("<br />");
+					builder.append("<b>");
 					builder.append(resourceService
 							.getItemDefaultEnLabel(currNode
 									.getPrimaryNodeType().getName()));
-				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
+					builder.append("</b>");
+					builder.append("<br />");
+					builder.append(CommonsJcrUtils.get(currNode,
+							PeopleNames.PEOPLE_TASK_STATUS));
+
+				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
+					builder.append("<b>");
 					builder.append(activityService.getActivityLabel(currNode));
+					builder.append("</b>");
+				}
 				return builder.toString();
 			} catch (RepositoryException re) {
 				throw new ArgeoException("Unable to get type snippet for "
@@ -348,36 +354,36 @@ public class ActivityTable extends Composite implements ArgeoNames {
 					}
 				} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
 					Calendar happened = null;
-					Calendar created = null;
+					// Calendar created = null;
+					String happenedLbl = "";
 					Calendar lastMod = null;
 					if (activityNode.hasProperty(Property.JCR_LAST_MODIFIED))
 						lastMod = activityNode.getProperty(
 								Property.JCR_LAST_MODIFIED).getDate();
 
 					if (activityNode
-							.hasProperty(PeopleNames.PEOPLE_ACTIVITY_DATE))
+							.hasProperty(PeopleNames.PEOPLE_ACTIVITY_DATE)) {
 						happened = activityNode.getProperty(
 								PeopleNames.PEOPLE_ACTIVITY_DATE).getDate();
-					else if (activityNode.hasProperty(Property.JCR_CREATED))
-						created = activityNode
-								.getProperty(Property.JCR_CREATED).getDate();
-
-					boolean addUpdateDt = created == null;
+						happenedLbl = "Done on: ";
+					} else if (activityNode.hasProperty(Property.JCR_CREATED)) {
+						happened = activityNode.getProperty(
+								Property.JCR_CREATED).getDate();
+						happenedLbl = "Created on: ";
+					}
+					boolean addUpdateDt = happened == null;
 					if (!addUpdateDt) {
-						date = (Calendar) created.clone();
+						date = (Calendar) happened.clone();
 						date.add(Calendar.MINUTE, 5);
 						if (lastMod != null)
 							addUpdateDt = lastMod.after(date);
 					}
-					if (happened != null)
-						builder.append("Done on: ")
-								.append(funkyFormat(happened)).append("<br />");
-					else if (created != null)
-						builder.append("Created on: ")
-								.append(funkyFormat(created)).append("<br />");
 					if (addUpdateDt)
-						builder.append("Last update: ").append(
-								funkyFormat(lastMod));
+						builder.append("Last update: ")
+								.append(funkyFormat(lastMod)).append("<br />");
+					if (happened != null)
+						builder.append(happenedLbl).append(
+								funkyFormat(happened));
 				}
 				return builder.toString();
 			} catch (RepositoryException e) {
