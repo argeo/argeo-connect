@@ -91,7 +91,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 		Composite tableComp = new Composite(this, SWT.NO_FOCUS);
 		tableViewer = createActivityViewer(tableComp, style);
 		tableComp.setLayoutData(PeopleUiUtils.fillGridData());
-		refreshFilteredList();
+		// refreshFilteredList();
 	}
 
 	private TableViewer createActivityViewer(final Composite parent, int style) {
