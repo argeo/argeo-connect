@@ -740,15 +740,17 @@ public class CommonsJcrUtils {
 	public static void removeStringFromMultiValuedProp(Node node,
 			String propName, String value) {
 		try {
-			List<Value> nodes = new ArrayList<Value>();
-			Value[] values = node.getProperty(propName).getValues();
-			for (int i = 0; i < values.length; i++) {
-				String curr = values[i].getString();
-				if (!value.equals(curr))
-					nodes.add(values[i]);
+			if (node.hasProperty(propName)) {
+				List<Value> nodes = new ArrayList<Value>();
+				Value[] values = node.getProperty(propName).getValues();
+				for (int i = 0; i < values.length; i++) {
+					String curr = values[i].getString();
+					if (!value.equals(curr))
+						nodes.add(values[i]);
+				}
+				Value[] results = nodes.toArray(new Value[0]);
+				node.setProperty(propName, results);
 			}
-			Value[] results = nodes.toArray(new Value[0]);
-			node.setProperty(propName, results);
 		} catch (RepositoryException e) {
 			throw new PeopleException(
 					"Unable to remove reference from property " + propName

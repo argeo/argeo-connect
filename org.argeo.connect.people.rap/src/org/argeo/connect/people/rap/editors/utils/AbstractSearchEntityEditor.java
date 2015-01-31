@@ -25,6 +25,7 @@ import org.argeo.connect.people.rap.wizards.TagOrUntagInstancesWizard;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -174,15 +175,28 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		addBtnListener(removeTagBtn, PeopleConstants.RESOURCE_TAG,
 				PeopleNames.PEOPLE_TAGS, TagOrUntagInstancesWizard.TYPE_REMOVE);
 
-		final Button addMLBtn = new Button(parent, SWT.PUSH);
-		addMLBtn.setText("Add mailing list");
-		addBtnListener(addMLBtn, PeopleTypes.PEOPLE_MAILING_LIST,
-				PeopleNames.PEOPLE_MAILING_LISTS, TagOrUntagInstancesWizard.TYPE_ADD);
+		if (isOrgOrPerson()) {
+			final Button addMLBtn = new Button(parent, SWT.PUSH);
+			addMLBtn.setText("Add mailing list");
+			addBtnListener(addMLBtn, PeopleTypes.PEOPLE_MAILING_LIST,
+					PeopleNames.PEOPLE_MAILING_LISTS,
+					TagOrUntagInstancesWizard.TYPE_ADD);
 
-		final Button removeMLBtn = new Button(parent, SWT.PUSH);
-		removeMLBtn.setText("Remove mailing list");
-		addBtnListener(removeMLBtn, PeopleTypes.PEOPLE_MAILING_LIST,
-				PeopleNames.PEOPLE_MAILING_LISTS, TagOrUntagInstancesWizard.TYPE_REMOVE);
+			final Button removeMLBtn = new Button(parent, SWT.PUSH);
+			removeMLBtn.setText("Remove mailing list");
+			addBtnListener(removeMLBtn, PeopleTypes.PEOPLE_MAILING_LIST,
+					PeopleNames.PEOPLE_MAILING_LISTS,
+					TagOrUntagInstancesWizard.TYPE_REMOVE);
+		}
+	}
+
+	private boolean isOrgOrPerson() {
+		ColumnDefinition colDef = getColumnDefinition(null).get(0);
+		if (PeopleTypes.PEOPLE_PERSON.equals(colDef.getSelectorName())
+				|| PeopleTypes.PEOPLE_ORG.equals(colDef.getSelectorName()))
+			return true;
+		else
+			return false;
 	}
 
 	private void addBtnListener(final Button button, final String tagId,
@@ -201,8 +215,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 				else {
 					Wizard wizard = new TagOrUntagInstancesWizard(actionType,
 							session, peopleService, peopleWorkbenchService,
-							rows, getEntityType(), tagId,
-							taggablePropName);
+							rows, getEntityType(), tagId, taggablePropName);
 					WizardDialog dialog = new WizardDialog(shell, wizard);
 					int result = dialog.open();
 					if (result == WizardDialog.OK) {
@@ -212,14 +225,6 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 			}
 		});
 	}
-
-	// private Row[] castAsRows(Object[] objs) {
-	// int i = 0;
-	// Row[] rows = new Row[objs.length];
-	// for (Object obj : objs)
-	// rows[i++] = (Row) obj;
-	// return rows;
-	// }
 
 	/** Overwrite to set the correct row height */
 	protected int getCurrRowHeight() {
