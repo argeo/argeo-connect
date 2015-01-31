@@ -15,12 +15,6 @@
 			<artifactId>org.argeo.security.dep.node</artifactId>
 			<version>${version.argeo-commons}</version>
 			<type>pom</type>
-			<exclusions>
-				<exclusion>
-					<groupId>org.argeo.commons</groupId>
-					<artifactId>org.argeo.server.dep.tomcat</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<!-- Modules -->

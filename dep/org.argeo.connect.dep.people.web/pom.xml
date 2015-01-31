@@ -28,6 +28,17 @@
 			<artifactId>org.argeo.dep.cms</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
-
+		
+		<!-- Third parties -->
+		<dependency>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>argeo-tp</artifactId>
+			<version>${version.argeo-distribution}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.extras</groupId>
+			<artifactId>argeo-tp-extras</artifactId>
+			<version>${version.argeo-tp-extras}</version>
+		</dependency>
 	</dependencies>
 </project>

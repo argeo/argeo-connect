@@ -38,16 +38,15 @@
 			<version>2.1.14-SNAPSHOT</version>
 		</dependency>
 
+
 		<!-- COMMONS -->
-		<!-- RAP only dependencies -->
+		<!-- Rap default Argeo Utilities: this bundle explicitly use the RAP workbench. -->
 		<dependency>
 			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.eclipse.ui.rap</artifactId>
 			<version>${version.argeo-commons}</version>
-			<scope>provided</scope>
 		</dependency>
 
-		<!-- Base Argeo Eclipse Utilities -->
 		<dependency>
 			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.eclipse.ui.workbench</artifactId>

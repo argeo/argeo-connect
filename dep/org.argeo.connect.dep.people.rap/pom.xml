@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.argeo.connect</groupId>
@@ -9,30 +10,46 @@
 	</parent>
 	<artifactId>org.argeo.connect.dep.people.rap</artifactId>
 	<name>Connect People RAP Dependencies</name>
-	
+
 	<dependencies>
-		<!--  Connect People RAP Workbench -->
+		<!-- Connect People RAP Workbench -->
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.people.rap</artifactId>
 			<version>2.1.14-SNAPSHOT</version>
 		</dependency>
 
-		<!--  Force the use of the rap provided eclipse.osgi bundle. -->
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.people.services</artifactId>
+			<version>2.1.14-SNAPSHOT</version>
+		</dependency>
+		
+		
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.dep.people.web</artifactId>
+			<version>2.1.14-SNAPSHOT</version>
+		</dependency>
+
+		<!-- Node -->
 		<dependency>
 			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.security.dep.node.rap</artifactId>
 			<version>${version.argeo-commons}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.argeo.tp</groupId>
-					<artifactId>org.eclipse.osgi</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.argeo.commons</groupId>
-					<artifactId>org.argeo.server.dep.tomcat</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
+
+		<!-- Third parties -->
+		<dependency>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>argeo-tp</artifactId>
+			<version>${version.argeo-distribution}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.extras</groupId>
+			<artifactId>argeo-tp-extras</artifactId>
+			<version>${version.argeo-tp-extras}</version>
+		</dependency>
+
 	</dependencies>
 </project>
