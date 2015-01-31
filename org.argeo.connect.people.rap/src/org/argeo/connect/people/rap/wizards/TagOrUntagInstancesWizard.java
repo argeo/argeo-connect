@@ -46,6 +46,7 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Generic wizard to add a tag like property entities retrieved in the passed
@@ -69,6 +70,9 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 	// Context
 	private PeopleService peopleService;
 	private PeopleWorkbenchService peopleUiService;
+
+	// Enable refresh of the calling editor at the end of the job
+	private Display callingDisplay;
 
 	private String tagId;
 	private Node tagInstance;
@@ -95,11 +99,12 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 	 * @param tagId
 	 * @param tagPropName
 	 */
-	public TagOrUntagInstancesWizard(int actionType, Session session,
-			PeopleService peopleService,
+	public TagOrUntagInstancesWizard(Display callingDisplay, int actionType,
+			Session session, PeopleService peopleService,
 			PeopleWorkbenchService peopleUiService, Row[] rows,
 			String selectorName, String tagId, String tagPropName) {
 
+		this.callingDisplay = callingDisplay;
 		this.session = session;
 		this.peopleService = peopleService;
 		this.peopleUiService = peopleUiService;
@@ -148,8 +153,8 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 			MessageDialog.openError(getShell(), "Unvalid information", errMsg);
 			return false;
 		}
-		new UpdateTagAndInstancesJob(actionType, peopleService, tagInstance,
-				rows, selectorName, tagPropName).schedule();
+		new UpdateTagAndInstancesJob(callingDisplay, actionType, peopleService,
+				tagInstance, rows, selectorName, tagPropName).schedule();
 		return true;
 	}
 
@@ -305,14 +310,16 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 		private String tagPath;
 		private String tagPropName;
 		private List<String> pathes = new ArrayList<String>();
+		private Display display;
 
-		public UpdateTagAndInstancesJob(int actionType,
+		public UpdateTagAndInstancesJob(Display display, int actionType,
 				PeopleService peopleService, Node taginstance,
 				Row[] toUpdateRows, String selectorName, String tagPropName) {
 			super("Updating");
 			// Must be called *before* the job is scheduled so that a progress
 			// window appears.
 			// setUser(true);
+			this.display = display;
 
 			this.actionType = actionType;
 			this.tagPropName = tagPropName;
@@ -375,6 +382,14 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 							currNode.getSession().save();
 					}
 					monitor.worked(1);
+
+					// FIXME asynchronous refresh does not yet work
+					display.asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							// CommandUtils.callCommand(ForceRefresh.ID);
+						}
+					});
 				}
 			} catch (Exception e) {
 				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
