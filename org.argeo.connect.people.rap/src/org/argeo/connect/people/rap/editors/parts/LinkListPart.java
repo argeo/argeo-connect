@@ -1,5 +1,8 @@
 package org.argeo.connect.people.rap.editors.parts;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
@@ -40,10 +43,13 @@ public class LinkListPart extends Composite implements PeopleNames {
 	private final PeopleWorkbenchService peopleWorkbenchService;
 	private final Node entity;
 	private final String propName;
+	private final List<String> hiddenItemIds = new ArrayList<String>();
 
+	
 	// UI Context
 	private final AbstractFormPart formPart;
 	private final FormToolkit toolkit;
+
 
 	// COMPOSITES
 	private static final String VALUE_KEY = "valueKey";
@@ -62,6 +68,26 @@ public class LinkListPart extends Composite implements PeopleNames {
 			Composite parent, int style,
 			PeopleWorkbenchService msmWorkbenchService, Node entity,
 			String propName) {
+		this(toolkit, formPart, parent, style, msmWorkbenchService, entity,
+				propName, null);
+	}
+
+	/** Will prevent display of linked entities whose id is passed in the list */
+	/**
+	 * 
+	 * @param toolkit
+	 * @param formPart
+	 * @param parent
+	 * @param style
+	 * @param msmWorkbenchService
+	 * @param entity
+	 * @param propName
+	 * @param hiddenItemIds
+	 */
+	public LinkListPart(FormToolkit toolkit, AbstractFormPart formPart,
+			Composite parent, int style,
+			PeopleWorkbenchService msmWorkbenchService, Node entity,
+			String propName, List<String> hiddenItemIds) {
 		super(parent, style);
 		this.formPart = formPart;
 		this.toolkit = toolkit;
@@ -75,6 +101,8 @@ public class LinkListPart extends Composite implements PeopleNames {
 		rl.marginBottom = rl.marginTop = rl.marginLeft = rl.marginRight = 0;
 		rl.spacing = 8;
 		this.setLayout(rl);
+		if (hiddenItemIds != null)
+			this.hiddenItemIds.addAll(hiddenItemIds);
 		recreateRelated(this, isEditing());
 	}
 
@@ -102,11 +130,13 @@ public class LinkListPart extends Composite implements PeopleNames {
 				Value[] values = entity.getProperty(propName).getValues();
 				for (Value value : values) {
 					String valueStr = value.getString();
-					Node targetNode = getTargetWithValue(valueStr);
-					String labelStr = CommonsJcrUtils.get(targetNode,
-							Property.JCR_TITLE);
-					createDeletableClickable(relatedCmp, valueStr, labelStr,
-							isEditing);
+					if (!hiddenItemIds.contains(valueStr)) {
+						Node targetNode = getTargetWithValue(valueStr);
+						String labelStr = CommonsJcrUtils.get(targetNode,
+								Property.JCR_TITLE);
+						createDeletableClickable(relatedCmp, valueStr,
+								labelStr, isEditing);
+					}
 				}
 			} else if (!isEditing())
 				// Add an empty label to force a correct layout
@@ -119,7 +149,6 @@ public class LinkListPart extends Composite implements PeopleNames {
 				newRelatedLk.setText("<a>Add</a>");
 				addNewRelatedSelList(newRelatedLk);
 			}
-
 		} catch (RepositoryException e) {
 			throw new PeopleException(
 					"Unable to create related to composite for " + entity, e);

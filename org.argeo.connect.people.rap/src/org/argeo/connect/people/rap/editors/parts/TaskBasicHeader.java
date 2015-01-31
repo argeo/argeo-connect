@@ -54,6 +54,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 	// local cache
 	private Node assignedToNode;
 	private boolean isBeingEdited;
+	private List<String> hiddenItemIds;
 
 	// UI Context
 	private final MyFormPart myFormPart;
@@ -86,12 +87,20 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 
 	public TaskBasicHeader(FormToolkit toolkit, IManagedForm form,
 			Composite parent, int style, PeopleService peopleService,
-			PeopleWorkbenchService msmWorkbenchService, String taskTypeId,
+			PeopleWorkbenchService peopleWorkbenchService, String taskTypeId,
 			Node task) {
+		this(toolkit, form, parent, style, peopleService,
+				peopleWorkbenchService, taskTypeId, task, null);
+	}
+
+	public TaskBasicHeader(FormToolkit toolkit, IManagedForm form,
+			Composite parent, int style, PeopleService peopleService,
+			PeopleWorkbenchService peopleWorkbenchService, String taskTypeId,
+			Node task, List<String> hiddenItemIds) {
 		super(parent, style);
 		this.toolkit = toolkit;
 		// this.peopleService = peopleService;
-		this.peopleWorkbenchService = msmWorkbenchService;
+		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.taskTypeId = taskTypeId;
 		this.task = task;
 
@@ -125,8 +134,8 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 				return;
 			try {
 				if (isEditing()) {
-					PeopleRapUtils.refreshFormCombo(statusCmb, task,
-							PeopleNames.PEOPLE_TASK_STATUS);
+					refreshStatusCombo(statusCmb, task);
+
 					dueDateCmp.refresh();
 					wakeUpDateCmp.refresh();
 					// update current assigned to group cache here
@@ -176,7 +185,8 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		// Label label =
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Related entities");
 		relatedCmp = new LinkListPart(toolkit, myFormPart, parent,
-				SWT.NO_FOCUS, peopleWorkbenchService, task, PEOPLE_RELATED_TO);
+				SWT.NO_FOCUS, peopleWorkbenchService, task, PEOPLE_RELATED_TO,
+				hiddenItemIds);
 		relatedCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
 
 		// Title
@@ -197,9 +207,6 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		// 1st line (NOTE: it defines the grid data layout of this part)
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Status");
 		statusCmb = new Combo(parent, SWT.READ_ONLY);
-		List<String> values = resourceService.getTemplateCatalogue(session,
-				taskTypeId, PeopleNames.PEOPLE_TASK_STATUS, null);
-		statusCmb.setItems(values.toArray(new String[values.size()]));
 		statusCmb
 				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
 
@@ -223,7 +230,8 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		// RELATED ENTITIES
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Related entities");
 		relatedCmp = new LinkListPart(toolkit, myFormPart, parent,
-				SWT.NO_FOCUS, peopleWorkbenchService, task, PEOPLE_RELATED_TO);
+				SWT.NO_FOCUS, peopleWorkbenchService, task, PEOPLE_RELATED_TO,
+				hiddenItemIds);
 		relatedCmp.setLayoutData(PeopleUiUtils.horizontalFillData(3));
 		relatedCmp.layout();
 
@@ -289,7 +297,8 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 	}
 
 	// HELPERS
-	private void addStatusCmbSelListener(final AbstractFormPart part,
+	/** Override this to add specific behaviour on status change */
+	protected void addStatusCmbSelListener(final AbstractFormPart part,
 			final Combo combo, final Node entity, final String propName,
 			final int propType) {
 		combo.addSelectionListener(new SelectionAdapter() {
@@ -307,6 +316,16 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 
 			}
 		});
+	}
+
+	/** Override this to add specific rights for status change */
+	protected void refreshStatusCombo(Combo combo, Node currTask) {
+		List<String> values = resourceService.getTemplateCatalogue(session,
+				taskTypeId, PeopleNames.PEOPLE_TASK_STATUS, null);
+		combo.setItems(values.toArray(new String[values.size()]));
+		PeopleRapUtils.refreshFormCombo(combo, currTask,
+				PeopleNames.PEOPLE_TASK_STATUS);
+		combo.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(currTask));
 	}
 
 	private void addChangeAssignListener() {
