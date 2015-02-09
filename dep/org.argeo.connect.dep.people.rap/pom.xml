@@ -49,6 +49,5 @@
 			<artifactId>argeo-tp-extras</artifactId>
 			<version>${version.argeo-tp-extras}</version>
 		</dependency>
-
 	</dependencies>
 </project>
