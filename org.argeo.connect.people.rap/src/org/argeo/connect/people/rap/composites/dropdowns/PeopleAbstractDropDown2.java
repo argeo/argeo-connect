@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
-public abstract class PeopleAbstractDropDown {
+public abstract class PeopleAbstractDropDown2 {
 
 	private final Text text;
 	private final DropDown dropDown;
@@ -25,7 +25,7 @@ public abstract class PeopleAbstractDropDown {
 	private String[] values;
 
 	// Implementers should call refreshValues() once init has been done.
-	public PeopleAbstractDropDown(Text text) {
+	public PeopleAbstractDropDown2(Text text) {
 		dropDown = new DropDown(text);
 		dropDown.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		this.text = text;
@@ -61,10 +61,10 @@ public abstract class PeopleAbstractDropDown {
 		List<String> filteredValues = getFilteredValues(text.getText());
 		values = filteredValues.toArray(new String[filteredValues.size()]);
 		dropDown.setItems(values);
-		// if (!modifyFromList)
-		// // Force show on focus in
-		// // FIXME LEGACY METHOD THAT HAS BEEN REMOVED
-		// dropDown.setVisible(true);
+		if (!modifyFromList)
+			// Force show on focus in
+			// FIXME LEGACY METHOD THAT HAS BEEN REMOVED
+			dropDown.setVisible(true);
 
 	}
 
@@ -135,7 +135,6 @@ public abstract class PeopleAbstractDropDown {
 
 			public void handleEvent(Event event) {
 				if (!modifyFromList) {
-					userText = text.getText();
 					refreshValues();
 					if (values.length == 1) {
 						dropDown.setSelectionIndex(0);
@@ -145,4 +144,81 @@ public abstract class PeopleAbstractDropDown {
 			}
 		});
 	}
+
+	// text.addFocusListener(new FocusListener() {
+	// private static final long serialVersionUID = 1L;
+	//
+	// // TODO clean this, it is not the best way to force display of
+	// // the list when the text is empty, and has some weird side
+	// // effects.
+	// @Override
+	// public void focusLost(FocusEvent event) {
+	// }
+	//
+	// @Override
+	// public void focusGained(FocusEvent event) {
+	// // Force show on focus in
+	// // FIXME LEGACY METHOD THAT HAS BEEN REMOVED
+	// dropDown.setVisible(true);
+	// }
+	// });
+	//
+	// text.addModifyListener(new ModifyListener() {
+	// private static final long serialVersionUID = 1L;
+	//
+	// @Override
+	// public void modifyText(ModifyEvent event) {
+	// // Avoid reducing suggestion while browsing them
+	// if (!modifyFromList) {
+	// refreshValues();
+	// }
+	// }
+	// });
+	//
+	// // text.addListener(SWT.Traverse, new DDReturnListener());
+	// // dropDown.addListener(SWT.CANCEL, new AllEventsListener());
+	// // dropDown.addListener(SWT.CLOSE, new AllEventsListener());
+	// // dropDown.addListener(SWT.CR, new AllEventsListener());
+	// // dropDown.addListener(SWT.Selection, new AllEventsListener());
+	// dropDown.addListener(SWT.Selection, new DDSelectionListener());
+	// dropDown.addListener(SWT.DefaultSelection, new DDSelectionListener());
+	// }
+
+	//
+	// private class AllEventsListener implements Listener {
+	// private static final long serialVersionUID = 1L;
+	//
+	// @Override
+	// public void handleEvent(Event event) {
+	// System.out.println("Event received: " + event.type);
+	// }
+	// }
+
+	// private class DDReturnListener implements Listener {
+	// private static final long serialVersionUID = 1L;
+	//
+	// @Override
+	// public void handleEvent(Event event) {
+	// event.doit = false;
+	// System.out.println("RETURN HIT");
+	// }
+	// }
+
+	// private class DDSelectionListener implements Listener {
+	// private static final long serialVersionUID = 1L;
+	//
+	// @Override
+	// public void handleEvent(Event event) {
+	//
+	// modifyFromList = true;
+	// int index = dropDown.getSelectionIndex();
+	// if (index != -1 && index < values.length)
+	// text.setText(values[index]);
+	// modifyFromList = false;
+	// if (event.type == SWT.DefaultSelection)
+	// KeyboardFocusManager.getCurrentKeyboardFocusManager()
+	// .focusNextComponent();
+	// // event.doit = false;
+	// }
+	// }
 }

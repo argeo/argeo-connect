@@ -16,6 +16,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
@@ -24,7 +25,6 @@ import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.rap.wizards.TagOrUntagInstancesWizard;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -392,10 +392,9 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	protected Text createBoldLT(Composite parent, String title, String message,
 			String tooltip, int colspan) {
-		createBoldLabel(parent, title);
+		PeopleRapUtils.createBoldLabel(parent, title);
 		Text text = new Text(parent, SWT.BOTTOM | SWT.BORDER);
-		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
-				colspan, 1));
+		text.setLayoutData(PeopleUiUtils.fillGridData(colspan));
 		text.setMessage(message);
 		text.setToolTipText(tooltip);
 		return text;
@@ -410,14 +409,6 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		dateTime.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
 		dateTime.setToolTipText(tooltip);
 		return dateTime;
-	}
-
-	protected Label createBoldLabel(Composite parent, String title) {
-		Label label = new Label(parent, SWT.RIGHT);
-		label.setText(title);
-		label.setFont(EclipseUiUtils.getBoldFont(parent));
-		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-		return label;
 	}
 
 	// Compulsory unused methods

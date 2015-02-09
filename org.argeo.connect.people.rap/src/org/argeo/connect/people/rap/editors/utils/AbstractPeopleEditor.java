@@ -501,7 +501,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	@Override
 	public boolean isDirty() {
 		try {
-			return session.hasPendingChanges();
+			boolean isDirty = session.hasPendingChanges();
+			return isDirty;
 		} catch (Exception e) {
 			throw new PeopleException("Error getting session status.", e);
 		}
