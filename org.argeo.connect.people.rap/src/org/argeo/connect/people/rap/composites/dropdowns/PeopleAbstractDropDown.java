@@ -4,7 +4,7 @@ import java.awt.KeyboardFocusManager;
 import java.util.List;
 
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.eclipse.rap.addons.dropdown.DropDown;
+import org.eclipse.rap.rwt.widgets.DropDown;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -58,7 +58,8 @@ public abstract class PeopleAbstractDropDown {
 		values = filteredValues.toArray(new String[filteredValues.size()]);
 		dropDown.setItems(values);
 		if (!modifyFromList)
-			dropDown.show();
+			;
+			//dropDown.show();
 	}
 
 	protected void addListeners() {
@@ -75,7 +76,8 @@ public abstract class PeopleAbstractDropDown {
 			@Override
 			public void focusGained(FocusEvent event) {
 				// Force show on focus in
-				dropDown.show();
+				// FIXME LEGACY METHOD THAT HAS BEEN REMOVED 
+				//dropDown.show();
 			}
 		});
 
