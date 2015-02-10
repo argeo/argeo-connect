@@ -78,7 +78,7 @@ public class ActivityList extends Composite {
 	}
 
 	private void populate(IManagedForm form, Composite parent) {
-		parent.setLayout(new GridLayout());
+		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		try {
 			Composite addCmp = null;
 			if (peopleService.getUserManagementService().isUserInRole(
@@ -123,9 +123,9 @@ public class ActivityList extends Composite {
 			final MyActivityTableCmp activityTable) {
 		// The Add Activity bar
 		addActivityBar.setLayoutData(PeopleUiUtils.horizontalFillData());
-		GridLayout gl = new GridLayout(7, false);
-		gl.marginHeight = gl.marginWidth = 0;
-		addActivityBar.setLayout(gl);
+		// GridLayout gl = new GridLayout(7, false);
+		// gl.marginHeight = gl.marginWidth = 0;
+		addActivityBar.setLayout(new GridLayout(7, false));
 
 		// Activity type
 		final Combo typeCmb = new Combo(addActivityBar, SWT.NONE

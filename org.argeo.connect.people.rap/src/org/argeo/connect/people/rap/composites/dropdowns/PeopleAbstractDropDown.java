@@ -13,7 +13,10 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
-/** Canonical implementation of a dropdown with listeners configured */
+/**
+ * Enable easy addition of a {@code DropDown} widget to a text with listeners
+ * configured
+ */
 public abstract class PeopleAbstractDropDown {
 
 	private final Text text;
@@ -129,7 +132,8 @@ public abstract class PeopleAbstractDropDown {
 
 			public void focusLost(FocusEvent event) {
 				dropDown.setVisible(false);
-				if (readOnly && values != null && !Arrays.asList(values).contains(userText)) {
+				if (readOnly && values != null
+						&& !Arrays.asList(values).contains(userText)) {
 					modifyFromList = true;
 					text.setText("");
 					refreshValues();
