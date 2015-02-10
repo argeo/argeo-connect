@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
+/** Canonical implementation of a dropdown with listeners configured */
 public abstract class PeopleAbstractDropDown {
 
 	private final Text text;
@@ -24,12 +25,55 @@ public abstract class PeopleAbstractDropDown {
 	// Current displayed list items
 	private String[] values;
 
-	// Implementers should call refreshValues() once init has been done.
+	// Fine tuning
+	boolean readOnly;
+	boolean refreshOnFocus;
+
+	/** Implementers should call refreshValues() once init has been done. */
 	public PeopleAbstractDropDown(Text text) {
+		this(text, SWT.NONE, false);
+	}
+
+	/**
+	 * Implementers should call refreshValues() once init has been done.
+	 * 
+	 * @param text
+	 * @param style
+	 *            only SWT.READ_ONLY is understood, check if the entered text is
+	 *            part of the legal choices.
+	 */
+	public PeopleAbstractDropDown(Text text, int style) {
+		this(text, style, false);
+	}
+
+	/**
+	 * Implementers should call refreshValues() once init has been done.
+	 * 
+	 * @param text
+	 * @param style
+	 *            only SWT.READ_ONLY is understood, check if the entered text is
+	 *            part of the legal choices.
+	 * @param refreshOnFocus
+	 *            if true, the possible values are computed each time the focus
+	 *            is gained. It enables, among other to fine tune the
+	 *            getFilteredValues method depending on the current context
+	 */
+	public PeopleAbstractDropDown(Text text, int style, boolean refreshOnFocus) {
+		this.text = text;
 		dropDown = new DropDown(text);
 		dropDown.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		this.text = text;
+
+		readOnly = (style & SWT.READ_ONLY) != 0;
+		this.refreshOnFocus = refreshOnFocus;
 		addListeners();
+	}
+
+	/**
+	 * Overwrite to force the refresh of the possible values on focus gained
+	 * event
+	 */
+	protected boolean refreshOnFocus() {
+		return false;
 	}
 
 	public String getText() {
@@ -61,11 +105,6 @@ public abstract class PeopleAbstractDropDown {
 		List<String> filteredValues = getFilteredValues(text.getText());
 		values = filteredValues.toArray(new String[filteredValues.size()]);
 		dropDown.setItems(values);
-		// if (!modifyFromList)
-		// // Force show on focus in
-		// // FIXME LEGACY METHOD THAT HAS BEEN REMOVED
-		// dropDown.setVisible(true);
-
 	}
 
 	protected void addListeners() {
@@ -73,20 +112,24 @@ public abstract class PeopleAbstractDropDown {
 		addSelectionListener();
 		addDefaultSelectionListener();
 		addFocusListener();
-
 	}
 
-	private void addFocusListener() {
+	protected void addFocusListener() {
 		text.addFocusListener(new FocusListener() {
 			private static final long serialVersionUID = -7179112097626535946L;
 
 			public void focusGained(FocusEvent event) {
+				if (refreshOnFocus) {
+					modifyFromList = true;
+					refreshValues();
+					modifyFromList = false;
+				}
 				dropDown.setVisible(true);
 			}
 
 			public void focusLost(FocusEvent event) {
 				dropDown.setVisible(false);
-				if (!Arrays.asList(values).contains(userText)) {
+				if (readOnly && values != null && !Arrays.asList(values).contains(userText)) {
 					modifyFromList = true;
 					text.setText("");
 					refreshValues();
