@@ -32,8 +32,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * A text composite for dialogs to request end user for a date using a text and
- * a calendar popup
+ * A text composite to request end user for a date using a text and a calendar
+ * popup
  * */
 public class DateText extends Composite {
 	private static final long serialVersionUID = 7651166365139278532L;
@@ -64,6 +64,16 @@ public class DateText extends Composite {
 		return calendar;
 	}
 
+	/** Enable setting a custom tooltip on the underlyting text */
+	public void setToolTipText(String toolTipText) {
+		dateTxt.setToolTipText(toolTipText);
+	}
+
+	/** Enable setting a custom message on the underlying text */
+	public void setMessage(String message) {
+		dateTxt.setMessage(message);
+	}
+
 	private void populate(Composite dateComposite) {
 		GridLayout gl = PeopleUiUtils.noSpaceGridLayout(2);
 		gl.horizontalSpacing = 5;
@@ -71,7 +81,7 @@ public class DateText extends Composite {
 		dateTxt = new Text(dateComposite, SWT.BORDER);
 		dateTxt.setData(RWT.CUSTOM_VARIANT,
 				PeopleRapConstants.PEOPLE_CLASS_FORCE_BORDER);
-		dateTxt.setLayoutData(new GridData(150, SWT.DEFAULT));
+		dateTxt.setLayoutData(new GridData(80, SWT.DEFAULT));
 		dateTxt.setToolTipText("Enter a date with form \""
 				+ PeopleUiConstants.DEFAULT_SHORT_DATE_FORMAT
 				+ "\" or use the calendar");
@@ -98,14 +108,19 @@ public class DateText extends Composite {
 			@Override
 			public void focusLost(FocusEvent event) {
 				String newVal = dateTxt.getText();
-				try {
-					Calendar newCal = parseDate(newVal);
-					DateText.this.setText(newCal);
-					calendar = newCal;
-				} catch (ParseException pe) {
-					// Silent. Manage error popup?
-					if (calendar != null)
-						DateText.this.setText(calendar);
+				// Enable reset of the field
+				if (CommonsJcrUtils.isEmptyString(newVal))
+					calendar = null;
+				else {
+					try {
+						Calendar newCal = parseDate(newVal);
+						// DateText.this.setText(newCal);
+						calendar = newCal;
+					} catch (ParseException pe) {
+						// Silent. Manage error popup?
+						if (calendar != null)
+							DateText.this.setText(calendar);
+					}
 				}
 			}
 
@@ -140,6 +155,9 @@ public class DateText extends Composite {
 		public CalendarPopup(Control source) {
 			super(source.getDisplay(), SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
 			populate();
+			// Add border and shadow style
+			CalendarPopup.this.setData(RWT.CUSTOM_VARIANT,
+					PeopleRapConstants.PEOPLE_CLASS_POPUP_SHELL);
 			pack();
 			layout();
 			setLocation(source.toDisplay((source.getLocation().x - 2),
@@ -153,7 +171,6 @@ public class DateText extends Composite {
 					close();
 					dispose();
 				}
-
 			});
 			open();
 		}

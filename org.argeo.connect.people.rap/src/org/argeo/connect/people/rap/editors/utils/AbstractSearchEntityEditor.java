@@ -18,6 +18,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.rap.composites.DateText;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
@@ -42,8 +43,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DateTime;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
@@ -400,15 +399,27 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		return text;
 	}
 
-	protected DateTime createLDT(Composite parent, String title, String tooltip) {
-		Label label = new Label(parent, SWT.RIGHT);
-		label.setText(title);
-		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-		DateTime dateTime = new DateTime(parent, SWT.RIGHT | SWT.DATE
-				| SWT.MEDIUM | SWT.DROP_DOWN);
-		dateTime.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
-		dateTime.setToolTipText(tooltip);
-		return dateTime;
+	// protected DateTime createLDT(Composite parent, String title, String
+	// tooltip) {
+	// Label label = new Label(parent, SWT.RIGHT);
+	// label.setText(title);
+	// label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+	// DateTime dateTime = new DateTime(parent, SWT.RIGHT | SWT.DATE
+	// | SWT.MEDIUM | SWT.DROP_DOWN);
+	// dateTime.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
+	// dateTime.setToolTipText(tooltip);
+	// return dateTime;
+	// }
+
+	protected DateText createLD(Composite parent, String title, String tooltip) {
+		// Label label = new Label(parent, SWT.RIGHT);
+		// label.setText(title);
+		// label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
+		// false));
+		DateText dateText = new DateText(parent, SWT.NO_FOCUS);
+		dateText.setToolTipText(tooltip);
+		dateText.setMessage(title);
+		return dateText;
 	}
 
 	// Compulsory unused methods

@@ -66,8 +66,6 @@ public class NewSimpleTaskWizard extends Wizard {
 	// This page widgets
 	protected Text titleTxt;
 	protected Text descTxt;
-	// private DateTime dueDateDt;
-	// private DateTime wakeUpDateDt;
 
 	private DateText dueDateCmp;
 	private DateText wakeUpDateCmp;
@@ -197,17 +195,10 @@ public class NewSimpleTaskWizard extends Wizard {
 			// DUE DATE
 			PeopleRapUtils.createBoldLabel(parent, "Due date");
 			dueDateCmp = new DateText(parent, SWT.NO_FOCUS);
-			// dueDateDt = new DateTime(parent, SWT.DATE | SWT.MEDIUM
-			// | SWT.DROP_DOWN);
-			// dueDateDt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false,
-			// false));
 
 			// WAKE UP DATE
 			PeopleRapUtils.createBoldLabel(parent, "Wake up date");
 			wakeUpDateCmp = new DateText(parent, SWT.NO_FOCUS);
-
-			// wakeUpDateDt = new DateTime(parent, SWT.DATE | SWT.MEDIUM
-			// | SWT.DROP_DOWN);
 
 			// DESCRIPTION
 			Label label = new Label(parent, SWT.RIGHT | SWT.TOP);

@@ -98,7 +98,6 @@ public class DateTextPart extends Composite {
 			if (node.hasProperty(propName))
 				cal = node.getProperty(propName).getDate();
 			boolean isEditing = CommonsJcrUtils.isNodeCheckedOutByMe(node);
-			// dateTxt.setEditable(isEditing);
 			dateTxt.setEnabled(isEditing);
 			openCalBtn.setEnabled(isEditing);
 		} catch (RepositoryException e) {
@@ -198,6 +197,11 @@ public class DateTextPart extends Composite {
 			currCal = parseDate(false);
 
 			populate();
+			
+			// Add border and shadow style
+			CalendarPopup.this.setData(RWT.CUSTOM_VARIANT,
+					PeopleRapConstants.PEOPLE_CLASS_POPUP_SHELL);
+			
 			pack();
 			layout();
 			setLocation(source.toDisplay((source.getLocation().x - 2),
