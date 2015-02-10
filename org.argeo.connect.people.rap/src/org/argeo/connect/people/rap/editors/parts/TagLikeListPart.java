@@ -117,7 +117,7 @@ public class TagLikeListPart extends Composite {
 		Composite parent = this;
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = true;
-		rl.marginHeight = rl.marginLeft = 0;
+		rl.marginLeft = rl.marginTop = rl.marginBottom = 0;
 		rl.marginRight = 8;
 		parent.setLayout(rl);
 
@@ -189,18 +189,20 @@ public class TagLikeListPart extends Composite {
 						link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 						if (taggablePropName.equals(PeopleNames.PEOPLE_TAGS)) {
 							link.setText(" #<a>" + tagValue + "</a>");
-							link.setData(
-									RWT.CUSTOM_VARIANT,
-									PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
+//							link.setData(
+//									RWT.CUSTOM_VARIANT,
+//									PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
 						} else if (taggablePropName
 								.equals(PeopleNames.PEOPLE_MAILING_LISTS)) {
 							link.setText(" @<a>" + tagValue + "</a>");
-							link.setData(
-									RWT.CUSTOM_VARIANT,
-									PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
+//							link.setData(
+//									RWT.CUSTOM_VARIANT,
+//									PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
 						} else
 							link.setText(" <a>" + tagValue + "</a>");
-
+						link.setData(
+								RWT.CUSTOM_VARIANT,
+								PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
 						link.addSelectionListener(new SelectionAdapter() {
 							private static final long serialVersionUID = 1L;
 

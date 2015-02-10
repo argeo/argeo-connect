@@ -316,13 +316,11 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 				PeopleService peopleService, Node taginstance,
 				Row[] toUpdateRows, String selectorName, String tagPropName) {
 			super("Updating");
-			// Must be called *before* the job is scheduled so that a progress
-			// window appears.
-			// setUser(true);
-			this.display = display;
 
+			this.display = display;
 			this.actionType = actionType;
 			this.tagPropName = tagPropName;
+			
 			try {
 				this.tagPath = tagInstance.getPath();
 				repository = tagInstance.getSession().getRepository();

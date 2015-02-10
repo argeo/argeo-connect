@@ -69,7 +69,7 @@ public class TagLikeListSmallPart extends Composite {
 	private final Node tagParent;
 	private final String tagId;
 	private String tagCodePropName = null;
-	private String cssStyle;
+	private String cssStyle = PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER;
 	private final String taggablePropName;
 
 	// Deduced from the context, shortcut for this class
@@ -118,10 +118,6 @@ public class TagLikeListSmallPart extends Composite {
 			throw new PeopleException("unable to get tag prop name for "
 					+ tagParent, e);
 		}
-
-		// TODO clean this
-		cssStyle = PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER;
-
 		populate();
 	}
 
@@ -130,7 +126,7 @@ public class TagLikeListSmallPart extends Composite {
 		Composite parent = this;
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = true;
-		rl.marginHeight = rl.marginLeft = 0;
+		rl.marginLeft = rl.marginTop = rl.marginBottom = 0;
 		rl.marginRight = 8;
 		parent.setLayout(rl);
 
@@ -216,17 +212,17 @@ public class TagLikeListSmallPart extends Composite {
 								SWT.NO_FOCUS);
 						tagCmp.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 						Link link = new Link(tagCmp, SWT.NONE);
-
 						link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+
 						if (taggablePropName.equals(PeopleNames.PEOPLE_TAGS)) {
 							link.setText(" #<a>" + tagValue + "</a>");
-							link.setData(RWT.CUSTOM_VARIANT, cssStyle);
 						} else if (taggablePropName
 								.equals(PeopleNames.PEOPLE_MAILING_LISTS)) {
 							link.setText(" @<a>" + tagValue + "</a>");
-							link.setData(RWT.CUSTOM_VARIANT, cssStyle);
 						} else
 							link.setText(" <a>" + tagValue + "</a>");
+
+						link.setData(RWT.CUSTOM_VARIANT, cssStyle);
 
 						link.addSelectionListener(new SelectionAdapter() {
 							private static final long serialVersionUID = 1L;

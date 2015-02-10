@@ -45,11 +45,9 @@ public class LinkListPart extends Composite implements PeopleNames {
 	private final String propName;
 	private final List<String> hiddenItemIds = new ArrayList<String>();
 
-	
 	// UI Context
 	private final AbstractFormPart formPart;
 	private final FormToolkit toolkit;
-
 
 	// COMPOSITES
 	private static final String VALUE_KEY = "valueKey";
@@ -72,8 +70,8 @@ public class LinkListPart extends Composite implements PeopleNames {
 				propName, null);
 	}
 
-	/** Will prevent display of linked entities whose id is passed in the list */
 	/**
+	 * Will prevent display of linked entities whose id is passed in the list
 	 * 
 	 * @param toolkit
 	 * @param formPart
@@ -164,6 +162,9 @@ public class LinkListPart extends Composite implements PeopleNames {
 		Link relatedLk = new Link(part, SWT.LEFT);
 		toolkit.adapt(relatedLk, false, false);
 		relatedLk.setText("<a>" + label + "</a>");
+		relatedLk.setData(RWT.CUSTOM_VARIANT,
+				PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
+
 		relatedLk.addSelectionListener(new OpenEditorAdapter(value));
 		relatedLk.setLayoutData(linkFormData(isEditing));
 

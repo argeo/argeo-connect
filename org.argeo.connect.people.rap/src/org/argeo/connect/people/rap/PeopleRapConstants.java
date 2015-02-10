@@ -52,6 +52,7 @@ public interface PeopleRapConstants {
 	public final static String PEOPLE_CLASS_GADGET = "people_gadget";
 	public final static String PEOPLE_CLASS_GADGET_HEADER = "people_gadget_header";
 	public final static String PEOPLE_CLASS_FLAT_BTN = "people_flat_btn";
+	public final static String PEOPLE_CLASS_SMALL_TEXT = "people_small_text";
 	public final static String PEOPLE_CLASS_POPUP_SHELL = "people_popup_shell";
 	// Overwrite normal behaviour:
 	// show the border of a text even when the text is disabled.
