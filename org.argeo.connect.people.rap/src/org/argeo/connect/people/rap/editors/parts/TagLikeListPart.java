@@ -187,21 +187,15 @@ public class TagLikeListPart extends Composite {
 						Link link = new Link(tagCmp, SWT.NONE);
 
 						link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-						if (taggablePropName.equals(PeopleNames.PEOPLE_TAGS)) {
+						if (taggablePropName.equals(PeopleNames.PEOPLE_TAGS))
 							link.setText(" #<a>" + tagValue + "</a>");
-//							link.setData(
-//									RWT.CUSTOM_VARIANT,
-//									PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
-						} else if (taggablePropName
-								.equals(PeopleNames.PEOPLE_MAILING_LISTS)) {
+						else if (taggablePropName
+								.equals(PeopleNames.PEOPLE_MAILING_LISTS))
 							link.setText(" @<a>" + tagValue + "</a>");
-//							link.setData(
-//									RWT.CUSTOM_VARIANT,
-//									PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
-						} else
+						else
 							link.setText(" <a>" + tagValue + "</a>");
-						link.setData(
-								RWT.CUSTOM_VARIANT,
+
+						link.setData(RWT.CUSTOM_VARIANT,
 								PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
 						link.addSelectionListener(new SelectionAdapter() {
 							private static final long serialVersionUID = 1L;

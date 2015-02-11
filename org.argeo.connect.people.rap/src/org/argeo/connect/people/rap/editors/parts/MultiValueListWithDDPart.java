@@ -24,6 +24,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -53,8 +54,8 @@ public abstract class MultiValueListWithDDPart extends Composite {
 
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = true;
-		rl.marginLeft = 5;
-		rl.marginRight = 0;
+		rl.marginLeft = rl.marginBottom = rl.marginTop = 0;
+		rl.marginRight = 5;
 
 		this.setLayout(rl);
 		refresh();
@@ -93,7 +94,11 @@ public abstract class MultiValueListWithDDPart extends Composite {
 			if (node.hasProperty(propertyName)) {
 				Value[] values = node.getProperty(propertyName).getValues();
 				for (final Value value : values) {
-					toolkit.createLabel(parent, value.getString());
+					Label label = toolkit
+							.createLabel(parent, value.getString());
+					label.setData(RWT.CUSTOM_VARIANT,
+							PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
+					label.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 					Button deleteBtn = createDeleteButton(parent);
 					deleteBtn.addSelectionListener(getDeleteBtnListener(value
 							.getString()));
@@ -106,7 +111,7 @@ public abstract class MultiValueListWithDDPart extends Composite {
 			tagTxt.setLayoutData(rd);
 
 			final PeopleAbstractDropDown addValueDD = new AddValueDD(tagTxt,
-					SWT.READ_ONLY);
+					SWT.READ_ONLY, true);
 
 			tagTxt.addTraverseListener(new TraverseListener() {
 				private static final long serialVersionUID = 1L;
@@ -173,8 +178,8 @@ public abstract class MultiValueListWithDDPart extends Composite {
 
 	private class AddValueDD extends PeopleAbstractDropDown {
 
-		public AddValueDD(Text text, int style) {
-			super(text, style);
+		public AddValueDD(Text text, int style, boolean refreshOnFocus) {
+			super(text, style, refreshOnFocus);
 		}
 
 		@Override
