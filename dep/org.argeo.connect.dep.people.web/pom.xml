@@ -10,11 +10,12 @@
 	<name>Connect People Backend CMS Dependencies</name>
 	<dependencies>
 		<!-- Connect People -->
-		<dependency>
+		<!--  FIXME uncomment once it is fixed -->
+		<!--  		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.people.web</artifactId>
-			<version>2.1.15-SNAPSHOT</version>
-		</dependency>
+			<version>2.1.15-SNAPSHOT</version>			
+		</dependency>-->
 
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
