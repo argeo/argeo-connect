@@ -30,6 +30,7 @@ import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 // Add refresh ability to a basic composite
+@Deprecated
 public class TemplateCatalogueWithPickUpPart extends Composite {
 
 	private static final long serialVersionUID = 1L;
