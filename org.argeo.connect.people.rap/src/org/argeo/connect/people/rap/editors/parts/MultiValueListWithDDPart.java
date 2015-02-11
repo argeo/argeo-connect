@@ -10,6 +10,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.composites.dropdowns.PeopleAbstractDropDown;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.rap.rwt.RWT;
@@ -19,6 +20,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -43,21 +46,17 @@ public abstract class MultiValueListWithDDPart extends Composite {
 
 	private Node node;
 	private String propertyName;
+	private String addMsg;
 
 	public MultiValueListWithDDPart(FormToolkit toolkit, AbstractFormPart part,
-			Composite parent, int style, Node node, String propertyName) {
+			Composite parent, int style, Node node, String propertyName,
+			String addMsg) {
 		super(parent, style);
 		this.toolkit = toolkit;
 		this.part = part;
 		this.node = node;
 		this.propertyName = propertyName;
-
-		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
-		rl.wrap = true;
-		rl.marginLeft = rl.marginBottom = rl.marginTop = 0;
-		rl.marginRight = 5;
-
-		this.setLayout(rl);
+		this.addMsg = addMsg;
 		refresh();
 	}
 
@@ -86,27 +85,45 @@ public abstract class MultiValueListWithDDPart extends Composite {
 
 	public void refresh() {
 		Composite parent = this;
+
+		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
+		rl.wrap = true;
+		rl.marginLeft = rl.marginBottom = rl.marginTop = 0;
+		rl.marginRight = 8;
+
+		this.setLayout(rl);
+
 		// TODO Add a check to see if the property has changed
 		Control[] oldChildren = parent.getChildren();
 		for (Control child : oldChildren)
 			child.dispose();
+
 		try {
 			if (node.hasProperty(propertyName)) {
 				Value[] values = node.getProperty(propertyName).getValues();
 				for (final Value value : values) {
-					Label label = toolkit
-							.createLabel(parent, value.getString());
+					// Workaround the fact that row layout elements are top
+					// aligned
+					Composite valCmp = toolkit.createComposite(parent,
+							SWT.NO_FOCUS);
+					GridLayout gl = PeopleUiUtils.noSpaceGridLayout(2);
+					gl.marginTop = 2;
+					valCmp.setLayout(gl);
+
+					// Label and delete button
+					Label label = new Label(valCmp, SWT.BOTTOM);
+					label.setText(value.getString());
 					label.setData(RWT.CUSTOM_VARIANT,
 							PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
 					label.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-					Button deleteBtn = createDeleteButton(parent);
+					Button deleteBtn = createDeleteButton(valCmp);
 					deleteBtn.addSelectionListener(getDeleteBtnListener(value
 							.getString()));
 				}
 			}
 
 			final Text tagTxt = toolkit.createText(parent, "", SWT.BORDER);
-			tagTxt.setMessage("Add...");
+			tagTxt.setMessage(addMsg);
 			RowData rd = new RowData(80, SWT.DEFAULT);
 			tagTxt.setLayoutData(rd);
 
@@ -123,13 +140,14 @@ public abstract class MultiValueListWithDDPart extends Composite {
 					}
 				}
 			});
-			// we must call this so that the row data can compute the OK
-			// button size.
+			// we must call this so that the row data can compute the height of
+			// other controls.
 			tagTxt.getParent().layout();
+			int height = tagTxt.getSize().y;
 
 			Button okBtn = toolkit.createButton(parent, "OK", SWT.BORDER
 					| SWT.PUSH | SWT.BOTTOM);
-			rd = new RowData(SWT.DEFAULT, tagTxt.getSize().y - 2);
+			rd = new RowData(SWT.DEFAULT, height - 2);
 			okBtn.setLayoutData(rd);
 
 			okBtn.addSelectionListener(new SelectionAdapter() {
@@ -155,10 +173,8 @@ public abstract class MultiValueListWithDDPart extends Composite {
 		button.setData(RWT.CUSTOM_VARIANT,
 				PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 		button.setImage(PeopleRapImages.DELETE_BTN);
-		RowData rd = new RowData();
-		rd.height = 16;
-		rd.width = 16;
-		button.setLayoutData(rd);
+		GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		button.setLayoutData(gd);
 		return button;
 	}
 
