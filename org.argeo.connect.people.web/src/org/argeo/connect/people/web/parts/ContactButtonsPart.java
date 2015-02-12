@@ -40,7 +40,7 @@ public class ContactButtonsPart implements CmsUiProvider {
 	private Button createCategoryButton(Composite parent, Node context)
 			throws RepositoryException {
 		Button btn = new Button(parent, SWT.NONE);
-		btn.setLayoutData(CmsUtils.ROW_DATA_16px);
+		btn.setLayoutData(CmsUtils.rowData16px());
 		btn.setData(RWT.CUSTOM_VARIANT, getCssStyle(context));
 		return btn;
 	}
@@ -101,7 +101,7 @@ public class ContactButtonsPart implements CmsUiProvider {
 	@SuppressWarnings("unused")
 	private Button createDeleteButton(Composite parent, Node context) {
 		Button btn = new Button(parent, SWT.NONE);
-		btn.setLayoutData(CmsUtils.ROW_DATA_16px);
+		btn.setLayoutData(CmsUtils.rowData16px());
 		btn.setData(RWT.CUSTOM_VARIANT, "cms_icon_delete");
 		return btn;
 	}
@@ -109,7 +109,7 @@ public class ContactButtonsPart implements CmsUiProvider {
 	private Button createPrimaryButton(Composite parent, Node context)
 			throws RepositoryException {
 		Button btn = new Button(parent, SWT.NONE);
-		btn.setLayoutData(CmsUtils.ROW_DATA_16px);
+		btn.setLayoutData(CmsUtils.rowData16px());
 		// update image
 		boolean isPrimary = PeopleJcrUtils.isPrimary(context.getParent()
 				.getParent(), context);

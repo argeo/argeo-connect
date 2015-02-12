@@ -1,10 +1,10 @@
 Bundle-SymbolicName: org.argeo.connect.people.rap;singleton:=true
 Bundle-Activator: org.argeo.connect.people.rap.PeopleRapPlugin
 Require-Bundle: org.eclipse.rap.ui,\
- org.eclipse.rap.ui.workbench
+org.eclipse.rap.ui.workbench
 Import-Package:*,\
-	org.argeo.connect.people,\
-	org.argeo.eclipse.spring,\
-	org.springframework.dao,\
-	org.springframework.core
+org.argeo.connect.people,\
+org.argeo.eclipse.spring,\
+org.springframework.dao,\
+org.springframework.core
 

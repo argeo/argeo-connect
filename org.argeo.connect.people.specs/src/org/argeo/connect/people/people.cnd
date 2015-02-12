@@ -1,7 +1,3 @@
-/// NOTES AND TIPS 
-// Adding "nofulltext" tag to a property enable its removal from the full text search mechanism
-
-
 <people = 'http://www.argeo.org/ns/people'>
 
 //
@@ -10,7 +6,7 @@
 [people:base] > nt:unstructured, mix:versionable, mix:created, mix:lastModified, mix:title
 
 //
-// ENTITY TYPE: it is the parent of all people CRM business types.
+// ENTITY TYPE: it is the parent of all people business types.
 //
 [people:entity] > people:base
 - people:uid (String) m nofulltext // An implementation dependent UID for each entity
@@ -22,8 +18,8 @@
 [people:externalId] > nt:unstructured, mix:title
 //- people:source (URI) // an optional URI
 - people:sourceId (String) nofulltext // The external source ID, this must be cleanly handled in a later version
-- people:externalUid (String) nofulltext // This entity unique ID in the external system
-// Might be the FN value of a vCard
+- people:externalUid (String) nofulltext // This entity's unique ID in the external system
+										 // Might be the FN value of a vCard
 
 //
 // PERSON
@@ -73,7 +69,7 @@
 - people:vatIdNb (STRING)
 // Departments or organisational units
 + * (people:org) *
-// tag like multivalued properties to add an organisation to a given branch
+// tag like multi-valued properties to add an organisation to a given branch
 // - people:orgBranches (STRING) *
 // Subnode for all bank accounts owned by this org
 + people:paymentAccounts (nt:unstructured)
@@ -110,7 +106,7 @@
 
 // The job or position of a person in an organisation
 [people:job] > people:position
-- people:refUid (STRING) nofulltext // ONLY an organisation //was mandatory m 
+- people:refUid (STRING) nofulltext // ONLY an organisation
 - people:department (STRING) // An optional department within the org corresponding to the current position
 
 
@@ -223,7 +219,7 @@ mixin
 								// if not present, then we use the JCR_TITLE that is the name and the label at the same time
 
 // The 3 below properties enable to narrow the taggable part of the whole repo and
-// thus fasten the requests, among others
+// thus, among others, fasten the requests, 
 - people:taggablePropNames (STRING) * // Names of the multi value property of the taggable node in which the corresponding tag is stored
 // Should also the 2 below property be multiple ?
 - people:taggableParentPath (STRING) // Absolute path to parent of the taggable nodes
@@ -233,7 +229,7 @@ mixin
 [people:tagInstance] > nt:unstructured, mix:title
 
 [people:encodedTagInstance] > nt:unstructured, mix:title
-- people:code (STRING) // m??? 
+- people:code (STRING) 
 
 
 // MAILING LIST 

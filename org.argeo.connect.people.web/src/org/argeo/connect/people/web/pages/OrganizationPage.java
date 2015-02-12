@@ -104,7 +104,8 @@ public class OrganizationPage implements CmsUiProvider {
 
 		final Label readOnlyInfoLbl = new Label(parent, SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		ILabelProvider labelProvider = new OrgOverviewLP(PeopleWebConstants.OVERVIEW_TYPE_HEADER, peopleService);
+		ILabelProvider labelProvider = new OrgOverviewLP(
+				PeopleWebConstants.OVERVIEW_TYPE_HEADER, peopleService);
 		readOnlyInfoLbl.setText(labelProvider.getText(context));
 	}
 
@@ -123,7 +124,7 @@ public class OrganizationPage implements CmsUiProvider {
 				new Label(parent, SWT.NONE).setText(valueStr);
 
 				Button icon = new Button(parent, SWT.NONE);
-				icon.setLayoutData(CmsUtils.ROW_DATA_16px);
+				icon.setLayoutData(CmsUtils.rowData16px());
 				icon.setData(RWT.CUSTOM_VARIANT, "cms_icon_delete");
 				icon.addSelectionListener(new SelectionAdapter() {
 					private static final long serialVersionUID = 1L;

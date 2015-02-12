@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.argeo.connect</groupId>
@@ -7,8 +8,15 @@
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>org.argeo.connect.dep.people</artifactId>
-	<name>Connect People Backend Dependencies</name>
+	<name>Connect People Backend</name>
 	<dependencies>
+		<!-- Modules -->
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.people.services</artifactId>
+			<version>2.1.15-SNAPSHOT</version>
+		</dependency>
+
 		<!-- Node -->
 		<dependency>
 			<groupId>org.argeo.commons</groupId>
@@ -17,11 +25,11 @@
 			<type>pom</type>
 		</dependency>
 
-		<!-- Modules -->
+		<!-- Additional third parties -->
 		<dependency>
-			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.people.services</artifactId>
-			<version>2.1.15-SNAPSHOT</version>
+			<groupId>org.argeo.tp.extras</groupId>
+			<artifactId>argeo-tp-extras</artifactId>
+			<version>${version.argeo-tp-extras}</version>
 		</dependency>
 	</dependencies>
 </project>
