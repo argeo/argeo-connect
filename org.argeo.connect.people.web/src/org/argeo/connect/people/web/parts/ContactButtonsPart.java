@@ -4,7 +4,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsUiProvider;
-import org.argeo.cms.CmsUtils;
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;

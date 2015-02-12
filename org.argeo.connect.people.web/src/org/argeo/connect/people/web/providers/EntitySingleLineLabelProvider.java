@@ -5,8 +5,6 @@ import javax.jcr.Node;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.ui.PeopleUiConstants;
-
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.eclipse.jface.viewers.ILabelProvider;

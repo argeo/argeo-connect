@@ -9,7 +9,7 @@ import javax.jcr.Value;
 
 import org.apache.commons.io.IOUtils;
 import org.argeo.cms.CmsUiProvider;
-import org.argeo.cms.CmsUtils;
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiUtils;

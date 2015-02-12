@@ -12,7 +12,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
 import org.argeo.cms.CmsException;
-import org.argeo.cms.CmsLink;
+import org.argeo.cms.util.CmsLink;
 import org.argeo.cms.CmsUiProvider;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.rap.rwt.RWT;

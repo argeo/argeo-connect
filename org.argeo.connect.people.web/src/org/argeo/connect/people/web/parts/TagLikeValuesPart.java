@@ -5,7 +5,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
 import org.argeo.cms.CmsUiProvider;
-import org.argeo.cms.CmsUtils;
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
