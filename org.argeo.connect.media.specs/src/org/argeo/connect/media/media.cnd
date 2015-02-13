@@ -1,28 +1,18 @@
-// MAP = Media or Artwork Project
+// MAP means "Media or Artwork Project"
 <map = 'http://www.argeo.org/ns/map'>
 <film = 'http://www.argeo.org/ns/film'>
 
 //
-// PROJECT
+// GENERIC MAP PROJECT: Can be a film, a performance, a music album... 
 //
-// Can be a film, a performance, a music album...
 [map:project] > people:group
 - map:projectId (STRING) // a business specific film ID
-// Subnode with alternative title
-+ map:titles (nt:unstructured) 
-// Subnode that contains synopses 
-+ map:synopses (nt:unstructured)
-// Subnode with time stamps and awards
-+ map:timestamps (nt:unstructured)
-
-// Cache some values to ease rendering
-- map:cachePTitle (STRING) IGNORE
-- map:cachePTitleArticle (STRING) IGNORE
-- map:cachePTitleLatin (STRING) IGNORE
-- map:cacheDirectors (String) * IGNORE
++ map:titles (nt:unstructured) // Alternative titles
++ map:synopses (nt:unstructured) // Synopses and log-lines 
++ map:timestamps (nt:unstructured) // Remarkable time stamps and awards
 
 // Generic properties for all type of Media or Artwork projects
-- map:type (STRING) // 
+- map:type (STRING) 
 - map:genres (STRING) *
 - map:categories (STRING) *
 - map:length (LONG) ='0' a // the length in seconds
@@ -38,12 +28,19 @@
 - map:prodCountries (STRING) * // A list of countries as defined in ISO 3166-1
                                // primary production country must be the first of the list
 
-- map:prodCosts (STRING) // Approximative production costs. There is a festival specific list of possible choices.
+- map:prodCosts (STRING) // Approximative production costs. There is an application specific list
 - map:originalLanguages (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
 - map:availableSubtitles (STRING) * // Tag like list of available subtitles
 
 // maybe too specific 
 - map:isStudentProject (BOOLEAN)
+
+// Cache some values to ease rendering
+- map:cachePTitle (STRING) IGNORE
+- map:cachePTitleArticle (STRING) IGNORE
+- map:cachePTitleLatin (STRING) IGNORE
+- map:cacheDirectors (String) * IGNORE
+
 
 // GENERIC SUBCONCEPTS FOR MAP
 [map:synopsis] > nt:unstructured, people:language
@@ -71,65 +68,12 @@
 //
 
 [map:film] > map:project
-
-- film:isDebutFilm (BOOLEAN)
 - film:shootingFormat (STRING)
 - film:animationTechnique (STRING) // only if animation is in categories
 - film:soundType (STRING)
 - film:colourType (STRING)
-
-+ film:prints (nt:unstructured) // Subnode with film prints
-
-
-// Removed use map:projectId instead
-// - film:filmId (STRING) // a business specific film ID
-
-// Removed use map: instead
-// - film:type (STRING) // Feature, Mid-Length, Short
-// Removed use map: instead
-// - film:website (STRING) 
-// Removed use map: instead
-// - film:trailerUrl (STRING) // Rather use a URI property?
-
-// Removed use map: instead
-// - film:prodYear (LONG)
-// Removed use map: instead
-// - film:prodCountries (STRING) * // A list of countries as defined in ISO 3166-1
-                                    // primary production country must be the first of the list
-// Removed use map: instead
-// - film:prodCosts (STRING) // Approximative production costs. There is a festival specific list of possible choices.
-// Removed use map: instead
-// - film:originalLanguages (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
-// Removed use map: instead
-// - film:availableSubtitles (STRING) * // Tag like list of available subtitles
-
-// Removed use map: instead
-// - film:length (LONG) ='0' m a // the length in seconds
-// Removed use map: instead
-// - film:genres (STRING) *
-// Removed use map: instead
-// - film:categories (STRING) *
-
-// Removed use map: instead
-// - film:premiere (STRING)
-
-
-// maybe too specific 
-// Removed use map: instead
-// - film:isStudentProject (BOOLEAN)
-
-
-// Removed use map: instead
-// - film:hasTrailer (BOOLEAN)
-// Removed use map: instead
-// - film:allowExcerptsOnTv (BOOLEAN)
-// Removed use map: instead
-// - film:allowExcerptsOnWeb (BOOLEAN)
-
-
-// DEPRECATED - to be removed in a near future
-// - film:submittedFor (STRING)
-
+- film:isDebutFilm (BOOLEAN)
++ film:prints (nt:unstructured) // Film prints
 
 //
 // FILM PRINT
