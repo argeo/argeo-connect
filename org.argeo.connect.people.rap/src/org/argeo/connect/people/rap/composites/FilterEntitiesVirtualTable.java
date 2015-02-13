@@ -105,7 +105,8 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(26));
+		
 		TableViewerColumn column;
 		for (ColumnDefinition colDef : colDefs) {
 			column = ViewerUtils.createTableViewerColumn(entityViewer,

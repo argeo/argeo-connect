@@ -362,6 +362,10 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	protected Session getSession() {
 		return session;
 	}
+	
+	protected VirtualRowTableViewer getTableViewer(){
+		return tableCmp;
+	}
 
 	protected String getEntityType() {
 		return ((SearchNodeEditorInput) getEditorInput()).getNodeType();

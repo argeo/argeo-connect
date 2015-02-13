@@ -146,8 +146,29 @@ public class CommonsJcrUtils {
 	 */
 	public static boolean isNodeCheckedOut(Node node) {
 		try {
-			return node.getSession().getWorkspace().getVersionManager()
-					.isCheckedOut(node.getPath());
+			if (!node.isNodeType("mix:versionable"))
+				return true;
+			else
+				return node.getSession().getWorkspace().getVersionManager()
+						.isCheckedOut(node.getPath());
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Unable to get check out status for node " + node, re);
+		}
+	}
+
+	/**
+	 * Returns the versionable node in the parent path, this if it is
+	 * versionable or null if no-one is versionnable including root node.
+	 */
+	public static Node getVersionableAncestor(Node node) {
+		try {
+			if (node.isNodeType("mix:versionable"))
+				return node;
+			else if (node.getPath().equals("/"))
+				return null;
+			else
+				return getVersionableAncestor(node.getParent());
 		} catch (RepositoryException re) {
 			throw new PeopleException(
 					"Unable to get check out status for node " + node, re);
