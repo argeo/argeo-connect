@@ -40,8 +40,7 @@ public class DemoDataImport implements PeopleConstants {
 
 	/** Imports demo data and creates a dummy festival */
 	public void doImport(PeopleService peopleService,
-			UserAdminService userAdminService,
-			JcrSecurityModel jcrSecurityModel, Session adminSession,
+			UserAdminService userAdminService, Session adminSession,
 			Map<String, Resource> demoData) {
 		try {
 			this.peopleService = peopleService;
@@ -55,8 +54,7 @@ public class DemoDataImport implements PeopleConstants {
 			resource = demoData.get("userFile");
 			// Force the import of org.argeo.util.CsvParserWithLinesAsMap
 			CsvParserWithLinesAsMap parser = new UsersCsvFileParser(
-					adminSession, peopleService, userAdminService,
-					jcrSecurityModel);
+					adminSession, peopleService, userAdminService);
 			parser.parse(resource.getInputStream(), "UTF-8");
 
 			createUserGroups(adminSession);

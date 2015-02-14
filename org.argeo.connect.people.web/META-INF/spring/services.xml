@@ -12,7 +12,6 @@
 		<property name="demoBusinessData" ref="demoBusinessData" />
 		<property name="initResources" ref="initResources" />
 		<property name="userAdminService" ref="userAdminService" />
-		<property name="jcrSecurityModel" ref="jcrSecurityModel" />
 	</bean>
 
 	<!-- IMPORTANT: Enable auto magic admin login in the repository during the 

@@ -16,8 +16,6 @@
 
 	<reference id="userAdminService" interface="org.argeo.security.UserAdminService" />
 
-	<reference id="jcrSecurityModel" interface="org.argeo.security.jcr.JcrSecurityModel" />
-
 	<reference id="peopleService" interface="org.argeo.connect.people.PeopleService" />
 
 	<!-- LOCAL BEANS -->

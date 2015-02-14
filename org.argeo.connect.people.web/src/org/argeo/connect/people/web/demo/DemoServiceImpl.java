@@ -22,7 +22,6 @@ import org.argeo.connect.people.core.imports.EncodedTagCsvFileParser;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.security.UserAdminService;
-import org.argeo.security.jcr.JcrSecurityModel;
 import org.springframework.core.io.Resource;
 
 /** Exemplary implementation of the people specific Backend */
@@ -145,10 +144,6 @@ public class DemoServiceImpl extends PeopleServiceImpl implements
 	/* DEPENDENCY INJECTION */
 	public void setUserAdminService(UserAdminService userAdminService) {
 		this.userAdminService = userAdminService;
-	}
-
-	public void setJcrSecurityModel(JcrSecurityModel jcrSecurityModel) {
-		this.jcrSecurityModel = jcrSecurityModel;
 	}
 
 	public void setRepository(Repository repository) {

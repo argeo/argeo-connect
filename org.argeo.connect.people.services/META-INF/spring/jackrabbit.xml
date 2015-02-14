@@ -17,10 +17,6 @@
 		<property name="bundleContext" ref="bundleContext" />
 	</bean>
 
-	<!-- Current JCR Security model (used by the UI to create new users) -->
-	<!--  FIXME must not be there. Also hard coded dependency to jackrabbit  -->
-<!-- 	<bean name="jcrSecurityModel" class="org.argeo.security.jackrabbit.JackrabbitSecurityModel" /> -->
-	
 	<!-- People specific roles declaration -->
 
 	<!-- ROLE_BUSINESS_ADMIN: A role that has JCR_ALL rights on the workspace. 

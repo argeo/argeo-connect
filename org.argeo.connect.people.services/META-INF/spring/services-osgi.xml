@@ -24,7 +24,6 @@
 	<reference id="userAdminService" interface="org.argeo.security.UserAdminService" />
 
 	<!-- SERVICES -->
-	<service ref="jcrSecurityModel" interface="org.argeo.security.jcr.JcrSecurityModel" />
 	<!-- <service ref="peopleService" interface="org.argeo.connect.people.PeopleService" 
 		/> -->
 	<service ref="peopleRepository" interface="javax.jcr.Repository">
