@@ -23,7 +23,6 @@ import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.rap.wizards.NewPeopleUserWizard;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.security.UserAdminService;
-import org.argeo.security.jcr.JcrSecurityModel;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -39,7 +38,6 @@ public class CreatePeopleUser extends AbstractHandler {
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private UserAdminService userAdminService;
-	private JcrSecurityModel jcrSecurityModel;
 	// People specific service
 	private UserManagementService userManagementService;
 
@@ -48,7 +46,7 @@ public class CreatePeopleUser extends AbstractHandler {
 		try {
 			session = repository.login();
 			NewPeopleUserWizard newUserWizard = new NewPeopleUserWizard(
-					session, userAdminService, jcrSecurityModel,
+					session, userAdminService,
 					userManagementService);
 			WizardDialog dialog = new WizardDialog(
 					HandlerUtil.getActiveShell(event), newUserWizard);
@@ -67,10 +65,6 @@ public class CreatePeopleUser extends AbstractHandler {
 
 	public void setUserAdminService(UserAdminService userAdminService) {
 		this.userAdminService = userAdminService;
-	}
-
-	public void setJcrSecurityModel(JcrSecurityModel jcrSecurityModel) {
-		this.jcrSecurityModel = jcrSecurityModel;
 	}
 
 	public void setPeopleService(PeopleService peopleService) {

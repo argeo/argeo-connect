@@ -31,7 +31,6 @@ import org.argeo.eclipse.ui.workbench.ErrorFeedback;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.UserJcrUtils;
 import org.argeo.security.UserAdminService;
-import org.argeo.security.jcr.JcrSecurityModel;
 import org.argeo.security.jcr.JcrUserDetails;
 import org.eclipse.jface.dialogs.IPageChangeProvider;
 import org.eclipse.jface.dialogs.IPageChangedListener;
@@ -60,7 +59,7 @@ public class NewPeopleUserWizard extends Wizard {
 	private final static Log log = LogFactory.getLog(NewPeopleUserWizard.class);
 	private Session session;
 	private UserAdminService userAdminService;
-	private JcrSecurityModel jcrSecurityModel;
+	// private JcrSecurityModel jcrSecurityModel;
 
 	private UserManagementService userManagementService;
 
@@ -71,11 +70,10 @@ public class NewPeopleUserWizard extends Wizard {
 
 	public NewPeopleUserWizard(Session session,
 			UserAdminService userAdminService,
-			JcrSecurityModel jcrSecurityModel,
 			UserManagementService userManagementService) {
 		this.session = session;
 		this.userAdminService = userAdminService;
-		this.jcrSecurityModel = jcrSecurityModel;
+		// this.jcrSecurityModel = jcrSecurityModel;
 		this.userManagementService = userManagementService;
 
 		setWindowTitle("People user creation");
@@ -115,8 +113,9 @@ public class NewPeopleUserWizard extends Wizard {
 		String username = mainUserInfo.getUsername();
 		try {
 			// Effective creation of the new user
-			Node userProfile = jcrSecurityModel.sync(session, username, null);
-
+			// Node userProfile = jcrSecurityModel.sync(session, username,
+			// null);
+			Node userProfile = null;
 			session.getWorkspace().getVersionManager()
 					.checkout(userProfile.getPath());
 			mainUserInfo.mapToProfileNode(userProfile);

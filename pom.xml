@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.argeo.commons</groupId>
@@ -22,7 +23,7 @@
 		<module>org.argeo.connect.people.services</module>
 		<module>org.argeo.connect.people.ui</module>
 		<module>org.argeo.connect.people.rap</module>
-		<module>org.argeo.connect.people.web</module>
+		<!-- <module>org.argeo.connect.people.web</module> -->
 		<!-- Depends on org.eclipse.ui.form that must be added to eclipse RCP repo -->
 		<!-- <module>org.argeo.photo.manager.ui</module> -->
 		<module>org.argeo.connect.files</module>
@@ -89,16 +90,9 @@ which are used as well as that of the covered work.]]>
 				<checksumPolicy>warn</checksumPolicy>
 			</releases>
 		</repository>
-		<!--  <repository>
-			<id>argeo-tp-extras-local</id>
-			<url>http://localhost:7080/data/public/java/argeo-tp-extras-2.1</url>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-				<checksumPolicy>warn</checksumPolicy>
-			</releases>
-		</repository>
-		 -->
+		<!-- <repository> <id>argeo-tp-extras-local</id> <url>http://localhost:7080/data/public/java/argeo-tp-extras-2.1</url> 
+			<releases> <enabled>true</enabled> <updatePolicy>daily</updatePolicy> <checksumPolicy>warn</checksumPolicy> 
+			</releases> </repository> -->
 	</repositories>
 	<dependencies>
 		<dependency>

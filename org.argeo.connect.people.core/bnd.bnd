@@ -1,3 +1,4 @@
-Import-Package:*,\
-javax.jcr.nodetype,\
-org.argeo.security.core
+Import-Package: javax.jcr.nodetype,\
+org.argeo.security.core,\
+org.springframework.security.provisioning,\
+*

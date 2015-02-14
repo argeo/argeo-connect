@@ -1,2 +1,2 @@
-Import-Package:*,\
-org.argeo.connect.people
+Import-Package: org.argeo.connect.people,\
+*
