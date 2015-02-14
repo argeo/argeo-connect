@@ -27,11 +27,10 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.composites.UserGroupTableComposite;
-import org.argeo.eclipse.ui.workbench.ErrorFeedback;
+import org.argeo.eclipse.ui.dialogs.ErrorFeedback;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.UserJcrUtils;
 import org.argeo.security.UserAdminService;
-import org.argeo.security.jcr.JcrUserDetails;
 import org.eclipse.jface.dialogs.IPageChangeProvider;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.dialogs.PageChangedEvent;
@@ -52,14 +51,12 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.springframework.security.core.GrantedAuthority;
 
 /** Wizard to create a new user in a connect People application. */
 public class NewPeopleUserWizard extends Wizard {
 	private final static Log log = LogFactory.getLog(NewPeopleUserWizard.class);
 	private Session session;
 	private UserAdminService userAdminService;
-	// private JcrSecurityModel jcrSecurityModel;
 
 	private UserManagementService userManagementService;
 
@@ -73,7 +70,6 @@ public class NewPeopleUserWizard extends Wizard {
 			UserManagementService userManagementService) {
 		this.session = session;
 		this.userAdminService = userAdminService;
-		// this.jcrSecurityModel = jcrSecurityModel;
 		this.userManagementService = userManagementService;
 
 		setWindowTitle("People user creation");
@@ -111,29 +107,13 @@ public class NewPeopleUserWizard extends Wizard {
 			return false;
 
 		String username = mainUserInfo.getUsername();
+		String password = mainUserInfo.getPassword();
+
 		try {
-			// Effective creation of the new user
-			// Node userProfile = jcrSecurityModel.sync(session, username,
-			// null);
-			Node userProfile = null;
-			session.getWorkspace().getVersionManager()
-					.checkout(userProfile.getPath());
-			mainUserInfo.mapToProfileNode(userProfile);
-			String password = mainUserInfo.getPassword();
-
-			List<GrantedAuthority> authoritiesList = new ArrayList<GrantedAuthority>();
-			JcrUserDetails jcrUserDetails = new JcrUserDetails(userProfile,
-					password, authoritiesList);
-			// Add roles. might exist a cleaner way to do.
-			if (!userRolesPage.getRoles().isEmpty())
-				jcrUserDetails = jcrUserDetails.cloneWithNewRoles(userRolesPage
-						.getRoles());
-
-			session.save();
-			session.getWorkspace().getVersionManager()
-					.checkin(userProfile.getPath());
-
-			userAdminService.createUser(jcrUserDetails);
+			userManagementService.createUser(session, userAdminService,
+					username, password.toCharArray(),
+					mainUserInfo.getFirstName(), mainUserInfo.getLastName(),
+					mainUserInfo.getMail(), null, userRolesPage.getRoles());
 
 			Node defaultGroup = userManagementService
 					.createDefaultGroupForUser(session, username);

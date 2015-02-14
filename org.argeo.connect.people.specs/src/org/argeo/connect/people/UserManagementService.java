@@ -5,6 +5,8 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
+import org.argeo.security.UserAdminService;
+
 /**
  * Provides method interfaces to manage people specific user concepts.
  * Implementing applications should extend and/or override the canonical
@@ -21,6 +23,12 @@ public interface UserManagementService {
 	 * end-user using its username as a deterministic key
 	 */
 	public Node getPeopleProfile(Session session, String username);
+
+	/** Centralize People Specific user creation. NAT API. will evolve. */
+	public Node createUser(Session adminSession,
+			UserAdminService userAdminService, String userName, char[] password,
+			String firstName, String lastName, String email, String desc,
+			List<String> roles);
 
 	/* GROUPS */
 	// /**

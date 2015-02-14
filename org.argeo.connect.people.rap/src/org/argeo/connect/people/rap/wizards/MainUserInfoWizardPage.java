@@ -53,7 +53,7 @@ public class MainUserInfoWizardPage extends WizardPage implements
 
 	@Override
 	public void createControl(Composite parent) {
-		
+
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout(2, false));
 		username = EclipseUiUtils.createGridLT(composite, "Username", this);
@@ -77,7 +77,8 @@ public class MainUserInfoWizardPage extends WizardPage implements
 			setMessage(message, WizardPage.ERROR);
 			setPageComplete(false);
 		} else {
-			setMessage("Main user info complete. Switch to next page.", WizardPage.INFORMATION);
+			setMessage("Main user info complete. Switch to next page.",
+					WizardPage.INFORMATION);
 			setPageComplete(true);
 		}
 		getContainer().updateButtons();
@@ -120,6 +121,18 @@ public class MainUserInfoWizardPage extends WizardPage implements
 
 	public String getPassword() {
 		return password1.getText();
+	}
+
+	public String getMail() {
+		return primaryEmail.getText();
+	}
+
+	public String getFirstName() {
+		return firstName.getText();
+	}
+
+	public String getLastName() {
+		return lastName.getText();
 	}
 
 	public void mapToProfileNode(Node up) {

@@ -18,14 +18,19 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.UserJcrUtils;
+import org.argeo.security.UserAdminService;
+import org.argeo.security.jcr.NewUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,10 +38,61 @@ import org.springframework.security.core.context.SecurityContextHolder;
 /** Canonical implementation of the people {@link UserManagementService} */
 public class UserManagementServiceImpl implements UserManagementService {
 
+	private final static Log log = LogFactory
+			.getLog(UserManagementServiceImpl.class);
+
 	private final PeopleService peopleService;
 
 	public UserManagementServiceImpl(PeopleService peopleService) {
 		this.peopleService = peopleService;
+	}
+
+	//
+	// USERS MANAGEMENT
+	//
+	public Node createUser(Session adminSession,
+			UserAdminService userAdminService, final String userName,
+			final char[] password, final String firstName,
+			final String lastName, final String email, final String desc,
+			final List<String> roles) {
+		try {
+			NewUserDetails userDetails = new NewUserDetails(userName, password,
+					roles.toArray(new String[0])) {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void mapToProfileNode(Node userProfile)
+						throws RepositoryException {
+					userProfile.setProperty(ArgeoNames.ARGEO_PRIMARY_EMAIL,
+							email);
+					userProfile.setProperty(ArgeoNames.ARGEO_FIRST_NAME,
+							firstName);
+					userProfile.setProperty(ArgeoNames.ARGEO_LAST_NAME,
+							lastName);
+					userProfile.setProperty(Property.JCR_TITLE, firstName + " "
+							+ lastName);
+					if (CommonsJcrUtils.checkNotEmptyString(desc))
+						userProfile.setProperty(Property.JCR_DESCRIPTION, desc);
+				}
+
+			};
+			userAdminService.createUser(userDetails);
+			return UserJcrUtils.getUserHome(adminSession, userName);
+		} catch (Exception e) {
+			JcrUtils.discardQuietly(adminSession);
+			Node userHome = UserJcrUtils.getUserHome(adminSession, userName);
+			if (userHome != null) {
+				try {
+					userHome.remove();
+					adminSession.save();
+				} catch (RepositoryException e1) {
+					JcrUtils.discardQuietly(adminSession);
+					log.warn("Error when trying to clean up failed new user "
+							+ userName, e1);
+				}
+			}
+		}
+		return null;
 	}
 
 	//
