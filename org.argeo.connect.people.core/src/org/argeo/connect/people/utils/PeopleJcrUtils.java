@@ -226,9 +226,11 @@ public class PeopleJcrUtils implements PeopleNames {
 			Node parent = primaryChild.getParent();
 			String thisNodeType = primaryChild.getPrimaryNodeType().getName();
 
-			if (isPrimary(parentNode, primaryChild))
-				return false;
-
+			if (isPrimary(parentNode, primaryChild)){
+				primaryChild.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, false);
+				return true;
+			}
+				
 			NodeIterator ni = parent.getNodes();
 			Node firstNode = ni.nextNode();
 			// update primary flag if needed
