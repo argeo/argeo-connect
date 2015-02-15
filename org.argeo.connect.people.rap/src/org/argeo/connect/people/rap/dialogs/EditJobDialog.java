@@ -185,8 +185,8 @@ public class EditJobDialog extends TrayDialog {
 
 		// the list
 		Composite listCmp = new Composite(dialogarea, SWT.NONE);
-		GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1);
-		gd.heightHint = 250;
+		GridData gd = PeopleUiUtils.horizontalFillData(2);
+		gd.heightHint = 290;
 		listCmp.setLayoutData(gd);
 		entityViewer = createListPart(listCmp,
 				new EntitySingleColumnLabelProvider(peopleService,
@@ -196,8 +196,7 @@ public class EditJobDialog extends TrayDialog {
 		// An empty line to give some air to the dialog
 		Label dummyLbl = new Label(dialogarea, SWT.NONE);
 		dummyLbl.setText("");
-		dummyLbl.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2,
-				1));
+		dummyLbl.setLayoutData(PeopleUiUtils.horizontalFillData(2));
 
 		// Display chosen org or person
 		selectedItemTxt = createLT(dialogarea, chosenItemLbl);
@@ -230,8 +229,8 @@ public class EditJobDialog extends TrayDialog {
 			isPrimaryBtn.setSelection(wasPrimary);
 		}
 
-		parent.pack();
-		parent.layout();
+		dialogarea.layout();
+		// parent.layout();
 		// Set the focus on the first field.
 		filterTxt.setFocus();
 		return dialogarea;
@@ -289,7 +288,7 @@ public class EditJobDialog extends TrayDialog {
 	}
 
 	protected Point getInitialSize() {
-		return new Point(400, 500);
+		return new Point(400, 580);
 	}
 
 	protected void configureShell(Shell shell) {
@@ -363,7 +362,7 @@ public class EditJobDialog extends TrayDialog {
 		table.setHeaderVisible(false);
 		// Enable markups
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(20));
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(24));
 
 		// Providers and listeners
 		v.setContentProvider(new MyLazyContentProvider(v));

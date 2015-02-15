@@ -243,7 +243,7 @@ public class TemplateValueCatalogue extends Composite {
 		table.setLinesVisible(true);
 		table.setLayoutData(PeopleUiUtils.fillGridData());
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(23));
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(24));
 
 		TableViewer viewer = new TableViewer(table);
 
