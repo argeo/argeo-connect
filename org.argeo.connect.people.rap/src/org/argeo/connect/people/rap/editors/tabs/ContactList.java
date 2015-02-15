@@ -23,6 +23,7 @@ import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.argeo.jcr.JcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -405,7 +406,7 @@ public class ContactList extends Composite {
 				String value = valueTxt.getText();
 				String label = labelTxt.getText();
 				boolean isPrimary = primaryChk.getSelection();
-				saveAndRefresh(contactType, contactType, value, isPrimary,
+				saveAndRefresh(contactType, JcrUtils.replaceInvalidChars(value), value, isPrimary,
 						nature, null, label);
 			}
 		});
@@ -420,7 +421,7 @@ public class ContactList extends Composite {
 					String value = valueTxt.getText();
 					String label = labelTxt.getText();
 					boolean isPrimary = primaryChk.getSelection();
-					saveAndRefresh(contactType, contactType, value, isPrimary,
+					saveAndRefresh(contactType, JcrUtils.replaceInvalidChars(value), value, isPrimary,
 							nature, null, label);
 				}
 			}
@@ -458,7 +459,7 @@ public class ContactList extends Composite {
 				String label = labelTxt.getText();
 				String cat = catCmb.getText();
 				boolean isPrimary = primaryChk.getSelection();
-				saveAndRefresh(contactType, contactType, value, isPrimary,
+				saveAndRefresh(contactType, JcrUtils.replaceInvalidChars(value), value, isPrimary,
 						nature, cat, label);
 			}
 		});
@@ -474,7 +475,7 @@ public class ContactList extends Composite {
 					String label = labelTxt.getText();
 					String cat = catCmb.getText();
 					boolean isPrimary = primaryChk.getSelection();
-					saveAndRefresh(contactType, contactType, value, isPrimary,
+					saveAndRefresh(contactType, JcrUtils.replaceInvalidChars(value), value, isPrimary,
 							nature, cat, label);
 				}
 			}
@@ -490,7 +491,7 @@ public class ContactList extends Composite {
 			boolean isPrimary, String nature, String category, String label) {
 
 		PeopleJcrUtils.createContact(peopleService, entity, contactType,
-				contactType, value, isPrimary, nature, category, label);
+				name, value, isPrimary, nature, category, label);
 		addContactCmb.select(0);
 		formPart.markDirty();
 		formPart.refresh();
