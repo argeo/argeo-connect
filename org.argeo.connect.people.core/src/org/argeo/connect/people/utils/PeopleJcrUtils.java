@@ -670,6 +670,9 @@ public class PeopleJcrUtils implements PeopleNames {
 		}
 	}
 
+	
+	
+	
 	public static void updateDisplayAddress(Node contactNode) {
 		try {
 			StringBuilder displayAddress = new StringBuilder();
