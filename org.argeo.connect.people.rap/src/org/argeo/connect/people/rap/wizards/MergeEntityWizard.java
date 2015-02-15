@@ -110,29 +110,17 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 	 * @param tagId
 	 * @param tagPropName
 	 */
-	// int actionType,
-	// Session session,
 	public MergeEntityWizard(Display callingDisplay,
 			PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, Row[] rows,
 			String selectorName, ColumnLabelProvider overviewLP) {
 		this.callingDisplay = callingDisplay;
-		// this.session = session;
 		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleWorkbenchService;
-		// this.tagId = tagId;
-		// this.tagPropName = tagPropName;
 		this.rows = rows;
 		this.selectorName = selectorName;
 		// might be refined.
 		this.overviewLP = overviewLP;
-
-		// this.actionType = actionType;
-
-		// resourceService = peopleService.getResourceService();
-		// tagParent = resourceService.getTagLikeResourceParent(session, tagId);
-		// tagInstanceType = CommonsJcrUtils.get(tagParent,
-		// PEOPLE_TAG_INSTANCE_TYPE);
 	}
 
 	@Override
@@ -531,6 +519,8 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 				Node referencing = ref.getParent();
 				checkCOStatusBeforeUpdate(referencing);
 				if (ref.isMultiple()) {
+					CommonsJcrUtils.removeRefFromMultiValuedProp(referencing,
+							ref.getName(), slaveNode.getIdentifier());
 					CommonsJcrUtils.addRefToMultiValuedProp(referencing,
 							ref.getName(), masterNode);
 				} else
