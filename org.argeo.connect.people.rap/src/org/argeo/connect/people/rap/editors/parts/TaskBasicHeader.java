@@ -109,6 +109,8 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		activityService = peopleService.getActivityService();
 		session = CommonsJcrUtils.getSession(task);
 
+		this.hiddenItemIds = hiddenItemIds;
+		
 		// Initialise the form
 		myFormPart = new MyFormPart(this);
 		myFormPart.initialize(form);
