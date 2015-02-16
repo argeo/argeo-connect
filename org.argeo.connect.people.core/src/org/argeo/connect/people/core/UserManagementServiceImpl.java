@@ -4,19 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.DynamicOperand;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
-import javax.jcr.query.qom.StaticOperand;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -102,32 +93,39 @@ public class UserManagementServiceImpl implements UserManagementService {
 	@Override
 	public Node getGroupById(Session session, String groupId) {
 		try {
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
-			QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			Selector source = factory.selector(PeopleTypes.PEOPLE_USER_GROUP,
-					PeopleTypes.PEOPLE_USER_GROUP);
-			DynamicOperand dynOp = factory.propertyValue(
-					source.getSelectorName(), PeopleNames.PEOPLE_GROUP_ID);
-			StaticOperand statOp = factory.literal(session.getValueFactory()
-					.createValue(groupId));
-			Constraint defaultC = factory.comparison(dynOp,
-					QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
-			QueryObjectModel query = factory.createQuery(source, defaultC,
-					null, null);
-			QueryResult queryResult = query.execute();
-			NodeIterator ni = queryResult.getNodes();
-
-			if (ni.getSize() == 0)
+			String fullPath = getPathFromGroupId(groupId);
+			if (session.nodeExists(fullPath))
+				return session.getNode(fullPath);
+			else
 				return null;
-			else if (ni.getSize() > 1) {
-				throw new PeopleException("Problem retrieving group " + groupId
-						+ " by ID, we found " + ni.getSize()
-						+ " correspnding entity(ies)");
-			} else
-				return ni.nextNode();
+			//
+			// QueryManager queryManager = session.getWorkspace()
+			// .getQueryManager();
+			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
+			// Selector source = factory.selector(PeopleTypes.PEOPLE_USER_GROUP,
+			// PeopleTypes.PEOPLE_USER_GROUP);
+			// DynamicOperand dynOp = factory.propertyValue(
+			// source.getSelectorName(), PeopleNames.PEOPLE_GROUP_ID);
+			// StaticOperand statOp = factory.literal(session.getValueFactory()
+			// .createValue(groupId));
+			// Constraint defaultC = factory.comparison(dynOp,
+			// QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+			// QueryObjectModel query = factory.createQuery(source, defaultC,
+			// null, null);
+			// QueryResult queryResult = query.execute();
+			// NodeIterator ni = queryResult.getNodes();
+			//
+			// if (ni.getSize() == 0)
+			// return null;
+			// else if (ni.getSize() > 1) {
+			// throw new PeopleException("Problem retrieving group " + groupId
+			// + " by ID, we found " + ni.getSize()
+			// + " correspnding entity(ies)");
+			// } else
+			// return ni.nextNode();
 		} catch (RepositoryException re) {
-			throw new PeopleException("unable to create group " + groupId, re);
+			throw new PeopleException("Unable to retrieve group of ID "
+					+ groupId, re);
 		}
 	}
 
@@ -137,15 +135,20 @@ public class UserManagementServiceImpl implements UserManagementService {
 		return createGroup(session, groupId, title, description, false);
 	}
 
+	private String getPathFromGroupId(String groupId) {
+		String relPath = JcrUtils.firstCharsToPath(groupId, 2);
+		String fullPath = peopleService
+				.getBasePath(PeopleTypes.PEOPLE_USER_GROUP)
+				+ "/"
+				+ relPath
+				+ "/" + groupId;
+		return fullPath;
+	}
+
 	private Node createGroup(Session session, String groupId, String title,
 			String description, boolean isUserGroup) {
 		try {
-			String relPath = JcrUtils.firstCharsToPath(groupId, 2);
-			String fullPath = peopleService
-					.getBasePath(PeopleTypes.PEOPLE_USER_GROUP)
-					+ "/"
-					+ relPath
-					+ "/" + groupId;
+			String fullPath = getPathFromGroupId(groupId);
 			if (session.nodeExists(fullPath))
 				return session.getNode(fullPath);
 			else {
