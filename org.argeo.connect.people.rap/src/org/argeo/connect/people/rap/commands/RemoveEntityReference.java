@@ -5,6 +5,8 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
@@ -23,13 +25,12 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * parameters.
  */
 public class RemoveEntityReference extends AbstractHandler {
-	// private final static Log log = LogFactory
-	// .getLog(RemoveEntityReference.class);
+	private final static Log log = LogFactory
+			.getLog(RemoveEntityReference.class);
 
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".removeEntityReference";
 	public final static String DEFAULT_LABEL = "Delete";
-	public final static String PARAM_VERSIONABLE_PARENT_JCR_ID = "param.versionableParentJcrId";
 	public final static String PARAM_TOREMOVE_JCR_ID = "param.toRemoveJcrId";
 
 	/* DEPENDENCY INJECTION */
@@ -47,8 +48,6 @@ public class RemoveEntityReference extends AbstractHandler {
 		if (!result)
 			return null;
 
-		String versParentJcrId = event
-				.getParameter(PARAM_VERSIONABLE_PARENT_JCR_ID);
 		String toRemoveJcrId = event.getParameter(PARAM_TOREMOVE_JCR_ID);
 
 		Session session = null;
@@ -56,14 +55,22 @@ public class RemoveEntityReference extends AbstractHandler {
 		Node toRemoveNode = null;
 		try {
 			session = repository.login();
-			versionableParent = session.getNodeByIdentifier(versParentJcrId);
 			toRemoveNode = session.getNodeByIdentifier(toRemoveJcrId);
+			versionableParent = CommonsJcrUtils
+					.getVersionableAncestor(toRemoveNode);
 
-			boolean wasCO = CommonsJcrUtils
-					.checkCOStatusBeforeUpdate(versionableParent);
-			toRemoveNode.remove();
-			CommonsJcrUtils.checkCOStatusAfterUpdate(versionableParent, wasCO);
-
+			if (versionableParent == null) {
+				log.warn("Found no versionnable node in ancestors of "
+						+ toRemoveNode + "\n Simply removing.");
+				toRemoveNode.remove();
+				session.save();
+			} else {
+				boolean wasCO = CommonsJcrUtils
+						.checkCOStatusBeforeUpdate(versionableParent);
+				toRemoveNode.remove();
+				CommonsJcrUtils.checkCOStatusAfterUpdate(versionableParent,
+						wasCO);
+			}
 		} catch (RepositoryException e) {
 			StringBuilder errMsg = new StringBuilder();
 			errMsg.append("Unable to remove ");
@@ -72,8 +79,7 @@ public class RemoveEntityReference extends AbstractHandler {
 			errMsg.append("JcrID: " + toRemoveJcrId).append(
 					" on parent versionnable node ");
 			if (versionableParent != null)
-				errMsg.append(versionableParent).append(" - ");
-			errMsg.append("JcrID: " + versParentJcrId);
+				errMsg.append(versionableParent);
 			throw new PeopleException(errMsg.toString(), e);
 		} finally {
 			JcrUtils.logoutQuietly(session);

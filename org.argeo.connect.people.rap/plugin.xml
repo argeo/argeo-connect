@@ -254,10 +254,10 @@
 			id="org.argeo.connect.people.rap.removeEntityReference"
         	defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       	    name="removeEntityReference">
-            <commandParameter
+            <!-- <commandParameter
          		id="param.versionableParentJcrId"
          		name="Jcr ID of the nearest versionable ancestor">
-  	 		</commandParameter>
+  	 		</commandParameter> -->
             <commandParameter
          		id="param.toRemoveJcrId"
          		name="Jcr ID of the node to remove">

@@ -116,7 +116,6 @@ public class JobList extends Composite {
 						PeopleTypes.PEOPLE_JOB, PeopleTypes.PEOPLE_PERSON);
 				Collections.sort(employees, lastNameFirstNamePersonComparator);
 				itemViewer.setInput(employees);
-				// itemViewer.refresh();
 			} else {
 				try {
 					List<Node> jobs = new ArrayList<Node>();
@@ -194,8 +193,7 @@ public class JobList extends Composite {
 							isBackward)
 							+ " <br />"
 							+ PeopleRapSnippets
-									.getRemoveReferenceSnippetForLists(link,
-											entity);
+									.getRemoveReferenceSnippetForLists(link);
 				}
 			});
 		}

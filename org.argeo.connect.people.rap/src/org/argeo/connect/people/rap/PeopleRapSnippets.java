@@ -36,34 +36,15 @@ public class PeopleRapSnippets {
 
 	/**
 	 * Create the text value of a link that enable calling the
-	 * <code>RemoveEntityReference</command> from a cell of a HTML list
+	 * <code>RemoveEntityReference</code> from a cell of a HTML list.
 	 */
-	public static String getRemoveReferenceSnippetForLists(Node currNode,
-			Node parentVersionableNode) {
-		String toRemoveJcrId = CommonsJcrUtils.getIdentifier(currNode);
-		String versionableParJcrId = CommonsJcrUtils
-				.getIdentifier(parentVersionableNode);
+	public static String getRemoveReferenceSnippetForLists(Node linkNode) {
+		String toRemoveJcrId = CommonsJcrUtils.getIdentifier(linkNode);
 		String href = RemoveEntityReference.ID + "/"
-				+ RemoveEntityReference.PARAM_VERSIONABLE_PARENT_JCR_ID + "="
-				+ versionableParJcrId + "/"
 				+ RemoveEntityReference.PARAM_TOREMOVE_JCR_ID + "="
 				+ toRemoveJcrId;
 		return getRWTLink(href, PeopleUiConstants.CRUD_DELETE);
 	}
-
-	// /**
-	// * Create the text value of a link that enable calling the
-	// * <code>RemoveEntityReference</command> from a cell of a HTML list
-	// */
-	// public static String getRemoveSnippetForLists(Node currNode,
-	// boolean removeParent) {
-	// String toRemoveJcrId = CommonsJcrUtils.getIdentifier(currNode);
-	// String href = DeleteEntity.ID + "/"
-	// + DeleteEntity.PARAM_TOREMOVE_JCR_ID + "=" + toRemoveJcrId
-	// + "/" + DeleteEntity.PARAM_REMOVE_ALSO_PARENT + "="
-	// + removeParent;
-	// return getRWTLink(href, PeopleUiConstants.CRUD_DELETE);
-	// }
 
 	/**
 	 * Create the text value of a link that enable calling the
@@ -89,21 +70,6 @@ public class PeopleRapSnippets {
 				+ toEditJcrId;
 		return getRWTLink(href, value);
 	}
-
-	// /** a snippet to display tags that are linked to the current entity */
-	// public static String getTags(Node entity) {
-	// try {
-	// StringBuilder tags = new StringBuilder();
-	// if (entity.hasProperty(PeopleNames.PEOPLE_TAGS)) {
-	// for (Value value : entity
-	// .getProperty((PeopleNames.PEOPLE_TAGS)).getValues())
-	// tags.append("#").append(value.getString()).append(" ");
-	// }
-	// return PeopleUiUtils.replaceAmpersand(tags.toString());
-	// } catch (RepositoryException e) {
-	// throw new PeopleException("Error while getting tags for entity", e);
-	// }
-	// }
 
 	/**
 	 * a snippet to display clickable tags that are linked to the current entity
