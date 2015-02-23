@@ -412,9 +412,9 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 							mergeNodes(null, masterNode, currSlave);
 
 							if (log.isDebugEnabled()) {
-								log.debug("About to remove "
-										+ currSlave.getPath());
-								log.debug("Title: "
+								log.debug("About to remove node "
+										+ currSlave.getPath()
+										+ "\n with title: "
 										+ CommonsJcrUtils.get(currSlave,
 												Property.JCR_TITLE));
 							}

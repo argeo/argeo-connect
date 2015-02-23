@@ -52,34 +52,36 @@ public class RemoveEntityReference extends AbstractHandler {
 		String toRemoveJcrId = event.getParameter(PARAM_TOREMOVE_JCR_ID);
 
 		Session session = null;
+		Node versionableParent = null;
+		Node toRemoveNode = null;
 		try {
 			session = repository.login();
-			Node versionableParent = session
-					.getNodeByIdentifier(versParentJcrId);
-			Node toRemoveNode = session.getNodeByIdentifier(toRemoveJcrId);
+			versionableParent = session.getNodeByIdentifier(versParentJcrId);
+			toRemoveNode = session.getNodeByIdentifier(toRemoveJcrId);
 
-			boolean wasCheckedOut = CommonsJcrUtils
-					.isNodeCheckedOutByMe(versionableParent);
-			if (!wasCheckedOut)
-				CommonsJcrUtils.checkout(versionableParent);
+			boolean wasCO = CommonsJcrUtils
+					.checkCOStatusBeforeUpdate(versionableParent);
 			toRemoveNode.remove();
-			if (wasCheckedOut)
-				versionableParent.getSession().save();
-			else
-				CommonsJcrUtils.saveAndCheckin(versionableParent);
-
-			IEditorPart iep = HandlerUtil.getActiveWorkbenchWindow(event)
-					.getActivePage().getActiveEditor();
-			if (iep != null && iep instanceof AbstractEntityCTabEditor)
-				((AbstractEntityCTabEditor) iep).forceRefresh();
+			CommonsJcrUtils.checkCOStatusAfterUpdate(versionableParent, wasCO);
 
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to remove JCR ID "
-					+ toRemoveJcrId + " on parent versionnable node "
-					+ versParentJcrId, e);
+			StringBuilder errMsg = new StringBuilder();
+			errMsg.append("Unable to remove ");
+			if (toRemoveNode != null)
+				errMsg.append(toRemoveNode).append(" - ");
+			errMsg.append("JcrID: " + toRemoveJcrId).append(
+					" on parent versionnable node ");
+			if (versionableParent != null)
+				errMsg.append(versionableParent).append(" - ");
+			errMsg.append("JcrID: " + versParentJcrId);
+			throw new PeopleException(errMsg.toString(), e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}
+		IEditorPart iep = HandlerUtil.getActiveWorkbenchWindow(event)
+				.getActivePage().getActiveEditor();
+		if (iep != null && iep instanceof AbstractEntityCTabEditor)
+			((AbstractEntityCTabEditor) iep).forceRefresh();
 		return null;
 	}
 
