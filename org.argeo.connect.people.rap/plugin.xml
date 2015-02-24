@@ -24,6 +24,19 @@
 		</perspective> -->
 	</extension>
 
+	<!-- Enrich existing perspectives to add people specific UI Parts -->
+	<!-- Does not work in RAP: it tries to instantiate this view before the default ones and then the relative placement fails. -->
+	<extension point="org.eclipse.ui.perspectiveExtensions">
+		<perspectiveExtension targetID="org.argeo.eclipse.ui.workbench.osgiPerspective">
+			<view 
+				id="org.argeo.connect.people.rap.peopleDefaultView" 
+				visible="true"
+				relationship="left" 
+             	relative="org.eclipse.ui.editorss"/> 
+          </perspectiveExtension>
+	</extension>
+
+
     <!-- VIEWS -->
     <extension
 		point="org.eclipse.ui.views">
@@ -303,7 +316,7 @@
 
 		<!-- Generic commands provided by the people app --> 
 		<menuContribution
-			locationURI="toolbar:org.argeo.ui.userToolbar?before=org.eclipse.ui.file.save"> 
+			locationURI="toolbar:org.argeo.security.ui.rap.userToolbar?before=org.eclipse.ui.file.save"> 
 			<!-- Force resfresh if possible --> 
 			<command
 				commandId="org.argeo.connect.people.rap.forceRefresh"
@@ -320,7 +333,7 @@
 		</menuContribution>
 		
 		<menuContribution
-			locationURI="toolbar:org.argeo.ui.userToolbar?after=org.eclipse.ui.file.saveAll"> 
+			locationURI="toolbar:org.argeo.security.ui.rap.userToolbar?after=org.eclipse.ui.file.saveAll"> 
 			<!-- Check in and out management --> 
  			<command
 				commandId="org.argeo.connect.people.rap.checkOutItem"
