@@ -71,12 +71,12 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * Dialog with a filtered list to create or edit a position for a given person
- * in an organisation. If editing an existing position, note that both
+ * in an organization. If editing an existing position, note that both
  * referenced and referencing entities must be given in order to eventually
  * remove old reference
  * 
- * It is the dialog duty to correctly initialise what is displayed the
- * parameters passed on instantiation
+ * <p>It is the dialog duty to correctly initialize what is displayed based on the
+ * parameters passed at instantiation time.</p>
  */
 public class EditJobDialog extends TrayDialog {
 	private static final long serialVersionUID = -3534660152626908662L;
@@ -107,7 +107,7 @@ public class EditJobDialog extends TrayDialog {
 	private String toSearchNodeType;
 	private Node oldLinkNode;
 
-	// caches old info to initialise widgets if needed
+	// Caches old info to initialize widgets if needed
 	private String oldPosition = "";
 	private String oldDepartment = "";
 	private boolean wasPrimary = false;
@@ -151,7 +151,7 @@ public class EditJobDialog extends TrayDialog {
 		} else { // UPDATE
 			this.oldLinkNode = oldLink;
 			try {
-				// Initiallize with old values
+				// Initialize with old values
 				session = oldLink.getSession();
 				oldPosition = CommonsJcrUtils.get(oldLinkNode,
 						PeopleNames.PEOPLE_ROLE);
@@ -175,15 +175,14 @@ public class EditJobDialog extends TrayDialog {
 	protected Control createDialogArea(Composite parent) {
 		// MAIN LAYOUT
 		Composite dialogarea = (Composite) super.createDialogArea(parent);
-		// dialogarea.setLayoutData(PeopleUiUtils.fillGridData());
 		dialogarea.setLayout(new GridLayout(2, false));
 
-		// the filter
+		// The filter
 		Composite filterCmp = new Composite(dialogarea, SWT.NONE);
 		filterCmp.setLayoutData(PeopleUiUtils.horizontalFillData(2));
 		addFilterPanel(filterCmp);
 
-		// the list
+		// The list
 		Composite listCmp = new Composite(dialogarea, SWT.NONE);
 		GridData gd = PeopleUiUtils.horizontalFillData(2);
 		gd.heightHint = 290;
@@ -230,17 +229,12 @@ public class EditJobDialog extends TrayDialog {
 		}
 
 		dialogarea.layout();
-		// parent.layout();
 		// Set the focus on the first field.
 		filterTxt.setFocus();
 		return dialogarea;
 	}
 
-	/**
-	 * Override this to perform the real addition
-	 * 
-	 * @return
-	 */
+	/** Override to provide business specific addition behavior*/
 	protected boolean performFinish() {
 		// Sanity check
 		String msg = null;
@@ -280,7 +274,6 @@ public class EditJobDialog extends TrayDialog {
 	}
 
 	// This dialog life cycle
-
 	@Override
 	protected void okPressed() {
 		if (performFinish())
@@ -344,9 +337,6 @@ public class EditJobDialog extends TrayDialog {
 
 	protected TableViewer createListPart(Composite tableComposite,
 			ILabelProvider labelProvider) {
-		// parent.setLayout(new FillLayout());
-
-		// Composite tableComposite = new Composite(parent, SWT.NONE);
 		TableViewer v = new TableViewer(tableComposite, SWT.VIRTUAL
 				| SWT.V_SCROLL | SWT.SINGLE);
 		v.setLabelProvider(labelProvider);

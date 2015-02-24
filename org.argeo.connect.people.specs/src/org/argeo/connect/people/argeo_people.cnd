@@ -1,7 +1,0 @@
-<people = 'http://www.argeo.org/ns/people'>
-
-[people:anonymousPerson] > mix:title
-- people:personUuid (STRING) m
-- people:dateOfBirth (DATE)
-- argeo:firstName (STRING)
-- argeo:lastName (STRING)
