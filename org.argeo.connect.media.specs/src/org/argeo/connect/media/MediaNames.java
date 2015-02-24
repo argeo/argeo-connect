@@ -21,7 +21,9 @@ public interface MediaNames {
 	/* VARIOUS PARENT NODES */
 
 	// generic map sub-concepts
-	public final static String MAP_TITLES = "map:titles";// various languages
+	public final static String MAP_TITLES = "map:titles";// internationalized
+															// version of the
+															// titles
 	public final static String MAP_TIMESTAMPS = "map:timestamps";
 	public final static String MAP_SYNOPSES = "map:synopses";
 
@@ -35,7 +37,6 @@ public interface MediaNames {
 	public final static String MAP_TITLE_IS_ORIG = "map:titleIsOrig";
 
 	/* SYNOPSES */
-	// TODO change this to map:logline
 	public final static String MAP_LOGLINE = "map:logLine";
 	public final static String MAP_SYNOPSIS_CONTENT = "map:synopsisContent";
 	public final static String MAP_SYNOPSIS_CONTENT_SHORT = "map:synopsisContentShort";
@@ -50,7 +51,7 @@ public interface MediaNames {
 	public final static String MAP_CATEGORIES = "map:categories";
 	public final static String MAP_GENRES = "map:genres";
 	public final static String MAP_LENGTH = "map:length";
-	
+
 	public final static String MAP_PROD_YEAR = "map:prodYear";
 	public final static String MAP_PROD_COUNTRIES = "map:prodCountries";
 	public final static String MAP_PROD_COSTS = "map:prodCosts";
@@ -67,7 +68,7 @@ public interface MediaNames {
 	public final static String MAP_PREMIERE = "map:premiere";
 	public final static String MAP_IS_PREMIERE = "map:isPremiere";
 	public final static String MAP_IS_STUDENT_PROJECT = "map:isStudentProject";
-	
+
 	/* FILMS */
 	public final static String FILM_ANIMATION_TECHNIQUE = "film:animationTechnique";
 	public final static String FILM_SOUND_TYPE = "film:soundType";
