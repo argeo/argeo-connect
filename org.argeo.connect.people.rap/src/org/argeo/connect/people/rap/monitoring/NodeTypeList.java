@@ -1,5 +1,7 @@
 package org.argeo.connect.people.rap.monitoring;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,10 +34,18 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 
+/**
+ * Quick and dirty editor to monitor the number of instances for each known node
+ * type
+ * 
+ * TODO Work on this to enrich the generic monitoring perspective.
+ */
 public class NodeTypeList extends EditorPart implements Refreshable {
 
 	/* DEPENDENCY INJECTION */
 	private Session session;
+
+	protected NumberFormat numberFormat;
 
 	// Business Object
 	private String[][] elements;
@@ -45,10 +55,6 @@ public class NodeTypeList extends EditorPart implements Refreshable {
 	private NameLP nameLP = new NameLP();
 	private CountLP countLP = new CountLP();
 
-	public NodeTypeList() {
-		// TODO Auto-generated constructor stub
-	}
-
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -57,6 +63,10 @@ public class NodeTypeList extends EditorPart implements Refreshable {
 
 		setPartName("Node types");
 		setTitleToolTip("Display the list of used node types and corresponding occurence number");
+
+		numberFormat = DecimalFormat.getInstance();
+		((DecimalFormat) numberFormat).applyPattern("#,##0");
+
 	}
 
 	@Override
@@ -81,11 +91,11 @@ public class NodeTypeList extends EditorPart implements Refreshable {
 
 		TableViewer viewer = new TableViewer(table);
 		TableViewerColumn column;
-		column = ViewerUtils.createTableViewerColumn(viewer, "Node type",
-				SWT.NONE, 300);
+		column = ViewerUtils.createTableViewerColumn(viewer, "Name", SWT.NONE,
+				300);
 		column.setLabelProvider(new SimpleLP(0));
-		column = ViewerUtils.createTableViewerColumn(viewer, "Instance number",
-				SWT.NONE, 150);
+		column = ViewerUtils.createTableViewerColumn(viewer, "Number",
+				SWT.RIGHT, 150);
 		column.setLabelProvider(new SimpleLP(1));
 
 		MyLazyContentProvider lazyContentProvider = new MyLazyContentProvider(
@@ -94,12 +104,7 @@ public class NodeTypeList extends EditorPart implements Refreshable {
 		return viewer;
 	}
 
-	@Override
-	public void setFocus() {
-		// TODO Auto-generated method stub
-	}
-
-	private final static String NODE_DEF_PARENT_PATH = "/jcr:system/jcr:NodeTypes";
+	private final static String NODE_DEF_PARENT_PATH = "/jcr:system/jcr:nodeTypes";
 
 	@Override
 	public void forceRefresh(Object object) {
@@ -177,7 +182,7 @@ public class NodeTypeList extends EditorPart implements Refreshable {
 	}
 
 	// PROVIDERS
-	private class NameLP extends ColumnLabelProvider {
+	protected class NameLP extends ColumnLabelProvider {
 		private static final long serialVersionUID = -8179051587196328000L;
 
 		@Override
@@ -191,7 +196,7 @@ public class NodeTypeList extends EditorPart implements Refreshable {
 		}
 	}
 
-	private class CountLP extends ColumnLabelProvider {
+	protected class CountLP extends ColumnLabelProvider {
 		private static final long serialVersionUID = -4022534826825314784L;
 
 		@Override
@@ -205,7 +210,7 @@ public class NodeTypeList extends EditorPart implements Refreshable {
 								"select * from [" + currType + "] as instances",
 								Query.JCR_SQL2);
 				NodeIterator nit = query.execute().getNodes();
-				return "" + nit.getSize();
+				return numberFormat.format(nit.getSize());
 			} catch (RepositoryException re) {
 				throw new PeopleException("Unable to retrieve number of "
 						+ "instances for type " + element, re);
@@ -213,10 +218,22 @@ public class NodeTypeList extends EditorPart implements Refreshable {
 		}
 	}
 
+	protected Session getSession() {
+		return session;
+	}
+
+	protected TableViewer getTableViewer() {
+		return tableViewer;
+	}
+
 	// COMPULSORY UNUSED METHODS
 	@Override
 	public boolean isDirty() {
 		return false;
+	}
+
+	@Override
+	public void setFocus() {
 	}
 
 	@Override

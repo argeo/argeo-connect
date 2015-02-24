@@ -26,7 +26,7 @@
 
 	<!-- Enrich existing perspectives to add people specific UI Parts -->
 	<!-- Does not work in RAP: it tries to instantiate this view before the default ones and then the relative placement fails. -->
-	<extension point="org.eclipse.ui.perspectiveExtensions">
+	<!-- <extension point="org.eclipse.ui.perspectiveExtensions">
 		<perspectiveExtension targetID="org.argeo.eclipse.ui.workbench.osgiPerspective">
 			<view 
 				id="org.argeo.connect.people.rap.peopleDefaultView" 
@@ -34,8 +34,7 @@
 				relationship="left" 
              	relative="org.eclipse.ui.editorss"/> 
           </perspectiveExtension>
-	</extension>
-
+	</extension> -->
 
     <!-- VIEWS -->
     <extension
