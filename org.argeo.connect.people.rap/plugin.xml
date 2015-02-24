@@ -172,25 +172,25 @@
 				name="The Model Specific Entity Uid">
 			</commandParameter>
 		</command>    
-
+		
+		<!-- Search entities by type -->
 		<command
 			id="org.argeo.connect.people.rap.openSearchEntityEditor"
 			defaultHandler="org.argeo.connect.people.rap.commands.OpenSearchEntityEditor"
 			name="Open Search Entity Editor">
-			 <commandParameter
-         		id="param.nodeType"
-         		name="Node Type">
-  	 		</commandParameter>
-			 <commandParameter
-         		id="param.editorName"
-         		name="Editor Name">
-  	 		</commandParameter>
-			 <commandParameter
-         		id="param.basePath"
-         		name="Parent base path">
-  	 		</commandParameter>
+			<commandParameter
+				id="param.nodeType"
+				name="Node Type">
+			</commandParameter>
+			<commandParameter
+				id="param.editorName"
+				name="Editor Name">
+			</commandParameter>
+			<commandParameter
+				id="param.basePath"
+				name="Parent base path">
+			</commandParameter>
 		</command>
-	
 
 		<!-- Person and organisation management --> 
 		<command
@@ -312,7 +312,6 @@
 	<!-- Menus -->
 	<extension
 		point="org.eclipse.ui.menus">
-
 		<!-- Generic commands provided by the people app --> 
 		<menuContribution
 			locationURI="toolbar:org.argeo.security.ui.rap.userToolbar?before=org.eclipse.ui.file.save"> 
