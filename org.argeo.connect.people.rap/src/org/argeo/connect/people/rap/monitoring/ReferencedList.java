@@ -26,6 +26,8 @@ import org.eclipse.ui.PartInitException;
  */
 public class ReferencedList extends NodeTypeList implements Refreshable {
 
+	private final int MIN_REF_NB = 5;
+
 	// Business Object
 	private String[][] elements;
 
@@ -54,24 +56,29 @@ public class ReferencedList extends NodeTypeList implements Refreshable {
 							"select * from [nt:unstructured] as instances",
 							Query.JCR_SQL2);
 			NodeIterator nit = query.execute().getNodes();
-
-			List<String[]> infos = new ArrayList<String[]>();
-			while (nit.hasNext()) {
-				Node currNode = nit.nextNode();
-				PropertyIterator pit = currNode.getReferences();
-				if (pit.getSize() > 10) {
-					String[] vals = new String[2];
-					vals[0] = nameLP.getText(currNode);
-					vals[1] = countLP.getText(pit.getSize());
-					infos.add(vals);
-				}
-			}
-
-			elements = infos.toArray(new String[1][2]);
 			TableViewer tableViewer = getTableViewer();
-			tableViewer.setInput(elements);
-			// we must explicitly set the items count
-			tableViewer.setItemCount(elements.length);
+			if (!nit.hasNext()) {
+				elements = null;
+				tableViewer.setInput(elements);
+				// we must explicitly set the items count
+				tableViewer.setItemCount(0);
+			} else {
+				List<String[]> infos = new ArrayList<String[]>();
+				while (nit.hasNext()) {
+					Node currNode = nit.nextNode();
+					PropertyIterator pit = currNode.getReferences();
+					if (pit.getSize() > MIN_REF_NB) {
+						String[] vals = new String[2];
+						vals[0] = nameLP.getText(currNode);
+						vals[1] = countLP.getText(pit.getSize());
+						infos.add(vals);
+					}
+				}
+				elements = infos.toArray(new String[1][2]);
+				tableViewer.setInput(elements);
+				// we must explicitly set the items count
+				tableViewer.setItemCount(elements.length);
+			}
 			tableViewer.refresh();
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to refresh node type list table",
