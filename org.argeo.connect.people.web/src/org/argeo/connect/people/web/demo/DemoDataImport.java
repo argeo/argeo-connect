@@ -28,7 +28,6 @@ import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.ArgeoTypes;
 import org.argeo.security.UserAdminService;
-import org.argeo.security.jcr.JcrSecurityModel;
 import org.argeo.util.CsvParserWithLinesAsMap;
 import org.springframework.core.io.Resource;
 

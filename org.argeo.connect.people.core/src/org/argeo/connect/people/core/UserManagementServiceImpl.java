@@ -89,6 +89,11 @@ public class UserManagementServiceImpl implements UserManagementService {
 	//
 	// GROUP MANAGEMENT
 	//
+	@Override
+	public Node createGroup(Session session, String groupId, String title,
+			String description) {
+		return createGroup(session, groupId, title, description, false);
+	}
 
 	@Override
 	public Node getGroupById(Session session, String groupId) {
@@ -98,41 +103,10 @@ public class UserManagementServiceImpl implements UserManagementService {
 				return session.getNode(fullPath);
 			else
 				return null;
-			//
-			// QueryManager queryManager = session.getWorkspace()
-			// .getQueryManager();
-			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			// Selector source = factory.selector(PeopleTypes.PEOPLE_USER_GROUP,
-			// PeopleTypes.PEOPLE_USER_GROUP);
-			// DynamicOperand dynOp = factory.propertyValue(
-			// source.getSelectorName(), PeopleNames.PEOPLE_GROUP_ID);
-			// StaticOperand statOp = factory.literal(session.getValueFactory()
-			// .createValue(groupId));
-			// Constraint defaultC = factory.comparison(dynOp,
-			// QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
-			// QueryObjectModel query = factory.createQuery(source, defaultC,
-			// null, null);
-			// QueryResult queryResult = query.execute();
-			// NodeIterator ni = queryResult.getNodes();
-			//
-			// if (ni.getSize() == 0)
-			// return null;
-			// else if (ni.getSize() > 1) {
-			// throw new PeopleException("Problem retrieving group " + groupId
-			// + " by ID, we found " + ni.getSize()
-			// + " correspnding entity(ies)");
-			// } else
-			// return ni.nextNode();
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to retrieve group of ID "
 					+ groupId, re);
 		}
-	}
-
-	@Override
-	public Node createGroup(Session session, String groupId, String title,
-			String description) {
-		return createGroup(session, groupId, title, description, false);
 	}
 
 	private String getPathFromGroupId(String groupId) {
@@ -173,30 +147,16 @@ public class UserManagementServiceImpl implements UserManagementService {
 		}
 	}
 
-	/* Life cycle management */
-	/**
-	 * Call by each startup in order to make sure the backend is ready to
-	 * receive/provide data.
-	 */
-	public void init() {
-		// Do nothing
-	}
-
-	/** Clean shutdown of the backend. */
-	public void destroy() {
-		// Do nothing
-	}
-
 	//
 	// USER MANAGEMENT
 	//
 	/**
-	 * If a userprofile exists but no peopleprofile, it creates, saves and
-	 * checks-in the corresponding Node in a distinct session
+	 * If a "argeo:profile" node exists but no "people:profile", the later is
+	 * created, saved and checked-in in a distinct session
 	 * 
 	 * @param session
 	 * @param username
-	 * @return a peopleprofile node or null if the userprofile is not found
+	 * @return a people:profile node or null if the argeo:profile is not found
 	 */
 	@Override
 	public Node getPeopleProfile(Session session, String username) {

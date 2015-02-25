@@ -1,6 +1,6 @@
 package org.argeo.connect.people;
 
-/** JCR names managed by Connect People. */
+/** People specific JCR names. */
 public interface PeopleNames {
 
 	/**
@@ -16,13 +16,6 @@ public interface PeopleNames {
 	// about current instance of the People repository
 	public final static String PEOPLE_CONF = "conf";
 
-	// TODO Should not be there
-	// public final static String PEOPLE_FILMS = "films";
-
-	// Resources parent node names
-	// public final static String PEOPLE_COUNTRIES = "people:countries";
-	// public final static String PEOPLE_LANGS = "people:languages";
-
 	// Sub concepts parent node names
 	public final static String PEOPLE_TAGS = "people:tags";
 	public final static String PEOPLE_MAILING_LISTS = "people:mailingLists";
@@ -30,20 +23,18 @@ public interface PeopleNames {
 	public final static String PEOPLE_PAYMENT_ACCOUNTS = "people:paymentAccounts";
 	public final static String PEOPLE_CONTACTS = "people:contacts";
 	public final static String PEOPLE_TITLES = "people:titles";
-	// for groups, job and mailing lists.
+	// For groups, job and mailing lists.
 	public final static String PEOPLE_MEMBERS = "people:members";
 	public final static String PEOPLE_JOBS = "people:jobs";
-	// To enable synchronisation with third party systems
+	// Enable synchronisation with third party systems
 	public final static String PEOPLE_EXTERNAL_IDS = "people:externalIds";
 
 	// Widely used property names
 	public final static String PEOPLE_LANG = "people:lang";
 	public final static String PEOPLE_PICTURE = "people:picture";
-	// the iso code of a given resource
-	// public final static String PEOPLE_ISO_CODE = "people:isoCode";
-	// Reference an other entity using the implementation specific UID
+	// Reference an other entity using the business specific UID
 	public final static String PEOPLE_REF_UID = "people:refUid";
-	// Primary boolean flag
+	// Primary flag
 	public final static String PEOPLE_IS_PRIMARY = "people:isPrimary";
 
 	/* EXTERNAL IDS */
@@ -72,16 +63,13 @@ public interface PeopleNames {
 	public final static String PEOPLE_VAT_ID_NB = "people:vatIdNb";
 
 	/* USER MANAGEMENT */
-	// REFERENCE * towards people:person types
-	public final static String PEOPLE_RELATED_PERSON = "people:relatedPersons";
-	// REFERENCE * towards people:userGroup types
-	public final static String PEOPLE_USER_GROUPS = "people:userGroups";
+	// Lists groups for current user
+	public final static String PEOPLE_USER_GROUPS = "people:userGroups"; // REFERENCE*
 	public final static String PEOPLE_GROUP_ID = "people:groupId";
 	public final static String PEOPLE_IS_SINGLE_USER_GROUP = "people:isSingleUserGroup";
 
 	/* RESOURCES */
-	// Generally the corresponding node type but might something else if
-	// necessary.
+	// Generally the corresponding node type. Might be something else.
 	public final static String PEOPLE_TEMPLATE_ID = "people:templateId"; // (STRING)
 	public final static String PEOPLE_TAG_ID = "people:tagId"; // (STRING)
 	public final static String PEOPLE_TAG_INSTANCE_TYPE = "people:tagInstanceType"; // (STRING)
@@ -90,7 +78,7 @@ public interface PeopleNames {
 	public final static String PEOPLE_TAGGABLE_NODE_TYPE = "people:taggableNodeType"; // (STRING)
 	public final static String PEOPLE_TAGGABLE_PROP_NAME = "people:taggablePropNames"; // (STRING)
 																						// *
-	public final static String PEOPLE_CODE = "people:code"; // (STRING) // m???
+	public final static String PEOPLE_CODE = "people:code"; // (STRING)
 
 	/* ACTIVITIES AND TASKS */
 	public final static String PEOPLE_MANAGER = "people:manager";
@@ -102,7 +90,9 @@ public interface PeopleNames {
 
 	// Tasks
 	public final static String PEOPLE_TASK_STATUS = "people:taskStatus";
-	public final static String PEOPLE_ASSIGNED_TO = "people:assignedTo";
+	// The corresponding groupID - we cannot use references because some groups
+	// might be assigned to a lot of tasks
+	public final static String PEOPLE_ASSIGNED_TO = "people:assignedTo"; // STRING
 	public final static String PEOPLE_DUE_DATE = "people:dueDate";
 	public final static String PEOPLE_CLOSE_DATE = "people:closeDate";
 	public final static String PEOPLE_CLOSED_BY = "people:closedBy";

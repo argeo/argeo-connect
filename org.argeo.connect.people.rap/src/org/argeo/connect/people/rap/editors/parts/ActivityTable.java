@@ -428,7 +428,6 @@ public class ActivityTable extends Composite implements ArgeoNames {
 											Property.JCR_LAST_MODIFIED_BY)
 											.getString());
 						}
-
 					}
 				} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
 					String reporter = activityService

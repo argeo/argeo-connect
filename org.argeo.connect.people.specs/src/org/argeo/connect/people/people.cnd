@@ -188,7 +188,7 @@ mixin
 // Tasks 
 [people:task] > people:activity
 - people:taskStatus (String) // the current status of this task
-- people:assignedTo (REFERENCE) // reference to a people:userGroup
+- people:assignedTo (String) // a people:userGroup group id
 - people:dueDate (DATE) 
 - people:closeDate (DATE) 
 - people:closedBy (STRING) // The id of the user who closed this task

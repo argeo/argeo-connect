@@ -6,10 +6,11 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
 
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ActivityValueCatalogs;
@@ -18,7 +19,6 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.JcrUtils;
 
@@ -31,27 +31,12 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	// Among other to rely on its base path policies.
 	private final PeopleService peopleService;
 
-	/* DEPENDENCY INJECTION */
-	private UserManagementService userManagementService;
-
 	/**
 	 * Default constructor, caller must then inject a relevant
 	 * {@link userManagementService}
 	 */
 	public ActivityServiceImpl(PeopleService peopleService) {
 		this.peopleService = peopleService;
-	}
-
-	/**
-	 * Shortcut to create an activity service directly with a user management
-	 * service
-	 * 
-	 * @param userManagementService
-	 */
-	public ActivityServiceImpl(PeopleService peopleService,
-			UserManagementService userManagementService) {
-		this.peopleService = peopleService;
-		setUserManagementService(userManagementService);
 	}
 
 	/* ACTIVITIES */
@@ -206,30 +191,49 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	@Override
 	public List<Node> getTasksForUser(Session session, String username,
 			boolean onlyOpenTasks) {
+		List<Node> groups = peopleService.getUserManagementService()
+				.getUserGroups(session, username);
+		List<Node> tasks = new ArrayList<Node>();
+		for (Node group : groups)
+			tasks.addAll(getTasksForGroup(group, onlyOpenTasks));
+		return tasks;
+	}
+
+	public List<Node> getTasksForGroup(Node group, boolean onlyOpenTasks) {
+		// Cannot be null
+		String groupId = CommonsJcrUtils
+				.get(group, PeopleNames.PEOPLE_GROUP_ID);
+		return getTasksForGroup(CommonsJcrUtils.getSession(group), groupId,
+				onlyOpenTasks);
+	}
+
+	public List<Node> getTasksForGroup(Session session, String groupId,
+			boolean onlyOpenTasks) {
 		try {
-			List<Node> groups = userManagementService.getUserGroups(session,
-					username);
-			List<Node> tasks = new ArrayList<Node>();
-			for (Node group : groups) {
-				PropertyIterator pit = group
-						.getReferences(PeopleNames.PEOPLE_ASSIGNED_TO);
-				while (pit.hasNext()) {
-					Property currProp = pit.nextProperty();
-					Node currNode = currProp.getParent();
-					if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
-						if (onlyOpenTasks) {
-							if (!isTaskDone(currNode)
-									&& !isTaskSleeping(currNode))
-								tasks.add(currNode);
-						} else
-							tasks.add(currNode);
-					}
+			Query query = session
+					.getWorkspace()
+					.getQueryManager()
+					.createQuery(
+							"SELECT * FROM [" + PeopleTypes.PEOPLE_TASK
+									+ "] WHERE ["
+									+ PeopleNames.PEOPLE_ASSIGNED_TO + "]='"
+									+ groupId + "' ORDER BY ["
+									+ Property.JCR_LAST_MODIFIED + "] DESC ",
+							Query.JCR_SQL2);
+			NodeIterator nit = query.execute().getNodes();
+			if (onlyOpenTasks) {
+				List<Node> tasks = new ArrayList<Node>();
+				while (nit.hasNext()) {
+					Node currNode = nit.nextNode();
+					if (!isTaskDone(currNode) && !isTaskSleeping(currNode))
+						tasks.add(currNode);
 				}
-			}
-			return tasks;
+				return tasks;
+			} else
+				return JcrUtils.nodeIteratorToList(nit);
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to get tasks for user "
-					+ username);
+			throw new PeopleException("Unable to get tasks for group "
+					+ groupId);
 		}
 	}
 
@@ -317,12 +321,15 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	public String getAssignedToDisplayName(Node taskNode) {
 		try {
 			if (taskNode.hasProperty(PeopleNames.PEOPLE_ASSIGNED_TO)) {
-				Node referencedManager = taskNode.getProperty(
-						PeopleNames.PEOPLE_ASSIGNED_TO).getNode();
-				return CommonsJcrUtils.get(referencedManager,
-						Property.JCR_TITLE);
-			} else
-				return "";
+				String groupId = taskNode.getProperty(
+						PeopleNames.PEOPLE_ASSIGNED_TO).getString();
+
+				Node groupNode = peopleService.getUserManagementService()
+						.getGroupById(taskNode.getSession(), groupId);
+				if (groupNode != null)
+					return CommonsJcrUtils.get(groupNode, Property.JCR_TITLE);
+			}
+			return "";
 		} catch (RepositoryException e) {
 			throw new PeopleException(
 					"Unable to get name of group assigned to " + taskNode, e);
@@ -331,7 +338,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 
 	@Override
 	public Node createTask(Session session, Node parentNode, String title,
-			String description, Node assignedTo, List<Node> relatedTo,
+			String description, String assignedTo, List<Node> relatedTo,
 			Calendar dueDate, Calendar wakeUpDate) {
 		return createTask(session, parentNode, session.getUserID(), title,
 				description, assignedTo, relatedTo, new GregorianCalendar(),
@@ -340,7 +347,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 
 	@Override
 	public Node createTask(Session session, Node parentNode, String reporterId,
-			String title, String description, Node assignedTo,
+			String title, String description, String assignedTo,
 			List<Node> relatedTo, Calendar creationDate, Calendar dueDate,
 			Calendar wakeUpDate) {
 		return createTask(session, parentNode, PeopleTypes.PEOPLE_TASK,
@@ -351,7 +358,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	@Override
 	public Node createTask(Session session, Node parentNode,
 			String taskNodeType, String reporterId, String title,
-			String description, Node assignedTo, List<Node> relatedTo,
+			String description, String assignedTo, List<Node> relatedTo,
 			Calendar creationDate, Calendar dueDate, Calendar wakeUpDate) {
 
 		try {
@@ -379,7 +386,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 
 			taskNode.setProperty(PeopleNames.PEOPLE_REPORTED_BY, reporterId);
 
-			if (assignedTo != null)
+			if (CommonsJcrUtils.checkNotEmptyString(assignedTo))
 				taskNode.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO, assignedTo);
 
 			if (relatedTo != null && !relatedTo.isEmpty())
@@ -416,9 +423,4 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 		}
 	}
 
-	/* DEPENDENCY INJECTION */
-	public void setUserManagementService(
-			UserManagementService userManagementService) {
-		this.userManagementService = userManagementService;
-	}
 }

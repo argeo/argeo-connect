@@ -8,12 +8,14 @@ import javax.jcr.Session;
 
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.rap.ActivitiesImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.composites.DateText;
 import org.argeo.connect.people.rap.dialogs.PickUpGroupDialog;
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
@@ -109,10 +111,10 @@ public class NewSimpleTaskWizard extends Wizard {
 			return false;
 		}
 
-		createdTask = activityService.createTask(currSession, null,
-				titleTxt.getText(), descTxt.getText(), assignedToGroupNode,
-				relatedTo, dueDateCmp.getCalendar(),
-				wakeUpDateCmp.getCalendar());
+		createdTask = activityService.createTask(currSession, null, titleTxt
+				.getText(), descTxt.getText(), CommonsJcrUtils.get(
+				assignedToGroupNode, PeopleNames.PEOPLE_GROUP_ID), relatedTo,
+				dueDateCmp.getCalendar(), wakeUpDateCmp.getCalendar());
 
 		return true;
 	}

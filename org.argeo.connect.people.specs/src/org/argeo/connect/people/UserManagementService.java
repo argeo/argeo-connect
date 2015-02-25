@@ -20,26 +20,27 @@ public interface UserManagementService {
 	/* USERS */
 	/**
 	 * Returns the Node that will store all people specific information on a
-	 * end-user using its username as a deterministic key
+	 * end-user using its username as a deterministic key.
+	 * 
+	 * If a "argeo:profile" node exists but no "people:profile", the later is
+	 * created, saved and checked-in in a distinct session
+	 * 
+	 * @param session
+	 * @param username
+	 * @return a people:profile node or null if the argeo:profile is not found
 	 */
 	public Node getPeopleProfile(Session session, String username);
 
 	/** Centralize People Specific user creation. NAT API. will evolve. */
 	public Node createUser(Session adminSession,
-			UserAdminService userAdminService, String userName, char[] password,
-			String firstName, String lastName, String email, String desc,
-			List<String> roles);
-
-	/* GROUPS */
-	// /**
-	// * Returns the base path for the groups
-	// * **/
-	// public String getUserGroupParentPath();
+			UserAdminService userAdminService, String userName,
+			char[] password, String firstName, String lastName, String email,
+			String desc, List<String> roles);
 
 	/**
-	 * Creates a new user group to be used in task assignation among other.
-	 * Relies on the group ID if such a group already exists, existing one is
-	 * returned.
+	 * Creates a new user group to be used among others in task assignment. It
+	 * relies on the group ID: if such a group already exists, this existing one
+	 * is returned.
 	 * 
 	 * @param session
 	 * @param groupId
@@ -82,17 +83,24 @@ public interface UserManagementService {
 	/**
 	 * Session is saved and userprofile checked in after addition.
 	 * 
-	 * @param userProfile
-	 *            JCR Node of the profile in the Argeo Security model.
+	 * @param session
+	 * @param username
 	 * @param groups
 	 * @return
 	 */
 	public String addGroupsToUser(Session session, String username,
 			List<Node> groups);
 
+	/**
+	 * Returns the list of groups for this user
+	 * 
+	 * @param session
+	 * @param username
+	 */
 	public List<Node> getUserGroups(Session session, String username);
 
 	/* USERS */
+	// TODO the 3 following methods should rather be in the UserAdminService
 	/** returns true if the current user is in the specified role */
 	public boolean isUserInRole(String userRole);
 

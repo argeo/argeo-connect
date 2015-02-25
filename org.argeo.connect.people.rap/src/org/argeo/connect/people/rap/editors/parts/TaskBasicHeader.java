@@ -44,7 +44,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 
 	// Context
 	private final Session session;
-	// private final PeopleService peopleService;
+	private final PeopleService peopleService;
 	private final PeopleWorkbenchService peopleWorkbenchService;
 	private final ResourceService resourceService;
 	private final ActivityService activityService;
@@ -99,7 +99,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 			Node task, List<String> hiddenItemIds) {
 		super(parent, style);
 		this.toolkit = toolkit;
-		// this.peopleService = peopleService;
+		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.taskTypeId = taskTypeId;
 		this.task = task;
@@ -110,7 +110,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		session = CommonsJcrUtils.getSession(task);
 
 		this.hiddenItemIds = hiddenItemIds;
-		
+
 		// Initialise the form
 		myFormPart = new MyFormPart(this);
 		myFormPart.initialize(form);
@@ -136,16 +136,21 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 				return;
 			try {
 				if (isEditing()) {
-					refreshStatusCombo(statusCmb, task);
+					refreshStatusCombo(statusCmb, node);
 
 					dueDateCmp.refresh();
 					wakeUpDateCmp.refresh();
 					// update current assigned to group cache here
 					String manager = activityService
-							.getAssignedToDisplayName(task);
-					if (task.hasProperty(PeopleNames.PEOPLE_ASSIGNED_TO))
-						assignedToNode = task.getProperty(
-								PeopleNames.PEOPLE_ASSIGNED_TO).getNode();
+							.getAssignedToDisplayName(node);
+					if (task.hasProperty(PeopleNames.PEOPLE_ASSIGNED_TO)) {
+						String groupId = task.getProperty(
+								PeopleNames.PEOPLE_ASSIGNED_TO).getString();
+						assignedToNode = peopleService
+								.getUserManagementService().getGroupById(
+										node.getSession(), groupId);
+					}
+
 					manager += " ~ <a>Change</a>";
 					changeAssignationLk.setText(manager);
 					changeAssignationLk.getParent().layout();
@@ -349,8 +354,10 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 							return; // nothing has changed
 						else {
 							// Update value
+							String groupId = newNode.getProperty(
+									PeopleNames.PEOPLE_GROUP_ID).getString();
 							task.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO,
-									newNode);
+									groupId);
 							// update cache and display.
 							assignedToNode = newNode;
 							changeAssignationLk.setText(CommonsJcrUtils.get(

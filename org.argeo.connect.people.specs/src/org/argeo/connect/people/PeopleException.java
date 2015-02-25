@@ -1,9 +1,6 @@
 package org.argeo.connect.people;
 
-/**
- * Connect People's specific exception. For the time being, it just wraps a
- * usual RuntimeException
- */
+/** People specific exception. Simply wraps a <code>RuntimeException</code> */
 public class PeopleException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
@@ -14,5 +11,4 @@ public class PeopleException extends RuntimeException {
 	public PeopleException(String message, Throwable e) {
 		super(message, e);
 	}
-
 }

@@ -70,34 +70,6 @@ public class ContactValueCatalogs {
 	public final static String CONTACT_CAT_YAHOO = "Yahoo";
 	public final static String CONTACT_CAT_GOOGLE_TALK = "Google Talk";
 
-	// public static String[] getCategoryList(String entityType,
-	// String contactType, String nature) {
-	// if (PeopleTypes.PEOPLE_PHONE.equals(contactType)) {
-	// if (entityType.equals(PeopleTypes.PEOPLE_PERSON)) {
-	// if (CONTACT_NATURE_PRO.equals(nature))
-	// return ARRAY_PERSON_PRO_PHONES;
-	// else
-	// return ARRAY_PERSON_PRIVATE_PHONES;
-	// } else if (entityType.equals(PeopleTypes.PEOPLE_ORG))
-	// return ARRAY_ORG_PHONES;
-	// }
-	// // NO category for MAIL
-	// // else if (PeopleTypes.PEOPLE_MAil.equals(contactType))
-	// else if (PeopleTypes.PEOPLE_ADDRESS.equals(contactType)) {
-	// if (entityType.equals(PeopleTypes.PEOPLE_PERSON))
-	// return ARRAY_PERSON_ADDRESSES;
-	// else if (entityType.equals(PeopleTypes.PEOPLE_ORG))
-	// return ARRAY_ORG_ADDRESSES;
-	// }
-	// // NO category for URL
-	// // else if (PeopleTypes.PEOPLE_URL.equals(contactType))
-	// else if (PeopleTypes.PEOPLE_SOCIAL_MEDIA.equals(contactType))
-	// return ARRAY_SOCIAL_MEDIA;
-	// else if (PeopleTypes.PEOPLE_IMPP.equals(contactType))
-	// return ARRAY_IMPP;
-	// return new String[0];
-	// }
-
 	/* CONTACT TYPE */
 	// Contact categories: maps corresponding node types with a label
 	public static final Map<String, String> MAPS_CONTACT_TYPES;
@@ -112,7 +84,7 @@ public class ContactValueCatalogs {
 		MAPS_CONTACT_TYPES = Collections.unmodifiableMap(tmpMap);
 	}
 
-	// corresponding array for various lists
+	// Corresponding array for various lists
 	public static final String[] ARRAY_CONTACT_NATURES = { CONTACT_NATURE_PRO,
 			CONTACT_NATURE_PRIVATE, CONTACT_OTHER };
 
@@ -120,12 +92,12 @@ public class ContactValueCatalogs {
 			CONTACT_TYPE_PHONE, CONTACT_TYPE_ADDRESS,
 			CONTACT_TYPE_SOCIAL_MEDIA, CONTACT_TYPE_URL, CONTACT_TYPE_IMPP };
 
-	// person private phones
+	// Person private phones
 	public static final String[] ARRAY_PERSON_PRIVATE_PHONES = {
 			CONTACT_NO_VAL, CONTACT_CAT_MOBILE, CONTACT_CAT_DIRECT,
 			CONTACT_CAT_VOIP, CONTACT_CAT_FAX, CONTACT_OTHER };
 
-	// person professional phones
+	// Person professional phones
 	public static final String[] ARRAY_PERSON_PRO_PHONES = { CONTACT_NO_VAL,
 			CONTACT_CAT_MOBILE, CONTACT_CAT_DIRECT, CONTACT_CAT_MAIN,
 			CONTACT_CAT_VOIP, CONTACT_CAT_FAX, CONTACT_OTHER };
@@ -134,7 +106,7 @@ public class ContactValueCatalogs {
 	public static final String[] ARRAY_ORG_PHONES = { CONTACT_NO_VAL,
 			CONTACT_CAT_MAIN, CONTACT_CAT_VOIP, CONTACT_CAT_FAX, CONTACT_OTHER };
 
-	// Person adresses
+	// Person addresses
 	public static final String[] ARRAY_PERSON_WORK_ADDRESSES = {
 			CONTACT_NO_VAL, CONTACT_CAT_HEADOFFICE, CONTACT_CAT_SECOFFICE,
 			CONTACT_CAT_BILLING, CONTACT_CAT_DELIVERY,

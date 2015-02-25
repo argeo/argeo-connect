@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 
 import java.util.List;
 
+/** People constants */
 public interface PeopleConstants {
 
 	// Namespace
@@ -38,12 +39,6 @@ public interface PeopleConstants {
 			PEOPLE_RESOURCES, PEOPLE_ORGS, PEOPLE_PERSONS, PEOPLE_PROJECTS,
 			PEOPLE_USER_GROUPS, PEOPLE_ACTIVITIES);
 
-	// public static final List<String> KNOWN_RESOURCE_NAMES = asList(
-	// //
-	// PeopleNames.PEOPLE_TAGS, PeopleNames.PEOPLE_MAILING_LISTS,
-	// PeopleNames.PEOPLE_TASKS, PeopleNames.PEOPLE_COUNTRIES,
-	// PeopleNames.PEOPLE_LANGS);
-
 	// Corresponding subnodes for resources
 	public final static String PEOPLE_RESOURCE_TEMPLATE = "templates";
 	public final static String PEOPLE_RESOURCE_TAG_LIKE = "tags";
@@ -53,22 +48,16 @@ public interface PeopleConstants {
 	// public final static String PEOPLE_PROP_PREVENT_ML_ADDITION =
 	// "connect.people.user.preventMLAddition";
 
-	// TODO check this.
-	public final static Integer TARGET_LINK_PARENT = 0;
-	public final static Integer TARGET_LINK_REF = 1;
-
 	// default query limit
 	public final static long QUERY_DEFAULT_LIMIT = 50;
 
-	/*
-	 * USER ROLES
-	 */
+	// USER ROLES
 	public final static String ROLE_GUEST = "ROLE_REGISTERED_GUEST";
 	public final static String ROLE_MEMBER = "ROLE_REGISTERED_MEMBER";
 	public final static String ROLE_BUSINESS_ADMIN = "ROLE_BUSINESS_ADMIN";
 	public final static String ROLE_ADMIN = "ROLE_ADMIN";
 
-	/* LANGUAGE CONSTANTS */
+	// LANGUAGE CONSTANTS
 	public final static String LANG_EN = "en";
 	public final static String LANG_DE = "de";
 	public final static String LANG_FR = "fr";
@@ -81,5 +70,4 @@ public interface PeopleConstants {
 	public static final String IMPORT_CATALOGUE_KEY_COL = "Field";
 	public static final String IMPORT_CATALOGUE_VALUES_COL = "Values";
 	public static final String IMPORT_CATALOGUE_VALUES_SEPARATOR = "; ";
-
 }

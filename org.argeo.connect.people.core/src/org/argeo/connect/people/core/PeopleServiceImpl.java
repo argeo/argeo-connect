@@ -48,8 +48,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	private ContactService contactService = new ContactServiceImpl(this);
 
-	private ActivityService activityService = new ActivityServiceImpl(this,
-			userManagementService);
+	private ActivityService activityService = new ActivityServiceImpl(this);
 	private ResourceService resourceService = new ResourceServiceImpl(this);
 
 	// private Repository repository;

@@ -43,11 +43,6 @@ public class ActivityValueCatalogs {
 		MAPS_ACTIVITY_TYPES = Collections.unmodifiableMap(tmpMap);
 	}
 
-	// public static String[] getActivityTypeLabels() {
-	// return MAPS_ACTIVITY_TYPES.values().toArray(
-	// new String[MAPS_ACTIVITY_TYPES.size()]);
-	// }
-
 	public static String[] getActivityTypeLabels() {
 		return new String[] { ACT_LBL_NOTE, ACT_LBL_SENT_MAIL, ACT_LBL_CALL,
 				ACT_LBL_MEETING, ACT_LBL_SENT_FAX, ACT_LBL_POST_MAIL,

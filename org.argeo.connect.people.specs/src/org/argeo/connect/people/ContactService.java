@@ -14,29 +14,23 @@ import javax.jcr.Node;
  * */
 public interface ContactService {
 
-	/**
-	 * Retrieves the valid possible contact types
-	 */
+	/** Retrieves the valid possible contact types */
 	public String[] getKnownContactTypes();
 
-	/**
-	 * Retrieves the valid possible contact type labels
-	 */
+	/** Retrieves the valid possible contact type labels */
 	public String[] getKnownContactLabels();
 
-	/**
-	 * Returns the list of possible contacts given an entity
-	 */
+	/** Returns the list of possible contacts given an entity */
 	public String[] getContactTypeLabels(Node entity);
 
 	/**
-	 * Enable the definition of a list given the other information we already
+	 * Returns the list of possible values given the other information we already
 	 * have for this contact instance
 	 */
 	public String[] getContactPossibleValues(Node contact, String property);
 
 	/**
-	 * Returns possible category, depending on the contact type and contact
+	 * Returns the list of valid categories, depending on the contact type and contact
 	 * nature before the creation of the contact
 	 */
 	public String[] getContactCategories(String contactableType,

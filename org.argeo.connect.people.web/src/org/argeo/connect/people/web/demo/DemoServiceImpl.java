@@ -33,7 +33,6 @@ public class DemoServiceImpl extends PeopleServiceImpl implements
 	private Repository repository;
 	private String workspaceName;
 	private UserAdminService userAdminService;
-	private JcrSecurityModel jcrSecurityModel;
 	private Map<String, Resource> initResources = null;
 	/* DEMO ONLY: injected business data */
 	private Map<String, Resource> demoBusinessData = null;
@@ -53,8 +52,8 @@ public class DemoServiceImpl extends PeopleServiceImpl implements
 						.getNode(getBasePath(PeopleTypes.PEOPLE_PERSON));
 				if (!personPar.hasNodes()) {
 					DemoDataImport importer = new DemoDataImport();
-					importer.doImport(this, userAdminService, jcrSecurityModel,
-							adminSession, demoBusinessData);
+					importer.doImport(this, userAdminService, adminSession,
+							demoBusinessData);
 				}
 			}
 		} catch (Exception e) {
