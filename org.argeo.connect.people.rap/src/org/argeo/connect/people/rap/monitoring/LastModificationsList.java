@@ -1,16 +1,19 @@
 package org.argeo.connect.people.rap.monitoring;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
-import javax.jcr.PropertyIterator;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.utils.Refreshable;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.ui.IEditorInput;
@@ -18,13 +21,11 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 
 /**
- * Quick and dirty editor to monitor number of references that point to a given
- * node: we have noticed issues with PostgreSQL cache management on big data
- * import
+ * Quick and dirty editor to monitor the last 100 modifications on a repo
  * 
  * TODO work on this to enrich the generic monitoring perspective.
  */
-public class ReferencedList extends NodeTypeList implements Refreshable {
+public class LastModificationsList extends NodeTypeList implements Refreshable {
 
 	// Business Object
 	private String[][] elements;
@@ -38,9 +39,9 @@ public class ReferencedList extends NodeTypeList implements Refreshable {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		setPartName("Referenced list");
-		setTitleToolTip("Display the list of referenceable nodes that "
-				+ "have more than 10 references");
+		setPartName("Last modif. list");
+		setTitleToolTip("Display the list of the most recent "
+				+ "modifications done on the system");
 	}
 
 	@Override
@@ -51,20 +52,20 @@ public class ReferencedList extends NodeTypeList implements Refreshable {
 					.getWorkspace()
 					.getQueryManager()
 					.createQuery(
-							"select * from [nt:unstructured] as instances",
+							"SELECT * FROM [" + NodeType.MIX_LAST_MODIFIED
+									+ "] ORDER BY ["
+									+ Property.JCR_LAST_MODIFIED + "] DESC ",
 							Query.JCR_SQL2);
+			query.setLimit(100);
 			NodeIterator nit = query.execute().getNodes();
 
 			List<String[]> infos = new ArrayList<String[]>();
 			while (nit.hasNext()) {
 				Node currNode = nit.nextNode();
-				PropertyIterator pit = currNode.getReferences();
-				if (pit.getSize() > 10) {
-					String[] vals = new String[2];
-					vals[0] = nameLP.getText(currNode);
-					vals[1] = countLP.getText(pit.getSize());
-					infos.add(vals);
-				}
+				String[] vals = new String[2];
+				vals[0] = nameLP.getText(currNode);
+				vals[1] = countLP.getText(currNode);
+				infos.add(vals);
 			}
 
 			elements = infos.toArray(new String[1][2]);
@@ -100,7 +101,17 @@ public class ReferencedList extends NodeTypeList implements Refreshable {
 
 		@Override
 		public String getText(Object element) {
-			return numberFormat.format((Long) element);
+			try {
+				Node currNode = (Node) element;
+				String modifBy = CommonsJcrUtils.get(currNode,
+						Property.JCR_LAST_MODIFIED_BY);
+				Calendar modifOn = currNode.getProperty(Property.JCR_LAST_MODIFIED)
+						.getDate();
+				return modifBy + " - " + dateFormat.format(modifOn.getTime());
+			} catch (Exception e) {
+				throw new PeopleException("Unable to retrieve and "
+						+ "format last modif info for " + element, e);
+			}
 		}
 	}
 }

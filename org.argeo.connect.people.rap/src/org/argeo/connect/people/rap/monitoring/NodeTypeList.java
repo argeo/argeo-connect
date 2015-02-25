@@ -1,7 +1,9 @@
 package org.argeo.connect.people.rap.monitoring;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +48,8 @@ public class NodeTypeList extends EditorPart implements Refreshable {
 	private Session session;
 
 	protected NumberFormat numberFormat;
+	protected DateFormat dateFormat = new SimpleDateFormat(
+			"dd/MM/yyyy 'at' HH:mm");
 
 	// Business Object
 	private String[][] elements;
