@@ -28,12 +28,14 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.rap.commands.ForceRefresh;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
+import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.security.ui.PrivilegedJob;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -375,9 +377,6 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 		public MergeEntitiesJob(Display display, PeopleService peopleService,
 				Node masterNode, Row[] toUpdateRows, String selectorName) {
 			super("Updating");
-			// Must be called *before* the job is scheduled so that a progress
-			// window appears.
-			// setUser(true);
 			this.display = display;
 
 			try {
@@ -434,6 +433,13 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 						monitor.worked(1);
 					}
 				}
+
+				// Update the user interface asynchronously
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						CommandUtils.callCommand(ForceRefresh.ID);
+					}
+				});
 			} catch (Exception e) {
 				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
 						"Unable to perform merge update on " + masterPath
