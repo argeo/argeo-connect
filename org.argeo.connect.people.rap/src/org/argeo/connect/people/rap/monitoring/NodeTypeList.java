@@ -117,22 +117,26 @@ public class NodeTypeList extends EditorPart implements Refreshable {
 			if (session.nodeExists(NODE_DEF_PARENT_PATH)) {
 				Node parent = session.getNode(NODE_DEF_PARENT_PATH);
 				NodeIterator nit = parent.getNodes();
-
-				List<String[]> infos = new ArrayList<String[]>();
-				while (nit.hasNext()) {
-					Node currDef = nit.nextNode();
-					if (currDef.isNodeType(NodeType.NT_NODE_TYPE)) {
-						String[] vals = new String[2];
-						vals[0] = nameLP.getText(currDef);
-						vals[1] = countLP.getText(currDef);
-						infos.add(vals);
+				if (!nit.hasNext()) {
+					elements = null;
+					tableViewer.setInput(elements);
+					// we must explicitly set the items count
+					tableViewer.setItemCount(0);
+				} else {
+					List<String[]> infos = new ArrayList<String[]>();
+					while (nit.hasNext()) {
+						Node currDef = nit.nextNode();
+						if (currDef.isNodeType(NodeType.NT_NODE_TYPE)) {
+							String[] vals = new String[2];
+							vals[0] = nameLP.getText(currDef);
+							vals[1] = countLP.getText(currDef);
+							infos.add(vals);
+						}
 					}
+					elements = infos.toArray(new String[1][2]);
+					tableViewer.setInput(elements);
+					tableViewer.setItemCount(elements.length);
 				}
-
-				elements = infos.toArray(new String[1][2]);
-				tableViewer.setInput(elements);
-				// we must explicitly set the items count
-				tableViewer.setItemCount(elements.length);
 				tableViewer.refresh();
 			}
 		} catch (RepositoryException e) {

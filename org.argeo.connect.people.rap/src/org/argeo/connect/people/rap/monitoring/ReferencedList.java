@@ -57,27 +57,25 @@ public class ReferencedList extends NodeTypeList implements Refreshable {
 							Query.JCR_SQL2);
 			NodeIterator nit = query.execute().getNodes();
 			TableViewer tableViewer = getTableViewer();
-			if (!nit.hasNext()) {
-				elements = null;
-				tableViewer.setInput(elements);
-				// we must explicitly set the items count
-				tableViewer.setItemCount(0);
-			} else {
-				List<String[]> infos = new ArrayList<String[]>();
-				while (nit.hasNext()) {
-					Node currNode = nit.nextNode();
-					PropertyIterator pit = currNode.getReferences();
-					if (pit.getSize() > MIN_REF_NB) {
-						String[] vals = new String[2];
-						vals[0] = nameLP.getText(currNode);
-						vals[1] = countLP.getText(pit.getSize());
-						infos.add(vals);
-					}
+			List<String[]> infos = new ArrayList<String[]>();
+			while (nit.hasNext()) {
+				Node currNode = nit.nextNode();
+				PropertyIterator pit = currNode.getReferences();
+				if (pit.getSize() > MIN_REF_NB) {
+					String[] vals = new String[2];
+					vals[0] = nameLP.getText(currNode);
+					vals[1] = countLP.getText(pit.getSize());
+					infos.add(vals);
 				}
+			}
+			if (infos.size() > 0) {
 				elements = infos.toArray(new String[1][2]);
 				tableViewer.setInput(elements);
-				// we must explicitly set the items count
 				tableViewer.setItemCount(elements.length);
+			} else {
+				elements = null;
+				tableViewer.setInput(elements);
+				tableViewer.setItemCount(0);
 			}
 			tableViewer.refresh();
 		} catch (RepositoryException e) {

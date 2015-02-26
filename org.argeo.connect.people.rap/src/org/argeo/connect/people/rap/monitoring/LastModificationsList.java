@@ -59,20 +59,28 @@ public class LastModificationsList extends NodeTypeList implements Refreshable {
 			query.setLimit(100);
 			NodeIterator nit = query.execute().getNodes();
 
-			List<String[]> infos = new ArrayList<String[]>();
-			while (nit.hasNext()) {
-				Node currNode = nit.nextNode();
-				String[] vals = new String[2];
-				vals[0] = nameLP.getText(currNode);
-				vals[1] = countLP.getText(currNode);
-				infos.add(vals);
-			}
-
-			elements = infos.toArray(new String[1][2]);
 			TableViewer tableViewer = getTableViewer();
-			tableViewer.setInput(elements);
-			// we must explicitly set the items count
-			tableViewer.setItemCount(elements.length);
+			if (!nit.hasNext()) {
+				elements = null;
+				tableViewer.setInput(elements);
+				// we must explicitly set the items count
+				tableViewer.setItemCount(0);
+			} else {
+
+				List<String[]> infos = new ArrayList<String[]>();
+				while (nit.hasNext()) {
+					Node currNode = nit.nextNode();
+					String[] vals = new String[2];
+					vals[0] = nameLP.getText(currNode);
+					vals[1] = countLP.getText(currNode);
+					infos.add(vals);
+				}
+
+				elements = infos.toArray(new String[1][2]);
+				tableViewer.setInput(elements);
+				// we must explicitly set the items count
+				tableViewer.setItemCount(elements.length);
+			}
 			tableViewer.refresh();
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to refresh node type list table",
@@ -105,8 +113,8 @@ public class LastModificationsList extends NodeTypeList implements Refreshable {
 				Node currNode = (Node) element;
 				String modifBy = CommonsJcrUtils.get(currNode,
 						Property.JCR_LAST_MODIFIED_BY);
-				Calendar modifOn = currNode.getProperty(Property.JCR_LAST_MODIFIED)
-						.getDate();
+				Calendar modifOn = currNode.getProperty(
+						Property.JCR_LAST_MODIFIED).getDate();
 				return modifBy + " - " + dateFormat.format(modifOn.getTime());
 			} catch (Exception e) {
 				throw new PeopleException("Unable to retrieve and "
