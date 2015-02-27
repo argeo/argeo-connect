@@ -8,6 +8,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
@@ -22,8 +23,12 @@ public class ForceRefresh extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		String partId = event.getParameter(PARAM_VIEW_ID);
 
-		IWorkbenchPage activePage = HandlerUtil.getActiveWorkbenchWindow(event)
-				.getActivePage();
+		IWorkbenchWindow iww = HandlerUtil.getActiveWorkbenchWindow(event);
+		if (iww == null)
+			return null;
+		
+		
+		IWorkbenchPage activePage = iww.getActivePage();
 
 		if (partId != null) {
 			IViewPart viewPart = activePage.findView(partId);

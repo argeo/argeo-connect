@@ -14,18 +14,13 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
-import org.argeo.ArgeoMonitor;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleBasicEditor;
 import org.argeo.connect.people.rap.providers.MyLazyContentProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.eclipse.ui.EclipseArgeoMonitor;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
-import org.argeo.security.ui.PrivilegedJob;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -38,15 +33,15 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 
 /**
- * Quick and dirty editor to monitor the number of instances for each known node
- * type
- * 
- * TODO Work on this to enrich the generic monitoring perspective.
+ * WORK IN PROGRESS: Generic table to manage display of CSV log file of a given
+ * type. Also enable the launch of a new long running job to generate an updated
+ * file.
  */
-public class NodeTypeList extends AbstractPeopleBasicEditor implements
-		Refreshable {
+public class AbstractCsvLogTableViewer extends AbstractPeopleBasicEditor
+		implements Refreshable {
 
 	/* DEPENDENCY INJECTION */
+	private Session session;
 
 	protected NumberFormat numberFormat;
 	protected DateFormat dateFormat = new SimpleDateFormat(
@@ -71,6 +66,7 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 
 		numberFormat = DecimalFormat.getInstance();
 		((DecimalFormat) numberFormat).applyPattern("#,##0");
+
 	}
 
 	@Override
@@ -111,30 +107,16 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 
 	@Override
 	public void forceRefresh(Object object) {
-		new QueryJob().schedule();
-	}
-
-	/** Privileged job that performs the query asynchronously */
-	private class QueryJob extends PrivilegedJob {
-		private Table table;
-
-		public QueryJob() {
-			super("AsynchronousQuery");
-			tableViewer = getTableViewer();
-			table = getTableViewer().getTable();
-		}
-
-		protected IStatus doRun(IProgressMonitor progressMonitor) {
-			ArgeoMonitor monitor = new EclipseArgeoMonitor(progressMonitor);
-			if (monitor != null && !monitor.isCanceled())
-				monitor.beginTask("Querying the repository", -1);
-
-			Session session = getSession();
-			try {
-				if (session.nodeExists(NODE_DEF_PARENT_PATH)) {
-					Node parent = session.getNode(NODE_DEF_PARENT_PATH);
-					NodeIterator nit = parent.getNodes();
-					final List<String[]> infos = new ArrayList<String[]>();
+		// TODO put this in a job
+		try {
+			if (session.nodeExists(NODE_DEF_PARENT_PATH)) {
+				Node parent = session.getNode(NODE_DEF_PARENT_PATH);
+				NodeIterator nit = parent.getNodes();
+				if (!nit.hasNext()) {
+					// elements = null;
+					lazyCp.setElements(null);
+				} else {
+					List<String[]> infos = new ArrayList<String[]>();
 					while (nit.hasNext()) {
 						Node currDef = nit.nextNode();
 						if (currDef.isNodeType(NodeType.NT_NODE_TYPE)) {
@@ -144,25 +126,19 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 							infos.add(vals);
 						}
 					}
-
-					if (table.isDisposed())
-						return Status.OK_STATUS;
-
-					table.getDisplay().asyncExec(new Runnable() {
-						public void run() {
-							Object[] input = null;
-							if (!infos.isEmpty())
-								input = infos.toArray(new String[1][2]);
-							lazyCp.setElements(input);
-						}
-					});
+					lazyCp.setElements(infos.toArray(new String[1][2]));
 				}
-			} catch (RepositoryException e) {
-				throw new PeopleException(
-						"Unable to refresh node type list table", e);
 			}
-			return Status.OK_STATUS;
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to refresh node type list table",
+					e);
 		}
+	}
+
+	@Override
+	public void dispose() {
+		JcrUtils.logoutQuietly(session);
+		super.dispose();
 	}
 
 	// PROVIDERS
@@ -180,6 +156,7 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 		}
 	}
 
+	// PROVIDERS
 	protected class NameLP extends ColumnLabelProvider {
 		private static final long serialVersionUID = -8179051587196328000L;
 
@@ -201,7 +178,7 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 		public String getText(Object element) {
 			try {
 				String currType = ((Node) element).getName();
-				Query query = getSession()
+				Query query = session
 						.getWorkspace()
 						.getQueryManager()
 						.createQuery(

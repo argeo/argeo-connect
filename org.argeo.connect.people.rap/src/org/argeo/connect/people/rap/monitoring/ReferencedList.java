@@ -9,10 +9,18 @@ import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 
+import org.argeo.ArgeoMonitor;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.rap.providers.MyLazyContentProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;
+import org.argeo.eclipse.ui.EclipseArgeoMonitor;
+import org.argeo.security.ui.PrivilegedJob;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -28,11 +36,7 @@ public class ReferencedList extends NodeTypeList implements Refreshable {
 
 	private final int MIN_REF_NB = 5;
 
-	// Business Object
-	private String[][] elements;
-
 	// This page widget
-	// private TableViewer tableViewer;
 	private NameLP nameLP = new NameLP();
 	private CountLP countLP = new CountLP();
 
@@ -47,40 +51,67 @@ public class ReferencedList extends NodeTypeList implements Refreshable {
 
 	@Override
 	public void forceRefresh(Object object) {
-		// TODO put this in a job
-		try {
-			Query query = getSession()
-					.getWorkspace()
-					.getQueryManager()
-					.createQuery(
-							"select * from [nt:unstructured] as instances",
-							Query.JCR_SQL2);
-			NodeIterator nit = query.execute().getNodes();
-			TableViewer tableViewer = getTableViewer();
-			List<String[]> infos = new ArrayList<String[]>();
-			while (nit.hasNext()) {
-				Node currNode = nit.nextNode();
-				PropertyIterator pit = currNode.getReferences();
-				if (pit.getSize() > MIN_REF_NB) {
-					String[] vals = new String[2];
-					vals[0] = nameLP.getText(currNode);
-					vals[1] = countLP.getText(pit.getSize());
-					infos.add(vals);
+		new QueryJob().schedule();
+	}
+
+	/** Privileged job that performs the query asynchronously */
+	private class QueryJob extends PrivilegedJob {
+		private TableViewer tableViewer;
+		private Table table;
+
+		public QueryJob() {
+			super("AsynchronousQuery");
+			tableViewer = getTableViewer();
+			table = getTableViewer().getTable();
+		}
+
+		protected IStatus doRun(IProgressMonitor progressMonitor) {
+			ArgeoMonitor monitor = new EclipseArgeoMonitor(progressMonitor);
+			if (monitor != null && !monitor.isCanceled())
+				monitor.beginTask("Querying the repository", -1);
+
+			try {
+				Query query = getSession()
+						.getWorkspace()
+						.getQueryManager()
+						.createQuery(
+								"select * from [nt:unstructured] as instances",
+								Query.JCR_SQL2);
+				NodeIterator nit = query.execute().getNodes();
+
+				final List<String[]> infos = new ArrayList<String[]>();
+				while (nit.hasNext()) {
+					Node currNode = nit.nextNode();
+					PropertyIterator pit = currNode.getReferences();
+					if (pit.getSize() > MIN_REF_NB) {
+						String[] vals = new String[2];
+						vals[0] = nameLP.getText(currNode);
+						vals[1] = countLP.getText(pit.getSize());
+						infos.add(vals);
+					}
 				}
+
+				if (table.isDisposed())
+					return Status.OK_STATUS;
+
+				if (table.isDisposed())
+					return Status.OK_STATUS;
+
+				table.getDisplay().asyncExec(new Runnable() {
+					public void run() {
+						MyLazyContentProvider lazyCp = (MyLazyContentProvider) tableViewer
+								.getContentProvider();
+						Object[] input = null;
+						if (!infos.isEmpty())
+							input = infos.toArray(new String[1][2]);
+						lazyCp.setElements(input);
+					}
+				});
+			} catch (RepositoryException e) {
+				throw new PeopleException(
+						"Unable to refresh Referenced node table", e);
 			}
-			if (infos.size() > 0) {
-				elements = infos.toArray(new String[1][2]);
-				tableViewer.setInput(elements);
-				tableViewer.setItemCount(elements.length);
-			} else {
-				elements = null;
-				tableViewer.setInput(elements);
-				tableViewer.setItemCount(0);
-			}
-			tableViewer.refresh();
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to refresh node type list table",
-					e);
+			return Status.OK_STATUS;
 		}
 	}
 

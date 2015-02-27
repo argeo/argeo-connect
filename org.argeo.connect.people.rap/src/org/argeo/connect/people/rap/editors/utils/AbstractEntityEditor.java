@@ -20,7 +20,6 @@ import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.commands.CancelAndCheckInItem;
 import org.argeo.connect.people.rap.commands.CheckOutItem;
 import org.argeo.connect.people.rap.commands.DeleteEntity;
-import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.utils.CheckoutSourceProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
@@ -71,7 +70,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
-	private String openEntityEditorCmdId = OpenEntityEditor.ID;
+	// private String openEntityEditorCmdId = OpenEntityEditor.ID;
 
 	/* CONSTANTS */
 	// length for short strings (typically tab names)
@@ -164,9 +163,9 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 	 * Exposes the id of the openEntityEditor command. By default it is
 	 * {@code OpenEntityEditor.ID} but might be changed by injection
 	 */
-	final protected String getOpenEntityEditorCmdId() {
-		return openEntityEditorCmdId;
-	}
+//	final protected String getOpenEntityEditorCmdId() {
+//		return openEntityEditorCmdId;
+//	}
 
 	/**
 	 * Displays by default only the last update snippet. Overwrite to adapt to
@@ -728,7 +727,7 @@ public abstract class AbstractEntityEditor extends EditorPart implements
 		this.repository = repository;
 	}
 
-	public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
-		this.openEntityEditorCmdId = openEntityEditorCmdId;
-	}
+	// public void setOpenEntityEditorCmdId(String openEntityEditorCmdId) {
+	// this.openEntityEditorCmdId = openEntityEditorCmdId;
+	// }
 }

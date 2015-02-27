@@ -19,6 +19,7 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
+import org.argeo.eclipse.ui.workbench.WorkbenchUiPlugin;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.rap.rwt.RWT;
@@ -54,6 +55,15 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * context
  */
 public class PeopleRapUtils {
+	/**
+	 * Shortcut to retrieve the current active page. It assumes the bundle
+	 * WorkbenchUiPlugin is started (it is by the way the basis of all apps
+	 * based upon argeo framework that use the workbench)
+	 */
+	public static IWorkbenchPage getActivePage() {
+		return WorkbenchUiPlugin.getDefault().getWorkbench()
+				.getActiveWorkbenchWindow().getActivePage();
+	}
 
 	/**
 	 * Shortcut to refresh a <code>DateTime</code> widget given a Node in a form

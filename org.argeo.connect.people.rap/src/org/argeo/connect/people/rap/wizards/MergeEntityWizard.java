@@ -30,8 +30,10 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.ForceRefresh;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
+import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
+import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
@@ -59,6 +61,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
 
 /**
  * Generic wizard to add merge 2 or more entities of the same type * This will
@@ -85,7 +89,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 	private Node masterNode;
 
 	// Enable refresh of the calling editor at the end of the job
-	private Display callingDisplay;
+	private IWorkbenchPage callingPage;
 
 	// private String tagId;
 	// private Node tagInstance;
@@ -112,11 +116,11 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 	 * @param tagId
 	 * @param tagPropName
 	 */
-	public MergeEntityWizard(Display callingDisplay,
+	public MergeEntityWizard(IWorkbenchPage callingPage,
 			PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, Row[] rows,
 			String selectorName, ColumnLabelProvider overviewLP) {
-		this.callingDisplay = callingDisplay;
+		this.callingPage = callingPage;
 		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.rows = rows;
@@ -156,7 +160,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 			MessageDialog.openError(getShell(), "Unvalid information", errMsg);
 			return false;
 		}
-		new MergeEntitiesJob(callingDisplay, peopleService, masterNode, rows,
+		new MergeEntitiesJob(callingPage, peopleService, masterNode, rows,
 				selectorName).schedule();
 		return true;
 	}
@@ -185,7 +189,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 		public void createControl(Composite parent) {
 			Composite body = new Composite(parent, SWT.NONE);
 			body.setLayout(PeopleUiUtils.noSpaceGridLayout());
-			// A composite that display chosen entity
+			// A composite that callingPage chosen entity
 
 			Composite headerCmp = new Composite(body, SWT.NONE);
 			headerCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
@@ -371,13 +375,15 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 		private List<String> slavePathes = new ArrayList<String>();
 		private List<String> modifiedPathes = new ArrayList<String>();
 
-		@SuppressWarnings("unused")
-		private Display display;
+		private List<String> removedIds = new ArrayList<String>();
 
-		public MergeEntitiesJob(Display display, PeopleService peopleService,
-				Node masterNode, Row[] toUpdateRows, String selectorName) {
+		private IWorkbenchPage callingPage;
+
+		public MergeEntitiesJob(IWorkbenchPage callingPage,
+				PeopleService peopleService, Node masterNode,
+				Row[] toUpdateRows, String selectorName) {
 			super("Updating");
-			this.display = display;
+			this.callingPage = callingPage;
 
 			try {
 				this.masterPath = masterNode.getPath();
@@ -417,6 +423,8 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 										+ CommonsJcrUtils.get(currSlave,
 												Property.JCR_TITLE));
 							}
+
+							removedIds.add(currSlave.getIdentifier());
 							currSlave.remove();
 						}
 						monitor.worked(1);
@@ -435,10 +443,47 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 				}
 
 				// Update the user interface asynchronously
-				Display.getDefault().asyncExec(new Runnable() {
+				// wait one second so that the monitor & the dialog are
+				// disposed.
+				// Do something later in the UI thread
+				// callingPage.asyncExec(new Runnable() {
+				// public void run() {
+				// callingPage.timerExec(1000, new Runnable() {
+				// @Override
+				// public void run() {
+				// // Refresh list
+				// CommandUtils.callCommand(ForceRefresh.ID);
+				// }});}});
+				Display currDisplay = callingPage.getWorkbenchWindow().getShell()
+						.getDisplay();
+				currDisplay.asyncExec(new Runnable() {
 					public void run() {
-						CommandUtils.callCommand(ForceRefresh.ID);
+						try {
+							EntityEditorInput eei;
+							// Close removed node editors
+							for (String jcrId : removedIds) {
+								eei = new EntityEditorInput(jcrId);
+								IEditorPart iep = callingPage.findEditor(eei);
+								if (iep != null)
+									callingPage.closeEditor(iep, false);
+							}
+
+							// Refresh master editor if opened
+							eei = new EntityEditorInput(masterNode
+									.getIdentifier());
+							IEditorPart iep = callingPage.findEditor(eei);
+							if (iep != null && iep instanceof Refreshable)
+								((Refreshable) iep).forceRefresh(null);
+
+							// Refresh list
+							CommandUtils.callCommand(ForceRefresh.ID);
+						} catch (Exception e) {
+							// Fail without notifying the user
+							log.error("Unable to refresh the workbench after merge");
+							e.printStackTrace();
+						}
 					}
+
 				});
 			} catch (Exception e) {
 				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,

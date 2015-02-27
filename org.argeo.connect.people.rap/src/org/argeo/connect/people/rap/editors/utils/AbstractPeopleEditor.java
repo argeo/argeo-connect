@@ -541,6 +541,11 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	}
 
 	/* DEPENDENCY INJECTION */
+
+	public void setRepository(Repository repository) {
+		this.repository = repository;
+	}
+	
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
 	}
@@ -548,9 +553,5 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	public void setPeopleWorkbenchService(
 			PeopleWorkbenchService peopleWorkbenchService) {
 		this.peopleWorkbenchService = peopleWorkbenchService;
-	}
-
-	public void setRepository(Repository repository) {
-		this.repository = repository;
 	}
 }
