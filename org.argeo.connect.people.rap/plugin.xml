@@ -50,14 +50,14 @@
 		<!-- Users and tasks Management -->
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/people.gif"
+			icon="icons/group.gif"
 			id="org.argeo.connect.people.rap.userGroupsView"
 			name="Groups"
 			restorable="true">
 		</view>
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/people.gif"
+			icon="icons/user.gif"
 			id="org.argeo.connect.people.rap.adminUsersView"
 			name="Users"
 			restorable="true">
