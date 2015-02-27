@@ -3,6 +3,7 @@ package org.argeo.connect.people.core;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 
 import org.argeo.connect.people.PeopleException;
@@ -152,9 +153,6 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 	@Override
 	public Node createOrUpdateJob(Node oldJob, Node person, Node organisation,
 			String position, String department, boolean isPrimary) {
-		// A shortcut to have a node name even when no position is given
-		String newNodeName = CommonsJcrUtils.checkNotEmptyString(position) ? position
-				: "Unnamed_job";
 
 		// The job on which to update various info
 		Node newJob = null;
@@ -176,6 +174,17 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 					newJob = oldJob;
 			}
 
+			// Define the job node new name
+			String orgName = CommonsJcrUtils.get(organisation,
+					PeopleNames.PEOPLE_LEGAL_NAME);
+			String orgUid = CommonsJcrUtils.get(organisation,
+					PeopleNames.PEOPLE_UID);
+			String newNodeName = null;
+			if (CommonsJcrUtils.checkNotEmptyString(orgName))
+				newNodeName = JcrUtils.replaceInvalidChars(newNodeName);
+			else
+				newNodeName = orgUid;
+
 			boolean wasCO = CommonsJcrUtils.checkCOStatusBeforeUpdate(person);
 			// Create node if necessary
 			if (newJob == null) {
@@ -183,24 +192,28 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 						PeopleNames.PEOPLE_JOBS, NodeType.NT_UNSTRUCTURED);
 				newJob = parentNode
 						.addNode(newNodeName, PeopleTypes.PEOPLE_JOB);
+			} else if (!newNodeName.equals(newJob.getName())) {
+				Session session = newJob.getSession();
+				String srcAbsPath = newJob.getPath();
+				String destAbsPath = JcrUtils.parentPath(srcAbsPath) + "/"+ newNodeName;
+				session.move(srcAbsPath, destAbsPath);
 			}
 
-			// update properties
-
+			// Update properties
 			// Related org
-			newJob.setProperty(PeopleNames.PEOPLE_REF_UID, organisation
-					.getProperty(PeopleNames.PEOPLE_UID).getString());
+			newJob.setProperty(PeopleNames.PEOPLE_REF_UID, orgUid);
 
 			// position
-			if (position == null)
-				position = ""; // to be able to remove an existing position
-			newJob.setProperty(PeopleNames.PEOPLE_ROLE, position);
-			// TODO update node name ??
-
+			if (CommonsJcrUtils.isEmptyString(position) && newJob.hasProperty(PeopleNames.PEOPLE_ROLE))
+				newJob.getProperty(PeopleNames.PEOPLE_ROLE).remove();
+			else 
+				newJob.setProperty(PeopleNames.PEOPLE_ROLE, position);
+			
 			// department
-			if (department == null)
-				department = "";
-			newJob.setProperty(PeopleNames.PEOPLE_DEPARTMENT, department);
+			if (CommonsJcrUtils.isEmptyString(department) && newJob.hasProperty(PeopleNames.PEOPLE_DEPARTMENT))
+				newJob.getProperty(PeopleNames.PEOPLE_DEPARTMENT).remove();
+			else 
+				newJob.setProperty(PeopleNames.PEOPLE_DEPARTMENT, department);
 
 			// primary flag
 			if (isPrimary)
