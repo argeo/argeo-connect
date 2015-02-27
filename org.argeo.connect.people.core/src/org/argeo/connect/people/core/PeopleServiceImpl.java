@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ContactService;
+import org.argeo.connect.people.MaintenanceService;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -45,11 +46,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private UserManagementService userManagementService = new UserManagementServiceImpl(
 			this);
 	private PersonService personService = new PersonServiceImpl(this);
-
 	private ContactService contactService = new ContactServiceImpl(this);
-
 	private ActivityService activityService = new ActivityServiceImpl(this);
 	private ResourceService resourceService = new ResourceServiceImpl(this);
+	private MaintenanceService maintenanceService = new MaintenanceServiceImpl(
+			this);
 
 	// private Repository repository;
 
@@ -462,6 +463,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	@Override
 	public ResourceService getResourceService() {
 		return resourceService;
+	}
+
+	@Override
+	public MaintenanceService getMaintenanceService() {
+		return maintenanceService;
 	}
 
 	@Override

@@ -1,10 +1,15 @@
 package org.argeo.connect.people.rap.monitoring;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -14,10 +19,13 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.argeo.ArgeoMonitor;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleBasicEditor;
-import org.argeo.connect.people.rap.providers.MyLazyContentProvider;
+import org.argeo.connect.people.rap.providers.SimpleLazyContentProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
@@ -47,17 +55,25 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 		Refreshable {
 
 	/* DEPENDENCY INJECTION */
+	private PeopleService peopleService;
 
+	// Configuration
 	protected NumberFormat numberFormat;
 	protected DateFormat dateFormat = new SimpleDateFormat(
 			"dd/MM/yyyy 'at' HH:mm");
+	protected DateFormat isoFormat = new SimpleDateFormat("yyyy-dd-MM_HH-mm");
+	protected final String SEPARATOR = ",";
+	protected final String DELIMITER = "\"";
+	protected final String CR = "\n";
+	private final static String NODE_DEF_PARENT_PATH = "/jcr:system/jcr:nodeTypes";
 
-	// Business Object
-	// private String[][] elements;
+	private final String relPath = "/nodeInstances";
+	private final String[] headers = { "Name", "Nb of occurences" };
+	private final String prefix = "instanceNb";
 
 	// This page widget
 	private TableViewer tableViewer;
-	private MyLazyContentProvider lazyCp;
+	private SimpleLazyContentProvider lazyCp;
 	private NameLP nameLP = new NameLP();
 	private CountLP countLP = new CountLP();
 
@@ -102,12 +118,10 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 				SWT.RIGHT, 150);
 		column.setLabelProvider(new SimpleLP(1));
 
-		lazyCp = new MyLazyContentProvider(viewer);
+		lazyCp = new SimpleLazyContentProvider(viewer);
 		viewer.setContentProvider(lazyCp);
 		return viewer;
 	}
-
-	private final static String NODE_DEF_PARENT_PATH = "/jcr:system/jcr:nodeTypes";
 
 	@Override
 	public void forceRefresh(Object object) {
@@ -130,10 +144,18 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 				monitor.beginTask("Querying the repository", -1);
 
 			Session session = getSession();
+			OutputStream outputStream = null;
 			try {
 				if (session.nodeExists(NODE_DEF_PARENT_PATH)) {
 					Node parent = session.getNode(NODE_DEF_PARENT_PATH);
 					NodeIterator nit = parent.getNodes();
+
+					if (nit.hasNext()) {
+						outputStream = new FileOutputStream(createLogFile(
+								relPath, prefix));
+						writeLine(outputStream, headers);
+					}
+
 					final List<String[]> infos = new ArrayList<String[]>();
 					while (nit.hasNext()) {
 						Node currDef = nit.nextNode();
@@ -142,8 +164,12 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 							vals[0] = nameLP.getText(currDef);
 							vals[1] = countLP.getText(currDef);
 							infos.add(vals);
+							writeLine(outputStream, vals);
 						}
 					}
+
+					outputStream.flush();
+					outputStream.close();
 
 					if (table.isDisposed())
 						return Status.OK_STATUS;
@@ -160,9 +186,19 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 			} catch (RepositoryException e) {
 				throw new PeopleException(
 						"Unable to refresh node type list table", e);
+			} catch (IOException e) {
+				throw new PeopleException(
+						"Unable write to log file with prefix " + prefix, e);
+			} finally {
+				IOUtils.closeQuietly(outputStream);
 			}
 			return Status.OK_STATUS;
 		}
+	}
+
+	// Exposes
+	protected PeopleService getPeopleService() {
+		return peopleService;
 	}
 
 	// PROVIDERS
@@ -219,4 +255,45 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 	protected TableViewer getTableViewer() {
 		return tableViewer;
 	}
+
+	protected void writeLine(OutputStream output, String[] values)
+			throws IOException {
+		StringBuilder builder = new StringBuilder();
+		for (String value : values) {
+			builder.append(DELIMITER + cleanValue(value) + DELIMITER).append(
+					SEPARATOR);
+		}
+		String header = builder.toString().substring(0, builder.length() - 1);
+		header += CR;
+		output.write(header.getBytes());
+	}
+
+	protected String cleanValue(String value) {
+		return value.replace("\"", "\\\"");
+	}
+
+	protected void writeValue(OutputStream output, String value)
+			throws IOException {
+		byte[] contentInBytes = cleanValue(value).getBytes();
+		output.write(contentInBytes);
+	}
+
+	protected File createLogFile(String relPath, String filePrefix)
+			throws IOException {
+		File file = null;
+		String path = getPeopleService().getMaintenanceService()
+				.getMonitoringLogFolderPath() + relPath;
+		File parentFolder = new File(path);
+		FileUtils.forceMkdir(parentFolder);
+		String nowIso = isoFormat.format(new GregorianCalendar().getTime());
+		file = new File(path + "/" + filePrefix + "_" + nowIso + ".csv");
+		file.createNewFile();
+		return file;
+	}
+
+	/* DEPENDENCY INJECTION */
+	public void setPeopleService(PeopleService peopleService) {
+		this.peopleService = peopleService;
+	}
+
 }

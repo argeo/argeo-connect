@@ -20,7 +20,7 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleBasicEditor;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
-import org.argeo.connect.people.rap.providers.MyLazyContentProvider;
+import org.argeo.connect.people.rap.providers.SimpleLazyContentProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -56,7 +56,7 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements
 
 	// This page widget
 	private TableViewer tableViewer;
-	private MyLazyContentProvider lazyCp;
+	private SimpleLazyContentProvider lazyCp;
 
 	// Utils
 	final static int QUERY_LIMIT = 100;
@@ -104,7 +104,7 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements
 				350);
 		column.setLabelProvider(new PathLP());
 
-		lazyCp = new MyLazyContentProvider(viewer);
+		lazyCp = new SimpleLazyContentProvider(viewer);
 		viewer.setContentProvider(lazyCp);
 		return viewer;
 	}

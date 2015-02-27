@@ -4,13 +4,17 @@ import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 
-public class MyLazyContentProvider implements ILazyContentProvider {
+/**
+ * Canonical implementation of a LazyContentProvider that manage array of
+ * objects
+ */
+public class SimpleLazyContentProvider implements ILazyContentProvider {
 	private static final long serialVersionUID = 1L;
 	private TableViewer viewer;
 
 	Object[] elements;
 
-	public MyLazyContentProvider(TableViewer viewer) {
+	public SimpleLazyContentProvider(TableViewer viewer) {
 		this.viewer = viewer;
 	}
 

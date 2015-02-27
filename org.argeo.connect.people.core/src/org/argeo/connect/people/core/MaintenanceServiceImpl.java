@@ -11,10 +11,14 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
 	private String pathToRepository = System.getProperty("user.dir");
 
-	private PeopleService peopleService;
+	// private PeopleService peopleService;
 
 	public MaintenanceServiceImpl(PeopleService peopleService) {
-		this.peopleService = peopleService;
+		// this.peopleService = peopleService;
 	}
-
+	
+	@Override
+	public String getMonitoringLogFolderPath(){
+		return pathToRepository + "/log/monitoring";
+	}
 }

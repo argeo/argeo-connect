@@ -16,7 +16,7 @@ import javax.jcr.query.Query;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleBasicEditor;
-import org.argeo.connect.people.rap.providers.MyLazyContentProvider;
+import org.argeo.connect.people.rap.providers.SimpleLazyContentProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -52,7 +52,7 @@ public class AbstractCsvLogTableViewer extends AbstractPeopleBasicEditor
 
 	// This page widget
 	private TableViewer tableViewer;
-	private MyLazyContentProvider lazyCp;
+	private SimpleLazyContentProvider lazyCp;
 	private NameLP nameLP = new NameLP();
 	private CountLP countLP = new CountLP();
 
@@ -98,7 +98,7 @@ public class AbstractCsvLogTableViewer extends AbstractPeopleBasicEditor
 				SWT.RIGHT, 150);
 		column.setLabelProvider(new SimpleLP(1));
 
-		lazyCp = new MyLazyContentProvider(viewer);
+		lazyCp = new SimpleLazyContentProvider(viewer);
 		viewer.setContentProvider(lazyCp);
 		return viewer;
 	}

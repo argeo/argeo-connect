@@ -1,5 +1,8 @@
 package org.argeo.connect.people.rap.monitoring;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,9 +12,10 @@ import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 
+import org.apache.commons.io.IOUtils;
 import org.argeo.ArgeoMonitor;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.rap.providers.MyLazyContentProvider;
+import org.argeo.connect.people.rap.providers.SimpleLazyContentProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
 import org.argeo.security.ui.PrivilegedJob;
@@ -35,6 +39,9 @@ import org.eclipse.ui.PartInitException;
 public class ReferencedList extends NodeTypeList implements Refreshable {
 
 	private final int MIN_REF_NB = 5;
+	private final String relPath = "/references";
+	private final String[] headers = { "Path", "Nb of occurences" };
+	private final String prefix = "refList";
 
 	// This page widget
 	private NameLP nameLP = new NameLP();
@@ -69,7 +76,7 @@ public class ReferencedList extends NodeTypeList implements Refreshable {
 			ArgeoMonitor monitor = new EclipseArgeoMonitor(progressMonitor);
 			if (monitor != null && !monitor.isCanceled())
 				monitor.beginTask("Querying the repository", -1);
-
+			OutputStream outputStream = null;
 			try {
 				Query query = getSession()
 						.getWorkspace()
@@ -80,6 +87,13 @@ public class ReferencedList extends NodeTypeList implements Refreshable {
 				NodeIterator nit = query.execute().getNodes();
 
 				final List<String[]> infos = new ArrayList<String[]>();
+
+				if (nit.hasNext()) {
+					outputStream = new FileOutputStream(createLogFile(relPath,
+							prefix));
+					writeLine(outputStream, headers);
+				}
+
 				while (nit.hasNext()) {
 					Node currNode = nit.nextNode();
 					PropertyIterator pit = currNode.getReferences();
@@ -88,8 +102,12 @@ public class ReferencedList extends NodeTypeList implements Refreshable {
 						vals[0] = nameLP.getText(currNode);
 						vals[1] = countLP.getText(pit.getSize());
 						infos.add(vals);
+						writeLine(outputStream, vals);
 					}
 				}
+
+				outputStream.flush();
+				outputStream.close();
 
 				if (table.isDisposed())
 					return Status.OK_STATUS;
@@ -99,7 +117,7 @@ public class ReferencedList extends NodeTypeList implements Refreshable {
 
 				table.getDisplay().asyncExec(new Runnable() {
 					public void run() {
-						MyLazyContentProvider lazyCp = (MyLazyContentProvider) tableViewer
+						SimpleLazyContentProvider lazyCp = (SimpleLazyContentProvider) tableViewer
 								.getContentProvider();
 						Object[] input = null;
 						if (!infos.isEmpty())
@@ -110,6 +128,11 @@ public class ReferencedList extends NodeTypeList implements Refreshable {
 			} catch (RepositoryException e) {
 				throw new PeopleException(
 						"Unable to refresh Referenced node table", e);
+			} catch (IOException e) {
+				throw new PeopleException(
+						"Unable write to log file with prefix " + prefix, e);
+			} finally {
+				IOUtils.closeQuietly(outputStream);
 			}
 			return Status.OK_STATUS;
 		}
@@ -139,4 +162,5 @@ public class ReferencedList extends NodeTypeList implements Refreshable {
 			return numberFormat.format((Long) element);
 		}
 	}
+
 }
