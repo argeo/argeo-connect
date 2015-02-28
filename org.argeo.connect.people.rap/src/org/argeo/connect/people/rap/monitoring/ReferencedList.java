@@ -162,5 +162,4 @@ public class ReferencedList extends NodeTypeList implements Refreshable {
 			return numberFormat.format((Long) element);
 		}
 	}
-
 }

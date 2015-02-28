@@ -141,7 +141,7 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 		protected IStatus doRun(IProgressMonitor progressMonitor) {
 			ArgeoMonitor monitor = new EclipseArgeoMonitor(progressMonitor);
 			if (monitor != null && !monitor.isCanceled())
-				monitor.beginTask("Querying the repository", -1);
+				monitor.beginTask("Retrieving defined node types", -1);
 
 			Session session = getSession();
 			OutputStream outputStream = null;
@@ -149,8 +149,14 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 				if (session.nodeExists(NODE_DEF_PARENT_PATH)) {
 					Node parent = session.getNode(NODE_DEF_PARENT_PATH);
 					NodeIterator nit = parent.getNodes();
-
+				
+					
 					if (nit.hasNext()) {
+						// Enable progress bar
+						if (monitor != null && !monitor.isCanceled())
+							monitor.beginTask("Computing instances number for", (int) nit.getSize());
+
+						// Create log file
 						outputStream = new FileOutputStream(createLogFile(
 								relPath, prefix));
 						writeLine(outputStream, headers);
@@ -160,11 +166,17 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 					while (nit.hasNext()) {
 						Node currDef = nit.nextNode();
 						if (currDef.isNodeType(NodeType.NT_NODE_TYPE)) {
+							String name = nameLP.getText(currDef);
+							// Enable progress bar
+							if (monitor != null && !monitor.isCanceled())
+								monitor.subTask(name);
+
 							String[] vals = new String[2];
-							vals[0] = nameLP.getText(currDef);
+							vals[0] = name;
 							vals[1] = countLP.getText(currDef);
 							infos.add(vals);
 							writeLine(outputStream, vals);
+							monitor.worked(1);
 						}
 					}
 

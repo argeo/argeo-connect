@@ -131,7 +131,7 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements
 			try {
 				ArgeoMonitor monitor = new EclipseArgeoMonitor(progressMonitor);
 				if (monitor != null && !monitor.isCanceled()) {
-					monitor.beginTask("Updating objects", -1);
+					monitor.beginTask("Retrieving last modified nodes", -1);
 					Query query = session
 							.getWorkspace()
 							.getQueryManager()
