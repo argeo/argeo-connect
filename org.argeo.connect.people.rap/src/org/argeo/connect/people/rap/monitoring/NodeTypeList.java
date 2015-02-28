@@ -149,12 +149,12 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 				if (session.nodeExists(NODE_DEF_PARENT_PATH)) {
 					Node parent = session.getNode(NODE_DEF_PARENT_PATH);
 					NodeIterator nit = parent.getNodes();
-				
-					
+
 					if (nit.hasNext()) {
 						// Enable progress bar
 						if (monitor != null && !monitor.isCanceled())
-							monitor.beginTask("Computing instances number for", (int) nit.getSize());
+							monitor.beginTask("Computing instances number for",
+									(int) nit.getSize());
 
 						// Create log file
 						outputStream = new FileOutputStream(createLogFile(
@@ -256,7 +256,8 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 								"select * from [" + currType + "] as instances",
 								Query.JCR_SQL2);
 				NodeIterator nit = query.execute().getNodes();
-				return numberFormat.format(nit.getSize());
+				// return numberFormat.format(nit.getSize());
+				return ""+ nit.getSize();
 			} catch (RepositoryException re) {
 				throw new PeopleException("Unable to retrieve number of "
 						+ "instances for type " + element, re);

@@ -159,7 +159,8 @@ public class ReferencedList extends NodeTypeList implements Refreshable {
 
 		@Override
 		public String getText(Object element) {
-			return numberFormat.format((Long) element);
+			// return numberFormat.format((Long) element);
+			return "" + (Long) element;
 		}
 	}
 }
