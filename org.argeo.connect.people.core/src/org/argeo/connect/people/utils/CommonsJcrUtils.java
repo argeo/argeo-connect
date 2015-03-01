@@ -241,10 +241,18 @@ public class CommonsJcrUtils {
 	 */
 	public static void saveAndCheckin(Node node) {
 		try {
-			JcrUtils.updateLastModified(node);
-			node.getSession().save();
-			node.getSession().getWorkspace().getVersionManager()
-					.checkin(node.getPath());
+			if (!node.isCheckedOut())
+				// versionable & already published, nothing to do.
+				return;
+			if (node.isNodeType(NodeType.MIX_VERSIONABLE)) {
+				JcrUtils.updateLastModified(node);
+				node.getSession().save();
+				node.getSession().getWorkspace().getVersionManager()
+						.checkin(node.getPath());
+			} else {
+				// JcrUtils.updateLastModified(node);
+				node.getSession().save();
+			}
 		} catch (RepositoryException re) {
 			throw new PeopleException(
 					"Unable to save and chek in node " + node, re);
