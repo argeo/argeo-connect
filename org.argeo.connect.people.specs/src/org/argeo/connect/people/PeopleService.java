@@ -131,7 +131,7 @@ public interface PeopleService {
 	 * Use with caution. Publishes all versionable Nodes that are in this
 	 * workspace and in a "checked out" state.
 	 */
-	public void publishAll(Session session, ArgeoMonitor monitor);
+	public long publishAll(Session session, ArgeoMonitor monitor);
 
 	/* EXPOSE THE VARIOUS BUSINESS SERVICES */
 	/** Returns the corresponding {@link PersonService} */

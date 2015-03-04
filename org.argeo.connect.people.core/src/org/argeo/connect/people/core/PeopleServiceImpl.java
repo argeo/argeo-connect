@@ -426,8 +426,9 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	@Override
-	public void publishAll(Session session, ArgeoMonitor monitor) {
+	public long publishAll(Session session, ArgeoMonitor monitor) {
 		Query query;
+		long nodeNb = 0;
 		try {
 			query = session
 					.getWorkspace()
@@ -442,7 +443,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			NodeIterator nit = query.execute().getNodes();
 
 			if (nit.hasNext() && monitor != null && !monitor.isCanceled()) {
-				long nodeNb = nit.getSize();
+				nodeNb = nit.getSize();
 				int shortNb = (int) nodeNb / 100;
 				monitor.beginTask("Committing " + nodeNb + " nodes", shortNb);
 
@@ -454,6 +455,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 					monitor.worked(1);
 				i++;
 			}
+			return nodeNb;
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to publish the workspace for "
 					+ session, e);
