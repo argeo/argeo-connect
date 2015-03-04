@@ -181,7 +181,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 					PeopleNames.PEOPLE_UID);
 			String newNodeName = null;
 			if (CommonsJcrUtils.checkNotEmptyString(orgName))
-				newNodeName = JcrUtils.replaceInvalidChars(newNodeName);
+				newNodeName = JcrUtils.replaceInvalidChars(orgName);
 			else
 				newNodeName = orgUid;
 
