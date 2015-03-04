@@ -6,6 +6,8 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.argeo.ArgeoMonitor;
+
 /** Provides method interfaces to manage a people repository */
 public interface PeopleService {
 
@@ -124,6 +126,12 @@ public interface PeopleService {
 	/** Simply look for primary information and update primary cache if needed */
 	public void updatePrimaryCache(Node entity) throws PeopleException,
 			RepositoryException;
+
+	/**
+	 * Use with caution. Publishes all versionable Nodes that are in this
+	 * workspace and in a "checked out" state.
+	 */
+	public void publishAll(Session session, ArgeoMonitor monitor);
 
 	/* EXPOSE THE VARIOUS BUSINESS SERVICES */
 	/** Returns the corresponding {@link PersonService} */

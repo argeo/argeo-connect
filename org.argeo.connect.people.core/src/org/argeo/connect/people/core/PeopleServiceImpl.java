@@ -12,6 +12,7 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Constraint;
@@ -23,6 +24,7 @@ import javax.jcr.query.qom.StaticOperand;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.ArgeoMonitor;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ContactService;
 import org.argeo.connect.people.MaintenanceService;
@@ -42,7 +44,7 @@ import org.argeo.jcr.JcrUtils;
 public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private final static Log log = LogFactory.getLog(PeopleServiceImpl.class);
 
-	/* Other services */
+	/* Centralise the various specific People services */
 	private UserManagementService userManagementService = new UserManagementServiceImpl(
 			this);
 	private PersonService personService = new PersonServiceImpl(this);
@@ -51,23 +53,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private ResourceService resourceService = new ResourceServiceImpl(this);
 	private MaintenanceService maintenanceService = new MaintenanceServiceImpl(
 			this);
-
-	// private Repository repository;
-
-	/* Life cycle management */
-	/**
-	 * Call by each startup in order to make sure the backend is ready to
-	 * receive/provide data.
-	 */
-	public void init() {
-		// Does nothing
-		log.info("People's backend has been initialized");
-	}
-
-	/** Clean shutdown of the backend. */
-	public void destroy() {
-		// Does nothing
-	}
 
 	/* PATH MANAGEMENT */
 	// TODO clean and generalize this
@@ -435,14 +420,46 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 				}
 				return result;
 			}
-
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to retrieve related entities", e);
 		}
-
 	}
 
-	/* PERSONS AND ORGANISATIONS */
+	@Override
+	public void publishAll(Session session, ArgeoMonitor monitor) {
+		Query query;
+		try {
+			query = session
+					.getWorkspace()
+					.getQueryManager()
+					.createQuery(
+							"SELECT * FROM [" + NodeType.MIX_LAST_MODIFIED
+									+ "] ORDER BY ["
+									+ Property.JCR_LAST_MODIFIED + "] DESC ",
+							Query.JCR_SQL2);
+			if (monitor != null && !monitor.isCanceled())
+				monitor.beginTask("Gathering versionnable items", -1);
+			NodeIterator nit = query.execute().getNodes();
+
+			if (nit.hasNext() && monitor != null && !monitor.isCanceled()) {
+				long nodeNb = nit.getSize();
+				int shortNb = (int) nodeNb / 100;
+				monitor.beginTask("Committing " + nodeNb + " nodes", shortNb);
+
+			}
+			long i = 0;
+			while (nit.hasNext()) {
+				CommonsJcrUtils.checkCOStatusAfterUpdate(nit.nextNode(), false);
+				if (i % 100 == 0 && monitor != null && !monitor.isCanceled())
+					monitor.worked(1);
+				i++;
+			}
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to publish the workspace for "
+					+ session, e);
+		}
+
+	}
 
 	/* EXPOSED SERVICES */
 	@Override
@@ -486,6 +503,21 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	/** Override to define app specific properties that are not system properties */
 	public String getConfigProperty(String key) {
 		return System.getProperty(key);
+	}
+
+	/* LIFE CYCLE MANAGEMENT */
+	/**
+	 * Call by each startup in order to make sure the backend is ready to
+	 * receive/provide data.
+	 */
+	public void init() {
+		// Does nothing
+		log.info("People's backend has been initialized");
+	}
+
+	/** Clean shutdown of the backend. */
+	public void destroy() {
+		// Does nothing
 	}
 
 	// /* DEPENDENCY INJECTION */
