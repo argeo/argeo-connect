@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * Shows all information we have about a given person. Expects a context that
+ * Shows all information we have about a given organisation. Expects a context that
  * has the people:org NodeType
  */
 public class OrgPage implements CmsUiProvider {

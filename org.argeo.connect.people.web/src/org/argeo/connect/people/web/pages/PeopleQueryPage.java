@@ -7,20 +7,15 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.Ordering;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
-import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
 import org.argeo.cms.CmsSession;
 import org.argeo.cms.CmsUiProvider;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.web.PeopleMsg;
 import org.argeo.connect.people.web.providers.SearchEntitiesLP;
 import org.argeo.jcr.JcrUtils;
@@ -46,11 +41,17 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
 /** Simple page to manage RSS channels and feeds */
-public class PeopleSearchPage implements CmsUiProvider {
+public class PeopleQueryPage implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
 	private Map<String, String> iconPathes;
+
+	public PeopleQueryPage(PeopleService peopleService,
+			Map<String, String> iconPathes) {
+		this.peopleService = peopleService;
+		this.iconPathes = iconPathes;
+	}
 
 	@Override
 	public Control createUi(Composite parent, Node context) {
@@ -110,7 +111,7 @@ public class PeopleSearchPage implements CmsUiProvider {
 				Node node = (Node) ((IStructuredSelection) event.getSelection())
 						.getFirstElement();
 				try {
-					cmsSession.navigateTo("display"+node.getPath());
+					cmsSession.navigateTo(node.getPath());
 				} catch (RepositoryException e) {
 					throw new ArgeoException("unable to get path for node "
 							+ node + " in the PeopleSearchPage", e);
@@ -137,35 +138,55 @@ public class PeopleSearchPage implements CmsUiProvider {
 			Session session = context.getSession();
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
-			QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			String path = context.getPath();
+			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
+			// String path = context.getPath();
+			//
+			// Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
+			// PeopleTypes.PEOPLE_ENTITY);
+			//
+			// // StaticOperand so =
+			// // factory.literal(session.getValueFactory()
+			// // .createValue("*"));
+			// Constraint defaultC = null;
 
-			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
-					PeopleTypes.PEOPLE_ENTITY);
-
-			// StaticOperand so =
-			// factory.literal(session.getValueFactory()
-			// .createValue("*"));
-			Constraint defaultC = factory.descendantNode(
-					source.getSelectorName(), path);
+			// = factory.descendantNode(
+			// source.getSelectorName(), path);
 
 			// Parse the String
-			String[] strs = filter.trim().split(" ");
-			for (String token : strs) {
-				StaticOperand so = factory.literal(session.getValueFactory()
-						.createValue("*" + token + "*"));
-				Constraint currC = factory.fullTextSearch(
-						source.getSelectorName(), null, so);
-				if (defaultC == null)
-					defaultC = currC;
-				else
-					defaultC = factory.and(defaultC, currC);
-			}
 
-			Ordering order = factory.ascending(factory.propertyValue(
-					source.getSelectorName(), Property.JCR_TITLE));
-			QueryObjectModel query = factory.createQuery(source, defaultC,
-					new Ordering[] { order }, null);
+			String statement = context.getProperty(Property.JCR_STATEMENT)
+					.getString();
+			String selectorName = statement.substring(statement.indexOf('['),
+					statement.indexOf(']') + 1);
+
+			String language = context.getProperty(Property.JCR_LANGUAGE)
+					.getString();
+			if (!Query.JCR_SQL2.equals(language))
+				throw new PeopleException("Unknown language type " + language);
+			if (CommonsJcrUtils.checkNotEmptyString(filter))
+				statement += " WHERE CONTAINS(" + selectorName + ".*, '*"
+						+ filter + "*')";
+			Query query = queryManager.createQuery(statement, language);
+
+			query.getBindVariableNames();
+
+			// String[] strs = filter.trim().split(" ");
+			// for (String token : strs) {
+			// StaticOperand so = factory.literal(session.getValueFactory()
+			// .createValue("*" + token + "*"));
+			// Constraint currC = factory.fullTextSearch(
+			// source.getSelectorName(), null, so);
+			// if (defaultC == null)
+			// defaultC = currC;
+			// else
+			// defaultC = factory.and(defaultC, currC);
+			// }
+
+			// Ordering order = factory.ascending(factory.propertyValue(
+			// source.getSelectorName(), Property.JCR_TITLE));
+			//
+			// QueryObjectModel query = factory.createQuery(source, defaultC,
+			// new Ordering[] { order }, null);
 			// query.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
 			entityViewer.setInput(JcrUtils.nodeIteratorToList(query.execute()
 					.getNodes()));
@@ -193,14 +214,5 @@ public class PeopleSearchPage implements CmsUiProvider {
 		public Object[] getElements(Object arg0) {
 			return nodes.toArray();
 		}
-	}
-
-	/* DEPENDENCY INJECTION */
-	public void setPeopleService(PeopleService peopleService) {
-		this.peopleService = peopleService;
-	}
-
-	public void setIconPathes(Map<String, String> iconPathes) {
-		this.iconPathes = iconPathes;
 	}
 }

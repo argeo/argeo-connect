@@ -6,6 +6,7 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.QueryObjectModel;
@@ -27,6 +28,7 @@ import org.argeo.connect.people.core.imports.UsersCsvFileParser;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.ArgeoTypes;
+import org.argeo.jcr.JcrUtils;
 import org.argeo.security.UserAdminService;
 import org.argeo.util.CsvParserWithLinesAsMap;
 import org.springframework.core.io.Resource;
@@ -91,9 +93,39 @@ public class DemoDataImport implements PeopleConstants {
 					PeopleNames.PEOPLE_MAILING_LISTS);
 			resourceService.refreshKnownTags(mlParent);
 
+			// Initialises queries
+			createSearch(adminSession);
+
 		} catch (Exception e) {
 			throw new ArgeoException("Cannot initialize backend", e);
 		}
+	}
+
+	/** Saves the underlying passed session **/
+	private void createSearch(Session adminSession) throws RepositoryException {
+		String SEARCH_BASE_PATH = "/search";
+		JcrUtils.mkdirs(adminSession, SEARCH_BASE_PATH);
+		Query query = adminSession
+				.getWorkspace()
+				.getQueryManager()
+				.createQuery(
+						"SELECT * FROM [" + PeopleTypes.PEOPLE_ENTITY + "]",
+						Query.JCR_SQL2);
+		query.storeAsNode(SEARCH_BASE_PATH + "/all");
+
+		// persons
+		query = adminSession
+				.getWorkspace()
+				.getQueryManager()
+				.createQuery(
+						"SELECT * FROM [" + PeopleTypes.PEOPLE_PERSON + "]",
+						Query.JCR_SQL2);
+
+		query.storeAsNode(SEARCH_BASE_PATH + "persons");
+
+		// save queries
+		adminSession.save();
+
 	}
 
 	private void createUserGroups(Session adminSession)
