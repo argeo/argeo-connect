@@ -1,26 +1,20 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.argeo.connect</groupId>
-		<version>2.1.15-SNAPSHOT</version>
+		<version>2.1.19-SNAPSHOT</version>
 		<artifactId>dep</artifactId>
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>org.argeo.connect.dep.people.web</artifactId>
-	<name>Connect People CMS Light</name>
+	<name>Connect People Base Web UI</name>
 	<dependencies>
 		<!-- Connect People web -->
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.people.web</artifactId>
-			<version>2.1.15-SNAPSHOT</version>			
-		</dependency>
-		
-		<!--  Base backend - UI Independant-->
-		<dependency>
-			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.dep.people</artifactId>
-			<version>2.1.15-SNAPSHOT</version>
+			<version>2.1.19-SNAPSHOT</version>
 		</dependency>
 
 		<!-- Base CMS distribution -->
@@ -28,6 +22,13 @@
 			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.dep.cms</artifactId>
 			<version>${version.argeo-commons}</version>
+		</dependency>
+
+		<!-- Base backend - UI Independant -->
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.dep.people</artifactId>
+			<version>2.1.19-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
