@@ -39,7 +39,7 @@ public class DemoDataImport implements PeopleConstants {
 
 	private PeopleService peopleService;
 
-	/** Imports demo data and creates a dummy festival */
+	/** Imports demo data */
 	public void doImport(PeopleService peopleService,
 			UserAdminService userAdminService, Session adminSession,
 			Map<String, Resource> demoData) {
