@@ -104,27 +104,25 @@ public class DemoDataImport implements PeopleConstants {
 	/** Saves the underlying passed session **/
 	private void createSearch(Session adminSession) throws RepositoryException {
 		String SEARCH_BASE_PATH = "/search";
-		JcrUtils.mkdirs(adminSession, SEARCH_BASE_PATH);
-		Query query = adminSession
-				.getWorkspace()
-				.getQueryManager()
-				.createQuery(
-						"SELECT * FROM [" + PeopleTypes.PEOPLE_ENTITY + "]",
-						Query.JCR_SQL2);
-		query.storeAsNode(SEARCH_BASE_PATH + "/all");
+		Node queryParentNode = JcrUtils.mkdirs(adminSession, SEARCH_BASE_PATH);
 
-		// persons
-		query = adminSession
-				.getWorkspace()
-				.getQueryManager()
-				.createQuery(
-						"SELECT * FROM [" + PeopleTypes.PEOPLE_PERSON + "]",
-						Query.JCR_SQL2);
-
-		query.storeAsNode(SEARCH_BASE_PATH + "persons");
-
+		createQueryNodeForType(queryParentNode, PeopleTypes.PEOPLE_ENTITY,
+				"all");
+		createQueryNodeForType(queryParentNode, PeopleTypes.PEOPLE_PERSON,
+				"persons");
+		createQueryNodeForType(queryParentNode, PeopleTypes.PEOPLE_ORG, "orgs");
 		// save queries
 		adminSession.save();
+	}
+
+	private void createQueryNodeForType(Node queryParentNode, String NodeType,
+			String nodeName) throws RepositoryException {
+		Query query = queryParentNode
+				.getSession()
+				.getWorkspace()
+				.getQueryManager()
+				.createQuery("SELECT * FROM [" + NodeType + "]", Query.JCR_SQL2);
+		query.storeAsNode(queryParentNode.getPath() + "/" + nodeName);
 
 	}
 
