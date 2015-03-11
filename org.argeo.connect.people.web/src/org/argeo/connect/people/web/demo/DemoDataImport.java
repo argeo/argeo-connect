@@ -33,7 +33,7 @@ import org.argeo.security.UserAdminService;
 import org.argeo.util.CsvParserWithLinesAsMap;
 import org.springframework.core.io.Resource;
 
-/** Fills the repository in a demo context */
+/** Fill the repository in a demo context */
 public class DemoDataImport implements PeopleConstants {
 	private final static Log log = LogFactory.getLog(DemoDataImport.class);
 
