@@ -80,6 +80,16 @@ public class CommonsJcrUtils {
 		}
 	}
 
+	/** Shortcut to manage case where parentPath is "/" (parent is root) */
+	public static String getAbsPath(String parPath, String nodeName) {
+		String absPath = null;
+		if ("/".equals(parPath))
+			absPath = "/" + nodeName;
+		else
+			absPath = parPath + "/" + nodeName;
+		return absPath;
+	}
+
 	/**
 	 * Centralizes exception management to call
 	 * {@link Session#getNodeByIdentifier(String)}
