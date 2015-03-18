@@ -1,5 +1,9 @@
 package org.argeo.connect.people.core;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,6 +43,8 @@ import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.jcr.JcrUtils;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 /** Concrete access to {@link PeopleService} */
 public class PeopleServiceImpl implements PeopleService, PeopleNames {
@@ -461,6 +467,23 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 					+ session, e);
 		}
 
+	}
+
+	protected InputStream getStreamFromUrl(String url) throws IOException {
+		InputStream inputStream = null;
+		if (url.startsWith("classpath:")) {
+			url = url.substring("classpath:".length());
+			Resource resultbasepath = new ClassPathResource(url);
+			if (resultbasepath.exists())
+				inputStream = resultbasepath.getInputStream();
+		} else if (url.startsWith("file:")) {
+			url = url.substring("file:".length());
+			File file = new File(url);
+			// String tmpPath = file.getAbsolutePath();
+			if (file.exists())
+				inputStream = new FileInputStream(url);
+		}
+		return inputStream;
 	}
 
 	/* EXPOSED SERVICES */
