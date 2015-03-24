@@ -110,13 +110,14 @@ public class SearchEntitiesLP implements ILabelProvider {
 
 	@Override
 	public void dispose() {
-		if (icons != null)
+		if (icons != null) {
 			for (String key : icons.keySet()) {
 				Image image = icons.get(key);
 				if (!image.isDisposed())
 					image.dispose();
 			}
 			icons.clear();
+		}
 	}
 
 	@Override

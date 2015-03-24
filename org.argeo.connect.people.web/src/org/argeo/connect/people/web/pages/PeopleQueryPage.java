@@ -40,7 +40,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
-/** Simple page to manage RSS channels and feeds */
+/** Generic page to display a list of filtered nodes, base on their type */
 public class PeopleQueryPage implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
