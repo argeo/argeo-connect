@@ -28,29 +28,28 @@
 	</bean>
 
 
-	<!-- ROLE_REGISTERED_MEMBER: A role that has JCR_ALL rights on the workspace. 
-		Sees less perspectives as the Business or the technical admin. -->
+	<!-- ROLE_REGISTERED_USER: A role that has a home and read a/o write access 
+		on some sub parts of the workspace: this must be done by the current calling 
+		application -->
 	<bean class="org.argeo.security.core.SimpleRoleRegistration"
 		init-method="run">
-		<property name="role" value="ROLE_REGISTERED_MEMBER" />
+		<property name="role" value="ROLE_REGISTERED_USER" />
 		<property name="userAdminService" ref="userAdminService" />
 	</bean>
 
 	<!-- ROLE_REGISTERED_GUEST: A role that has been granted JCR_READ rights 
 		on the workspace -->
-	<bean class="org.argeo.security.core.SimpleRoleRegistration"
-		init-method="run">
-		<property name="role" value="ROLE_REGISTERED_GUEST" />
-		<property name="userAdminService" ref="userAdminService" />
-	</bean>
-
+	<!-- DEPRECATED not used for thze time being -->
+	<!-- <bean class="org.argeo.security.core.SimpleRoleRegistration" init-method="run"> 
+		<property name="role" value="ROLE_REGISTERED_GUEST" /> <property name="userAdminService" 
+		ref="userAdminService" /> </bean> -->
 	<!-- Effective attribution of privileges. -->
 	<bean parent="template.jcrAuthorizations">
 		<property name="principalPrivileges">
 			<util:map>
 				<entry key="jcr:all" value="ROLE_BUSINESS_ADMIN" />
-				<entry key="jcr:all" value="ROLE_REGISTERED_MEMBER" />
-				<entry key="jcr:read" value="ROLE_REGISTERED_GUEST" />
+				<!-- <entry key="jcr:all" value="ROLE_REGISTERED_MEMBER" /> <entry key="jcr:read" 
+					value="ROLE_REGISTERED_GUEST" /> -->
 			</util:map>
 		</property>
 	</bean>
