@@ -2,7 +2,7 @@ package org.argeo.connect.people.rap.composites;
 
 import java.util.List;
 
-import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
+import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;

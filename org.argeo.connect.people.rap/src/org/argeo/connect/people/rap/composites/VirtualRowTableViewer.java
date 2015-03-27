@@ -6,7 +6,7 @@ import java.util.List;
 import javax.jcr.query.Row;
 
 import org.argeo.connect.people.rap.PeopleRapImages;
-import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
+import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;

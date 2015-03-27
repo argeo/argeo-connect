@@ -1,4 +1,4 @@
-package org.argeo.connect.people.rap.exports;
+package org.argeo.connect.people.ui;
 
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -7,10 +7,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
  * Experimental class that also bound a label provider to the column definition
  * in order to ease table management in a JCR Context. Might be factorized if it
  * seems relevant after being used for a while.
- * 
- * Rather use the same class from people.ui bundle
  */
-@Deprecated
 public class PeopleColumnDefinition extends ColumnDefinition {
 
 	private ColumnLabelProvider labelProvider;

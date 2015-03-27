@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.jcr.query.Row;
 
-import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
+import org.argeo.connect.people.ui.PeopleColumnDefinition;
 
 /**
  * Views and editors can implement this interface so that one of the row list

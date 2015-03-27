@@ -33,7 +33,7 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
-import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
+import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.providers.JcrRowHtmlLabelProvider;
 import org.argeo.connect.people.rap.providers.TagLabelProvider;

@@ -32,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
+import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 
 public class RowsToCalcWriter {

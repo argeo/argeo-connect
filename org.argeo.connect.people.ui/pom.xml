@@ -17,6 +17,12 @@
 			<version>2.1.20-SNAPSHOT</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.argeo.commons</groupId>
+			<artifactId>org.argeo.eclipse.ui</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+		
 		<!-- Needed at compile time provided by the plateform -->
 		<!--  <dependency>
 			<groupId>org.argeo.tp.rap.platform</groupId>

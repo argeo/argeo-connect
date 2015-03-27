@@ -32,7 +32,7 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.dialogs.AskTitleDescriptionDialog;
 import org.argeo.connect.people.rap.editors.utils.SearchNodeEditorInput;
-import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
+import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.providers.JcrRowHtmlLabelProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;

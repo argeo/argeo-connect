@@ -36,8 +36,8 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
-import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
+import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -76,7 +76,8 @@ public class PickUpContactableDialog extends TrayDialog {
 	private TableViewer tableViewer;
 
 	public PickUpContactableDialog(Shell parentShell, String title,
-			Session session, PeopleWorkbenchService peopleUiService, String nodeType) {
+			Session session, PeopleWorkbenchService peopleUiService,
+			String nodeType) {
 		super(parentShell);
 		this.title = title;
 		this.session = session;
@@ -96,8 +97,8 @@ public class PickUpContactableDialog extends TrayDialog {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
 		createFilterPart(dialogArea);
-		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(
-				dialogArea, SWT.MULTI, colDefs);
+		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(dialogArea,
+				SWT.MULTI, colDefs);
 		tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		tableViewer.addDoubleClickListener(new MyDoubleClickListener());
@@ -190,8 +191,8 @@ public class PickUpContactableDialog extends TrayDialog {
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
 			Selector source = factory.selector(nodeType, nodeType);
 
-			Constraint defaultC = CommonsJcrUtils.getFreeTextConstraint(session,
-					factory, source, filterTxt.getText());
+			Constraint defaultC = CommonsJcrUtils.getFreeTextConstraint(
+					session, factory, source, filterTxt.getText());
 
 			Ordering order = factory.ascending(factory.propertyValue(
 					source.getSelectorName(), Property.JCR_TITLE));

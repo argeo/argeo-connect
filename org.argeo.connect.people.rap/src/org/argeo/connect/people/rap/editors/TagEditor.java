@@ -33,12 +33,12 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
-import org.argeo.connect.people.rap.exports.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.providers.TagLabelProvider;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.rap.wizards.EditTagWizard;
+import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
@@ -124,10 +124,10 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 				new SimpleJcrRowLabelProvider(PeopleTypes.PEOPLE_ENTITY,
 						PEOPLE_TAGS), 300));
 	}
-	
+
 	/* SPECIFIC CONFIGURATION */
 	/** Overwrite to add the batch update features */
-	protected boolean enableBatchUpdate(){
+	protected boolean enableBatchUpdate() {
 		return false;
 	}
 
