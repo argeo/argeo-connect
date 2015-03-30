@@ -18,6 +18,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.web.PeopleMsg;
 import org.argeo.connect.people.web.providers.SearchEntitiesLP;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -56,7 +57,7 @@ public class PeopleQueryPage implements CmsUiProvider {
 	@Override
 	public Control createUi(Composite parent, Node context) {
 		Composite body = new Composite(parent, SWT.NO_FOCUS);
-		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		body.setLayoutData(EclipseUiUtils.fillAll());
 		populateBodyPanel(body, context);
 		parent.layout();
 		return body;

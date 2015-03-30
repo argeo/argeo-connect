@@ -12,9 +12,7 @@ import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.viewers.LabelProvider;
 
-/**
- * Provide a single column label provider for person lists
- */
+/** Provide a single column label provider for person lists */
 public class PersonListLabelProvider extends LabelProvider implements
 		PeopleNames {
 
