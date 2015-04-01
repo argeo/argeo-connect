@@ -28,7 +28,10 @@ public class PeopleRapSnippets {
 	 * enabled tree / table / label that will trigger a corresponding RWT
 	 * specific listener. Such a listener must be able to understand the
 	 * specific format of the value of this href attribute
+	 * 
+	 * rather use {@link PeopleUiSnippet#getRWTLink()}
 	 */
+	@Deprecated
 	public static String getRWTLink(String href, String value) {
 		// " + PeopleRapConstants.PEOPLE_STYLE_LINK + "
 		return "<a href=\"" + href + "\" target=\"_rwt\">" + value + "</a>";

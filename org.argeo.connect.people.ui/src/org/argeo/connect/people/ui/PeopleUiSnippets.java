@@ -23,6 +23,16 @@ import org.argeo.connect.people.utils.PeopleJcrUtils;
 public class PeopleUiSnippets {
 
 	/**
+	 * Simply formats a couple href / label to display a link in a markup
+	 * enabled tree / table / label that will trigger a corresponding RWT
+	 * specific listener. Such a listener must be able to understand the
+	 * specific format of the value of this href attribute
+	 */
+	public static String getRWTLink(String href, String value) {
+		return "<a href=\"" + href + "\" target=\"_rwt\">" + value + "</a>";
+	}
+
+	/**
 	 * Creates a snippet with all information we have about the name of a given
 	 * person
 	 */
