@@ -128,7 +128,13 @@ public class GetCalcExport extends AbstractHandler {
 					// Create file
 					final File tmpFile = File.createTempFile("people-extract",
 							".ods");
+					// TODO does not work: files are deleted only when the
+					// corresponding JVM is closed
 					tmpFile.deleteOnExit();
+
+					// TODO An error will be thrown if the end user click on
+					// "run in background" and then close the corresponding
+					// editor
 
 					// Effective generation
 					callCalcGenerator(provider, exportId, tmpFile);
