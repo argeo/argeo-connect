@@ -23,19 +23,19 @@ import org.argeo.connect.people.utils.PeopleJcrUtils;
 /** Some helper methods to generate HTML snippet */
 public class PeopleRapSnippets {
 
-	/**
-	 * Simply formats a couple href / label to display a link in a markup
-	 * enabled tree / table / label that will trigger a corresponding RWT
-	 * specific listener. Such a listener must be able to understand the
-	 * specific format of the value of this href attribute
-	 * 
-	 * rather use {@link PeopleUiSnippet#getRWTLink()}
-	 */
-	@Deprecated
-	public static String getRWTLink(String href, String value) {
-		// " + PeopleRapConstants.PEOPLE_STYLE_LINK + "
-		return "<a href=\"" + href + "\" target=\"_rwt\">" + value + "</a>";
-	}
+	// /**
+	// * Simply formats a couple href / label to display a link in a markup
+	// * enabled tree / table / label that will trigger a corresponding RWT
+	// * specific listener. Such a listener must be able to understand the
+	// * specific format of the value of this href attribute
+	// *
+	// * rather use {@link PeopleUiSnippet#getRWTLink()}
+	// */
+	// @Deprecated
+	// public static String getRWTLink(String href, String value) {
+	// // " + PeopleRapConstants.PEOPLE_STYLE_LINK + "
+	// return "<a href=\"" + href + "\" target=\"_rwt\">" + value + "</a>";
+	// }
 
 	/**
 	 * Create the text value of a link that enable calling the
@@ -46,7 +46,7 @@ public class PeopleRapSnippets {
 		String href = RemoveEntityReference.ID + "/"
 				+ RemoveEntityReference.PARAM_TOREMOVE_JCR_ID + "="
 				+ toRemoveJcrId;
-		return getRWTLink(href, PeopleUiConstants.CRUD_DELETE);
+		return PeopleUiSnippets.getRWTLink(href, PeopleUiConstants.CRUD_DELETE);
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class PeopleRapSnippets {
 		String href = EditJob.ID + "/" + EditJob.PARAM_RELEVANT_NODE_JCR_ID
 				+ "=" + toEditJcrId + "/" + EditJob.PARAM_IS_BACKWARD + "="
 				+ isBackward;
-		return getRWTLink(href, PeopleUiConstants.CRUD_EDIT);
+		return PeopleUiSnippets.getRWTLink(href, PeopleUiConstants.CRUD_EDIT);
 	}
 
 	/**
@@ -71,7 +71,7 @@ public class PeopleRapSnippets {
 		String toEditJcrId = CommonsJcrUtils.getIdentifier(relevantNode);
 		String href = commandId + "/" + OpenEntityEditor.PARAM_JCR_ID + "="
 				+ toEditJcrId;
-		return getRWTLink(href, value);
+		return PeopleUiSnippets.getRWTLink(href, value);
 	}
 
 	/**
@@ -114,7 +114,7 @@ public class PeopleRapSnippets {
 		String tagJcrId = CommonsJcrUtils.getIdentifier(tag);
 		String href = commandId + PeopleRapConstants.HREF_SEPARATOR;
 		href += OpenEntityEditor.PARAM_JCR_ID + "=" + tagJcrId;
-		return getRWTLink(href, value);
+		return PeopleUiSnippets.getRWTLink(href, value);
 	}
 
 	/** creates the display ReadOnly HTML snippet for a work address */

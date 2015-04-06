@@ -28,7 +28,6 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.CancelAndCheckInItem;
@@ -40,6 +39,7 @@ import org.argeo.connect.people.rap.utils.AbstractPanelFormPart;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.dialogs.SingleValue;
@@ -267,13 +267,13 @@ public class TemplateValueCatalogue extends Composite {
 				public String getText(Object element) {
 					String value = PeopleUiUtils
 							.replaceAmpersand((String) element);
-					String editLink = PeopleRapSnippets
+					String editLink = PeopleUiSnippets
 							.getRWTLink(
 									PeopleUiConstants.CRUD_EDIT
 											+ PeopleRapConstants.HREF_SEPARATOR
 											+ value,
 									PeopleUiConstants.CRUD_EDIT);
-					String removeLink = PeopleRapSnippets
+					String removeLink = PeopleUiSnippets
 							.getRWTLink(
 									PeopleUiConstants.CRUD_DELETE
 											+ PeopleRapConstants.HREF_SEPARATOR
