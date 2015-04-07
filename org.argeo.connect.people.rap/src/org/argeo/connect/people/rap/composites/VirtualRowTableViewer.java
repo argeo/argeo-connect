@@ -5,24 +5,24 @@ import java.util.List;
 
 import javax.jcr.query.Row;
 
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.ArgeoNames;
+import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 
@@ -74,8 +74,8 @@ public class VirtualRowTableViewer extends Composite implements ArgeoNames {
 		// initialization
 		Composite parent = this;
 		// Main Layout
-		GridLayout layout = PeopleUiUtils.noSpaceGridLayout();
-		this.setLayout(layout);
+		// GridLayout layout = PeopleUiUtils.noSpaceGridLayout();
+		// this.setLayout(layout);
 		createTableViewer(parent);
 		EclipseUiSpecificUtils.enableToolTipSupport(viewer);
 	}
@@ -86,26 +86,15 @@ public class VirtualRowTableViewer extends Composite implements ArgeoNames {
 	}
 
 	private void createTableViewer(final Composite parent) {
-		// Creates objects
-
 		int swtStyle = tableStyle | SWT.VIRTUAL;
-
-		// if (hasCheckBoxes)
-		// swtStyle = swtStyle | SWT.CHECK;
-
 		Table table = new Table(parent, swtStyle);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
-		table.setLayoutData(PeopleUiUtils.fillGridData());
-		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		CmsUtils.markup(table);
 
-		// if (hasCheckBoxes)
-		// viewer = new CheckboxTableViewer(table);
-		// else
-		viewer = new TableViewer(table);
-
-		// Create columns
 		TableViewerColumn column;
+		TableColumnLayout tableColumnLayout = new TableColumnLayout();
+		viewer = new TableViewer(table);
 
 		if (hasCheckBoxes) {
 			// check column
@@ -121,23 +110,30 @@ public class VirtualRowTableViewer extends Composite implements ArgeoNames {
 				public Image getImage(Object element) {
 					Row row = (Row) element;
 					if (selectedElements.contains(row)) {
-						return PeopleRapImages.CHECKED;
+						return PeopleRapImages.CHECK_SELECTED;
 					} else {
-						return null;
+						return PeopleRapImages.CHECK_UNSELECTED;
 					}
 				}
 			});
 			column.setEditingSupport(new SelectionEditingSupport());
+			tableColumnLayout.setColumnData(column.getColumn(),
+					new ColumnWeightData(20, 20, true));
 		}
 
 		for (PeopleColumnDefinition colDef : colDefs) {
 			column = ViewerUtils.createTableViewerColumn(viewer,
 					colDef.getHeaderLabel(), SWT.NONE, colDef.getColumnSize());
 			column.setLabelProvider(colDef.getColumnLabelProvider());
+			tableColumnLayout.setColumnData(
+					column.getColumn(),
+					new ColumnWeightData(colDef.getColumnSize(), colDef
+							.getColumnSize(), true));
 		}
 
 		lazyContentProvider = new MyLazyContentProvider(viewer);
 		viewer.setContentProvider(lazyContentProvider);
+		parent.setLayout(tableColumnLayout);
 	}
 
 	private class MyLazyContentProvider implements ILazyContentProvider {

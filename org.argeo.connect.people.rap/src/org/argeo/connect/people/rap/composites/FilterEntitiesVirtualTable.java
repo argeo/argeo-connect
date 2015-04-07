@@ -19,22 +19,24 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.providers.TitleIconLP;
+import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
+import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -59,11 +61,6 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 
 	// Defaults
 	private String nodeType = PeopleTypes.PEOPLE_ENTITY;
-	private List<ColumnDefinition> colDefs = new ArrayList<ColumnDefinition>();
-	{
-		colDefs.add(new ColumnDefinition(null, Property.JCR_TITLE,
-				PropertyType.STRING, "Name", 300));
-	};
 
 	public FilterEntitiesVirtualTable(Composite parent, int style,
 			Session session, PeopleWorkbenchService peopleWorkbenchService,
@@ -75,6 +72,24 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 		if (CommonsJcrUtils.checkNotEmptyString(nodeType))
 			this.nodeType = nodeType;
 		populate();
+	}
+
+	/**
+	 * if lay flag is set, the populate method must be explicitly called: Enable
+	 * further configuration of the table before display, like typically
+	 * definition of other column
+	 */
+	public FilterEntitiesVirtualTable(Composite parent, int style,
+			Session session, PeopleWorkbenchService peopleWorkbenchService,
+			String nodeType, boolean lazy) {
+		super(parent, SWT.NONE);
+		this.session = session;
+		this.peopleWorkbenchService = peopleWorkbenchService;
+		this.tableStyle = style;
+		if (CommonsJcrUtils.checkNotEmptyString(nodeType))
+			this.nodeType = nodeType;
+		if (!lazy)
+			populate();
 	}
 
 	protected void populate() {
@@ -89,32 +104,28 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 	}
 
 	private void createTableViewer(final Composite parent) {
-		// the list
-		// We must limit the size of the table otherwise the full list is loaded
-		// before the layout happens
 		Composite listCmp = new Composite(parent, SWT.NO_FOCUS);
-		GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
-		gd.heightHint = 460;
-		listCmp.setLayoutData(gd);
-		listCmp.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		listCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		entityViewer = new TableViewer(listCmp, SWT.VIRTUAL | tableStyle);
 		Table table = entityViewer.getTable();
-
-		table.setLayoutData(PeopleUiUtils.fillGridData());
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
-		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(26));
-		
+		CmsUtils.markup(table);
+		CmsUtils.setItemHeight(table, 26);
+		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 		TableViewerColumn column;
-		for (ColumnDefinition colDef : colDefs) {
+		
+		for (PeopleColumnDefinition colDef : getColumnsDef()) {
 			column = ViewerUtils.createTableViewerColumn(entityViewer,
 					colDef.getHeaderLabel(), SWT.NONE, colDef.getColumnSize());
-			column.setLabelProvider(new TitleIconLP(peopleWorkbenchService,
-					colDef.getPropertyName()));
+			column.setLabelProvider(colDef.getColumnLabelProvider());
+			tableColumnLayout.setColumnData(
+					column.getColumn(),
+					new ColumnWeightData(colDef.getColumnSize(), colDef
+							.getColumnSize(), true));
 		}
-
+		listCmp.setLayout(tableColumnLayout);
 		entityViewer.setContentProvider(new MyLazyCP(entityViewer));
 	}
 
@@ -142,7 +153,12 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 		}
 	}
 
-	public List<ColumnDefinition> getColumnsDef() {
+	protected List<PeopleColumnDefinition> getColumnsDef() {
+		List<PeopleColumnDefinition> colDefs;
+		colDefs = new ArrayList<PeopleColumnDefinition>();
+		colDefs.add(new PeopleColumnDefinition(null, Property.JCR_TITLE,
+				PropertyType.STRING, "Name", new TitleIconLP(
+						peopleWorkbenchService, Property.JCR_TITLE), 300));
 		return colDefs;
 	}
 
@@ -184,13 +200,6 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 		}
 	}
 
-	// protected void setViewerInput(Object[] elements) {
-	// entityViewer.setInput(elements);
-	// // we must explicitly set the items count
-	// entityViewer.setItemCount(elements.length);
-	// entityViewer.refresh();
-	// }
-
 	/**
 	 * Build repository request : caller might overwrite in order to display a
 	 * subset
@@ -225,8 +234,6 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 		Ordering[] orderings = { order };
 		QueryObjectModel query = factory.createQuery(source, defaultC,
 				orderings, null);
-		// TODO rather implement a virtual viewer
-		// query.setLimit(100);
 		QueryResult result = query.execute();
 		return result.getNodes();
 	}

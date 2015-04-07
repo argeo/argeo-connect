@@ -201,8 +201,7 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 			gd.heightHint = 250;
 			table.setLayoutData(gd);
 			table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-			table.setData(RWT.CUSTOM_ITEM_HEIGHT,
-					Integer.valueOf(20));
+			table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(20));
 
 			itemsViewer = new TableViewer(table);
 			itemsViewer.setContentProvider(new BasicNodeListContentProvider());
@@ -244,9 +243,9 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 				@Override
 				public Image getImage(Object element) {
 					if (selectedItems.contains(element)) {
-						return PeopleRapImages.CHECKED;
+						return PeopleRapImages.CHECK_SELECTED;
 					} else {
-						return PeopleRapImages.UNCHECKED;
+						return PeopleRapImages.CHECK_UNSELECTED;
 					}
 				}
 			});

@@ -15,11 +15,14 @@
  */
 package org.argeo.connect.people.rap.dialogs;
 
+import java.util.List;
+
 import javax.jcr.Node;
 import javax.jcr.Session;
 
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.FilterEntitiesVirtualTable;
+import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -47,6 +50,7 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 	private final PeopleWorkbenchService peopleWorkbenchService;
 	private final String nodeType;
 	private Node selectedNode;
+	private List<PeopleColumnDefinition> colDefs;
 
 	// this page widgets and UI objects
 	private FilterEntitiesVirtualTable tableCmp;
@@ -62,6 +66,17 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 		this.nodeType = nodeType;
 	}
 
+	public PickUpByNodeTypeDialog(Shell parentShell, String title,
+			Session session, PeopleWorkbenchService peopleWorkbenchService,
+			String nodeType, List<PeopleColumnDefinition> colDefs) {
+		super(parentShell);
+		this.title = title;
+		this.session = session;
+		this.peopleWorkbenchService = peopleWorkbenchService;
+		this.nodeType = nodeType;
+		this.colDefs = colDefs;
+	}
+
 	protected Point getInitialSize() {
 		return new Point(400, 600);
 	}
@@ -70,8 +85,8 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
 		int style = SWT.V_SCROLL | SWT.SINGLE;
-		tableCmp = new FilterEntitiesVirtualTable(dialogArea, style, session,
-				peopleWorkbenchService, nodeType);
+		tableCmp = new MyFilterEntitiesVirtualTable(dialogArea, style, session,
+				peopleWorkbenchService, nodeType, colDefs);
 		tableCmp.setLayoutData(PeopleUiUtils.fillGridData());
 
 		// Add listeners
@@ -118,6 +133,36 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 				selectedNode = (Node) obj;
 				okPressed();
 			}
+		}
+	}
+
+	// Add the ability to provide a business specific label provider for the
+	// given entity type
+	private class MyFilterEntitiesVirtualTable extends
+			FilterEntitiesVirtualTable {
+		private static final long serialVersionUID = 3122449385321832511L;
+		private List<PeopleColumnDefinition> colDefs;
+
+		public MyFilterEntitiesVirtualTable(Composite parent, int style,
+				Session session, PeopleWorkbenchService peopleWorkbenchService,
+				String nodeType) {
+			super(parent, style, session, peopleWorkbenchService, nodeType);
+		}
+
+		public MyFilterEntitiesVirtualTable(Composite parent, int style,
+				Session session, PeopleWorkbenchService peopleWorkbenchService,
+				String nodeType, List<PeopleColumnDefinition> colDefs) {
+			super(parent, style, session, peopleWorkbenchService, nodeType,
+					true);
+			this.colDefs = colDefs;
+			populate();
+		}
+
+		protected List<PeopleColumnDefinition> getColumnsDef() {
+			if (colDefs == null)
+				return super.getColumnsDef();
+			else
+				return colDefs;
 		}
 	}
 }

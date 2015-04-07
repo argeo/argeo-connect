@@ -62,10 +62,10 @@ public class PeopleRapImages {
 			.getImageDescriptor("icons/calendar.gif").createImage();
 
 	// Check box icons
-	public final static Image CHECKED = PeopleRapPlugin.getImageDescriptor(
-			"icons/checked.gif").createImage();
-	public final static Image UNCHECKED = PeopleRapPlugin.getImageDescriptor(
-			"icons/unchecked.gif").createImage();
+	public final static Image CHECK_SELECTED = PeopleRapPlugin
+			.getImageDescriptor("icons/check-selected.png").createImage();
+	public final static Image CHECK_UNSELECTED = PeopleRapPlugin
+			.getImageDescriptor("icons/check-unselected.png").createImage();
 
 	// User Management
 	public final static Image ROLE_CHECKED = PeopleRapPlugin

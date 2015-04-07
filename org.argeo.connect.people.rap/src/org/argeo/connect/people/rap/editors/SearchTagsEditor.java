@@ -138,7 +138,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		if (canEdit())
 			colDefs.add(new PeopleColumnDefinition(tagInstanceType,
 					Property.JCR_TITLE, PropertyType.STRING, "",
-					new EditLabelProvider(), 200));
+					new EditLabelProvider(), 80));
 	}
 
 	// MAIN LAYOUT
