@@ -14,13 +14,12 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
 /**
- * Provide a single column label provider for entity lists display varies with
- * node type
+ * Provide a single column label provider for entity lists. Icon and displayed
+ * text vary with the element node type
  */
 public class EntitySingleColumnLabelProvider extends LabelProvider implements
 		PeopleNames {
-
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -2613028516709467900L;
 
 	private PeopleWorkbenchService peopleWorkbenchService;
 
