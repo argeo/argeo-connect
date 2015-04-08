@@ -39,6 +39,7 @@ import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -90,7 +91,7 @@ public class PickUpContactableDialog extends TrayDialog {
 	}
 
 	protected Point getInitialSize() {
-		return new Point(400, 600);
+		return new Point(400, 650);
 	}
 
 	protected Control createDialogArea(Composite parent) {
@@ -98,9 +99,9 @@ public class PickUpContactableDialog extends TrayDialog {
 
 		createFilterPart(dialogArea);
 		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(dialogArea,
-				SWT.MULTI, colDefs);
+				SWT.SINGLE | SWT.BORDER, colDefs);
 		tableViewer = tableCmp.getTableViewer();
-		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 		tableViewer.addDoubleClickListener(new MyDoubleClickListener());
 		tableViewer
 				.addSelectionChangedListener(new MySelectionChangedListener());

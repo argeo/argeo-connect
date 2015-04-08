@@ -23,7 +23,7 @@ import javax.jcr.Session;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.FilterEntitiesVirtualTable;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -32,6 +32,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -78,16 +79,17 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 	}
 
 	protected Point getInitialSize() {
-		return new Point(400, 600);
+		return new Point(400, 605);
 	}
 
 	protected Control createDialogArea(Composite parent) {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
-		int style = SWT.V_SCROLL | SWT.SINGLE;
+		int style = SWT.V_SCROLL | SWT.SINGLE | SWT.BORDER;
 		tableCmp = new MyFilterEntitiesVirtualTable(dialogArea, style, session,
 				peopleWorkbenchService, nodeType, colDefs);
-		tableCmp.setLayoutData(PeopleUiUtils.fillGridData());
+		GridData gd = EclipseUiUtils.fillAll();
+		tableCmp.setLayoutData(gd);
 
 		// Add listeners
 		tableCmp.getTableViewer().addDoubleClickListener(
@@ -95,7 +97,12 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 		tableCmp.getTableViewer().addSelectionChangedListener(
 				new MySelectionChangedListener());
 
-		parent.pack();
+		tableCmp.getTableViewer().getTable().pack();
+		tableCmp.getTableViewer().getTable().layout();
+		tableCmp.layout();
+		// dialogArea.pack();
+
+		dialogArea.layout();
 		return dialogArea;
 	}
 

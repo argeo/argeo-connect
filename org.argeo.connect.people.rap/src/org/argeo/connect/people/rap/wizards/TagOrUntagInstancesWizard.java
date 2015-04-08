@@ -21,8 +21,8 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.SimpleJcrTableComposite;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
+import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
@@ -62,10 +62,6 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 	// To be cleaned:
 	public final static int TYPE_ADD = 1;
 	public final static int TYPE_REMOVE = 2;
-
-	// various labels
-	// private final static String ADD_CONFIRM_MSG = "";
-	// private final static String REMOVE_CONFIRM_MSG = "";
 
 	// Context
 	private PeopleService peopleService;
@@ -165,7 +161,8 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 	@Override
 	public boolean canFinish() {
-		return getContainer().getCurrentPage().getNextPage() == null;
+		return tagInstance != null
+				&& getContainer().getCurrentPage().getNextPage() == null;
 	}
 
 	protected class MainInfoPage extends WizardPage {
@@ -182,6 +179,9 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 		public MainInfoPage(String pageName) {
 			super(pageName);
 			setTitle("Select a tag");
+			setMessage("Choose the value that will be "
+					+ (actionType == TYPE_ADD ? "added to " : "removed from ")
+					+ "the previously selected items.");
 		}
 
 		public void createControl(Composite parent) {
@@ -245,7 +245,28 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 		public RecapPage(String pageName) {
 			super(pageName);
 			setTitle("Check and confirm");
-			setMessage("The below listed items will be impacted.\nAre you sure you want to procede ?");
+		}
+
+		public void setVisible(boolean visible) {
+			super.setVisible(visible);
+
+			if (visible == true) {
+				if (tagInstance == null)
+					setErrorMessage("Please choose a tag value to be used");
+				else {
+					setErrorMessage(null);
+					String name = CommonsJcrUtils.get(tagInstance,
+							Property.JCR_TITLE);
+					if (actionType == TYPE_ADD)
+						setMessage("Your are about to add [" + name
+								+ "] to the below listed items. "
+								+ "Are you sure you want to procede ?");
+					else
+						setMessage("Your are about to remove [" + name
+								+ "] from the below listed items. "
+								+ "Are you sure you want to procede ?");
+				}
+			}
 		}
 
 		public void createControl(Composite parent) {
@@ -320,7 +341,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 			this.display = display;
 			this.actionType = actionType;
 			this.tagPropName = tagPropName;
-			
+
 			try {
 				this.tagPath = tagInstance.getPath();
 				repository = tagInstance.getSession().getRepository();

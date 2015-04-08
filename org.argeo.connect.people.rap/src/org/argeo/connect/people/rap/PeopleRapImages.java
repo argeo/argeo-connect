@@ -22,8 +22,13 @@ public class PeopleRapImages {
 			ENTITY_PATH + "company.png").createImage();
 	public final static Image ICON_FILM = PeopleRapPlugin.getImageDescriptor(
 			ENTITY_PATH + "film.png").createImage();
+
 	public final static Image ICON_MAILING_LIST = PeopleRapPlugin
-			.getImageDescriptor(ENTITY_PATH + "mailingList.gif").createImage();
+			.getImageDescriptor(ENTITY_PATH + "mailingList.png").createImage();
+
+	public final static Image ICON_TAG = PeopleRapPlugin.getImageDescriptor(
+			ENTITY_PATH + "tag.png").createImage();
+
 	public final static Image ICON_GROUP = PeopleRapPlugin.getImageDescriptor(
 			ENTITY_PATH + "group.gif").createImage();
 
@@ -64,8 +69,12 @@ public class PeopleRapImages {
 	// Check box icons
 	public final static Image CHECK_SELECTED = PeopleRapPlugin
 			.getImageDescriptor("icons/check-selected.png").createImage();
+
 	public final static Image CHECK_UNSELECTED = PeopleRapPlugin
 			.getImageDescriptor("icons/check-unselected.png").createImage();
+
+	public final static Image MERGE_BTN = PeopleRapPlugin.getImageDescriptor(
+			"icons/merge.gif").createImage();
 
 	// User Management
 	public final static Image ROLE_CHECKED = PeopleRapPlugin

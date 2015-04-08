@@ -47,7 +47,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
 /** Canonical implementation of a table that display Jcr nodes */
-
 public class SimpleJcrTableComposite extends Composite implements ArgeoNames {
 
 	private static final long serialVersionUID = 3476100511651849356L;

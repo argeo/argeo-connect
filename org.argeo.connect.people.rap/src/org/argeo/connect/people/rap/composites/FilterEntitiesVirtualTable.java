@@ -27,6 +27,7 @@ import org.argeo.connect.people.rap.providers.TitleIconLP;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.ArgeoNames;
@@ -65,18 +66,12 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 	public FilterEntitiesVirtualTable(Composite parent, int style,
 			Session session, PeopleWorkbenchService peopleWorkbenchService,
 			String nodeType) {
-		super(parent, SWT.NONE);
-		this.session = session;
-		this.peopleWorkbenchService = peopleWorkbenchService;
-		this.tableStyle = style;
-		if (CommonsJcrUtils.checkNotEmptyString(nodeType))
-			this.nodeType = nodeType;
-		populate();
+		this(parent, style, session, peopleWorkbenchService, nodeType, false);
 	}
 
 	/**
-	 * if lay flag is set, the populate method must be explicitly called: Enable
-	 * further configuration of the table before display, like typically
+	 * If lazy flag is set, the populate method must be explicitly called:
+	 * Enable further configuration of the table before display, like typically
 	 * definition of other column
 	 */
 	public FilterEntitiesVirtualTable(Composite parent, int style,
@@ -99,13 +94,22 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 		this.setLayout(layout);
 		createFilterPart(parent);
 		createTableViewer(parent);
+		this.pack();
+		this.layout();
 		EclipseUiSpecificUtils.enableToolTipSupport(entityViewer);
 		refreshFilteredList();
 	}
 
+	protected int getTableHeight() {
+		return 449;
+	}
+
 	private void createTableViewer(final Composite parent) {
 		Composite listCmp = new Composite(parent, SWT.NO_FOCUS);
-		listCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		// TODO Workaround to force display of the scroll bar
+		GridData gd = EclipseUiUtils.fillWidth();
+		gd.heightHint = getTableHeight();
+		listCmp.setLayoutData(gd);
 
 		entityViewer = new TableViewer(listCmp, SWT.VIRTUAL | tableStyle);
 		Table table = entityViewer.getTable();
@@ -115,7 +119,7 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 		CmsUtils.setItemHeight(table, 26);
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 		TableViewerColumn column;
-		
+
 		for (PeopleColumnDefinition colDef : getColumnsDef()) {
 			column = ViewerUtils.createTableViewerColumn(entityViewer,
 					colDef.getHeaderLabel(), SWT.NONE, colDef.getColumnSize());

@@ -24,13 +24,11 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.rap.editors.utils.AbstractSearchEntityEditor;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -38,7 +36,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.widgets.Section;
 
 /**
  * Search the repository with a given entity type
@@ -67,27 +64,26 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 	}
 
 	/** Override this to provide type specific static filters */
-	protected void populateStaticFilters(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
-
-		// Configure the Twistie section
-		Section headerSection = new Section(parent, Section.TITLE_BAR
-				| Section.TWISTIE);
-		headerSection.setText("Show more filters");
-		headerSection.setExpanded(false);
-		headerSection.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				false));
-
-		Composite body = new Composite(headerSection, SWT.NONE);
-		headerSection.setClient(body);
+	protected void populateStaticFilters(Composite body) {
+		// parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		//
+		// // Configure the Twistie section
+		// Section headerSection = new Section(parent, Section.TITLE_BAR
+		// | Section.TWISTIE);
+		// headerSection.setText("Show more filters");
+		// headerSection.setExpanded(false);
+		// headerSection.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+		// false));
+		//
+		// Composite body = new Composite(headerSection, SWT.NONE);
+		// headerSection.setClient(body);
 
 		body.setLayout(new GridLayout(4, false));
 
 		Text tagTxt = createBoldLT(body, "Tag", "",
 				"Select from list to find entities that are categorised with this tag");
 		tagDD = new TagLikeDropDown(getSession(), getPeopleService()
-						.getResourceService(),
-				PeopleConstants.RESOURCE_TAG, tagTxt);
+				.getResourceService(), PeopleConstants.RESOURCE_TAG, tagTxt);
 
 		Button goBtn = new Button(body, SWT.PUSH);
 		goBtn.setText("Search");

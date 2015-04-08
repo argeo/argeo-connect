@@ -11,21 +11,24 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.DateText;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.rap.wizards.TagOrUntagInstancesWizard;
+import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -38,11 +41,18 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
@@ -62,12 +72,8 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	private PeopleWorkbenchService peopleWorkbenchService;
 	private PeopleService peopleService;
 
-	// Business Objects
-	// private String entityType;
-
 	// This page widgets
 	private VirtualRowTableViewer tableCmp;
-	// private TableViewer tableViewer;
 	private Text filterTxt;
 
 	// Locally cache what is displayed in the UI. Enable exports among others.
@@ -87,17 +93,18 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	public void createPartControl(Composite parent) {
 		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
-		// the generic free search part
 		Composite searchCmp = new Composite(parent, SWT.NO_FOCUS);
-		populateSearchPanel(searchCmp);
-		searchCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-
-		// section with static filters
-		if (showStaticFilterSection()) {
-			Composite filterSection = new Composite(parent, SWT.NO_FOCUS);
-			populateStaticFilters(filterSection);
-			filterSection.setLayoutData(PeopleUiUtils.horizontalFillData());
+		searchCmp.setLayoutData(EclipseUiUtils.fillWidth());
+		if (!showStaticFilterSection()) {
+			searchCmp.setLayout(new GridLayout());
+			Composite filterCmp = new Composite(searchCmp, SWT.NO_FOCUS);
+			filterCmp.setLayoutData(EclipseUiUtils.fillWidth());
+			populateSearchPanel(filterCmp);
 		}
+		// a simple generic free search part
+		else
+			// Add a section with static filters
+			populateStaticSearchPanel(searchCmp);
 
 		// A menu with various actions on selected items
 		if (hasCheckBoxes()) {
@@ -125,7 +132,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		return true;
 	}
 
-	/** Override this to provide type specific static filters */
+	/** Override to provide type specific static filters */
 	protected void populateStaticFilters(Composite body) {
 	}
 
@@ -139,53 +146,150 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	protected void createCheckBoxMenu(Composite parent) {
 		RowLayout layout = new RowLayout(SWT.HORIZONTAL);
-		layout.pack = false;
+		// layout.pack = false;
 		parent.setLayout(layout);
 
-		Button selectAllBtn = new Button(parent, SWT.PUSH);
-		selectAllBtn.setText("Select all");
+		final Button selectAllBtn = new Button(parent, SWT.PUSH);
+		selectAllBtn.setToolTipText("Select all");
+		selectAllBtn.setImage(PeopleRapImages.CHECK_UNSELECTED);
+		RowData rd = new RowData(40, SWT.DEFAULT);
+		selectAllBtn.setLayoutData(rd);
+
 		selectAllBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				tableCmp.setAllChecked(true);
+				if (tableCmp.getSelectedElements().length == 0) {
+					tableCmp.setAllChecked(true);
+					selectAllBtn.setImage(PeopleRapImages.CHECK_SELECTED);
+					selectAllBtn
+							.setToolTipText("Unselect all (At least one element is already selected)");
+				} else {
+					tableCmp.setAllChecked(false);
+					selectAllBtn.setImage(PeopleRapImages.CHECK_UNSELECTED);
+					selectAllBtn.setToolTipText("Select all");
+				}
 			}
 		});
 
-		Button unselectAllBtn = new Button(parent, SWT.PUSH);
-		unselectAllBtn.setText("Unselect all");
-		unselectAllBtn.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
+		// // an empty cell to give some air to the layout
+		// Label emptyLbl = new Label(parent, SWT.NONE);
+		// emptyLbl.setText("");
+		// rd = new RowData(60, SWT.DEFAULT);
+		// emptyLbl.setLayoutData(rd);
+
+		Button addTagBtn = new Button(parent, SWT.TOGGLE);
+		addTagBtn.setText("Tag");
+		addTagBtn.setImage(PeopleRapImages.ICON_TAG);
+		addToggleStateTagBtnListener(addTagBtn, PeopleConstants.RESOURCE_TAG,
+				PeopleNames.PEOPLE_TAGS);
+
+		if (isOrgOrPerson()) {
+			Button addMLBtn = new Button(parent, SWT.TOGGLE);
+			addMLBtn.setText(" Mailing List");
+			addMLBtn.setImage(PeopleRapImages.ICON_MAILING_LIST);
+			addToggleStateTagBtnListener(addMLBtn,
+					PeopleTypes.PEOPLE_MAILING_LIST,
+					PeopleNames.PEOPLE_MAILING_LISTS);
+		}
+	}
+
+	private void addToggleStateTagBtnListener(final Button addTagBtn,
+			final String tagId, final String taggablePropName) {
+
+		addTagBtn.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 9066664395274942610L;
+			private DropDownPopup dropDown;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				tableCmp.setAllChecked(false);
+
+				boolean toggled = addTagBtn.getSelection();
+				if (toggled) {
+					if (dropDown != null && !dropDown.isDisposed())
+						// should never happen
+						dropDown.setVisible(true);
+					else {
+
+						dropDown = new DropDownPopup(addTagBtn, tagId,
+								taggablePropName);
+						dropDown.open();
+					}
+				} else {
+					if (dropDown != null && !dropDown.isDisposed())
+						dropDown.dispose();
+				}
 			}
 		});
+	}
 
-		final Button addTagBtn = new Button(parent, SWT.PUSH);
-		addTagBtn.setText("Add tag");
-		addBtnListener(addTagBtn, PeopleConstants.RESOURCE_TAG,
-				PeopleNames.PEOPLE_TAGS, TagOrUntagInstancesWizard.TYPE_ADD);
+	private class DropDownPopup extends Shell {
+		private static final long serialVersionUID = 1L;
+		private Button toggleBtn;
+		private String tagId;
+		private String taggablePropName;
 
-		final Button removeTagBtn = new Button(parent, SWT.PUSH);
-		removeTagBtn.setText("Remove tag");
-		addBtnListener(removeTagBtn, PeopleConstants.RESOURCE_TAG,
-				PeopleNames.PEOPLE_TAGS, TagOrUntagInstancesWizard.TYPE_REMOVE);
+		public DropDownPopup(final Control source, String tagId,
+				String taggablePropName) {
+			super(source.getDisplay(), SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
 
-		if (isOrgOrPerson()) {
-			final Button addMLBtn = new Button(parent, SWT.PUSH);
-			addMLBtn.setText("Add mailing list");
-			addBtnListener(addMLBtn, PeopleTypes.PEOPLE_MAILING_LIST,
-					PeopleNames.PEOPLE_MAILING_LISTS,
-					TagOrUntagInstancesWizard.TYPE_ADD);
+			toggleBtn = (Button) source;
+			this.tagId = tagId;
+			this.taggablePropName = taggablePropName;
 
-			final Button removeMLBtn = new Button(parent, SWT.PUSH);
-			removeMLBtn.setText("Remove mailing list");
-			addBtnListener(removeMLBtn, PeopleTypes.PEOPLE_MAILING_LIST,
-					PeopleNames.PEOPLE_MAILING_LISTS,
-					TagOrUntagInstancesWizard.TYPE_REMOVE);
+			populate();
+			// Add border and shadow style
+			CmsUtils.style(DropDownPopup.this,
+					PeopleRapConstants.PEOPLE_CLASS_POPUP_SHELL);
+			pack();
+			layout();
+
+			// position the popup
+			Rectangle parPosition = source.getBounds();
+			Point absolute = source.toDisplay(source.getSize().x,
+					source.getSize().y);
+			absolute.x = absolute.x - parPosition.width;
+			absolute.y = absolute.y + 2;
+			setLocation(absolute);
+
+			addShellListener(new ShellAdapter() {
+				private static final long serialVersionUID = 5178980294808435833L;
+
+				@Override
+				public void shellDeactivated(ShellEvent e) {
+					close();
+					dispose();
+					if (!source.isDisposed()) {
+						boolean toggled = toggleBtn.getSelection();
+						if (toggled)
+							toggleBtn.setSelection(false);
+						e.doit = false;
+					}
+
+				}
+			});
+			open();
+		}
+
+		protected void populate() {
+
+			Composite parent = DropDownPopup.this;
+			parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+
+			final Button addTagBtn = new Button(parent, SWT.LEAD | SWT.FLAT);
+			addTagBtn.setText("Add to selected");
+			addTagBtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
+					false));
+			addBtnListener(toggleBtn.getShell(), addTagBtn, tagId,
+					taggablePropName, TagOrUntagInstancesWizard.TYPE_ADD);
+
+			final Button removeTagBtn = new Button(parent, SWT.LEAD | SWT.FLAT);
+			removeTagBtn.setText("Remove from selected");
+			removeTagBtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
+					false));
+			addBtnListener(toggleBtn.getShell(), removeTagBtn, tagId,
+					taggablePropName, TagOrUntagInstancesWizard.TYPE_REMOVE);
 		}
 	}
 
@@ -198,25 +302,26 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 			return false;
 	}
 
-	private void addBtnListener(final Button button, final String tagId,
-			final String taggablePropName, final int actionType) {
+	private void addBtnListener(final Shell parentShell, final Button button,
+			final String tagId, final String taggablePropName,
+			final int actionType) {
 		button.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 2236384303910015747L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Row[] rows = tableCmp.getSelectedElements();
-				Shell shell = button.getShell();
 
 				if (rows.length == 0)
-					MessageDialog.openInformation(shell, "Unvalid selection",
+					MessageDialog.openInformation(parentShell,
+							"Unvalid selection",
 							"No item is selected. Nothing has been done.");
 				else {
 					Wizard wizard = new TagOrUntagInstancesWizard(button
 							.getDisplay(), actionType, session, peopleService,
 							peopleWorkbenchService, rows, getEntityType(),
 							tagId, taggablePropName);
-					WizardDialog dialog = new WizardDialog(shell, wizard);
+					WizardDialog dialog = new WizardDialog(parentShell, wizard);
 					int result = dialog.open();
 					if (result == WizardDialog.OK) {
 						refreshFilteredList();
@@ -257,8 +362,8 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	/**
 	 * Returns an array with the rows that where retrieved by the last search
-	 * (or all if the filter has been reset in the mean while). For the time
-	 * being, returned rows are still *not* linked to the export ID
+	 * (or all if the filter has been reset in the meantime). By default,
+	 * returned rows are still *not* linked to the export ID
 	 */
 	public Row[] getRows(String exportId) {
 		return rows;
@@ -280,13 +385,50 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	}
 
 	/** Refresh the table viewer based on the free text search field */
+	protected void populateStaticSearchPanel(final Composite parent) {
+		parent.setLayout(new GridLayout(2, false));
+
+		Composite filterCmp = new Composite(parent, SWT.NO_FOCUS);
+		filterCmp.setLayoutData(EclipseUiUtils.fillWidth());
+		populateSearchPanel(filterCmp);
+
+		final Link more = new Link(parent, SWT.NONE);
+		more.setText("<a> More... </a>");
+		CmsUtils.markup(more);
+
+		more.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 2092985883844558754L;
+			private boolean isShown = false;
+			private Composite staticFiltersCmp;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (isShown) {
+					CmsUtils.clear(staticFiltersCmp);
+					staticFiltersCmp.dispose();
+					more.setText("<a> More... </a>");
+				} else {
+					staticFiltersCmp = new Composite(parent, SWT.NO_FOCUS);
+					staticFiltersCmp.setLayoutData(EclipseUiUtils.fillWidth(2));
+					populateStaticFilters(staticFiltersCmp);
+					more.setText("<a> Less... </a>");
+
+				}
+				parent.layout();
+				parent.getParent().layout();
+				isShown = !isShown;
+			}
+		});
+	}
+
+	/** Refresh the table viewer based on the free text search field */
 	protected void populateSearchPanel(Composite parent) {
-		parent.setLayout(new GridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
 				| SWT.ICON_CANCEL);
+		// TODO internationalize this
 		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
-		filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
-				| GridData.HORIZONTAL_ALIGN_FILL));
+		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 		filterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 5003010530960334977L;
 
@@ -305,12 +447,6 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	protected void setViewerInput(Row[] rows) {
 		this.rows = rows;
 		TableViewer tableViewer = tableCmp.getTableViewer();
-
-		// CheckboxTableViewer ctv = null;
-		// if (tableViewer instanceof CheckboxTableViewer) {
-		// ctv = (CheckboxTableViewer) tableViewer;
-		// ctv.setAllChecked(false);
-		// }
 
 		tableViewer.setInput(rows);
 		// we must explicitly set the items count
@@ -357,13 +493,14 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		refreshFilteredList();
 	}
 
-	// /////////////////////////
-	// Expose to children classes
+	//
+	// Exposes to children classes
+	//
 	protected Session getSession() {
 		return session;
 	}
-	
-	protected VirtualRowTableViewer getTableViewer(){
+
+	protected VirtualRowTableViewer getTableViewer() {
 		return tableCmp;
 	}
 
@@ -383,11 +520,9 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		return peopleWorkbenchService;
 	}
 
-	// protected TableViewer getTableViewer() {
-	// return tableViewer;
-	// }
-
+	//
 	// Local Methods
+	//
 	protected Text createBoldLT(Composite parent, String title, String message,
 			String tooltip) {
 		return createBoldLT(parent, title, message, tooltip, 1);
@@ -403,27 +538,25 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		return text;
 	}
 
-	// protected DateTime createLDT(Composite parent, String title, String
-	// tooltip) {
-	// Label label = new Label(parent, SWT.RIGHT);
-	// label.setText(title);
-	// label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-	// DateTime dateTime = new DateTime(parent, SWT.RIGHT | SWT.DATE
-	// | SWT.MEDIUM | SWT.DROP_DOWN);
-	// dateTime.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
-	// dateTime.setToolTipText(tooltip);
-	// return dateTime;
-	// }
-
 	protected DateText createLD(Composite parent, String title, String tooltip) {
-		// Label label = new Label(parent, SWT.RIGHT);
-		// label.setText(title);
-		// label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
-		// false));
 		DateText dateText = new DateText(parent, SWT.NO_FOCUS);
 		dateText.setToolTipText(tooltip);
 		dateText.setMessage(title);
 		return dateText;
+	}
+
+	/* DEPENDENCY INJECTION */
+	public void setRepository(Repository repository) {
+		session = CommonsJcrUtils.login(repository);
+	}
+
+	public void setPeopleService(PeopleService peopleService) {
+		this.peopleService = peopleService;
+	}
+
+	public void setPeopleWorkbenchService(
+			PeopleWorkbenchService peopleWorkbenchService) {
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
 	// Compulsory unused methods
@@ -443,19 +576,5 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	@Override
 	public boolean isSaveAsAllowed() {
 		return false;
-	}
-
-	/* DEPENDENCY INJECTION */
-	public void setRepository(Repository repository) {
-		session = CommonsJcrUtils.login(repository);
-	}
-
-	public void setPeopleService(PeopleService peopleService) {
-		this.peopleService = peopleService;
-	}
-
-	public void setPeopleWorkbenchService(
-			PeopleWorkbenchService peopleWorkbenchService) {
-		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 }

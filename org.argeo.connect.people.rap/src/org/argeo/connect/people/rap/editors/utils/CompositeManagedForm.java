@@ -15,7 +15,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 
 /**
  * Implementation of the IManagedForm that relies on a Form rather than on a
- * scroll form in order to workaround scrolling issues in complexe layouts,
+ * scroll form in order to workaround scrolling issues in complex layouts,
  * especially when tables with many lines are displayed.
  */
 class CompositeManagedForm implements IManagedForm {

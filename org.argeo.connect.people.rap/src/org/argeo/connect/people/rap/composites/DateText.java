@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
@@ -156,7 +157,7 @@ public class DateText extends Composite {
 			super(source.getDisplay(), SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
 			populate();
 			// Add border and shadow style
-			CalendarPopup.this.setData(RWT.CUSTOM_VARIANT,
+			CmsUtils.style(CalendarPopup.this,
 					PeopleRapConstants.PEOPLE_CLASS_POPUP_SHELL);
 			pack();
 			layout();

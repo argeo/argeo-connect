@@ -118,7 +118,7 @@ public class VirtualRowTableViewer extends Composite implements ArgeoNames {
 			});
 			column.setEditingSupport(new SelectionEditingSupport());
 			tableColumnLayout.setColumnData(column.getColumn(),
-					new ColumnWeightData(20, 20, true));
+					new ColumnWeightData(20, 24, true));
 		}
 
 		for (PeopleColumnDefinition colDef : colDefs) {
