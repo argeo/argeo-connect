@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 public class PeopleColumnDefinition extends ColumnDefinition {
 
 	private ColumnLabelProvider labelProvider;
+	private int columnStyle;
 
 	public PeopleColumnDefinition(String selectorName, String propertyName,
 			int propertyType, String headerLabel,
@@ -26,6 +27,14 @@ public class PeopleColumnDefinition extends ColumnDefinition {
 		this.labelProvider = labelProvider;
 	}
 
+	public PeopleColumnDefinition(String selectorName, String propertyName,
+			int propertyType, String headerLabel,
+			ColumnLabelProvider labelProvider, int columnSize, int columnStyle) {
+		super(selectorName, propertyName, propertyType, headerLabel, columnSize);
+		this.labelProvider = labelProvider;
+		this.columnStyle = columnStyle;
+	}
+
 	public ColumnLabelProvider getColumnLabelProvider() {
 		return labelProvider;
 	}
@@ -34,4 +43,11 @@ public class PeopleColumnDefinition extends ColumnDefinition {
 		this.labelProvider = labelProvider;
 	}
 
+	public int getColumnStyle() {
+		return columnStyle;
+	}
+
+	public void setColumnStyle(int columnStyle) {
+		this.columnStyle = columnStyle;
+	}
 }
