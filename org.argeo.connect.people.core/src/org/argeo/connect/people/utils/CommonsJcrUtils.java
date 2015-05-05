@@ -21,6 +21,7 @@ import javax.jcr.query.qom.Constraint;
 import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
+import javax.jcr.version.VersionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -240,6 +241,24 @@ public class CommonsJcrUtils {
 	 */
 	public static boolean isNodeCheckedOutByMe(Node node) {
 		return isNodeCheckedOut(node);
+	}
+
+	/**
+	 * Make a version snapshot of the current state of the given versionable
+	 * node. It wraps a JCR save and checkPoint methods
+	 */
+	public static void checkPoint(Node node) {
+		try {
+			JcrUtils.updateLastModified(node);
+			node.getSession().save();
+			VersionManager vm = node.getSession().getWorkspace()
+					.getVersionManager();
+			String path = node.getPath();
+			vm.checkpoint(path);
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Unable to save and chek in node " + node, re);
+		}
 	}
 
 	/**
