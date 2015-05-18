@@ -102,7 +102,7 @@ public class TemplateEditor extends AbstractEntityCTabEditor implements
 				innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 						propLabel, PeopleRapConstants.CTAB_EDIT_CATALOGUE + "/"
 								+ propName, tooltip);
-				innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+				innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 				Composite submittedForCmp = new TemplateValueCatalogue(
 						getSite().getWorkbenchWindow().getWorkbench(),
 						getFormToolkit(), innerPannel, SWT.NO_FOCUS,

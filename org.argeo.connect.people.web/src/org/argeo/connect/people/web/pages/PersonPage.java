@@ -8,6 +8,7 @@ import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.web.parts.ActivitiesPart;
 import org.argeo.connect.people.web.parts.ContactsWithNotePart;
 import org.argeo.connect.people.web.parts.PersonHeaderPart;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -27,25 +28,25 @@ public class PersonPage implements CmsUiProvider {
 	@Override
 	public Control createUi(Composite parent, Node context)
 			throws RepositoryException {
-		
+
 		// TODO use a scrollable composite
 		Composite body = new Composite(parent, SWT.NO_FOCUS);
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		body.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		body.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// header
 		Composite headerCmp = new Composite(body, SWT.NO_FOCUS);
-		headerCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		headerCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		personHeaderPart.createUi(headerCmp, context);
 
 		// contacts
 		Composite contactCmp = new Composite(body, SWT.NO_FOCUS);
-		contactCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		contactCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		contactsWithNotePart.createUi(contactCmp, context);
 
 		// activities
 		Composite activitiesCmp = new Composite(body, SWT.NO_FOCUS);
-		activitiesCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		activitiesCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		activitiesPart.createUi(activitiesCmp, context);
 
 		parent.layout();

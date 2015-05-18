@@ -119,7 +119,7 @@ public class TemplateValueCatalogue extends Composite {
 		this.templateNode = templateNode;
 		this.propertyName = propertyName;
 		this.taggableType = taggableType;
-		this.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		this.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		myFormPart = new MyFormPart(this);
 		myFormPart.initialize(form);
 		form.addPart(myFormPart);
@@ -141,14 +141,14 @@ public class TemplateValueCatalogue extends Composite {
 				addBtn = toolkit.createButton(panel, "Add a value", SWT.PUSH);
 				configureAddValueBtn(this, addBtn);
 			} else {
-				GridLayout gl = PeopleUiUtils.noSpaceGridLayout();
+				GridLayout gl = EclipseUiUtils.noSpaceGridLayout();
 				gl.verticalSpacing = 5;
 				panel.setLayout(gl);
 			}
 
 			// Item list
 			Composite valuesCmp = new Composite(panel, SWT.NO_FOCUS);
-			GridData gd = PeopleUiUtils.horizontalFillData();
+			GridData gd = EclipseUiUtils.fillWidth();
 			gd.heightHint = 150;
 			valuesCmp.setLayoutData(gd);
 			valuesViewer = createValuesViewer(valuesCmp);
@@ -235,7 +235,7 @@ public class TemplateValueCatalogue extends Composite {
 
 	/** Displays existing values for this property */
 	private TableViewer createValuesViewer(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		final Table table = new Table(parent, SWT.SINGLE | SWT.V_SCROLL
 				| SWT.H_SCROLL);
 		table.setHeaderVisible(true);
@@ -375,7 +375,7 @@ public class TemplateValueCatalogue extends Composite {
 	}
 
 	private TableViewer createInstancesViewer(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 		colDefs.add(new PeopleColumnDefinition(taggableType,
 				Property.JCR_TITLE, PropertyType.STRING, "Instances",
@@ -562,7 +562,7 @@ public class TemplateValueCatalogue extends Composite {
 				newValueTxt = new Text(body, SWT.BORDER);
 				newValueTxt.setMessage("was: " + oldValue);
 				newValueTxt.setText(oldValue);
-				newValueTxt.setLayoutData(PeopleUiUtils.horizontalFillData());
+				newValueTxt.setLayoutData(EclipseUiUtils.fillWidth());
 				setControl(body);
 				newValueTxt.setFocus();
 			}

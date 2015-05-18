@@ -21,8 +21,8 @@ import org.argeo.connect.people.core.versioning.ItemDiff;
 import org.argeo.connect.people.core.versioning.VersionDiff;
 import org.argeo.connect.people.core.versioning.VersionUtils;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.PropertyDiff;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
@@ -67,7 +67,7 @@ public class HistoryLog extends Composite {
 
 	private void populate(IManagedForm form, Composite parent) {
 
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		UserManagementService userService = peopleService
 				.getUserManagementService();
@@ -89,7 +89,7 @@ public class HistoryLog extends Composite {
 				| SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 		// styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 		// true));
-		//refreshHistory(styledText);
+		// refreshHistory(styledText);
 		// styledText.setEditable(false);
 
 		myFormPart = new MyFormPart(styledText);

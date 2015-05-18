@@ -23,6 +23,7 @@ import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -79,7 +80,7 @@ public class ContactList extends Composite {
 
 	private void populate() {
 		Composite parent = this;
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// Add a scrolled container
 		ScrolledComposite container = new ScrolledComposite(parent,
@@ -92,7 +93,7 @@ public class ContactList extends Composite {
 
 		container.setExpandHorizontal(true);
 		container.setExpandVertical(false);
-		container.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		container.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		innerCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		formPart.initialize(form);
@@ -187,7 +188,7 @@ public class ContactList extends Composite {
 	/** Manage display and update of existing contact Nodes */
 	private void populateDisplayContactPanel(final Composite parent,
 			boolean isCheckedOut) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		try {
 
 			String[] knownTypes = peopleService.getContactService()
@@ -406,7 +407,8 @@ public class ContactList extends Composite {
 				String value = valueTxt.getText();
 				String label = labelTxt.getText();
 				boolean isPrimary = primaryChk.getSelection();
-				saveAndRefresh(contactType, JcrUtils.replaceInvalidChars(value), value, isPrimary,
+				saveAndRefresh(contactType,
+						JcrUtils.replaceInvalidChars(value), value, isPrimary,
 						nature, null, label);
 			}
 		});
@@ -421,8 +423,9 @@ public class ContactList extends Composite {
 					String value = valueTxt.getText();
 					String label = labelTxt.getText();
 					boolean isPrimary = primaryChk.getSelection();
-					saveAndRefresh(contactType, JcrUtils.replaceInvalidChars(value), value, isPrimary,
-							nature, null, label);
+					saveAndRefresh(contactType,
+							JcrUtils.replaceInvalidChars(value), value,
+							isPrimary, nature, null, label);
 				}
 			}
 		};
@@ -459,7 +462,8 @@ public class ContactList extends Composite {
 				String label = labelTxt.getText();
 				String cat = catCmb.getText();
 				boolean isPrimary = primaryChk.getSelection();
-				saveAndRefresh(contactType, JcrUtils.replaceInvalidChars(value), value, isPrimary,
+				saveAndRefresh(contactType,
+						JcrUtils.replaceInvalidChars(value), value, isPrimary,
 						nature, cat, label);
 			}
 		});
@@ -475,8 +479,9 @@ public class ContactList extends Composite {
 					String label = labelTxt.getText();
 					String cat = catCmb.getText();
 					boolean isPrimary = primaryChk.getSelection();
-					saveAndRefresh(contactType, JcrUtils.replaceInvalidChars(value), value, isPrimary,
-							nature, cat, label);
+					saveAndRefresh(contactType,
+							JcrUtils.replaceInvalidChars(value), value,
+							isPrimary, nature, cat, label);
 				}
 			}
 		};
@@ -490,8 +495,8 @@ public class ContactList extends Composite {
 	private void saveAndRefresh(String contactType, String name, String value,
 			boolean isPrimary, String nature, String category, String label) {
 
-		PeopleJcrUtils.createContact(peopleService, entity, contactType,
-				name, value, isPrimary, nature, category, label);
+		PeopleJcrUtils.createContact(peopleService, entity, contactType, name,
+				value, isPrimary, nature, category, label);
 		addContactCmb.select(0);
 		formPart.markDirty();
 		formPart.refresh();

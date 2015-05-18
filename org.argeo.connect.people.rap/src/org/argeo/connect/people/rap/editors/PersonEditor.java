@@ -82,7 +82,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 
 	@Override
 	protected void populateHeader(Composite parent) {
-		GridLayout gl = PeopleUiUtils.noSpaceGridLayout();
+		GridLayout gl = EclipseUiUtils.noSpaceGridLayout();
 		gl.marginBottom = 10;
 		parent.setLayout(gl);
 
@@ -116,7 +116,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Contact details", PeopleRapConstants.CTAB_CONTACT_DETAILS,
 				tooltip);
-		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		ContactList cpc = new ContactList(innerPannel, SWT.NO_FOCUS, toolkit,
 				getManagedForm(), getNode(), getPeopleService(),
 				getPeopleWorkbenchService());
@@ -127,7 +127,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
 				PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
-		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite activitiesCmp = new ActivityList(toolkit, getManagedForm(),
 				innerPannel, SWT.NONE, getPeopleService(),
 				getPeopleWorkbenchService(), person);
@@ -138,7 +138,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Organisations",
 				PeopleRapConstants.CTAB_JOBS, tooltip);
-		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite crewCmp = new JobList(toolkit, getManagedForm(), innerPannel,
 				SWT.NONE, getPeopleService(), getPeopleWorkbenchService(),
 				person);
@@ -149,7 +149,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				+ JcrUtils.get(person, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "History",
 				PeopleRapConstants.CTAB_HISTORY, tooltip);
-		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite historyLogCmp = new HistoryLog(toolkit, getManagedForm(),
 				innerPannel, SWT.NONE, getPeopleService(), person);
 		historyLogCmp.setLayoutData(EclipseUiUtils.fillAll());
@@ -180,7 +180,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		PeopleRapUtils.setSwitchingFormData(editPanel);
 		// editPanel.setData(RWT.CUSTOM_VARIANT,
 		// PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
-		editPanel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		editPanel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// First Line - display Name management
 		Composite firstCmp = toolkit.createComposite(editPanel, SWT.NO_FOCUS);
@@ -205,7 +205,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 
 		// Fourth Line: Polite form & spoken languages
 		Composite fourthCmp = toolkit.createComposite(editPanel, SWT.NO_FOCUS);
-		fourthCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		fourthCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		fourthCmp.setLayout(new GridLayout(4, false));
 
 		// Create edit text

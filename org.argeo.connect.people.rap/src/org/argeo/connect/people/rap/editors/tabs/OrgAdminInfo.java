@@ -11,9 +11,9 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.composites.BankAccountComposite;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.OrgJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -132,11 +132,11 @@ public class OrgAdminInfo extends Composite {
 
 	private void populateBankAccountGroup(final IManagedForm form,
 			Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		final Group group = new Group(parent, 0);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		group.setText("Payment account");
-		group.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		group.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {

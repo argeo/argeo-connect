@@ -21,6 +21,7 @@ import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -90,7 +91,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 		// DATA
 		Composite dataCmp = toolkit.createComposite(parent);
-		dataCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		dataCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		if (!isCheckedOut) // READ ONLY
 			populateReadOnlyPanel(dataCmp);

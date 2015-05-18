@@ -56,11 +56,11 @@ public class ActivityEditor extends AbstractPeopleEditor {
 	}
 
 	protected void populateHeader(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite headerCmp = new ActivityHeader(getFormToolkit(),
 				getManagedForm(), parent, SWT.NO_FOCUS, getPeopleService(),
 				getPeopleWorkbenchService(), activity);
-		headerCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		headerCmp.setLayoutData(EclipseUiUtils.fillWidth());
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		label.setLayoutData(gd);
 		final Text titleTxt = toolkit.createText(parent, "", SWT.BORDER
 				| SWT.SINGLE);
-		titleTxt.setLayoutData(PeopleUiUtils.horizontalFillData());
+		titleTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// Bottom part: description
 		label = PeopleRapUtils.createBoldLabel(toolkit, parent, "Description");
@@ -175,17 +175,17 @@ public class ActivityEditor extends AbstractPeopleEditor {
 				gd.widthHint = firstColWHint;
 				label.setLayoutData(gd);
 				typeLbl = toolkit.createLabel(parent, "");
-				typeLbl.setLayoutData(PeopleUiUtils.horizontalFillData());
+				typeLbl.setLayoutData(EclipseUiUtils.fillWidth());
 
 				PeopleRapUtils.createBoldLabel(toolkit, parent, "Reported by");
 				managerLbl = toolkit.createLabel(parent, "");
-				managerLbl.setLayoutData(PeopleUiUtils.horizontalFillData());
+				managerLbl.setLayoutData(EclipseUiUtils.fillWidth());
 
 				// ACTIVITY DATE
 				PeopleRapUtils.createBoldLabel(toolkit, parent, "Date");
 				dateComposite = new DateTextPart(parent, SWT.NO_FOCUS, toolkit,
 						myFormPart, activity, PeopleNames.PEOPLE_ACTIVITY_DATE);
-				dateComposite.setLayoutData(PeopleUiUtils.horizontalFillData());
+				dateComposite.setLayoutData(EclipseUiUtils.fillWidth());
 
 				// 2nd line - RELATED ENTITIES
 				label = PeopleRapUtils.createBoldLabel(toolkit, parent,

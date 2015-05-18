@@ -8,14 +8,15 @@ import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.web.parts.ActivitiesPart;
 import org.argeo.connect.people.web.parts.ContactsWithNotePart;
 import org.argeo.connect.people.web.parts.OrgHeaderPart;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * Shows all information we have about a given organisation. Expects a context that
- * has the people:org NodeType
+ * Shows all information we have about a given organisation. Expects a context
+ * that has the people:org NodeType
  */
 public class OrgPage implements CmsUiProvider {
 
@@ -31,21 +32,21 @@ public class OrgPage implements CmsUiProvider {
 		// TODO use a scrollable composite
 		Composite body = new Composite(parent, SWT.NO_FOCUS);
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		body.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		body.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// header
 		Composite headerCmp = new Composite(body, SWT.NO_FOCUS);
-		headerCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		headerCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		orgHeaderPart.createUi(headerCmp, context);
 
 		// contacts
 		Composite contactCmp = new Composite(body, SWT.NO_FOCUS);
-		contactCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		contactCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		contactsWithNotePart.createUi(contactCmp, context);
 
 		// activities
 		Composite activitiesCmp = new Composite(body, SWT.NO_FOCUS);
-		activitiesCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		activitiesCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		activitiesPart.createUi(activitiesCmp, context);
 
 		parent.layout();

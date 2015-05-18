@@ -32,13 +32,13 @@ public class PeopleUiUtils {
 		return new GridData(SWT.FILL, SWT.FILL, true, true, horizontalSpan, 1);
 	}
 
-	/**
-	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
-	 * SWT.CENTER, true, false.
-	 */
-	public static GridData horizontalFillData() {
-		return new GridData(SWT.FILL, SWT.CENTER, true, false);
-	}
+	// /**
+	// * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
+	// * SWT.CENTER, true, false.
+	// */
+	// public static GridData horizontalFillData() {
+	// return new GridData(SWT.FILL, SWT.CENTER, true, false);
+	// }
 
 	/**
 	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
@@ -49,13 +49,13 @@ public class PeopleUiUtils {
 				1);
 	}
 
-	/**
-	 * Shortcut to create a {@link GridLayout} with no margin and no spacing
-	 * (default are normally 5 px).
-	 */
-	public static GridLayout noSpaceGridLayout() {
-		return noSpaceGridLayout(1);
-	}
+	// /**
+	// * Shortcut to create a {@link GridLayout} with no margin and no spacing
+	// * (default are normally 5 px).
+	// */
+	// public static GridLayout noSpaceGridLayout() {
+	// return noSpaceGridLayout(1);
+	// }
 
 	/**
 	 * Shortcut to create a {@link GridLayout} with the given column number with

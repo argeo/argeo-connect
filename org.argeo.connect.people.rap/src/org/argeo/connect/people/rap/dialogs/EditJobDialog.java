@@ -321,11 +321,11 @@ public class EditJobDialog extends TrayDialog {
 	}
 
 	protected void addFilterPanel(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
 				| SWT.ICON_CANCEL);
 		filterTxt.setMessage("Search and choose a corresponding entity");
-		filterTxt.setLayoutData(PeopleUiUtils.horizontalFillData());
+		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 		filterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 5003010530960334977L;
 

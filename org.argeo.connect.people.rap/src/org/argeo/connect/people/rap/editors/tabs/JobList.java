@@ -101,7 +101,7 @@ public class JobList extends Composite {
 				addBtn = toolkit.createButton(panel, "", SWT.PUSH);
 				configureAddBtn(addBtn);
 			} else {
-				panel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+				panel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			}
 
 			// Item list

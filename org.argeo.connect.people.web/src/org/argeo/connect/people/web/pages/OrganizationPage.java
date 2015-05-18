@@ -16,6 +16,7 @@ import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.providers.OrgOverviewLP;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -42,26 +43,26 @@ public class OrganizationPage implements CmsUiProvider {
 
 		Composite body = new Composite(parent, SWT.NO_FOCUS);
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		body.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		body.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// header
 		Composite headerCmp = new Composite(body, SWT.NO_FOCUS);
-		headerCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		headerCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		createHeader(headerCmp, context);
 
 		// mailing lists
 		Composite mlCmp = new Composite(body, SWT.NO_FOCUS);
-		mlCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		mlCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		createMailingListPanel(mlCmp, context);
 
 		// contacts
 		Composite contactCmp = new Composite(body, SWT.NO_FOCUS);
-		contactCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		contactCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		createContactPanel(contactCmp, context);
 
 		// activities
 		Composite activityCmp = new Composite(body, SWT.NO_FOCUS);
-		activityCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		activityCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		createActivityPanel(activityCmp, context);
 
 		parent.layout();
@@ -91,12 +92,12 @@ public class OrganizationPage implements CmsUiProvider {
 			parent.setLayout(new GridLayout(2, false));
 			Composite imgCmp = new Composite(parent, SWT.NO_FOCUS
 					| SWT.NO_SCROLL | SWT.NO_TRIM);
-			imgCmp.setLayout(PeopleUiUtils.noSpaceGridLayout());
+			imgCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			imgCmp.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
 			new ImageLabel(imgCmp, SWT.NO_FOCUS, itemPicture);
 
 			Composite rightCmp = new Composite(parent, SWT.NO_FOCUS);
-			rightCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+			rightCmp.setLayoutData(EclipseUiUtils.fillWidth());
 			parent = rightCmp;
 
 		}

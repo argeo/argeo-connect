@@ -88,7 +88,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 		resourceService = peopleService.getResourceService();
 		this.entity = entity;
 
-		this.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		this.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite tableComp = new Composite(this, SWT.NO_FOCUS);
 		tableViewer = createActivityViewer(tableComp, style);
 		tableComp.setLayoutData(EclipseUiUtils.fillAll());

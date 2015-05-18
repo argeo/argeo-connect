@@ -162,7 +162,7 @@ public class FilteredVirtualEntityTable extends Composite implements ArgeoNames 
 		// initialization
 		Composite parent = this;
 		// Main Layout
-		GridLayout layout = PeopleUiUtils.noSpaceGridLayout();
+		GridLayout layout = EclipseUiUtils.noSpaceGridLayout();
 		layout.verticalSpacing = 5;
 		this.setLayout(layout);
 		if (hasFilter)

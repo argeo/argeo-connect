@@ -432,7 +432,7 @@ public class PeopleRapUtils {
 			final String basePath) {
 		Link link = new Link(parent, SWT.NONE);
 		link.setText("<a>" + label + "</a>");
-		link.setLayoutData(PeopleUiUtils.horizontalFillData());
+		link.setLayoutData(EclipseUiUtils.fillWidth());
 		link.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
@@ -465,7 +465,7 @@ public class PeopleRapUtils {
 			final String editorId, final String label) {
 		Link link = new Link(parent, SWT.NONE);
 		link.setText("<a>" + label + "</a>");
-		link.setLayoutData(PeopleUiUtils.horizontalFillData());
+		link.setLayoutData(EclipseUiUtils.fillWidth());
 		link.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
@@ -500,7 +500,7 @@ public class PeopleRapUtils {
 			final String label, final Node entity) {
 		Link link = new Link(parent, SWT.NONE);
 		link.setText("<a>" + label + "</a>");
-		link.setLayoutData(PeopleUiUtils.horizontalFillData());
+		link.setLayoutData(EclipseUiUtils.fillWidth());
 		link.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 

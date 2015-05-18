@@ -92,7 +92,7 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 
 	@Override
 	public void createPartControl(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		// The table itself
 		Composite tableCmp = new Composite(parent, SWT.NO_FOCUS);
 		tableViewer = createTableViewer(tableCmp, SWT.READ_ONLY);

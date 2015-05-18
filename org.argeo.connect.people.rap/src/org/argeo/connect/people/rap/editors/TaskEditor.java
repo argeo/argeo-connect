@@ -48,11 +48,11 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 	}
 
 	protected void populateHeader(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite headerCmp = new TaskBasicHeader(getFormToolkit(),
 				getManagedForm(), parent, SWT.NO_FOCUS, getPeopleService(),
 				getPeopleWorkbenchService(), getCurrentTaskType(), task);
-		headerCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		headerCmp.setLayoutData(EclipseUiUtils.fillWidth());
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(task, Property.JCR_TITLE);
 		Composite innerPannel = addTabToFolder(tabFolder, CTAB_COMP_STYLE,
 				"Activity log", PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
-		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite activitiesCmp = new ActivityList(toolkit, getManagedForm(),
 				innerPannel, SWT.NONE, getPeopleService(),
 				getPeopleWorkbenchService(), task);

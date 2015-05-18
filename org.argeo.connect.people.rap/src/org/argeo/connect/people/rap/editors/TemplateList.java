@@ -72,11 +72,11 @@ public class TemplateList extends EditorPart implements PeopleNames,
 
 	// MAIN LAYOUT
 	public void createPartControl(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		Composite buttonCmp = new Composite(parent, SWT.NO_FOCUS);
 		populateButtonCmp(buttonCmp);
-		buttonCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		buttonCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// The table itself
 		Composite tableCmp = new Composite(parent, SWT.NO_FOCUS);

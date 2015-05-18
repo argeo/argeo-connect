@@ -86,7 +86,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 
 	@Override
 	protected void populateHeader(Composite parent) {
-		GridLayout gl = PeopleUiUtils.noSpaceGridLayout();
+		GridLayout gl = EclipseUiUtils.noSpaceGridLayout();
 		gl.marginBottom = 10;
 		parent.setLayout(gl);
 
@@ -117,7 +117,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Details", PeopleRapConstants.CTAB_CONTACT_DETAILS, tooltip);
-		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		ContactList cpc = new ContactList(innerPannel, SWT.NO_FOCUS, toolkit,
 				getManagedForm(), getNode(), getPeopleService(),
 				getPeopleWorkbenchService());
@@ -128,7 +128,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(org, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
 				PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
-		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite activitiesCmp = new ActivityList(toolkit, getManagedForm(),
 				innerPannel, SWT.NONE, getPeopleService(),
 				getPeopleWorkbenchService(), org);
@@ -139,7 +139,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Team",
 				PeopleRapConstants.CTAB_EMPLOYEES, tooltip);
-		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite employeesCmp = new JobList(toolkit, getManagedForm(),
 				innerPannel, SWT.NONE, getPeopleService(),
 				getPeopleWorkbenchService(), org);
@@ -150,7 +150,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Admin.",
 				PeopleRapConstants.CTAB_LEGAL_INFO, tooltip);
-		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite legalCmp = new OrgAdminInfo(toolkit, getManagedForm(),
 				innerPannel, SWT.NONE, org);
 		legalCmp.setLayoutData(EclipseUiUtils.fillAll());
@@ -160,7 +160,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				+ JcrUtils.get(org, Property.JCR_TITLE);
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "History",
 				PeopleRapConstants.CTAB_HISTORY, tooltip);
-		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite historyLogCmp = new HistoryLog(toolkit, getManagedForm(),
 				innerPannel, SWT.NONE, getPeopleService(), org);
 		historyLogCmp.setLayoutData(EclipseUiUtils.fillAll());

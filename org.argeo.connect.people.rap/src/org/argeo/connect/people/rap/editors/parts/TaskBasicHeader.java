@@ -23,6 +23,7 @@ import org.argeo.connect.people.rap.utils.AbstractPanelFormPart;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -182,11 +183,11 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Status");
 		statusROLbl = new Label(parent, SWT.NO_FOCUS | SWT.WRAP);
-		statusROLbl.setLayoutData(PeopleUiUtils.horizontalFillData());
+		statusROLbl.setLayoutData(EclipseUiUtils.fillWidth());
 
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Assigned to");
 		assignedToROLbl = new Label(parent, SWT.NO_FOCUS | SWT.WRAP);
-		assignedToROLbl.setLayoutData(PeopleUiUtils.horizontalFillData());
+		assignedToROLbl.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// RELATED ENTITIES
 		// Label label =
@@ -194,17 +195,17 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		relatedCmp = new LinkListPart(toolkit, myFormPart, parent,
 				SWT.NO_FOCUS, peopleWorkbenchService, task, PEOPLE_RELATED_TO,
 				hiddenItemIds);
-		relatedCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		relatedCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// Title
 		PeopleRapUtils.createBoldLabel(parent, "Title");
 		titleTxt = toolkit.createText(parent, "", SWT.BORDER);
-		titleTxt.setLayoutData(PeopleUiUtils.horizontalFillData());
+		titleTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// Description
 		PeopleRapUtils.createBoldLabel(parent, "Description");
 		descTxt = toolkit.createText(parent, "", SWT.BORDER);
-		descTxt.setLayoutData(PeopleUiUtils.horizontalFillData());
+		descTxt.setLayoutData(EclipseUiUtils.fillWidth());
 	}
 
 	/* EDIT LAYOUT */
@@ -221,18 +222,18 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Due date");
 		dueDateCmp = new DateTextPart(parent, SWT.NO_FOCUS, toolkit,
 				myFormPart, task, PeopleNames.PEOPLE_DUE_DATE);
-		dueDateCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		dueDateCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// ASSIGNED TO
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Assigned to");
 		changeAssignationLk = new Link(parent, SWT.NONE);
-		changeAssignationLk.setLayoutData(PeopleUiUtils.horizontalFillData());
+		changeAssignationLk.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// WAKE UP DATE
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Wake up date");
 		wakeUpDateCmp = new DateTextPart(parent, SWT.NO_FOCUS, toolkit,
 				myFormPart, task, PeopleNames.PEOPLE_WAKE_UP_DATE);
-		wakeUpDateCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		wakeUpDateCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// RELATED ENTITIES
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Related entities");

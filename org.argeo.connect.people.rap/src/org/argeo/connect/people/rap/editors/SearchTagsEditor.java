@@ -144,11 +144,11 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 	// MAIN LAYOUT
 	public void createPartControl(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		// the generic free search part
 		Composite searchCmp = new Composite(parent, SWT.NO_FOCUS);
 		populateSearchPanel(searchCmp);
-		searchCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+		searchCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// The table itself
 		Composite tableCmp = new Composite(parent, SWT.NO_FOCUS);

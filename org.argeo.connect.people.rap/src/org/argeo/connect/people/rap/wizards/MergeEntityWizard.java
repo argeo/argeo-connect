@@ -31,12 +31,13 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.ForceRefresh;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.rap.utils.Refreshable;
+import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.security.ui.PrivilegedJob;
@@ -188,12 +189,12 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 
 		public void createControl(Composite parent) {
 			Composite body = new Composite(parent, SWT.NONE);
-			body.setLayout(PeopleUiUtils.noSpaceGridLayout());
+			body.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			// A composite that callingPage chosen entity
 
 			Composite headerCmp = new Composite(body, SWT.NONE);
-			headerCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
-			headerCmp.setLayout(PeopleUiUtils.noSpaceGridLayout());
+			headerCmp.setLayoutData(EclipseUiUtils.fillWidth());
+			headerCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			chosenItemLabel = new Label(headerCmp, SWT.NONE);
 			chosenItemLabel.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 
@@ -293,11 +294,11 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 
 		public void createControl(Composite parent) {
 			Composite body = new Composite(parent, SWT.NONE);
-			body.setLayout(PeopleUiUtils.noSpaceGridLayout());
+			body.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 			Composite headerCmp = new Composite(body, SWT.NONE);
-			headerCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
-			headerCmp.setLayout(PeopleUiUtils.noSpaceGridLayout());
+			headerCmp.setLayoutData(EclipseUiUtils.fillWidth());
+			headerCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			chosenItemLabel = new Label(headerCmp, SWT.NONE);
 			chosenItemLabel.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 
@@ -454,8 +455,8 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 				// // Refresh list
 				// CommandUtils.callCommand(ForceRefresh.ID);
 				// }});}});
-				Display currDisplay = callingPage.getWorkbenchWindow().getShell()
-						.getDisplay();
+				Display currDisplay = callingPage.getWorkbenchWindow()
+						.getShell().getDisplay();
 				currDisplay.asyncExec(new Runnable() {
 					public void run() {
 						try {

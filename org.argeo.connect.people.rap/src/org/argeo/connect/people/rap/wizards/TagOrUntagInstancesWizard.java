@@ -23,9 +23,9 @@ import org.argeo.connect.people.rap.composites.SimpleJcrTableComposite;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.security.ui.PrivilegedJob;
@@ -186,7 +186,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 		public void createControl(Composite parent) {
 			Composite body = new Composite(parent, SWT.NONE);
-			body.setLayout(PeopleUiUtils.noSpaceGridLayout());
+			body.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			Node tagParent = peopleService.getResourceService()
 					.getTagLikeResourceParent(session, tagId);
 			int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
@@ -271,7 +271,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 		public void createControl(Composite parent) {
 			Composite body = new Composite(parent, SWT.NONE);
-			body.setLayout(PeopleUiUtils.noSpaceGridLayout());
+			body.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 			colDefs.add(new PeopleColumnDefinition(selectorName,
 					Property.JCR_TITLE, PropertyType.STRING, "Display Name",

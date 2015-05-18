@@ -131,7 +131,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	}
 
 	protected void createMainLayout(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// Internal main Layout
 		// The header

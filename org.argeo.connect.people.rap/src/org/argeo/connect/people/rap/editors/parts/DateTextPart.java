@@ -230,7 +230,7 @@ public class DateTextPart extends Composite {
 		}
 
 		protected void populate() {
-			setLayout(PeopleUiUtils.noSpaceGridLayout());
+			setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 			dateTimeCtl = new DateTime(this, SWT.CALENDAR);
 			dateTimeCtl.setLayoutData(EclipseUiUtils.fillAll());

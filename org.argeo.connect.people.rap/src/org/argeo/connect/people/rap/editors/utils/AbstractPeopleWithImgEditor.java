@@ -9,6 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -52,7 +53,7 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
 
 	@Override
 	protected void createMainLayout(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// Internal main Layout
 		// The header
@@ -94,7 +95,7 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
 
 		// the body
 		Composite body = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		body.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		body.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		populateBody(body);
 	}
@@ -128,7 +129,8 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
 	@Override
 	public void dispose() {
 		// Free the resources.
-		if (itemPicture != null && !itemPicture.equals(PeopleRapImages.NO_PICTURE))
+		if (itemPicture != null
+				&& !itemPicture.equals(PeopleRapImages.NO_PICTURE))
 			itemPicture.dispose();
 		super.dispose();
 	}

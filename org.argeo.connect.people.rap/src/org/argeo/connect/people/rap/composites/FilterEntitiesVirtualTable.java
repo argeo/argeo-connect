@@ -89,7 +89,7 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 
 	protected void populate() {
 		Composite parent = this;
-		GridLayout layout = PeopleUiUtils.noSpaceGridLayout();
+		GridLayout layout = EclipseUiUtils.noSpaceGridLayout();
 		layout.verticalSpacing = 5;
 		this.setLayout(layout);
 		createFilterPart(parent);
@@ -177,7 +177,7 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
 				| SWT.ICON_CANCEL);
 		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
-		filterTxt.setLayoutData(PeopleUiUtils.horizontalFillData());
+		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 		filterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 1L;
 

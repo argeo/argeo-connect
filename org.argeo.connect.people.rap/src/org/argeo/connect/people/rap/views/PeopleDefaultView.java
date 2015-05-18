@@ -30,8 +30,8 @@ import org.argeo.connect.people.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.rap.providers.EntitySingleColumnLabelProvider;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -82,7 +82,7 @@ public class PeopleDefaultView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// Header
 		Composite cmp = new Composite(parent, SWT.NO_FOCUS);
@@ -109,8 +109,7 @@ public class PeopleDefaultView extends ViewPart {
 		Composite logoCmp = new Composite(parent, SWT.NO_FOCUS);
 		FormData fdBg = PeopleRapUtils.createformData(0, 20, 100, 75);
 		logoCmp.setLayoutData(fdBg);
-		logoCmp.setData(RWT.CUSTOM_VARIANT,
-				"people-logoComposite");
+		logoCmp.setData(RWT.CUSTOM_VARIANT, "people-logoComposite");
 
 		// The Image
 		Label logoLbl = new Label(parent, SWT.NO_FOCUS);
@@ -127,7 +126,7 @@ public class PeopleDefaultView extends ViewPart {
 		Composite linksCmp = new Composite(parent, SWT.NO_FOCUS);
 		linksCmp.setLayoutData(PeopleRapUtils.createformData(75, 25, 98, 73));
 		linksCmp.setData(RWT.CUSTOM_VARIANT, "people-logoTable");
-		linksCmp.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		linksCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		addLink(linksCmp, "Search Entities",
 				"Open an editor to narrow you search", CMD_OPEN_SEARCH_EDITOR);
@@ -146,7 +145,8 @@ public class PeopleDefaultView extends ViewPart {
 			params.put(OpenSearchEntityEditor.PARAM_EDITOR_NAME, "Search");
 			params.put(OpenSearchEntityEditor.PARAM_BASE_PATH, "/");
 			CommandUtils.callCommand(
-					peopleWorkbenchService.getOpenSearchEntityEditorCmdId(), params);
+					peopleWorkbenchService.getOpenSearchEntityEditorCmdId(),
+					params);
 		} else if (CMD_LOGOUT.equals(commandId))
 			CommandUtils.callCommand(CMD_LOGOUT);
 	}
@@ -203,8 +203,7 @@ public class PeopleDefaultView extends ViewPart {
 		table.setHeaderVisible(false);
 		// Enable markups
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT,
-				Integer.valueOf(24));
+		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(24));
 
 		v.setContentProvider(new BasicNodeListContentProvider());
 		v.addDoubleClickListener(new PeopleJcrViewerDClickListener(
@@ -300,7 +299,8 @@ public class PeopleDefaultView extends ViewPart {
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
+	public void setPeopleWorkbenchService(
+			PeopleWorkbenchService peopleWorkbenchService) {
 		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 

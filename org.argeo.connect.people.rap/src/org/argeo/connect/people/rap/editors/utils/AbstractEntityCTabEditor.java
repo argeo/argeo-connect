@@ -34,7 +34,7 @@ public abstract class AbstractEntityCTabEditor extends
 	 */
 	@Override
 	protected final void populateBody(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		// NO_FOCUS to solve our "tab browsing" issue
 		folder = createCTabFolder(parent, SWT.NO_FOCUS);
 		populateTabFolder(folder);

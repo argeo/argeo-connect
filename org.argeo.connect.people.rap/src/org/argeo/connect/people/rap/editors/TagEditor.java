@@ -39,8 +39,8 @@ import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.rap.wizards.EditTagWizard;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -142,7 +142,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 	}
 
 	protected void createMainLayout(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		// The header
 		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		header.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -280,7 +280,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 	}
 
 	private TableViewer createTableViewer(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(parent,
 				SWT.MULTI, colDefs, enableBatchUpdate());
 		TableViewer tableViewer = tableCmp.getTableViewer();

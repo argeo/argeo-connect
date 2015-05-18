@@ -65,7 +65,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 
 	/** Override this to provide type specific static filters */
 	protected void populateStaticFilters(Composite body) {
-		// parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		// parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		//
 		// // Configure the Twistie section
 		// Section headerSection = new Section(parent, Section.TITLE_BAR

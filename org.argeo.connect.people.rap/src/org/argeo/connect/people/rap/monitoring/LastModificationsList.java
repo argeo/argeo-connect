@@ -75,7 +75,7 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements
 
 	@Override
 	public void createPartControl(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		// The table itself
 		tableViewer = createTableViewer(parent, SWT.READ_ONLY | SWT.VIRTUAL);
 		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(

@@ -79,13 +79,13 @@ public class ActivityList extends Composite {
 	}
 
 	private void populate(IManagedForm form, Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		try {
 			Composite addCmp = null;
 			if (peopleService.getUserManagementService().isUserInRole(
 					PeopleConstants.ROLE_MEMBER)) {
 				addCmp = toolkit.createComposite(parent);
-				addCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+				addCmp.setLayoutData(EclipseUiUtils.fillWidth());
 			}
 
 			// The Table that displays corresponding activities
@@ -123,7 +123,7 @@ public class ActivityList extends Composite {
 			final Node entity, final String openEditorCmdId,
 			final MyActivityTableCmp activityTable) {
 		// The Add Activity bar
-		addActivityBar.setLayoutData(PeopleUiUtils.horizontalFillData());
+		addActivityBar.setLayoutData(EclipseUiUtils.fillWidth());
 		// GridLayout gl = new GridLayout(7, false);
 		// gl.marginHeight = gl.marginWidth = 0;
 		addActivityBar.setLayout(new GridLayout(7, false));

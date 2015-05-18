@@ -24,7 +24,7 @@ public class ContactsWithNotePart extends ContactsPart {
 			throws RepositoryException {
 		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 		Composite left = new Composite(parent, SWT.NO_FOCUS);
-		left.setLayoutData(PeopleUiUtils.horizontalFillData());
+		left.setLayoutData(EclipseUiUtils.fillWidth());
 		createContactPanel(left, context);
 
 		Composite right = new Composite(parent, SWT.NO_FOCUS);
@@ -35,12 +35,12 @@ public class ContactsWithNotePart extends ContactsPart {
 
 	private void createNotePanel(Composite parent, Node context)
 			throws RepositoryException {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// FIXME add description in the demo data and change the below
 		if (context.hasProperty(Property.JCR_TITLE)) {
 			Group group = new Group(parent, SWT.NO_FOCUS);
-			group.setLayout(PeopleUiUtils.noSpaceGridLayout());
+			group.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			group.setLayoutData(EclipseUiUtils.fillAll());
 
 			group.setText("Note");

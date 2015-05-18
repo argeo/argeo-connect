@@ -30,11 +30,11 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
-import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.security.ui.PrivilegedJob;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -225,7 +225,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 
 		public void createControl(Composite parent) {
 			Composite body = new Composite(parent, SWT.NONE);
-			body.setLayout(PeopleUiUtils.noSpaceGridLayout());
+			body.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 			colDefs.add(new PeopleColumnDefinition(taggableNodeType,
 					Property.JCR_TITLE, PropertyType.STRING, "Display Name",

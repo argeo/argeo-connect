@@ -91,7 +91,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	@Override
 	public void createPartControl(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		Composite searchCmp = new Composite(parent, SWT.NO_FOCUS);
 		searchCmp.setLayoutData(EclipseUiUtils.fillWidth());
@@ -110,7 +110,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		if (hasCheckBoxes()) {
 			Composite menuCmp = new Composite(parent, SWT.NO_FOCUS);
 			createCheckBoxMenu(menuCmp);
-			menuCmp.setLayoutData(PeopleUiUtils.horizontalFillData());
+			menuCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		}
 
 		// The table itself
@@ -275,7 +275,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		protected void populate() {
 
 			Composite parent = DropDownPopup.this;
-			parent.setLayout(PeopleUiUtils.noSpaceGridLayout());
+			parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 			final Button addTagBtn = new Button(parent, SWT.LEAD | SWT.FLAT);
 			addTagBtn.setText("Add to selected");

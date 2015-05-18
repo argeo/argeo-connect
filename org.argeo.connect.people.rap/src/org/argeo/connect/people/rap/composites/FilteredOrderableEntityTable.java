@@ -20,7 +20,6 @@ import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
@@ -165,7 +164,7 @@ public class FilteredOrderableEntityTable extends Composite implements
 		// initialization
 		Composite parent = this;
 		// Main Layout
-		GridLayout layout = PeopleUiUtils.noSpaceGridLayout();
+		GridLayout layout = EclipseUiUtils.noSpaceGridLayout();
 		layout.verticalSpacing = 5;
 		this.setLayout(layout);
 		if (hasFilter)

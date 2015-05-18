@@ -135,7 +135,7 @@ public class SimpleJcrTableComposite extends Composite implements ArgeoNames {
 		// initialization
 		Composite parent = this;
 		// Main Layout
-		GridLayout gl = PeopleUiUtils.noSpaceGridLayout();
+		GridLayout gl = EclipseUiUtils.noSpaceGridLayout();
 		gl.verticalSpacing = 5;
 		this.setLayout(gl);
 		if (hasFilter)
