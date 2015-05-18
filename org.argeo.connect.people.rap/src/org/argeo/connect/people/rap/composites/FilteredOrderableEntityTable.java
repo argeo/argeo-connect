@@ -21,6 +21,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
@@ -47,7 +48,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
 /** Almost canonical implementation of a table that display entities */
-public class FilteredOrderableEntityTable extends Composite implements ArgeoNames {
+public class FilteredOrderableEntityTable extends Composite implements
+		ArgeoNames {
 	// private final static Log log =
 	// LogFactory.getLog(EntityTableComposite.class);
 	private static final long serialVersionUID = 1262369448445021926L;
@@ -86,7 +88,8 @@ public class FilteredOrderableEntityTable extends Composite implements ArgeoName
 	 *            the style of the table
 	 * @param session
 	 */
-	public FilteredOrderableEntityTable(Composite parent, int style, Session session) {
+	public FilteredOrderableEntityTable(Composite parent, int style,
+			Session session) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.session = session;
@@ -104,8 +107,8 @@ public class FilteredOrderableEntityTable extends Composite implements ArgeoName
 	 * @param addFilter
 	 * @param addSelection
 	 */
-	public FilteredOrderableEntityTable(Composite parent, int style, Session session,
-			boolean addFilter, boolean addSelection) {
+	public FilteredOrderableEntityTable(Composite parent, int style,
+			Session session, boolean addFilter, boolean addSelection) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.session = session;
@@ -122,8 +125,8 @@ public class FilteredOrderableEntityTable extends Composite implements ArgeoName
 	 * @param session
 	 * @param colDefs
 	 */
-	public FilteredOrderableEntityTable(Composite parent, int style, Session session,
-			List<ColumnDefinition> colDefs) {
+	public FilteredOrderableEntityTable(Composite parent, int style,
+			Session session, List<ColumnDefinition> colDefs) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.session = session;
@@ -143,9 +146,9 @@ public class FilteredOrderableEntityTable extends Composite implements ArgeoName
 	 * @param addFilter
 	 * @param addSelection
 	 */
-	public FilteredOrderableEntityTable(Composite parent, int style, Session session,
-			String nodeType, List<ColumnDefinition> colDefs, boolean addFilter,
-			boolean addSelection) {
+	public FilteredOrderableEntityTable(Composite parent, int style,
+			Session session, String nodeType, List<ColumnDefinition> colDefs,
+			boolean addFilter, boolean addSelection) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.session = session;
@@ -201,7 +204,7 @@ public class FilteredOrderableEntityTable extends Composite implements ArgeoName
 			tableStyle = tableStyle | SWT.CHECK;
 
 		Table table = new Table(parent, tableStyle);
-		table.setLayoutData(PeopleUiUtils.fillGridData());
+		table.setLayoutData(EclipseUiUtils.fillAll());
 
 		TableViewer viewer;
 		if (hasSelectionColumn)

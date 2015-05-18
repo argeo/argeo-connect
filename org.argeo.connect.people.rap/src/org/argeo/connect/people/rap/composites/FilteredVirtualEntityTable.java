@@ -21,6 +21,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
@@ -203,7 +204,7 @@ public class FilteredVirtualEntityTable extends Composite implements ArgeoNames 
 			tableStyle = tableStyle | SWT.CHECK;
 
 		Table table = new Table(parent, tableStyle);
-		table.setLayoutData(PeopleUiUtils.fillGridData());
+		table.setLayoutData(EclipseUiUtils.fillAll());
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 
@@ -221,7 +222,7 @@ public class FilteredVirtualEntityTable extends Composite implements ArgeoNames 
 		// viewer = new TableViewer(parent, SWT.VIRTUAL | tableStyle);
 		// Table table = viewer.getTable();
 		//
-		// table.setLayoutData(PeopleUiUtils.fillGridData());
+		// table.setLayoutData(EclipseUiUtils.fillAll());
 		// table.setLinesVisible(true);
 		// table.setHeaderVisible(true);
 		// table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);

@@ -28,6 +28,7 @@ import org.argeo.connect.people.rap.utils.ActivityViewerComparator;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -96,7 +97,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 	private TableViewer createTableViewer(final Composite parent) {
 		int tableStyle = SWT.SINGLE | SWT.VIRTUAL;
 		Table table = new Table(parent, tableStyle);
-		table.setLayoutData(PeopleUiUtils.fillGridData());
+		table.setLayoutData(EclipseUiUtils.fillAll());
 
 		TableViewer viewer = new TableViewer(table);
 		table.setLinesVisible(true);

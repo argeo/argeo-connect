@@ -13,6 +13,7 @@ import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -188,7 +189,7 @@ public class DateText extends Composite {
 			setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 			dateTimeCtl = new DateTime(this, SWT.CALENDAR);
-			dateTimeCtl.setLayoutData(PeopleUiUtils.fillGridData());
+			dateTimeCtl.setLayoutData(EclipseUiUtils.fillAll());
 			if (calendar != null)
 				dateTimeCtl.setDate(calendar.get(Calendar.YEAR),
 						calendar.get(Calendar.MONTH),

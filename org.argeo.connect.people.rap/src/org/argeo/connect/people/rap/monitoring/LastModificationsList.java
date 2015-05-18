@@ -25,6 +25,7 @@ import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrUtils;
@@ -87,7 +88,7 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements
 		Table table = new Table(parent, tableStyle);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
-		table.setLayoutData(PeopleUiUtils.fillGridData());
+		table.setLayoutData(EclipseUiUtils.fillAll());
 
 		TableViewer viewer = new TableViewer(table);
 		TableViewerColumn column;
@@ -116,7 +117,7 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements
 
 	/** Privileged job that performs the query asynchronously */
 	private class QueryJob extends PrivilegedJob {
-		
+
 		// Enable sanity check before updating the UI
 		private Table table;
 

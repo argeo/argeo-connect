@@ -19,6 +19,7 @@ import org.argeo.connect.people.rap.editors.utils.AbstractPeopleBasicEditor;
 import org.argeo.connect.people.rap.providers.SimpleLazyContentProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -75,7 +76,7 @@ public class AbstractCsvLogTableViewer extends AbstractPeopleBasicEditor
 		// The table itself
 		Composite tableCmp = new Composite(parent, SWT.NO_FOCUS);
 		tableViewer = createTableViewer(tableCmp, SWT.READ_ONLY);
-		tableCmp.setLayoutData(PeopleUiUtils.fillGridData());
+		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 		// tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
 		// tagInstanceType, peopleWorkbenchService));
 	}
@@ -87,7 +88,7 @@ public class AbstractCsvLogTableViewer extends AbstractPeopleBasicEditor
 		Table table = new Table(parent, swtStyle);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
-		table.setLayoutData(PeopleUiUtils.fillGridData());
+		table.setLayoutData(EclipseUiUtils.fillAll());
 
 		TableViewer viewer = new TableViewer(table);
 		TableViewerColumn column;

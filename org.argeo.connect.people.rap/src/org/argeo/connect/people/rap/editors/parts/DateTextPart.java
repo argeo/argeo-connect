@@ -17,6 +17,7 @@ import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -38,9 +39,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
-/**
- * A composite to put in a form to manage a date with a pop-up calendar
- * */
+/** A composite to put in a form to manage a date with a pop-up calendar */
 public class DateTextPart extends Composite {
 	private static final long serialVersionUID = 7651166365139278532L;
 
@@ -197,11 +196,11 @@ public class DateTextPart extends Composite {
 			currCal = parseDate(false);
 
 			populate();
-			
+
 			// Add border and shadow style
 			CalendarPopup.this.setData(RWT.CUSTOM_VARIANT,
 					PeopleRapConstants.PEOPLE_CLASS_POPUP_SHELL);
-			
+
 			pack();
 			layout();
 			setLocation(source.toDisplay((source.getLocation().x - 2),
@@ -234,7 +233,7 @@ public class DateTextPart extends Composite {
 			setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 			dateTimeCtl = new DateTime(this, SWT.CALENDAR);
-			dateTimeCtl.setLayoutData(PeopleUiUtils.fillGridData());
+			dateTimeCtl.setLayoutData(EclipseUiUtils.fillAll());
 			if (currCal != null)
 				dateTimeCtl.setDate(currCal.get(Calendar.YEAR),
 						currCal.get(Calendar.MONTH),

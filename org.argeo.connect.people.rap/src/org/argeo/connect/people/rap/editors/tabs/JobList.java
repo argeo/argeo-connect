@@ -34,6 +34,7 @@ import org.argeo.connect.people.rap.utils.AbstractPanelFormPart;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -106,7 +107,7 @@ public class JobList extends Composite {
 			// Item list
 			Composite tableComp = toolkit.createComposite(panel);
 			itemViewer = createItemViewer(tableComp);
-			tableComp.setLayoutData(PeopleUiUtils.fillGridData());
+			tableComp.setLayoutData(EclipseUiUtils.fillAll());
 			refreshContent(panel, entity);
 		}
 

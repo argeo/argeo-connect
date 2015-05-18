@@ -116,7 +116,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		// The table itself
 		Composite tableCmp = new Composite(parent, SWT.NO_FOCUS);
 		createListPart(tableCmp);
-		tableCmp.setLayoutData(PeopleUiUtils.fillGridData());
+		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// initialize table
 		refreshFilteredList();

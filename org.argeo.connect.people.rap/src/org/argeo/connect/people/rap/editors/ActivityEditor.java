@@ -16,6 +16,7 @@ import org.argeo.connect.people.rap.editors.parts.LinkListPart;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -82,7 +83,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		label.setLayoutData(gd);
 		final Text descTxt = toolkit.createText(parent, "", SWT.BORDER
 				| SWT.MULTI | SWT.WRAP);
-		descTxt.setLayoutData(PeopleUiUtils.fillGridData());
+		descTxt.setLayoutData(EclipseUiUtils.fillAll());
 
 		final AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {

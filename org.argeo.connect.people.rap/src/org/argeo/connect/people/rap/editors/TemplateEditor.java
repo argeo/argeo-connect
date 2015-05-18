@@ -20,6 +20,7 @@ import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.editors.utils.IVersionedItemEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -36,16 +37,17 @@ import org.eclipse.ui.forms.AbstractFormPart;
  * Enable management of a given node template, among other static list
  * (catalogue) management
  */
-public class TemplateEditor extends AbstractEntityCTabEditor implements IVersionedItemEditor {
-	final static Log log = LogFactory.getLog(TemplateEditor.class);
+public class TemplateEditor extends AbstractEntityCTabEditor implements
+		IVersionedItemEditor {
 
+	final static Log log = LogFactory.getLog(TemplateEditor.class);
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".templateEditor";
 
 	/* DEPENDENCY INJECTION */
 	private ResourceService resourceService;
 
-	// Main business Objects
+	// Context
 	private Node nodeTemplate;
 
 	public void init(IEditorSite site, IEditorInput input)
@@ -108,7 +110,7 @@ public class TemplateEditor extends AbstractEntityCTabEditor implements IVersion
 						getPeopleWorkbenchService(), nodeTemplate, propName,
 						CommonsJcrUtils.get(nodeTemplate,
 								PeopleNames.PEOPLE_TEMPLATE_ID));
-				submittedForCmp.setLayoutData(PeopleUiUtils.fillGridData());
+				submittedForCmp.setLayoutData(EclipseUiUtils.fillAll());
 			}
 		} catch (RepositoryException e) {
 			throw new PeopleException(

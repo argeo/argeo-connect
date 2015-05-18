@@ -21,6 +21,7 @@ import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
@@ -171,12 +172,12 @@ public class SimpleJcrTableComposite extends Composite implements ArgeoNames {
 	private TableViewer createTableViewer(final Composite parent) {
 		// TODO make it virtual
 		// tableStyle = tableStyle | SWT.VIRTUAL;
-		
+
 		if (hasSelectionColumn)
 			tableStyle = tableStyle | SWT.CHECK;
 
 		Table table = new Table(parent, tableStyle);
-		table.setLayoutData(PeopleUiUtils.fillGridData());
+		table.setLayoutData(EclipseUiUtils.fillAll());
 
 		TableViewer viewer;
 		if (hasSelectionColumn)

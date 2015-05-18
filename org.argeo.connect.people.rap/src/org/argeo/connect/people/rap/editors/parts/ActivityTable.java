@@ -38,6 +38,7 @@ import org.argeo.connect.people.rap.utils.ActivityViewerComparator;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
@@ -90,7 +91,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 		this.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		Composite tableComp = new Composite(this, SWT.NO_FOCUS);
 		tableViewer = createActivityViewer(tableComp, style);
-		tableComp.setLayoutData(PeopleUiUtils.fillGridData());
+		tableComp.setLayoutData(EclipseUiUtils.fillAll());
 		// refreshFilteredList();
 	}
 
@@ -99,7 +100,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 
 		Table table = viewer.getTable();
-		table.setLayoutData(PeopleUiUtils.fillGridData());
+		table.setLayoutData(EclipseUiUtils.fillAll());
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(54));
 		table.setHeaderVisible(false);

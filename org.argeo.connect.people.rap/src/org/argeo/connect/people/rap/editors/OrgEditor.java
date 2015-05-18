@@ -23,6 +23,7 @@ import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
@@ -131,7 +132,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		Composite activitiesCmp = new ActivityList(toolkit, getManagedForm(),
 				innerPannel, SWT.NONE, getPeopleService(),
 				getPeopleWorkbenchService(), org);
-		activitiesCmp.setLayoutData(PeopleUiUtils.fillGridData());
+		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// Employees
 		tooltip = "Known employees of "
@@ -142,7 +143,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		Composite employeesCmp = new JobList(toolkit, getManagedForm(),
 				innerPannel, SWT.NONE, getPeopleService(),
 				getPeopleWorkbenchService(), org);
-		employeesCmp.setLayoutData(PeopleUiUtils.fillGridData());
+		employeesCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// Legal informations
 		tooltip = "Legal information for "
@@ -152,7 +153,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		Composite legalCmp = new OrgAdminInfo(toolkit, getManagedForm(),
 				innerPannel, SWT.NONE, org);
-		legalCmp.setLayoutData(PeopleUiUtils.fillGridData());
+		legalCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// History panel
 		tooltip = "History of information about "
@@ -162,7 +163,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		Composite historyLogCmp = new HistoryLog(toolkit, getManagedForm(),
 				innerPannel, SWT.NONE, getPeopleService(), org);
-		historyLogCmp.setLayoutData(PeopleUiUtils.fillGridData());
+		historyLogCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 	}
 

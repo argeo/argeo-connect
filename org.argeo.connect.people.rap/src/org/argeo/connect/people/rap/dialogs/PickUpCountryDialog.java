@@ -28,8 +28,8 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.composites.SimpleJcrTableComposite;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -89,7 +89,7 @@ public class PickUpCountryDialog extends TrayDialog {
 		tableCmp = new SimpleJcrTableComposite(dialogArea, style, session,
 				CommonsJcrUtils.getPath(tagParent),
 				PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE, colDefs, true, false);
-		tableCmp.setLayoutData(PeopleUiUtils.fillGridData());
+		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// Add listeners
 		tableCmp.getTableViewer().addDoubleClickListener(

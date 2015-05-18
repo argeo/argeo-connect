@@ -6,6 +6,7 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -14,7 +15,7 @@ import org.eclipse.swt.widgets.Label;
 
 /**
  * Part that display a list of contacts for a people:contactable node and the
- * Jcr:Description of this contactable node
+ * jcr:description of this contactable node
  */
 public class ContactsWithNotePart extends ContactsPart {
 
@@ -27,7 +28,7 @@ public class ContactsWithNotePart extends ContactsPart {
 		createContactPanel(left, context);
 
 		Composite right = new Composite(parent, SWT.NO_FOCUS);
-		right.setLayoutData(PeopleUiUtils.fillGridData());
+		right.setLayoutData(EclipseUiUtils.fillAll());
 		createNotePanel(right, context);
 		return parent;
 	}
@@ -40,7 +41,7 @@ public class ContactsWithNotePart extends ContactsPart {
 		if (context.hasProperty(Property.JCR_TITLE)) {
 			Group group = new Group(parent, SWT.NO_FOCUS);
 			group.setLayout(PeopleUiUtils.noSpaceGridLayout());
-			group.setLayoutData(PeopleUiUtils.fillGridData());
+			group.setLayoutData(EclipseUiUtils.fillAll());
 
 			group.setText("Note");
 			Label label = new Label(group, SWT.WRAP);

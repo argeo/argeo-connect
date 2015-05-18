@@ -28,6 +28,7 @@ import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -159,7 +160,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 		// the body
 		Composite body = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		body.setLayoutData(PeopleUiUtils.fillGridData());
+		body.setLayoutData(EclipseUiUtils.fillAll());
 		populateBody(body);
 	}
 
@@ -545,7 +546,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
-	
+
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
 	}

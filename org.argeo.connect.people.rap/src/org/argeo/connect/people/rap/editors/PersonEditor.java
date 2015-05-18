@@ -26,6 +26,7 @@ import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
@@ -50,26 +51,19 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
 
-/**
- * Editor page that display a person with corresponding details
- */
+/** Edit a person with corresponding details */
 public class PersonEditor extends AbstractEntityCTabEditor implements
 		PeopleNames {
 	final static Log log = LogFactory.getLog(PersonEditor.class);
-
-	// local constants
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".personEditor";
-	// Main business Objects
-	private Node person;
 
-	// Usefull toolkits
-	// private ActivityToolkit activityTK;
+	// Context
+	private Node person;
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
 		person = getNode();
-
 	}
 
 	@Override
@@ -137,7 +131,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		Composite activitiesCmp = new ActivityList(toolkit, getManagedForm(),
 				innerPannel, SWT.NONE, getPeopleService(),
 				getPeopleWorkbenchService(), person);
-		activitiesCmp.setLayoutData(PeopleUiUtils.fillGridData());
+		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// Jobs panel
 		tooltip = "Organisations linked to "
@@ -148,7 +142,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		Composite crewCmp = new JobList(toolkit, getManagedForm(), innerPannel,
 				SWT.NONE, getPeopleService(), getPeopleWorkbenchService(),
 				person);
-		crewCmp.setLayoutData(PeopleUiUtils.fillGridData());
+		crewCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// History panel
 		tooltip = "History of information about "
@@ -158,7 +152,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		innerPannel.setLayout(PeopleUiUtils.noSpaceGridLayout());
 		Composite historyLogCmp = new HistoryLog(toolkit, getManagedForm(),
 				innerPannel, SWT.NONE, getPeopleService(), person);
-		historyLogCmp.setLayoutData(PeopleUiUtils.fillGridData());
+		historyLogCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// folder.layout();
 	}
@@ -529,8 +523,8 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				ResourceService rs = getPeopleService().getResourceService();
 				if (isoVal != null
 						&& rs.getEncodedTagValue(getSession(),
-								PeopleConstants.RESOURCE_LANG, isoVal)
-								.equals(button.getText()))
+								PeopleConstants.RESOURCE_LANG, isoVal).equals(
+								button.getText()))
 					tmp = true;
 			}
 			button.setSelection(tmp);

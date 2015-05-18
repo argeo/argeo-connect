@@ -21,7 +21,7 @@ import javax.jcr.Session;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.FilterEntitiesVirtualTable;
-import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -73,7 +73,7 @@ public class PickUpRelatedDialog extends TrayDialog {
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
 		tableCmp = new FilterEntitiesVirtualTable(dialogArea, style, session,
 				peopleWorkbenchService, PeopleTypes.PEOPLE_ENTITY);
-		tableCmp.setLayoutData(PeopleUiUtils.fillGridData());
+		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// Add listeners
 		tableCmp.getTableViewer().addDoubleClickListener(

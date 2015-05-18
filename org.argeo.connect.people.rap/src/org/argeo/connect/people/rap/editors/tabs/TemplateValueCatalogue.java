@@ -42,6 +42,7 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.dialogs.SingleValue;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
@@ -105,8 +106,6 @@ public class TemplateValueCatalogue extends Composite {
 	// this page UI Objects
 	private final MyFormPart myFormPart;
 
-	// private TableViewer valuesViewer;
-
 	public TemplateValueCatalogue(IWorkbench workbench, FormToolkit toolkit,
 			Composite parent, int style, IManagedForm form,
 			PeopleService peopleService,
@@ -158,7 +157,7 @@ public class TemplateValueCatalogue extends Composite {
 					new MyEditRemoveAdapter());
 
 			Composite instancesCmp = new Composite(panel, SWT.NO_FOCUS);
-			instancesCmp.setLayoutData(PeopleUiUtils.fillGridData());
+			instancesCmp.setLayoutData(EclipseUiUtils.fillAll());
 			instancesViewer = createInstancesViewer(instancesCmp);
 			instancesViewer.setContentProvider(new InstancesTableCP(
 					instancesViewer));
@@ -241,7 +240,7 @@ public class TemplateValueCatalogue extends Composite {
 				| SWT.H_SCROLL);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		table.setLayoutData(PeopleUiUtils.fillGridData());
+		table.setLayoutData(EclipseUiUtils.fillAll());
 		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(24));
 
@@ -384,7 +383,7 @@ public class TemplateValueCatalogue extends Composite {
 						Property.JCR_TITLE), 400));
 		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(parent,
 				SWT.MULTI, colDefs);
-		tableCmp.setLayoutData(PeopleUiUtils.fillGridData());
+		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 		TableViewer viewer = tableCmp.getTableViewer();
 		viewer.setContentProvider(new InstancesTableCP(viewer));
 		return viewer;

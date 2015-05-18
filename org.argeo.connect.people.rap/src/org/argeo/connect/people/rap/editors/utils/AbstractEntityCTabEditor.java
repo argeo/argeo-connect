@@ -1,6 +1,7 @@
 package org.argeo.connect.people.rap.editors.utils;
 
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -16,8 +17,6 @@ import org.eclipse.swt.widgets.Control;
  */
 public abstract class AbstractEntityCTabEditor extends
 		AbstractPeopleWithImgEditor implements IVersionedItemEditor {
-	// private final static Log log = LogFactory
-	// .getLog(AbstractEntityEditor.class);
 
 	/* CONSTANTS */
 	protected final static int CTAB_COMP_STYLE = SWT.NO_FOCUS;
@@ -45,7 +44,7 @@ public abstract class AbstractEntityCTabEditor extends
 	/* MANAGE TAB FOLDER */
 	protected CTabFolder createCTabFolder(Composite parent, int style) {
 		CTabFolder tabFolder = new CTabFolder(parent, style);
-		tabFolder.setLayoutData(PeopleUiUtils.fillGridData());
+		tabFolder.setLayoutData(EclipseUiUtils.fillAll());
 		return tabFolder;
 	}
 

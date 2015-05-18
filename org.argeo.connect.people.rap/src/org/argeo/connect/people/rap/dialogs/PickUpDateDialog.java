@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -53,7 +54,7 @@ public class PickUpDateDialog extends TrayDialog {
 		dialogArea.setLayout(PeopleUiUtils.noSpaceGridLayout());
 
 		dateTimeCtl = new DateTime(dialogArea, SWT.CALENDAR);
-		dateTimeCtl.setLayoutData(PeopleUiUtils.fillGridData());
+		dateTimeCtl.setLayoutData(EclipseUiUtils.fillAll());
 
 		dateTimeCtl.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = -8414377364434281112L;

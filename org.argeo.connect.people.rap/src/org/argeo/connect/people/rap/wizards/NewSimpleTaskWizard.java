@@ -14,8 +14,8 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.composites.DateText;
 import org.argeo.connect.people.rap.dialogs.PickUpGroupDialog;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
@@ -210,7 +210,7 @@ public class NewSimpleTaskWizard extends Wizard {
 
 			descTxt = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.WRAP);
 			descTxt.setMessage("A description");
-			gd = PeopleUiUtils.fillGridData();
+			gd = EclipseUiUtils.fillAll();
 			gd.horizontalSpan = 3;
 			gd.heightHint = 150;
 			descTxt.setLayoutData(gd);

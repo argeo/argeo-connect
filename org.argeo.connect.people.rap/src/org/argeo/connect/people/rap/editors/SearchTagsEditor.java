@@ -32,13 +32,14 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.dialogs.AskTitleDescriptionDialog;
 import org.argeo.connect.people.rap.editors.utils.SearchNodeEditorInput;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.providers.JcrRowHtmlLabelProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.rap.wizards.EditTagWizard;
+import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
@@ -152,7 +153,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		// The table itself
 		Composite tableCmp = new Composite(parent, SWT.NO_FOCUS);
 		createListPart(tableCmp);
-		tableCmp.setLayoutData(PeopleUiUtils.fillGridData());
+		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 		refreshStaticFilteredList();
 	}
 
@@ -238,8 +239,9 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 					factory.descendantNode(source.getSelectorName(),
 							tagParent.getPath()));
 
-			Ordering order = factory.ascending(factory.upperCase(factory.propertyValue(
-					source.getSelectorName(), Property.JCR_TITLE)));
+			Ordering order = factory
+					.ascending(factory.upperCase(factory.propertyValue(
+							source.getSelectorName(), Property.JCR_TITLE)));
 			Ordering[] orderings = { order };
 			QueryObjectModel query = factory.createQuery(source, defaultC,
 					orderings, null);

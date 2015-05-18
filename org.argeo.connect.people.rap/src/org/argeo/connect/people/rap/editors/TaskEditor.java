@@ -13,6 +13,7 @@ import org.argeo.connect.people.rap.editors.parts.TaskBasicHeader;
 import org.argeo.connect.people.rap.editors.tabs.ActivityList;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -21,9 +22,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 
-/**
- * Default connect task editor
- */
+/** Default connect task editor */
 public class TaskEditor extends AbstractEntityCTabEditor {
 	final static Log log = LogFactory.getLog(TaskEditor.class);
 
@@ -67,6 +66,6 @@ public class TaskEditor extends AbstractEntityCTabEditor {
 		Composite activitiesCmp = new ActivityList(toolkit, getManagedForm(),
 				innerPannel, SWT.NONE, getPeopleService(),
 				getPeopleWorkbenchService(), task);
-		activitiesCmp.setLayoutData(PeopleUiUtils.fillGridData());
+		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
 	}
 }
