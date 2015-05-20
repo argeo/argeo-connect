@@ -28,12 +28,12 @@ public class UsersCsvFileParser extends AbstractPeopleCsvFileParser {
 
 	@Override
 	protected void processLine(Integer lineNumber, Map<String, String> line) {
-		final String userName = line.get("people:username");
-		final String firstName = line.get("people:firstName");
-		final String lastName = line.get("people:lastName");
-		final String email = line.get("people:email");
-		final String desc = line.get("people:description");
-		final String role = line.get("people:role");
+		String userName = line.get("people:username");
+		String firstName = line.get("people:firstName");
+		String lastName = line.get("people:lastName");
+		String email = line.get("people:email");
+		String desc = line.get("people:description");
+		String role = line.get("people:role");
 
 		userManagementService.createUser(adminSession, userAdminService,
 				userName, "demo".toCharArray(), firstName, lastName, email,
