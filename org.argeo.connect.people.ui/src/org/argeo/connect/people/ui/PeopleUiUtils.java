@@ -3,8 +3,6 @@ package org.argeo.connect.people.ui;
 import javax.jcr.Node;
 
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -28,9 +26,9 @@ public class PeopleUiUtils {
 	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
 	 * SWT.FILL, true, true, horizontalSpan, 1.
 	 */
-	public static GridData fillGridData(int horizontalSpan) {
-		return new GridData(SWT.FILL, SWT.FILL, true, true, horizontalSpan, 1);
-	}
+	// public static GridData fillGridData(int horizontalSpan) {
+	// return new GridData(SWT.FILL, SWT.FILL, true, true, horizontalSpan, 1);
+	// }
 
 	// /**
 	// * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
