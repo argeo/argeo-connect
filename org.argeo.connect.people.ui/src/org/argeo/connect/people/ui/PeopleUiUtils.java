@@ -44,10 +44,10 @@ public class PeopleUiUtils {
 	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
 	 * SWT.CENTER, true, false, horizontalSpan, 1.
 	 */
-	public static GridData horizontalFillData(int horizontalSpan) {
-		return new GridData(SWT.FILL, SWT.CENTER, true, false, horizontalSpan,
-				1);
-	}
+	// public static GridData horizontalFillData(int horizontalSpan) {
+	// return new GridData(SWT.FILL, SWT.CENTER, true, false, horizontalSpan,
+	// 1);
+	// }
 
 	// /**
 	// * Shortcut to create a {@link GridLayout} with no margin and no spacing

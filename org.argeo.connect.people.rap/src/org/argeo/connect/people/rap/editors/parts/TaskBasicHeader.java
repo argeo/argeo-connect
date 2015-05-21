@@ -21,7 +21,6 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.dialogs.PickUpGroupDialog;
 import org.argeo.connect.people.rap.utils.AbstractPanelFormPart;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.window.Window;
@@ -240,18 +239,18 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		relatedCmp = new LinkListPart(toolkit, myFormPart, parent,
 				SWT.NO_FOCUS, peopleWorkbenchService, task, PEOPLE_RELATED_TO,
 				hiddenItemIds);
-		relatedCmp.setLayoutData(PeopleUiUtils.horizontalFillData(3));
+		relatedCmp.setLayoutData(EclipseUiUtils.fillWidth(3));
 		relatedCmp.layout();
 
 		// Title
 		PeopleRapUtils.createBoldLabel(parent, "Title");
 		titleTxt = toolkit.createText(parent, "", SWT.BORDER);
-		titleTxt.setLayoutData(PeopleUiUtils.horizontalFillData(3));
+		titleTxt.setLayoutData(EclipseUiUtils.fillWidth(3));
 
 		// Description
 		PeopleRapUtils.createBoldLabel(parent, "Description");
 		descTxt = toolkit.createText(parent, "", SWT.BORDER);
-		descTxt.setLayoutData(PeopleUiUtils.horizontalFillData(3));
+		descTxt.setLayoutData(EclipseUiUtils.fillWidth(3));
 
 		// Add listeners
 		dueDateCmp.setFormPart(myFormPart);

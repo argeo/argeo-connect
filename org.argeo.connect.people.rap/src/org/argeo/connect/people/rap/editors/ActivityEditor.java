@@ -14,7 +14,6 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.editors.parts.DateTextPart;
 import org.argeo.connect.people.rap.editors.parts.LinkListPart;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
@@ -196,7 +195,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 				relatedCmp = new LinkListPart(toolkit, myFormPart, parent,
 						SWT.NO_FOCUS, getPeopleWorkbenchService(), activity,
 						PeopleNames.PEOPLE_RELATED_TO);
-				relatedCmp.setLayoutData(PeopleUiUtils.horizontalFillData(5));
+				relatedCmp.setLayoutData(EclipseUiUtils.fillWidth(5));
 			}
 		}
 	}

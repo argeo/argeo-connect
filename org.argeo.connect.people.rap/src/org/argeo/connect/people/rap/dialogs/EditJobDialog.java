@@ -38,7 +38,6 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.providers.EntitySingleColumnLabelProvider;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -75,8 +74,10 @@ import org.eclipse.swt.widgets.Text;
  * referenced and referencing entities must be given in order to eventually
  * remove old reference
  * 
- * <p>It is the dialog duty to correctly initialize what is displayed based on the
- * parameters passed at instantiation time.</p>
+ * <p>
+ * It is the dialog duty to correctly initialize what is displayed based on the
+ * parameters passed at instantiation time.
+ * </p>
  */
 public class EditJobDialog extends TrayDialog {
 	private static final long serialVersionUID = -3534660152626908662L;
@@ -179,12 +180,12 @@ public class EditJobDialog extends TrayDialog {
 
 		// The filter
 		Composite filterCmp = new Composite(dialogarea, SWT.NONE);
-		filterCmp.setLayoutData(PeopleUiUtils.horizontalFillData(2));
+		filterCmp.setLayoutData(EclipseUiUtils.fillWidth(2));
 		addFilterPanel(filterCmp);
 
 		// The list
 		Composite listCmp = new Composite(dialogarea, SWT.NONE);
-		GridData gd = PeopleUiUtils.horizontalFillData(2);
+		GridData gd = EclipseUiUtils.fillWidth(2);
 		gd.heightHint = 290;
 		listCmp.setLayoutData(gd);
 		entityViewer = createListPart(listCmp,
@@ -195,7 +196,7 @@ public class EditJobDialog extends TrayDialog {
 		// An empty line to give some air to the dialog
 		Label dummyLbl = new Label(dialogarea, SWT.NONE);
 		dummyLbl.setText("");
-		dummyLbl.setLayoutData(PeopleUiUtils.horizontalFillData(2));
+		dummyLbl.setLayoutData(EclipseUiUtils.fillWidth(2));
 
 		// Display chosen org or person
 		selectedItemTxt = createLT(dialogarea, chosenItemLbl);
@@ -234,7 +235,7 @@ public class EditJobDialog extends TrayDialog {
 		return dialogarea;
 	}
 
-	/** Override to provide business specific addition behavior*/
+	/** Override to provide business specific addition behavior */
 	protected boolean performFinish() {
 		// Sanity check
 		String msg = null;
@@ -268,8 +269,8 @@ public class EditJobDialog extends TrayDialog {
 		}
 
 		// Real update
-		peopleService.getPersonService().createOrUpdateJob(oldLinkNode, person, organisation,
-				position, department, isPrimary);
+		peopleService.getPersonService().createOrUpdateJob(oldLinkNode, person,
+				organisation, position, department, isPrimary);
 		return true;
 	}
 
