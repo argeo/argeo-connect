@@ -20,8 +20,6 @@ public interface PeopleWorkbenchService {
 
 	public String getOpenSearchEntityEditorCmdId();
 
-	// public String getOpenSearchByTagEditorCmdId();
-
 	public String getOpenFileCmdId();
 
 	public String getDefaultEditorId();
