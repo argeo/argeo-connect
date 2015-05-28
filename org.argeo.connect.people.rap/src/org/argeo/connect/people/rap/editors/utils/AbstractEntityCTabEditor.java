@@ -1,6 +1,5 @@
 package org.argeo.connect.people.rap.editors.utils;
 
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;

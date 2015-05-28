@@ -324,6 +324,7 @@ public class CommonsJcrUtils {
 			JcrUtils.discardUnderlyingSessionQuietly(node);
 			// if the node has never been saved, it does not exist anymore.
 			if (session.nodeExists(path)
+					&& node.isNodeType(NodeType.MIX_VERSIONABLE)
 					&& session.getWorkspace().getVersionManager()
 							.isCheckedOut(path))
 				try {
@@ -342,7 +343,8 @@ public class CommonsJcrUtils {
 		} catch (InvalidItemStateException re) {
 			// the item has been deleted.
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to cancel and chek in node ", re);
+			throw new PeopleException("Unable to cancel and check-in " + node,
+					re);
 		}
 	}
 
