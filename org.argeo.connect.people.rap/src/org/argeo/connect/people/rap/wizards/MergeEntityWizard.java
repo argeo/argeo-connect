@@ -23,6 +23,7 @@ import javax.jcr.version.VersionManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoMonitor;
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -34,6 +35,7 @@ import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
+import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -181,9 +183,6 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 			chosenItemLabel = new Label(headerCmp, SWT.NONE);
 			chosenItemLabel.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 
-			chosenItemLabel
-					.setText("<br/><big><i> No master has yet been chosen </i></big><br/>");
-
 			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 			colDefs.add(new PeopleColumnDefinition(selectorName,
 					Property.JCR_TITLE, PropertyType.STRING, "Display Name",
@@ -257,14 +256,16 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 			super.setVisible(visible);
 			if (visible) {
 				if (masterNode == null)
-					chosenItemLabel.setText("");
+					chosenItemLabel.setText("<br/><big><i> "
+							+ PeopleUiConstants.NB_DOUBLE_SPACE
+							+ "No master has "
+							+ "yet been chosen </i></big><br/> "
+							+ PeopleUiConstants.NB_DOUBLE_SPACE);
 				else
 					chosenItemLabel.setText(overviewLP.getText(masterNode));
-				chosenItemLabel.getParent().layout();
-				chosenItemLabel.getParent().getParent().layout();
+				chosenItemLabel.getParent().getParent().layout(true, true);
 			}
 		}
-
 	}
 
 	protected class RecapPage extends WizardPage {
@@ -286,7 +287,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 			headerCmp.setLayoutData(EclipseUiUtils.fillWidth());
 			headerCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			chosenItemLabel = new Label(headerCmp, SWT.NONE);
-			chosenItemLabel.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+			CmsUtils.markup(chosenItemLabel);
 
 			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 			colDefs.add(new PeopleColumnDefinition(selectorName,
@@ -483,7 +484,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 		}
 
 		private boolean checkCOStatusBeforeUpdate(Node node) {
-			// Look for the parent versionnable;
+			// Look for the parent versionable;
 			Node parentV = CommonsJcrUtils.getVersionableAncestor(node);
 			if (parentV == null)
 				return true;
@@ -641,7 +642,6 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 					throw new PeopleException(
 							"Unsupported multiple property type on property "
 									+ masterProp + "for node " + masterNode);
-
 				}
 			}
 		}
