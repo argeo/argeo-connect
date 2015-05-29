@@ -113,6 +113,19 @@ public class PeopleRapUtils {
 
 	/**
 	 * Shortcut to refresh a <code>Text</code> widget given a Node in a form and
+	 * a property Name. Also manages its enable state in the case the Node that
+	 * owns the property is a descendant of the versionable node
+	 */
+	public static String refreshFormTextWidget(Text text,
+			Node versionableEntity, Node node, String propName) {
+		String tmpStr = CommonsJcrUtils.get(node, propName);
+		text.setText(tmpStr);
+		text.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(versionableEntity));
+		return tmpStr;
+	}
+
+	/**
+	 * Shortcut to refresh a <code>Text</code> widget given a Node in a form and
 	 * a property Name. Also manages its enable state and set a default message
 	 * if corresponding Text value is empty
 	 */
