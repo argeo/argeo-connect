@@ -12,7 +12,6 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.parts.TaskBasicHeader;
 import org.argeo.connect.people.rap.editors.tabs.ActivityList;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;

@@ -18,7 +18,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleBasicEditor;
 import org.argeo.connect.people.rap.providers.SimpleLazyContentProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrUtils;

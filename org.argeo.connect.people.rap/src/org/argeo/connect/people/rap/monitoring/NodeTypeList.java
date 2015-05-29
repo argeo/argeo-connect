@@ -27,7 +27,6 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleBasicEditor;
 import org.argeo.connect.people.rap.providers.SimpleLazyContentProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -258,7 +257,7 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 								Query.JCR_SQL2);
 				NodeIterator nit = query.execute().getNodes();
 				// return numberFormat.format(nit.getSize());
-				return ""+ nit.getSize();
+				return "" + nit.getSize();
 			} catch (RepositoryException re) {
 				throw new PeopleException("Unable to retrieve number of "
 						+ "instances for type " + element, re);

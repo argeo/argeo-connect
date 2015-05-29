@@ -33,7 +33,6 @@ import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.composites.UserGroupTableComposite;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.ArgeoNames;
@@ -155,8 +154,7 @@ public class UserEditor extends FormEditor {
 			userRolesPage.doSave(monitor);
 		}
 
-		userDetails = userDetails.cloneWithNewRoles(userRolesPage
-				.getRoles());
+		userDetails = userDetails.cloneWithNewRoles(userRolesPage.getRoles());
 		userAdminService.updateUser(userDetails);
 
 		if (userGroupsPage.isDirty()) {

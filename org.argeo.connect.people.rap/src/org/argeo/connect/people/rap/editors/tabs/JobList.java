@@ -31,7 +31,6 @@ import org.argeo.connect.people.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.rap.providers.RoleListLabelProvider;
 import org.argeo.connect.people.rap.utils.AbstractPanelFormPart;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;

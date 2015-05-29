@@ -37,7 +37,6 @@ import org.argeo.connect.people.rap.providers.JcrRowHtmlLabelProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.rap.wizards.EditTagWizard;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;

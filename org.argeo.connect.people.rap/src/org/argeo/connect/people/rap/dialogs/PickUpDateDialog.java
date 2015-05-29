@@ -18,7 +18,6 @@ package org.argeo.connect.people.rap.dialogs;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
