@@ -259,11 +259,13 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 							Property.JCR_TITLE);
 					if (actionType == TYPE_ADD)
 						setMessage("Your are about to add [" + name
-								+ "] to the below listed items. "
+								+ "] to the below listed " + rows.length
+								+ " items. "
 								+ "Are you sure you want to procede ?");
 					else
 						setMessage("Your are about to remove [" + name
-								+ "] from the below listed items. "
+								+ "] from the below listed " + rows.length
+								+ " items. "
 								+ "Are you sure you want to procede ?");
 				}
 			}

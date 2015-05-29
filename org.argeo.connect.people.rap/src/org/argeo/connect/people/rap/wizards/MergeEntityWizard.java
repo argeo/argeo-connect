@@ -34,7 +34,6 @@ import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -78,10 +77,6 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 	public final static int TYPE_ADD = 1;
 	public final static int TYPE_REMOVE = 2;
 
-	// various labels
-	// private final static String ADD_CONFIRM_MSG = "";
-	// private final static String REMOVE_CONFIRM_MSG = "";
-
 	// Context
 	private PeopleService peopleService;
 	private PeopleWorkbenchService peopleWorkbenchService;
@@ -92,20 +87,8 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 	// Enable refresh of the calling editor at the end of the job
 	private IWorkbenchPage callingPage;
 
-	// private String tagId;
-	// private Node tagInstance;
-	// private String tagPropName;
-
 	private Row[] rows;
 	private final String selectorName;
-
-	// private final int actionType;
-
-	// Cache to ease implementation
-	// private Session session;
-	// private ResourceService resourceService;
-	// private Node tagParent;
-	// private String tagInstanceType;
 
 	/**
 	 * @param actionType
@@ -190,13 +173,16 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 		public void createControl(Composite parent) {
 			Composite body = new Composite(parent, SWT.NONE);
 			body.setLayout(EclipseUiUtils.noSpaceGridLayout());
-			// A composite that callingPage chosen entity
 
+			// A composite that callingPage chosen entity
 			Composite headerCmp = new Composite(body, SWT.NONE);
 			headerCmp.setLayoutData(EclipseUiUtils.fillWidth());
 			headerCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			chosenItemLabel = new Label(headerCmp, SWT.NONE);
 			chosenItemLabel.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+
+			chosenItemLabel
+					.setText("<br/><big><i> No master has yet been chosen </i></big><br/>");
 
 			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 			colDefs.add(new PeopleColumnDefinition(selectorName,

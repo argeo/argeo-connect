@@ -378,7 +378,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		tableCmp = new VirtualRowTableViewer(parent, SWT.MULTI,
 				getColumnDefinition(null), hasCheckBoxes());
 		TableViewer tableViewer = tableCmp.getTableViewer();
-		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
 				getEntityType(), peopleWorkbenchService));
 	}
