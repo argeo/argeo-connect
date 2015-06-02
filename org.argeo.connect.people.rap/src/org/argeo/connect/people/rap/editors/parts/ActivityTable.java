@@ -519,12 +519,12 @@ public class ActivityTable extends Composite implements ArgeoNames {
 				Node currNode = (Node) element;
 
 				if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-					String desc = CommonsJcrUtils.get(currNode,
-							Property.JCR_TITLE)
-							+ " - "
-							+ CommonsJcrUtils.get(currNode,
-									Property.JCR_DESCRIPTION);
-					return wrapThis(desc);
+					String title = CommonsJcrUtils.get(currNode,
+							Property.JCR_TITLE);
+					String desc =CommonsJcrUtils.get(currNode,
+							Property.JCR_DESCRIPTION);
+					String res = CommonsJcrUtils.concatIfNotEmpty(title, desc, "-");
+					return wrapThis(res);
 				}
 				return "";
 			} catch (RepositoryException re) {

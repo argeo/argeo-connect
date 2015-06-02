@@ -50,7 +50,8 @@ public class ActivityUtils {
 			return "(none yet)";
 		else {
 			double avg = total / nb;
-			return Math.round(avg) + "";
+			String result = Math.round(avg) + " ( " + nb + " votes)";
+			return result;
 		}
 	}
 

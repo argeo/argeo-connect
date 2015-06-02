@@ -449,9 +449,8 @@ public class TemplateValueCatalogue extends Composite {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String value = SingleValue
-						.ask("New value",
-								"Provide a value to be addded in the current catalogue.");
+				String value = SingleValue.ask("New Option",
+						"Enrich current catalogue with a new option");
 				if (CommonsJcrUtils.checkNotEmptyString(value)) {
 					String errMsg = CommonsJcrUtils.addMultiPropertyValue(
 							templateNode, propertyName, value);
