@@ -190,7 +190,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 
 		// RELATED ENTITIES
 		// Label label =
-		PeopleRapUtils.createBoldLabel(toolkit, parent, "Related entities");
+		PeopleRapUtils.createBoldLabel(toolkit, parent, "Related to");
 		relatedCmp = new LinkListPart(toolkit, myFormPart, parent,
 				SWT.NO_FOCUS, peopleWorkbenchService, task, PEOPLE_RELATED_TO,
 				hiddenItemIds);
@@ -235,7 +235,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		wakeUpDateCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// RELATED ENTITIES
-		PeopleRapUtils.createBoldLabel(toolkit, parent, "Related entities");
+		PeopleRapUtils.createBoldLabel(toolkit, parent, "Related to");
 		relatedCmp = new LinkListPart(toolkit, myFormPart, parent,
 				SWT.NO_FOCUS, peopleWorkbenchService, task, PEOPLE_RELATED_TO,
 				hiddenItemIds);

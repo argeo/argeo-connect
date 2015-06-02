@@ -59,6 +59,7 @@ public interface PeopleTypes {
 	/* TASKS AND ACTIVITIES */
 	public final static String PEOPLE_ACTIVITY = "people:activity";
 	public final static String PEOPLE_TASK = "people:task";
+	public final static String PEOPLE_POLL = "people:poll";
 
 	public final static String PEOPLE_NOTE = "people:note";
 	public final static String PEOPLE_SENT_EMAIL = "people:sentEmail";
@@ -71,6 +72,7 @@ public interface PeopleTypes {
 	public final static String PEOPLE_CHAT = "people:chat";
 	public final static String PEOPLE_TWEET = "people:tweet";
 	public final static String PEOPLE_BLOG_POST = "people:blogPost";
+	public final static String PEOPLE_RATE = "people:rate";
 
 	/* CONTACT */
 	public final static String PEOPLE_CONTACT = "people:contact";

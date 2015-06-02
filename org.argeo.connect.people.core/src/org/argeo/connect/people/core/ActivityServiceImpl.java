@@ -423,4 +423,31 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 		}
 	}
 
+	@Override
+	public Node createPoll(Node parentNode, String reporterId, String pollName,
+			String title, String description, String assignedTo,
+			List<Node> relatedTo, Calendar creationDate, Calendar dueDate,
+			Calendar wakeUpDate) {
+		Node poll = createTask(null, parentNode, PeopleTypes.PEOPLE_TASK,
+				reporterId, title, description, assignedTo, relatedTo,
+				creationDate, dueDate, wakeUpDate);
+
+		try {
+			poll.addMixin(PeopleTypes.PEOPLE_POLL);
+			poll.setProperty(PEOPLE_POLL_NAME, pollName);
+			poll.addNode(PeopleNames.PEOPLE_RATES);
+
+			// TODO clean this
+			// Enhance task naming
+			Session session = parentNode.getSession();
+			String newPath = parentNode.getPath() + "/"
+					+ JcrUtils.replaceInvalidChars(pollName);
+			session.move(poll.getPath(), newPath);
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"Unable to add poll specific info to task " + poll, e);
+		}
+		return poll;
+	}
+
 }

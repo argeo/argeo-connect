@@ -185,6 +185,10 @@ mixin
 [people:blogPost]
 mixin 
 
+[people:rate]
+mixin 
+- people:rate (LONG) // the note attributed by the current user  
+
 // Tasks 
 [people:task] > people:activity
 - people:taskStatus (String) // the current status of this task
@@ -197,6 +201,16 @@ mixin
 + people:activities (nt:unstructured)
 // - people:dependsOn (REFERENCE) *
 // + people:tasks (nt:unstructured)
+
+
+// Add this mixin to enable gathering user feedback and votes (rates) for a given entity
+[people:poll]
+mixin
+- people:pollName (String) // the current status of this task
+- people:cacheAvgRate (STRING) IGNORE // caches the current average of the children rates
+// Contains the child rating activities
++ people:rates (nt:unstructured)
+
 
 //
 // RESOURCE MANAGEMENT

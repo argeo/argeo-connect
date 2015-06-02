@@ -99,6 +99,15 @@ public interface PeopleNames {
 	public final static String PEOPLE_WAKE_UP_DATE = "people:wakeUpDate";
 	public final static String PEOPLE_DEPENDS_ON = "people:dependsOn";
 	public final static String PEOPLE_TASKS = "people:tasks";
+
+	// Management of user rating
+	public final static String PEOPLE_POLL_NAME = "people:pollName"; // (STRING) 
+	public final static String PEOPLE_CACHE_AVG_RATE = "people:cacheAvgRate"; // (STRING)
+	public final static String PEOPLE_RATES = "people:rates";  // (nt:unstructured)
+	// a single rate for one of the children people:rate activities
+	public final static String PEOPLE_RATE = "people:rate"; //  (LONG)
+
+	
 	// definition of the task template
 	public final static String PEOPLE_TASK_CLOSING_STATUSES = "people:closingStatuses";
 	public final static String PEOPLE_TASK_DEFAULT_STATUS = "people:defaultStatus";
