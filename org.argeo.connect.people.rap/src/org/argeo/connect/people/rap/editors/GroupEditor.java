@@ -50,28 +50,28 @@ public abstract class GroupEditor extends AbstractEntityCTabEditor {
 			parent.setLayout(new FormLayout());
 
 			// READ ONLY PANEL
-			final Composite roPanelCmp = toolkit.createComposite(parent,
-					SWT.NO_FOCUS);
+			final Composite roPanelCmp = getFormToolkit().createComposite(
+					parent, SWT.NO_FOCUS);
 			PeopleRapUtils.setSwitchingFormData(roPanelCmp);
 			roPanelCmp.setLayout(new GridLayout());
 
 			// Add a label with info provided by the FilmOverviewLabelProvider
-			final Label titleROLbl = toolkit.createLabel(roPanelCmp, "",
-					SWT.WRAP);
+			final Label titleROLbl = getFormToolkit().createLabel(roPanelCmp,
+					"", SWT.WRAP);
 			titleROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider groupTitleLP = new GroupLabelProvider(
 					PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE);
 
 			// EDIT PANEL
-			final Composite editPanel = toolkit.createComposite(parent,
-					SWT.NO_FOCUS);
+			final Composite editPanel = getFormToolkit().createComposite(
+					parent, SWT.NO_FOCUS);
 			PeopleRapUtils.setSwitchingFormData(editPanel);
 
 			// intern layout
 			editPanel.setLayout(new GridLayout(1, false));
-			final Text titleTxt = PeopleRapUtils.createGDText(toolkit,
+			final Text titleTxt = PeopleRapUtils.createGDText(getFormToolkit(),
 					editPanel, "A title", "The title of this group", 200, 1);
-			final Text descTxt = PeopleRapUtils.createGDText(toolkit,
+			final Text descTxt = PeopleRapUtils.createGDText(getFormToolkit(),
 					editPanel, "A Description", "", 400, 1);
 
 			AbstractFormPart editPart = new AbstractFormPart() {

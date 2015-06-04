@@ -21,6 +21,7 @@ import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.editors.parts.ActivityTable;
+import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.rap.wizards.NewSimpleTaskWizard;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -44,7 +45,6 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 public class ActivityList extends Composite {
@@ -53,6 +53,7 @@ public class ActivityList extends Composite {
 	// private final static Log log = LogFactory.getLog(ActivityList.class);
 
 	// Context
+	private final AbstractPeopleEditor editor;
 	private final FormToolkit toolkit;
 	private final PeopleService peopleService;
 	private final PeopleWorkbenchService peopleWorkbenchService;
@@ -63,21 +64,22 @@ public class ActivityList extends Composite {
 	private MyFormPart myFormPart;
 	private MyActivityTableCmp activityTable;
 
-	public ActivityList(FormToolkit toolkit, IManagedForm form,
-			Composite parent, int style, PeopleService peopleService,
+	public ActivityList(AbstractPeopleEditor editor, Composite parent,
+			int style, PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, Node entity) {
 		super(parent, style);
-		this.toolkit = toolkit;
+		this.editor = editor;
+		this.toolkit = editor.getFormToolkit();
 		this.peopleService = peopleService;
 		activityService = peopleService.getActivityService();
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.entity = entity;
 
 		// Populate
-		populate(form, this);
+		populate(this);
 	}
 
-	private void populate(IManagedForm form, Composite parent) {
+	private void populate(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		try {
 			Composite addCmp = null;
@@ -105,8 +107,8 @@ public class ActivityList extends Composite {
 		}
 
 		myFormPart = new MyFormPart();
-		myFormPart.initialize(form);
-		form.addPart(myFormPart);
+		myFormPart.initialize(editor.getManagedForm());
+		editor.getManagedForm().addPart(myFormPart);
 	}
 
 	private class MyFormPart extends AbstractFormPart {

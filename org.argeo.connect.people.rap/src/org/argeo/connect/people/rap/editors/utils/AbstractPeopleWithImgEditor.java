@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
  * Slightly modifies AbstractPeopleEditor main layout adding a place for an
@@ -54,6 +55,8 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
 	@Override
 	protected void createMainLayout(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
+
+		FormToolkit toolkit = getManagedForm().getToolkit();
 
 		// Internal main Layout
 		// The header
@@ -108,7 +111,8 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
 		gl.marginBottom = 8;
 		parent.setLayout(gl);
 
-		Label image = toolkit.createLabel(parent, "", SWT.NO_FOCUS);
+		Label image = getManagedForm().getToolkit().createLabel(parent, "",
+				SWT.NO_FOCUS);
 		image.setBackground(parent.getBackground());
 		GridData gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
 		if (getPicture() != null) {

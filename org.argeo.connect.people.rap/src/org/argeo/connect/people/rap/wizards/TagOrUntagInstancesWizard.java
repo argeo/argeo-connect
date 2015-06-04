@@ -9,7 +9,6 @@ import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Row;
 
 import org.argeo.ArgeoMonitor;
@@ -368,13 +367,8 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 					Node targetTagInstance = session.getNode(tagPath);
 
 					// TODO use transaction
-					boolean isVersionable = targetTagInstance
-							.isNodeType(NodeType.MIX_VERSIONABLE);
-					boolean isCheckedIn = isVersionable
-							&& !CommonsJcrUtils
-									.isNodeCheckedOutByMe(targetTagInstance);
-					if (isCheckedIn)
-						CommonsJcrUtils.checkout(targetTagInstance);
+					// Legacy insure the node is checked out before update
+					CommonsJcrUtils.checkCOStatusBeforeUpdate(tagInstance);
 
 					// TODO hardcoded prop name
 					String value = targetTagInstance.getProperty(
@@ -382,10 +376,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 					for (String currPath : pathes) {
 						Node currNode = session.getNode(currPath);
-						boolean wasCO = CommonsJcrUtils
-								.isNodeCheckedOutByMe(currNode);
-						if (!wasCO)
-							CommonsJcrUtils.checkout(currNode);
+						CommonsJcrUtils.checkCOStatusBeforeUpdate(currNode);
 						if (actionType == TYPE_ADD) {
 							// Duplication will return an error message that we
 							// ignore
@@ -397,10 +388,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 							CommonsJcrUtils.removeStringFromMultiValuedProp(
 									currNode, tagPropName, value);
 						}
-						if (!wasCO)
-							CommonsJcrUtils.saveAndCheckin(currNode);
-						else
-							currNode.getSession().save();
+						CommonsJcrUtils.save(currNode, true);
 					}
 					monitor.worked(1);
 

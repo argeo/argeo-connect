@@ -13,9 +13,9 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
+import org.argeo.eclipse.ui.parts.UsersTable;
 import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.eclipse.ui.parts.UsersTable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.layout.FillLayout;
@@ -41,10 +41,6 @@ public class UserGroupEditor extends GroupEditor {
 	}
 
 	@Override
-	protected void createToolkits() {
-	}
-
-	@Override
 	protected void populateTabFolder(CTabFolder folder) {
 		// The member list
 		String tooltip = "Members of group "
@@ -58,8 +54,7 @@ public class UserGroupEditor extends GroupEditor {
 		parent.setLayout(new FillLayout());
 
 		// Create the composite that displays the list and a filter
-		userTableCmp = new MyUsersTable(parent, SWT.NO_FOCUS,
-				getSession());
+		userTableCmp = new MyUsersTable(parent, SWT.NO_FOCUS, getSession());
 		userTableCmp.populate(true, false);
 
 		// Configure

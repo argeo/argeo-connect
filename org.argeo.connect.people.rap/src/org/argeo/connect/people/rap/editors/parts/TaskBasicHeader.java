@@ -19,6 +19,7 @@ import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.dialogs.PickUpGroupDialog;
+import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.rap.utils.AbstractPanelFormPart;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -35,7 +36,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /** Provides basic information about a task in a form context */
@@ -57,6 +57,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 	private List<String> hiddenItemIds;
 
 	// UI Context
+	private final AbstractPeopleEditor editor;
 	private final MyFormPart myFormPart;
 	private final FormToolkit toolkit;
 
@@ -80,25 +81,21 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 	private DateFormat dateFormat = new SimpleDateFormat(
 			PeopleUiConstants.DEFAULT_DATE_FORMAT);
 
-	private boolean isEditing() {
-		isBeingEdited = CommonsJcrUtils.isNodeCheckedOutByMe(task);
-		return isBeingEdited;
-	}
-
-	public TaskBasicHeader(FormToolkit toolkit, IManagedForm form,
-			Composite parent, int style, PeopleService peopleService,
+	public TaskBasicHeader(AbstractPeopleEditor editor, Composite parent,
+			int style, PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, String taskTypeId,
 			Node task) {
-		this(toolkit, form, parent, style, peopleService,
-				peopleWorkbenchService, taskTypeId, task, null);
+		this(editor, parent, style, peopleService, peopleWorkbenchService,
+				taskTypeId, task, null);
 	}
 
-	public TaskBasicHeader(FormToolkit toolkit, IManagedForm form,
-			Composite parent, int style, PeopleService peopleService,
+	public TaskBasicHeader(AbstractPeopleEditor editor, Composite parent,
+			int style, PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, String taskTypeId,
 			Node task, List<String> hiddenItemIds) {
 		super(parent, style);
-		this.toolkit = toolkit;
+		this.editor = editor;
+		this.toolkit = editor.getFormToolkit();
 		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.taskTypeId = taskTypeId;
@@ -113,8 +110,8 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 
 		// Initialise the form
 		myFormPart = new MyFormPart(this);
-		myFormPart.initialize(form);
-		form.addPart(myFormPart);
+		myFormPart.initialize(editor.getManagedForm());
+		editor.getManagedForm().addPart(myFormPart);
 	}
 
 	private class MyFormPart extends AbstractPanelFormPart {
@@ -160,9 +157,9 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 							.getAssignedToDisplayName(task));
 				}
 
-				PeopleRapUtils.refreshFormTextWidget(titleTxt, task,
+				PeopleRapUtils.refreshFormTextWidget(editor, titleTxt, task,
 						Property.JCR_TITLE);
-				PeopleRapUtils.refreshFormTextWidget(descTxt, task,
+				PeopleRapUtils.refreshFormTextWidget(editor, descTxt, task,
 						Property.JCR_DESCRIPTION);
 				relatedCmp.refresh();
 				// Refresh the parent because the whole header must be
@@ -330,7 +327,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		List<String> values = resourceService.getTemplateCatalogue(session,
 				taskTypeId, PeopleNames.PEOPLE_TASK_STATUS, null);
 		combo.setItems(values.toArray(new String[values.size()]));
-		PeopleRapUtils.refreshFormCombo(combo, currTask,
+		PeopleRapUtils.refreshFormCombo(editor, combo, currTask,
 				PeopleNames.PEOPLE_TASK_STATUS);
 		combo.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(currTask));
 	}

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import javax.jcr.AccessDeniedException;
 import javax.jcr.InvalidItemStateException;
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
@@ -23,8 +23,6 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 import javax.jcr.version.VersionManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -32,7 +30,7 @@ import org.argeo.jcr.JcrUtils;
 
 /** Some static utilities methods that might be factorized in a near future */
 public class CommonsJcrUtils {
-	private final static Log log = LogFactory.getLog(CommonsJcrUtils.class);
+	// private final static Log log = LogFactory.getLog(CommonsJcrUtils.class);
 
 	/*
 	 * Encapsulate some commons JCR calls with the try/catch block in order to
@@ -157,7 +155,7 @@ public class CommonsJcrUtils {
 	 */
 	public static boolean isNodeCheckedOut(Node node) {
 		try {
-			if (!node.isNodeType("mix:versionable"))
+			if (!node.isNodeType(NodeType.MIX_VERSIONABLE)) // "mix:versionable")
 				return true;
 			else
 				return node.getSession().getWorkspace().getVersionManager()
@@ -174,7 +172,7 @@ public class CommonsJcrUtils {
 	 */
 	public static Node getVersionableAncestor(Node node) {
 		try {
-			if (node.isNodeType("mix:versionable"))
+			if (node.isNodeType(NodeType.MIX_VERSIONABLE)) // "mix:versionable"
 				return node;
 			else if (node.getPath().equals("/"))
 				return null;
@@ -209,12 +207,22 @@ public class CommonsJcrUtils {
 	 * 
 	 * TODO : add management of check out by others.
 	 */
-	public static void checkout(Node node) {
+	private static void checkout(Node node) {
 		try {
 			node.getSession().getWorkspace().getVersionManager()
 					.checkout(node.getPath());
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to check out node  " + node, re);
+		}
+	}
+
+	/** Simply check if a node is versionable */
+	public static boolean isVersionable(Node node) {
+		try {
+			return node.isNodeType(NodeType.MIX_VERSIONABLE);
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to test versionability  of "
+					+ node, re);
 		}
 	}
 
@@ -258,6 +266,30 @@ public class CommonsJcrUtils {
 		} catch (RepositoryException re) {
 			throw new PeopleException(
 					"Unable to save and chek in node " + node, re);
+		}
+	}
+
+	/** Consively save the unerlying session if some changes have been done */
+	public static boolean save(Node node) {
+		return save(node, false);
+	}
+
+	/**
+	 * Consively save the underlying session if some changes have been done and
+	 * make a version tag if asked and if the node is already versionable
+	 */
+	public static boolean save(Node node, boolean tagVersion) {
+		try {
+			Session adminSession = node.getSession();
+			if (adminSession.hasPendingChanges()) {
+				adminSession.save();
+				if (tagVersion && isVersionable(node))
+					checkPoint(node);
+				return true;
+			}
+			return false;
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to save session  for " + node, e);
 		}
 	}
 
@@ -312,41 +344,61 @@ public class CommonsJcrUtils {
 	}
 
 	/**
+	 * Simply retrieves the first versionable node in the current node ancestor
+	 * tree (might be the ndoe itself) or null if none of them is versionable
+	 */
+	public static Node getParentVersionableNode(Node node)
+			throws RepositoryException {
+		Node curr = node;
+		while (true) {
+			if (curr.isNodeType(NodeType.MIX_VERSIONABLE))
+				return curr;
+			try {
+				curr = curr.getParent();
+			} catch (ItemNotFoundException infe) {
+				// root node
+				return null;
+			}
+		}
+	}
+
+	/**
 	 * Wraps the versionMananger.checkedIn(path) method to adapt it to the
 	 * current check in / check out policy.
 	 * 
 	 * TODO : add management of check out by others.
 	 */
-	public static void cancelAndCheckin(Node node) {
-		try {
-			String path = node.getPath();
-			Session session = node.getSession();
-			JcrUtils.discardUnderlyingSessionQuietly(node);
-			// if the node has never been saved, it does not exist anymore.
-			if (session.nodeExists(path)
-					&& node.isNodeType(NodeType.MIX_VERSIONABLE)
-					&& session.getWorkspace().getVersionManager()
-							.isCheckedOut(path))
-				try {
-					session.getWorkspace().getVersionManager().checkin(path);
-
-				} catch (AccessDeniedException re) {
-					log.warn(
-							"Error while trying to cancel and check in node "
-									+ node
-									+ " with user "
-									+ session.getUserID()
-									+ "\nIt usually happens when a user that has read only rights"
-									+ " close the editor of an entity that has not been close cleanly after last edition.",
-							re);
-				}
-		} catch (InvalidItemStateException re) {
-			// the item has been deleted.
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to cancel and check-in " + node,
-					re);
-		}
-	}
+	// public static void cancelAndCheckin(Node node) {
+	// try {
+	// String path = node.getPath();
+	// Session session = node.getSession();
+	// JcrUtils.discardUnderlyingSessionQuietly(node);
+	// // if the node has never been saved, it does not exist anymore.
+	// if (session.nodeExists(path)
+	// && node.isNodeType(NodeType.MIX_VERSIONABLE)
+	// && session.getWorkspace().getVersionManager()
+	// .isCheckedOut(path))
+	// try {
+	// session.getWorkspace().getVersionManager().checkin(path);
+	//
+	// } catch (AccessDeniedException re) {
+	// log.warn(
+	// "Error while trying to cancel and check in node "
+	// + node
+	// + " with user "
+	// + session.getUserID()
+	// + "\nIt usually happens when a user that has read only rights"
+	// +
+	// " close the editor of an entity that has not been close cleanly after last edition.",
+	// re);
+	// }
+	// } catch (InvalidItemStateException re) {
+	// // the item has been deleted.
+	// } catch (RepositoryException re) {
+	// throw new PeopleException("Unable to cancel and check-in " + node,
+	// re);
+	// }
+	// }
 
 	/* HELPERS FOR SINGLE VALUES */
 	/**

@@ -8,6 +8,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -36,23 +37,26 @@ public class ContactComposite extends Composite {
 	private final PeopleWorkbenchService peopleUiService;
 	private final Node contactNode;
 	private final Node parentVersionableNode;
+
+	private final AbstractPeopleEditor editor;
 	private final FormToolkit toolkit;
 	private final AbstractFormPart formPart;
 	private final boolean isCheckedOut;
 
-	public ContactComposite(Composite parent, int style, FormToolkit toolkit,
-			AbstractFormPart formPart, Node contactNode,
-			Node parentVersionableNode, PeopleWorkbenchService peopleUiService,
-			PeopleService peopleService) {
+	public ContactComposite(Composite parent, int style,
+			AbstractPeopleEditor editor, AbstractFormPart formPart,
+			Node contactNode, Node parentVersionableNode,
+			PeopleWorkbenchService peopleUiService, PeopleService peopleService) {
 		super(parent, style);
 		this.peopleService = peopleService;
 		this.peopleUiService = peopleUiService;
 		this.contactNode = contactNode;
 		this.parentVersionableNode = parentVersionableNode;
-		this.toolkit = toolkit;
+
+		this.editor = editor;
+		this.toolkit = editor.getFormToolkit();
 		this.formPart = formPart;
-		this.isCheckedOut = CommonsJcrUtils
-				.isNodeCheckedOutByMe(parentVersionableNode);
+		this.isCheckedOut = editor.isEditing();
 		populate();
 	}
 
@@ -110,12 +114,12 @@ public class ContactComposite extends Composite {
 			catCmb.select(0);
 		}
 
-		PeopleRapUtils.refreshFormText(labelTxt, contactNode,
+		PeopleRapUtils.refreshFormText(editor, labelTxt, contactNode,
 				PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
-		PeopleRapUtils.refreshFormText(valueTxt, contactNode,
+		PeopleRapUtils.refreshFormText(editor, valueTxt, contactNode,
 				PeopleNames.PEOPLE_CONTACT_VALUE, "Value");
 		if (catCmb != null)
-			PeopleRapUtils.refreshFormCombo(catCmb, contactNode,
+			PeopleRapUtils.refreshFormCombo(editor, catCmb, contactNode,
 					PeopleNames.PEOPLE_CONTACT_CATEGORY);
 
 		// Listeners

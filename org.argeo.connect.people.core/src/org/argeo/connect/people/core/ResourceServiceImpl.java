@@ -603,12 +603,13 @@ public class ResourceServiceImpl implements ResourceService {
 		String oldValue = tagInstance.getProperty(Property.JCR_TITLE)
 				.getString();
 
-		boolean wasCheckedIn = false;
-		if (tagInstance.isNodeType(NodeType.MIX_VERSIONABLE)
-				&& !CommonsJcrUtils.isNodeCheckedOutByMe(tagInstance)) {
-			wasCheckedIn = true;
-			CommonsJcrUtils.checkout(tagInstance);
-		}
+		// boolean wasCO = 
+				CommonsJcrUtils.checkCOStatusBeforeUpdate(tagInstance); //= false;
+//		if (tagInstance.isNodeType(NodeType.MIX_VERSIONABLE)
+//				&& !CommonsJcrUtils.isNodeCheckedOutByMe(tagInstance)) {
+//			wasCheckedIn = true;
+//			CommonsJcrUtils.checkout(tagInstance);
+//		}
 
 		Session session = tagInstance.getSession();
 		// TODO use a transaction
@@ -624,9 +625,12 @@ public class ResourceServiceImpl implements ResourceService {
 		session.move(tagInstance.getPath(), newPath);
 		tagInstance.setProperty(Property.JCR_TITLE, newValue);
 
-		if (wasCheckedIn)
-			CommonsJcrUtils.saveAndCheckin(tagInstance);
-		else
+//		if (wasCO)
+//			log.warn("Tag " + );
+//			CommonsJcrUtils.saveAndCheckin(tagInstance);
+//		if (wasCheckedIn)
+//			
+//		else
 			tagInstance.getSession().save();
 		return true;
 	}
@@ -663,11 +667,8 @@ public class ResourceServiceImpl implements ResourceService {
 					versionable = currNode;
 			}
 
-			if (versionable != null
-					&& !CommonsJcrUtils.isNodeCheckedOutByMe(versionable)) {
-				wasCheckedIn = true;
-				CommonsJcrUtils.checkout(versionable);
-			}
+			if (versionable != null) 
+				wasCheckedIn = CommonsJcrUtils.checkCOStatusBeforeUpdate(versionable);
 
 			Property property = taggable.getProperty(tagPropName);
 
@@ -686,9 +687,9 @@ public class ResourceServiceImpl implements ResourceService {
 			} else
 				taggable.setProperty(tagPropName, newValue);
 
-			if (wasCheckedIn)
-				CommonsJcrUtils.saveAndCheckin(versionable);
-			else
+			// if (wasCheckedIn)
+			// CommonsJcrUtils.saveAndCheckin(versionable);
+			// else
 				taggable.getSession().save();
 		} catch (RepositoryException ee) {
 			throw new PeopleException(

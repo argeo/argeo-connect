@@ -54,10 +54,10 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 	// Main business Objects
 	private Node org;
 
-	// Toolkits
-	// private ListToolkit listTK;
-	// private LegalInfoToolkit legalTK;
-	// private ActivityToolkit activityTK;
+	// getFormToolkit()s
+	// private ListgetFormToolkit() listTK;
+	// private LegalInfogetFormToolkit() legalTK;
+	// private ActivitygetFormToolkit() activityTK;
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -75,36 +75,27 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 	}
 
 	@Override
-	protected void createToolkits() {
-		// listTK = new ListToolkit(toolkit, getManagedForm(),
-		// getPeopleService(),
-		// getPeopleWorkbenchService());
-		// legalTK = new LegalInfoToolkit(toolkit, getManagedForm(), org);
-		// activityTK = new ActivityToolkit(toolkit, getManagedForm(),
-		// getPeopleService(), getPeopleWorkbenchService());
-	}
-
-	@Override
 	protected void populateHeader(Composite parent) {
 		GridLayout gl = EclipseUiUtils.noSpaceGridLayout();
 		gl.marginBottom = 10;
 		parent.setLayout(gl);
 
-		Composite titleCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		Composite titleCmp = getFormToolkit().createComposite(parent,
+				SWT.NO_FOCUS);
 		titleCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		populateTitleComposite(titleCmp);
 
 		// Tag Management
-		Composite tagsCmp = new TagLikeListPart(parent, SWT.NO_FOCUS, toolkit,
-				getManagedForm(), getPeopleService(),
+		Composite tagsCmp = new TagLikeListPart(parent, SWT.NO_FOCUS,
+				getFormToolkit(), getManagedForm(), getPeopleService(),
 				getPeopleWorkbenchService(), PeopleConstants.RESOURCE_TAG, org,
 				PeopleNames.PEOPLE_TAGS, "Enter a new tag");
 
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// Mailing list management
-		Composite mlCmp = new TagLikeListPart(parent, SWT.NO_FOCUS, toolkit,
-				getManagedForm(), getPeopleService(),
+		Composite mlCmp = new TagLikeListPart(parent, SWT.NO_FOCUS,
+				getFormToolkit(), getManagedForm(), getPeopleService(),
 				getPeopleWorkbenchService(), PeopleTypes.PEOPLE_MAILING_LIST,
 				org, PeopleNames.PEOPLE_MAILING_LISTS, "Add a mailing");
 
@@ -118,9 +109,8 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Details", PeopleRapConstants.CTAB_CONTACT_DETAILS, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		ContactList cpc = new ContactList(innerPannel, SWT.NO_FOCUS, toolkit,
-				getManagedForm(), getNode(), getPeopleService(),
-				getPeopleWorkbenchService());
+		ContactList cpc = new ContactList(innerPannel, SWT.NO_FOCUS, this,
+				getNode(), getPeopleService(), getPeopleWorkbenchService());
 		cpc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		// Activities and tasks
@@ -129,9 +119,8 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
 				PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite activitiesCmp = new ActivityList(toolkit, getManagedForm(),
-				innerPannel, SWT.NONE, getPeopleService(),
-				getPeopleWorkbenchService(), org);
+		Composite activitiesCmp = new ActivityList(this, innerPannel, SWT.NONE,
+				getPeopleService(), getPeopleWorkbenchService(), org);
 		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// Employees
@@ -140,8 +129,8 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Team",
 				PeopleRapConstants.CTAB_EMPLOYEES, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite employeesCmp = new JobList(toolkit, getManagedForm(),
-				innerPannel, SWT.NONE, getPeopleService(),
+		Composite employeesCmp = new JobList(getFormToolkit(),
+				getManagedForm(), innerPannel, SWT.NONE, getPeopleService(),
 				getPeopleWorkbenchService(), org);
 		employeesCmp.setLayoutData(EclipseUiUtils.fillAll());
 
@@ -151,8 +140,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Admin.",
 				PeopleRapConstants.CTAB_LEGAL_INFO, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite legalCmp = new OrgAdminInfo(toolkit, getManagedForm(),
-				innerPannel, SWT.NONE, org);
+		Composite legalCmp = new OrgAdminInfo(this, innerPannel, SWT.NONE, org);
 		legalCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// History panel
@@ -161,8 +149,8 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "History",
 				PeopleRapConstants.CTAB_HISTORY, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite historyLogCmp = new HistoryLog(toolkit, getManagedForm(),
-				innerPannel, SWT.NONE, getPeopleService(), org);
+		Composite historyLogCmp = new HistoryLog(this, innerPannel, SWT.NONE,
+				getPeopleService(), org);
 		historyLogCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 	}
@@ -171,29 +159,29 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		try {
 			parent.setLayout(new FormLayout());
 			// READ ONLY
-			final Composite roPanelCmp = toolkit.createComposite(parent,
-					SWT.NO_FOCUS);
+			final Composite roPanelCmp = getFormToolkit().createComposite(
+					parent, SWT.NO_FOCUS);
 			PeopleRapUtils.setSwitchingFormData(roPanelCmp);
 			roPanelCmp.setLayout(new GridLayout());
 
 			// Add a label with info provided by the OrgOverviewLabelProvider
-			final Label orgInfoROLbl = toolkit.createLabel(roPanelCmp, "",
-					SWT.WRAP);
+			final Label orgInfoROLbl = getFormToolkit().createLabel(roPanelCmp,
+					"", SWT.WRAP);
 			orgInfoROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider orgLP = new OrgOverviewLabelProvider(
 					false, getPeopleService(), getPeopleWorkbenchService());
 
 			// EDIT
-			final Composite editPanelCmp = toolkit.createComposite(parent,
-					SWT.NONE);
+			final Composite editPanelCmp = getFormToolkit().createComposite(
+					parent, SWT.NONE);
 			PeopleRapUtils.setSwitchingFormData(editPanelCmp);
 			editPanelCmp.setLayout(new GridLayout(2, false));
 
 			// Create edit text
-			final Text displayNameTxt = PeopleRapUtils.createGDText(toolkit,
-					editPanelCmp, "Display name",
+			final Text displayNameTxt = PeopleRapUtils.createGDText(
+					getFormToolkit(), editPanelCmp, "Display name",
 					"Display name used for this organisation", 300, 1);
-			final Button useDistinctDisplayBtn = toolkit.createButton(
+			final Button useDistinctDisplayBtn = getFormToolkit().createButton(
 					editPanelCmp, "Use a specific display name", SWT.CHECK);
 			useDistinctDisplayBtn
 					.setToolTipText("Use a display name that is not the legal name");
@@ -204,7 +192,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 					super.refresh();
 					// EDIT PART
 					boolean useDistinct = PeopleRapUtils.refreshFormCheckBox(
-							useDistinctDisplayBtn, org,
+							OrgEditor.this, useDistinctDisplayBtn, org,
 							PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 
 					if (useDistinct) {

@@ -53,8 +53,8 @@ public abstract class AbstractEntityCTabEditor extends
 		item.setData(CTAB_INSTANCE_ID, id);
 		item.setText(label);
 		item.setToolTipText(tooltip);
-		Composite innerPannel = toolkit
-				.createComposite(tabFolder, SWT.V_SCROLL);
+		Composite innerPannel = getManagedForm().getToolkit().createComposite(
+				tabFolder, SWT.V_SCROLL);
 		// must set control
 		item.setControl(innerPannel);
 		return innerPannel;
@@ -91,8 +91,8 @@ public abstract class AbstractEntityCTabEditor extends
 		item.setData(CTAB_INSTANCE_ID, id);
 		item.setText(label);
 		item.setToolTipText(tooltip);
-		Composite innerPannel = toolkit
-				.createComposite(tabFolder, SWT.V_SCROLL);
+		Composite innerPannel = getManagedForm().getToolkit().createComposite(
+				tabFolder, SWT.V_SCROLL);
 		// must set control
 		item.setControl(innerPannel);
 		return innerPannel;

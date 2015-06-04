@@ -2,9 +2,10 @@ package org.argeo.connect.people.rap.listeners;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.CmsEditable;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.editors.utils.IVersionedItemEditor;
-import org.argeo.connect.people.rap.utils.CheckoutSourceProvider;
+import org.argeo.connect.people.rap.utils.EditionSourceProvider;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
@@ -57,20 +58,21 @@ public class PartStateChanged implements IPartListener, IStartup {
 		// Retrieve the service to enable/disable checkout button
 		ISourceProviderService sourceProviderService = (ISourceProviderService) window
 				.getService(ISourceProviderService.class);
-		CheckoutSourceProvider esp = (CheckoutSourceProvider) sourceProviderService
-				.getSourceProvider(CheckoutSourceProvider.CHECKOUT_STATE);
+		EditionSourceProvider esp = (EditionSourceProvider) sourceProviderService
+				.getSourceProvider(EditionSourceProvider.EDITING_STATE);
 		if (part instanceof IVersionedItemEditor) {
-			IVersionedItemEditor editor = (IVersionedItemEditor) part;
-			// Processing the ability to checkout is delegated to the editor
-			boolean canBeCheckoutedByMe = editor.canBeCheckedOutByMe();
-			esp.setIsCurrentItemCheckedOut(!canBeCheckoutedByMe);
-
-			IStatusLineManager manager = ((IEditorPart) editor).getEditorSite()
+			IStatusLineManager manager = ((IEditorPart) part).getEditorSite()
 					.getActionBars().getStatusLineManager();
-			manager.setMessage(editor.getlastUpdateMessage());
+			manager.setMessage(((IVersionedItemEditor) part)
+					.getlastUpdateMessage());
 
+		}
+		if (part instanceof CmsEditable) {
+			CmsEditable editor = (CmsEditable) part;
+			// Processing the ability to checkout is delegated to the editor
+			esp.setCurrentItemEditingState(editor.isEditing());
 		} else {// force button to be disabled if another part has the focus.
-			esp.setIsCurrentItemCheckedOut(true);
+			esp.setCurrentItemEditingState(true);
 		}
 	}
 
@@ -99,9 +101,9 @@ public class PartStateChanged implements IPartListener, IStartup {
 			// Retrieve the service to enable/disable checkout button
 			ISourceProviderService sourceProviderService = (ISourceProviderService) window
 					.getService(ISourceProviderService.class);
-			CheckoutSourceProvider esp = (CheckoutSourceProvider) sourceProviderService
-					.getSourceProvider(CheckoutSourceProvider.CHECKOUT_STATE);
-			esp.setIsCurrentItemCheckedOut(true);
+			EditionSourceProvider esp = (EditionSourceProvider) sourceProviderService
+					.getSourceProvider(EditionSourceProvider.EDITING_STATE);
+			esp.setCurrentItemEditingState(true);
 		}
 	}
 

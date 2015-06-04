@@ -16,6 +16,7 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
+import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
@@ -56,12 +57,14 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 	private final PeopleWorkbenchService peopleWorkbenchService;
 	private final Node contactNode;
 	private final Node parentVersionableNode;
+
+	private final AbstractPeopleEditor editor;
 	private final AbstractFormPart formPart;
 	private final FormToolkit toolkit;
 	private final boolean isCheckedOut;
 
 	public ContactAddressComposite(Composite parent, int style,
-			FormToolkit toolkit, AbstractFormPart formPart,
+			AbstractPeopleEditor editor, AbstractFormPart formPart,
 			PeopleService peopleService,
 			PeopleWorkbenchService peopleUiService, Node contactNode,
 			Node parentVersionableNode) {
@@ -69,7 +72,9 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleUiService;
 		this.contactNode = contactNode;
-		this.toolkit = toolkit;
+
+		this.editor = editor;
+		this.toolkit = editor.getFormToolkit();
 		this.formPart = formPart;
 		this.parentVersionableNode = parentVersionableNode;
 		this.isCheckedOut = CommonsJcrUtils
@@ -192,9 +197,9 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					contactNode.getParent().getParent());
 
 			// REFRESH VALUES
-			PeopleRapUtils.refreshFormText(labelTxt, contactNode,
+			PeopleRapUtils.refreshFormText(editor, labelTxt, contactNode,
 					PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
-			PeopleRapUtils.refreshFormCombo(catCmb, contactNode,
+			PeopleRapUtils.refreshFormCombo(editor, catCmb, contactNode,
 					PeopleNames.PEOPLE_CONTACT_CATEGORY);
 
 			if (contactNode.hasProperty(PeopleNames.PEOPLE_REF_UID)) {
@@ -308,21 +313,21 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 							PEOPLE_CONTACT_CATEGORY));
 
 			// Refresh
-			PeopleRapUtils.refreshFormText(streetTxt, contactNode,
+			PeopleRapUtils.refreshFormText(editor, streetTxt, contactNode,
 					PeopleNames.PEOPLE_STREET, "Street");
-			PeopleRapUtils.refreshFormText(street2Txt, contactNode,
+			PeopleRapUtils.refreshFormText(editor, street2Txt, contactNode,
 					PeopleNames.PEOPLE_STREET_COMPLEMENT, "Street complement");
-			PeopleRapUtils.refreshFormText(zipTxt, contactNode,
+			PeopleRapUtils.refreshFormText(editor, zipTxt, contactNode,
 					PeopleNames.PEOPLE_ZIP_CODE, "Zip code");
-			PeopleRapUtils.refreshFormText(cityTxt, contactNode,
+			PeopleRapUtils.refreshFormText(editor, cityTxt, contactNode,
 					PeopleNames.PEOPLE_CITY, "City");
-			PeopleRapUtils.refreshFormText(stateTxt, contactNode,
+			PeopleRapUtils.refreshFormText(editor, stateTxt, contactNode,
 					PeopleNames.PEOPLE_STATE, "State");
-			PeopleRapUtils.refreshFormText(geoPointTxt, contactNode,
+			PeopleRapUtils.refreshFormText(editor, geoPointTxt, contactNode,
 					PeopleNames.PEOPLE_GEOPOINT, "Geo point");
-			PeopleRapUtils.refreshFormText(labelTxt, contactNode,
+			PeopleRapUtils.refreshFormText(editor, labelTxt, contactNode,
 					PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
-			PeopleRapUtils.refreshFormCombo(catCmb, contactNode,
+			PeopleRapUtils.refreshFormCombo(editor, catCmb, contactNode,
 					PeopleNames.PEOPLE_CONTACT_CATEGORY);
 
 			// add listeners

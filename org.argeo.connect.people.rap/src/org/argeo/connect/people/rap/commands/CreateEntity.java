@@ -13,7 +13,6 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -75,7 +74,9 @@ public class CreateEntity extends AbstractHandler {
 			} else {
 				// This will try to remove the newly created temporary Node it
 				// the process fails before first save
-				CommonsJcrUtils.cancelAndCheckin(newNode);
+				JcrUtils.discardQuietly(session);
+
+				// CommonsJcrUtils.cancelAndCheckin(newNode);
 			}
 		} catch (RepositoryException e) {
 			throw new PeopleException("unexpected JCR error while opening "

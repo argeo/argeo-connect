@@ -214,15 +214,15 @@ public class UserManagementServiceImpl implements UserManagementService {
 			StringBuilder builder = new StringBuilder();
 			for (String currUserName : usernames) {
 				Node peopleProfile = getPeopleProfile(tmpSession, currUserName);
-				CommonsJcrUtils.checkout(peopleProfile);
+				CommonsJcrUtils.checkCOStatusBeforeUpdate(peopleProfile);
 				String msg = CommonsJcrUtils.addRefToMultiValuedProp(
 						peopleProfile, PeopleNames.PEOPLE_USER_GROUPS,
 						userGroup);
 				if (msg != null) {
 					builder.append(msg).append("\n");
-					CommonsJcrUtils.cancelAndCheckin(peopleProfile);
+					JcrUtils.discardUnderlyingSessionQuietly(peopleProfile);
 				} else
-					CommonsJcrUtils.saveAndCheckin(peopleProfile);
+					CommonsJcrUtils.checkPoint(peopleProfile);
 			}
 
 			if (builder.length() > 0)
@@ -242,12 +242,12 @@ public class UserManagementServiceImpl implements UserManagementService {
 			List<Node> groups) {
 		try {
 			Node peopleProfile = getPeopleProfile(session, username);
-			CommonsJcrUtils.checkout(peopleProfile);
+			CommonsJcrUtils.checkCOStatusBeforeUpdate(peopleProfile);
 
 			// it overrides all values at each time.
 			CommonsJcrUtils.setMultipleReferences(peopleProfile,
 					PeopleNames.PEOPLE_USER_GROUPS, groups);
-			CommonsJcrUtils.saveAndCheckin(peopleProfile);
+			CommonsJcrUtils.checkPoint(peopleProfile);
 
 		} catch (RepositoryException re) {
 			throw new PeopleException("unable to add groups to user "

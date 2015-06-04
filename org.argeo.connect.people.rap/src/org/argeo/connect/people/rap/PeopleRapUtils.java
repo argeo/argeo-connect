@@ -9,6 +9,7 @@ import javax.jcr.Node;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
+import org.argeo.cms.CmsEditable;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.commands.OpenSearchEntityEditor;
@@ -72,8 +73,8 @@ public class PeopleRapUtils {
 	 * 
 	 * If the property does not yet exits, it is not created and the
 	 */
-	public static void refreshFormDateTimeWidget(DateTime dateTime, Node node,
-			String propName) {
+	public static void refreshFormDateTimeWidget(CmsEditable editable,
+			DateTime dateTime, Node node, String propName) {
 		try {
 			Calendar dateToDisplay = null;
 			if (node.hasProperty(propName))
@@ -85,7 +86,7 @@ public class PeopleRapUtils {
 					dateToDisplay.get(Calendar.MONTH),
 					dateToDisplay.get(Calendar.DAY_OF_MONTH));
 			dateTime.setTime(12, 0, 0);
-			dateTime.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(node));
+			dateTime.setEnabled(editable.isEditing());
 		} catch (RepositoryException re) {
 			throw new PeopleException(
 					"unable to refresh DateTime widget for node " + node
@@ -93,34 +94,34 @@ public class PeopleRapUtils {
 		}
 	}
 
+	// /**
+	// * Shortcut to refresh a <code>Text</code> widget given a Node in a form
+	// and
+	// * a property Name. Also manages its enable state
+	// */
+	// public static String refreshFormTextWidget(Text text, Node entity,
+	// String propName) {
+	// String tmpStr = CommonsJcrUtils.get(entity, propName);
+	// // Check if there is no side effect.
+	// // Commented out to manage the following case in a film header:
+	// // Primary Title has a latin pronunciation,
+	// // we define another primary title that has no such value,
+	// // the text must be reset to blank.
+	// // if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+	// text.setText(tmpStr);
+	// text.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
+	// return tmpStr;
+	// }
+
 	/**
 	 * Shortcut to refresh a <code>Text</code> widget given a Node in a form and
 	 * a property Name. Also manages its enable state
 	 */
-	public static String refreshFormTextWidget(Text text, Node entity,
-			String propName) {
-		String tmpStr = CommonsJcrUtils.get(entity, propName);
-		// Check if there is no side effect.
-		// Commented out to manage the following case in a film header:
-		// Primary Title has a latin pronunciation,
-		// we define another primary title that has no such value,
-		// the text must be reset to blank.
-		// if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
-		text.setText(tmpStr);
-		text.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
-		return tmpStr;
-	}
-
-	/**
-	 * Shortcut to refresh a <code>Text</code> widget given a Node in a form and
-	 * a property Name. Also manages its enable state in the case the Node that
-	 * owns the property is a descendant of the versionable node
-	 */
-	public static String refreshFormTextWidget(Text text,
-			Node versionableEntity, Node node, String propName) {
+	public static String refreshFormTextWidget(CmsEditable editable, Text text,
+			Node node, String propName) {
 		String tmpStr = CommonsJcrUtils.get(node, propName);
 		text.setText(tmpStr);
-		text.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(versionableEntity));
+		text.setEnabled(editable.isEditing());
 		return tmpStr;
 	}
 
@@ -129,9 +130,9 @@ public class PeopleRapUtils {
 	 * a property Name. Also manages its enable state and set a default message
 	 * if corresponding Text value is empty
 	 */
-	public static String refreshFormText(Text text, Node entity,
-			String propName, String defaultMsg) {
-		String tmpStr = refreshFormTextWidget(text, entity, propName);
+	public static String refreshFormText(CmsEditable editable, Text text,
+			Node entity, String propName, String defaultMsg) {
+		String tmpStr = refreshFormTextWidget(editable, text, entity, propName);
 		if (CommonsJcrUtils.isEmptyString(tmpStr)
 				&& CommonsJcrUtils.checkNotEmptyString(defaultMsg))
 			text.setMessage(defaultMsg);
@@ -142,19 +143,20 @@ public class PeopleRapUtils {
 	 * Shortcut to select an item of a <code>Combo</code> widget given a Node in
 	 * a form, a property Name. Also manages its enable state.
 	 */
-	public static void refreshFormCombo(Combo combo, Node node, String propName) {
+	public static void refreshFormCombo(CmsEditable editable, Combo combo,
+			Node node, String propName) {
 		String currValue = CommonsJcrUtils.get(node, propName);
 		if (CommonsJcrUtils.checkNotEmptyString(currValue))
 			combo.select(combo.indexOf(currValue));
-		combo.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(node));
+		combo.setEnabled(editable.isEditing());
 	}
 
 	/**
 	 * Shortcut to refresh a Check box <code>Button</code> widget given a Node
 	 * in a form and a property Name.
 	 */
-	public static boolean refreshFormCheckBox(Button button, Node entity,
-			String propName) {
+	public static boolean refreshFormCheckBox(CmsEditable editable,
+			Button button, Node entity, String propName) {
 		Boolean tmp = null;
 		try {
 			if (entity.hasProperty(propName)) {
@@ -162,7 +164,7 @@ public class PeopleRapUtils {
 				button.setSelection(tmp);
 			} else
 				tmp = false;
-			button.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
+			button.setEnabled(editable.isEditing());
 		} catch (RepositoryException re) {
 			throw new PeopleException("unable get boolean value for property "
 					+ propName);

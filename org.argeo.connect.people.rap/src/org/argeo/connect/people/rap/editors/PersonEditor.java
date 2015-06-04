@@ -87,21 +87,22 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		parent.setLayout(gl);
 
 		// Main info
-		Composite titleCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
+		Composite titleCmp = getFormToolkit().createComposite(parent,
+				SWT.NO_FOCUS);
 		titleCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		populateTitleComposite(titleCmp);
 
 		// Tag Management
-		Composite tagsCmp = new TagLikeListPart(parent, SWT.NO_FOCUS, toolkit,
-				getManagedForm(), getPeopleService(),
+		Composite tagsCmp = new TagLikeListPart(parent, SWT.NO_FOCUS,
+				getFormToolkit(), getManagedForm(), getPeopleService(),
 				getPeopleWorkbenchService(), PeopleConstants.RESOURCE_TAG,
 				person, PeopleNames.PEOPLE_TAGS, "Add a tag");
 
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// Mailing list management
-		Composite mlCmp = new TagLikeListPart(parent, SWT.NO_FOCUS, toolkit,
-				getManagedForm(), getPeopleService(),
+		Composite mlCmp = new TagLikeListPart(parent, SWT.NO_FOCUS,
+				getFormToolkit(), getManagedForm(), getPeopleService(),
 				getPeopleWorkbenchService(), PeopleTypes.PEOPLE_MAILING_LIST,
 				person, PEOPLE_MAILING_LISTS, "Add a mailing");
 
@@ -117,9 +118,8 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				"Contact details", PeopleRapConstants.CTAB_CONTACT_DETAILS,
 				tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		ContactList cpc = new ContactList(innerPannel, SWT.NO_FOCUS, toolkit,
-				getManagedForm(), getNode(), getPeopleService(),
-				getPeopleWorkbenchService());
+		ContactList cpc = new ContactList(innerPannel, SWT.NO_FOCUS, this,
+				getNode(), getPeopleService(), getPeopleWorkbenchService());
 		cpc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		// Activities and tasks
@@ -128,9 +128,8 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
 				PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite activitiesCmp = new ActivityList(toolkit, getManagedForm(),
-				innerPannel, SWT.NONE, getPeopleService(),
-				getPeopleWorkbenchService(), person);
+		Composite activitiesCmp = new ActivityList(this, innerPannel, SWT.NONE,
+				getPeopleService(), getPeopleWorkbenchService(), person);
 		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// Jobs panel
@@ -139,9 +138,9 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Organisations",
 				PeopleRapConstants.CTAB_JOBS, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite crewCmp = new JobList(toolkit, getManagedForm(), innerPannel,
-				SWT.NONE, getPeopleService(), getPeopleWorkbenchService(),
-				person);
+		Composite crewCmp = new JobList(getFormToolkit(), getManagedForm(),
+				innerPannel, SWT.NONE, getPeopleService(),
+				getPeopleWorkbenchService(), person);
 		crewCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// History panel
@@ -150,8 +149,8 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "History",
 				PeopleRapConstants.CTAB_HISTORY, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite historyLogCmp = new HistoryLog(toolkit, getManagedForm(),
-				innerPannel, SWT.NONE, getPeopleService(), person);
+		Composite historyLogCmp = new HistoryLog(this, innerPannel, SWT.NONE, getPeopleService(),
+				person);
 		historyLogCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// folder.layout();
@@ -161,21 +160,21 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		parent.setLayout(new FormLayout());
 
 		// READ ONLY
-		final Composite readOnlyPanel = toolkit.createComposite(parent,
-				SWT.NO_FOCUS);
+		final Composite readOnlyPanel = getFormToolkit().createComposite(
+				parent, SWT.NO_FOCUS);
 		PeopleRapUtils.setSwitchingFormData(readOnlyPanel);
 		readOnlyPanel.setLayout(new GridLayout());
 
 		// Add a label with info provided by the PersonOverviewLabelProvider
-		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
-				SWT.WRAP);
+		final Label readOnlyInfoLbl = getFormToolkit().createLabel(
+				readOnlyPanel, "", SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		final ColumnLabelProvider personLP = new PersonOverviewLabelProvider(
 				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE,
 				getPeopleService(), getPeopleWorkbenchService());
 
 		// EDIT
-		final Composite editPanel = toolkit.createComposite(parent,
+		final Composite editPanel = getFormToolkit().createComposite(parent,
 				SWT.NO_FOCUS);
 		PeopleRapUtils.setSwitchingFormData(editPanel);
 		// editPanel.setData(RWT.CUSTOM_VARIANT,
@@ -183,67 +182,74 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		editPanel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// First Line - display Name management
-		Composite firstCmp = toolkit.createComposite(editPanel, SWT.NO_FOCUS);
+		Composite firstCmp = getFormToolkit().createComposite(editPanel,
+				SWT.NO_FOCUS);
 		firstCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = false;
 		firstCmp.setLayout(rl);
 
 		// Second Line main names
-		Composite secondCmp = toolkit.createComposite(editPanel, SWT.NO_FOCUS);
+		Composite secondCmp = getFormToolkit().createComposite(editPanel,
+				SWT.NO_FOCUS);
 		secondCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = false;
 		secondCmp.setLayout(rl);
 
 		// Third Line: other Names
-		Composite thirdCmp = toolkit.createComposite(editPanel, SWT.NO_FOCUS);
+		Composite thirdCmp = getFormToolkit().createComposite(editPanel,
+				SWT.NO_FOCUS);
 		thirdCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = false;
 		thirdCmp.setLayout(rl);
 
 		// Fourth Line: Polite form & spoken languages
-		Composite fourthCmp = toolkit.createComposite(editPanel, SWT.NO_FOCUS);
+		Composite fourthCmp = getFormToolkit().createComposite(editPanel,
+				SWT.NO_FOCUS);
 		fourthCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		fourthCmp.setLayout(new GridLayout(4, false));
 
 		// Create edit text
-		final Text displayNameTxt = PeopleRapUtils.createRDText(toolkit,
-				firstCmp, "Display name",
+		final Text displayNameTxt = PeopleRapUtils.createRDText(
+				getFormToolkit(), firstCmp, "Display name",
 				"Default display name for this person", 300);
-		final Button defineDistinctBtn = toolkit.createButton(firstCmp,
-				"Define a distinct display name", SWT.CHECK);
+		final Button defineDistinctBtn = getFormToolkit().createButton(
+				firstCmp, "Define a distinct display name", SWT.CHECK);
 		defineDistinctBtn.setToolTipText("Default is \"Firstname LASTNAME\"");
 
-		final Text salutationTxt = PeopleRapUtils.createRDText(toolkit,
-				secondCmp, "Salutation", "Mr, Mrs...", 60);
-		final Text firstNameTxt = PeopleRapUtils.createRDText(toolkit,
+		final Text salutationTxt = PeopleRapUtils.createRDText(
+				getFormToolkit(), secondCmp, "Salutation", "Mr, Mrs...", 60);
+		final Text firstNameTxt = PeopleRapUtils.createRDText(getFormToolkit(),
 				secondCmp, "First Name", "Usual first name for this person",
 				100);
-		final Text middleNameTxt = PeopleRapUtils.createRDText(toolkit,
-				secondCmp, "Middle Name", "The second name if it exists", 100);
-		final Text lastNameTxt = PeopleRapUtils.createRDText(toolkit,
+		final Text middleNameTxt = PeopleRapUtils.createRDText(
+				getFormToolkit(), secondCmp, "Middle Name",
+				"The second name if it exists", 100);
+		final Text lastNameTxt = PeopleRapUtils.createRDText(getFormToolkit(),
 				secondCmp, "Last Name", "Usual last name for this person", 100);
-		final Text suffixTxt = PeopleRapUtils.createRDText(toolkit, secondCmp,
-				"Suffix", "Junior, the third...", 80);
+		final Text suffixTxt = PeopleRapUtils.createRDText(getFormToolkit(),
+				secondCmp, "Suffix", "Junior, the third...", 80);
 
 		// final Text genderTxt = entityTK.createText(thirdCmp, "Gender", "...",
 		// 80);
-		final Text titleTxt = PeopleRapUtils.createRDText(toolkit, thirdCmp,
-				"Title", "Doc., Sir...", 60);
-		final Text maidenNameTxt = PeopleRapUtils.createRDText(toolkit,
-				thirdCmp, "Maiden Name", "Birth Name before getting maried",
-				100);
-		final Text nickNameTxt = PeopleRapUtils.createRDText(toolkit, thirdCmp,
-				"Nickame", "A pseudonym...", 100);
-		final Text latinPhoneticTxt = PeopleRapUtils.createRDText(toolkit,
-				thirdCmp, "Latin Phonetic",
+		final Text titleTxt = PeopleRapUtils.createRDText(getFormToolkit(),
+				thirdCmp, "Title", "Doc., Sir...", 60);
+		final Text maidenNameTxt = PeopleRapUtils.createRDText(
+				getFormToolkit(), thirdCmp, "Maiden Name",
+				"Birth Name before getting maried", 100);
+		final Text nickNameTxt = PeopleRapUtils.createRDText(getFormToolkit(),
+				thirdCmp, "Nickame", "A pseudonym...", 100);
+		final Text latinPhoneticTxt = PeopleRapUtils.createRDText(
+				getFormToolkit(), thirdCmp, "Latin Phonetic",
 				"A helper to know how to pronounce this name", 100);
 
 		// Fourth Line
-		PeopleRapUtils.createBoldLabel(toolkit, fourthCmp, "Form Of Address");
-		Composite politeCmp = toolkit.createComposite(fourthCmp, SWT.NO_FOCUS);
+		PeopleRapUtils.createBoldLabel(getFormToolkit(), fourthCmp,
+				"Form Of Address");
+		Composite politeCmp = getFormToolkit().createComposite(fourthCmp,
+				SWT.NO_FOCUS);
 		politeCmp
 				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
 		GridLayout layout = new GridLayout(2, false);
@@ -254,9 +260,9 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		final Button informalBtn = new Button(politeCmp, SWT.RADIO);
 		informalBtn.setText("Informal");
 
-		PeopleRapUtils.createBoldLabel(toolkit, fourthCmp, "Language");
-		Composite languageCmp = toolkit
-				.createComposite(fourthCmp, SWT.NO_FOCUS);
+		PeopleRapUtils.createBoldLabel(getFormToolkit(), fourthCmp, "Language");
+		Composite languageCmp = getFormToolkit().createComposite(fourthCmp,
+				SWT.NO_FOCUS);
 		languageCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true,
 				false));
 		layout = new GridLayout(2, false);
@@ -312,7 +318,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				readOnlyInfoLbl.setText(roText);
 
 				// Manage switch
-				if (CommonsJcrUtils.isNodeCheckedOutByMe(person))
+				if (isEditing())
 					editPanel.moveAbove(readOnlyPanel);
 				else
 					editPanel.moveBelow(readOnlyPanel);

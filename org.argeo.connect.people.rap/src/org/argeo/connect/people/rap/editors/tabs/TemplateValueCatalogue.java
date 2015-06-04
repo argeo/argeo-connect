@@ -30,9 +30,10 @@ import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.commands.CancelAndCheckInItem;
+import org.argeo.connect.people.rap.commands.ChangeEditingState;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
+import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.rap.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.rap.utils.AbstractPanelFormPart;
@@ -79,7 +80,6 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
@@ -106,14 +106,14 @@ public class TemplateValueCatalogue extends Composite {
 	// this page UI Objects
 	private final MyFormPart myFormPart;
 
-	public TemplateValueCatalogue(IWorkbench workbench, FormToolkit toolkit,
-			Composite parent, int style, IManagedForm form,
+	public TemplateValueCatalogue(IWorkbench workbench,
+			AbstractPeopleEditor editor, Composite parent, int style,
 			PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, Node templateNode,
 			String propertyName, String taggableType) {
 		super(parent, style);
 		this.workbench = workbench;
-		this.toolkit = toolkit;
+		this.toolkit = editor.getFormToolkit();
 		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.templateNode = templateNode;
@@ -121,8 +121,8 @@ public class TemplateValueCatalogue extends Composite {
 		this.taggableType = taggableType;
 		this.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		myFormPart = new MyFormPart(this);
-		myFormPart.initialize(form);
-		form.addPart(myFormPart);
+		myFormPart.initialize(editor.getManagedForm());
+		editor.getManagedForm().addPart(myFormPart);
 	}
 
 	private class MyFormPart extends AbstractPanelFormPart {
@@ -136,7 +136,7 @@ public class TemplateValueCatalogue extends Composite {
 		protected void reCreateChildComposite(Composite panel, Node editionInfo) {
 			// Add button if needed
 			Button addBtn = null;
-			if (isCurrentlyCheckedOut()) {
+			if (isEditing()) {
 				panel.setLayout(new GridLayout());
 				addBtn = toolkit.createButton(panel, "Add a value", SWT.PUSH);
 				configureAddValueBtn(this, addBtn);
@@ -319,36 +319,15 @@ public class TemplateValueCatalogue extends Composite {
 					IEditorPart editor = wb.getActiveWorkbenchWindow()
 							.getActivePage().getActiveEditor();
 					if (editor != null && editor instanceof Refreshable) {
-						CommandUtils.callCommand(CancelAndCheckInItem.ID);
+						// Cancel and Check In
+						Map<String, String> params = new HashMap<String, String>();
+						params.put(ChangeEditingState.PARAM_NEW_STATE,
+								ChangeEditingState.NOT_EDITING);
+						params.put(ChangeEditingState.PARAM_PRIOR_ACTION,
+								ChangeEditingState.PRIOR_ACTION_CANCEL);
+						CommandUtils.callCommand(ChangeEditingState.ID);
 						((Refreshable) editor).forceRefresh(null);
 
-						// Node currNode = null;
-						//
-						// IVersionedItemEditor currEd = (IVersionedItemEditor)
-						// editor;
-						// if (currEd.isCheckedOutByMe())
-						// currEd.saveAndCheckInItem();
-						//
-						//
-						// if (currNode.getSession().hasPendingChanges())
-						// CommandUtils
-						// .callCommand(IWorkbenchCommandConstants.FILE_SAVE);
-						// else
-						// CommandUtils.callCommand(CancelAndCheckInItem.ID);
-						//
-						// }
-						// && editor instanceof A) {
-						// if (node.getSession().hasPendingChanges())
-						// CommandUtils
-						// .callCommand(IWorkbenchCommandConstants.FILE_SAVE);
-						// else
-						// CommandUtils.callCommand(CancelAndCheckInItem.ID);
-						//
-						// IVersionedItemEditor currEd = (IVersionedItemEditor)
-						// editor;
-						// if (currEd.isCheckedOutByMe())
-						// currEd.saveAndCheckInItem();
-						// }
 					}
 				}
 			}

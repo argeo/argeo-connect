@@ -360,13 +360,10 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 						+ referencedNode + "("
 						+ referencedNode.getPrimaryNodeType() + ")");
 
-			// TODO manage duplicates
-			boolean wasCheckedout = CommonsJcrUtils
-					.isNodeCheckedOutByMe(referencingNode);
-			if (!wasCheckedout)
-				CommonsJcrUtils.checkout(referencingNode);
-
-			// add the corresponding node
+			// Legacy: force node to be checked-out
+			if (!CommonsJcrUtils.checkCOStatusBeforeUpdate(referencingNode))
+				log.warn("Referencing node " + referencingNode
+						+ " was checked in when we wanted to update");
 
 			Node link = parentNode.addNode(CommonsJcrUtils
 					.checkNotEmptyString(role) ? role : "Unnamed_role",
@@ -375,11 +372,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 				link.setProperty(PeopleNames.PEOPLE_ROLE, role);
 			link.setProperty(PeopleNames.PEOPLE_REF_UID, referencedNode
 					.getProperty(PeopleNames.PEOPLE_UID).getString());
-
-			if (!wasCheckedout)
-				CommonsJcrUtils.saveAndCheckin(referencingNode);
-			else
-				referencingNode.getSession().save();
+			referencingNode.getSession().save();
 
 			return link;
 		} catch (RepositoryException e) {

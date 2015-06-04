@@ -354,11 +354,8 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 					// TODO use transaction
 					boolean isVersionable = tagInstance
 							.isNodeType(NodeType.MIX_VERSIONABLE);
-					boolean isCheckedIn = isVersionable
-							&& !CommonsJcrUtils
-									.isNodeCheckedOutByMe(tagInstance);
-					if (isCheckedIn)
-						CommonsJcrUtils.checkout(tagInstance);
+					// Legacy insure the node is checked out before update
+					CommonsJcrUtils.checkCOStatusBeforeUpdate(tagInstance);
 
 					resourceService.updateTag(tagInstance, newTitle);
 
@@ -369,15 +366,11 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 						// force reset
 						tagInstance.setProperty(Property.JCR_DESCRIPTION, "");
 
-					if (isCheckedIn)
-						CommonsJcrUtils.saveAndCheckin(tagInstance);
-					else if (isVersionable) // workaround versionable node
-											// should have
-						// been commited on last update
-						CommonsJcrUtils.saveAndCheckin(tagInstance);
+					// Do we really want a new version at each and every time
+					if (isVersionable)
+						CommonsJcrUtils.checkPoint(tagInstance);
 					else
 						tagInstance.getSession().save();
-
 					monitor.worked(1);
 				}
 			} catch (Exception e) {

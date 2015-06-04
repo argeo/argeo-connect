@@ -20,6 +20,7 @@ import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.core.versioning.ItemDiff;
 import org.argeo.connect.people.core.versioning.VersionDiff;
 import org.argeo.connect.people.core.versioning.VersionUtils;
+import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -31,7 +32,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
@@ -42,6 +42,7 @@ public class HistoryLog extends Composite {
 	private static final long serialVersionUID = -4736848221960630767L;
 	// private final static Log log = LogFactory.getLog(HistoryLog.class);
 
+	private final AbstractPeopleEditor editor;
 	private final FormToolkit toolkit;
 	private final PeopleService peopleService;
 	// private final PeopleWorkbenchService peopleWorkbenchService;
@@ -52,20 +53,21 @@ public class HistoryLog extends Composite {
 	// this page UI Objects
 	private MyFormPart myFormPart;
 
-	public HistoryLog(FormToolkit toolkit, IManagedForm form, Composite parent,
-			int style, PeopleService peopleService, Node entity) {
+	public HistoryLog(AbstractPeopleEditor editor, Composite parent, int style,
+			PeopleService peopleService, Node entity) {
 		// PeopleWorkbenchService peopleWorkbenchService,
 		super(parent, style);
-		this.toolkit = toolkit;
+		this.editor = editor;
+		this.toolkit = editor.getFormToolkit();
 		this.peopleService = peopleService;
 		// this.peopleWorkbenchService = peopleWorkbenchService;
 		this.entity = entity;
 
 		// Populate
-		populate(form, this);
+		populate(this);
 	}
 
-	private void populate(IManagedForm form, Composite parent) {
+	private void populate(Composite parent) {
 
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
@@ -93,8 +95,8 @@ public class HistoryLog extends Composite {
 		// styledText.setEditable(false);
 
 		myFormPart = new MyFormPart(styledText);
-		myFormPart.initialize(form);
-		form.addPart(myFormPart);
+		myFormPart.initialize(editor.getManagedForm());
+		editor.getManagedForm().addPart(myFormPart);
 	}
 
 	private class MyFormPart extends AbstractFormPart {

@@ -89,26 +89,21 @@ public class DeleteEntity extends AbstractHandler {
 			if (removeParent)
 				toRemoveNode = toRemoveNode.getParent();
 
-			boolean wasCheckedOut = CommonsJcrUtils
-					.isNodeCheckedOutByMe(toRemoveNode);
-			if (!wasCheckedOut)
-				CommonsJcrUtils.checkout(toRemoveNode);
-
-			boolean parentWasCheckout = true;
-
-			parentVersionableNode = getParentVersionableNode(toRemoveNode);
+			if (!CommonsJcrUtils.checkCOStatusBeforeUpdate(toRemoveNode))
+				log.warn("To remove node " + toRemoveNode
+						+ " was checked in when we wanted to remove it");
+			
+			parentVersionableNode = CommonsJcrUtils.getParentVersionableNode(toRemoveNode);
 			if (parentVersionableNode != null) {
-				parentWasCheckout = CommonsJcrUtils
-						.isNodeCheckedOutByMe(parentVersionableNode);
-				if (!parentWasCheckout)
-					CommonsJcrUtils.checkout(parentVersionableNode);
+				if (!CommonsJcrUtils.checkCOStatusBeforeUpdate(parentVersionableNode))
+					log.warn("Parent versionable node " + parentVersionableNode
+							+ " was checked in when we wanted to remove it");
 			}
 
 			JcrUtils.discardUnderlyingSessionQuietly(toRemoveNode);
-
 			toRemoveNode.remove();
-			if (!parentWasCheckout)
-				CommonsJcrUtils.saveAndCheckin(parentVersionableNode);
+			if (parentVersionableNode != null)
+				CommonsJcrUtils.checkPoint(parentVersionableNode);
 			else
 				session.save();
 
@@ -116,7 +111,6 @@ public class DeleteEntity extends AbstractHandler {
 					&& iep.getEditorInput().getName().equals(toRemoveJcrId))
 				iwp.closeEditor(iep, false);
 
-			session.save();
 		} catch (ReferentialIntegrityException e) {
 			MessageDialog
 					.openError(
@@ -134,22 +128,6 @@ public class DeleteEntity extends AbstractHandler {
 			JcrUtils.logoutQuietly(session);
 		}
 		return null;
-	}
-
-	// Workaround to retrieve parent versionable node.
-	private Node getParentVersionableNode(Node node) throws RepositoryException {
-		Node curr = node;
-		while (true) {
-			try {
-				curr = curr.getParent();
-			} catch (ItemNotFoundException infe) {
-				// root node
-				return null;
-			}
-
-			if (curr.isNodeType(NodeType.MIX_VERSIONABLE))
-				return curr;
-		}
 	}
 
 	private boolean canDelete(Node node, Shell activeShell)

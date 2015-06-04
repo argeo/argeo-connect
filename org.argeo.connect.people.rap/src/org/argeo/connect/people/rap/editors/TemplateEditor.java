@@ -103,9 +103,8 @@ public class TemplateEditor extends AbstractEntityCTabEditor implements
 								+ propName, tooltip);
 				innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 				Composite submittedForCmp = new TemplateValueCatalogue(
-						getSite().getWorkbenchWindow().getWorkbench(),
-						getFormToolkit(), innerPannel, SWT.NO_FOCUS,
-						getManagedForm(), getPeopleService(),
+						getSite().getWorkbenchWindow().getWorkbench(), this,
+						innerPannel, SWT.NO_FOCUS, getPeopleService(),
 						getPeopleWorkbenchService(), nodeTemplate, propName,
 						CommonsJcrUtils.get(nodeTemplate,
 								PeopleNames.PEOPLE_TEMPLATE_ID));
@@ -123,8 +122,8 @@ public class TemplateEditor extends AbstractEntityCTabEditor implements
 
 		try {
 			parent.setLayout(new GridLayout());
-			final Label editionInfoROLbl = toolkit.createLabel(parent, "",
-					SWT.WRAP);
+			final Label editionInfoROLbl = getManagedForm().getToolkit()
+					.createLabel(parent, "", SWT.WRAP);
 			editionInfoROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider festivalLP = new EditionOLP();
 

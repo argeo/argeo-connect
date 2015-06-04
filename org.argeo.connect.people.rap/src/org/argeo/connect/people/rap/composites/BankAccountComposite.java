@@ -4,6 +4,7 @@ import javax.jcr.Node;
 
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.rap.PeopleRapUtils;
+import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -21,17 +22,20 @@ public class BankAccountComposite extends Composite {
 	private static final long serialVersionUID = -3303030374442774568L;
 
 	private final Node currAccount;
+
+	private final AbstractPeopleEditor editor;
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 	// Don't forget to unregister on dispose
 	private AbstractFormPart formPart;
 
 	public BankAccountComposite(Composite parent, int style,
-			FormToolkit toolkit, IManagedForm form, Node bankAccount) {
+			AbstractPeopleEditor editor, Node bankAccount) {
 		super(parent, style);
 		this.currAccount = bankAccount;
-		this.toolkit = toolkit;
-		this.form = form;
+		this.editor = editor;
+		this.toolkit = editor.getFormToolkit();
+		this.form = editor.getManagedForm();
 		populate();
 	}
 
@@ -79,20 +83,20 @@ public class BankAccountComposite extends Composite {
 				super.refresh();
 
 				if (!holderTxt.isDisposed()) {
-					PeopleRapUtils.refreshFormTextWidget(holderTxt, currAccount,
-							PeopleNames.PEOPLE_ACCOUNT_HOLDER);
-					PeopleRapUtils.refreshFormTextWidget(bankNameTxt,
+					PeopleRapUtils.refreshFormTextWidget(editor, holderTxt,
+							currAccount, PeopleNames.PEOPLE_ACCOUNT_HOLDER);
+					PeopleRapUtils.refreshFormTextWidget(editor, bankNameTxt,
 							currAccount, PeopleNames.PEOPLE_BANK_NAME);
-					PeopleRapUtils.refreshFormTextWidget(currencyTxt,
+					PeopleRapUtils.refreshFormTextWidget(editor, currencyTxt,
 							currAccount, PeopleNames.PEOPLE_CURRENCY);
-					PeopleRapUtils.refreshFormTextWidget(accNbTxt, currAccount,
-							PeopleNames.PEOPLE_ACCOUNT_NB);
-					PeopleRapUtils.refreshFormTextWidget(bankNbTxt, currAccount,
-							PeopleNames.PEOPLE_BANK_NB);
-					PeopleRapUtils.refreshFormTextWidget(bicTxt, currAccount,
-							PeopleNames.PEOPLE_BIC);
-					PeopleRapUtils.refreshFormTextWidget(ibanTxt, currAccount,
-							PeopleNames.PEOPLE_IBAN);
+					PeopleRapUtils.refreshFormTextWidget(editor, accNbTxt,
+							currAccount, PeopleNames.PEOPLE_ACCOUNT_NB);
+					PeopleRapUtils.refreshFormTextWidget(editor, bankNbTxt,
+							currAccount, PeopleNames.PEOPLE_BANK_NB);
+					PeopleRapUtils.refreshFormTextWidget(editor, bicTxt,
+							currAccount, PeopleNames.PEOPLE_BIC);
+					PeopleRapUtils.refreshFormTextWidget(editor, ibanTxt,
+							currAccount, PeopleNames.PEOPLE_IBAN);
 				}
 			}
 		};

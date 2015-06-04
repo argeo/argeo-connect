@@ -20,6 +20,7 @@ import org.argeo.connect.people.rap.composites.ContactAddressComposite;
 import org.argeo.connect.people.rap.composites.ContactComposite;
 import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
+import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
@@ -54,8 +55,11 @@ public class ContactList extends Composite {
 	// private final static Log log = LogFactory
 	// .getLog(ContactPanelComposite.class);
 
+	private final AbstractPeopleEditor editor;
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
+	
+	
 	private final PeopleService peopleService;
 	private final PeopleWorkbenchService peopleWorkbenchService;
 	private final Node entity;
@@ -66,12 +70,13 @@ public class ContactList extends Composite {
 	// Caches the add new contact combo
 	private Combo addContactCmb;
 
-	public ContactList(Composite parent, int style, FormToolkit toolkit,
-			IManagedForm form, Node entityNode, PeopleService peopleService,
+	public ContactList(Composite parent, int style, AbstractPeopleEditor editor, Node entityNode, PeopleService peopleService,
 			PeopleWorkbenchService peopleUiService) {
 		super(parent, style);
-		this.toolkit = toolkit;
-		this.form = form;
+		
+		this.editor = editor;
+		this.toolkit = editor.getFormToolkit();
+		this.form = editor.getManagedForm();
 		this.entity = entityNode;
 		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleUiService;
@@ -204,11 +209,11 @@ public class ContactList extends Composite {
 							continue loop;
 						if (CommonsJcrUtils.isNodeType(currNode,
 								PeopleTypes.PEOPLE_ADDRESS))
-							new ContactAddressComposite(parent, SWT.NO_FOCUS,
-									toolkit, formPart, peopleService,
+							new ContactAddressComposite(parent, SWT.NO_FOCUS, editor
+									, formPart, peopleService,
 									peopleWorkbenchService, currNode, entity);
 						else
-							new ContactComposite(parent, SWT.NO_FOCUS, toolkit,
+							new ContactComposite(parent, SWT.NO_FOCUS, editor,
 									formPart, currNode, entity,
 									peopleWorkbenchService, peopleService);
 					}
@@ -233,7 +238,7 @@ public class ContactList extends Composite {
 		Text notesTxt = toolkit.createText(parent, "", SWT.BORDER | SWT.MULTI
 				| SWT.WRAP);
 		notesTxt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		PeopleRapUtils.refreshFormTextWidget(notesTxt, entity,
+		PeopleRapUtils.refreshFormTextWidget(editor, notesTxt, entity,
 				Property.JCR_DESCRIPTION);
 		PeopleRapUtils.addTxtModifyListener(formPart, notesTxt, entity,
 				Property.JCR_DESCRIPTION, PropertyType.STRING);

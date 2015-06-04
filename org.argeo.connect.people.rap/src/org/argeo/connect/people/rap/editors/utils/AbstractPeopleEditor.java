@@ -15,15 +15,15 @@ import javax.jcr.nodetype.NodeType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
+import org.argeo.cms.CmsEditable;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.commands.CancelAndCheckInItem;
-import org.argeo.connect.people.rap.commands.CheckOutItem;
+import org.argeo.connect.people.rap.commands.ChangeEditingState;
 import org.argeo.connect.people.rap.commands.DeleteEntity;
-import org.argeo.connect.people.rap.utils.CheckoutSourceProvider;
+import org.argeo.connect.people.rap.utils.EditionSourceProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
@@ -49,7 +49,6 @@ import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IFormPart;
-import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.EditorPart;
@@ -62,7 +61,7 @@ import org.eclipse.ui.services.ISourceProviderService;
  * from the header with some buttons.
  */
 public abstract class AbstractPeopleEditor extends EditorPart implements
-		IVersionedItemEditor, Refreshable {
+		CmsEditable, IVersionedItemEditor, Refreshable {
 	private final static Log log = LogFactory
 			.getLog(AbstractPeopleEditor.class);
 
@@ -74,6 +73,11 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	private Repository repository;
 	private Session session;
 
+	// New approch: we do not rely on the checkin status of the underlying node
+	// which should always be in a checkout state.
+	// We rather perform a checkPoint when save is explicitly called
+	private Boolean isEditing = false;
+
 	/* CONSTANTS */
 	// length for short strings (typically tab names)
 	protected final static int SHORT_NAME_LENGHT = 10;
@@ -83,12 +87,13 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	// Business Objects
 	private Node node;
+	// This editor form
+	private PeopleManagedForm mForm;
+
 	// Enable management of new entities
 	// private boolean isDraft = false;
 
-	// Form and corresponding life cycle
-	private IManagedForm mForm;
-	protected FormToolkit toolkit;
+	private FormToolkit toolkit;
 
 	// The body composite for the current editor
 	private Composite main;
@@ -110,7 +115,11 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			String displayName = CommonsJcrUtils.get(node, Property.JCR_TITLE);
 			if (CommonsJcrUtils.isEmptyString(displayName))
 				displayName = "current item";
-			setTitleToolTip("Display and edit information for " + displayName);
+			sei.setTooltipText("Display and edit information for "
+					+ displayName);
+			// Does not do what is expected (rather use the above workaround)
+			// setTitleToolTip("Display and edit information for " +
+			// displayName);
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Unable to create new session"
 					+ " to use with current editor", e);
@@ -123,8 +132,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		// Initialize main UI objects
 		toolkit = new FormToolkit(parent.getDisplay());
 		Form form = toolkit.createForm(parent);
-		mForm = new MyManagedForm(parent, toolkit);
-		createToolkits();
+		mForm = new PeopleManagedForm(parent, toolkit);
+		mForm.setContainer(AbstractPeopleEditor.this);
 		main = form.getBody();
 		createMainLayout(main);
 		forceRefresh();
@@ -178,9 +187,10 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		// setPartName("New...");
 	}
 
-	/** Overwrite to create specific toolkits relevant for the current editor */
-	protected void createToolkits() {
-	}
+	// /** Overwrite to create specific toolkits relevant for the current editor
+	// */
+	// protected void createToolkits() {
+	// }
 
 	protected abstract Boolean deleteParentOnRemove();
 
@@ -210,8 +220,14 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					if (canBeCheckedOutByMe())
-						CommandUtils.callCommand(CheckOutItem.ID);
+					if (canEdit()) {
+						Map<String, String> params = new HashMap<String, String>();
+						params.put(ChangeEditingState.PARAM_NEW_STATE,
+								ChangeEditingState.EDITING);
+						params.put(ChangeEditingState.PARAM_PRIOR_ACTION,
+								ChangeEditingState.PRIOR_ACTION_CHECKOUT);
+						CommandUtils.callCommand(ChangeEditingState.ID, params);
+					}
 				}
 			});
 		}
@@ -243,15 +259,22 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try {
-					if (isCheckedOutByMe())
+					if (isEditing())
 						if (node.getSession().hasPendingChanges())
 							CommandUtils
 									.callCommand(IWorkbenchCommandConstants.FILE_SAVE);
-						else
-							CommandUtils.callCommand(CancelAndCheckInItem.ID);
+						else {
+							Map<String, String> params = new HashMap<String, String>();
+							params.put(ChangeEditingState.PARAM_NEW_STATE,
+									ChangeEditingState.NOT_EDITING);
+							params.put(ChangeEditingState.PARAM_PRIOR_ACTION,
+									ChangeEditingState.PRIOR_ACTION_CANCEL);
+							CommandUtils.callCommand(ChangeEditingState.ID,
+									params);
+						}
 				} catch (RepositoryException re) {
-					throw new PeopleException("Unable to save pending changes",
-							re);
+					throw new PeopleException(
+							"Unable to save pending changes for " + node, re);
 				}
 			}
 		});
@@ -265,8 +288,14 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (isCheckedOutByMe())
-					CommandUtils.callCommand(CancelAndCheckInItem.ID);
+				if (isEditing()) {
+					Map<String, String> params = new HashMap<String, String>();
+					params.put(ChangeEditingState.PARAM_NEW_STATE,
+							ChangeEditingState.NOT_EDITING);
+					params.put(ChangeEditingState.PARAM_PRIOR_ACTION,
+							ChangeEditingState.PRIOR_ACTION_CANCEL);
+					CommandUtils.callCommand(ChangeEditingState.ID, params);
+				}
 			}
 		});
 
@@ -279,14 +308,14 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					if (isCheckedOutByMe()) {
-						Map<String, String> params = new HashMap<String, String>();
-						params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID,
-								CommonsJcrUtils.getIdentifier(node));
-						params.put(DeleteEntity.PARAM_REMOVE_ALSO_PARENT,
-								deleteParentOnRemove().toString());
-						CommandUtils.callCommand(DeleteEntity.ID, params);
-					}
+					// if (isCheckedOutByMe()) {
+					Map<String, String> params = new HashMap<String, String>();
+					params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID,
+							CommonsJcrUtils.getIdentifier(node));
+					params.put(DeleteEntity.PARAM_REMOVE_ALSO_PARENT,
+							deleteParentOnRemove().toString());
+					CommandUtils.callCommand(DeleteEntity.ID, params);
+					// }
 				}
 			});
 		}
@@ -298,8 +327,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		AbstractFormPart editPart = new AbstractFormPart() {
 			// Update values on refresh
 			public void refresh() {
-				// super.refresh();
-				if (isCheckedOutByMe())
+				if (isEditing())
 					editPanelCmp.moveAbove(roPanelCmp);
 				else
 					editPanelCmp.moveBelow(roPanelCmp);
@@ -315,20 +343,21 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	protected void addEditButtons(Composite parent) {
 	}
 
-	/* EXPOSES TO CHILDREN CLASSES */
+	/* PUBLIC ABILITIES AND EXPOSED OBJECTS */
 	/** Returns the entity Node that is bound to this editor */
 	public Node getNode() {
 		return node;
 	}
 
-	protected FormToolkit getFormToolkit() {
+	public FormToolkit getFormToolkit() {
 		return toolkit;
 	}
 
-	protected IManagedForm getManagedForm() {
+	public PeopleManagedForm getManagedForm() {
 		return mForm;
 	}
 
+	/* EXPOSES TO CHILDREN CLASSES */
 	protected PeopleService getPeopleService() {
 		return peopleService;
 	}
@@ -372,45 +401,70 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	// IVersionedItemEditor methods
 
 	/** Checks whether the current user can edit the node */
-	@Override
-	public boolean canBeCheckedOutByMe() {
-		// TODO add an error/warning message in the editor if the node has
-		// already been checked out by someone else.
-		if (isCheckedOutByMe())
-			return false;
-		else
-			return getPeopleService().getUserManagementService().isUserInRole(
-					PeopleConstants.ROLE_MEMBER);
-	}
+	// public boolean canBeCheckedOutByMe() {
+	// // TODO add an error/warning message in the editor if the node has
+	// // already been checked out by someone else.
+	// if (isCheckedOutByMe())
+	// return false;
+	// else
+	// return getPeopleService().getUserManagementService().isUserInRole(
+	// PeopleConstants.ROLE_MEMBER);
+	// }
 
-	public boolean isCheckedOutByMe() {
-		return CommonsJcrUtils.isNodeCheckedOutByMe(node);
-	}
+	// public boolean isCheckedOutByMe() {
+	// return CommonsJcrUtils.isNodeCheckedOutByMe(node);
+	// }
 
 	/** Manage check out state and corresponding refresh of the UI */
-	protected void notifyCheckOutStateChange() {
+	protected void notifyEditionStateChange() {
 		// update enable state of the check out button
 		ISourceProviderService sourceProviderService = (ISourceProviderService) this
 				.getSite().getWorkbenchWindow()
 				.getService(ISourceProviderService.class);
-		CheckoutSourceProvider csp = (CheckoutSourceProvider) sourceProviderService
-				.getSourceProvider(CheckoutSourceProvider.CHECKOUT_STATE);
-		csp.setIsCurrentItemCheckedOut(isCheckedOutByMe());
+		EditionSourceProvider csp = (EditionSourceProvider) sourceProviderService
+				.getSourceProvider(EditionSourceProvider.EDITING_STATE);
+		csp.setCurrentItemEditingState(isEditing());
 		forceRefresh();
 	}
 
-	@Override
-	public void checkoutItem() {
-		if (isCheckedOutByMe())
-			// Do nothing
-			;
-		else
-			CommonsJcrUtils.checkout(node);
-		notifyCheckOutStateChange();
+	// @Override
+	// public void checkoutItem() {
+	// if (isCheckedOutByMe())
+	// // Do nothing
+	// ;
+	// else
+	// CommonsJcrUtils.checkout(node);
+	// notifyCheckOutStateChange();
+	// }
+
+	// Enable life cycle management
+	public Boolean isEditing() {
+		return isEditing;
 	}
 
-	@Override
-	public void saveAndCheckInItem() {
+	public Boolean canEdit() {
+		// if (isCheckedOutByMe())
+		// return false;
+		// else
+		return getPeopleService().getUserManagementService().isUserInRole(
+				PeopleConstants.ROLE_MEMBER);
+	}
+
+	public void startEditing() {
+		if (!isEditing) {
+			isEditing = true;
+			forceRefresh();
+		}
+	}
+
+	public void stopEditing() {
+		if (isEditing) {
+			isEditing = false;
+			forceRefresh();
+		}
+	}
+
+	public void saveAndStopEditing() {
 		try {
 			peopleService.saveEntity(node, true);
 			mForm.commit(true);
@@ -421,6 +475,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			for (IFormPart part : mForm.getParts()) {
 				part.commit(true);
 			}
+			stopEditing();
 			updatePartName();
 		} catch (PeopleException pe) {
 			MessageDialog.openError(this.getSite().getShell(),
@@ -433,10 +488,11 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		}
 	}
 
-	@Override
-	public void cancelAndCheckInItem() {
-		CommonsJcrUtils.cancelAndCheckin(node);
-		notifyCheckOutStateChange();
+	public void cancelAndStopEditing() {
+		// CommonsJcrUtils.cancelAndCheckin(node);
+		JcrUtils.discardUnderlyingSessionQuietly(node);
+		stopEditing();
+		notifyEditionStateChange();
 		firePropertyChange(PROP_DIRTY);
 	}
 
@@ -478,7 +534,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	public void dispose() {
 		try {
 			if (node != null)
-				CommonsJcrUtils.cancelAndCheckin(node);
+				JcrUtils.discardUnderlyingSessionQuietly(node);
+			// CommonsJcrUtils.cancelAndCheckin(node);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}
@@ -493,8 +550,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		if (canSave()) {
-			saveAndCheckInItem();
-			notifyCheckOutStateChange();
+			saveAndStopEditing();
+			notifyEditionStateChange();
 			firePropertyChange(PROP_DIRTY);
 		}
 	}
@@ -518,9 +575,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	public void setFocus() {
 	}
 
-	/* local classes */
-	private class MyManagedForm extends CompositeManagedForm {
-		public MyManagedForm(Composite parent, FormToolkit toolkit) {
+	public class PeopleManagedForm extends CompositeManagedForm {
+		public PeopleManagedForm(Composite parent, FormToolkit toolkit) {
 			super(parent, toolkit);
 		}
 
@@ -539,6 +595,11 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 				AbstractPeopleEditor.this.firePropertyChange(PROP_DIRTY);
 			}
 		}
+
+		public AbstractPeopleEditor getEditor() {
+			return (AbstractPeopleEditor) getContainer();
+		}
+
 	}
 
 	/* DEPENDENCY INJECTION */

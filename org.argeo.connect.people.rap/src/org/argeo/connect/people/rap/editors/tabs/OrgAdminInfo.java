@@ -11,6 +11,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.composites.BankAccountComposite;
+import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.OrgJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -24,7 +25,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
@@ -36,35 +36,37 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class OrgAdminInfo extends Composite {
 	private static final long serialVersionUID = -7033074223243935324L;
 
+	private final AbstractPeopleEditor editor;
 	private final FormToolkit toolkit;
 	private final Node entity;
 
 	// this page UI Objects
 
-	public OrgAdminInfo(FormToolkit toolkit, IManagedForm form,
-			Composite parent, int style, Node entity) {
+	public OrgAdminInfo(AbstractPeopleEditor editor, Composite parent,
+			int style, Node entity) {
 		super(parent, style);
-		this.toolkit = toolkit;
+		this.editor = editor;
+		this.toolkit = editor.getFormToolkit();
 		this.entity = entity;
 
 		// Populate
-		populateLegalInfoPanel(form, this);
+		populateLegalInfoPanel(this);
 	}
 
-	public void populateLegalInfoPanel(IManagedForm form, Composite parent) {
+	public void populateLegalInfoPanel(Composite parent) {
 		parent.setLayout(new GridLayout());
 
 		Composite adminInfoCmp = toolkit.createComposite(parent);
 		adminInfoCmp
 				.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		populateAdminInfoCmp(form, adminInfoCmp);
+		populateAdminInfoCmp(adminInfoCmp);
 
 		Composite payAccCmp = toolkit.createComposite(parent);
 		payAccCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		populateBankAccountGroup(form, payAccCmp);
+		populateBankAccountGroup(payAccCmp);
 	}
 
-	private void populateAdminInfoCmp(IManagedForm form, Composite parent) {
+	private void populateAdminInfoCmp(Composite parent) {
 		parent.setLayout(new GridLayout(4, false));
 
 		// Legal Name
@@ -87,11 +89,11 @@ public class OrgAdminInfo extends Composite {
 		final AbstractFormPart notePart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
-				PeopleRapUtils.refreshFormTextWidget(legalNameTxt, entity,
-						PeopleNames.PEOPLE_LEGAL_NAME);
-				PeopleRapUtils.refreshFormTextWidget(legalFormTxt, entity,
-						PeopleNames.PEOPLE_LEGAL_FORM);
-				PeopleRapUtils.refreshFormTextWidget(vatIDTxt, entity,
+				PeopleRapUtils.refreshFormTextWidget(editor, legalNameTxt,
+						entity, PeopleNames.PEOPLE_LEGAL_NAME);
+				PeopleRapUtils.refreshFormTextWidget(editor, legalFormTxt,
+						entity, PeopleNames.PEOPLE_LEGAL_FORM);
+				PeopleRapUtils.refreshFormTextWidget(editor, vatIDTxt, entity,
 						PeopleNames.PEOPLE_VAT_ID_NB);
 			}
 		};
@@ -126,12 +128,11 @@ public class OrgAdminInfo extends Composite {
 				}
 			}
 		});
-		notePart.initialize(form);
-		form.addPart(notePart);
+		notePart.initialize(editor.getManagedForm());
+		editor.getManagedForm().addPart(notePart);
 	}
 
-	private void populateBankAccountGroup(final IManagedForm form,
-			Composite parent) {
+	private void populateBankAccountGroup(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		final Group group = new Group(parent, 0);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -161,8 +162,8 @@ public class OrgAdminInfo extends Composite {
 
 				NodeIterator ni = OrgJcrUtils.getPaymentAccounts(entity);
 				while (ni != null && ni.hasNext()) {
-					Composite cmp = new BankAccountComposite(group, 0, toolkit,
-							form, ni.nextNode());
+					Composite cmp = new BankAccountComposite(group, 0, editor,
+							ni.nextNode());
 					cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
 							false));
 				}
@@ -170,7 +171,7 @@ public class OrgAdminInfo extends Composite {
 			}
 		};
 		parent.layout();
-		formPart.initialize(form);
-		form.addPart(formPart);
+		formPart.initialize(editor.getManagedForm());
+		editor.getManagedForm().addPart(formPart);
 	}
 }

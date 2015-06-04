@@ -95,7 +95,7 @@ public class JobList extends Composite {
 		protected void reCreateChildComposite(Composite panel, Node entity) {
 			// Add button if needed
 			Button addBtn = null;
-			if (isCurrentlyCheckedOut()) {
+			if (isEditing()) {
 				panel.setLayout(new GridLayout());
 				addBtn = toolkit.createButton(panel, "", SWT.PUSH);
 				configureAddBtn(addBtn);

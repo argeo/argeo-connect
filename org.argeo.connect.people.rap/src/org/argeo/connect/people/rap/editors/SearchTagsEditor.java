@@ -345,8 +345,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 							if (MessageDialog.openConfirm(
 									event.display.getActiveShell(),
 									"Confirm deletion", msg)) {
-								if (!CommonsJcrUtils.isNodeCheckedOutByMe(node))
-									CommonsJcrUtils.checkout(node);
+								CommonsJcrUtils.checkCOStatusBeforeUpdate(node);
 								session.removeItem(node.getPath());
 								session.save();
 								refreshStaticFilteredList();

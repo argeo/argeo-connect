@@ -65,6 +65,8 @@ public class ActivityEditor extends AbstractPeopleEditor {
 	@Override
 	protected void populateBody(Composite parent) {
 		parent.setLayout(new GridLayout(2, false));
+
+		FormToolkit toolkit = getFormToolkit();
 		// 3rd line: title
 		Label label = PeopleRapUtils.createBoldLabel(toolkit, parent, "Title");
 		GridData gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
@@ -87,10 +89,10 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		final AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
-				PeopleRapUtils.refreshFormTextWidget(titleTxt, activity,
-						Property.JCR_TITLE);
-				PeopleRapUtils.refreshFormTextWidget(descTxt, activity,
-						Property.JCR_DESCRIPTION);
+				PeopleRapUtils.refreshFormTextWidget(ActivityEditor.this,
+						titleTxt, activity, Property.JCR_TITLE);
+				PeopleRapUtils.refreshFormTextWidget(ActivityEditor.this,
+						descTxt, activity, Property.JCR_DESCRIPTION);
 			}
 		};
 

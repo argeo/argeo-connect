@@ -2,9 +2,10 @@ package org.argeo.connect.people.rap.utils;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor.PeopleManagedForm;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.AbstractFormPart;
 
 /**
@@ -13,36 +14,34 @@ import org.eclipse.ui.forms.AbstractFormPart;
  * layouts depending on the checkout state
  */
 public abstract class AbstractPanelFormPart extends AbstractFormPart {
-	private boolean isCurrentlyCheckedOut;
+
+	private AbstractPeopleEditor editor;
+	private Boolean isEditing;
 	private final Composite parent;
 	private final Node entity;
 
 	public AbstractPanelFormPart(Composite parent, Node entity) {
 		this.parent = parent;
 		this.entity = entity;
-		// will force creation on first pass
-		isCurrentlyCheckedOut = !CommonsJcrUtils.isNodeCheckedOutByMe(entity);
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
-		if (isCurrentlyCheckedOut != CommonsJcrUtils
-				.isNodeCheckedOutByMe(entity)) {
-			isCurrentlyCheckedOut = CommonsJcrUtils
-					.isNodeCheckedOutByMe(entity);
+		if (editor == null)
+			editor = ((PeopleManagedForm) getManagedForm()).getEditor();
 
-			for (Control control : parent.getChildren()) {
-				control.dispose();
-			}
+		if ((isEditing == null) || isEditing != editor.isEditing()) {
+			isEditing = editor.isEditing();
+			CmsUtils.clear(parent);
 			reCreateChildComposite(parent, entity);
 			parent.layout();
 		} else
 			refreshContent(parent, entity);
 	}
 
-	protected boolean isCurrentlyCheckedOut() {
-		return isCurrentlyCheckedOut;
+	protected boolean isEditing() {
+		return isEditing;
 	}
 
 	abstract protected void reCreateChildComposite(Composite parent, Node entity);
