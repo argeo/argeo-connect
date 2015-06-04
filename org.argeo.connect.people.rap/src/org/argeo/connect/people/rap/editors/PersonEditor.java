@@ -93,18 +93,18 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		populateTitleComposite(titleCmp);
 
 		// Tag Management
-		Composite tagsCmp = new TagLikeListPart(parent, SWT.NO_FOCUS,
-				getFormToolkit(), getManagedForm(), getPeopleService(),
-				getPeopleWorkbenchService(), PeopleConstants.RESOURCE_TAG,
-				person, PeopleNames.PEOPLE_TAGS, "Add a tag");
+		Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS,
+				getPeopleService(), getPeopleWorkbenchService(),
+				PeopleConstants.RESOURCE_TAG, person, PeopleNames.PEOPLE_TAGS,
+				"Add a tag");
 
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// Mailing list management
-		Composite mlCmp = new TagLikeListPart(parent, SWT.NO_FOCUS,
-				getFormToolkit(), getManagedForm(), getPeopleService(),
-				getPeopleWorkbenchService(), PeopleTypes.PEOPLE_MAILING_LIST,
-				person, PEOPLE_MAILING_LISTS, "Add a mailing");
+		Composite mlCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS,
+				getPeopleService(), getPeopleWorkbenchService(),
+				PeopleTypes.PEOPLE_MAILING_LIST, person, PEOPLE_MAILING_LISTS,
+				"Add a mailing");
 
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 	}
@@ -118,7 +118,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 				"Contact details", PeopleRapConstants.CTAB_CONTACT_DETAILS,
 				tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		ContactList cpc = new ContactList(innerPannel, SWT.NO_FOCUS, this,
+		ContactList cpc = new ContactList(this, innerPannel, SWT.NO_FOCUS,
 				getNode(), getPeopleService(), getPeopleWorkbenchService());
 		cpc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
@@ -149,8 +149,8 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "History",
 				PeopleRapConstants.CTAB_HISTORY, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite historyLogCmp = new HistoryLog(this, innerPannel, SWT.NONE, getPeopleService(),
-				person);
+		Composite historyLogCmp = new HistoryLog(this, innerPannel, SWT.NONE,
+				getPeopleService(), person);
 		historyLogCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// folder.layout();

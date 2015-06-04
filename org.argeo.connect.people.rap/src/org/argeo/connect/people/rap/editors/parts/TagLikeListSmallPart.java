@@ -14,6 +14,7 @@ import javax.jcr.version.VersionManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -25,6 +26,7 @@ import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
+import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
@@ -40,12 +42,10 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
@@ -58,8 +58,8 @@ public class TagLikeListSmallPart extends Composite {
 			.getLog(TagLikeListSmallPart.class);
 
 	// UI Context
+	private final AbstractPeopleEditor editor;
 	private final FormToolkit toolkit;
-	private final IManagedForm form;
 	private final String newTagMsg;
 
 	// Context
@@ -89,14 +89,13 @@ public class TagLikeListSmallPart extends Composite {
 	 * @param tagId
 	 * @param newTagMsg
 	 */
-	public TagLikeListSmallPart(Composite parent, int style,
-			FormToolkit toolkit, IManagedForm form,
-			PeopleService peopleService,
+	public TagLikeListSmallPart(AbstractPeopleEditor editor, Composite parent,
+			int style, PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, String tagId,
 			Node taggable, String taggablePropName, String newTagMsg) {
 		super(parent, style);
-		this.toolkit = toolkit;
-		this.form = form;
+		this.editor = editor;
+		this.toolkit = editor.getFormToolkit();
 		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.tagId = tagId;
@@ -118,23 +117,17 @@ public class TagLikeListSmallPart extends Composite {
 			throw new PeopleException("unable to get tag prop name for "
 					+ tagParent, e);
 		}
-		populate();
-	}
-
-	/* Main layout and form part creation */
-	private void populate() {
-		Composite parent = this;
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = true;
 		rl.marginLeft = rl.marginTop = rl.marginBottom = 0;
 		rl.marginRight = 8;
-		parent.setLayout(rl);
+		this.setLayout(rl);
 
-		AbstractFormPart tagFormPart = new TagFormPart(parent);
+		AbstractFormPart tagFormPart = new TagFormPart(this);
 		// must be refreshed on first pass.
 		tagFormPart.refresh();
-		tagFormPart.initialize(form);
-		form.addPart(tagFormPart);
+		tagFormPart.initialize(editor.getManagedForm());
+		editor.getManagedForm().addPart(tagFormPart);
 	}
 
 	private class TagFormPart extends AbstractFormPart {
@@ -188,11 +181,8 @@ public class TagLikeListSmallPart extends Composite {
 
 			// We redraw the full control at each refresh, might be a more
 			// efficient way to do
-			Control[] oldChildren = parentCmp.getChildren();
-			for (Control child : oldChildren)
-				child.dispose();
-
-			boolean isCO = CommonsJcrUtils.isNodeCheckedOutByMe(taggable);
+			CmsUtils.clear(parentCmp);
+			boolean isCO = editor.isEditing();
 
 			try {
 				if (taggable.hasProperty(taggablePropName)) {

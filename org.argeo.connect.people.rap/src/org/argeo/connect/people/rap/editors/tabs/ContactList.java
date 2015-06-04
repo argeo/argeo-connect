@@ -6,6 +6,7 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.ContactService;
 import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleConstants;
@@ -58,8 +59,7 @@ public class ContactList extends Composite {
 	private final AbstractPeopleEditor editor;
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
-	
-	
+
 	private final PeopleService peopleService;
 	private final PeopleWorkbenchService peopleWorkbenchService;
 	private final Node entity;
@@ -70,10 +70,11 @@ public class ContactList extends Composite {
 	// Caches the add new contact combo
 	private Combo addContactCmb;
 
-	public ContactList(Composite parent, int style, AbstractPeopleEditor editor, Node entityNode, PeopleService peopleService,
+	public ContactList(AbstractPeopleEditor editor, Composite parent,
+			int style, Node entityNode, PeopleService peopleService,
 			PeopleWorkbenchService peopleUiService) {
 		super(parent, style);
-		
+
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
 		this.form = editor.getManagedForm();
@@ -117,12 +118,9 @@ public class ContactList extends Composite {
 					return;
 
 				// We redraw the full part at each refresh
-				Control[] oldChildren = innerCmp.getChildren();
-				for (Control child : oldChildren)
-					child.dispose();
+				CmsUtils.clear(innerCmp);
 
-				boolean checkedOut = CommonsJcrUtils
-						.isNodeCheckedOutByMe(entity);
+				boolean checkedOut = editor.isEditing();
 				GridData gd;
 				Composite newContactCmp = null;
 
@@ -209,8 +207,8 @@ public class ContactList extends Composite {
 							continue loop;
 						if (CommonsJcrUtils.isNodeType(currNode,
 								PeopleTypes.PEOPLE_ADDRESS))
-							new ContactAddressComposite(parent, SWT.NO_FOCUS, editor
-									, formPart, peopleService,
+							new ContactAddressComposite(parent, SWT.NO_FOCUS,
+									editor, formPart, peopleService,
 									peopleWorkbenchService, currNode, entity);
 						else
 							new ContactComposite(parent, SWT.NO_FOCUS, editor,

@@ -53,7 +53,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 
 	// local cache
 	private Node assignedToNode;
-	private boolean isBeingEdited;
+	//private boolean isBeingEdited;
 	private List<String> hiddenItemIds;
 
 	// UI Context

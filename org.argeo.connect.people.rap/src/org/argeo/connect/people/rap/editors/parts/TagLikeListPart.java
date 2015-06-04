@@ -25,6 +25,7 @@ import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
+import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
@@ -45,7 +46,6 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
@@ -57,8 +57,8 @@ public class TagLikeListPart extends Composite {
 	private final static Log log = LogFactory.getLog(TagLikeListPart.class);
 
 	// UI Context
+	private final AbstractPeopleEditor editor;
 	private final FormToolkit toolkit;
-	private final IManagedForm form;
 	private final String newTagMsg;
 
 	// Context
@@ -89,13 +89,13 @@ public class TagLikeListPart extends Composite {
 	 * @param tagId
 	 * @param newTagMsg
 	 */
-	public TagLikeListPart(Composite parent, int style, FormToolkit toolkit,
-			IManagedForm form, PeopleService peopleService,
+	public TagLikeListPart(AbstractPeopleEditor editor, Composite parent,
+			int style, PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, String tagId,
 			Node taggable, String taggablePropName, String newTagMsg) {
 		super(parent, style);
-		this.toolkit = toolkit;
-		this.form = form;
+		this.editor = editor;
+		this.toolkit = editor.getFormToolkit();
 		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.tagId = tagId;
@@ -109,21 +109,15 @@ public class TagLikeListPart extends Composite {
 		session = CommonsJcrUtils.getSession(taggable);
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
 
-		populate();
-	}
-
-	/* Main layout and form part creation */
-	private void populate() {
-		Composite parent = this;
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = true;
 		rl.marginLeft = rl.marginTop = rl.marginBottom = 0;
 		rl.marginRight = 8;
-		parent.setLayout(rl);
+		this.setLayout(rl);
 
-		AbstractFormPart tagFormPart = new TagFormPart(parent);
-		tagFormPart.initialize(form);
-		form.addPart(tagFormPart);
+		AbstractFormPart tagFormPart = new TagFormPart(this);
+		tagFormPart.initialize(editor.getManagedForm());
+		editor.getManagedForm().addPart(tagFormPart);
 	}
 
 	private class TagFormPart extends AbstractFormPart {
@@ -172,7 +166,7 @@ public class TagLikeListPart extends Composite {
 			for (Control child : oldChildren)
 				child.dispose();
 
-			boolean isCO = CommonsJcrUtils.isNodeCheckedOutByMe(taggable);
+			boolean isCO = editor.isEditing();
 
 			try {
 				if (taggable.hasProperty(taggablePropName)) {

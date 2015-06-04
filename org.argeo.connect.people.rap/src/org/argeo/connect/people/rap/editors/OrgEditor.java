@@ -86,18 +86,18 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		populateTitleComposite(titleCmp);
 
 		// Tag Management
-		Composite tagsCmp = new TagLikeListPart(parent, SWT.NO_FOCUS,
-				getFormToolkit(), getManagedForm(), getPeopleService(),
-				getPeopleWorkbenchService(), PeopleConstants.RESOURCE_TAG, org,
-				PeopleNames.PEOPLE_TAGS, "Enter a new tag");
+		Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS,
+				getPeopleService(), getPeopleWorkbenchService(),
+				PeopleConstants.RESOURCE_TAG, org, PeopleNames.PEOPLE_TAGS,
+				"Enter a new tag");
 
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// Mailing list management
-		Composite mlCmp = new TagLikeListPart(parent, SWT.NO_FOCUS,
-				getFormToolkit(), getManagedForm(), getPeopleService(),
-				getPeopleWorkbenchService(), PeopleTypes.PEOPLE_MAILING_LIST,
-				org, PeopleNames.PEOPLE_MAILING_LISTS, "Add a mailing");
+		Composite mlCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS,
+				getPeopleService(), getPeopleWorkbenchService(),
+				PeopleTypes.PEOPLE_MAILING_LIST, org,
+				PeopleNames.PEOPLE_MAILING_LISTS, "Add a mailing");
 
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 	}
@@ -109,7 +109,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
 				"Details", PeopleRapConstants.CTAB_CONTACT_DETAILS, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		ContactList cpc = new ContactList(innerPannel, SWT.NO_FOCUS, this,
+		ContactList cpc = new ContactList(this, innerPannel, SWT.NO_FOCUS,
 				getNode(), getPeopleService(), getPeopleWorkbenchService());
 		cpc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
