@@ -74,6 +74,67 @@ public class PeopleRapSnippets {
 		return PeopleUiSnippets.getRWTLink(href, value);
 	}
 
+	// Does not work: we do not know how to navigate internally in the workbench
+	// with a normal <a> tag in a markuped label
+
+	// public static String getClickableEntityContact(PeopleService
+	// peopleService,
+	// Node entity, String label, String openEditorCmdId) {
+	// try {
+	// // local cache
+	// Node person = null, org = null;
+	//
+	// if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
+	// person = entity;
+	// Node currContact = PeopleJcrUtils.getPrimaryContact(person,
+	// PeopleTypes.PEOPLE_ADDRESS);
+	// if (!(currContact == null || !currContact
+	// .isNodeType(PeopleTypes.PEOPLE_CONTACT_REF))) {
+	// org = peopleService.getEntityByUid(CommonsJcrUtils
+	// .getSession(currContact), CommonsJcrUtils.get(
+	// currContact, PeopleNames.PEOPLE_REF_UID));
+	// }
+	// } else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
+	// org = entity;
+	//
+	// StringBuilder builder = new StringBuilder();
+	//
+	// if (CommonsJcrUtils.checkNotEmptyString(label))
+	// builder.append(label);
+	// builder.append("<b>");
+	// if (org != null) {
+	// String clickableLabel = getOpenEditorSnippet(openEditorCmdId,
+	// org, CommonsJcrUtils.get(org, Property.JCR_TITLE));
+	// builder.append(clickableLabel).append("<br/>");
+	// }
+	// if (person != null) {
+	// String clickableLabel = getOpenEditorSnippet(openEditorCmdId,
+	// person, peopleService.getDisplayName(person));
+	// builder.append(clickableLabel).append("<br/>");
+	// }
+	// builder.append("</b>");
+	//
+	// // phone
+	// String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
+	// PeopleTypes.PEOPLE_PHONE);
+	// if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+	// builder.append(PeopleUiSnippets.getPhoneLink(tmpStr)).append(
+	// "<br/>");
+	//
+	// // mail
+	// tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
+	// PeopleTypes.PEOPLE_EMAIL);
+	// if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+	// builder.append(PeopleUiSnippets.getMailLink(tmpStr)).append(
+	// "<br/>");
+	//
+	// return PeopleUiUtils.replaceAmpersand(builder.toString());
+	// } catch (RepositoryException re) {
+	// throw new PeopleException(
+	// "Unable to create contact snippet for node " + entity, re);
+	// }
+	// }
+
 	/**
 	 * a snippet to display clickable tags that are linked to the current entity
 	 */

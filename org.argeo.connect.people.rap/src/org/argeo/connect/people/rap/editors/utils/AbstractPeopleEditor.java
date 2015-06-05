@@ -424,6 +424,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		EditionSourceProvider csp = (EditionSourceProvider) sourceProviderService
 				.getSourceProvider(EditionSourceProvider.EDITING_STATE);
 		csp.setCurrentItemEditingState(isEditing());
+		firePropertyChange(PROP_DIRTY);
 		forceRefresh();
 	}
 
@@ -453,14 +454,16 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	public void startEditing() {
 		if (!isEditing) {
 			isEditing = true;
-			forceRefresh();
+			notifyEditionStateChange();
+			// forceRefresh();
 		}
 	}
 
 	public void stopEditing() {
 		if (isEditing) {
 			isEditing = false;
-			forceRefresh();
+			notifyEditionStateChange();
+			// forceRefresh();
 		}
 	}
 
@@ -492,8 +495,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		// CommonsJcrUtils.cancelAndCheckin(node);
 		JcrUtils.discardUnderlyingSessionQuietly(node);
 		stopEditing();
-		notifyEditionStateChange();
-		firePropertyChange(PROP_DIRTY);
 	}
 
 	@Override

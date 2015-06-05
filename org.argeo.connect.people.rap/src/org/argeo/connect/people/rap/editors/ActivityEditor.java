@@ -184,8 +184,9 @@ public class ActivityEditor extends AbstractPeopleEditor {
 
 				// ACTIVITY DATE
 				PeopleRapUtils.createBoldLabel(toolkit, parent, "Date");
-				dateComposite = new DateTextPart(parent, SWT.NO_FOCUS, toolkit,
-						myFormPart, activity, PeopleNames.PEOPLE_ACTIVITY_DATE);
+				dateComposite = new DateTextPart(ActivityEditor.this, parent,
+						SWT.NO_FOCUS, myFormPart, activity,
+						PeopleNames.PEOPLE_ACTIVITY_DATE);
 				dateComposite.setLayoutData(EclipseUiUtils.fillWidth());
 
 				// 2nd line - RELATED ENTITIES

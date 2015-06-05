@@ -15,6 +15,7 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapImages;
+import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -37,7 +38,6 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /** A composite to put in a form to manage a date with a pop-up calendar */
 public class DateTextPart extends Composite {
@@ -48,6 +48,7 @@ public class DateTextPart extends Composite {
 	private String propName;
 
 	// UI Objects
+	private final AbstractPeopleEditor editor;
 	private AbstractFormPart formPart;
 	private Text dateTxt;
 	private Button openCalBtn;
@@ -66,9 +67,10 @@ public class DateTextPart extends Composite {
 	 * @param node
 	 * @param propName
 	 */
-	public DateTextPart(Composite parent, int style, FormToolkit toolkit,
-			AbstractFormPart formPart, Node node, String propName) {
+	public DateTextPart(AbstractPeopleEditor editor, Composite parent,
+			int style, AbstractFormPart formPart, Node node, String propName) {
 		super(parent, style);
+		this.editor = editor;
 		this.formPart = formPart;
 		this.node = node;
 		this.propName = propName;
@@ -96,9 +98,8 @@ public class DateTextPart extends Composite {
 		try {
 			if (node.hasProperty(propName))
 				cal = node.getProperty(propName).getDate();
-			boolean isEditing = CommonsJcrUtils.isNodeCheckedOutByMe(node);
-			dateTxt.setEnabled(isEditing);
-			openCalBtn.setEnabled(isEditing);
+			dateTxt.setEnabled(editor.isEditing());
+			openCalBtn.setEnabled(editor.isEditing());
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to refresh " + propName
 					+ " date property for " + node, e);

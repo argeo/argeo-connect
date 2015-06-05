@@ -7,6 +7,7 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.widgets.ScrolledPage;
 import org.argeo.connect.people.ContactService;
 import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleConstants;
@@ -28,7 +29,6 @@ import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
@@ -45,7 +45,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /** A panel to display contacts */
@@ -57,7 +56,6 @@ public class ContactList extends Composite {
 
 	private final AbstractPeopleEditor editor;
 	private final FormToolkit toolkit;
-	private final IManagedForm form;
 
 	private final PeopleService peopleService;
 	private final PeopleWorkbenchService peopleWorkbenchService;
@@ -76,35 +74,22 @@ public class ContactList extends Composite {
 
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
-		this.form = editor.getManagedForm();
 		this.entity = entityNode;
 		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleUiService;
-		populate();
-	}
 
-	private void populate() {
-		Composite parent = this;
-		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
+		this.setLayout(new GridLayout());
 
-		// Add a scrolled container
-		ScrolledComposite container = new ScrolledComposite(parent,
-				SWT.NO_FOCUS | SWT.V_SCROLL); // SWT.H_SCROLL |
-		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		// container.setAlwaysShowScrollBars(true);
-		innerCmp = new Composite(container, SWT.NO_FOCUS);
-		innerCmp.setLayout(new GridLayout());
+		// Populate
+		ScrolledPage scrolled = new ScrolledPage(this, SWT.NO_FOCUS);
+		scrolled.setLayoutData(EclipseUiUtils.fillAll());
+		scrolled.setLayout(EclipseUiUtils.noSpaceGridLayout());
+		innerCmp = new Composite(scrolled, SWT.NO_FOCUS);
+		innerCmp.setLayoutData(EclipseUiUtils.fillAll());
+		innerCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		formPart = new ContactFormPart();
-
-		container.setExpandHorizontal(true);
-		container.setExpandVertical(false);
-		container.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		innerCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		formPart.initialize(form);
-		form.addPart(formPart);
-
-		container.setContent(innerCmp);
+		formPart.initialize(editor.getManagedForm());
+		editor.getManagedForm().addPart(formPart);
 	}
 
 	private class ContactFormPart extends AbstractFormPart {

@@ -53,7 +53,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 
 	// local cache
 	private Node assignedToNode;
-	//private boolean isBeingEdited;
+	// private boolean isBeingEdited;
 	private List<String> hiddenItemIds;
 
 	// UI Context
@@ -112,6 +112,10 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		myFormPart = new MyFormPart(this);
 		myFormPart.initialize(editor.getManagedForm());
 		editor.getManagedForm().addPart(myFormPart);
+	}
+
+	public void refresh() {
+		myFormPart.refresh();
 	}
 
 	private class MyFormPart extends AbstractPanelFormPart {
@@ -216,8 +220,8 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 
 		// DUE DATE
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Due date");
-		dueDateCmp = new DateTextPart(parent, SWT.NO_FOCUS, toolkit,
-				myFormPart, task, PeopleNames.PEOPLE_DUE_DATE);
+		dueDateCmp = new DateTextPart(editor, parent, SWT.NO_FOCUS, myFormPart,
+				task, PeopleNames.PEOPLE_DUE_DATE);
 		dueDateCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// ASSIGNED TO
@@ -227,7 +231,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 
 		// WAKE UP DATE
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Wake up date");
-		wakeUpDateCmp = new DateTextPart(parent, SWT.NO_FOCUS, toolkit,
+		wakeUpDateCmp = new DateTextPart(editor, parent, SWT.NO_FOCUS,
 				myFormPart, task, PeopleNames.PEOPLE_WAKE_UP_DATE);
 		wakeUpDateCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
@@ -329,7 +333,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		combo.setItems(values.toArray(new String[values.size()]));
 		PeopleRapUtils.refreshFormCombo(editor, combo, currTask,
 				PeopleNames.PEOPLE_TASK_STATUS);
-		combo.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(currTask));
+		combo.setEnabled(editor.isEditing());
 	}
 
 	private void addChangeAssignListener() {

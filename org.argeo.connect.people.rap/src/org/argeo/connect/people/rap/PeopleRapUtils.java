@@ -24,7 +24,6 @@ import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.argeo.eclipse.ui.workbench.WorkbenchUiPlugin;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -631,8 +630,8 @@ public class PeopleRapUtils {
 	public static void setTableDefaultStyle(Table table, int customItemHeight) {
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
-		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(customItemHeight));
+		CmsUtils.setItemHeight(table, customItemHeight);
+		CmsUtils.markup(table);
 	}
 
 	// /////////////////////////////
