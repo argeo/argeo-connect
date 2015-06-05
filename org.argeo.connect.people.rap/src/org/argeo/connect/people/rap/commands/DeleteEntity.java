@@ -3,7 +3,6 @@ package org.argeo.connect.people.rap.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
@@ -11,7 +10,6 @@ import javax.jcr.ReferentialIntegrityException;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -92,10 +90,12 @@ public class DeleteEntity extends AbstractHandler {
 			if (!CommonsJcrUtils.checkCOStatusBeforeUpdate(toRemoveNode))
 				log.warn("To remove node " + toRemoveNode
 						+ " was checked in when we wanted to remove it");
-			
-			parentVersionableNode = CommonsJcrUtils.getParentVersionableNode(toRemoveNode);
+
+			parentVersionableNode = CommonsJcrUtils
+					.getParentVersionableNode(toRemoveNode);
 			if (parentVersionableNode != null) {
-				if (!CommonsJcrUtils.checkCOStatusBeforeUpdate(parentVersionableNode))
+				if (!CommonsJcrUtils
+						.checkCOStatusBeforeUpdate(parentVersionableNode))
 					log.warn("Parent versionable node " + parentVersionableNode
 							+ " was checked in when we wanted to remove it");
 			}
@@ -194,5 +194,4 @@ public class DeleteEntity extends AbstractHandler {
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
 	}
-
 }

@@ -106,7 +106,7 @@ public class PeopleDefaultView extends ViewPart {
 	private void createHeaderPart(Composite parent) {
 		parent.setLayout(new FormLayout());
 
-		// The BackGround
+		// The Background
 		Composite logoCmp = new Composite(parent, SWT.NO_FOCUS);
 		FormData fdBg = PeopleRapUtils.createformData(0, 20, 100, 75);
 		logoCmp.setLayoutData(fdBg);
@@ -303,5 +303,4 @@ public class PeopleDefaultView extends ViewPart {
 			PeopleWorkbenchService peopleWorkbenchService) {
 		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
-
 }
