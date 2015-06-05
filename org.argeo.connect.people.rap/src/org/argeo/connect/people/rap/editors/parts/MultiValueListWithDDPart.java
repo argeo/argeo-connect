@@ -6,6 +6,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapImages;
@@ -13,7 +14,6 @@ import org.argeo.connect.people.rap.composites.dropdowns.PeopleAbstractDropDown;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -113,9 +113,9 @@ public abstract class MultiValueListWithDDPart extends Composite {
 					// Label and delete button
 					Label label = new Label(valCmp, SWT.BOTTOM);
 					label.setText(value.getString());
-					label.setData(RWT.CUSTOM_VARIANT,
+					CmsUtils.style(label,
 							PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
-					label.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+					CmsUtils.markup(label);
 					Button deleteBtn = createDeleteButton(valCmp);
 					deleteBtn.addSelectionListener(getDeleteBtnListener(value
 							.getString()));
@@ -170,8 +170,7 @@ public abstract class MultiValueListWithDDPart extends Composite {
 
 	private Button createDeleteButton(Composite parent) {
 		Button button = new Button(parent, SWT.FLAT);
-		button.setData(RWT.CUSTOM_VARIANT,
-				PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
+		CmsUtils.style(button, PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 		button.setImage(PeopleRapImages.DELETE_BTN);
 		GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		button.setLayoutData(gd);

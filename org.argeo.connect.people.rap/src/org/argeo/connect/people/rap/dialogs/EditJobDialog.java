@@ -31,6 +31,7 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -201,7 +202,7 @@ public class EditJobDialog extends TrayDialog {
 		// Display chosen org or person
 		selectedItemTxt = createLT(dialogarea, chosenItemLbl);
 		selectedItemTxt.setEnabled(false);
-		selectedItemTxt.setData(RWT.CUSTOM_VARIANT,
+		CmsUtils.style(selectedItemTxt,
 				PeopleRapConstants.PEOPLE_CLASS_FORCE_BORDER);
 
 		if (isBackward) {

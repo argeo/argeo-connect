@@ -18,6 +18,7 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -25,6 +26,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleRapUtils;
+import org.argeo.connect.people.rap.PeopleStyles;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
@@ -38,7 +40,6 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -70,7 +71,6 @@ public class PeopleDefaultView extends ViewPart {
 	private Session session;
 	private PeopleService peopleService;
 	private PeopleWorkbenchService peopleWorkbenchService;
-	// private Repository repository;
 
 	// This page widgets
 	private TableViewer personViewer;
@@ -88,6 +88,7 @@ public class PeopleDefaultView extends ViewPart {
 		Composite cmp = new Composite(parent, SWT.NO_FOCUS);
 		cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		createHeaderPart(cmp);
+
 		// Filter
 		cmp = new Composite(parent, SWT.NO_FOCUS);
 		cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
@@ -109,12 +110,12 @@ public class PeopleDefaultView extends ViewPart {
 		Composite logoCmp = new Composite(parent, SWT.NO_FOCUS);
 		FormData fdBg = PeopleRapUtils.createformData(0, 20, 100, 75);
 		logoCmp.setLayoutData(fdBg);
-		logoCmp.setData(RWT.CUSTOM_VARIANT, "people-logoComposite");
+		CmsUtils.style(logoCmp, PeopleStyles.LOGO_BOX);
 
 		// The Image
 		Label logoLbl = new Label(parent, SWT.NO_FOCUS);
 		logoLbl.setImage(PeopleRapImages.LOGO_SMALL);
-		logoLbl.setData(RWT.CUSTOM_VARIANT, "people-logo");
+		CmsUtils.style(logoLbl, PeopleStyles.LOGO);
 		logoLbl.setSize(130, 131);
 		FormData fdImg = new FormData();
 		fdImg.top = new FormAttachment(0, 0);
@@ -125,7 +126,7 @@ public class PeopleDefaultView extends ViewPart {
 		// The links
 		Composite linksCmp = new Composite(parent, SWT.NO_FOCUS);
 		linksCmp.setLayoutData(PeopleRapUtils.createformData(75, 25, 98, 73));
-		linksCmp.setData(RWT.CUSTOM_VARIANT, "people-logoTable");
+		CmsUtils.style(linksCmp, PeopleStyles.LOGO_TABLE);
 		linksCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		addLink(linksCmp, "Search Entities",
@@ -157,8 +158,8 @@ public class PeopleDefaultView extends ViewPart {
 		link.setText("<a>" + label + "</a>");
 		if (tooltip != null)
 			link.setToolTipText(tooltip);
-		link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		link.setData(RWT.CUSTOM_VARIANT, "people-logoTable");
+		CmsUtils.markup(link);
+		CmsUtils.style(link, PeopleStyles.LOGO_TABLE);
 
 		link.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
@@ -201,9 +202,8 @@ public class PeopleDefaultView extends ViewPart {
 		Table table = v.getTable();
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
-		// Enable markups
-		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(24));
+		CmsUtils.markup(table);
+		CmsUtils.setItemHeight(table, 24);
 
 		v.setContentProvider(new BasicNodeListContentProvider());
 		v.addDoubleClickListener(new PeopleJcrViewerDClickListener(

@@ -8,6 +8,7 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.rap.PeopleRapConstants;
@@ -19,7 +20,6 @@ import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -162,8 +162,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 		Link relatedLk = new Link(part, SWT.LEFT);
 		toolkit.adapt(relatedLk, false, false);
 		relatedLk.setText("<a>" + label + "</a>");
-		relatedLk.setData(RWT.CUSTOM_VARIANT,
-				PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
+		CmsUtils.style(relatedLk, PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
 
 		relatedLk.addSelectionListener(new OpenEditorAdapter(value));
 		relatedLk.setLayoutData(linkFormData(isEditing));
@@ -171,8 +170,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 		if (isEditing) {
 			// Display delete button only in edit mode.
 			Button deleteBtn = new Button(part, SWT.FLAT);
-			deleteBtn.setData(RWT.CUSTOM_VARIANT,
-					PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
+			CmsUtils.style(deleteBtn, PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 			deleteBtn.setImage(PeopleRapImages.DELETE_BTN);
 			deleteBtn.setLayoutData(deleteFormData());
 			deleteBtn.addSelectionListener(new SelectionAdapter() {

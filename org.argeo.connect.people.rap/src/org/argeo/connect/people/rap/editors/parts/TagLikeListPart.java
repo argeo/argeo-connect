@@ -14,6 +14,7 @@ import javax.jcr.version.VersionManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -189,7 +190,7 @@ public class TagLikeListPart extends Composite {
 						else
 							link.setText(" <a>" + tagValue + "</a>");
 
-						link.setData(RWT.CUSTOM_VARIANT,
+						CmsUtils.style(link,
 								PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
 						link.addSelectionListener(new SelectionAdapter() {
 							private static final long serialVersionUID = 1L;
@@ -291,8 +292,7 @@ public class TagLikeListPart extends Composite {
 	private void addDeleteButton(final AbstractFormPart part, Composite parent,
 			final Value value) {
 		final Button deleteBtn = new Button(parent, SWT.FLAT);
-		deleteBtn.setData(RWT.CUSTOM_VARIANT,
-				PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
+		CmsUtils.style(deleteBtn, PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 		deleteBtn
 				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		deleteBtn.setImage(PeopleRapImages.DELETE_BTN_LEFT);

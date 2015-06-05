@@ -27,7 +27,6 @@ import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -159,13 +158,13 @@ public class ContactList extends Composite {
 				noteCmp.setLayoutData(gd);
 				populateNotePanel(noteCmp);
 
-				innerCmp.pack(true);
-				innerCmp.setLayoutData(gd = new GridData(SWT.FILL, SWT.FILL,
-						true, true));
-				innerCmp.layout();
-				innerCmp.getParent().pack(true);
-				innerCmp.getParent().layout();
-				ContactList.this.layout();
+				// innerCmp.pack(true);
+				// innerCmp.setLayoutData(gd = new GridData(SWT.FILL, SWT.FILL,
+				// true, true));
+				// innerCmp.layout();
+				// innerCmp.getParent().pack(true);
+				// innerCmp.getParent().layout(true, true);
+				ContactList.this.layout(true, true);
 			} catch (Exception e) {
 				throw new PeopleException(
 						"unexpected error while refreshing node " + entity, e);
@@ -193,7 +192,6 @@ public class ContactList extends Composite {
 			boolean isCheckedOut) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		try {
-
 			String[] knownTypes = peopleService.getContactService()
 					.getKnownContactTypes();
 			if (entity.hasNode(PeopleNames.PEOPLE_CONTACTS)) {
@@ -328,14 +326,17 @@ public class ContactList extends Composite {
 						"Unable to refresh add contact panel", e1);
 			}
 
-			parent.layout();
+			parent.layout(true, true);
+			Control[] controls = new Control[1];
+			controls[0] = parent;
+			ContactList.this.layout(controls);
 
-			innerCmp.pack(true);
-			innerCmp.layout();
-
-			// innerCmp.getParent().pack(true);
-			// parent.layout();
-			innerCmp.getParent().layout();
+			// innerCmp.pack(true);
+			// innerCmp.layout();
+			//
+			// // innerCmp.getParent().pack(true);
+			// // parent.layout();
+			// innerCmp.getParent().layout();
 
 			// for (Control ctl : parent.getChildren()) {
 			// log.debug("Current children controls " + ctl.toString());
@@ -612,7 +613,7 @@ public class ContactList extends Composite {
 			catCmb.select(0);
 
 			final Text valueTxt = createRowDataLT(parent, "Linked company", 200);
-			valueTxt.setData(RWT.CUSTOM_VARIANT,
+			CmsUtils.style(valueTxt,
 					PeopleRapConstants.PEOPLE_CLASS_FORCE_BORDER);
 			valueTxt.setEnabled(false);
 

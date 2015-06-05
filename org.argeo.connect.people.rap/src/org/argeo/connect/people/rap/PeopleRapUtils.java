@@ -10,6 +10,7 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsEditable;
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.commands.OpenSearchEntityEditor;
@@ -537,8 +538,7 @@ public class PeopleRapUtils {
 	 */
 	public static Button createDeleteButton(Composite parent) {
 		Button button = new Button(parent, SWT.FLAT);
-		button.setData(RWT.CUSTOM_VARIANT,
-				PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
+		CmsUtils.style(button, PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 		button.setImage(PeopleRapImages.DELETE_BTN_LEFT);
 		RowData rd = new RowData();
 		rd.height = 16;

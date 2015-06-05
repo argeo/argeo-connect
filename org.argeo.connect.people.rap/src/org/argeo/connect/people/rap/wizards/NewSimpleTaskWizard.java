@@ -6,6 +6,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -21,7 +22,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -159,7 +159,7 @@ public class NewSimpleTaskWizard extends Wizard {
 			final Text assignedToTxt = new Text(parent, SWT.BORDER
 					| SWT.NO_FOCUS);
 			assignedToTxt.setMessage("Assign a group to manage this task");
-			assignedToTxt.setData(RWT.CUSTOM_VARIANT,
+			CmsUtils.style(assignedToTxt,
 					PeopleRapConstants.PEOPLE_CLASS_FORCE_BORDER);
 
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);

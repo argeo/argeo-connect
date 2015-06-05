@@ -11,6 +11,7 @@ import javax.jcr.Node;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapImages;
@@ -18,7 +19,6 @@ import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -111,15 +111,13 @@ public class DateTextPart extends Composite {
 		gl.horizontalSpacing = 5;
 		dateComposite.setLayout(gl);
 		dateTxt = new Text(dateComposite, SWT.BORDER);
-		dateTxt.setData(RWT.CUSTOM_VARIANT,
-				PeopleRapConstants.PEOPLE_CLASS_FORCE_BORDER);
+		CmsUtils.style(dateTxt, PeopleRapConstants.PEOPLE_CLASS_FORCE_BORDER);
 		dateTxt.setLayoutData(new GridData(150, SWT.DEFAULT));
 		dateTxt.setToolTipText("Enter a date with form \""
 				+ PeopleUiConstants.DEFAULT_SHORT_DATE_FORMAT
 				+ "\" or use the calendar");
 		openCalBtn = new Button(dateComposite, SWT.FLAT);
-		openCalBtn.setData(RWT.CUSTOM_VARIANT,
-				PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
+		CmsUtils.style(openCalBtn, PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
 		GridData gd = new GridData(SWT.CENTER, SWT.CENTER, false, false);
 		gd.heightHint = 17;
 		openCalBtn.setLayoutData(gd);
@@ -198,7 +196,7 @@ public class DateTextPart extends Composite {
 			populate();
 
 			// Add border and shadow style
-			CalendarPopup.this.setData(RWT.CUSTOM_VARIANT,
+			CmsUtils.style(CalendarPopup.this,
 					PeopleRapConstants.PEOPLE_CLASS_POPUP_SHELL);
 
 			pack();

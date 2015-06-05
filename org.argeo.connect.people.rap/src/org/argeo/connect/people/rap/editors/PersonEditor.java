@@ -177,8 +177,6 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		final Composite editPanel = getFormToolkit().createComposite(parent,
 				SWT.NO_FOCUS);
 		PeopleRapUtils.setSwitchingFormData(editPanel);
-		// editPanel.setData(RWT.CUSTOM_VARIANT,
-		// PeopleUiConstants.PEOPLE_CSS_GENERALINFO_COMPOSITE);
 		editPanel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// First Line - display Name management
