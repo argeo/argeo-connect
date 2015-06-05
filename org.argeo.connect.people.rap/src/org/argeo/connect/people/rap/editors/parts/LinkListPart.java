@@ -16,6 +16,7 @@ import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.dialogs.PickUpRelatedDialog;
+import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -33,7 +34,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /** Provides basic information about a task in a form context */
 public class LinkListPart extends Composite implements PeopleNames {
@@ -46,8 +46,8 @@ public class LinkListPart extends Composite implements PeopleNames {
 	private final List<String> hiddenItemIds = new ArrayList<String>();
 
 	// UI Context
+	private final AbstractPeopleEditor editor;
 	private final AbstractFormPart formPart;
-	private final FormToolkit toolkit;
 
 	// COMPOSITES
 	private static final String VALUE_KEY = "valueKey";
@@ -62,11 +62,11 @@ public class LinkListPart extends Composite implements PeopleNames {
 		}
 	}
 
-	public LinkListPart(FormToolkit toolkit, AbstractFormPart formPart,
+	public LinkListPart(AbstractPeopleEditor editor, AbstractFormPart formPart,
 			Composite parent, int style,
 			PeopleWorkbenchService msmWorkbenchService, Node entity,
 			String propName) {
-		this(toolkit, formPart, parent, style, msmWorkbenchService, entity,
+		this(editor, formPart, parent, style, msmWorkbenchService, entity,
 				propName, null);
 	}
 
@@ -82,13 +82,13 @@ public class LinkListPart extends Composite implements PeopleNames {
 	 * @param propName
 	 * @param hiddenItemIds
 	 */
-	public LinkListPart(FormToolkit toolkit, AbstractFormPart formPart,
+	public LinkListPart(AbstractPeopleEditor editor, AbstractFormPart formPart,
 			Composite parent, int style,
 			PeopleWorkbenchService msmWorkbenchService, Node entity,
 			String propName, List<String> hiddenItemIds) {
 		super(parent, style);
 		this.formPart = formPart;
-		this.toolkit = toolkit;
+		this.editor = editor;
 		this.peopleWorkbenchService = msmWorkbenchService;
 		this.entity = entity;
 		this.propName = propName;
@@ -101,22 +101,22 @@ public class LinkListPart extends Composite implements PeopleNames {
 		this.setLayout(rl);
 		if (hiddenItemIds != null)
 			this.hiddenItemIds.addAll(hiddenItemIds);
-		recreateRelated(this, isEditing());
+		recreateRelated(this);
 	}
 
-	private boolean isEditing() {
-		return CommonsJcrUtils.isNodeCheckedOutByMe(entity);
-	}
+	// private boolean isEditing() {
+	// return CommonsJcrUtils.isNodeCheckedOutByMe(entity);
+	// }
 
 	public void refresh() {
 		if (relatedHasChanged()) {
-			recreateRelated(this, isEditing());
+			recreateRelated(this);
 		}
 		this.layout();
 	}
 
 	// HELPERS
-	private void recreateRelated(Composite relatedCmp, boolean isEditing) {
+	private void recreateRelated(Composite relatedCmp) {
 		try {
 			// Dispose existing
 			Control[] oldChildren = relatedCmp.getChildren();
@@ -133,17 +133,17 @@ public class LinkListPart extends Composite implements PeopleNames {
 						String labelStr = CommonsJcrUtils.get(targetNode,
 								Property.JCR_TITLE);
 						createDeletableClickable(relatedCmp, valueStr,
-								labelStr, isEditing);
+								labelStr, editor.isEditing());
 					}
 				}
-			} else if (!isEditing())
+			} else if (!editor.isEditing())
 				// Add an empty label to force a correct layout
 				new Label(relatedCmp, SWT.NONE);
 
-			if (isEditing()) {
+			if (editor.isEditing()) {
 				// The add button
 				Link newRelatedLk = new Link(relatedCmp, SWT.CENTER);
-				toolkit.adapt(newRelatedLk, false, false);
+				editor.getFormToolkit().adapt(newRelatedLk, false, false);
 				newRelatedLk.setText("<a>Add</a>");
 				addNewRelatedSelList(newRelatedLk);
 			}
@@ -160,7 +160,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 		part.setData(VALUE_KEY, value);
 
 		Link relatedLk = new Link(part, SWT.LEFT);
-		toolkit.adapt(relatedLk, false, false);
+		editor.getFormToolkit().adapt(relatedLk, false, false);
 		relatedLk.setText("<a>" + label + "</a>");
 		CmsUtils.style(relatedLk, PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
 

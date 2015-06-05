@@ -195,7 +195,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 				gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 				gd.verticalIndent = 2;
 				label.setLayoutData(gd);
-				relatedCmp = new LinkListPart(toolkit, myFormPart, parent,
+				relatedCmp = new LinkListPart(ActivityEditor.this, myFormPart, parent,
 						SWT.NO_FOCUS, getPeopleWorkbenchService(), activity,
 						PeopleNames.PEOPLE_RELATED_TO);
 				relatedCmp.setLayoutData(EclipseUiUtils.fillWidth(5));

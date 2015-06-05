@@ -1,14 +1,21 @@
 package org.argeo.connect.people.utils;
 
+import java.util.GregorianCalendar;
+
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.jcr.JcrUtils;
 
 /**
  * Draft methods that should be centralized in the activityService as soon as
@@ -16,17 +23,78 @@ import org.argeo.connect.people.PeopleTypes;
  */
 public class ActivityUtils {
 
-	public static NodeIterator getPolls(Node pollable, boolean onlyOpenPolls)
-			throws RepositoryException {
-		Session session = pollable.getSession();
-		String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_POLL
-				+ "] WHERE  ISDESCENDANTNODE('" + pollable.getPath() + "') ";
-		if (onlyOpenPolls)
-			throw new ArgeoException("Unimplemented ability");
+	private final static Log log = LogFactory.getLog(ActivityUtils.class);
 
-		Query query = session.getWorkspace().getQueryManager()
-				.createQuery(queryStr, Query.JCR_SQL2);
-		return query.execute().getNodes();
+	public static NodeIterator getPolls(Node pollable, boolean onlyOpenPolls) {
+		try {
+			Session session = pollable.getSession();
+			String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_POLL
+					+ "] WHERE  ISDESCENDANTNODE('" + pollable.getPath()
+					+ "') ";
+			if (onlyOpenPolls)
+				throw new ArgeoException("Unimplemented ability");
+
+			Query query = session.getWorkspace().getQueryManager()
+					.createQuery(queryStr, Query.JCR_SQL2);
+			return query.execute().getNodes();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to get polls for " + pollable);
+		}
+	}
+
+	public static Node getMyVote(Node poll) {
+		try {
+			Session session = poll.getSession();
+			String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_RATE
+					+ "] WHERE  ISDESCENDANTNODE('" + poll.getPath() + "') ";
+			Query query = session.getWorkspace().getQueryManager()
+					.createQuery(queryStr, Query.JCR_SQL2);
+			NodeIterator nit = query.execute().getNodes();
+			long size = nit.getSize();
+			if (size == 0)
+				return null;
+			else if (size == 1)
+				return nit.nextNode();
+
+			else {
+				log.warn("Found " + size + " votes for " + poll + " with user "
+						+ poll.getSession().getUserID());
+				return nit.nextNode();
+			}
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to get polls for " + poll);
+		}
+
+	}
+
+	public static Node createVote(Node poll) {
+		return createVote(poll, null);
+	}
+
+	public static Node createVote(Node poll, String userID) {
+		try {
+			Node parent = JcrUtils.mkdirs(poll, PeopleNames.PEOPLE_RATES,
+					NodeType.NT_UNSTRUCTURED);
+
+			String nodeName = CommonsJcrUtils.isEmptyString(userID) ? poll
+					.getSession().getUserID() : userID;
+
+			Node vote = parent.addNode(nodeName, PeopleTypes.PEOPLE_ACTIVITY);
+			vote.addMixin(PeopleTypes.PEOPLE_RATE);
+			vote.setProperty(PeopleNames.PEOPLE_REPORTED_BY, nodeName);
+
+			// Activity Date
+			vote.setProperty(PeopleNames.PEOPLE_ACTIVITY_DATE,
+					new GregorianCalendar());
+
+			// related to
+			CommonsJcrUtils.addRefToMultiValuedProp(vote,
+					PeopleNames.PEOPLE_RELATED_TO, poll);
+			JcrUtils.updateLastModified(vote);
+			return vote;
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to create vote on " + poll, re);
+		}
 	}
 
 	public static String getAvgRating(Node poll) throws RepositoryException {
