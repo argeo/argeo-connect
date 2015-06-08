@@ -35,7 +35,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
@@ -77,8 +76,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		this.toolkit = editor.getFormToolkit();
 		this.formPart = formPart;
 		this.parentVersionableNode = parentVersionableNode;
-		this.isCheckedOut = CommonsJcrUtils
-				.isNodeCheckedOutByMe(parentVersionableNode);
+		this.isCheckedOut = editor.isEditing();
 		populate();
 	}
 
@@ -274,14 +272,9 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 	}
 
 	private void populateAdresseCmp(Composite parent, Node contactNode) {
-		boolean isCheckedOut = CommonsJcrUtils
-				.isNodeCheckedOutByMe(contactNode);
 
-		for (Control control : parent.getChildren()) {
-			control.dispose();
-		}
-
-		if (isCheckedOut) {
+		EclipseUiUtils.clear(parent);
+		if (editor.isEditing()) {
 			// specific for addresses
 			final Text streetTxt = PeopleRapUtils.createRDText(toolkit, parent,
 					"Street", "Street", 0);
