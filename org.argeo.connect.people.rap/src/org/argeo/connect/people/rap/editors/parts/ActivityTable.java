@@ -523,7 +523,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 							Property.JCR_TITLE);
 					String desc =CommonsJcrUtils.get(currNode,
 							Property.JCR_DESCRIPTION);
-					String res = CommonsJcrUtils.concatIfNotEmpty(title, desc, "-");
+					String res = CommonsJcrUtils.concatIfNotEmpty(title, desc, " - ");
 					return wrapThis(res);
 				}
 				return "";

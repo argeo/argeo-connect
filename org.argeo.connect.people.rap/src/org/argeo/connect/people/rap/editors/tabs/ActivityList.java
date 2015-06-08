@@ -239,7 +239,7 @@ public class ActivityList extends Composite {
 			try {
 				List<Node> nodes = new ArrayList<Node>();
 				PropertyIterator pit = entity
-						.getReferences(PeopleNames.PEOPLE_RELATED_TO);
+						.getReferences(PeopleNames.PEOPLE_RELATED_TO); //
 				while (pit.hasNext()) {
 					Property currProp = pit.nextProperty();
 					Node currNode = currProp.getParent();
@@ -247,6 +247,20 @@ public class ActivityList extends Composite {
 							&& !nodes.contains(currNode))
 						nodes.add(currNode);
 				}
+
+				// TODO additional part to debug
+				// Remove this
+				// if (entity.hasNode(PeopleNames.PEOPLE_RATES)) {
+				// NodeIterator nit = entity.getNode(PeopleNames.PEOPLE_RATES)
+				// .getNodes();
+				// while (nit.hasNext()) {
+				// Node currNode = nit.nextNode();
+				// if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)
+				// && !nodes.contains(currNode))
+				// nodes.add(currNode);
+				// }
+				// }
+
 				getTableViewer().setInput(nodes.toArray());
 			} catch (RepositoryException e) {
 				throw new ArgeoException("Unable to list activities", e);

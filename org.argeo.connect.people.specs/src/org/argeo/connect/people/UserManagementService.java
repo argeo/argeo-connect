@@ -99,6 +99,20 @@ public interface UserManagementService {
 	 */
 	public List<Node> getUserGroups(Session session, String username);
 
+	/**
+	 * Returns the list of my groups for
+	 * 
+	 * @param session
+	 */
+	public List<Node> getMyGroups(Session session);
+
+	/**
+	 * Returns the list of my groups for
+	 * 
+	 * @param session
+	 */
+	public boolean amIInGroup(Session session, String groupId);
+
 	/* USERS */
 	// TODO the 3 following methods should rather be in the UserAdminService
 	/** returns true if the current user is in the specified role */

@@ -257,6 +257,23 @@ public class UserManagementServiceImpl implements UserManagementService {
 	}
 
 	@Override
+	public List<Node> getMyGroups(Session session) {
+		return getUserGroups(session, session.getUserID());
+	}
+
+	@Override
+	public boolean amIInGroup(Session session, String groupId) {
+		List<Node> myGroups = getMyGroups(session);
+		for (Node group : myGroups) {
+			String currGroupId = CommonsJcrUtils.get(group,
+					PeopleNames.PEOPLE_GROUP_ID);
+			if (groupId.equals(currGroupId))
+				return true;
+		}
+		return false;
+	}
+
+	@Override
 	public List<Node> getUserGroups(Session session, String username) {
 		List<Node> groups = new ArrayList<Node>();
 		try {

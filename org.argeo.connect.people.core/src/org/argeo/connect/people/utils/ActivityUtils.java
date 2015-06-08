@@ -1,5 +1,7 @@
 package org.argeo.connect.people.utils;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.GregorianCalendar;
 
 import javax.jcr.Node;
@@ -9,8 +11,6 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -23,14 +23,15 @@ import org.argeo.jcr.JcrUtils;
  */
 public class ActivityUtils {
 
-	private final static Log log = LogFactory.getLog(ActivityUtils.class);
+	// private final static Log log = LogFactory.getLog(ActivityUtils.class);
+
+	private final static NumberFormat nbFormat = DecimalFormat.getInstance();
 
 	public static NodeIterator getPolls(Node pollable, boolean onlyOpenPolls) {
 		try {
 			Session session = pollable.getSession();
 			String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_POLL
-					+ "] WHERE  ISDESCENDANTNODE('" + pollable.getPath()
-					+ "') ";
+					+ "] WHERE  ISDESCENDANTNODE('" + pollable.getPath() + "')";
 			if (onlyOpenPolls)
 				throw new ArgeoException("Unimplemented ability");
 
@@ -44,23 +45,31 @@ public class ActivityUtils {
 
 	public static Node getMyVote(Node poll) {
 		try {
-			Session session = poll.getSession();
-			String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_RATE
-					+ "] WHERE  ISDESCENDANTNODE('" + poll.getPath() + "') ";
-			Query query = session.getWorkspace().getQueryManager()
-					.createQuery(queryStr, Query.JCR_SQL2);
-			NodeIterator nit = query.execute().getNodes();
-			long size = nit.getSize();
-			if (size == 0)
-				return null;
-			else if (size == 1)
-				return nit.nextNode();
-
-			else {
-				log.warn("Found " + size + " votes for " + poll + " with user "
-						+ poll.getSession().getUserID());
-				return nit.nextNode();
+			Node myVote = null;
+			if (poll.hasNode(PeopleNames.PEOPLE_RATES)) {
+				Node allRates = poll.getNode(PeopleNames.PEOPLE_RATES);
+				String userId = poll.getSession().getUserID();
+				if (allRates.hasNode(userId))
+					myVote = allRates.getNode(userId);
 			}
+			return myVote;
+			// Session session = poll.getSession();
+			// String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_RATE
+			// + "] WHERE  ISDESCENDANTNODE('" + poll.getPath() + "') ";
+			// Query query = session.getWorkspace().getQueryManager()
+			// .createQuery(queryStr, Query.JCR_SQL2);
+			// NodeIterator nit = query.execute().getNodes();
+			// long size = nit.getSize();
+			// if (size == 0)
+			// return null;
+			// else if (size == 1)
+			// return nit.nextNode();
+			//
+			// else {
+			// log.warn("Found " + size + " votes for " + poll + " with user "
+			// + ;
+			// return nit.nextNode();
+			// }
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to get polls for " + poll);
 		}
@@ -117,8 +126,10 @@ public class ActivityUtils {
 		if (nb == 0)
 			return "(none yet)";
 		else {
-			double avg = total / nb;
-			String result = Math.round(avg) + " ( " + nb + " votes)";
+			double avg = (double) total / (double) nb;
+			// Math.round(avg)
+			String result = nbFormat.format(avg) + " (" + nb
+					+ (nb == 1 ? " vote)" : " votes)");
 			return result;
 		}
 	}

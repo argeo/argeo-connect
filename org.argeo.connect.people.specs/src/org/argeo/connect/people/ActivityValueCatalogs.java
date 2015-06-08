@@ -24,6 +24,7 @@ public class ActivityValueCatalogs {
 	public final static String ACT_LBL_CHAT = "Chat";
 	public final static String ACT_LBL_TWEET = "Tweet";
 	public final static String ACT_LBL_BLOG = "Blog post";
+	public final static String ACT_LBL_RATE = "Rate";
 
 	// maps corresponding node types with a label
 	public static final Map<String, String> MAPS_ACTIVITY_TYPES;
@@ -40,6 +41,7 @@ public class ActivityValueCatalogs {
 		tmpMap.put(PeopleTypes.PEOPLE_CHAT, ACT_LBL_CHAT);
 		tmpMap.put(PeopleTypes.PEOPLE_TWEET, ACT_LBL_TWEET);
 		tmpMap.put(PeopleTypes.PEOPLE_BLOG_POST, ACT_LBL_BLOG);
+		tmpMap.put(PeopleTypes.PEOPLE_RATE, ACT_LBL_RATE);
 		MAPS_ACTIVITY_TYPES = Collections.unmodifiableMap(tmpMap);
 	}
 
