@@ -60,7 +60,6 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 	private final AbstractPeopleEditor editor;
 	private final AbstractFormPart formPart;
 	private final FormToolkit toolkit;
-	private final boolean isCheckedOut;
 
 	public ContactAddressComposite(Composite parent, int style,
 			AbstractPeopleEditor editor, AbstractFormPart formPart,
@@ -76,7 +75,6 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		this.toolkit = editor.getFormToolkit();
 		this.formPart = formPart;
 		this.parentVersionableNode = parentVersionableNode;
-		this.isCheckedOut = editor.isEditing();
 		populate();
 	}
 
@@ -96,10 +94,10 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		Composite dataCmp = toolkit.createComposite(parent);
 		dataCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
-		if (!isCheckedOut) // READ ONLY
-			populateReadOnlyPanel(dataCmp);
-		else
+		if (editor.isEditing())
 			populateEditPanel(dataCmp);
+		else
+			populateReadOnlyPanel(dataCmp);
 	}
 
 	protected void populateReadOnlyPanel(Composite readOnlyPanel) {
