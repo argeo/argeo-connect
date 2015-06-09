@@ -72,7 +72,7 @@ public class SearchNodeEditorInput implements IEditorInput {
 
 	@Override
 	public String getToolTipText() {
-		return "Search among all " + name
+		return "Search among all " + name.toLowerCase()
 				+ " defined in the current repository";
 	}
 
