@@ -69,7 +69,7 @@ public abstract class AbstractEntityCTabEditor extends
 	 * @param tooltip
 	 * @param afterTabId
 	 *            the tab will be added after the tab that has this Id if such a
-	 *            tab exists.
+	 *            tab exists of at first place if null.
 	 * @return
 	 */
 	protected Composite addTabToFolder(CTabFolder tabFolder, int style,
@@ -77,12 +77,14 @@ public abstract class AbstractEntityCTabEditor extends
 		// retrieve index of the existing tab
 		CTabItem[] items = folder.getItems();
 		int i = 0;
-		loop: for (CTabItem item : items) {
-			String currId = (String) item.getData(CTAB_INSTANCE_ID);
-			i++;
-			if (currId != null && currId.equals(afterTabId))
-				break loop;
-		}
+		if (afterTabId != null)
+			loop: for (CTabItem item : items) {
+				String currId = (String) item.getData(CTAB_INSTANCE_ID);
+				i++;
+				if (currId != null && currId.equals(afterTabId))
+					break loop;
+			}
+
 		CTabItem item;
 		if (i == items.length)
 			item = new CTabItem(tabFolder, style);

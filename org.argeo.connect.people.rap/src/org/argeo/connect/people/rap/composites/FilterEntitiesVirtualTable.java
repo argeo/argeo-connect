@@ -186,11 +186,7 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 		});
 	}
 
-	/**
-	 * Refresh the list: caller might overwrite in order to display a subset of
-	 * all nodes
-	 */
-	protected void refreshFilteredList() {
+	private void refreshFilteredList() {
 		List<Node> nodes;
 		try {
 			nodes = JcrUtils.nodeIteratorToList(listFilteredElements(session,

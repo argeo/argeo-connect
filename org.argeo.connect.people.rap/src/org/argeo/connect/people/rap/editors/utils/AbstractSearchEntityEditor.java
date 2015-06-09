@@ -9,7 +9,6 @@ import javax.jcr.query.Row;
 import javax.jcr.query.qom.Constraint;
 import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
-import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleConstants;
@@ -460,19 +459,8 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	protected Constraint getFreeTextConstraint(QueryObjectModelFactory factory,
 			Selector source) throws RepositoryException {
-		String filter = getFilterText().getText();
-		Constraint defaultC = null;
-		if (CommonsJcrUtils.checkNotEmptyString(filter)) {
-			String[] strs = filter.trim().split(" ");
-			for (String token : strs) {
-				StaticOperand so = factory.literal(session.getValueFactory()
-						.createValue("*" + token + "*"));
-				Constraint currC = factory.fullTextSearch(
-						source.getSelectorName(), null, so);
-				defaultC = CommonsJcrUtils.localAnd(factory, defaultC, currC);
-			}
-		}
-		return defaultC;
+		return CommonsJcrUtils.getFreeTextConstraint(session, factory, source,
+				getFilterText().getText());
 	}
 
 	// Life cycle management

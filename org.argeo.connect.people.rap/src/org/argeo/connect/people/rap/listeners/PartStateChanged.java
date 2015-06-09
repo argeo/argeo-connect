@@ -37,7 +37,6 @@ public class PartStateChanged implements IPartListener, IStartup {
 							e);
 				}
 			}
-
 		});
 	}
 

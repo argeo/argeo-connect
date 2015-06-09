@@ -269,13 +269,13 @@ public class CommonsJcrUtils {
 		}
 	}
 
-	/** Consively save the unerlying session if some changes have been done */
+	/** Concisely save the underlying session if some changes have been done */
 	public static boolean save(Node node) {
 		return save(node, false);
 	}
 
 	/**
-	 * Consively save the underlying session if some changes have been done and
+	 * Concisely save the underlying session if some changes have been done and
 	 * make a version tag if asked and if the node is already versionable
 	 */
 	public static boolean save(Node node, boolean tagVersion) {
@@ -361,44 +361,6 @@ public class CommonsJcrUtils {
 			}
 		}
 	}
-
-	/**
-	 * Wraps the versionMananger.checkedIn(path) method to adapt it to the
-	 * current check in / check out policy.
-	 * 
-	 * TODO : add management of check out by others.
-	 */
-	// public static void cancelAndCheckin(Node node) {
-	// try {
-	// String path = node.getPath();
-	// Session session = node.getSession();
-	// JcrUtils.discardUnderlyingSessionQuietly(node);
-	// // if the node has never been saved, it does not exist anymore.
-	// if (session.nodeExists(path)
-	// && node.isNodeType(NodeType.MIX_VERSIONABLE)
-	// && session.getWorkspace().getVersionManager()
-	// .isCheckedOut(path))
-	// try {
-	// session.getWorkspace().getVersionManager().checkin(path);
-	//
-	// } catch (AccessDeniedException re) {
-	// log.warn(
-	// "Error while trying to cancel and check in node "
-	// + node
-	// + " with user "
-	// + session.getUserID()
-	// + "\nIt usually happens when a user that has read only rights"
-	// +
-	// " close the editor of an entity that has not been close cleanly after last edition.",
-	// re);
-	// }
-	// } catch (InvalidItemStateException re) {
-	// // the item has been deleted.
-	// } catch (RepositoryException re) {
-	// throw new PeopleException("Unable to cancel and check-in " + node,
-	// re);
-	// }
-	// }
 
 	/* HELPERS FOR SINGLE VALUES */
 	/**
@@ -902,34 +864,6 @@ public class CommonsJcrUtils {
 			throw new ArgeoException("Cannot get alt property for " + lang, e);
 		}
 	}
-
-	/**
-	 * Returns the corresponding sub node for the given language at default rel
-	 * path * If no rel path is given, we use the default
-	 * {@link PeopleNames#PEOPLE_ALT_LANGS}. It creates such a Node if it does
-	 * not yet exist. By default it is a nt:unstructured node with mix:title
-	 * mixin
-	 * */
-	// public static Node getOrCreateAltLanguageNode(Node node, String lang) {
-	// return getOrCreateAltLanguageNode(node, PeopleNames.PEOPLE_ALT_LANGS,
-	// lang);
-	// }
-
-	// private static Node getOrCreateAltLanguageNode(Node node, String relPath,
-	// String lang) {
-	// try {
-	// Node child = JcrUtils.mkdirs(node.getSession(), node.getPath()
-	// + "/" + relPath + "/" + lang, NodeType.NT_UNSTRUCTURED,
-	// NodeType.NT_UNSTRUCTURED, false);
-	// child.addMixin(NodeType.MIX_TITLE);
-	// child.addMixin(NodeType.MIX_LANGUAGE);
-	// child.setProperty(Property.JCR_LANGUAGE, lang);
-	// return child;
-	// } catch (RepositoryException e) {
-	// throw new PeopleException("Cannot create child for language "
-	// + lang, e);
-	// }
-	// }
 
 	public static Node getOrCreateAltLanguageNode(Node node, String lang,
 			List<String> mixins) {

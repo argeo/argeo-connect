@@ -18,6 +18,8 @@ package org.argeo.connect.people.rap.dialogs;
 import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
@@ -143,6 +145,17 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 		}
 	}
 
+	/** Overwrite and return true to provide specific filtering */
+	protected boolean defineSpecificQuery() {
+		return false;
+	}
+
+	/** Overwrite to provide specific filtering */
+	protected NodeIterator query(Session session, String filter)
+			throws RepositoryException {
+		return null;
+	}
+
 	// Add the ability to provide a business specific label provider for the
 	// given entity type
 	private class MyFilterEntitiesVirtualTable extends
@@ -163,6 +176,14 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 					true);
 			this.colDefs = colDefs;
 			populate();
+		}
+
+		protected NodeIterator listFilteredElements(Session session,
+				String filter) throws RepositoryException {
+			if (defineSpecificQuery())
+				return query(session, filter);
+			else
+				return super.listFilteredElements(session, filter);
 		}
 
 		protected List<PeopleColumnDefinition> getColumnsDef() {
