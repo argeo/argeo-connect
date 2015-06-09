@@ -222,12 +222,12 @@ public class MyTasksView extends ViewPart implements Refreshable {
 				Node currNode = (Node) element;
 
 				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
+					String title = CommonsJcrUtils.get(currNode,
+							Property.JCR_TITLE);
+
 					String desc = CommonsJcrUtils.get(currNode,
-							Property.JCR_TITLE)
-							+ " - "
-							+ CommonsJcrUtils.get(currNode,
-									Property.JCR_DESCRIPTION);
-					return desc;
+							Property.JCR_DESCRIPTION);
+					return CommonsJcrUtils.concatIfNotEmpty(title, desc, " - ");
 				}
 				return "";
 			} catch (RepositoryException re) {
