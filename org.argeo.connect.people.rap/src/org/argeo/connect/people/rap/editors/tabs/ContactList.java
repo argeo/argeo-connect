@@ -236,7 +236,7 @@ public class ContactList extends Composite {
 		addContactCmb = new Combo(parent, SWT.NONE | SWT.READ_ONLY
 				| SWT.NO_FOCUS);
 
-		addContactCmb.setLayoutData(new RowData(100, SWT.DEFAULT));
+		addContactCmb.setLayoutData(new RowData(140, SWT.DEFAULT));
 		addContactCmb.setItems(ContactValueCatalogs.ARRAY_CONTACT_TYPES);
 		addContactCmb.add("Add a contact", 0);
 		addContactCmb.select(0);
