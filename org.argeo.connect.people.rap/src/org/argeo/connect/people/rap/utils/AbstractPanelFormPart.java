@@ -11,7 +11,7 @@ import org.eclipse.ui.forms.AbstractFormPart;
 /**
  * Extends the usual Abstract form part to ease the management of panel that
  * must totally be redrawn on each refresh, typically to display different
- * layouts depending on the checkout state
+ * layouts depending on the linked editor state
  */
 public abstract class AbstractPanelFormPart extends AbstractFormPart {
 

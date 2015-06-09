@@ -17,10 +17,10 @@ public class TitleIconLP extends SimpleJcrNodeLabelProvider {
 
 	private final PeopleWorkbenchService peopleWorkbenchService;
 
-	public TitleIconLP(PeopleWorkbenchService peopleUiService,
+	public TitleIconLP(PeopleWorkbenchService peopleWorkbenchService,
 			String propertyName) {
 		super(propertyName);
-		this.peopleWorkbenchService = peopleUiService;
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
 	@Override
