@@ -13,7 +13,6 @@ import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.providers.GroupLabelProvider;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -86,7 +85,7 @@ public abstract class GroupEditor extends AbstractEntityCTabEditor {
 					// READ ONLY PART
 					titleROLbl.setText(groupTitleLP.getText(group));
 					// Manage switch
-					if (CommonsJcrUtils.isNodeCheckedOutByMe(group))
+					if (isEditing())
 						editPanel.moveAbove(roPanelCmp);
 					else
 						editPanel.moveBelow(roPanelCmp);

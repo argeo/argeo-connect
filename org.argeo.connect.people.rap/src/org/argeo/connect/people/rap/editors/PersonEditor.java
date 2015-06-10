@@ -138,9 +138,8 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Organisations",
 				PeopleRapConstants.CTAB_JOBS, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite crewCmp = new JobList(getFormToolkit(), getManagedForm(),
-				innerPannel, SWT.NONE, getPeopleService(),
-				getPeopleWorkbenchService(), person);
+		Composite crewCmp = new JobList(this, innerPannel, SWT.NONE,
+				getPeopleService(), getPeopleWorkbenchService(), person);
 		crewCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// History panel
@@ -508,7 +507,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 					tmp = true;
 			}
 			button.setSelection(tmp);
-			button.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
+			button.setEnabled(isEditing());
 		} catch (RepositoryException re) {
 			throw new PeopleException("Error getting polite form property on "
 					+ entity, re);
@@ -532,7 +531,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 					tmp = true;
 			}
 			button.setSelection(tmp);
-			button.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
+			button.setEnabled(isEditing());
 		} catch (RepositoryException re) {
 			throw new PeopleException("Error getting polite form property on "
 					+ entity, re);

@@ -15,6 +15,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.PeopleAbstractDropDown;
+import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -196,8 +197,8 @@ public class PeopleRapUtils {
 	 * Shortcut to refresh a radio <code>Button</code> widget given a Node in a
 	 * form and a property Name. Also manage its enabled state
 	 */
-	public static void refreshFormRadio(Button button, Node entity,
-			String propName) {
+	public static void refreshFormRadio(AbstractPeopleEditor editor,
+			Button button, Node entity, String propName) {
 		Boolean tmp = null;
 		try {
 			if (entity.hasProperty(propName)) {
@@ -206,7 +207,7 @@ public class PeopleRapUtils {
 			} else
 				tmp = false;
 			button.setSelection(tmp);
-			button.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
+			button.setEnabled(editor.isEditing());
 		} catch (RepositoryException re) {
 			throw new PeopleException(
 					"Unable to get boolean value for property " + propName

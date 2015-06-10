@@ -145,7 +145,7 @@ public class OrgAdminInfo extends Composite {
 				super.refresh();
 				try {
 					if (!entity.hasNode(PeopleNames.PEOPLE_PAYMENT_ACCOUNTS)
-							&& CommonsJcrUtils.isNodeCheckedOutByMe(entity)) {
+							&& editor.isEditing()) {
 						OrgJcrUtils.createPaymentAccount(entity,
 								PeopleTypes.PEOPLE_BANK_ACCOUNT, "new");
 						entity.getSession().save();

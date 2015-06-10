@@ -22,6 +22,7 @@ import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.EditJob;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
+import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.rap.editors.utils.BooleanEditingSupport;
 import org.argeo.connect.people.rap.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.rap.listeners.PeopleDoubleClickAdapter;
@@ -48,7 +49,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
@@ -64,14 +64,16 @@ public class JobList extends Composite {
 	private final Node entity;
 	private final boolean isBackward;
 
-	// this page UI Objects
-	private MyFormPart myFormPart;
+	// UI Objects
+	private final AbstractPeopleEditor editor;
+	private final MyFormPart myFormPart;
 
-	public JobList(FormToolkit toolkit, IManagedForm form, Composite parent,
-			int style, PeopleService peopleService,
+	public JobList(AbstractPeopleEditor editor, Composite parent, int style,
+			PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, Node entity) {
 		super(parent, style);
-		this.toolkit = toolkit;
+
+		toolkit = editor.getFormToolkit();
 		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.entity = entity;
@@ -80,9 +82,10 @@ public class JobList extends Composite {
 		isBackward = CommonsJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG);
 
 		// Populate
+		this.editor = editor;
 		myFormPart = new MyFormPart(this);
-		myFormPart.initialize(form);
-		form.addPart(myFormPart);
+		myFormPart.initialize(editor.getManagedForm());
+		editor.getManagedForm().addPart(myFormPart);
 	}
 
 	private class MyFormPart extends AbstractPanelFormPart {
@@ -178,7 +181,7 @@ public class JobList extends Composite {
 					peopleService, peopleWorkbenchService));
 
 		// Edit & Remove links
-		if (CommonsJcrUtils.isNodeCheckedOutByMe(entity)) {
+		if (editor.isEditing()) {
 			col = ViewerUtils.createTableViewerColumn(viewer,
 					"Edit/Remove links", SWT.NONE, 60);
 			tableColumnLayout.setColumnData(col.getColumn(),
@@ -266,7 +269,7 @@ public class JobList extends Composite {
 
 		@Override
 		protected boolean canEdit(Object element) {
-			return CommonsJcrUtils.isNodeCheckedOutByMe(entity);
+			return editor.canEdit();
 		}
 
 		@Override

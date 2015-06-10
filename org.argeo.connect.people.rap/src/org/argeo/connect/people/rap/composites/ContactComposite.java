@@ -66,8 +66,8 @@ public class ContactComposite extends Composite {
 		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 
 		// buttons
-		Composite buttCmp = new ContactButtonsComposite(parent, SWT.NO_FOCUS,
-				toolkit, formPart, contactNode, parentVersionableNode,
+		Composite buttCmp = new ContactButtonsComposite(editor, formPart,
+				parent, SWT.NO_FOCUS, contactNode, parentVersionableNode,
 				peopleUiService, peopleService);
 		toolkit.adapt(buttCmp, false, false);
 		buttCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));

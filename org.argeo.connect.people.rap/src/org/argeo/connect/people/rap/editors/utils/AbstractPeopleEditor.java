@@ -334,7 +334,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 				roPanelCmp.getParent().layout();
 			}
 		};
-		// editPart.refresh();
 		editPart.initialize(mForm);
 		mForm.addPart(editPart);
 	}
@@ -377,13 +376,30 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	/* UTILITES */
 	/** Forces refresh of all form parts of the current editor */
 	public void forceRefresh(Object object) {
+
+		if (log.isTraceEnabled())
+			log.trace("Starting Editor refresh");
+
+		long start, tmpStart, tmpEnd;
+		start = System.currentTimeMillis();
 		for (IFormPart part : mForm.getParts()) {
-			// if (part instanceof AbstractFormPart)
-			// ((AbstractFormPart) part).markStale();
+			tmpStart = System.currentTimeMillis();
 			part.refresh();
+			tmpEnd = System.currentTimeMillis();
+
+			if (log.isTraceEnabled())
+				log.trace("FormPart " + part.getClass().getName()
+						+ " refreshed in " + (tmpEnd - tmpStart) + " ms");
 		}
+		tmpStart = System.currentTimeMillis();
 		main.layout(true);
 		mForm.reflow(true);
+		tmpEnd = System.currentTimeMillis();
+		if (log.isTraceEnabled()) {
+			log.trace("Layout and reflow in in " + (tmpEnd - tmpStart) + " ms");
+			log.trace("Full refresh of " + this.getClass().getName() + " in "
+					+ (tmpEnd - start) + " ms");
+		}
 	}
 
 	public void forceRefresh() {

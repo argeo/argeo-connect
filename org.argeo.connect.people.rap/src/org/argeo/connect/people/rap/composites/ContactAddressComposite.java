@@ -84,8 +84,8 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 
 		// BUTTONS
-		Composite buttCmp = new ContactButtonsComposite(parent, SWT.NONE,
-				toolkit, formPart, contactNode, parentVersionableNode,
+		Composite buttCmp = new ContactButtonsComposite(editor, formPart,
+				parent, SWT.NONE, contactNode, parentVersionableNode,
 				peopleWorkbenchService, peopleService);
 		toolkit.adapt(buttCmp, false, false);
 		buttCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));

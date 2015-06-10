@@ -10,8 +10,8 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -21,7 +21,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
  * Centralizes management of contacts buttons.
@@ -34,15 +33,15 @@ public class ContactButtonsComposite extends Composite {
 	private final PeopleService peopleService;
 	private final PeopleWorkbenchService peopleUiService;
 	private final Node contactNode;
-	private final boolean isCheckedOut;
+	private final boolean isEditing;
 	private final Node parentVersionableNode;
 	private final AbstractFormPart formPart;
 
 	// private final PeopleImageProvider imageProvider = new
 	// PeopleImageProvider();
 
-	public ContactButtonsComposite(Composite parent, int style,
-			FormToolkit toolkit, AbstractFormPart formPart, Node contactNode,
+	public ContactButtonsComposite(AbstractPeopleEditor editor, AbstractFormPart formPart, Composite parent, int style,
+			Node contactNode,
 			Node parentVersionableNode, PeopleWorkbenchService peopleUiService,
 			PeopleService peopleService) {
 		super(parent, style);
@@ -51,8 +50,7 @@ public class ContactButtonsComposite extends Composite {
 		this.contactNode = contactNode;
 		this.parentVersionableNode = parentVersionableNode;
 		this.formPart = formPart;
-		this.isCheckedOut = CommonsJcrUtils
-				.isNodeCheckedOutByMe(parentVersionableNode);
+		this.isEditing = editor.isEditing();
 		populate();
 	}
 
@@ -70,7 +68,7 @@ public class ContactButtonsComposite extends Composite {
 		configurePrimaryButton(primaryBtn);
 
 		// Deletion
-		if (isCheckedOut) {
+		if (isEditing) {
 			Button deleteBtn = createDeleteButton(buttCmp);
 			configureDeleteButton(deleteBtn);
 		}
@@ -112,7 +110,7 @@ public class ContactButtonsComposite extends Composite {
 				btn.setImage(PeopleRapImages.PRIMARY_BTN);
 			else
 				btn.setImage(PeopleRapImages.PRIMARY_NOT_BTN);
-			btn.setEnabled(isCheckedOut);
+			btn.setEnabled(isEditing);
 			// primaryBtn.setGrayed(false);
 
 			GridData gd = new GridData();

@@ -129,9 +129,8 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Team",
 				PeopleRapConstants.CTAB_EMPLOYEES, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite employeesCmp = new JobList(getFormToolkit(),
-				getManagedForm(), innerPannel, SWT.NONE, getPeopleService(),
-				getPeopleWorkbenchService(), org);
+		Composite employeesCmp = new JobList(this, innerPannel, SWT.NONE,
+				getPeopleService(), getPeopleWorkbenchService(), org);
 		employeesCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// Legal informations
@@ -208,7 +207,7 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 					String roText = orgLP.getText(org);
 					orgInfoROLbl.setText(roText);
 
-					if (CommonsJcrUtils.isNodeCheckedOutByMe(org))
+					if (isEditing())
 						editPanelCmp.moveAbove(roPanelCmp);
 					else
 						editPanelCmp.moveBelow(roPanelCmp);

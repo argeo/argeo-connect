@@ -84,26 +84,26 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
  * A composite to include in a form and that enables edition of the values of a
- * catalogue from a given template.
+ * catalog from a given template.
  * 
  * This might be extended to provide a specific request that will limit the
- * perimeter on which the current catalogue might apply (typically, if we use
- * two distinct nomenclature for a same property that are bound to a given
- * projects)
+ * perimeter on which the current catalog might apply (typically, if we use two
+ * distinct nomenclature for a same property that are bound to a given projects)
  */
 public class TemplateValueCatalogue extends Composite {
 	private static final long serialVersionUID = -5018569293721397600L;
 
 	// Context
-	private final IWorkbench workbench;
-	private final FormToolkit toolkit;
 	private final PeopleWorkbenchService peopleWorkbenchService;
 	private final PeopleService peopleService;
 	private final Node templateNode;
 	private final String propertyName;
 	private final String taggableType;
 
-	// this page UI Objects
+	// UI Context
+	private final IWorkbench workbench;
+	private final FormToolkit toolkit;
+	private final AbstractPeopleEditor editor;
 	private final MyFormPart myFormPart;
 
 	public TemplateValueCatalogue(IWorkbench workbench,
@@ -113,6 +113,7 @@ public class TemplateValueCatalogue extends Composite {
 			String propertyName, String taggableType) {
 		super(parent, style);
 		this.workbench = workbench;
+		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
 		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleWorkbenchService;
@@ -257,7 +258,7 @@ public class TemplateValueCatalogue extends Composite {
 			}
 		});
 
-		if (CommonsJcrUtils.isNodeCheckedOutByMe(templateNode)) {
+		if (editor.isEditing()) {
 			col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE, 80);
 			col.setLabelProvider(new ColumnLabelProvider() {
 				private static final long serialVersionUID = 1L;
@@ -566,28 +567,34 @@ public class TemplateValueCatalogue extends Composite {
 			@Override
 			public void setVisible(boolean visible) {
 				super.setVisible(visible);
-				if (visible == true) {
-					long checkoutItemNb = 0;
-					RowIterator rit = query(oldValue);
-					List<Row> rows = new ArrayList<Row>();
-					while (rit.hasNext()) {
-						Row currRow = rit.nextRow();
-						rows.add(currRow);
-						Node currNode = CommonsJcrUtils.getNode(currRow,
-								taggableType);
-						if (CommonsJcrUtils.isNodeCheckedOut(currNode))
-							checkoutItemNb++;
-					}
-					setViewerInput(membersViewer, rows.toArray(new Row[0]));
-					if (checkoutItemNb > 0)
-						setErrorMessage("Warning: "
-								+ checkoutItemNb
-								+ " entities are currently checked out. Updating might "
-								+ "prevent some users from saving their latest changes. "
-								+ "Are you sure you want to procede?");
-					else
-						setErrorMessage(null);
-				}
+
+				// In the newer approach, all nodes are always checked out.
+				// TODO We should rather rely on another mechanism to
+				// investigate on potential blockers before launching the batch
+				// update
+
+				// if (visible == true) {
+				// long checkoutItemNb = 0;
+				// RowIterator rit = query(oldValue);
+				// List<Row> rows = new ArrayList<Row>();
+				// while (rit.hasNext()) {
+				// Row currRow = rit.nextRow();
+				// rows.add(currRow);
+				// Node currNode = CommonsJcrUtils.getNode(currRow,
+				// taggableType);
+				// if (CommonsJcrUtils.isNodeCheckedOut(currNode))
+				// checkoutItemNb++;
+				// }
+				// setViewerInput(membersViewer, rows.toArray(new Row[0]));
+				// if (checkoutItemNb > 0)
+				// setErrorMessage("Warning: "
+				// + checkoutItemNb
+				// + " entities are currently checked out. Updating might "
+				// + "prevent some users from saving their latest changes. "
+				// + "Are you sure you want to procede?");
+				// else
+				// setErrorMessage(null);
+				// }
 			}
 		}
 	}
@@ -610,9 +617,10 @@ public class TemplateValueCatalogue extends Composite {
 		@Override
 		public Image getImage(Object element) {
 			Image image = super.getImage(element);
-			Node currEntity = CommonsJcrUtils.getNode((Row) element,
-					selectorName);
-			if (CommonsJcrUtils.isNodeCheckedOut(currEntity) && image != null) {
+			// Node currEntity = CommonsJcrUtils.getNode((Row) element,
+			// selectorName);
+			// CommonsJcrUtils.isNodeCheckedOut(currEntity)
+			if (editor.isEditing() && image != null) {
 				if (images.containsKey(image)) {
 					image = images.get(image);
 				} else {
