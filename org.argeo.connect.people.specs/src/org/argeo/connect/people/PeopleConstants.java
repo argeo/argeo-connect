@@ -30,6 +30,7 @@ public interface PeopleConstants {
 	public final static String PEOPLE_ORGS = "orgs";
 	public final static String PEOPLE_PERSONS = "persons";
 	public final static String PEOPLE_PROJECTS = "projects";
+	public final static String PEOPLE_EDITIONS = "editions";
 	public final static String PEOPLE_USER_GROUPS = "userGroups";
 	public final static String PEOPLE_ACTIVITIES = "activities";
 

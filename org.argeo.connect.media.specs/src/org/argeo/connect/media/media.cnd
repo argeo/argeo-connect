@@ -39,7 +39,7 @@
 - map:cachePTitle (STRING) IGNORE
 - map:cachePTitleArticle (STRING) IGNORE
 - map:cachePTitleLatin (STRING) IGNORE
-- map:cacheDirectors (String) * IGNORE
+- map:cacheDirectors (STRING) * IGNORE
 
 
 // GENERIC SUBCONCEPTS FOR MAP

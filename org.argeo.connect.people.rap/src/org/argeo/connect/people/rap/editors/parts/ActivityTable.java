@@ -406,9 +406,9 @@ public class ActivityTable extends Composite implements ArgeoNames {
 				if (activityNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
 					// done task
 					if (activityService.isTaskDone(activityNode)) {
-						value = activityService
-								.getActivityManagerDisplayName(activityNode);
-						if (CommonsJcrUtils.checkNotEmptyString(value))
+//						value = activityService
+//								.getActivityManagerDisplayName(activityNode);
+//						if (CommonsJcrUtils.checkNotEmptyString(value))
 							builder.append("Done by: ").append(value)
 									.append("<br />");
 						value = activityService
@@ -431,8 +431,9 @@ public class ActivityTable extends Composite implements ArgeoNames {
 						}
 					}
 				} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-					String reporter = activityService
-							.getActivityManagerDisplayName(activityNode);
+					String reporter = "";
+//							activityService
+//							.getActivityManagerDisplayName(activityNode);
 					String updater = null;
 
 					if (activityNode.hasProperty(Property.JCR_LAST_MODIFIED_BY))

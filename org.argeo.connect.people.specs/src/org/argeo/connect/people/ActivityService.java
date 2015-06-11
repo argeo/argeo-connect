@@ -62,7 +62,7 @@ public interface ActivityService {
 	public Calendar getActivityRelevantDate(Node activityNode);
 
 	/** Get the display name for the manager of an activity. */
-	public String getActivityManagerDisplayName(Node activityNode);
+	// public String getActivityManagerDisplayName(Node activityNode);
 
 	/* TASKS */
 	/**
@@ -139,11 +139,11 @@ public interface ActivityService {
 			String description, String assignedTo, List<Node> relatedTo,
 			Calendar creationDate, Calendar dueDate, Calendar wakeUpDate);
 
-	public Node createPoll(Node parentNode, String reporterId, String pollName, String title,
-			String description, String assignedTo, List<Node> relatedTo,
-			Calendar creationDate, Calendar dueDate, Calendar wakeUpDate);
+	public Node createPoll(Node parentNode, String reporterId, String pollName,
+			String title, String description, String assignedTo,
+			List<Node> relatedTo, Calendar creationDate, Calendar dueDate,
+			Calendar wakeUpDate);
 
-	
 	/**
 	 * Retrieves tasks assigned to one of the group that contain the username
 	 * retrieved from the current session

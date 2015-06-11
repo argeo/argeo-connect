@@ -174,8 +174,11 @@ public class MyTasksView extends ViewPart implements Refreshable {
 				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
 					return activityService.getAssignedToDisplayName(currNode);
 				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-					return activityService
-							.getActivityManagerDisplayName(currNode);
+					return CommonsJcrUtils.get(currNode,
+							PeopleNames.PEOPLE_REPORTED_BY);
+
+					// activityService
+					// .getActivityManagerDisplayName(currNode);
 				}
 				return "";
 			} catch (RepositoryException re) {

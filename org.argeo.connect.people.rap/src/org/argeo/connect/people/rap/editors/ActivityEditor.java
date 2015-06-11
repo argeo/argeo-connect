@@ -148,8 +148,10 @@ public class ActivityEditor extends AbstractPeopleEditor {
 					populate(ActivityHeader.this);
 
 				typeLbl.setText(activityService.getActivityLabel(activity));
-				String manager = activityService
-						.getActivityManagerDisplayName(activity);
+				String manager = CommonsJcrUtils.get(activity,
+						PeopleNames.PEOPLE_REPORTED_BY);
+				// activityService
+				// .getActivityManagerDisplayName(activity);
 				if (CommonsJcrUtils.checkNotEmptyString(manager))
 					managerLbl.setText(manager);
 				dateComposite.refresh();
@@ -195,9 +197,9 @@ public class ActivityEditor extends AbstractPeopleEditor {
 				gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 				gd.verticalIndent = 2;
 				label.setLayoutData(gd);
-				relatedCmp = new LinkListPart(ActivityEditor.this, myFormPart, parent,
-						SWT.NO_FOCUS, getPeopleWorkbenchService(), activity,
-						PeopleNames.PEOPLE_RELATED_TO);
+				relatedCmp = new LinkListPart(ActivityEditor.this, myFormPart,
+						parent, SWT.NO_FOCUS, getPeopleWorkbenchService(),
+						activity, PeopleNames.PEOPLE_RELATED_TO);
 				relatedCmp.setLayoutData(EclipseUiUtils.fillWidth(5));
 			}
 		}
