@@ -191,11 +191,11 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 				Node parentNode = JcrUtils.mkdirs(person,
 						PeopleNames.PEOPLE_JOBS, NodeType.NT_UNSTRUCTURED);
 				newJob = parentNode
-						.addNode(newNodeName, PeopleTypes.PEOPLE_JOB);
+						.addNode(newNodeName.trim(), PeopleTypes.PEOPLE_JOB);
 			} else if (!newNodeName.equals(newJob.getName())) {
 				Session session = newJob.getSession();
 				String srcAbsPath = newJob.getPath();
-				String destAbsPath = JcrUtils.parentPath(srcAbsPath) + "/"+ newNodeName;
+				String destAbsPath = JcrUtils.parentPath(srcAbsPath) + "/"+ newNodeName.trim();
 				session.move(srcAbsPath, destAbsPath);
 			}
 

@@ -93,6 +93,12 @@ public class DeleteEntity extends AbstractHandler {
 
 			parentVersionableNode = CommonsJcrUtils
 					.getParentVersionableNode(toRemoveNode);
+
+			if (parentVersionableNode != null
+					&& toRemoveNode.getPath().equals(
+							parentVersionableNode.getPath()))
+				parentVersionableNode = null;
+
 			if (parentVersionableNode != null) {
 				if (!CommonsJcrUtils
 						.checkCOStatusBeforeUpdate(parentVersionableNode))
