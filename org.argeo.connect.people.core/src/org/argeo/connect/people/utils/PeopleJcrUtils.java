@@ -226,11 +226,11 @@ public class PeopleJcrUtils implements PeopleNames {
 			Node parent = primaryChild.getParent();
 			String thisNodeType = primaryChild.getPrimaryNodeType().getName();
 
-			if (isPrimary(parentNode, primaryChild)){
+			if (isPrimary(parentNode, primaryChild)) {
 				primaryChild.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, false);
 				return true;
 			}
-				
+
 			NodeIterator ni = parent.getNodes();
 			Node firstNode = ni.nextNode();
 			// update primary flag if needed
@@ -453,7 +453,9 @@ public class PeopleJcrUtils implements PeopleNames {
 			setContactNature(contact, nature, linkedOrg);
 			return contact;
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to add a new contact node", re);
+			throw new ArgeoException("Unable to add a new "
+					+ "contact node with value [" + value + "] on "
+					+ parentNode, re);
 		}
 	}
 
@@ -593,8 +595,8 @@ public class PeopleJcrUtils implements PeopleNames {
 		try {
 			Node address = createContact(peopleService, parentNode,
 					PeopleTypes.PEOPLE_ADDRESS, PeopleTypes.PEOPLE_ADDRESS, "",
-					false, ContactValueCatalogs.CONTACT_NATURE_PRO, referencedOrg, category,
-					label);
+					false, ContactValueCatalogs.CONTACT_NATURE_PRO,
+					referencedOrg, category, label);
 			address.addMixin(PeopleTypes.PEOPLE_CONTACT_REF);
 			// set reference field
 			if (referencedOrg != null)
@@ -670,9 +672,6 @@ public class PeopleJcrUtils implements PeopleNames {
 		}
 	}
 
-	
-	
-	
 	public static void updateDisplayAddress(Node contactNode) {
 		try {
 			StringBuilder displayAddress = new StringBuilder();
