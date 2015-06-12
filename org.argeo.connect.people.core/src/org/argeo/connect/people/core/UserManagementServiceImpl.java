@@ -139,7 +139,9 @@ public class UserManagementServiceImpl implements UserManagementService {
 					newGroup.setProperty(
 							PeopleNames.PEOPLE_IS_SINGLE_USER_GROUP, true);
 				}
-				CommonsJcrUtils.saveAndCheckin(newGroup);
+				// TODO save strategy
+				CommonsJcrUtils.checkPoint(newGroup);
+				// CommonsJcrUtils.saveAndCheckin(newGroup);
 				return newGroup;
 			}
 		} catch (RepositoryException re) {

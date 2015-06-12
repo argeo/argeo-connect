@@ -184,7 +184,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 					|| entity.isNodeType(PeopleTypes.PEOPLE_NODE_TEMPLATE)) {
 				// Known types that does not have a specific save strategy
 				if (commit)
-					CommonsJcrUtils.saveAndCheckin(entity);
+					CommonsJcrUtils.checkPoint(entity);
 				else
 					entity.getSession().save();
 			} else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)
@@ -194,7 +194,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 				// TODO implement generic People behaviour for tasks and
 				// activities
 				if (commit)
-					CommonsJcrUtils.saveAndCheckin(entity);
+					CommonsJcrUtils.checkPoint(entity);
 				else
 					entity.getSession().save();
 			else

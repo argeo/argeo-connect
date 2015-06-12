@@ -185,7 +185,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 						Node tag = resourceService.registerTag(session, tagId,
 								dialog.getTitle());
 						if (tag.isNodeType(NodeType.MIX_VERSIONABLE))
-							CommonsJcrUtils.saveAndCheckin(tag);
+							CommonsJcrUtils.checkPoint(tag);
 						else
 							session.save();
 						refreshStaticFilteredList();

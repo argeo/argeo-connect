@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
@@ -603,13 +602,13 @@ public class ResourceServiceImpl implements ResourceService {
 		String oldValue = tagInstance.getProperty(Property.JCR_TITLE)
 				.getString();
 
-		// boolean wasCO = 
-				CommonsJcrUtils.checkCOStatusBeforeUpdate(tagInstance); //= false;
-//		if (tagInstance.isNodeType(NodeType.MIX_VERSIONABLE)
-//				&& !CommonsJcrUtils.isNodeCheckedOutByMe(tagInstance)) {
-//			wasCheckedIn = true;
-//			CommonsJcrUtils.checkout(tagInstance);
-//		}
+		// boolean wasCO =
+		CommonsJcrUtils.checkCOStatusBeforeUpdate(tagInstance); // = false;
+		// if (tagInstance.isNodeType(NodeType.MIX_VERSIONABLE)
+		// && !CommonsJcrUtils.isNodeCheckedOutByMe(tagInstance)) {
+		// wasCheckedIn = true;
+		// CommonsJcrUtils.checkout(tagInstance);
+		// }
 
 		Session session = tagInstance.getSession();
 		// TODO use a transaction
@@ -625,13 +624,13 @@ public class ResourceServiceImpl implements ResourceService {
 		session.move(tagInstance.getPath(), newPath);
 		tagInstance.setProperty(Property.JCR_TITLE, newValue);
 
-//		if (wasCO)
-//			log.warn("Tag " + );
-//			CommonsJcrUtils.saveAndCheckin(tagInstance);
-//		if (wasCheckedIn)
-//			
-//		else
-			tagInstance.getSession().save();
+		// if (wasCO)
+		// log.warn("Tag " + );
+		// CommonsJcrUtils.saveAndCheckin(tagInstance);
+		// if (wasCheckedIn)
+		//
+		// else
+		tagInstance.getSession().save();
 		return true;
 	}
 
@@ -647,31 +646,11 @@ public class ResourceServiceImpl implements ResourceService {
 	private void updateOneTag(Node taggable, String tagPropName,
 			String oldValue, String newValue) {
 		try {
-			boolean wasCheckedIn = false;
-			Node versionable = null;
-
-			if (taggable.isNodeType(NodeType.MIX_VERSIONABLE))
-				versionable = taggable;
-			else {
-				Node currNode = taggable;
-				loop: while (!currNode.isNodeType(NodeType.MIX_VERSIONABLE)) {
-					try {
-						currNode = currNode.getParent();
-					} catch (ItemNotFoundException infe) {
-						// root node: we are in a full unversioned sub tree
-						break loop;
-					}
-				}
-				if (currNode != null
-						&& currNode.isNodeType(NodeType.MIX_VERSIONABLE))
-					versionable = currNode;
-			}
-
-			if (versionable != null) 
-				wasCheckedIn = CommonsJcrUtils.checkCOStatusBeforeUpdate(versionable);
-
+			Node versionable = CommonsJcrUtils
+					.getParentVersionableNode(taggable);
+			if (versionable != null)
+				CommonsJcrUtils.checkCOStatusBeforeUpdate(versionable);
 			Property property = taggable.getProperty(tagPropName);
-
 			if (property.isMultiple()) {
 				List<String> oldValues = CommonsJcrUtils.getMultiAsList(
 						taggable, tagPropName);
@@ -686,11 +665,7 @@ public class ResourceServiceImpl implements ResourceService {
 						newValues.toArray(new String[0]));
 			} else
 				taggable.setProperty(tagPropName, newValue);
-
-			// if (wasCheckedIn)
-			// CommonsJcrUtils.saveAndCheckin(versionable);
-			// else
-				taggable.getSession().save();
+			taggable.getSession().save();
 		} catch (RepositoryException ee) {
 			throw new PeopleException(
 					"Unable to update tag like multiple value property "

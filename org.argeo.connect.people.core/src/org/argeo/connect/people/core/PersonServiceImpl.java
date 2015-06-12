@@ -102,14 +102,15 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 			throw new PeopleException(msg);
 		}
 
+		peopleService.checkPathAndMoveIfNeeded(person,
+				PeopleTypes.PEOPLE_PERSON);
+		person.getSession().save();
+
 		// Update cache
 		peopleService.updatePrimaryCache(person);
 
-		peopleService.checkPathAndMoveIfNeeded(person,
-				PeopleTypes.PEOPLE_PERSON);
-
 		if (commit)
-			CommonsJcrUtils.saveAndCheckin(person);
+			CommonsJcrUtils.checkPoint(person);
 		else
 			person.getSession().save();
 	}
@@ -117,9 +118,6 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 	/** Override to provide business specific rules before save and commit */
 	protected void saveOrganisation(Node org, boolean commit)
 			throws PeopleException, RepositoryException {
-		// Update cache
-		peopleService.updatePrimaryCache(org);
-
 		// Check validity of main info
 		String legalName = CommonsJcrUtils.get(org,
 				PeopleNames.PEOPLE_LEGAL_NAME);
@@ -144,8 +142,13 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 
 		// Finalise save process.
 		peopleService.checkPathAndMoveIfNeeded(org, PeopleTypes.PEOPLE_ORG);
+		org.getSession().save();
+
+		// Update cache
+		peopleService.updatePrimaryCache(org);
+
 		if (commit)
-			CommonsJcrUtils.saveAndCheckin(org);
+			CommonsJcrUtils.checkPoint(org);
 		else
 			org.getSession().save();
 	}
@@ -166,10 +169,13 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 				String newPath = person.getPath();
 				if (!newPath.equals(oldPath)) {
 					// remove old
-					boolean wasCO = CommonsJcrUtils
+					//boolean wasCO = 
+							CommonsJcrUtils
 							.checkCOStatusBeforeUpdate(oldPerson);
 					oldJob.remove();
-					CommonsJcrUtils.checkCOStatusAfterUpdate(oldPerson, wasCO);
+					// FIXME we should not save the session anymore	
+					oldPerson.getSession().save();
+					// CommonsJcrUtils.checkCOStatusAfterUpdate(oldPerson, wasCO);
 				} else
 					newJob = oldJob;
 			}
@@ -185,17 +191,19 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 			else
 				newNodeName = orgUid;
 
-			boolean wasCO = CommonsJcrUtils.checkCOStatusBeforeUpdate(person);
+			// boolean wasCO = 
+					CommonsJcrUtils.checkCOStatusBeforeUpdate(person);
 			// Create node if necessary
 			if (newJob == null) {
 				Node parentNode = JcrUtils.mkdirs(person,
 						PeopleNames.PEOPLE_JOBS, NodeType.NT_UNSTRUCTURED);
-				newJob = parentNode
-						.addNode(newNodeName.trim(), PeopleTypes.PEOPLE_JOB);
+				newJob = parentNode.addNode(newNodeName.trim(),
+						PeopleTypes.PEOPLE_JOB);
 			} else if (!newNodeName.equals(newJob.getName())) {
 				Session session = newJob.getSession();
 				String srcAbsPath = newJob.getPath();
-				String destAbsPath = JcrUtils.parentPath(srcAbsPath) + "/"+ newNodeName.trim();
+				String destAbsPath = JcrUtils.parentPath(srcAbsPath) + "/"
+						+ newNodeName.trim();
 				session.move(srcAbsPath, destAbsPath);
 			}
 
@@ -204,15 +212,17 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 			newJob.setProperty(PeopleNames.PEOPLE_REF_UID, orgUid);
 
 			// position
-			if (CommonsJcrUtils.isEmptyString(position) && newJob.hasProperty(PeopleNames.PEOPLE_ROLE))
+			if (CommonsJcrUtils.isEmptyString(position)
+					&& newJob.hasProperty(PeopleNames.PEOPLE_ROLE))
 				newJob.getProperty(PeopleNames.PEOPLE_ROLE).remove();
-			else 
+			else
 				newJob.setProperty(PeopleNames.PEOPLE_ROLE, position);
-			
+
 			// department
-			if (CommonsJcrUtils.isEmptyString(department) && newJob.hasProperty(PeopleNames.PEOPLE_DEPARTMENT))
+			if (CommonsJcrUtils.isEmptyString(department)
+					&& newJob.hasProperty(PeopleNames.PEOPLE_DEPARTMENT))
 				newJob.getProperty(PeopleNames.PEOPLE_DEPARTMENT).remove();
-			else 
+			else
 				newJob.setProperty(PeopleNames.PEOPLE_DEPARTMENT, department);
 
 			// primary flag
@@ -220,8 +230,9 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 				PeopleJcrUtils.markAsPrimary(peopleService, person, newJob);
 			else
 				newJob.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, isPrimary);
-
-			CommonsJcrUtils.checkCOStatusAfterUpdate(person, wasCO);
+			// FIXME we should not save the session anymore	
+			person.getSession().save();
+			// CommonsJcrUtils.checkCOStatusAfterUpdate(person, wasCO);
 		} catch (RepositoryException re) {
 			throw new PeopleException("unable to create or update job "
 					+ oldJob + " for person " + person + " and org "

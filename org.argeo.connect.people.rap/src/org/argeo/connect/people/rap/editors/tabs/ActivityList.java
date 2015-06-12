@@ -319,7 +319,9 @@ public class ActivityList extends Composite {
 			relatedTo.add(relatedEntity);
 			Node activity = activityService.createActivity(session, type,
 					title, desc, relatedTo);
-			CommonsJcrUtils.saveAndCheckin(activity);
+			// TODO save strategy
+			// CommonsJcrUtils.saveAndCheckin(activity);
+			CommonsJcrUtils.checkPoint(activity);
 			return activity;
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to create activity node", e);

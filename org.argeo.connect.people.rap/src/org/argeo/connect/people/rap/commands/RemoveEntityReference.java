@@ -65,11 +65,14 @@ public class RemoveEntityReference extends AbstractHandler {
 				toRemoveNode.remove();
 				session.save();
 			} else {
-				boolean wasCO = CommonsJcrUtils
+				// boolean wasCO = 
+				CommonsJcrUtils
 						.checkCOStatusBeforeUpdate(versionableParent);
 				toRemoveNode.remove();
-				CommonsJcrUtils.checkCOStatusAfterUpdate(versionableParent,
-						wasCO);
+				// FIXME should we save ? commit ? do nothing
+				CommonsJcrUtils.save(versionableParent);
+//				CommonsJcrUtils.checkCOStatusAfterUpdate(versionableParent,
+//						wasCO);
 			}
 		} catch (RepositoryException e) {
 			StringBuilder errMsg = new StringBuilder();

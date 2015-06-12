@@ -68,12 +68,11 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
 	private PeopleWorkbenchService peopleWorkbenchService;
-	// We use a one session per editor pattern to secure various nodes and
-	// changes life cycle
+	// There *one session per editor*
 	private Repository repository;
 	private Session session;
 
-	// New approch: we do not rely on the checkin status of the underlying node
+	// New approach: we do not rely on the checkin status of the underlying node
 	// which should always be in a checkout state.
 	// We rather perform a checkPoint when save is explicitly called
 	private Boolean isEditing = false;
@@ -85,17 +84,12 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	private final static DateFormat df = new SimpleDateFormat(
 			PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
-	// Business Objects
+	// Context
 	private Node node;
-	// This editor form
+
+	// UI Context
 	private PeopleManagedForm mForm;
-
-	// Enable management of new entities
-	// private boolean isDraft = false;
-
 	private FormToolkit toolkit;
-
-	// The body composite for the current editor
 	private Composite main;
 
 	// LIFE CYCLE
@@ -143,13 +137,11 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// Internal main Layout
-		// The header
+		// Header
 		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS
 				| SWT.NO_SCROLL | SWT.NO_TRIM);
 		GridLayout gl = PeopleUiUtils.noSpaceGridLayout(2);
-		// So that the buttons are not too close to the right border of the
-		// composite.
-		gl.marginRight = 5;
+		gl.marginRight = 5; // otherwise buttons are too close from right border
 		header.setLayout(gl);
 		header.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
@@ -173,9 +165,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		populateBody(body);
 	}
 
-	/**
-	 * Overwrite to provide a specific part Name
-	 */
+	/** Overwrite to provide a specific part Name */
 	protected void updatePartName() {
 		String name = CommonsJcrUtils.get(node, Property.JCR_TITLE);
 		if (CommonsJcrUtils.checkNotEmptyString(name)) {
@@ -183,14 +173,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 				name = name.substring(0, SHORT_NAME_LENGHT - 1) + "...";
 			setPartName(name);
 		}
-		// else if (isDraft)
-		// setPartName("New...");
 	}
-
-	// /** Overwrite to create specific toolkits relevant for the current editor
-	// */
-	// protected void createToolkits() {
-	// }
 
 	protected abstract Boolean deleteParentOnRemove();
 
@@ -211,8 +194,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 		// Do not show the edit button if the user does not have sufficient
 		// rights
-		if (getPeopleService().getUserManagementService().isUserInRole(
-				PeopleConstants.ROLE_MEMBER)) {
+		if (canEdit()) {
 			Button editBtn = toolkit.createButton(roPanelCmp, "Edit", SWT.PUSH);
 			editBtn.setLayoutData(new RowData(60, 20));
 			editBtn.addSelectionListener(new SelectionAdapter() {
@@ -308,14 +290,12 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					// if (isCheckedOutByMe()) {
 					Map<String, String> params = new HashMap<String, String>();
 					params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID,
 							CommonsJcrUtils.getIdentifier(node));
 					params.put(DeleteEntity.PARAM_REMOVE_ALSO_PARENT,
 							deleteParentOnRemove().toString());
 					CommandUtils.callCommand(DeleteEntity.ID, params);
-					// }
 				}
 			});
 		}
@@ -417,19 +397,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	// IVersionedItemEditor methods
 
 	/** Checks whether the current user can edit the node */
-	// public boolean canBeCheckedOutByMe() {
-	// // TODO add an error/warning message in the editor if the node has
-	// // already been checked out by someone else.
-	// if (isCheckedOutByMe())
-	// return false;
-	// else
-	// return getPeopleService().getUserManagementService().isUserInRole(
-	// PeopleConstants.ROLE_MEMBER);
-	// }
-
-	// public boolean isCheckedOutByMe() {
-	// return CommonsJcrUtils.isNodeCheckedOutByMe(node);
-	// }
 
 	/** Manage check out state and corresponding refresh of the UI */
 	protected void notifyEditionStateChange() {
@@ -444,34 +411,22 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		forceRefresh();
 	}
 
-	// @Override
-	// public void checkoutItem() {
-	// if (isCheckedOutByMe())
-	// // Do nothing
-	// ;
-	// else
-	// CommonsJcrUtils.checkout(node);
-	// notifyCheckOutStateChange();
-	// }
-
 	// Enable life cycle management
 	public Boolean isEditing() {
 		return isEditing;
 	}
 
 	public Boolean canEdit() {
-		// if (isCheckedOutByMe())
-		// return false;
-		// else
 		return getPeopleService().getUserManagementService().isUserInRole(
-				PeopleConstants.ROLE_MEMBER);
+				PeopleConstants.ROLE_MEMBER)
+				|| getPeopleService().getUserManagementService().isUserInRole(
+						PeopleConstants.ROLE_BUSINESS_ADMIN);
 	}
 
 	public void startEditing() {
 		if (!isEditing) {
 			isEditing = true;
 			notifyEditionStateChange();
-			// forceRefresh();
 		}
 	}
 
@@ -479,7 +434,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		if (isEditing) {
 			isEditing = false;
 			notifyEditionStateChange();
-			// forceRefresh();
 		}
 	}
 
@@ -508,7 +462,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	}
 
 	public void cancelAndStopEditing() {
-		// CommonsJcrUtils.cancelAndCheckin(node);
 		JcrUtils.discardUnderlyingSessionQuietly(node);
 		stopEditing();
 	}
@@ -542,17 +495,15 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	/** Overwrite to hide the delete button */
 	protected boolean showDeleteButton() {
-		return true;
+		return canEdit();
 	}
 
 	/* EDITOR LIFE CYCLE MANAGEMENT */
-
 	@Override
 	public void dispose() {
 		try {
 			if (node != null)
 				JcrUtils.discardUnderlyingSessionQuietly(node);
-			// CommonsJcrUtils.cancelAndCheckin(node);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}
@@ -579,7 +530,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			boolean isDirty = session.hasPendingChanges();
 			return isDirty;
 		} catch (Exception e) {
-			throw new PeopleException("Error getting session status.", e);
+			throw new PeopleException(
+					"Error getting session status on " + node, e);
 		}
 	}
 
