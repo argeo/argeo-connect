@@ -266,6 +266,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 		@Override
 		public String getText(Object element) {
+
 			Node currNode = CommonsJcrUtils.getNode((Row) element,
 					tagInstanceType);
 
