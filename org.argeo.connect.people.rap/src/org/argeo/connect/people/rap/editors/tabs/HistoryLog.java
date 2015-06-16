@@ -79,20 +79,16 @@ public class HistoryLog extends Composite {
 			Label label = new Label(parent, SWT.NONE);
 			label.setText("People UID: "
 					+ CommonsJcrUtils.get(entity, PeopleNames.PEOPLE_UID));
-			GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
+			GridData gd = EclipseUiUtils.fillWidth();
 			gd.verticalIndent = 3;
 			gd.horizontalIndent = 5;
 			label.setLayoutData(gd);
 		}
 		Composite historyCmp = new Composite(parent, SWT.NONE);
-		historyCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		historyCmp.setLayoutData(EclipseUiUtils.fillAll());
 		historyCmp.setLayout(new FillLayout());
 		final Text styledText = toolkit.createText(historyCmp, "", SWT.BORDER
 				| SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-		// styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-		// true));
-		// refreshHistory(styledText);
-		// styledText.setEditable(false);
 
 		myFormPart = new MyFormPart(styledText);
 		myFormPart.initialize(editor.getManagedForm());

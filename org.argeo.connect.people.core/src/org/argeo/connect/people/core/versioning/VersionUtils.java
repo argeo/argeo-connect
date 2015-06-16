@@ -140,7 +140,7 @@ public class VersionUtils {
 					ItemDiff iDiff = new ItemDiff(ItemDiff.REMOVED,
 							currNodePath, n, null);
 					localDiffs.put(currNodePath, iDiff);
-					addAllProperties(localDiffs, ItemDiff.REMOVED, n,
+					addAllProperties(localDiffs, ItemDiff.REMOVED, true, n,
 							excludedProperties);
 				}
 			}
@@ -155,7 +155,7 @@ public class VersionUtils {
 					ItemDiff iDiff = new ItemDiff(ItemDiff.ADDED, currNodePath,
 							null, n);
 					localDiffs.put(currNodePath, iDiff);
-					addAllProperties(localDiffs, ItemDiff.ADDED, n,
+					addAllProperties(localDiffs, ItemDiff.ADDED, true, n,
 							excludedProperties);
 				}
 			}
@@ -189,7 +189,7 @@ public class VersionUtils {
 		return tmpItem instanceof Node;
 	}
 
-	static void addAllProperties(Map<String, ItemDiff> diffs, Integer type,
+	static void addAllProperties(Map<String, ItemDiff> diffs, Integer type, boolean trackSubNode,
 			Node node, List<String> excludedProperties)
 			throws RepositoryException {
 		PropertyIterator pit = node.getProperties();
@@ -205,6 +205,34 @@ public class VersionUtils {
 				iDiff = new ItemDiff(ItemDiff.REMOVED, name, p, null);
 			diffs.put(name, iDiff);
 		}
+		
+		// TODO: for the time being, we do not yet add sub nodes and their properties in the diff
+		// Investigate: We might have to also deal and update this to correctly managed added rel pathes.
+		
+		// NodeIterator nit = node.getNodes();
+		// nodes: while (nit.hasNext()) {
+		// Node n = nit.nextNode();
+		// String name = n.getName();
+		// // TODO add nodes to ignore in the property list
+		// if (excludedProperties.contains(name))
+		// continue nodes;
+		// ItemDiff iDiff;
+		// if (ItemDiff.ADDED == type){
+		// iDiff = new ItemDiff(ItemDiff.ADDED, name, null, n);
+		// localDiffs.put(currNodePath, iDiff);
+		// addAllProperties(localDiffs, ItemDiff.ADDED, n,
+		// excludedProperties);
+		//
+		// localDiffs, ItemDiff.ADDED, n,
+		// excludedProperties
+		// }
+		// else
+		// iDiff = new ItemDiff(ItemDiff.REMOVED, name, p, null);
+		// diffs.put(name, iDiff);
+		// }
+		//	
+		
+		
 	}
 
 	/**

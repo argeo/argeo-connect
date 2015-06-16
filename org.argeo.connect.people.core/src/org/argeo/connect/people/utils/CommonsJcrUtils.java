@@ -255,17 +255,24 @@ public class CommonsJcrUtils {
 	 * Make a version snapshot of the current state of the given versionable
 	 * node. It wraps a JCR save and checkPoint methods
 	 */
-	public static void checkPoint(Node node) {
+	public static boolean checkPoint(Node node) {
 		try {
-			JcrUtils.updateLastModified(node);
-			node.getSession().save();
-			VersionManager vm = node.getSession().getWorkspace()
-					.getVersionManager();
-			String path = node.getPath();
-			vm.checkpoint(path);
+			Session session = node.getSession();
+			if (session.hasPendingChanges()) {
+				JcrUtils.updateLastModified(node);
+				session.save();
+				if (isVersionable(node)) {
+					VersionManager vm = session.getWorkspace()
+							.getVersionManager();
+					String path = node.getPath();
+					vm.checkpoint(path);
+				}
+				return true;
+			}
+			return false;
 		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"Unable to save and chek in node " + node, re);
+			throw new PeopleException("Unable to perform check point on "
+					+ node, re);
 		}
 	}
 
@@ -280,12 +287,14 @@ public class CommonsJcrUtils {
 	 */
 	public static boolean save(Node node, boolean tagVersion) {
 		try {
-			Session adminSession = node.getSession();
-			if (adminSession.hasPendingChanges()) {
-				adminSession.save();
-				if (tagVersion && isVersionable(node))
-					checkPoint(node);
-				return true;
+			if (tagVersion)
+				return checkPoint(node);
+			else {
+				Session session = node.getSession();
+				if (session.hasPendingChanges()) {
+					session.save();
+					return true;
+				}
 			}
 			return false;
 		} catch (RepositoryException e) {
