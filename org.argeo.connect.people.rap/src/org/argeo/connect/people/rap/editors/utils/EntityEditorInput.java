@@ -7,12 +7,20 @@ import org.eclipse.ui.IPersistableElement;
 /** Editor input for generic editor that display info on a given JCR Node */
 public class EntityEditorInput implements IEditorInput {
 
-	private final String uid;
+	private String uid;
 // Workaround to enable setting a dynamic tooltip from the bound editor part instance.
 	private String tooltip = "Display and edit current item informations";	
 	
 	/** uid must not be null */
 	public EntityEditorInput(String uid) {
+		this.uid = uid;
+	}
+
+	/** Enable change on the "main" node for this editor after creation *
+	 * 
+	 * @param uid must not be null
+	 */
+	public void setUid(String uid) {
 		this.uid = uid;
 	}
 

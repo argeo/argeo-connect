@@ -433,7 +433,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 					.getWorkspace()
 					.getQueryManager()
 					.createQuery(
-							"SELECT * FROM [" + NodeType.MIX_LAST_MODIFIED
+							"SELECT * FROM [" + NodeType.MIX_VERSIONABLE
 									+ "] ORDER BY ["
 									+ Property.JCR_LAST_MODIFIED + "] DESC ",
 							Query.JCR_SQL2);
@@ -449,7 +449,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			}
 			long i = 0;
 			while (nit.hasNext()) {
-				CommonsJcrUtils.checkCOStatusAfterUpdate(nit.nextNode(), false);
+				CommonsJcrUtils.checkPoint(nit.nextNode());
 				if (i % 100 == 0 && monitor != null && !monitor.isCanceled())
 					monitor.worked(1);
 				i++;

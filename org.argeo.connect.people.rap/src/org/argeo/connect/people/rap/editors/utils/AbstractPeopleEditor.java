@@ -323,6 +323,11 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	}
 
 	/* PUBLIC ABILITIES AND EXPOSED OBJECTS */
+	/** Enables definition of a new "main" node for this editor */
+	public void setNode(Node node) {
+		this.node = node;
+	}
+
 	/** Returns the entity Node that is bound to this editor */
 	public Node getNode() {
 		return node;
