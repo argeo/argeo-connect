@@ -43,6 +43,19 @@ public class ActivityUtils {
 		}
 	}
 
+	public static NodeIterator getRates(Node pollable) {
+		try {
+			Session session = pollable.getSession();
+			String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_RATE
+					+ "] WHERE  ISDESCENDANTNODE('" + pollable.getPath() + "')";
+			Query query = session.getWorkspace().getQueryManager()
+					.createQuery(queryStr, Query.JCR_SQL2);
+			return query.execute().getNodes();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to get rates for " + pollable);
+		}
+	}
+
 	public static Node getMyVote(Node poll) {
 		try {
 			Node myVote = null;

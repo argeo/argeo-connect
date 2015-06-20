@@ -406,6 +406,22 @@ public class CommonsJcrUtils {
 	}
 
 	/**
+	 * Concisely get the value of a date property or null if this node doesn't
+	 * have this property
+	 */
+	public static Calendar getDateValue(Node node, String propertyName) {
+		try {
+			if (!node.hasProperty(propertyName))
+				return null;
+			else
+				return node.getProperty(propertyName).getDate();
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Cannot get date property " + propertyName
+					+ " of " + node, e);
+		}
+	}
+
+	/**
 	 * Concisely get the value of a boolean property or null if this node
 	 * doesn't have this property
 	 */

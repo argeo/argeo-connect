@@ -16,7 +16,6 @@ import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.editors.parts.TagLikeListPart;
 import org.argeo.connect.people.rap.editors.tabs.ActivityList;
 import org.argeo.connect.people.rap.editors.tabs.ContactList;
-import org.argeo.connect.people.rap.editors.tabs.HistoryLog;
 import org.argeo.connect.people.rap.editors.tabs.JobList;
 import org.argeo.connect.people.rap.editors.tabs.OrgAdminInfo;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
@@ -143,14 +142,14 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		legalCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// History panel
-		tooltip = "History of information about "
-				+ JcrUtils.get(org, Property.JCR_TITLE);
-		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "History",
-				PeopleRapConstants.CTAB_HISTORY, tooltip);
-		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite historyLogCmp = new HistoryLog(this, innerPannel, SWT.NONE,
-				getPeopleService(), org);
-		historyLogCmp.setLayoutData(EclipseUiUtils.fillAll());
+		// tooltip = "History of information about "
+		// + JcrUtils.get(org, Property.JCR_TITLE);
+		// innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "History",
+		// PeopleRapConstants.CTAB_HISTORY, tooltip);
+		// innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
+		// Composite historyLogCmp = new HistoryLog(this, innerPannel, SWT.NONE,
+		// getPeopleService(), org);
+		// historyLogCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 	}
 

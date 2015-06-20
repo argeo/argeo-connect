@@ -183,9 +183,12 @@ public class HistoryLog extends Composite {
 			throw new PeopleException(
 					"Cannot generate history for current entity.", e);
 		}
-
 	}
 
+	public void refresh(){
+		myFormPart.refresh();
+	}
+	
 	private String getValueAsString(Value refValue) throws RepositoryException {
 		String refValueStr;
 		if (refValue.getType() == PropertyType.DATE) {

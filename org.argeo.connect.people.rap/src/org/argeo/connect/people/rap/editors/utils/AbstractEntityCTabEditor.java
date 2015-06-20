@@ -1,9 +1,20 @@
 package org.argeo.connect.people.rap.editors.utils;
 
+import javax.jcr.Property;
+import javax.jcr.nodetype.NodeType;
+
+import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.editors.tabs.HistoryLog;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -59,6 +70,40 @@ public abstract class AbstractEntityCTabEditor extends
 		return innerPannel;
 	}
 
+	@Override
+	protected void addEditButtons(final Composite parent) {
+		if (CommonsJcrUtils.isNodeType(getNode(), NodeType.MIX_VERSIONABLE)) {
+			final Button showHistoryBtn = getFormToolkit().createButton(parent,
+					"History", SWT.PUSH);
+			showHistoryBtn.setLayoutData(new RowData(60, 20));
+			showHistoryBtn.addSelectionListener(new SelectionAdapter() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					// History panel
+					String tooltip = "History of information about "
+							+ JcrUtils.get(getNode(), Property.JCR_TITLE);
+					Composite innerPannel = addTabToFolder(folder,
+							CTAB_COMP_STYLE, "History",
+							PeopleRapConstants.CTAB_HISTORY, tooltip);
+					innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
+					HistoryLog historyLogCmp = new HistoryLog(
+							AbstractEntityCTabEditor.this, innerPannel,
+							SWT.NONE, getPeopleService(), getNode());
+					historyLogCmp.setLayoutData(EclipseUiUtils.fillAll());
+					if (!showHistoryBtn.isDisposed()) {
+						Composite par = showHistoryBtn.getParent();
+						showHistoryBtn.dispose();
+						par.layout(true, true);
+					}
+					openTabItem(PeopleRapConstants.CTAB_HISTORY);
+					historyLogCmp.refresh();
+				}
+			});
+		}
+	}
+
 	/**
 	 * 
 	 * @param tabFolder
@@ -109,6 +154,18 @@ public abstract class AbstractEntityCTabEditor extends
 				return;
 			}
 		}
+	}
+
+	/** Open the corresponding tab if it has been defined */
+	public CTabItem getTabItemById(String id) {
+		CTabItem[] items = folder.getItems();
+		for (CTabItem item : items) {
+			String currId = (String) item.getData(CTAB_INSTANCE_ID);
+			if (currId != null && currId.equals(id)) {
+				return item;
+			}
+		}
+		return null;
 	}
 
 	/* UTILITES */

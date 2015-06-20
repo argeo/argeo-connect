@@ -299,6 +299,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 				}
 			});
 		}
+
+		// add other edition buttons
 		addEditButtons(editPanelCmp);
 
 		editPanelCmp.layout();
