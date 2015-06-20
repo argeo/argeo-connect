@@ -153,6 +153,29 @@ public class PeopleRapUtils {
 	}
 
 	/**
+	 * Shortcut to refresh a Check box <code>Button</code> with an encoded
+	 * boolean flag widget given a Node in a form and a property Name.
+	 */
+	public static boolean refreshFlagFormCheckBox(CmsEditable editable,
+			Button button, Node entity, String propName, int cache) {
+		long val = 0;
+		Boolean tmp = null;
+		try {
+			if (entity.hasProperty(propName)) {
+				val = entity.getProperty(propName).getLong();
+				tmp = (val & cache) != 0;
+				button.setSelection(tmp);
+			} else
+				tmp = false;
+			button.setEnabled(editable.isEditing());
+		} catch (RepositoryException re) {
+			throw new PeopleException("unable get boolean value for property "
+					+ propName);
+		}
+		return tmp;
+	}
+
+	/**
 	 * Shortcut to refresh a Check box <code>Button</code> widget given a Node
 	 * in a form and a property Name.
 	 */
@@ -328,6 +351,36 @@ public class PeopleRapUtils {
 				if (CommonsJcrUtils.setJcrProperty(node, propName,
 						PropertyType.BOOLEAN, value))
 					part.markDirty();
+			}
+		});
+	}
+
+	/**
+	 * Shortcut to add a default selection listener to a Check Box
+	 * <code>Button</code> widget that is bound a JCR boolean property. Any
+	 * change in the selection is immediately stored in the active session, but
+	 * not saved
+	 */
+	public static void addFlagCheckBoxListener(final Button button,
+			final Node node, final String propName, final int cache,
+			final AbstractFormPart part) {
+		button.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				boolean value = button.getSelection();
+
+				Long oldValue = CommonsJcrUtils.getLongValue(node, propName);
+				if (oldValue == null)
+					oldValue = 0L;
+				boolean oldFlag = (oldValue & cache) != 0;
+				if (value != oldFlag) {
+					long newValue = oldValue ^ cache;
+					CommonsJcrUtils.setJcrProperty(node, propName,
+							PropertyType.LONG, newValue);
+					part.markDirty();
+				}
 			}
 		});
 	}
