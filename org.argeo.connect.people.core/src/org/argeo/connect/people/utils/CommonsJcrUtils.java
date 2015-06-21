@@ -791,6 +791,28 @@ public class CommonsJcrUtils {
 	}
 
 	/**
+	 * Simply checks a multi valued STRING property of a Node and returns true
+	 * if the given property has already such a value. comparison is case
+	 * insensitive and trimmed.
+	 */
+	public static boolean valueExists(Node node, String propName, String value) {
+		try {
+			value = value.trim().toLowerCase();
+			if (node.hasProperty(propName)) {
+				Value[] values = node.getProperty(propName).getValues();
+				for (Value currVal : values) {
+					String currStr = currVal.getString().trim().toLowerCase();
+					if (value.equals(currStr))
+						return true;
+				}
+			}
+			return false;
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Unable to set tags", re);
+		}
+	}
+
+	/**
 	 * Adds a String to the multi valued STRING property of a Node. An error
 	 * message is returned if the String is already in the list. The new String
 	 * is always added after all already existing Strings.

@@ -122,7 +122,8 @@ public class ActivityUtils {
 	public static String getAvgRating(Node poll) throws RepositoryException {
 		Session session = poll.getSession();
 		String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_RATE
-				+ "] WHERE  ISDESCENDANTNODE('" + poll.getPath() + "') ";
+				+ "] WHERE  ISDESCENDANTNODE('" + poll.getPath() + "/"
+				+ PeopleNames.PEOPLE_RATES + "') ";
 		long nb = 0;
 		long total = 0;
 		Query query = session.getWorkspace().getQueryManager()
