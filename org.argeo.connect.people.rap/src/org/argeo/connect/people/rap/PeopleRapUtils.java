@@ -154,7 +154,7 @@ public class PeopleRapUtils {
 
 	/**
 	 * Shortcut to refresh a Check box <code>Button</code> with an encoded
-	 * boolean flag widget given a Node in a form and a property Name.
+	 * boolean flag widget given a node in a form and a property name.
 	 */
 	public static boolean refreshFlagFormCheckBox(CmsEditable editable,
 			Button button, Node entity, String propName, int cache) {

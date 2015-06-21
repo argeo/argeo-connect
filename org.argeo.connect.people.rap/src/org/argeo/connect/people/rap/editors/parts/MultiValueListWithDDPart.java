@@ -13,6 +13,7 @@ import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.composites.dropdowns.PeopleAbstractDropDown;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -26,7 +27,6 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
@@ -39,8 +39,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  */
 
 public abstract class MultiValueListWithDDPart extends Composite {
-
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 7439016082872333306L;
 	private AbstractFormPart part;
 	private FormToolkit toolkit;
 
@@ -94,9 +93,7 @@ public abstract class MultiValueListWithDDPart extends Composite {
 		this.setLayout(rl);
 
 		// TODO Add a check to see if the property has changed
-		Control[] oldChildren = parent.getChildren();
-		for (Control child : oldChildren)
-			child.dispose();
+		EclipseUiUtils.clear(parent);
 
 		try {
 			if (node.hasProperty(propertyName)) {
