@@ -25,6 +25,7 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -49,7 +50,6 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
@@ -101,8 +101,8 @@ public class ActivityTable extends Composite implements ArgeoNames {
 
 		Table table = viewer.getTable();
 		table.setLayoutData(EclipseUiUtils.fillAll());
-		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(54));
+		CmsUtils.markup(table);
+		CmsUtils.setItemHeight(table, 54);
 		table.setHeaderVisible(false);
 		table.setLinesVisible(true);
 
@@ -266,6 +266,13 @@ public class ActivityTable extends Composite implements ArgeoNames {
 				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
 					builder.append("<b>");
 					builder.append(activityService.getActivityLabel(currNode));
+					// specific for rate
+					if (currNode.isNodeType(PeopleTypes.PEOPLE_RATE)) {
+						Long rate = CommonsJcrUtils.getLongValue(currNode,
+								PeopleNames.PEOPLE_RATE);
+						if (rate != null)
+							builder.append(": " + rate);
+					}
 					builder.append("</b>");
 				}
 				return builder.toString();
@@ -406,11 +413,11 @@ public class ActivityTable extends Composite implements ArgeoNames {
 				if (activityNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
 					// done task
 					if (activityService.isTaskDone(activityNode)) {
-//						value = activityService
-//								.getActivityManagerDisplayName(activityNode);
-//						if (CommonsJcrUtils.checkNotEmptyString(value))
-							builder.append("Done by: ").append(value)
-									.append("<br />");
+						// value = activityService
+						// .getActivityManagerDisplayName(activityNode);
+						// if (CommonsJcrUtils.checkNotEmptyString(value))
+						builder.append("Done by: ").append(value)
+								.append("<br />");
 						value = activityService
 								.getAssignedToDisplayName(activityNode);
 						if (CommonsJcrUtils.checkNotEmptyString(value))
@@ -432,8 +439,8 @@ public class ActivityTable extends Composite implements ArgeoNames {
 					}
 				} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
 					String reporter = "";
-//							activityService
-//							.getActivityManagerDisplayName(activityNode);
+					// activityService
+					// .getActivityManagerDisplayName(activityNode);
 					String updater = null;
 
 					if (activityNode.hasProperty(Property.JCR_LAST_MODIFIED_BY))
@@ -522,9 +529,10 @@ public class ActivityTable extends Composite implements ArgeoNames {
 				if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
 					String title = CommonsJcrUtils.get(currNode,
 							Property.JCR_TITLE);
-					String desc =CommonsJcrUtils.get(currNode,
+					String desc = CommonsJcrUtils.get(currNode,
 							Property.JCR_DESCRIPTION);
-					String res = CommonsJcrUtils.concatIfNotEmpty(title, desc, " - ");
+					String res = CommonsJcrUtils.concatIfNotEmpty(title, desc,
+							" - ");
 					return wrapThis(res);
 				}
 				return "";

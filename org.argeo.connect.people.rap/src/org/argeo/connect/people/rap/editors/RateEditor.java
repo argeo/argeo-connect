@@ -1,24 +1,35 @@
 package org.argeo.connect.people.rap.editors;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 import javax.jcr.Node;
 import javax.jcr.Property;
+import javax.jcr.PropertyType;
+import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.ActivityService;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleRapUtils;
-import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.editors.parts.DateTextPart;
 import org.argeo.connect.people.rap.editors.parts.LinkListPart;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
+import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.people.utils.ActivityUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -29,15 +40,17 @@ import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
-/** Default People activity editor */
-public class ActivityEditor extends AbstractPeopleEditor {
-	final static Log log = LogFactory.getLog(ActivityEditor.class);
+/**
+ * Default People rate editor: display a rate and an optional comment. Only the
+ * manager can edit an existing rate, the business admin can yet delete it
+ */
+public class RateEditor extends AbstractPeopleEditor {
+	final static Log log = LogFactory.getLog(RateEditor.class);
 
-	public final static String ID = PeopleRapPlugin.PLUGIN_ID
-			+ ".activityEditor";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".rateEditor";
 
 	// Context
-	private Node activity;
+	private Node rate;
 
 	// Workaround to align first column of header and body.
 	private int firstColWHint = 85;
@@ -45,7 +58,16 @@ public class ActivityEditor extends AbstractPeopleEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		activity = getNode();
+		rate = getNode();
+	}
+
+	/** Overwrite to provide a specific part tooltip */
+	protected void updateToolTip() {
+		EntityEditorInput sei = (EntityEditorInput) getEditorInput();
+		String pollName = ActivityUtils.getPollName(getNode());
+		String manager = CommonsJcrUtils.get(getNode(),
+				PeopleNames.PEOPLE_REPORTED_BY);
+		sei.setTooltipText(manager + "'s rate for " + pollName);
 	}
 
 	@Override
@@ -58,10 +80,17 @@ public class ActivityEditor extends AbstractPeopleEditor {
 
 	protected void populateHeader(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite headerCmp = new ActivityHeader(getFormToolkit(),
+		Composite headerCmp = new RateHeader(getFormToolkit(),
 				getManagedForm(), parent, SWT.NO_FOCUS, getPeopleService(),
-				getPeopleWorkbenchService(), activity);
+				rate);
 		headerCmp.setLayoutData(EclipseUiUtils.fillWidth());
+	}
+
+	protected List<String> getPossibleRates() {
+		List<String> rates = new ArrayList<String>();
+		for (int i = 0; i <= 20; i++)
+			rates.add("" + i);
+		return rates;
 	}
 
 	@Override
@@ -69,17 +98,18 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		parent.setLayout(new GridLayout(2, false));
 
 		FormToolkit toolkit = getFormToolkit();
-		// 3rd line: title
-		Label label = PeopleRapUtils.createBoldLabel(toolkit, parent, "Title");
-		GridData gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
-		gd.widthHint = firstColWHint;
-		label.setLayoutData(gd);
-		final Text titleTxt = toolkit.createText(parent, "", SWT.BORDER
-				| SWT.SINGLE);
-		titleTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
-		// Bottom part: description
-		label = PeopleRapUtils.createBoldLabel(toolkit, parent, "Description");
+		// Rate
+		PeopleRapUtils.createBoldLabel(toolkit, parent, "Rate");
+		final Combo rateCmb = new Combo(parent, SWT.READ_ONLY);
+		GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		gd.widthHint = 100;
+		rateCmb.setLayoutData(gd);
+		rateCmb.setItems(getPossibleRates().toArray(new String[0]));
+
+		// Bottom part: optional comment
+		Label label = PeopleRapUtils
+				.createBoldLabel(toolkit, parent, "Comment");
 		gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
 		gd.widthHint = firstColWHint;
 		gd.verticalIndent = 2;
@@ -91,26 +121,31 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		final AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
-				PeopleRapUtils.refreshFormTextWidget(ActivityEditor.this,
-						titleTxt, activity, Property.JCR_TITLE);
-				PeopleRapUtils.refreshFormTextWidget(ActivityEditor.this,
-						descTxt, activity, Property.JCR_DESCRIPTION);
+				boolean canEdit = RateEditor.this.isEditing()
+						&& getSession().getUserID().equals(
+								CommonsJcrUtils.get(getNode(),
+										PeopleNames.PEOPLE_REPORTED_BY));
+				PeopleRapUtils.refreshFormTextWidget(RateEditor.this, descTxt,
+						rate, Property.JCR_DESCRIPTION);
+				descTxt.setEnabled(canEdit);
+				rateCmb.select(rateCmb.indexOf(CommonsJcrUtils.get(rate,
+						PeopleNames.PEOPLE_RATE)));
+				rateCmb.setEnabled(canEdit);
 			}
 		};
 
-		PeopleRapUtils.addModifyListener(titleTxt, activity,
-				Property.JCR_TITLE, formPart);
-		PeopleRapUtils.addModifyListener(descTxt, activity,
+		PeopleRapUtils.addModifyListener(descTxt, rate,
 				Property.JCR_DESCRIPTION, formPart);
+		PeopleRapUtils.addComboSelectionListener(formPart, rateCmb, rate,
+				PeopleNames.PEOPLE_RATE, PropertyType.LONG);
 
 		formPart.initialize(getManagedForm());
 		getManagedForm().addPart(formPart);
 	}
 
-	private class ActivityHeader extends Composite {
+	private class RateHeader extends Composite {
 		private static final long serialVersionUID = 6434106955847719839L;
 
-		private final ActivityService activityService;
 		private final Node activity;
 
 		// UI Context
@@ -118,20 +153,18 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		private final FormToolkit toolkit;
 
 		// UI Objects
-		private Label typeLbl;
+		private Label pollNameLbl;
 		private Label managerLbl;
-		private DateTextPart dateComposite;
+		private Label dateLbl;
+		// private DateTextPart dateComposite;
 		private LinkListPart relatedCmp;
 
-		public ActivityHeader(FormToolkit toolkit, IManagedForm form,
+		public RateHeader(FormToolkit toolkit, IManagedForm form,
 				Composite parent, int style, PeopleService peopleService,
-				PeopleWorkbenchService msmWorkbenchService, Node activity) {
+				Node activity) {
 			super(parent, style);
 			this.toolkit = toolkit;
 			this.activity = activity;
-
-			// Caches a few context object to ease implementation
-			activityService = peopleService.getActivityService();
 
 			// Initialise the form
 			myFormPart = new MyFormPart();
@@ -141,26 +174,34 @@ public class ActivityEditor extends AbstractPeopleEditor {
 
 		private class MyFormPart extends AbstractFormPart {
 
+			DateFormat dateFormat = new SimpleDateFormat(
+					PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
+
 			@Override
 			public void refresh() {
-				if (ActivityHeader.this.isDisposed())
+				if (RateHeader.this.isDisposed())
 					return;
+				if (RateHeader.this.getChildren().length == 0)
+					populate(RateHeader.this);
 
-				if (ActivityHeader.this.getChildren().length == 0)
-					populate(ActivityHeader.this);
-
-				typeLbl.setText(activityService.getActivityLabel(activity));
+				pollNameLbl.setText(ActivityUtils.getPollName(activity));
 				String manager = CommonsJcrUtils.get(activity,
 						PeopleNames.PEOPLE_REPORTED_BY);
 				if (CommonsJcrUtils.checkNotEmptyString(manager))
 					managerLbl.setText(manager);
+				try {
+					if (activity.hasProperty(PeopleNames.PEOPLE_ACTIVITY_DATE)) {
+						Calendar cal = activity.getProperty(
+								PeopleNames.PEOPLE_ACTIVITY_DATE).getDate();
+						dateLbl.setText(dateFormat.format(cal.getTime()));
+					}
+				} catch (RepositoryException e) {
+					throw new PeopleException("unable to refresh "
+							+ "rating date for " + activity, e);
+				}
 
-				dateComposite.refresh();
-
-				// // We redraw the full control at each refresh, might be a
-				// // more efficient way to do
-				// EclipseUiUtils.clear(relatedCmp);
 				relatedCmp.refresh();
+
 				relatedCmp.getParent().getParent().layout();
 			}
 
@@ -171,29 +212,31 @@ public class ActivityEditor extends AbstractPeopleEditor {
 				// Work around to be able to kind of also align bold labels of
 				// the body
 				Label label = PeopleRapUtils.createBoldLabel(toolkit, parent,
-						"Type");
+						"Category");
 				GridData gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 				gd.widthHint = firstColWHint;
 				label.setLayoutData(gd);
-				typeLbl = toolkit.createLabel(parent, "");
+				pollNameLbl = toolkit.createLabel(parent, "");
 
 				gd = EclipseUiUtils.fillWidth();
-				gd.verticalIndent = 3;
-				typeLbl.setLayoutData(gd);
+				gd.verticalIndent = 2;
+				pollNameLbl.setLayoutData(gd);
 
-				PeopleRapUtils.createBoldLabel(toolkit, parent, "Reported by");
+				PeopleRapUtils.createBoldLabel(toolkit, parent, "Rated by");
 				managerLbl = toolkit.createLabel(parent, "");
 
 				gd = EclipseUiUtils.fillWidth();
-				gd.verticalIndent = 3;
+				gd.verticalIndent = 2;
 				managerLbl.setLayoutData(gd);
 
 				// ACTIVITY DATE
-				PeopleRapUtils.createBoldLabel(toolkit, parent, "Date");
-				dateComposite = new DateTextPart(ActivityEditor.this, parent,
-						SWT.NO_FOCUS, myFormPart, activity,
-						PeopleNames.PEOPLE_ACTIVITY_DATE);
-				dateComposite.setLayoutData(EclipseUiUtils.fillWidth());
+				PeopleRapUtils.createBoldLabel(toolkit, parent, "On");
+				dateLbl = toolkit.createLabel(parent, "");
+
+				// dateComposite = new DateTextPart(RateEditor.this, parent,
+				// SWT.NO_FOCUS, myFormPart, activity,
+				// PeopleNames.PEOPLE_ACTIVITY_DATE);
+				// dateComposite.setLayoutData(EclipseUiUtils.fillWidth());
 
 				// 2nd line - RELATED ENTITIES
 				label = PeopleRapUtils.createBoldLabel(toolkit, parent,
@@ -201,7 +244,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 				gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 				gd.verticalIndent = 2;
 				label.setLayoutData(gd);
-				relatedCmp = new LinkListPart(ActivityEditor.this, myFormPart,
+				relatedCmp = new LinkListPart(RateEditor.this, myFormPart,
 						parent, SWT.NO_FOCUS, getPeopleWorkbenchService(),
 						activity, PeopleNames.PEOPLE_RELATED_TO);
 				relatedCmp.setLayoutData(EclipseUiUtils.fillWidth(5));

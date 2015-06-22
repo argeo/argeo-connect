@@ -18,6 +18,7 @@ import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.dialogs.PickUpRelatedDialog;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
@@ -119,10 +120,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 	private void recreateRelated(Composite relatedCmp) {
 		try {
 			// Dispose existing
-			Control[] oldChildren = relatedCmp.getChildren();
-			for (Control child : oldChildren)
-				child.dispose();
-			// Insure Layout is OK
+			EclipseUiUtils.clear(relatedCmp);
 
 			if (entity.hasProperty(propName)) {
 				Value[] values = entity.getProperty(propName).getValues();
@@ -191,7 +189,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 
 	private FormData deleteFormData() {
 		FormData formData = new FormData();
-		formData.top = new FormAttachment(0, 1);
+		formData.top = new FormAttachment(0, 2);
 		formData.right = new FormAttachment(100, 0);
 		return formData;
 	}

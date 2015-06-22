@@ -173,10 +173,10 @@ public abstract class AbstractEntityCTabEditor extends
 	 * Generally, generic entity editors displays the *business* node. Yet
 	 * sometimes parent node should also be removed on delete.
 	 */
-	@Override
-	protected Boolean deleteParentOnRemove() {
-		return false;
-	}
+//	@Override
+//	protected Boolean deleteParentOnRemove() {
+//		return false;
+//	}
 
 	protected boolean checkControl(Control control) {
 		return control != null && !control.isDisposed();

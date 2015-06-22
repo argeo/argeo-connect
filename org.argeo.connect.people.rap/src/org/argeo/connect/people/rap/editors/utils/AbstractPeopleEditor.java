@@ -101,19 +101,9 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			session = repository.login();
 			EntityEditorInput sei = (EntityEditorInput) getEditorInput();
 			node = getSession().getNodeByIdentifier(sei.getUid());
-
-			// try to set a default part name
+			// Set a default part name and tooltip
 			updatePartName();
-
-			// update tooltip
-			String displayName = CommonsJcrUtils.get(node, Property.JCR_TITLE);
-			if (CommonsJcrUtils.isEmptyString(displayName))
-				displayName = "current item";
-			sei.setTooltipText("Display and edit information for "
-					+ displayName);
-			// Does not do what is expected (rather use the above workaround)
-			// setTitleToolTip("Display and edit information for " +
-			// displayName);
+			updateToolTip();
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Unable to create new session"
 					+ " to use with current editor", e);
@@ -175,7 +165,24 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		}
 	}
 
-	protected abstract Boolean deleteParentOnRemove();
+	/** Overwrite to provide a specific part tooltip */
+	protected void updateToolTip() {
+		EntityEditorInput sei = (EntityEditorInput) getEditorInput();
+		String displayName = CommonsJcrUtils.get(node, Property.JCR_TITLE);
+		if (CommonsJcrUtils.isEmptyString(displayName))
+			displayName = "current item";
+		sei.setTooltipText("Display and edit information for " + displayName);
+		// Does not do what is expected (rather use the above workaround)
+		// setTitleToolTip("Display and edit information for " +
+		// displayName);
+	}
+
+	/**
+	 * Old approach to enable management of the edition / edition info duality.
+	 * Not used anymore with the new model. Double check and remove
+	 */
+	// @Deprecated
+	// protected abstract Boolean deleteParentOnRemove();
 
 	/** Overwrite following methods to create a nice editor... */
 	protected abstract void populateBody(Composite parent);;
@@ -293,8 +300,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 					Map<String, String> params = new HashMap<String, String>();
 					params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID,
 							CommonsJcrUtils.getIdentifier(node));
-					params.put(DeleteEntity.PARAM_REMOVE_ALSO_PARENT,
-							deleteParentOnRemove().toString());
+					// params.put(DeleteEntity.PARAM_REMOVE_ALSO_PARENT,
+					// deleteParentOnRemove().toString());
 					CommandUtils.callCommand(DeleteEntity.ID, params);
 				}
 			});

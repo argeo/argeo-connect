@@ -143,10 +143,10 @@ public class TemplateEditor extends AbstractEntityCTabEditor implements
 		}
 	}
 
-	@Override
-	protected Boolean deleteParentOnRemove() {
-		return false;
-	}
+	// @Override
+	// protected Boolean deleteParentOnRemove() {
+	// return false;
+	// }
 
 	@Override
 	protected boolean showDeleteButton() {
