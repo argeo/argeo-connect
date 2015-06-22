@@ -24,8 +24,24 @@ import org.argeo.jcr.JcrUtils;
 public class ActivityUtils {
 
 	// private final static Log log = LogFactory.getLog(ActivityUtils.class);
-
 	private final static NumberFormat nbFormat = DecimalFormat.getInstance();
+
+	/** Simply returns the poll name that is relevant for the given rate */
+	public static String getPollName(Node rate) {
+		try {
+			Node poll = null;
+			Node curr = rate;
+			while (poll == null)
+				if (curr.isNodeType(PeopleTypes.PEOPLE_POLL))
+					poll = curr;
+				else
+					curr = curr.getParent();
+			return CommonsJcrUtils.get(poll, PeopleNames.PEOPLE_POLL_NAME);
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to get related "
+					+ "poll name for " + rate, re);
+		}
+	}
 
 	public static NodeIterator getPolls(Node pollable, boolean onlyOpenPolls) {
 		try {
@@ -39,7 +55,7 @@ public class ActivityUtils {
 					.createQuery(queryStr, Query.JCR_SQL2);
 			return query.execute().getNodes();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get polls for " + pollable);
+			throw new PeopleException("Unable to get polls for " + pollable, re);
 		}
 	}
 
