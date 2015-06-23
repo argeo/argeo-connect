@@ -153,27 +153,27 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	}
 
 	/** Get the display name for the manager of an activity. */
-//	public String getActivityManagerDisplayName(Node activityNode) {
-//		// TODO return display name rather than ID
-//		String manager = CommonsJcrUtils.get(activityNode,
-//				PeopleNames.PEOPLE_REPORTED_BY);
-//
-//		if (CommonsJcrUtils.isEmptyString(manager)) {
-//			// TODO workaround to try to return a manager name in case we are in
-//			// a legacy context
-//			try {
-//				if (activityNode.hasProperty(PeopleNames.PEOPLE_MANAGER)) {
-//					Node referencedManager = activityNode.getProperty(
-//							PeopleNames.PEOPLE_MANAGER).getNode();
-//					manager = referencedManager.getParent().getName();
-//				}
-//			} catch (RepositoryException e) {
-//				throw new PeopleException("Unable to legacy get "
-//						+ "manager name for activity " + activityNode, e);
-//			}
-//		}
-//		return manager;
-//	}
+	// public String getActivityManagerDisplayName(Node activityNode) {
+	// // TODO return display name rather than ID
+	// String manager = CommonsJcrUtils.get(activityNode,
+	// PeopleNames.PEOPLE_REPORTED_BY);
+	//
+	// if (CommonsJcrUtils.isEmptyString(manager)) {
+	// // TODO workaround to try to return a manager name in case we are in
+	// // a legacy context
+	// try {
+	// if (activityNode.hasProperty(PeopleNames.PEOPLE_MANAGER)) {
+	// Node referencedManager = activityNode.getProperty(
+	// PeopleNames.PEOPLE_MANAGER).getNode();
+	// manager = referencedManager.getParent().getName();
+	// }
+	// } catch (RepositoryException e) {
+	// throw new PeopleException("Unable to legacy get "
+	// + "manager name for activity " + activityNode, e);
+	// }
+	// }
+	// return manager;
+	// }
 
 	/* TASKS */
 	@Override
@@ -404,23 +404,25 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 				taskNode.setProperty(PeopleNames.PEOPLE_WAKE_UP_DATE,
 						wakeUpDate);
 			}
-
-			// Default status management
-			ResourceService resourceService = peopleService
-					.getResourceService();
-			Node template = resourceService.getNodeTemplate(session,
-					taskNodeType);
-			String defaultStatus = CommonsJcrUtils.get(template,
-					PEOPLE_TASK_DEFAULT_STATUS);
-			if (CommonsJcrUtils.checkNotEmptyString(defaultStatus))
-				taskNode.setProperty(PEOPLE_TASK_STATUS, defaultStatus);
-
+			setTaskDefaultStatus(taskNode, taskNodeType);
 			return taskNode;
 		} catch (RepositoryException e) {
 			throw new PeopleException(
 					"Unable to create task of type " + taskNodeType + " named "
 							+ title + " under " + parentNode, e);
 		}
+	}
+
+	protected void setTaskDefaultStatus(Node taskNode, String taskNodeType)
+			throws RepositoryException {
+		// Default status management
+		ResourceService resourceService = peopleService.getResourceService();
+		Node template = resourceService.getNodeTemplate(taskNode.getSession(),
+				taskNodeType);
+		String defaultStatus = CommonsJcrUtils.get(template,
+				PEOPLE_TASK_DEFAULT_STATUS);
+		if (CommonsJcrUtils.checkNotEmptyString(defaultStatus))
+			taskNode.setProperty(PEOPLE_TASK_STATUS, defaultStatus);
 	}
 
 	@Override

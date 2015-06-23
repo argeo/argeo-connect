@@ -4,8 +4,6 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -24,28 +22,26 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Generic wizard to manually create a new organisation in the system
- * 
- * The node must have been created. But the wizard will try to save and commit
- * using the PeopleService before returning SWT.OK. The caller might then call
- * the "open entity editor" command if needed.
+ * Generic wizard to manually create a new organisation in the system. The node
+ * must have been created and is only updated with user filled info. The session
+ * is *NOT* saved.
  */
 
 public class NewOrgWizard extends Wizard implements PeopleNames {
-	private final static Log log = LogFactory.getLog(NewOrgWizard.class);
+	// private final static Log log = LogFactory.getLog(NewOrgWizard.class);
 
 	// Context
-	private PeopleService peopleService;
+	// private PeopleService peopleService;
 	private Node org;
 
 	// This page widgets
 	private Text legalNameTxt;
-	private Button defineDistinctDisplayBtn;
+	private Button useDistinctDisplayNameBtn;
 	private Text displayNameTxt;
 	private Text legalFormTxt;
 
 	public NewOrgWizard(PeopleService peopleService, Node org) {
-		this.peopleService = peopleService;
+		// this.peopleService = peopleService;
 		this.org = org;
 	}
 
@@ -68,8 +64,7 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 	@Override
 	public boolean performFinish() {
 		String legalName = legalNameTxt.getText();
-		// beware of the not !
-		boolean useDistinctDisplayName = defineDistinctDisplayBtn
+		boolean useDistinctDisplayName = useDistinctDisplayNameBtn
 				.getSelection();
 		String displayName = displayNameTxt.getText();
 		String legalForm = legalFormTxt.getText();
@@ -86,15 +81,15 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 		if (CommonsJcrUtils.checkNotEmptyString(legalForm))
 			CommonsJcrUtils.setJcrProperty(org, PEOPLE_LEGAL_FORM,
 					PropertyType.STRING, legalForm);
-		try {
-			peopleService.saveEntity(org, false);
-		} catch (PeopleException e) {
-			MessageDialog.openError(getShell(), "Unvalid information",
-					e.getMessage());
-			log.warn("Unable to save the newly created org " + legalName + ", "
-					+ displayName, e);
-			return false;
-		}
+		// try {
+		// peopleService.saveEntity(org, false);
+		// } catch (PeopleException e) {
+		// MessageDialog.openError(getShell(), "Unvalid information",
+		// e.getMessage());
+		// log.warn("Unable to save the newly created org " + legalName + ", "
+		// + displayName, e);
+		// return false;
+		// }
 		return true;
 	}
 
@@ -105,8 +100,16 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 
 	@Override
 	public boolean canFinish() {
-		// TODO implement Sanity check
-		return true;
+		String legalName = legalNameTxt.getText();
+		String displayName = displayNameTxt.getText();
+		if (CommonsJcrUtils.isEmptyString(legalName)
+				&& CommonsJcrUtils.isEmptyString(displayName)) {
+			MessageDialog
+					.openError(getShell(), "Non-valid information",
+							"Please enter at least a legal or a display name that is not empty.");
+			return false;
+		} else
+			return true;
 	}
 
 	protected class MainInfoPage extends WizardPage {
@@ -136,10 +139,10 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 					false));
 
 			// Display Name
-			defineDistinctDisplayBtn = new Button(parent, SWT.CHECK);
-			defineDistinctDisplayBtn
+			useDistinctDisplayNameBtn = new Button(parent, SWT.CHECK);
+			useDistinctDisplayNameBtn
 					.setText("Define a display name that is not the legal name");
-			defineDistinctDisplayBtn.setLayoutData(new GridData(SWT.FILL,
+			useDistinctDisplayNameBtn.setLayoutData(new GridData(SWT.FILL,
 					SWT.CENTER, true, false, 2, 1));
 
 			PeopleRapUtils.createBoldLabel(parent, "Display Name");
@@ -149,13 +152,13 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 					true, false));
 			displayNameTxt.setEnabled(false);
 
-			defineDistinctDisplayBtn
+			useDistinctDisplayNameBtn
 					.addSelectionListener(new SelectionAdapter() {
 						private static final long serialVersionUID = 1L;
 
 						@Override
 						public void widgetSelected(SelectionEvent e) {
-							displayNameTxt.setEnabled(defineDistinctDisplayBtn
+							displayNameTxt.setEnabled(useDistinctDisplayNameBtn
 									.getSelection());
 						}
 					});

@@ -40,7 +40,7 @@ public class CreateEntity extends AbstractHandler {
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleUiService;
+	private PeopleWorkbenchService peopleWorkbenchService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
@@ -57,26 +57,27 @@ public class CreateEntity extends AbstractHandler {
 			newNode = parent.addNode(nodeType, nodeType);
 			String uuid = UUID.randomUUID().toString();
 			newNode.setProperty(PeopleNames.PEOPLE_UID, uuid);
-			// newNode.setProperty(PeopleNames.PEOPLE_IS_DRAFT, true);
 
-			Wizard wizard = peopleUiService.getCreationWizard(peopleService,
-					newNode);
+			Wizard wizard = peopleWorkbenchService.getCreationWizard(
+					peopleService, newNode);
 			WizardDialog dialog = new WizardDialog(
 					HandlerUtil.getActiveShell(event), wizard);
 			dialog.setTitle("New...");
 			int result = dialog.open();
 			if (result == WizardDialog.OK) {
+				// Save the newly created entity and create a base version
+				peopleService.saveEntity(newNode, true);
+
+				// Open the corresponding editor
 				String jcrId = newNode.getIdentifier();
 				CommandUtils.callCommand(
-						peopleUiService.getOpenEntityEditorCmdId(),
+						peopleWorkbenchService.getOpenEntityEditorCmdId(),
 						OpenEntityEditor.PARAM_JCR_ID, jcrId);
 				return newNode.getPath();
 			} else {
 				// This will try to remove the newly created temporary Node it
 				// the process fails before first save
 				JcrUtils.discardQuietly(session);
-
-				// CommonsJcrUtils.cancelAndCheckin(newNode);
 			}
 		} catch (RepositoryException e) {
 			throw new PeopleException("unexpected JCR error while opening "
@@ -93,7 +94,7 @@ public class CreateEntity extends AbstractHandler {
 	}
 
 	protected PeopleWorkbenchService getPeopleWorkbenchService() {
-		return peopleUiService;
+		return peopleWorkbenchService;
 	}
 
 	protected PeopleService getPeopleService() {
@@ -109,7 +110,8 @@ public class CreateEntity extends AbstractHandler {
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleUiService(PeopleWorkbenchService peopleUiService) {
-		this.peopleUiService = peopleUiService;
+	public void setPeopleWorkbenchService(
+			PeopleWorkbenchService peopleWorkbenchService) {
+		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 }

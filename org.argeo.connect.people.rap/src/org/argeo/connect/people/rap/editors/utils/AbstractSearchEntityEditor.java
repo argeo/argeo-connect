@@ -50,6 +50,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -132,6 +133,23 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	/** Override to provide type specific static filters */
 	protected void populateStaticFilters(Composite body) {
+	}
+
+	/** Call when a place holder for this info exists */
+	protected void setNbOfFoundResultsLbl(Label resultNbLbl) {
+		if (resultNbLbl != null && !resultNbLbl.isDisposed())
+			if (rows == null)
+				resultNbLbl.setText(" (No result yet) ");
+			else if (rows.length == 0)
+				resultNbLbl.setText(" (No result found) ");
+			else if (rows.length == 1)
+				resultNbLbl.setText(" One result found ");
+			else
+				resultNbLbl.setText(rows.length + " results found ");
+		resultNbLbl.getParent().layout(true, true);
+	}
+
+	protected void setNbOfFoundResultsLbl(long nbOfResults) {
 	}
 
 	/**
@@ -449,6 +467,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		tableViewer.setInput(rows);
 		// we must explicitly set the items count
 		tableViewer.setItemCount(rows.length);
+		setNbOfFoundResultsLbl(rows.length);
 		tableViewer.refresh();
 	}
 

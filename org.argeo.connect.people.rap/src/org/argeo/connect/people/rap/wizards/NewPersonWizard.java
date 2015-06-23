@@ -3,8 +3,6 @@ package org.argeo.connect.people.rap.wizards;
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -28,10 +26,10 @@ import org.eclipse.swt.widgets.Text;
  */
 
 public class NewPersonWizard extends Wizard implements PeopleNames {
-	private final static Log log = LogFactory.getLog(NewPersonWizard.class);
+	// private final static Log log = LogFactory.getLog(NewPersonWizard.class);
 
 	// Context
-	private PeopleService peopleService;
+	// private PeopleService peopleService;
 	private Node person;
 
 	// This page widgets
@@ -39,7 +37,7 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 	protected Text firstNameTxt;
 
 	public NewPersonWizard(PeopleService peopleService, Node person) {
-		this.peopleService = peopleService;
+		// this.peopleService = peopleService;
 		this.person = person;
 	}
 
@@ -61,25 +59,22 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 	 */
 	@Override
 	public boolean performFinish() {
-		// Sanity check
 		String lastName = lastNameTxt.getText();
-		String firstName = firstNameTxt.getText();
-
 		CommonsJcrUtils.setJcrProperty(person, PEOPLE_LAST_NAME,
 				PropertyType.STRING, lastName);
+		String firstName = firstNameTxt.getText();
 		CommonsJcrUtils.setJcrProperty(person, PEOPLE_FIRST_NAME,
 				PropertyType.STRING, firstName);
-
-		try {
-			peopleService.saveEntity(person, false);
-		} catch (PeopleException e) {
-			MessageDialog.openError(getShell(), "Unvalid information",
-					e.getMessage());
-			log.warn("Unable to save newly created person " + lastName + ", "
-					+ firstName);
-			e.printStackTrace();
-			return false;
-		}
+		// try {
+		// peopleService.saveEntity(person, false);
+		// } catch (PeopleException e) {
+		// MessageDialog.openError(getShell(), "Unvalid information",
+		// e.getMessage());
+		// log.warn("Unable to save newly created person " + lastName + ", "
+		// + firstName);
+		// e.printStackTrace();
+		// return false;
+		// }
 		return true;
 	}
 
@@ -90,10 +85,15 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 
 	@Override
 	public boolean canFinish() {
-		// TODO implement Sanity check
-		// String lastName = lastNameTxt.getText();
-		// String firstName = firstNameTxt.getText();
-		return true;
+		String lastName = lastNameTxt.getText();
+		String firstName = firstNameTxt.getText();
+		if (CommonsJcrUtils.isEmptyString(lastName)
+				&& CommonsJcrUtils.isEmptyString(firstName)) {
+			MessageDialog.openError(getShell(), "Non-valid information",
+					"Please enter at least a name that is not empty.");
+			return false;
+		} else
+			return true;
 	}
 
 	protected class MainInfoPage extends WizardPage {
@@ -102,7 +102,7 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 		public MainInfoPage(String pageName) {
 			super(pageName);
 			setTitle("Create a contact");
-			setMessage("Please enter a last name and / or a first name.");
+			setMessage("Please enter a last name and/or a first name.");
 		}
 
 		public void createControl(Composite parent) {
@@ -116,7 +116,6 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 					false));
 
 			// FirstName
-			// LastName
 			PeopleRapUtils.createBoldLabel(parent, "First Name");
 			firstNameTxt = new Text(parent, SWT.BORDER);
 			firstNameTxt.setMessage("a first name");
