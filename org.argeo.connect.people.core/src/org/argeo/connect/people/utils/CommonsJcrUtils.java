@@ -276,6 +276,25 @@ public class CommonsJcrUtils {
 		}
 	}
 
+	/**
+	 * Force a version snapshot of the current state of the given versionable
+	 * node. It wraps a JCR checkPoint methods
+	 */
+	public static void forceCheckPoint(Node node) {
+		try {
+			Session session = node.getSession();
+			JcrUtils.updateLastModified(node);
+			if (isVersionable(node)) {
+				VersionManager vm = session.getWorkspace().getVersionManager();
+				String path = node.getPath();
+				vm.checkpoint(path);
+			}
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to perform check point on "
+					+ node, re);
+		}
+	}
+
 	/** Concisely save the underlying session if some changes have been done */
 	public static boolean save(Node node) {
 		return save(node, false);
