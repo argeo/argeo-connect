@@ -2,6 +2,7 @@ package org.argeo.connect.people.utils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.jcr.InvalidItemStateException;
@@ -213,6 +214,28 @@ public class CommonsJcrUtils {
 					.checkout(node.getPath());
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to check out node  " + node, re);
+		}
+	}
+
+	/**
+	 * If this node is has the {@link NodeType#MIX_LAST_MODIFIED} mixin, it
+	 * updates the {@link Property#JCR_LAST_MODIFIED} property with the current
+	 * time and the {@link Property#JCR_LAST_MODIFIED_BY} property with the
+	 * passed user id. In Jackrabbit 2.x, <a
+	 * href="https://issues.apache.org/jira/browse/JCR-2233">these properties
+	 * are not automatically updated</a>, hence the need for manual update. The
+	 * session is not saved.
+	 */
+	public static void updateLastModified(Node node, String userId) {
+		try {
+			if (!node.isNodeType(NodeType.MIX_LAST_MODIFIED))
+				node.addMixin(NodeType.MIX_LAST_MODIFIED);
+			node.setProperty(Property.JCR_LAST_MODIFIED,
+					new GregorianCalendar());
+			node.setProperty(Property.JCR_LAST_MODIFIED_BY, userId);
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Cannot update last modified on " + node,
+					e);
 		}
 	}
 

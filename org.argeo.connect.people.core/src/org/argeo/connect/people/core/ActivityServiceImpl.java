@@ -430,12 +430,12 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			String title, String description, String assignedTo,
 			List<Node> relatedTo, Calendar creationDate, Calendar dueDate,
 			Calendar wakeUpDate) {
-		Node poll = createTask(null, parentNode, PeopleTypes.PEOPLE_TASK,
+		Node poll = createTask(null, parentNode, PeopleTypes.PEOPLE_POLL,
 				reporterId, title, description, assignedTo, relatedTo,
 				creationDate, dueDate, wakeUpDate);
 
 		try {
-			poll.addMixin(PeopleTypes.PEOPLE_POLL);
+			// poll.addMixin(PeopleTypes.PEOPLE_POLL);
 			poll.setProperty(PEOPLE_POLL_NAME, pollName);
 			poll.addNode(PeopleNames.PEOPLE_RATES);
 
