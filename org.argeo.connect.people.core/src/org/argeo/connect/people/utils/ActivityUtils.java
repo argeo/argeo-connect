@@ -135,32 +135,38 @@ public class ActivityUtils {
 		}
 	}
 
-	public static String getAvgRating(Node poll) throws RepositoryException {
-		Session session = poll.getSession();
-		String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_RATE
-				+ "] WHERE  ISDESCENDANTNODE('" + poll.getPath() + "/"
-				+ PeopleNames.PEOPLE_RATES + "') ";
-		long nb = 0;
-		long total = 0;
-		Query query = session.getWorkspace().getQueryManager()
-				.createQuery(queryStr, Query.JCR_SQL2);
-		NodeIterator nit = query.execute().getNodes();
-		while (nit.hasNext()) {
-			Node node = nit.nextNode();
-			if (node.hasProperty(PeopleNames.PEOPLE_RATE)) {
-				total += node.getProperty(PeopleNames.PEOPLE_RATE).getLong();
-				nb++;
+	public static String getAvgRating(Node poll) {
+		try {
+			Session session = poll.getSession();
+			String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_RATE
+					+ "] WHERE  ISDESCENDANTNODE('" + poll.getPath() + "/"
+					+ PeopleNames.PEOPLE_RATES + "') ";
+			long nb = 0;
+			long total = 0;
+			Query query = session.getWorkspace().getQueryManager()
+					.createQuery(queryStr, Query.JCR_SQL2);
+			NodeIterator nit = query.execute().getNodes();
+			while (nit.hasNext()) {
+				Node node = nit.nextNode();
+				if (node.hasProperty(PeopleNames.PEOPLE_RATE)) {
+					total += node.getProperty(PeopleNames.PEOPLE_RATE)
+							.getLong();
+					nb++;
+				}
 			}
-		}
 
-		if (nb == 0)
-			return "(none yet)";
-		else {
-			double avg = (double) total / (double) nb;
-			// Math.round(avg)
-			String result = nbFormat.format(avg) + " (" + nb
-					+ (nb == 1 ? " vote)" : " votes)");
-			return result;
+			if (nb == 0)
+				return "(none yet)";
+			else {
+				double avg = (double) total / (double) nb;
+				// Math.round(avg)
+				String result = nbFormat.format(avg) + " (" + nb
+						+ (nb == 1 ? " vote)" : " votes)");
+				return result;
+			}
+		} catch (RepositoryException e) {
+			throw new PeopleException("unable to compute "
+					+ "average rating for " + poll, e);
 		}
 	}
 
