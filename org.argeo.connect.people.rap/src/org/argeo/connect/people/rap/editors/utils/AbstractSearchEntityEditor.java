@@ -137,7 +137,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	/** Call when a place holder for this info exists */
 	protected void setNbOfFoundResultsLbl(Label resultNbLbl) {
-		if (resultNbLbl != null && !resultNbLbl.isDisposed())
+		if (resultNbLbl != null && !resultNbLbl.isDisposed()) {
 			if (rows == null)
 				resultNbLbl.setText(" (No result yet) ");
 			else if (rows.length == 0)
@@ -146,7 +146,8 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 				resultNbLbl.setText(" One result found ");
 			else
 				resultNbLbl.setText(rows.length + " results found ");
-		resultNbLbl.getParent().layout(true, true);
+			resultNbLbl.getParent().layout(true, true);
+		}
 	}
 
 	protected void setNbOfFoundResultsLbl(long nbOfResults) {
