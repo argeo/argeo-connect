@@ -144,7 +144,17 @@ public class CommonsJcrUtils {
 			return node.isNodeType(nodeTypeName);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to test NodeType " + nodeTypeName
-					+ " for node " + node, re);
+					+ " for " + node, re);
+		}
+	}
+
+	/** Simply retrieve primary node type name */
+	public static String getPrimaryNodeType(Node node) {
+		try {
+			return node.getPrimaryNodeType().getName();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to retrieve node type name for "
+					+ node, re);
 		}
 	}
 

@@ -123,6 +123,8 @@ public abstract class MultiValueListWithDDPart extends Composite {
 			tagTxt.setMessage(addMsg);
 			RowData rd = new RowData(80, SWT.DEFAULT);
 			tagTxt.setLayoutData(rd);
+			// This does not work
+			// CmsUtils.style(tagTxt, "add_value");
 
 			final PeopleAbstractDropDown addValueDD = new AddValueDD(tagTxt,
 					SWT.READ_ONLY, true);
