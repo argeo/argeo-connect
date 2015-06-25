@@ -156,12 +156,15 @@ public class ActivityEditor extends AbstractPeopleEditor {
 					managerLbl.setText(manager);
 
 				dateComposite.refresh();
-
-				// // We redraw the full control at each refresh, might be a
-				// // more efficient way to do
-				// EclipseUiUtils.clear(relatedCmp);
-				relatedCmp.refresh();
-				relatedCmp.getParent().getParent().layout();
+				
+				// We force full refresh with this workaround at each refresh to
+				// insure the editable state will change even if no related
+				// object has been added. Might be later cleaned
+				if (relatedCmp != null && !relatedCmp.isDisposed()) {
+					EclipseUiUtils.clear(relatedCmp);
+					relatedCmp.refresh();
+				}
+				ActivityHeader.this.layout(true, true);
 			}
 
 			private void populate(Composite parent) {

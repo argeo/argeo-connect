@@ -200,9 +200,14 @@ public class RateEditor extends AbstractPeopleEditor {
 							+ "rating date for " + activity, e);
 				}
 
-				relatedCmp.refresh();
-
-				relatedCmp.getParent().getParent().layout();
+				// We force full refresh with this workaround at each refresh to
+				// insure the editable state will change even if no related
+				// object has been added. Might be later cleaned
+				if (relatedCmp != null && !relatedCmp.isDisposed()) {
+					EclipseUiUtils.clear(relatedCmp);
+					relatedCmp.refresh();
+				}
+				relatedCmp.getParent().getParent().layout(true, true);
 			}
 
 			private void populate(Composite parent) {

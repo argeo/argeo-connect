@@ -169,7 +169,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 				// Refresh the parent because the whole header must be
 				// re-layouted if some added relations triggers the creation
 				// of a new line of the row data
-				parent.getParent().layout();
+				parent.getParent().layout(true, true);
 			} catch (RepositoryException re) {
 				throw new PeopleException("Unable to refresh header form "
 						+ "part composite for task " + task, re);
