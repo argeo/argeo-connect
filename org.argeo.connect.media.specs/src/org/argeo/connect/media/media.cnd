@@ -102,6 +102,11 @@
 - film:printFee (STRING)
 - film:printFeeInfo (STRING)
 
+// Optional contact 
+- film:printDefaultSourceContact (REFERENCE)
+- film:printDefaultReturnContact (REFERENCE)
+
+
 [film:printDcp] > film:print
 - film:printFileName (STRING)
 - film:printRes (STRING)

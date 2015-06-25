@@ -106,6 +106,9 @@ public interface MediaNames {
 	public final static String FILM_PRINT_FEE = "film:printFee";// (STRING)
 	public final static String FILM_PRINT_FEE_INFO = "film:printFeeInfo";// (STRING)
 
+	public final static String FILM_PRINT_DEFAULT_SRC_CONTACT = "film:printDefaultSourceContact"; // (REFERENCE)
+	public final static String FILM_PRINT_DEFAULT_RETURN_CONTACT = "film:printDefaultReturnContact"; // (REFERENCE)
+
 	// [film:printDcp] > film:print
 	public final static String FILM_PRINT_FILE_NAME = "film:printFileName";// (STRING)
 	public final static String FILM_PRINT_RES = "resolution";// (STRING)

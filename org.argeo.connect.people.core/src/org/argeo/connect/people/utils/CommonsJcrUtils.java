@@ -535,6 +535,20 @@ public class CommonsJcrUtils {
 					node.setProperty(propName, (String) value);
 					return true;
 				}
+			case PropertyType.REFERENCE:
+				if ((!node.hasProperty(propName) && value == null)
+						|| (node.hasProperty(propName) && ((Node) value)
+								.getIdentifier().equals(
+										node.getProperty(propName).getNode()
+												.getIdentifier()))) {
+					return false;
+				} else if (value == null) {
+					node.getProperty(propName).remove();
+					return true;
+				} else {
+					node.setProperty(propName, (Node) value);
+					return true;
+				}
 			case PropertyType.BOOLEAN:
 				if (node.hasProperty(propName)
 						&& node.getProperty(propName).getBoolean() == (Boolean) value)
