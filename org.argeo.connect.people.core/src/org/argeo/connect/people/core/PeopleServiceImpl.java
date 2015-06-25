@@ -135,6 +135,19 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			return typeId + "s";
 	}
 
+	// @Override
+	// public String getDefaultEntityRelPath(Node node, String nodeType) {
+	// String peopleUid = CommonsJcrUtils.get(node, PEOPLE_UID);
+	// if (CommonsJcrUtils.isEmptyString(peopleUid))
+	// throw new PeopleException("Cannot define relpath for " + node
+	// + " with type " + nodeType
+	// + ". No property people:uid is defined and "
+	// + "no default relpath strategy has been defined "
+	// + "for nodes that are not of type people:base");
+	// else
+	// return JcrUtils.firstCharsToPath(peopleUid, 2);
+	// }
+
 	@Override
 	public String getDefaultPathForEntity(Node node, String nodeType) {
 		String peopleUid = CommonsJcrUtils.get(node, PEOPLE_UID);
@@ -149,7 +162,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	@Override
 	public String getDefaultPathForEntity(String peopleUid, String nodeType) {
 		String path = getBasePath(nodeType) + "/";
-		path += JcrUtils.firstCharsToPath(peopleUid, 2);
+		path += JcrUtils.firstCharsToPath(peopleUid, 2) + "/" + peopleUid;
 		return path;
 	}
 
@@ -211,12 +224,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	@Override
 	public void checkPathAndMoveIfNeeded(Node entity, String entityNodeType)
 			throws RepositoryException {
-		String peopleUid = entity.getProperty(PEOPLE_UID).getString();
-		String destPath = getDefaultPathForEntity(peopleUid, entityNodeType);
-		if (!destPath.equals(entity.getParent().getPath())) {
-			JcrUtils.mkdirs(entity.getSession(), destPath);
-			entity.getSession().move(entity.getPath(),
-					destPath + "/" + peopleUid);
+		String destPath = getDefaultPathForEntity(entity, entityNodeType);
+		if (!destPath.equals(entity.getPath())) {
+			String parPath = JcrUtils.parentPath(destPath);
+			JcrUtils.mkdirs(entity.getSession(), parPath);
+			entity.getSession().move(entity.getPath(), destPath);
 		}
 	}
 

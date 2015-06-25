@@ -52,7 +52,6 @@ public class CreateEntity extends AbstractHandler {
 			session = repository.login();
 			String draftPath = peopleService.getTmpPath();
 			String datePath = JcrUtils.dateAsPath(Calendar.getInstance(), true);
-
 			Node parent = JcrUtils.mkdirs(session, draftPath + "/" + datePath);
 			newNode = parent.addNode(nodeType, nodeType);
 			String uuid = UUID.randomUUID().toString();
