@@ -78,7 +78,8 @@
 //
 // FILM PRINT
 //
-[film:print] > nt:unstructured, mix:title, people:orderable
+ // Should we rather use a versionable node?
+[film:print] > nt:unstructured, mix:title, mix:referenceable, people:orderable
 - film:printType (STRING)
 - film:printNumber (STRING)
 - film:printDuration (LONG) // length in seconds
