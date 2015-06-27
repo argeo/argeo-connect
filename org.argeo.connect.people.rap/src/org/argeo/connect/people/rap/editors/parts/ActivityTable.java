@@ -38,6 +38,7 @@ import org.argeo.connect.people.rap.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.rap.utils.ActivityViewerComparator;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.connect.people.utils.ActivityUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
@@ -529,6 +530,14 @@ public class ActivityTable extends Composite implements ArgeoNames {
 				if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
 					String title = CommonsJcrUtils.get(currNode,
 							Property.JCR_TITLE);
+					// Specific behaviour for polls
+					if (currNode.isNodeType(PeopleTypes.PEOPLE_POLL)) {
+						title = CommonsJcrUtils.get(currNode,
+								PeopleNames.PEOPLE_POLL_NAME)
+								+ ": "
+								+ ActivityUtils.getAvgRating(currNode);
+					}
+
 					String desc = CommonsJcrUtils.get(currNode,
 							Property.JCR_DESCRIPTION);
 					String res = CommonsJcrUtils.concatIfNotEmpty(title, desc,
