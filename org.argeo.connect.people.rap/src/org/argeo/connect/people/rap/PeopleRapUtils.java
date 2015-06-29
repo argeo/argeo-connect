@@ -68,6 +68,18 @@ public class PeopleRapUtils {
 	}
 
 	/**
+	 * Helper to call a command with a few parameter easily. The additional
+	 * parameters must be NPairs with each time a parameterID and a
+	 * parameterValue couple in this order
+	 */
+	public static void callCommand(String commandID, String... parameters) {
+		Map<String, String> params = new HashMap<String, String>();
+		for (int i = 0; i < (parameters.length / 2); i++)
+			params.put(parameters[i * 2], parameters[i * 2 + 1]);
+		CommandUtils.callCommand(commandID, params);
+	}
+
+	/**
 	 * Shortcut to refresh a <code>DateTime</code> widget given a Node in a form
 	 * and a property Name. Also manages its enable state. Note that, by
 	 * default, we force setting of the time to noon. Might be later enhanced.

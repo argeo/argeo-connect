@@ -8,9 +8,9 @@ import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
+import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.wizards.NewSimpleTaskWizard;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -50,7 +50,7 @@ public class CreateSimpleTask extends AbstractHandler {
 			JcrUtils.logoutQuietly(session);
 		}
 		if (jcrId != null)
-			PeopleUiUtils.callCommand(
+			PeopleRapUtils.callCommand(
 					peopleWorkbenchService.getOpenEntityEditorCmdId(),
 					OpenEntityEditor.PARAM_JCR_ID, jcrId,
 					OpenEntityEditor.PARAM_OPEN_FOR_EDIT, "true");
