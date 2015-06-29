@@ -28,6 +28,8 @@ public abstract class AbstractPanelFormPart extends AbstractFormPart {
 	@Override
 	public void refresh() {
 		super.refresh();
+		if (parent == null || parent.isDisposed())
+			return;
 		if (editor == null)
 			editor = ((PeopleManagedForm) getManagedForm()).getEditor();
 
