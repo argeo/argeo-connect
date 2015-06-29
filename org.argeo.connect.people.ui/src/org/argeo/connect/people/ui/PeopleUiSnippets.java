@@ -432,6 +432,29 @@ public class PeopleUiSnippets {
 		}
 	}
 
+	/**
+	 * Simply gets a snippet to display clickable primary contacts
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	public static String getPrimaryContacts(PeopleService peopleService,
+			Node entity) {
+		StringBuilder builder = new StringBuilder();
+		// phone
+		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
+				PeopleTypes.PEOPLE_PHONE);
+		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+			builder.append(getPhoneLink(tmpStr)).append("<br/>");
+
+		// mail
+		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
+				PeopleTypes.PEOPLE_EMAIL);
+		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+			builder.append(getMailLink(tmpStr)).append("<br/>");
+		return PeopleUiUtils.replaceAmpersand(builder.toString());
+	}
+
 	/** shortcut to set form data while dealing with switching panel */
 	private final static DateFormat df = new SimpleDateFormat(
 			PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
