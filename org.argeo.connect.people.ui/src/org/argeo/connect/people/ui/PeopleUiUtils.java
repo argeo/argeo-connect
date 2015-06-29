@@ -4,8 +4,6 @@ import javax.jcr.Node;
 
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 
 /** Helper methods for various People UIs */
@@ -21,39 +19,6 @@ public class PeopleUiUtils {
 				PeopleUiConstants.AMPERSAND);
 		return value;
 	}
-
-	/**
-	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
-	 * SWT.FILL, true, true, horizontalSpan, 1.
-	 */
-	// public static GridData fillGridData(int horizontalSpan) {
-	// return new GridData(SWT.FILL, SWT.FILL, true, true, horizontalSpan, 1);
-	// }
-
-	// /**
-	// * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
-	// * SWT.CENTER, true, false.
-	// */
-	// public static GridData horizontalFillData() {
-	// return new GridData(SWT.FILL, SWT.CENTER, true, false);
-	// }
-
-	/**
-	 * Shortcut to create a {@link GridData} with default parameters SWT.FILL,
-	 * SWT.CENTER, true, false, horizontalSpan, 1.
-	 */
-	// public static GridData horizontalFillData(int horizontalSpan) {
-	// return new GridData(SWT.FILL, SWT.CENTER, true, false, horizontalSpan,
-	// 1);
-	// }
-
-	// /**
-	// * Shortcut to create a {@link GridLayout} with no margin and no spacing
-	// * (default are normally 5 px).
-	// */
-	// public static GridLayout noSpaceGridLayout() {
-	// return noSpaceGridLayout(1);
-	// }
 
 	/**
 	 * Shortcut to create a {@link GridLayout} with the given column number with
@@ -72,13 +37,13 @@ public class PeopleUiUtils {
 	 * 
 	 * @param parent
 	 */
-	public static void disposeAllChildren(Composite parent) {
-		// We redraw the full control at each refresh, might be a more
-		// efficient way to do
-		Control[] oldChildren = parent.getChildren();
-		for (Control child : oldChildren)
-			child.dispose();
-	}
+	// public static void disposeAllChildren(Composite parent) {
+	// // We redraw the full control at each refresh, might be a more
+	// // efficient way to do
+	// Control[] oldChildren = parent.getChildren();
+	// for (Control child : oldChildren)
+	// child.dispose();
+	// }
 
 	public static boolean isNumbers(String content) {
 		int length = content.length();
