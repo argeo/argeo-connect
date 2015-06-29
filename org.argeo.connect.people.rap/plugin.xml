@@ -166,7 +166,11 @@
 				id="param.cTabId"
 				name="The id of the tab to open if such a tab exists">
 			</commandParameter>
-         	<!-- Still used to open editor with the linked list (employees...) -->
+			<commandParameter
+				id="param.openForEdit"
+				name="A flag to try to open the corresponding entity for edition">
+			</commandParameter>
+			<!-- Still used to open editor with the linked list (employees...) -->
 			<commandParameter
 				id="param.entityUid"
 				name="The Model Specific Entity Uid">

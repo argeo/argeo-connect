@@ -64,13 +64,22 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 	@Override
 	public boolean performFinish() {
 		String legalName = legalNameTxt.getText();
+		String displayName = displayNameTxt.getText();
+
 		boolean useDistinctDisplayName = useDistinctDisplayNameBtn
 				.getSelection();
-		String displayName = displayNameTxt.getText();
 		String legalForm = legalFormTxt.getText();
+
+		if (CommonsJcrUtils.isEmptyString(legalName)
+				&& CommonsJcrUtils.isEmptyString(displayName)) {
+			MessageDialog
+					.openError(getShell(), "Non-valid information",
+							"Please enter at least a legal or a display name that is not empty.");
+			return false;
+		}
+
 		CommonsJcrUtils.setJcrProperty(org, PEOPLE_LEGAL_NAME,
 				PropertyType.STRING, legalName);
-
 		if (useDistinctDisplayName) {
 			CommonsJcrUtils.setJcrProperty(org,
 					PEOPLE_USE_DISTINCT_DISPLAY_NAME, PropertyType.BOOLEAN,
@@ -81,15 +90,6 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 		if (CommonsJcrUtils.checkNotEmptyString(legalForm))
 			CommonsJcrUtils.setJcrProperty(org, PEOPLE_LEGAL_FORM,
 					PropertyType.STRING, legalForm);
-		// try {
-		// peopleService.saveEntity(org, false);
-		// } catch (PeopleException e) {
-		// MessageDialog.openError(getShell(), "Unvalid information",
-		// e.getMessage());
-		// log.warn("Unable to save the newly created org " + legalName + ", "
-		// + displayName, e);
-		// return false;
-		// }
 		return true;
 	}
 
@@ -100,16 +100,7 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 
 	@Override
 	public boolean canFinish() {
-		String legalName = legalNameTxt.getText();
-		String displayName = displayNameTxt.getText();
-		if (CommonsJcrUtils.isEmptyString(legalName)
-				&& CommonsJcrUtils.isEmptyString(displayName)) {
-			MessageDialog
-					.openError(getShell(), "Non-valid information",
-							"Please enter at least a legal or a display name that is not empty.");
-			return false;
-		} else
-			return true;
+		return true;
 	}
 
 	protected class MainInfoPage extends WizardPage {

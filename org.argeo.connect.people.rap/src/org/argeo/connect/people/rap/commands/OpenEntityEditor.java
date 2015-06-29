@@ -7,6 +7,7 @@ import javax.jcr.Session;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.CmsEditable;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
@@ -49,6 +50,7 @@ public class OpenEntityEditor extends AbstractHandler {
 	private PeopleService peopleService;
 
 	public final static String PARAM_JCR_ID = "param.jcrId";
+	public final static String PARAM_OPEN_FOR_EDIT = "param.openForEdit";
 	public final static String PARAM_CTAB_ID = "param.cTabId";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -74,6 +76,10 @@ public class OpenEntityEditor extends AbstractHandler {
 				IEditorPart editor = HandlerUtil
 						.getActiveWorkbenchWindow(event).getActivePage()
 						.openEditor(eei, editorId);
+
+				String openForEdit = event.getParameter(PARAM_OPEN_FOR_EDIT);
+				if ("true".equals(openForEdit) && editor instanceof CmsEditable)
+					((CmsEditable) editor).startEditing();
 
 				String tabId = event.getParameter(PARAM_CTAB_ID);
 				if (CommonsJcrUtils.checkNotEmptyString(tabId)

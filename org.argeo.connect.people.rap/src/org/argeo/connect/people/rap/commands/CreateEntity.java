@@ -13,7 +13,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.eclipse.ui.workbench.CommandUtils;
+import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -69,9 +69,11 @@ public class CreateEntity extends AbstractHandler {
 
 				// Open the corresponding editor
 				String jcrId = newNode.getIdentifier();
-				CommandUtils.callCommand(
+				PeopleUiUtils.callCommand(
 						peopleWorkbenchService.getOpenEntityEditorCmdId(),
-						OpenEntityEditor.PARAM_JCR_ID, jcrId);
+						OpenEntityEditor.PARAM_JCR_ID, jcrId,
+						OpenEntityEditor.PARAM_OPEN_FOR_EDIT, "true");
+
 				return newNode.getPath();
 			} else {
 				// This will try to remove the newly created temporary Node it

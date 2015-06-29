@@ -1,8 +1,12 @@
 package org.argeo.connect.people.ui;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.jcr.Node;
 
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -151,4 +155,17 @@ public class PeopleUiUtils {
 		value = replaceAmpersand(value);
 		return value;
 	}
+
+	/**
+	 * Helper to call a command with a few parameter easily. The additional
+	 * parameters must be NPairs with each time a parameterID and a
+	 * parameterValue couple in this order
+	 */
+	public static void callCommand(String commandID, String... parameters) {
+		Map<String, String> params = new HashMap<String, String>();
+		for (int i = 0; i < (parameters.length / 2); i++)
+			params.put(parameters[i * 2], parameters[i * 2 + 1]);
+		CommandUtils.callCommand(commandID, params);
+	}
+
 }

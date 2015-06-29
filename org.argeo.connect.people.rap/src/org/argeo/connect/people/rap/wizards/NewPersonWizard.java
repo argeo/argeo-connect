@@ -12,6 +12,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -60,22 +62,19 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 	@Override
 	public boolean performFinish() {
 		String lastName = lastNameTxt.getText();
-		CommonsJcrUtils.setJcrProperty(person, PEOPLE_LAST_NAME,
-				PropertyType.STRING, lastName);
 		String firstName = firstNameTxt.getText();
-		CommonsJcrUtils.setJcrProperty(person, PEOPLE_FIRST_NAME,
-				PropertyType.STRING, firstName);
-		// try {
-		// peopleService.saveEntity(person, false);
-		// } catch (PeopleException e) {
-		// MessageDialog.openError(getShell(), "Unvalid information",
-		// e.getMessage());
-		// log.warn("Unable to save newly created person " + lastName + ", "
-		// + firstName);
-		// e.printStackTrace();
-		// return false;
-		// }
-		return true;
+		if (CommonsJcrUtils.isEmptyString(lastName)
+				&& CommonsJcrUtils.isEmptyString(firstName)) {
+			MessageDialog.openError(getShell(), "Non-valid information",
+					"Please enter at least a name that is not empty.");
+			return false;
+		} else {
+			CommonsJcrUtils.setJcrProperty(person, PEOPLE_LAST_NAME,
+					PropertyType.STRING, lastName);
+			CommonsJcrUtils.setJcrProperty(person, PEOPLE_FIRST_NAME,
+					PropertyType.STRING, firstName);
+			return true;
+		}
 	}
 
 	@Override
@@ -89,8 +88,6 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 		String firstName = firstNameTxt.getText();
 		if (CommonsJcrUtils.isEmptyString(lastName)
 				&& CommonsJcrUtils.isEmptyString(firstName)) {
-			MessageDialog.openError(getShell(), "Non-valid information",
-					"Please enter at least a name that is not empty.");
 			return false;
 		} else
 			return true;
@@ -121,6 +118,18 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 			firstNameTxt.setMessage("a first name");
 			firstNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 					false));
+
+			ModifyListener ml = new ModifyListener() {
+				private static final long serialVersionUID = -1628130380128946886L;
+
+				@Override
+				public void modifyText(ModifyEvent event) {
+					getContainer().updateButtons();
+				}
+			};
+
+			firstNameTxt.addModifyListener(ml);
+			lastNameTxt.addModifyListener(ml);
 
 			// Don't forget this.
 			setControl(lastNameTxt);
