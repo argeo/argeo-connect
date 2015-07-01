@@ -8,6 +8,14 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+import javax.jcr.query.qom.Constraint;
+import javax.jcr.query.qom.Ordering;
+import javax.jcr.query.qom.QueryObjectModel;
+import javax.jcr.query.qom.QueryObjectModelFactory;
+import javax.jcr.query.qom.Selector;
+import javax.jcr.query.qom.StaticOperand;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -89,6 +97,56 @@ public class UserManagementServiceImpl implements UserManagementService {
 	//
 	// GROUP MANAGEMENT
 	//
+	@Override
+	public List<Node> getDefinedGroups(Session session, String filter,
+			boolean includeSingleUserGroups) {
+		try {
+			QueryManager queryManager = session.getWorkspace()
+					.getQueryManager();
+			QueryObjectModelFactory factory = queryManager.getQOMFactory();
+
+			Selector source = factory.selector(PeopleTypes.PEOPLE_USER_GROUP,
+					PeopleTypes.PEOPLE_USER_GROUP);
+
+			// Dynamically build constraint depending on the filter String
+			Constraint defaultC = null;
+			if (CommonsJcrUtils.checkNotEmptyString(filter)) {
+				String[] strs = filter.trim().split(" ");
+				for (String token : strs) {
+					StaticOperand so = factory.literal(session
+							.getValueFactory().createValue("*" + token + "*"));
+					Constraint currC = factory.fullTextSearch(
+							source.getSelectorName(), null, so);
+					if (defaultC == null)
+						defaultC = currC;
+					else
+						defaultC = factory.and(defaultC, currC);
+				}
+			}
+
+			if (!includeSingleUserGroups) {
+				Constraint constraint = factory.propertyExistence(
+						source.getSelectorName(),
+						PeopleNames.PEOPLE_IS_SINGLE_USER_GROUP);
+				defaultC = CommonsJcrUtils.localAnd(factory, defaultC,
+						factory.not(constraint));
+			}
+
+			Ordering order = factory.ascending(factory.propertyValue(
+					source.getSelectorName(), Property.JCR_TITLE));
+			Ordering[] orderings = { order };
+
+			QueryObjectModel query = factory.createQuery(source, defaultC,
+					orderings, null);
+
+			QueryResult result = query.execute();
+			return JcrUtils.nodeIteratorToList(result.getNodes());
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"Unable to retrieve the list of defined user groups", e);
+		}
+	}
+
 	@Override
 	public Node createGroup(Session session, String groupId, String title,
 			String description) {

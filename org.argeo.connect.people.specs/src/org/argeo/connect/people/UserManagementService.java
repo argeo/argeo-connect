@@ -38,6 +38,20 @@ public interface UserManagementService {
 			String desc, List<String> roles);
 
 	/**
+	 * Retrieves the list of the defined user groups given its id
+	 * 
+	 * @param session
+	 * @param filter
+	 * @param includeSingleUserGroups
+	 *            if false, it will returns only groups otherwise it will also
+	 *            include all groups that have been created to enable assignment
+	 *            to a single user
+	 * @return
+	 */
+	public List<Node> getDefinedGroups(Session session, String filter,
+			boolean includeSingleUserGroups);
+
+	/**
 	 * Creates a new user group to be used among others in task assignment. It
 	 * relies on the group ID: if such a group already exists, this existing one
 	 * is returned.
