@@ -471,6 +471,9 @@ public class ResourceServiceImpl implements ResourceService {
 	@Override
 	public NodeIterator getTaggedEntities(Node tagParent, String key) {
 		try {
+			// TODO clean this
+			String cleanedKey = key.replaceAll("(?:')", "''");
+
 			String nodeType = tagParent.getProperty(
 					PeopleNames.PEOPLE_TAGGABLE_NODE_TYPE).getString();
 			String parentPath = tagParent.getProperty(
@@ -483,7 +486,7 @@ public class ResourceServiceImpl implements ResourceService {
 			for (String propName : propNames) {
 				builder.append(sName);
 				builder.append(".[" + propName + "] = ");
-				builder.append("'" + key + "'");
+				builder.append("'" + cleanedKey + "'");
 				builder.append(" OR ");
 			}
 			String propClause = builder.toString();

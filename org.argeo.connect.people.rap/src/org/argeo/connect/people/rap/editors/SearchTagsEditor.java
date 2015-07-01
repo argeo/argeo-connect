@@ -184,6 +184,9 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 					try {
 						Node tag = resourceService.registerTag(session, tagId,
 								dialog.getTitle());
+						String desc = dialog.getDescription();
+						if (CommonsJcrUtils.checkNotEmptyString(desc))
+							tag.setProperty(Property.JCR_DESCRIPTION, desc);
 						if (tag.isNodeType(NodeType.MIX_VERSIONABLE))
 							CommonsJcrUtils.checkPoint(tag);
 						else
@@ -271,9 +274,6 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 					tagInstanceType);
 
 			long count = resourceService.countMembers(currNode);
-			// peopleService.getResourceService().countMembers(currNode,
-			// peopleService.getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
-			// propertyName);
 			return "" + count;
 		}
 	}
@@ -313,8 +313,6 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 	private boolean canDelete(Node currNode) {
 		long currCount = resourceService.countMembers(currNode);
-		// currNode, peopleService.getBasePath(null),
-		// PeopleTypes.PEOPLE_ENTITY, propertyName);
 		return canEdit() && currCount == 0;
 	}
 
