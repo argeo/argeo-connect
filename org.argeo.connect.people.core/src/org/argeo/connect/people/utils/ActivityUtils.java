@@ -106,10 +106,14 @@ public class ActivityUtils {
 	}
 
 	public static Node createVote(Node poll) {
-		return createVote(poll, null);
+		return createOneRating(poll, null, null);
 	}
 
 	public static Node createVote(Node poll, String userID) {
+		return createOneRating(poll, userID, null);
+	}
+
+	public static Node createOneRating(Node poll, String userID, Long rate) {
 		try {
 			Node parent = JcrUtils.mkdirs(poll, PeopleNames.PEOPLE_RATES,
 					NodeType.NT_UNSTRUCTURED);
@@ -128,38 +132,88 @@ public class ActivityUtils {
 			// related to
 			CommonsJcrUtils.addRefToMultiValuedProp(vote,
 					PeopleNames.PEOPLE_RELATED_TO, poll);
+
 			JcrUtils.updateLastModified(vote);
+
+			if (rate != null)
+				vote.setProperty(PeopleNames.PEOPLE_RATE, rate);
+			updateAvgRatingCache(poll);
 			return vote;
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to create vote on " + poll, re);
 		}
 	}
 
-	public static String getAvgRating(Node poll) {
+	public static void updateAvgRatingCache(Node poll) {
 		try {
-			Session session = poll.getSession();
-			String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_RATE
-					+ "] WHERE  ISDESCENDANTNODE('" + poll.getPath() + "/"
-					+ PeopleNames.PEOPLE_RATES + "') ";
+			double average = -1;
+
+			// Session session = poll.getSession();
+			// String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_RATE
+			// + "] WHERE  ISDESCENDANTNODE('" + poll.getPath() + "/"
+			// + PeopleNames.PEOPLE_RATES + "') ";
+			// long nb = 0;
+			// long total = 0;
+			// Query query = session.getWorkspace().getQueryManager()
+			// .createQuery(queryStr, Query.JCR_SQL2);
+			// NodeIterator nit = query.execute().getNodes();
+
 			long nb = 0;
 			long total = 0;
-			Query query = session.getWorkspace().getQueryManager()
-					.createQuery(queryStr, Query.JCR_SQL2);
-			NodeIterator nit = query.execute().getNodes();
-			while (nit.hasNext()) {
-				Node node = nit.nextNode();
-				if (node.hasProperty(PeopleNames.PEOPLE_RATE)) {
-					total += node.getProperty(PeopleNames.PEOPLE_RATE)
-							.getLong();
-					nb++;
+
+			if (poll.hasNode(PeopleNames.PEOPLE_RATES)) {
+				NodeIterator nit = poll.getNode(PeopleNames.PEOPLE_RATES)
+						.getNodes();
+				while (nit.hasNext()) {
+					Node node = nit.nextNode();
+					if (node.hasProperty(PeopleNames.PEOPLE_RATE)) {
+						total += node.getProperty(PeopleNames.PEOPLE_RATE)
+								.getLong();
+						nb++;
+					}
 				}
 			}
 
-			if (nb == 0)
+			if (nb > 0)
+				average = (double) total / (double) nb;
+			poll.setProperty(PeopleNames.PEOPLE_CACHE_AVG_RATE, average);
+		} catch (RepositoryException e) {
+			throw new PeopleException("unable to compute "
+					+ "average rating for " + poll, e);
+		}
+	}
+
+	public static String getAvgRating(Node poll) {
+		try {
+			// Session session = poll.getSession();
+			// String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_RATE
+			// + "] WHERE  ISDESCENDANTNODE('" + poll.getPath() + "/"
+			// + PeopleNames.PEOPLE_RATES + "') ";
+			// long nb = 0;
+			// long total = 0;
+			// Query query = session.getWorkspace().getQueryManager()
+			// .createQuery(queryStr, Query.JCR_SQL2);
+			// NodeIterator nit = query.execute().getNodes();
+			// while (nit.hasNext()) {
+			// Node node = nit.nextNode();
+			// if (node.hasProperty(PeopleNames.PEOPLE_RATE)) {
+			// total += node.getProperty(PeopleNames.PEOPLE_RATE)
+			// .getLong();
+			// nb++;
+			// }
+			// }
+
+			Double avg = -1d;
+			if (poll.hasProperty(PeopleNames.PEOPLE_CACHE_AVG_RATE))
+				avg = poll.getProperty(PeopleNames.PEOPLE_CACHE_AVG_RATE)
+						.getDouble();
+
+			if (avg <= 0)
 				return "(none yet)";
 			else {
-				double avg = (double) total / (double) nb;
-				// Math.round(avg)
+				// TODO enhance retrieval of vote count
+				long nb = poll.getNode(PeopleNames.PEOPLE_RATES).getNodes()
+						.getSize();
 				String result = nbFormat.format(avg) + " (" + nb
 						+ (nb == 1 ? " vote)" : " votes)");
 				return result;

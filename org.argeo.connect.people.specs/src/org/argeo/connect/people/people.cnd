@@ -205,8 +205,8 @@ mixin
 
 // tasks to enable gathering user feedback and votes (rates) for a given entity
 [people:poll] > people:task
-- people:pollName (String) // the current status of this task
-- people:cacheAvgRate (STRING) IGNORE // caches the current average of the children rates
+- people:pollName (STRING) // the current status of this task
+- people:cacheAvgRate (DOUBLE) IGNORE // caches the current average of the children rates
 // Contains the child rating activities
 + people:rates (nt:unstructured)
 
