@@ -15,118 +15,91 @@ import org.argeo.ArgeoMonitor;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.composites.SimpleJcrTableComposite;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
+import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.security.ui.PrivilegedJob;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Table;
 
-/**
- * Generic wizard to add a tag like property entities retrieved in the passed
- * Rows
- * 
- * This will return SWT.OK only if the value has been changed, in that case,
- * underlying session is saved
- */
-
-public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
+/** Update the status of the selected tasks (with only one node type) as batch */
+public class AssignToWizard extends Wizard implements PeopleNames {
 	// private final static Log log = LogFactory.getLog(EditTagWizard.class);
 
-	// To be cleaned:
-	public final static int TYPE_ADD = 1;
-	public final static int TYPE_REMOVE = 2;
-
 	// Context
-	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleUiService;
+	private final PeopleService peopleService;
+	private final PeopleWorkbenchService peopleUiService;
+	private final Row[] rows;
+	private final String selectorName;
+	// Cache to ease implementation
+	private final Session session;
+
+	// The status to impact
+	private String chosenGroup;
 
 	// Enable refresh of the calling editor at the end of the job
-	private Display callingDisplay;
-
-	private String tagId;
-	private Node tagInstance;
-
-	private String tagPropName;
-
-	private Row[] rows;
-	private final String selectorName;
-	private final int actionType;
-
-	// Cache to ease implementation
-	private Session session;
-	private ResourceService resourceService;
-	private Node tagParent;
-	private String tagInstanceType;
+	// private final Display callingDisplay;
+	// does not work should use a server push session
 
 	/**
-	 * @param actionType
+	 * @param callingDisplay
 	 * @param session
 	 * @param peopleService
-	 * @param peopleUiService
+	 * @param peopleWorkbenchService
 	 * @param rows
 	 * @param selectorName
-	 * @param tagId
-	 * @param tagPropName
+	 * @param taskId
 	 */
-	public TagOrUntagInstancesWizard(Display callingDisplay, int actionType,
-			Session session, PeopleService peopleService,
-			PeopleWorkbenchService peopleUiService, Row[] rows,
-			String selectorName, String tagId, String tagPropName) {
-
-		this.callingDisplay = callingDisplay;
+	public AssignToWizard(Session session, PeopleService peopleService,
+			PeopleWorkbenchService peopleWorkbenchService, Row[] rows,
+			String selectorName) {
 		this.session = session;
 		this.peopleService = peopleService;
-		this.peopleUiService = peopleUiService;
-		this.tagId = tagId;
-		this.tagPropName = tagPropName;
+		this.peopleUiService = peopleWorkbenchService;
 		this.rows = rows;
 		this.selectorName = selectorName;
-
-		this.actionType = actionType;
-
-		resourceService = peopleService.getResourceService();
-		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
-		tagInstanceType = CommonsJcrUtils.get(tagParent,
-				PEOPLE_TAG_INSTANCE_TYPE);
 	}
 
 	@Override
 	public void addPages() {
 		try {
 			// configure container
-			String title = "Batch "
-					+ (actionType == TYPE_ADD ? "addition" : "remove");
+			String title = "Batch assignation";
 			setWindowTitle(title);
 			MainInfoPage inputPage = new MainInfoPage("Configure");
 			addPage(inputPage);
 			RecapPage recapPage = new RecapPage("Validate and launch");
 			addPage(recapPage);
+			// getContainer().updateButtons();
 		} catch (Exception e) {
 			throw new PeopleException("Cannot add page to wizard", e);
 		}
@@ -141,15 +114,15 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 		// try {
 		// Sanity checks
 		String errMsg = null;
-		if (tagInstance == null)
-			errMsg = "Please choose the tag to use";
+		if (CommonsJcrUtils.isEmptyString(chosenGroup))
+			errMsg = "Please pick up a new group";
 
 		if (errMsg != null) {
 			MessageDialog.openError(getShell(), "Unvalid information", errMsg);
 			return false;
 		}
-		new UpdateTagAndInstancesJob(callingDisplay, actionType, peopleService,
-				tagInstance, rows, selectorName, tagPropName).schedule();
+		new UpdateAssignmentJob(peopleService, rows, selectorName, chosenGroup)
+				.schedule();
 		return true;
 	}
 
@@ -160,81 +133,111 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 	@Override
 	public boolean canFinish() {
-		return tagInstance != null
+		return CommonsJcrUtils.checkNotEmptyString(chosenGroup)
 				&& getContainer().getCurrentPage().getNextPage() == null;
 	}
 
 	protected class MainInfoPage extends WizardPage {
 		private static final long serialVersionUID = 1L;
 
-		private SimpleJcrTableComposite tableCmp;
-
-		private List<ColumnDefinition> colDefs = new ArrayList<ColumnDefinition>();
-		{ // By default, it displays only title
-			colDefs.add(new ColumnDefinition(null, Property.JCR_TITLE,
-					PropertyType.STRING, "Label", 420));
-		};
-
 		public MainInfoPage(String pageName) {
 			super(pageName);
-			setTitle("Select a tag");
-			setMessage("Choose the value that will be "
-					+ (actionType == TYPE_ADD ? "added to " : "removed from ")
-					+ "the previously selected items.");
+			setTitle("Select a group");
+			setMessage("Choose the group that must manage "
+					+ "the previously selected tasks.");
 		}
 
 		public void createControl(Composite parent) {
-			Composite body = new Composite(parent, SWT.NONE);
-			body.setLayout(EclipseUiUtils.noSpaceGridLayout());
-			Node tagParent = peopleService.getResourceService()
-					.getTagLikeResourceParent(session, tagId);
-			int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-			tableCmp = new SimpleJcrTableComposite(body, style, session,
-					CommonsJcrUtils.getPath(tagParent), tagInstanceType,
-					colDefs, true, false);
-			GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
-			gd.heightHint = 400;
-			tableCmp.setLayoutData(gd);
+			// parent.setLayout(new GridLayout());
+			Composite body = new Composite(parent, SWT.NO_FOCUS);
+			body.setLayoutData(EclipseUiUtils.fillAll());
+			GridLayout layout = new GridLayout();
+			layout.marginTop = layout.marginWidth = 10;
+			body.setLayout(layout);
 
-			// Add listeners
-			tableCmp.getTableViewer().addDoubleClickListener(
-					new MyDoubleClickListener());
-			tableCmp.getTableViewer().addSelectionChangedListener(
-					new MySelectionChangedListener());
+			Composite box = new Composite(body, SWT.NO_FOCUS);
+			box.setLayoutData(EclipseUiUtils.fillAll());
 
+			int swtStyle = SWT.SINGLE;
+			Table table = new Table(box, swtStyle);
+			table.setLinesVisible(true);
+			TableViewerColumn column;
+			TableColumnLayout tableColumnLayout = new TableColumnLayout();
+			TableViewer viewer = new TableViewer(table);
+
+			column = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE,
+					100);
+			column.setLabelProvider(new ColumnLabelProvider());
+			tableColumnLayout.setColumnData(column.getColumn(),
+					new ColumnWeightData(100, 100, true));
+
+			viewer.setContentProvider(new IStructuredContentProvider() {
+				private static final long serialVersionUID = 7310636623175577101L;
+
+				@Override
+				public void inputChanged(Viewer viewer, Object oldInput,
+						Object newInput) {
+				}
+
+				@Override
+				public void dispose() {
+				}
+
+				@Override
+				public Object[] getElements(Object inputElement) {
+					return (String[]) inputElement;
+				}
+			});
+
+			viewer.addSelectionChangedListener(new MySelectionChangedListener());
+			viewer.addDoubleClickListener(new MyDoubleClickListener());
+
+			box.setLayout(tableColumnLayout);
+			List<Node> groups = peopleService.getUserManagementService()
+					.getDefinedGroups(session, null, true);
+			List<String> values = new ArrayList<String>();
+			for (Node group : groups) {
+				values.add(CommonsJcrUtils.get(group,
+						PeopleNames.PEOPLE_GROUP_ID));
+			}
+			viewer.setInput(values.toArray(new String[0]));
 			setControl(body);
-			tableCmp.setFocus();
+			body.setFocus();
 		}
 
 		class MySelectionChangedListener implements ISelectionChangedListener {
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				if (event.getSelection().isEmpty())
-					tagInstance = null;
+					chosenGroup = null;
 				else {
 					Object obj = ((IStructuredSelection) event.getSelection())
 							.getFirstElement();
-					if (obj instanceof Node) {
-						tagInstance = (Node) obj;
+					if (obj instanceof String) {
+						chosenGroup = (String) obj;
 					}
 				}
+				getContainer().updateButtons();
 			}
 		}
 
 		class MyDoubleClickListener implements IDoubleClickListener {
 			public void doubleClick(DoubleClickEvent evt) {
 				if (evt.getSelection().isEmpty()) {
-					tagInstance = null;
-					return;
+					chosenGroup = null;
 				} else {
 					Object obj = ((IStructuredSelection) evt.getSelection())
 							.getFirstElement();
-					if (obj instanceof Node) {
-						tagInstance = (Node) obj;
+					if (obj instanceof String) {
+						chosenGroup = (String) obj;
 						getContainer().showPage(getNextPage());
 					}
 				}
 			}
+		}
+
+		public boolean canFlipToNextPage() {
+			return CommonsJcrUtils.checkNotEmptyString(chosenGroup);
 		}
 	}
 
@@ -243,36 +246,25 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 		public RecapPage(String pageName) {
 			super(pageName);
-			setTitle("Check and confirm");
 		}
 
 		public void setVisible(boolean visible) {
 			super.setVisible(visible);
-
 			if (visible == true) {
-				if (tagInstance == null)
-					setErrorMessage("Please choose a tag value to be used");
-				else {
-					setErrorMessage(null);
-					String name = CommonsJcrUtils.get(tagInstance,
-							Property.JCR_TITLE);
-					if (actionType == TYPE_ADD)
-						setMessage("Your are about to add [" + name
-								+ "] to the below listed " + rows.length
-								+ " items. "
-								+ "Are you sure you want to proceed ?");
-					else
-						setMessage("Your are about to remove [" + name
-								+ "] from the below listed " + rows.length
-								+ " items. "
-								+ "Are you sure you want to proceed ?");
-				}
+				setErrorMessage(null);
+				setTitle("Assign to " + chosenGroup + ": check and confirm.");
+				setMessage("Your are about to assign the below listed "
+						+ rows.length + " tasks to " + chosenGroup
+						+ ". Are you sure you want to proceed?");
 			}
 		}
 
 		public void createControl(Composite parent) {
 			Composite body = new Composite(parent, SWT.NONE);
-			body.setLayout(EclipseUiUtils.noSpaceGridLayout());
+			body.setLayoutData(EclipseUiUtils.fillWidth());
+			GridLayout layout = new GridLayout();
+			layout.marginTop = layout.marginWidth = 10;
+			body.setLayout(layout);
 			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 			colDefs.add(new PeopleColumnDefinition(selectorName,
 					Property.JCR_TITLE, PropertyType.STRING, "Display Name",
@@ -285,7 +277,8 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 			membersViewer.setContentProvider(new MyLazyContentProvider(
 					membersViewer));
 			setViewerInput(membersViewer, rows);
-			GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+			// workaround the issue with fill layout and virtual viewer
+			GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
 			gd.heightHint = 400;
 			tableCmp.setLayoutData(gd);
 			setControl(body);
@@ -313,8 +306,6 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 		}
 
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			// IMPORTANT: don't forget this: an exception will be thrown if a
-			// selected object is not part of the results anymore.
 			viewer.setSelection(null);
 			this.elements = (Row[]) newInput;
 		}
@@ -325,34 +316,31 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 	}
 
 	/** Privileged job that performs the update asynchronously */
-	private class UpdateTagAndInstancesJob extends PrivilegedJob {
+	private class UpdateAssignmentJob extends PrivilegedJob {
 
-		private int actionType;
 		private Repository repository;
-		private String tagPath;
-		private String tagPropName;
-		private List<String> pathes = new ArrayList<String>();
-		private Display display;
 
-		public UpdateTagAndInstancesJob(Display display, int actionType,
-				PeopleService peopleService, Node taginstance,
-				Row[] toUpdateRows, String selectorName, String tagPropName) {
+		final private List<String> pathes = new ArrayList<String>();
+		private final String chosenGroup;
+
+		// private final String taskTypeId;
+
+		public UpdateAssignmentJob(PeopleService peopleService,
+				Row[] toUpdateRows, String selectorName, String chosenGroup) {
 			super("Updating");
 
-			this.display = display;
-			this.actionType = actionType;
-			this.tagPropName = tagPropName;
-
+			// this.taskTypeId = taskTypeId;
+			this.chosenGroup = chosenGroup;
 			try {
-				this.tagPath = tagInstance.getPath();
-				repository = tagInstance.getSession().getRepository();
+				Node tmpNode = toUpdateRows[0].getNode(selectorName);
+				repository = tmpNode.getSession().getRepository();
 				for (Row row : toUpdateRows) {
 					Node currNode = row.getNode(selectorName);
 					pathes.add(currNode.getPath());
 				}
 			} catch (RepositoryException e) {
-				throw new PeopleException("Unable to init "
-						+ "tag instance batch update for " + tagInstance, e);
+				throw new PeopleException("Unable to initialise "
+						+ "status batch update ", e);
 			}
 		}
 
@@ -364,47 +352,23 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 					monitor.beginTask("Updating objects", -1);
 
 					session = repository.login();
-					Node targetTagInstance = session.getNode(tagPath);
 
 					// TODO use transaction
-					// Legacy insure the node is checked out before update
-					CommonsJcrUtils.checkCOStatusBeforeUpdate(tagInstance);
-
-					// TODO hardcoded prop name
-					String value = targetTagInstance.getProperty(
-							Property.JCR_TITLE).getString();
-
 					for (String currPath : pathes) {
 						Node currNode = session.getNode(currPath);
+						// Legacy insure the node is checked out before update
 						CommonsJcrUtils.checkCOStatusBeforeUpdate(currNode);
-						if (actionType == TYPE_ADD) {
-							// Duplication will return an error message that we
-							// ignore
-							CommonsJcrUtils.addStringToMultiValuedProp(
-									currNode, tagPropName, value);
-						} else if (actionType == TYPE_REMOVE) {
-							// Duplication will return an error message that we
-							// ignore
-							CommonsJcrUtils.removeStringFromMultiValuedProp(
-									currNode, tagPropName, value);
-						}
-						CommonsJcrUtils.save(currNode, true);
+						if (CommonsJcrUtils.setJcrProperty(currNode,
+								PeopleNames.PEOPLE_ASSIGNED_TO,
+								PropertyType.STRING, chosenGroup))
+							peopleService.saveEntity(currNode, true);
 					}
 					monitor.worked(1);
-
-					// FIXME asynchronous refresh does not yet work
-					display.asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							// CommandUtils.callCommand(ForceRefresh.ID);
-						}
-					});
 				}
 			} catch (Exception e) {
 				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
-						"Unable to perform batch update on " + tagPath
-								+ " for " + selectorName + " row list with "
-								+ tagInstanceType, e);
+						"Unable to perform batch assignment to " + chosenGroup
+								+ " for " + selectorName + " row list ", e);
 			} finally {
 				JcrUtils.logoutQuietly(session);
 			}

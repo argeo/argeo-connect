@@ -102,13 +102,13 @@ public class TemplateEditor extends AbstractEntityCTabEditor implements
 						propLabel, PeopleRapConstants.CTAB_EDIT_CATALOGUE + "/"
 								+ propName, tooltip);
 				innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-				Composite submittedForCmp = new TemplateValueCatalogue(
+				Composite oneBusinessPropertyCatalogue = new TemplateValueCatalogue(
 						getSite().getWorkbenchWindow().getWorkbench(), this,
 						innerPannel, SWT.NO_FOCUS, getPeopleService(),
 						getPeopleWorkbenchService(), nodeTemplate, propName,
 						CommonsJcrUtils.get(nodeTemplate,
 								PeopleNames.PEOPLE_TEMPLATE_ID));
-				submittedForCmp.setLayoutData(EclipseUiUtils.fillAll());
+				oneBusinessPropertyCatalogue.setLayoutData(EclipseUiUtils.fillAll());
 			}
 		} catch (RepositoryException e) {
 			throw new PeopleException(
