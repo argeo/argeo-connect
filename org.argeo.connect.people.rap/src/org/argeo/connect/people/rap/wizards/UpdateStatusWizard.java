@@ -370,16 +370,18 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 					monitor.beginTask("Updating objects", -1);
 
 					session = repository.login();
-
+					List<String> modifiedPaths = new ArrayList<String>();
 					// TODO use transaction
 					for (String currPath : pathes) {
 						Node currNode = session.getNode(currPath);
-						// Legacy insure the node is checked out before update
 						CommonsJcrUtils.checkCOStatusBeforeUpdate(currNode);
-						peopleService.getActivityService().updateStatus(
-								taskTypeId, currNode, chosenStatus);
-						peopleService.saveEntity(currNode, true);
+						boolean changed = peopleService.getActivityService()
+								.updateStatus(taskTypeId, currNode,
+										chosenStatus, modifiedPaths);
+						if (changed)
+							session.save();
 					}
+					CommonsJcrUtils.checkPoint(session, modifiedPaths, true);
 					monitor.worked(1);
 				}
 			} catch (Exception e) {

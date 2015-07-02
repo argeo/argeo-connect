@@ -165,8 +165,8 @@ public interface ActivityService {
 	 * It will return true if anything has changed but *DOES NOT SAVE* the
 	 * session
 	 */
-	public boolean updateStatus(String templateId, Node taskNode,
-			String newStatus);
+	// public boolean updateStatus(String templateId, Node taskNode,
+	// String newStatus);
 
 	/**
 	 * Update the status of this task to the new passed status. It is also in

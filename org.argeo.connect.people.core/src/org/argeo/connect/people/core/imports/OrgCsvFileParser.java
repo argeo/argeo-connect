@@ -132,9 +132,7 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 				if (!CommonsJcrUtils.isEmptyString(mailingLists))
 					orga.setProperty(PEOPLE_MAILING_LISTS, CommonsJcrUtils
 							.parseAndClean(mailingLists, ",", true));
-
 				getPeopleService().saveEntity(orga, true);
-
 			}
 
 			if (log.isDebugEnabled())

@@ -2,6 +2,7 @@ package org.argeo.connect.people.rap.editors.parts;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -55,6 +56,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 	private Node assignedToNode;
 	// private boolean isBeingEdited;
 	private List<String> hiddenItemIds;
+	private List<String> modifiedPaths = new ArrayList<String>();
 
 	// UI Context
 	private final AbstractPeopleEditor editor;
@@ -122,6 +124,17 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 
 		public MyFormPart(Composite parent) {
 			super(parent, task);
+		}
+
+		@Override
+		public void commit(boolean onSave) {
+			super.commit(onSave);
+			if (onSave) {
+				CommonsJcrUtils.save(task);
+				CommonsJcrUtils.checkPoint(CommonsJcrUtils.getSession(task),
+						modifiedPaths, true);
+				modifiedPaths.clear();
+			}
 		}
 
 		protected void reCreateChildComposite(Composite panel, Node node) {
@@ -316,7 +329,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 				if (index != -1) {
 					String selectedCategory = combo.getItem(index);
 					if (activityService.updateStatus(taskTypeId, task,
-							selectedCategory))
+							selectedCategory, modifiedPaths))
 						part.markDirty();
 				}
 

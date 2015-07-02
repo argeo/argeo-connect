@@ -237,28 +237,19 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 		}
 	}
 
-	@Override
-	public boolean updateStatus(String templateId, Node taskNode,
-			String newStatus) {
+	protected boolean manageClosedState(String templateId, Node taskNode,
+			String oldStatus, String newStatus, List<String> modifiedPaths) {
 		try {
 			Session session = taskNode.getSession();
-
-			String oldStatus = CommonsJcrUtils.get(taskNode,
-					PeopleNames.PEOPLE_TASK_STATUS);
-
-			if (CommonsJcrUtils.checkNotEmptyString(oldStatus)
-					&& oldStatus.equals(newStatus))
-				return false;
-
-			taskNode.setProperty(PeopleNames.PEOPLE_TASK_STATUS, newStatus);
-
 			ResourceService resourceService = peopleService
 					.getResourceService();
 			List<String> closingStatus = resourceService.getTemplateCatalogue(
 					session, templateId,
 					PeopleNames.PEOPLE_TASK_CLOSING_STATUSES, null);
-			if (closingStatus.contains(newStatus)) {
 
+			boolean changed = false;
+
+			if (closingStatus.contains(newStatus)) {
 				if (closingStatus.contains(oldStatus)) {
 					// Already closed, nothing to do
 				} else {
@@ -267,6 +258,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 							new GregorianCalendar());
 					taskNode.setProperty(PeopleNames.PEOPLE_CLOSED_BY,
 							session.getUserID());
+					changed = true;
 				}
 			} else {
 				if (!closingStatus.contains(oldStatus)) {
@@ -279,22 +271,88 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 					if (taskNode.hasProperty(PeopleNames.PEOPLE_CLOSED_BY))
 						taskNode.getProperty(PeopleNames.PEOPLE_CLOSED_BY)
 								.remove();
+					changed = true;
 				}
 			}
-			return true;
+			return changed;
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to manage closed state for "
+					+ newStatus + " status for task " + taskNode
+					+ " of template ID " + templateId, re);
+		}
+	}
+
+	// @Override
+	// public boolean updateStatus(String templateId, Node taskNode,
+	// String newStatus) {
+	// try {
+	// Session session = taskNode.getSession();
+	//
+	// String oldStatus = CommonsJcrUtils.get(taskNode,
+	// PeopleNames.PEOPLE_TASK_STATUS);
+	//
+	// if (CommonsJcrUtils.checkNotEmptyString(oldStatus)
+	// && oldStatus.equals(newStatus))
+	// return false;
+	//
+	// taskNode.setProperty(PeopleNames.PEOPLE_TASK_STATUS, newStatus);
+	//
+	// ResourceService resourceService = peopleService
+	// .getResourceService();
+	// List<String> closingStatus = resourceService.getTemplateCatalogue(
+	// session, templateId,
+	// PeopleNames.PEOPLE_TASK_CLOSING_STATUSES, null);
+	// if (closingStatus.contains(newStatus)) {
+	//
+	// if (closingStatus.contains(oldStatus)) {
+	// // Already closed, nothing to do
+	// } else {
+	// // Close
+	// taskNode.setProperty(PeopleNames.PEOPLE_CLOSE_DATE,
+	// new GregorianCalendar());
+	// taskNode.setProperty(PeopleNames.PEOPLE_CLOSED_BY,
+	// session.getUserID());
+	// }
+	// } else {
+	// if (!closingStatus.contains(oldStatus)) {
+	// // Already open, nothing to do
+	// } else {
+	// // Re-Open
+	// if (taskNode.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE))
+	// taskNode.getProperty(PeopleNames.PEOPLE_CLOSE_DATE)
+	// .remove();
+	// if (taskNode.hasProperty(PeopleNames.PEOPLE_CLOSED_BY))
+	// taskNode.getProperty(PeopleNames.PEOPLE_CLOSED_BY)
+	// .remove();
+	// }
+	// }
+	// return true;
+	// } catch (RepositoryException re) {
+	// throw new PeopleException("Unable to set new status " + newStatus
+	// + " status for task " + taskNode + " of template ID "
+	// + templateId, re);
+	// }
+	// }
+
+	public boolean updateStatus(String templateId, Node taskNode,
+			String newStatus, List<String> modifiedPaths) {
+		try {
+			String oldStatus = CommonsJcrUtils.get(taskNode,
+					PeopleNames.PEOPLE_TASK_STATUS);
+			if (CommonsJcrUtils.checkNotEmptyString(oldStatus)
+					&& oldStatus.equals(newStatus))
+				return false;
+			else {
+				taskNode.setProperty(PeopleNames.PEOPLE_TASK_STATUS, newStatus);
+				manageClosedState(templateId, taskNode, oldStatus, newStatus,
+						modifiedPaths);
+				return true;
+			}
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to set new status " + newStatus
 					+ " status for task " + taskNode + " of template ID "
 					+ templateId, re);
 		}
-	}
-
-	public boolean updateStatus(String templateId, Node taskNode,
-			String newStatus, List<String> modifiedPaths) {
-		// does nothing specific
-
-		// close or reopen the task
-		return updateStatus(templateId, taskNode, newStatus);
 	}
 
 	@Override
