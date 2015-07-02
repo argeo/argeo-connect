@@ -382,6 +382,43 @@ public class CommonsJcrUtils {
 	}
 
 	/**
+	 * Wraps a best effort to versionMananger.checkedPoint(path) a list of path.
+	 * We check if the node still exists because the list might be out-dated
+	 * 
+	 * We assume the session has been saved.
+	 *
+	 * Not that are not versionable won't be touched TODO : add management of
+	 * check out by others.
+	 */
+	public static void checkPoint(Session session, List<String> pathes,
+			boolean updateLastModified) {
+		try {
+			VersionManager vm = session.getWorkspace().getVersionManager();
+			loop: for (String currPath : pathes) {
+				if (!session.nodeExists(currPath))
+					continue loop;
+				try {
+					Node currNode = session.getNode(currPath);
+					if (!currNode.isNodeType(NodeType.MIX_VERSIONABLE))
+						continue loop;
+
+					if (updateLastModified) {
+						JcrUtils.updateLastModified(currNode);
+						session.save();
+					}
+					vm.checkpoint(currPath);
+				} catch (RepositoryException re) {
+					throw new PeopleException(
+							"Unable to perform check point on " + currPath, re);
+				}
+			}
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Unexpected error when performing batch check point ", re);
+		}
+	}
+
+	/**
 	 * Simplify the save strategy keeping the check-in status unchanged. Goes
 	 * together with <code>checkCOStatusAfterUpdate</code>
 	 */

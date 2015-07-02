@@ -258,9 +258,11 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 					session, templateId,
 					PeopleNames.PEOPLE_TASK_CLOSING_STATUSES, null);
 			if (closingStatus.contains(newStatus)) {
+
 				if (closingStatus.contains(oldStatus)) {
 					// Already closed, nothing to do
 				} else {
+					// Close
 					taskNode.setProperty(PeopleNames.PEOPLE_CLOSE_DATE,
 							new GregorianCalendar());
 					taskNode.setProperty(PeopleNames.PEOPLE_CLOSED_BY,
@@ -270,6 +272,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 				if (!closingStatus.contains(oldStatus)) {
 					// Already open, nothing to do
 				} else {
+					// Re-Open
 					if (taskNode.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE))
 						taskNode.getProperty(PeopleNames.PEOPLE_CLOSE_DATE)
 								.remove();
@@ -284,6 +287,14 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 					+ " status for task " + taskNode + " of template ID "
 					+ templateId, re);
 		}
+	}
+
+	public boolean updateStatus(String templateId, Node taskNode,
+			String newStatus, List<String> modifiedPaths) {
+		// does nothing specific
+
+		// close or reopen the task
+		return updateStatus(templateId, taskNode, newStatus);
 	}
 
 	@Override
