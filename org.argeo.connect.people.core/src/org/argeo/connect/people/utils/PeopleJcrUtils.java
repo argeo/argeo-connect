@@ -30,6 +30,8 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.jcr.ArgeoNames;
+import org.argeo.jcr.ArgeoTypes;
 import org.argeo.jcr.JcrUtils;
 
 /**
@@ -83,6 +85,30 @@ public class PeopleJcrUtils implements PeopleNames {
 	public static Node addEntityToGroup(Node group, Node entity, String role)
 			throws RepositoryException {
 		return addEntityToGroup(group, entity, role, null, null, null, null);
+	}
+
+	public static void createUserGroups(PeopleService peopleService,
+			Session adminSession) throws RepositoryException {
+
+		QueryManager queryManager = adminSession.getWorkspace()
+				.getQueryManager();
+		QueryObjectModelFactory factory = queryManager.getQOMFactory();
+		Selector source = factory.selector(ArgeoTypes.ARGEO_USER_PROFILE,
+				ArgeoTypes.ARGEO_USER_PROFILE);
+		QueryObjectModel query = factory.createQuery(source, null, null, null);
+		QueryResult result = query.execute();
+
+		NodeIterator nit = result.getNodes();
+		while (nit.hasNext()) {
+			Node currProfile = nit.nextNode();
+			String username = CommonsJcrUtils.get(currProfile,
+					ArgeoNames.ARGEO_USER_ID);
+
+			// TODO hardcoded default users...
+			if (!("root".equals(username) || "demo".equals(username))) // "guest".equals(username)||
+				peopleService.getUserManagementService()
+						.createDefaultGroupForUser(adminSession, username);
+		}
 	}
 
 	// /////////////////////////
