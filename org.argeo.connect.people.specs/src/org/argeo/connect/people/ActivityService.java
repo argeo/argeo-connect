@@ -162,10 +162,25 @@ public interface ActivityService {
 	 * charge of updating other task properties, typically after determining if
 	 * the closed status of the task has changed.
 	 * 
-	 * It will return true if anything has changed
+	 * It will return true if anything has changed but *DOES NOT SAVE* the
+	 * session
 	 */
 	public boolean updateStatus(String templateId, Node taskNode,
 			String newStatus);
+
+	/**
+	 * Update the status of this task to the new passed status. It is also in
+	 * charge of updating other task properties, typically after determining if
+	 * the closed status of the task has changed.
+	 * 
+	 * It also enable to keep a cache of modified node if the update triggered
+	 * modification or update on other nodes.
+	 * 
+	 * It will return true if anything has changed but *DOES NOT SAVE* the
+	 * session
+	 */
+	public boolean updateStatus(String templateId, Node taskNode,
+			String newStatus, List<String> modifiedPaths);
 
 	/**
 	 * Determines whether a task has been done. Application should override or
