@@ -434,20 +434,21 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 				reporterId, title, description, assignedTo, relatedTo,
 				creationDate, dueDate, wakeUpDate);
 
+		String newPath = null;
 		try {
-			// poll.addMixin(PeopleTypes.PEOPLE_POLL);
+			newPath = parentNode.getPath() + "/"
+					+ JcrUtils.replaceInvalidChars(pollName);
 			poll.setProperty(PEOPLE_POLL_NAME, pollName);
 			poll.addNode(PeopleNames.PEOPLE_RATES);
 
 			// TODO clean this
 			// Enhance task naming
 			Session session = parentNode.getSession();
-			String newPath = parentNode.getPath() + "/"
-					+ JcrUtils.replaceInvalidChars(pollName);
 			session.move(poll.getPath(), newPath);
 		} catch (RepositoryException e) {
 			throw new PeopleException(
-					"Unable to add poll specific info to task " + poll, e);
+					"Unable to add poll specific info to task " + poll
+							+ " and move it to " + newPath, e);
 		}
 		return poll;
 	}
