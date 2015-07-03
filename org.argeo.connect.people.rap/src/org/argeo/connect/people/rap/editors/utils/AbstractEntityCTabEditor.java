@@ -144,7 +144,7 @@ public abstract class AbstractEntityCTabEditor extends
 		return innerPannel;
 	}
 
-	/** Open the corresponding tab if it has been defined */
+	/** Opens the corresponding tab if it has been defined */
 	public void openTabItem(String id) {
 		CTabItem[] items = folder.getItems();
 		for (CTabItem item : items) {
@@ -156,7 +156,7 @@ public abstract class AbstractEntityCTabEditor extends
 		}
 	}
 
-	/** Open the corresponding tab if it has been defined */
+	/** Retrieves a tab by ID if it has been defined */
 	public CTabItem getTabItemById(String id) {
 		CTabItem[] items = folder.getItems();
 		for (CTabItem item : items) {
@@ -173,10 +173,10 @@ public abstract class AbstractEntityCTabEditor extends
 	 * Generally, generic entity editors displays the *business* node. Yet
 	 * sometimes parent node should also be removed on delete.
 	 */
-//	@Override
-//	protected Boolean deleteParentOnRemove() {
-//		return false;
-//	}
+	// @Override
+	// protected Boolean deleteParentOnRemove() {
+	// return false;
+	// }
 
 	protected boolean checkControl(Control control) {
 		return control != null && !control.isDisposed();
