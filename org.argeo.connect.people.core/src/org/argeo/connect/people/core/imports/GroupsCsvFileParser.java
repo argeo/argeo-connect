@@ -8,6 +8,7 @@ import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserManagementService;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 
 /**
  * Base utility to load user groups form a .CSV file in a People repository
@@ -35,7 +36,8 @@ public class GroupsCsvFileParser extends AbstractPeopleCsvFileParser {
 		Node currGroup = userManagementService.createGroup(adminSession,
 				groupName, title, desc);
 
-		userManagementService.addUsersToGroup(adminSession, currGroup,
-				Arrays.asList(members.split(", ")));
+		if (CommonsJcrUtils.checkNotEmptyString(members))
+			userManagementService.addUsersToGroup(adminSession, currGroup,
+					Arrays.asList(members.split(", ")));
 	}
 }
