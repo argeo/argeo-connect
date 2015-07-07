@@ -35,12 +35,12 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -74,6 +74,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	// This page widgets
 	private VirtualRowTableViewer tableCmp;
 	private Text filterTxt;
+	private TraverseListener traverseListener;
 
 	// Locally cache what is displayed in the UI. Enable exports among others.
 	private Row[] rows;
@@ -118,7 +119,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// initialize table
-		refreshFilteredList();
+		// refreshFilteredList();
 	}
 
 	protected abstract void refreshFilteredList();
@@ -446,13 +447,31 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		// TODO internationalize this
 		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
-		filterTxt.addModifyListener(new ModifyListener() {
-			private static final long serialVersionUID = 5003010530960334977L;
 
-			public void modifyText(ModifyEvent event) {
-				refreshFilteredList();
+		traverseListener = new TraverseListener() {
+			private static final long serialVersionUID = 1914600503113422597L;
+
+			@Override
+			public void keyTraversed(TraverseEvent e) {
+				if (e.keyCode == SWT.CR) {
+					e.doit = false;
+					refreshFilteredList();
+				}
 			}
-		});
+		};
+		filterTxt.addTraverseListener(traverseListener);
+
+		// filterTxt.addModifyListener(new ModifyListener() {
+		// private static final long serialVersionUID = 5003010530960334977L;
+		//
+		// public void modifyText(ModifyEvent event) {
+		// refreshFilteredList();
+		// }
+		// });
+	}
+
+	protected TraverseListener getTraverseListener() {
+		return traverseListener;
 	}
 
 	/** Overwrite to customise the filtering widgets */

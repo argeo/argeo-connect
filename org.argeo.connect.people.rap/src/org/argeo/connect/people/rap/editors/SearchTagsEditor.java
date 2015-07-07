@@ -132,9 +132,9 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 				"Title",
 				new JcrRowHtmlLabelProvider(tagInstanceType, Property.JCR_TITLE),
 				300));
-		colDefs.add(new PeopleColumnDefinition(tagInstanceType,
-				Property.JCR_TITLE, PropertyType.STRING, "Member count",
-				new CountMemberLP(), 85));
+		 colDefs.add(new PeopleColumnDefinition(tagInstanceType,
+		 Property.JCR_TITLE, PropertyType.STRING, "Member count",
+		 new CountMemberLP(), 85));
 		if (canEdit())
 			colDefs.add(new PeopleColumnDefinition(tagInstanceType,
 					Property.JCR_TITLE, PropertyType.STRING, "",

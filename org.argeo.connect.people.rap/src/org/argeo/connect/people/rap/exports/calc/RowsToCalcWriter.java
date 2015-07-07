@@ -127,7 +127,8 @@ public class RowsToCalcWriter {
 
 			// Fill the sheet
 			writeHeader(sheet);
-			writeBody(sheet, rows);
+			if (rows != null && rows.length > 0)
+				writeBody(sheet, rows);
 
 			// Add some formatting
 			SheetSettings ss = sheet.getSettings();
