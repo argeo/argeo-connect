@@ -121,7 +121,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 		// Types
 		col = new TableColumn(table, SWT.LEFT);
 		tableColumnLayout
-				.setColumnData(col, new ColumnWeightData(60, 60, true));
+				.setColumnData(col, new ColumnWeightData(30, 80, true));
 		tvCol = new TableViewerColumn(viewer, col);
 		tvCol.setLabelProvider(new TypeLabelProvider());
 		col.addSelectionListener(JcrUiUtils.getNodeSelectionAdapter(colIndex++,
@@ -131,7 +131,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 		// Dates
 		col = new TableColumn(table, SWT.LEFT);
 		tableColumnLayout
-				.setColumnData(col, new ColumnWeightData(60, 60, true));
+				.setColumnData(col, new ColumnWeightData(60, 145, true));
 		tvCol = new TableViewerColumn(viewer, col);
 		tvCol.setLabelProvider(new DateLabelProvider());
 		col.addSelectionListener(JcrUiUtils.getNodeSelectionAdapter(colIndex++,
@@ -145,7 +145,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 				PropertyType.STRING, PeopleNames.PEOPLE_ASSIGNED_TO,
 				comparator, viewer));
 		tableColumnLayout
-				.setColumnData(col, new ColumnWeightData(60, 60, true));
+				.setColumnData(col, new ColumnWeightData(60, 150, true));
 		tvCol = new TableViewerColumn(viewer, col);
 		tvCol.setLabelProvider(new UsersLabelProvider());
 

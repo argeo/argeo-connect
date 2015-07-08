@@ -247,20 +247,6 @@ public class ActivityList extends Composite {
 							&& !nodes.contains(currNode))
 						nodes.add(currNode);
 				}
-
-				// TODO additional part to debug
-				// Remove this
-				// if (entity.hasNode(PeopleNames.PEOPLE_RATES)) {
-				// NodeIterator nit = entity.getNode(PeopleNames.PEOPLE_RATES)
-				// .getNodes();
-				// while (nit.hasNext()) {
-				// Node currNode = nit.nextNode();
-				// if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)
-				// && !nodes.contains(currNode))
-				// nodes.add(currNode);
-				// }
-				// }
-
 				getTableViewer().setInput(nodes.toArray());
 			} catch (RepositoryException e) {
 				throw new ArgeoException("Unable to list activities", e);
@@ -289,6 +275,7 @@ public class ActivityList extends Composite {
 	private void createTask(Shell shell, Node relatedEntity) {
 		Session session = null;
 		try {
+			// FIXME session management is not clean here
 			// Create an independent session.
 			session = relatedEntity.getSession().getRepository().login();
 			NewSimpleTaskWizard wizard = new NewSimpleTaskWizard(session,
@@ -319,8 +306,6 @@ public class ActivityList extends Composite {
 			relatedTo.add(relatedEntity);
 			Node activity = activityService.createActivity(session, type,
 					title, desc, relatedTo);
-			// TODO save strategy
-			// CommonsJcrUtils.saveAndCheckin(activity);
 			CommonsJcrUtils.checkPoint(activity);
 			return activity;
 		} catch (RepositoryException e) {
