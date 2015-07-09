@@ -3,7 +3,12 @@ package org.argeo.connect.people.ui;
 import javax.jcr.Node;
 
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 /** Helper methods for various People UIs */
@@ -29,6 +34,17 @@ public class PeopleUiUtils {
 		GridLayout gl = new GridLayout(nbOfCol, false);
 		gl.marginWidth = gl.marginHeight = gl.horizontalSpacing = gl.verticalSpacing = 0;
 		return gl;
+	}
+
+	/** simply add an empty line in a grid data to give some air */
+	public static Label addEmptyLine(Composite parent, int height, int colSpan) {
+		// Empty line that act as a padding
+		Label emptyLbl = new Label(parent, SWT.NONE);
+		emptyLbl.setText("");
+		GridData gd = EclipseUiUtils.fillWidth(colSpan);
+		gd.heightHint = height;
+		emptyLbl.setLayoutData(gd);
+		return emptyLbl;
 	}
 
 	/**
