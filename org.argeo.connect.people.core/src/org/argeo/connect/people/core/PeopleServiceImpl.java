@@ -436,6 +436,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		}
 	}
 
+	/** Do not use this, there is further more a problem with the checkPoint method*/
+	@Deprecated
 	@Override
 	public long publishAll(Session session, ArgeoMonitor monitor) {
 		Query query;
