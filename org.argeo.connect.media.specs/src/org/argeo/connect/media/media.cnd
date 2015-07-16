@@ -17,9 +17,11 @@
 - map:categories (STRING) *
 - map:length (LONG) ='0' a // the length in seconds
 
+// Use a URI rather than a String for the 3 following properties?  
 - map:website (STRING) 
+- map:trailerUrl (STRING) 
+- map:previewUrl (STRING) 
 - map:hasTrailer (BOOLEAN)
-- map:trailerUrl (STRING) // Rather use a URI property?
 - map:allowExcerptsOnTv (BOOLEAN)
 - map:allowExcerptsOnWeb (BOOLEAN)
 - map:premiere (STRING)

@@ -58,6 +58,7 @@ public interface MediaNames {
 
 	public final static String MAP_WEBSITE = "map:website";
 	public final static String MAP_TRAILER_URL = "map:trailerUrl";
+	public final static String MAP_PREVIEW_URL = "map:previewUrl";
 	public final static String MAP_HAS_TRAILER = "map:hasTrailer";
 	public final static String MAP_ALLOW_EXCERPTS_ON_TV = "map:allowExcerptsOnTv";
 	public final static String MAP_ALLOW_EXCERPTS_ON_WEB = "map:allowExcerptsOnWeb";
