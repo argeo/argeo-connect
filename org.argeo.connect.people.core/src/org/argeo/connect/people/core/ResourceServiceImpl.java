@@ -557,9 +557,19 @@ public class ResourceServiceImpl implements ResourceService {
 								.getValues();
 						for (Value tagV : tags) {
 							String currTag = tagV.getString().trim();
+
 							if (CommonsJcrUtils.checkNotEmptyString(currTag)
-									&& !registeredTags.contains(currTag))
-								existingValues.add(currTag);
+									&& !registeredTags.contains(currTag)) {
+								if (currTag.length() < 2) {
+									log.warn("Unable to cache tag ["
+											+ currTag
+											+ "] for "
+											+ CommonsJcrUtils.get(currNode,
+													Property.JCR_TITLE) + " - "
+											+ currNode);
+								} else
+									existingValues.add(currTag);
+							}
 						}
 					}
 				}

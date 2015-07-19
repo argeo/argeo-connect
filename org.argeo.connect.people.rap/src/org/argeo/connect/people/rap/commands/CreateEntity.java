@@ -1,6 +1,5 @@
 package org.argeo.connect.people.rap.commands;
 
-import java.util.Calendar;
 import java.util.UUID;
 
 import javax.jcr.Node;
@@ -14,6 +13,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -50,11 +50,13 @@ public class CreateEntity extends AbstractHandler {
 		Node newNode = null;
 		try {
 			session = repository.login();
-			String draftPath = peopleService.getTmpPath();
-			String datePath = JcrUtils.dateAsPath(Calendar.getInstance(), true);
-			Node parent = JcrUtils.mkdirs(session, draftPath + "/" + datePath);
-			newNode = parent.addNode(nodeType, nodeType);
+			// String draftPath = peopleService.getTmpPath();
+			// String datePath = JcrUtils.dateAsPath(Calendar.getInstance(),
+			// true);
+			// JcrUtils.mkdirs(session, draftPath + "/" + datePath);
+			Node parent = PeopleJcrUtils.getDraftParent(session, peopleService);
 			String uuid = UUID.randomUUID().toString();
+			newNode = parent.addNode(uuid, nodeType);
 			newNode.setProperty(PeopleNames.PEOPLE_UID, uuid);
 
 			Wizard wizard = peopleWorkbenchService.getCreationWizard(
@@ -76,7 +78,7 @@ public class CreateEntity extends AbstractHandler {
 
 				return newNode.getPath();
 			} else {
-				// This will try to remove the newly created temporary Node it
+				// This will try to remove the newly created temporary Node if
 				// the process fails before first save
 				JcrUtils.discardQuietly(session);
 			}

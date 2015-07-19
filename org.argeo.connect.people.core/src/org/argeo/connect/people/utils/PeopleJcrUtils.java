@@ -960,4 +960,18 @@ public class PeopleJcrUtils implements PeopleNames {
 					"unable to get entity from reference node", re);
 		}
 	}
+	
+	
+	//TODO Clean and generalize this
+	public static Node getDraftParent(Session session, PeopleService peopleService){
+		String draftPath = peopleService.getTmpPath();
+		String datePath = JcrUtils.dateAsPath(Calendar.getInstance(), true);
+		return JcrUtils.mkdirs(session, draftPath + "/" + datePath + "drafts");
+	}
+
+	public static Node getImportTmpParent(Session session, PeopleService peopleService){
+		String draftPath = peopleService.getTmpPath();
+		String datePath = JcrUtils.dateAsPath(Calendar.getInstance(), true);
+		return JcrUtils.mkdirs(session, draftPath + "/" + datePath + "imports");
+	}
 }
