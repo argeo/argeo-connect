@@ -185,10 +185,10 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	// protected abstract Boolean deleteParentOnRemove();
 
 	/** Overwrite following methods to create a nice editor... */
-	protected abstract void populateBody(Composite parent);;
+	protected abstract void populateBody(Composite parent);
 
 	/** Overwrite following methods to create a nice editor... */
-	protected abstract void populateHeader(Composite parent);;
+	protected abstract void populateHeader(Composite parent);
 
 	protected void populateButtonsComposite(final Composite buttons) {
 		buttons.setLayout(new FormLayout());
