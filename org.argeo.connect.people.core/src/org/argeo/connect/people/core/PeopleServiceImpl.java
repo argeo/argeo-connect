@@ -304,9 +304,10 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			if (ni.getSize() == 0)
 				return null;
 			else if (ni.getSize() > 1) {
-				throw new PeopleException(
-						"Problem retrieving entity by UID, we found "
-								+ ni.getSize() + " corresponding entity(ies)");
+				throw new PeopleException("Found " + ni.getSize()
+						+ " entities for People UID " + uid
+						+ " (first occurence node type: "
+						+ ni.nextNode().getPrimaryNodeType().getName() + ")");
 			} else
 				return ni.nextNode();
 		} catch (RepositoryException e) {
@@ -436,7 +437,10 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		}
 	}
 
-	/** Do not use this, there is further more a problem with the checkPoint method*/
+	/**
+	 * Do not use this, there is further more a problem with the checkPoint
+	 * method
+	 */
 	@Deprecated
 	@Override
 	public long publishAll(Session session, ArgeoMonitor monitor) {
