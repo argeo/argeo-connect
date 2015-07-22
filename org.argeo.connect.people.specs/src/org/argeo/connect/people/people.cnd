@@ -203,21 +203,10 @@ mixin
 // + people:tasks (nt:unstructured)
 
 
-//// tasks to enable gathering user feedback and votes (rates) for a given entity
-// [people:poll] > people:task
-// - people:pollName (STRING) // the current status of this task
-// - people:cacheAvgRate (DOUBLE) IGNORE // caches the current average of the children rates
-// // - people:cacheAvgRate (STRING) IGNORE // caches the current average of the children rates
-// // Contains the child rating activities
-// + people:rates (nt:unstructured)
-
-// REACTIVATED JUST FOR THIS TAG TO AVOID A MIGRATION OF AN EXISTING INSTANCE 
-// DO NOT RELY ON THIS. RATHER USE THE ABOVE that will be re-activated for next micro version
-// Add this mixin to enable gathering user feedback and votes (rates) for a given entity
-[people:poll]
-mixin
-- people:pollName (String) // the current status of this task
-- people:cacheAvgRate (STRING) IGNORE // caches the current average of the children rates
+// Gathers user feedback and votes (rates)
+[people:poll] > people:task
+- people:pollName (STRING) // a specific name. Useful?
+- people:cacheAvgRate (DOUBLE) IGNORE // caches the current average of the children rates
 // Contains the child rating activities
 + people:rates (nt:unstructured)
 
