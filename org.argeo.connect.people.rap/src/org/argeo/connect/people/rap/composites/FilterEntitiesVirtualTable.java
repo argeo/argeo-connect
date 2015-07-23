@@ -12,7 +12,6 @@ import javax.jcr.Session;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.Ordering;
 import javax.jcr.query.qom.QueryObjectModel;
 import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
@@ -20,6 +19,7 @@ import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
@@ -227,12 +227,16 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 					defaultC = factory.and(defaultC, currC);
 			}
 		}
-		// Entity should normally always be a mix:title
-		Ordering order = factory.ascending(factory.propertyValue(
-				source.getSelectorName(), Property.JCR_TITLE));
-		Ordering[] orderings = { order };
-		QueryObjectModel query = factory.createQuery(source, defaultC,
-				orderings, null);
+
+		// // Entity should normally always be a mix:title
+		// Ordering order = factory.ascending(factory.propertyValue(
+		// source.getSelectorName(), Property.JCR_TITLE));
+		// Ordering[] orderings = { order };
+		// QueryObjectModel query = factory.createQuery(source, defaultC,
+		// orderings, null);
+		QueryObjectModel query = factory.createQuery(source, defaultC, null,
+				null);
+		query.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
 		QueryResult result = query.execute();
 		return result.getNodes();
 	}
