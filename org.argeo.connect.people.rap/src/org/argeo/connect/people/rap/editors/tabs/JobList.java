@@ -159,7 +159,7 @@ public class JobList extends Composite {
 					PeopleNames.PEOPLE_IS_PRIMARY, PeopleRapImages.PRIMARY_BTN,
 					PeopleRapImages.PRIMARY_NOT_BTN));
 			tableColumnLayout.setColumnData(col.getColumn(),
-					new ColumnWeightData(10, 15, true));
+					new ColumnWeightData(0, 26, true));
 		}
 
 		// Role
@@ -269,7 +269,7 @@ public class JobList extends Composite {
 
 		@Override
 		protected boolean canEdit(Object element) {
-			return editor.canEdit();
+			return editor.isEditing();
 		}
 
 		@Override

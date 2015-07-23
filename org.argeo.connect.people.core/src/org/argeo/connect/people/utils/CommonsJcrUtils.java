@@ -867,7 +867,9 @@ public class CommonsJcrUtils {
 		try {
 			Session session = node.getSession();
 			String sourceId = sourceNode.getIdentifier();
-			String targetId = targetNode.getIdentifier();
+			String targetId = null;
+			if (targetNode != null)
+				targetId = targetNode.getIdentifier();
 
 			Value[] values;
 			List<Node> nodes = new ArrayList<Node>();
@@ -878,12 +880,14 @@ public class CommonsJcrUtils {
 					String jcrId = currValue.getString();
 					if (sourceId.equals(jcrId)) {
 						// does not add
-					} else if (targetId.equals(jcrId)) {
+					} else if (jcrId.equals(targetId)) {
 						nodes.add(session.getNodeByIdentifier(sourceId));
 						nodes.add(session.getNodeByIdentifier(targetId));
 					} else
 						nodes.add(session.getNodeByIdentifier(jcrId));
 				}
+				if (targetId == null)
+					nodes.add(session.getNodeByIdentifier(sourceId));
 			}
 			setMultipleReferences(node, propName, nodes);
 		} catch (RepositoryException re) {
