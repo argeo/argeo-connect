@@ -38,8 +38,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -96,7 +96,8 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 		this.pack();
 		this.layout();
 		EclipseUiSpecificUtils.enableToolTipSupport(entityViewer);
-		refreshFilteredList();
+		// Do not execute the query by default
+		// refreshFilteredList();
 	}
 
 	protected int getTableHeight() {
@@ -177,13 +178,27 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 				| SWT.ICON_CANCEL);
 		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
-		filterTxt.addModifyListener(new ModifyListener() {
-			private static final long serialVersionUID = 1L;
+		
+		
+		filterTxt.addTraverseListener(new TraverseListener() {
+			private static final long serialVersionUID = 3946973977865345010L;
 
-			public void modifyText(ModifyEvent event) {
-				refreshFilteredList();
+			@Override
+			public void keyTraversed(TraverseEvent e) {
+				if (e.keyCode == SWT.CR) {
+					e.doit = false;
+					refreshFilteredList();
+				}
 			}
 		});
+		
+		// filterTxt.addModifyListener(new ModifyListener() {
+		// private static final long serialVersionUID = 1L;
+		//
+		// public void modifyText(ModifyEvent event) {
+		// refreshFilteredList();
+		// }
+		// });
 	}
 
 	private void refreshFilteredList() {
