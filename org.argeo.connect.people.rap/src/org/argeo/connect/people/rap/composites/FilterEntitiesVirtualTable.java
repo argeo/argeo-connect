@@ -178,8 +178,7 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 				| SWT.ICON_CANCEL);
 		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
-		
-		
+
 		filterTxt.addTraverseListener(new TraverseListener() {
 			private static final long serialVersionUID = 3946973977865345010L;
 
@@ -191,7 +190,7 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 				}
 			}
 		});
-		
+
 		// filterTxt.addModifyListener(new ModifyListener() {
 		// private static final long serialVersionUID = 1L;
 		//
