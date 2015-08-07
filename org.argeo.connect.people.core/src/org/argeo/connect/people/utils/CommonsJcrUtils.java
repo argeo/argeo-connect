@@ -8,6 +8,7 @@ import java.util.List;
 import javax.jcr.InvalidItemStateException;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.Repository;
@@ -16,6 +17,7 @@ import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.ValueFactory;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.query.Query;
 import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
 import javax.jcr.query.qom.Constraint;
@@ -101,6 +103,29 @@ public class CommonsJcrUtils {
 			throw new PeopleException(
 					"Unable to retrieve node by identifier with " + identifier,
 					re);
+		}
+	}
+
+	/**
+	 * Shortcut to get a node iterator on all nodes of a given type under a
+	 * given subpath.
+	 */
+	public static NodeIterator getNodesOfType(Session session,
+			String parentPath, String nodeType) {
+		try {
+			if (parentPath == null)
+				parentPath = "/";
+			Query query = session
+					.getWorkspace()
+					.getQueryManager()
+					.createQuery(
+							"select * from [" + nodeType
+									+ "] as nodes where ISDESCENDANTNODE('"
+									+ parentPath + "') ", Query.JCR_SQL2);
+			return query.execute().getNodes();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to retrieve node of type "
+					+ nodeType + " under " + parentPath, re);
 		}
 	}
 
