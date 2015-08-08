@@ -68,6 +68,7 @@ public interface PeopleConstants {
 	public final static String UNKNOWN_NAME = "?";
 
 	// Import Constants
+	public final static String IMPORT_REF_SUFFIX = "_puid";
 	public static final String IMPORT_CATALOGUE_KEY_COL = "Field";
 	public static final String IMPORT_CATALOGUE_VALUES_COL = "Values";
 	public static final String IMPORT_CATALOGUE_VALUES_SEPARATOR = "; ";

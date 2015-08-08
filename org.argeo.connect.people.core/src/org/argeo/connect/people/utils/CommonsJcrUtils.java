@@ -10,6 +10,7 @@ import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
 import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -26,14 +27,18 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 import javax.jcr.version.VersionManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.jcr.JcrUtils;
 
 /** Some static utilities methods that might be factorized in a near future */
 public class CommonsJcrUtils {
-	// private final static Log log = LogFactory.getLog(CommonsJcrUtils.class);
+	private final static Log log = LogFactory.getLog(CommonsJcrUtils.class);
 
 	/*
 	 * Encapsulate some commons JCR calls with the try/catch block in order to
@@ -1172,10 +1177,6 @@ public class CommonsJcrUtils {
 		return builder.toString();
 	}
 
-	/* PREVENT INSTANTIATION */
-	private CommonsJcrUtils() {
-	}
-
 	/* QOM HELPERS */
 	/**
 	 * returns and(constraintA, constraintB) if constraintA != null, or
@@ -1206,4 +1207,56 @@ public class CommonsJcrUtils {
 		}
 		return defaultC;
 	}
+
+	/* IMPORT HELPERS */
+	/**
+	 * Transform String property that use the people UID to reference other
+	 * entities during import to JCR References. Manage both single and multi
+	 * value prop It retrieves and process all properties that have a _puid
+	 * suffix
+	 */
+	public static void translatePuidToRef(PeopleService peopleService, Node node) {
+		try {
+			Session session = node.getSession();
+			PropertyIterator pit = node.getProperties();
+			while (pit.hasNext()) {
+				Property currProp = pit.nextProperty();
+				String currName = currProp.getName();
+				if (currName.endsWith(PeopleConstants.IMPORT_REF_SUFFIX)) {
+					String newName = currName.substring(0, currName.length()
+							- PeopleConstants.IMPORT_REF_SUFFIX.length());
+					if (currProp.isMultiple()) {
+						Value[] values = currProp.getValues();
+						List<Node> nodes = new ArrayList<Node>();
+						for (Value val : values) {
+							String currId = val.getString();
+							Node referenced = peopleService.getEntityByUid(
+									session, currId);
+							if (referenced == null)
+								log.warn("Unable to find referenced node with ID "
+										+ currId + " for " + currProp);
+							else
+								nodes.add(referenced);
+						}
+						setMultipleReferences(node, newName, nodes);
+						currProp.remove();
+					} else {
+						String currId = currProp.getString();
+						Node referenced = peopleService.getEntityByUid(session,
+								currId);
+						node.setProperty(newName, referenced);
+						currProp.remove();
+					}
+				}
+			}
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to perform post import "
+					+ "translation on Node " + node, re);
+		}
+	}
+
+	/* PREVENT INSTANTIATION */
+	private CommonsJcrUtils() {
+	}
+
 }
