@@ -7,11 +7,14 @@ import java.util.Map;
 
 import javax.jcr.Item;
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -73,23 +76,29 @@ public class HistoryLog extends Composite {
 
 		UserManagementService userService = peopleService
 				.getUserManagementService();
-
+		// Add info to be able to find the node via the data explorer
 		if (userService.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
 				|| userService.isUserInRole(PeopleConstants.ROLE_ADMIN)) {
-			Label label = new Label(parent, SWT.NONE);
-			label.setText("People UID: "
-					+ CommonsJcrUtils.get(entity, PeopleNames.PEOPLE_UID));
+			Label label = new Label(parent, SWT.WRAP);
+			CmsUtils.markup(label);
 			GridData gd = EclipseUiUtils.fillWidth();
 			gd.verticalIndent = 3;
 			gd.horizontalIndent = 5;
 			label.setLayoutData(gd);
+			StringBuilder builder = new StringBuilder();
+			String puid = CommonsJcrUtils.get(entity, PeopleNames.PEOPLE_UID);
+			if (CommonsJcrUtils.checkNotEmptyString(puid)) {
+				builder.append("People UID: ").append(puid);
+				builder.append(" <br/>");
+			}
+			builder.append("Path: ").append(CommonsJcrUtils.getPath(entity));
+			label.setText(builder.toString());
 		}
 		Composite historyCmp = new Composite(parent, SWT.NONE);
 		historyCmp.setLayoutData(EclipseUiUtils.fillAll());
 		historyCmp.setLayout(new FillLayout());
 		final Text styledText = toolkit.createText(historyCmp, "", SWT.BORDER
 				| SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-
 		myFormPart = new MyFormPart(styledText);
 		myFormPart.initialize(editor.getManagedForm());
 		editor.getManagedForm().addPart(myFormPart);
@@ -116,7 +125,6 @@ public class HistoryLog extends Composite {
 			StringBuilder main = new StringBuilder();
 
 			for (int i = lst.size() - 1; i >= 0; i--) {
-
 				StringBuilder firstL = new StringBuilder();
 				if (i == 0)
 					firstL.append("Creation (");
@@ -143,9 +151,7 @@ public class HistoryLog extends Composite {
 				StringBuilder buf = new StringBuilder();
 				Map<String, ItemDiff> diffs = lst.get(i).getDiffs();
 				for (String prop : diffs.keySet()) {
-
 					ItemDiff diff = diffs.get(prop);
-
 					Item refItem = diff.getReferenceItem();
 					Item newItem = diff.getObservedItem();
 					Item tmpItem = refItem == null ? newItem : refItem;
@@ -171,8 +177,8 @@ public class HistoryLog extends Composite {
 								: ((Node) refItem).getName();
 						String obsStr = newItem == null ? null
 								: ((Node) newItem).getName();
-						appendNodeModif(buf, diff.getType(), diff.getRelPath(),
-								refStr, obsStr);
+						appendNodeModif(buf, (Node) newItem, diff.getType(),
+								diff.getRelPath(), refStr, obsStr);
 					}
 				}
 				buf.append("\n");
@@ -185,10 +191,10 @@ public class HistoryLog extends Composite {
 		}
 	}
 
-	public void refresh(){
+	public void refresh() {
 		myFormPart.refresh();
 	}
-	
+
 	private String getValueAsString(Value refValue) throws RepositoryException {
 		String refValueStr;
 		if (refValue.getType() == PropertyType.DATE) {
@@ -228,9 +234,9 @@ public class HistoryLog extends Composite {
 		}
 	}
 
-	private void appendNodeModif(StringBuilder buf, Integer type, String label,
-			String oldValue, String newValue) {
-
+	private void appendNodeModif(StringBuilder buf, Node node, Integer type,
+			String label, String oldValue, String newValue)
+			throws RepositoryException {
 		if (type == PropertyDiff.MODIFIED) {
 			buf.append("Node ");
 			buf.append(label).append(" modified: ");
@@ -239,10 +245,44 @@ public class HistoryLog extends Composite {
 			buf.append("Node ");
 			buf.append(label).append(" added: ");
 			buf.append("\n");
+			appendAddedNodeProperties(buf, node, 1);
 		} else if (type == PropertyDiff.REMOVED) {
 			buf.append("Node ");
 			buf.append(label).append(" removed: ");
 			buf.append("\n");
+		}
+	}
+
+	// Small hack to list the properties of a added sub node
+	private void appendAddedNodeProperties(StringBuilder builder, Node node,
+			int level) throws RepositoryException {
+		PropertyIterator pit = node.getProperties();
+		while (pit.hasNext()) {
+			Property prop = pit.nextProperty();
+			if (!VersionUtils.DEFAULT_FILTERED_OUT_PROP_NAMES.contains(prop
+					.getName())) {
+				String label = propLabel(prop.getName());
+				for (int i = 0; i < level; i++)
+					builder.append("\t");
+				builder.append(label).append(": ");
+				builder.append(" + ");
+				if (prop.isMultiple())
+					builder.append(CommonsJcrUtils.getMultiAsString(
+							prop.getParent(), prop.getName(), "; "));
+				else
+					builder.append(getValueAsString(prop.getValue()));
+				builder.append("\n");
+			}
+		}
+		NodeIterator nit = node.getNodes();
+		while (nit.hasNext()) {
+			Node currNode = nit.nextNode();
+			for (int i = 0; i < level; i++)
+				builder.append("\t");
+			builder.append("Sub Node ");
+			builder.append(currNode.getName()).append(" added: ");
+			builder.append("\n");
+			appendAddedNodeProperties(builder, currNode, level + 1);
 		}
 	}
 
