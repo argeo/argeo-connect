@@ -38,10 +38,13 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
@@ -174,10 +177,20 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 	/* MANAGE FILTER */
 	private void createFilterPart(Composite parent) {
 		// Text Area for the filter
-		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
-				| SWT.ICON_CANCEL);
+
+		Composite filterCmp = new Composite(parent, SWT.NO_FOCUS);
+		GridLayout layout = EclipseUiUtils.noSpaceGridLayout(new GridLayout(2,
+				false));
+		layout.horizontalSpacing = 5;
+		filterCmp.setLayout(layout);
+		filterCmp.setLayoutData(EclipseUiUtils.fillWidth());
+		filterTxt = new Text(filterCmp, SWT.BORDER | SWT.SEARCH
+				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
+
+		Button okBtn = new Button(filterCmp, SWT.FLAT);
+		okBtn.setText("Find");
 
 		filterTxt.addTraverseListener(new TraverseListener() {
 			private static final long serialVersionUID = 3946973977865345010L;
@@ -188,6 +201,15 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 					e.doit = false;
 					refreshFilteredList();
 				}
+			}
+		});
+
+		okBtn.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 4305076157959928315L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				refreshFilteredList();
 			}
 		});
 

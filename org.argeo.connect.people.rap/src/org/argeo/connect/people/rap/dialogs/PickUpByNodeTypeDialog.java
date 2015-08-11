@@ -33,8 +33,11 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -59,6 +62,9 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 	private FilterEntitiesVirtualTable tableCmp;
 	private final String title;
 
+	// draft workaround to prevent window close when the user presses return
+	private Button dummyButton;
+
 	public PickUpByNodeTypeDialog(Shell parentShell, String title,
 			Session session, PeopleWorkbenchService peopleWorkbenchService,
 			String nodeType) {
@@ -81,14 +87,18 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 	}
 
 	protected Point getInitialSize() {
-		return new Point(400, 605);
+		return new Point(400, 607);
 	}
 
 	protected Control createDialogArea(Composite parent) {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
+		Composite main = new Composite(dialogArea, SWT.NO_FOCUS);
+		main.setLayout(EclipseUiUtils.noSpaceGridLayout());
+		main.setLayoutData(EclipseUiUtils.fillAll());
+		
 		int style = SWT.V_SCROLL | SWT.SINGLE | SWT.BORDER;
-		tableCmp = new MyFilterEntitiesVirtualTable(dialogArea, style, session,
+		tableCmp = new MyFilterEntitiesVirtualTable(main, style, session,
 				peopleWorkbenchService, nodeType, colDefs);
 		GridData gd = EclipseUiUtils.fillAll();
 		tableCmp.setLayoutData(gd);
@@ -104,6 +114,10 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 		tableCmp.layout();
 		// dialogArea.pack();
 
+		// draft workaround to prevent window close when the user presses return
+		dummyButton = new Button(main, SWT.PUSH);
+		dummyButton.setLayoutData(new GridData(1, 1));
+
 		dialogArea.layout();
 		return dialogArea;
 	}
@@ -115,6 +129,21 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
 		shell.setText(title);
+	}
+
+	@Override
+	public void create() {
+		super.create();
+		dummyButton.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = -7900611671119542857L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// Do nothing, rather than call ok pressed
+			}
+		});
+		Shell shell = getShell();
+		shell.setDefaultButton(dummyButton);
 	}
 
 	class MySelectionChangedListener implements ISelectionChangedListener {
