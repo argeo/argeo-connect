@@ -1215,7 +1215,8 @@ public class CommonsJcrUtils {
 	 * value prop It retrieves and process all properties that have a _puid
 	 * suffix
 	 */
-	public static void translatePuidToRef(PeopleService peopleService, Node node) {
+	public static void translatePuidToRef(PeopleService peopleService,
+			Node node, boolean updateChildren) {
 		try {
 			Session session = node.getSession();
 			PropertyIterator pit = node.getProperties();
@@ -1249,6 +1250,14 @@ public class CommonsJcrUtils {
 					}
 				}
 			}
+			if (updateChildren) {
+				NodeIterator nit = node.getNodes();
+				while (nit.hasNext()) {
+					Node currChild = nit.nextNode();
+					translatePuidToRef(peopleService, currChild, updateChildren);
+				}
+			}
+
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to perform post import "
 					+ "translation on Node " + node, re);
