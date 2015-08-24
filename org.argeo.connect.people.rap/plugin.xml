@@ -15,13 +15,13 @@
 		</perspective>
       -->
 		<!-- Draft perspective for people standalone application --> 
-		<!--
+		
 		<perspective
 			class="org.argeo.connect.people.rap.PeoplePerspective"
 			icon="icons/people.gif"
             id="org.argeo.connect.people.rap.peoplePerspective"
             name="People">
-		</perspective> -->
+		</perspective> 	
 	</extension>
 
 	<!-- Enrich existing perspectives to add people specific UI Parts -->
@@ -548,10 +548,10 @@
         </activity>
         <!-- FIXME: we hide for the time being the people stand alone perspective 
         to all people that are not in role technical admin --> 
-        <activityPatternBinding
+        <!--<activityPatternBinding
               activityId="org.argeo.connect.people.rap.adminActivity"
               isEqualityPattern="true"
               pattern="org.argeo.connect.people.rap/org.argeo.connect.people.rap.peoplePerspective">
-        </activityPatternBinding>
+        </activityPatternBinding> -->
      </extension>
 </plugin>

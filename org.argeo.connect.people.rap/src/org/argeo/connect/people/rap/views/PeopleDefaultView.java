@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Property;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -73,7 +74,7 @@ public class PeopleDefaultView extends ViewPart {
 	private PeopleWorkbenchService peopleWorkbenchService;
 
 	// This page widgets
-	private TableViewer personViewer;
+	private TableViewer contactableViewer;
 	private Text filterTxt;
 	private final static String FILTER_HELP_MSG = "Search...";
 
@@ -86,19 +87,20 @@ public class PeopleDefaultView extends ViewPart {
 
 		// Header
 		Composite cmp = new Composite(parent, SWT.NO_FOCUS);
-		cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		cmp.setLayoutData(EclipseUiUtils.fillWidth());
 		createHeaderPart(cmp);
 
 		// Filter
 		cmp = new Composite(parent, SWT.NO_FOCUS);
-		cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		cmp.setLayoutData(EclipseUiUtils.fillWidth());
 		createFilterPart(cmp);
 
 		// Table
 		cmp = new Composite(parent, SWT.NO_FOCUS);
-		cmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		personViewer = createListPart(cmp, new EntitySingleColumnLabelProvider(
-				peopleService, peopleWorkbenchService));
+		cmp.setLayoutData(EclipseUiUtils.fillAll());
+		contactableViewer = createListPart(cmp,
+				new EntitySingleColumnLabelProvider(peopleService,
+						peopleWorkbenchService));
 
 		refreshFilteredList();
 	}
@@ -224,10 +226,9 @@ public class PeopleDefaultView extends ViewPart {
 	protected void refreshFilteredList() {
 		try {
 			List<Node> persons = JcrUtils.nodeIteratorToList(doSearch(session,
-					filterTxt.getText(), PeopleTypes.PEOPLE_PERSON,
-					PeopleNames.PEOPLE_LAST_NAME,
-					PeopleNames.PEOPLE_PRIMARY_EMAIL));
-			personViewer.setInput(persons);
+					filterTxt.getText(), PeopleTypes.PEOPLE_CONTACTABLE,
+					Property.JCR_TITLE, PeopleNames.PEOPLE_PRIMARY_EMAIL));
+			contactableViewer.setInput(persons);
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list persons", e);
 		}
@@ -247,21 +248,15 @@ public class PeopleDefaultView extends ViewPart {
 
 		// Parse the String
 		String[] strs = filter.trim().split(" ");
-		if (strs.length == 0) {
-			// StaticOperand so = factory.literal(session.getValueFactory()
-			// .createValue("*"));
-			// defaultC = factory.fullTextSearch("selector", null, so);
-		} else {
-			for (String token : strs) {
-				StaticOperand so = factory.literal(session.getValueFactory()
-						.createValue("*" + token + "*"));
-				Constraint currC = factory.fullTextSearch(
-						source.getSelectorName(), null, so);
-				if (defaultC == null)
-					defaultC = currC;
-				else
-					defaultC = factory.and(defaultC, currC);
-			}
+		for (String token : strs) {
+			StaticOperand so = factory.literal(session.getValueFactory()
+					.createValue("*" + token + "*"));
+			Constraint currC = factory.fullTextSearch(source.getSelectorName(),
+					null, so);
+			if (defaultC == null)
+				defaultC = currC;
+			else
+				defaultC = factory.and(defaultC, currC);
 		}
 
 		Ordering order = null, order2 = null;

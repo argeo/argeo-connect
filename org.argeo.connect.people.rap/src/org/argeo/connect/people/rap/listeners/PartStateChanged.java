@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IStartup;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -28,9 +29,10 @@ public class PartStateChanged implements IPartListener, IStartup {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				try {
-					PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-							.getActivePage()
-							.addPartListener(new PartStateChanged());
+					IWorkbenchPage iwp = PlatformUI.getWorkbench()
+							.getActiveWorkbenchWindow().getActivePage();
+					if (iwp != null)
+						iwp.addPartListener(new PartStateChanged());
 				} catch (Exception e) {
 					throw new PeopleException(
 							"Error while registering the PartStateChangedListener",
