@@ -50,7 +50,7 @@ import org.springframework.core.io.Resource;
 public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private final static Log log = LogFactory.getLog(PeopleServiceImpl.class);
 
-	/* Centralise the various specific People services */
+	/* Centralizes the various specific People services */
 	private UserManagementService userManagementService = new UserManagementServiceImpl(
 			this);
 	private PersonService personService = new PersonServiceImpl(this);
@@ -111,11 +111,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		// resourceType
 		if (resourceType == null)
 			return getBasePath(PeopleConstants.PEOPLE_RESOURCE);
-		//
-		//
-		// String parentName = getParentNameFromType(resourceType);
-		// if (PeopleConstants.KNOWN_RESOURCE_NAMES.contains(parentName))
-		// return getResourceBasePath(null) + "/" + parentName;
 		else
 			throw new PeopleException("Undefined type: " + resourceType);
 	}
@@ -134,19 +129,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		else
 			return typeId + "s";
 	}
-
-	// @Override
-	// public String getDefaultEntityRelPath(Node node, String nodeType) {
-	// String peopleUid = CommonsJcrUtils.get(node, PEOPLE_UID);
-	// if (CommonsJcrUtils.isEmptyString(peopleUid))
-	// throw new PeopleException("Cannot define relpath for " + node
-	// + " with type " + nodeType
-	// + ". No property people:uid is defined and "
-	// + "no default relpath strategy has been defined "
-	// + "for nodes that are not of type people:base");
-	// else
-	// return JcrUtils.firstCharsToPath(peopleUid, 2);
-	// }
 
 	@Override
 	public String getDefaultPathForEntity(Node node, String nodeType) {
@@ -204,7 +186,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 					|| entity.isNodeType(PeopleTypes.PEOPLE_ORG))
 				getPersonService().saveEntity(entity, commit);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
-				// TODO implement generic People behaviour for tasks and
+				// TODO implement generic People behavior for tasks and
 				// activities
 				if (commit)
 					CommonsJcrUtils.checkPoint(entity);
@@ -283,7 +265,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
 					PeopleTypes.PEOPLE_ENTITY);
 
-			// only look in business path
+			// Only look within the business path
 			Constraint c1 = factory.descendantNode(source.getSelectorName(),
 					getBasePath(null));
 
@@ -295,7 +277,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			Constraint c2 = factory.comparison(dynOp,
 					QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
 
-			// effecetive query
+			// Effective query
 			QueryObjectModel query = factory.createQuery(source,
 					factory.and(c1, c2), null, null);
 			QueryResult queryResult = query.execute();
@@ -348,13 +330,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 					parentNode = referencingNode
 							.getNode(PeopleNames.PEOPLE_JOBS);
 				}
-				// } else if (referencingNode
-				// .isNodeType(PeopleTypes.PEOPLE_MAILING_LIST)) {
-				// if (referencedNode.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
-				// linkNodeType = PeopleTypes.PEOPLE_MAILING_LIST_ITEM;
-				// parentNode = referencingNode
-				// .getNode(PeopleNames.PEOPLE_MEMBERS);
-				// }
 			} else if (referencingNode.isNodeType(PeopleTypes.PEOPLE_GROUP)) {
 				if (referencedNode.isNodeType(PeopleTypes.PEOPLE_ORG)
 						|| referencedNode.isNodeType(PeopleTypes.PEOPLE_PERSON)
@@ -528,10 +503,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		return userManagementService;
 	}
 
-	// protected Repository getRepository() {
-	// return repository;
-	// }
-
 	// HELPERS
 
 	/* MISCEALLENEOUS */
@@ -548,7 +519,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	 */
 	public void init() {
 		// Does nothing
-		log.info("People's backend has been initialized");
+		if (log.isDebugEnabled())
+			log.info("People's backend has been initialized");
 	}
 
 	/** Clean shutdown of the backend. */
@@ -556,12 +528,5 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		// Does nothing
 	}
 
-	// /* DEPENDENCY INJECTION */
-	// TODO remove this unused method and the corresponding injection in the
-	// spring XML files.
-	public void setBusinessCatalogs(Map<String, Object> businessCatalogs) {
-		// Inject a map with all business catalogs
-		// this.businessCatalogs = businessCatalogs;
-	}
-
+	/* DEPENDENCY INJECTION */
 }

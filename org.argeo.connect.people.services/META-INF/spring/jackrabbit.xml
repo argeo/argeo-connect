@@ -39,7 +39,7 @@
 
 	<!-- ROLE_REGISTERED_GUEST: A role that has been granted JCR_READ rights 
 		on the workspace -->
-	<!-- DEPRECATED not used for thze time being -->
+	<!-- DEPRECATED not used for the time being -->
 	<!-- <bean class="org.argeo.security.core.SimpleRoleRegistration" init-method="run"> 
 		<property name="role" value="ROLE_REGISTERED_GUEST" /> <property name="userAdminService" 
 		ref="userAdminService" /> </bean> -->
