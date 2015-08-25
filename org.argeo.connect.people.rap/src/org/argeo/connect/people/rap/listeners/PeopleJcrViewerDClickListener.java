@@ -44,9 +44,12 @@ public class PeopleJcrViewerDClickListener implements IDoubleClickListener {
 				.getFirstElement();
 		Node currNode = null;
 		try {
-			if (obj instanceof Row && selectorName != null) {
+			if (obj instanceof Row) {
 				Row curRow = (Row) obj;
-				currNode = curRow.getNode(selectorName);
+				if (selectorName == null)
+					currNode = curRow.getNode();
+				else
+					currNode = curRow.getNode(selectorName);
 			} else if (obj instanceof Node)
 				currNode = (Node) obj;
 

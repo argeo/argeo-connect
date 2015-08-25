@@ -398,8 +398,16 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 				getColumnDefinition(null), hasCheckBoxes());
 		TableViewer tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
+
+		// Small workaround to enable xpath queries
+		String entityType = getEntityType();
+
+		// Xpath queries: only one node by row
+		if (getColumnDefinition(null).get(0).getSelectorName() == null)
+			entityType = null;
+
 		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-				getEntityType(), peopleWorkbenchService));
+				entityType, peopleWorkbenchService));
 	}
 
 	/** Refresh the table viewer based on the free text search field */

@@ -1,5 +1,7 @@
 package org.argeo.connect.people.ui;
 
+import javax.jcr.PropertyType;
+
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
@@ -12,6 +14,26 @@ public class PeopleColumnDefinition extends ColumnDefinition {
 
 	private ColumnLabelProvider labelProvider;
 	private int columnStyle;
+
+	/**
+	 * Basic default column definition that only has a header label and a label
+	 * provider
+	 */
+	public PeopleColumnDefinition(String headerLabel,
+			ColumnLabelProvider labelProvider) {
+		super(null, null, PropertyType.STRING, headerLabel);
+		this.labelProvider = labelProvider;
+	}
+
+	/**
+	 * Basic default column definition that only has a header label and a label
+	 * provider
+	 */
+	public PeopleColumnDefinition(String headerLabel,
+			ColumnLabelProvider labelProvider, int columnSize) {
+		super(null, null, PropertyType.STRING, headerLabel, columnSize);
+		this.labelProvider = labelProvider;
+	}
 
 	public PeopleColumnDefinition(String selectorName, String propertyName,
 			int propertyType, String headerLabel,
