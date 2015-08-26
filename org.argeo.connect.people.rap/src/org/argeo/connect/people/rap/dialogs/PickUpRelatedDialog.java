@@ -30,6 +30,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -49,6 +50,9 @@ public class PickUpRelatedDialog extends TrayDialog {
 	// this page widgets and UI objects
 	private FilterEntitiesVirtualTable tableCmp;
 	private final String title;
+
+	// draft workaround to prevent window close when the user presses return
+	private Button dummyButton;
 
 	public PickUpRelatedDialog(Shell parentShell, String title,
 			Session session, PeopleWorkbenchService peopleWorkbenchService,
@@ -81,6 +85,10 @@ public class PickUpRelatedDialog extends TrayDialog {
 		tableCmp.getTableViewer().addSelectionChangedListener(
 				new MySelectionChangedListener());
 
+		// draft workaround to prevent window close when the user presses return
+		dummyButton = new Button(dialogArea, SWT.PUSH);
+		dummyButton.setVisible(false);
+
 		parent.pack();
 		return dialogArea;
 	}
@@ -92,6 +100,12 @@ public class PickUpRelatedDialog extends TrayDialog {
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
 		shell.setText(title);
+	}
+
+	@Override
+	public void create() {
+		super.create();
+		getShell().setDefaultButton(dummyButton);
 	}
 
 	class MySelectionChangedListener implements ISelectionChangedListener {

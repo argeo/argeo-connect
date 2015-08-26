@@ -101,13 +101,12 @@ public interface PeopleNames {
 	public final static String PEOPLE_TASKS = "people:tasks";
 
 	// Management of user rating
-	public final static String PEOPLE_POLL_NAME = "people:pollName"; // (STRING) 
+	public final static String PEOPLE_POLL_NAME = "people:pollName"; // (STRING)
 	public final static String PEOPLE_CACHE_AVG_RATE = "people:cacheAvgRate"; // (STRING)
-	public final static String PEOPLE_RATES = "people:rates";  // (nt:unstructured)
+	public final static String PEOPLE_RATES = "people:rates"; // (nt:unstructured)
 	// a single rate for one of the children people:rate activities
-	public final static String PEOPLE_RATE = "people:rate"; //  (LONG)
+	public final static String PEOPLE_RATE = "people:rate"; // (LONG)
 
-	
 	// definition of the task template
 	public final static String PEOPLE_TASK_CLOSING_STATUSES = "people:closingStatuses";
 	public final static String PEOPLE_TASK_DEFAULT_STATUS = "people:defaultStatus";
@@ -177,4 +176,11 @@ public interface PeopleNames {
 	public final static String PEOPLE_IBAN = "people:iban";
 	public final static String PEOPLE_BIC = "people:bic";
 
+	// Dirty workaround to avoid plain strings in xpath.request: the jcr
+	// references have the complete unique namespace URL as prefix
+	// TODO find a cleaner way to replace the URL by the local declared prefix
+
+	public final static String JCR_TITLE = "jcr:title";
+	public final static String JCR_DESCRIPTION = "jcr:description";
+	public final static String JCR_PRIMARY_TYPE = "jcr:primaryType";
 }

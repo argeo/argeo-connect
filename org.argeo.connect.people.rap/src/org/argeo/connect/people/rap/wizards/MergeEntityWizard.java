@@ -184,8 +184,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 			chosenItemLabel.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 
 			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
-			colDefs.add(new PeopleColumnDefinition(selectorName,
-					Property.JCR_TITLE, PropertyType.STRING, "Display Name",
+			colDefs.add(new PeopleColumnDefinition("Display Name",
 					new TitleIconRowLP(peopleWorkbenchService, selectorName,
 							Property.JCR_TITLE), 300));
 
@@ -205,23 +204,23 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 								return;
 							Object first = ((IStructuredSelection) event
 									.getSelection()).getFirstElement();
-							try {
-								if (first instanceof Row)
-									masterNode = ((Row) first)
-											.getNode(selectorName);
-								if (first == null)
-									chosenItemLabel.setText("");
-								else
-									chosenItemLabel.setText(overviewLP
-											.getText(masterNode));
-								chosenItemLabel.getParent().layout();
-								chosenItemLabel.getParent().getParent()
-										.layout();
-							} catch (RepositoryException e) {
-								throw new PeopleException(
-										"unable to change master with " + first,
-										e);
+							// try {
+							if (first instanceof Row) {
+								masterNode = CommonsJcrUtils.getNode(
+										(Row) first, selectorName);
 							}
+							if (first == null)
+								chosenItemLabel.setText("");
+							else
+								chosenItemLabel.setText(overviewLP
+										.getText(masterNode));
+							chosenItemLabel.getParent().layout();
+							chosenItemLabel.getParent().getParent().layout();
+							// } catch (RepositoryException e) {
+							// throw new PeopleException(
+							// "unable to change master with " + first,
+							// e);
+							// }
 						}
 					});
 
@@ -239,15 +238,18 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 				} else {
 					Object obj = ((IStructuredSelection) evt.getSelection())
 							.getFirstElement();
-					try {
-						if (obj instanceof Row)
-							masterNode = ((Row) obj).getNode(selectorName);
-						getContainer().showPage(getNextPage());
+					// try {
+					if (obj instanceof Row)
+						masterNode = CommonsJcrUtils.getNode((Row) obj,
+								selectorName);
 
-					} catch (RepositoryException e) {
-						throw new PeopleException(
-								"unable to change master with " + obj, e);
-					}
+					// masterNode = ((Row) obj).getNode(selectorName);
+					getContainer().showPage(getNextPage());
+
+					// } catch (RepositoryException e) {
+					// throw new PeopleException(
+					// "unable to change master with " + obj, e);
+					// }
 				}
 			}
 		}
@@ -290,8 +292,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 			CmsUtils.markup(chosenItemLabel);
 
 			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
-			colDefs.add(new PeopleColumnDefinition(selectorName,
-					Property.JCR_TITLE, PropertyType.STRING, "Display Name",
+			colDefs.add(new PeopleColumnDefinition("Display Name",
 					new TitleIconRowLP(peopleWorkbenchService, selectorName,
 							Property.JCR_TITLE), 300));
 
@@ -377,7 +378,8 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 				this.masterPath = masterNode.getPath();
 				repository = masterNode.getSession().getRepository();
 				for (Row row : toUpdateRows) {
-					Node currNode = row.getNode(selectorName);
+					Node currNode = CommonsJcrUtils.getNode(row, selectorName);
+					// Node currNode = row.getNode(selectorName);
 					slavePathes.add(currNode.getPath());
 				}
 			} catch (RepositoryException e) {

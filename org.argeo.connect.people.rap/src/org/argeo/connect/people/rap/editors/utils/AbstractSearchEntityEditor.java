@@ -335,10 +335,12 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 							"Unvalid selection",
 							"No item is selected. Nothing has been done.");
 				else {
+					// We assume here we always use xpath query and thus we have
+					// only single node rows
 					Wizard wizard = new TagOrUntagInstancesWizard(button
 							.getDisplay(), actionType, session, peopleService,
-							peopleWorkbenchService, rows, getEntityType(),
-							tagId, taggablePropName);
+							peopleWorkbenchService, rows, null, tagId,
+							taggablePropName);
 					WizardDialog dialog = new WizardDialog(parentShell, wizard);
 					int result = dialog.open();
 					if (result == WizardDialog.OK) {

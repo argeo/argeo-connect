@@ -34,6 +34,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.jcr.JcrUtils;
 
 /** Concrete access to people {@link ResourceService} */
@@ -481,25 +482,48 @@ public class ResourceServiceImpl implements ResourceService {
 			List<String> propNames = CommonsJcrUtils.getMultiAsList(tagParent,
 					PeopleNames.PEOPLE_TAGGABLE_PROP_NAME);
 
-			String sName = "nodes";
+			// String sName = "nodes";
+			// StringBuilder builder = new StringBuilder();
+			// for (String propName : propNames) {
+			// builder.append(sName);
+			// builder.append(".[" + propName + "] = ");
+			// builder.append("'" + cleanedKey + "'");
+			// builder.append(" OR ");
+			// }
+			// String propClause = builder.toString();
+			// if (propClause.endsWith(" OR "))
+			// propClause = propClause.substring(0, propClause.length() - 4);
+			//
+			// // TODO will it fails if propNames is empty?
+			// QueryManager qm = tagParent.getSession().getWorkspace()
+			// .getQueryManager();
+			// Query query = qm.createQuery("select * from [" + nodeType +
+			// "] as "
+			// + sName + " where ISDESCENDANTNODE('" + parentPath
+			// + "') AND (" + propClause + ") ", Query.JCR_SQL2);
+
+			// Build xpath for property names;
 			StringBuilder builder = new StringBuilder();
 			for (String propName : propNames) {
-				builder.append(sName);
-				builder.append(".[" + propName + "] = ");
-				builder.append("'" + cleanedKey + "'");
+				builder.append(XPathUtils.getPropertyEquals(propName,
+						cleanedKey));
 				builder.append(" OR ");
 			}
-			String propClause = builder.toString();
-			if (propClause.endsWith(" OR "))
-				propClause = propClause.substring(0, propClause.length() - 4);
+			String condition = builder.toString();
+			// if (condition.endsWith(" OR "))
+			// force error if no property is defined for this tag
+			condition = condition.substring(0, condition.length() - 4);
 
-			// TODO will it fails if propNames is empty?
-			QueryManager qm = tagParent.getSession().getWorkspace()
+			String xpathQueryStr = XPathUtils.descendantFrom(parentPath) +
+					"//element(*, " + nodeType + ")";
+
+			xpathQueryStr += "[" + condition + "]";
+			QueryManager queryManager = tagParent.getSession().getWorkspace()
 					.getQueryManager();
-			Query query = qm.createQuery("select * from [" + nodeType + "] as "
-					+ sName + " where ISDESCENDANTNODE('" + parentPath
-					+ "') AND (" + propClause + ") ", Query.JCR_SQL2);
-			return query.execute().getNodes();
+			Query query = queryManager.createQuery(xpathQueryStr,
+					PeopleConstants.QUERY_XPATH);
+			NodeIterator nit = query.execute().getNodes();
+			return nit;
 		} catch (RepositoryException ee) {
 			throw new PeopleException(
 					"Unable to retrieve tagged entities for key " + key

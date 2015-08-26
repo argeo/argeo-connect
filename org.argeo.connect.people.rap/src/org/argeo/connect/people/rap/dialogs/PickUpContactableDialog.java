@@ -20,18 +20,14 @@ import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
-import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.Ordering;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
 
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
@@ -39,6 +35,7 @@ import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -85,9 +82,9 @@ public class PickUpContactableDialog extends TrayDialog {
 		this.nodeType = nodeType;
 
 		colDefs = new ArrayList<PeopleColumnDefinition>();
-		colDefs.add(new PeopleColumnDefinition(nodeType, Property.JCR_TITLE,
-				PropertyType.STRING, "Display Name", new TitleIconRowLP(
-						peopleUiService, nodeType, Property.JCR_TITLE), 300));
+		colDefs.add(new PeopleColumnDefinition("Display Name",
+				new TitleIconRowLP(peopleUiService, null, Property.JCR_TITLE),
+				300));
 	}
 
 	protected Point getInitialSize() {
@@ -139,12 +136,7 @@ public class PickUpContactableDialog extends TrayDialog {
 			Object obj = ((IStructuredSelection) event.getSelection())
 					.getFirstElement();
 			if (obj instanceof Row) {
-				try {
-					selectedNode = ((Row) obj).getNode(nodeType);
-				} catch (RepositoryException e) {
-					throw new PeopleException("Unable to retrieve "
-							+ "selected node for row " + obj, e);
-				}
+				selectedNode = CommonsJcrUtils.getNode((Row) obj, null);
 			}
 		}
 	}
@@ -157,13 +149,8 @@ public class PickUpContactableDialog extends TrayDialog {
 			Object obj = ((IStructuredSelection) evt.getSelection())
 					.getFirstElement();
 			if (obj instanceof Row) {
-				try {
-					selectedNode = ((Row) obj).getNode(nodeType);
-					okPressed();
-				} catch (RepositoryException e) {
-					throw new PeopleException("Unable to retrieve "
-							+ "selected node for row " + obj, e);
-				}
+				CommonsJcrUtils.getNode((Row) obj, null);
+				okPressed();
 			}
 		}
 	}
@@ -189,23 +176,33 @@ public class PickUpContactableDialog extends TrayDialog {
 		try {
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
-			QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			Selector source = factory.selector(nodeType, nodeType);
+			String xpathQueryStr = "//element(*, " + nodeType + ")";
+			String attrQuery = XPathUtils.getFreeTextConstraint(filterTxt
+					.getText());
+			if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+				xpathQueryStr += "[" + attrQuery + "]";
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
+					PeopleConstants.QUERY_XPATH);
+			QueryResult result = xpathQuery.execute();
 
-			Constraint defaultC = CommonsJcrUtils.getFreeTextConstraint(
-					session, factory, source, filterTxt.getText());
-
-			Ordering order = factory.ascending(factory.propertyValue(
-					source.getSelectorName(), Property.JCR_TITLE));
-			Ordering[] orderings = { order };
-			QueryObjectModel query = factory.createQuery(source, defaultC,
-					orderings, null);
-			// TODO rather implement a virtual viewer
-			query.setLimit(100);
-			QueryResult result = query.execute();
+			// QueryManager queryManager = session.getWorkspace()
+			// .getQueryManager();
+			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
+			// Selector source = factory.selector(nodeType, nodeType);
+			//
+			// Constraint defaultC = CommonsJcrUtils.getFreeTextConstraint(
+			// session, factory, source, filterTxt.getText());
+			//
+			// Ordering order = factory.ascending(factory.propertyValue(
+			// source.getSelectorName(), Property.JCR_TITLE));
+			// Ordering[] orderings = { order };
+			// QueryObjectModel query = factory.createQuery(source, defaultC,
+			// orderings, null);
+			// // TODO rather implement a virtual viewer
+			// query.setLimit(100);
+			// QueryResult result = query.execute();
 			Row[] rows = CommonsJcrUtils.rowIteratorToArray(result.getRows());
 			setViewerInput(rows);
-
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list " + nodeType
 					+ " entities", e);

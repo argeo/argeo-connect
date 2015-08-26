@@ -1,5 +1,6 @@
 package org.argeo.connect.people.rap.providers;
 
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Row;
 
@@ -13,7 +14,6 @@ import org.eclipse.swt.graphics.Image;
  * SimpleJcrRowLabelProvider: TO BE VALIDATED
  */
 public class TitleIconRowLP extends JcrRowHtmlLabelProvider {
-	// WAS public class TitleWithIconLP extends JcrRowHtmlLabelProvider {
 	private static final long serialVersionUID = 6064779874148619776L;
 
 	private final PeopleWorkbenchService peopleWorkbenchService;
@@ -29,10 +29,13 @@ public class TitleIconRowLP extends JcrRowHtmlLabelProvider {
 	@Override
 	public Image getImage(Object element) {
 		try {
-			return peopleWorkbenchService.getIconForType(((Row) element)
-					.getNode(selectorName));
-			// WAS return peopleUiService.getIconForType(((Row) element)
-			// .getNode(PeopleTypes.PEOPLE_ENTITY));
+			Row row = (Row) element;
+			Node node;
+			if (selectorName == null)
+				node = row.getNode();
+			else
+				node = row.getNode(selectorName);
+			return peopleWorkbenchService.getIconForType(node);
 		} catch (RepositoryException e) {
 			throw new PeopleException(
 					"unable to retrieve image for " + element, e);

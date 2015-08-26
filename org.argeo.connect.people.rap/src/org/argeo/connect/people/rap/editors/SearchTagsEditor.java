@@ -5,20 +5,14 @@ import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
-import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.Ordering;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
-import javax.jcr.query.qom.StaticOperand;
+import javax.jcr.query.RowIterator;
 
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
@@ -38,6 +32,7 @@ import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.rap.wizards.EditTagWizard;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -125,20 +120,13 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 			throw new PeopleException("Unknown tag like property at base path "
 					+ basePath);
 
-		colDefs.add(new PeopleColumnDefinition(
-				tagInstanceType,
-				Property.JCR_TITLE,
-				PropertyType.STRING,
-				"Title",
-				new JcrRowHtmlLabelProvider(tagInstanceType, Property.JCR_TITLE),
-				300));
-		 colDefs.add(new PeopleColumnDefinition(tagInstanceType,
-		 Property.JCR_TITLE, PropertyType.STRING, "Member count",
-		 new CountMemberLP(), 85));
+		colDefs.add(new PeopleColumnDefinition("Title",
+				new JcrRowHtmlLabelProvider(Property.JCR_TITLE), 300));
+		colDefs.add(new PeopleColumnDefinition("Member count",
+				new CountMemberLP(), 85));
 		if (canEdit())
-			colDefs.add(new PeopleColumnDefinition(tagInstanceType,
-					Property.JCR_TITLE, PropertyType.STRING, "",
-					new EditLabelProvider(), 80));
+			colDefs.add(new PeopleColumnDefinition("", new EditLabelProvider(),
+					80));
 	}
 
 	// MAIN LAYOUT
@@ -208,47 +196,67 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-				tagInstanceType, peopleWorkbenchService));
+				null, peopleWorkbenchService));
 		tableViewer.getTable().addSelectionListener(new HtmlRwtAdapter());
 	}
 
 	/** Refresh the table viewer based on the free text search field */
 	protected void refreshStaticFilteredList() {
 		try {
+			// QueryManager queryManager = session.getWorkspace()
+			// .getQueryManager();
+			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
+			// Selector source = factory
+			// .selector(tagInstanceType, tagInstanceType);
+			//
+			// String filter = filterTxt.getText();
+			// Constraint defaultC = null;
+			// if (CommonsJcrUtils.checkNotEmptyString(filter)) {
+			// String[] strs = filter.trim().split(" ");
+			// for (String token : strs) {
+			// StaticOperand so = factory.literal(session
+			// .getValueFactory().createValue("*" + token + "*"));
+			// Constraint currC = factory.fullTextSearch(
+			// source.getSelectorName(), null, so);
+			// defaultC = CommonsJcrUtils.localAnd(factory, defaultC,
+			// currC);
+			// }
+			// }
+			//
+			// defaultC = CommonsJcrUtils.localAnd(
+			// factory,
+			// defaultC,
+			// factory.descendantNode(source.getSelectorName(),
+			// tagParent.getPath()));
+			//
+			// Ordering order = factory
+			// .ascending(factory.upperCase(factory.propertyValue(
+			// source.getSelectorName(), Property.JCR_TITLE)));
+			// Ordering[] orderings = { order };
+			// QueryObjectModel query = factory.createQuery(source, defaultC,
+			// orderings, null);
+			// QueryResult result = query.execute();
+			// Row[] rows =
+			// CommonsJcrUtils.rowIteratorToArray(result.getRows());
+			// setViewerInput(rows);
+
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
-			QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			Selector source = factory
-					.selector(tagInstanceType, tagInstanceType);
 
-			String filter = filterTxt.getText();
-			Constraint defaultC = null;
-			if (CommonsJcrUtils.checkNotEmptyString(filter)) {
-				String[] strs = filter.trim().split(" ");
-				for (String token : strs) {
-					StaticOperand so = factory.literal(session
-							.getValueFactory().createValue("*" + token + "*"));
-					Constraint currC = factory.fullTextSearch(
-							source.getSelectorName(), null, so);
-					defaultC = CommonsJcrUtils.localAnd(factory, defaultC,
-							currC);
-				}
-			}
+			String xpathQueryStr = "//element(*, " + tagInstanceType + ")";
+			String attrQuery = XPathUtils.getFreeTextConstraint(filterTxt
+					.getText());
+			if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+				xpathQueryStr += "[" + attrQuery + "]";
 
-			defaultC = CommonsJcrUtils.localAnd(
-					factory,
-					defaultC,
-					factory.descendantNode(source.getSelectorName(),
-							tagParent.getPath()));
+			// always order ?
+			xpathQueryStr += " order by @" + JCR_TITLE;
 
-			Ordering order = factory
-					.ascending(factory.upperCase(factory.propertyValue(
-							source.getSelectorName(), Property.JCR_TITLE)));
-			Ordering[] orderings = { order };
-			QueryObjectModel query = factory.createQuery(source, defaultC,
-					orderings, null);
-			QueryResult result = query.execute();
-			Row[] rows = CommonsJcrUtils.rowIteratorToArray(result.getRows());
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
+					PeopleConstants.QUERY_XPATH);
+
+			RowIterator xPathRit = xpathQuery.execute().getRows();
+			Row[] rows = CommonsJcrUtils.rowIteratorToArray(xPathRit);
 			setViewerInput(rows);
 
 		} catch (RepositoryException e) {
@@ -269,10 +277,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 		@Override
 		public String getText(Object element) {
-
-			Node currNode = CommonsJcrUtils.getNode((Row) element,
-					tagInstanceType);
-
+			Node currNode = CommonsJcrUtils.getNode((Row) element, null);
 			long count = resourceService.countMembers(currNode);
 			return "" + count;
 		}
@@ -283,8 +288,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 		@Override
 		public String getText(Object element) {
-			Node currNode = CommonsJcrUtils.getNode((Row) element,
-					tagInstanceType);
+			Node currNode = CommonsJcrUtils.getNode((Row) element, null);
 			try {
 				String jcrId = currNode.getIdentifier();
 				StringBuilder builder = new StringBuilder();

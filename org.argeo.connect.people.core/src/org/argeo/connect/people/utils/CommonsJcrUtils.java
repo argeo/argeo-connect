@@ -158,7 +158,10 @@ public class CommonsJcrUtils {
 	 */
 	public static Node getNode(Row row, String selectorName) {
 		try {
-			return row.getNode(selectorName);
+			if (selectorName == null)
+				return row.getNode();
+			else
+				return row.getNode(selectorName);
 		} catch (RepositoryException re) {
 			throw new PeopleException(
 					"Unable to retrieve Node with selector name "

@@ -274,8 +274,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 			Composite body = new Composite(parent, SWT.NONE);
 			body.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
-			colDefs.add(new PeopleColumnDefinition(selectorName,
-					Property.JCR_TITLE, PropertyType.STRING, "Display Name",
+			colDefs.add(new PeopleColumnDefinition("Display Name",
 					new TitleIconRowLP(peopleUiService, selectorName,
 							Property.JCR_TITLE), 300));
 
@@ -347,7 +346,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 				this.tagPath = tagInstance.getPath();
 				repository = tagInstance.getSession().getRepository();
 				for (Row row : toUpdateRows) {
-					Node currNode = row.getNode(selectorName);
+					Node currNode = CommonsJcrUtils.getNode(row, selectorName);
 					pathes.add(currNode.getPath());
 				}
 			} catch (RepositoryException e) {
@@ -402,8 +401,11 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 				}
 			} catch (Exception e) {
 				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
-						"Unable to perform batch update on " + tagPath
-								+ " for " + selectorName + " row list with "
+						"Unable to perform batch update on "
+								+ tagPath
+								+ " for "
+								+ (selectorName == null ? "single node "
+										: selectorName) + " row list with "
 								+ tagInstanceType, e);
 			} finally {
 				JcrUtils.logoutQuietly(session);

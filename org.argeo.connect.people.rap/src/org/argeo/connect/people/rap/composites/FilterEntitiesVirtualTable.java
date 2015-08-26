@@ -9,13 +9,9 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
-import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
 import org.argeo.cms.util.CmsUtils;
@@ -26,6 +22,7 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.providers.TitleIconLP;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -198,7 +195,6 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 			@Override
 			public void keyTraversed(TraverseEvent e) {
 				if (e.keyCode == SWT.CR) {
-					e.doit = false;
 					refreshFilteredList();
 				}
 			}
@@ -212,14 +208,6 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 				refreshFilteredList();
 			}
 		});
-
-		// filterTxt.addModifyListener(new ModifyListener() {
-		// private static final long serialVersionUID = 1L;
-		//
-		// public void modifyText(ModifyEvent event) {
-		// refreshFilteredList();
-		// }
-		// });
 	}
 
 	private void refreshFilteredList() {
@@ -242,27 +230,35 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 	protected NodeIterator listFilteredElements(Session session, String filter)
 			throws RepositoryException {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
-		QueryObjectModelFactory factory = queryManager.getQOMFactory();
+		String xpathQueryStr = "//element(*, " + nodeType + ")";
+		String attrQuery = XPathUtils.getFreeTextConstraint(filter);
+		if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+			xpathQueryStr += "[" + attrQuery + "]";
+		Query xpathQuery = queryManager.createQuery(xpathQueryStr,
+				PeopleConstants.QUERY_XPATH);
+		xpathQuery.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
+		QueryResult result = xpathQuery.execute();
+		return result.getNodes();
 
-		Selector source = factory.selector(nodeType, nodeType);
-
-		Constraint defaultC = null;
-
-		// Build constraints based the textArea filter content
-		if (filter != null && !"".equals(filter.trim())) {
-			// Parse the String
-			String[] strs = filter.trim().split(" ");
-			for (String token : strs) {
-				StaticOperand so = factory.literal(session.getValueFactory()
-						.createValue("*" + token + "*"));
-				Constraint currC = factory.fullTextSearch(
-						source.getSelectorName(), null, so);
-				if (defaultC == null)
-					defaultC = currC;
-				else
-					defaultC = factory.and(defaultC, currC);
-			}
-		}
+		// QueryManager queryManager = session.getWorkspace().getQueryManager();
+		// QueryObjectModelFactory factory = queryManager.getQOMFactory();
+		// Selector source = factory.selector(nodeType, nodeType);
+		// Constraint defaultC = null;
+		// // Build constraints based the textArea filter content
+		// if (filter != null && !"".equals(filter.trim())) {
+		// // Parse the String
+		// String[] strs = filter.trim().split(" ");
+		// for (String token : strs) {
+		// StaticOperand so = factory.literal(session.getValueFactory()
+		// .createValue("*" + token + "*"));
+		// Constraint currC = factory.fullTextSearch(
+		// source.getSelectorName(), null, so);
+		// if (defaultC == null)
+		// defaultC = currC;
+		// else
+		// defaultC = factory.and(defaultC, currC);
+		// }
+		// }
 
 		// // Entity should normally always be a mix:title
 		// Ordering order = factory.ascending(factory.propertyValue(
@@ -270,10 +266,10 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 		// Ordering[] orderings = { order };
 		// QueryObjectModel query = factory.createQuery(source, defaultC,
 		// orderings, null);
-		QueryObjectModel query = factory.createQuery(source, defaultC, null,
-				null);
-		query.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
-		QueryResult result = query.execute();
-		return result.getNodes();
+		// QueryObjectModel query = factory.createQuery(source, defaultC, null,
+		// null);
+		// query.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
+		// QueryResult result = query.execute();
+		// return result.getNodes();
 	}
 }

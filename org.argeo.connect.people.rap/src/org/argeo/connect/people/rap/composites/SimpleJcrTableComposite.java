@@ -10,16 +10,14 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.Ordering;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
-import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
@@ -316,35 +314,14 @@ public class SimpleJcrTableComposite extends Composite implements ArgeoNames {
 	protected NodeIterator listFilteredElements(Session session, String filter)
 			throws RepositoryException {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
-		QueryObjectModelFactory factory = queryManager.getQOMFactory();
-
-		Selector source = factory.selector(nodeType, nodeType);
-
-		Constraint defaultC = factory.descendantNode(source.getSelectorName(),
-				parentPath);
-
-		// Build constraints based the textArea filter content
-		if (filter != null && !"".equals(filter.trim())) {
-			// Parse the String
-			String[] strs = filter.trim().split(" ");
-			for (String token : strs) {
-				StaticOperand so = factory.literal(session.getValueFactory()
-						.createValue("*" + token + "*"));
-				Constraint currC = factory.fullTextSearch(
-						source.getSelectorName(), null, so);
-				if (defaultC == null)
-					defaultC = currC;
-				else
-					defaultC = factory.and(defaultC, currC);
-			}
-		}
-
-		Ordering[] orderings = null;
-
-		QueryObjectModel query = factory.createQuery(source, defaultC,
-				orderings, null);
-
-		QueryResult result = query.execute();
+		String xpathQueryStr = XPathUtils.descendantFrom(parentPath)
+				+ "//element(*, " + nodeType + ")";
+		String attrQuery = XPathUtils.getFreeTextConstraint(filter);
+		if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+			xpathQueryStr += "[" + attrQuery + "]";
+		Query xpathQuery = queryManager.createQuery(xpathQueryStr,
+				PeopleConstants.QUERY_XPATH);
+		QueryResult result = xpathQuery.execute();
 		return result.getNodes();
 	}
 }

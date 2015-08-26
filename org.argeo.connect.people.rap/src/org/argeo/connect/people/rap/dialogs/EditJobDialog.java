@@ -23,15 +23,12 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.Ordering;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
-import javax.jcr.query.qom.StaticOperand;
+import javax.jcr.query.QueryResult;
 
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -40,6 +37,7 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.providers.EntitySingleColumnLabelProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -55,8 +53,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -115,6 +113,9 @@ public class EditJobDialog extends TrayDialog {
 	private boolean wasPrimary = false;
 	private Node oldReferencing;
 	private Node oldReferenced;
+
+	// add an unvisible button to get the default OK event
+	private Button defaultDummyBtn;
 
 	/**
 	 * 
@@ -230,6 +231,9 @@ public class EditJobDialog extends TrayDialog {
 			isPrimaryBtn.setSelection(wasPrimary);
 		}
 
+		defaultDummyBtn = new Button(dialogarea, SWT.PUSH);
+		defaultDummyBtn.setVisible(false);
+
 		dialogarea.layout();
 		// Set the focus on the first field.
 		filterTxt.setFocus();
@@ -291,6 +295,13 @@ public class EditJobDialog extends TrayDialog {
 		shell.setText(title);
 	}
 
+	@Override
+	public void create() {
+		super.create();
+		// prevent calling OK Pressed on filtering
+		getShell().setDefaultButton(defaultDummyBtn);
+	}
+
 	/** Overwrite to close session */
 	public boolean close() {
 		JcrUtils.logoutQuietly(session);
@@ -328,13 +339,26 @@ public class EditJobDialog extends TrayDialog {
 				| SWT.ICON_CANCEL);
 		filterTxt.setMessage("Search and choose a corresponding entity");
 		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
-		filterTxt.addModifyListener(new ModifyListener() {
-			private static final long serialVersionUID = 5003010530960334977L;
 
-			public void modifyText(ModifyEvent event) {
-				refreshFilteredList(toSearchNodeType);
+		filterTxt.addTraverseListener(new TraverseListener() {
+			private static final long serialVersionUID = 3886722799404099828L;
+
+			@Override
+			public void keyTraversed(TraverseEvent e) {
+				if (e.keyCode == SWT.CR) {
+					e.doit = false;
+					refreshFilteredList(toSearchNodeType);
+				}
 			}
 		});
+		
+		// filterTxt.addModifyListener(new ModifyListener() {
+		// private static final long serialVersionUID = 5003010530960334977L;
+		//
+		// public void modifyText(ModifyEvent event) {
+		// refreshFilteredList(toSearchNodeType);
+		// }
+		// });
 	}
 
 	protected TableViewer createListPart(Composite tableComposite,
@@ -426,38 +450,16 @@ public class EditJobDialog extends TrayDialog {
 			String filter = filterTxt.getText();
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
-			QueryObjectModelFactory factory = queryManager.getQOMFactory();
 
-			Selector source = factory.selector(nodeType, "selector");
-
-			// no Default Constraint
-			Constraint defaultC = null;
-
-			// Parse the String
-			String[] strs = filter.trim().split(" ");
-			if (strs.length == 0) {
-				StaticOperand so = factory.literal(session.getValueFactory()
-						.createValue("*"));
-				defaultC = factory.fullTextSearch("selector", null, so);
-			} else {
-				for (String token : strs) {
-					StaticOperand so = factory.literal(session
-							.getValueFactory().createValue("*" + token + "*"));
-					Constraint currC = factory.fullTextSearch(
-							source.getSelectorName(), null, so);
-					if (defaultC == null)
-						defaultC = currC;
-					else
-						defaultC = factory.and(defaultC, currC);
-				}
-			}
-			QueryObjectModel query;
-			// Entity should normally always be a mix:title
-			Ordering order = factory.ascending(factory.propertyValue(
-					source.getSelectorName(), Property.JCR_TITLE));
-			Ordering[] orderings = { order };
-			query = factory.createQuery(source, defaultC, orderings, null);
-			return query.execute().getNodes();
+			String xpathQueryStr = "//element(*, " + nodeType + ")";
+			String attrQuery = XPathUtils.getFreeTextConstraint(filter);
+			if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+				xpathQueryStr += "[" + attrQuery + "]";
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
+					PeopleConstants.QUERY_XPATH);
+			xpathQuery.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
+			QueryResult result = xpathQuery.execute();
+			return result.getNodes();
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list entities", e);
 		}

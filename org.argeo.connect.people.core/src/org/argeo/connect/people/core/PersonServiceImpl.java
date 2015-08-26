@@ -169,13 +169,13 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 				String newPath = person.getPath();
 				if (!newPath.equals(oldPath)) {
 					// remove old
-					//boolean wasCO = 
-							CommonsJcrUtils
-							.checkCOStatusBeforeUpdate(oldPerson);
+					// boolean wasCO =
+					CommonsJcrUtils.checkCOStatusBeforeUpdate(oldPerson);
 					oldJob.remove();
-					// FIXME we should not save the session anymore	
+					// FIXME we should not save the session anymore
 					oldPerson.getSession().save();
-					// CommonsJcrUtils.checkCOStatusAfterUpdate(oldPerson, wasCO);
+					// CommonsJcrUtils.checkCOStatusAfterUpdate(oldPerson,
+					// wasCO);
 				} else
 					newJob = oldJob;
 			}
@@ -186,13 +186,16 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 			String orgUid = CommonsJcrUtils.get(organisation,
 					PeopleNames.PEOPLE_UID);
 			String newNodeName = null;
-			if (CommonsJcrUtils.checkNotEmptyString(orgName))
+			if (CommonsJcrUtils.checkNotEmptyString(orgName)) {
 				newNodeName = JcrUtils.replaceInvalidChars(orgName);
-			else
+				// FIXME centralize this
+				if (newNodeName.indexOf("\n") > -1)
+					newNodeName = newNodeName.replaceAll("(?:\n)", "");
+			} else
 				newNodeName = orgUid;
 
-			// boolean wasCO = 
-					CommonsJcrUtils.checkCOStatusBeforeUpdate(person);
+			// boolean wasCO =
+			CommonsJcrUtils.checkCOStatusBeforeUpdate(person);
 			// Create node if necessary
 			if (newJob == null) {
 				Node parentNode = JcrUtils.mkdirs(person,
@@ -230,7 +233,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 				PeopleJcrUtils.markAsPrimary(peopleService, person, newJob);
 			else
 				newJob.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, isPrimary);
-			// FIXME we should not save the session anymore	
+			// FIXME we should not save the session anymore
 			person.getSession().save();
 			// CommonsJcrUtils.checkCOStatusAfterUpdate(person, wasCO);
 		} catch (RepositoryException re) {
