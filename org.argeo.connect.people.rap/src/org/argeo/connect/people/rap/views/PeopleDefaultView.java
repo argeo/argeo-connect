@@ -6,22 +6,16 @@ import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
-import javax.jcr.Property;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.Ordering;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
-import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapImages;
@@ -34,6 +28,7 @@ import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.rap.providers.EntitySingleColumnLabelProvider;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.argeo.jcr.JcrUtils;
@@ -226,8 +221,8 @@ public class PeopleDefaultView extends ViewPart {
 	protected void refreshFilteredList() {
 		try {
 			List<Node> persons = JcrUtils.nodeIteratorToList(doSearch(session,
-					filterTxt.getText(), PeopleTypes.PEOPLE_CONTACTABLE,
-					Property.JCR_TITLE, PeopleNames.PEOPLE_PRIMARY_EMAIL));
+					filterTxt.getText(), PeopleTypes.PEOPLE_CONTACTABLE));
+			// ,Property.JCR_TITLE, PeopleNames.PEOPLE_PRIMARY_EMAIL
 			contactableViewer.setInput(persons);
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list persons", e);
@@ -236,57 +231,22 @@ public class PeopleDefaultView extends ViewPart {
 
 	/** Build repository request */
 	private NodeIterator doSearch(Session session, String filter,
-			String typeName, String orderProperty, String orderProperty2)
-			throws RepositoryException {
+			String typeName) throws RepositoryException {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
-		QueryObjectModelFactory factory = queryManager.getQOMFactory();
+		String xpathQueryStr = "//element(*, " + typeName + ")";
+		String xpathFilter = XPathUtils.getFreeTextConstraint(filter);
+		if (CommonsJcrUtils.checkNotEmptyString(xpathFilter))
+			xpathQueryStr += "[" + xpathFilter + "]";
 
-		Selector source = factory.selector(typeName, typeName);
-
-		// no Default Constraint
-		Constraint defaultC = null;
-
-		// Parse the String
-		String[] strs = filter.trim().split(" ");
-		for (String token : strs) {
-			StaticOperand so = factory.literal(session.getValueFactory()
-					.createValue("*" + token + "*"));
-			Constraint currC = factory.fullTextSearch(source.getSelectorName(),
-					null, so);
-			if (defaultC == null)
-				defaultC = currC;
-			else
-				defaultC = factory.and(defaultC, currC);
-		}
-
-		Ordering order = null, order2 = null;
-
-		if (orderProperty != null && !"".equals(orderProperty.trim()))
-			order = factory.ascending(factory.lowerCase(factory.propertyValue(
-					source.getSelectorName(), orderProperty)));
-		if (orderProperty2 != null && !"".equals(orderProperty2.trim()))
-			order2 = factory.ascending(factory.propertyValue(
-					source.getSelectorName(), orderProperty2));
-
-		QueryObjectModel query;
-		if (order == null) {
-			query = factory.createQuery(source, defaultC, null, null);
-		} else {
-			if (order2 == null)
-				query = factory.createQuery(source, defaultC,
-						new Ordering[] { order }, null);
-			else
-				query = factory.createQuery(source, defaultC, new Ordering[] {
-						order, order2 }, null);
-		}
-		query.setLimit(ROW_LIMIT.longValue());
-		QueryResult result = query.execute();
+		Query xpathQuery = queryManager.createQuery(xpathQueryStr,
+				PeopleConstants.QUERY_XPATH);
+		xpathQuery.setLimit(ROW_LIMIT);
+		QueryResult result = xpathQuery.execute();
 		return result.getNodes();
 	}
 
 	/* DEPENDENCY INJECTION */
 	public void setRepository(Repository repository) {
-		// this.repository = repository;
 		session = CommonsJcrUtils.login(repository);
 	}
 
