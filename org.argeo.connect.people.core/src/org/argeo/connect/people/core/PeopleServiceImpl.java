@@ -19,12 +19,6 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.DynamicOperand;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
-import javax.jcr.query.qom.StaticOperand;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,6 +36,7 @@ import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.jcr.JcrUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -261,27 +256,38 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		try {
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
-			QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
-					PeopleTypes.PEOPLE_ENTITY);
+			String xpathQueryStr = XPathUtils.descendantFrom(getBasePath(null))
+					+ "//element(*, " + PeopleTypes.PEOPLE_ENTITY + ")";
+			String attrQuery = XPathUtils.getPropertyEquals(
+					PeopleNames.PEOPLE_UID, uid);
+			if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+				xpathQueryStr += "[" + attrQuery + "]";
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
+					PeopleConstants.QUERY_XPATH);
+			QueryResult result = xpathQuery.execute();
+			NodeIterator ni = result.getNodes();
 
-			// Only look within the business path
-			Constraint c1 = factory.descendantNode(source.getSelectorName(),
-					getBasePath(null));
-
-			// Retrieve correct ID
-			DynamicOperand dynOp = factory.propertyValue(
-					source.getSelectorName(), PeopleNames.PEOPLE_UID);
-			StaticOperand statOp = factory.literal(session.getValueFactory()
-					.createValue(uid));
-			Constraint c2 = factory.comparison(dynOp,
-					QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
-
-			// Effective query
-			QueryObjectModel query = factory.createQuery(source,
-					factory.and(c1, c2), null, null);
-			QueryResult queryResult = query.execute();
-			NodeIterator ni = queryResult.getNodes();
+			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
+			// Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
+			// PeopleTypes.PEOPLE_ENTITY);
+			//
+			// // Only look within the business path
+			// Constraint c1 = factory.descendantNode(source.getSelectorName(),
+			// getBasePath(null));
+			//
+			// // Retrieve correct ID
+			// DynamicOperand dynOp = factory.propertyValue(
+			// source.getSelectorName(), PeopleNames.PEOPLE_UID);
+			// StaticOperand statOp = factory.literal(session.getValueFactory()
+			// .createValue(uid));
+			// Constraint c2 = factory.comparison(dynOp,
+			// QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+			//
+			// // Effective query
+			// QueryObjectModel query = factory.createQuery(source,
+			// factory.and(c1, c2), null, null);
+			// QueryResult queryResult = query.execute();
+			// NodeIterator ni = queryResult.getNodes();
 
 			if (ni.getSize() == 0)
 				return null;
@@ -378,37 +384,54 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			Session session = entity.getSession();
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
-			QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			final String typeSelector = "relatedType";
-			Selector source = factory.selector(linkNodeType, typeSelector);
-			DynamicOperand dynOp = factory.propertyValue(
-					source.getSelectorName(), PeopleNames.PEOPLE_REF_UID);
-			StaticOperand statOp = factory.literal(session.getValueFactory()
-					.createValue(
-							entity.getProperty(PeopleNames.PEOPLE_UID)
-									.getString()));
-			Constraint defaultC = factory.comparison(dynOp,
-					QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
-			QueryObjectModel query = factory.createQuery(source, defaultC,
-					null, null);
-			QueryResult queryResult = query.execute();
-			NodeIterator ni = queryResult.getNodes();
+			String xpathQueryStr = XPathUtils.descendantFrom(getBasePath(null))
+					+ "//element(*, " + linkNodeType + ")";
+			String attrQuery = XPathUtils.getPropertyEquals(
+					PeopleNames.PEOPLE_REF_UID,
+					entity.getProperty(PeopleNames.PEOPLE_UID).getString());
+			if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+				xpathQueryStr += "[" + attrQuery + "]";
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
+					PeopleConstants.QUERY_XPATH);
+			QueryResult result = xpathQuery.execute();
+			NodeIterator ni = result.getNodes();
+
+			// Session session = entity.getSession();
+			// QueryManager queryManager = session.getWorkspace()
+			// .getQueryManager();
+			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
+			// final String typeSelector = "relatedType";
+			// Selector source = factory.selector(linkNodeType, typeSelector);
+			// DynamicOperand dynOp = factory.propertyValue(
+			// source.getSelectorName(), PeopleNames.PEOPLE_REF_UID);
+			// StaticOperand statOp = factory.literal(session.getValueFactory()
+			// .createValue(
+			// entity.getProperty(PeopleNames.PEOPLE_UID)
+			// .getString()));
+			// Constraint defaultC = factory.comparison(dynOp,
+			// QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+			// QueryObjectModel query = factory.createQuery(source, defaultC,
+			// null, null);
+			// QueryResult queryResult = query.execute();
+			// NodeIterator ni = queryResult.getNodes();
 
 			if (relatedEntityType == null)
 				return JcrUtils.nodeIteratorToList(ni);
 			else {
-
-				List<Node> result = new ArrayList<Node>();
+				List<Node> cleaned = new ArrayList<Node>();
 				while (ni.hasNext()) {
 					Node currNode = ni.nextNode();
 					if (currNode.getParent().getParent()
 							.isNodeType(relatedEntityType))
-						result.add(currNode);
+						cleaned.add(currNode);
 				}
-				return result;
+				return cleaned;
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrieve related entities", e);
+			throw new PeopleException("Unable to retrieve " + linkNodeType
+					+ " related "
+					+ (relatedEntityType == null ? "" : relatedEntityType)
+					+ " entities for " + entity, e);
 		}
 	}
 

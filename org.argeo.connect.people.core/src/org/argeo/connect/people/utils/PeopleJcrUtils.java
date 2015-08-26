@@ -14,15 +14,10 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.DynamicOperand;
 import javax.jcr.query.qom.QueryObjectModel;
 import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
-import javax.jcr.query.qom.StaticOperand;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleConstants;
@@ -39,7 +34,7 @@ import org.argeo.jcr.JcrUtils;
  * these methods than direct JCR queries in order to ease model evolution.
  */
 public class PeopleJcrUtils implements PeopleNames {
-	private final static Log log = LogFactory.getLog(PeopleJcrUtils.class);
+	// private final static Log log = LogFactory.getLog(PeopleJcrUtils.class);
 
 	/* GROUP MANAGEMENT */
 	/**
@@ -140,13 +135,15 @@ public class PeopleJcrUtils implements PeopleNames {
 	 * Returns the country of an entity relying on its primary address, if
 	 * defined
 	 */
-	public static String getCountryFromItem(Node item) {
+	public static String getCountryFromItem(PeopleService peopleService,
+			Node item) {
 		Node node = getPrimaryContact(item, PeopleTypes.PEOPLE_ADDRESS);
 		if (node != null
 				&& CommonsJcrUtils.isNodeType(node,
 						PeopleTypes.PEOPLE_CONTACT_REF)) {
 			// retrieve primary address for the referenced Node
-			Node referenced = getEntityFromNodeReference(node, PEOPLE_REF_UID);
+			Node referenced = peopleService.getEntityFromNodeReference(node,
+					PEOPLE_REF_UID);
 			if (referenced != null)
 				node = getPrimaryContact(referenced, PeopleTypes.PEOPLE_ADDRESS);
 		}
@@ -159,13 +156,14 @@ public class PeopleJcrUtils implements PeopleNames {
 	 * Returns the country of an entity relying on its primary address, if
 	 * defined
 	 */
-	public static String getTownFromItem(Node item) {
+	public static String getTownFromItem(PeopleService peopleService, Node item) {
 		Node node = getPrimaryContact(item, PeopleTypes.PEOPLE_ADDRESS);
 		if (node != null
 				&& CommonsJcrUtils.isNodeType(node,
 						PeopleTypes.PEOPLE_CONTACT_REF)) {
 			// retrieve primary address for the referenced Node
-			Node referenced = getEntityFromNodeReference(node, PEOPLE_REF_UID);
+			Node referenced = peopleService.getEntityFromNodeReference(node,
+					PEOPLE_REF_UID);
 			if (referenced != null)
 				node = getPrimaryContact(referenced, PeopleTypes.PEOPLE_ADDRESS);
 		}
@@ -367,12 +365,13 @@ public class PeopleJcrUtils implements PeopleNames {
 							&& CommonsJcrUtils
 									.checkNotEmptyString(CommonsJcrUtils.get(
 											primaryChild, PEOPLE_REF_UID))) {
-						Node linkedOrg = PeopleJcrUtils
+						Node linkedOrg = peopleService
 								.getEntityFromNodeReference(primaryChild,
 										PEOPLE_REF_UID);
 						if (linkedOrg != null) {
-							cityStr = getTownFromItem(linkedOrg);
-							countryStr = getCountryFromItem(linkedOrg);
+							cityStr = getTownFromItem(peopleService, linkedOrg);
+							countryStr = getCountryFromItem(peopleService,
+									linkedOrg);
 						}
 					} else {
 						cityStr = CommonsJcrUtils
@@ -400,7 +399,7 @@ public class PeopleJcrUtils implements PeopleNames {
 				}
 			} else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_JOB)) {
 				if (isPrimary) {
-					Node linkedOrg = PeopleJcrUtils.getEntityFromNodeReference(
+					Node linkedOrg = peopleService.getEntityFromNodeReference(
 							primaryChild, PEOPLE_REF_UID);
 					if (linkedOrg != null) {
 						parentNode.setProperty(PEOPLE_CACHE_PORG,
@@ -898,78 +897,81 @@ public class PeopleJcrUtils implements PeopleNames {
 		return string.replace(' ', '_');
 	}
 
-	/**
-	 * insure user to retrieve at most one single node in the current
-	 * repository, independently of the implementation of the model
-	 */
-	public static Node getEntityByUid(Session session, String uid) {
-		try {
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
-			QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
-					PeopleTypes.PEOPLE_ENTITY);
-			DynamicOperand dynOp = factory.propertyValue(
-					source.getSelectorName(), PeopleNames.PEOPLE_UID);
-			StaticOperand statOp = factory.literal(session.getValueFactory()
-					.createValue(uid));
-			Constraint defaultC = factory.comparison(dynOp,
-					QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
-			QueryObjectModel query = factory.createQuery(source, defaultC,
-					null, null);
-			QueryResult queryResult = query.execute();
-			NodeIterator ni = queryResult.getNodes();
+	// /**
+	// * insure user to retrieve at most one single node in the current
+	// * repository, independently of the implementation of the model
+	// */
+	// public static Node getEntityByUid(Session session, String uid) {
+	// try {
+	// QueryManager queryManager = session.getWorkspace()
+	// .getQueryManager();
+	// QueryObjectModelFactory factory = queryManager.getQOMFactory();
+	// Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
+	// PeopleTypes.PEOPLE_ENTITY);
+	// DynamicOperand dynOp = factory.propertyValue(
+	// source.getSelectorName(), PeopleNames.PEOPLE_UID);
+	// StaticOperand statOp = factory.literal(session.getValueFactory()
+	// .createValue(uid));
+	// Constraint defaultC = factory.comparison(dynOp,
+	// QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+	// QueryObjectModel query = factory.createQuery(source, defaultC,
+	// null, null);
+	// QueryResult queryResult = query.execute();
+	// NodeIterator ni = queryResult.getNodes();
+	//
+	// if (ni.getSize() == 0)
+	// return null;
+	// else if (ni.getSize() > 1) {
+	// if (log.isDebugEnabled())
+	// while (ni.hasNext())
+	// log.debug("Found Node :" + ni.nextNode());
+	// throw new PeopleException("Problem retrieving entity by UID "
+	// + uid + ", we found " + ni.getSize()
+	// + " corresponding entity(ies)");
+	// } else
+	// return ni.nextNode();
+	// } catch (RepositoryException e) {
+	// throw new PeopleException("Unable to retrieve entity of uid: "
+	// + uid, e);
+	// }
+	// }
 
-			if (ni.getSize() == 0)
-				return null;
-			else if (ni.getSize() > 1) {
-				if (log.isDebugEnabled())
-					while (ni.hasNext())
-						log.debug("Found Node :" + ni.nextNode());
-				throw new PeopleException("Problem retrieving entity by UID "
-						+ uid + ", we found " + ni.getSize()
-						+ " corresponding entity(ies)");
-			} else
-				return ni.nextNode();
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrieve entity of uid: "
-					+ uid, e);
-		}
-	}
+	// /**
+	// * Retrieves the referenced Node in the current repository, using a
+	// business
+	// * defined ID and regardless of the implemented model. This will at most
+	// * return one single node.
+	// *
+	// * @param node
+	// * @param propName
+	// * the name of the property that contains the used reference.
+	// * Usually we rely on {@link PeopleName#PEOPLE_REF_UID} *
+	// * @return
+	// */
+	// public static Node getEntityFromNodeReference(Node node, String propName)
+	// {
+	// try {
+	// if (node.hasProperty(propName))
+	// return getEntityByUid(node.getSession(),
+	// node.getProperty(propName).getString());
+	// else
+	// return null;
+	// } catch (RepositoryException re) {
+	// throw new PeopleException(
+	// "unable to get entity from reference node", re);
+	// }
+	// }
 
-	/**
-	 * Retrieves the referenced Node in the current repository, using a business
-	 * defined ID and regardless of the implemented model. This will at most
-	 * return one single node.
-	 * 
-	 * @param node
-	 * @param propName
-	 *            the name of the property that contains the used reference.
-	 *            Usually we rely on {@link PeopleName#PEOPLE_REF_UID} *
-	 * @return
-	 */
-	public static Node getEntityFromNodeReference(Node node, String propName) {
-		try {
-			if (node.hasProperty(propName))
-				return getEntityByUid(node.getSession(),
-						node.getProperty(propName).getString());
-			else
-				return null;
-		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"unable to get entity from reference node", re);
-		}
-	}
-	
-	
-	//TODO Clean and generalize this
-	public static Node getDraftParent(Session session, PeopleService peopleService){
+	// TODO Clean and generalize this
+	public static Node getDraftParent(Session session,
+			PeopleService peopleService) {
 		String draftPath = peopleService.getTmpPath();
 		String datePath = JcrUtils.dateAsPath(Calendar.getInstance(), true);
 		return JcrUtils.mkdirs(session, draftPath + "/" + datePath + "drafts");
 	}
 
-	public static Node getImportTmpParent(Session session, PeopleService peopleService){
+	public static Node getImportTmpParent(Session session,
+			PeopleService peopleService) {
 		String draftPath = peopleService.getTmpPath();
 		String datePath = JcrUtils.dateAsPath(Calendar.getInstance(), true);
 		return JcrUtils.mkdirs(session, draftPath + "/" + datePath + "imports");

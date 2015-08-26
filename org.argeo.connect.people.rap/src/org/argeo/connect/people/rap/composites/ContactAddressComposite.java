@@ -199,7 +199,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					PeopleNames.PEOPLE_CONTACT_CATEGORY);
 
 			if (contactNode.hasProperty(PeopleNames.PEOPLE_REF_UID)) {
-				Node linkedOrg = PeopleJcrUtils.getEntityByUid(contactNode
+				Node linkedOrg = peopleService.getEntityByUid(contactNode
 						.getSession(),
 						contactNode.getProperty(PeopleNames.PEOPLE_REF_UID)
 								.getString());

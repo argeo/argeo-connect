@@ -9,17 +9,16 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.Ordering;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
-import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
@@ -344,36 +343,16 @@ public class FilteredOrderableEntityTable extends Composite implements
 	protected NodeIterator listFilteredElements(Session session, String filter)
 			throws RepositoryException {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
-		QueryObjectModelFactory factory = queryManager.getQOMFactory();
+		String xpathQueryStr = "//element(*, " + nodeType + ")";
+		String attrQuery = XPathUtils.getFreeTextConstraint(filter);
+		if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+			xpathQueryStr += "[" + attrQuery + "]";
+		xpathQueryStr += " order by @" + PeopleNames.JCR_TITLE;
+		Query xpathQuery = queryManager.createQuery(xpathQueryStr,
+				PeopleConstants.QUERY_XPATH);
+		xpathQuery.setLimit(100);
+		QueryResult result = xpathQuery.execute();
 
-		Selector source = factory.selector(nodeType, nodeType);
-
-		Constraint defaultC = null;
-
-		// Build constraints based the textArea filter content
-		if (filter != null && !"".equals(filter.trim())) {
-			// Parse the String
-			String[] strs = filter.trim().split(" ");
-			for (String token : strs) {
-				StaticOperand so = factory.literal(session.getValueFactory()
-						.createValue("*" + token + "*"));
-				Constraint currC = factory.fullTextSearch(
-						source.getSelectorName(), null, so);
-				if (defaultC == null)
-					defaultC = currC;
-				else
-					defaultC = factory.and(defaultC, currC);
-			}
-		}
-		// Entity should normally always be a mix:title
-		Ordering order = factory.ascending(factory.propertyValue(
-				source.getSelectorName(), Property.JCR_TITLE));
-		Ordering[] orderings = { order };
-		QueryObjectModel query = factory.createQuery(source, defaultC,
-				orderings, null);
-		// TODO rather implement a virtual viewer
-		query.setLimit(100);
-		QueryResult result = query.execute();
 		return result.getNodes();
 	}
 }

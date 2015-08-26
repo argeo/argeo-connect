@@ -238,8 +238,9 @@ public class PeopleUiSnippets {
 	/** creates the localisation snippet */
 	public static String getLocalisationInfo(PeopleService peopleService,
 			Node entity) {
-		String town = PeopleJcrUtils.getTownFromItem(entity);
-		String country = PeopleJcrUtils.getCountryFromItem(entity);
+		String town = PeopleJcrUtils.getTownFromItem(peopleService, entity);
+		String country = PeopleJcrUtils.getCountryFromItem(peopleService,
+				entity);
 		if (CommonsJcrUtils.checkNotEmptyString(town)
 				|| CommonsJcrUtils.checkNotEmptyString(country)) {
 			StringBuilder builder = new StringBuilder();
