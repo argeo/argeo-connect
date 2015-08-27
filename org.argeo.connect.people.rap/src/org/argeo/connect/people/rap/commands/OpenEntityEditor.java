@@ -26,6 +26,8 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
@@ -73,9 +75,10 @@ public class OpenEntityEditor extends AbstractHandler {
 
 			String editorId = getEditorIdFromNode(entity);
 			if (editorId != null) {
-				IEditorPart editor = HandlerUtil
-						.getActiveWorkbenchWindow(event).getActivePage()
-						.openEditor(eei, editorId);
+				IWorkbenchWindow iww = HandlerUtil
+						.getActiveWorkbenchWindow(event);
+				IWorkbenchPage iwp = iww.getActivePage();
+				IEditorPart editor = iwp.openEditor(eei, editorId);
 
 				String openForEdit = event.getParameter(PARAM_OPEN_FOR_EDIT);
 				if ("true".equals(openForEdit) && editor instanceof CmsEditable)

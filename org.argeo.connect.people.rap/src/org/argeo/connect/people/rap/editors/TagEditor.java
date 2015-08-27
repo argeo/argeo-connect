@@ -207,7 +207,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 		// Double click
 		PeopleJcrViewerDClickListener ndcl = new PeopleJcrViewerDClickListener(
-				PeopleTypes.PEOPLE_ENTITY, peopleWorkbenchService);
+				null, peopleWorkbenchService);
 		membersViewer.addDoubleClickListener(ndcl);
 	}
 
@@ -240,12 +240,11 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 					+ PeopleTypes.PEOPLE_ENTITY + ")";
 
 			String filter = filterTxt.getText();
-			String currVal = CommonsJcrUtils.get(getNode(),
-					Property.JCR_TITLE);
+			String currVal = CommonsJcrUtils.get(getNode(), Property.JCR_TITLE);
 
 			String freeTxtCond = XPathUtils.getFreeTextConstraint(filter);
-			String mlNamecond = XPathUtils.getPropertyEquals(
-					PEOPLE_TAGS, currVal);
+			String mlNamecond = XPathUtils.getPropertyEquals(PEOPLE_TAGS,
+					currVal);
 			String conditions = XPathUtils.localAnd(freeTxtCond, mlNamecond);
 
 			if (CommonsJcrUtils.checkNotEmptyString(conditions))
@@ -259,13 +258,12 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 			if (log.isDebugEnabled()) {
 				long end = System.currentTimeMillis();
-				log.debug("Found: " + xPathRit.getSize()
-						+ " members for tag " + getNode()+ " in "
-						+ (end - begin) + " ms by executing XPath query ("
-						+ xpathQueryStr + ").");
+				log.debug("Found: " + xPathRit.getSize() + " members for tag "
+						+ getNode() + " in " + (end - begin)
+						+ " ms by executing XPath query (" + xpathQueryStr
+						+ ").");
 			}
-			
-			
+
 			// QueryManager queryManager = session.getWorkspace()
 			// .getQueryManager();
 			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
