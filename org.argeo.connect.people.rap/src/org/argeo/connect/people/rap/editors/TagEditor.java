@@ -5,22 +5,16 @@ import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
-import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.DynamicOperand;
-import javax.jcr.query.qom.Ordering;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelConstants;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
-import javax.jcr.query.qom.StaticOperand;
+import javax.jcr.query.RowIterator;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
@@ -34,14 +28,15 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
 import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
+import org.argeo.connect.people.rap.providers.JcrRowHtmlLabelProvider;
 import org.argeo.connect.people.rap.providers.TagLabelProvider;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.rap.wizards.EditTagWizard;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -73,6 +68,7 @@ import org.eclipse.ui.part.EditorPart;
  * Editor that display a filtered list of entities that have a given Tag.
  */
 public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
+	private final static Log log = LogFactory.getLog(TagEditor.class);
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".tagEditor";
 
 	/* DEPENDENCY INJECTION */
@@ -115,14 +111,11 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		// Cannot be statically done to have a valid reference to the injected
 		// peopleUiService
 		colDefs = new ArrayList<PeopleColumnDefinition>();
-		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
-				Property.JCR_TITLE, PropertyType.STRING, "Display Name",
-				new TitleIconRowLP(peopleWorkbenchService,
-						PeopleTypes.PEOPLE_ENTITY, Property.JCR_TITLE), 300));
-		colDefs.add(new PeopleColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
-				PEOPLE_TAGS, PropertyType.STRING, "Tags",
-				new SimpleJcrRowLabelProvider(PeopleTypes.PEOPLE_ENTITY,
-						PEOPLE_TAGS), 300));
+		colDefs.add(new PeopleColumnDefinition("Display Name",
+				new TitleIconRowLP(peopleWorkbenchService, null,
+						Property.JCR_TITLE), 300));
+		colDefs.add(new PeopleColumnDefinition("Tags",
+				new JcrRowHtmlLabelProvider(PEOPLE_TAGS), 300));
 	}
 
 	/* SPECIFIC CONFIGURATION */
@@ -235,42 +228,81 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 	/** Refresh the table viewer based on the free text search field */
 	protected void refreshFilteredList() {
+		long begin = System.currentTimeMillis();
+
 		try {
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
-			QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
-					PeopleTypes.PEOPLE_ENTITY);
+
+			String xpathQueryStr = XPathUtils.descendantFrom(peopleService
+					.getBasePath(null))
+					+ "//element(*, "
+					+ PeopleTypes.PEOPLE_ENTITY + ")";
 
 			String filter = filterTxt.getText();
-			String currVal = CommonsJcrUtils.get(getNode(), Property.JCR_TITLE);
-			StaticOperand so = factory.literal(session.getValueFactory()
-					.createValue(currVal));
-			DynamicOperand dyo = factory.propertyValue(
-					source.getSelectorName(), PEOPLE_TAGS);
-			Constraint constraint = factory.comparison(dyo,
-					QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
+			String currVal = CommonsJcrUtils.get(getNode(),
+					Property.JCR_TITLE);
 
-			if (CommonsJcrUtils.checkNotEmptyString(filter)) {
-				String[] strs = filter.trim().split(" ");
-				for (String token : strs) {
-					StaticOperand soTmp = factory.literal(session
-							.getValueFactory().createValue("*" + token + "*"));
-					Constraint currC = factory.fullTextSearch(
-							source.getSelectorName(), null, soTmp);
-					constraint = CommonsJcrUtils.localAnd(factory, constraint,
-							currC);
-				}
-			}
+			String freeTxtCond = XPathUtils.getFreeTextConstraint(filter);
+			String mlNamecond = XPathUtils.getPropertyEquals(
+					PEOPLE_TAGS, currVal);
+			String conditions = XPathUtils.localAnd(freeTxtCond, mlNamecond);
 
-			Ordering order = factory.ascending(factory.propertyValue(
-					source.getSelectorName(), Property.JCR_TITLE));
-			Ordering[] orderings = { order };
-			QueryObjectModel query = factory.createQuery(source, constraint,
-					orderings, null);
-			QueryResult result = query.execute();
-			Row[] rows = CommonsJcrUtils.rowIteratorToArray(result.getRows());
+			if (CommonsJcrUtils.checkNotEmptyString(conditions))
+				xpathQueryStr += "[" + conditions + "]";
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
+					PeopleConstants.QUERY_XPATH);
+
+			RowIterator xPathRit = xpathQuery.execute().getRows();
+			Row[] rows = CommonsJcrUtils.rowIteratorToArray(xPathRit);
 			setViewerInput(rows);
+
+			if (log.isDebugEnabled()) {
+				long end = System.currentTimeMillis();
+				log.debug("Found: " + xPathRit.getSize()
+						+ " members for tag " + getNode()+ " in "
+						+ (end - begin) + " ms by executing XPath query ("
+						+ xpathQueryStr + ").");
+			}
+			
+			
+			// QueryManager queryManager = session.getWorkspace()
+			// .getQueryManager();
+			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
+			// Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
+			// PeopleTypes.PEOPLE_ENTITY);
+			//
+			// String filter = filterTxt.getText();
+			// String currVal = CommonsJcrUtils.get(getNode(),
+			// Property.JCR_TITLE);
+			// StaticOperand so = factory.literal(session.getValueFactory()
+			// .createValue(currVal));
+			// DynamicOperand dyo = factory.propertyValue(
+			// source.getSelectorName(), PEOPLE_TAGS);
+			// Constraint constraint = factory.comparison(dyo,
+			// QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
+			//
+			// if (CommonsJcrUtils.checkNotEmptyString(filter)) {
+			// String[] strs = filter.trim().split(" ");
+			// for (String token : strs) {
+			// StaticOperand soTmp = factory.literal(session
+			// .getValueFactory().createValue("*" + token + "*"));
+			// Constraint currC = factory.fullTextSearch(
+			// source.getSelectorName(), null, soTmp);
+			// constraint = CommonsJcrUtils.localAnd(factory, constraint,
+			// currC);
+			// }
+			// }
+			//
+			// Ordering order = factory.ascending(factory.propertyValue(
+			// source.getSelectorName(), Property.JCR_TITLE));
+			// Ordering[] orderings = { order };
+			// QueryObjectModel query = factory.createQuery(source, constraint,
+			// orderings, null);
+			// QueryResult result = query.execute();
+			// Row[] rows =
+			// CommonsJcrUtils.rowIteratorToArray(result.getRows());
+			// setViewerInput(rows);
 
 		} catch (RepositoryException e) {
 			throw new PeopleException(

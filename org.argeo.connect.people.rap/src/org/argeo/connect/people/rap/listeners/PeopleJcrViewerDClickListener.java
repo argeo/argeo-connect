@@ -7,6 +7,7 @@ import javax.jcr.query.Row;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -18,12 +19,14 @@ import org.eclipse.jface.viewers.IStructuredSelection;
  */
 public class PeopleJcrViewerDClickListener implements IDoubleClickListener {
 
-	private final String selectorName;
+	private String selectorName;
 	private final PeopleWorkbenchService peopleWorkbenchService;
 
 	public PeopleJcrViewerDClickListener(String selectorName,
 			PeopleWorkbenchService peopleWorkbenchService) {
-		this.selectorName = selectorName;
+
+		if (CommonsJcrUtils.checkNotEmptyString(selectorName))
+			this.selectorName = selectorName;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
