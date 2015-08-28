@@ -9,9 +9,11 @@ import javax.jcr.RepositoryException;
 public class XPathUtils {
 
 	public static String descendantFrom(String parentPath) {
-		if (CommonsJcrUtils.checkNotEmptyString(parentPath))
+		if (CommonsJcrUtils.checkNotEmptyString(parentPath)) {
+			if ("/".equals(parentPath))
+				parentPath = "";
 			return "/jcr:root" + parentPath;
-		else
+		} else
 			return "";
 	}
 
