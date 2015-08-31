@@ -19,6 +19,8 @@ import javax.jcr.Value;
 import javax.jcr.ValueFactory;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
 import javax.jcr.query.qom.Constraint;
@@ -33,7 +35,6 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
 import org.argeo.jcr.JcrUtils;
 
 /** Some static utilities methods that might be factorized in a near future */
@@ -1218,8 +1219,8 @@ public class CommonsJcrUtils {
 	 * value prop It retrieves and process all properties that have a _puid
 	 * suffix
 	 */
-	public static void translatePuidToRef(PeopleService peopleService,
-			Node node, boolean updateChildren) {
+	public static void translatePuidToRef(Node node, String nodeType,
+			String basePath, boolean updateChildren) {
 		try {
 			Session session = node.getSession();
 			PropertyIterator pit = node.getProperties();
@@ -1234,8 +1235,8 @@ public class CommonsJcrUtils {
 						List<Node> nodes = new ArrayList<Node>();
 						for (Value val : values) {
 							String currId = val.getString();
-							Node referenced = peopleService.getEntityByUid(
-									session, currId);
+							Node referenced = getEntityByUid(session, currId,
+									nodeType, basePath);
 							if (referenced == null)
 								log.warn("Unable to find referenced node with ID "
 										+ currId + " for " + currProp);
@@ -1246,8 +1247,8 @@ public class CommonsJcrUtils {
 						currProp.remove();
 					} else {
 						String currId = currProp.getString();
-						Node referenced = peopleService.getEntityByUid(session,
-								currId);
+						Node referenced = getEntityByUid(session, nodeType,
+								basePath, currId);
 						node.setProperty(newName, referenced);
 						currProp.remove();
 					}
@@ -1257,13 +1258,49 @@ public class CommonsJcrUtils {
 				NodeIterator nit = node.getNodes();
 				while (nit.hasNext()) {
 					Node currChild = nit.nextNode();
-					translatePuidToRef(peopleService, currChild, updateChildren);
+					translatePuidToRef(currChild, nodeType, basePath,
+							updateChildren);
 				}
 			}
 
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to perform post import "
 					+ "translation on Node " + node, re);
+		}
+	}
+
+	public static Node getEntityByUid(Session session, String uid,
+			String nodeType, String basePath) {
+		try {
+			QueryManager queryManager = session.getWorkspace()
+					.getQueryManager();
+
+			if (CommonsJcrUtils.isEmptyString(basePath)
+					|| "/".equals(basePath.trim()))
+				basePath = "";
+
+			String xpathQueryStr = basePath + "//element(*, " + nodeType + ")";
+			String attrQuery = XPathUtils.getPropertyEquals(
+					PeopleNames.PEOPLE_UID, uid);
+			if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+				xpathQueryStr += "[" + attrQuery + "]";
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
+					PeopleConstants.QUERY_XPATH);
+			QueryResult result = xpathQuery.execute();
+			NodeIterator ni = result.getNodes();
+
+			if (ni.getSize() == 0)
+				return null;
+			else if (ni.getSize() > 1) {
+				throw new PeopleException("Found " + ni.getSize()
+						+ " entities for People UID " + uid
+						+ " (first occurence node type: "
+						+ ni.nextNode().getPrimaryNodeType().getName() + ")");
+			} else
+				return ni.nextNode();
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to retrieve entity of uid: "
+					+ uid + " under " + basePath, e);
 		}
 	}
 
