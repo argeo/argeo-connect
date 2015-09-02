@@ -1247,8 +1247,8 @@ public class CommonsJcrUtils {
 						currProp.remove();
 					} else {
 						String currId = currProp.getString();
-						Node referenced = getEntityByUid(session, nodeType,
-								basePath, currId);
+						Node referenced = getEntityByUid(session, currId,
+								nodeType, basePath);
 						node.setProperty(newName, referenced);
 						currProp.remove();
 					}
