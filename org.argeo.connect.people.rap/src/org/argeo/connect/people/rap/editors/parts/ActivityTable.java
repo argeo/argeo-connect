@@ -416,7 +416,8 @@ public class ActivityTable extends Composite implements ArgeoNames {
 						}
 					}
 				} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-					String reporter = "";
+					String reporter = CommonsJcrUtils.get(activityNode,
+							PeopleNames.PEOPLE_REPORTED_BY);
 					// activityService
 					// .getActivityManagerDisplayName(activityNode);
 					String updater = null;
