@@ -53,6 +53,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Point;
@@ -95,6 +97,7 @@ public class EditJobDialog extends TrayDialog {
 
 	// The search list
 	private Text filterTxt;
+	private Button okBtn;
 	private TableViewer entityViewer;
 
 	private final String title;
@@ -113,9 +116,6 @@ public class EditJobDialog extends TrayDialog {
 	private boolean wasPrimary = false;
 	private Node oldReferencing;
 	private Node oldReferenced;
-
-	// add an unvisible button to get the default OK event
-	private Button defaultDummyBtn;
 
 	/**
 	 * 
@@ -231,9 +231,6 @@ public class EditJobDialog extends TrayDialog {
 			isPrimaryBtn.setSelection(wasPrimary);
 		}
 
-		defaultDummyBtn = new Button(dialogarea, SWT.PUSH);
-		defaultDummyBtn.setVisible(false);
-
 		dialogarea.layout();
 		// Set the focus on the first field.
 		filterTxt.setFocus();
@@ -299,7 +296,7 @@ public class EditJobDialog extends TrayDialog {
 	public void create() {
 		super.create();
 		// prevent calling OK Pressed on filtering
-		getShell().setDefaultButton(defaultDummyBtn);
+		getShell().setDefaultButton(okBtn);
 	}
 
 	/** Overwrite to close session */
@@ -334,11 +331,17 @@ public class EditJobDialog extends TrayDialog {
 	}
 
 	protected void addFilterPanel(Composite parent) {
-		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
+		GridLayout layout = EclipseUiUtils.noSpaceGridLayout(new GridLayout(2,
+				false));
+		layout.horizontalSpacing = 5;
+		parent.setLayout(layout);
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
 				| SWT.ICON_CANCEL);
 		filterTxt.setMessage("Search and choose a corresponding entity");
 		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
+
+		okBtn = new Button(parent, SWT.FLAT);
+		okBtn.setText("Find");
 
 		filterTxt.addTraverseListener(new TraverseListener() {
 			private static final long serialVersionUID = 3886722799404099828L;
@@ -351,7 +354,16 @@ public class EditJobDialog extends TrayDialog {
 				}
 			}
 		});
-		
+
+		okBtn.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 4305076157959928315L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				refreshFilteredList(toSearchNodeType);
+			}
+		});
+
 		// filterTxt.addModifyListener(new ModifyListener() {
 		// private static final long serialVersionUID = 5003010530960334977L;
 		//
