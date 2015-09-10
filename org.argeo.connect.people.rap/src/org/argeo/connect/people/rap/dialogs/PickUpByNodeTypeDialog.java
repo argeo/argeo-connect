@@ -87,7 +87,7 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 	}
 
 	protected Point getInitialSize() {
-		return new Point(400, 607);
+		return new Point(400, 615);
 	}
 
 	protected Control createDialogArea(Composite parent) {
@@ -164,7 +164,6 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 		public void doubleClick(DoubleClickEvent evt) {
 			if (evt.getSelection().isEmpty())
 				return;
-
 			Object obj = ((IStructuredSelection) evt.getSelection())
 					.getFirstElement();
 			if (obj instanceof Node) {

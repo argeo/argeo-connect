@@ -219,7 +219,8 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 			entityViewer.setItemCount(nodes.size());
 			entityViewer.refresh();
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Unable to list users", e);
+			throw new ArgeoException("Unable to refresh filtered list of "
+					+ nodeType + " with filter " + filterTxt.getText(), e);
 		}
 	}
 
