@@ -27,7 +27,6 @@ import org.argeo.connect.people.rap.wizards.TagOrUntagInstancesWizard;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -311,10 +310,12 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		}
 	}
 
-	private boolean isOrgOrPerson() {
-		ColumnDefinition colDef = getColumnDefinition(null).get(0);
-		if (PeopleTypes.PEOPLE_PERSON.equals(colDef.getSelectorName())
-				|| PeopleTypes.PEOPLE_ORG.equals(colDef.getSelectorName()))
+	protected boolean isOrgOrPerson() {
+		SearchNodeEditorInput eei = (SearchNodeEditorInput) getEditorInput();
+		String nodeType = eei.getNodeType();
+
+		if (PeopleTypes.PEOPLE_PERSON.equals(nodeType)
+				|| PeopleTypes.PEOPLE_ORG.equals(nodeType))
 			return true;
 		else
 			return false;
