@@ -17,12 +17,6 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.DynamicOperand;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
-import javax.jcr.query.qom.StaticOperand;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -401,23 +395,38 @@ public class ResourceServiceImpl implements ResourceService {
 
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
-			QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			Selector source = factory.selector(tagNodeType, tagNodeType);
+			
 
-			Constraint c1 = factory.descendantNode(source.getSelectorName(),
-					tagParent.getPath());
+			// XPath
+			StringBuilder builder = new StringBuilder();
+			builder.append(XPathUtils.descendantFrom(tagParent.getPath()));
+			builder.append("//element(*, ").append(tagNodeType)
+					.append(")");
+			builder.append("[");
+			builder.append(XPathUtils.getPropertyEquals(PeopleNames.JCR_TITLE, value));
+			builder.append("]");
+			Query query = queryManager.createQuery(builder.toString(),
+					PeopleConstants.QUERY_XPATH);
 
-			DynamicOperand dynOp = factory.propertyValue(
-					source.getSelectorName(), Property.JCR_TITLE);
-			StaticOperand statOp = factory.literal(session.getValueFactory()
-					.createValue(value));
-			Constraint c2 = factory.comparison(dynOp,
-					QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+			
+			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
+			// Selector source = factory.selector(tagNodeType, tagNodeType);
+			//
+			// Constraint c1 = factory.descendantNode(source.getSelectorName(),
+			// tagParent.getPath());
+			//
+			// DynamicOperand dynOp = factory.propertyValue(
+			// source.getSelectorName(), Property.JCR_TITLE);
+			// StaticOperand statOp = factory.literal(session.getValueFactory()
+			// .createValue(value));
+			// Constraint c2 = factory.comparison(dynOp,
+			// QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+			//
+			// Constraint defaultC = factory.and(c1, c2);
+			//
+			// QueryObjectModel query = factory.createQuery(source, defaultC,
+			// null, null);
 
-			Constraint defaultC = factory.and(c1, c2);
-
-			QueryObjectModel query = factory.createQuery(source, defaultC,
-					null, null);
 			QueryResult queryResult = query.execute();
 			NodeIterator ni = queryResult.getNodes();
 			if (ni.hasNext())
