@@ -209,6 +209,8 @@ public class TemplateValueCatalogue extends Composite {
 			Session session = templateNode.getSession();
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
+			
+			
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
 			Selector source = factory.selector(taggableType, taggableType);
 
@@ -225,6 +227,8 @@ public class TemplateValueCatalogue extends Composite {
 			Ordering[] orderings = { order };
 			QueryObjectModel query = factory.createQuery(source, constraint,
 					orderings, null);
+			
+			
 			QueryResult result = query.execute();
 			return result.getRows();
 		} catch (RepositoryException e) {

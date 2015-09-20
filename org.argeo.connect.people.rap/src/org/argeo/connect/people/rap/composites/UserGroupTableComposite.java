@@ -9,19 +9,16 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.Ordering;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
-import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiUtils;
+import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
@@ -314,44 +311,60 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 	protected final NodeIterator listFilteredElements(Session session,
 			String filter) throws RepositoryException {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
-		QueryObjectModelFactory factory = queryManager.getQOMFactory();
 
-		Selector source = factory.selector(PeopleTypes.PEOPLE_USER_GROUP,
-				PeopleTypes.PEOPLE_USER_GROUP);
-
-		// Dynamically build constraint depending on the filter String
-		Constraint defaultC = null;
-		if (filter != null && !"".equals(filter.trim())) {
-			String[] strs = filter.trim().split(" ");
-			for (String token : strs) {
-				StaticOperand so = factory.literal(session.getValueFactory()
-						.createValue("*" + token + "*"));
-				Constraint currC = factory.fullTextSearch(
-						source.getSelectorName(), null, so);
-				if (defaultC == null)
-					defaultC = currC;
-				else
-					defaultC = factory.and(defaultC, currC);
-			}
-		}
-
+		// XPath
+		StringBuilder builder = new StringBuilder();
+		builder.append("//element(*, ").append(PeopleTypes.PEOPLE_USER_GROUP)
+				.append(")");
+		builder.append("[");
+		String groupOnlyCond = "";
 		if (displayUserChk != null && !displayUserChk.getSelection()) {
-			Constraint constraint = factory.propertyExistence(
-					source.getSelectorName(),
-					PeopleNames.PEOPLE_IS_SINGLE_USER_GROUP);
-			constraint = factory.not(constraint);
-			if (defaultC == null)
-				defaultC = constraint;
-			else
-				defaultC = factory.and(defaultC, constraint);
+			groupOnlyCond = "(not(@"+PeopleNames.PEOPLE_IS_SINGLE_USER_GROUP+"='true'))";
 		}
-
-		Ordering order = factory.ascending(factory.propertyValue(
-				source.getSelectorName(), Property.JCR_TITLE));
-		Ordering[] orderings = { order };
-
-		QueryObjectModel query = factory.createQuery(source, defaultC,
-				orderings, null);
+		builder.append(XPathUtils.localAnd(XPathUtils.getFreeTextConstraint(filter), groupOnlyCond));
+		builder.append("]");
+		builder.append(" order by @");
+		builder.append(PeopleNames.JCR_TITLE);
+		builder.append(" ascending ");
+		Query query = queryManager.createQuery(builder.toString(),
+				PeopleConstants.QUERY_XPATH);
+		
+		// QOM
+		// QueryObjectModelFactory factory = queryManager.getQOMFactory();
+		// Selector source = factory.selector(PeopleTypes.PEOPLE_USER_GROUP,
+		// PeopleTypes.PEOPLE_USER_GROUP);
+		// Constraint defaultC = null;
+		// if (filter != null && !"".equals(filter.trim())) {
+		// String[] strs = filter.trim().split(" ");
+		// for (String token : strs) {
+		// StaticOperand so = factory.literal(session.getValueFactory()
+		// .createValue("*" + token + "*"));
+		// Constraint currC = factory.fullTextSearch(
+		// source.getSelectorName(), null, so);
+		// if (defaultC == null)
+		// defaultC = currC;
+		// else
+		// defaultC = factory.and(defaultC, currC);
+		// }
+		// }
+		//
+		// if (displayUserChk != null && !displayUserChk.getSelection()) {
+		// Constraint constraint = factory.propertyExistence(
+		// source.getSelectorName(),
+		// PeopleNames.PEOPLE_IS_SINGLE_USER_GROUP);
+		// constraint = factory.not(constraint);
+		// if (defaultC == null)
+		// defaultC = constraint;
+		// else
+		// defaultC = factory.and(defaultC, constraint);
+		// }
+		//
+		// Ordering order = factory.ascending(factory.propertyValue(
+		// source.getSelectorName(), Property.JCR_TITLE));
+		// Ordering[] orderings = { order };
+		//
+		// QueryObjectModel query = factory.createQuery(source, defaultC,
+		// orderings, null);
 
 		QueryResult result = query.execute();
 		return result.getNodes();

@@ -6,25 +6,20 @@ import java.util.List;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
+import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.DynamicOperand;
-import javax.jcr.query.qom.Ordering;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelConstants;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
-import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.rap.editors.utils.AbstractSearchEntityEditor;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -113,30 +108,61 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 		try {
 			QueryManager queryManager = getSession().getWorkspace()
 					.getQueryManager();
-			QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			Selector source = factory
-					.selector(getEntityType(), getEntityType());
 
-			Constraint defaultC = getFreeTextConstraint(factory, source);
+			// XPath
+			StringBuilder builder = new StringBuilder();
+			builder.append("//element(*, ").append(getEntityType()).append(")");
+			String attrQuery = XPathUtils
+					.localAnd(XPathUtils.getFreeTextConstraint(getFilterText()
+							.getText()), XPathUtils.getPropertyEquals(
+							PEOPLE_TAGS, tagDD.getText()));
+			if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+				builder.append("[").append(attrQuery).append("]");
+			builder.append(" order by @").append(PeopleNames.JCR_TITLE)
+					.append(" ascending");
+			Query query = queryManager.createQuery(builder.toString(),
+					PeopleConstants.QUERY_XPATH);
 
-			// Tag
-			String currVal = tagDD.getText();
-			if (CommonsJcrUtils.checkNotEmptyString(currVal)) {
-				StaticOperand so = factory.literal(getSession()
-						.getValueFactory().createValue(currVal));
-				DynamicOperand dyo = factory.propertyValue(
-						source.getSelectorName(), PEOPLE_TAGS);
-				Constraint currC = factory.comparison(dyo,
-						QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
-				defaultC = CommonsJcrUtils.localAnd(factory, defaultC, currC);
-			}
-
-			// TODO handle the case where no TITLE prop is available
-			Ordering order = factory.ascending(factory.propertyValue(
-					source.getSelectorName(), Property.JCR_TITLE));
-			Ordering[] orderings = { order };
-			QueryObjectModel query = factory.createQuery(source, defaultC,
-					orderings, null);
+			// boolean showAll = showAllResultsBtn != null
+			// && !(showAllResultsBtn.isDisposed())
+			// && showAllResultsBtn.getSelection();
+			//
+			// if (!showAll)
+			// xpathQuery.setLimit(MsmUiConstants.SEARCH_DEFAULT_LIMIT);
+			//
+			// RowIterator xPathRit = xpathQuery.execute().getRows();
+			// if (log.isDebugEnabled()) {
+			// long end = System.currentTimeMillis();
+			// log.debug("Found: " + xPathRit.getSize() + " persons in "
+			// + (end - begin) + " ms by executing XPath query ("
+			// + xpathQueryStr + ").");
+			// }
+			//
+			//
+			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
+			// Selector source = factory
+			// .selector(getEntityType(), getEntityType());
+			//
+			// Constraint defaultC = getFreeTextConstraint(factory, source);
+			//
+			// // Tag
+			// String currVal = tagDD.getText();
+			// if (CommonsJcrUtils.checkNotEmptyString(currVal)) {
+			// StaticOperand so = factory.literal(getSession()
+			// .getValueFactory().createValue(currVal));
+			// DynamicOperand dyo = factory.propertyValue(
+			// source.getSelectorName(), );
+			// Constraint currC = factory.comparison(dyo,
+			// QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
+			// defaultC = CommonsJcrUtils.localAnd(factory, defaultC, currC);
+			// }
+			//
+			// // TODO handle the case where no TITLE prop is available
+			// Ordering order = factory.ascending(factory.propertyValue(
+			// source.getSelectorName(), Property.JCR_TITLE));
+			// Ordering[] orderings = { order };
+			// QueryObjectModel query = factory.createQuery(source, defaultC,
+			// orderings, null);
 			QueryResult result = query.execute();
 			Row[] rows = CommonsJcrUtils.rowIteratorToArray(result.getRows());
 			setViewerInput(rows);

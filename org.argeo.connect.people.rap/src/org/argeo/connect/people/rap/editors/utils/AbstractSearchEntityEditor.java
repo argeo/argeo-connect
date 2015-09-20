@@ -507,11 +507,11 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		this.filterString = filterString;
 	}
 
-	protected Constraint getFreeTextConstraint(QueryObjectModelFactory factory,
-			Selector source) throws RepositoryException {
-		return CommonsJcrUtils.getFreeTextConstraint(session, factory, source,
-				getFilterText().getText());
-	}
+//	protected Constraint getFreeTextConstraint(QueryObjectModelFactory factory,
+//			Selector source) throws RepositoryException {
+//		return CommonsJcrUtils.getFreeTextConstraint(session, factory, source,
+//				getFilterText().getText());
+//	}
 
 	// Life cycle management
 	@Override

@@ -11,11 +11,12 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
 import org.argeo.ArgeoMonitor;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleBasicEditor;
@@ -132,15 +133,27 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements
 				ArgeoMonitor monitor = new EclipseArgeoMonitor(progressMonitor);
 				if (monitor != null && !monitor.isCanceled()) {
 					monitor.beginTask("Retrieving last modified nodes", -1);
+
+					// XPath
+					StringBuilder builder = new StringBuilder();
+					builder.append("//element(*, ")
+							.append(PeopleNames.MIX_LAST_MODIFIED).append(")");
+					builder.append(" order by @");
+					builder.append(PeopleNames.JCR_LAST_MODIFIED);
+					builder.append(" descending ");
 					Query query = session
 							.getWorkspace()
 							.getQueryManager()
-							.createQuery(
-									"SELECT * FROM ["
-											+ NodeType.MIX_LAST_MODIFIED
-											+ "] ORDER BY ["
-											+ Property.JCR_LAST_MODIFIED
-											+ "] DESC ", Query.JCR_SQL2);
+							.createQuery(builder.toString(),
+									PeopleConstants.QUERY_XPATH);
+
+					// SQL2
+					// String queryStr = "SELECT * FROM ["
+					// + NodeType.MIX_LAST_MODIFIED + "] ORDER BY ["
+					// + Property.JCR_LAST_MODIFIED + "] DESC ";
+					// Query query = session.getWorkspace().getQueryManager()
+					// .createQuery(queryStr, Query.JCR_SQL2);
+
 					query.setLimit(QUERY_LIMIT);
 					NodeIterator nit = query.execute().getNodes();
 
