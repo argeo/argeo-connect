@@ -6,13 +6,25 @@ import java.util.Calendar;
 
 import javax.jcr.RepositoryException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.jackrabbit.util.ISO9075;
+
 public class XPathUtils {
+	private final static Log log = LogFactory.getLog(XPathUtils.class);
 
 	public static String descendantFrom(String parentPath) {
 		if (CommonsJcrUtils.checkNotEmptyString(parentPath)) {
 			if ("/".equals(parentPath))
 				parentPath = "";
-			return "/jcr:root" + parentPath;
+			// Hardcoded dependency to Jackrabbit. Remove
+			String result = "/jcr:root" + ISO9075.encodePath(parentPath);
+			if (log.isDebugEnabled()) {
+				String result2 = "/jcr:root" + parentPath;
+				if (!result2.equals(result))
+					log.warn("Encoded Path " + result2 + " --> " + result);
+			}
+			return result;
 		} else
 			return "";
 	}

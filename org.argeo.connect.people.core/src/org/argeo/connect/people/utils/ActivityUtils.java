@@ -12,6 +12,7 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
 import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
@@ -46,13 +47,24 @@ public class ActivityUtils {
 	public static NodeIterator getPolls(Node pollable, boolean onlyOpenPolls) {
 		try {
 			Session session = pollable.getSession();
-			String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_POLL
-					+ "] WHERE  ISDESCENDANTNODE('" + pollable.getPath() + "')";
-			if (onlyOpenPolls)
-				throw new ArgeoException("Unimplemented ability");
 
-			Query query = session.getWorkspace().getQueryManager()
-					.createQuery(queryStr, Query.JCR_SQL2);
+			if (onlyOpenPolls)
+				throw new ArgeoException("Unimplemented feature");
+
+			// XPath
+			StringBuilder builder = new StringBuilder();
+			builder.append(XPathUtils.descendantFrom(pollable.getPath()));
+			builder.append("//element(*, ").append(PeopleTypes.PEOPLE_POLL)
+					.append(")");
+			Query query = session.getWorkspace().getQueryManager().
+					createQuery(builder.toString(),
+							PeopleConstants.QUERY_XPATH);
+
+			// SQL2
+			// String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_POLL
+			// + "] WHERE  ISDESCENDANTNODE('" + pollable.getPath() + "')";
+			// Query query = session.getWorkspace().getQueryManager()
+			// .createQuery(queryStr, Query.JCR_SQL2);
 			return query.execute().getNodes();
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to get polls for " + pollable, re);
@@ -62,10 +74,21 @@ public class ActivityUtils {
 	public static NodeIterator getRates(Node pollable) {
 		try {
 			Session session = pollable.getSession();
-			String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_RATE
-					+ "] WHERE  ISDESCENDANTNODE('" + pollable.getPath() + "')";
-			Query query = session.getWorkspace().getQueryManager()
-					.createQuery(queryStr, Query.JCR_SQL2);
+			
+			// XPath
+			StringBuilder builder = new StringBuilder();
+			builder.append(XPathUtils.descendantFrom(pollable.getPath()));
+			builder.append("//element(*, ").append(PeopleTypes.PEOPLE_RATE)
+					.append(")");
+			Query query = session.getWorkspace().getQueryManager().
+					createQuery(builder.toString(),
+							PeopleConstants.QUERY_XPATH);
+
+			// // SQL2
+			// String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_RATE
+			// + "] WHERE  ISDESCENDANTNODE('" + pollable.getPath() + "')";
+			// Query query = session.getWorkspace().getQueryManager()
+			// .createQuery(queryStr, Query.JCR_SQL2);
 			return query.execute().getNodes();
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to get rates for " + pollable);
