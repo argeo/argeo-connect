@@ -184,4 +184,7 @@ public interface PeopleNames {
 	public final static String JCR_DESCRIPTION = "jcr:description";
 	public final static String JCR_PRIMARY_TYPE = "jcr:primaryType";
 	public final static String JCR_CREATED = "jcr:created";
+	public final static String MIX_LAST_MODIFIED = "mix:lastModified";
+	public final static String JCR_LAST_MODIFIED = "jcr:lastModified";
+
 }
