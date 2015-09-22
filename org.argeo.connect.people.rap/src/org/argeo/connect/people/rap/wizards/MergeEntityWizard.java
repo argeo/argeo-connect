@@ -89,7 +89,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 	// Enable refresh of the calling editor at the end of the job
 	private IWorkbenchPage callingPage;
 
-	private Row[] rows;
+	private Object[] rows;
 	private final String selectorName;
 
 	/**
@@ -104,7 +104,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 	 */
 	public MergeEntityWizard(IWorkbenchPage callingPage,
 			PeopleService peopleService,
-			PeopleWorkbenchService peopleWorkbenchService, Row[] rows,
+			PeopleWorkbenchService peopleWorkbenchService, Object[] rows,
 			String selectorName, ColumnLabelProvider overviewLP) {
 		this.callingPage = callingPage;
 		this.peopleService = peopleService;
@@ -322,17 +322,17 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 	}
 
 	/** Use this method to update the result table */
-	protected void setViewerInput(TableViewer membersViewer, Row[] rows) {
-		membersViewer.setInput(rows);
+	protected void setViewerInput(TableViewer membersViewer, Object[] elements) {
+		membersViewer.setInput(elements);
 		// we must explicitly set the items count
-		membersViewer.setItemCount(rows.length);
+		membersViewer.setItemCount(elements.length);
 		membersViewer.refresh();
 	}
 
 	private class MyLazyContentProvider implements ILazyContentProvider {
 		private static final long serialVersionUID = 1L;
 		private TableViewer viewer;
-		private Row[] elements;
+		private Object[] elements;
 
 		public MyLazyContentProvider(TableViewer viewer) {
 			this.viewer = viewer;
@@ -345,7 +345,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 			// IMPORTANT: don't forget this: an exception will be thrown if a
 			// selected object is not part of the results anymore.
 			viewer.setSelection(null);
-			this.elements = (Row[]) newInput;
+			this.elements = (Object[]) newInput;
 		}
 
 		public void updateElement(int index) {
@@ -370,15 +370,16 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 
 		public MergeEntitiesJob(IWorkbenchPage callingPage,
 				PeopleService peopleService, Node masterNode,
-				Row[] toUpdateRows, String selectorName) {
+				Object[] toUpdateElements, String selectorName) {
 			super("Updating");
 			this.callingPage = callingPage;
 
 			try {
 				this.masterPath = masterNode.getPath();
 				repository = masterNode.getSession().getRepository();
-				for (Row row : toUpdateRows) {
-					Node currNode = CommonsJcrUtils.getNode(row, selectorName);
+				for (Object element : toUpdateElements) {
+					Node currNode = CommonsJcrUtils.getNodeFromElement(element,
+							selectorName);
 					// Node currNode = row.getNode(selectorName);
 					slavePathes.add(currNode.getPath());
 				}
