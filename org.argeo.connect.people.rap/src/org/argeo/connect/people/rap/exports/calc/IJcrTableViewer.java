@@ -2,8 +2,6 @@ package org.argeo.connect.people.rap.exports.calc;
 
 import java.util.List;
 
-import javax.jcr.query.Row;
-
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 
 /**
@@ -11,11 +9,11 @@ import org.argeo.connect.people.ui.PeopleColumnDefinition;
  * that is displayed in the part can be rebuild externally. Typically to
  * generate csv or calc extract.
  */
-public interface ITableProvider {
+public interface IJcrTableViewer {
 	/**
 	 * Returns the list to display in the spread sheet
 	 */
-	public Row[] getRows(String extractId);
+	public Object[] getElements(String extractId);
 
 	/**
 	 * Returns the column definition for passed ID

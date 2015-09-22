@@ -13,7 +13,6 @@ public interface ExtractDefinition {
 
 	public final static List<ColumnDefinition> EXTRACT_SIMPLE_MAILING_LIST = new ArrayList<ColumnDefinition>() {
 		private static final long serialVersionUID = 1L;
-
 		{
 			add(new ColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
 					Property.JCR_TITLE, PropertyType.STRING, "Display name"));

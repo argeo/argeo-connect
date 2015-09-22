@@ -25,10 +25,10 @@ import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
+import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
-import org.argeo.connect.people.rap.providers.JcrRowHtmlLabelProvider;
+import org.argeo.connect.people.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.people.rap.providers.TagLabelProvider;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.rap.utils.Refreshable;
@@ -115,7 +115,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 				new TitleIconRowLP(peopleWorkbenchService, null,
 						Property.JCR_TITLE), 300));
 		colDefs.add(new PeopleColumnDefinition("Tags",
-				new JcrRowHtmlLabelProvider(PEOPLE_TAGS), 300));
+				new JcrHtmlLabelProvider(PEOPLE_TAGS), 300));
 	}
 
 	/* SPECIFIC CONFIGURATION */
@@ -311,7 +311,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 	private TableViewer createTableViewer(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(parent,
+		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent,
 				SWT.MULTI, colDefs, enableBatchUpdate());
 		TableViewer tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

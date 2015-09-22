@@ -3,8 +3,6 @@ package org.argeo.connect.people.rap.composites;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.jcr.query.Row;
-
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
@@ -26,10 +24,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 
-/** Utility class that wraps a virtual table viewer to display JCR rows */
-public class VirtualRowTableViewer extends Composite implements ArgeoNames {
+/** Utility class that wraps a virtual table viewer to display JCR rows or nodes */
+public class VirtualJcrTableViewer extends Composite implements ArgeoNames {
 	// private final static Log log = LogFactory
-	// .getLog(VirtualRowTableViewer.class);
+	// .getLog(VirtualJcrTableViewer.class);
 
 	private static final long serialVersionUID = 1L;
 	private TableViewer viewer;
@@ -38,12 +36,12 @@ public class VirtualRowTableViewer extends Composite implements ArgeoNames {
 	private int tableStyle;
 
 	// Management of displayed row and selection
-	private Row[] elements;
-	// Work around : keep a flag to know which elements have already been loade
+	private Object[] elements;
+	// Work around : keep a flag to know which elements have already been loaded
 	// or not
 	private boolean[] loadedFlags;
 
-	private List<Row> selectedElements = new ArrayList<Row>();
+	private List<Object> selectedElements = new ArrayList<Object>();
 	private boolean hasCheckBoxes = false;
 
 	private MyLazyContentProvider lazyContentProvider;
@@ -53,7 +51,7 @@ public class VirtualRowTableViewer extends Composite implements ArgeoNames {
 	}
 
 	// CONSTRUCTOR
-	public VirtualRowTableViewer(Composite parent, int style,
+	public VirtualJcrTableViewer(Composite parent, int style,
 			List<PeopleColumnDefinition> columns) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
@@ -61,7 +59,7 @@ public class VirtualRowTableViewer extends Composite implements ArgeoNames {
 		populate();
 	}
 
-	public VirtualRowTableViewer(Composite parent, int style,
+	public VirtualJcrTableViewer(Composite parent, int style,
 			List<PeopleColumnDefinition> columns, boolean addCheckBoxes) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
@@ -108,8 +106,7 @@ public class VirtualRowTableViewer extends Composite implements ArgeoNames {
 				}
 
 				public Image getImage(Object element) {
-					Row row = (Row) element;
-					if (selectedElements.contains(row)) {
+					if (selectedElements.contains(element)) {
 						return PeopleRapImages.CHECK_SELECTED;
 					} else {
 						return PeopleRapImages.CHECK_UNSELECTED;
@@ -152,7 +149,7 @@ public class VirtualRowTableViewer extends Composite implements ArgeoNames {
 			// selected object is not part of the results anymore.
 			viewer.setSelection(null);
 			selectedElements.clear();
-			elements = (Row[]) newInput;
+			elements = (Object[]) newInput;
 			loadedFlags = new boolean[elements == null ? 0 : elements.length];
 		}
 
@@ -182,18 +179,16 @@ public class VirtualRowTableViewer extends Composite implements ArgeoNames {
 
 		@Override
 		protected Object getValue(Object element) {
-			Row row = (Row) element;
-			return selectedElements.contains(row);
+			return selectedElements.contains(element);
 		}
 
 		@Override
 		protected void setValue(Object element, Object value) {
 			Boolean selected = (Boolean) value;
-			Row row = (Row) element;
-			if (selected && !selectedElements.contains(row)) {
-				selectedElements.add(row);
-			} else if (!selected && selectedElements.contains(row)) {
-				selectedElements.remove(row);
+			if (selected && !selectedElements.contains(element)) {
+				selectedElements.add(element);
+			} else if (!selected && selectedElements.contains(element)) {
+				selectedElements.remove(element);
 			}
 		}
 	}
@@ -201,7 +196,7 @@ public class VirtualRowTableViewer extends Composite implements ArgeoNames {
 	public void setAllChecked(boolean checked) {
 		selectedElements.clear();
 		if (checked)
-			for (Row currEl : elements) {
+			for (Object currEl : elements) {
 				selectedElements.add(currEl);
 			}
 		// Cannot violently refresh. loop issues
@@ -213,8 +208,8 @@ public class VirtualRowTableViewer extends Composite implements ArgeoNames {
 				lazyContentProvider.updateElement(i);
 	}
 
-	public Row[] getSelectedElements() {
-		return selectedElements.toArray(new Row[0]);
+	public Object[] getSelectedElements() {
+		return selectedElements.toArray();
 	}
 
 	public void refresh() {

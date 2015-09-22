@@ -5,8 +5,8 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Locale;
 
+import javax.jcr.Node;
 import javax.jcr.PropertyType;
-import javax.jcr.query.Row;
 
 import jxl.Cell;
 import jxl.SheetSettings;
@@ -35,13 +35,13 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 
-/** Generate a spreadsheet from a Row array using jxl */
-public class RowsToCalcWriter {
-
-	private final static Log log = LogFactory.getLog(RowsToCalcWriter.class);
+/** Generate a spreadsheet from a Node array using jxl */
+public class NodesToCalcWriter {
+	private final static Log log = LogFactory.getLog(NodesToCalcWriter.class);
 
 	// Must be set first
 	private List<PeopleColumnDefinition> columnDefs;
+
 	private WritableCellFormat tableHeaderFormat;
 	private WritableCellFormat tableBodyStringFormat;
 	private WritableCellFormat tableBodyDateFormat;
@@ -49,8 +49,7 @@ public class RowsToCalcWriter {
 	private WritableCellFormat tableBodyFloatFormat;
 	private WorkbookSettings wSettings;
 
-	// private static final int maxNumberOfRowsPerSheet = 65536;
-	public RowsToCalcWriter() {
+	public NodesToCalcWriter() {
 		try {
 			/* General preferences */
 			wSettings = new WorkbookSettings();
@@ -95,10 +94,8 @@ public class RowsToCalcWriter {
 		}
 	}
 
-	/**
-	 * Build excel file from the passed {@code Row} array.
-	 */
-	public void writeTableFromRows(File outputFile, Row[] rows,
+	/** Write a calc file from the passed {@code Node} array */
+	public void writeTableFromNodes(File outputFile, Node[] nodes,
 			List<PeopleColumnDefinition> columnDefs) {
 		try {
 			WritableWorkbook workbook = null;
@@ -106,20 +103,17 @@ public class RowsToCalcWriter {
 				workbook = Workbook.createWorkbook(outputFile, wSettings);
 				if (log.isTraceEnabled())
 					log.trace("Workbook " + outputFile.getName() + " created");
-
 			} catch (FileNotFoundException fnfe) {
 				throw new PeopleException("Cannot create workbook", fnfe);
 			}
 
 			WritableSheet sheet = workbook.createSheet("Main", 0);
-			// WritableSheet sheet = workbook.getSheet("Main");
 
 			this.columnDefs = columnDefs;
-
 			// Fill the sheet
 			writeHeader(sheet);
-			if (rows != null && rows.length > 0)
-				writeBody(sheet, rows);
+			if (nodes != null && nodes.length > 0)
+				writeBody(sheet, nodes);
 
 			// Add some formatting
 			SheetSettings ss = sheet.getSettings();
@@ -146,99 +140,47 @@ public class RowsToCalcWriter {
 						.getHeaderLabel(), tableHeaderFormat));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new PeopleException("Could not write header.", e);
 		}
 	}
 
-	private void writeBody(WritableSheet sheet, Row[] rows) {
+	private void writeBody(WritableSheet sheet, Node[] nodes) {
 		int currentRow = 1;
-		for (Row row : rows) {
-			// while (iterator.hasNext()) {
-			// Row row = iterator.nextRow();
+		for (Node node : nodes) {
 			int i = 0;
 			for (PeopleColumnDefinition currCol : columnDefs) {
-				i = updateCell(currentRow, i, sheet, row, currCol);
+				i = updateCell(currentRow, i, sheet, node, currCol);
 			}
 			currentRow++;
 		}
 		resizeColumns(sheet);
 		// TODO does not work yet.
 		// resizeRows(sheet);
-
 	}
 
 	// Specific behaviour
 	private int updateCell(int currRowIndex, int currColIndex,
-			WritableSheet sheet, Row row, PeopleColumnDefinition currCol) {
+			WritableSheet sheet, Node node, PeopleColumnDefinition currCol) {
 		try {
 			if (PropertyType.LONG == currCol.getPropertyType()) {
 				sheet.addCell(new jxl.write.Number(
 						currColIndex,
 						currRowIndex,
-						new Long(currCol.getColumnLabelProvider().getText(row)),
+						new Long(currCol.getColumnLabelProvider().getText(node)),
 						tableBodyIntFormat));
 				return currColIndex + 1;
 			} else if (PropertyType.DECIMAL == currCol.getPropertyType()
 					|| PropertyType.DOUBLE == currCol.getPropertyType()) {
 				sheet.addCell(new jxl.write.Number(currColIndex, currRowIndex,
-						new Double(currCol.getColumnLabelProvider()
-								.getText(row)), tableBodyFloatFormat));
+						new Double(currCol.getColumnLabelProvider().getText(
+								node)), tableBodyFloatFormat));
 				return currColIndex + 1;
-
-				// TODO re-implement Date management
-				// } else if (PropertyType.DATE == currCol.getPropertyType()) {
-				// sheet.addCell(new DateTime(currColIndex, currRowIndex, prop
-				// .getDate().getTime(), tableBodyDateFormat));
-				// return currColIndex + 1;
 			} else {
 				sheet.addCell(new Label(currColIndex, currRowIndex, currCol
-						.getColumnLabelProvider().getText(row),
+						.getColumnLabelProvider().getText(node),
 						tableBodyStringFormat));
 				return currColIndex + 1;
 			}
-			// Node node = row.getNode(currCol.getSelectorName());
-			// if (node.hasProperty(currCol.getPropertyName())) {
-			// Property prop = node.getProperty(currCol.getPropertyName());
-			// // String rawValueStr = prop.getString();
-			//
-			// if (prop.isMultiple()) {
-			// // best effort
-			// StringBuilder builder = new StringBuilder();
-			// for (Value value : prop.getValues()) {
-			// builder.append(value.getString()).append(SEPARATOR);
-			// }
-			// if (builder.lastIndexOf(SEPARATOR) > 0) {
-			// builder.delete(builder.length() - 2, builder.length());
-			// }
-			// sheet.addCell(new Label(currColIndex, currRowIndex, builder
-			// .toString(), tableBodyStringFormat));
-			// return currColIndex + 1;
-			// } else if (PropertyType.LONG == currCol.getPropertyType()) {
-			// sheet.addCell(new jxl.write.Number(currColIndex,
-			// currRowIndex, prop.getLong(), tableBodyIntFormat));
-			// return currColIndex + 1;
-			// } else if (PropertyType.DECIMAL == currCol.getPropertyType()
-			// || PropertyType.DOUBLE == currCol.getPropertyType()) {
-			// sheet.addCell(new jxl.write.Number(currColIndex,
-			// currRowIndex, prop.getDouble(),
-			// tableBodyFloatFormat));
-			// return currColIndex + 1;
-			// } else if (PropertyType.DATE == currCol.getPropertyType()) {
-			// sheet.addCell(new DateTime(currColIndex, currRowIndex, prop
-			// .getDate().getTime(), tableBodyDateFormat));
-			// return currColIndex + 1;
-			// } else {
-			// sheet.addCell(new Label(currColIndex, currRowIndex, prop
-			// .getString(), tableBodyStringFormat));
-			// return currColIndex + 1;
-			// }
-			// }
-			// return currColIndex + 1;
-
-			// } catch (RepositoryException e) {
-			// throw new PeopleException("Unable to get value for label: "
-			// + currCol.getHeaderLabel(), e);
 		} catch (RowsExceededException e) {
 			throw new PeopleException("Too many rows", e);
 		} catch (WriteException e) {
@@ -260,7 +202,6 @@ public class RowsToCalcWriter {
 		}
 	}
 
-	// TODO does not work yet.
 	protected void resizeRows(WritableSheet sheet) {
 		boolean hasContent = true;
 		int j = 1;
@@ -270,7 +211,7 @@ public class RowsToCalcWriter {
 			loop: for (int i = 0; i < columnDefs.size(); i++) {
 				Cell currCell = sheet.getCell(i, j);
 
-				// We only manage heigth for label for the time being
+				// We only manage height for label for the time being
 				if (!(currCell instanceof Label))
 					continue loop;
 				Label currLabel = (Label) currCell;
@@ -287,8 +228,6 @@ public class RowsToCalcWriter {
 					maxHeigth = currentHeigth;
 			}
 			try {
-				// sheet.getRow(j).
-				// sheet.setRowView(j, 20);
 				sheet.setRowView(j, maxHeigth + 1);
 			} catch (RowsExceededException re) {
 				throw new ArgeoException("unable to resize row " + j, re);
@@ -296,12 +235,4 @@ public class RowsToCalcWriter {
 			j++;
 		}
 	}
-
-	/**
-	 * Initialises calc generation, to be called prior to any extract generation
-	 */
-	// public void setColumnDefinition(List<ColumnDefinition> columnDefinition)
-	// {
-	// this.columnDefs = columnDefinition;
-	// }
 }

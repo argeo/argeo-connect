@@ -12,7 +12,7 @@ import org.eclipse.swt.graphics.Image;
  * retrieved texts to be compliant with RAP
  */
 public class TitleIconLP extends SimpleJcrNodeLabelProvider {
-	// WAS public class TitleWithIconLP extends JcrRowHtmlLabelProvider {
+	// WAS public class TitleWithIconLP extends JcrHtmlLabelProvider {
 	private static final long serialVersionUID = 6064779874148619776L;
 
 	private final PeopleWorkbenchService peopleWorkbenchService;

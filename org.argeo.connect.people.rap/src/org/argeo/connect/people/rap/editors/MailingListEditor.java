@@ -25,10 +25,10 @@ import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
+import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
-import org.argeo.connect.people.rap.providers.JcrRowHtmlLabelProvider;
+import org.argeo.connect.people.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.people.rap.providers.TagLabelProvider;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.rap.utils.Refreshable;
@@ -128,9 +128,9 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 				new TitleIconRowLP(peopleWorkbenchService, null,
 						Property.JCR_TITLE), 300));
 		colDefs.add(new PeopleColumnDefinition("Primary mail",
-				new JcrRowHtmlLabelProvider(PEOPLE_CACHE_PMAIL), 300));
+				new JcrHtmlLabelProvider(PEOPLE_CACHE_PMAIL), 300));
 		colDefs.add(new PeopleColumnDefinition("Mailing lists",
-				new JcrRowHtmlLabelProvider(PEOPLE_TAGS), 300));
+				new JcrHtmlLabelProvider(PEOPLE_TAGS), 300));
 	}
 
 	/* CONTENT CREATION */
@@ -337,13 +337,13 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 	}
 
 	/* Provide extraction ability */
-	public Row[] getRows(String extractId) {
+	public Row[] getElements(String extractId) {
 		return rows;
 	}
 
 	private TableViewer createTableViewer(Composite parent) {
 		parent.setLayout(new GridLayout());
-		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(parent,
+		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent,
 				SWT.MULTI, colDefs);
 		TableViewer tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

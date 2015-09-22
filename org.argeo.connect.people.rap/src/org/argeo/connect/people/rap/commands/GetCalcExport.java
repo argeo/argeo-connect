@@ -7,15 +7,18 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.Session;
+import javax.jcr.query.Row;
 
 import org.argeo.ArgeoMonitor;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.exports.calc.ITableProvider;
+import org.argeo.connect.people.rap.exports.calc.IJcrTableViewer;
+import org.argeo.connect.people.rap.exports.calc.NodesToCalcWriter;
 import org.argeo.connect.people.rap.exports.calc.RowsToCalcWriter;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
@@ -59,8 +62,8 @@ public class GetCalcExport extends AbstractHandler {
 		try {
 			IWorkbenchPart iwp = HandlerUtil.getActiveWorkbenchWindow(event)
 					.getActivePage().getActivePart();
-			if (iwp instanceof ITableProvider) {
-				ITableProvider provider = (ITableProvider) iwp;
+			if (iwp instanceof IJcrTableViewer) {
+				IJcrTableViewer provider = (IJcrTableViewer) iwp;
 
 				if ((provider).getColumnDefinition(exportId) == null)
 					return null;
@@ -83,19 +86,28 @@ public class GetCalcExport extends AbstractHandler {
 	}
 
 	/** Override to provide other naming strategy */
-	protected String getFileName(ITableProvider provider) {
+	protected String getFileName(IJcrTableViewer provider) {
 		String prefix = "PeopleExport-";
 		String dateVal = df.format(new GregorianCalendar().getTime());
 		return prefix + dateVal + ".ods";
 	}
 
 	/** Real call to spreadsheet generator. */
-	protected synchronized void callCalcGenerator(ITableProvider provider,
+	protected synchronized void callCalcGenerator(IJcrTableViewer provider,
 			String exportId, File file) throws Exception {
 
-		RowsToCalcWriter writer = new RowsToCalcWriter();
-		writer.writeTableFromRows(file, provider.getRows(exportId),
-				provider.getColumnDefinition(exportId));
+		Object[] elements = provider.getElements(exportId);
+		if (elements instanceof Row[]) {
+			RowsToCalcWriter writer = new RowsToCalcWriter();
+			writer.writeTableFromRows(file,
+					(Row[]) provider.getElements(exportId),
+					provider.getColumnDefinition(exportId));
+		} else if (elements instanceof Node[]) {
+			NodesToCalcWriter writer = new NodesToCalcWriter();
+			writer.writeTableFromNodes(file,
+					(Node[]) provider.getElements(exportId),
+					provider.getColumnDefinition(exportId));
+		}
 	}
 
 	/** Privileged job that performs the extract asynchronously */
@@ -103,11 +115,11 @@ public class GetCalcExport extends AbstractHandler {
 
 		private Display display;
 		private Repository repository;
-		private ITableProvider provider;
+		private IJcrTableViewer provider;
 		private String exportId;
 
 		public GenerateExtract(Display display, Repository repository,
-				ITableProvider provider, String exportId) {
+				IJcrTableViewer provider, String exportId) {
 			super("Generating the export");
 			this.display = display;
 			this.repository = repository;
@@ -158,8 +170,7 @@ public class GetCalcExport extends AbstractHandler {
 				}
 			} catch (Exception e) {
 				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
-						"Unable to refresh tag and ML cache on " + repository,
-						e);
+						"Unable to generate export " + exportId, e);
 			} finally {
 				JcrUtils.logoutQuietly(session);
 			}

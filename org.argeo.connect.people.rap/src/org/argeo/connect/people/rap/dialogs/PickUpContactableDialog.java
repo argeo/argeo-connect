@@ -31,7 +31,7 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
+import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -95,7 +95,7 @@ public class PickUpContactableDialog extends TrayDialog {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
 		createFilterPart(dialogArea);
-		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(dialogArea,
+		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(dialogArea,
 				SWT.SINGLE | SWT.BORDER, colDefs);
 		tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());

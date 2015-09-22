@@ -9,7 +9,6 @@ import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.query.Row;
 
 import org.argeo.ArgeoMonitor;
 import org.argeo.connect.people.PeopleException;
@@ -19,7 +18,7 @@ import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.SimpleJcrTableComposite;
-import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
+import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -74,7 +73,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 	private String tagPropName;
 
-	private Row[] rows;
+	private Object[] elements;
 	private final String selectorName;
 	private final int actionType;
 
@@ -89,14 +88,14 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 	 * @param session
 	 * @param peopleService
 	 * @param peopleUiService
-	 * @param rows
+	 * @param elements
 	 * @param selectorName
 	 * @param tagId
 	 * @param tagPropName
 	 */
 	public TagOrUntagInstancesWizard(Display callingDisplay, int actionType,
 			Session session, PeopleService peopleService,
-			PeopleWorkbenchService peopleUiService, Row[] rows,
+			PeopleWorkbenchService peopleUiService, Object[] elements,
 			String selectorName, String tagId, String tagPropName) {
 
 		this.callingDisplay = callingDisplay;
@@ -105,7 +104,8 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 		this.peopleUiService = peopleUiService;
 		this.tagId = tagId;
 		this.tagPropName = tagPropName;
-		this.rows = rows;
+
+		this.elements = elements;
 		this.selectorName = selectorName;
 
 		this.actionType = actionType;
@@ -149,7 +149,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 			return false;
 		}
 		new UpdateTagAndInstancesJob(callingDisplay, actionType, peopleService,
-				tagInstance, rows, selectorName, tagPropName).schedule();
+				tagInstance, elements, selectorName, tagPropName).schedule();
 		return true;
 	}
 
@@ -258,12 +258,12 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 							Property.JCR_TITLE);
 					if (actionType == TYPE_ADD)
 						setMessage("Your are about to add [" + name
-								+ "] to the below listed " + rows.length
+								+ "] to the below listed " + elements.length
 								+ " items. "
 								+ "Are you sure you want to proceed ?");
 					else
 						setMessage("Your are about to remove [" + name
-								+ "] from the below listed " + rows.length
+								+ "] from the below listed " + elements.length
 								+ " items. "
 								+ "Are you sure you want to proceed ?");
 				}
@@ -278,12 +278,12 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 					new TitleIconRowLP(peopleUiService, selectorName,
 							Property.JCR_TITLE), 300));
 
-			VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(body,
+			VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(body,
 					SWT.READ_ONLY, colDefs);
 			TableViewer membersViewer = tableCmp.getTableViewer();
 			membersViewer.setContentProvider(new MyLazyContentProvider(
 					membersViewer));
-			setViewerInput(membersViewer, rows);
+			setViewerInput(membersViewer, elements);
 			GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 			gd.heightHint = 400;
 			tableCmp.setLayoutData(gd);
@@ -292,17 +292,17 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 	}
 
 	/** Use this method to update the result table */
-	protected void setViewerInput(TableViewer membersViewer, Row[] rows) {
-		membersViewer.setInput(rows);
+	protected void setViewerInput(TableViewer membersViewer, Object[] elements) {
+		membersViewer.setInput(elements);
 		// we must explicitly set the items count
-		membersViewer.setItemCount(rows.length);
+		membersViewer.setItemCount(elements.length);
 		membersViewer.refresh();
 	}
 
 	private class MyLazyContentProvider implements ILazyContentProvider {
 		private static final long serialVersionUID = 1L;
 		private TableViewer viewer;
-		private Row[] elements;
+		private Object[] elements;
 
 		public MyLazyContentProvider(TableViewer viewer) {
 			this.viewer = viewer;
@@ -315,7 +315,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 			// IMPORTANT: don't forget this: an exception will be thrown if a
 			// selected object is not part of the results anymore.
 			viewer.setSelection(null);
-			this.elements = (Row[]) newInput;
+			this.elements = (Object[]) newInput;
 		}
 
 		public void updateElement(int index) {
@@ -335,7 +335,8 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 		public UpdateTagAndInstancesJob(Display display, int actionType,
 				PeopleService peopleService, Node taginstance,
-				Row[] toUpdateRows, String selectorName, String tagPropName) {
+				Object[] toUpdateElements, String selectorName,
+				String tagPropName) {
 			super("Updating");
 
 			this.display = display;
@@ -345,8 +346,9 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 			try {
 				this.tagPath = tagInstance.getPath();
 				repository = tagInstance.getSession().getRepository();
-				for (Row row : toUpdateRows) {
-					Node currNode = CommonsJcrUtils.getNode(row, selectorName);
+				for (Object element : toUpdateElements) {
+					Node currNode = CommonsJcrUtils.getNodeFromElement(element,
+							selectorName);
 					pathes.add(currNode.getPath());
 				}
 			} catch (RepositoryException e) {

@@ -32,7 +32,7 @@ import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.ChangeEditingState;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
-import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
+import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.rap.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
@@ -365,7 +365,7 @@ public class TemplateValueCatalogue extends Composite {
 				Property.JCR_TITLE, PropertyType.STRING, "Instances",
 				new MyTitleIconRowLP(peopleWorkbenchService, taggableType,
 						Property.JCR_TITLE), 400));
-		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(parent,
+		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent,
 				SWT.MULTI, colDefs);
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 		TableViewer viewer = tableCmp.getTableViewer();

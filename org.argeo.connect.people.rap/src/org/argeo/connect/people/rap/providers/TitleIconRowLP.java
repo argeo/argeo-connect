@@ -1,19 +1,17 @@
 package org.argeo.connect.people.rap.providers;
 
 import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.query.Row;
 
-import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.swt.graphics.Image;
 
 /**
  * Add an icon to the results, using the node type of the node retrieved using
- * the selector name. It uses a JcrRowHtmlLabelProvider rather than a
+ * the selector name. It uses a JcrHtmlLabelProvider rather than a
  * SimpleJcrRowLabelProvider: TO BE VALIDATED
  */
-public class TitleIconRowLP extends JcrRowHtmlLabelProvider {
+public class TitleIconRowLP extends JcrHtmlLabelProvider {
 	private static final long serialVersionUID = 6064779874148619776L;
 
 	private final PeopleWorkbenchService peopleWorkbenchService;
@@ -28,17 +26,7 @@ public class TitleIconRowLP extends JcrRowHtmlLabelProvider {
 
 	@Override
 	public Image getImage(Object element) {
-		try {
-			Row row = (Row) element;
-			Node node;
-			if (selectorName == null)
-				node = row.getNode();
-			else
-				node = row.getNode(selectorName);
-			return peopleWorkbenchService.getIconForType(node);
-		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"unable to retrieve image for " + element, e);
-		}
+		Node node = CommonsJcrUtils.getNodeFromElement(element, selectorName);
+		return peopleWorkbenchService.getIconForType(node);
 	}
 }

@@ -182,6 +182,34 @@ public class CommonsJcrUtils {
 	}
 
 	/**
+	 * Helper for label provider: returns the Node if element is a Node or
+	 * simply retrieves a the Node if the object is a row. Expects a single Node
+	 * in the row if no selector name is provided Call {@link Row#getNode()}
+	 * catching {@link RepositoryException}
+	 */
+	public static Node getNodeFromElement(Object element, String selectorName) {
+		Node currNode;
+		if (element instanceof Row) {
+			Row currRow = (Row) element;
+			try {
+				if (selectorName != null)
+					currNode = currRow.getNode(selectorName);
+				else
+					currNode = currRow.getNode();
+			} catch (RepositoryException re) {
+				throw new PeopleException(
+						"Unable to retrieve Node with selector name "
+								+ selectorName + " on " + currRow, re);
+			}
+		} else if (element instanceof Node)
+			currNode = (Node) element;
+		else
+			throw new PeopleException("unsupported element type: "
+					+ element.getClass().getName());
+		return currNode;
+	}
+
+	/**
 	 * Call {@link Node#isNodetype(String nodeTypeName)} without exceptions
 	 */
 	public static boolean isNodeType(Node node, String nodeTypeName) {

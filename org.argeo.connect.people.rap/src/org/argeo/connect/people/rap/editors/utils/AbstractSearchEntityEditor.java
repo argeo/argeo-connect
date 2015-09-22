@@ -3,12 +3,7 @@ package org.argeo.connect.people.rap.editors.utils;
 import java.util.List;
 
 import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.query.Row;
-import javax.jcr.query.qom.Constraint;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
 
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleConstants;
@@ -20,7 +15,7 @@ import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.DateText;
-import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
+import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.rap.wizards.TagOrUntagInstancesWizard;
@@ -71,12 +66,12 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	private PeopleService peopleService;
 
 	// This page widgets
-	private VirtualRowTableViewer tableCmp;
+	private VirtualJcrTableViewer tableCmp;
 	private Text filterTxt;
 	private TraverseListener traverseListener;
 
 	// Locally cache what is displayed in the UI. Enable exports among others.
-	private Row[] rows;
+	private Object[] elements;
 	private String filterString;
 
 	@Override
@@ -105,7 +100,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 			// Add a section with static filters
 			populateStaticSearchPanel(searchCmp);
 
-		// A menu with various actions on selected items
+		// A menu with various actions on selected elements
 		if (hasCheckBoxes()) {
 			Composite menuCmp = new Composite(parent, SWT.NO_FOCUS);
 			createCheckBoxMenu(menuCmp);
@@ -138,14 +133,14 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	/** Call when a place holder for this info exists */
 	protected void setNbOfFoundResultsLbl(Label resultNbLbl) {
 		if (resultNbLbl != null && !resultNbLbl.isDisposed()) {
-			if (rows == null)
+			if (elements == null)
 				resultNbLbl.setText(" (No result yet) ");
-			else if (rows.length == 0)
+			else if (elements.length == 0)
 				resultNbLbl.setText(" (No result found) ");
-			else if (rows.length == 1)
+			else if (elements.length == 1)
 				resultNbLbl.setText(" One result found ");
 			else
-				resultNbLbl.setText(rows.length + " results found ");
+				resultNbLbl.setText(elements.length + " results found ");
 			resultNbLbl.getParent().layout(true, true);
 		}
 	}
@@ -329,7 +324,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Row[] rows = tableCmp.getSelectedElements();
+				Object[] rows = tableCmp.getSelectedElements();
 
 				if (rows.length == 0)
 					MessageDialog.openInformation(parentShell,
@@ -386,8 +381,8 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	 * (or all if the filter has been reset in the meantime). By default,
 	 * returned rows are still *not* linked to the export ID
 	 */
-	public Row[] getRows(String exportId) {
-		return rows;
+	public Object[] getElements(String exportId) {
+		return elements;
 	}
 
 	/** Generates a pseudo query String that defines the last filter applied */
@@ -397,7 +392,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	protected void createListPart(Composite parent) {
 		parent.setLayout(new GridLayout());
-		tableCmp = new VirtualRowTableViewer(parent, SWT.MULTI,
+		tableCmp = new VirtualJcrTableViewer(parent, SWT.MULTI,
 				getColumnDefinition(null), hasCheckBoxes());
 		TableViewer tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
@@ -491,14 +486,14 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	}
 
 	/** Use this method to update the result table */
-	protected void setViewerInput(Row[] rows) {
-		this.rows = rows;
+	protected void setViewerInput(Object[] items) {
+		this.elements = items;
 		TableViewer tableViewer = tableCmp.getTableViewer();
 
-		tableViewer.setInput(rows);
-		// we must explicitly set the items count
-		tableViewer.setItemCount(rows.length);
-		setNbOfFoundResultsLbl(rows.length);
+		tableViewer.setInput(items);
+		// we must explicitly set the elements count
+		tableViewer.setItemCount(items.length);
+		setNbOfFoundResultsLbl(items.length);
 		tableViewer.refresh();
 	}
 
@@ -506,12 +501,6 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	protected void setFilterString(String filterString) {
 		this.filterString = filterString;
 	}
-
-//	protected Constraint getFreeTextConstraint(QueryObjectModelFactory factory,
-//			Selector source) throws RepositoryException {
-//		return CommonsJcrUtils.getFreeTextConstraint(session, factory, source,
-//				getFilterText().getText());
-//	}
 
 	// Life cycle management
 	@Override
@@ -537,7 +526,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		return session;
 	}
 
-	protected VirtualRowTableViewer getTableViewer() {
+	protected VirtualJcrTableViewer getTableViewer() {
 		return tableCmp;
 	}
 

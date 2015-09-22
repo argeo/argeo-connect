@@ -18,7 +18,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
+import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
@@ -281,7 +281,7 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 					new TitleIconRowLP(peopleUiService, selectorName,
 							Property.JCR_TITLE), 300));
 
-			VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(body,
+			VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(body,
 					SWT.READ_ONLY, colDefs);
 			TableViewer membersViewer = tableCmp.getTableViewer();
 			membersViewer.setContentProvider(new MyLazyContentProvider(

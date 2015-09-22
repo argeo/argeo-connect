@@ -23,11 +23,11 @@ import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.composites.VirtualRowTableViewer;
+import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.dialogs.AskTitleDescriptionDialog;
 import org.argeo.connect.people.rap.editors.utils.SearchNodeEditorInput;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
-import org.argeo.connect.people.rap.providers.JcrRowHtmlLabelProvider;
+import org.argeo.connect.people.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.rap.wizards.EditTagWizard;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
@@ -121,7 +121,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 					+ basePath);
 
 		colDefs.add(new PeopleColumnDefinition("Title",
-				new JcrRowHtmlLabelProvider(Property.JCR_TITLE), 300));
+				new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
 		colDefs.add(new PeopleColumnDefinition("Member count",
 				new CountMemberLP(), 85));
 		if (canEdit())
@@ -191,7 +191,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 	protected void createListPart(Composite parent) {
 		parent.setLayout(new GridLayout());
-		VirtualRowTableViewer tableCmp = new VirtualRowTableViewer(parent,
+		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent,
 				SWT.MULTI, colDefs);
 		tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
