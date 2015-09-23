@@ -61,6 +61,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		PeopleNames, Refreshable {
 
 	/* DEPENDENCY INJECTION */
+	private Repository repository;
 	private Session session;
 	private PeopleWorkbenchService peopleWorkbenchService;
 	private PeopleService peopleService;
@@ -81,6 +82,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		setInput(input);
 		String label = ((SearchNodeEditorInput) getEditorInput()).getName();
 		setPartName(label);
+		session = CommonsJcrUtils.login(repository);
 	}
 
 	@Override
@@ -571,20 +573,6 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		return dateText;
 	}
 
-	/* DEPENDENCY INJECTION */
-	public void setRepository(Repository repository) {
-		session = CommonsJcrUtils.login(repository);
-	}
-
-	public void setPeopleService(PeopleService peopleService) {
-		this.peopleService = peopleService;
-	}
-
-	public void setPeopleWorkbenchService(
-			PeopleWorkbenchService peopleWorkbenchService) {
-		this.peopleWorkbenchService = peopleWorkbenchService;
-	}
-
 	// Compulsory unused methods
 	@Override
 	public void doSave(IProgressMonitor monitor) {
@@ -603,4 +591,19 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	public boolean isSaveAsAllowed() {
 		return false;
 	}
+
+	/* DEPENDENCY INJECTION */
+	public void setRepository(Repository repository) {
+		this.repository = repository;
+	}
+
+	public void setPeopleService(PeopleService peopleService) {
+		this.peopleService = peopleService;
+	}
+
+	public void setPeopleWorkbenchService(
+			PeopleWorkbenchService peopleWorkbenchService) {
+		this.peopleWorkbenchService = peopleWorkbenchService;
+	}
+
 }

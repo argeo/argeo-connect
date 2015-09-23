@@ -64,6 +64,7 @@ public class PeopleDefaultView extends ViewPart {
 	private final static Integer ROW_LIMIT = 100;
 
 	/* DEPENDENCY INJECTION */
+	private Repository repository;
 	private Session session;
 	private PeopleService peopleService;
 	private PeopleWorkbenchService peopleWorkbenchService;
@@ -78,6 +79,8 @@ public class PeopleDefaultView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		this.session = CommonsJcrUtils.login(repository);
+
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// Header
@@ -247,7 +250,7 @@ public class PeopleDefaultView extends ViewPart {
 
 	/* DEPENDENCY INJECTION */
 	public void setRepository(Repository repository) {
-		session = CommonsJcrUtils.login(repository);
+		this.repository = repository;
 	}
 
 	public void setPeopleService(PeopleService peopleService) {

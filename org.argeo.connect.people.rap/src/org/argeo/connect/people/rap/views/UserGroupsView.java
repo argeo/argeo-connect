@@ -41,6 +41,9 @@ public class UserGroupsView extends ViewPart implements Refreshable {
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID
 			+ ".userGroupsView";
 
+	/* DEPENDENCY INJECTION */
+	private Repository repository;
+
 	private Session session;
 	private PeopleWorkbenchService peopleWorkbenchService;
 
@@ -50,6 +53,8 @@ public class UserGroupsView extends ViewPart implements Refreshable {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		this.session = CommonsJcrUtils.login(repository);
+
 		parent.setLayout(new FillLayout());
 
 		// Create the composite that displays the list and a filter
@@ -134,7 +139,7 @@ public class UserGroupsView extends ViewPart implements Refreshable {
 
 	/* DEPENDENCY INJECTION */
 	public void setRepository(Repository repository) {
-		this.session = CommonsJcrUtils.login(repository);
+		this.repository = repository;
 	}
 
 	public void setPeopleWorkbenchService(

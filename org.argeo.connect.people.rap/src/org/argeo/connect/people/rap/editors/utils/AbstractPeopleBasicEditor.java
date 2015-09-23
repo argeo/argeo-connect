@@ -17,6 +17,7 @@ public abstract class AbstractPeopleBasicEditor extends EditorPart implements
 		Refreshable {
 
 	/* DEPENDENCY INJECTION */
+	private Repository repository;
 	private Session session;
 
 	@Override
@@ -24,6 +25,7 @@ public abstract class AbstractPeopleBasicEditor extends EditorPart implements
 			throws PartInitException {
 		setSite(site);
 		setInput(input);
+		session = CommonsJcrUtils.login(repository);
 	}
 
 	@Override
@@ -61,6 +63,6 @@ public abstract class AbstractPeopleBasicEditor extends EditorPart implements
 
 	/* DEPENDENCY INJECTION */
 	public void setRepository(Repository repository) {
-		session = CommonsJcrUtils.login(repository);
+		this.repository = repository;
 	}
 }

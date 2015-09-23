@@ -10,12 +10,22 @@ import org.argeo.security.UserAdminService;
 /**
  * Provides method interfaces to manage people specific user concepts.
  * Implementing applications should extend and/or override the canonical
- * implementation in order to provide business specific behaviours.
+ * implementation in order to provide business specific behaviors.
  * 
  * The correct instance of this interface is usually acquired through the
  * peopleService.
  * */
 public interface UserManagementService {
+
+	/* USERS */
+	/** returns true if the current user is in the specified role */
+	public boolean isUserInRole(String userRole);
+
+	/** returns the current user ID **/
+	public String getCurrentUserId();
+
+	/** Returns a human readable display name using the user ID */
+	public String getUserDisplayName(String userId);
 
 	/* USERS */
 	/**
@@ -29,9 +39,11 @@ public interface UserManagementService {
 	 * @param username
 	 * @return a people:profile node or null if the argeo:profile is not found
 	 */
+	@Deprecated
 	public Node getPeopleProfile(Session session, String username);
 
 	/** Centralize People Specific user creation. NAT API. will evolve. */
+	@Deprecated
 	public Node createUser(Session adminSession,
 			UserAdminService userAdminService, String userName,
 			char[] password, String firstName, String lastName, String email,
@@ -48,6 +60,7 @@ public interface UserManagementService {
 	 *            to a single user
 	 * @return
 	 */
+	@Deprecated
 	public List<Node> getDefinedGroups(Session session, String filter,
 			boolean includeSingleUserGroups);
 
@@ -60,6 +73,7 @@ public interface UserManagementService {
 	 * @param groupId
 	 * @return
 	 */
+	@Deprecated
 	public Node createGroup(Session session, String groupId, String title,
 			String description);
 
@@ -70,6 +84,7 @@ public interface UserManagementService {
 	 * @param groupId
 	 * @return
 	 */
+	@Deprecated
 	public Node getGroupById(Session session, String groupId);
 
 	/**
@@ -81,6 +96,7 @@ public interface UserManagementService {
 	 * @param groupId
 	 * @return
 	 */
+	@Deprecated
 	public Node createDefaultGroupForUser(Session session, String username);
 
 	/**
@@ -91,6 +107,7 @@ public interface UserManagementService {
 	 * @return an error message listing the username where the reference was
 	 *         already there
 	 */
+	@Deprecated
 	public String addUsersToGroup(Session session, Node userGroup,
 			List<String> usernames);
 
@@ -102,6 +119,7 @@ public interface UserManagementService {
 	 * @param groups
 	 * @return
 	 */
+	@Deprecated
 	public String addGroupsToUser(Session session, String username,
 			List<Node> groups);
 
@@ -111,6 +129,7 @@ public interface UserManagementService {
 	 * @param session
 	 * @param username
 	 */
+	@Deprecated
 	public List<Node> getUserGroups(Session session, String username);
 
 	/**
@@ -118,6 +137,7 @@ public interface UserManagementService {
 	 * 
 	 * @param session
 	 */
+	@Deprecated
 	public List<Node> getMyGroups(Session session);
 
 	/**
@@ -125,18 +145,8 @@ public interface UserManagementService {
 	 * 
 	 * @param session
 	 */
+	@Deprecated
 	public boolean amIInGroup(Session session, String groupId);
-
-	/* USERS */
-	// TODO the 3 following methods should rather be in the UserAdminService
-	/** returns true if the current user is in the specified role */
-	public boolean isUserInRole(String userRole);
-
-	/** returns the current user ID **/
-	public String getCurrentUserId();
-
-	/** Returns a human readable display name using the user ID */
-	public String getUserDisplayName(String userId);
 
 	/* MISCELLANEOUS */
 }

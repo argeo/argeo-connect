@@ -51,6 +51,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 	public static final String ID = PeopleRapPlugin.PLUGIN_ID + ".myTasksView";
 
 	/* DEPENDENCY INJECTION */
+	private Repository repository;
 	private Session session;
 	private ActivityService activityService;
 	private PeopleWorkbenchService peopleWorkbenchService;
@@ -61,6 +62,8 @@ public class MyTasksView extends ViewPart implements Refreshable {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		this.session = CommonsJcrUtils.login(repository);
+
 		GridLayout layout = EclipseUiUtils.noSpaceGridLayout();
 		layout.verticalSpacing = 5;
 		parent.setLayout(layout);
@@ -321,7 +324,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 	}
 
 	public void setRepository(Repository repository) {
-		this.session = CommonsJcrUtils.login(repository);
+		this.repository = repository;
 	}
 
 	public void setPeopleWorkbenchService(

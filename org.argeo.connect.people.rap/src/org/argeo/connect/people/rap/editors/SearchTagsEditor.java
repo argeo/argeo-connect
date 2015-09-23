@@ -69,6 +69,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 			+ ".searchTagsEditor";
 
 	/* DEPENDENCY INJECTION */
+	private Repository repository;
 	private Session session;
 	private PeopleService peopleService;
 	private ResourceService resourceService;
@@ -99,6 +100,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		String basePath = ((SearchNodeEditorInput) getEditorInput())
 				.getBasePath();
 		try {
+			session = CommonsJcrUtils.login(repository);
 			tagParent = session.getNode(basePath);
 		} catch (RepositoryException e) {
 			throw new PeopleException(
@@ -347,7 +349,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 	/* DEPENDENCY INJECTION */
 	public void setRepository(Repository repository) {
-		session = CommonsJcrUtils.login(repository);
+		this.repository = repository;
 	}
 
 	public void setPeopleWorkbenchService(

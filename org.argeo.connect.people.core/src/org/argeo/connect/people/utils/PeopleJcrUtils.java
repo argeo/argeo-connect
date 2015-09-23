@@ -12,11 +12,6 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.ContactValueCatalogs;
@@ -25,8 +20,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.jcr.ArgeoNames;
-import org.argeo.jcr.ArgeoTypes;
 import org.argeo.jcr.JcrUtils;
 
 /**
@@ -77,34 +70,35 @@ public class PeopleJcrUtils implements PeopleNames {
 	 * @param role
 	 *            the role of the given entity in this group. Cannot be null
 	 * */
-	public static Node addEntityToGroup(Node group, Node entity, String role)
-			throws RepositoryException {
-		return addEntityToGroup(group, entity, role, null, null, null, null);
-	}
-
-	public static void createUserGroups(PeopleService peopleService,
-			Session adminSession) throws RepositoryException {
-
-		QueryManager queryManager = adminSession.getWorkspace()
-				.getQueryManager();
-		QueryObjectModelFactory factory = queryManager.getQOMFactory();
-		Selector source = factory.selector(ArgeoTypes.ARGEO_USER_PROFILE,
-				ArgeoTypes.ARGEO_USER_PROFILE);
-		QueryObjectModel query = factory.createQuery(source, null, null, null);
-		QueryResult result = query.execute();
-
-		NodeIterator nit = result.getNodes();
-		while (nit.hasNext()) {
-			Node currProfile = nit.nextNode();
-			String username = CommonsJcrUtils.get(currProfile,
-					ArgeoNames.ARGEO_USER_ID);
-
-			// TODO hardcoded default users...
-			if (!("root".equals(username) || "demo".equals(username))) // "guest".equals(username)||
-				peopleService.getUserManagementService()
-						.createDefaultGroupForUser(adminSession, username);
-		}
-	}
+	// public static Node addEntityToGroup(Node group, Node entity, String role)
+	// throws RepositoryException {
+	// return addEntityToGroup(group, entity, role, null, null, null, null);
+	// }
+	//
+	// public static void createUserGroups(PeopleService peopleService,
+	// Session adminSession) throws RepositoryException {
+	//
+	// QueryManager queryManager = adminSession.getWorkspace()
+	// .getQueryManager();
+	// QueryObjectModelFactory factory = queryManager.getQOMFactory();
+	// Selector source = factory.selector(ArgeoTypes.ARGEO_USER_PROFILE,
+	// ArgeoTypes.ARGEO_USER_PROFILE);
+	// QueryObjectModel query = factory.createQuery(source, null, null, null);
+	// QueryResult result = query.execute();
+	//
+	// NodeIterator nit = result.getNodes();
+	// while (nit.hasNext()) {
+	// Node currProfile = nit.nextNode();
+	// String username = CommonsJcrUtils.get(currProfile,
+	// ArgeoNames.ARGEO_USER_ID);
+	//
+	// // TODO hardcoded default users...
+	// if (!("root".equals(username) || "demo".equals(username))) //
+	// "guest".equals(username)||
+	// peopleService.getUserManagementService()
+	// .createDefaultGroupForUser(adminSession, username);
+	// }
+	// }
 
 	// /////////////////////////
 	// / CONTACTS

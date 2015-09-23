@@ -16,18 +16,12 @@
 package org.argeo.connect.people.rap.commands;
 
 import javax.jcr.Repository;
-import javax.jcr.Session;
 
+import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.UserManagementService;
-import org.argeo.connect.people.rap.wizards.NewPeopleUserWizard;
-import org.argeo.jcr.JcrUtils;
-import org.argeo.security.UserAdminService;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
  * Launch a wizard that enables creation of a new People user, enable among
@@ -37,37 +31,41 @@ import org.eclipse.ui.handlers.HandlerUtil;
 public class CreatePeopleUser extends AbstractHandler {
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private UserAdminService userAdminService;
+
+	// private UserAdminService userAdminService;
 	// People specific service
-	private UserManagementService userManagementService;
+	// private UserManagementService userManagementService;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		Session session = null;
-		try {
-			session = repository.login();
-			NewPeopleUserWizard newUserWizard = new NewPeopleUserWizard(
-					session, userAdminService,
-					userManagementService);
-			WizardDialog dialog = new WizardDialog(
-					HandlerUtil.getActiveShell(event), newUserWizard);
-			dialog.open();
-		} catch (Exception e) {
-			throw new ExecutionException("Cannot open wizard", e);
-		} finally {
-			JcrUtils.logoutQuietly(session);
-		}
-		return null;
+		throw new ArgeoException("Deprecated command");
+
+		// Session session = null;
+		// try {
+		// session = repository.login();
+		// NewPeopleUserWizard newUserWizard = new NewPeopleUserWizard(
+		// session, userAdminService,
+		// userManagementService);
+		// WizardDialog dialog = new WizardDialog(
+		// HandlerUtil.getActiveShell(event), newUserWizard);
+		// dialog.open();
+		// } catch (Exception e) {
+		// throw new ExecutionException("Cannot open wizard", e);
+		// } finally {
+		// JcrUtils.logoutQuietly(session);
+		// }
+		// return null;
 	}
 
 	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
 
-	public void setUserAdminService(UserAdminService userAdminService) {
-		this.userAdminService = userAdminService;
-	}
+	// public void setUserAdminService(UserAdminService userAdminService) {
+	// this.userAdminService = userAdminService;
+	// }
 
 	public void setPeopleService(PeopleService peopleService) {
-		this.userManagementService = peopleService.getUserManagementService();
+		// this.userManagementService =
+		// peopleService.getUserManagementService();
 	}
 }
