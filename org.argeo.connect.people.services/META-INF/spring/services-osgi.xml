@@ -9,7 +9,7 @@
        http://www.springframework.org/schema/util
        http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-	<!-- LABEL -->
+	<!-- LABEL : logs an INFO message once the bundle has been started -->
 	<beans:bean class="org.argeo.security.core.OsgiModuleLabel">
 		<beans:property name="bundleContext" ref="bundleContext" />
 	</beans:bean>
@@ -17,12 +17,18 @@
 	<!-- REFERENCES -->
 	<reference id="nodeRepository" interface="javax.jcr.Repository"
 		filter="(argeo.jcr.repository.alias=node)" />
-	
-	<reference id="authenticationManager"
-		interface="org.springframework.security.authentication.AuthenticationManager" />
 
-	<reference id="userAdminService" interface="org.argeo.security.UserAdminService" />
+	<beans:bean class="org.argeo.security.core.OsgiModuleLabel">
+		<beans:property name="bundleContext" ref="bundleContext" />
+	</beans:bean>
 
+	<reference id="userAdmin" interface="org.osgi.service.useradmin.UserAdmin" />
+	<reference id="userTransaction" interface="javax.transaction.UserTransaction" />
+
+
+	<!-- <reference id="authenticationManager" interface="org.springframework.security.authentication.AuthenticationManager" 
+		/> <reference id="userAdminService" interface="org.argeo.security.UserAdminService" 
+		/> -->
 	<!-- SERVICES -->
 	<!-- <service ref="peopleService" interface="org.argeo.connect.people.PeopleService" 
 		/> -->

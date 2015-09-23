@@ -48,7 +48,7 @@
 		</view>
 		
 		<!-- Users and tasks Management -->
-		<view
+		<!--<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/group.gif"
 			id="org.argeo.connect.people.rap.userGroupsView"
@@ -61,7 +61,7 @@
 			id="org.argeo.connect.people.rap.adminUsersView"
 			name="Users"
 			restorable="true">
-		</view>
+		</view> -->
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/activities/todo.gif"
@@ -122,7 +122,7 @@
 		</editor>
 		
 		<!-- Users and groups -->  
-		<editor
+		<!-- <editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/group.gif"
 			id="org.argeo.connect.people.rap.userGroupEditor"
@@ -133,7 +133,7 @@
 			icon="icons/person.gif"
 			id="org.argeo.connect.people.rap.userEditor"
 			name="User Management">
-		</editor>
+		</editor> -->
 		
 		<!-- Activities -->
 		<editor
@@ -213,7 +213,7 @@
 		
 		
 		<!-- Users and Groups Management --> 
-		<command
+		<!--<command
       		id="org.argeo.connect.people.rap.createPeopleUser"
             defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       		name="New User Group">
@@ -231,7 +231,7 @@
          		id="param.username"
          		name="the username">
   	 		</commandParameter>
-    	</command>
+    	</command>-->
     	
     	<!-- Activities and tasks management --> 
     	<command

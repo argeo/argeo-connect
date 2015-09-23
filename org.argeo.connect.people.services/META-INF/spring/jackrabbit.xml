@@ -21,22 +21,26 @@
 
 	<!-- ROLE_BUSINESS_ADMIN: A role that has JCR_ALL rights on the workspace. 
 		Sees people specific admin perspectives -->
-	<bean class="org.argeo.security.core.SimpleRoleRegistration"
+	<!-- ROLES -->
+	<bean id="ROLE_BUSINESS_ADMIN" class="org.argeo.security.core.SimpleRoleRegistration"
 		init-method="run">
-		<property name="role" value="ROLE_BUSINESS_ADMIN" />
-		<property name="userAdminService" ref="userAdminService" />
+		<property name="role" value="org.argeo.connect.people.admin" />
+		<!-- <beans:property name="roles"/><beans:list>...</beans:list></beans:property> -->
+		<property name="userAdmin" ref="userAdmin" />
+		<property name="userTransaction" ref="userTransaction" />
 	</bean>
 
+
+	<!-- <bean class="org.argeo.security.core.SimpleRoleRegistration" init-method="run"> 
+		<property name="role" value="ROLE_BUSINESS_ADMIN" /> <property name="userAdminService" 
+		ref="userAdminService" /> </bean> -->
 
 	<!-- ROLE_REGISTERED_USER: A role that has a home and read a/o write access 
 		on some sub parts of the workspace: this must be done by the current calling 
 		application -->
-	<bean class="org.argeo.security.core.SimpleRoleRegistration"
-		init-method="run">
-		<property name="role" value="ROLE_REGISTERED_USER" />
-		<property name="userAdminService" ref="userAdminService" />
-	</bean>
-
+	<!-- <bean class="org.argeo.security.core.SimpleRoleRegistration" init-method="run"> 
+		<property name="role" value="ROLE_REGISTERED_USER" /> <property name="userAdminService" 
+		ref="userAdminService" /> </bean> -->
 	<!-- ROLE_REGISTERED_GUEST: A role that has been granted JCR_READ rights 
 		on the workspace -->
 	<!-- DEPRECATED not used for the time being -->

@@ -33,17 +33,13 @@
 	</bean>
 
 	<!-- User Management -->
-	<bean id="createUserGroup" class="org.argeo.connect.people.rap.commands.CreateUserGroup"
-		scope="prototype">
-		<property name="repository" ref="repository" />
-		<property name="peopleService" ref="peopleService" />
-	</bean>
-	<bean id="createPeopleUser" class="org.argeo.connect.people.rap.commands.CreatePeopleUser"
-		scope="prototype">
-		<property name="repository" ref="repository" />
-		<property name="userAdminService" ref="userAdminService" />
-		<property name="peopleService" ref="peopleService" />
-	</bean>
+	<!-- <bean id="createUserGroup" class="org.argeo.connect.people.rap.commands.CreateUserGroup" 
+		scope="prototype"> <property name="repository" ref="repository" /> <property 
+		name="peopleService" ref="peopleService" /> </bean> <bean id="createPeopleUser" 
+		class="org.argeo.connect.people.rap.commands.CreatePeopleUser" scope="prototype"> 
+		<property name="repository" ref="repository" /> <property name="userAdminService" 
+		ref="userAdminService" /> <property name="peopleService" ref="peopleService" 
+		/> </bean> -->
 
 	<!-- Tasks and Activities -->
 	<bean id="createSimpleTask" class="org.argeo.connect.people.rap.commands.CreateSimpleTask"

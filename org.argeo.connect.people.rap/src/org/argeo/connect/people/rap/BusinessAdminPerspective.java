@@ -15,21 +15,24 @@
  */
 package org.argeo.connect.people.rap;
 
-import org.argeo.connect.people.rap.views.AdminUsersView;
-import org.argeo.connect.people.rap.views.UserGroupsView;
-import org.eclipse.ui.IFolderLayout;
-import org.eclipse.ui.IPageLayout;
-import org.eclipse.ui.IPerspectiveFactory;
-
-public class BusinessAdminPerspective implements IPerspectiveFactory {
-	public void createInitialLayout(IPageLayout layout) {
-		String editorArea = layout.getEditorArea();
-		layout.setEditorAreaVisible(true);
-		layout.setFixed(false);
-
-		IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT,
-				0.3f, editorArea);
-		left.addView(AdminUsersView.ID);
-		left.addView(UserGroupsView.ID);
-	}
+public class BusinessAdminPerspective {
 }
+
+// import org.argeo.connect.people.rap.views.AdminUsersView;
+// import org.argeo.connect.people.rap.views.UserGroupsView;
+// import org.eclipse.ui.IFolderLayout;
+// import org.eclipse.ui.IPageLayout;
+// import org.eclipse.ui.IPerspectiveFactory;
+//
+// public class BusinessAdminPerspective implements IPerspectiveFactory {
+// public void createInitialLayout(IPageLayout layout) {
+// String editorArea = layout.getEditorArea();
+// layout.setEditorAreaVisible(true);
+// layout.setFixed(false);
+//
+// IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT,
+// 0.3f, editorArea);
+// left.addView(AdminUsersView.ID);
+// left.addView(UserGroupsView.ID);
+// }
+// }

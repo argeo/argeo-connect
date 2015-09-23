@@ -43,26 +43,16 @@
 		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
-	<!-- Users and groups management -->
-	<bean id="userEditor" class="org.argeo.connect.people.rap.editors.UserEditor"
-		scope="prototype">
-		<property name="repository" ref="repository" />
-		<property name="userAdminService" ref="userAdminService" />
-		<property name="peopleService" ref="peopleService" />
-	</bean>
-
-	<bean id="groupEditor" class="org.argeo.connect.people.rap.editors.GroupEditor"
-		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
-		<property name="repository" ref="repository" />
-	</bean>
-
-	<bean id="userGroupEditor" class="org.argeo.connect.people.rap.editors.UserGroupEditor"
-		scope="prototype">
-		<property name="peopleService" ref="peopleService" />
-		<property name="repository" ref="repository" />
-	</bean>
-
+	<!-- Legacy Users and groups management -->
+	<!-- <bean id="userEditor" class="org.argeo.connect.people.rap.editors.UserEditor" 
+		scope="prototype"> <property name="repository" ref="repository" /> <property 
+		name="userAdminService" ref="userAdminService" /> <property name="peopleService" 
+		ref="peopleService" /> </bean> <bean id="groupEditor" class="org.argeo.connect.people.rap.editors.GroupEditor" 
+		scope="prototype"> <property name="peopleService" ref="peopleService" /> 
+		<property name="repository" ref="repository" /> </bean> <bean id="userGroupEditor" 
+		class="org.argeo.connect.people.rap.editors.UserGroupEditor" scope="prototype"> 
+		<property name="peopleService" ref="peopleService" /> <property name="repository" 
+		ref="repository" /> </bean> -->
 	<!-- Management of tags and static lists -->
 	<bean id="listValuesEditor" class="org.argeo.connect.people.rap.editors.ListValuesEditor"
 		scope="prototype">

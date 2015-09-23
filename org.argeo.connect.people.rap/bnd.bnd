@@ -7,7 +7,10 @@ org.argeo.eclipse.spring,\
 org.argeo.eclipse.ui.dialogs,\
 org.springframework.dao,\
 org.springframework.core,\
-org.springframework.security.core,\
-org.springframework.security.provisioning,\
+org.osgi.service.useradmin,\
 *
+
+
+#org.springframework.security.core,\
+#org.springframework.security.provisioning,\
 
