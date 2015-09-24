@@ -11,15 +11,19 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
 
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ActivityValueCatalogs;
+import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ResourceService;
+import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.jcr.JcrUtils;
 
 /** Concrete access to People's {@link ActivityService} */
@@ -191,35 +195,42 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	@Override
 	public List<Node> getTasksForUser(Session session, String username,
 			boolean onlyOpenTasks) {
-		List<Node> groups = peopleService.getUserManagementService()
-				.getUserGroups(session, username);
+		UserManagementService usm = peopleService.getUserManagementService();
+		String[] roles = usm.getUserRoles(username);
 		List<Node> tasks = new ArrayList<Node>();
-		for (Node group : groups)
-			tasks.addAll(getTasksForGroup(group, onlyOpenTasks));
+		for (String role : roles)
+			tasks.addAll(getTasksForGroup(session, role, onlyOpenTasks));
 		return tasks;
-	}
-
-	public List<Node> getTasksForGroup(Node group, boolean onlyOpenTasks) {
-		// Cannot be null
-		String groupId = CommonsJcrUtils
-				.get(group, PeopleNames.PEOPLE_GROUP_ID);
-		return getTasksForGroup(CommonsJcrUtils.getSession(group), groupId,
-				onlyOpenTasks);
 	}
 
 	public List<Node> getTasksForGroup(Session session, String groupId,
 			boolean onlyOpenTasks) {
 		try {
-			Query query = session
-					.getWorkspace()
-					.getQueryManager()
-					.createQuery(
-							"SELECT * FROM [" + PeopleTypes.PEOPLE_TASK
-									+ "] WHERE ["
-									+ PeopleNames.PEOPLE_ASSIGNED_TO + "]='"
-									+ groupId + "' ORDER BY ["
-									+ Property.JCR_LAST_MODIFIED + "] DESC ",
-							Query.JCR_SQL2);
+
+			QueryManager queryManager = session.getWorkspace()
+					.getQueryManager();
+
+			// XPath
+			StringBuilder builder = new StringBuilder();
+			builder.append("//element(*, ").append(PeopleTypes.PEOPLE_TASK)
+					.append(")");
+			String attrQuery = XPathUtils.getPropertyEquals(
+					PeopleNames.PEOPLE_ASSIGNED_TO, groupId);
+			if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+				builder.append("[").append(attrQuery).append("]");
+			builder.append("order by @").append(PeopleNames.JCR_LAST_MODIFIED)
+					.append(" descending");
+
+			Query query = queryManager.createQuery(builder.toString(),
+					PeopleConstants.QUERY_XPATH);
+
+			// String querySqlStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_TASK
+			// + "] WHERE [" + PeopleNames.PEOPLE_ASSIGNED_TO + "]='"
+			// + groupId + "' ORDER BY [" + Property.JCR_LAST_MODIFIED
+			// + "] DESC ";
+			// Query query = queryManager.createQuery(querySqlStr,
+			// Query.JCR_SQL2);
+
 			NodeIterator nit = query.execute().getNodes();
 			if (onlyOpenTasks) {
 				List<Node> tasks = new ArrayList<Node>();
@@ -393,10 +404,8 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 				String groupId = taskNode.getProperty(
 						PeopleNames.PEOPLE_ASSIGNED_TO).getString();
 
-				Node groupNode = peopleService.getUserManagementService()
-						.getGroupById(taskNode.getSession(), groupId);
-				if (groupNode != null)
-					return CommonsJcrUtils.get(groupNode, Property.JCR_TITLE);
+				return peopleService.getUserManagementService()
+						.getUserDisplayName(groupId);
 			}
 			return "";
 		} catch (RepositoryException e) {

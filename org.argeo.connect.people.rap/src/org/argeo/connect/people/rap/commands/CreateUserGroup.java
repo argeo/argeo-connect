@@ -15,45 +15,34 @@
  */
 package org.argeo.connect.people.rap.commands;
 
-import javax.jcr.Repository;
-import javax.jcr.Session;
-
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.rap.wizards.NewUserGroupWizard;
-import org.argeo.jcr.JcrUtils;
-import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.ui.handlers.HandlerUtil;
-
+public class CreateUserGroup{}
 /** Launch a wizard that enables creation of a new user group. */
-public class CreateUserGroup extends AbstractHandler {
-	private Repository repository;
-	private PeopleService peopleService;
-
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		Session session = null;
-		try {
-			session = repository.login();
-			NewUserGroupWizard newUserWizard = new NewUserGroupWizard(session,
-					peopleService);
-			WizardDialog dialog = new WizardDialog(
-					HandlerUtil.getActiveShell(event), newUserWizard);
-			dialog.open();
-		} catch (Exception e) {
-			throw new ExecutionException("Cannot open wizard", e);
-		} finally {
-			JcrUtils.logoutQuietly(session);
-		}
-		return null;
-	}
-
-	public void setRepository(Repository repository) {
-		this.repository = repository;
-	}
-
-	public void setPeopleService(PeopleService peopleService) {
-		this.peopleService = peopleService;
-	}
-}
+// public class CreateUserGroup extends AbstractHandler {
+// private Repository repository;
+// private PeopleService peopleService;
+//
+// public Object execute(ExecutionEvent event) throws ExecutionException {
+// Session session = null;
+// try {
+// session = repository.login();
+// NewUserGroupWizard newUserWizard = new NewUserGroupWizard(session,
+// peopleService);
+// WizardDialog dialog = new WizardDialog(
+// HandlerUtil.getActiveShell(event), newUserWizard);
+// dialog.open();
+// } catch (Exception e) {
+// throw new ExecutionException("Cannot open wizard", e);
+// } finally {
+// JcrUtils.logoutQuietly(session);
+// }
+// return null;
+// }
+//
+// public void setRepository(Repository repository) {
+// this.repository = repository;
+// }
+//
+// public void setPeopleService(PeopleService peopleService) {
+// this.peopleService = peopleService;
+// }
+// }

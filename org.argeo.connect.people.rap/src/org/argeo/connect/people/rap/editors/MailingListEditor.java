@@ -168,8 +168,8 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 				.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		Link editTitleLink = null;
-		if (userService.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
-				|| userService.isUserInRole(PeopleConstants.ROLE_ADMIN)) {
+		if (userService.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
+				|| userService.amIInRole(PeopleConstants.ROLE_ADMIN)) {
 			editTitleLink = new Link(parent, SWT.NONE);
 			editTitleLink.setText("<a>Edit Mailing List</a>");
 		} else

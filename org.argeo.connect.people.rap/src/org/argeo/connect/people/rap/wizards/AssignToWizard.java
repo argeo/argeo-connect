@@ -15,6 +15,7 @@ import org.argeo.ArgeoMonitor;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.UserManagementService;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
@@ -50,6 +51,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
+import org.osgi.service.useradmin.Group;
 
 /** Update the status of the selected tasks (with only one node type) as batch */
 public class AssignToWizard extends Wizard implements PeopleNames {
@@ -193,12 +195,12 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			viewer.addDoubleClickListener(new MyDoubleClickListener());
 
 			box.setLayout(tableColumnLayout);
-			List<Node> groups = peopleService.getUserManagementService()
-					.getDefinedGroups(session, null, true);
+			UserManagementService usm = peopleService
+					.getUserManagementService();
+			List<Group> groups = usm.listGroups(null);
 			List<String> values = new ArrayList<String>();
-			for (Node group : groups) {
-				values.add(CommonsJcrUtils.get(group,
-						PeopleNames.PEOPLE_GROUP_ID));
+			for (Group group : groups) {
+				usm.getUserDisplayName(group.getName());
 			}
 			viewer.setInput(values.toArray(new String[0]));
 			setControl(body);

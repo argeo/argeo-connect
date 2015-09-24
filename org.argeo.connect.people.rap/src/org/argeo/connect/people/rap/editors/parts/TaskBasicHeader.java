@@ -12,6 +12,7 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.argeo.ArgeoException;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -160,9 +161,11 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 					if (task.hasProperty(PeopleNames.PEOPLE_ASSIGNED_TO)) {
 						String groupId = task.getProperty(
 								PeopleNames.PEOPLE_ASSIGNED_TO).getString();
-						assignedToNode = peopleService
-								.getUserManagementService().getGroupById(
-										node.getSession(), groupId);
+						throw new ArgeoException(
+								"Adapt ths to the new security model");
+						// assignedToNode = peopleService
+						// .getUserManagementService().getGroupById(
+						// node.getSession(), groupId);
 					}
 
 					manager += " ~ <a>Change</a>";

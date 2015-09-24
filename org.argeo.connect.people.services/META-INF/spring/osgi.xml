@@ -25,13 +25,7 @@
 	<reference id="userAdmin" interface="org.osgi.service.useradmin.UserAdmin" />
 	<reference id="userTransaction" interface="javax.transaction.UserTransaction" />
 
-
-	<!-- <reference id="authenticationManager" interface="org.springframework.security.authentication.AuthenticationManager" 
-		/> <reference id="userAdminService" interface="org.argeo.security.UserAdminService" 
-		/> -->
 	<!-- SERVICES -->
-	<!-- <service ref="peopleService" interface="org.argeo.connect.people.PeopleService" 
-		/> -->
 	<service ref="peopleRepository" interface="javax.jcr.Repository">
 		<service-properties>
 			<beans:entry key="argeo.jcr.repository.alias" value="people" />

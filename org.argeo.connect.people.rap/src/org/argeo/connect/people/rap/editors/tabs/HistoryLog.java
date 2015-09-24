@@ -77,8 +77,8 @@ public class HistoryLog extends Composite {
 		UserManagementService userService = peopleService
 				.getUserManagementService();
 		// Add info to be able to find the node via the data explorer
-		if (userService.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
-				|| userService.isUserInRole(PeopleConstants.ROLE_ADMIN)) {
+		if (userService.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
+				|| userService.amIInRole(PeopleConstants.ROLE_ADMIN)) {
 			Label label = new Label(parent, SWT.WRAP);
 			CmsUtils.markup(label);
 			GridData gd = EclipseUiUtils.fillWidth();

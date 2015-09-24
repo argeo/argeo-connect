@@ -337,8 +337,8 @@ public class TagLikeListPart extends Composite {
 						.equals(peopleService
 								.getConfigProperty(PeopleConstants.PEOPLE_PROP_PREVENT_TAG_ADDITION))
 						|| userService
-								.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
-						|| userService.isUserInRole(PeopleConstants.ROLE_ADMIN);
+								.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
+						|| userService.amIInRole(PeopleConstants.ROLE_ADMIN);
 
 				if (canAdd) {
 					// Ask end user if we create a new tag

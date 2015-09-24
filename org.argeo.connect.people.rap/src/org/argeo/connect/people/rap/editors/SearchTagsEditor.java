@@ -277,9 +277,9 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 	}
 
 	private boolean canEdit() {
-		return peopleService.getUserManagementService().isUserInRole(
+		return peopleService.getUserManagementService().amIInRole(
 				PeopleConstants.ROLE_BUSINESS_ADMIN)
-				|| peopleService.getUserManagementService().isUserInRole(
+				|| peopleService.getUserManagementService().amIInRole(
 						PeopleConstants.ROLE_ADMIN);
 	}
 

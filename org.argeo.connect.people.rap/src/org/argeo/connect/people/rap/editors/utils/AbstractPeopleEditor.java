@@ -431,9 +431,9 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	}
 
 	public Boolean canEdit() {
-		return getPeopleService().getUserManagementService().isUserInRole(
+		return getPeopleService().getUserManagementService().amIInRole(
 				PeopleConstants.ROLE_MEMBER)
-				|| getPeopleService().getUserManagementService().isUserInRole(
+				|| getPeopleService().getUserManagementService().amIInRole(
 						PeopleConstants.ROLE_BUSINESS_ADMIN);
 	}
 

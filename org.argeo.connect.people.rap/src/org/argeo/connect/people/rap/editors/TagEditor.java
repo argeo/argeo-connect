@@ -160,8 +160,8 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		Link editTitleLink = null;
 		UserManagementService userService = peopleService
 				.getUserManagementService();
-		if (userService.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
-				|| userService.isUserInRole(PeopleConstants.ROLE_ADMIN)) {
+		if (userService.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
+				|| userService.amIInRole(PeopleConstants.ROLE_ADMIN)) {
 			editTitleLink = new Link(parent, SWT.NONE);
 			editTitleLink.setText("<a>Edit Tag</a>");
 		} else

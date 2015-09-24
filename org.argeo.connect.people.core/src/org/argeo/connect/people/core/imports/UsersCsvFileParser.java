@@ -1,10 +1,10 @@
 package org.argeo.connect.people.core.imports;
 
-import java.util.Arrays;
 import java.util.Map;
 
 import javax.jcr.Session;
 
+import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserManagementService;
 import org.argeo.security.UserAdminService;
@@ -35,8 +35,10 @@ public class UsersCsvFileParser extends AbstractPeopleCsvFileParser {
 		String desc = line.get("people:description");
 		String role = line.get("people:role");
 
-		userManagementService.createUser(adminSession, userAdminService,
-				userName, "demo".toCharArray(), firstName, lastName, email,
-				desc, Arrays.asList(role.split(", ")));
+		throw new ArgeoException("Legacy class. do not use anymore");
+
+		// userManagementService.createUser(adminSession, userAdminService,
+		// userName, "demo".toCharArray(), firstName, lastName, email,
+		// desc, Arrays.asList(role.split(", ")));
 	}
 }

@@ -3,14 +3,12 @@ package org.argeo.connect.people.rap.composites.dropdowns;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.jcr.Node;
 import javax.jcr.Session;
 
-import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserManagementService;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.swt.widgets.Text;
+import org.osgi.service.useradmin.Group;
 
 /** Drop down that displays the list of existing groups */
 public class ExistingGroupsDropDown extends PeopleAbstractDropDown {
@@ -30,11 +28,10 @@ public class ExistingGroupsDropDown extends PeopleAbstractDropDown {
 
 	@Override
 	protected List<String> getFilteredValues(String filter) {
-		List<Node> groups = userService.getDefinedGroups(session, filter,
-				includeUsers);
+		List<Group> groups = userService.listGroups(filter);
 		List<String> values = new ArrayList<String>();
-		for (Node group : groups) {
-			values.add(CommonsJcrUtils.get(group, PeopleNames.PEOPLE_GROUP_ID));
+		for (Group group : groups) {
+			values.add(group.getName());
 		}
 		return values;
 	}

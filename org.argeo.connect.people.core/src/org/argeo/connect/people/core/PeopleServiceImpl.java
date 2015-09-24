@@ -38,6 +38,7 @@ import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.jcr.JcrUtils;
+import org.osgi.service.useradmin.UserAdmin;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -46,8 +47,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private final static Log log = LogFactory.getLog(PeopleServiceImpl.class);
 
 	/* Centralizes the various specific People services */
-	private UserManagementService userManagementService = new UserManagementServiceImpl(
-			this);
+	private UserAdmin userAdmin;
+	private UserManagementService userManagementService;
 	private PersonService personService = new PersonServiceImpl(this);
 	private ContactService contactService = new ContactServiceImpl(this);
 	private ActivityService activityService = new ActivityServiceImpl(this);
@@ -541,7 +542,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	 * receive/provide data.
 	 */
 	public void init() {
-		// Does nothing
+		userManagementService = new UserManagementServiceImpl(this, userAdmin);
 		if (log.isDebugEnabled())
 			log.info("People's backend has been initialized");
 	}
@@ -552,4 +553,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	/* DEPENDENCY INJECTION */
+	public void setUserAdmin(UserAdmin userAdmin) {
+		this.userAdmin = userAdmin;
+	}
 }
