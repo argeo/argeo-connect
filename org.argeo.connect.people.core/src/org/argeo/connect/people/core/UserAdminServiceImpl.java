@@ -104,6 +104,12 @@ public class UserAdminServiceImpl implements UserAdminService {
 
 	/** Can be a group or a user */
 	public String getUserDisplayName(String dn) {
+
+		// FIXME: during initialisation phase, the system logs "admin" as user
+		// name rather than the corresponding dn
+		if ("admin".equals(dn))
+			return "System Adminitrator";
+
 		User user = getUser(dn);
 		if (user instanceof Group)
 			return UsersUtils.getProperty(user, LdifName.cn.name());

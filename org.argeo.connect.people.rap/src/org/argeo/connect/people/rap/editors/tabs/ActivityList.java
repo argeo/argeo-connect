@@ -279,7 +279,7 @@ public class ActivityList extends Composite {
 			// Create an independent session.
 			session = relatedEntity.getSession().getRepository().login();
 			NewSimpleTaskWizard wizard = new NewSimpleTaskWizard(session,
-					activityService);
+					peopleService);
 			List<Node> relatedTo = new ArrayList<Node>();
 			relatedTo.add(relatedEntity);
 			wizard.setRelatedTo(relatedTo);

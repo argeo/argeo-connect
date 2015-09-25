@@ -18,6 +18,7 @@ package org.argeo.connect.people.rap.dialogs;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
+import org.argeo.ArgeoException;
 import org.argeo.connect.people.rap.composites.UserGroupTableComposite;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -73,8 +74,10 @@ public class PickUpGroupDialog extends TrayDialog {
 		return dialogArea;
 	}
 
-	public Node getSelected() {
-		return selectedNode;
+	public String getSelected() {
+		throw new ArgeoException("Implement the group pick up strategies");
+
+		// return selectedNode;
 	}
 
 	protected void configureShell(Shell shell) {

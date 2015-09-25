@@ -3,13 +3,13 @@ package org.argeo.connect.people.rap.wizards;
 import java.util.List;
 
 import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.rap.ActivitiesImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapUtils;
@@ -51,10 +51,11 @@ public class NewSimpleTaskWizard extends Wizard {
 	// Set upon instantiation
 	private Session currSession;
 	private ActivityService activityService;
+	private UserAdminService userAdminService;
 
 	// Business objects
 	private List<Node> relatedTo;
-	private Node assignedToGroupNode;
+	private String assignedToGroupId;
 	private Node createdTask;
 
 	public void setRelatedTo(List<Node> relatedTo) {
@@ -74,8 +75,9 @@ public class NewSimpleTaskWizard extends Wizard {
 
 	protected TableViewer itemsViewer;
 
-	public NewSimpleTaskWizard(Session session, ActivityService activityService) {
-		this.activityService = activityService;
+	public NewSimpleTaskWizard(Session session, PeopleService peopleService) {
+		activityService = peopleService.getActivityService();
+		userAdminService = peopleService.getUserAdminService();
 		this.currSession = session;
 	}
 
@@ -104,17 +106,17 @@ public class NewSimpleTaskWizard extends Wizard {
 	public boolean performFinish() {
 		// Sanity check
 		String msg = null;
-		if (assignedToGroupNode == null)
+		if (CommonsJcrUtils.isEmptyString(assignedToGroupId))
 			msg = "Please assign this task to a group.";
 		if (msg != null) {
 			MessageDialog.openError(getShell(), "Uncomplete information", msg);
 			return false;
 		}
 
-		createdTask = activityService.createTask(currSession, null, titleTxt
-				.getText(), descTxt.getText(), CommonsJcrUtils.get(
-				assignedToGroupNode, PeopleNames.PEOPLE_GROUP_ID), relatedTo,
-				dueDateCmp.getCalendar(), wakeUpDateCmp.getCalendar());
+		createdTask = activityService.createTask(currSession, null,
+				titleTxt.getText(), descTxt.getText(), assignedToGroupId,
+				relatedTo, dueDateCmp.getCalendar(),
+				wakeUpDateCmp.getCalendar());
 
 		return true;
 	}
@@ -176,20 +178,16 @@ public class NewSimpleTaskWizard extends Wizard {
 
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
-					try {
-						PickUpGroupDialog diag = new PickUpGroupDialog(
-								assignedToTxt.getShell(), "Choose a group",
-								currSession, null);
-						if (diag.open() == Window.OK) {
-							assignedToGroupNode = diag.getSelected();
-							// TODO use correct group name
-							// update display
-							assignedToTxt.setText(assignedToGroupNode.getName());
-						}
-					} catch (RepositoryException e) {
-						throw new PeopleException(
-								"Unable to pick up a group node to assign to",
-								e);
+					PickUpGroupDialog diag = new PickUpGroupDialog(
+							assignedToTxt.getShell(), "Choose a group",
+							currSession, null);
+					if (diag.open() == Window.OK) {
+
+						assignedToGroupId = diag.getSelected();
+						if (CommonsJcrUtils
+								.checkNotEmptyString(assignedToGroupId))
+							assignedToTxt.setText(userAdminService
+									.getUserDisplayName(assignedToGroupId));
 					}
 				}
 			});

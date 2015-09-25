@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
@@ -111,6 +112,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		private static final long serialVersionUID = 6434106955847719839L;
 
 		private final ActivityService activityService;
+		private final UserAdminService userAdminService;
 		private final Node activity;
 
 		// UI Context
@@ -132,6 +134,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 
 			// Caches a few context object to ease implementation
 			activityService = peopleService.getActivityService();
+			userAdminService = peopleService.getUserAdminService();
 
 			// Initialise the form
 			myFormPart = new MyFormPart();
@@ -153,10 +156,11 @@ public class ActivityEditor extends AbstractPeopleEditor {
 				String manager = CommonsJcrUtils.get(activity,
 						PeopleNames.PEOPLE_REPORTED_BY);
 				if (CommonsJcrUtils.checkNotEmptyString(manager))
-					managerLbl.setText(manager);
+					managerLbl.setText(userAdminService
+							.getUserDisplayName(manager));
 
 				dateComposite.refresh();
-				
+
 				// We force full refresh with this workaround at each refresh to
 				// insure the editable state will change even if no related
 				// object has been added. Might be later cleaned

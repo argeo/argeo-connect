@@ -4,7 +4,6 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
@@ -26,7 +25,7 @@ public class CreateSimpleTask extends AbstractHandler {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private ActivityService activityService;
+	private PeopleService peopleService;
 	private PeopleWorkbenchService peopleWorkbenchService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
@@ -35,7 +34,7 @@ public class CreateSimpleTask extends AbstractHandler {
 		try {
 			session = repository.login();
 			NewSimpleTaskWizard wizard = new NewSimpleTaskWizard(session,
-					activityService);
+					peopleService);
 			WizardDialog dialog = new WizardDialog(
 					HandlerUtil.getActiveShell(event), wizard);
 			int result = dialog.open();
@@ -63,7 +62,7 @@ public class CreateSimpleTask extends AbstractHandler {
 	}
 
 	public void setPeopleService(PeopleService peopleService) {
-		this.activityService = peopleService.getActivityService();
+		this.peopleService = peopleService;
 	}
 
 	public void setPeopleWorkbenchService(

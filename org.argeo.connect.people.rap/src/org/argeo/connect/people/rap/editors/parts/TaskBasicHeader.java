@@ -54,7 +54,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 	private final String taskTypeId;
 
 	// local cache
-	private Node assignedToNode;
+	private String assignedToGroupId;
 	// private boolean isBeingEdited;
 	private List<String> hiddenItemIds;
 	private List<String> modifiedPaths = new ArrayList<String>();
@@ -362,25 +362,43 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 							session, null);
 					int result = diag.open();
 					if (Window.OK == result) {
-						Node newNode = diag.getSelected();
-						if (assignedToNode != null
-								&& newNode.getPath().equals(
-										assignedToNode.getPath()))
+						String newGroupId = diag.getSelected();
+						if (newGroupId == null
+								|| newGroupId.equals(assignedToGroupId))
 							return; // nothing has changed
 						else {
 							// Update value
-							String groupId = newNode.getProperty(
-									PeopleNames.PEOPLE_GROUP_ID).getString();
 							task.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO,
-									groupId);
+									newGroupId);
 							// update cache and display.
-							assignedToNode = newNode;
-							changeAssignationLk.setText(CommonsJcrUtils.get(
-									assignedToNode, Property.JCR_TITLE)
+							assignedToGroupId = newGroupId;
+							changeAssignationLk.setText(peopleService
+									.getUserAdminService().getUserDisplayName(
+											newGroupId)
 									+ "  ~ <a>Change</a>");
 							myFormPart.markDirty();
 						}
 					}
+
+					// Node newNode = diag.getSelected();
+					// if (assignedToNode != null
+					// && newNode.getPath().equals(
+					// assignedToNode.getPath()))
+					// return; // nothing has changed
+					// else {
+					// // Update value
+					// String groupId = newNode.getProperty(
+					// PeopleNames.PEOPLE_GROUP_ID).getString();
+					// task.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO,
+					// groupId);
+					// // update cache and display.
+					// assignedToNode = newNode;
+					// changeAssignationLk.setText(CommonsJcrUtils.get(
+					// assignedToNode, Property.JCR_TITLE)
+					// + "  ~ <a>Change</a>");
+					// myFormPart.markDirty();
+					// }
+					// }
 				} catch (RepositoryException re) {
 					throw new PeopleException(
 							"Unable to change assignation for node " + task, re);
