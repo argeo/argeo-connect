@@ -83,7 +83,7 @@ public class ActivityList extends Composite {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		try {
 			Composite addCmp = null;
-			if (peopleService.getUserManagementService().amIInRole(
+			if (peopleService.getUserAdminService().amIInRole(
 					PeopleConstants.ROLE_MEMBER)) {
 				addCmp = toolkit.createComposite(parent);
 				addCmp.setLayoutData(EclipseUiUtils.fillWidth());

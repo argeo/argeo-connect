@@ -6,14 +6,14 @@ import java.util.List;
 import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.UserManagementService;
+import org.argeo.connect.people.UserAdminService;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.service.useradmin.Group;
 
 /** Drop down that displays the list of existing groups */
 public class ExistingGroupsDropDown extends PeopleAbstractDropDown {
 
-	private final UserManagementService userService;
+	private final UserAdminService userService;
 	private final Session session;
 	private final boolean includeUsers;
 
@@ -21,7 +21,7 @@ public class ExistingGroupsDropDown extends PeopleAbstractDropDown {
 			Session session, boolean includeUsers) {
 		super(text);
 		this.session = session;
-		this.userService = peopleService.getUserManagementService();
+		this.userService = peopleService.getUserAdminService();
 		this.includeUsers = includeUsers;
 		init();
 	}

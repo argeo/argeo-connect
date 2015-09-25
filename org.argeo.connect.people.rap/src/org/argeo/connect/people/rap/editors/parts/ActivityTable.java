@@ -28,6 +28,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ResourceService;
+import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.listeners.HtmlListRwtAdapter;
@@ -64,6 +65,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 	private ResourceService resourceService;
 	private PeopleWorkbenchService peopleWorkbenchService;
 	private ActivityService activityService;
+	private UserAdminService userAdminService;
 
 	// CONSTRUCTORS
 
@@ -84,6 +86,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		activityService = peopleService.getActivityService();
 		resourceService = peopleService.getResourceService();
+		userAdminService = peopleService.getUserAdminService();
 		this.entity = entity;
 
 		this.setLayout(EclipseUiUtils.noSpaceGridLayout());
@@ -378,6 +381,17 @@ public class ActivityTable extends Composite implements ArgeoNames {
 		}
 	}
 
+	private String getDisplayName(String id) {
+		return userAdminService.getUserDisplayName(id);
+	}
+
+	private String getDNameFromProp(Node node, String propName) {
+		String id = CommonsJcrUtils.get(node, propName);
+		if (CommonsJcrUtils.checkNotEmptyString(id))
+			return userAdminService.getUserDisplayName(id);
+		return "";
+	}
+
 	private class UsersLabelProvider extends ColumnLabelProvider {
 		private static final long serialVersionUID = 1L;
 
@@ -390,9 +404,8 @@ public class ActivityTable extends Composite implements ArgeoNames {
 				if (activityNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
 					// done task
 					if (activityService.isTaskDone(activityNode)) {
-						value = CommonsJcrUtils.get(activityNode,
-								PeopleNames.PEOPLE_CLOSED_BY);// activityService
-						// .getActivityManagerDisplayName(activityNode);
+						value = getDNameFromProp(activityNode,
+								PeopleNames.PEOPLE_CLOSED_BY);
 						if (CommonsJcrUtils.checkNotEmptyString(value))
 							builder.append("Done by: ").append(value)
 									.append("<br />");
@@ -407,30 +420,22 @@ public class ActivityTable extends Composite implements ArgeoNames {
 						if (CommonsJcrUtils.checkNotEmptyString(value))
 							builder.append("Assigned to: ").append(value)
 									.append("<br />");
-						if (activityNode
-								.hasProperty(Property.JCR_LAST_MODIFIED_BY)) {
+
+						value = CommonsJcrUtils.get(activityNode,
+								Property.JCR_LAST_MODIFIED_BY);
+						if (CommonsJcrUtils.checkNotEmptyString(value))
 							builder.append("Last updated by: ").append(
-									activityNode.getProperty(
-											Property.JCR_LAST_MODIFIED_BY)
-											.getString());
-						}
+									getDisplayName(value));
 					}
 				} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-					String reporter = CommonsJcrUtils.get(activityNode,
+					String reporter = getDNameFromProp(activityNode,
 							PeopleNames.PEOPLE_REPORTED_BY);
-					// activityService
-					// .getActivityManagerDisplayName(activityNode);
-					String updater = null;
+					String updater = getDNameFromProp(activityNode,
+							Property.JCR_LAST_MODIFIED_BY);
 
-					if (activityNode.hasProperty(Property.JCR_LAST_MODIFIED_BY))
-						updater = activityNode.getProperty(
-								Property.JCR_LAST_MODIFIED_BY).getString();
-
-					if (CommonsJcrUtils.isEmptyString(reporter)
-							&& activityNode
-									.hasProperty(Property.JCR_CREATED_BY))
-						reporter = activityNode.getProperty(
-								Property.JCR_CREATED_BY).getString();
+					if (CommonsJcrUtils.isEmptyString(reporter))
+						reporter = getDNameFromProp(activityNode,
+								Property.JCR_CREATED_BY);
 
 					if (CommonsJcrUtils.checkNotEmptyString(reporter))
 						builder.append("Reported by: ").append(reporter)

@@ -21,7 +21,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.UserManagementService;
+import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
@@ -158,10 +158,10 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 				.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		Link editTitleLink = null;
-		UserManagementService userService = peopleService
-				.getUserManagementService();
-		if (userService.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
-				|| userService.amIInRole(PeopleConstants.ROLE_ADMIN)) {
+		UserAdminService userService = peopleService
+				.getUserAdminService();
+		if (userService.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)) {
+			// || userService.amIInRole(PeopleConstants.ROLE_ADMIN)) {
 			editTitleLink = new Link(parent, SWT.NONE);
 			editTitleLink.setText("<a>Edit Tag</a>");
 		} else

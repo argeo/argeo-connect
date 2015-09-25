@@ -20,7 +20,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.UserManagementService;
+import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
@@ -72,7 +72,7 @@ public class TagLikeListPart extends Composite {
 
 	// Deduced from the context, shortcut for this class
 	private final ResourceService resourceService;
-	private final UserManagementService userService;
+	private final UserAdminService userService;
 	private final Session session;
 
 	// Cache to trace newly created versionable tag like objects.
@@ -106,7 +106,7 @@ public class TagLikeListPart extends Composite {
 
 		// Cache some context object to ease implementation
 		this.resourceService = peopleService.getResourceService();
-		this.userService = peopleService.getUserManagementService();
+		this.userService = peopleService.getUserAdminService();
 		session = CommonsJcrUtils.getSession(taggable);
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
 
@@ -337,8 +337,8 @@ public class TagLikeListPart extends Composite {
 						.equals(peopleService
 								.getConfigProperty(PeopleConstants.PEOPLE_PROP_PREVENT_TAG_ADDITION))
 						|| userService
-								.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
-						|| userService.amIInRole(PeopleConstants.ROLE_ADMIN);
+								.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN);
+						// || userService.amIInRole(PeopleConstants.ROLE_ADMIN);
 
 				if (canAdd) {
 					// Ask end user if we create a new tag

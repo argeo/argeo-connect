@@ -21,7 +21,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.UserManagementService;
+import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.jcr.JcrUtils;
@@ -195,7 +195,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	@Override
 	public List<Node> getTasksForUser(Session session, String username,
 			boolean onlyOpenTasks) {
-		UserManagementService usm = peopleService.getUserManagementService();
+		UserAdminService usm = peopleService.getUserAdminService();
 		String[] roles = usm.getUserRoles(username);
 		List<Node> tasks = new ArrayList<Node>();
 		for (String role : roles)
@@ -404,7 +404,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 				String groupId = taskNode.getProperty(
 						PeopleNames.PEOPLE_ASSIGNED_TO).getString();
 
-				return peopleService.getUserManagementService()
+				return peopleService.getUserAdminService()
 						.getUserDisplayName(groupId);
 			}
 			return "";

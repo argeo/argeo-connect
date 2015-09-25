@@ -53,10 +53,13 @@ public class TemplateList extends EditorPart implements PeopleNames,
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".templateList";
 
 	/* DEPENDENCY INJECTION */
-	private Session session;
+	private Repository repository;
 	private PeopleService peopleService;
 	private ResourceService resourceService;
 	private PeopleWorkbenchService peopleWorkbenchService;
+
+	// Context
+	private Session session;
 
 	// UI Objects
 	private TableViewer tableViewer;
@@ -67,6 +70,7 @@ public class TemplateList extends EditorPart implements PeopleNames,
 		setSite(site);
 		setInput(input);
 		setPartName("Catalogues");
+		session = CommonsJcrUtils.login(repository);
 	}
 
 	// MAIN LAYOUT
@@ -185,7 +189,7 @@ public class TemplateList extends EditorPart implements PeopleNames,
 
 	/* DEPENDENCY INJECTION */
 	public void setRepository(Repository repository) {
-		session = CommonsJcrUtils.login(repository);
+		this.repository = repository;
 	}
 
 	public void setPeopleService(PeopleService peopleService) {

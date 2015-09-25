@@ -19,7 +19,7 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.UserManagementService;
+import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.core.versioning.ItemDiff;
 import org.argeo.connect.people.core.versioning.VersionDiff;
 import org.argeo.connect.people.core.versioning.VersionUtils;
@@ -74,11 +74,11 @@ public class HistoryLog extends Composite {
 
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
-		UserManagementService userService = peopleService
-				.getUserManagementService();
+		UserAdminService userService = peopleService
+				.getUserAdminService();
 		// Add info to be able to find the node via the data explorer
-		if (userService.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
-				|| userService.amIInRole(PeopleConstants.ROLE_ADMIN)) {
+		if (userService.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)) {
+			// || userService.amIInRole(PeopleConstants.ROLE_ADMIN)) {
 			Label label = new Label(parent, SWT.WRAP);
 			CmsUtils.markup(label);
 			GridData gd = EclipseUiUtils.fillWidth();
@@ -133,7 +133,7 @@ public class HistoryLog extends Composite {
 
 				if (lst.get(i).getUserId() != null)
 					firstL.append("User : "
-							+ peopleService.getUserManagementService()
+							+ peopleService.getUserAdminService()
 									.getUserDisplayName(lst.get(i).getUserId())
 							+ ", ");
 				if (lst.get(i).getUpdateTime() != null) {

@@ -11,7 +11,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.UserManagementService;
+import org.argeo.connect.people.UserAdminService;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.UsersUtils;
 import org.argeo.osgi.useradmin.LdifName;
 import org.osgi.framework.InvalidSyntaxException;
@@ -22,7 +23,7 @@ import org.osgi.service.useradmin.User;
 import org.osgi.service.useradmin.UserAdmin;
 
 /**
- * Canonical implementation of the people {@link UserManagementService}. Wrap
+ * Canonical implementation of the people {@link UserAdminService}. Wrap
  * interaction with users and groups in a *READ-ONLY* mode. We want to be able
  * to:
  * <ul>
@@ -31,16 +32,15 @@ import org.osgi.service.useradmin.UserAdmin;
  * <li>If sufficient rights: retrieve a given user and its information</li>
  * </ul>
  */
-public class UserManagementServiceImpl implements UserManagementService {
+public class UserAdminServiceImpl implements UserAdminService {
 
 	private final static Log log = LogFactory
-			.getLog(UserManagementServiceImpl.class);
+			.getLog(UserAdminServiceImpl.class);
 
 	private final PeopleService peopleService;
 	private final UserAdmin userAdmin;
 
-	public UserManagementServiceImpl(PeopleService peopleService,
-			UserAdmin userAdmin) {
+	public UserAdminServiceImpl(PeopleService peopleService, UserAdmin userAdmin) {
 		this.peopleService = peopleService;
 		this.userAdmin = userAdmin;
 	}
@@ -78,9 +78,19 @@ public class UserManagementServiceImpl implements UserManagementService {
 
 	/** Returns true if the current user is in the specified role */
 	@Override
-	public boolean amIInRole(String role) {
+	public boolean amIInRole(String rolename) {
+		// FIXME clean this
+		String dn;
+		if (rolename.startsWith("cn="))
+			dn = rolename;
+		else
+			dn = "cn=" + rolename + ",ou=roles,ou=node";
+
+		Role role = userAdmin.getRole(dn);
+		String roledn = role.getName();
+
 		for (String currRole : getMyRoles())
-			if (role.equals(currRole))
+			if (roledn.equals(currRole))
 				return true;
 		return false;
 	}
@@ -97,8 +107,15 @@ public class UserManagementServiceImpl implements UserManagementService {
 		User user = getUser(dn);
 		if (user instanceof Group)
 			return UsersUtils.getProperty(user, LdifName.cn.name());
-		else
-			return UsersUtils.getProperty(user, LdifName.displayName.name());
+		else {
+			String dName = UsersUtils.getProperty(user,
+					LdifName.displayName.name());
+			if (CommonsJcrUtils.isEmptyString(dName))
+				dName = UsersUtils.getProperty(user, LdifName.cn.name());
+			if (CommonsJcrUtils.isEmptyString(dName))
+				dName = dn;
+			return dName;
+		}
 	}
 
 	/** Lists all roles of the given user */

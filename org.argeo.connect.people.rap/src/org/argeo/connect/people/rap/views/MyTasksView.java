@@ -21,6 +21,7 @@ import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
@@ -53,16 +54,21 @@ public class MyTasksView extends ViewPart implements Refreshable {
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private Session session;
-	private ActivityService activityService;
+	private PeopleService peopleService;
 	private PeopleWorkbenchService peopleWorkbenchService;
 
-	// private String openEntityEditorCmdId = OpenEntityEditor.ID;
+	// Local cache
+	private ActivityService activityService;
+	private UserAdminService userAdminService;
 
 	private TableViewer tableViewer;
 
 	@Override
 	public void createPartControl(Composite parent) {
-		this.session = CommonsJcrUtils.login(repository);
+		// Finalise initialisation
+		activityService = peopleService.getActivityService();
+		userAdminService = peopleService.getUserAdminService();
+		session = CommonsJcrUtils.login(repository);
 
 		GridLayout layout = EclipseUiUtils.noSpaceGridLayout();
 		layout.verticalSpacing = 5;
@@ -177,11 +183,10 @@ public class MyTasksView extends ViewPart implements Refreshable {
 				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
 					return activityService.getAssignedToDisplayName(currNode);
 				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-					return CommonsJcrUtils.get(currNode,
+					String id = CommonsJcrUtils.get(currNode,
 							PeopleNames.PEOPLE_REPORTED_BY);
-
-					// activityService
-					// .getActivityManagerDisplayName(currNode);
+					if (CommonsJcrUtils.checkNotEmptyString(id))
+						return userAdminService.getUserDisplayName(id);
 				}
 				return "";
 			} catch (RepositoryException re) {
@@ -320,7 +325,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
-		this.activityService = peopleService.getActivityService();
+		this.peopleService = peopleService;
 	}
 
 	public void setRepository(Repository repository) {

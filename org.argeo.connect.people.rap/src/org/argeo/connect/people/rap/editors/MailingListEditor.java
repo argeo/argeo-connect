@@ -21,7 +21,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.UserManagementService;
+import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
@@ -85,7 +85,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 
 	// Context
 	private Session session;
-	private UserManagementService userService;
+	private UserAdminService userService;
 
 	// This page objects
 	protected FormToolkit toolkit;
@@ -112,7 +112,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 							+ sei.getUid(), e);
 		}
 		// Retrieve userService from context
-		userService = peopleService.getUserManagementService();
+		userService = peopleService.getUserAdminService();
 
 		// Name and tooltip
 		String name = CommonsJcrUtils.get(mailingList, Property.JCR_TITLE);
@@ -168,8 +168,8 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 				.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		Link editTitleLink = null;
-		if (userService.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)
-				|| userService.amIInRole(PeopleConstants.ROLE_ADMIN)) {
+		if (userService.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)){
+				// || userService.amIInRole(PeopleConstants.ROLE_ADMIN)) {
 			editTitleLink = new Link(parent, SWT.NONE);
 			editTitleLink.setText("<a>Edit Mailing List</a>");
 		} else

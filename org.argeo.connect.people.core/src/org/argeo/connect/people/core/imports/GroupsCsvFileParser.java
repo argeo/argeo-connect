@@ -30,7 +30,7 @@ public class GroupsCsvFileParser extends AbstractPeopleCsvFileParser {
 		throw new ArgeoException("Legacy class. do not use anymore");
 
 		// // Effective creation of the new user
-		// UserManagementService userManagementService = getPeopleService()
+		// UserAdminService userManagementService = getPeopleService()
 		// .getUserManagementService();
 		// Node currGroup = userManagementService.createGroup(adminSession,
 		// groupName, title, desc);

@@ -277,10 +277,10 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 	}
 
 	private boolean canEdit() {
-		return peopleService.getUserManagementService().amIInRole(
-				PeopleConstants.ROLE_BUSINESS_ADMIN)
-				|| peopleService.getUserManagementService().amIInRole(
-						PeopleConstants.ROLE_ADMIN);
+		return peopleService.getUserAdminService().amIInRole(
+				PeopleConstants.ROLE_BUSINESS_ADMIN);
+		// || peopleService.getUserManagementService().amIInRole(
+		// PeopleConstants.ROLE_ADMIN);
 	}
 
 	private boolean canDelete(Node currNode) {

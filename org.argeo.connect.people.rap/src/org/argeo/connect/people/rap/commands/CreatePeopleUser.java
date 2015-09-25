@@ -34,7 +34,7 @@ public class CreatePeopleUser extends AbstractHandler {
 
 	// private UserAdminService userAdminService;
 	// People specific service
-	// private UserManagementService userManagementService;
+	// private UserAdminService userManagementService;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		throw new ArgeoException("Deprecated command");

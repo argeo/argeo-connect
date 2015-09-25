@@ -23,7 +23,7 @@ public class NewPeopleUserWizard {
 // private Session session;
 // private UserAdminService userAdminService;
 //
-// private UserManagementService userManagementService;
+// private UserAdminService userManagementService;
 //
 // // pages
 // private MainUserInfoWizardPage mainUserInfo;
@@ -32,7 +32,7 @@ public class NewPeopleUserWizard {
 //
 // public NewPeopleUserWizard(Session session,
 // UserAdminService userAdminService,
-// UserManagementService userManagementService) {
+// UserAdminService userManagementService) {
 // this.session = session;
 // this.userAdminService = userAdminService;
 // this.userManagementService = userManagementService;

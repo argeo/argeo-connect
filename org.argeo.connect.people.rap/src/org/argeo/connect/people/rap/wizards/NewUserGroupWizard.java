@@ -23,7 +23,7 @@ public class NewUserGroupWizard {}
 // // LogFactory.getLog(NewUserGroupWizard.class);
 //
 // private Session session;
-// private UserManagementService userManagementService;
+// private UserAdminService userManagementService;
 //
 // // pages
 // private MainInfoPage chooseCommandPage;

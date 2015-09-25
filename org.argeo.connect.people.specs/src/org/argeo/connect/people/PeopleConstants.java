@@ -54,11 +54,11 @@ public interface PeopleConstants {
 	// default query limit
 	public final static long QUERY_DEFAULT_LIMIT = 50;
 
-	// USER ROLES
-	public final static String ROLE_GUEST = "ROLE_REGISTERED_GUEST";
-	public final static String ROLE_MEMBER = "ROLE_REGISTERED_MEMBER";
-	public final static String ROLE_BUSINESS_ADMIN = "ROLE_BUSINESS_ADMIN";
-	public final static String ROLE_ADMIN = "ROLE_ADMIN";
+	// System roles exposed by people
+	public final static String ROLE_GUEST = "org.argeo.connect.people.guest";
+	public final static String ROLE_MEMBER = "org.argeo.connect.people.member";
+	public final static String ROLE_BUSINESS_ADMIN = "org.argeo.connect.people.admin";
+	// public final static String ROLE_ADMIN = "admin";
 
 	// LANGUAGE CONSTANTS
 	public final static String LANG_EN = "en";

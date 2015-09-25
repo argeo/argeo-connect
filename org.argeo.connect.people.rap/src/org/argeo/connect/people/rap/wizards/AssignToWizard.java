@@ -15,7 +15,7 @@ import org.argeo.ArgeoMonitor;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.UserManagementService;
+import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
@@ -195,8 +195,8 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			viewer.addDoubleClickListener(new MyDoubleClickListener());
 
 			box.setLayout(tableColumnLayout);
-			UserManagementService usm = peopleService
-					.getUserManagementService();
+			UserAdminService usm = peopleService
+					.getUserAdminService();
 			List<Group> groups = usm.listGroups(null);
 			List<String> values = new ArrayList<String>();
 			for (Group group : groups) {

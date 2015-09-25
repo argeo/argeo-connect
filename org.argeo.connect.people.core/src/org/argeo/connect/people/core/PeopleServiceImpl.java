@@ -33,7 +33,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.PersonService;
 import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.UserManagementService;
+import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.XPathUtils;
@@ -48,7 +48,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	/* Centralizes the various specific People services */
 	private UserAdmin userAdmin;
-	private UserManagementService userManagementService;
+	private UserAdminService userAdminService;
 	private PersonService personService = new PersonServiceImpl(this);
 	private ContactService contactService = new ContactServiceImpl(this);
 	private ActivityService activityService = new ActivityServiceImpl(this);
@@ -523,8 +523,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	@Override
-	public UserManagementService getUserManagementService() {
-		return userManagementService;
+	public UserAdminService getUserAdminService() {
+		return userAdminService;
 	}
 
 	// HELPERS
@@ -542,7 +542,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	 * receive/provide data.
 	 */
 	public void init() {
-		userManagementService = new UserManagementServiceImpl(this, userAdmin);
+		userAdminService = new UserAdminServiceImpl(this, userAdmin);
 		if (log.isDebugEnabled())
 			log.info("People's backend has been initialized");
 	}

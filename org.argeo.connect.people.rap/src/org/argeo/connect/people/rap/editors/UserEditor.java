@@ -31,7 +31,7 @@ public class UserEditor{}
 // import org.apache.commons.logging.LogFactory;
 // import org.argeo.ArgeoException;
 // import org.argeo.connect.people.PeopleService;
-// import org.argeo.connect.people.UserManagementService;
+// import org.argeo.connect.people.UserAdminService;
 // import org.argeo.connect.people.rap.PeopleRapImages;
 // import org.argeo.connect.people.rap.PeopleRapPlugin;
 // import org.argeo.connect.people.rap.composites.UserGroupTableComposite;
@@ -84,7 +84,7 @@ public class UserEditor{}
 //
 // /* DEPENDENCY INJECTION */
 // private UserAdminService userAdminService;
-// private UserManagementService userManagementService;
+// private UserAdminService userManagementService;
 // private Session session;
 //
 // // Local instance of the user model
@@ -190,7 +190,7 @@ public class UserEditor{}
 // // This UI Objects
 // private TableViewer groupsViewer;
 // private AbstractFormPart part;
-// private UserManagementService userManagementService;
+// private UserAdminService userManagementService;
 //
 // // Business objects
 // // private Node argeoProfile;
@@ -199,7 +199,7 @@ public class UserEditor{}
 // private List<Node> displayedGroups = new ArrayList<Node>();
 //
 // public UserGroupsPage(FormEditor editor,
-// UserManagementService userManagementService, Node argeoProfile) {
+// UserAdminService userManagementService, Node argeoProfile) {
 // super(editor, ID, "Groups");
 // this.userManagementService = userManagementService;
 // // this.argeoProfile = argeoProfile;

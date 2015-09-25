@@ -143,8 +143,8 @@ public interface PeopleService {
 	/** Returns the corresponding {@link ContactService} */
 	public ContactService getContactService();
 
-	/** Returns the corresponding {@link UserManagementService} */
-	public UserManagementService getUserManagementService();
+	/** Returns the corresponding {@link UserAdminService} */
+	public UserAdminService getUserAdminService();
 
 	/** Returns the corresponding {@link ResourceService} */
 	public ResourceService getResourceService();

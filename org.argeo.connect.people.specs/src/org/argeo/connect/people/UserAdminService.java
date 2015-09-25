@@ -13,7 +13,7 @@ import org.osgi.service.useradmin.User;
  * The correct instance of this interface is usually acquired through the
  * peopleService.
  * */
-public interface UserManagementService {
+public interface UserAdminService {
 
 	/* USERS */
 	/** Returns the current user */
