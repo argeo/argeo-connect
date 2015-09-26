@@ -50,6 +50,7 @@ public class NewSimpleTaskWizard extends Wizard {
 
 	// Set upon instantiation
 	private Session currSession;
+	private PeopleService peopleService;
 	private ActivityService activityService;
 	private UserAdminService userAdminService;
 
@@ -76,6 +77,7 @@ public class NewSimpleTaskWizard extends Wizard {
 	protected TableViewer itemsViewer;
 
 	public NewSimpleTaskWizard(Session session, PeopleService peopleService) {
+		this.peopleService = peopleService;
 		activityService = peopleService.getActivityService();
 		userAdminService = peopleService.getUserAdminService();
 		this.currSession = session;
@@ -180,7 +182,7 @@ public class NewSimpleTaskWizard extends Wizard {
 				public void widgetSelected(final SelectionEvent event) {
 					PickUpGroupDialog diag = new PickUpGroupDialog(
 							assignedToTxt.getShell(), "Choose a group",
-							currSession, null);
+							peopleService);
 					if (diag.open() == Window.OK) {
 
 						assignedToGroupId = diag.getSelected();

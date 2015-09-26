@@ -359,7 +359,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 				try {
 					PickUpGroupDialog diag = new PickUpGroupDialog(
 							changeAssignationLk.getShell(), "Choose a group",
-							session, null);
+							peopleService);
 					int result = diag.open();
 					if (Window.OK == result) {
 						String newGroupId = diag.getSelected();

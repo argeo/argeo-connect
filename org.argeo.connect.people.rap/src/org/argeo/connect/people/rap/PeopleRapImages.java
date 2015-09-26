@@ -30,7 +30,11 @@ public class PeopleRapImages {
 			ENTITY_PATH + "tag.png").createImage();
 
 	public final static Image ICON_GROUP = PeopleRapPlugin.getImageDescriptor(
-			ENTITY_PATH + "group.gif").createImage();
+			BASE_PATH + "group.gif").createImage();
+	public final static Image ICON_USER = PeopleRapPlugin.getImageDescriptor(
+			BASE_PATH + "person.gif").createImage();
+	public final static Image ICON_ROLE = PeopleRapPlugin.getImageDescriptor(
+			BASE_PATH + "role.gif").createImage();
 
 	// Miscellaneous
 	public final static Image LOGO = PeopleRapPlugin.getImageDescriptor(

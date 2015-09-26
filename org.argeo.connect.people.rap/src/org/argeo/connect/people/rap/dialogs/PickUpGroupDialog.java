@@ -15,11 +15,9 @@
  */
 package org.argeo.connect.people.rap.dialogs;
 
-import javax.jcr.Node;
-import javax.jcr.Session;
-
-import org.argeo.ArgeoException;
-import org.argeo.connect.people.rap.composites.UserGroupTableComposite;
+import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.rap.composites.GroupsTableViewer;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -29,27 +27,29 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+import org.osgi.service.useradmin.Group;
 
 /** Dialog with a group list to pick up one */
 public class PickUpGroupDialog extends TrayDialog {
 	private static final long serialVersionUID = -1420106871173920369L;
 
 	// Business objects
-	private final Session session;
-	private Node selectedNode;
+	private final PeopleService peopleService;
+	private Group selectedGroup;
 
 	// this page widgets and UI objects
-	private UserGroupTableComposite tableCmp;
+	private GroupsTableViewer tableCmp;
 	private String title;
 
-	public PickUpGroupDialog(Shell parentShell, String title, Session session,
-			Node referencingNode) {
+	public PickUpGroupDialog(Shell parentShell, String title,
+			PeopleService peopleService) {
 		super(parentShell);
 		this.title = title;
-		this.session = session;
+		this.peopleService = peopleService;
 	}
 
 	protected Point getInitialSize() {
@@ -60,9 +60,14 @@ public class PickUpGroupDialog extends TrayDialog {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 		dialogArea.setLayout(new FillLayout());
 
-		tableCmp = new UserGroupTableComposite(dialogArea, SWT.NO_FOCUS,
-				session);
+		Composite bodyCmp = new Composite(dialogArea, SWT.NO_FOCUS);
+		bodyCmp.setLayout(new GridLayout());
+
+		tableCmp = new GroupsTableViewer(bodyCmp, SWT.NO_FOCUS,
+				peopleService.getUserAdminService());
 		tableCmp.populate(true, false);
+		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
+		tableCmp.refresh();
 
 		// Add listeners
 		tableCmp.getTableViewer().addDoubleClickListener(
@@ -75,9 +80,10 @@ public class PickUpGroupDialog extends TrayDialog {
 	}
 
 	public String getSelected() {
-		throw new ArgeoException("Implement the group pick up strategies");
-
-		// return selectedNode;
+		if (selectedGroup == null)
+			return null;
+		else
+			return selectedGroup.getName();
 	}
 
 	protected void configureShell(Shell shell) {
@@ -92,8 +98,8 @@ public class PickUpGroupDialog extends TrayDialog {
 
 			Object obj = ((IStructuredSelection) evt.getSelection())
 					.getFirstElement();
-			if (obj instanceof Node) {
-				selectedNode = (Node) obj;
+			if (obj instanceof Group) {
+				selectedGroup = (Group) obj;
 				okPressed();
 			}
 		}
@@ -103,15 +109,14 @@ public class PickUpGroupDialog extends TrayDialog {
 		@Override
 		public void selectionChanged(SelectionChangedEvent event) {
 			if (event.getSelection().isEmpty()) {
-				selectedNode = null;
+				selectedGroup = null;
 				return;
 			}
 			Object obj = ((IStructuredSelection) event.getSelection())
 					.getFirstElement();
-			if (obj instanceof Node) {
-				selectedNode = (Node) obj;
+			if (obj instanceof Group) {
+				selectedGroup = (Group) obj;
 			}
 		}
 	}
-
 }
