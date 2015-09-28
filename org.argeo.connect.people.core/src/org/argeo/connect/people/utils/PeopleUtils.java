@@ -16,7 +16,7 @@ public class PeopleUtils {
 		return age;
 	}
 
-	/* LENGHT AND DURATION MANAGEMENT */
+	/* LENGTH AND DURATION MANAGEMENT */
 	/** returns corresponding hours for a HH:MM:SS representation */
 	public static long getHoursFromLength(long lengthInSeconds) {
 		return (lengthInSeconds / (60 * 60)) % 60;

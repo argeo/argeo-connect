@@ -19,7 +19,7 @@ public class XPathUtils {
 				parentPath = "";
 			// Hardcoded dependency to Jackrabbit. Remove
 			String result = "/jcr:root" + ISO9075.encodePath(parentPath);
-			if (log.isDebugEnabled()) {
+			if (log.isTraceEnabled()) {
 				String result2 = "/jcr:root" + parentPath;
 				if (!result2.equals(result))
 					log.warn("Encoded Path " + result2 + " --> " + result);

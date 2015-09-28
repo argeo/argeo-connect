@@ -25,6 +25,7 @@ import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.jcr.JcrUtils;
+import org.osgi.service.useradmin.Role;
 
 /** Concrete access to People's {@link ActivityService} */
 public class ActivityServiceImpl implements ActivityService, PeopleNames {
@@ -156,29 +157,6 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 		}
 	}
 
-	/** Get the display name for the manager of an activity. */
-	// public String getActivityManagerDisplayName(Node activityNode) {
-	// // TODO return display name rather than ID
-	// String manager = CommonsJcrUtils.get(activityNode,
-	// PeopleNames.PEOPLE_REPORTED_BY);
-	//
-	// if (CommonsJcrUtils.isEmptyString(manager)) {
-	// // TODO workaround to try to return a manager name in case we are in
-	// // a legacy context
-	// try {
-	// if (activityNode.hasProperty(PeopleNames.PEOPLE_MANAGER)) {
-	// Node referencedManager = activityNode.getProperty(
-	// PeopleNames.PEOPLE_MANAGER).getNode();
-	// manager = referencedManager.getParent().getName();
-	// }
-	// } catch (RepositoryException e) {
-	// throw new PeopleException("Unable to legacy get "
-	// + "manager name for activity " + activityNode, e);
-	// }
-	// }
-	// return manager;
-	// }
-
 	/* TASKS */
 	@Override
 	public List<Node> getMyTasks(Session session, boolean onlyOpenTasks) {
@@ -206,7 +184,6 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	public List<Node> getTasksForGroup(Session session, String groupId,
 			boolean onlyOpenTasks) {
 		try {
-
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
 
@@ -223,13 +200,6 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 
 			Query query = queryManager.createQuery(builder.toString(),
 					PeopleConstants.QUERY_XPATH);
-
-			// String querySqlStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_TASK
-			// + "] WHERE [" + PeopleNames.PEOPLE_ASSIGNED_TO + "]='"
-			// + groupId + "' ORDER BY [" + Property.JCR_LAST_MODIFIED
-			// + "] DESC ";
-			// Query query = queryManager.createQuery(querySqlStr,
-			// Query.JCR_SQL2);
 
 			NodeIterator nit = query.execute().getNodes();
 			if (onlyOpenTasks) {
@@ -293,58 +263,6 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 		}
 	}
 
-	// @Override
-	// public boolean updateStatus(String templateId, Node taskNode,
-	// String newStatus) {
-	// try {
-	// Session session = taskNode.getSession();
-	//
-	// String oldStatus = CommonsJcrUtils.get(taskNode,
-	// PeopleNames.PEOPLE_TASK_STATUS);
-	//
-	// if (CommonsJcrUtils.checkNotEmptyString(oldStatus)
-	// && oldStatus.equals(newStatus))
-	// return false;
-	//
-	// taskNode.setProperty(PeopleNames.PEOPLE_TASK_STATUS, newStatus);
-	//
-	// ResourceService resourceService = peopleService
-	// .getResourceService();
-	// List<String> closingStatus = resourceService.getTemplateCatalogue(
-	// session, templateId,
-	// PeopleNames.PEOPLE_TASK_CLOSING_STATUSES, null);
-	// if (closingStatus.contains(newStatus)) {
-	//
-	// if (closingStatus.contains(oldStatus)) {
-	// // Already closed, nothing to do
-	// } else {
-	// // Close
-	// taskNode.setProperty(PeopleNames.PEOPLE_CLOSE_DATE,
-	// new GregorianCalendar());
-	// taskNode.setProperty(PeopleNames.PEOPLE_CLOSED_BY,
-	// session.getUserID());
-	// }
-	// } else {
-	// if (!closingStatus.contains(oldStatus)) {
-	// // Already open, nothing to do
-	// } else {
-	// // Re-Open
-	// if (taskNode.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE))
-	// taskNode.getProperty(PeopleNames.PEOPLE_CLOSE_DATE)
-	// .remove();
-	// if (taskNode.hasProperty(PeopleNames.PEOPLE_CLOSED_BY))
-	// taskNode.getProperty(PeopleNames.PEOPLE_CLOSED_BY)
-	// .remove();
-	// }
-	// }
-	// return true;
-	// } catch (RepositoryException re) {
-	// throw new PeopleException("Unable to set new status " + newStatus
-	// + " status for task " + taskNode + " of template ID "
-	// + templateId, re);
-	// }
-	// }
-
 	public boolean updateStatus(String templateId, Node taskNode,
 			String newStatus, List<String> modifiedPaths) {
 		try {
@@ -403,9 +321,8 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			if (taskNode.hasProperty(PeopleNames.PEOPLE_ASSIGNED_TO)) {
 				String groupId = taskNode.getProperty(
 						PeopleNames.PEOPLE_ASSIGNED_TO).getString();
-
-				return peopleService.getUserAdminService()
-						.getUserDisplayName(groupId);
+				return peopleService.getUserAdminService().getUserDisplayName(
+						groupId);
 			}
 			return "";
 		} catch (RepositoryException e) {
@@ -438,7 +355,6 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			String taskNodeType, String reporterId, String title,
 			String description, String assignedTo, List<Node> relatedTo,
 			Calendar creationDate, Calendar dueDate, Calendar wakeUpDate) {
-
 		try {
 			if (session == null && parentNode == null)
 				throw new PeopleException(
@@ -464,9 +380,11 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 
 			taskNode.setProperty(PeopleNames.PEOPLE_REPORTED_BY, reporterId);
 
-			if (CommonsJcrUtils.checkNotEmptyString(assignedTo))
-				taskNode.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO, assignedTo);
-
+			if (CommonsJcrUtils.checkNotEmptyString(assignedTo)) {
+				String atdn = peopleService.getUserAdminService()
+						.getDistinguishedName(assignedTo, Role.GROUP);
+				taskNode.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO, atdn);
+			}
 			if (relatedTo != null && !relatedTo.isEmpty())
 				CommonsJcrUtils.setMultipleReferences(taskNode,
 						PeopleNames.PEOPLE_RELATED_TO, relatedTo);
@@ -530,5 +448,4 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 		}
 		return poll;
 	}
-
 }

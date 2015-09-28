@@ -46,5 +46,11 @@ public interface UserAdminService {
 	public String[] getUserRoles(String dn);
 
 	public List<Group> listGroups(String filter);
+
 	/* MISCELLANEOUS */
+	/** Simply returns the dn of a role given its local ID */
+	public String getDistinguishedName(String localId, int type);
+
+	/** Exposes the main default domain name for this instance */
+	public String getDefaultDomainName();
 }

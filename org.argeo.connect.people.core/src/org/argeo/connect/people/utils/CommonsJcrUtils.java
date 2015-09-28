@@ -1120,9 +1120,17 @@ public class CommonsJcrUtils {
 	/* MISCELLANEOUS */
 
 	/* WIDELY USED PATTERNS */
-	/**
-	 * Browses a {@code RowIterator} to build the corresponding row array.
-	 */
+	/** Browses a {@code NodeIterator} to build the corresponding Node array. */
+	public static Node[] nodeIteratorToArray(NodeIterator nit) {
+		Node[] nodes = new Node[(int) nit.getSize()];
+		int i = 0;
+		while (nit.hasNext()) {
+			nodes[i++] = nit.nextNode();
+		}
+		return nodes;
+	}
+
+	/** Browses a {@code RowIterator} to build the corresponding row array. */
 	public static Row[] rowIteratorToArray(RowIterator rit) {
 		List<Row> rows = new ArrayList<Row>();
 		while (rit.hasNext()) {

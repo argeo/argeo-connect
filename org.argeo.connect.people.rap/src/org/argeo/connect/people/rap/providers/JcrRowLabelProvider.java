@@ -1,10 +1,7 @@
 package org.argeo.connect.people.rap.providers;
 
 import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.query.Row;
 
-import org.argeo.ArgeoException;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 
@@ -31,17 +28,8 @@ public class JcrRowLabelProvider extends SimpleJcrNodeLabelProvider {
 
 	@Override
 	public String getText(Object element) {
-		try {
-			Row currRow = (Row) element;
-			Node currNode = null;
-			if (selectorName != null)
-				currNode = currRow.getNode(selectorName);
-			else
-				currNode = currRow.getNode();
-			return super.getText(currNode);
-		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to get Node " + selectorName
-					+ " from row " + element, re);
-		}
+		Node currNode = CommonsJcrUtils.getNodeFromElement(element,
+				selectorName);
+		return super.getText(currNode);
 	}
 }

@@ -134,20 +134,26 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	/** Call when a place holder for this info exists */
 	protected void setNbOfFoundResultsLbl(Label resultNbLbl) {
-		if (resultNbLbl != null && !resultNbLbl.isDisposed()) {
-			if (elements == null)
-				resultNbLbl.setText(" (No result yet) ");
-			else if (elements.length == 0)
-				resultNbLbl.setText(" (No result found) ");
-			else if (elements.length == 1)
-				resultNbLbl.setText(" One result found ");
-			else
-				resultNbLbl.setText(elements.length + " results found ");
-			resultNbLbl.getParent().layout(true, true);
-		}
+		if (elements == null)
+			resultNbLbl.setText(" (No result yet) ");
+		else if (elements.length == 0)
+			resultNbLbl.setText(" (No result found) ");
+		else if (elements.length == 1)
+			resultNbLbl.setText(" One result found ");
+		else
+			resultNbLbl.setText(elements.length + " results found ");
+		resultNbLbl.getParent().layout(true, true);
 	}
 
 	protected void setNbOfFoundResultsLbl(long nbOfResults) {
+		Label label = getResultLengthLbl();
+		if (label != null && !label.isDisposed())
+			setNbOfFoundResultsLbl(label);
+	}
+
+	/** Override this to provide a label that displays the NB of found results */
+	protected Label getResultLengthLbl() {
+		return null;
 	}
 
 	/**

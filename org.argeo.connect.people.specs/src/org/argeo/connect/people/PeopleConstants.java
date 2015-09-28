@@ -47,6 +47,7 @@ public interface PeopleConstants {
 	public final static String PEOPLE_RESOURCE_TAG_LIKE = "tags";
 
 	// Configuration System Properties
+	public final static String PEOPLE_DEFAULT_DOMAIN_NAME = "connect.people.defaultDomainName";
 	public final static String PEOPLE_PROP_PREVENT_TAG_ADDITION = "connect.people.user.preventTagAddition";
 	// public final static String PEOPLE_PROP_PREVENT_ML_ADDITION =
 	// "connect.people.user.preventMLAddition";
