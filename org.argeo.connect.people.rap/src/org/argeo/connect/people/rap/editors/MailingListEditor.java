@@ -168,8 +168,8 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 				.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		Link editTitleLink = null;
-		if (userService.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)){
-				// || userService.amIInRole(PeopleConstants.ROLE_ADMIN)) {
+		if (userService.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)) {
+			// || userService.amIInRole(PeopleConstants.ROLE_ADMIN)) {
 			editTitleLink = new Link(parent, SWT.NONE);
 			editTitleLink.setText("<a>Edit Mailing List</a>");
 		} else
@@ -239,14 +239,14 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		membersViewer = createTableViewer(tableComp);
 		membersViewer.setContentProvider(new MyLazyContentProvider(
 				membersViewer));
-
-		addFilterListener(filterTxt, membersViewer);
-		refreshFilteredList();
-
 		// Double click
 		PeopleJcrViewerDClickListener ndcl = new PeopleJcrViewerDClickListener(
 				null, peopleWorkbenchService);
 		membersViewer.addDoubleClickListener(ndcl);
+
+		addFilterListener(filterTxt, membersViewer);
+		refreshFilteredList();
+
 	}
 
 	/** Refresh the table viewer based on the free text search field */
@@ -346,9 +346,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent,
 				SWT.MULTI, colDefs);
 		TableViewer tableViewer = tableCmp.getTableViewer();
-		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-				PeopleTypes.PEOPLE_ENTITY, peopleWorkbenchService));
+		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 		return tableViewer;
 	}
 
@@ -519,5 +517,4 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 			PeopleWorkbenchService peopleWorkbenchService) {
 		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
-
 }

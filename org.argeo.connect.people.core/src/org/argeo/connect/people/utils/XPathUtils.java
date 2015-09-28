@@ -85,8 +85,7 @@ public class XPathUtils {
 		return "";
 	}
 
-	public static String getPropertyEquals(String propertyName, String value)
-			throws RepositoryException {
+	public static String getPropertyEquals(String propertyName, String value) {
 		if (CommonsJcrUtils.checkNotEmptyString(value))
 			return "@" + propertyName + "='" + value + "'";
 		return "";

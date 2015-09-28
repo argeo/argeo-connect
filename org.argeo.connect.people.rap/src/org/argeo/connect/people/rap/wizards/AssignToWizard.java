@@ -9,7 +9,6 @@ import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.query.Row;
 
 import org.argeo.ArgeoMonitor;
 import org.argeo.connect.people.PeopleException;
@@ -60,34 +59,26 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 	// Context
 	private final PeopleService peopleService;
 	private final PeopleWorkbenchService peopleUiService;
-	private final Row[] rows;
+	private final Object[] elements;
 	private final String selectorName;
-	// Cache to ease implementation
-	private final Session session;
 
-	// The status to impact
-	private String chosenGroup;
-
-	// Enable refresh of the calling editor at the end of the job
-	// private final Display callingDisplay;
-	// does not work should use a server push session
+	// The new group to use
+	private String chosenGroupId;
 
 	/**
-	 * @param callingDisplay
 	 * @param session
 	 * @param peopleService
 	 * @param peopleWorkbenchService
-	 * @param rows
+	 * @param elements
 	 * @param selectorName
 	 * @param taskId
 	 */
-	public AssignToWizard(Session session, PeopleService peopleService,
-			PeopleWorkbenchService peopleWorkbenchService, Row[] rows,
+	public AssignToWizard(PeopleService peopleService,
+			PeopleWorkbenchService peopleWorkbenchService, Object[] elements,
 			String selectorName) {
-		this.session = session;
 		this.peopleService = peopleService;
 		this.peopleUiService = peopleWorkbenchService;
-		this.rows = rows;
+		this.elements = elements;
 		this.selectorName = selectorName;
 	}
 
@@ -116,15 +107,15 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 		// try {
 		// Sanity checks
 		String errMsg = null;
-		if (CommonsJcrUtils.isEmptyString(chosenGroup))
+		if (CommonsJcrUtils.isEmptyString(chosenGroupId))
 			errMsg = "Please pick up a new group";
 
 		if (errMsg != null) {
 			MessageDialog.openError(getShell(), "Unvalid information", errMsg);
 			return false;
 		}
-		new UpdateAssignmentJob(peopleService, rows, selectorName, chosenGroup)
-				.schedule();
+		new UpdateAssignmentJob(peopleService, elements, selectorName,
+				chosenGroupId).schedule();
 		return true;
 	}
 
@@ -135,7 +126,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 
 	@Override
 	public boolean canFinish() {
-		return CommonsJcrUtils.checkNotEmptyString(chosenGroup)
+		return CommonsJcrUtils.checkNotEmptyString(chosenGroupId)
 				&& getContainer().getCurrentPage().getNextPage() == null;
 	}
 
@@ -195,14 +186,14 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			viewer.addDoubleClickListener(new MyDoubleClickListener());
 
 			box.setLayout(tableColumnLayout);
-			UserAdminService usm = peopleService
-					.getUserAdminService();
+			UserAdminService usm = peopleService.getUserAdminService();
 			List<Group> groups = usm.listGroups(null);
 			List<String> values = new ArrayList<String>();
 			for (Group group : groups) {
-				usm.getUserDisplayName(group.getName());
+				values.add(usm.getUserDisplayName(group.getName()));
 			}
 			viewer.setInput(values.toArray(new String[0]));
+			viewer.refresh();
 			setControl(body);
 			body.setFocus();
 		}
@@ -211,12 +202,12 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				if (event.getSelection().isEmpty())
-					chosenGroup = null;
+					chosenGroupId = null;
 				else {
 					Object obj = ((IStructuredSelection) event.getSelection())
 							.getFirstElement();
 					if (obj instanceof String) {
-						chosenGroup = (String) obj;
+						chosenGroupId = (String) obj;
 					}
 				}
 				getContainer().updateButtons();
@@ -226,12 +217,12 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 		class MyDoubleClickListener implements IDoubleClickListener {
 			public void doubleClick(DoubleClickEvent evt) {
 				if (evt.getSelection().isEmpty()) {
-					chosenGroup = null;
+					chosenGroupId = null;
 				} else {
 					Object obj = ((IStructuredSelection) evt.getSelection())
 							.getFirstElement();
 					if (obj instanceof String) {
-						chosenGroup = (String) obj;
+						chosenGroupId = (String) obj;
 						getContainer().showPage(getNextPage());
 					}
 				}
@@ -239,7 +230,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 		}
 
 		public boolean canFlipToNextPage() {
-			return CommonsJcrUtils.checkNotEmptyString(chosenGroup);
+			return CommonsJcrUtils.checkNotEmptyString(chosenGroupId);
 		}
 	}
 
@@ -254,9 +245,9 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			super.setVisible(visible);
 			if (visible == true) {
 				setErrorMessage(null);
-				setTitle("Assign to " + chosenGroup + ": check and confirm.");
+				setTitle("Assign to " + chosenGroupId + ": check and confirm.");
 				setMessage("Your are about to assign the below listed "
-						+ rows.length + " tasks to " + chosenGroup
+						+ elements.length + " tasks to " + chosenGroupId
 						+ ". Are you sure you want to proceed?");
 			}
 		}
@@ -278,7 +269,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			TableViewer membersViewer = tableCmp.getTableViewer();
 			membersViewer.setContentProvider(new MyLazyContentProvider(
 					membersViewer));
-			setViewerInput(membersViewer, rows);
+			setViewerInput(membersViewer, elements);
 			// workaround the issue with fill layout and virtual viewer
 			GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
 			gd.heightHint = 400;
@@ -288,17 +279,17 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 	}
 
 	/** Use this method to update the result table */
-	protected void setViewerInput(TableViewer membersViewer, Row[] rows) {
-		membersViewer.setInput(rows);
+	protected void setViewerInput(TableViewer membersViewer, Object[] elements) {
+		membersViewer.setInput(elements);
 		// we must explicitly set the items count
-		membersViewer.setItemCount(rows.length);
+		membersViewer.setItemCount(elements.length);
 		membersViewer.refresh();
 	}
 
 	private class MyLazyContentProvider implements ILazyContentProvider {
 		private static final long serialVersionUID = 1L;
 		private TableViewer viewer;
-		private Row[] elements;
+		private Object[] elements;
 
 		public MyLazyContentProvider(TableViewer viewer) {
 			this.viewer = viewer;
@@ -309,7 +300,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			viewer.setSelection(null);
-			this.elements = (Row[]) newInput;
+			this.elements = (Object[]) newInput;
 		}
 
 		public void updateElement(int index) {
@@ -328,16 +319,18 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 		// private final String taskTypeId;
 
 		public UpdateAssignmentJob(PeopleService peopleService,
-				Row[] toUpdateRows, String selectorName, String chosenGroup) {
+				Object[] toUpdateItems, String selectorName, String chosenGroup) {
 			super("Updating");
 
 			// this.taskTypeId = taskTypeId;
 			this.chosenGroup = chosenGroup;
 			try {
-				Node tmpNode = toUpdateRows[0].getNode(selectorName);
+				Node tmpNode = CommonsJcrUtils.getNodeFromElement(
+						toUpdateItems[0], selectorName);
 				repository = tmpNode.getSession().getRepository();
-				for (Row row : toUpdateRows) {
-					Node currNode = row.getNode(selectorName);
+				for (Object element : toUpdateItems) {
+					Node currNode = CommonsJcrUtils.getNodeFromElement(element,
+							selectorName);
 					pathes.add(currNode.getPath());
 				}
 			} catch (RepositoryException e) {

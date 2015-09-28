@@ -24,16 +24,11 @@ public class PeopleJcrViewerDClickListener implements IDoubleClickListener {
 
 	public PeopleJcrViewerDClickListener(String selectorName,
 			PeopleWorkbenchService peopleWorkbenchService) {
-
 		if (CommonsJcrUtils.checkNotEmptyString(selectorName))
 			this.selectorName = selectorName;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
-	/**
-	 * Double click listener for NODES only, to manage JCR row use
-	 * PeopleJcrViewerDClickListener(String selectorName)
-	 **/
 	public PeopleJcrViewerDClickListener(
 			PeopleWorkbenchService peopleWorkbenchService) {
 		selectorName = null;
@@ -47,24 +42,19 @@ public class PeopleJcrViewerDClickListener implements IDoubleClickListener {
 				.getFirstElement();
 		Node currNode = null;
 		try {
-			if (obj instanceof Row) {
-				Row curRow = (Row) obj;
-				if (selectorName == null)
-					currNode = curRow.getNode();
-				else
-					currNode = curRow.getNode(selectorName);
-			} else if (obj instanceof Node)
-				currNode = (Node) obj;
-
-			if (currNode != null) {
+			if (obj instanceof Row || obj instanceof Node)
+				currNode = CommonsJcrUtils
+						.getNodeFromElement(obj, selectorName);
+			if (currNode != null)
 				CommandUtils
 						.callCommand(peopleWorkbenchService
 								.getOpenEntityEditorCmdId(),
 								OpenEntityEditor.PARAM_JCR_ID, currNode
 										.getIdentifier());
-			}
+
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to open editor for node", re);
+			throw new PeopleException("Unable to open editor for node "
+					+ currNode, re);
 		}
 	}
 }

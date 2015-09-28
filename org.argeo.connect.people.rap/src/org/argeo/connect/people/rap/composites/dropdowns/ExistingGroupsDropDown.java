@@ -1,12 +1,13 @@
 package org.argeo.connect.people.rap.composites.dropdowns;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-
-import javax.jcr.Session;
+import java.util.Map;
 
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.service.useradmin.Group;
 
@@ -14,25 +15,48 @@ import org.osgi.service.useradmin.Group;
 public class ExistingGroupsDropDown extends PeopleAbstractDropDown {
 
 	private final UserAdminService userService;
-	private final Session session;
 	private final boolean includeUsers;
 
+	// We use a map: the displayed value is not the key we want to retrieve
+	// use a linked map to keep ordered returned by the query
+	private Map<String, Group> groupMap = new LinkedHashMap<String, Group>();
+
 	public ExistingGroupsDropDown(Text text, PeopleService peopleService,
-			Session session, boolean includeUsers) {
+			boolean showSystemRoles) {
 		super(text);
-		this.session = session;
 		this.userService = peopleService.getUserAdminService();
-		this.includeUsers = includeUsers;
+		this.includeUsers = showSystemRoles;
 		init();
+	}
+
+	@Override
+	public String getText() {
+		String groupId = null;
+		String dname = super.getText();
+		if (CommonsJcrUtils.checkNotEmptyString(dname))
+			groupId = groupMap.get(dname).getName();
+		return groupId;
 	}
 
 	@Override
 	protected List<String> getFilteredValues(String filter) {
 		List<Group> groups = userService.listGroups(filter);
-		List<String> values = new ArrayList<String>();
-		for (Group group : groups) {
-			values.add(group.getName());
+		groupMap.clear();
+		List<String> res = new ArrayList<String>();
+
+		loop: for (Group group : groups) {
+			String dn = group.getName();
+			String groupDName = userService.getUserDisplayName(dn);
+
+			if (CommonsJcrUtils.checkNotEmptyString(filter))
+				if (!dn.toLowerCase().contains(filter.toLowerCase()))
+					continue loop;
+			if (includeUsers
+					|| !dn.endsWith(UserAdminService.SYSTEM_ROLE_SUFFIX)) {
+				groupMap.put(groupDName, group);
+				res.add(groupDName);
+			}
 		}
-		return values;
+		return res;
 	}
 }

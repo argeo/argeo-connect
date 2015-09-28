@@ -85,10 +85,10 @@ public class UserAdminServiceImpl implements UserAdminService {
 	public boolean amIInRole(String rolename) {
 		// FIXME clean this
 		String dn;
-		if (rolename.startsWith("cn="))
+		if (rolename.startsWith(LdifName.cn.name() + "="))
 			dn = rolename;
 		else
-			dn = "cn=" + rolename + ",ou=roles,ou=node";
+			dn = LdifName.cn.name() + "=" + rolename + "," + SYSTEM_ROLE_SUFFIX;
 
 		Role role = userAdmin.getRole(dn);
 		String roledn = role.getName();
@@ -192,11 +192,14 @@ public class UserAdminServiceImpl implements UserAdminService {
 
 	public String getDistinguishedName(String localId, int type) {
 		if (Role.GROUP == type)
-			return "cn=" + localId + ",ou=groups," + getDefaultDomainName();
+			return LdifName.cn.name() + "=" + localId + "," + GROUPS_SUFFIX
+					+ "," + getDefaultDomainName();
 		else if (Role.USER == type)
-			return "uid=" + localId + ",ou=users," + getDefaultDomainName();
+			return LdifName.uid.name() + "=" + localId + "," + USERS_SUFFIX
+					+ "," + getDefaultDomainName();
 		else if (Role.ROLE == type)
-			return "cn=" + localId + ",ou=roles,ou=node";
+			return LdifName.cn.name() + "=" + localId + ","
+					+ SYSTEM_ROLE_SUFFIX;
 		else
 			throw new ArgeoException("Unknown role type. "
 					+ "Cannot deduce dn for " + localId);

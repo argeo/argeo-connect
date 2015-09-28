@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -11,8 +12,6 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
-import javax.jcr.query.Row;
-import javax.jcr.query.RowIterator;
 
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
@@ -207,36 +206,30 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		try {
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
-
-			String xpathQueryStr = XPathUtils.descendantFrom(peopleService
+			String queryStr = XPathUtils.descendantFrom(peopleService
 					.getBasePath(PeopleConstants.PEOPLE_RESOURCE))
 					+ "//element(*, " + tagInstanceType + ")";
 			String attrQuery = XPathUtils.getFreeTextConstraint(filterTxt
 					.getText());
 			if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
-				xpathQueryStr += "[" + attrQuery + "]";
-
+				queryStr += "[" + attrQuery + "]";
 			// always order ?
-			xpathQueryStr += " order by @" + PeopleNames.JCR_TITLE
-					+ " ascending";
-
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
+			queryStr += " order by @" + PeopleNames.JCR_TITLE;
+			Query query = queryManager.createQuery(queryStr,
 					PeopleConstants.QUERY_XPATH);
-
-			RowIterator xPathRit = xpathQuery.execute().getRows();
-			Row[] rows = CommonsJcrUtils.rowIteratorToArray(xPathRit);
-			setViewerInput(rows);
-
+			NodeIterator nit = query.execute().getNodes();
+			Node[] nodes = CommonsJcrUtils.nodeIteratorToArray(nit);
+			setViewerInput(nodes);
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list " + tagInstanceType, e);
 		}
 	}
 
 	/** Use this method to update the result table */
-	protected void setViewerInput(Row[] rows) {
-		tableViewer.setInput(rows);
+	protected void setViewerInput(Object[] elements) {
+		tableViewer.setInput(elements);
 		// we must explicitly set the items count
-		tableViewer.setItemCount(rows.length);
+		tableViewer.setItemCount(elements.length);
 		tableViewer.refresh();
 	}
 
@@ -245,7 +238,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 		@Override
 		public String getText(Object element) {
-			Node currNode = CommonsJcrUtils.getNode((Row) element, null);
+			Node currNode = CommonsJcrUtils.getNodeFromElement(element, null);
 			long count = resourceService.countMembers(currNode);
 			return "" + count;
 		}
@@ -256,7 +249,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 		@Override
 		public String getText(Object element) {
-			Node currNode = CommonsJcrUtils.getNode((Row) element, null);
+			Node currNode = CommonsJcrUtils.getNodeFromElement(element, null);
 			try {
 				String jcrId = currNode.getIdentifier();
 				StringBuilder builder = new StringBuilder();

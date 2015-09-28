@@ -15,6 +15,10 @@ import org.osgi.service.useradmin.User;
  * */
 public interface UserAdminService {
 
+	public final static String SYSTEM_ROLE_SUFFIX = "ou=roles,ou=node";
+	public final static String USERS_SUFFIX = "ou=users";
+	public final static String GROUPS_SUFFIX = "ou=groups";
+
 	/* USERS */
 	/** Returns the current user */
 	public User getMyUser();
