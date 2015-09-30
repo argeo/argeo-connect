@@ -5,12 +5,5 @@ org.eclipse.rap.ui.workbench
 Import-Package: org.argeo.connect.people,\
 org.argeo.eclipse.spring,\
 org.argeo.eclipse.ui.dialogs,\
-org.springframework.dao,\
-org.springframework.core,\
 org.osgi.service.useradmin,\
 *
-
-
-#org.springframework.security.core,\
-#org.springframework.security.provisioning,\
-

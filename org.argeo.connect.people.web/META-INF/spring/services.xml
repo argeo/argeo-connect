@@ -18,7 +18,6 @@
 		"init" phase -->
 	<bean
 		class="org.argeo.security.core.AuthenticatedApplicationContextInitialization">
-		<property name="authenticationManager" ref="authenticationManager" />
 		<property name="beanNames" ref="adminServices" />
 	</bean>
 
