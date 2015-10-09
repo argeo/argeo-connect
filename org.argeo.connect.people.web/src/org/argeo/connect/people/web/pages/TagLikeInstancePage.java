@@ -18,6 +18,7 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.cms.CmsUiProvider;
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
@@ -31,9 +32,9 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -46,9 +47,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
-/**
- * Shows all entities that have a given tag like property
- */
+/** Show all entities that have a given tag-like property */
 public class TagLikeInstancePage implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
@@ -67,10 +66,8 @@ public class TagLikeInstancePage implements CmsUiProvider {
 
 	public void populateBodyPanel(Composite parent, final Node context) {
 		parent.setLayout(new GridLayout());
-
-		// TODO use a label provider
 		Label title = new Label(parent, SWT.WRAP);
-		title.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		CmsUtils.markup(title);
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b><big> ");
 		builder.append(CommonsJcrUtils.get(context, Property.JCR_TITLE));
@@ -110,31 +107,21 @@ public class TagLikeInstancePage implements CmsUiProvider {
 		Table table = v.getTable();
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
-		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(23));
+		CmsUtils.markup(table);
+		CmsUtils.setItemHeight(table, 23);
 		v.setContentProvider(new BasicContentProvider());
-
-		v.addDoubleClickListener(new IDoubleClickListener() {
-
-			@Override
-			public void doubleClick(DoubleClickEvent event) {
-				// CmsSession cmsSession = (CmsSession)
-				// v.getTable().getDisplay()
-				// .getData(CmsSession.KEY);
-				// Node node = (Node) ((IStructuredSelection)
-				// event.getSelection())
-				// .getFirstElement();
-				// try {
-				// cmsSession.navigateTo(node.getPath());
-				// } catch (RepositoryException e) {
-				// throw new ArgeoException("unable to get path for node "
-				// + node + " in the Browsing by Tag Page", e);
-				// }
-			}
-		});
 		ILabelProvider labelProvider = new SearchEntitiesLP(peopleService,
 				table.getDisplay(), iconPathes);
 		v.setLabelProvider(labelProvider);
+		v.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				Object firstObj = ((IStructuredSelection) event.getSelection())
+						.getFirstElement();
+				String path = CommonsJcrUtils.getPath((Node) firstObj);
+				CmsUtils.getCmsView().navigateTo(path);
+			}
+		});
 		return v;
 	}
 

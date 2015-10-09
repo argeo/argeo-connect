@@ -16,11 +16,14 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.cms.CmsUiProvider;
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.web.PeopleMsg;
 import org.argeo.connect.people.web.providers.SearchEntitiesLP;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -28,13 +31,12 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -42,7 +44,10 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
-/** Simple page to manage RSS channels and feeds */
+/**
+ * Generic page to display a filtered list of entities. TODO check if not
+ * dupplicated with PeopleQueryPage
+ */
 public class PeopleSearchPage implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
@@ -52,7 +57,7 @@ public class PeopleSearchPage implements CmsUiProvider {
 	@Override
 	public Control createUi(Composite parent, Node context) {
 		Composite body = new Composite(parent, SWT.NO_FOCUS);
-		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		body.setLayoutData(EclipseUiUtils.fillAll());
 		populateBodyPanel(body, context);
 		parent.layout();
 		return body;
@@ -62,13 +67,10 @@ public class PeopleSearchPage implements CmsUiProvider {
 		parent.setLayout(new GridLayout());
 		final Text entityFilterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH
 				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
-		entityFilterTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
-				false));
+		entityFilterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 		entityFilterTxt.setMessage(PeopleMsg.searchEntities.lead());
-
 		Composite tableComposite = new Composite(parent, SWT.NONE);
-		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				true));
+		tableComposite.setLayoutData(EclipseUiUtils.fillAll());
 		final TableViewer entityViewer = createListPart(tableComposite);
 
 		entityFilterTxt.addModifyListener(new ModifyListener() {
@@ -94,31 +96,21 @@ public class PeopleSearchPage implements CmsUiProvider {
 		Table table = v.getTable();
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
-		table.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		table.setData(RWT.CUSTOM_ITEM_HEIGHT, Integer.valueOf(23));
+		CmsUtils.markup(table);
+		CmsUtils.setItemHeight(table, 23);
 		v.setContentProvider(new BasicContentProvider());
-
-		v.addDoubleClickListener(new IDoubleClickListener() {
-
-			@Override
-			public void doubleClick(DoubleClickEvent event) {
-//				CmsSession cmsSession = (CmsSession) v.getTable().getDisplay()
-//						.getData(CmsSession.KEY);
-//				Node node = (Node) ((IStructuredSelection) event.getSelection())
-//						.getFirstElement();
-//				try {
-//					cmsSession.navigateTo("display"+node.getPath());
-//				} catch (RepositoryException e) {
-//					throw new ArgeoException("unable to get path for node "
-//							+ node + " in the PeopleSearchPage", e);
-//				}
-			}
-		});
-
 		ILabelProvider labelProvider = new SearchEntitiesLP(peopleService,
 				table.getDisplay(), iconPathes);
 		v.setLabelProvider(labelProvider);
-
+		v.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				Object firstObj = ((IStructuredSelection) event.getSelection())
+						.getFirstElement();
+				String path = CommonsJcrUtils.getPath((Node) firstObj);
+				CmsUtils.getCmsView().navigateTo("display" + path);
+			}
+		});
 		return v;
 	}
 
@@ -140,13 +132,8 @@ public class PeopleSearchPage implements CmsUiProvider {
 			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
 					PeopleTypes.PEOPLE_ENTITY);
 
-			// StaticOperand so =
-			// factory.literal(session.getValueFactory()
-			// .createValue("*"));
 			Constraint defaultC = factory.descendantNode(
 					source.getSelectorName(), path);
-
-			// Parse the String
 			String[] strs = filter.trim().split(" ");
 			for (String token : strs) {
 				StaticOperand so = factory.literal(session.getValueFactory()
@@ -163,7 +150,6 @@ public class PeopleSearchPage implements CmsUiProvider {
 					source.getSelectorName(), Property.JCR_TITLE));
 			QueryObjectModel query = factory.createQuery(source, defaultC,
 					new Ordering[] { order }, null);
-			// query.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
 			entityViewer.setInput(JcrUtils.nodeIteratorToList(query.execute()
 					.getNodes()));
 		} catch (RepositoryException e) {
