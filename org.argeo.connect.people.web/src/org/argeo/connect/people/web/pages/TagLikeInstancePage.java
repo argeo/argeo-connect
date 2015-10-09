@@ -17,8 +17,6 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
-import org.argeo.ArgeoException;
-import org.argeo.cms.CmsSession;
 import org.argeo.cms.CmsUiProvider;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
@@ -33,7 +31,6 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.rap.rwt.RWT;
@@ -121,16 +118,18 @@ public class TagLikeInstancePage implements CmsUiProvider {
 
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				CmsSession cmsSession = (CmsSession) v.getTable().getDisplay()
-						.getData(CmsSession.KEY);
-				Node node = (Node) ((IStructuredSelection) event.getSelection())
-						.getFirstElement();
-				try {
-					cmsSession.navigateTo(node.getPath());
-				} catch (RepositoryException e) {
-					throw new ArgeoException("unable to get path for node "
-							+ node + " in the Browsing by Tag Page", e);
-				}
+				// CmsSession cmsSession = (CmsSession)
+				// v.getTable().getDisplay()
+				// .getData(CmsSession.KEY);
+				// Node node = (Node) ((IStructuredSelection)
+				// event.getSelection())
+				// .getFirstElement();
+				// try {
+				// cmsSession.navigateTo(node.getPath());
+				// } catch (RepositoryException e) {
+				// throw new ArgeoException("unable to get path for node "
+				// + node + " in the Browsing by Tag Page", e);
+				// }
 			}
 		});
 		ILabelProvider labelProvider = new SearchEntitiesLP(peopleService,

@@ -4,7 +4,6 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsUiProvider;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.web.parts.ActivitiesPart;
 import org.argeo.connect.people.web.parts.ContactsWithNotePart;
 import org.argeo.connect.people.web.parts.OrgHeaderPart;

@@ -12,7 +12,6 @@ import org.argeo.cms.CmsUiProvider;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.providers.OrgOverviewLP;

@@ -6,7 +6,6 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsUiProvider;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;

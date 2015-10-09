@@ -12,7 +12,6 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.argeo.ArgeoException;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -149,47 +148,31 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		protected void refreshContent(Composite parent, Node node) {
 			if (TaskBasicHeader.this.isDisposed())
 				return;
-			try {
-				if (isEditing()) {
-					refreshStatusCombo(statusCmb, node);
+			if (isEditing()) {
+				refreshStatusCombo(statusCmb, node);
 
-					dueDateCmp.refresh();
-					wakeUpDateCmp.refresh();
-					// update current assigned to group cache here
-					String manager = activityService
-							.getAssignedToDisplayName(node);
-					if (task.hasProperty(PeopleNames.PEOPLE_ASSIGNED_TO)) {
-						String groupId = task.getProperty(
-								PeopleNames.PEOPLE_ASSIGNED_TO).getString();
-						throw new ArgeoException(
-								"Adapt ths to the new security model");
-						// assignedToNode = peopleService
-						// .getUserManagementService().getGroupById(
-						// node.getSession(), groupId);
-					}
-
-					manager += " ~ <a>Change</a>";
-					changeAssignationLk.setText(manager);
-					changeAssignationLk.getParent().layout();
-				} else {
-					statusROLbl.setText(getStatusText());
-					assignedToROLbl.setText(activityService
-							.getAssignedToDisplayName(task));
-				}
-
-				PeopleRapUtils.refreshFormTextWidget(editor, titleTxt, task,
-						Property.JCR_TITLE);
-				PeopleRapUtils.refreshFormTextWidget(editor, descTxt, task,
-						Property.JCR_DESCRIPTION);
-				relatedCmp.refresh();
-				// Refresh the parent because the whole header must be
-				// re-layouted if some added relations triggers the creation
-				// of a new line of the row data
-				parent.getParent().layout(true, true);
-			} catch (RepositoryException re) {
-				throw new PeopleException("Unable to refresh header form "
-						+ "part composite for task " + task, re);
+				dueDateCmp.refresh();
+				wakeUpDateCmp.refresh();
+				// update current assigned to group cache here
+				String manager = activityService.getAssignedToDisplayName(node);
+				manager += " ~ <a>Change</a>";
+				changeAssignationLk.setText(manager);
+				changeAssignationLk.getParent().layout();
+			} else {
+				statusROLbl.setText(getStatusText());
+				assignedToROLbl.setText(activityService
+						.getAssignedToDisplayName(task));
 			}
+
+			PeopleRapUtils.refreshFormTextWidget(editor, titleTxt, task,
+					Property.JCR_TITLE);
+			PeopleRapUtils.refreshFormTextWidget(editor, descTxt, task,
+					Property.JCR_DESCRIPTION);
+			relatedCmp.refresh();
+			// Refresh the parent because the whole header must be
+			// re-layouted if some added relations triggers the creation
+			// of a new line of the row data
+			parent.getParent().layout(true, true);
 		}
 	}
 
