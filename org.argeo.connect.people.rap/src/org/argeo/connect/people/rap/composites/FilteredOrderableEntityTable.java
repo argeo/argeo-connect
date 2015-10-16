@@ -21,7 +21,7 @@ import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
-import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
+import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
@@ -62,14 +62,14 @@ public class FilteredOrderableEntityTable extends Composite implements
 
 	private boolean hasFilter = false;
 	private boolean hasSelectionColumn = false;
-	private List<ColumnDefinition> colDefs = new ArrayList<ColumnDefinition>();
+	private List<JcrColumnDefinition> colDefs = new ArrayList<JcrColumnDefinition>();
 	{ // By default, it displays only title
-		colDefs.add(new ColumnDefinition(null, Property.JCR_TITLE,
+		colDefs.add(new JcrColumnDefinition(null, Property.JCR_TITLE,
 				PropertyType.STRING, "Name", 300));
 	};
 	private String nodeType = PeopleTypes.PEOPLE_ENTITY;
 
-	public List<ColumnDefinition> getColumnsDef() {
+	public List<JcrColumnDefinition> getColumnsDef() {
 		return colDefs;
 	}
 
@@ -124,7 +124,7 @@ public class FilteredOrderableEntityTable extends Composite implements
 	 * @param colDefs
 	 */
 	public FilteredOrderableEntityTable(Composite parent, int style,
-			Session session, List<ColumnDefinition> colDefs) {
+			Session session, List<JcrColumnDefinition> colDefs) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.session = session;
@@ -145,7 +145,7 @@ public class FilteredOrderableEntityTable extends Composite implements
 	 * @param addSelection
 	 */
 	public FilteredOrderableEntityTable(Composite parent, int style,
-			Session session, String nodeType, List<ColumnDefinition> colDefs,
+			Session session, String nodeType, List<JcrColumnDefinition> colDefs,
 			boolean addFilter, boolean addSelection) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
@@ -243,7 +243,7 @@ public class FilteredOrderableEntityTable extends Composite implements
 
 		NodeViewerComparator comparator = new NodeViewerComparator();
 		int i = offset;
-		for (ColumnDefinition colDef : colDefs) {
+		for (JcrColumnDefinition colDef : colDefs) {
 			column = ViewerUtils.createTableViewerColumn(viewer,
 					colDef.getHeaderLabel(), SWT.NONE, colDef.getColumnSize());
 			column.setLabelProvider(new CLProvider(colDef.getPropertyName()));
@@ -255,7 +255,7 @@ public class FilteredOrderableEntityTable extends Composite implements
 		}
 
 		// IMPORTANT: initialize comparator before setting it
-		ColumnDefinition firstCol = colDefs.get(0);
+		JcrColumnDefinition firstCol = colDefs.get(0);
 		comparator.setColumn(firstCol.getPropertyType(),
 				firstCol.getPropertyName());
 		viewer.setComparator(comparator);

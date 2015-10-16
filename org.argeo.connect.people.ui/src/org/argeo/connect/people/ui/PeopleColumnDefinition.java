@@ -2,7 +2,7 @@ package org.argeo.connect.people.ui;
 
 import javax.jcr.PropertyType;
 
-import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
+import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
 /**
@@ -10,7 +10,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
  * in order to ease table management in a JCR Context. Might be factorized if it
  * seems relevant after being used for a while.
  */
-public class PeopleColumnDefinition extends ColumnDefinition {
+public class PeopleColumnDefinition extends JcrColumnDefinition {
 
 	private ColumnLabelProvider labelProvider;
 	private int columnStyle;

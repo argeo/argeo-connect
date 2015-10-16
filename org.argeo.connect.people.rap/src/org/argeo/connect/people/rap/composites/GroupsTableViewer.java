@@ -294,7 +294,7 @@ public class GroupsTableViewer extends Composite {
 		// }
 
 		// IMPORTANT: initialize comparator before setting it
-		// ColumnDefinition firstCol = colDefs.get(0);
+		// JcrColumnDefinition firstCol = colDefs.get(0);
 		// comparator.setColumn(firstCol.getPropertyType(),
 		// firstCol.getPropertyName());
 		// viewer.setComparator(comparator);

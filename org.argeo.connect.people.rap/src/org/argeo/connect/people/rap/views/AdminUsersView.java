@@ -33,7 +33,7 @@ package org.argeo.connect.people.rap.views;
 //import org.argeo.jcr.ArgeoNames;
 //import org.argeo.jcr.ArgeoTypes;
 //import org.argeo.jcr.JcrUtils;
-//import org.argeo.eclipse.ui.parts.UsersTable;
+//import org.argeo.eclipse.ui.parts.JcrUsersTable;
 //import org.eclipse.jface.viewers.DoubleClickEvent;
 //import org.eclipse.jface.viewers.IDoubleClickListener;
 //import org.eclipse.jface.viewers.IStructuredSelection;
@@ -51,7 +51,7 @@ package org.argeo.connect.people.rap.views;
 //	/* DEPENDENCY INJECTION */
 //	private Session session;
 //
-//	private UsersTable userTableCmp;
+//	private JcrUsersTable userTableCmp;
 //	private JcrUserListener userStructureListener;
 //	private JcrUserListener userPropertiesListener;
 //
@@ -60,7 +60,7 @@ package org.argeo.connect.people.rap.views;
 //		parent.setLayout(new FillLayout());
 //
 //		// Create the composite that displays the list and a filter
-//		userTableCmp = new UsersTable(parent, SWT.NO_FOCUS, session);
+//		userTableCmp = new JcrUsersTable(parent, SWT.NO_FOCUS, session);
 //		userTableCmp.populate(true, false);
 //
 //		// Configure

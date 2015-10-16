@@ -7,14 +7,14 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
+import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
 
 public interface ExtractDefinition {
 
-	public final static List<ColumnDefinition> EXTRACT_SIMPLE_MAILING_LIST = new ArrayList<ColumnDefinition>() {
+	public final static List<JcrColumnDefinition> EXTRACT_SIMPLE_MAILING_LIST = new ArrayList<JcrColumnDefinition>() {
 		private static final long serialVersionUID = 1L;
 		{
-			add(new ColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
+			add(new JcrColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
 					Property.JCR_TITLE, PropertyType.STRING, "Display name"));
 		}
 	};

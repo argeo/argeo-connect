@@ -134,7 +134,7 @@ public class NewUserGroupWizard {}
 // private class ChooseUsersWizardPage extends WizardPage implements
 // IPageChangedListener {
 // private static final long serialVersionUID = 1L;
-// private UsersTable userTableCmp;
+// private JcrUsersTable userTableCmp;
 // private Composite container;
 // private Session session;
 //
@@ -148,7 +148,7 @@ public class NewUserGroupWizard {}
 // public void createControl(Composite parent) {
 // container = new Composite(parent, SWT.NONE);
 // container.setLayout(new FillLayout());
-// userTableCmp = new UsersTable(container, SWT.NO_FOCUS,
+// userTableCmp = new JcrUsersTable(container, SWT.NO_FOCUS,
 // session);
 // userTableCmp.populate(true, true);
 // setControl(container);
@@ -188,7 +188,7 @@ public class NewUserGroupWizard {}
 // return userTableCmp.getSelectedUsers();
 // }
 //
-// // private class MyUserTableCmp extends UsersTable {
+// // private class MyUserTableCmp extends JcrUsersTable {
 // //
 // // private static final long serialVersionUID = 1L;
 // //
@@ -226,7 +226,7 @@ public class NewUserGroupWizard {}
 // private class ValidateAndLaunchWizardPage extends WizardPage implements
 // IPageChangedListener {
 // private static final long serialVersionUID = 1L;
-// private UsersTable userTableCmp;
+// private JcrUsersTable userTableCmp;
 // private Session session;
 //
 // public ValidateAndLaunchWizardPage(Session session) {
@@ -246,7 +246,7 @@ public class NewUserGroupWizard {}
 // ((IPageChangeProvider) container).addPageChangedListener(this);
 // }
 //
-// userTableCmp = new UsersTable(mainCmp, SWT.NO_FOCUS,
+// userTableCmp = new JcrUsersTable(mainCmp, SWT.NO_FOCUS,
 // session);
 // userTableCmp.populate(false, false);
 // setControl(mainCmp);
@@ -269,7 +269,7 @@ public class NewUserGroupWizard {}
 // }
 // }
 //
-// // private class MyUserTableCmp extends UsersTable {
+// // private class MyUserTableCmp extends JcrUsersTable {
 // // public MyUserTableCmp(Composite parent, int style, Session session) {
 // // super(parent, style, session);
 // // }

@@ -300,7 +300,7 @@ public class RowsToCalcWriter {
 	/**
 	 * Initialises calc generation, to be called prior to any extract generation
 	 */
-	// public void setColumnDefinition(List<ColumnDefinition> columnDefinition)
+	// public void setColumnDefinition(List<JcrColumnDefinition> columnDefinition)
 	// {
 	// this.columnDefs = columnDefinition;
 	// }

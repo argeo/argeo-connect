@@ -24,7 +24,7 @@ import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
+import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.security.ui.PrivilegedJob;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -169,9 +169,9 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 		private SimpleJcrTableComposite tableCmp;
 
-		private List<ColumnDefinition> colDefs = new ArrayList<ColumnDefinition>();
+		private List<JcrColumnDefinition> colDefs = new ArrayList<JcrColumnDefinition>();
 		{ // By default, it displays only title
-			colDefs.add(new ColumnDefinition(null, Property.JCR_TITLE,
+			colDefs.add(new JcrColumnDefinition(null, Property.JCR_TITLE,
 					PropertyType.STRING, "Label", 420));
 		};
 

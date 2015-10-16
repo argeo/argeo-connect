@@ -20,7 +20,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
-import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
+import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
@@ -64,19 +64,19 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 	/**
 	 * Overwrite to display other columns
 	 */
-	public List<ColumnDefinition> getColumnsDef() {
-		List<ColumnDefinition> columnDefs = new ArrayList<ColumnDefinition>();
+	public List<JcrColumnDefinition> getColumnsDef() {
+		List<JcrColumnDefinition> columnDefs = new ArrayList<JcrColumnDefinition>();
 
 		// Displayed name
-		columnDefs.add(new ColumnDefinition(null, Property.JCR_TITLE,
+		columnDefs.add(new JcrColumnDefinition(null, Property.JCR_TITLE,
 				PropertyType.STRING, "Name", 140));
 
 		// Description
-		columnDefs.add(new ColumnDefinition(null, Property.JCR_DESCRIPTION,
+		columnDefs.add(new JcrColumnDefinition(null, Property.JCR_DESCRIPTION,
 				PropertyType.STRING, "Description", 200));
 
 		// // Member nb
-		// columnDefs.add(new ColumnDefinition(null, null,
+		// columnDefs.add(new JcrColumnDefinition(null, null,
 		// PropertyType.STRING, "Nb of member", 50));
 		return columnDefs;
 	}
@@ -184,11 +184,11 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 		}
 
 		// Create other columns
-		List<ColumnDefinition> colDefs = getColumnsDef();
+		List<JcrColumnDefinition> colDefs = getColumnsDef();
 
 		NodeViewerComparator comparator = new NodeViewerComparator();
 		int i = offset;
-		for (ColumnDefinition colDef : colDefs) {
+		for (JcrColumnDefinition colDef : colDefs) {
 			column = ViewerUtils.createTableViewerColumn(viewer,
 					colDef.getHeaderLabel(), SWT.NONE, colDef.getColumnSize());
 			column.setLabelProvider(new CLProvider(colDef.getPropertyName()));
@@ -201,7 +201,7 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 		}
 
 		// IMPORTANT: initialize comparator before setting it
-		ColumnDefinition firstCol = colDefs.get(0);
+		JcrColumnDefinition firstCol = colDefs.get(0);
 		comparator.setColumn(firstCol.getPropertyType(),
 				firstCol.getPropertyName());
 		viewer.setComparator(comparator);

@@ -1,6 +1,6 @@
 package org.argeo.connect.people.rap.exports;
 
-import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
+import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
 /**
@@ -11,7 +11,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
  * Rather use the same class from people.ui bundle
  */
 @Deprecated
-public class PeopleColumnDefinition extends ColumnDefinition {
+public class PeopleColumnDefinition extends JcrColumnDefinition {
 
 	private ColumnLabelProvider labelProvider;
 

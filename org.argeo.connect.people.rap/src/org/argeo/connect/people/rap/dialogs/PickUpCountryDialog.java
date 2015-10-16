@@ -30,7 +30,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.composites.SimpleJcrTableComposite;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.eclipse.ui.jcr.lists.ColumnDefinition;
+import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -58,11 +58,11 @@ public class PickUpCountryDialog extends TrayDialog {
 	private SimpleJcrTableComposite tableCmp;
 	private final String title;
 
-	private List<ColumnDefinition> colDefs = new ArrayList<ColumnDefinition>();
+	private List<JcrColumnDefinition> colDefs = new ArrayList<JcrColumnDefinition>();
 	{ // By default, it displays only title
-		colDefs.add(new ColumnDefinition(null, PeopleNames.PEOPLE_CODE,
+		colDefs.add(new JcrColumnDefinition(null, PeopleNames.PEOPLE_CODE,
 				PropertyType.STRING, "Iso Code", 100));
-		colDefs.add(new ColumnDefinition(null, Property.JCR_TITLE,
+		colDefs.add(new JcrColumnDefinition(null, Property.JCR_TITLE,
 				PropertyType.STRING, "Label", 240));
 	};
 
