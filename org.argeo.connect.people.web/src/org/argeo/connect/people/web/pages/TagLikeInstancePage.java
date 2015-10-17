@@ -23,7 +23,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.web.PeopleMsg;
 import org.argeo.connect.people.web.providers.SearchEntitiesLP;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -78,7 +77,7 @@ public class TagLikeInstancePage implements CmsUiProvider {
 				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		entityFilterTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
 				false));
-		entityFilterTxt.setMessage(PeopleMsg.searchEntities.lead());
+		// entityFilterTxt.setMessage(PeopleMsg.searchEntities.lead());
 
 		Composite tableComposite = new Composite(parent, SWT.NONE);
 		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,

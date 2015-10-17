@@ -65,7 +65,7 @@ public class PeopleQueryPage implements CmsUiProvider {
 		final Text entityFilterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH
 				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		entityFilterTxt.setLayoutData(EclipseUiUtils.fillWidth());
-		entityFilterTxt.setMessage(PeopleMsg.searchEntities.lead());
+		// entityFilterTxt.setMessage(PeopleMsg.searchEntities.lead());
 
 		Composite tableComposite = new Composite(parent, SWT.NONE);
 		tableComposite.setLayoutData(EclipseUiUtils.fillAll());

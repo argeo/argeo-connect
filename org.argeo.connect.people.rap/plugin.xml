@@ -15,13 +15,14 @@
 		</perspective>
       -->
 		<!-- Draft perspective for people standalone application --> 
-		
+		<!-- 
 		<perspective
 			class="org.argeo.connect.people.rap.PeoplePerspective"
 			icon="icons/people.gif"
             id="org.argeo.connect.people.rap.peoplePerspective"
             name="People">
 		</perspective> 	
+		      -->
 	</extension>
 
 	<!-- Enrich existing perspectives to add people specific UI Parts -->
