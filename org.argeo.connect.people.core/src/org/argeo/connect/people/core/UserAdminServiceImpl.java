@@ -191,6 +191,16 @@ public class UserAdminServiceImpl implements UserAdminService {
 	}
 
 	public String getDistinguishedName(String localId, int type) {
+
+		// TODO check if we already have the dn of an existing user. Clean this
+		try {
+			Role role = userAdmin.getRole(localId);
+			if (role != null)
+				return localId;
+		} catch (Exception e) {
+			// silent
+		}
+
 		if (Role.GROUP == type)
 			return LdifName.cn.name() + "=" + localId + "," + GROUPS_SUFFIX
 					+ "," + getDefaultDomainName();

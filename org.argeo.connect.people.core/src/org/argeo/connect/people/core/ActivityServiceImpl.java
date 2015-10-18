@@ -25,7 +25,6 @@ import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.jcr.JcrUtils;
-import org.osgi.service.useradmin.Role;
 
 /** Concrete access to People's {@link ActivityService} */
 public class ActivityServiceImpl implements ActivityService, PeopleNames {
@@ -380,11 +379,11 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 
 			taskNode.setProperty(PeopleNames.PEOPLE_REPORTED_BY, reporterId);
 
-			if (CommonsJcrUtils.checkNotEmptyString(assignedTo)) {
-				String atdn = peopleService.getUserAdminService()
-						.getDistinguishedName(assignedTo, Role.GROUP);
-				taskNode.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO, atdn);
-			}
+			if (CommonsJcrUtils.checkNotEmptyString(assignedTo))
+				// String atdn = peopleService.getUserAdminService()
+				// .getDistinguishedName(assignedTo, Role.GROUP);
+				taskNode.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO, assignedTo);
+
 			if (relatedTo != null && !relatedTo.isEmpty())
 				CommonsJcrUtils.setMultipleReferences(taskNode,
 						PeopleNames.PEOPLE_RELATED_TO, relatedTo);

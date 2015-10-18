@@ -194,11 +194,11 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 		// First line: search Text and buttons
 		filterTxt = createFilterText(parent);
-		filterTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// Corresponding list
 		Composite tableComp = toolkit.createComposite(parent);
-		tableComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		tableComp.setLayoutData(EclipseUiUtils.fillAll());
 
 		membersViewer = createTableViewer(tableComp);
 		membersViewer.setContentProvider(new MyLazyContentProvider(
@@ -314,9 +314,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent,
 				SWT.MULTI, colDefs, enableBatchUpdate());
 		TableViewer tableViewer = tableCmp.getTableViewer();
-		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-				PeopleTypes.PEOPLE_ENTITY, peopleWorkbenchService));
+		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 		return tableViewer;
 	}
 
