@@ -19,8 +19,6 @@
 	<reference id="peopleRepository" interface="javax.jcr.Repository"
 		filter="(argeo.jcr.repository.alias=people)" />
 
-	<reference id="userAdminService" interface="org.argeo.security.UserAdminService" />
-
 	<!-- SERVICES -->
 	<!-- The APP SPecific implementation of the People / MSM Service -->
 	<service ref="peopleDemoService" interface="org.argeo.connect.people.PeopleService" />
