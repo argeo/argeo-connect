@@ -424,33 +424,78 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		filterCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		populateSearchPanel(filterCmp);
 
+		// add static filter abilities
 		final Link more = new Link(parent, SWT.NONE);
-		more.setText("<a> More... </a>");
 		CmsUtils.markup(more);
+		Composite staticFilterCmp = new Composite(parent, SWT.NO_FOCUS);
+		staticFilterCmp.setLayoutData(EclipseUiUtils.fillWidth(2));
+		populateStaticFilters(staticFilterCmp);
 
-		more.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 2092985883844558754L;
-			private boolean isShown = false;
-			private Composite staticFiltersCmp;
+		MoreLinkListener listener = new MoreLinkListener(more, staticFilterCmp,
+				false);
+		// initialise the layout
+		listener.refresh();
+		more.addSelectionListener(listener);
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (isShown) {
-					CmsUtils.clear(staticFiltersCmp);
-					staticFiltersCmp.dispose();
-					more.setText("<a> More... </a>");
-				} else {
-					staticFiltersCmp = new Composite(parent, SWT.NO_FOCUS);
-					staticFiltersCmp.setLayoutData(EclipseUiUtils.fillWidth(2));
-					populateStaticFilters(staticFiltersCmp);
-					more.setText("<a> Less... </a>");
+		// more.addSelectionListener(new SelectionAdapter() {
+		// private static final long serialVersionUID = 2092985883844558754L;
+		// private boolean isShown = false;
+		// private Composite staticFiltersCmp;
+		//
+		// @Override
+		// public void widgetSelected(SelectionEvent e) {
+		// if (isShown) {
+		// CmsUtils.clear(staticFiltersCmp);
+		// staticFiltersCmp.dispose();
+		// more.setText("<a> More... </a>");
+		// } else {
+		// staticFiltersCmp = new Composite(parent, SWT.NO_FOCUS);
+		// staticFiltersCmp.setLayoutData(EclipseUiUtils.fillWidth(2));
+		// populateStaticFilters(staticFiltersCmp);
+		// more.setText("<a> Less... </a>");
+		// }
+		// parent.layout();
+		// parent.getParent().layout();
+		// isShown = !isShown;
+		// }
+		// });
+	}
 
-				}
-				parent.layout();
-				parent.getParent().layout();
-				isShown = !isShown;
+	private class MoreLinkListener extends SelectionAdapter {
+		private static final long serialVersionUID = -524987616510893463L;
+		private boolean isShown;
+		private final Composite staticFilterCmp;
+		private final Link moreLk;
+
+		public MoreLinkListener(Link moreLk, Composite staticFilterCmp,
+				boolean isShown) {
+			this.moreLk = moreLk;
+			this.staticFilterCmp = staticFilterCmp;
+			this.isShown = isShown;
+		}
+
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			isShown = !isShown;
+			refresh();
+		}
+
+		public void refresh() {
+			GridData gd = (GridData) staticFilterCmp.getLayoutData();
+			if (isShown) {
+				moreLk.setText("<a> Less... </a>");
+				gd.heightHint = SWT.DEFAULT;
+			} else {
+				moreLk.setText("<a> More... </a>");
+				gd.heightHint = 0;
 			}
-		});
+			forceLayout();
+		}
+
+		private void forceLayout() {
+			staticFilterCmp.getParent().getParent().layout(true, true);
+		}
+
 	}
 
 	/** Refresh the table viewer based on the free text search field */

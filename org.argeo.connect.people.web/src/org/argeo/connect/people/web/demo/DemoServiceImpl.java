@@ -37,6 +37,7 @@ public class DemoServiceImpl extends PeopleServiceImpl implements
 	private Map<String, Resource> demoBusinessData = null;
 
 	public void init() {
+		super.init();
 		Session adminSession = null;
 		try {
 			adminSession = repository.login(workspaceName);
@@ -51,8 +52,7 @@ public class DemoServiceImpl extends PeopleServiceImpl implements
 						.getNode(getBasePath(PeopleTypes.PEOPLE_PERSON));
 				if (!personPar.hasNodes()) {
 					DemoDataImport importer = new DemoDataImport();
-					importer.doImport(this, adminSession,
-							demoBusinessData);
+					importer.doImport(this, adminSession, demoBusinessData);
 				}
 			}
 		} catch (Exception e) {

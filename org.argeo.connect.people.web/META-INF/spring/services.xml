@@ -11,6 +11,7 @@
 		<property name="workspaceName" value="main" />
 		<property name="demoBusinessData" ref="demoBusinessData" />
 		<property name="initResources" ref="initResources" />
+		<property name="userAdmin" ref="userAdmin" />
 	</bean>
 
 	<!-- IMPORTANT: Enable auto magic admin login in the repository during the 

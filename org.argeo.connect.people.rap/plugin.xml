@@ -14,15 +14,13 @@
             name="User management">
 		</perspective>
       -->
-		<!-- Draft perspective for people standalone application --> 
-		<!-- 
+		<!-- People default standalone perspective --> 
 		<perspective
 			class="org.argeo.connect.people.rap.PeoplePerspective"
 			icon="icons/people.gif"
             id="org.argeo.connect.people.rap.peoplePerspective"
             name="People">
-		</perspective> 	
-		      -->
+		</perspective>
 	</extension>
 
 	<!-- Enrich existing perspectives to add people specific UI Parts -->
@@ -515,6 +513,26 @@
 
 	<extension
 		point="org.eclipse.ui.activities">
+		<!-- People specific activities --> 
+		<activity
+              description="Generic people app"
+              id="org.argeo.connect.people.rap.peopleAppActivity"
+              name="People App Activity">
+		  <enabledWhen>
+		    <with variable="roles">
+		      <iterate ifEmpty="false" operator="or">
+		        <equals value="cn=org.argeo.connect.people.manager,ou=roles,ou=node" />
+		      </iterate>
+		    </with>
+		 </enabledWhen>
+        </activity>
+        
+        <activityPatternBinding
+              activityId="org.argeo.connect.people.rap.peopleAppActivity"
+              isEqualityPattern="true"
+              pattern="org.argeo.connect.people.rap/org.argeo.connect.people.rap.peoplePerspective">
+        </activityPatternBinding>
+
 		<!-- Business admin activities --> 
 		<activity
               description="Business admin activities"
@@ -547,12 +565,11 @@
 		    </with>
 		  </enabledWhen>
         </activity>
-        <!-- FIXME: we hide for the time being the people stand alone perspective 
-        to all people that are not in role technical admin --> 
-        <!--<activityPatternBinding
+        
+        <activityPatternBinding
               activityId="org.argeo.connect.people.rap.adminActivity"
               isEqualityPattern="true"
               pattern="org.argeo.connect.people.rap/org.argeo.connect.people.rap.peoplePerspective">
-        </activityPatternBinding> -->
+        </activityPatternBinding>
      </extension>
 </plugin>

@@ -91,6 +91,9 @@ public class UserAdminServiceImpl implements UserAdminService {
 			dn = LdifName.cn.name() + "=" + rolename + "," + SYSTEM_ROLE_SUFFIX;
 
 		Role role = userAdmin.getRole(dn);
+		if (role == null)
+			return false;
+
 		String roledn = role.getName();
 
 		for (String currRole : getMyRoles())

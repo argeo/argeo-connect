@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Property;
-import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
@@ -17,10 +16,10 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.rap.editors.utils.AbstractSearchEntityEditor;
+import org.argeo.connect.people.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.XPathUtils;
-import org.argeo.eclipse.ui.jcr.lists.SimpleJcrRowLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -32,9 +31,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 
-/**
- * Search the repository with a given entity type
- */
+/** Search the repository with a given entity type */
 public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID
@@ -49,30 +46,14 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 			throws PartInitException {
 		super.init(site, input);
 		colDefs = new ArrayList<PeopleColumnDefinition>();
-		colDefs.add(new PeopleColumnDefinition(getEntityType(),
-				Property.JCR_TITLE, PropertyType.STRING, "Display Name",
-				new SimpleJcrRowLabelProvider(getEntityType(),
-						Property.JCR_TITLE), 300));
-		colDefs.add(new PeopleColumnDefinition(getEntityType(), PEOPLE_TAGS,
-				PropertyType.STRING, "Tags", new SimpleJcrRowLabelProvider(
-						getEntityType(), PEOPLE_TAGS), 300));
+		colDefs.add(new PeopleColumnDefinition("Display Name",
+				new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
+		colDefs.add(new PeopleColumnDefinition("Tags",
+				new JcrHtmlLabelProvider(PEOPLE_TAGS), 300));
 	}
 
 	/** Override this to provide type specific static filters */
 	protected void populateStaticFilters(Composite body) {
-		// parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		//
-		// // Configure the Twistie section
-		// Section headerSection = new Section(parent, Section.TITLE_BAR
-		// | Section.TWISTIE);
-		// headerSection.setText("Show more filters");
-		// headerSection.setExpanded(false);
-		// headerSection.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-		// false));
-		//
-		// Composite body = new Composite(headerSection, SWT.NONE);
-		// headerSection.setClient(body);
-
 		body.setLayout(new GridLayout(4, false));
 
 		Text tagTxt = createBoldLT(body, "Tag", "",
@@ -166,7 +147,6 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 			QueryResult result = query.execute();
 			Row[] rows = CommonsJcrUtils.rowIteratorToArray(result.getRows());
 			setViewerInput(rows);
-
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list " + getEntityType()
 					+ " entities with static filter ", e);
