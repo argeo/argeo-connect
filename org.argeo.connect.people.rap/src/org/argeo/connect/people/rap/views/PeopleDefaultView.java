@@ -72,7 +72,7 @@ public class PeopleDefaultView extends ViewPart {
 	// This page widgets
 	private TableViewer contactableViewer;
 	private Text filterTxt;
-	private final static String FILTER_HELP_MSG = "Search...";
+	private final static String FILTER_HELP_MSG = "Search";
 
 	private final static String CMD_OPEN_SEARCH_EDITOR = "openSearchEditor";
 	private final static String CMD_LOGOUT = "org.eclipse.ui.file.exit";
@@ -100,19 +100,19 @@ public class PeopleDefaultView extends ViewPart {
 				new EntitySingleColumnLabelProvider(peopleService,
 						peopleWorkbenchService));
 
-		refreshFilteredList();
+		// refreshFilteredList();
 	}
 
 	private void createHeaderPart(Composite parent) {
 		parent.setLayout(new FormLayout());
 
-		// The Background
+		// Background
 		Composite logoCmp = new Composite(parent, SWT.NO_FOCUS);
-		FormData fdBg = PeopleRapUtils.createformData(0, 20, 100, 75);
+		FormData fdBg = PeopleRapUtils.createformData(0, 20, 100, 65);
 		logoCmp.setLayoutData(fdBg);
 		CmsUtils.style(logoCmp, PeopleStyles.LOGO_BOX);
 
-		// The Image
+		// Logo
 		Label logoLbl = new Label(parent, SWT.NO_FOCUS);
 		logoLbl.setImage(PeopleRapImages.LOGO_SMALL);
 		CmsUtils.style(logoLbl, PeopleStyles.LOGO);
@@ -123,12 +123,11 @@ public class PeopleDefaultView extends ViewPart {
 		fdImg.left = new FormAttachment(2, 0);
 		logoLbl.setLayoutData(fdImg);
 
-		// The links
+		// Links
 		Composite linksCmp = new Composite(parent, SWT.NO_FOCUS);
-		linksCmp.setLayoutData(PeopleRapUtils.createformData(75, 25, 98, 73));
+		linksCmp.setLayoutData(PeopleRapUtils.createformData(65, 25, 98, 73));
 		CmsUtils.style(linksCmp, PeopleStyles.LOGO_TABLE);
 		linksCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
-
 		addLink(linksCmp, "Search Entities",
 				"Open an editor to narrow you search", CMD_OPEN_SEARCH_EDITOR);
 		addLink(linksCmp, "Logout", "Log out from connect", CMD_LOGOUT);
@@ -155,7 +154,7 @@ public class PeopleDefaultView extends ViewPart {
 	private Link addLink(Composite parent, String label, String tooltip,
 			final String commandId) {
 		Link link = new Link(parent, SWT.NONE);
-		link.setText("<a>" + label + "</a>");
+		link.setText(" <a>" + label + "</a> ");
 		if (tooltip != null)
 			link.setToolTipText(tooltip);
 		CmsUtils.markup(link);

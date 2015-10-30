@@ -14,8 +14,10 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.ActivityEditor;
 import org.argeo.connect.people.rap.editors.GroupEditor;
+import org.argeo.connect.people.rap.editors.MailingListEditor;
 import org.argeo.connect.people.rap.editors.OrgEditor;
 import org.argeo.connect.people.rap.editors.PersonEditor;
+import org.argeo.connect.people.rap.editors.TagEditor;
 import org.argeo.connect.people.rap.editors.TaskEditor;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
@@ -111,12 +113,11 @@ public class OpenEntityEditor extends AbstractHandler {
 	 */
 	protected String getEditorIdFromNode(Node curNode) {
 		try {
-			// TODO fix this
-			// if (curNode.isNodeType(PeopleTypes.PEOPLE_USER_GROUP))
-			// return UserGroupEditor.ID;
-			// else
-
-			if (curNode.isNodeType(PeopleTypes.PEOPLE_TASK))
+			if (curNode.isNodeType(PeopleTypes.PEOPLE_TAG_INSTANCE))
+				return TagEditor.ID;
+			else if (curNode.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST))
+				return MailingListEditor.ID;
+			else if (curNode.isNodeType(PeopleTypes.PEOPLE_TASK))
 				return TaskEditor.ID;
 			else if (curNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
 				return ActivityEditor.ID;

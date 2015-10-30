@@ -115,6 +115,12 @@
 		</editor>
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/entities/tag.png"
+			id="org.argeo.connect.people.rap.tagEditor"
+			name="Tag">
+		</editor>
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/mailingList.gif"
 			id="org.argeo.connect.people.rap.mailingListEditor"
 			name="Mailing List">
