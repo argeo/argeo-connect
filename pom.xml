@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.argeo.commons</groupId>
@@ -13,7 +14,7 @@
 	<version>2.1.39-SNAPSHOT</version>
 	<properties>
 		<version.connect>2.1.39-SNAPSHOT</version.connect>
-		<version.argeo-tp-extras>2.1.3</version.argeo-tp-extras>
+		<version.argeo-tp-extras>2.1.7</version.argeo-tp-extras>
 	</properties>
 	<modules>
 		<module>org.argeo.connect.people.specs</module>
@@ -25,7 +26,7 @@
 		<module>org.argeo.connect.people.web</module>
 		<!-- Depends on org.eclipse.ui.form that must be added to eclipse RCP repo -->
 		<!-- <module>org.argeo.photo.manager.ui</module> -->
-		<module>org.argeo.connect.files</module>
+		<module>org.argeo.connect.payment</module>
 		<!-- Depends on com.sun.syndication that must be added to argeo-extras 
 			repo -->
 		<!-- <module>org.argeo.connect.streams</module> -->
@@ -101,6 +102,17 @@ which are used as well as that of the covered work.]]>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.argeo.tp.extras</groupId>
+				<artifactId>argeo-tp-extras</artifactId>
+				<version>${version.argeo-tp-extras}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<distributionManagement>
 		<repository>
 			<id>staging</id>
