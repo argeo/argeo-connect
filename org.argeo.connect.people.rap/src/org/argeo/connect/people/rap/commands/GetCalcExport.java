@@ -100,12 +100,12 @@ public class GetCalcExport extends AbstractHandler {
 		if (elements instanceof Row[]) {
 			RowsToCalcWriter writer = new RowsToCalcWriter();
 			writer.writeTableFromRows(file,
-					(Row[]) provider.getElements(exportId),
+					(Row[]) elements,
 					provider.getColumnDefinition(exportId));
 		} else if (elements instanceof Node[]) {
 			NodesToCalcWriter writer = new NodesToCalcWriter();
 			writer.writeTableFromNodes(file,
-					(Node[]) provider.getElements(exportId),
+					(Node[]) elements,
 					provider.getColumnDefinition(exportId));
 		}
 	}
