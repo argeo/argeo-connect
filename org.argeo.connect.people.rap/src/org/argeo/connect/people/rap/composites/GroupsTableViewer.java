@@ -85,9 +85,6 @@ public class GroupsTableViewer extends Composite {
 				new CommonNameLP(), 150));
 		columnDefs.add(new PeopleColumnDefinition("Domain", new DomainNameLP(),
 				120));
-		// columnDefs.add(new PeopleColumnDefinition("Distinguished Name",
-		// new UserNameLP(), 300));
-
 	}
 
 	// // TODO workaround the bug of the table layout in the Form

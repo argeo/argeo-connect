@@ -497,8 +497,11 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 						.getProperty(Property.JCR_LAST_MODIFIED).getDate()
 						.getTime()));
 				builder.append(", by ");
-				builder.append(currNode.getProperty(
-						Property.JCR_LAST_MODIFIED_BY).getString());
+
+				String lstModByDn = currNode.getProperty(
+						Property.JCR_LAST_MODIFIED_BY).getString();
+				builder.append(peopleService.getUserAdminService()
+						.getUserDisplayName(lstModByDn));
 				builder.append(". ");
 			}
 			return builder.toString();

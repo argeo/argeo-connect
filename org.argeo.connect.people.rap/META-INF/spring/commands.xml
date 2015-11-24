@@ -13,6 +13,13 @@
 	</bean>
 
 	<!-- Entities and links CRUDs -->
+	<bean id="createEntity" class="org.argeo.connect.people.rap.commands.CreateEntity"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+	</bean>
+
 	<bean id="deleteEntity" class="org.argeo.connect.people.rap.commands.DeleteEntity"
 		scope="prototype">
 		<property name="repository" ref="repository" />

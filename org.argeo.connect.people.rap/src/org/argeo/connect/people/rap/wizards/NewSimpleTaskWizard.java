@@ -10,7 +10,6 @@ import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.people.rap.ActivitiesImages;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.composites.DateText;
@@ -91,7 +90,8 @@ public class NewSimpleTaskWizard extends Wizard {
 	@Override
 	public void addPages() {
 		// Configure the wizard
-		setDefaultPageImageDescriptor(ActivitiesImages.TODO_IMGDESC);
+		setWindowTitle("Create a task");
+		// setDefaultPageImageDescriptor(ActivitiesImages.TODO_IMGDESC);
 		try {
 			SelectChildrenPage page = new SelectChildrenPage("Main page");
 			addPage(page);

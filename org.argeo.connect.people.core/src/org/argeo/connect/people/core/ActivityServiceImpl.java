@@ -414,8 +414,10 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 		ResourceService resourceService = peopleService.getResourceService();
 		Node template = resourceService.getNodeTemplate(taskNode.getSession(),
 				taskNodeType);
-		String defaultStatus = CommonsJcrUtils.get(template,
-				PEOPLE_TASK_DEFAULT_STATUS);
+		String defaultStatus = null;
+		if (template != null)
+			defaultStatus = CommonsJcrUtils.get(template,
+					PEOPLE_TASK_DEFAULT_STATUS);
 		if (CommonsJcrUtils.checkNotEmptyString(defaultStatus))
 			taskNode.setProperty(PEOPLE_TASK_STATUS, defaultStatus);
 	}

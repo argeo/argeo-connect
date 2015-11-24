@@ -16,9 +16,9 @@
       -->
 		<!-- People default standalone perspective --> 
 		<perspective
-			class="org.argeo.connect.people.rap.PeoplePerspective"
-			icon="icons/people.gif"
             id="org.argeo.connect.people.rap.peoplePerspective"
+			icon="icons/people.gif"
+			class="org.argeo.connect.people.rap.PeoplePerspective"
             name="People">
 		</perspective>
 	</extension>
@@ -126,20 +126,6 @@
 			name="Mailing List">
 		</editor>
 		
-		<!-- Users and groups -->  
-		<!-- <editor
-			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/group.gif"
-			id="org.argeo.connect.people.rap.userGroupEditor"
-			name="User Group">
-		</editor>
-		<editor
-			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/person.gif"
-			id="org.argeo.connect.people.rap.userEditor"
-			name="User Management">
-		</editor> -->
-		
 		<!-- Activities -->
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
@@ -215,29 +201,7 @@
          		name="When editing an existing job, true if editing an org">
   	 		</commandParameter>
     	</command>
-		
-		
-		<!-- Users and Groups Management --> 
-		<!--<command
-      		id="org.argeo.connect.people.rap.createPeopleUser"
-            defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
-      		name="New User Group">
-    	</command>
-		<command
-      		id="org.argeo.connect.people.rap.createUserGroup"
-            defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
-      		name="New User Group">
-    	</command>
-		<command
-      		id="org.argeo.connect.people.rap.openPeopleUserEditor"
-            defaultHandler="org.argeo.connect.people.rap.commands.OpenPeopleUserEditor"
-      		name="Open user editor">
-            <commandParameter
-         		id="param.username"
-         		name="the username">
-  	 		</commandParameter>
-    	</command>-->
-    	
+   	
     	<!-- Activities and tasks management --> 
     	<command
       		id="org.argeo.connect.people.rap.createSimpleTask"
@@ -263,6 +227,16 @@
     	
     	<!-- Entity CRUD --> 
 		<command
+      		id="org.argeo.connect.people.rap.createEntity"
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+            name="createEntity">
+            <commandParameter
+         		id="param.targetNodeType"
+         		name="Target Node Type">
+  	 		</commandParameter>
+    	</command>
+    	
+		<command
 			id="org.argeo.connect.people.rap.deleteEntity"
             defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       		name="deleteEntity">
@@ -281,10 +255,6 @@
 			id="org.argeo.connect.people.rap.removeEntityReference"
         	defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       	    name="removeEntityReference">
-            <!-- <commandParameter
-         		id="param.versionableParentJcrId"
-         		name="Jcr ID of the nearest versionable ancestor">
-  	 		</commandParameter> -->
             <commandParameter
          		id="param.toRemoveJcrId"
          		name="Jcr ID of the node to remove">
@@ -406,55 +376,58 @@
     		</command>
 		</menuContribution>
 		
-		<!-- PeopleUserAdminView toolbar menu --> 
-		<menuContribution
-            locationURI="toolbar:org.argeo.connect.people.rap.adminUsersView">
-			<command
-                  commandId="org.argeo.security.ui.admin.refreshUsersList"
-                  icon="icons/refresh.png"
-                  label="Refresh list"
-                  tooltip="Force the full refresh of the user list">
-            </command>
-            <command
-                  commandId="org.argeo.security.ui.admin.deleteUser"
-                  icon="icons/remove.gif"
-                  label="Delete User"
-                  tooltip="Delete selected users">
-            </command>
-            <command
-                  commandId="org.argeo.connect.people.rap.createPeopleUser"
-                  icon="icons/newGroup.gif"
-                  label="Add User"
-                  tooltip="Add new user">
-            </command>
-            <command
-                  commandId="org.argeo.security.ui.admin.userBatchUpdate"
-                  icon="icons/batch.gif"
-                  label="Update users"
-                  tooltip="Perform maintenance activities on a list of chosen users">
-            </command>
-        </menuContribution>
+		<!-- Add entity menu (only when people perspective is active)--> 
+		<menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.argeo.security.ui.rap.userToolbar">
+			<toolbar id="org.argeo.connect.people.rap.dropDownsToolbar">
+				<command
+					commandId="org.argeo.connect.people.rap.doNothing"
+					icon="icons/add.png"
+					label="Create"
+					tooltip="Create a new object"
+					id="org.argeo.connect.people.rap.addEntityToolbar"
+					style="pulldown">
+					<visibleWhen checkEnabled="false">
+    					<with variable="activeWorkbenchWindow.activePerspective">
+        					<equals value="org.argeo.connect.people.rap.peoplePerspective"/>
+						</with>
+					</visibleWhen>
+				</command>
+			</toolbar>
+		</menuContribution>
 		
-		<!-- UserGroupView tool bar menu --> 
-		<menuContribution
-            locationURI="toolbar:org.argeo.connect.people.rap.userGroupsView">
-            <command
-                  commandId="org.argeo.connect.people.rap.createUserGroup"
-                  icon="icons/newGroup.gif"
-                  label="Add Group"
-                  tooltip="Add a new user group">
-            </command>
-             <command
-				commandId="org.argeo.connect.people.rap.forceRefresh"
-                icon="icons/refresh.png"
-				label="Refresh"
-				tooltip="User group list refresh">
+		<!-- Corresponding submenus --> 
+		<menuContribution locationURI="menu:org.argeo.connect.people.rap.addEntityToolbar">
+			<command
+				commandId="org.argeo.connect.people.rap.createEntity"
+				icon="icons/person.gif"
+				label="Person">
 				<parameter
-					name="param.viewId"
-					value="org.argeo.connect.people.rap.userGroupsView" />
-            </command>
-        </menuContribution>
-
+         		name="param.targetNodeType"
+         		value="people:person" />
+			</command>	
+			<command
+				commandId="org.argeo.connect.people.rap.createEntity"
+				icon="icons/company.png"
+				label="Organisation">
+				<parameter
+         		name="param.targetNodeType"
+         		value="people:org" />
+			</command>	
+			<command
+				commandId="org.argeo.connect.people.rap.createSimpleTask"
+				icon="icons/activities/todo.gif"
+				label="Task">
+			</command>	
+			<command
+				commandId="org.argeo.connect.people.rap.createEntity"
+				icon="icons/mailingList.gif"
+				label="Mailing List">
+				<parameter
+         		name="param.targetNodeType"
+         		value="people:mailingList" />
+			</command>
+		</menuContribution>
+		
 		<!-- MyTasksView tool bar menu --> 
 		<menuContribution
             locationURI="toolbar:org.argeo.connect.people.rap.myTasksView">

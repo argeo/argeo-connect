@@ -128,9 +128,9 @@ public class PeopleDefaultView extends ViewPart {
 		linksCmp.setLayoutData(PeopleRapUtils.createformData(65, 25, 98, 73));
 		CmsUtils.style(linksCmp, PeopleStyles.LOGO_TABLE);
 		linksCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		addLink(linksCmp, "Search Entities",
-				"Open an editor to narrow you search", CMD_OPEN_SEARCH_EDITOR);
-		addLink(linksCmp, "Logout", "Log out from connect", CMD_LOGOUT);
+		addLink(linksCmp, "Search contact",
+				"Open an editor to precise you search", CMD_OPEN_SEARCH_EDITOR);
+		addLink(linksCmp, "Logout", "Directly log out from the application", CMD_LOGOUT);
 
 		// Order layouts
 		logoLbl.moveAbove(logoCmp);

@@ -11,6 +11,7 @@ import javax.security.auth.x500.X500Principal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
+import org.argeo.cms.auth.AuthConstants;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
@@ -188,7 +189,10 @@ public class UserAdminServiceImpl implements UserAdminService {
 		}
 		List<Group> users = new ArrayList<Group>();
 		for (Role role : roles)
-			if (role.getType() == Role.GROUP)
+			if (role.getType() == Role.GROUP
+					&& !users.contains(role)
+					&& !role.getName().toLowerCase()
+							.endsWith(AuthConstants.ROLES_BASEDN))
 				users.add((Group) role);
 		return users;
 	}
