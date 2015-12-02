@@ -3,6 +3,8 @@ package org.argeo.connect.payment.stripe;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.payment.Counterparty;
 import org.argeo.connect.payment.Transaction;
 
@@ -12,6 +14,7 @@ import com.stripe.model.Charge;
 import com.stripe.net.RequestOptions;
 
 public class StripeTransaction implements Transaction {
+	private final static Log log = LogFactory.getLog(StripeTransaction.class);
 
 	@Override
 	public Object getBusinessId() {
@@ -33,6 +36,7 @@ public class StripeTransaction implements Transaction {
 
 	/** from https://stripe.com/docs/api?lang=java */
 	public void test() {
+		log.debug("Basic stripe test");
 		try {
 			Stripe.apiKey = "sk_test_rgydDhfOG9cu1y2N2PDKs0Pd";
 
