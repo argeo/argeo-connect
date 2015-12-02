@@ -36,7 +36,6 @@ public class StripeTransaction implements Transaction {
 
 	/** from https://stripe.com/docs/api?lang=java */
 	public void test() {
-		log.debug("Basic stripe test");
 		try {
 			Stripe.apiKey = "sk_test_rgydDhfOG9cu1y2N2PDKs0Pd";
 
@@ -51,9 +50,9 @@ public class StripeTransaction implements Transaction {
 			RequestOptions options = RequestOptions.builder()
 					.setIdempotencyKey("5NxN9SYyYhwfPCG5").build();
 
-			Charge.create(chargeParams, options);
+			Charge charge = Charge.create(chargeParams, options);
 		} catch (StripeException e) {
-			// TODO Auto-generated catch block
+			log.debug("Basic stripe test");
 			e.printStackTrace();
 		}
 	}

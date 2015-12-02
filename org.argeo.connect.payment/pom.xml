@@ -25,5 +25,10 @@
 			<groupId>org.argeo.tp.extras.payment</groupId>
 			<artifactId>com.stripe</artifactId>
 		</dependency>
+		<!-- Used by Strip -->
+		<dependency>
+			<groupId>org.argeo.tp.misc</groupId>
+			<artifactId>com.google.gson</artifactId>
+		</dependency>
 	</dependencies>
 </project>

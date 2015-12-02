@@ -1,2 +1,3 @@
-Import-Package:com.stripe.*;resolution:=optional,
+Import-Package:com.stripe.*;resolution:=optional,\
+com.google.gson;resolution:=optional,\
 *
