@@ -2,6 +2,10 @@ package org.argeo.connect.payment.stripe;
 
 public interface StripeConstants {
 
+	public final static String STRIPE_API_KEY_PROP = "connect.payment.stripe.apiKey";
+	
+	/* STRIPE TAGS NAMES */
+	
 	// Various
 	public final static String STRIPE_DESC = "description";
 	public final static String STRIPE_METADATA = "metadata";

@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Account;
@@ -17,11 +20,18 @@ import com.stripe.model.ChargeCollection;
  * Centralises call to the Stripe API
  */
 public class StripeService {
+	private final static Log log = LogFactory.getLog(StripeService.class);
 
 	public StripeService() {
-		Stripe.apiKey = "sk_test_rgydDhfOG9cu1y2N2PDKs0Pd";
+		String apiKey = System.getProperty(StripeConstants.STRIPE_API_KEY_PROP);
+		if (apiKey != null)
+			Stripe.apiKey = apiKey;
+		else
+			log.warn("No stripe API key found, "
+					+ "the key must be set externally or "
+					+ "the following calls to Stripe API will fail");
 	}
-
+	
 	/** Does not work with account that have not yet been verified */
 	public String createManagedAccount(String countryCode)
 			throws StripeException {
