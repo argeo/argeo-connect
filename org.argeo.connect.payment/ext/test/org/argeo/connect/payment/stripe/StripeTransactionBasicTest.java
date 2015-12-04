@@ -88,6 +88,7 @@ public class StripeTransactionBasicTest extends TestCase implements
 
 		Charge charge = Charge.create(chargeParams, options);
 		String chargeId = charge.getId();
+
 		Charge charge2 = Charge.retrieve(chargeId);
 		assertEquals(chargeId, charge2.getId());
 
