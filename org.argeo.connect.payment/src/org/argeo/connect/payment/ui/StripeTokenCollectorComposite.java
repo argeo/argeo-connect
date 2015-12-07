@@ -2,10 +2,16 @@ package org.argeo.connect.payment.ui;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.payment.PaymentConstants;
+import org.argeo.connect.payment.stripe.StripeConstants;
+import org.argeo.connect.payment.stripe.StripeService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -23,14 +29,17 @@ import org.eclipse.swt.widgets.Text;
  */
 public class StripeTokenCollectorComposite extends Composite implements
 		PaymentConstants {
+	private final static Log log = LogFactory
+			.getLog(StripeTokenCollectorComposite.class);
 	private static final long serialVersionUID = -1392423995512547856L;
 
+	// Context
+	private final StripeService stripeService;
+	// Prepared map with relevant transaction info
 	private Map<String, Object> chargeParams;
-	private Map<String, Object> cardParams;
-
-	// Transaction info
 
 	// Card info
+	private Map<String, Object> cardParams;
 	private Text cardCountryTxt;
 	private Text cardNbTxt;
 	private Text cardExpMonthTxt;
@@ -38,9 +47,10 @@ public class StripeTokenCollectorComposite extends Composite implements
 	private Text cardCvcTxt;
 
 	public StripeTokenCollectorComposite(Composite parent, int style,
-			Map<String, Object> chargeParams) {
+			StripeService stripeService, Map<String, Object> chargeParams) {
 		super(parent, style | SWT.BORDER);
 		// Make a copy to insure financial info cannot be changed afterwards
+		this.stripeService = stripeService;
 		this.chargeParams = new HashMap<String, Object>();
 		this.chargeParams.putAll(chargeParams);
 		CmsUtils.style(this, PaymentStyles.CARD_INFO_BOX);
@@ -194,21 +204,63 @@ public class StripeTokenCollectorComposite extends Composite implements
 	}
 
 	private void reviewAndValid() {
-
 		// TODO implement sanity checks
 		cardParams = new HashMap<String, Object>();
-		cardParams.put(CARD_COUNTRY, cardCountryTxt.getText());
-		cardParams.put(CARD_NB, cardNbTxt.getText());
-		cardParams.put(CARD_EXP_MONTH, cardExpMonthTxt.getText());
-		cardParams.put(CARD_EXP_YEAR, cardExpYearTxt.getText());
+		// TODO add email from the session
+		// TODO add name from the session
+
+		String country = cardCountryTxt.getText();
+		String number = cardNbTxt.getText();
+		String month = cardExpMonthTxt.getText();
+		String year = cardExpYearTxt.getText();
+
+		if (EclipseUiUtils.isEmpty(country) || EclipseUiUtils.isEmpty(number)
+				|| EclipseUiUtils.isEmpty(month)
+				|| EclipseUiUtils.isEmpty(year)) {
+			MessageDialog.openError(getShell(), "Unvalid information",
+					"All field are required, please update and try again");
+			return;
+		}
+		cardParams.put(CARD_COUNTRY, country);
+		cardParams.put(CARD_NB, number);
+		cardParams.put(CARD_EXP_MONTH, month);
+		cardParams.put(CARD_EXP_YEAR, year);
 		populateValid();
 		forceLayout();
 	}
 
 	private void doPay() {
-		cardParams.put(CARD_CVC, cardCvcTxt.getText());
-		// TODO really pay
-		// TODO reset card info
+		String cvc = cardCvcTxt.getText();
+		if (EclipseUiUtils.isEmpty(cvc)) {
+			MessageDialog.openError(getShell(), "Unvalid information",
+					"Please enter a valid verification code");
+			return;
+		}
+
+		cardParams.put(CARD_CVC, cvc);
+		chargeParams.put(StripeConstants.STRIPE_CHARGE_CARD, cardParams);
+		String idemPotencyKey = UUID.randomUUID().toString();
+		String chargeId = null;
+		try {
+			chargeId = stripeService
+					.processCharge(chargeParams, idemPotencyKey);
+		} catch (Exception e) {
+			String msg = e.getMessage()
+					+ "\n No payment have been done. Please verify your information "
+					+ "and try again or contact an administrator";
+			MessageDialog.openError(getShell(), "Unable to process payment",
+					msg);
+			log.error(e.getMessage() + "\nUnable to process charge for "
+					+ chargeParams.toString());
+			if (log.isDebugEnabled())
+				e.printStackTrace();
+			return;
+			// throw new PaymentException("Unable to process charge for "
+			// + chargeParams.toString(), e);
+		}
+		afterPaymentDone(chargeId);
+		cardParams.clear();
+		chargeParams.clear();
 	}
 
 	/**

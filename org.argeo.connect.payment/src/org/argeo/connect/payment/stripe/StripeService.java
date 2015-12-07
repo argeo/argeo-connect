@@ -15,6 +15,7 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.Account;
 import com.stripe.model.Charge;
 import com.stripe.model.ChargeCollection;
+import com.stripe.net.RequestOptions;
 
 /**
  * Centralises call to the Stripe API
@@ -31,7 +32,7 @@ public class StripeService {
 					+ "the key must be set externally or "
 					+ "the following calls to Stripe API will fail");
 	}
-	
+
 	/** Does not work with account that have not yet been verified */
 	public String createManagedAccount(String countryCode)
 			throws StripeException {
@@ -48,4 +49,13 @@ public class StripeService {
 		return charges.getData();
 	}
 
+	/** */
+	public String processCharge(Map<String, Object> chargeParams,
+			String idemPotencyKey) throws StripeException {
+		RequestOptions options = RequestOptions.builder()
+				.setIdempotencyKey(idemPotencyKey).build();
+		Charge charge = Charge.create(chargeParams, options);
+		String chargeId = charge.getId();
+		return chargeId;
+	}
 }
