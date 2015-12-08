@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.payment.PaymentConstants;
 import org.argeo.connect.payment.stripe.StripeConstants;
@@ -40,6 +41,7 @@ public class StripeTokenCollectorComposite extends Composite implements
 
 	// Card info
 	private Map<String, Object> cardParams;
+	private Text cardNameTxt;
 	private Text cardCountryTxt;
 	private Text cardNbTxt;
 	private Text cardExpMonthTxt;
@@ -67,21 +69,39 @@ public class StripeTokenCollectorComposite extends Composite implements
 
 		int colNb = 3;
 		parent.setLayout(new GridLayout(colNb, false));
+
 		// Card info
 		Label cardInfoTitleLbl = createLabel(parent,
 				PaymentStyles.CARD_INFO_TITLE, colNb);
 		cardInfoTitleLbl.setText("Please provide your card information.");
 
 		Label descLbl = createLabel(parent, PaymentStyles.CARD_INFO_TEXT, colNb);
+		// FIXME rather use a box and some css padding
+		((GridData) descLbl.getLayoutData()).verticalIndent = 15;
 		descLbl.setText((String) chargeParams
 				.get(PaymentConstants.PAYMENT_DESC));
+		createLabel(parent, PaymentStyles.CARD_INFO_TEXT, colNb);
 
-		cardCountryTxt = createLt(parent, "Card country");
-		cardNbTxt = createLt(parent, "Card number");
-		cardExpMonthTxt = createLt(parent, "Expiration month (MM)");
-		cardExpYearTxt = createLt(parent, "Expiration year (YYYY)");
+		cardNameTxt = createLt(parent, "Card holder", "your name");
+		cardNameTxt.setText(CurrentUser.getDisplayName());
+
+		cardCountryTxt = createLt(parent, "Card country", "");
+		cardNbTxt = createLt(parent, "Card number", "");
+
+		// Expiration date
+		createBoldLabel(parent, "Expiration date (MM/YYYY)");
+		cardExpMonthTxt = new Text(parent, SWT.LEAD | SWT.BORDER);
+		cardExpMonthTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+				false));
+		cardExpMonthTxt.setMessage("MM");
+
+		cardExpYearTxt = new Text(parent, SWT.LEAD | SWT.BORDER);
+		cardExpYearTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+				false));
+		cardExpYearTxt.setMessage("YYYY");
 
 		if (cardParams != null) {
+			resetText(CARD_NAME, cardNameTxt);
 			resetText(CARD_COUNTRY, cardCountryTxt);
 			resetText(CARD_NB, cardNbTxt);
 			resetText(CARD_EXP_MONTH, cardExpMonthTxt);
@@ -103,22 +123,26 @@ public class StripeTokenCollectorComposite extends Composite implements
 
 		int colNb = 2;
 		parent.setLayout(new GridLayout(colNb, false));
+
 		// Card info
 		Label cardInfoTitleLbl = createLabel(parent,
 				PaymentStyles.CARD_INFO_TITLE, colNb);
 		cardInfoTitleLbl.setText("Review card information and valid");
 
 		Label descLbl = createLabel(parent, PaymentStyles.CARD_INFO_TEXT, colNb);
+		// FIXME rather use a box and some css padding
+		((GridData) descLbl.getLayoutData()).verticalIndent = 15;
 		descLbl.setText((String) chargeParams
 				.get(PaymentConstants.PAYMENT_DESC));
+		createLabel(parent, PaymentStyles.CARD_INFO_TEXT, colNb);
 
+		createLL(parent, "Holder name", (String) cardParams.get(CARD_NAME));
 		createLL(parent, "Card country", (String) cardParams.get(CARD_COUNTRY));
 		String formattedNb = formatNb((String) cardParams.get(CARD_NB));
 		createLL(parent, "Card number", formattedNb);
-		createLL(parent, "Expiration month (MM)",
-				(String) cardParams.get(CARD_EXP_MONTH));
-		createLL(parent, "Expiration year (YYYY)",
-				(String) cardParams.get(CARD_EXP_YEAR));
+		createLL(parent, "Expiration Date (MM/YYYY)",
+				(String) cardParams.get(CARD_EXP_MONTH) + "/"
+						+ (String) cardParams.get(CARD_EXP_YEAR));
 		createBoldLabel(parent, "CVC");
 		cardCvcTxt = new Text(parent, SWT.LEAD | SWT.BORDER);
 		cardCvcTxt.setLayoutData(EclipseUiUtils.fillWidth());
@@ -207,20 +231,23 @@ public class StripeTokenCollectorComposite extends Composite implements
 		// TODO implement sanity checks
 		cardParams = new HashMap<String, Object>();
 		// TODO add email from the session
-		// TODO add name from the session
 
+		// TODO add name from the session
+		String name = cardNameTxt.getText();
 		String country = cardCountryTxt.getText();
 		String number = cardNbTxt.getText();
 		String month = cardExpMonthTxt.getText();
 		String year = cardExpYearTxt.getText();
 
-		if (EclipseUiUtils.isEmpty(country) || EclipseUiUtils.isEmpty(number)
+		if (EclipseUiUtils.isEmpty(name) || EclipseUiUtils.isEmpty(country)
+				|| EclipseUiUtils.isEmpty(number)
 				|| EclipseUiUtils.isEmpty(month)
 				|| EclipseUiUtils.isEmpty(year)) {
 			MessageDialog.openError(getShell(), "Unvalid information",
 					"All field are required, please update and try again");
 			return;
 		}
+		cardParams.put(CARD_NAME, name);
 		cardParams.put(CARD_COUNTRY, country);
 		cardParams.put(CARD_NB, number);
 		cardParams.put(CARD_EXP_MONTH, month);
@@ -268,7 +295,6 @@ public class StripeTokenCollectorComposite extends Composite implements
 	 * Behavior on cancel
 	 */
 	protected void cancelPayment() {
-
 	}
 
 	/**
@@ -306,10 +332,11 @@ public class StripeTokenCollectorComposite extends Composite implements
 		return label;
 	}
 
-	private Text createLt(Composite parent, String labelStr) {
+	private Text createLt(Composite parent, String labelStr, String msgStr) {
 		createBoldLabel(parent, labelStr);
 		Text text = new Text(parent, SWT.LEAD | SWT.BORDER);
 		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		text.setMessage(msgStr);
 		return text;
 	}
 

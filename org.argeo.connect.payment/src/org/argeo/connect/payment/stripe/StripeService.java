@@ -43,7 +43,7 @@ public class StripeService {
 		return newAccount.getId();
 	}
 
-	/** Does not work with account that have not yet been verified */
+	/** Retrieves all charges for the current connected account */
 	public List<Charge> listCharges(String filter) throws StripeException {
 		ChargeCollection charges = Charge.list(null);
 		return charges.getData();
