@@ -17,9 +17,7 @@ import com.stripe.model.Charge;
 import com.stripe.model.ChargeCollection;
 import com.stripe.net.RequestOptions;
 
-/**
- * Centralises call to the Stripe API
- */
+/** Centralises call to the Stripe API */
 public class StripeService {
 	private final static Log log = LogFactory.getLog(StripeService.class);
 
