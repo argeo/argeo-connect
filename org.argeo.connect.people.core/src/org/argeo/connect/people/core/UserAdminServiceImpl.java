@@ -18,7 +18,7 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.people.utils.UsersUtils;
+import org.argeo.connect.people.util.UsersUtils;
 import org.argeo.osgi.useradmin.LdifName;
 import org.argeo.osgi.useradmin.UserDirectoryException;
 import org.osgi.framework.InvalidSyntaxException;

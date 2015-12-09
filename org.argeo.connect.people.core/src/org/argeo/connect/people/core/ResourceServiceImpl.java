@@ -30,8 +30,8 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.utils.JcrUiUtils;
-import org.argeo.connect.people.utils.XPathUtils;
+import org.argeo.connect.people.util.JcrUiUtils;
+import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.jcr.JcrUtils;
 
 /** Concrete access to people {@link ResourceService} */

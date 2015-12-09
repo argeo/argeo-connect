@@ -19,10 +19,10 @@ import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.utils.JcrUiUtils;
-import org.argeo.connect.people.utils.OrgJcrUtils;
-import org.argeo.connect.people.utils.PeopleJcrUtils;
-import org.argeo.connect.people.utils.PersonJcrUtils;
+import org.argeo.connect.people.util.JcrUiUtils;
+import org.argeo.connect.people.util.OrgJcrUtils;
+import org.argeo.connect.people.util.PeopleJcrUtils;
+import org.argeo.connect.people.util.PersonJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.springframework.core.io.Resource;
 

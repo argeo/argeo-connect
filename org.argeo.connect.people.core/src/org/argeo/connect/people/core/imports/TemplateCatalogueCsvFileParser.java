@@ -7,7 +7,7 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.util.CsvParserWithLinesAsMap;
 
 /**

@@ -1,4 +1,4 @@
-package org.argeo.connect.people.utils;
+package org.argeo.connect.people.util;
 
 import java.io.InputStream;
 import java.util.ArrayList;
