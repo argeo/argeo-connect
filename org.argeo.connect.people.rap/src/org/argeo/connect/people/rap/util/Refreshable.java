@@ -1,4 +1,4 @@
-package org.argeo.connect.people.rap.utils;
+package org.argeo.connect.people.rap.util;
 
 /**
  * WorkbenchPart should implement this interface to enable refresh command to

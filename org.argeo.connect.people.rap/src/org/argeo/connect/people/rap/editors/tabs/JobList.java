@@ -31,7 +31,7 @@ import org.argeo.connect.people.rap.providers.BooleanFlagLabelProvider;
 import org.argeo.connect.people.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.rap.providers.RoleListLabelProvider;
-import org.argeo.connect.people.rap.utils.AbstractPanelFormPart;
+import org.argeo.connect.people.rap.util.AbstractPanelFormPart;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;

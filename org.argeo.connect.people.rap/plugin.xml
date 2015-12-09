@@ -309,7 +309,7 @@
 				tooltip="Force refresh of the current active part">
 				<visibleWhen>
 					<with variable="activePart">
-						<instanceof value="org.argeo.connect.people.rap.utils.Refreshable" />
+						<instanceof value="org.argeo.connect.people.rap.util.Refreshable" />
 					</with>
 				</visibleWhen>
 			</command>
@@ -482,7 +482,7 @@
 	<extension
       	point="org.eclipse.ui.services">
 	   	<sourceProvider
-	        provider="org.argeo.connect.people.rap.utils.EditionSourceProvider">
+	        provider="org.argeo.connect.people.rap.util.EditionSourceProvider">
 	     	<variable
 	            name="org.argeo.connect.people.rap.editingState"
 	            priorityLevel="workbench">

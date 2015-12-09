@@ -17,7 +17,7 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.DateText;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
-import org.argeo.connect.people.rap.utils.Refreshable;
+import org.argeo.connect.people.rap.util.Refreshable;
 import org.argeo.connect.people.rap.wizards.TagOrUntagInstancesWizard;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.util.JcrUiUtils;

@@ -26,7 +26,7 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.UserGroupTableComposite;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
-import org.argeo.connect.people.rap.utils.Refreshable;
+import org.argeo.connect.people.rap.util.Refreshable;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.jcr.ArgeoJcrConstants;
 import org.argeo.jcr.JcrUtils;

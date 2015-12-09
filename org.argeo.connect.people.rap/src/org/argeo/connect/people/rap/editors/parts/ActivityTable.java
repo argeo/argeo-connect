@@ -34,7 +34,7 @@ import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.listeners.HtmlListRwtAdapter;
-import org.argeo.connect.people.rap.utils.ActivityViewerComparator;
+import org.argeo.connect.people.rap.util.ActivityViewerComparator;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.util.ActivityUtils;

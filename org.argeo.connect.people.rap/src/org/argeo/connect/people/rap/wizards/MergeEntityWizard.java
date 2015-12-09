@@ -33,7 +33,7 @@ import org.argeo.connect.people.rap.commands.ForceRefresh;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
-import org.argeo.connect.people.rap.utils.Refreshable;
+import org.argeo.connect.people.rap.util.Refreshable;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.util.JcrUiUtils;

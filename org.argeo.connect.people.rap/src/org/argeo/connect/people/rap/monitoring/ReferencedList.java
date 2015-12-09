@@ -16,7 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.argeo.ArgeoMonitor;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.providers.SimpleLazyContentProvider;
-import org.argeo.connect.people.rap.utils.Refreshable;
+import org.argeo.connect.people.rap.util.Refreshable;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
 import org.argeo.security.ui.PrivilegedJob;
 import org.eclipse.core.runtime.IProgressMonitor;
