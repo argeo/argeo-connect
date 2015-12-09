@@ -21,7 +21,7 @@
 //import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 //import org.argeo.connect.people.rap.composites.ActivityTableComposite;
 //import org.argeo.connect.people.rap.wizards.NewSimpleTaskWizard;
-//import org.argeo.connect.people.utils.JcrUiUtils;
+//import org.argeo.connect.people.util.JcrUiUtils;
 //import org.argeo.eclipse.ui.utils.CommandUtils;
 //import org.argeo.jcr.JcrUtils;
 //import org.eclipse.jface.viewers.DoubleClickEvent;

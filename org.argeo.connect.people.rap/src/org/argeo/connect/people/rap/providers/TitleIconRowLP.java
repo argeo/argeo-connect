@@ -3,7 +3,7 @@ package org.argeo.connect.people.rap.providers;
 import javax.jcr.Node;
 
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.connect.people.util.JcrUiUtils;
 import org.eclipse.swt.graphics.Image;
 
 /**

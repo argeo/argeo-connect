@@ -28,7 +28,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.composites.SimpleJcrTableComposite;
-import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
 import org.eclipse.jface.dialogs.TrayDialog;

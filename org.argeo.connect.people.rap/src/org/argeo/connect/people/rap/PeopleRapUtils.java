@@ -17,7 +17,7 @@ import org.argeo.connect.people.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.PeopleAbstractDropDown;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;

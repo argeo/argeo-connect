@@ -6,7 +6,7 @@ import javax.jcr.Value;
 
 import org.argeo.cms.CmsUiProvider;
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.connect.people.util.JcrUiUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;

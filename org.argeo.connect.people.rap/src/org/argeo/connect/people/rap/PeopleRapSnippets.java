@@ -17,8 +17,8 @@ import org.argeo.connect.people.rap.commands.RemoveEntityReference;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.JcrUiUtils;
-import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.argeo.connect.people.util.JcrUiUtils;
+import org.argeo.connect.people.util.PeopleJcrUtils;
 
 /** Some helper methods to generate HTML snippet */
 public class PeopleRapSnippets {

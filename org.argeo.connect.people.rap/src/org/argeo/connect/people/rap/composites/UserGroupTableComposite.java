@@ -18,7 +18,7 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.XPathUtils;
+import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;

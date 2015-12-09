@@ -12,7 +12,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.utils.UsersUtils;
+import org.argeo.connect.people.util.UsersUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.eclipse.jface.layout.TableColumnLayout;

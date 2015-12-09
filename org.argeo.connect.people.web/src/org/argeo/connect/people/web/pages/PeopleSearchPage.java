@@ -20,7 +20,7 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.web.PeopleMsg;
 import org.argeo.connect.people.web.providers.SearchEntitiesLP;
 import org.argeo.eclipse.ui.EclipseUiUtils;

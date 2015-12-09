@@ -16,7 +16,7 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.rap.providers.EntitySingleColumnLabelProvider;
-import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.CellEditor;

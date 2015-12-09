@@ -5,7 +5,7 @@ import javax.jcr.nodetype.NodeType;
 
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.editors.tabs.HistoryLog;
-import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;

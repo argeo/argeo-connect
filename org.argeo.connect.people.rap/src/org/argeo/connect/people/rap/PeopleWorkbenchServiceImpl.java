@@ -12,7 +12,7 @@ import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.rap.wizards.NewOrgWizard;
 import org.argeo.connect.people.rap.wizards.NewPersonWizard;
-import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.connect.people.util.JcrUiUtils;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 

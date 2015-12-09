@@ -25,7 +25,7 @@ import org.argeo.connect.people.core.versioning.VersionDiff;
 import org.argeo.connect.people.core.versioning.VersionUtils;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.PropertyDiff;
 import org.eclipse.swt.SWT;

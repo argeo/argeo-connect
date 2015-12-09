@@ -19,7 +19,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.core.PeopleServiceImpl;
 import org.argeo.connect.people.core.imports.EncodedTagCsvFileParser;
-import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.springframework.core.io.Resource;
 

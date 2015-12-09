@@ -5,7 +5,7 @@ import javax.jcr.Node;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 
 /**
