@@ -12,7 +12,6 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -108,7 +107,7 @@ public class DateText extends Composite {
 			public void focusLost(FocusEvent event) {
 				String newVal = dateTxt.getText();
 				// Enable reset of the field
-				if (CommonsJcrUtils.isEmptyString(newVal))
+				if (EclipseUiUtils.isEmpty(newVal))
 					calendar = null;
 				else {
 					try {
@@ -138,7 +137,7 @@ public class DateText extends Composite {
 	}
 
 	private Calendar parseDate(String newVal) throws ParseException {
-		if (CommonsJcrUtils.checkNotEmptyString(newVal)) {
+		if (EclipseUiUtils.notEmpty(newVal)) {
 			Date date = dateFormat.parse(newVal);
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(date);

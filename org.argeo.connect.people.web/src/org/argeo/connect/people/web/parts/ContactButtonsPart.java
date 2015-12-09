@@ -8,7 +8,7 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -48,9 +48,9 @@ public class ContactButtonsPart implements CmsUiProvider {
 	private String getCssStyle(Node entity) throws RepositoryException {
 
 		Node contactable = entity.getParent().getParent();
-		String category = CommonsJcrUtils.get(entity,
+		String category = JcrUiUtils.get(entity,
 				PeopleNames.PEOPLE_CONTACT_CATEGORY);
-		String nature = CommonsJcrUtils.get(entity,
+		String nature = JcrUiUtils.get(entity,
 				PeopleNames.PEOPLE_CONTACT_NATURE);
 		// EMAIL
 		if (entity.isNodeType(PeopleTypes.PEOPLE_EMAIL)) {

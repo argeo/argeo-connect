@@ -1,5 +1,7 @@
 package org.argeo.connect.people.web.providers;
 
+import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+
 import java.util.List;
 
 import javax.jcr.Node;
@@ -13,7 +15,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.PeopleWebSnippets;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -71,21 +73,19 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 		String localisationStr = PeopleUiSnippets.getLocalisationInfo(
 				peopleService, person);
 		String primContactStr = PeopleUiSnippets.getPrimaryContacts(person);
-		Boolean politeFormFlag = CommonsJcrUtils.getBooleanValue(person,
+		Boolean politeFormFlag = JcrUiUtils.getBooleanValue(person,
 				PEOPLE_USE_POLITE_FORM);
-		List<String> spokenLanguages = CommonsJcrUtils.getMultiAsList(person,
+		List<String> spokenLanguages = JcrUiUtils.getMultiAsList(person,
 				PEOPLE_SPOKEN_LANGUAGES);
 
-		if (CommonsJcrUtils.checkNotEmptyString(fmn)
-				|| CommonsJcrUtils.checkNotEmptyString(localisationStr)) {
+		if (notEmpty(fmn) || notEmpty(localisationStr)) {
 			builder.append("<br/>").append(fmn);
-			if (CommonsJcrUtils.checkNotEmptyString(fmn)
-					&& CommonsJcrUtils.checkNotEmptyString(localisationStr))
+			if (notEmpty(fmn) && notEmpty(localisationStr))
 				builder.append(PeopleUiConstants.NB_SPACE
 						+ PeopleUiConstants.NB_SPACE);
 			builder.append(localisationStr);
 		}
-		if (CommonsJcrUtils.checkNotEmptyString(primContactStr))
+		if (notEmpty(primContactStr))
 			builder.append("<br/>").append(primContactStr.trim());
 
 		if (politeFormFlag != null || !spokenLanguages.isEmpty()) {
@@ -127,7 +127,7 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 
 		String local = PeopleUiSnippets.getLocalisationInfo(peopleService,
 				person);
-		if (CommonsJcrUtils.checkNotEmptyString(local)) {
+		if (notEmpty(local)) {
 			builder.append(PeopleUiConstants.NB_DOUBLE_SPACE);
 			builder.append(local);
 		}
@@ -139,7 +139,7 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 
 		// Contacts
 		String primContactStr = PeopleUiSnippets.getPrimaryContacts(person);
-		if (CommonsJcrUtils.checkNotEmptyString(primContactStr)) {
+		if (notEmpty(primContactStr)) {
 			builder.append(primContactStr.trim());
 			if (isSmallList)
 				builder.append(PeopleUiConstants.NB_DOUBLE_SPACE);
@@ -156,14 +156,12 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 				PeopleNames.PEOPLE_MAILING_LISTS, "@");
 		if (isSmallList) {
 			builder.append(tags);
-			if (CommonsJcrUtils.checkNotEmptyString(tags)
-					&& CommonsJcrUtils.checkNotEmptyString(mailingLists))
+			if (notEmpty(tags) && notEmpty(mailingLists))
 				builder.append(PeopleUiConstants.NB_SPACE);
 			builder.append(mailingLists);
 		} else {
 			builder.append("<br/>").append(tags);
-			if (CommonsJcrUtils.checkNotEmptyString(tags)
-					&& CommonsJcrUtils.checkNotEmptyString(mailingLists))
+			if (notEmpty(tags) && notEmpty(mailingLists))
 				builder.append("<br/>");
 			builder.append(mailingLists);
 			builder.append("</span>");

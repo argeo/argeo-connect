@@ -6,7 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -44,11 +44,11 @@ public class ChangeEditingState extends AbstractHandler {
 			// prior action
 			Node node = editor.getNode();
 			if (PRIOR_ACTION_SAVE.equals(priorAction))
-				CommonsJcrUtils.checkPoint(node);
+				JcrUiUtils.checkPoint(node);
 			else if (PRIOR_ACTION_CANCEL.equals(priorAction))
 				JcrUtils.discardUnderlyingSessionQuietly(node);
 			else if (PRIOR_ACTION_CHECKOUT.equals(priorAction)) {
-				if (!CommonsJcrUtils.checkCOStatusBeforeUpdate(node))
+				if (!JcrUiUtils.checkCOStatusBeforeUpdate(node))
 					log.warn("Referencing node " + node
 							+ " was checked in when we wanted to update");
 			}

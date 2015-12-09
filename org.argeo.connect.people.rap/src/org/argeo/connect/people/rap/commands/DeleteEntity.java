@@ -18,7 +18,8 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -81,17 +82,17 @@ public class DeleteEntity extends AbstractHandler {
 			IEditorPart iep = iwp.getActiveEditor();
 
 			boolean removeParent = false;
-			if (CommonsJcrUtils.checkNotEmptyString(removeParentStr))
+			if (EclipseUiUtils.notEmpty(removeParentStr))
 				removeParent = new Boolean(removeParentStr);
 
 			if (removeParent)
 				toRemoveNode = toRemoveNode.getParent();
 
-			if (!CommonsJcrUtils.checkCOStatusBeforeUpdate(toRemoveNode))
+			if (!JcrUiUtils.checkCOStatusBeforeUpdate(toRemoveNode))
 				log.warn("To remove node " + toRemoveNode
 						+ " was checked in when we wanted to remove it");
 
-			parentVersionableNode = CommonsJcrUtils
+			parentVersionableNode = JcrUiUtils
 					.getParentVersionableNode(toRemoveNode);
 
 			if (parentVersionableNode != null
@@ -100,7 +101,7 @@ public class DeleteEntity extends AbstractHandler {
 				parentVersionableNode = null;
 
 			if (parentVersionableNode != null) {
-				if (!CommonsJcrUtils
+				if (!JcrUiUtils
 						.checkCOStatusBeforeUpdate(parentVersionableNode))
 					log.warn("Parent versionable node " + parentVersionableNode
 							+ " was checked in when we wanted to remove it");
@@ -109,7 +110,7 @@ public class DeleteEntity extends AbstractHandler {
 			JcrUtils.discardUnderlyingSessionQuietly(toRemoveNode);
 			toRemoveNode.remove();
 			if (parentVersionableNode != null)
-				CommonsJcrUtils.checkPoint(parentVersionableNode);
+				JcrUiUtils.checkPoint(parentVersionableNode);
 			else
 				session.save();
 

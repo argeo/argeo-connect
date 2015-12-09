@@ -8,7 +8,8 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
 /**
@@ -55,14 +56,14 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 
 		// first line
 		builder.append("<b><big> ");
-		builder.append(CommonsJcrUtils.get(entity, Property.JCR_TITLE));
+		builder.append(JcrUiUtils.get(entity, Property.JCR_TITLE));
 		builder.append("</big></b>");
 		long membersNb = tagService.countMembers(entity);
 		builder.append(" <i>(").append(membersNb).append(" members)</i>");
 
 		// Description
-		String desc = CommonsJcrUtils.get(entity, Property.JCR_DESCRIPTION);
-		if (CommonsJcrUtils.checkNotEmptyString(desc))
+		String desc = JcrUiUtils.get(entity, Property.JCR_DESCRIPTION);
+		if (EclipseUiUtils.notEmpty(desc))
 			builder.append("<br />").append(desc);
 
 		builder.append("</span>");
@@ -72,7 +73,7 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 	private String getOneLineLabel(Node entity) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b>");
-		builder.append(CommonsJcrUtils.get(entity, Property.JCR_TITLE));
+		builder.append(JcrUiUtils.get(entity, Property.JCR_TITLE));
 		builder.append("</b>");
 		long membersNb = tagService.countMembers(entity);
 		builder.append(" <i>(").append(membersNb).append(" members)</i>");

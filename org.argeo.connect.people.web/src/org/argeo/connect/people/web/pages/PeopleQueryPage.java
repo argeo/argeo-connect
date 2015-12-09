@@ -14,8 +14,7 @@ import org.argeo.cms.CmsUiProvider;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
-import org.argeo.connect.people.web.PeopleMsg;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.web.providers.SearchEntitiesLP;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -105,7 +104,7 @@ public class PeopleQueryPage implements CmsUiProvider {
 			public void doubleClick(DoubleClickEvent event) {
 				Object firstObj = ((IStructuredSelection) event.getSelection())
 						.getFirstElement();
-				String path = CommonsJcrUtils.getPath((Node) firstObj);
+				String path = JcrUiUtils.getPath((Node) firstObj);
 				CmsUtils.getCmsView().navigateTo(path);
 			}
 		});
@@ -116,7 +115,7 @@ public class PeopleQueryPage implements CmsUiProvider {
 			Node context) {
 		try {
 			// Do not load all contacts when no filter is present
-			// if (CommonsJcrUtils.isEmptyString(filter)) {
+			// if (JcrUiUtils.isEmptyString(filter)) {
 			// entityViewer.setInput(null);
 			// return;
 			// }
@@ -134,7 +133,7 @@ public class PeopleQueryPage implements CmsUiProvider {
 					.getString();
 			if (!Query.JCR_SQL2.equals(language))
 				throw new PeopleException("Unknown language type " + language);
-			if (CommonsJcrUtils.checkNotEmptyString(filter))
+			if (EclipseUiUtils.notEmpty(filter))
 				statement += " WHERE CONTAINS(" + selectorName + ".*, '*"
 						+ filter + "*')";
 			Query query = queryManager.createQuery(statement, language);

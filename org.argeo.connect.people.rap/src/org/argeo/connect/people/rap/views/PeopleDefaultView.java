@@ -27,7 +27,7 @@ import org.argeo.connect.people.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.rap.providers.EntitySingleColumnLabelProvider;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
@@ -79,7 +79,7 @@ public class PeopleDefaultView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		this.session = CommonsJcrUtils.login(repository);
+		this.session = JcrUiUtils.login(repository);
 
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
@@ -237,7 +237,7 @@ public class PeopleDefaultView extends ViewPart {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
 		String xpathQueryStr = "//element(*, " + typeName + ")";
 		String xpathFilter = XPathUtils.getFreeTextConstraint(filter);
-		if (CommonsJcrUtils.checkNotEmptyString(xpathFilter))
+		if (EclipseUiUtils.notEmpty(xpathFilter))
 			xpathQueryStr += "[" + xpathFilter + "]";
 
 		Query xpathQuery = queryManager.createQuery(xpathQueryStr,

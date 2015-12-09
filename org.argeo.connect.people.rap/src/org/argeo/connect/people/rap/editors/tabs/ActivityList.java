@@ -23,7 +23,7 @@ import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.editors.parts.ActivityTable;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.rap.wizards.NewSimpleTaskWizard;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.argeo.jcr.JcrUtils;
@@ -306,7 +306,7 @@ public class ActivityList extends Composite {
 			relatedTo.add(relatedEntity);
 			Node activity = activityService.createActivity(session, type,
 					title, desc, relatedTo);
-			CommonsJcrUtils.checkPoint(activity);
+			JcrUiUtils.checkPoint(activity);
 			return activity;
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to create activity node", e);

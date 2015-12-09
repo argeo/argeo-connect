@@ -20,8 +20,8 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.exports.calc.IJcrTableViewer;
 import org.argeo.connect.people.rap.exports.calc.NodesToCalcWriter;
 import org.argeo.connect.people.rap.exports.calc.RowsToCalcWriter;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.argeo.eclipse.ui.workbench.commands.OpenFile;
 import org.argeo.jcr.JcrUtils;
@@ -56,7 +56,7 @@ public class GetCalcExport extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		String exportId = event.getParameter(PARAM_EXPORT_ID);
 		// force default
-		if (CommonsJcrUtils.isEmptyString(exportId))
+		if (EclipseUiUtils.isEmpty(exportId))
 			exportId = PeopleRapConstants.DEFAULT_CALC_EXPORT;
 
 		try {
@@ -99,13 +99,11 @@ public class GetCalcExport extends AbstractHandler {
 		Object[] elements = provider.getElements(exportId);
 		if (elements instanceof Row[]) {
 			RowsToCalcWriter writer = new RowsToCalcWriter();
-			writer.writeTableFromRows(file,
-					(Row[]) elements,
+			writer.writeTableFromRows(file, (Row[]) elements,
 					provider.getColumnDefinition(exportId));
 		} else if (elements instanceof Node[]) {
 			NodesToCalcWriter writer = new NodesToCalcWriter();
-			writer.writeTableFromNodes(file,
-					(Node[]) elements,
+			writer.writeTableFromNodes(file, (Node[]) elements,
 					provider.getColumnDefinition(exportId));
 		}
 	}

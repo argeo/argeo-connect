@@ -15,7 +15,8 @@ import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
 /**
@@ -92,20 +93,18 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		String local = PeopleUiSnippets.getLocalisationInfo(peopleService,
 				person);
 		String primaryContacts = PeopleUiSnippets.getPrimaryContacts(person);
-		Boolean politeFormFlag = CommonsJcrUtils.getBooleanValue(person,
+		Boolean politeFormFlag = JcrUiUtils.getBooleanValue(person,
 				PEOPLE_USE_POLITE_FORM);
-		List<String> spokenLanguages = CommonsJcrUtils.getMultiAsList(person,
+		List<String> spokenLanguages = JcrUiUtils.getMultiAsList(person,
 				PEOPLE_SPOKEN_LANGUAGES);
 
-		if (CommonsJcrUtils.checkNotEmptyString(fmn)
-				|| CommonsJcrUtils.checkNotEmptyString(local)) {
+		if (EclipseUiUtils.notEmpty(fmn) || EclipseUiUtils.notEmpty(local)) {
 			builder.append("<br/>").append(fmn);
-			if (CommonsJcrUtils.checkNotEmptyString(fmn)
-					&& CommonsJcrUtils.checkNotEmptyString(local))
+			if (EclipseUiUtils.notEmpty(fmn) && EclipseUiUtils.notEmpty(local))
 				builder.append("&#160;&#160; ");
 			builder.append(local);
 		}
-		if (CommonsJcrUtils.checkNotEmptyString(primaryContacts))
+		if (EclipseUiUtils.notEmpty(primaryContacts))
 			builder.append("<br/>").append(primaryContacts);
 
 		if (politeFormFlag != null || !spokenLanguages.isEmpty()) {
@@ -117,8 +116,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 			if (!spokenLanguages.isEmpty()) {
 				for (String str : spokenLanguages) {
 					String language = peopleService.getResourceService()
-							.getEncodedTagValue(
-									CommonsJcrUtils.getSession(person),
+							.getEncodedTagValue(JcrUiUtils.getSession(person),
 									PeopleConstants.RESOURCE_LANG, str);
 					builder.append(language).append(", ");
 				}
@@ -137,7 +135,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 	// builder.append("<span style='font-size:15px;'>");
 	//
 	// String primaryContacts = PeopleHtmlUtils.getPrimaryContacts(person);
-	// if (CommonsJcrUtils.checkNotEmptyString(primaryContacts))
+	// if (JcrUiUtils.checkNotEmptyString(primaryContacts))
 	// builder.append(primaryContacts).append("<br/>");
 	// builder.append(PeopleHtmlUtils.getLastUpdateSnippet(person));
 	//
@@ -154,19 +152,19 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		builder.append("</big> </b> ");
 		String local = PeopleUiSnippets.getLocalisationInfo(peopleService,
 				person);
-		if (CommonsJcrUtils.checkNotEmptyString(local))
+		if (EclipseUiUtils.notEmpty(local))
 			builder.append(local);
 		builder.append("<br/>");
 
 		// Contacts
 		String primContactsStr = PeopleUiSnippets.getPrimaryContacts(person);
-		if (CommonsJcrUtils.checkNotEmptyString(primContactsStr))
+		if (EclipseUiUtils.notEmpty(primContactsStr))
 			builder.append(primContactsStr).append("<br/>");
 
 		// Tags
 		String clickableTags = PeopleRapSnippets.getTags(peopleService,
 				peopleWorkbenchService, person);
-		if (CommonsJcrUtils.checkNotEmptyString(clickableTags))
+		if (EclipseUiUtils.notEmpty(clickableTags))
 			builder.append(clickableTags).append("<br/>");
 
 		builder.append("</span>");

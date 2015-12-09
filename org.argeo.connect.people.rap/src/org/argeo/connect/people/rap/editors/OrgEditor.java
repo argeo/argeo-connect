@@ -21,7 +21,7 @@ import org.argeo.connect.people.rap.editors.tabs.OrgAdminInfo;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -63,9 +63,9 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 		super.init(site, input);
 		org = getNode();
 
-		String shortName = CommonsJcrUtils.get(org,
+		String shortName = JcrUiUtils.get(org,
 				PeopleNames.PEOPLE_LEGAL_NAME);
-		if (CommonsJcrUtils.checkNotEmptyString(shortName)) {
+		if (EclipseUiUtils.notEmpty(shortName)) {
 			if (shortName.length() > SHORT_NAME_LENGHT)
 				shortName = shortName.substring(0, SHORT_NAME_LENGHT - 1)
 						+ "...";
@@ -225,13 +225,13 @@ public class OrgEditor extends AbstractEntityCTabEditor {
 				public void widgetSelected(SelectionEvent e) {
 					boolean defineDistinct = useDistinctDisplayBtn
 							.getSelection();
-					if (CommonsJcrUtils.setJcrProperty(org,
+					if (JcrUiUtils.setJcrProperty(org,
 							PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME,
 							PropertyType.BOOLEAN, defineDistinct)) {
 						if (!defineDistinct) {
-							String displayName = CommonsJcrUtils.get(org,
+							String displayName = JcrUiUtils.get(org,
 									PeopleNames.PEOPLE_LEGAL_NAME);
-							CommonsJcrUtils.setJcrProperty(org,
+							JcrUiUtils.setJcrProperty(org,
 									Property.JCR_TITLE, PropertyType.STRING,
 									displayName);
 							displayNameTxt.setText(displayName);

@@ -4,7 +4,7 @@ import java.net.URL;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -32,7 +32,7 @@ public class OpenUrl extends AbstractHandler {
 		try {
 			URL url = null;
 
-			if (CommonsJcrUtils.checkNotEmptyString(urlValue)) {
+			if (EclipseUiUtils.notEmpty(urlValue)) {
 				url = new URL(urlValue);
 			} else if (PARAM_VALUE_TRACKER.equals(urlType))
 				url = new URL(TRACKER_URL);

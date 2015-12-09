@@ -1,5 +1,7 @@
 package org.argeo.connect.people.rap.composites;
 
+import static org.argeo.eclipse.ui.jcr.JcrUiUtils.getNodeSelectionAdapter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,10 +18,9 @@ import javax.jcr.query.QueryResult;
 
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
@@ -219,9 +220,8 @@ public class SimpleJcrTableComposite extends Composite implements ArgeoNames {
 					colDef.getHeaderLabel(), SWT.NONE, colDef.getColumnSize());
 			column.setLabelProvider(new CLProvider(colDef.getPropertyName()));
 			column.getColumn().addSelectionListener(
-					JcrUiUtils.getNodeSelectionAdapter(i,
-							colDef.getPropertyType(), colDef.getPropertyName(),
-							comparator, viewer));
+					getNodeSelectionAdapter(i, colDef.getPropertyType(),
+							colDef.getPropertyName(), comparator, viewer));
 			i++;
 		}
 
@@ -317,7 +317,7 @@ public class SimpleJcrTableComposite extends Composite implements ArgeoNames {
 		String xpathQueryStr = XPathUtils.descendantFrom(parentPath)
 				+ "//element(*, " + nodeType + ")";
 		String attrQuery = XPathUtils.getFreeTextConstraint(filter);
-		if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+		if (EclipseUiUtils.notEmpty(attrQuery))
 			xpathQueryStr += "[" + attrQuery + "]";
 		Query xpathQuery = queryManager.createQuery(xpathQueryStr,
 				PeopleConstants.QUERY_XPATH);

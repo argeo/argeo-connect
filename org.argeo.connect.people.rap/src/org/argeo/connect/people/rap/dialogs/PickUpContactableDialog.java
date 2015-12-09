@@ -34,7 +34,7 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
@@ -136,7 +136,7 @@ public class PickUpContactableDialog extends TrayDialog {
 			Object obj = ((IStructuredSelection) event.getSelection())
 					.getFirstElement();
 			if (obj instanceof Row) {
-				selectedNode = CommonsJcrUtils.getNode((Row) obj, null);
+				selectedNode = JcrUiUtils.getNode((Row) obj, null);
 			}
 		}
 	}
@@ -149,7 +149,7 @@ public class PickUpContactableDialog extends TrayDialog {
 			Object obj = ((IStructuredSelection) evt.getSelection())
 					.getFirstElement();
 			if (obj instanceof Row) {
-				CommonsJcrUtils.getNode((Row) obj, null);
+				JcrUiUtils.getNode((Row) obj, null);
 				okPressed();
 			}
 		}
@@ -179,7 +179,7 @@ public class PickUpContactableDialog extends TrayDialog {
 			String xpathQueryStr = "//element(*, " + nodeType + ")";
 			String attrQuery = XPathUtils.getFreeTextConstraint(filterTxt
 					.getText());
-			if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+			if (EclipseUiUtils.notEmpty(attrQuery))
 				xpathQueryStr += "[" + attrQuery + "]";
 			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
 					PeopleConstants.QUERY_XPATH);
@@ -190,7 +190,7 @@ public class PickUpContactableDialog extends TrayDialog {
 			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
 			// Selector source = factory.selector(nodeType, nodeType);
 			//
-			// Constraint defaultC = CommonsJcrUtils.getFreeTextConstraint(
+			// Constraint defaultC = JcrUiUtils.getFreeTextConstraint(
 			// session, factory, source, filterTxt.getText());
 			//
 			// Ordering order = factory.ascending(factory.propertyValue(
@@ -201,7 +201,7 @@ public class PickUpContactableDialog extends TrayDialog {
 			// // TODO rather implement a virtual viewer
 			// query.setLimit(100);
 			// QueryResult result = query.execute();
-			Row[] rows = CommonsJcrUtils.rowIteratorToArray(result.getRows());
+			Row[] rows = JcrUiUtils.rowIteratorToArray(result.getRows());
 			setViewerInput(rows);
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list " + nodeType

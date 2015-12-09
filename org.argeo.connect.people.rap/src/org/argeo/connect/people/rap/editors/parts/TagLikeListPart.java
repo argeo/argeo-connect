@@ -28,7 +28,8 @@ import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.rap.rwt.RWT;
@@ -107,7 +108,7 @@ public class TagLikeListPart extends Composite {
 		// Cache some context object to ease implementation
 		this.resourceService = peopleService.getResourceService();
 		this.userService = peopleService.getUserAdminService();
-		session = CommonsJcrUtils.getSession(taggable);
+		session = JcrUiUtils.getSession(taggable);
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
 
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
@@ -213,8 +214,7 @@ public class TagLikeListPart extends Composite {
 												peopleWorkbenchService
 														.getOpenEntityEditorCmdId(),
 												OpenEntityEditor.PARAM_JCR_ID,
-												CommonsJcrUtils
-														.getIdentifier(tag));
+												JcrUiUtils.getIdentifier(tag));
 								} catch (RepositoryException e) {
 									throw new PeopleException(
 											"unable to get path for resource tag node "
@@ -269,7 +269,7 @@ public class TagLikeListPart extends Composite {
 						@Override
 						public void widgetSelected(SelectionEvent e) {
 							String newTag = tagDD.getText();
-							if (CommonsJcrUtils.isEmptyString(newTag))
+							if (EclipseUiUtils.isEmpty(newTag))
 								return;
 							else
 								addTag(parentCmp.getShell(), TagFormPart.this,
@@ -338,7 +338,7 @@ public class TagLikeListPart extends Composite {
 								.getConfigProperty(PeopleConstants.PEOPLE_PROP_PREVENT_TAG_ADDITION))
 						|| userService
 								.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN);
-						// || userService.amIInRole(PeopleConstants.ROLE_ADMIN);
+				// || userService.amIInRole(PeopleConstants.ROLE_ADMIN);
 
 				if (canAdd) {
 					// Ask end user if we create a new tag
@@ -376,8 +376,7 @@ public class TagLikeListPart extends Composite {
 							.trim();
 					if (newTag.toUpperCase().trim().equals(curTagUpperCase)) {
 						msg = "\""
-								+ CommonsJcrUtils.get(taggable,
-										Property.JCR_TITLE)
+								+ JcrUiUtils.get(taggable, Property.JCR_TITLE)
 								+ "\" is already linked with \""
 								+ tag.getString()
 								+ "\". Nothing has been done.";

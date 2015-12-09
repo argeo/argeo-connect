@@ -24,7 +24,7 @@ import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -188,7 +188,7 @@ public class ContactList extends Composite {
 						Node currNode = ni.nextNode();
 						if (!currNode.isNodeType(currType))
 							continue loop;
-						if (CommonsJcrUtils.isNodeType(currNode,
+						if (JcrUiUtils.isNodeType(currNode,
 								PeopleTypes.PEOPLE_ADDRESS))
 							new ContactAddressComposite(parent, SWT.NO_FOCUS,
 									editor, formPart, peopleService,
@@ -242,7 +242,7 @@ public class ContactList extends Composite {
 		addContactCmb.select(0);
 
 		// NATURE(work or private) is only for persons
-		Combo natureCmb = CommonsJcrUtils.isNodeType(entity,
+		Combo natureCmb = JcrUiUtils.isNodeType(entity,
 				PeopleTypes.PEOPLE_PERSON) ? new Combo(parent, SWT.READ_ONLY)
 				: null;
 		if (natureCmb != null) {
@@ -516,7 +516,7 @@ public class ContactList extends Composite {
 		// Country: dropdown + text
 		Text countryTxt = createRowDataLT(parent, "Country", 150);
 		final TagLikeDropDown countryDD = new TagLikeDropDown(
-				CommonsJcrUtils.getSession(entity),
+				JcrUiUtils.getSession(entity),
 				peopleService.getResourceService(),
 				PeopleConstants.RESOURCE_COUNTRY, countryTxt);
 		final Text geoPointTxt = createRowDataLT(parent, "Geopoint", 200);
@@ -623,7 +623,7 @@ public class ContactList extends Composite {
 					Node currNode = diag.getSelected();
 					valueTxt.setData(PROP_SELECTED_NODE, currNode);
 					if (currNode != null) {
-						valueTxt.setText(CommonsJcrUtils.get(currNode,
+						valueTxt.setText(JcrUiUtils.get(currNode,
 								Property.JCR_TITLE));
 					}
 				}

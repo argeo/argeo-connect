@@ -1,5 +1,8 @@
 package org.argeo.connect.people.core;
 
+import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
+import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
@@ -11,8 +14,9 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.PersonService;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
 /** Concrete access to people {@link PersonService} */
@@ -33,22 +37,19 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 				defineDistinct = entity.getProperty(
 						PEOPLE_USE_DISTINCT_DISPLAY_NAME).getBoolean();
 			if (defineDistinct)
-				displayName = CommonsJcrUtils.get(entity, Property.JCR_TITLE);
+				displayName = JcrUiUtils.get(entity, Property.JCR_TITLE);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
-				String lastName = CommonsJcrUtils.get(entity, PEOPLE_LAST_NAME);
-				String firstName = CommonsJcrUtils.get(entity,
-						PEOPLE_FIRST_NAME);
-				if (CommonsJcrUtils.checkNotEmptyString(firstName)
-						|| CommonsJcrUtils.checkNotEmptyString(lastName)) {
+				String lastName = JcrUiUtils.get(entity, PEOPLE_LAST_NAME);
+				String firstName = JcrUiUtils.get(entity, PEOPLE_FIRST_NAME);
+				if (EclipseUiUtils.notEmpty(firstName) || notEmpty(lastName)) {
 					displayName = lastName;
-					if (CommonsJcrUtils.checkNotEmptyString(firstName)
-							&& CommonsJcrUtils.checkNotEmptyString(lastName))
+					if (notEmpty(firstName) && notEmpty(lastName))
 						displayName += ", ";
 					displayName += firstName;
 				}
 			} else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG)) {
 				// Default display is simply the legal name
-				displayName = CommonsJcrUtils.get(entity, PEOPLE_LEGAL_NAME);
+				displayName = JcrUiUtils.get(entity, PEOPLE_LEGAL_NAME);
 			} else
 				throw new PeopleException("Display name not defined for type "
 						+ entity.getPrimaryNodeType().getName() + " - node: "
@@ -77,11 +78,10 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 	 */
 	protected void savePerson(Node person, boolean commit)
 			throws PeopleException, RepositoryException {
-		String lastName = CommonsJcrUtils.get(person,
-				PeopleNames.PEOPLE_LAST_NAME);
-		String firstName = CommonsJcrUtils.get(person,
-				PeopleNames.PEOPLE_FIRST_NAME);
-		Boolean useDistinctDName = CommonsJcrUtils.getBooleanValue(person,
+		String lastName = JcrUiUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
+		String firstName = JcrUiUtils
+				.get(person, PeopleNames.PEOPLE_FIRST_NAME);
+		Boolean useDistinctDName = JcrUiUtils.getBooleanValue(person,
 				PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 		String displayName = null;
 
@@ -90,12 +90,10 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 			displayName = getDisplayName(person);
 			person.setProperty(Property.JCR_TITLE, displayName);
 		} else
-			displayName = CommonsJcrUtils.get(person, Property.JCR_TITLE);
+			displayName = JcrUiUtils.get(person, Property.JCR_TITLE);
 
 		// Check validity of main info
-		if (CommonsJcrUtils.isEmptyString(lastName)
-				&& CommonsJcrUtils.isEmptyString(firstName)
-				&& CommonsJcrUtils.isEmptyString(displayName)) {
+		if (isEmpty(lastName) && isEmpty(firstName) && isEmpty(displayName)) {
 			String msg = "Please note that you must define a first name, a "
 					+ "last name or a display name to be able to create or "
 					+ "update this person.";
@@ -110,7 +108,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 		peopleService.updatePrimaryCache(person);
 
 		if (commit)
-			CommonsJcrUtils.checkPoint(person);
+			JcrUiUtils.checkPoint(person);
 		else
 			person.getSession().save();
 	}
@@ -119,21 +117,19 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 	protected void saveOrganisation(Node org, boolean commit)
 			throws PeopleException, RepositoryException {
 		// Check validity of main info
-		String legalName = CommonsJcrUtils.get(org,
-				PeopleNames.PEOPLE_LEGAL_NAME);
+		String legalName = JcrUiUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 
-		Boolean defineDistinctDefaultDisplay = CommonsJcrUtils.getBooleanValue(
-				org, PEOPLE_USE_DISTINCT_DISPLAY_NAME);
+		Boolean defineDistinctDefaultDisplay = JcrUiUtils.getBooleanValue(org,
+				PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 		String displayName;
 		if (defineDistinctDefaultDisplay == null
 				|| !defineDistinctDefaultDisplay) {
 			displayName = getDisplayName(org);
 			org.setProperty(Property.JCR_TITLE, legalName);
 		} else
-			displayName = CommonsJcrUtils.get(org, Property.JCR_TITLE);
+			displayName = JcrUiUtils.get(org, Property.JCR_TITLE);
 
-		if (CommonsJcrUtils.isEmptyString(legalName)
-				&& CommonsJcrUtils.isEmptyString(displayName)) {
+		if (isEmpty(legalName) && isEmpty(displayName)) {
 			String msg = "Please note that you must define a legal "
 					+ " or a display name to be able to create or "
 					+ "update this organisation.";
@@ -148,7 +144,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 		peopleService.updatePrimaryCache(org);
 
 		if (commit)
-			CommonsJcrUtils.checkPoint(org);
+			JcrUiUtils.checkPoint(org);
 		else
 			org.getSession().save();
 	}
@@ -170,23 +166,23 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 				if (!newPath.equals(oldPath)) {
 					// remove old
 					// boolean wasCO =
-					CommonsJcrUtils.checkCOStatusBeforeUpdate(oldPerson);
+					JcrUiUtils.checkCOStatusBeforeUpdate(oldPerson);
 					oldJob.remove();
 					// FIXME we should not save the session anymore
 					oldPerson.getSession().save();
-					// CommonsJcrUtils.checkCOStatusAfterUpdate(oldPerson,
+					// JcrUiUtils.checkCOStatusAfterUpdate(oldPerson,
 					// wasCO);
 				} else
 					newJob = oldJob;
 			}
 
 			// Define the job node new name
-			String orgName = CommonsJcrUtils.get(organisation,
+			String orgName = JcrUiUtils.get(organisation,
 					PeopleNames.PEOPLE_LEGAL_NAME);
-			String orgUid = CommonsJcrUtils.get(organisation,
-					PeopleNames.PEOPLE_UID);
+			String orgUid = JcrUiUtils
+					.get(organisation, PeopleNames.PEOPLE_UID);
 			String newNodeName = null;
-			if (CommonsJcrUtils.checkNotEmptyString(orgName)) {
+			if (notEmpty(orgName)) {
 				newNodeName = JcrUtils.replaceInvalidChars(orgName);
 				// FIXME centralize this
 				if (newNodeName.indexOf("\n") > -1)
@@ -195,7 +191,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 				newNodeName = orgUid;
 
 			// boolean wasCO =
-			CommonsJcrUtils.checkCOStatusBeforeUpdate(person);
+			JcrUiUtils.checkCOStatusBeforeUpdate(person);
 			// Create node if necessary
 			if (newJob == null) {
 				Node parentNode = JcrUtils.mkdirs(person,
@@ -215,14 +211,14 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 			newJob.setProperty(PeopleNames.PEOPLE_REF_UID, orgUid);
 
 			// position
-			if (CommonsJcrUtils.isEmptyString(position)
+			if (isEmpty(position)
 					&& newJob.hasProperty(PeopleNames.PEOPLE_ROLE))
 				newJob.getProperty(PeopleNames.PEOPLE_ROLE).remove();
 			else
 				newJob.setProperty(PeopleNames.PEOPLE_ROLE, position);
 
 			// department
-			if (CommonsJcrUtils.isEmptyString(department)
+			if (isEmpty(department)
 					&& newJob.hasProperty(PeopleNames.PEOPLE_DEPARTMENT))
 				newJob.getProperty(PeopleNames.PEOPLE_DEPARTMENT).remove();
 			else
@@ -235,7 +231,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 				newJob.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, isPrimary);
 			// FIXME we should not save the session anymore
 			person.getSession().save();
-			// CommonsJcrUtils.checkCOStatusAfterUpdate(person, wasCO);
+			// JcrUiUtils.checkCOStatusAfterUpdate(person, wasCO);
 		} catch (RepositoryException re) {
 			throw new PeopleException("unable to create or update job "
 					+ oldJob + " for person " + person + " and org "

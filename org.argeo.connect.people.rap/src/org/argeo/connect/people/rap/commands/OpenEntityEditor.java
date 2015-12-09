@@ -21,7 +21,7 @@ import org.argeo.connect.people.rap.editors.TagEditor;
 import org.argeo.connect.people.rap.editors.TaskEditor;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -86,7 +86,7 @@ public class OpenEntityEditor extends AbstractHandler {
 					((CmsEditable) editor).startEditing();
 
 				String tabId = event.getParameter(PARAM_CTAB_ID);
-				if (CommonsJcrUtils.checkNotEmptyString(tabId)
+				if (EclipseUiUtils.notEmpty(tabId)
 						&& editor instanceof AbstractEntityCTabEditor)
 					((AbstractEntityCTabEditor) editor).openTabItem(tabId);
 			}

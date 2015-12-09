@@ -1,5 +1,7 @@
 package org.argeo.connect.people.utils;
 
+import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -14,7 +16,7 @@ public class XPathUtils {
 	private final static Log log = LogFactory.getLog(XPathUtils.class);
 
 	public static String descendantFrom(String parentPath) {
-		if (CommonsJcrUtils.checkNotEmptyString(parentPath)) {
+		if (notEmpty(parentPath)) {
 			if ("/".equals(parentPath))
 				parentPath = "";
 			// Hardcoded dependency to Jackrabbit. Remove
@@ -32,7 +34,7 @@ public class XPathUtils {
 	public static String localAnd(String... conditions) {
 		StringBuilder builder = new StringBuilder();
 		for (String condition : conditions) {
-			if (CommonsJcrUtils.checkNotEmptyString(condition)) {
+			if (notEmpty(condition)) {
 				builder.append(" ").append(condition).append(" and ");
 			}
 		}
@@ -43,7 +45,7 @@ public class XPathUtils {
 	}
 
 	public static String xPathNot(String condition) {
-		if (CommonsJcrUtils.checkNotEmptyString(condition))
+		if (notEmpty(condition))
 			return "not(" + condition + ")";
 		else
 			return "";
@@ -52,7 +54,7 @@ public class XPathUtils {
 	public static String getFreeTextConstraint(String filter)
 			throws RepositoryException {
 		StringBuilder builder = new StringBuilder();
-		if (CommonsJcrUtils.checkNotEmptyString(filter)) {
+		if (notEmpty(filter)) {
 			String[] strs = filter.trim().split(" ");
 			for (String token : strs) {
 				builder.append("jcr:contains(.,'*" + token + "*') and ");
@@ -64,7 +66,7 @@ public class XPathUtils {
 
 	public static String getPropertyContains(String propertyName, String filter)
 			throws RepositoryException {
-		if (CommonsJcrUtils.checkNotEmptyString(filter))
+		if (notEmpty(filter))
 			return "jcr:contains(@" + propertyName + ",'*" + filter + "*')";
 		return "";
 	}
@@ -86,13 +88,13 @@ public class XPathUtils {
 	}
 
 	public static String getPropertyEquals(String propertyName, String value) {
-		if (CommonsJcrUtils.checkNotEmptyString(value))
+		if (notEmpty(value))
 			return "@" + propertyName + "='" + value + "'";
 		return "";
 	}
 
 	public static void andAppend(StringBuilder builder, String condition) {
-		if (CommonsJcrUtils.checkNotEmptyString(condition)) {
+		if (notEmpty(condition)) {
 			builder.append(condition);
 			builder.append(" and ");
 		}
@@ -100,18 +102,17 @@ public class XPathUtils {
 
 	public static void appendAndPropStringCondition(StringBuilder builder,
 			String propertyName, String filter) throws RepositoryException {
-		if (CommonsJcrUtils.checkNotEmptyString(filter)) {
+		if (notEmpty(filter)) {
 			andAppend(builder, getPropertyContains(propertyName, filter));
 		}
 	}
 
 	public static void appendAndNotPropStringCondition(StringBuilder builder,
 			String propertyName, String filter) throws RepositoryException {
-		if (CommonsJcrUtils.checkNotEmptyString(filter)) {
+		if (notEmpty(filter)) {
 			String cond = getPropertyContains(propertyName, filter);
 			builder.append(xPathNot(cond));
 			builder.append(" and ");
 		}
 	}
-
 }

@@ -12,7 +12,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.composites.BankAccountComposite;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.OrgJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
@@ -111,10 +111,10 @@ public class OrgAdminInfo extends Composite {
 			@Override
 			public void modifyText(ModifyEvent event) {
 				try {
-					if (CommonsJcrUtils.setJcrProperty(entity,
+					if (JcrUiUtils.setJcrProperty(entity,
 							PeopleNames.PEOPLE_LEGAL_NAME, PropertyType.STRING,
 							legalNameTxt.getText())) {
-						Boolean defineDistinct = CommonsJcrUtils
+						Boolean defineDistinct = JcrUiUtils
 								.getBooleanValue(
 										entity,
 										PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME);

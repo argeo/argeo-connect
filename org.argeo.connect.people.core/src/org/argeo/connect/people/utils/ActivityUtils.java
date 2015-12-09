@@ -16,6 +16,7 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
 /**
@@ -37,7 +38,7 @@ public class ActivityUtils {
 					poll = curr;
 				else
 					curr = curr.getParent();
-			return CommonsJcrUtils.get(poll, PeopleNames.PEOPLE_POLL_NAME);
+			return JcrUiUtils.get(poll, PeopleNames.PEOPLE_POLL_NAME);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to get related "
 					+ "poll name for " + rate, re);
@@ -56,8 +57,10 @@ public class ActivityUtils {
 			builder.append(XPathUtils.descendantFrom(pollable.getPath()));
 			builder.append("//element(*, ").append(PeopleTypes.PEOPLE_POLL)
 					.append(")");
-			Query query = session.getWorkspace().getQueryManager().
-					createQuery(builder.toString(),
+			Query query = session
+					.getWorkspace()
+					.getQueryManager()
+					.createQuery(builder.toString(),
 							PeopleConstants.QUERY_XPATH);
 
 			// SQL2
@@ -74,14 +77,16 @@ public class ActivityUtils {
 	public static NodeIterator getRates(Node pollable) {
 		try {
 			Session session = pollable.getSession();
-			
+
 			// XPath
 			StringBuilder builder = new StringBuilder();
 			builder.append(XPathUtils.descendantFrom(pollable.getPath()));
 			builder.append("//element(*, ").append(PeopleTypes.PEOPLE_RATE)
 					.append(")");
-			Query query = session.getWorkspace().getQueryManager().
-					createQuery(builder.toString(),
+			Query query = session
+					.getWorkspace()
+					.getQueryManager()
+					.createQuery(builder.toString(),
 							PeopleConstants.QUERY_XPATH);
 
 			// // SQL2
@@ -141,7 +146,7 @@ public class ActivityUtils {
 			Node parent = JcrUtils.mkdirs(poll, PeopleNames.PEOPLE_RATES,
 					NodeType.NT_UNSTRUCTURED);
 
-			String nodeName = CommonsJcrUtils.isEmptyString(userID) ? poll
+			String nodeName = EclipseUiUtils.isEmpty(userID) ? poll
 					.getSession().getUserID() : userID;
 
 			Node vote = parent.addNode(nodeName, PeopleTypes.PEOPLE_ACTIVITY);
@@ -153,7 +158,7 @@ public class ActivityUtils {
 					new GregorianCalendar());
 
 			// related to
-			CommonsJcrUtils.addRefToMultiValuedProp(vote,
+			JcrUiUtils.addRefToMultiValuedProp(vote,
 					PeopleNames.PEOPLE_RELATED_TO, poll);
 
 			JcrUtils.updateLastModified(vote);

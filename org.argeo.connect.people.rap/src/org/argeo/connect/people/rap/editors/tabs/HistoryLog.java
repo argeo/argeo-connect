@@ -25,7 +25,7 @@ import org.argeo.connect.people.core.versioning.VersionDiff;
 import org.argeo.connect.people.core.versioning.VersionUtils;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.PropertyDiff;
 import org.eclipse.swt.SWT;
@@ -86,12 +86,12 @@ public class HistoryLog extends Composite {
 			gd.horizontalIndent = 5;
 			label.setLayoutData(gd);
 			StringBuilder builder = new StringBuilder();
-			String puid = CommonsJcrUtils.get(entity, PeopleNames.PEOPLE_UID);
-			if (CommonsJcrUtils.checkNotEmptyString(puid)) {
+			String puid = JcrUiUtils.get(entity, PeopleNames.PEOPLE_UID);
+			if (EclipseUiUtils.notEmpty(puid)) {
 				builder.append("People UID: ").append(puid);
 				builder.append(" <br/>");
 			}
-			builder.append("Path: ").append(CommonsJcrUtils.getPath(entity));
+			builder.append("Path: ").append(JcrUiUtils.getPath(entity));
 			label.setText(builder.toString());
 		}
 		Composite historyCmp = new Composite(parent, SWT.NONE);
@@ -267,7 +267,7 @@ public class HistoryLog extends Composite {
 				builder.append(label).append(": ");
 				builder.append(" + ");
 				if (prop.isMultiple())
-					builder.append(CommonsJcrUtils.getMultiAsString(
+					builder.append(JcrUiUtils.getMultiAsString(
 							prop.getParent(), prop.getName(), "; "));
 				else
 					builder.append(getValueAsString(prop.getValue()));

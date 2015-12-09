@@ -31,7 +31,7 @@ public abstract class BooleanEditingSupport extends EditingSupport {
 	protected abstract boolean canEdit(Object element);
 
 	// protected boolean canEdit(Object element) {
-	// return CommonsJcrUtils.isNodeCheckedOutByMe(film);
+	// return JcrUiUtils.isNodeCheckedOutByMe(film);
 	// }
 
 	@Override

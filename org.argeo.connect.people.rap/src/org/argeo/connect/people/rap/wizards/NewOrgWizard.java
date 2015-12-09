@@ -8,7 +8,8 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
@@ -70,25 +71,24 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 				.getSelection();
 		String legalForm = legalFormTxt.getText();
 
-		if (CommonsJcrUtils.isEmptyString(legalName)
-				&& CommonsJcrUtils.isEmptyString(displayName)) {
+		if (EclipseUiUtils.isEmpty(legalName)
+				&& EclipseUiUtils.isEmpty(displayName)) {
 			MessageDialog
 					.openError(getShell(), "Non-valid information",
 							"Please enter at least a legal or a display name that is not empty.");
 			return false;
 		}
 
-		CommonsJcrUtils.setJcrProperty(org, PEOPLE_LEGAL_NAME,
-				PropertyType.STRING, legalName);
+		JcrUiUtils.setJcrProperty(org, PEOPLE_LEGAL_NAME, PropertyType.STRING,
+				legalName);
 		if (useDistinctDisplayName) {
-			CommonsJcrUtils.setJcrProperty(org,
-					PEOPLE_USE_DISTINCT_DISPLAY_NAME, PropertyType.BOOLEAN,
-					useDistinctDisplayName);
-			CommonsJcrUtils.setJcrProperty(org, Property.JCR_TITLE,
+			JcrUiUtils.setJcrProperty(org, PEOPLE_USE_DISTINCT_DISPLAY_NAME,
+					PropertyType.BOOLEAN, useDistinctDisplayName);
+			JcrUiUtils.setJcrProperty(org, Property.JCR_TITLE,
 					PropertyType.STRING, displayName);
 		}
-		if (CommonsJcrUtils.checkNotEmptyString(legalForm))
-			CommonsJcrUtils.setJcrProperty(org, PEOPLE_LEGAL_FORM,
+		if (EclipseUiUtils.notEmpty(legalForm))
+			JcrUiUtils.setJcrProperty(org, PEOPLE_LEGAL_FORM,
 					PropertyType.STRING, legalForm);
 		return true;
 	}

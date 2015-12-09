@@ -5,7 +5,7 @@ import javax.jcr.Node;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -34,9 +34,9 @@ public class EntitySingleLineLabelProvider implements ILabelProvider {
 	public String getText(Object element) {
 
 		Node entity = (Node) element;
-		if (CommonsJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON))
+		if (JcrUiUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON))
 			return personOLP.getText(entity);
-		else if (CommonsJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG))
+		else if (JcrUiUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG))
 			return orgOLP.getText(entity);
 		else {
 			StringBuilder builder = new StringBuilder();

@@ -7,7 +7,8 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
 /**
@@ -31,16 +32,15 @@ public class GroupMembersLabelProvider extends ColumnLabelProvider implements
 			// Get referenced entity
 			Node referencedEntity = peopleService.getEntityByUid(
 					position.getSession(),
-					CommonsJcrUtils.get(position, PEOPLE_REF_UID));
+					JcrUiUtils.get(position, PEOPLE_REF_UID));
 
 			// Create HTML snippet
 			StringBuilder builder = new StringBuilder();
 			builder.append("<b>");
-			builder.append(CommonsJcrUtils.get(referencedEntity,
-					Property.JCR_TITLE));
+			builder.append(JcrUiUtils.get(referencedEntity, Property.JCR_TITLE));
 			builder.append("</b>");
-			String role = CommonsJcrUtils.get(position, PEOPLE_ROLE);
-			if (CommonsJcrUtils.checkNotEmptyString(role))
+			String role = JcrUiUtils.get(position, PEOPLE_ROLE);
+			if (EclipseUiUtils.notEmpty(role))
 				builder.append(" [").append(role).append("]");
 			return builder.toString();
 		} catch (RepositoryException e) {

@@ -24,7 +24,7 @@ import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.utils.ActivityUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -65,7 +65,7 @@ public class RateEditor extends AbstractPeopleEditor {
 	protected void updateToolTip() {
 		EntityEditorInput sei = (EntityEditorInput) getEditorInput();
 		String pollName = ActivityUtils.getPollName(getNode());
-		String manager = CommonsJcrUtils.get(getNode(),
+		String manager = JcrUiUtils.get(getNode(),
 				PeopleNames.PEOPLE_REPORTED_BY);
 		sei.setTooltipText(manager + "'s rate for " + pollName);
 	}
@@ -74,7 +74,7 @@ public class RateEditor extends AbstractPeopleEditor {
 	protected void updatePartName() {
 		ActivityService as = getPeopleService().getActivityService();
 		String name = as.getActivityLabel(getNode());
-		if (CommonsJcrUtils.checkNotEmptyString(name))
+		if (EclipseUiUtils.notEmpty(name))
 			setPartName(name);
 	}
 
@@ -123,12 +123,12 @@ public class RateEditor extends AbstractPeopleEditor {
 				super.refresh();
 				boolean canEdit = RateEditor.this.isEditing()
 						&& getSession().getUserID().equals(
-								CommonsJcrUtils.get(getNode(),
+								JcrUiUtils.get(getNode(),
 										PeopleNames.PEOPLE_REPORTED_BY));
 				PeopleRapUtils.refreshFormTextWidget(RateEditor.this, descTxt,
 						rate, Property.JCR_DESCRIPTION);
 				descTxt.setEnabled(canEdit);
-				rateCmb.select(rateCmb.indexOf(CommonsJcrUtils.get(rate,
+				rateCmb.select(rateCmb.indexOf(JcrUiUtils.get(rate,
 						PeopleNames.PEOPLE_RATE)));
 				rateCmb.setEnabled(canEdit);
 			}
@@ -185,9 +185,9 @@ public class RateEditor extends AbstractPeopleEditor {
 					populate(RateHeader.this);
 
 				pollNameLbl.setText(ActivityUtils.getPollName(activity));
-				String manager = CommonsJcrUtils.get(activity,
+				String manager = JcrUiUtils.get(activity,
 						PeopleNames.PEOPLE_REPORTED_BY);
-				if (CommonsJcrUtils.checkNotEmptyString(manager))
+				if (EclipseUiUtils.notEmpty(manager))
 					managerLbl.setText(manager);
 				try {
 					if (activity.hasProperty(PeopleNames.PEOPLE_ACTIVITY_DATE)) {

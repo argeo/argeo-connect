@@ -34,7 +34,7 @@ import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.rap.wizards.EditTagWizard;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -102,8 +102,8 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 					+ " to use with current editor", e);
 		}
 		// Name and tooltip
-		String name = CommonsJcrUtils.get(node, Property.JCR_TITLE);
-		if (CommonsJcrUtils.checkNotEmptyString(name))
+		String name = JcrUiUtils.get(node, Property.JCR_TITLE);
+		if (EclipseUiUtils.notEmpty(name))
 			setPartName(name);
 		setTitleToolTip("List contacts tagged as " + name);
 
@@ -240,20 +240,20 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 					+ PeopleTypes.PEOPLE_ENTITY + ")";
 
 			String filter = filterTxt.getText();
-			String currVal = CommonsJcrUtils.get(getNode(), Property.JCR_TITLE);
+			String currVal = JcrUiUtils.get(getNode(), Property.JCR_TITLE);
 
 			String freeTxtCond = XPathUtils.getFreeTextConstraint(filter);
 			String mlNamecond = XPathUtils.getPropertyEquals(PEOPLE_TAGS,
 					currVal);
 			String conditions = XPathUtils.localAnd(freeTxtCond, mlNamecond);
 
-			if (CommonsJcrUtils.checkNotEmptyString(conditions))
+			if (EclipseUiUtils.notEmpty(conditions))
 				xpathQueryStr += "[" + conditions + "]";
 			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
 					PeopleConstants.QUERY_XPATH);
 
 			RowIterator xPathRit = xpathQuery.execute().getRows();
-			Row[] rows = CommonsJcrUtils.rowIteratorToArray(xPathRit);
+			Row[] rows = JcrUiUtils.rowIteratorToArray(xPathRit);
 			setViewerInput(rows);
 
 			if (log.isDebugEnabled()) {
@@ -271,7 +271,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 			// PeopleTypes.PEOPLE_ENTITY);
 			//
 			// String filter = filterTxt.getText();
-			// String currVal = CommonsJcrUtils.get(getNode(),
+			// String currVal = JcrUiUtils.get(getNode(),
 			// Property.JCR_TITLE);
 			// StaticOperand so = factory.literal(session.getValueFactory()
 			// .createValue(currVal));
@@ -280,14 +280,14 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 			// Constraint constraint = factory.comparison(dyo,
 			// QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
 			//
-			// if (CommonsJcrUtils.checkNotEmptyString(filter)) {
+			// if (JcrUiUtils.checkNotEmptyString(filter)) {
 			// String[] strs = filter.trim().split(" ");
 			// for (String token : strs) {
 			// StaticOperand soTmp = factory.literal(session
 			// .getValueFactory().createValue("*" + token + "*"));
 			// Constraint currC = factory.fullTextSearch(
 			// source.getSelectorName(), null, soTmp);
-			// constraint = CommonsJcrUtils.localAnd(factory, constraint,
+			// constraint = JcrUiUtils.localAnd(factory, constraint,
 			// currC);
 			// }
 			// }
@@ -299,7 +299,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 			// orderings, null);
 			// QueryResult result = query.execute();
 			// Row[] rows =
-			// CommonsJcrUtils.rowIteratorToArray(result.getRows());
+			// JcrUiUtils.rowIteratorToArray(result.getRows());
 			// setViewerInput(rows);
 
 		} catch (RepositoryException e) {

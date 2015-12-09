@@ -6,7 +6,8 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.LabelProvider;
 
 /**
@@ -26,12 +27,12 @@ public class OrgListLabelProvider extends LabelProvider implements PeopleNames {
 		Node orga = (Node) element;
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b>");
-		builder.append(CommonsJcrUtils.get(orga, PEOPLE_LEGAL_NAME));
+		builder.append(JcrUiUtils.get(orga, PEOPLE_LEGAL_NAME));
 		builder.append("</b> ");
 
 		String local = PeopleUiSnippets.getLocalisationInfo(peopleService,
 				orga);
-		if (CommonsJcrUtils.checkNotEmptyString(local))
+		if (EclipseUiUtils.notEmpty(local))
 			builder.append(local);
 
 		String result = PeopleUiUtils.replaceAmpersand(builder.toString());

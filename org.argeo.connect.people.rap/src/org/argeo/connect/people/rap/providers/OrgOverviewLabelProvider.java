@@ -13,7 +13,8 @@ import org.argeo.connect.people.rap.PeopleRapSnippets;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
 /**
@@ -64,26 +65,26 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 				builder.append("<span "
 						+ PeopleRapConstants.PEOPLE_STYLE_ENTITY_HEADER + " >");
 			builder.append("<big><b>");
-			builder.append(CommonsJcrUtils.get(orga, Property.JCR_TITLE));
+			builder.append(JcrUiUtils.get(orga, Property.JCR_TITLE));
 			builder.append("</b></big> ");
 
 			String local = PeopleUiSnippets.getLocalisationInfo(peopleService,
 					orga);
-			if (CommonsJcrUtils.checkNotEmptyString(local))
+			if (EclipseUiUtils.notEmpty(local))
 				builder.append(local);
 
 			builder.append("<br/>");
 
 			String tmpStr;
 			tmpStr = PeopleUiSnippets.getPrimaryContacts(orga);
-			if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
+			if (EclipseUiUtils.notEmpty(tmpStr)) {
 				builder.append(tmpStr).append("<br/>");
 			}
 
 			if (isSmallList) {
 				tmpStr = PeopleRapSnippets.getTags(peopleService,
 						peopleWorkbenchService, orga);
-				if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+				if (EclipseUiUtils.notEmpty(tmpStr))
 					builder.append(tmpStr);
 			}
 

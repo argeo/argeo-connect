@@ -28,7 +28,8 @@ import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.rap.rwt.RWT;
@@ -106,7 +107,7 @@ public class TagLikeListSmallPart extends Composite {
 		// Cache some context object to ease implementation
 		this.resourceService = peopleService.getResourceService();
 		this.userService = peopleService.getUserAdminService();
-		session = CommonsJcrUtils.getSession(taggable);
+		session = JcrUiUtils.getSession(taggable);
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
 
 		try {
@@ -235,8 +236,7 @@ public class TagLikeListSmallPart extends Composite {
 												peopleWorkbenchService
 														.getOpenEntityEditorCmdId(),
 												OpenEntityEditor.PARAM_JCR_ID,
-												CommonsJcrUtils
-														.getIdentifier(tag));
+												JcrUiUtils.getIdentifier(tag));
 								} catch (RepositoryException e) {
 									throw new PeopleException(
 											"unable to get path for resource tag node "
@@ -295,7 +295,7 @@ public class TagLikeListSmallPart extends Composite {
 						@Override
 						public void widgetSelected(SelectionEvent e) {
 							String newTag = tagDD.getText();
-							if (CommonsJcrUtils.isEmptyString(newTag))
+							if (EclipseUiUtils.isEmpty(newTag))
 								return;
 							else
 								addTag(parentCmp.getShell(), TagFormPart.this,
@@ -370,7 +370,7 @@ public class TagLikeListSmallPart extends Composite {
 								.trim();
 						if (newTag.toUpperCase().trim().equals(curTagUpperCase)) {
 							msg = "\""
-									+ CommonsJcrUtils.get(taggable,
+									+ JcrUiUtils.get(taggable,
 											Property.JCR_TITLE)
 									+ "\" is already linked with \""
 									+ tag.getString()

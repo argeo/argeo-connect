@@ -21,7 +21,7 @@ import org.argeo.connect.people.rap.composites.SimpleJcrTableComposite;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
@@ -112,7 +112,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 		resourceService = peopleService.getResourceService();
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
-		tagInstanceType = CommonsJcrUtils.get(tagParent,
+		tagInstanceType = JcrUiUtils.get(tagParent,
 				PEOPLE_TAG_INSTANCE_TYPE);
 	}
 
@@ -190,7 +190,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 					.getTagLikeResourceParent(session, tagId);
 			int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
 			tableCmp = new SimpleJcrTableComposite(body, style, session,
-					CommonsJcrUtils.getPath(tagParent), tagInstanceType,
+					JcrUiUtils.getPath(tagParent), tagInstanceType,
 					colDefs, true, false);
 			GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 			gd.heightHint = 400;
@@ -254,7 +254,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 					setErrorMessage("Please choose a tag value to be used");
 				else {
 					setErrorMessage(null);
-					String name = CommonsJcrUtils.get(tagInstance,
+					String name = JcrUiUtils.get(tagInstance,
 							Property.JCR_TITLE);
 					if (actionType == TYPE_ADD)
 						setMessage("Your are about to add [" + name
@@ -347,7 +347,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 				this.tagPath = tagInstance.getPath();
 				repository = tagInstance.getSession().getRepository();
 				for (Object element : toUpdateElements) {
-					Node currNode = CommonsJcrUtils.getNodeFromElement(element,
+					Node currNode = JcrUiUtils.getNodeFromElement(element,
 							selectorName);
 					pathes.add(currNode.getPath());
 				}
@@ -369,7 +369,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 					// TODO use transaction
 					// Legacy insure the node is checked out before update
-					CommonsJcrUtils.checkCOStatusBeforeUpdate(tagInstance);
+					JcrUiUtils.checkCOStatusBeforeUpdate(tagInstance);
 
 					// TODO hardcoded prop name
 					String value = targetTagInstance.getProperty(
@@ -377,19 +377,19 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 					for (String currPath : pathes) {
 						Node currNode = session.getNode(currPath);
-						CommonsJcrUtils.checkCOStatusBeforeUpdate(currNode);
+						JcrUiUtils.checkCOStatusBeforeUpdate(currNode);
 						if (actionType == TYPE_ADD) {
 							// Duplication will return an error message that we
 							// ignore
-							CommonsJcrUtils.addStringToMultiValuedProp(
+							JcrUiUtils.addStringToMultiValuedProp(
 									currNode, tagPropName, value);
 						} else if (actionType == TYPE_REMOVE) {
 							// Duplication will return an error message that we
 							// ignore
-							CommonsJcrUtils.removeStringFromMultiValuedProp(
+							JcrUiUtils.removeStringFromMultiValuedProp(
 									currNode, tagPropName, value);
 						}
-						CommonsJcrUtils.save(currNode, true);
+						JcrUiUtils.save(currNode, true);
 					}
 					monitor.worked(1);
 

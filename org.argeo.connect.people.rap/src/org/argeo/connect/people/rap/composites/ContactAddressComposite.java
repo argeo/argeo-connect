@@ -20,7 +20,7 @@ import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
@@ -103,20 +103,18 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 	protected void populateReadOnlyPanel(Composite readOnlyPanel) {
 		readOnlyPanel.setLayout(new GridLayout());
 
-		String refUid = CommonsJcrUtils.get(contactNode,
-				PeopleNames.PEOPLE_REF_UID);
-		if (CommonsJcrUtils.isNodeType(contactNode,
-				PeopleTypes.PEOPLE_CONTACT_REF)
-				&& CommonsJcrUtils.checkNotEmptyString(refUid)) {
+		String refUid = JcrUiUtils.get(contactNode, PeopleNames.PEOPLE_REF_UID);
+		if (JcrUiUtils.isNodeType(contactNode, PeopleTypes.PEOPLE_CONTACT_REF)
+				&& EclipseUiUtils.notEmpty(refUid)) {
 
 			final Node referencedEntity = peopleService.getEntityByUid(
-					CommonsJcrUtils.getSession(contactNode), refUid);
+					JcrUiUtils.getSession(contactNode), refUid);
 
 			Link readOnlyInfoLk = new Link(readOnlyPanel, SWT.WRAP);
 			StringBuilder builder = new StringBuilder();
 			// the referenced org
 			if (referencedEntity != null) {
-				String label = CommonsJcrUtils.get(referencedEntity,
+				String label = JcrUiUtils.get(referencedEntity,
 						Property.JCR_TITLE);
 				builder.append("<a>").append(label).append("</a> ");
 			}
@@ -160,11 +158,9 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		rl.center = true;
 		parent.setLayout(rl);
 
-		String refUid = CommonsJcrUtils.get(contactNode,
-				PeopleNames.PEOPLE_REF_UID);
-		if (CommonsJcrUtils.isNodeType(contactNode,
-				PeopleTypes.PEOPLE_CONTACT_REF)
-				&& CommonsJcrUtils.checkNotEmptyString(refUid))
+		String refUid = JcrUiUtils.get(contactNode, PeopleNames.PEOPLE_REF_UID);
+		if (JcrUiUtils.isNodeType(contactNode, PeopleTypes.PEOPLE_CONTACT_REF)
+				&& EclipseUiUtils.notEmpty(refUid))
 			populateWorkAdresseCmp(parent, contactNode);
 		else
 			populateAdresseCmp(parent, contactNode);
@@ -206,8 +202,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 				if (linkedOrg != null) {
 					nameLkListener.setOrg(linkedOrg);
 					nameLk.setText("<a>"
-							+ CommonsJcrUtils
-									.get(linkedOrg, Property.JCR_TITLE)
+							+ JcrUiUtils.get(linkedOrg, Property.JCR_TITLE)
 							+ "</a>");
 				}
 			}
@@ -230,12 +225,12 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					if (currNode != null) {
 						nameLkListener.setOrg(currNode);
 						nameLk.setText("<a>"
-								+ CommonsJcrUtils.get(currNode,
-										Property.JCR_TITLE) + "</a>");
+								+ JcrUiUtils.get(currNode, Property.JCR_TITLE)
+								+ "</a>");
 
-						String uid = CommonsJcrUtils.get(currNode,
+						String uid = JcrUiUtils.get(currNode,
 								PeopleNames.PEOPLE_UID);
-						if (CommonsJcrUtils.setJcrProperty(contactNode,
+						if (JcrUiUtils.setJcrProperty(contactNode,
 								PeopleNames.PEOPLE_REF_UID,
 								PropertyType.STRING, uid))
 							formPart.markDirty();
@@ -263,7 +258,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 				CommandUtils.callCommand(
 						peopleWorkbenchService.getOpenEntityEditorCmdId(),
 						OpenEntityEditor.PARAM_JCR_ID,
-						CommonsJcrUtils.getIdentifier(org));
+						JcrUiUtils.getIdentifier(org));
 			}
 
 		}
@@ -288,7 +283,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					"Country", "", 110);
 
 			// The country drop down
-			Session session = CommonsJcrUtils.getSession(contactNode);
+			Session session = JcrUiUtils.getSession(contactNode);
 			final TagLikeDropDown countryDD = new TagLikeDropDown(session,
 					peopleService.getResourceService(),
 					PeopleConstants.RESOURCE_COUNTRY, countryTxt);
@@ -343,9 +338,9 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					PropertyType.STRING);
 
 			// specific for drop downs
-			String countryIso = CommonsJcrUtils.get(contactNode,
+			String countryIso = JcrUiUtils.get(contactNode,
 					PeopleNames.PEOPLE_COUNTRY);
-			if (CommonsJcrUtils.checkNotEmptyString(countryIso)) {
+			if (EclipseUiUtils.notEmpty(countryIso)) {
 				String countryVal = peopleService.getResourceService()
 						.getEncodedTagValue(session,
 								PeopleConstants.RESOURCE_COUNTRY, countryIso);
@@ -365,14 +360,14 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			public void modifyText(ModifyEvent event) {
 
 				String label = text.getText();
-				if (CommonsJcrUtils.isEmptyString(label))
+				if (EclipseUiUtils.isEmpty(label))
 					return;
-				Session session = CommonsJcrUtils.getSession(contactNode);
+				Session session = JcrUiUtils.getSession(contactNode);
 				String iso = peopleService.getResourceService()
 						.getEncodedTagCodeFromValue(session,
 								PeopleConstants.RESOURCE_COUNTRY, label);
-				if (CommonsJcrUtils.checkNotEmptyString(iso)
-						&& CommonsJcrUtils.setJcrProperty(contactNode,
+				if (EclipseUiUtils.notEmpty(iso)
+						&& JcrUiUtils.setJcrProperty(contactNode,
 								PeopleNames.PEOPLE_COUNTRY,
 								PropertyType.STRING, iso)) {
 					part.markDirty();
@@ -389,7 +384,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				if (CommonsJcrUtils.setJcrProperty(entity, propName, propType,
+				if (JcrUiUtils.setJcrProperty(entity, propName, propType,
 						text.getText())) {
 					part.markDirty();
 					PeopleJcrUtils.updateDisplayAddress(entity);

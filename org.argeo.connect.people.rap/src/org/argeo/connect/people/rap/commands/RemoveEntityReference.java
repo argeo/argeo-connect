@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -56,7 +56,7 @@ public class RemoveEntityReference extends AbstractHandler {
 		try {
 			session = repository.login();
 			toRemoveNode = session.getNodeByIdentifier(toRemoveJcrId);
-			versionableParent = CommonsJcrUtils
+			versionableParent = JcrUiUtils
 					.getVersionableAncestor(toRemoveNode);
 
 			if (versionableParent == null) {
@@ -66,12 +66,12 @@ public class RemoveEntityReference extends AbstractHandler {
 				session.save();
 			} else {
 				// boolean wasCO = 
-				CommonsJcrUtils
+				JcrUiUtils
 						.checkCOStatusBeforeUpdate(versionableParent);
 				toRemoveNode.remove();
 				// FIXME should we save ? commit ? do nothing
-				CommonsJcrUtils.save(versionableParent);
-//				CommonsJcrUtils.checkCOStatusAfterUpdate(versionableParent,
+				JcrUiUtils.save(versionableParent);
+//				JcrUiUtils.checkCOStatusAfterUpdate(versionableParent,
 //						wasCO);
 			}
 		} catch (RepositoryException e) {

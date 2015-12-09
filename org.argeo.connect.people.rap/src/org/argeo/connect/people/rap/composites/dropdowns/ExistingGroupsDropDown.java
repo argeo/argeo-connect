@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.service.useradmin.Group;
 
@@ -33,7 +33,7 @@ public class ExistingGroupsDropDown extends PeopleAbstractDropDown {
 	public String getText() {
 		String groupId = null;
 		String dname = super.getText();
-		if (CommonsJcrUtils.checkNotEmptyString(dname))
+		if (EclipseUiUtils.notEmpty(dname))
 			groupId = groupMap.get(dname).getName();
 		return groupId;
 	}
@@ -48,7 +48,7 @@ public class ExistingGroupsDropDown extends PeopleAbstractDropDown {
 			String dn = group.getName();
 			String groupDName = userService.getUserDisplayName(dn);
 
-			if (CommonsJcrUtils.checkNotEmptyString(filter))
+			if (EclipseUiUtils.notEmpty(filter))
 				if (!dn.toLowerCase().contains(filter.toLowerCase()))
 					continue loop;
 			if (includeUsers

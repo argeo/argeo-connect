@@ -3,7 +3,7 @@ package org.argeo.connect.people.rap.composites.dropdowns;
 import java.util.Arrays;
 import java.util.List;
 
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.widgets.DropDown;
 import org.eclipse.swt.SWT;
@@ -91,7 +91,7 @@ public abstract class PeopleAbstractDropDown {
 
 	public void reset(String value) {
 		modifyFromList = true;
-		if (CommonsJcrUtils.checkNotEmptyString(value))
+		if (EclipseUiUtils.notEmpty(value))
 			text.setText(value);
 		else
 			text.setText("");

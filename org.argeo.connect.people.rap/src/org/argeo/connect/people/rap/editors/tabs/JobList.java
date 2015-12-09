@@ -32,7 +32,7 @@ import org.argeo.connect.people.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.rap.providers.RoleListLabelProvider;
 import org.argeo.connect.people.rap.utils.AbstractPanelFormPart;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -79,7 +79,7 @@ public class JobList extends Composite {
 		this.entity = entity;
 
 		// Participations are stored in the projects.
-		isBackward = CommonsJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG);
+		isBackward = JcrUiUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG);
 
 		// Populate
 		this.editor = editor;
@@ -232,7 +232,7 @@ public class JobList extends Composite {
 			public void widgetSelected(SelectionEvent e) {
 				Map<String, String> params = new HashMap<String, String>();
 				params.put(EditJob.PARAM_RELEVANT_NODE_JCR_ID,
-						CommonsJcrUtils.getIdentifier(entity));
+						JcrUiUtils.getIdentifier(entity));
 				CommandUtils.callCommand(EditJob.ID, params);
 			}
 		});
@@ -245,17 +245,17 @@ public class JobList extends Composite {
 				Node link = (Node) obj;
 				Node toOpen;
 				if (isBackward) {
-					toOpen = CommonsJcrUtils.getParent(CommonsJcrUtils
+					toOpen = JcrUiUtils.getParent(JcrUiUtils
 							.getParent(link));
 				} else {
-					toOpen = peopleService.getEntityByUid(CommonsJcrUtils
-							.getSession(entity), CommonsJcrUtils.get(link,
+					toOpen = peopleService.getEntityByUid(JcrUiUtils
+							.getSession(entity), JcrUiUtils.get(link,
 							PeopleNames.PEOPLE_REF_UID));
 				}
 				CommandUtils.callCommand(
 						peopleWorkbenchService.getOpenEntityEditorCmdId(),
 						OpenEntityEditor.PARAM_JCR_ID,
-						CommonsJcrUtils.getIdentifier(toOpen));
+						JcrUiUtils.getIdentifier(toOpen));
 			}
 		}
 	}
@@ -294,13 +294,13 @@ public class JobList extends Composite {
 					node1 = node1.getParent().getParent();
 				if (node2 != null)
 					node2 = node2.getParent().getParent();
-				String lastName1 = CommonsJcrUtils.get(node1,
+				String lastName1 = JcrUiUtils.get(node1,
 						PeopleNames.PEOPLE_LAST_NAME).toLowerCase();
-				String lastName2 = CommonsJcrUtils.get(node2,
+				String lastName2 = JcrUiUtils.get(node2,
 						PeopleNames.PEOPLE_LAST_NAME).toLowerCase();
-				String firstName1 = CommonsJcrUtils.get(node1,
+				String firstName1 = JcrUiUtils.get(node1,
 						PeopleNames.PEOPLE_FIRST_NAME).toLowerCase();
-				String firstName2 = CommonsJcrUtils.get(node2,
+				String firstName2 = JcrUiUtils.get(node2,
 						PeopleNames.PEOPLE_FIRST_NAME).toLowerCase();
 				rc = lastName1.compareTo(lastName2);
 				if (rc == 0)

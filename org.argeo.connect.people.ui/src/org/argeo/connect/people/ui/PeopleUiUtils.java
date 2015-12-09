@@ -2,7 +2,7 @@ package org.argeo.connect.people.ui;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -78,20 +78,20 @@ public class PeopleUiUtils {
 	 */
 	public static String refreshTextWidgetValue(Text text, Node entity,
 			String propName) {
-		String tmpStr = CommonsJcrUtils.get(entity, propName);
-		if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+		String tmpStr = JcrUiUtils.get(entity, propName);
+		if (EclipseUiUtils.notEmpty(tmpStr))
 			text.setText(tmpStr);
 		return tmpStr;
 	}
 
 	/**
-	 * Calls <code>CommonsJcrUtils.get(Node node, String propName)</code> method
-	 * and replace any '&' by its html encoding '&amp;' to avoid
+	 * Calls <code>JcrUiUtils.get(Node node, String propName)</code> method and
+	 * replace any '&' by its html encoding '&amp;' to avoid
 	 * <code>IllegalArgumentException</code> while rendering html read only
 	 * snippets
 	 */
 	public static String getRwtCompliantString(Node node, String propName) {
-		String value = CommonsJcrUtils.get(node, propName);
+		String value = JcrUiUtils.get(node, propName);
 		value = replaceAmpersand(value);
 		return value;
 	}

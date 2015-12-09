@@ -20,7 +20,7 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.web.PeopleMsg;
 import org.argeo.connect.people.web.providers.SearchEntitiesLP;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -107,7 +107,7 @@ public class PeopleSearchPage implements CmsUiProvider {
 			public void doubleClick(DoubleClickEvent event) {
 				Object firstObj = ((IStructuredSelection) event.getSelection())
 						.getFirstElement();
-				String path = CommonsJcrUtils.getPath((Node) firstObj);
+				String path = JcrUiUtils.getPath((Node) firstObj);
 				CmsUtils.getCmsView().navigateTo("display" + path);
 			}
 		});
@@ -118,7 +118,7 @@ public class PeopleSearchPage implements CmsUiProvider {
 			Node context) {
 		try {
 			// Do not load all contacts when no filter is present
-			// if (CommonsJcrUtils.isEmptyString(filter)) {
+			// if (JcrUiUtils.isEmptyString(filter)) {
 			// entityViewer.setInput(null);
 			// return;
 			// }

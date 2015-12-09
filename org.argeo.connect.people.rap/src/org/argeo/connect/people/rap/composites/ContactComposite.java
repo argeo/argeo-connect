@@ -11,7 +11,7 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -98,8 +98,8 @@ public class ContactComposite extends Composite {
 		rl.marginWidth = 0;
 		parent.setLayout(rl);
 
-		boolean hasCat = !(CommonsJcrUtils.isNodeType(contactNode,
-				PeopleTypes.PEOPLE_URL) || CommonsJcrUtils.isNodeType(
+		boolean hasCat = !(JcrUiUtils.isNodeType(contactNode,
+				PeopleTypes.PEOPLE_URL) || JcrUiUtils.isNodeType(
 				contactNode, PeopleTypes.PEOPLE_EMAIL));
 
 		// The widgets

@@ -42,7 +42,7 @@ import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.dialogs.SingleValue;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -177,7 +177,7 @@ public class TemplateValueCatalogue extends Composite {
 										.getFirstElement();
 								RowIterator rit = query(currSelected);
 								setViewerInput(instancesViewer,
-										CommonsJcrUtils.rowIteratorToArray(rit));
+										JcrUiUtils.rowIteratorToArray(rit));
 							}
 						}
 					});
@@ -187,8 +187,8 @@ public class TemplateValueCatalogue extends Composite {
 
 		protected void refreshContent(Composite parent, Node editionInfo) {
 			try {
-				valuesViewer.setInput(CommonsJcrUtils.getMultiAsList(
-						templateNode, propertyName).toArray(new String[0]));
+				valuesViewer.setInput(JcrUiUtils.getMultiAsList(templateNode,
+						propertyName).toArray(new String[0]));
 				valuesViewer.refresh();
 				setViewerInput(instancesViewer, null);
 				if (editionInfo.getSession().hasPendingChanges())
@@ -209,8 +209,7 @@ public class TemplateValueCatalogue extends Composite {
 			Session session = templateNode.getSession();
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
-			
-			
+
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
 			Selector source = factory.selector(taggableType, taggableType);
 
@@ -227,8 +226,7 @@ public class TemplateValueCatalogue extends Composite {
 			Ordering[] orderings = { order };
 			QueryObjectModel query = factory.createQuery(source, constraint,
 					orderings, null);
-			
-			
+
 			QueryResult result = query.execute();
 			return result.getRows();
 		} catch (RepositoryException e) {
@@ -376,11 +374,11 @@ public class TemplateValueCatalogue extends Composite {
 	private class InstanceDClickAdapter extends PeopleDoubleClickAdapter {
 		@Override
 		protected void processDoubleClick(Object obj) {
-			Node occurrence = CommonsJcrUtils.getNode((Row) obj, taggableType);
+			Node occurrence = JcrUiUtils.getNode((Row) obj, taggableType);
 			CommandUtils.callCommand(
 					peopleWorkbenchService.getOpenEntityEditorCmdId(),
 					OpenEntityEditor.PARAM_JCR_ID,
-					CommonsJcrUtils.getIdentifier(occurrence));
+					JcrUiUtils.getIdentifier(occurrence));
 		}
 	}
 
@@ -435,10 +433,10 @@ public class TemplateValueCatalogue extends Composite {
 			public void widgetSelected(SelectionEvent e) {
 				String value = SingleValue.ask("New Option",
 						"Enrich current catalogue with a new option");
-				if (CommonsJcrUtils.checkNotEmptyString(value)) {
-					String errMsg = CommonsJcrUtils.addMultiPropertyValue(
+				if (EclipseUiUtils.notEmpty(value)) {
+					String errMsg = JcrUiUtils.addMultiPropertyValue(
 							templateNode, propertyName, value);
-					if (CommonsJcrUtils.isEmptyString(errMsg)) {
+					if (EclipseUiUtils.isEmpty(errMsg)) {
 						formPart.markDirty();
 						formPart.refresh();
 					} else
@@ -496,7 +494,7 @@ public class TemplateValueCatalogue extends Composite {
 			if (PeopleUiConstants.CRUD_EDIT.equals(actionType)) {
 				newValue = newValueTxt.getText();
 
-				if (CommonsJcrUtils.isEmptyString(newValue))
+				if (EclipseUiUtils.isEmpty(newValue))
 					errMsg = "New value cannot be blank or an empty string";
 				else if (oldValue.equals(newValue))
 					errMsg = "New value is the same as old one.\n"
@@ -584,9 +582,9 @@ public class TemplateValueCatalogue extends Composite {
 				// while (rit.hasNext()) {
 				// Row currRow = rit.nextRow();
 				// rows.add(currRow);
-				// Node currNode = CommonsJcrUtils.getNode(currRow,
+				// Node currNode = JcrUiUtils.getNode(currRow,
 				// taggableType);
-				// if (CommonsJcrUtils.isNodeCheckedOut(currNode))
+				// if (JcrUiUtils.isNodeCheckedOut(currNode))
 				// checkoutItemNb++;
 				// }
 				// setViewerInput(membersViewer, rows.toArray(new Row[0]));
@@ -621,9 +619,9 @@ public class TemplateValueCatalogue extends Composite {
 		@Override
 		public Image getImage(Object element) {
 			Image image = super.getImage(element);
-			// Node currEntity = CommonsJcrUtils.getNode((Row) element,
+			// Node currEntity = JcrUiUtils.getNode((Row) element,
 			// selectorName);
-			// CommonsJcrUtils.isNodeCheckedOut(currEntity)
+			// JcrUiUtils.isNodeCheckedOut(currEntity)
 			if (editor.isEditing() && image != null) {
 				if (images.containsKey(image)) {
 					image = images.get(image);

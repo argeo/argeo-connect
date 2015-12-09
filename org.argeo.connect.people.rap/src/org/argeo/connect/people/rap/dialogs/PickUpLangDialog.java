@@ -28,7 +28,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.composites.SimpleJcrTableComposite;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
 import org.eclipse.jface.dialogs.TrayDialog;
@@ -85,7 +85,7 @@ public class PickUpLangDialog extends TrayDialog {
 
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
 		tableCmp = new SimpleJcrTableComposite(dialogArea, style, session,
-				CommonsJcrUtils.getPath(langTagParent),
+				JcrUiUtils.getPath(langTagParent),
 				PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE, colDefs, true, false);
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 
@@ -101,7 +101,7 @@ public class PickUpLangDialog extends TrayDialog {
 
 	public String getSelected() {
 		if (selectedNode != null)
-			return CommonsJcrUtils.get(selectedNode, PeopleNames.PEOPLE_CODE);
+			return JcrUiUtils.get(selectedNode, PeopleNames.PEOPLE_CODE);
 		else
 			return null;
 	}

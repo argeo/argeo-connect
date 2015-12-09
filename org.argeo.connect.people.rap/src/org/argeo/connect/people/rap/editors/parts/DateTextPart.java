@@ -18,7 +18,7 @@ import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -141,7 +141,7 @@ public class DateTextPart extends Composite {
 				try {
 					Calendar newVal = parseDate(false);
 					if (newVal != null) {
-						if (CommonsJcrUtils.setJcrProperty(node, propName,
+						if (JcrUiUtils.setJcrProperty(node, propName,
 								PropertyType.DATE, newVal))
 							formPart.markDirty();
 					} else if (node.hasProperty(propName)) {
@@ -163,7 +163,7 @@ public class DateTextPart extends Composite {
 	private Calendar parseDate(boolean openWrongFormatError) {
 		String dateStr = dateTxt.getText();
 
-		if (CommonsJcrUtils.checkNotEmptyString(dateStr)) {
+		if (EclipseUiUtils.notEmpty(dateStr)) {
 			try {
 				Date date = dateFormat.parse(dateStr);
 				Calendar cal = new GregorianCalendar();
@@ -223,7 +223,7 @@ public class DateTextPart extends Composite {
 			cal.set(dateTimeCtl.getYear(), dateTimeCtl.getMonth(),
 					dateTimeCtl.getDay(), 12, 0);
 			dateTxt.setText(dateFormat.format(cal.getTime()));
-			if (CommonsJcrUtils.setJcrProperty(node, propName,
+			if (JcrUiUtils.setJcrProperty(node, propName,
 					PropertyType.DATE, cal))
 				formPart.markDirty();
 		}

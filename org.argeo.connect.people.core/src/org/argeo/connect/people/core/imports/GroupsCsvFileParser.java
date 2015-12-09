@@ -35,7 +35,7 @@ public class GroupsCsvFileParser extends AbstractPeopleCsvFileParser {
 		// Node currGroup = userManagementService.createGroup(adminSession,
 		// groupName, title, desc);
 		//
-		// if (CommonsJcrUtils.checkNotEmptyString(members))
+		// if (JcrUiUtils.checkNotEmptyString(members))
 		// userManagementService.addUsersToGroup(adminSession, currGroup,
 		// Arrays.asList(members.split(", ")));
 	}

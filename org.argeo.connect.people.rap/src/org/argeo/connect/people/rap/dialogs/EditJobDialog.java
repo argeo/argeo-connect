@@ -36,7 +36,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.providers.EntitySingleColumnLabelProvider;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -146,7 +146,7 @@ public class EditJobDialog extends TrayDialog {
 			toSearchNodeType = PeopleTypes.PEOPLE_ORG;
 
 		if (oldLink == null) { // CREATE
-			session = CommonsJcrUtils.getSession(toUpdateNode);
+			session = JcrUiUtils.getSession(toUpdateNode);
 			if (isBackward)
 				oldReferenced = toUpdateNode;
 			else
@@ -156,11 +156,11 @@ public class EditJobDialog extends TrayDialog {
 			try {
 				// Initialize with old values
 				session = oldLink.getSession();
-				oldPosition = CommonsJcrUtils.get(oldLinkNode,
+				oldPosition = JcrUiUtils.get(oldLinkNode,
 						PeopleNames.PEOPLE_ROLE);
-				oldDepartment = CommonsJcrUtils.get(oldLinkNode,
+				oldDepartment = JcrUiUtils.get(oldLinkNode,
 						PeopleNames.PEOPLE_DEPARTMENT);
-				Boolean tmp = CommonsJcrUtils.getBooleanValue(oldLink,
+				Boolean tmp = JcrUiUtils.getBooleanValue(oldLink,
 						PeopleNames.PEOPLE_IS_PRIMARY);
 				if (tmp != null)
 					wasPrimary = tmp;
@@ -208,11 +208,11 @@ public class EditJobDialog extends TrayDialog {
 
 		if (isBackward) {
 			if (oldReferencing != null)
-				selectedItemTxt.setText(CommonsJcrUtils.get(oldReferencing,
+				selectedItemTxt.setText(JcrUiUtils.get(oldReferencing,
 						Property.JCR_TITLE));
 		} else {
 			if (oldReferenced != null)
-				selectedItemTxt.setText(CommonsJcrUtils.get(oldReferenced,
+				selectedItemTxt.setText(JcrUiUtils.get(oldReferenced,
 						Property.JCR_TITLE));
 		}
 		// Role
@@ -413,7 +413,7 @@ public class EditJobDialog extends TrayDialog {
 
 				try {
 					if (selectedEntity.isNodeType(NodeType.MIX_TITLE))
-						selectedItemTxt.setText(CommonsJcrUtils.get(
+						selectedItemTxt.setText(JcrUiUtils.get(
 								selectedEntity, Property.JCR_TITLE));
 				} catch (RepositoryException e) {
 					throw new PeopleException("Unable to update "
@@ -465,7 +465,7 @@ public class EditJobDialog extends TrayDialog {
 
 			String xpathQueryStr = "//element(*, " + nodeType + ")";
 			String attrQuery = XPathUtils.getFreeTextConstraint(filter);
-			if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+			if (EclipseUiUtils.notEmpty(attrQuery))
 				xpathQueryStr += "[" + attrQuery + "]";
 			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
 					PeopleConstants.QUERY_XPATH);

@@ -21,7 +21,7 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.providers.TitleIconLP;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
@@ -80,7 +80,7 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 		this.session = session;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.tableStyle = style;
-		if (CommonsJcrUtils.checkNotEmptyString(nodeType))
+		if (EclipseUiUtils.notEmpty(nodeType))
 			this.nodeType = nodeType;
 		if (!lazy)
 			populate();
@@ -233,7 +233,7 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
 		String xpathQueryStr = "//element(*, " + nodeType + ")";
 		String attrQuery = XPathUtils.getFreeTextConstraint(filter);
-		if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+		if (EclipseUiUtils.notEmpty(attrQuery))
 			xpathQueryStr += "[" + attrQuery + "]";
 		Query xpathQuery = queryManager.createQuery(xpathQueryStr,
 				PeopleConstants.QUERY_XPATH);

@@ -17,7 +17,7 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.dialogs.PickUpRelatedDialog;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -106,7 +106,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 	}
 
 	// private boolean isEditing() {
-	// return CommonsJcrUtils.isNodeCheckedOutByMe(entity);
+	// return JcrUiUtils.isNodeCheckedOutByMe(entity);
 	// }
 
 	public void refresh() {
@@ -128,7 +128,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 					String valueStr = value.getString();
 					if (!hiddenItemIds.contains(valueStr)) {
 						Node targetNode = getTargetWithValue(valueStr);
-						String labelStr = CommonsJcrUtils.get(targetNode,
+						String labelStr = JcrUiUtils.get(targetNode,
 								Property.JCR_TITLE);
 						createDeletableClickable(relatedCmp, valueStr,
 								labelStr, editor.isEditing());
@@ -176,7 +176,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
-					CommonsJcrUtils.removeRefFromMultiValuedProp(entity,
+					JcrUiUtils.removeRefFromMultiValuedProp(entity,
 							propName, value);
 					formPart.refresh();
 					formPart.markDirty();
@@ -273,7 +273,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 					int result = diag.open();
 					if (Window.OK == result) {
 						Node node = diag.getSelected();
-						String errMsg = CommonsJcrUtils
+						String errMsg = JcrUiUtils
 								.addRefToMultiValuedProp(entity, propName, node);
 						if (errMsg != null)
 							MessageDialog.openError(link.getShell(),

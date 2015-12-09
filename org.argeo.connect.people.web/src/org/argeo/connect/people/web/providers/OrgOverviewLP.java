@@ -1,5 +1,7 @@
 package org.argeo.connect.people.web.providers;
 
+import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
@@ -11,7 +13,6 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.PeopleWebSnippets;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -67,13 +68,13 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 
 		String local = PeopleUiSnippets
 				.getLocalisationInfo(peopleService, orga);
-		if (CommonsJcrUtils.checkNotEmptyString(local))
+		if (notEmpty(local))
 			builder.append(local);
 
 		builder.append("<br/>");
 
 		String tmpStr = PeopleUiSnippets.getPrimaryContacts(orga);
-		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
+		if (notEmpty(tmpStr)) {
 			builder.append(tmpStr);
 		}
 		builder.append("</span>");
@@ -95,7 +96,7 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 
 		String local = PeopleUiSnippets
 				.getLocalisationInfo(peopleService, orga);
-		if (CommonsJcrUtils.checkNotEmptyString(local))
+		if (notEmpty(local))
 			builder.append(local);
 
 		if (isSmallList)
@@ -105,27 +106,26 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 			builder.append("<br/>");
 
 		String tmpStr = PeopleUiSnippets.getPrimaryContacts(orga);
-		if (CommonsJcrUtils.checkNotEmptyString(tmpStr)) {
+		if (notEmpty(tmpStr))
 			builder.append(tmpStr);
-		}
 
-		String tags = PeopleWebSnippets.getTagLikeValues(peopleService, PeopleConstants.RESOURCE_TAG, orga,
-				PeopleNames.PEOPLE_TAGS, "#");
+		String tags = PeopleWebSnippets.getTagLikeValues(peopleService,
+				PeopleConstants.RESOURCE_TAG, orga, PeopleNames.PEOPLE_TAGS,
+				"#");
 		String mailingLists = PeopleWebSnippets.getTagLikeValues(peopleService,
-				PeopleTypes.PEOPLE_MAILING_LIST,orga, PeopleNames.PEOPLE_MAILING_LISTS, "@");
+				PeopleTypes.PEOPLE_MAILING_LIST, orga,
+				PeopleNames.PEOPLE_MAILING_LISTS, "@");
 
 		if (isSmallList) {
 			builder.append(
 					PeopleUiConstants.NB_SPACE + PeopleUiConstants.NB_SPACE)
 					.append(tags.trim());
-			if (CommonsJcrUtils.checkNotEmptyString(tags)
-					&& CommonsJcrUtils.checkNotEmptyString(mailingLists))
+			if (notEmpty(tags) && notEmpty(mailingLists))
 				builder.append(PeopleUiConstants.NB_SPACE);
 			builder.append(mailingLists.trim());
 		} else {
 			builder.append("<br/>").append(tags.trim());
-			if (CommonsJcrUtils.checkNotEmptyString(tags)
-					&& CommonsJcrUtils.checkNotEmptyString(mailingLists))
+			if (notEmpty(tags) && notEmpty(mailingLists))
 				builder.append("<br/>");
 			builder.append(mailingLists.trim());
 			builder.append("</span>");

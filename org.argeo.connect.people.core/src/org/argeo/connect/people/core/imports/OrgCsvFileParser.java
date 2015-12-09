@@ -1,5 +1,7 @@
 package org.argeo.connect.people.core.imports;
 
+import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -18,7 +20,7 @@ import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.springframework.core.io.Resource;
@@ -63,7 +65,7 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 
 				// Website and dummy picture
 				String webSite = line.get("people:websiteUrl");
-				if (!CommonsJcrUtils.isEmptyString(webSite)) {
+				if (notEmpty(webSite)) {
 					PeopleJcrUtils.createWebsite(getPeopleService(), orga,
 							webSite, true, null, null);
 
@@ -102,20 +104,20 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 				PeopleJcrUtils.updateDisplayAddress(address);
 
 				String emailAddress = line.get("people:emailAddress").trim();
-				if (!CommonsJcrUtils.isEmptyString(emailAddress)) {
+				if (notEmpty(emailAddress)) {
 					PeopleJcrUtils.createEmail(getPeopleService(), orga,
 							emailAddress, true, null, null, null);
 				}
 
 				// Phone numbers
 				String phone = line.get("people:phoneNb");
-				if (!CommonsJcrUtils.isEmptyString(phone)) {
+				if (notEmpty(phone)) {
 					PeopleJcrUtils.createPhone(getPeopleService(), orga, phone,
 							true, null, ContactValueCatalogs.CONTACT_CAT_MAIN,
 							null);
 				}
 				phone = line.get("people:faxNb");
-				if (!CommonsJcrUtils.isEmptyString(phone)) {
+				if (notEmpty(phone)) {
 					PeopleJcrUtils.createPhone(getPeopleService(), orga, phone,
 							true, null, ContactValueCatalogs.CONTACT_CAT_FAX,
 							null);
@@ -123,15 +125,15 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 
 				// Tags
 				String tags = line.get(PEOPLE_TAGS);
-				if (!CommonsJcrUtils.isEmptyString(tags))
+				if (notEmpty(tags))
 					orga.setProperty(PEOPLE_TAGS,
-							CommonsJcrUtils.parseAndClean(tags, ",", true));
+							JcrUiUtils.parseAndClean(tags, ",", true));
 
 				// Mailing lists
 				String mailingLists = line.get(PEOPLE_MAILING_LISTS);
-				if (!CommonsJcrUtils.isEmptyString(mailingLists))
-					orga.setProperty(PEOPLE_MAILING_LISTS, CommonsJcrUtils
-							.parseAndClean(mailingLists, ",", true));
+				if (notEmpty(mailingLists))
+					orga.setProperty(PEOPLE_MAILING_LISTS,
+							JcrUiUtils.parseAndClean(mailingLists, ",", true));
 				getPeopleService().saveEntity(orga, true);
 			}
 

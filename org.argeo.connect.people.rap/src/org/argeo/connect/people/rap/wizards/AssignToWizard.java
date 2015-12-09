@@ -20,7 +20,7 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -104,10 +104,9 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 	 */
 	@Override
 	public boolean performFinish() {
-		// try {
 		// Sanity checks
 		String errMsg = null;
-		if (CommonsJcrUtils.isEmptyString(chosenGroupId))
+		if (EclipseUiUtils.isEmpty(chosenGroupId))
 			errMsg = "Please pick up a new group";
 
 		if (errMsg != null) {
@@ -126,7 +125,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 
 	@Override
 	public boolean canFinish() {
-		return CommonsJcrUtils.checkNotEmptyString(chosenGroupId)
+		return EclipseUiUtils.notEmpty(chosenGroupId)
 				&& getContainer().getCurrentPage().getNextPage() == null;
 	}
 
@@ -230,7 +229,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 		}
 
 		public boolean canFlipToNextPage() {
-			return CommonsJcrUtils.checkNotEmptyString(chosenGroupId);
+			return EclipseUiUtils.notEmpty(chosenGroupId);
 		}
 	}
 
@@ -325,11 +324,11 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			// this.taskTypeId = taskTypeId;
 			this.chosenGroup = chosenGroup;
 			try {
-				Node tmpNode = CommonsJcrUtils.getNodeFromElement(
-						toUpdateItems[0], selectorName);
+				Node tmpNode = JcrUiUtils.getNodeFromElement(toUpdateItems[0],
+						selectorName);
 				repository = tmpNode.getSession().getRepository();
 				for (Object element : toUpdateItems) {
-					Node currNode = CommonsJcrUtils.getNodeFromElement(element,
+					Node currNode = JcrUiUtils.getNodeFromElement(element,
 							selectorName);
 					pathes.add(currNode.getPath());
 				}
@@ -352,8 +351,8 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 					for (String currPath : pathes) {
 						Node currNode = session.getNode(currPath);
 						// Legacy insure the node is checked out before update
-						CommonsJcrUtils.checkCOStatusBeforeUpdate(currNode);
-						if (CommonsJcrUtils.setJcrProperty(currNode,
+						JcrUiUtils.checkCOStatusBeforeUpdate(currNode);
+						if (JcrUiUtils.setJcrProperty(currNode,
 								PeopleNames.PEOPLE_ASSIGNED_TO,
 								PropertyType.STRING, chosenGroup))
 							peopleService.saveEntity(currNode, true);

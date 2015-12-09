@@ -1,5 +1,7 @@
 package org.argeo.connect.people.rap.wizards;
 
+import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
+
 import java.util.List;
 
 import javax.jcr.Node;
@@ -14,7 +16,6 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.composites.DateText;
 import org.argeo.connect.people.rap.dialogs.PickUpGroupDialog;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
@@ -108,7 +109,7 @@ public class NewSimpleTaskWizard extends Wizard {
 	public boolean performFinish() {
 		// Sanity check
 		String msg = null;
-		if (CommonsJcrUtils.isEmptyString(assignedToGroupId))
+		if (isEmpty(assignedToGroupId))
 			msg = "Please assign this task to a group.";
 		if (msg != null) {
 			MessageDialog.openError(getShell(), "Uncomplete information", msg);
@@ -186,8 +187,7 @@ public class NewSimpleTaskWizard extends Wizard {
 					if (diag.open() == Window.OK) {
 
 						assignedToGroupId = diag.getSelected();
-						if (CommonsJcrUtils
-								.checkNotEmptyString(assignedToGroupId))
+						if (EclipseUiUtils.notEmpty(assignedToGroupId))
 							assignedToTxt.setText(userAdminService
 									.getUserDisplayName(assignedToGroupId));
 					}

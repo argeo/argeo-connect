@@ -27,7 +27,7 @@ import org.argeo.connect.people.rap.utils.EditionSourceProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.argeo.jcr.JcrUtils;
@@ -157,8 +157,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	/** Overwrite to provide a specific part Name */
 	protected void updatePartName() {
-		String name = CommonsJcrUtils.get(node, Property.JCR_TITLE);
-		if (CommonsJcrUtils.checkNotEmptyString(name)) {
+		String name = JcrUiUtils.get(node, Property.JCR_TITLE);
+		if (EclipseUiUtils.notEmpty(name)) {
 			if (name.length() > SHORT_NAME_LENGHT)
 				name = name.substring(0, SHORT_NAME_LENGHT - 1) + "...";
 			setPartName(name);
@@ -168,8 +168,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	/** Overwrite to provide a specific part tooltip */
 	protected void updateToolTip() {
 		EntityEditorInput sei = (EntityEditorInput) getEditorInput();
-		String displayName = CommonsJcrUtils.get(node, Property.JCR_TITLE);
-		if (CommonsJcrUtils.isEmptyString(displayName))
+		String displayName = JcrUiUtils.get(node, Property.JCR_TITLE);
+		if (EclipseUiUtils.isEmpty(displayName))
 			displayName = "current item";
 		sei.setTooltipText("Display and edit information for " + displayName);
 		// Does not do what is expected (rather use the above workaround)
@@ -299,7 +299,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 				public void widgetSelected(SelectionEvent e) {
 					Map<String, String> params = new HashMap<String, String>();
 					params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID,
-							CommonsJcrUtils.getIdentifier(node));
+							JcrUiUtils.getIdentifier(node));
 					// params.put(DeleteEntity.PARAM_REMOVE_ALSO_PARENT,
 					// deleteParentOnRemove().toString());
 					CommandUtils.callCommand(DeleteEntity.ID, params);
@@ -486,8 +486,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		StringBuilder builder = new StringBuilder();
 		try {
 			if (currNode.isNodeType(NodeType.MIX_TITLE)) {
-				builder.append(
-						CommonsJcrUtils.get(currNode, Property.JCR_TITLE))
+				builder.append(JcrUiUtils.get(currNode, Property.JCR_TITLE))
 						.append(" - ");
 			}
 

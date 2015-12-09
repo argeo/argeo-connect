@@ -124,7 +124,7 @@ public class DemoDataImport implements PeopleConstants {
 	// NodeIterator nit = result.getNodes();
 	// while (nit.hasNext()) {
 	// Node currProfile = nit.nextNode();
-	// String username = CommonsJcrUtils.get(currProfile,
+	// String username = JcrUiUtils.get(currProfile,
 	// ArgeoNames.ARGEO_USER_ID);
 	//
 	// // TODO remove hard coded default users names

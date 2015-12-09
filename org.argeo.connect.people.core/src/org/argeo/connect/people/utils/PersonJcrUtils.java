@@ -18,6 +18,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
 /**
@@ -35,19 +36,19 @@ public class PersonJcrUtils implements PeopleNames {
 	// if (person.hasProperty(PEOPLE_USE_DEFAULT_DISPLAY_NAME)
 	// && person.getProperty(PEOPLE_USE_DEFAULT_DISPLAY_NAME)
 	// .getBoolean()) {
-	// String lastName = CommonsJcrUtils.get(person, PEOPLE_LAST_NAME);
-	// String firstName = CommonsJcrUtils.get(person,
+	// String lastName = JcrUiUtils.get(person, PEOPLE_LAST_NAME);
+	// String firstName = JcrUiUtils.get(person,
 	// PEOPLE_FIRST_NAME);
-	// if (CommonsJcrUtils.checkNotEmptyString(firstName)
-	// || CommonsJcrUtils.checkNotEmptyString(lastName)) {
+	// if (JcrUiUtils.checkNotEmptyString(firstName)
+	// || JcrUiUtils.checkNotEmptyString(lastName)) {
 	// displayName = firstName;
-	// if (CommonsJcrUtils.checkNotEmptyString(firstName)
-	// && CommonsJcrUtils.checkNotEmptyString(lastName))
+	// if (JcrUiUtils.checkNotEmptyString(firstName)
+	// && JcrUiUtils.checkNotEmptyString(lastName))
 	// displayName += " ";
 	// displayName += lastName;
 	// }
 	// } else
-	// displayName = CommonsJcrUtils.get(person, Property.JCR_TITLE);
+	// displayName = JcrUiUtils.get(person, Property.JCR_TITLE);
 	// } catch (RepositoryException e) {
 	// throw new PeopleException("Unable to get Person display name", e);
 	// }
@@ -57,33 +58,33 @@ public class PersonJcrUtils implements PeopleNames {
 	public static String getVariousNameInfo(Node person) {
 		StringBuilder nameInfo = new StringBuilder();
 
-		if (CommonsJcrUtils.get(person, PEOPLE_SALUTATION) != null) {
-			nameInfo.append(CommonsJcrUtils.get(person, PEOPLE_SALUTATION));
+		if (JcrUiUtils.get(person, PEOPLE_SALUTATION) != null) {
+			nameInfo.append(JcrUiUtils.get(person, PEOPLE_SALUTATION));
 			nameInfo.append(" ");
 		}
-		if (CommonsJcrUtils.get(person, PEOPLE_HONORIFIC_TITLE) != null) {
-			nameInfo.append(CommonsJcrUtils.get(person, PEOPLE_HONORIFIC_TITLE));
-			nameInfo.append(" ");
-		}
-
-		if (CommonsJcrUtils.get(person, PEOPLE_FIRST_NAME) != null) {
-			nameInfo.append(CommonsJcrUtils.get(person, PEOPLE_FIRST_NAME));
+		if (JcrUiUtils.get(person, PEOPLE_HONORIFIC_TITLE) != null) {
+			nameInfo.append(JcrUiUtils.get(person, PEOPLE_HONORIFIC_TITLE));
 			nameInfo.append(" ");
 		}
 
-		if (CommonsJcrUtils.get(person, PEOPLE_NICKNAME) != null) {
+		if (JcrUiUtils.get(person, PEOPLE_FIRST_NAME) != null) {
+			nameInfo.append(JcrUiUtils.get(person, PEOPLE_FIRST_NAME));
+			nameInfo.append(" ");
+		}
+
+		if (JcrUiUtils.get(person, PEOPLE_NICKNAME) != null) {
 			nameInfo.append("(");
-			nameInfo.append(CommonsJcrUtils.get(person, PEOPLE_NICKNAME));
+			nameInfo.append(JcrUiUtils.get(person, PEOPLE_NICKNAME));
 			nameInfo.append(") ");
 		}
 
-		if (CommonsJcrUtils.get(person, PEOPLE_LAST_NAME) != null) {
-			nameInfo.append(CommonsJcrUtils.get(person, PEOPLE_LAST_NAME));
+		if (JcrUiUtils.get(person, PEOPLE_LAST_NAME) != null) {
+			nameInfo.append(JcrUiUtils.get(person, PEOPLE_LAST_NAME));
 			nameInfo.append(" ");
 		}
 
-		if (CommonsJcrUtils.get(person, PEOPLE_NAME_SUFFIX) != null) {
-			nameInfo.append(CommonsJcrUtils.get(person, PEOPLE_NAME_SUFFIX));
+		if (JcrUiUtils.get(person, PEOPLE_NAME_SUFFIX) != null) {
+			nameInfo.append(JcrUiUtils.get(person, PEOPLE_NAME_SUFFIX));
 			nameInfo.append(" ");
 		}
 		return nameInfo.toString();
@@ -91,14 +92,14 @@ public class PersonJcrUtils implements PeopleNames {
 
 	public static String getSecondaryName(Node person) {
 		String secondaryName = null;
-		String nickName = CommonsJcrUtils.get(person, PEOPLE_NICKNAME);
+		String nickName = JcrUiUtils.get(person, PEOPLE_NICKNAME);
 
-		if (CommonsJcrUtils.checkNotEmptyString(nickName)) {
+		if (EclipseUiUtils.notEmpty(nickName)) {
 			secondaryName = "Nickname: " + nickName;
 		}
 
-		String maidenName = CommonsJcrUtils.get(person, PEOPLE_MAIDEN_NAME);
-		if (CommonsJcrUtils.checkNotEmptyString(maidenName)) {
+		String maidenName = JcrUiUtils.get(person, PEOPLE_MAIDEN_NAME);
+		if (EclipseUiUtils.notEmpty(maidenName)) {
 			if (secondaryName != null)
 				secondaryName += "   ";
 			secondaryName += "Maiden name: " + maidenName;
@@ -159,14 +160,13 @@ public class PersonJcrUtils implements PeopleNames {
 		Node job = jobs.addNode(org.getName(), PeopleTypes.PEOPLE_JOB);
 		job.setProperty(PEOPLE_REF_UID, org.getProperty(PEOPLE_UID).getString());
 
-		if (CommonsJcrUtils.checkNotEmptyString(role))
+		if (EclipseUiUtils.notEmpty(role))
 			job.setProperty(PEOPLE_ROLE, role);
-		if (CommonsJcrUtils.checkNotEmptyString(department))
+		if (EclipseUiUtils.notEmpty(department))
 			job.setProperty(PEOPLE_DEPARTMENT, department);
-		if (CommonsJcrUtils.checkNotEmptyString(title))
+		if (EclipseUiUtils.notEmpty(title))
 			throw new PeopleException(
 					"Position Nature: Unimplemented property ");
-		// job.setProperty(Property.JCR_TITLE, title);
 		if (dateBegin != null)
 			job.setProperty(PEOPLE_DATE_BEGIN, dateBegin);
 		if (dateEnd != null)

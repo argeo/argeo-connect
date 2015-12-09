@@ -17,7 +17,7 @@ import org.argeo.connect.people.rap.commands.RemoveEntityReference;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 
 /** Some helper methods to generate HTML snippet */
@@ -42,7 +42,7 @@ public class PeopleRapSnippets {
 	 * <code>RemoveEntityReference</code> from a cell of a HTML list.
 	 */
 	public static String getRemoveReferenceSnippetForLists(Node linkNode) {
-		String toRemoveJcrId = CommonsJcrUtils.getIdentifier(linkNode);
+		String toRemoveJcrId = JcrUiUtils.getIdentifier(linkNode);
 		String href = RemoveEntityReference.ID + "/"
 				+ RemoveEntityReference.PARAM_TOREMOVE_JCR_ID + "="
 				+ toRemoveJcrId;
@@ -55,7 +55,7 @@ public class PeopleRapSnippets {
 	 */
 	public static String getEditJobSnippetForLists(Node relevantNode,
 			boolean isBackward) {
-		String toEditJcrId = CommonsJcrUtils.getIdentifier(relevantNode);
+		String toEditJcrId = JcrUiUtils.getIdentifier(relevantNode);
 		String href = EditJob.ID + "/" + EditJob.PARAM_RELEVANT_NODE_JCR_ID
 				+ "=" + toEditJcrId + "/" + EditJob.PARAM_IS_BACKWARD + "="
 				+ isBackward;
@@ -68,7 +68,7 @@ public class PeopleRapSnippets {
 	 */
 	public static String getOpenEditorSnippet(String commandId,
 			Node relevantNode, String value) {
-		String toEditJcrId = CommonsJcrUtils.getIdentifier(relevantNode);
+		String toEditJcrId = JcrUiUtils.getIdentifier(relevantNode);
 		String href = commandId + "/" + OpenEntityEditor.PARAM_JCR_ID + "="
 				+ toEditJcrId;
 		return PeopleUiSnippets.getRWTLink(href, value);
@@ -90,8 +90,8 @@ public class PeopleRapSnippets {
 	// PeopleTypes.PEOPLE_ADDRESS);
 	// if (!(currContact == null || !currContact
 	// .isNodeType(PeopleTypes.PEOPLE_CONTACT_REF))) {
-	// org = peopleService.getEntityByUid(CommonsJcrUtils
-	// .getSession(currContact), CommonsJcrUtils.get(
+	// org = peopleService.getEntityByUid(JcrUiUtils
+	// .getSession(currContact), JcrUiUtils.get(
 	// currContact, PeopleNames.PEOPLE_REF_UID));
 	// }
 	// } else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
@@ -99,12 +99,12 @@ public class PeopleRapSnippets {
 	//
 	// StringBuilder builder = new StringBuilder();
 	//
-	// if (CommonsJcrUtils.checkNotEmptyString(label))
+	// if (JcrUiUtils.checkNotEmptyString(label))
 	// builder.append(label);
 	// builder.append("<b>");
 	// if (org != null) {
 	// String clickableLabel = getOpenEditorSnippet(openEditorCmdId,
-	// org, CommonsJcrUtils.get(org, Property.JCR_TITLE));
+	// org, JcrUiUtils.get(org, Property.JCR_TITLE));
 	// builder.append(clickableLabel).append("<br/>");
 	// }
 	// if (person != null) {
@@ -117,14 +117,14 @@ public class PeopleRapSnippets {
 	// // phone
 	// String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 	// PeopleTypes.PEOPLE_PHONE);
-	// if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+	// if (JcrUiUtils.checkNotEmptyString(tmpStr))
 	// builder.append(PeopleUiSnippets.getPhoneLink(tmpStr)).append(
 	// "<br/>");
 	//
 	// // mail
 	// tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
 	// PeopleTypes.PEOPLE_EMAIL);
-	// if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+	// if (JcrUiUtils.checkNotEmptyString(tmpStr))
 	// builder.append(PeopleUiSnippets.getMailLink(tmpStr)).append(
 	// "<br/>");
 	//
@@ -147,7 +147,7 @@ public class PeopleRapSnippets {
 						.getProperty((PeopleNames.PEOPLE_TAGS)).getValues())
 					tags.append("#")
 							.append(getTagLink(
-									CommonsJcrUtils.getSession(entity),
+									JcrUiUtils.getSession(entity),
 									peopleService, peopleWorkbenchService,
 									PeopleConstants.RESOURCE_TAG,
 									value.getString())).append("  ");
@@ -172,7 +172,7 @@ public class PeopleRapSnippets {
 				tagId, value);
 		if (tag == null)
 			return value;
-		String tagJcrId = CommonsJcrUtils.getIdentifier(tag);
+		String tagJcrId = JcrUiUtils.getIdentifier(tag);
 		String href = commandId + PeopleRapConstants.HREF_SEPARATOR;
 		href += OpenEntityEditor.PARAM_JCR_ID + "=" + tagJcrId;
 		return PeopleUiSnippets.getRWTLink(href, value);
@@ -188,7 +188,7 @@ public class PeopleRapSnippets {
 			String label = PeopleRapSnippets.getOpenEditorSnippet(
 					peopleWorkbenchService.getOpenEntityEditorCmdId(),
 					referencedEntity,
-					CommonsJcrUtils.get(referencedEntity, Property.JCR_TITLE));
+					JcrUiUtils.get(referencedEntity, Property.JCR_TITLE));
 			builder.append(label);
 		}
 		// current contact meta data

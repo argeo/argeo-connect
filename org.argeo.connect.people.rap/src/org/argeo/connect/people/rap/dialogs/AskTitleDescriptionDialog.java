@@ -15,7 +15,6 @@
  */
 package org.argeo.connect.people.rap.dialogs;
 
-import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
@@ -110,7 +109,7 @@ public class AskTitleDescriptionDialog extends TrayDialog {
 		// Sanity check
 		String msg = null;
 
-		if (CommonsJcrUtils.isEmptyString(title) || title.length() < 3)
+		if (EclipseUiUtils.isEmpty(title) || title.length() < 3)
 			msg = "Please enter a title that is at list two (2) valid charaters long.";
 		if (msg != null) {
 			MessageDialog.openError(getShell(), "Non valid information", msg);

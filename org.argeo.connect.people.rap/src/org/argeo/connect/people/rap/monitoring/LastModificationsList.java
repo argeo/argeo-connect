@@ -23,7 +23,7 @@ import org.argeo.connect.people.rap.editors.utils.AbstractPeopleBasicEditor;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.providers.SimpleLazyContentProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
@@ -203,7 +203,7 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements
 		public String getText(Object element) {
 			try {
 				Node currNode = (Node) element;
-				String modifBy = CommonsJcrUtils.get(currNode,
+				String modifBy = JcrUiUtils.get(currNode,
 						Property.JCR_LAST_MODIFIED_BY);
 				Calendar modifOn = currNode.getProperty(
 						Property.JCR_LAST_MODIFIED).getDate();

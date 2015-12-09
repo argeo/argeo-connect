@@ -18,8 +18,9 @@ import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.rap.editors.utils.AbstractSearchEntityEditor;
 import org.argeo.connect.people.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.XPathUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -97,7 +98,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 					.localAnd(XPathUtils.getFreeTextConstraint(getFilterText()
 							.getText()), XPathUtils.getPropertyEquals(
 							PEOPLE_TAGS, tagDD.getText()));
-			if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+			if (EclipseUiUtils.notEmpty(attrQuery))
 				builder.append("[").append(attrQuery).append("]");
 			builder.append(" order by @").append(PeopleNames.JCR_TITLE)
 					.append(" ascending");
@@ -128,14 +129,14 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 			//
 			// // Tag
 			// String currVal = tagDD.getText();
-			// if (CommonsJcrUtils.checkNotEmptyString(currVal)) {
+			// if (JcrUiUtils.checkNotEmptyString(currVal)) {
 			// StaticOperand so = factory.literal(getSession()
 			// .getValueFactory().createValue(currVal));
 			// DynamicOperand dyo = factory.propertyValue(
 			// source.getSelectorName(), );
 			// Constraint currC = factory.comparison(dyo,
 			// QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
-			// defaultC = CommonsJcrUtils.localAnd(factory, defaultC, currC);
+			// defaultC = JcrUiUtils.localAnd(factory, defaultC, currC);
 			// }
 			//
 			// // TODO handle the case where no TITLE prop is available
@@ -145,7 +146,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 			// QueryObjectModel query = factory.createQuery(source, defaultC,
 			// orderings, null);
 			QueryResult result = query.execute();
-			Row[] rows = CommonsJcrUtils.rowIteratorToArray(result.getRows());
+			Row[] rows = JcrUiUtils.rowIteratorToArray(result.getRows());
 			setViewerInput(rows);
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list " + getEntityType()

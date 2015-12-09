@@ -1,5 +1,7 @@
 package org.argeo.connect.people.rap.wizards;
 
+import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
+
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
 
@@ -7,7 +9,8 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
@@ -63,15 +66,15 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 	public boolean performFinish() {
 		String lastName = lastNameTxt.getText();
 		String firstName = firstNameTxt.getText();
-		if (CommonsJcrUtils.isEmptyString(lastName)
-				&& CommonsJcrUtils.isEmptyString(firstName)) {
+		if (EclipseUiUtils.isEmpty(lastName)
+				&& EclipseUiUtils.isEmpty(firstName)) {
 			MessageDialog.openError(getShell(), "Non-valid information",
 					"Please enter at least a name that is not empty.");
 			return false;
 		} else {
-			CommonsJcrUtils.setJcrProperty(person, PEOPLE_LAST_NAME,
+			JcrUiUtils.setJcrProperty(person, PEOPLE_LAST_NAME,
 					PropertyType.STRING, lastName);
-			CommonsJcrUtils.setJcrProperty(person, PEOPLE_FIRST_NAME,
+			JcrUiUtils.setJcrProperty(person, PEOPLE_FIRST_NAME,
 					PropertyType.STRING, firstName);
 			return true;
 		}
@@ -86,8 +89,7 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 	public boolean canFinish() {
 		String lastName = lastNameTxt.getText();
 		String firstName = firstNameTxt.getText();
-		if (CommonsJcrUtils.isEmptyString(lastName)
-				&& CommonsJcrUtils.isEmptyString(firstName)) {
+		if (isEmpty(lastName) && isEmpty(firstName)) {
 			return false;
 		} else
 			return true;

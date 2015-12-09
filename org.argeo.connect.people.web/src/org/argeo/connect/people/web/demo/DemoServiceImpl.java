@@ -19,7 +19,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.core.PeopleServiceImpl;
 import org.argeo.connect.people.core.imports.EncodedTagCsvFileParser;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.springframework.core.io.Resource;
 
@@ -92,7 +92,7 @@ public class DemoServiceImpl extends PeopleServiceImpl implements
 			resourceService.createTagLikeResourceParent(adminSession,
 					PeopleConstants.RESOURCE_COUNTRY,
 					PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE,
-					PeopleNames.PEOPLE_CODE, getBasePath(null), CommonsJcrUtils
+					PeopleNames.PEOPLE_CODE, getBasePath(null), JcrUiUtils
 							.getLocalJcrItemName(NodeType.NT_UNSTRUCTURED),
 					new ArrayList<String>());
 			String EN_SHORT_NAME = "English short name (upper-lower case)";
@@ -108,7 +108,7 @@ public class DemoServiceImpl extends PeopleServiceImpl implements
 			resourceService.createTagLikeResourceParent(adminSession,
 					PeopleConstants.RESOURCE_LANG,
 					PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE,
-					PeopleNames.PEOPLE_CODE, getBasePath(null), CommonsJcrUtils
+					PeopleNames.PEOPLE_CODE, getBasePath(null), JcrUiUtils
 							.getLocalJcrItemName(NodeType.NT_UNSTRUCTURED),
 					new ArrayList<String>());
 			String EN_SHORT_NAME = "Language name";

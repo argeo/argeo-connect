@@ -1,5 +1,8 @@
 package org.argeo.connect.people.core;
 
+import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
+import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +30,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.jcr.JcrUtils;
 
@@ -106,8 +109,8 @@ public class ResourceServiceImpl implements ResourceService {
 				Value[] values = node.getProperty(propertyName).getValues();
 				for (Value value : values) {
 					String curr = value.getString();
-					if (CommonsJcrUtils.isEmptyString(filter)
-							|| CommonsJcrUtils.checkNotEmptyString(curr)
+					if (isEmpty(filter)
+							|| notEmpty(curr)
 							&& curr.toLowerCase()
 									.contains(filter.toLowerCase()))
 						result.add(curr);
@@ -187,7 +190,7 @@ public class ResourceServiceImpl implements ResourceService {
 			String propertyName, String oldValue, String newValue) {
 		try {
 
-			if (CommonsJcrUtils.isEmptyString(oldValue))
+			if (isEmpty(oldValue))
 				throw new PeopleException("Old value cannot be empty");
 
 			Value[] values = templateNode.getProperty(propertyName).getValues();
@@ -196,7 +199,7 @@ public class ResourceServiceImpl implements ResourceService {
 			for (Value value : values) {
 				String currValStr = value.getString();
 				if (oldValue.equals(currValStr)) {
-					if (CommonsJcrUtils.checkNotEmptyString(newValue))
+					if (notEmpty(newValue))
 						newValues.add(newValue);
 				} else
 					newValues.add(currValStr);
@@ -207,7 +210,7 @@ public class ResourceServiceImpl implements ResourceService {
 			// TODO use a transaction
 			// Retrieve all node that reference this tag and update them
 			NodeIterator nit = getCatalogueValueInstances(
-					CommonsJcrUtils.getSession(templateNode), taggableType,
+					JcrUiUtils.getSession(templateNode), taggableType,
 					propertyName, oldValue);
 			while (nit.hasNext())
 				updateOneTag(nit.nextNode(), propertyName, oldValue, newValue);
@@ -257,7 +260,7 @@ public class ResourceServiceImpl implements ResourceService {
 						tagInstanceType);
 				// If this property is not set, the key property of the tag
 				// instance is the JCR_TITLE Property
-				if (CommonsJcrUtils.checkNotEmptyString(codePropName))
+				if (notEmpty(codePropName))
 					tagLikeParent
 							.setProperty(PeopleNames.PEOPLE_TAG_CODE_PROP_NAME,
 									codePropName);
@@ -300,7 +303,7 @@ public class ResourceServiceImpl implements ResourceService {
 		if (tagInstance != null) {
 			// Tag already exists, we do nothing.
 			if (log.isTraceEnabled()) {
-				String registeredKey = CommonsJcrUtils.get(
+				String registeredKey = JcrUiUtils.get(
 						tagInstance,
 						getTagKeyPropName(getTagLikeResourceParent(session,
 								tagId)));
@@ -324,7 +327,7 @@ public class ResourceServiceImpl implements ResourceService {
 		if (tagInstance != null) {
 			// Tag already exists, we do nothing.
 			if (log.isTraceEnabled()) {
-				String registeredKey = CommonsJcrUtils.get(
+				String registeredKey = JcrUiUtils.get(
 						tagInstance,
 						getTagKeyPropName(getTagLikeResourceParent(session,
 								tagId)));
@@ -338,7 +341,7 @@ public class ResourceServiceImpl implements ResourceService {
 					getExistingTagLikeParent(session, tagId), tagCode);
 			// remove trailing and starting space
 			tagValue = tagValue.trim();
-			CommonsJcrUtils.setJcrProperty(newTag, Property.JCR_TITLE,
+			JcrUiUtils.setJcrProperty(newTag, Property.JCR_TITLE,
 					PropertyType.STRING, tagValue);
 			return newTag;
 		}
@@ -357,7 +360,7 @@ public class ResourceServiceImpl implements ResourceService {
 			String relPath = getTagRelPath(instanceKey);
 			if (tagParent.hasNode(relPath)) {
 				Node existing = tagParent.getNode(relPath);
-				String existingValue = CommonsJcrUtils.get(existing,
+				String existingValue = JcrUiUtils.get(existing,
 						getTagKeyPropName(tagParent));
 				if (instanceKey.equalsIgnoreCase(existingValue)) {
 					return existing;
@@ -395,20 +398,18 @@ public class ResourceServiceImpl implements ResourceService {
 
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
-			
 
 			// XPath
 			StringBuilder builder = new StringBuilder();
 			builder.append(XPathUtils.descendantFrom(tagParent.getPath()));
-			builder.append("//element(*, ").append(tagNodeType)
-					.append(")");
+			builder.append("//element(*, ").append(tagNodeType).append(")");
 			builder.append("[");
-			builder.append(XPathUtils.getPropertyEquals(PeopleNames.JCR_TITLE, value));
+			builder.append(XPathUtils.getPropertyEquals(PeopleNames.JCR_TITLE,
+					value));
 			builder.append("]");
 			Query query = queryManager.createQuery(builder.toString(),
 					PeopleConstants.QUERY_XPATH);
 
-			
 			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
 			// Selector source = factory.selector(tagNodeType, tagNodeType);
 			//
@@ -453,7 +454,7 @@ public class ResourceServiceImpl implements ResourceService {
 				StringBuilder builder = new StringBuilder();
 				for (Value val : codes) {
 					String currCode = val.getString();
-					if (CommonsJcrUtils.checkNotEmptyString(currCode)) {
+					if (notEmpty(currCode)) {
 						builder.append(
 								getEncodedTagValue(session, tagId, currCode))
 								.append(separator);
@@ -488,7 +489,7 @@ public class ResourceServiceImpl implements ResourceService {
 					PeopleNames.PEOPLE_TAGGABLE_NODE_TYPE).getString();
 			String parentPath = tagParent.getProperty(
 					PeopleNames.PEOPLE_TAGGABLE_PARENT_PATH).getString();
-			List<String> propNames = CommonsJcrUtils.getMultiAsList(tagParent,
+			List<String> propNames = JcrUiUtils.getMultiAsList(tagParent,
 					PeopleNames.PEOPLE_TAGGABLE_PROP_NAME);
 
 			// String sName = "nodes";
@@ -523,8 +524,8 @@ public class ResourceServiceImpl implements ResourceService {
 			// force error if no property is defined for this tag
 			condition = condition.substring(0, condition.length() - 4);
 
-			String xpathQueryStr = XPathUtils.descendantFrom(parentPath) +
-					"//element(*, " + nodeType + ")";
+			String xpathQueryStr = XPathUtils.descendantFrom(parentPath)
+					+ "//element(*, " + nodeType + ")";
 
 			xpathQueryStr += "[" + condition + "]";
 			QueryManager queryManager = tagParent.getSession().getWorkspace()
@@ -558,16 +559,16 @@ public class ResourceServiceImpl implements ResourceService {
 					PeopleNames.PEOPLE_TAGGABLE_NODE_TYPE).getString();
 			String taggableParentPath = tagParent.getProperty(
 					PeopleNames.PEOPLE_TAGGABLE_PARENT_PATH).getString();
-			String codeProp = CommonsJcrUtils.get(tagParent,
-					PeopleNames.PEOPLE_CODE);
-			List<String> propNames = CommonsJcrUtils.getMultiAsList(tagParent,
+			String codeProp = JcrUiUtils
+					.get(tagParent, PeopleNames.PEOPLE_CODE);
+			List<String> propNames = JcrUiUtils.getMultiAsList(tagParent,
 					PeopleNames.PEOPLE_TAGGABLE_PROP_NAME);
 
 			NodeIterator nit = getRegisteredTags(tagParent, null);
 			while (nit.hasNext()) {
 				Node currNode = nit.nextNode();
-				String currKey = CommonsJcrUtils.get(currNode, keyPropName);
-				if (CommonsJcrUtils.checkNotEmptyString(currKey)
+				String currKey = JcrUiUtils.get(currNode, keyPropName);
+				if (notEmpty(currKey)
 						&& !registeredTags.contains(currKey))
 					registeredTags.add(currKey);
 			}
@@ -591,13 +592,13 @@ public class ResourceServiceImpl implements ResourceService {
 						for (Value tagV : tags) {
 							String currTag = tagV.getString().trim();
 
-							if (CommonsJcrUtils.checkNotEmptyString(currTag)
+							if (notEmpty(currTag)
 									&& !registeredTags.contains(currTag)) {
 								if (currTag.length() < 2) {
 									log.warn("Unable to cache tag ["
 											+ currTag
 											+ "] for "
-											+ CommonsJcrUtils.get(currNode,
+											+ JcrUiUtils.get(currNode,
 													Property.JCR_TITLE) + " - "
 											+ currNode);
 								} else
@@ -608,7 +609,7 @@ public class ResourceServiceImpl implements ResourceService {
 				}
 			}
 			// Add the newly found tags.
-			if (CommonsJcrUtils.isEmptyString(codeProp))
+			if (isEmpty(codeProp))
 				for (String tag : existingValues) {
 					createTagInstanceInternal(tagParent, tag);
 					session.save();
@@ -616,7 +617,7 @@ public class ResourceServiceImpl implements ResourceService {
 			else {
 				for (String tag : existingValues) {
 					Node curr = createTagInstanceInternal(tagParent, tag);
-					CommonsJcrUtils.setJcrProperty(curr, Property.JCR_TITLE,
+					JcrUiUtils.setJcrProperty(curr, Property.JCR_TITLE,
 							PropertyType.STRING, tag);
 					session.save();
 				}
@@ -649,11 +650,11 @@ public class ResourceServiceImpl implements ResourceService {
 				.getString();
 
 		// boolean wasCO =
-		CommonsJcrUtils.checkCOStatusBeforeUpdate(tagInstance); // = false;
+		JcrUiUtils.checkCOStatusBeforeUpdate(tagInstance); // = false;
 		// if (tagInstance.isNodeType(NodeType.MIX_VERSIONABLE)
-		// && !CommonsJcrUtils.isNodeCheckedOutByMe(tagInstance)) {
+		// && !JcrUiUtils.isNodeCheckedOutByMe(tagInstance)) {
 		// wasCheckedIn = true;
-		// CommonsJcrUtils.checkout(tagInstance);
+		// JcrUiUtils.checkout(tagInstance);
 		// }
 
 		Session session = tagInstance.getSession();
@@ -672,7 +673,7 @@ public class ResourceServiceImpl implements ResourceService {
 
 		// if (wasCO)
 		// log.warn("Tag " + );
-		// CommonsJcrUtils.saveAndCheckin(tagInstance);
+		// JcrUiUtils.saveAndCheckin(tagInstance);
 		// if (wasCheckedIn)
 		//
 		// else
@@ -692,14 +693,13 @@ public class ResourceServiceImpl implements ResourceService {
 	private void updateOneTag(Node taggable, String tagPropName,
 			String oldValue, String newValue) {
 		try {
-			Node versionable = CommonsJcrUtils
-					.getParentVersionableNode(taggable);
+			Node versionable = JcrUiUtils.getParentVersionableNode(taggable);
 			if (versionable != null)
-				CommonsJcrUtils.checkCOStatusBeforeUpdate(versionable);
+				JcrUiUtils.checkCOStatusBeforeUpdate(versionable);
 			Property property = taggable.getProperty(tagPropName);
 			if (property.isMultiple()) {
-				List<String> oldValues = CommonsJcrUtils.getMultiAsList(
-						taggable, tagPropName);
+				List<String> oldValues = JcrUiUtils.getMultiAsList(taggable,
+						tagPropName);
 				List<String> newValues = new ArrayList<String>();
 				for (String val : oldValues) {
 					if (oldValue.equals(val) && newValue != null)
@@ -731,7 +731,7 @@ public class ResourceServiceImpl implements ResourceService {
 		Node parent = retrieveTagParentFromTag(tag);
 		String keyPropName = getTagKeyPropName(parent);
 		NodeIterator nit = getTaggedEntities(parent,
-				CommonsJcrUtils.get(tag, keyPropName));
+				JcrUiUtils.get(tag, keyPropName));
 		return nit.getSize();
 	}
 
@@ -786,9 +786,8 @@ public class ResourceServiceImpl implements ResourceService {
 
 	protected Node retrieveTagParentFromTag(Node tag) {
 		Node parent = tag;
-		while (!CommonsJcrUtils.isNodeType(parent,
-				PeopleTypes.PEOPLE_TAG_PARENT))
-			parent = CommonsJcrUtils.getParent(parent);
+		while (!JcrUiUtils.isNodeType(parent, PeopleTypes.PEOPLE_TAG_PARENT))
+			parent = JcrUiUtils.getParent(parent);
 		return parent;
 	}
 
@@ -798,7 +797,7 @@ public class ResourceServiceImpl implements ResourceService {
 				return tagParent.getProperty(
 						PeopleNames.PEOPLE_TAG_CODE_PROP_NAME).getString();
 			else
-				return CommonsJcrUtils.getLocalJcrItemName(Property.JCR_TITLE);
+				return JcrUiUtils.getLocalJcrItemName(Property.JCR_TITLE);
 		} catch (RepositoryException e) {
 			throw new PeopleException(
 					"unable to retrieve key property name for " + tagParent);
@@ -822,7 +821,7 @@ public class ResourceServiceImpl implements ResourceService {
 			String queryStr = "select * from [" + nodeType
 					+ "] as nodes where ISDESCENDANTNODE('"
 					+ tagParent.getPath() + "')";
-			if (CommonsJcrUtils.checkNotEmptyString(filter))
+			if (notEmpty(filter))
 				queryStr += " AND LOWER(nodes.[" + Property.JCR_TITLE
 						+ "]) like \"%" + filter.toLowerCase() + "%\"";
 			queryStr += " ORDER BY nodes.[" + Property.JCR_TITLE + "]";
@@ -858,7 +857,7 @@ public class ResourceServiceImpl implements ResourceService {
 	//
 	// if (session.nodeExists(path)) {
 	// Node existing = session.getNode(path);
-	// if (tag.equalsIgnoreCase(CommonsJcrUtils.get(existing,
+	// if (tag.equalsIgnoreCase(JcrUiUtils.get(existing,
 	// Property.JCR_TITLE))) {
 	// return existing;
 	// }
@@ -883,7 +882,7 @@ public class ResourceServiceImpl implements ResourceService {
 	// try {
 	// String queryStr = "select * from [" + nodeType
 	// + "] as nodes where ISDESCENDANTNODE('" + basePath + "')";
-	// if (CommonsJcrUtils.checkNotEmptyString(filter))
+	// if (JcrUiUtils.checkNotEmptyString(filter))
 	// queryStr += " AND LOWER(nodes.[" + Property.JCR_TITLE
 	// + "]) like \"%" + filter.toLowerCase() + "%\"";
 	// queryStr += " ORDER BY nodes.[" + Property.JCR_TITLE + "]";
@@ -913,8 +912,8 @@ public class ResourceServiceImpl implements ResourceService {
 	// Value[] values = node.getProperty(propertyName).getValues();
 	// for (Value value : values) {
 	// String curr = value.getString();
-	// if (CommonsJcrUtils.isEmptyString(filter)
-	// || CommonsJcrUtils.checkNotEmptyString(curr)
+	// if (isEmptyString(filter)
+	// || JcrUiUtils.checkNotEmptyString(curr)
 	// && curr.toLowerCase().contains(
 	// filter.toLowerCase()))
 	// result.add(curr);
@@ -997,11 +996,11 @@ public class ResourceServiceImpl implements ResourceService {
 	// try {
 	// boolean wasCheckedIn = false;
 	// if (node.isNodeType(NodeType.MIX_VERSIONABLE)
-	// && !CommonsJcrUtils.isNodeCheckedOutByMe(node)) {
+	// && !JcrUiUtils.isNodeCheckedOutByMe(node)) {
 	// wasCheckedIn = true;
-	// CommonsJcrUtils.checkout(node);
+	// JcrUiUtils.checkout(node);
 	// }
-	// List<String> oldValues = CommonsJcrUtils.getMultiAsList(node,
+	// List<String> oldValues = JcrUiUtils.getMultiAsList(node,
 	// propertyName);
 	// List<String> newValues = new ArrayList<String>();
 	// for (String val : oldValues) {
@@ -1013,7 +1012,7 @@ public class ResourceServiceImpl implements ResourceService {
 	// node.setProperty(propertyName, newValues.toArray(new String[0]));
 	//
 	// if (wasCheckedIn)
-	// CommonsJcrUtils.saveAndCheckin(node);
+	// JcrUiUtils.saveAndCheckin(node);
 	// else
 	// node.getSession().save();
 	// } catch (RepositoryException ee) {
@@ -1031,7 +1030,7 @@ public class ResourceServiceImpl implements ResourceService {
 	// NodeIterator nit;
 	// try {
 	// Session session = tag.getSession();
-	// String tagValue = CommonsJcrUtils.get(tag, Property.JCR_TITLE);
+	// String tagValue = JcrUiUtils.get(tag, Property.JCR_TITLE);
 	// // Retrieve existing tags
 	// if (session.nodeExists(tagableParentPath)) {
 	// String queryString = "select * from [" + tagableType
@@ -1072,9 +1071,9 @@ public class ResourceServiceImpl implements ResourceService {
 	// nit = query.execute().getNodes();
 	// while (nit.hasNext()) {
 	// Node currNode = nit.nextNode();
-	// String currTag = CommonsJcrUtils.get(currNode,
+	// String currTag = JcrUiUtils.get(currNode,
 	// Property.JCR_TITLE);
-	// if (CommonsJcrUtils.checkNotEmptyString(currTag)
+	// if (JcrUiUtils.checkNotEmptyString(currTag)
 	// && !registeredTags.contains(currTag))
 	// registeredTags.add(currTag.trim());
 	// }
@@ -1096,7 +1095,7 @@ public class ResourceServiceImpl implements ResourceService {
 	// .getValues();
 	// for (Value tagV : tags) {
 	// String currTag = tagV.getString().trim();
-	// if (CommonsJcrUtils.checkNotEmptyString(currTag)
+	// if (JcrUiUtils.checkNotEmptyString(currTag)
 	// && !registeredTags.contains(currTag))
 	// existingValues.add(currTag);
 	// }

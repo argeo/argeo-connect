@@ -36,7 +36,7 @@ import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
@@ -206,7 +206,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 									.getSelection()).getFirstElement();
 							// try {
 							if (first instanceof Row) {
-								masterNode = CommonsJcrUtils.getNode(
+								masterNode = JcrUiUtils.getNode(
 										(Row) first, selectorName);
 							}
 							if (first == null)
@@ -240,7 +240,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 							.getFirstElement();
 					// try {
 					if (obj instanceof Row)
-						masterNode = CommonsJcrUtils.getNode((Row) obj,
+						masterNode = JcrUiUtils.getNode((Row) obj,
 								selectorName);
 
 					// masterNode = ((Row) obj).getNode(selectorName);
@@ -378,7 +378,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 				this.masterPath = masterNode.getPath();
 				repository = masterNode.getSession().getRepository();
 				for (Object element : toUpdateElements) {
-					Node currNode = CommonsJcrUtils.getNodeFromElement(element,
+					Node currNode = JcrUiUtils.getNodeFromElement(element,
 							selectorName);
 					// Node currNode = row.getNode(selectorName);
 					slavePathes.add(currNode.getPath());
@@ -411,7 +411,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 								log.debug("About to remove node "
 										+ currSlave.getPath()
 										+ "\n with title: "
-										+ CommonsJcrUtils.get(currSlave,
+										+ JcrUiUtils.get(currSlave,
 												Property.JCR_TITLE));
 							}
 
@@ -488,12 +488,12 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 
 		private boolean checkCOStatusBeforeUpdate(Node node) {
 			// Look for the parent versionable;
-			Node parentV = CommonsJcrUtils.getVersionableAncestor(node);
+			Node parentV = JcrUiUtils.getVersionableAncestor(node);
 			if (parentV == null)
 				return true;
-			boolean wasCo = CommonsJcrUtils.checkCOStatusBeforeUpdate(parentV);
+			boolean wasCo = JcrUiUtils.checkCOStatusBeforeUpdate(parentV);
 			if (!wasCo)
-				modifiedPathes.add(CommonsJcrUtils.getPath(parentV));
+				modifiedPathes.add(JcrUiUtils.getPath(parentV));
 			return wasCo;
 		}
 
@@ -561,9 +561,9 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 				Node referencing = ref.getParent();
 				checkCOStatusBeforeUpdate(referencing);
 				if (ref.isMultiple()) {
-					CommonsJcrUtils.removeRefFromMultiValuedProp(referencing,
+					JcrUiUtils.removeRefFromMultiValuedProp(referencing,
 							ref.getName(), slaveNode.getIdentifier());
-					CommonsJcrUtils.addRefToMultiValuedProp(referencing,
+					JcrUiUtils.addRefToMultiValuedProp(referencing,
 							ref.getName(), masterNode);
 				} else
 					referencing.setProperty(ref.getName(), masterNode);

@@ -35,80 +35,111 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
-/** Some static utilities methods that might be factorized in a near future */
-public class CommonsJcrUtils {
-	private final static Log log = LogFactory.getLog(CommonsJcrUtils.class);
-
-	/*
-	 * Encapsulate some commons JCR calls with the try/catch block in order to
-	 * simplify the code
-	 */
+/**
+ * Utility methods to ease interraction with a JCR repository while implementing
+ * UI. This might move to commons in a near future
+ */
+public class JcrUiUtils {
+	private final static Log log = LogFactory.getLog(JcrUiUtils.class);
 
 	/**
-	 * Call {@link Repository#login()} without exceptions (useful in super
-	 * constructors).
+	 * Replace the generic namespace with the local "jcr:" value. It is a
+	 * workaround that must be later cleaned
 	 */
-	public static Session login(Repository repository) {
-		try {
-			return repository.login();
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to login", re);
-		}
-	}
-
-	/** Centralizes exception management to call {@link Node#getSession()} */
-	public static Session getSession(Node node) {
-		try {
-			return node.getSession();
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve session for node "
-					+ node, re);
-		}
-	}
-
-	/** Centralizes exception management to call {@link Node#getIdentifier()} */
-	public static String getIdentifier(Node node) {
-		try {
-			return node.getIdentifier();
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve identifier for node "
-					+ node, re);
-		}
-	}
-
-	/** Centralizes exception management to call {@link Node#getPath()} */
-	public static String getPath(Node node) {
-		try {
-			return node.getPath();
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve path for node "
-					+ node, re);
-		}
-	}
-
-	/** Shortcut to manage case where parentPath is "/" (parent is root) */
-	public static String getAbsPath(String parPath, String nodeName) {
-		String absPath = null;
-		if ("/".equals(parPath))
-			absPath = "/" + nodeName;
+	public static String getLocalJcrItemName(String name) {
+		String jcr = "{http://www.jcp.org/jcr/1.0}";
+		String nt = "{http://www.jcp.org/jcr/nt/1.0}";
+		if (name.startsWith(jcr))
+			return "jcr:" + name.substring(jcr.length());
+		else if (name.startsWith(nt))
+			return "nt:" + name.substring(nt.length());
 		else
-			absPath = parPath + "/" + nodeName;
-		return absPath;
+			throw new PeopleException("Unknown prefix for " + name);
 	}
 
 	/**
-	 * Centralizes exception management to call
-	 * {@link Session#getNodeByIdentifier(String)}
+	 * Helper for label provider: returns the Node if element is a Node or
+	 * retrieves the Node if the object is a row. Expects a single Node in the
+	 * row if no selector name is provided Call {@link Row#getNode()} catching
+	 * {@link RepositoryException}
 	 */
-	public static Node getNodeByIdentifier(Session session, String identifier) {
+	public static Node getNodeFromElement(Object element, String selectorName) {
+		Node currNode;
+		if (element instanceof Row) {
+			Row currRow = (Row) element;
+			try {
+				if (selectorName != null)
+					currNode = currRow.getNode(selectorName);
+				else
+					currNode = currRow.getNode();
+			} catch (RepositoryException re) {
+				throw new PeopleException(
+						"Unable to retrieve Node with selector name "
+								+ selectorName + " on " + currRow, re);
+			}
+		} else if (element instanceof Node)
+			currNode = (Node) element;
+		else
+			throw new PeopleException("unsupported element type: "
+					+ element.getClass().getName());
+		return currNode;
+	}
+
+	/**
+	 * Returns the versionable node in the parent path, this if it is
+	 * versionable or null if none is versionnable including root node.
+	 */
+	public static Node getVersionableAncestor(Node node) {
 		try {
-			return session.getNodeByIdentifier(identifier);
+			if (node.isNodeType(NodeType.MIX_VERSIONABLE)) // "mix:versionable"
+				return node;
+			else if (node.getPath().equals("/"))
+				return null;
+			else
+				return getVersionableAncestor(node.getParent());
 		} catch (RepositoryException re) {
 			throw new PeopleException(
-					"Unable to retrieve node by identifier with " + identifier,
-					re);
+					"Unable to get check out status for node " + node, re);
+		}
+	}
+
+	/**
+	 * Works around missing method to test if a node has been removed from
+	 * existing session
+	 * 
+	 * @param node
+	 * @return
+	 */
+	public static boolean nodeStillExists(Node node) {
+		try {
+			node.getPath();
+		} catch (InvalidItemStateException iise) {
+			return false;
+		} catch (RepositoryException re) {
+			throw new PeopleException("Error while testing node existence", re);
+		}
+		return true;
+	}
+
+	/**
+	 * Wraps the versionMananger.isCheckedOut(path) method to adapt it to the
+	 * current check in / check out policy.
+	 * 
+	 * TODO : add management of check out by others.
+	 */
+	public static boolean isNodeCheckedOut(Node node) {
+		try {
+			if (!node.isNodeType(NodeType.MIX_VERSIONABLE))
+				return true;
+			else
+				return node.getSession().getWorkspace().getVersionManager()
+						.isCheckedOut(node.getPath());
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Unable to get check out status for node " + node, re);
 		}
 	}
 
@@ -146,160 +177,6 @@ public class CommonsJcrUtils {
 		}
 	}
 
-	/** Centralizes exception management to call {@link Node#getParent()} */
-	public static Node getParent(Node child) {
-		try {
-			return child.getParent();
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve parent node for "
-					+ child, re);
-		}
-	}
-
-	/**
-	 * Centralizes exception management to call
-	 * {@link Session#getNodeByIdentifier(String)}. The session is retrieves
-	 * using the passed node
-	 */
-	public static Node getNodeByIdentifier(Node sessionNode, String identifier) {
-		return getNodeByIdentifier(getSession(sessionNode), identifier);
-	}
-
-	/**
-	 * Call {@link Row#getNode()} catching {@link RepositoryException}
-	 */
-	public static Node getNode(Row row, String selectorName) {
-		try {
-			if (selectorName == null)
-				return row.getNode();
-			else
-				return row.getNode(selectorName);
-		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"Unable to retrieve Node with selector name "
-							+ selectorName + " on " + row, re);
-		}
-	}
-
-	/**
-	 * Helper for label provider: returns the Node if element is a Node or
-	 * simply retrieves a the Node if the object is a row. Expects a single Node
-	 * in the row if no selector name is provided Call {@link Row#getNode()}
-	 * catching {@link RepositoryException}
-	 */
-	public static Node getNodeFromElement(Object element, String selectorName) {
-		Node currNode;
-		if (element instanceof Row) {
-			Row currRow = (Row) element;
-			try {
-				if (selectorName != null)
-					currNode = currRow.getNode(selectorName);
-				else
-					currNode = currRow.getNode();
-			} catch (RepositoryException re) {
-				throw new PeopleException(
-						"Unable to retrieve Node with selector name "
-								+ selectorName + " on " + currRow, re);
-			}
-		} else if (element instanceof Node)
-			currNode = (Node) element;
-		else
-			throw new PeopleException("unsupported element type: "
-					+ element.getClass().getName());
-		return currNode;
-	}
-
-	/**
-	 * Call {@link Node#isNodetype(String nodeTypeName)} without exceptions
-	 */
-	public static boolean isNodeType(Node node, String nodeTypeName) {
-		try {
-			return node.isNodeType(nodeTypeName);
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to test NodeType " + nodeTypeName
-					+ " for " + node, re);
-		}
-	}
-
-	/** Simply retrieve primary node type name */
-	public static String getPrimaryNodeType(Node node) {
-		try {
-			return node.getPrimaryNodeType().getName();
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve node type name for "
-					+ node, re);
-		}
-	}
-
-	/**
-	 * Wraps the versionMananger.isCheckedOut(path) method to adapt it to the
-	 * current check in / check out policy.
-	 * 
-	 * TODO : add management of check out by others.
-	 */
-	public static boolean isNodeCheckedOut(Node node) {
-		try {
-			if (!node.isNodeType(NodeType.MIX_VERSIONABLE)) // "mix:versionable")
-				return true;
-			else
-				return node.getSession().getWorkspace().getVersionManager()
-						.isCheckedOut(node.getPath());
-		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"Unable to get check out status for node " + node, re);
-		}
-	}
-
-	/**
-	 * Returns the versionable node in the parent path, this if it is
-	 * versionable or null if no-one is versionnable including root node.
-	 */
-	public static Node getVersionableAncestor(Node node) {
-		try {
-			if (node.isNodeType(NodeType.MIX_VERSIONABLE)) // "mix:versionable"
-				return node;
-			else if (node.getPath().equals("/"))
-				return null;
-			else
-				return getVersionableAncestor(node.getParent());
-		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"Unable to get check out status for node " + node, re);
-		}
-	}
-
-	/**
-	 * Works around missing method to test if a node has been removed from
-	 * existing session
-	 * 
-	 * @param node
-	 * @return
-	 */
-	public static boolean nodeStillExists(Node node) {
-		try {
-			node.getPath();
-		} catch (InvalidItemStateException iise) {
-			return false;
-		} catch (RepositoryException re) {
-			throw new PeopleException("Error while testing node existence", re);
-		}
-		return true;
-	}
-
-	/**
-	 * Concisely check out a node.
-	 * 
-	 * TODO : add management of check out by others.
-	 */
-	private static void checkout(Node node) {
-		try {
-			node.getSession().getWorkspace().getVersionManager()
-					.checkout(node.getPath());
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to check out node  " + node, re);
-		}
-	}
-
 	/**
 	 * If this node is has the {@link NodeType#MIX_LAST_MODIFIED} mixin, it
 	 * updates the {@link Property#JCR_LAST_MODIFIED} property with the current
@@ -322,31 +199,7 @@ public class CommonsJcrUtils {
 		}
 	}
 
-	/** Simply check if a node is versionable */
-	public static boolean isVersionable(Node node) {
-		try {
-			return node.isNodeType(NodeType.MIX_VERSIONABLE);
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to test versionability  of "
-					+ node, re);
-		}
-	}
-
-	/**
-	 * Replace the generic namespace with the local "jcr:" value. It is a
-	 * workaround that must be later cleaned
-	 */
-	public static String getLocalJcrItemName(String name) {
-		String jcr = "{http://www.jcp.org/jcr/1.0}";
-		String nt = "{http://www.jcp.org/jcr/nt/1.0}";
-		if (name.startsWith(jcr))
-			return "jcr:" + name.substring(jcr.length());
-		else if (name.startsWith(nt))
-			return "nt:" + name.substring(nt.length());
-		else
-			throw new PeopleException("Unknown prefix for " + name);
-	}
-
+	// FIXME
 	/* VERSIONING MANAGEMENT */
 	/**
 	 * For the time being, same as isNodeCheckedOut(Node node).
@@ -533,9 +386,152 @@ public class CommonsJcrUtils {
 		}
 	}
 
+	// ENCAPSULATE COMMONS JCR CALLS
+	// with the try/catch block to simplify the code
+	/**
+	 * Call {@link Repository#login()} without exceptions (useful in super
+	 * constructors).
+	 */
+	public static Session login(Repository repository) {
+		try {
+			return repository.login();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to login", re);
+		}
+	}
+
+	/** Centralizes exception management to call {@link Node#getSession()} */
+	public static Session getSession(Node node) {
+		try {
+			return node.getSession();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to retrieve session for node "
+					+ node, re);
+		}
+	}
+
+	/** Centralizes exception management to call {@link Node#getIdentifier()} */
+	public static String getIdentifier(Node node) {
+		try {
+			return node.getIdentifier();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to retrieve identifier for node "
+					+ node, re);
+		}
+	}
+
+	/** Centralizes exception management to call {@link Node#getPath()} */
+	public static String getPath(Node node) {
+		try {
+			return node.getPath();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to retrieve path for node "
+					+ node, re);
+		}
+	}
+
+	/** Shortcut to manage case where parentPath is "/" (parent is root) */
+	public static String getAbsPath(String parPath, String nodeName) {
+		String absPath = null;
+		if ("/".equals(parPath))
+			absPath = "/" + nodeName;
+		else
+			absPath = parPath + "/" + nodeName;
+		return absPath;
+	}
+
+	/**
+	 * Centralizes exception management to call
+	 * {@link Session#getNodeByIdentifier(String)}
+	 */
+	public static Node getNodeByIdentifier(Session session, String identifier) {
+		try {
+			return session.getNodeByIdentifier(identifier);
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Unable to retrieve node by identifier with " + identifier,
+					re);
+		}
+	}
+
+	/** Centralizes exception management to call {@link Node#getParent()} */
+	public static Node getParent(Node child) {
+		try {
+			return child.getParent();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to retrieve parent node for "
+					+ child, re);
+		}
+	}
+
+	/**
+	 * Centralizes exception management to call
+	 * {@link Session#getNodeByIdentifier(String)}. The session is retrieved
+	 * using the passed node
+	 */
+	public static Node getNodeByIdentifier(Node sessionNode, String identifier) {
+		return getNodeByIdentifier(getSession(sessionNode), identifier);
+	}
+
+	/**
+	 * Call {@link Row#getNode()} catching {@link RepositoryException}
+	 */
+	public static Node getNode(Row row, String selectorName) {
+		try {
+			if (selectorName == null)
+				return row.getNode();
+			else
+				return row.getNode(selectorName);
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Unable to retrieve Node with selector name "
+							+ selectorName + " on " + row, re);
+		}
+	}
+
+	/** Calls {@link Node#isNodetype(String)} without exceptions */
+	public static boolean isNodeType(Node node, String nodeTypeName) {
+		try {
+			return node.isNodeType(nodeTypeName);
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to test NodeType " + nodeTypeName
+					+ " for " + node, re);
+		}
+	}
+
+	/** Simply retrieves primary node type name */
+	public static String getPrimaryNodeType(Node node) {
+		try {
+			return node.getPrimaryNodeType().getName();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to retrieve node type name for "
+					+ node, re);
+		}
+	}
+
+	/** Concisely check out a node. */
+	private static void checkout(Node node) {
+		try {
+			node.getSession().getWorkspace().getVersionManager()
+					.checkout(node.getPath());
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to check out node  " + node, re);
+		}
+	}
+
+	/** Simply check if a node is versionable */
+	public static boolean isVersionable(Node node) {
+		try {
+			return node.isNodeType(NodeType.MIX_VERSIONABLE);
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to test versionability  of "
+					+ node, re);
+		}
+	}
+
 	/* HELPERS FOR SINGLE VALUES */
 	/**
-	 * Concisely get the string value of a property. Returns an empty String
+	 * Concisely gets the String value of a property. Returns an empty String
 	 * rather than null if this node doesn't have this property or if the
 	 * corresponding property is an empty string.
 	 */
@@ -552,7 +548,7 @@ public class CommonsJcrUtils {
 	}
 
 	/**
-	 * Concisely get the value of a long property or null if this node doesn't
+	 * Concisely gets the value of a long property or null if this node doesn't
 	 * have this property
 	 */
 	public static Long getLongValue(Node node, String propertyName) {
@@ -568,7 +564,7 @@ public class CommonsJcrUtils {
 	}
 
 	/**
-	 * Concisely get the value of a date property or null if this node doesn't
+	 * Concisely gets the value of a date property or null if this node doesn't
 	 * have this property
 	 */
 	public static Calendar getDateValue(Node node, String propertyName) {
@@ -584,7 +580,7 @@ public class CommonsJcrUtils {
 	}
 
 	/**
-	 * Concisely get the value of a boolean property or null if this node
+	 * Concisely gets the value of a boolean property or null if this node
 	 * doesn't have this property
 	 */
 	public static Boolean getBooleanValue(Node node, String propertyName) {
@@ -600,7 +596,7 @@ public class CommonsJcrUtils {
 	}
 
 	/**
-	 * Concisely get a referenced node or null if the given node doesn't have
+	 * Concisely gets a referenced node or null if the given node doesn't have
 	 * this property or if the property is of the wrong type
 	 */
 	public static Node getReference(Node node, String propName) {
@@ -694,7 +690,7 @@ public class CommonsJcrUtils {
 
 			default:
 				throw new PeopleException(
-						"update unimplemented for property type "
+						"Update unimplemented for property type "
 								+ propertyType + ". Unable to update property "
 								+ propName + " on " + node);
 			}
@@ -707,20 +703,25 @@ public class CommonsJcrUtils {
 
 	/* MULTIPLE VALUES MANAGEMENT */
 	/**
-	 * Remove a given String from a multi value property of a node. If the
-	 * String is not found, it fails silently
+	 * Removes a given String from a multi value property of a node. If the
+	 * String is not found, it does nothing
 	 */
 	public static void removeMultiPropertyValue(Node node, String propName,
 			String stringToRemove) {
 		try {
+			boolean foundValue = false;
+
 			List<String> strings = new ArrayList<String>();
 			Value[] values = node.getProperty(propName).getValues();
 			for (int i = 0; i < values.length; i++) {
 				String curr = values[i].getString();
-				if (!stringToRemove.equals(curr))
+				if (stringToRemove.equals(curr))
+					foundValue = true;
+				else
 					strings.add(curr);
 			}
-			node.setProperty(propName, strings.toArray(new String[0]));
+			if (foundValue)
+				node.setProperty(propName, strings.toArray(new String[0]));
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to remove value "
 					+ stringToRemove + " for property " + propName + " of "
@@ -729,7 +730,7 @@ public class CommonsJcrUtils {
 	}
 
 	/**
-	 * Add a string value on a multivalued property. If this value is already
+	 * Adds a string value on a multivalued property. If this value is already
 	 * part of the list, it returns an error message. We use case insensitive
 	 * comparison
 	 */
@@ -776,12 +777,12 @@ public class CommonsJcrUtils {
 	public static void setMultiValueStringPropFromString(Node node,
 			String propName, String values, String separator) {
 		try {
-			if (!CommonsJcrUtils.isEmptyString(values)) {
+			if (EclipseUiUtils.notEmpty(values)) {
 				String[] valArray = values.split(separator);
 				// Remove any empty value
 				List<String> newValList = new ArrayList<String>();
 				for (String currValue : valArray) {
-					if (CommonsJcrUtils.checkNotEmptyString(currValue))
+					if (EclipseUiUtils.notEmpty(currValue))
 						newValList.add(currValue);
 				}
 				node.setProperty(propName, newValList.toArray(new String[0]));
@@ -794,7 +795,7 @@ public class CommonsJcrUtils {
 	}
 
 	/**
-	 * Concisely get a string that concatenates values of a multi-valued String
+	 * Concisely gets a string that concatenates values of a multi-valued String
 	 * property. It returns an empty String rather than null if this node
 	 * doesn't have this property or if the corresponding property is an empty
 	 * string.
@@ -814,7 +815,7 @@ public class CommonsJcrUtils {
 				StringBuilder builder = new StringBuilder();
 				for (Value val : langs) {
 					String currStr = val.getString();
-					if (CommonsJcrUtils.checkNotEmptyString(currStr))
+					if (EclipseUiUtils.notEmpty(currStr))
 						builder.append(currStr).append(separator);
 				}
 				if (builder.lastIndexOf(separator) >= 0)
@@ -911,7 +912,7 @@ public class CommonsJcrUtils {
 				for (Value currValue : values) {
 					String jcrId = currValue.getString();
 					if (nodeToReference.getIdentifier().equals(jcrId)) {
-						errMsg = CommonsJcrUtils.get(nodeToReference,
+						errMsg = JcrUiUtils.get(nodeToReference,
 								Property.JCR_TITLE)
 								+ " is already in the list and thus could not be added.";
 						return errMsg;
@@ -1080,7 +1081,7 @@ public class CommonsJcrUtils {
 	public static Node getAltLangNode(Node currentNode, String relPath,
 			String lang) {
 		try {
-			if (isEmptyString(relPath))
+			if (EclipseUiUtils.isEmpty(relPath))
 				relPath = PeopleNames.PEOPLE_ALT_LANGS;
 			if (!currentNode.hasNode(relPath + "/" + lang))
 				return null;
@@ -1147,14 +1148,14 @@ public class CommonsJcrUtils {
 	public static Row[] rowIteratorToDistinctArray(RowIterator rit,
 			String distinctSelectorName) throws RepositoryException {
 		List<Row> rows = new ArrayList<Row>();
-		List<String> filmIds = new ArrayList<String>();
+		List<String> jcrIds = new ArrayList<String>();
 		while (rit.hasNext()) {
 			Row curr = rit.nextRow();
 			String currId = curr.getNode(distinctSelectorName).getIdentifier();
-			if (filmIds.contains(currId))
+			if (jcrIds.contains(currId))
 				; // skip it
 			else {
-				filmIds.add(currId);
+				jcrIds.add(currId);
 				rows.add(curr);
 			}
 		}
@@ -1177,21 +1178,21 @@ public class CommonsJcrUtils {
 		return nodes;
 	}
 
-	/**
-	 * Check if a string is null or an empty string (a string with only spaces
-	 * is considered as empty
-	 */
-	public static boolean isEmptyString(String stringToTest) {
-		return stringToTest == null || "".equals(stringToTest.trim());
-	}
-
-	/**
-	 * Check if a string is null or an empty string (a string with only spaces
-	 * is considered as empty
-	 */
-	public static boolean checkNotEmptyString(String string) {
-		return string != null && !"".equals(string.trim());
-	}
+	// /**
+	// * Check if a string is null or an empty string (a string with only spaces
+	// * is considered as empty
+	// */
+	// public static boolean isEmpty(String stringToTest) {
+	// return stringToTest == null || "".equals(stringToTest.trim());
+	// }
+	//
+	// /**
+	// * Check if a string is null or an empty string (a string with only spaces
+	// * is considered as empty
+	// */
+	// public static boolean notEmpty(String string) {
+	// return string != null && !"".equals(string.trim());
+	// }
 
 	/**
 	 * Parse and trim a String of values
@@ -1217,13 +1218,13 @@ public class CommonsJcrUtils {
 	public static String concatIfNotEmpty(String str1, String str2,
 			String separator) {
 		StringBuilder builder = new StringBuilder();
-		if (checkNotEmptyString(str1))
+		if (EclipseUiUtils.notEmpty(str1))
 			builder.append(str1);
 
-		if (checkNotEmptyString(str1) && checkNotEmptyString(str2))
+		if (EclipseUiUtils.notEmpty(str1) && EclipseUiUtils.notEmpty(str2))
 			builder.append(separator);
 
-		if (checkNotEmptyString(str2))
+		if (EclipseUiUtils.notEmpty(str2))
 			builder.append(str2);
 		return builder.toString();
 	}
@@ -1246,7 +1247,7 @@ public class CommonsJcrUtils {
 			QueryObjectModelFactory factory, Selector source, String filter)
 			throws RepositoryException {
 		Constraint defaultC = null;
-		if (checkNotEmptyString(filter)) {
+		if (EclipseUiUtils.notEmpty(filter)) {
 			String[] strs = filter.trim().split(" ");
 			for (String token : strs) {
 				StaticOperand so = factory.literal(session.getValueFactory()
@@ -1322,14 +1323,13 @@ public class CommonsJcrUtils {
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
 
-			if (CommonsJcrUtils.isEmptyString(basePath)
-					|| "/".equals(basePath.trim()))
+			if (EclipseUiUtils.isEmpty(basePath) || "/".equals(basePath.trim()))
 				basePath = "";
 
 			String xpathQueryStr = basePath + "//element(*, " + nodeType + ")";
 			String attrQuery = XPathUtils.getPropertyEquals(
 					PeopleNames.PEOPLE_UID, uid);
-			if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+			if (EclipseUiUtils.notEmpty(attrQuery))
 				xpathQueryStr += "[" + attrQuery + "]";
 			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
 					PeopleConstants.QUERY_XPATH);
@@ -1351,8 +1351,7 @@ public class CommonsJcrUtils {
 		}
 	}
 
-	/* PREVENT INSTANTIATION */
-	private CommonsJcrUtils() {
+	/* PREVENTS INSTANTIATION */
+	private JcrUiUtils() {
 	}
-
 }

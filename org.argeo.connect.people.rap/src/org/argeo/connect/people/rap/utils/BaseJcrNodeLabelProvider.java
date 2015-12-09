@@ -11,7 +11,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
 import org.argeo.ArgeoException;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
 /**
@@ -68,12 +68,12 @@ public class BaseJcrNodeLabelProvider extends ColumnLabelProvider {
 					for (Value value : currNode.getProperty(propertyName)
 							.getValues()) {
 						String currStr = getSingleValueAsString(value);
-						if (CommonsJcrUtils.checkNotEmptyString(currStr))
+						if (EclipseUiUtils.notEmpty(currStr))
 							builder.append(currStr).append("; ");
 					}
-					if (builder.length() > 0) 
-						builder.deleteCharAt(builder.length() -2);
-					
+					if (builder.length() > 0)
+						builder.deleteCharAt(builder.length() - 2);
+
 					return builder.toString();
 				} else
 					return getSingleValueAsString(currNode.getProperty(

@@ -35,7 +35,7 @@ public class UserEditor{}
 // import org.argeo.connect.people.rap.PeopleRapImages;
 // import org.argeo.connect.people.rap.PeopleRapPlugin;
 // import org.argeo.connect.people.rap.composites.UserGroupTableComposite;
-// import org.argeo.connect.people.utils.CommonsJcrUtils;
+// import org.argeo.connect.people.utils.JcrUiUtils;
 // import org.argeo.eclipse.ui.EclipseUiUtils;
 // import org.argeo.jcr.ArgeoNames;
 // import org.argeo.jcr.JcrUtils;
@@ -326,7 +326,7 @@ public class UserEditor{}
 // private static final long serialVersionUID = 1L;
 //
 // public String getText(Object element) {
-// return CommonsJcrUtils.get((Node) element,
+// return JcrUiUtils.get((Node) element,
 // Property.JCR_TITLE);
 // }
 //
@@ -460,7 +460,7 @@ public class UserEditor{}
 // }
 //
 // public void setRepository(Repository repository) {
-// this.session = CommonsJcrUtils.login(repository);
+// this.session = JcrUiUtils.login(repository);
 // }
 //
 // public void setPeopleService(PeopleService peopleService) {

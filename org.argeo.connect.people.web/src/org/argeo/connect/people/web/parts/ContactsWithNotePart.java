@@ -5,7 +5,7 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -45,7 +45,7 @@ public class ContactsWithNotePart extends ContactsPart {
 
 			group.setText("Note");
 			Label label = new Label(group, SWT.WRAP);
-			label.setText(CommonsJcrUtils.get(context, Property.JCR_TITLE));
+			label.setText(JcrUiUtils.get(context, Property.JCR_TITLE));
 		}
 	}
 }

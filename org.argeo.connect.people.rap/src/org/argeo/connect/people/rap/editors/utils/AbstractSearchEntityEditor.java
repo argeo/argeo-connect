@@ -20,7 +20,7 @@ import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.rap.wizards.TagOrUntagInstancesWizard;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -82,7 +82,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		setInput(input);
 		String label = ((SearchNodeEditorInput) getEditorInput()).getName();
 		setPartName(label);
-		session = CommonsJcrUtils.login(repository);
+		session = JcrUiUtils.login(repository);
 	}
 
 	@Override

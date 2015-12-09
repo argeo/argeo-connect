@@ -1,5 +1,7 @@
 package org.argeo.connect.people.core.imports;
 
+import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -17,7 +19,7 @@ import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.OrgJcrUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.PersonJcrUtils;
@@ -58,9 +60,9 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 
 			// Mandatory properties
 			person.setProperty(PEOPLE_UID, peopleUid);
-			if (CommonsJcrUtils.checkNotEmptyString(lastName))
+			if (notEmpty(lastName))
 				person.setProperty(PEOPLE_LAST_NAME, lastName);
-			if (CommonsJcrUtils.checkNotEmptyString(firstName))
+			if (notEmpty(firstName))
 				person.setProperty(PEOPLE_FIRST_NAME, firstName);
 			person.setProperty(Property.JCR_TITLE, getPeopleService()
 					.getDisplayName(person));
@@ -89,28 +91,28 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 
 			// Tags
 			String tags = line.get(PEOPLE_TAGS);
-			if (!CommonsJcrUtils.isEmptyString(tags))
+			if (notEmpty(tags))
 				person.setProperty(PEOPLE_TAGS,
-						CommonsJcrUtils.parseAndClean(tags, ",", true));
+						JcrUiUtils.parseAndClean(tags, ",", true));
 
 			// Mailing lists
 			String mailingLists = line.get(PEOPLE_MAILING_LISTS);
-			if (!CommonsJcrUtils.isEmptyString(mailingLists))
+			if (notEmpty(mailingLists))
 				person.setProperty(PEOPLE_MAILING_LISTS,
-						CommonsJcrUtils.parseAndClean(mailingLists, ",", true));
+						JcrUiUtils.parseAndClean(mailingLists, ",", true));
 
 			// TODO Add spoken languages.
 
 			// CONTACTS
 			String phone = line.get("people:phoneNumber").trim();
-			if (!CommonsJcrUtils.isEmptyString(phone)) {
+			if (notEmpty(phone)) {
 				PeopleJcrUtils.createPhone(getPeopleService(), person, phone,
 						true, ContactValueCatalogs.CONTACT_NATURE_PRO,
 						ContactValueCatalogs.CONTACT_CAT_MOBILE, null);
 			}
 
 			phone = line.get("PhoneDirect").trim();
-			if (!CommonsJcrUtils.isEmptyString(phone)) {
+			if (notEmpty(phone)) {
 				PeopleJcrUtils.createPhone(getPeopleService(), person, phone,
 						false, ContactValueCatalogs.CONTACT_NATURE_PRO,
 						ContactValueCatalogs.CONTACT_CAT_MAIN, null);
@@ -118,7 +120,7 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 
 			String emailAddress = JcrUtils.replaceInvalidChars(line.get(
 					"people:emailAddress").trim());
-			if (!CommonsJcrUtils.isEmptyString(emailAddress)) {
+			if (notEmpty(emailAddress)) {
 				PeopleJcrUtils.createEmail(getPeopleService(), person,
 						emailAddress, true,
 						ContactValueCatalogs.CONTACT_NATURE_PRO, null, null);
@@ -126,7 +128,7 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 
 			emailAddress = JcrUtils.replaceInvalidChars(line.get(
 					"people:emailAddressOther").trim());
-			if (!CommonsJcrUtils.isEmptyString(emailAddress)) {
+			if (notEmpty(emailAddress)) {
 				PeopleJcrUtils
 						.createEmail(getPeopleService(), person, emailAddress,
 								false,
@@ -135,7 +137,7 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 			}
 
 			String facebook = line.get("Facebook");
-			if (!CommonsJcrUtils.isEmptyString(facebook)) {
+			if (notEmpty(facebook)) {
 				PeopleJcrUtils.createSocialMedia(getPeopleService(), person,
 						facebook, true,
 						ContactValueCatalogs.CONTACT_NATURE_PRIVATE,
@@ -144,17 +146,17 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 
 			// Add birth date
 			String birthDate = line.get(PEOPLE_BIRTH_DATE);
-			if (!CommonsJcrUtils.isEmptyString(birthDate))
+			if (notEmpty(birthDate))
 				setDateValueFromString(person, PEOPLE_BIRTH_DATE, birthDate);
 
 			// Add Note
 			String note = line.get(Property.JCR_DESCRIPTION);
-			if (!CommonsJcrUtils.isEmptyString(note))
+			if (notEmpty(note))
 				person.setProperty(Property.JCR_DESCRIPTION, note);
 
 			// ORGANISATION
 			String orgWebsite = line.get(PeopleTypes.PEOPLE_ORG);
-			if (CommonsJcrUtils.checkNotEmptyString(orgWebsite)) {
+			if (notEmpty(orgWebsite)) {
 				Node orga = OrgJcrUtils.getOrgWithWebSite(adminSession,
 						orgWebsite);
 				if (orga != null) {

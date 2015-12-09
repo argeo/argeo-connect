@@ -30,7 +30,7 @@ import org.argeo.connect.people.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.rap.wizards.EditTagWizard;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -99,7 +99,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		String basePath = ((SearchNodeEditorInput) getEditorInput())
 				.getBasePath();
 		try {
-			session = CommonsJcrUtils.login(repository);
+			session = JcrUiUtils.login(repository);
 			tagParent = session.getNode(basePath);
 		} catch (RepositoryException e) {
 			throw new PeopleException(
@@ -108,9 +108,9 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		}
 		// tagInstanceType = ((SearchNodeEditorInput)
 		// getEditorInput()).getNodeType();
-		tagInstanceType = CommonsJcrUtils.get(tagParent,
+		tagInstanceType = JcrUiUtils.get(tagParent,
 				PEOPLE_TAG_INSTANCE_TYPE);
-		tagId = CommonsJcrUtils.get(tagParent, PEOPLE_TAG_ID);
+		tagId = JcrUiUtils.get(tagParent, PEOPLE_TAG_ID);
 
 		// TODO this info should be stored in the parent path
 		if (tagId.equals(PeopleConstants.RESOURCE_TAG)) {
@@ -174,10 +174,10 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 						Node tag = resourceService.registerTag(session, tagId,
 								dialog.getTitle());
 						String desc = dialog.getDescription();
-						if (CommonsJcrUtils.checkNotEmptyString(desc))
+						if (EclipseUiUtils.notEmpty(desc))
 							tag.setProperty(Property.JCR_DESCRIPTION, desc);
 						if (tag.isNodeType(NodeType.MIX_VERSIONABLE))
-							CommonsJcrUtils.checkPoint(tag);
+							JcrUiUtils.checkPoint(tag);
 						else
 							session.save();
 						refreshStaticFilteredList();
@@ -211,14 +211,14 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 					+ "//element(*, " + tagInstanceType + ")";
 			String attrQuery = XPathUtils.getFreeTextConstraint(filterTxt
 					.getText());
-			if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+			if (EclipseUiUtils.notEmpty(attrQuery))
 				queryStr += "[" + attrQuery + "]";
 			// always order ?
 			queryStr += " order by @" + PeopleNames.JCR_TITLE;
 			Query query = queryManager.createQuery(queryStr,
 					PeopleConstants.QUERY_XPATH);
 			NodeIterator nit = query.execute().getNodes();
-			Node[] nodes = CommonsJcrUtils.nodeIteratorToArray(nit);
+			Node[] nodes = JcrUiUtils.nodeIteratorToArray(nit);
 			setViewerInput(nodes);
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list " + tagInstanceType, e);
@@ -238,7 +238,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 		@Override
 		public String getText(Object element) {
-			Node currNode = CommonsJcrUtils.getNodeFromElement(element, null);
+			Node currNode = JcrUiUtils.getNodeFromElement(element, null);
 			long count = resourceService.countMembers(currNode);
 			return "" + count;
 		}
@@ -249,7 +249,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 		@Override
 		public String getText(Object element) {
-			Node currNode = CommonsJcrUtils.getNodeFromElement(element, null);
+			Node currNode = JcrUiUtils.getNodeFromElement(element, null);
 			try {
 				String jcrId = currNode.getIdentifier();
 				StringBuilder builder = new StringBuilder();
@@ -304,12 +304,12 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 					} else {
 						if (canDelete(node)) { // Superstition
 							String msg = "Are you sure you want to delete \""
-									+ CommonsJcrUtils.get(node,
+									+ JcrUiUtils.get(node,
 											Property.JCR_TITLE) + "\" ?";
 							if (MessageDialog.openConfirm(
 									event.display.getActiveShell(),
 									"Confirm deletion", msg)) {
-								CommonsJcrUtils.checkCOStatusBeforeUpdate(node);
+								JcrUiUtils.checkCOStatusBeforeUpdate(node);
 								session.removeItem(node.getPath());
 								session.save();
 								refreshStaticFilteredList();

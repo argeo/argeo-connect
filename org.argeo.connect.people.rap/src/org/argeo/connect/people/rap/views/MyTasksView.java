@@ -1,5 +1,7 @@
 package org.argeo.connect.people.rap.views;
 
+import static org.argeo.eclipse.ui.jcr.JcrUiUtils.getNodeSelectionAdapter;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -27,9 +29,8 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.utils.ActivityViewerComparator;
 import org.argeo.connect.people.rap.utils.Refreshable;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
@@ -68,7 +69,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 		// Finalise initialisation
 		activityService = peopleService.getActivityService();
 		userAdminService = peopleService.getUserAdminService();
-		session = CommonsJcrUtils.login(repository);
+		session = JcrUiUtils.login(repository);
 
 		GridLayout layout = EclipseUiUtils.noSpaceGridLayout();
 		layout.verticalSpacing = 5;
@@ -125,7 +126,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 				SWT.RIGHT, 72);
 		column.setLabelProvider(new DateLabelProvider());
 		column.getColumn().addSelectionListener(
-				JcrUiUtils.getNodeSelectionAdapter(0, PropertyType.DATE,
+				getNodeSelectionAdapter(0, PropertyType.DATE,
 						ActivityViewerComparator.RELEVANT_DATE, comparator,
 						viewer));
 
@@ -134,7 +135,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 				360);
 		column.setLabelProvider(new TitleDescLabelProvider());
 		column.getColumn().addSelectionListener(
-				JcrUiUtils.getNodeSelectionAdapter(1, PropertyType.STRING,
+				getNodeSelectionAdapter(1, PropertyType.STRING,
 						Property.JCR_TITLE, comparator, viewer));
 
 		// Assigned to
@@ -142,7 +143,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 				SWT.NONE, 150);
 		column.setLabelProvider(new AssignedToLabelProvider());
 		column.getColumn().addSelectionListener(
-				JcrUiUtils.getNodeSelectionAdapter(2, PropertyType.STRING,
+				getNodeSelectionAdapter(2, PropertyType.STRING,
 						PeopleNames.PEOPLE_ASSIGNED_TO, comparator, viewer));
 
 		// Related to
@@ -150,7 +151,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 				SWT.NONE, 250);
 		column.setLabelProvider(new RelatedToLabelProvider());
 		column.getColumn().addSelectionListener(
-				JcrUiUtils.getNodeSelectionAdapter(3, PropertyType.STRING,
+				getNodeSelectionAdapter(3, PropertyType.STRING,
 						PeopleNames.PEOPLE_RELATED_TO, comparator, viewer));
 
 		// Warning: initialise comparator before setting it
@@ -183,9 +184,9 @@ public class MyTasksView extends ViewPart implements Refreshable {
 				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
 					return activityService.getAssignedToDisplayName(currNode);
 				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-					String id = CommonsJcrUtils.get(currNode,
+					String id = JcrUiUtils.get(currNode,
 							PeopleNames.PEOPLE_REPORTED_BY);
-					if (CommonsJcrUtils.checkNotEmptyString(id))
+					if (EclipseUiUtils.notEmpty(id))
 						return userAdminService.getUserDisplayName(id);
 				}
 				return "";
@@ -211,7 +212,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 						String id = value.getString();
 						Node currReferenced = session.getNodeByIdentifier(id);
 						builder.append(
-								CommonsJcrUtils.get(currReferenced,
+								JcrUiUtils.get(currReferenced,
 										Property.JCR_TITLE)).append(", ");
 					}
 					return builder.toString();
@@ -233,12 +234,11 @@ public class MyTasksView extends ViewPart implements Refreshable {
 				Node currNode = (Node) element;
 
 				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
-					String title = CommonsJcrUtils.get(currNode,
-							Property.JCR_TITLE);
+					String title = JcrUiUtils.get(currNode, Property.JCR_TITLE);
 
-					String desc = CommonsJcrUtils.get(currNode,
+					String desc = JcrUiUtils.get(currNode,
 							Property.JCR_DESCRIPTION);
-					return CommonsJcrUtils.concatIfNotEmpty(title, desc, " - ");
+					return JcrUiUtils.concatIfNotEmpty(title, desc, " - ");
 				}
 				return "";
 			} catch (RepositoryException re) {

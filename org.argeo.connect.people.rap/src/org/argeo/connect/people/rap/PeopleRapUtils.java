@@ -17,7 +17,7 @@ import org.argeo.connect.people.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.PeopleAbstractDropDown;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;
@@ -114,15 +114,15 @@ public class PeopleRapUtils {
 	// */
 	// public static String refreshFormTextWidget(Text text, Node entity,
 	// String propName) {
-	// String tmpStr = CommonsJcrUtils.get(entity, propName);
+	// String tmpStr = JcrUiUtils.get(entity, propName);
 	// // Check if there is no side effect.
 	// // Commented out to manage the following case in a film header:
 	// // Primary Title has a latin pronunciation,
 	// // we define another primary title that has no such value,
 	// // the text must be reset to blank.
-	// // if (CommonsJcrUtils.checkNotEmptyString(tmpStr))
+	// // if (JcrUiUtils.checkNotEmptyString(tmpStr))
 	// text.setText(tmpStr);
-	// text.setEnabled(CommonsJcrUtils.isNodeCheckedOutByMe(entity));
+	// text.setEnabled(JcrUiUtils.isNodeCheckedOutByMe(entity));
 	// return tmpStr;
 	// }
 
@@ -132,7 +132,7 @@ public class PeopleRapUtils {
 	 */
 	public static String refreshFormTextWidget(CmsEditable editable, Text text,
 			Node node, String propName) {
-		String tmpStr = CommonsJcrUtils.get(node, propName);
+		String tmpStr = JcrUiUtils.get(node, propName);
 		text.setText(tmpStr);
 		text.setEnabled(editable.isEditing());
 		return tmpStr;
@@ -146,8 +146,8 @@ public class PeopleRapUtils {
 	public static String refreshFormText(CmsEditable editable, Text text,
 			Node entity, String propName, String defaultMsg) {
 		String tmpStr = refreshFormTextWidget(editable, text, entity, propName);
-		if (CommonsJcrUtils.isEmptyString(tmpStr)
-				&& CommonsJcrUtils.checkNotEmptyString(defaultMsg))
+		if (EclipseUiUtils.isEmpty(tmpStr)
+				&& EclipseUiUtils.notEmpty(defaultMsg))
 			text.setMessage(defaultMsg);
 		return tmpStr;
 	}
@@ -158,8 +158,8 @@ public class PeopleRapUtils {
 	 */
 	public static void refreshFormCombo(CmsEditable editable, Combo combo,
 			Node node, String propName) {
-		String currValue = CommonsJcrUtils.get(node, propName);
-		if (CommonsJcrUtils.checkNotEmptyString(currValue))
+		String currValue = JcrUiUtils.get(node, propName);
+		if (EclipseUiUtils.notEmpty(currValue))
 			combo.select(combo.indexOf(currValue));
 		combo.setEnabled(editable.isEditing());
 	}
@@ -218,7 +218,7 @@ public class PeopleRapUtils {
 		try {
 			if (entity.hasProperty(propName)) {
 				tmp = entity.getProperty(propName).getString();
-				dropDown.reset(CommonsJcrUtils.get(entity, propName));
+				dropDown.reset(JcrUiUtils.get(entity, propName));
 			} else
 				dropDown.reset(null);
 		} catch (RepositoryException re) {
@@ -339,7 +339,7 @@ public class PeopleRapUtils {
 				value.set(dateTime.getYear(), dateTime.getMonth(),
 						dateTime.getDay(), dateTime.getHours(),
 						dateTime.getMinutes());
-				if (CommonsJcrUtils.setJcrProperty(node, propName,
+				if (JcrUiUtils.setJcrProperty(node, propName,
 						PropertyType.DATE, value))
 					part.markDirty();
 			}
@@ -360,7 +360,7 @@ public class PeopleRapUtils {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				boolean value = button.getSelection();
-				if (CommonsJcrUtils.setJcrProperty(node, propName,
+				if (JcrUiUtils.setJcrProperty(node, propName,
 						PropertyType.BOOLEAN, value))
 					part.markDirty();
 			}
@@ -383,13 +383,13 @@ public class PeopleRapUtils {
 			public void widgetSelected(SelectionEvent e) {
 				boolean value = button.getSelection();
 
-				Long oldValue = CommonsJcrUtils.getLongValue(node, propName);
+				Long oldValue = JcrUiUtils.getLongValue(node, propName);
 				if (oldValue == null)
 					oldValue = 0L;
 				boolean oldFlag = (oldValue & cache) != 0;
 				if (value != oldFlag) {
 					long newValue = oldValue ^ cache;
-					CommonsJcrUtils.setJcrProperty(node, propName,
+					JcrUiUtils.setJcrProperty(node, propName,
 							PropertyType.LONG, newValue);
 					part.markDirty();
 				}
@@ -409,7 +409,7 @@ public class PeopleRapUtils {
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				if (CommonsJcrUtils.setJcrProperty(node, propName,
+				if (JcrUiUtils.setJcrProperty(node, propName,
 						PropertyType.STRING, text.getText()))
 					part.markDirty();
 			}
@@ -427,7 +427,7 @@ public class PeopleRapUtils {
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				if (CommonsJcrUtils.setJcrProperty(entity, propName, propType,
+				if (JcrUiUtils.setJcrProperty(entity, propName, propType,
 						text.getText()))
 					part.markDirty();
 			}
@@ -449,8 +449,8 @@ public class PeopleRapUtils {
 				int index = combo.getSelectionIndex();
 				if (index != -1) {
 					String selectedCategory = combo.getItem(index);
-					if (CommonsJcrUtils.setJcrProperty(entity, propName,
-							propType, selectedCategory))
+					if (JcrUiUtils.setJcrProperty(entity, propName, propType,
+							selectedCategory))
 						part.markDirty();
 				}
 
@@ -487,10 +487,10 @@ public class PeopleRapUtils {
 					text.setBackground(null);
 					decoration.hide();
 					Long length = null;
-					if (CommonsJcrUtils.checkNotEmptyString(lengthStr))
+					if (EclipseUiUtils.notEmpty(lengthStr))
 						length = new Long(lengthStr);
-					if (CommonsJcrUtils.setJcrProperty(entity, propName,
-							propType, length))
+					if (JcrUiUtils.setJcrProperty(entity, propName, propType,
+							length))
 						part.markDirty();
 				}
 			}
@@ -589,7 +589,7 @@ public class PeopleRapUtils {
 			public void widgetSelected(final SelectionEvent event) {
 				Map<String, String> params = new HashMap<String, String>();
 				params.put(OpenEntityEditor.PARAM_JCR_ID,
-						CommonsJcrUtils.getIdentifier(entity));
+						JcrUiUtils.getIdentifier(entity));
 				CommandUtils.callCommand(
 						peopleUiService.getOpenEntityEditorCmdId(), params);
 			}

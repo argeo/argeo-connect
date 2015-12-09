@@ -18,7 +18,7 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.tabs.TemplateValueCatalogue;
 import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
 import org.argeo.connect.people.rap.editors.utils.IVersionedItemEditor;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
@@ -72,7 +72,7 @@ public class TemplateEditor extends AbstractEntityCTabEditor implements
 		}
 
 		String shortName = resourceService
-				.getItemDefaultEnLabel(CommonsJcrUtils.get(nodeTemplate,
+				.getItemDefaultEnLabel(JcrUiUtils.get(nodeTemplate,
 						PeopleNames.PEOPLE_TEMPLATE_ID));
 		setPartName(shortName);
 		resourceService = getPeopleService().getResourceService();
@@ -106,7 +106,7 @@ public class TemplateEditor extends AbstractEntityCTabEditor implements
 						getSite().getWorkbenchWindow().getWorkbench(), this,
 						innerPannel, SWT.NO_FOCUS, getPeopleService(),
 						getPeopleWorkbenchService(), nodeTemplate, propName,
-						CommonsJcrUtils.get(nodeTemplate,
+						JcrUiUtils.get(nodeTemplate,
 								PeopleNames.PEOPLE_TEMPLATE_ID));
 				oneBusinessPropertyCatalogue.setLayoutData(EclipseUiUtils.fillAll());
 			}
@@ -166,11 +166,11 @@ public class TemplateEditor extends AbstractEntityCTabEditor implements
 
 			// first line
 			builder.append("<b><big>");
-			builder.append(CommonsJcrUtils.get(node,
+			builder.append(JcrUiUtils.get(node,
 					PeopleNames.PEOPLE_TEMPLATE_ID));
 			builder.append("</big></b> ");
 			// builder.append("<br/><i>");
-			// builder.append(CommonsJcrUtils.get(editionInfo,
+			// builder.append(JcrUiUtils.get(editionInfo,
 			// Property.JCR_DESCRIPTION));
 			// builder.append("</i>");
 			// builder.append(getFromToSnippet(editionInfo));

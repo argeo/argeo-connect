@@ -32,7 +32,7 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -100,12 +100,11 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 		this.tagInstance = tagInstanceNode;
 		this.tagPropName = tagPropName;
 
-		session = CommonsJcrUtils.getSession(tagInstance);
+		session = JcrUiUtils.getSession(tagInstance);
 		resourceService = peopleService.getResourceService();
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
-		taggableNodeType = CommonsJcrUtils.get(tagParent,
-				PEOPLE_TAGGABLE_NODE_TYPE);
-		taggableParentPath = CommonsJcrUtils.get(tagParent,
+		taggableNodeType = JcrUiUtils.get(tagParent, PEOPLE_TAGGABLE_NODE_TYPE);
+		taggableParentPath = JcrUiUtils.get(tagParent,
 				PEOPLE_TAGGABLE_PARENT_PATH);
 	}
 
@@ -130,14 +129,13 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 	@Override
 	public boolean performFinish() {
 		try {
-			String oldTitle = CommonsJcrUtils.get(tagInstance,
-					Property.JCR_TITLE);
+			String oldTitle = JcrUiUtils.get(tagInstance, Property.JCR_TITLE);
 			String newTitle = newTitleTxt.getText();
 			String newDesc = newDescTxt.getText();
 
 			// Sanity checks
 			String errMsg = null;
-			if (CommonsJcrUtils.isEmptyString(newTitle))
+			if (EclipseUiUtils.isEmpty(newTitle))
 				errMsg = "New value cannot be blank or an empty string";
 			else if (oldTitle.equals(newTitle))
 				errMsg = "New value is the same as old one.\n"
@@ -181,7 +179,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			super(pageName);
 			setTitle("Enter a new title");
 			setMessage("As reminder, former value was: "
-					+ CommonsJcrUtils.get(tagInstance, Property.JCR_TITLE));
+					+ JcrUiUtils.get(tagInstance, Property.JCR_TITLE));
 		}
 
 		public void createControl(Composite parent) {
@@ -192,9 +190,9 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			PeopleRapUtils.createBoldLabel(body, "Title");
 			newTitleTxt = new Text(body, SWT.BORDER);
 			newTitleTxt.setMessage("was: "
-					+ CommonsJcrUtils.get(tagInstance, Property.JCR_TITLE));
-			newTitleTxt.setText(CommonsJcrUtils.get(tagInstance,
-					Property.JCR_TITLE));
+					+ JcrUiUtils.get(tagInstance, Property.JCR_TITLE));
+			newTitleTxt
+					.setText(JcrUiUtils.get(tagInstance, Property.JCR_TITLE));
 			newTitleTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 					false));
 
@@ -202,9 +200,8 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			PeopleRapUtils.createBoldLabel(body, "Description", SWT.TOP);
 			newDescTxt = new Text(body, SWT.BORDER | SWT.MULTI | SWT.WRAP);
 			newDescTxt.setMessage("was: "
-					+ CommonsJcrUtils
-							.get(tagInstance, Property.JCR_DESCRIPTION));
-			newDescTxt.setText(CommonsJcrUtils.get(tagInstance,
+					+ JcrUiUtils.get(tagInstance, Property.JCR_DESCRIPTION));
+			newDescTxt.setText(JcrUiUtils.get(tagInstance,
 					Property.JCR_DESCRIPTION));
 			newDescTxt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 					true));
@@ -247,7 +244,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 
 	/** Refresh the table viewer based on the free text search field */
 	protected void refreshFilteredList(TableViewer membersViewer) {
-		String currVal = CommonsJcrUtils.get(tagInstance, Property.JCR_TITLE);
+		String currVal = JcrUiUtils.get(tagInstance, Property.JCR_TITLE);
 		try {
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
@@ -264,7 +261,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 
 			Constraint subTree = factory.descendantNode(
 					source.getSelectorName(), taggableParentPath);
-			constraint = CommonsJcrUtils.localAnd(factory, constraint, subTree);
+			constraint = JcrUiUtils.localAnd(factory, constraint, subTree);
 
 			Ordering order = factory.ascending(factory.propertyValue(
 					source.getSelectorName(), Property.JCR_TITLE));
@@ -272,7 +269,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			QueryObjectModel query = factory.createQuery(source, constraint,
 					orderings, null);
 			QueryResult result = query.execute();
-			Row[] rows = CommonsJcrUtils.rowIteratorToArray(result.getRows());
+			Row[] rows = JcrUiUtils.rowIteratorToArray(result.getRows());
 			setViewerInput(membersViewer, rows);
 
 		} catch (RepositoryException e) {
@@ -355,11 +352,11 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 					boolean isVersionable = tagInstance
 							.isNodeType(NodeType.MIX_VERSIONABLE);
 					// Legacy insure the node is checked out before update
-					CommonsJcrUtils.checkCOStatusBeforeUpdate(tagInstance);
+					JcrUiUtils.checkCOStatusBeforeUpdate(tagInstance);
 
 					resourceService.updateTag(tagInstance, newTitle);
 
-					if (CommonsJcrUtils.checkNotEmptyString(newDesc))
+					if (EclipseUiUtils.notEmpty(newDesc))
 						tagInstance.setProperty(Property.JCR_DESCRIPTION,
 								newDesc);
 					else if (tagInstance.hasProperty(Property.JCR_DESCRIPTION))
@@ -368,7 +365,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 
 					// Do we really want a new version at each and every time
 					if (isVersionable)
-						CommonsJcrUtils.checkPoint(tagInstance);
+						JcrUiUtils.checkPoint(tagInstance);
 					else
 						tagInstance.getSession().save();
 					monitor.worked(1);

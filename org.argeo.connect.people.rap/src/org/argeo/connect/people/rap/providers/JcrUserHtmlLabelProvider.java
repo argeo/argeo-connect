@@ -5,7 +5,8 @@ import javax.jcr.Node;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 
 /**
  * Wraps the getText() method of the JcrRowLabelProvider to retrieve a user ID.
@@ -23,7 +24,7 @@ public class JcrUserHtmlLabelProvider extends JcrRowLabelProvider {
 			String selectorName, String propertyName) {
 		super(propertyName);
 		userAdminService = peopleService.getUserAdminService();
-		if (CommonsJcrUtils.checkNotEmptyString(selectorName))
+		if (EclipseUiUtils.notEmpty(selectorName))
 			this.selectorName = selectorName;
 	}
 
@@ -35,13 +36,12 @@ public class JcrUserHtmlLabelProvider extends JcrRowLabelProvider {
 
 	@Override
 	public String getText(Object element) {
-		Node currNode = CommonsJcrUtils.getNodeFromElement(element,
-				selectorName);
+		Node currNode = JcrUiUtils.getNodeFromElement(element, selectorName);
 		String userId = super.getText(currNode);
 		String displayName = null;
-		if (CommonsJcrUtils.checkNotEmptyString(userId))
+		if (EclipseUiUtils.notEmpty(userId))
 			displayName = userAdminService.getUserDisplayName(userId);
-		if (CommonsJcrUtils.isEmptyString(displayName))
+		if (EclipseUiUtils.isEmpty(displayName))
 			displayName = userId;
 		return PeopleUiUtils.replaceAmpersand(displayName);
 	}

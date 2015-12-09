@@ -10,7 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -74,10 +74,10 @@ public class SearchEntitiesLP implements ILabelProvider {
 	public String getText(Object element) {
 
 		Node entity = (Node) element;
-		if (CommonsJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON))
+		if (JcrUiUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON))
 			return // prefixWithImage(PeopleTypes.PEOPLE_PERSON) +
 			personOLP.getText(entity);
-		else if (CommonsJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG))
+		else if (JcrUiUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG))
 			return // prefixWithImage(PeopleTypes.PEOPLE_ORG) +
 			orgOLP.getText(entity);
 		else {
@@ -136,10 +136,10 @@ public class SearchEntitiesLP implements ILabelProvider {
 
 		Node node = (Node) element;
 		if (icons.containsKey(PeopleTypes.PEOPLE_PERSON)
-				&& CommonsJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_PERSON))
+				&& JcrUiUtils.isNodeType(node, PeopleTypes.PEOPLE_PERSON))
 			return icons.get(PeopleTypes.PEOPLE_PERSON);
 		else if (icons.containsKey(PeopleTypes.PEOPLE_ORG)
-				&& CommonsJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_ORG))
+				&& JcrUiUtils.isNodeType(node, PeopleTypes.PEOPLE_ORG))
 			return icons.get(PeopleTypes.PEOPLE_ORG);
 		else
 			return null;

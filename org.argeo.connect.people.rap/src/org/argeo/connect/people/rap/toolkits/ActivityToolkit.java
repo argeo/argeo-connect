@@ -21,7 +21,7 @@
 //import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 //import org.argeo.connect.people.rap.composites.ActivityTableComposite;
 //import org.argeo.connect.people.rap.wizards.NewSimpleTaskWizard;
-//import org.argeo.connect.people.utils.CommonsJcrUtils;
+//import org.argeo.connect.people.utils.JcrUiUtils;
 //import org.argeo.eclipse.ui.utils.CommandUtils;
 //import org.argeo.jcr.JcrUtils;
 //import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -301,7 +301,7 @@
 //			relatedTo.add(relatedEntity);
 //			Node activity = activityService.createActivity(session, type,
 //					title, desc, relatedTo);
-//			CommonsJcrUtils.saveAndCheckin(activity);
+//			JcrUiUtils.saveAndCheckin(activity);
 //			return activity;
 //		} catch (RepositoryException e) {
 //			throw new PeopleException("Unable to create activity node", e);

@@ -1,5 +1,7 @@
 package org.argeo.connect.people.core;
 
+import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -22,7 +24,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.jcr.JcrUtils;
 
@@ -84,7 +86,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 
 			// related to
 			if (relatedTo != null && !relatedTo.isEmpty())
-				CommonsJcrUtils.setMultipleReferences(activity,
+				JcrUiUtils.setMultipleReferences(activity,
 						PeopleNames.PEOPLE_RELATED_TO, relatedTo);
 
 			// Content
@@ -192,7 +194,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 					.append(")");
 			String attrQuery = XPathUtils.getPropertyEquals(
 					PeopleNames.PEOPLE_ASSIGNED_TO, groupId);
-			if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+			if (notEmpty(attrQuery))
 				builder.append("[").append(attrQuery).append("]");
 			builder.append("order by @").append(PeopleNames.JCR_LAST_MODIFIED)
 					.append(" descending");
@@ -265,10 +267,9 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	public boolean updateStatus(String templateId, Node taskNode,
 			String newStatus, List<String> modifiedPaths) {
 		try {
-			String oldStatus = CommonsJcrUtils.get(taskNode,
+			String oldStatus = JcrUiUtils.get(taskNode,
 					PeopleNames.PEOPLE_TASK_STATUS);
-			if (CommonsJcrUtils.checkNotEmptyString(oldStatus)
-					&& oldStatus.equals(newStatus))
+			if (notEmpty(oldStatus) && oldStatus.equals(newStatus))
 				return false;
 			else {
 				taskNode.setProperty(PeopleNames.PEOPLE_TASK_STATUS, newStatus);
@@ -371,21 +372,21 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 
 			Node taskNode = parentNode.addNode(taskNodeType, taskNodeType);
 
-			if (CommonsJcrUtils.checkNotEmptyString(title))
+			if (notEmpty(title))
 				taskNode.setProperty(Property.JCR_TITLE, title);
 
-			if (CommonsJcrUtils.checkNotEmptyString(description))
+			if (notEmpty(description))
 				taskNode.setProperty(Property.JCR_DESCRIPTION, description);
 
 			taskNode.setProperty(PeopleNames.PEOPLE_REPORTED_BY, reporterId);
 
-			if (CommonsJcrUtils.checkNotEmptyString(assignedTo))
+			if (notEmpty(assignedTo))
 				// String atdn = peopleService.getUserAdminService()
 				// .getDistinguishedName(assignedTo, Role.GROUP);
 				taskNode.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO, assignedTo);
 
 			if (relatedTo != null && !relatedTo.isEmpty())
-				CommonsJcrUtils.setMultipleReferences(taskNode,
+				JcrUiUtils.setMultipleReferences(taskNode,
 						PeopleNames.PEOPLE_RELATED_TO, relatedTo);
 
 			if (creationDate == null)
@@ -416,9 +417,9 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 				taskNodeType);
 		String defaultStatus = null;
 		if (template != null)
-			defaultStatus = CommonsJcrUtils.get(template,
-					PEOPLE_TASK_DEFAULT_STATUS);
-		if (CommonsJcrUtils.checkNotEmptyString(defaultStatus))
+			defaultStatus = JcrUiUtils
+					.get(template, PEOPLE_TASK_DEFAULT_STATUS);
+		if (notEmpty(defaultStatus))
 			taskNode.setProperty(PEOPLE_TASK_STATUS, defaultStatus);
 	}
 

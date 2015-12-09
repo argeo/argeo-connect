@@ -20,6 +20,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
 /**
@@ -46,12 +47,11 @@ public class PeopleJcrUtils implements PeopleNames {
 		Node members = JcrUtils.mkdirs(group, PEOPLE_MEMBERS,
 				NodeType.NT_UNSTRUCTURED);
 		Node member = members.addNode(
-				CommonsJcrUtils.get(entity, Property.JCR_TITLE),
+				JcrUiUtils.get(entity, Property.JCR_TITLE),
 				PeopleTypes.PEOPLE_MEMBER);
-		member.setProperty(PEOPLE_REF_UID,
-				CommonsJcrUtils.get(entity, PEOPLE_UID));
+		member.setProperty(PEOPLE_REF_UID, JcrUiUtils.get(entity, PEOPLE_UID));
 		member.setProperty(PEOPLE_ROLE, role);
-		if (CommonsJcrUtils.checkNotEmptyString(title))
+		if (EclipseUiUtils.notEmpty(title))
 			throw new PeopleException(
 					"Position Nature: Unimplemented property ");
 		// member.setProperty(Property.JCR_TITLE, title);
@@ -89,7 +89,7 @@ public class PeopleJcrUtils implements PeopleNames {
 	// NodeIterator nit = result.getNodes();
 	// while (nit.hasNext()) {
 	// Node currProfile = nit.nextNode();
-	// String username = CommonsJcrUtils.get(currProfile,
+	// String username = JcrUiUtils.get(currProfile,
 	// ArgeoNames.ARGEO_USER_ID);
 	//
 	// // TODO hardcoded default users...
@@ -105,19 +105,19 @@ public class PeopleJcrUtils implements PeopleNames {
 
 	public static void setContactLabel(Node contactNode, String label)
 			throws RepositoryException {
-		if (!CommonsJcrUtils.isEmptyString(label))
+		if (EclipseUiUtils.notEmpty(label))
 			contactNode.setProperty(PEOPLE_CONTACT_LABEL, label);
 	}
 
 	public static void setContactCategory(Node contactNode, String category)
 			throws RepositoryException {
-		if (!CommonsJcrUtils.isEmptyString(category))
+		if (EclipseUiUtils.notEmpty(category))
 			contactNode.setProperty(PEOPLE_CONTACT_CATEGORY, category);
 	}
 
 	public static void setContactNature(Node contactNode, String category,
 			Node orga) throws RepositoryException {
-		if (!CommonsJcrUtils.isEmptyString(category)) {
+		if (EclipseUiUtils.notEmpty(category)) {
 			contactNode.setProperty(PEOPLE_CONTACT_NATURE, category);
 			if (category.equals(ContactValueCatalogs.CONTACT_NATURE_PRO)
 					&& orga != null)
@@ -133,8 +133,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			Node item) {
 		Node node = getPrimaryContact(item, PeopleTypes.PEOPLE_ADDRESS);
 		if (node != null
-				&& CommonsJcrUtils.isNodeType(node,
-						PeopleTypes.PEOPLE_CONTACT_REF)) {
+				&& JcrUiUtils.isNodeType(node, PeopleTypes.PEOPLE_CONTACT_REF)) {
 			// retrieve primary address for the referenced Node
 			Node referenced = peopleService.getEntityFromNodeReference(node,
 					PEOPLE_REF_UID);
@@ -142,7 +141,7 @@ public class PeopleJcrUtils implements PeopleNames {
 				node = getPrimaryContact(referenced, PeopleTypes.PEOPLE_ADDRESS);
 		}
 		if (node != null)
-			return CommonsJcrUtils.get(node, PEOPLE_COUNTRY);
+			return JcrUiUtils.get(node, PEOPLE_COUNTRY);
 		return "";
 	}
 
@@ -153,8 +152,7 @@ public class PeopleJcrUtils implements PeopleNames {
 	public static String getTownFromItem(PeopleService peopleService, Node item) {
 		Node node = getPrimaryContact(item, PeopleTypes.PEOPLE_ADDRESS);
 		if (node != null
-				&& CommonsJcrUtils.isNodeType(node,
-						PeopleTypes.PEOPLE_CONTACT_REF)) {
+				&& JcrUiUtils.isNodeType(node, PeopleTypes.PEOPLE_CONTACT_REF)) {
 			// retrieve primary address for the referenced Node
 			Node referenced = peopleService.getEntityFromNodeReference(node,
 					PEOPLE_REF_UID);
@@ -162,7 +160,7 @@ public class PeopleJcrUtils implements PeopleNames {
 				node = getPrimaryContact(referenced, PeopleTypes.PEOPLE_ADDRESS);
 		}
 		if (node != null)
-			return CommonsJcrUtils.get(node, PEOPLE_CITY);
+			return JcrUiUtils.get(node, PEOPLE_CITY);
 		return "";
 	}
 
@@ -221,7 +219,7 @@ public class PeopleJcrUtils implements PeopleNames {
 	public static String getPrimaryContactValue(Node item, String nodeType) {
 		Node primary = getPrimaryContact(item, nodeType);
 		if (primary != null)
-			return CommonsJcrUtils.get(primary, PEOPLE_CONTACT_VALUE);
+			return JcrUiUtils.get(primary, PEOPLE_CONTACT_VALUE);
 		else
 			return "";
 	}
@@ -329,24 +327,24 @@ public class PeopleJcrUtils implements PeopleNames {
 		try {
 			if (primaryChild.isNodeType(PeopleTypes.PEOPLE_PHONE)) {
 				if (isPrimary) {
-					parentNode.setProperty(PEOPLE_CACHE_PPHONE, CommonsJcrUtils
-							.get(primaryChild, PEOPLE_CONTACT_VALUE));
+					parentNode.setProperty(PEOPLE_CACHE_PPHONE,
+							JcrUiUtils.get(primaryChild, PEOPLE_CONTACT_VALUE));
 				} else {
 					if (parentNode.hasProperty(PEOPLE_CACHE_PPHONE))
 						parentNode.setProperty(PEOPLE_CACHE_PPHONE, "");
 				}
 			} else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_EMAIL)) {
 				if (isPrimary) {
-					parentNode.setProperty(PEOPLE_CACHE_PMAIL, CommonsJcrUtils
-							.get(primaryChild, PEOPLE_CONTACT_VALUE));
+					parentNode.setProperty(PEOPLE_CACHE_PMAIL,
+							JcrUiUtils.get(primaryChild, PEOPLE_CONTACT_VALUE));
 				} else {
 					if (parentNode.hasProperty(PEOPLE_CACHE_PMAIL))
 						parentNode.setProperty(PEOPLE_CACHE_PMAIL, "");
 				}
 			} else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_URL)) {
 				if (isPrimary) {
-					parentNode.setProperty(PEOPLE_CACHE_PURL, CommonsJcrUtils
-							.get(primaryChild, PEOPLE_CONTACT_VALUE));
+					parentNode.setProperty(PEOPLE_CACHE_PURL,
+							JcrUiUtils.get(primaryChild, PEOPLE_CONTACT_VALUE));
 				} else {
 					if (parentNode.hasProperty(PEOPLE_CACHE_PURL))
 						parentNode.setProperty(PEOPLE_CACHE_PURL, "");
@@ -356,9 +354,8 @@ public class PeopleJcrUtils implements PeopleNames {
 					String cityStr = "", countryStr = "";
 
 					if (primaryChild.isNodeType(PeopleTypes.PEOPLE_CONTACT_REF)
-							&& CommonsJcrUtils
-									.checkNotEmptyString(CommonsJcrUtils.get(
-											primaryChild, PEOPLE_REF_UID))) {
+							&& EclipseUiUtils.notEmpty(JcrUiUtils.get(
+									primaryChild, PEOPLE_REF_UID))) {
 						Node linkedOrg = peopleService
 								.getEntityFromNodeReference(primaryChild,
 										PEOPLE_REF_UID);
@@ -368,16 +365,14 @@ public class PeopleJcrUtils implements PeopleNames {
 									linkedOrg);
 						}
 					} else {
-						cityStr = CommonsJcrUtils
-								.get(primaryChild, PEOPLE_CITY);
-						countryStr = CommonsJcrUtils.get(primaryChild,
+						cityStr = JcrUiUtils.get(primaryChild, PEOPLE_CITY);
+						countryStr = JcrUiUtils.get(primaryChild,
 								PEOPLE_COUNTRY);
-						if (CommonsJcrUtils.checkNotEmptyString(countryStr))
+						if (EclipseUiUtils.notEmpty(countryStr))
 							countryStr = peopleService
 									.getResourceService()
 									.getEncodedTagValue(
-											CommonsJcrUtils
-													.getSession(primaryChild),
+											JcrUiUtils.getSession(primaryChild),
 											PeopleConstants.RESOURCE_COUNTRY,
 											countryStr);
 
@@ -397,8 +392,7 @@ public class PeopleJcrUtils implements PeopleNames {
 							primaryChild, PEOPLE_REF_UID);
 					if (linkedOrg != null) {
 						parentNode.setProperty(PEOPLE_CACHE_PORG,
-								CommonsJcrUtils.get(linkedOrg,
-										Property.JCR_TITLE));
+								JcrUiUtils.get(linkedOrg, Property.JCR_TITLE));
 					}
 				} else {
 					if (parentNode.hasProperty(PEOPLE_CACHE_PORG))
@@ -661,25 +655,25 @@ public class PeopleJcrUtils implements PeopleNames {
 					PeopleTypes.PEOPLE_ADDRESS, PeopleTypes.PEOPLE_ADDRESS, "",
 					false, nature, category, label);
 			// set address fields
-			if (!CommonsJcrUtils.isEmptyString(street1))
+			if (EclipseUiUtils.notEmpty(street1))
 				address.setProperty(PEOPLE_STREET, street1);
 
-			if (!CommonsJcrUtils.isEmptyString(street2))
+			if (EclipseUiUtils.notEmpty(street2))
 				address.setProperty(PEOPLE_STREET_COMPLEMENT, street2);
 
-			if (!CommonsJcrUtils.isEmptyString(zipCode))
+			if (EclipseUiUtils.notEmpty(zipCode))
 				address.setProperty(PEOPLE_ZIP_CODE, zipCode);
 
-			if (!CommonsJcrUtils.isEmptyString(city))
+			if (EclipseUiUtils.notEmpty(city))
 				address.setProperty(PEOPLE_CITY, city);
 
-			if (!CommonsJcrUtils.isEmptyString(state))
+			if (EclipseUiUtils.notEmpty(state))
 				address.setProperty(PEOPLE_STATE, state);
 
-			if (!CommonsJcrUtils.isEmptyString(country))
+			if (EclipseUiUtils.notEmpty(country))
 				address.setProperty(PEOPLE_COUNTRY, country);
 
-			if (!CommonsJcrUtils.isEmptyString(geopoint))
+			if (EclipseUiUtils.notEmpty(geopoint))
 				address.setProperty(PEOPLE_GEOPOINT, geopoint);
 
 			// update primary flag after contact creation
@@ -696,26 +690,21 @@ public class PeopleJcrUtils implements PeopleNames {
 			StringBuilder displayAddress = new StringBuilder();
 			List<String> pieces = new ArrayList<String>();
 
-			pieces.add(CommonsJcrUtils.get(contactNode,
-					PeopleNames.PEOPLE_STREET));
-			pieces.add(CommonsJcrUtils.get(contactNode,
+			pieces.add(JcrUiUtils.get(contactNode, PeopleNames.PEOPLE_STREET));
+			pieces.add(JcrUiUtils.get(contactNode,
 					PeopleNames.PEOPLE_STREET_COMPLEMENT));
-			pieces.add(CommonsJcrUtils.get(contactNode,
-					PeopleNames.PEOPLE_ZIP_CODE));
-			pieces.add(CommonsJcrUtils
-					.get(contactNode, PeopleNames.PEOPLE_CITY));
-			pieces.add(CommonsJcrUtils.get(contactNode,
-					PeopleNames.PEOPLE_STATE));
-			pieces.add(CommonsJcrUtils.get(contactNode,
-					PeopleNames.PEOPLE_COUNTRY));
+			pieces.add(JcrUiUtils.get(contactNode, PeopleNames.PEOPLE_ZIP_CODE));
+			pieces.add(JcrUiUtils.get(contactNode, PeopleNames.PEOPLE_CITY));
+			pieces.add(JcrUiUtils.get(contactNode, PeopleNames.PEOPLE_STATE));
+			pieces.add(JcrUiUtils.get(contactNode, PeopleNames.PEOPLE_COUNTRY));
 
 			for (String piece : pieces) {
-				if (CommonsJcrUtils.checkNotEmptyString(piece))
+				if (EclipseUiUtils.notEmpty(piece))
 					displayAddress.append(piece).append(", ");
 			}
 
 			String res = displayAddress.toString();
-			if (CommonsJcrUtils.checkNotEmptyString(res)) {
+			if (EclipseUiUtils.notEmpty(res)) {
 				contactNode.setProperty(PeopleNames.PEOPLE_CONTACT_VALUE,
 						res.substring(0, res.lastIndexOf(", ")));
 			}

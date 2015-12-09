@@ -1,5 +1,7 @@
 package org.argeo.connect.people.rap.editors.parts;
 
+import static org.argeo.eclipse.ui.jcr.JcrUiUtils.getNodeSelectionAdapter;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -36,10 +38,9 @@ import org.argeo.connect.people.rap.utils.ActivityViewerComparator;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.utils.ActivityUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.eclipse.ui.jcr.JcrUiUtils;
 import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -81,7 +82,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 			PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, Node entity) {
 		super(parent, SWT.NONE);
-		session = CommonsJcrUtils.getSession(entity);
+		session = JcrUiUtils.getSession(entity);
 		// this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		activityService = peopleService.getActivityService();
@@ -124,7 +125,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 				.setColumnData(col, new ColumnWeightData(30, 80, true));
 		tvCol = new TableViewerColumn(viewer, col);
 		tvCol.setLabelProvider(new TypeLabelProvider());
-		col.addSelectionListener(JcrUiUtils.getNodeSelectionAdapter(colIndex++,
+		col.addSelectionListener(getNodeSelectionAdapter(colIndex++,
 				PropertyType.STRING, Property.JCR_PRIMARY_TYPE, comparator,
 				viewer));
 
@@ -134,14 +135,14 @@ public class ActivityTable extends Composite implements ArgeoNames {
 				new ColumnWeightData(60, 145, true));
 		tvCol = new TableViewerColumn(viewer, col);
 		tvCol.setLabelProvider(new DateLabelProvider());
-		col.addSelectionListener(JcrUiUtils.getNodeSelectionAdapter(colIndex++,
+		col.addSelectionListener(getNodeSelectionAdapter(colIndex++,
 				PropertyType.DATE, ActivityViewerComparator.RELEVANT_DATE,
 				comparator, viewer));
 
 		// relevant users
 		col = new TableColumn(table, SWT.LEFT);
 		col.setText("Reported by");
-		col.addSelectionListener(JcrUiUtils.getNodeSelectionAdapter(colIndex++,
+		col.addSelectionListener(getNodeSelectionAdapter(colIndex++,
 				PropertyType.STRING, PeopleNames.PEOPLE_ASSIGNED_TO,
 				comparator, viewer));
 		tableColumnLayout.setColumnData(col,
@@ -214,7 +215,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 		String xpathQueryStr = "//element(*, " + PeopleTypes.PEOPLE_ACTIVITY
 				+ ")";
 		String attrQuery = XPathUtils.getFreeTextConstraint(filter);
-		if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+		if (EclipseUiUtils.notEmpty(attrQuery))
 			xpathQueryStr += "[" + attrQuery + "]";
 		Query xpathQuery = queryManager.createQuery(xpathQueryStr,
 				PeopleConstants.QUERY_XPATH);
@@ -240,7 +241,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 									.getPrimaryNodeType().getName()));
 					builder.append("</b>");
 					builder.append("<br />");
-					builder.append(CommonsJcrUtils.get(currNode,
+					builder.append(JcrUiUtils.get(currNode,
 							PeopleNames.PEOPLE_TASK_STATUS));
 
 				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
@@ -248,7 +249,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 					builder.append(activityService.getActivityLabel(currNode));
 					// specific for rate
 					if (currNode.isNodeType(PeopleTypes.PEOPLE_RATE)) {
-						Long rate = CommonsJcrUtils.getLongValue(currNode,
+						Long rate = JcrUiUtils.getLongValue(currNode,
 								PeopleNames.PEOPLE_RATE);
 						if (rate != null)
 							builder.append(": " + rate);
@@ -386,8 +387,8 @@ public class ActivityTable extends Composite implements ArgeoNames {
 	}
 
 	private String getDNameFromProp(Node node, String propName) {
-		String id = CommonsJcrUtils.get(node, propName);
-		if (CommonsJcrUtils.checkNotEmptyString(id))
+		String id = JcrUiUtils.get(node, propName);
+		if (EclipseUiUtils.notEmpty(id))
 			return userAdminService.getUserDisplayName(id);
 		return "";
 	}
@@ -406,24 +407,24 @@ public class ActivityTable extends Composite implements ArgeoNames {
 					if (activityService.isTaskDone(activityNode)) {
 						value = getDNameFromProp(activityNode,
 								PeopleNames.PEOPLE_CLOSED_BY);
-						if (CommonsJcrUtils.checkNotEmptyString(value))
+						if (EclipseUiUtils.notEmpty(value))
 							builder.append("Done by: ").append(value)
 									.append("<br />");
 						value = activityService
 								.getAssignedToDisplayName(activityNode);
-						if (CommonsJcrUtils.checkNotEmptyString(value))
+						if (EclipseUiUtils.notEmpty(value))
 							builder.append("Assigned to: ").append(value)
 									.append("<br />");
 					} else {
 						value = activityService
 								.getAssignedToDisplayName(activityNode);
-						if (CommonsJcrUtils.checkNotEmptyString(value))
+						if (EclipseUiUtils.notEmpty(value))
 							builder.append("Assigned to: ").append(value)
 									.append("<br />");
 
-						value = CommonsJcrUtils.get(activityNode,
+						value = JcrUiUtils.get(activityNode,
 								Property.JCR_LAST_MODIFIED_BY);
-						if (CommonsJcrUtils.checkNotEmptyString(value))
+						if (EclipseUiUtils.notEmpty(value))
 							builder.append("Last updated by: ").append(
 									getDisplayName(value));
 					}
@@ -433,14 +434,14 @@ public class ActivityTable extends Composite implements ArgeoNames {
 					String updater = getDNameFromProp(activityNode,
 							Property.JCR_LAST_MODIFIED_BY);
 
-					if (CommonsJcrUtils.isEmptyString(reporter))
+					if (EclipseUiUtils.isEmpty(reporter))
 						reporter = getDNameFromProp(activityNode,
 								Property.JCR_CREATED_BY);
 
-					if (CommonsJcrUtils.checkNotEmptyString(reporter))
+					if (EclipseUiUtils.notEmpty(reporter))
 						builder.append("Reported by: ").append(reporter)
 								.append("<br />");
-					if (CommonsJcrUtils.checkNotEmptyString(updater)
+					if (EclipseUiUtils.notEmpty(updater)
 							&& (reporter == null || !reporter.equals(updater)))
 						builder.append("Last updated by: ").append(updater)
 								.append("<br />");
@@ -478,8 +479,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 										.getOpenEditorSnippet(
 												peopleWorkbenchService
 														.getOpenEntityEditorCmdId(),
-												currReferenced,
-												CommonsJcrUtils.get(
+												currReferenced, JcrUiUtils.get(
 														currReferenced,
 														Property.JCR_TITLE));
 								builder.append(label).append(", ");
@@ -511,20 +511,19 @@ public class ActivityTable extends Composite implements ArgeoNames {
 				Node currNode = (Node) element;
 
 				if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-					String title = CommonsJcrUtils.get(currNode,
-							Property.JCR_TITLE);
+					String title = JcrUiUtils.get(currNode, Property.JCR_TITLE);
 					// Specific behaviour for polls
 					if (currNode.isNodeType(PeopleTypes.PEOPLE_POLL)) {
-						title = CommonsJcrUtils.get(currNode,
+						title = JcrUiUtils.get(currNode,
 								PeopleNames.PEOPLE_POLL_NAME)
 								+ ": "
 								+ ActivityUtils.getAvgRating(currNode);
 					}
 
-					String desc = CommonsJcrUtils.get(currNode,
+					String desc = JcrUiUtils.get(currNode,
 							Property.JCR_DESCRIPTION);
-					String res = CommonsJcrUtils.concatIfNotEmpty(title, desc,
-							" - ");
+					String res = JcrUiUtils
+							.concatIfNotEmpty(title, desc, " - ");
 					return wrapThis(res);
 				}
 				return "";

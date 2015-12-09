@@ -1,5 +1,8 @@
 package org.argeo.connect.people.core;
 
+import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
+import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -34,7 +37,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.PersonService;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.jcr.JcrUtils;
@@ -128,8 +131,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	@Override
 	public String getDefaultPathForEntity(Node node, String nodeType) {
-		String peopleUid = CommonsJcrUtils.get(node, PEOPLE_UID);
-		if (CommonsJcrUtils.isEmptyString(peopleUid))
+		String peopleUid = JcrUiUtils.get(node, PEOPLE_UID);
+		if (isEmpty(peopleUid))
 			throw new PeopleException("Unable to define default path for "
 					+ node + " of type " + nodeType
 					+ ". No property people:uid is defined");
@@ -175,7 +178,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 					|| entity.isNodeType(PeopleTypes.PEOPLE_NODE_TEMPLATE)) {
 				// Known types that does not have a specific save strategy
 				if (commit)
-					CommonsJcrUtils.checkPoint(entity);
+					JcrUiUtils.checkPoint(entity);
 				else
 					entity.getSession().save();
 			} else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)
@@ -185,7 +188,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 				// TODO implement generic People behavior for tasks and
 				// activities
 				if (commit)
-					CommonsJcrUtils.checkPoint(entity);
+					JcrUiUtils.checkPoint(entity);
 				else
 					entity.getSession().save();
 			else
@@ -214,8 +217,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	@Override
 	public void updatePrimaryCache(Node entity) throws PeopleException,
 			RepositoryException {
-		if (CommonsJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)
-				|| CommonsJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG)) {
+		if (JcrUiUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)
+				|| JcrUiUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG)) {
 			for (String currType : PeopleTypes.KNOWN_CONTACT_TYPES) {
 				Node pNode = PeopleJcrUtils.getPrimaryContact(entity, currType);
 				if (pNode != null)
@@ -236,11 +239,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 				defineDistinct = entity.getProperty(
 						PEOPLE_USE_DISTINCT_DISPLAY_NAME).getBoolean();
 			if (defineDistinct)
-				displayName = CommonsJcrUtils.get(entity, Property.JCR_TITLE);
+				displayName = JcrUiUtils.get(entity, Property.JCR_TITLE);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
 				displayName = getPersonService().getDisplayName(entity);
 			} else if (entity.isNodeType(NodeType.MIX_TITLE))
-				displayName = CommonsJcrUtils.get(entity, Property.JCR_TITLE);
+				displayName = JcrUiUtils.get(entity, Property.JCR_TITLE);
 			else
 				throw new PeopleException("Display name not defined for type "
 						+ entity.getPrimaryNodeType().getName() + " - node: "
@@ -261,7 +264,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 					+ "//element(*, " + PeopleTypes.PEOPLE_ENTITY + ")";
 			String attrQuery = XPathUtils.getPropertyEquals(
 					PeopleNames.PEOPLE_UID, uid);
-			if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+			if (notEmpty(attrQuery))
 				xpathQueryStr += "[" + attrQuery + "]";
 			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
 					PeopleConstants.QUERY_XPATH);
@@ -308,8 +311,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	@Override
 	public Node getEntityFromNodeReference(Node node, String propName) {
 		try {
-			String peopleUid = CommonsJcrUtils.get(node, propName);
-			if (CommonsJcrUtils.isEmptyString(peopleUid))
+			String peopleUid = JcrUiUtils.get(node, propName);
+			if (isEmpty(peopleUid))
 				return null;
 			else
 				return getEntityByUid(node.getSession(), peopleUid);
@@ -356,14 +359,13 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 						+ referencedNode.getPrimaryNodeType() + ")");
 
 			// Legacy: force node to be checked-out
-			if (!CommonsJcrUtils.checkCOStatusBeforeUpdate(referencingNode))
+			if (!JcrUiUtils.checkCOStatusBeforeUpdate(referencingNode))
 				log.warn("Referencing node " + referencingNode
 						+ " was checked in when we wanted to update");
 
-			Node link = parentNode.addNode(CommonsJcrUtils
-					.checkNotEmptyString(role) ? role : "Unnamed_role",
-					linkNodeType);
-			if (CommonsJcrUtils.checkNotEmptyString(role))
+			Node link = parentNode.addNode(notEmpty(role) ? role
+					: "Unnamed_role", linkNodeType);
+			if (notEmpty(role))
 				link.setProperty(PeopleNames.PEOPLE_ROLE, role);
 			link.setProperty(PeopleNames.PEOPLE_REF_UID, referencedNode
 					.getProperty(PeopleNames.PEOPLE_UID).getString());
@@ -390,7 +392,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			String attrQuery = XPathUtils.getPropertyEquals(
 					PeopleNames.PEOPLE_REF_UID,
 					entity.getProperty(PeopleNames.PEOPLE_UID).getString());
-			if (CommonsJcrUtils.checkNotEmptyString(attrQuery))
+			if (notEmpty(attrQuery))
 				xpathQueryStr += "[" + attrQuery + "]";
 			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
 					PeopleConstants.QUERY_XPATH);
@@ -466,7 +468,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			}
 			long i = 0;
 			while (nit.hasNext()) {
-				CommonsJcrUtils.checkPoint(nit.nextNode());
+				JcrUiUtils.checkPoint(nit.nextNode());
 				if (i % 100 == 0 && monitor != null && !monitor.isCanceled())
 					monitor.worked(1);
 				i++;

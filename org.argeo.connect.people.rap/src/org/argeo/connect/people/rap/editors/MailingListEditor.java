@@ -34,7 +34,7 @@ import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.rap.utils.Refreshable;
 import org.argeo.connect.people.rap.wizards.EditTagWizard;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.utils.PeopleJcrUtils;
 import org.argeo.connect.people.utils.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -115,8 +115,8 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		userService = peopleService.getUserAdminService();
 
 		// Name and tooltip
-		String name = CommonsJcrUtils.get(mailingList, Property.JCR_TITLE);
-		if (CommonsJcrUtils.checkNotEmptyString(name))
+		String name = JcrUiUtils.get(mailingList, Property.JCR_TITLE);
+		if (EclipseUiUtils.notEmpty(name))
 			setPartName(name);
 		setTitleToolTip("List contacts referenced by Mailing List " + name);
 
@@ -263,7 +263,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 					+ PeopleTypes.PEOPLE_ENTITY + ")";
 
 			String filter = filterTxt.getText();
-			String currVal = CommonsJcrUtils.get(mailingList,
+			String currVal = JcrUiUtils.get(mailingList,
 					Property.JCR_TITLE);
 
 			String freeTxtCond = XPathUtils.getFreeTextConstraint(filter);
@@ -271,13 +271,13 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 					PEOPLE_MAILING_LISTS, currVal);
 			String conditions = XPathUtils.localAnd(freeTxtCond, mlNamecond);
 
-			if (CommonsJcrUtils.checkNotEmptyString(conditions))
+			if (EclipseUiUtils.notEmpty(conditions))
 				xpathQueryStr += "[" + conditions + "]";
 			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
 					PeopleConstants.QUERY_XPATH);
 
 			RowIterator xPathRit = xpathQuery.execute().getRows();
-			Row[] rows = CommonsJcrUtils.rowIteratorToArray(xPathRit);
+			Row[] rows = JcrUiUtils.rowIteratorToArray(xPathRit);
 			setViewerInput(rows);
 
 			if (log.isDebugEnabled()) {
@@ -293,7 +293,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 			// PeopleTypes.PEOPLE_ENTITY);
 			//
 			// String filter = filterTxt.getText();
-			// String currVal = CommonsJcrUtils.get(mailingList,
+			// String currVal = JcrUiUtils.get(mailingList,
 			// Property.JCR_TITLE);
 			// StaticOperand so = factory.literal(session.getValueFactory()
 			// .createValue(currVal));
@@ -304,17 +304,17 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 			//
 			// Constraint subTree = factory.descendantNode(
 			// source.getSelectorName(), peopleService.getBasePath(null));
-			// constraint = CommonsJcrUtils.localAnd(factory, constraint,
+			// constraint = JcrUiUtils.localAnd(factory, constraint,
 			// subTree);
 			//
-			// if (CommonsJcrUtils.checkNotEmptyString(filter)) {
+			// if (JcrUiUtils.checkNotEmptyString(filter)) {
 			// String[] strs = filter.trim().split(" ");
 			// for (String token : strs) {
 			// StaticOperand soTmp = factory.literal(session
 			// .getValueFactory().createValue("*" + token + "*"));
 			// Constraint currC = factory.fullTextSearch(
 			// source.getSelectorName(), null, soTmp);
-			// constraint = CommonsJcrUtils.localAnd(factory, constraint,
+			// constraint = JcrUiUtils.localAnd(factory, constraint,
 			// currC);
 			// }
 			// }
@@ -326,7 +326,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 			// orderings, null);
 			// QueryResult result = query.execute();
 			// Row[] rows =
-			// CommonsJcrUtils.rowIteratorToArray(result.getRows());
+			// JcrUiUtils.rowIteratorToArray(result.getRows());
 			// setViewerInput(rows);
 
 		} catch (RepositoryException e) {
@@ -394,7 +394,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 				node = row.getNode(PeopleTypes.PEOPLE_ENTITY);
 				String mailValue = PeopleJcrUtils.getPrimaryContactValue(node,
 						PeopleTypes.PEOPLE_EMAIL);
-				if (CommonsJcrUtils.checkNotEmptyString(mailValue))
+				if (EclipseUiUtils.notEmpty(mailValue))
 					builder.append(mailValue).append(",");
 			}
 			return builder.toString();

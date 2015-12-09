@@ -7,7 +7,8 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
 /**
@@ -31,18 +32,18 @@ public class RoleListLabelProvider extends ColumnLabelProvider implements
 				throw new PeopleException("Unvalid node type. "
 						+ "Cannot display role information");
 
-			String pos = CommonsJcrUtils.get(link, PeopleNames.PEOPLE_ROLE);
+			String pos = JcrUiUtils.get(link, PeopleNames.PEOPLE_ROLE);
 
 			// ROLE
 			StringBuilder builder = new StringBuilder();
-			if (CommonsJcrUtils.checkNotEmptyString(pos))
+			if (EclipseUiUtils.notEmpty(pos))
 				builder.append("<b>").append(pos).append("</b> <br/>");
 
 			// DEPARTMENT
 			if (link.isNodeType(PeopleTypes.PEOPLE_JOB)) {
-				String dep = CommonsJcrUtils.get(link,
-						PeopleNames.PEOPLE_DEPARTMENT);
-				if (CommonsJcrUtils.checkNotEmptyString(dep))
+				String dep = JcrUiUtils
+						.get(link, PeopleNames.PEOPLE_DEPARTMENT);
+				if (EclipseUiUtils.notEmpty(dep))
 					builder.append("Department: ").append(dep);
 
 			}

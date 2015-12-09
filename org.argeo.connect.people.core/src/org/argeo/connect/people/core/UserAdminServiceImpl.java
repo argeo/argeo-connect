@@ -1,5 +1,7 @@
 package org.argeo.connect.people.core;
 
+import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
+
 import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +18,6 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
 import org.argeo.connect.people.utils.UsersUtils;
 import org.argeo.osgi.useradmin.LdifName;
 import org.argeo.osgi.useradmin.UserDirectoryException;
@@ -145,9 +146,9 @@ public class UserAdminServiceImpl implements UserAdminService {
 			else {
 				String dName = UsersUtils.getProperty(user,
 						LdifName.displayName.name());
-				if (CommonsJcrUtils.isEmptyString(dName))
+				if (isEmpty(dName))
 					dName = UsersUtils.getProperty(user, LdifName.cn.name());
-				if (CommonsJcrUtils.isEmptyString(dName))
+				if (isEmpty(dName))
 					dName = dn;
 				return dName;
 			}
@@ -226,7 +227,7 @@ public class UserAdminServiceImpl implements UserAdminService {
 		String defaultDN = "dc=example,dc=com";
 		String dn = peopleService
 				.getConfigProperty(PeopleConstants.PEOPLE_DEFAULT_DOMAIN_NAME);
-		if (CommonsJcrUtils.isEmptyString(dn))
+		if (isEmpty(dn))
 			return defaultDN;
 		else
 			return dn;

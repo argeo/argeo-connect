@@ -3,7 +3,8 @@ package org.argeo.connect.people.rap.providers;
 import javax.jcr.Node;
 
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 
 /**
@@ -21,7 +22,7 @@ public class JcrHtmlLabelProvider extends SimpleJcrNodeLabelProvider {
 
 	public JcrHtmlLabelProvider(String selectorName, String propertyName) {
 		super(propertyName);
-		if (CommonsJcrUtils.checkNotEmptyString(selectorName))
+		if (EclipseUiUtils.notEmpty(selectorName))
 			this.selectorName = selectorName;
 	}
 
@@ -31,8 +32,7 @@ public class JcrHtmlLabelProvider extends SimpleJcrNodeLabelProvider {
 
 	@Override
 	public String getText(Object element) {
-		Node currNode = CommonsJcrUtils.getNodeFromElement(element,
-				selectorName);
+		Node currNode = JcrUiUtils.getNodeFromElement(element, selectorName);
 		return PeopleUiUtils.replaceAmpersand(super.getText(currNode));
 	}
 }

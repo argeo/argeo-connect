@@ -12,7 +12,7 @@ import org.argeo.cms.CmsUiProvider;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.providers.OrgOverviewLP;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -131,7 +131,7 @@ public class OrganizationPage implements CmsUiProvider {
 
 					@Override
 					public void widgetSelected(SelectionEvent e) {
-						CommonsJcrUtils.removeStringFromMultiValuedProp(
+						JcrUiUtils.removeStringFromMultiValuedProp(
 								context, PeopleNames.PEOPLE_MAILING_LISTS,
 								valueStr);
 						// FIXME won't work: node is checked in

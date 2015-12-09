@@ -5,7 +5,7 @@ import javax.jcr.nodetype.NodeType;
 
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.editors.tabs.HistoryLog;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;
@@ -72,7 +72,7 @@ public abstract class AbstractEntityCTabEditor extends
 
 	@Override
 	protected void addEditButtons(final Composite parent) {
-		if (CommonsJcrUtils.isNodeType(getNode(), NodeType.MIX_VERSIONABLE)) {
+		if (JcrUiUtils.isNodeType(getNode(), NodeType.MIX_VERSIONABLE)) {
 			final Button showHistoryBtn = getFormToolkit().createButton(parent,
 					"History", SWT.PUSH);
 			showHistoryBtn.setLayoutData(new RowData(60, 20));

@@ -21,7 +21,7 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
@@ -123,7 +123,7 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 		// try {
 		// Sanity checks
 		String errMsg = null;
-		if (CommonsJcrUtils.isEmptyString(chosenStatus))
+		if (EclipseUiUtils.isEmpty(chosenStatus))
 			errMsg = "Please pick up a new status";
 
 		if (errMsg != null) {
@@ -142,7 +142,7 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 
 	@Override
 	public boolean canFinish() {
-		return CommonsJcrUtils.checkNotEmptyString(chosenStatus)
+		return EclipseUiUtils.notEmpty(chosenStatus)
 				&& getContainer().getCurrentPage().getNextPage() == null;
 	}
 
@@ -247,7 +247,7 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 		}
 
 		public boolean canFlipToNextPage() {
-			return CommonsJcrUtils.checkNotEmptyString(chosenStatus);
+			return EclipseUiUtils.notEmpty(chosenStatus);
 		}
 	}
 
@@ -374,14 +374,14 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 					// TODO use transaction
 					for (String currPath : pathes) {
 						Node currNode = session.getNode(currPath);
-						CommonsJcrUtils.checkCOStatusBeforeUpdate(currNode);
+						JcrUiUtils.checkCOStatusBeforeUpdate(currNode);
 						boolean changed = peopleService.getActivityService()
 								.updateStatus(taskTypeId, currNode,
 										chosenStatus, modifiedPaths);
 						if (changed)
 							session.save();
 					}
-					CommonsJcrUtils.checkPoint(session, modifiedPaths, true);
+					JcrUiUtils.checkPoint(session, modifiedPaths, true);
 					monitor.worked(1);
 				}
 			} catch (Exception e) {

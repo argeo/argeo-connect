@@ -12,7 +12,7 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.composites.dropdowns.PeopleAbstractDropDown;
 import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.connect.people.utils.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -65,14 +65,14 @@ public abstract class MultiValueListWithDDPart extends Composite {
 	protected void addValue(String value) {
 		String errMsg = null;
 
-		if (CommonsJcrUtils.isEmptyString(value))
+		if (EclipseUiUtils.isEmpty(value))
 			return;
 		if (!getFilteredValues(null).contains(value))
 			errMsg = value + " is not a legal choice, "
 					+ "please correct and try again";
 		else
-			errMsg = CommonsJcrUtils.addStringToMultiValuedProp(node,
-					propertyName, value);
+			errMsg = JcrUiUtils.addStringToMultiValuedProp(node, propertyName,
+					value);
 		if (errMsg != null)
 			MessageDialog.openError(MultiValueListWithDDPart.this.getShell(),
 					"Addition not allowed", errMsg);
@@ -182,8 +182,7 @@ public abstract class MultiValueListWithDDPart extends Composite {
 
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
-				CommonsJcrUtils.removeMultiPropertyValue(node, propertyName,
-						value);
+				JcrUiUtils.removeMultiPropertyValue(node, propertyName, value);
 				part.refresh();
 				part.markDirty();
 			}

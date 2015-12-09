@@ -1,6 +1,6 @@
 package org.argeo.connect.people.rap.editors.utils;
 
-import org.argeo.connect.people.utils.CommonsJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
@@ -26,11 +26,11 @@ public class SearchNodeEditorInput implements IEditorInput {
 	/** Node type cannot be null */
 	public SearchNodeEditorInput(String nodeType, String basePath, String name) {
 		this.nodeType = nodeType;
-		if (CommonsJcrUtils.checkNotEmptyString(basePath))
+		if (EclipseUiUtils.notEmpty(basePath))
 			this.basePath = basePath;
 		else
 			this.basePath = "/";
-		if (CommonsJcrUtils.checkNotEmptyString(name))
+		if (EclipseUiUtils.notEmpty(name))
 			this.name = name;
 		else
 			this.name = nodeType;
