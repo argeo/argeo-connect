@@ -26,6 +26,7 @@ import javax.jcr.query.QueryResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoMonitor;
+import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ContactService;
 import org.argeo.connect.people.MaintenanceService;
@@ -41,7 +42,6 @@ import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.jcr.JcrUtils;
-import org.osgi.service.useradmin.UserAdmin;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -49,9 +49,10 @@ import org.springframework.core.io.Resource;
 public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private final static Log log = LogFactory.getLog(PeopleServiceImpl.class);
 
-	/* Centralizes the various specific People services */
-	private UserAdmin userAdmin;
+	/* DEPENDENCY INJECTION */
 	private UserAdminService userAdminService;
+
+	/* Centralizes the various specific People services */
 	private PersonService personService = new PersonServiceImpl(this);
 	private ContactService contactService = new ContactServiceImpl(this);
 	private ActivityService activityService = new ActivityServiceImpl(this);
@@ -101,10 +102,25 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	@Override
-	public String getHomePath() {
+	public String getInstanceConfPath() {
 		return getBasePath(null) + "/" + PeopleNames.PEOPLE_CONF;
 	}
 
+	@Override
+	public String getCurrentUserHomePath() {
+		return getHomeBasePath()+"/"+UserAdminUtils.getCurrentUserHomeRelPath();
+	}
+
+	@Override
+	public String getUserHomePath(String dn) {
+		return getHomeBasePath()+"/"+UserAdminUtils.getHomeRelPath(dn);
+	}
+	
+	protected String getHomeBasePath(){
+		return "/home";
+	}
+
+	
 	@Override
 	public String getResourceBasePath(String resourceType) {
 		// resourceType
@@ -544,7 +560,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	 * receive/provide data.
 	 */
 	public void init() {
-		userAdminService = new UserAdminServiceImpl(this, userAdmin);
 		if (log.isDebugEnabled())
 			log.info("People's backend has been initialized");
 	}
@@ -555,7 +570,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setUserAdmin(UserAdmin userAdmin) {
-		this.userAdmin = userAdmin;
+	public void setUserAdminService(UserAdminService userAdminService) {
+		this.userAdminService = userAdminService;
 	}
 }

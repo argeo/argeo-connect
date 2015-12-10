@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.argeo.cms.auth.AuthConstants;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -51,8 +52,7 @@ public class ExistingGroupsDropDown extends PeopleAbstractDropDown {
 			if (EclipseUiUtils.notEmpty(filter))
 				if (!dn.toLowerCase().contains(filter.toLowerCase()))
 					continue loop;
-			if (includeUsers
-					|| !dn.endsWith(UserAdminService.SYSTEM_ROLE_SUFFIX)) {
+			if (includeUsers || !dn.endsWith(AuthConstants.ROLES_BASEDN)) {
 				groupMap.put(groupDName, group);
 				res.add(groupDName);
 			}

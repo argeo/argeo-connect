@@ -3,6 +3,7 @@ Bundle-Activator: org.argeo.connect.people.rap.PeopleRapPlugin
 Require-Bundle: org.eclipse.rap.ui,\
 org.eclipse.rap.ui.workbench
 Import-Package: org.argeo.connect.people,\
+org.argeo.cms.auth,\
 org.argeo.eclipse.spring,\
 org.argeo.eclipse.ui.dialogs,\
 org.argeo.eclipse.ui.workbench.commands,\

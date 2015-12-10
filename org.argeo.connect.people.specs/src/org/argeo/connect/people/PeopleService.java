@@ -20,16 +20,20 @@ public interface PeopleService {
 	 */
 	public String getBasePath(String entityType);
 
-	/**
-	 * Provides a system specific tmp path typically for imports
-	 */
+	/** Returns the absolute path to the home node of the current user */
+	public String getCurrentUserHomePath();
+
+	/** Returns the absolute path to the home node of the current user */
+	public String getUserHomePath(String dn);
+
+	/** Provides a system specific tmp path typically for imports */
 	public String getTmpPath();
 
 	/**
 	 * Returns the path to a node that centralises information about the current
 	 * instance
 	 */
-	public String getHomePath();
+	public String getInstanceConfPath();
 
 	/**
 	 * Exposes the application specific parent path for this resource. Querying

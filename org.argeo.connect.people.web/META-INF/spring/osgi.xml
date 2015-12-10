@@ -19,6 +19,7 @@
 	<reference id="peopleRepository" interface="javax.jcr.Repository"
 		filter="(argeo.jcr.repository.alias=people)" />
 	<reference id="userAdmin" interface="org.osgi.service.useradmin.UserAdmin" /> 
+	<reference id="userTransaction" interface="javax.transaction.UserTransaction" />
 
 	<!-- SERVICES -->
 	<!-- The APP SPecific implementation of the People / MSM Service -->

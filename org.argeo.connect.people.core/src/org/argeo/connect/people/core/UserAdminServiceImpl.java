@@ -1,75 +1,51 @@
 package org.argeo.connect.people.core;
 
-import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
-
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.naming.InvalidNameException;
-import javax.security.auth.Subject;
-import javax.security.auth.x500.X500Principal;
+import javax.naming.ldap.LdapName;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.cms.auth.AuthConstants;
-import org.argeo.connect.people.PeopleConstants;
-import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleService;
+import org.argeo.cms.util.useradmin.UserAdminUtils;
+import org.argeo.cms.util.useradmin.UserAdminWrapper;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.util.UsersUtils;
 import org.argeo.osgi.useradmin.LdifName;
-import org.argeo.osgi.useradmin.UserDirectoryException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.useradmin.Authorization;
 import org.osgi.service.useradmin.Group;
 import org.osgi.service.useradmin.Role;
 import org.osgi.service.useradmin.User;
-import org.osgi.service.useradmin.UserAdmin;
 
 /**
- * Canonical implementation of the people {@link UserAdminService}. Wrap
- * interaction with users and groups in a *READ-ONLY* mode. We want to be able
- * to:
+ * Canonical implementation of the people {@link UserAdminService}. Wraps
+ * interaction with users and groups.
+ * 
+ * In a *READ-ONLY* mode. We want to be able to:
  * <ul>
  * <li>Retrieve my user and corresponding information (main info, groups...)</li>
  * <li>List all local groups (not the system roles)</li>
  * <li>If sufficient rights: retrieve a given user and its information</li>
  * </ul>
  */
-public class UserAdminServiceImpl implements UserAdminService {
-
-	private final static Log log = LogFactory
-			.getLog(UserAdminServiceImpl.class);
-
-	private final PeopleService peopleService;
-	private final UserAdmin userAdmin;
-
-	public UserAdminServiceImpl(PeopleService peopleService, UserAdmin userAdmin) {
-		this.peopleService = peopleService;
-		this.userAdmin = userAdmin;
-	}
+public class UserAdminServiceImpl extends UserAdminWrapper implements
+		UserAdminService {
 
 	// CURRENT USER
-
 	/** Returns the current user */
 	public User getMyUser() {
-		String name = getMyUserName();
-		return (User) userAdmin.getRole(name);
+		return UserAdminUtils.getCurrentUser(getUserAdmin());
 	}
 
 	/** Returns the DN of the current user */
-	public String getMyUserName() {
-		Subject subject = Subject.getSubject(AccessController.getContext());
-		String name = subject.getPrincipals(X500Principal.class).iterator()
-				.next().toString();
-		return name;
+	public String getMyUsername() {
+		return UserAdminUtils.getCurrentUsername();
 	}
 
 	/** Lists all roles of the current user */
 	public String[] getMyRoles() {
-		return getUserRoles(getMyUserName());
+		return getUserRoles(getMyUsername());
 	}
 
 	/** Returns the local uid of the current connected user in this context */
@@ -77,9 +53,14 @@ public class UserAdminServiceImpl implements UserAdminService {
 		return getMyUser().getName();
 	}
 
+	@Override
+	public String getMyMail() {
+		return UserAdminUtils.getCurrentUserMail(getUserAdmin());
+	}
+
 	/** Returns the display name of the current logged in user */
 	public String getMyDisplayName() {
-		return getUserDisplayName(getMyUserName());
+		return getUserDisplayName(getMyUsername());
 	}
 
 	/** Returns true if the current user is in the specified role */
@@ -90,9 +71,10 @@ public class UserAdminServiceImpl implements UserAdminService {
 		if (rolename.startsWith(LdifName.cn.name() + "="))
 			dn = rolename;
 		else
-			dn = LdifName.cn.name() + "=" + rolename + "," + SYSTEM_ROLE_SUFFIX;
+			dn = LdifName.cn.name() + "=" + rolename + ","
+					+ AuthConstants.ROLES_BASEDN;
 
-		Role role = userAdmin.getRole(dn);
+		Role role = getUserAdmin().getRole(dn);
 		if (role == null)
 			return false;
 
@@ -108,56 +90,28 @@ public class UserAdminServiceImpl implements UserAdminService {
 
 	/** Returns the current user */
 	public User getUser(String dn) {
-		Role role = null;
-		try {
-			role = userAdmin.getRole(dn);
-		} catch (Exception e) {
-			if (e instanceof InvalidNameException
-					|| e instanceof UserDirectoryException)
-				log.warn("Unable to retrieve user. Check if " + dn
-						+ " is a valid dn");
-			else
-				throw new PeopleException("Unable to "
-						+ "retrieve user with id " + dn, e);
-		}
-		if (role == null)
-			return null;
-		else
-			return (User) role;
+		LdapName ln = UserAdminUtils.getLdapName(dn);
+		return UserAdminUtils.getUser(getUserAdmin(), ln);
 	}
 
 	/** Can be a group or a user */
 	public String getUserDisplayName(String dn) {
-
 		// FIXME: during initialisation phase, the system logs "admin" as user
 		// name rather than the corresponding dn
 		if ("admin".equals(dn))
-			return "System Adminitrator";
+			return "System Administrator";
+		else
+			return UserAdminUtils.getUserDisplayName(getUserAdmin(), dn);
+	}
 
-		User user = getUser(dn);
-		if (user == null) {
-			log.warn("No user found for dn " + dn
-					+ " returning it instead of the display name");
-			return dn;
-
-		} else {
-			if (user instanceof Group)
-				return UsersUtils.getProperty(user, LdifName.cn.name());
-			else {
-				String dName = UsersUtils.getProperty(user,
-						LdifName.displayName.name());
-				if (isEmpty(dName))
-					dName = UsersUtils.getProperty(user, LdifName.cn.name());
-				if (isEmpty(dName))
-					dName = dn;
-				return dName;
-			}
-		}
+	@Override
+	public String getUserMail(String dn) {
+		return UserAdminUtils.getUserMail(getUserAdmin(), dn);
 	}
 
 	/** Lists all roles of the given user */
 	public String[] getUserRoles(String dn) {
-		Authorization currAuth = userAdmin.getAuthorization(getUser(dn));
+		Authorization currAuth = getUserAdmin().getAuthorization(getUser(dn));
 		return currAuth.getRoles();
 	}
 
@@ -178,12 +132,16 @@ public class UserAdminServiceImpl implements UserAdminService {
 					tmpBuilder.append("*)");
 				}
 			if (tmpBuilder.length() > 1) {
-				builder.append("(&(objectclass=groupOfNames)(|");
+				builder.append("(&(").append(LdifName.objectClass.name())
+						.append("=").append(LdifName.groupOfNames.name())
+						.append(")(|");
 				builder.append(tmpBuilder.toString());
 				builder.append("))");
 			} else
-				builder.append("(objectclass=groupOfNames)");
-			roles = userAdmin.getRoles(builder.toString());
+				builder.append("(").append(LdifName.objectClass.name())
+						.append("=").append(LdifName.groupOfNames.name())
+						.append(")");
+			roles = getUserAdmin().getRoles(builder.toString());
 		} catch (InvalidSyntaxException e) {
 			throw new ArgeoException("Unable to get roles with filter: "
 					+ filter, e);
@@ -199,37 +157,42 @@ public class UserAdminServiceImpl implements UserAdminService {
 	}
 
 	public String getDistinguishedName(String localId, int type) {
-
+		throw new ArgeoException("Implement this");
 		// TODO check if we already have the dn of an existing user. Clean this
-		try {
-			Role role = userAdmin.getRole(localId);
-			if (role != null)
-				return localId;
-		} catch (Exception e) {
-			// silent
-		}
-
-		if (Role.GROUP == type)
-			return LdifName.cn.name() + "=" + localId + "," + GROUPS_SUFFIX
-					+ "," + getDefaultDomainName();
-		else if (Role.USER == type)
-			return LdifName.uid.name() + "=" + localId + "," + USERS_SUFFIX
-					+ "," + getDefaultDomainName();
-		else if (Role.ROLE == type)
-			return LdifName.cn.name() + "=" + localId + ","
-					+ SYSTEM_ROLE_SUFFIX;
-		else
-			throw new ArgeoException("Unknown role type. "
-					+ "Cannot deduce dn for " + localId);
+		// try {
+		// Role role = userAdmin.getRole(localId);
+		// if (role != null)
+		// return localId;
+		// } catch (Exception e) {
+		// // silent
+		// }
+		//
+		// if (Role.GROUP == type)
+		// return LdifName.cn.name() + "=" + localId + "," + GROUPS_SUFFIX
+		// + "," + getDefaultDomainName();
+		// else if (Role.USER == type)
+		// return LdifName.uid.name() + "=" + localId + "," + USERS_SUFFIX
+		// + "," + getDefaultDomainName();
+		// else if (Role.ROLE == type)
+		// return LdifName.cn.name() + "=" + localId + ","
+		// + SYSTEM_ROLE_SUFFIX;
+		// else
+		// throw new ArgeoException("Unknown role type. "
+		// + "Cannot deduce dn for " + localId);
 	}
 
 	public String getDefaultDomainName() {
-		String defaultDN = "dc=example,dc=com";
-		String dn = peopleService
-				.getConfigProperty(PeopleConstants.PEOPLE_DEFAULT_DOMAIN_NAME);
-		if (isEmpty(dn))
-			return defaultDN;
-		else
-			return dn;
+		throw new ArgeoException("Implement this");
+
+		// String defaultDN = "dc=example,dc=com";
+		//
+		// // TODO rather retrieve this from the passed URIs
+		// String dn = peopleService
+		// .getConfigProperty(PeopleConstants.PEOPLE_DEFAULT_DOMAIN_NAME);
+		// if (isEmpty(dn))
+		// return defaultDN;
+		// else
+		// return dn;
 	}
+
 }

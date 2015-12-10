@@ -340,7 +340,7 @@ public class GroupsTableViewer extends Composite {
 			// Self as bold
 			try {
 				LdapName selfUserName = new LdapName(
-						userAdminService.getMyUserName());
+						userAdminService.getMyUsername());
 				String userName = UsersUtils
 						.getProperty((User) element, KEY_DN);
 				LdapName userLdapName = new LdapName(userName);
