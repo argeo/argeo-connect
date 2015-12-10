@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.argeo.connect</groupId>
@@ -12,33 +13,15 @@
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
-			<groupId>org.argeo.commons</groupId>
-			<artifactId>org.argeo.cms</artifactId>
-			<version>${version.argeo-commons}</version>
-		</dependency>
-
-		<!-- Common People UI Utils -->
-		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.people.ui</artifactId>
 			<version>2.1.39-SNAPSHOT</version>
 		</dependency>
-
+		<!-- Argeo Commons CMS -->
 		<dependency>
-			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.people.core</artifactId>
-			<version>2.1.39-SNAPSHOT</version>
+			<groupId>org.argeo.commons</groupId>
+			<artifactId>org.argeo.cms</artifactId>
+			<version>${version.argeo-commons}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.people.services</artifactId>
-			<version>2.1.39-SNAPSHOT</version>
-		</dependency>
-
-		<!-- <dependency> <groupId>org.argeo.commons</groupId> <artifactId>org.argeo.server.jcr</artifactId> 
-			<version>${version.argeo-commons}</version> </dependency> <dependency> <groupId>org.argeo.commons</groupId> 
-			<artifactId>org.argeo.security.core</artifactId> <version>${version.argeo-commons}</version> 
-			</dependency> -->
 	</dependencies>
 </project>

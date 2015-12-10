@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.argeo.connect</groupId>
@@ -11,14 +12,6 @@
 	<name>Connect People RAP Workbench UI</name>
 	<packaging>jar</packaging>
 	<dependencies>
-		<!-- RAP Specific bundles -->
-		<!-- Dropdown widget from rap addons -->
-		<!--  <dependency>
-			<groupId>org.argeo.tp.rap.addons</groupId>
-			<artifactId>org.eclipse.rap.addons.dropdown</artifactId>
-		</dependency> -->
-			<!-- <version>${version.rap.addons}</version> -->
-
 		<!-- People -->
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
@@ -32,13 +25,6 @@
 			<version>2.1.39-SNAPSHOT</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.people.core</artifactId>
-			<version>2.1.39-SNAPSHOT</version>
-		</dependency>
-
-
 		<!-- COMMONS -->
 		<!-- Rap default Argeo Utilities: this bundle explicitly use the RAP workbench. -->
 		<dependency>
@@ -47,28 +33,11 @@
 			<version>${version.argeo-commons}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.argeo.commons</groupId>
-			<artifactId>org.argeo.eclipse.ui.workbench</artifactId>
-			<version>${version.argeo-commons}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.argeo.commons</groupId>
-			<artifactId>org.argeo.server.jcr</artifactId>
-			<version>${version.argeo-commons}</version>
-		</dependency>
-
-		<!-- Extended by People to provide business specific user management -->
+		<!-- Also brings the CMS and the security bundles -->
 		<dependency>
 			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.security.ui.admin</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
-
-		<!-- THIRD PARTIES -->
-		<!-- Calc exports -->
-		<!-- <dependency> <groupId>org.argeo.tp</groupId> <artifactId>jxl</artifactId> 
-			</dependency> -->
 	</dependencies>
 </project>
