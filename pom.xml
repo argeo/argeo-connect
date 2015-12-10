@@ -95,12 +95,6 @@ which are used as well as that of the covered work.]]>
 			</releases> </repository> -->
 	</repositories>
 	<dependencies>
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.argeo.tp.extras</groupId> -->
-<!-- 			<artifactId>argeo-tp-extras</artifactId> -->
-<!-- 			<version>${version.argeo-tp-extras}</version> -->
-<!-- 			<scope>provided</scope> -->
-<!-- 		</dependency> -->
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

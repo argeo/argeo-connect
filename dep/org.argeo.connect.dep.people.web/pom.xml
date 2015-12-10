@@ -10,27 +10,22 @@
 	<artifactId>org.argeo.connect.dep.people.web</artifactId>
 	<name>Connect People Web-based UIs</name>
 	<dependencies>
-		<!-- Connect People RAP Workbench -->
+		<!-- Connect People -->
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.people.rap</artifactId>
 			<version>2.1.39-SNAPSHOT</version>
 		</dependency>
-
-		<!-- Connect People web -->
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.people.web</artifactId>
 			<version>2.1.39-SNAPSHOT</version>
 		</dependency>
-
-		<!-- Modules -->
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.people.services</artifactId>
 			<version>2.1.39-SNAPSHOT</version>
 		</dependency>
-
 
 		<!-- Base CMS distribution -->
 		<dependency>
@@ -47,13 +42,15 @@
 			<type>pom</type>
 		</dependency>
 
+		<!-- We put the full TP distribution in the target platform -->
 		<dependency>
 			<groupId>org.argeo.tp</groupId>
 			<artifactId>argeo-tp</artifactId>
 			<version>${version.argeo-distribution}</version>
 		</dependency>
 
-		<!-- Additional third parties -->
+		<!-- Additional third parties: we cannot add the full tp-extra distribution: 
+			by construction it is not OSGI complete -->
 		<dependency>
 			<groupId>org.argeo.tp.extras</groupId>
 			<artifactId>net.sf.jxl</artifactId>
