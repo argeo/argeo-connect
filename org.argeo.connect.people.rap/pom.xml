@@ -39,5 +39,11 @@
 			<artifactId>org.argeo.security.ui.admin</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
+
+		<!-- Calc file generation -->
+		<dependency>
+			<groupId>org.argeo.tp.extras</groupId>
+			<artifactId>net.sf.jxl</artifactId>
+		</dependency>
 	</dependencies>
 </project>
