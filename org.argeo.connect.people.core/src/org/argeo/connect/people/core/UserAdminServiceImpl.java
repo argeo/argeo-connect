@@ -94,7 +94,7 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 	/** Returns the current user */
 	public User getUser(String dn) {
 		LdapName ln = UserAdminUtils.getLdapName(dn);
-		return UserAdminUtils.getRole(getUserAdmin(), ln);
+		return (User) UserAdminUtils.getRole(getUserAdmin(), ln);
 	}
 
 	/** Can be a group or a user */
