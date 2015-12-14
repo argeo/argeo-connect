@@ -1,7 +1,9 @@
 package org.argeo.connect.people.core;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
+import java.util.Map;
 
 import javax.naming.ldap.LdapName;
 
@@ -12,6 +14,7 @@ import org.argeo.cms.util.useradmin.UserAdminWrapper;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.util.UsersUtils;
 import org.argeo.osgi.useradmin.LdifName;
+import org.argeo.osgi.useradmin.UserAdminConf;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.useradmin.Authorization;
 import org.osgi.service.useradmin.Group;
@@ -91,7 +94,7 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 	/** Returns the current user */
 	public User getUser(String dn) {
 		LdapName ln = UserAdminUtils.getLdapName(dn);
-		return UserAdminUtils.getUser(getUserAdmin(), ln);
+		return UserAdminUtils.getRole(getUserAdmin(), ln);
 	}
 
 	/** Can be a group or a user */
@@ -156,43 +159,43 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 		return users;
 	}
 
-	public String getDistinguishedName(String localId, int type) {
-		throw new ArgeoException("Implement this");
-		// TODO check if we already have the dn of an existing user. Clean this
-		// try {
-		// Role role = userAdmin.getRole(localId);
-		// if (role != null)
-		// return localId;
-		// } catch (Exception e) {
-		// // silent
-		// }
-		//
-		// if (Role.GROUP == type)
-		// return LdifName.cn.name() + "=" + localId + "," + GROUPS_SUFFIX
-		// + "," + getDefaultDomainName();
-		// else if (Role.USER == type)
-		// return LdifName.uid.name() + "=" + localId + "," + USERS_SUFFIX
-		// + "," + getDefaultDomainName();
-		// else if (Role.ROLE == type)
-		// return LdifName.cn.name() + "=" + localId + ","
-		// + SYSTEM_ROLE_SUFFIX;
-		// else
-		// throw new ArgeoException("Unknown role type. "
-		// + "Cannot deduce dn for " + localId);
+	@Override
+	public User getUserFromLocalId(String localId) {
+		User user = getUserAdmin().getUser(LdifName.uid.name(), localId);
+		if (user == null)
+			user = getUserAdmin().getUser(LdifName.cn.name(), localId);
+		return user;
+	}
+
+	public String buildDefaultDN(String localId, int type) {
+		return buildDistinguishedName(localId, getDefaultDomainName(), type);
+	}
+
+	public String buildDistinguishedName(String localId, String baseDn, int type) {
+		Map<String, String> dns = getKnownBaseDns(true);
+		Dictionary<String, ?> props = UserAdminConf.uriAsProperties(dns
+				.get(baseDn));
+		String dn = null;
+		if (Role.GROUP == type)
+			dn = LdifName.cn.name() + "=" + localId + ","
+					+ UserAdminConf.groupBase.getValue(props) + "," + baseDn;
+		else if (Role.USER == type)
+			dn = LdifName.uid.name() + "=" + localId + ","
+					+ UserAdminConf.userBase.getValue(props) + "," + baseDn;
+		else
+			throw new ArgeoException("Unknown role type. "
+					+ "Cannot deduce dn for " + localId);
+		return dn;
 	}
 
 	public String getDefaultDomainName() {
-		throw new ArgeoException("Implement this");
-
-		// String defaultDN = "dc=example,dc=com";
-		//
-		// // TODO rather retrieve this from the passed URIs
-		// String dn = peopleService
-		// .getConfigProperty(PeopleConstants.PEOPLE_DEFAULT_DOMAIN_NAME);
-		// if (isEmpty(dn))
-		// return defaultDN;
-		// else
-		// return dn;
+		Map<String, String> dns = getKnownBaseDns(true);
+		if (dns.size() == 1)
+			return dns.keySet().iterator().next();
+		else
+			throw new ArgeoException("Current context contains " + dns.size()
+					+ " base dns: " + dns.keySet().toString()
+					+ ". Unable to chose a default one.");
 	}
 
 }

@@ -4,17 +4,7 @@
 	<!-- Perspective --> 
 	<extension
     	point="org.eclipse.ui.perspectives">
-		<!-- RATHER DEFINE THE PERSPECTIVE DIRECTLY IN THE APPS. -->  
-		
-		<!-- People specific business admin perspective -->  
-		<!-- <perspective
-			class="org.argeo.connect.people.rap.BusinessAdminPerspective"
-			icon="icons/people.gif"
-            id="org.argeo.connect.people.rap.businessAdminPerspective"
-            name="User management">
-		</perspective>
-      -->
-		<!-- People default standalone perspective --> 
+    	<!-- People default standalone perspective --> 
 		<perspective
             id="org.argeo.connect.people.rap.peoplePerspective"
 			icon="icons/people.gif"
@@ -22,18 +12,6 @@
             name="People">
 		</perspective>
 	</extension>
-
-	<!-- Enrich existing perspectives to add people specific UI Parts -->
-	<!-- Does not work in RAP: it tries to instantiate this view before the default ones and then the relative placement fails. -->
-	<!-- <extension point="org.eclipse.ui.perspectiveExtensions">
-		<perspectiveExtension targetID="org.argeo.eclipse.ui.workbench.osgiPerspective">
-			<view 
-				id="org.argeo.connect.people.rap.peopleDefaultView" 
-				visible="true"
-				relationship="left" 
-             	relative="org.eclipse.ui.editorss"/> 
-          </perspectiveExtension>
-	</extension> -->
 
     <!-- VIEWS -->
     <extension
@@ -45,22 +23,7 @@
 			name="Search"
 			restorable="true">
 		</view>
-		
-		<!-- Users and tasks Management -->
-		<!--<view
-			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/group.gif"
-			id="org.argeo.connect.people.rap.userGroupsView"
-			name="Groups"
-			restorable="true">
-		</view>
-		<view
-			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/user.gif"
-			id="org.argeo.connect.people.rap.adminUsersView"
-			name="Users"
-			restorable="true">
-		</view> -->
+		<!-- Todo list -->
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/activities/todo.gif"
@@ -525,11 +488,7 @@
 		    </with>
 		  </enabledWhen>
         </activity>
-        <activityPatternBinding
-              activityId="org.argeo.connect.people.rap.businessAdminActivity"
-              isEqualityPattern="true"
-              pattern="org.argeo.connect.people.rap/org.argeo.connect.people.rap.businessAdminPerspective">
-        </activityPatternBinding>
+
         
 		<!-- Technical admin activities --> 
 		<!-- TODO clean the activity strategy -->
@@ -545,11 +504,5 @@
 		    </with>
 		  </enabledWhen>
         </activity>
-        
-        <activityPatternBinding
-              activityId="org.argeo.connect.people.rap.adminActivity"
-              isEqualityPattern="true"
-              pattern="org.argeo.connect.people.rap/org.argeo.connect.people.rap.peoplePerspective">
-        </activityPatternBinding>
      </extension>
 </plugin>

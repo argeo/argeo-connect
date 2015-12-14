@@ -11,12 +11,13 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.security.AccessControlManager;
+import javax.jcr.security.Privilege;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
 import org.argeo.cms.CmsEditable;
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapUtils;
@@ -431,10 +432,17 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	}
 
 	public Boolean canEdit() {
-		return getPeopleService().getUserAdminService().amIInRole(
-				PeopleConstants.ROLE_MEMBER)
-				|| getPeopleService().getUserAdminService().amIInRole(
-						PeopleConstants.ROLE_BUSINESS_ADMIN);
+		try {
+			AccessControlManager acm = session.getAccessControlManager();
+			Privilege[] privs = { acm.privilegeFromName(Privilege.JCR_WRITE) };
+			return acm.hasPrivileges(node.getPath(), privs);
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Unable to check privilege on " + node, e);
+		}
+		// return getPeopleService().getUserAdminService().amIInRole(
+		// PeopleConstants.ROLE_MEMBER)
+		// || getPeopleService().getUserAdminService().amIInRole(
+		// PeopleConstants.ROLE_BUSINESS_ADMIN);
 	}
 
 	public void startEditing() {

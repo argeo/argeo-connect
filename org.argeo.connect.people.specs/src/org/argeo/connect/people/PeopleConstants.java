@@ -58,9 +58,10 @@ public interface PeopleConstants {
 	// System roles exposed by people
 	public final static String ROLE_GUEST = "org.argeo.connect.people.guest";
 	public final static String ROLE_MEMBER = "org.argeo.connect.people.member";
-	// Give access to people specific perspectives
-	public final static String ROLE_MANAGER = "org.argeo.connect.people.manager";
 	public final static String ROLE_BUSINESS_ADMIN = "org.argeo.connect.people.admin";
+	// Give access to people specific perspectives
+	// public final static String ROLE_MANAGER =
+	// "org.argeo.connect.people.manager";
 
 	// LANGUAGE CONSTANTS
 	public final static String LANG_EN = "en";
@@ -76,7 +77,7 @@ public interface PeopleConstants {
 	public static final String IMPORT_CATALOGUE_KEY_COL = "Field";
 	public static final String IMPORT_CATALOGUE_VALUES_COL = "Values";
 	public static final String IMPORT_CATALOGUE_VALUES_SEPARATOR = "; ";
-	
+
 	// Workaround the JCR deprecation of XPath
 	@SuppressWarnings("deprecation")
 	public final static String QUERY_XPATH = Query.XPATH;

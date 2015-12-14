@@ -54,10 +54,17 @@ public interface UserAdminService {
 
 	/* MISCELLANEOUS */
 	/** Simply returns the dn of a role given its local ID */
-	public String getDistinguishedName(String localId, int type);
+	public String buildDefaultDN(String localId, int type);
 
 	/** Exposes the main default domain name for this instance */
 	public String getDefaultDomainName();
+
+	/**
+	 * Search for a {@link User} (might also be a group) whose uid or cn is
+	 * equals to localId within the various user repositories defined in the
+	 * current context.
+	 */
+	public User getUserFromLocalId(String localId);
 
 	/* EXPOSE */
 
