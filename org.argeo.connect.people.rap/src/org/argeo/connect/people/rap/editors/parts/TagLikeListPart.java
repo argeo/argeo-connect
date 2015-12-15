@@ -356,7 +356,7 @@ public class TagLikeListPart extends Composite {
 				} else {
 					msg = "\""
 							+ newTag
-							+ "\" is not yet registered\n"
+							+ "\" is not yet registered "
 							+ "and you don't have sufficient rights to create it.\n"
 							+ "Please contact a Business Admin and ask him "
 							+ "to register it for you if it is valid.";

@@ -112,7 +112,6 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 		tableCmp.getTableViewer().getTable().pack();
 		tableCmp.getTableViewer().getTable().layout();
 		tableCmp.layout();
-		// dialogArea.pack();
 
 		// draft workaround to prevent window close when the user presses return
 		dummyButton = new Button(main, SWT.PUSH);

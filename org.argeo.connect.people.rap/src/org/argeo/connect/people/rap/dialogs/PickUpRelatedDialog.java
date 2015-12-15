@@ -30,6 +30,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -74,8 +75,12 @@ public class PickUpRelatedDialog extends TrayDialog {
 		// final Button seeAllChk = new Button(dialogArea, SWT.CHECK);
 		// seeAllChk.setText("See all organisation");
 
-		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-		tableCmp = new FilterEntitiesVirtualTable(dialogArea, style, session,
+		Composite bodyCmp = new Composite(dialogArea, SWT.NO_FOCUS);
+		bodyCmp.setLayoutData(EclipseUiUtils.fillAll());
+		bodyCmp.setLayout(new GridLayout());
+
+		int style = SWT.BORDER | SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
+		tableCmp = new FilterEntitiesVirtualTable(bodyCmp, style, session,
 				peopleWorkbenchService, PeopleTypes.PEOPLE_ENTITY);
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 

@@ -12,9 +12,11 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 
+import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ActivityValueCatalogs;
 import org.argeo.connect.people.PeopleConstants;
@@ -27,7 +29,6 @@ import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.jcr.JcrUtils;
-import org.osgi.service.useradmin.User;
 
 /** Concrete access to People's {@link ActivityService} */
 public class ActivityServiceImpl implements ActivityService, PeopleNames {
@@ -56,7 +57,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 		return path;
 	}
 
-	public String getActivityParentPath(Session session, Calendar date,
+	public String getActivityParentRelPath(Session session, Calendar date,
 			String managerId) {
 		String path = peopleService.getBasePath(PeopleTypes.PEOPLE_ACTIVITY)
 				+ "/" + JcrUtils.dateAsPath(date, true) + managerId;
@@ -75,8 +76,13 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			String title, String desc, List<Node> relatedTo, Calendar date) {
 
 		try {
-			Node parent = JcrUtils.mkdirs(session,
-					getActivityParentPath(session, date, reporterId));
+
+			Node activityBase = session.getNode(peopleService
+					.getBasePath(PeopleTypes.PEOPLE_ACTIVITY));
+			String localId = UserAdminUtils.getUserUid(reporterId);
+			Node parent = JcrUtils.mkdirs(activityBase,
+					getActivityParentRelPath(session, date, localId),
+					NodeType.NT_UNSTRUCTURED);
 			Node activity = parent.addNode(type, PeopleTypes.PEOPLE_ACTIVITY);
 			activity.addMixin(type);
 			activity.setProperty(PeopleNames.PEOPLE_REPORTED_BY, reporterId);
@@ -365,11 +371,15 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			if (session == null)
 				session = parentNode.getSession();
 
-			if (parentNode == null)
+			if (parentNode == null) {
+				Node activityBase = session.getNode(peopleService
+						.getBasePath(PeopleTypes.PEOPLE_ACTIVITY));
+				String localId = UserAdminUtils.getUserUid(reporterId);
 				parentNode = JcrUtils
-						.mkdirs(session,
-								getActivityParentPath(session, creationDate,
-										reporterId));
+						.mkdirs(activityBase,
+								getActivityParentRelPath(session, creationDate,
+										localId), NodeType.NT_UNSTRUCTURED);
+			}
 
 			Node taskNode = parentNode.addNode(taskNodeType, taskNodeType);
 

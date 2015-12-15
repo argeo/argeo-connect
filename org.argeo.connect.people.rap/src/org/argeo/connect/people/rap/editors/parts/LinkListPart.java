@@ -105,10 +105,6 @@ public class LinkListPart extends Composite implements PeopleNames {
 		recreateRelated(this);
 	}
 
-	// private boolean isEditing() {
-	// return JcrUiUtils.isNodeCheckedOutByMe(entity);
-	// }
-
 	public void refresh() {
 		if (relatedHasChanged()) {
 			recreateRelated(this);
@@ -267,7 +263,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 			public void widgetSelected(final SelectionEvent event) {
 				try {
 					PickUpRelatedDialog diag = new PickUpRelatedDialog(link
-							.getShell(), "Choose an entity", entity
+							.getShell(), "Choose a related item", entity
 							.getSession(), peopleWorkbenchService, entity);
 
 					int result = diag.open();
@@ -277,7 +273,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 								.addRefToMultiValuedProp(entity, propName, node);
 						if (errMsg != null)
 							MessageDialog.openError(link.getShell(),
-									"Dupplicates", errMsg);
+									"Duplicates", errMsg);
 						else {
 							formPart.refresh();
 							formPart.markDirty();

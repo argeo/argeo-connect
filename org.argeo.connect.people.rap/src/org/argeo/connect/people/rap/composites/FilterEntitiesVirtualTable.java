@@ -21,7 +21,6 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.providers.TitleIconLP;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
@@ -93,7 +92,6 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 		this.setLayout(layout);
 		createFilterPart(parent);
 		createTableViewer(parent);
-		this.pack();
 		this.layout();
 		EclipseUiSpecificUtils.enableToolTipSupport(entityViewer);
 		// Do not execute the query by default
@@ -101,14 +99,17 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 	}
 
 	protected int getTableHeight() {
-		return 449;
+		return SWT.DEFAULT;
 	}
 
 	private void createTableViewer(final Composite parent) {
 		Composite listCmp = new Composite(parent, SWT.NO_FOCUS);
 		// TODO Workaround to force display of the scroll bar
-		GridData gd = EclipseUiUtils.fillWidth();
-		gd.heightHint = getTableHeight();
+		// Seems to be useless.
+		// GridData gd = EclipseUiUtils.fillWidth();
+		// gd.heightHint = getTableHeight();
+		GridData gd = EclipseUiUtils.fillAll();
+		// gd.heightHint = getTableHeight();
 		listCmp.setLayoutData(gd);
 
 		entityViewer = new TableViewer(listCmp, SWT.VIRTUAL | tableStyle);
