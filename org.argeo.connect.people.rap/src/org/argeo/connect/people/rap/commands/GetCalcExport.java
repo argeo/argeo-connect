@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
@@ -20,6 +21,7 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.exports.calc.IJcrTableViewer;
 import org.argeo.connect.people.rap.exports.calc.NodesToCalcWriter;
 import org.argeo.connect.people.rap.exports.calc.RowsToCalcWriter;
+import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
@@ -68,9 +70,12 @@ public class GetCalcExport extends AbstractHandler {
 				if ((provider).getColumnDefinition(exportId) == null)
 					return null;
 				else {
+					Object[] elements = provider.getElements(exportId);
+					List<PeopleColumnDefinition> cols = provider
+							.getColumnDefinition(exportId);
 					new GenerateExtract(HandlerUtil.getActivePart(event)
 							.getSite().getShell().getDisplay(), repository,
-							provider, exportId).schedule();
+							elements, cols, provider, exportId).schedule();
 				}
 			} else
 				throw new PeopleException(iwp.toString()
@@ -93,18 +98,15 @@ public class GetCalcExport extends AbstractHandler {
 	}
 
 	/** Real call to spreadsheet generator. */
-	protected synchronized void callCalcGenerator(IJcrTableViewer provider,
-			String exportId, File file) throws Exception {
-
-		Object[] elements = provider.getElements(exportId);
+	protected synchronized void callCalcGenerator(Object[] elements,
+			List<PeopleColumnDefinition> cols, String exportId, File file)
+			throws Exception {
 		if (elements instanceof Row[]) {
 			RowsToCalcWriter writer = new RowsToCalcWriter();
-			writer.writeTableFromRows(file, (Row[]) elements,
-					provider.getColumnDefinition(exportId));
+			writer.writeTableFromRows(file, (Row[]) elements, cols);
 		} else if (elements instanceof Node[]) {
 			NodesToCalcWriter writer = new NodesToCalcWriter();
-			writer.writeTableFromNodes(file, (Node[]) elements,
-					provider.getColumnDefinition(exportId));
+			writer.writeTableFromNodes(file, (Node[]) elements, cols);
 		}
 	}
 
@@ -114,13 +116,19 @@ public class GetCalcExport extends AbstractHandler {
 		private Display display;
 		private Repository repository;
 		private IJcrTableViewer provider;
+		private Object[] elements;
+		private List<PeopleColumnDefinition> cols;
+
 		private String exportId;
 
 		public GenerateExtract(Display display, Repository repository,
+				Object[] elements, List<PeopleColumnDefinition> cols,
 				IJcrTableViewer provider, String exportId) {
 			super("Generating the export");
 			this.display = display;
 			this.repository = repository;
+			this.elements = elements;
+			this.cols = cols;
 			this.provider = provider;
 			this.exportId = exportId;
 
@@ -147,7 +155,7 @@ public class GetCalcExport extends AbstractHandler {
 					// editor
 
 					// Effective generation
-					callCalcGenerator(provider, exportId, tmpFile);
+					callCalcGenerator(elements, cols, exportId, tmpFile);
 
 					display.asyncExec(new Runnable() {
 
