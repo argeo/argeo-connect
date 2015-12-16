@@ -1102,9 +1102,8 @@ public class JcrUiUtils {
 	public static Node getOrCreateAltLanguageNode(Node node, String relPath,
 			String lang, List<String> mixins) {
 		try {
-			Node child = JcrUtils.mkdirs(node.getSession(), node.getPath()
-					+ "/" + relPath + "/" + lang, NodeType.NT_UNSTRUCTURED,
-					NodeType.NT_UNSTRUCTURED, false);
+			Node child = JcrUtils.mkdirs(node, relPath + "/" + lang,
+					NodeType.NT_UNSTRUCTURED);
 			child.addMixin(NodeType.MIX_LANGUAGE);
 			if (mixins != null && !mixins.isEmpty())
 				for (String mixin : mixins)

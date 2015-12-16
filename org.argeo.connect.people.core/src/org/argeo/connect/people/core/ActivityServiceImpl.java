@@ -59,8 +59,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 
 	public String getActivityParentRelPath(Session session, Calendar date,
 			String managerId) {
-		String path = peopleService.getBasePath(PeopleTypes.PEOPLE_ACTIVITY)
-				+ "/" + JcrUtils.dateAsPath(date, true) + managerId;
+		String path = JcrUtils.dateAsPath(date, true) + managerId;
 		return path;
 	}
 
@@ -74,9 +73,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	@Override
 	public Node createActivity(Session session, String reporterId, String type,
 			String title, String desc, List<Node> relatedTo, Calendar date) {
-
 		try {
-
 			Node activityBase = session.getNode(peopleService
 					.getBasePath(PeopleTypes.PEOPLE_ACTIVITY));
 			String localId = UserAdminUtils.getUserUid(reporterId);
