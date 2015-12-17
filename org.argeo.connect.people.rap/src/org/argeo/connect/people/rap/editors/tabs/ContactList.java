@@ -15,8 +15,8 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapUtils;
+import org.argeo.connect.people.rap.PeopleStyles;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.ContactAddressComposite;
 import org.argeo.connect.people.rap.composites.ContactComposite;
@@ -599,7 +599,7 @@ public class ContactList extends Composite {
 
 			final Text valueTxt = createRowDataLT(parent, "Linked company", 200);
 			CmsUtils.style(valueTxt,
-					PeopleRapConstants.PEOPLE_CLASS_FORCE_BORDER);
+					PeopleStyles.PEOPLE_CLASS_FORCE_BORDER);
 			valueTxt.setEnabled(false);
 
 			final Link chooseOrgLk = new Link(parent, SWT.BOTTOM);

@@ -11,8 +11,8 @@ import javax.jcr.Value;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapImages;
+import org.argeo.connect.people.rap.PeopleStyles;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.dialogs.PickUpRelatedDialog;
@@ -156,7 +156,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 		Link relatedLk = new Link(part, SWT.LEFT);
 		editor.getFormToolkit().adapt(relatedLk, false, false);
 		relatedLk.setText("<a>" + label + "</a>");
-		CmsUtils.style(relatedLk, PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
+		CmsUtils.style(relatedLk, PeopleStyles.PEOPLE_CLASS_ENTITY_HEADER);
 
 		relatedLk.addSelectionListener(new OpenEditorAdapter(value));
 		relatedLk.setLayoutData(linkFormData(isEditing));
@@ -164,7 +164,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 		if (isEditing) {
 			// Display delete button only in edit mode.
 			Button deleteBtn = new Button(part, SWT.FLAT);
-			CmsUtils.style(deleteBtn, PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
+			CmsUtils.style(deleteBtn, PeopleStyles.FLAT_BTN);
 			deleteBtn.setImage(PeopleRapImages.DELETE_BTN);
 			deleteBtn.setLayoutData(deleteFormData());
 			deleteBtn.addSelectionListener(new SelectionAdapter() {

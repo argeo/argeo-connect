@@ -13,6 +13,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapUtils;
+import org.argeo.connect.people.rap.PeopleStyles;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.DateText;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
@@ -261,7 +262,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 			populate();
 			// Add border and shadow style
 			CmsUtils.style(DropDownPopup.this,
-					PeopleRapConstants.PEOPLE_CLASS_POPUP_SHELL);
+					PeopleStyles.POPUP_SHELL);
 			pack();
 			layout();
 

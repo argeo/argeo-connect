@@ -7,8 +7,8 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapImages;
+import org.argeo.connect.people.rap.PeopleStyles;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
@@ -76,7 +76,7 @@ public class ContactButtonsComposite extends Composite {
 
 	private Button createCategoryButton(Composite parent) {
 		Button btn = new Button(parent, SWT.FLAT);
-		CmsUtils.style(btn, PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
+		CmsUtils.style(btn, PeopleStyles.FLAT_BTN);
 
 		btn.setImage(peopleUiService.getIconForType(contactNode));
 		GridData gd = new GridData();
@@ -88,7 +88,7 @@ public class ContactButtonsComposite extends Composite {
 
 	private Button createDeleteButton(Composite parent) {
 		Button btn = new Button(parent, SWT.FLAT | SWT.BOTTOM);
-		CmsUtils.style(btn, PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
+		CmsUtils.style(btn, PeopleStyles.FLAT_BTN);
 		btn.setImage(PeopleRapImages.DELETE_BTN);
 		GridData gd = new GridData();
 		gd.widthHint = 16;
@@ -100,7 +100,7 @@ public class ContactButtonsComposite extends Composite {
 	private Button createPrimaryButton(Composite parent) {
 		try {
 			Button btn = new Button(parent, SWT.FLAT);
-			CmsUtils.style(btn, PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
+			CmsUtils.style(btn, PeopleStyles.FLAT_BTN);
 
 			// update image
 			boolean isPrimary = (contactNode

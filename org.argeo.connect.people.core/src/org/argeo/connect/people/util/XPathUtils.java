@@ -100,6 +100,20 @@ public class XPathUtils {
 		}
 	}
 
+	public static void appendOrderByProperties(StringBuilder builder,
+			boolean ascending, String... propertyNames) {
+		if (propertyNames.length > 0) {
+			builder.append(" order by ");
+			for (String propName : propertyNames)
+				builder.append("@").append(propName).append(", ");
+			builder = builder.delete(builder.length() - 2, builder.length());
+			if (ascending)
+				builder.append(" ascending ");
+			else
+				builder.append(" descending ");
+		}
+	}
+
 	public static void appendAndPropStringCondition(StringBuilder builder,
 			String propertyName, String filter) throws RepositoryException {
 		if (notEmpty(filter)) {

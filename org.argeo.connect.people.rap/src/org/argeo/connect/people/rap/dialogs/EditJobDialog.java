@@ -33,7 +33,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleStyles;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.providers.EntitySingleColumnLabelProvider;
 import org.argeo.connect.people.util.JcrUiUtils;
@@ -204,7 +204,7 @@ public class EditJobDialog extends TrayDialog {
 		selectedItemTxt = createLT(dialogarea, chosenItemLbl);
 		selectedItemTxt.setEnabled(false);
 		CmsUtils.style(selectedItemTxt,
-				PeopleRapConstants.PEOPLE_CLASS_FORCE_BORDER);
+				PeopleStyles.PEOPLE_CLASS_FORCE_BORDER);
 
 		if (isBackward) {
 			if (oldReferencing != null)

@@ -12,8 +12,8 @@ import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapUtils;
+import org.argeo.connect.people.rap.PeopleStyles;
 import org.argeo.connect.people.rap.composites.DateText;
 import org.argeo.connect.people.rap.dialogs.PickUpGroupDialog;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -165,7 +165,7 @@ public class NewSimpleTaskWizard extends Wizard {
 					| SWT.NO_FOCUS);
 			assignedToTxt.setMessage("Assign a group to manage this task");
 			CmsUtils.style(assignedToTxt,
-					PeopleRapConstants.PEOPLE_CLASS_FORCE_BORDER);
+					PeopleStyles.PEOPLE_CLASS_FORCE_BORDER);
 
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
 			assignedToTxt.setLayoutData(gd);

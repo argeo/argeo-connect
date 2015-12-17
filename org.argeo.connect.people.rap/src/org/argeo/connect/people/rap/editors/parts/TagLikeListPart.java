@@ -21,8 +21,8 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapImages;
+import org.argeo.connect.people.rap.PeopleStyles;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
@@ -192,7 +192,7 @@ public class TagLikeListPart extends Composite {
 							link.setText(" <a>" + tagValue + "</a>");
 
 						CmsUtils.style(link,
-								PeopleRapConstants.PEOPLE_CLASS_ENTITY_HEADER);
+								PeopleStyles.PEOPLE_CLASS_ENTITY_HEADER);
 						link.addSelectionListener(new SelectionAdapter() {
 							private static final long serialVersionUID = 1L;
 
@@ -292,7 +292,7 @@ public class TagLikeListPart extends Composite {
 	private void addDeleteButton(final AbstractFormPart part, Composite parent,
 			final Value value) {
 		final Button deleteBtn = new Button(parent, SWT.FLAT);
-		CmsUtils.style(deleteBtn, PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
+		CmsUtils.style(deleteBtn, PeopleStyles.FLAT_BTN);
 		deleteBtn
 				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		deleteBtn.setImage(PeopleRapImages.DELETE_BTN_LEFT);

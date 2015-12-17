@@ -603,7 +603,7 @@ public class PeopleRapUtils {
 	 */
 	public static Button createDeleteButton(Composite parent) {
 		Button button = new Button(parent, SWT.FLAT);
-		CmsUtils.style(button, PeopleRapConstants.PEOPLE_CLASS_FLAT_BTN);
+		CmsUtils.style(button, PeopleStyles.FLAT_BTN);
 		button.setImage(PeopleRapImages.DELETE_BTN_LEFT);
 		RowData rd = new RowData();
 		rd.height = 16;

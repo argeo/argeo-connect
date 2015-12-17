@@ -45,24 +45,9 @@ public interface PeopleRapConstants {
 	public final static String CTAB_HISTORY = "people:history";
 	public final static String CTAB_EDIT_CATALOGUE = "people:editCatalogue";
 
-	/* CUSTOM STYLING */
-
-	// Specific CSS classes
-	public final static String PEOPLE_CLASS_ENTITY_HEADER = "people_entity_header";
-	public final static String PEOPLE_CLASS_GADGET = "people_gadget";
-	public final static String PEOPLE_CLASS_GADGET_HEADER = "people_gadget_header";
-	public final static String PEOPLE_CLASS_FLAT_BTN = "people_flat_btn";
-	public final static String PEOPLE_CLASS_SMALL_TEXT = "people_small_text";
-	public final static String PEOPLE_CLASS_POPUP_SHELL = "people_popup_shell";
-	// Overwrite normal behaviour:
-	// show the border of a text even when the text is disabled.
-	public final static String PEOPLE_CLASS_FORCE_BORDER = "people_force_border";
-
-	// Specific CSS styling: we cannot use the CSS class parameter inside of a
-	// Custom variant widget.
-	// TODO rather set a custom variant on the corresponding label
+	// Custom styling within table cell that are markup enabled:
+	// we cannot use the CSS class parameter inside of a custom variant control.
 	public final static String PEOPLE_STYLE_ENTITY_HEADER = "style='font-size:14px;'";
-	// TODO rather use the general URL Styling via the application
 	public final static String PEOPLE_STYLE_LINK = " style='color:#383838; text-decoration:none;' ";
 
 	// the separator used in the various href local values to provide internal
