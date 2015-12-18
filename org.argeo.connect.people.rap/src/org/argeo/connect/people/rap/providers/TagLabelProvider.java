@@ -52,7 +52,7 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 		StringBuilder builder = new StringBuilder();
 
 		builder.append("<span " + PeopleRapConstants.PEOPLE_STYLE_ENTITY_HEADER
-				+ " >");
+				+ ">");
 
 		// first line
 		builder.append("<b><big> ");

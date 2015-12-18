@@ -112,7 +112,10 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 	public void addPages() {
 		try {
 			// configure container
-			setWindowTitle("Update Title");
+			String title = "Rename ["
+					+ JcrUiUtils.get(tagInstance, Property.JCR_TITLE)
+					+ "] and update existing related contacts";
+			setWindowTitle(title);
 			MainInfoPage inputPage = new MainInfoPage("Configure");
 			addPage(inputPage);
 			RecapPage recapPage = new RecapPage("Validate and launch");
@@ -235,9 +238,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			membersViewer.setContentProvider(new MyLazyContentProvider(
 					membersViewer));
 			refreshFilteredList(membersViewer);
-			GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
-			gd.heightHint = 400;
-			tableCmp.setLayoutData(gd);
+			tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 			setControl(body);
 		}
 	}
@@ -349,8 +350,6 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 					Node tagInstance = session.getNode(tagPath);
 
 					// TODO use transaction
-					boolean isVersionable = tagInstance
-							.isNodeType(NodeType.MIX_VERSIONABLE);
 					// Legacy insure the node is checked out before update
 					JcrUiUtils.checkCOStatusBeforeUpdate(tagInstance);
 
@@ -360,17 +359,18 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 						tagInstance.setProperty(Property.JCR_DESCRIPTION,
 								newDesc);
 					else if (tagInstance.hasProperty(Property.JCR_DESCRIPTION))
-						// force reset
-						tagInstance.setProperty(Property.JCR_DESCRIPTION, "");
+						tagInstance.getProperty(Property.JCR_DESCRIPTION).remove();
 
 					// Do we really want a new version at each and every time
-					if (isVersionable)
+					if (tagInstance
+							.isNodeType(NodeType.MIX_VERSIONABLE))
 						JcrUiUtils.checkPoint(tagInstance);
 					else
 						tagInstance.getSession().save();
 					monitor.worked(1);
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
 						"Cannot edit tag and corresponding instances", e);
 			} finally {

@@ -204,23 +204,18 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 								return;
 							Object first = ((IStructuredSelection) event
 									.getSelection()).getFirstElement();
-							// try {
 							if (first instanceof Row) {
-								masterNode = JcrUiUtils.getNode(
-										(Row) first, selectorName);
+								masterNode = JcrUiUtils.getNode((Row) first,
+										selectorName);
+							} else if (first instanceof Node) {
+								masterNode = (Node) first;
 							}
 							if (first == null)
 								chosenItemLabel.setText("");
 							else
 								chosenItemLabel.setText(overviewLP
 										.getText(masterNode));
-							chosenItemLabel.getParent().layout();
-							chosenItemLabel.getParent().getParent().layout();
-							// } catch (RepositoryException e) {
-							// throw new PeopleException(
-							// "unable to change master with " + first,
-							// e);
-							// }
+							chosenItemLabel.getParent().getParent().layout(true, true);
 						}
 					});
 
@@ -240,8 +235,8 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 							.getFirstElement();
 					// try {
 					if (obj instanceof Row)
-						masterNode = JcrUiUtils.getNode((Row) obj,
-								selectorName);
+						masterNode = JcrUiUtils
+								.getNode((Row) obj, selectorName);
 
 					// masterNode = ((Row) obj).getNode(selectorName);
 					getContainer().showPage(getNextPage());

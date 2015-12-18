@@ -9,6 +9,7 @@ import javax.jcr.Value;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -28,7 +29,6 @@ import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.ModifyEvent;
@@ -166,7 +166,7 @@ public class PersonEditor extends AbstractEntityCTabEditor implements
 		// Add a label with info provided by the PersonOverviewLabelProvider
 		final Label readOnlyInfoLbl = getFormToolkit().createLabel(
 				readOnlyPanel, "", SWT.WRAP);
-		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		CmsUtils.markup(readOnlyInfoLbl);
 		final ColumnLabelProvider personLP = new PersonOverviewLabelProvider(
 				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE,
 				getPeopleService(), getPeopleWorkbenchService());

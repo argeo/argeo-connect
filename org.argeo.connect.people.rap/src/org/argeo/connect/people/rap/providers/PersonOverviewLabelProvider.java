@@ -19,20 +19,15 @@ import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
-/**
- * Provides HTML Snippet to display details of a person in various editors and
- * lists
- */
+/** Create HTML Snippet to display a person's details in editors and lists */
 public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		PeopleNames {
 
 	private static final long serialVersionUID = 1L;
 
-	private final int listType;
-
-	// private boolean isSmallList = true;
 	private PeopleService peopleService;
 	private PeopleWorkbenchService peopleWorkbenchService;
+	private final int listType;
 
 	public PersonOverviewLabelProvider(int listType,
 			PeopleService peopleService,
@@ -62,9 +57,6 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 			case PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE:
 				result = getOverviewTitle(entity);
 				break;
-			// case PeopleUiConstants.LIST_TYPE_OVERVIEW_DETAIL:
-			// result = getOverviewDetails(entity);
-			// break;
 			case PeopleRapConstants.LIST_TYPE_SMALL:
 				result = getOverviewForList(entity, true);
 				break;
@@ -120,28 +112,13 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 									PeopleConstants.RESOURCE_LANG, str);
 					builder.append(language).append(", ");
 				}
-				// remove last occurence of the separator
+				// remove last occurrence of the separator
 				builder.delete(builder.length() - 2, builder.length());
 			}
 		}
 		builder.append("</span>");
 		return builder.toString();
 	}
-
-	//
-	// private String getOverviewDetails(Node person) throws RepositoryException
-	// {
-	// StringBuilder builder = new StringBuilder();
-	// builder.append("<span style='font-size:15px;'>");
-	//
-	// String primaryContacts = PeopleHtmlUtils.getPrimaryContacts(person);
-	// if (JcrUiUtils.checkNotEmptyString(primaryContacts))
-	// builder.append(primaryContacts).append("<br/>");
-	// builder.append(PeopleHtmlUtils.getLastUpdateSnippet(person));
-	//
-	// builder.append("</span>");
-	// return builder.toString();
-	// }
 
 	private String getOverviewForList(Node person, boolean isSmallList)
 			throws RepositoryException {
@@ -168,8 +145,6 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 			builder.append(clickableTags).append("<br/>");
 
 		builder.append("</span>");
-
 		return builder.toString();
 	}
-
 }

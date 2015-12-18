@@ -8,17 +8,21 @@ import org.eclipse.ui.IPersistableElement;
 public class EntityEditorInput implements IEditorInput {
 
 	private String uid;
-// Workaround to enable setting a dynamic tooltip from the bound editor part instance.
-	private String tooltip = "Display and edit current item informations";	
-	
+
+	// Workaround to enable setting a dynamic tooltip from the linked editor part
+	// instance.
+	private String tooltip = "Display and edit current item informations";
+
 	/** uid must not be null */
 	public EntityEditorInput(String uid) {
 		this.uid = uid;
 	}
 
-	/** Enable change on the "main" node for this editor after creation *
+	/**
+	 * Enable change on the "main" node for this editor after creation *
 	 * 
-	 * @param uid must not be null
+	 * @param uid
+	 *            must not be null
 	 */
 	public void setUid(String uid) {
 		this.uid = uid;
@@ -47,8 +51,8 @@ public class EntityEditorInput implements IEditorInput {
 	public String getToolTipText() {
 		return tooltip;
 	}
-	
-	public void setTooltipText(String tooltip){
+
+	public void setTooltipText(String tooltip) {
 		this.tooltip = tooltip;
 	}
 

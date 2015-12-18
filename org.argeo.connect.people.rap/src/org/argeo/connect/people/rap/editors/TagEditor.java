@@ -15,7 +15,7 @@ import javax.jcr.query.RowIterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.ArgeoException;
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -26,6 +26,7 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
+import org.argeo.connect.people.rap.dialogs.NoProgressBarWizardDialog;
 import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.providers.JcrHtmlLabelProvider;
@@ -45,7 +46,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -73,39 +73,31 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private Session session;
 	private PeopleService peopleService;
 	private PeopleWorkbenchService peopleWorkbenchService;
 
-	// this page widgets.
+	// UI Objects
+	protected FormToolkit toolkit;
 	private List<PeopleColumnDefinition> colDefs;
 	private TableViewer membersViewer;
 	private Text filterTxt;
-	// private Row[] rows; // Keep a local cache of the currently displayed
-	// rows.
+	private Label titleROLbl;
+	private ColumnLabelProvider groupTitleLP;
 
 	// Business Objects
+	private Session session;
 	private Node node;
-	protected FormToolkit toolkit;
 
 	// LIFE CYCLE
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		setSite(site);
 		setInput(input);
-		try {
-			session = repository.login();
-			EntityEditorInput sei = (EntityEditorInput) getEditorInput();
-			node = session.getNodeByIdentifier(sei.getUid());
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Unable to create new session"
-					+ " to use with current editor", e);
-		}
-		// Name and tooltip
-		String name = JcrUiUtils.get(node, Property.JCR_TITLE);
-		if (EclipseUiUtils.notEmpty(name))
-			setPartName(name);
-		setTitleToolTip("List contacts tagged as " + name);
+		EntityEditorInput sei = (EntityEditorInput) getEditorInput();
+
+		// Initialise context
+		session = JcrUiUtils.login(repository);
+		node = JcrUiUtils.getNodeByIdentifier(session, sei.getUid());
 
 		// Initialize column definition
 		// Cannot be statically done to have a valid reference to the injected
@@ -116,6 +108,17 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 						Property.JCR_TITLE), 300));
 		colDefs.add(new PeopleColumnDefinition("Tags",
 				new JcrHtmlLabelProvider(PEOPLE_TAGS), 300));
+	}
+
+	protected void afterNameUpdate() {
+		String name = JcrUiUtils.get(node, Property.JCR_TITLE);
+		if (EclipseUiUtils.notEmpty(name)) {
+			setPartName(name);
+			((EntityEditorInput) getEditorInput())
+					.setTooltipText("List contacts tagged as " + name);
+		}
+		if (titleROLbl != null && !titleROLbl.isDisposed())
+			titleROLbl.setText(groupTitleLP.getText(node));
 	}
 
 	/* SPECIFIC CONFIGURATION */
@@ -132,6 +135,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		Form form = toolkit.createForm(parent);
 		Composite main = form.getBody();
 		createMainLayout(main);
+		afterNameUpdate();
 	}
 
 	protected void createMainLayout(Composite parent) {
@@ -148,20 +152,16 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 	protected void populateHeader(final Composite parent) {
 		parent.setLayout(new GridLayout(2, false));
-		final Label titleROLbl = toolkit.createLabel(parent, "", SWT.WRAP);
-		titleROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		final ColumnLabelProvider groupTitleLP = new TagLabelProvider(
-				peopleService.getResourceService(),
+		titleROLbl = toolkit.createLabel(parent, "", SWT.WRAP);
+		CmsUtils.markup(titleROLbl);
+		groupTitleLP = new TagLabelProvider(peopleService.getResourceService(),
 				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE);
 		titleROLbl.setText(groupTitleLP.getText(getNode()));
-		titleROLbl
-				.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		titleROLbl.setLayoutData(EclipseUiUtils.fillWidth());
 
 		Link editTitleLink = null;
-		UserAdminService userService = peopleService
-				.getUserAdminService();
+		UserAdminService userService = peopleService.getUserAdminService();
 		if (userService.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)) {
-			// || userService.amIInRole(PeopleConstants.ROLE_ADMIN)) {
 			editTitleLink = new Link(parent, SWT.NONE);
 			editTitleLink.setText("<a>Edit Tag</a>");
 		} else
@@ -177,11 +177,11 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 							peopleWorkbenchService, getNode(),
 							PeopleConstants.RESOURCE_TAG,
 							PeopleNames.PEOPLE_TAGS);
-					WizardDialog dialog = new WizardDialog(titleROLbl
-							.getShell(), wizard);
+					NoProgressBarWizardDialog dialog = new NoProgressBarWizardDialog(
+							titleROLbl.getShell(), wizard);
 					int result = dialog.open();
 					if (result == WizardDialog.OK) {
-						titleROLbl.setText(groupTitleLP.getText(getNode()));
+						afterNameUpdate();
 					}
 				}
 			});

@@ -27,7 +27,7 @@ public class CreateUserGroup{}
 // session = repository.login();
 // NewUserGroupWizard newUserWizard = new NewUserGroupWizard(session,
 // peopleService);
-// WizardDialog dialog = new WizardDialog(
+// NoProgressBarWizardDialog dialog = new NoProgressBarWizardDialog(
 // HandlerUtil.getActiveShell(event), newUserWizard);
 // dialog.open();
 // } catch (Exception e) {

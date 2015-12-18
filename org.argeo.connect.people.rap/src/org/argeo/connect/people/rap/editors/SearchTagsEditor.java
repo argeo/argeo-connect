@@ -47,7 +47,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -69,21 +68,19 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private Session session;
 	private PeopleService peopleService;
-	private ResourceService resourceService;
 	private PeopleWorkbenchService peopleWorkbenchService;
 
 	// Context
+	private Session session;
+	private ResourceService resourceService;
 	private Node tagParent;
 	private String tagId;
-	// private String basePath;
 	private String tagInstanceType;
 	private String propertyName;
-	// private String resourceType;
-	private List<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 
-	// This page widget
+	// UI Objects
+	private List<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 	private TableViewer tableViewer;
 	private Text filterTxt;
 
@@ -106,10 +103,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 					"Unable to retrieve tag parent with path " + basePath
 							+ "\nUnable to open search editor.", e);
 		}
-		// tagInstanceType = ((SearchNodeEditorInput)
-		// getEditorInput()).getNodeType();
-		tagInstanceType = JcrUiUtils.get(tagParent,
-				PEOPLE_TAG_INSTANCE_TYPE);
+		tagInstanceType = JcrUiUtils.get(tagParent, PEOPLE_TAG_INSTANCE_TYPE);
 		tagId = JcrUiUtils.get(tagParent, PEOPLE_TAG_ID);
 
 		// TODO this info should be stored in the parent path
@@ -151,7 +145,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
 				| SWT.ICON_CANCEL);
 		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
-		filterTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 		filterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 5003010530960334977L;
 
@@ -163,7 +157,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		Button addBtn = new Button(parent, SWT.PUSH);
 		addBtn.setText("Create new...");
 		addBtn.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
+			private static final long serialVersionUID = -1990521824772413097L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -195,7 +189,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent,
 				SWT.MULTI, colDefs);
 		tableViewer = tableCmp.getTableViewer();
-		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
 				null, peopleWorkbenchService));
 		tableViewer.getTable().addSelectionListener(new HtmlRwtAdapter());
@@ -272,8 +266,6 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 	private boolean canEdit() {
 		return peopleService.getUserAdminService().amIInRole(
 				PeopleConstants.ROLE_BUSINESS_ADMIN);
-		// || peopleService.getUserManagementService().amIInRole(
-		// PeopleConstants.ROLE_ADMIN);
 	}
 
 	private boolean canDelete(Node currNode) {
@@ -304,8 +296,8 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 					} else {
 						if (canDelete(node)) { // Superstition
 							String msg = "Are you sure you want to delete \""
-									+ JcrUiUtils.get(node,
-											Property.JCR_TITLE) + "\" ?";
+									+ JcrUiUtils.get(node, Property.JCR_TITLE)
+									+ "\" ?";
 							if (MessageDialog.openConfirm(
 									event.display.getActiveShell(),
 									"Confirm deletion", msg)) {

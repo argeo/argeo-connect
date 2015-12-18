@@ -15,7 +15,7 @@ import javax.jcr.query.RowIterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.ArgeoException;
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -26,6 +26,7 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
+import org.argeo.connect.people.rap.dialogs.NoProgressBarWizardDialog;
 import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.providers.JcrHtmlLabelProvider;
@@ -87,11 +88,15 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 	private Session session;
 	private UserAdminService userService;
 
-	// This page objects
+	// UI objects
 	protected FormToolkit toolkit;
 	private List<PeopleColumnDefinition> colDefs; // Default columns
 	private TableViewer membersViewer;
 	private Text filterTxt;
+
+	private Label titleROLbl;
+	private ColumnLabelProvider mlTitleLP;
+
 	private Row[] rows;
 	private Form form;
 
@@ -103,22 +108,9 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		EntityEditorInput sei = (EntityEditorInput) getEditorInput();
 
 		// Initialise context
-		try {
-			session = repository.login();
-			mailingList = session.getNodeByIdentifier(sei.getUid());
-		} catch (RepositoryException e) {
-			throw new ArgeoException(
-					"Unable to initialise mailing list editor for id "
-							+ sei.getUid(), e);
-		}
-		// Retrieve userService from context
 		userService = peopleService.getUserAdminService();
-
-		// Name and tooltip
-		String name = JcrUiUtils.get(mailingList, Property.JCR_TITLE);
-		if (EclipseUiUtils.notEmpty(name))
-			setPartName(name);
-		setTitleToolTip("List contacts referenced by Mailing List " + name);
+		session = JcrUiUtils.login(repository);
+		mailingList = JcrUiUtils.getNodeByIdentifier(session, sei.getUid());
 
 		// Initialize column definition
 		// Cannot be done statically: we must have a valid reference to the
@@ -133,6 +125,18 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 				new JcrHtmlLabelProvider(PEOPLE_TAGS), 300));
 	}
 
+	protected void afterNameUpdate() {
+		String name = JcrUiUtils.get(mailingList, Property.JCR_TITLE);
+		if (EclipseUiUtils.notEmpty(name)) {
+			setPartName(name);
+			((EntityEditorInput) getEditorInput())
+					.setTooltipText("List contacts referenced by Mailing List "
+							+ name);
+		}
+		if (titleROLbl != null && !titleROLbl.isDisposed())
+			titleROLbl.setText(mlTitleLP.getText(mailingList));
+	}
+
 	/* CONTENT CREATION */
 	@Override
 	public void createPartControl(Composite parent) {
@@ -141,35 +145,33 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		form = toolkit.createForm(parent);
 		Composite main = form.getBody();
 		createMainLayout(main);
+		afterNameUpdate();
 	}
 
 	protected void createMainLayout(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		// The header
 		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		header.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		header.setLayoutData(EclipseUiUtils.fillWidth());
 		populateHeader(header);
 		// the body
 		Composite body = toolkit.createComposite(parent, SWT.NO_FOCUS);
-		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		body.setLayoutData(EclipseUiUtils.fillAll());
 		createMembersList(body, mailingList);
 	}
 
 	protected void populateHeader(final Composite parent) {
 		parent.setLayout(new GridLayout(2, false));
-		final Label titleROLbl = toolkit.createLabel(parent, "", SWT.WRAP);
-		titleROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		titleROLbl = toolkit.createLabel(parent, "", SWT.WRAP);
+		CmsUtils.markup(titleROLbl);
 
-		final ColumnLabelProvider mlTitleLP = new TagLabelProvider(
-				peopleService.getResourceService(),
+		mlTitleLP = new TagLabelProvider(peopleService.getResourceService(),
 				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE);
 		titleROLbl.setText(mlTitleLP.getText(mailingList));
-		titleROLbl
-				.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		titleROLbl.setLayoutData(EclipseUiUtils.fillWidth());
 
 		Link editTitleLink = null;
 		if (userService.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)) {
-			// || userService.amIInRole(PeopleConstants.ROLE_ADMIN)) {
 			editTitleLink = new Link(parent, SWT.NONE);
 			editTitleLink.setText("<a>Edit Mailing List</a>");
 		} else
@@ -187,16 +189,15 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 							PeopleTypes.PEOPLE_MAILING_LIST,
 							PeopleNames.PEOPLE_MAILING_LISTS);
 
-					WizardDialog dialog = new WizardDialog(titleROLbl
-							.getShell(), wizard);
+					NoProgressBarWizardDialog dialog = new NoProgressBarWizardDialog(
+							titleROLbl.getShell(), wizard);
 					int result = dialog.open();
 					if (result == WizardDialog.OK) {
-						titleROLbl.setText(mlTitleLP.getText(mailingList));
+						afterNameUpdate();
 					}
 				}
 			});
 		}
-
 	}
 
 	public void createMembersList(Composite parent, final Node entity) {
@@ -205,15 +206,12 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		// First line: search Text and buttons
 		Composite buttonsCmp = toolkit.createComposite(parent);
 		buttonsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		buttonsCmp.setLayout(new GridLayout(3, false)); // remove add members
-														// btn 4, false));
-
+		buttonsCmp.setLayout(new GridLayout(3, false));
 		filterTxt = createFilterText(buttonsCmp);
-		// Button addBtn = toolkit
-		// .createButton(buttonsCmp, "Add member", SWT.PUSH);
 
-		// Add a button that triggers a "mailto action" with the mail of all
-		// items that are currently displayed in the bottom table.
+		// Button to launch a mail client (depending on the end user brower and
+		// system configuration), and create a new mail adding in BCC all
+		// addresses that are found from the currently displayed items
 		final Button mailToBtn = toolkit.createButton(buttonsCmp, "Mail to",
 				SWT.PUSH);
 		mailToBtn
@@ -263,8 +261,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 					+ PeopleTypes.PEOPLE_ENTITY + ")";
 
 			String filter = filterTxt.getText();
-			String currVal = JcrUiUtils.get(mailingList,
-					Property.JCR_TITLE);
+			String currVal = JcrUiUtils.get(mailingList, Property.JCR_TITLE);
 
 			String freeTxtCond = XPathUtils.getFreeTextConstraint(filter);
 			String mlNamecond = XPathUtils.getPropertyEquals(
@@ -288,51 +285,9 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 						+ xpathQueryStr + ").");
 			}
 
-			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			// Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
-			// PeopleTypes.PEOPLE_ENTITY);
-			//
-			// String filter = filterTxt.getText();
-			// String currVal = JcrUiUtils.get(mailingList,
-			// Property.JCR_TITLE);
-			// StaticOperand so = factory.literal(session.getValueFactory()
-			// .createValue(currVal));
-			// DynamicOperand dyo = factory.propertyValue(
-			// source.getSelectorName(), PEOPLE_MAILING_LISTS);
-			// Constraint constraint = factory.comparison(dyo,
-			// QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
-			//
-			// Constraint subTree = factory.descendantNode(
-			// source.getSelectorName(), peopleService.getBasePath(null));
-			// constraint = JcrUiUtils.localAnd(factory, constraint,
-			// subTree);
-			//
-			// if (JcrUiUtils.checkNotEmptyString(filter)) {
-			// String[] strs = filter.trim().split(" ");
-			// for (String token : strs) {
-			// StaticOperand soTmp = factory.literal(session
-			// .getValueFactory().createValue("*" + token + "*"));
-			// Constraint currC = factory.fullTextSearch(
-			// source.getSelectorName(), null, soTmp);
-			// constraint = JcrUiUtils.localAnd(factory, constraint,
-			// currC);
-			// }
-			// }
-			//
-			// Ordering order = factory.ascending(factory.propertyValue(
-			// source.getSelectorName(), Property.JCR_TITLE));
-			// Ordering[] orderings = { order };
-			// QueryObjectModel query = factory.createQuery(source, constraint,
-			// orderings, null);
-			// QueryResult result = query.execute();
-			// Row[] rows =
-			// JcrUiUtils.rowIteratorToArray(result.getRows());
-			// setViewerInput(rows);
-
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Unable to list contacts for mailing list " + mailingList,
-					e);
+			throw new PeopleException("Unable to list contacts "
+					+ "for mailing list " + mailingList, e);
 		}
 	}
 
@@ -390,8 +345,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		StringBuilder builder = new StringBuilder();
 		try {
 			for (Row row : rows) {
-				Node node;
-				node = row.getNode(PeopleTypes.PEOPLE_ENTITY);
+				Node node = row.getNode(); // PeopleTypes.PEOPLE_ENTITY
 				String mailValue = PeopleJcrUtils.getPrimaryContactValue(node,
 						PeopleTypes.PEOPLE_EMAIL);
 				if (EclipseUiUtils.notEmpty(mailValue))
@@ -403,44 +357,11 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		}
 	}
 
-	// private void configureAddMemberButton(final AbstractFormPart part,
-	// Button button, final Node targetNode, String tooltip,
-	// final String nodeTypeToSearch) {
-	// button.setToolTipText(tooltip);
-	// button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
-	//
-	// button.addSelectionListener(new SelectionListener() {
-	// private static final long serialVersionUID = 1L;
-	//
-	// @Override
-	// public void widgetSelected(SelectionEvent e) {
-	// Map<String, String> params = new HashMap<String, String>();
-	// try {
-	// params.put(AddEntityReference.PARAM_REFERENCING_JCR_ID,
-	// targetNode.getIdentifier());
-	// params.put(AddEntityReference.PARAM_TO_SEARCH_NODE_TYPE,
-	// nodeTypeToSearch);
-	// params.put(AddEntityReference.PARAM_DIALOG_ID,
-	// PeopleUiConstants.DIALOG_ADD_ML_MEMBERS);
-	// CommandUtils.callCommand(AddEntityReference.ID, params);
-	// part.refresh();
-	// } catch (RepositoryException e1) {
-	// throw new PeopleException(
-	// "Unable to get parent Jcr identifier", e1);
-	// }
-	// }
-	//
-	// @Override
-	// public void widgetDefaultSelected(SelectionEvent e) {
-	// }
-	// });
-	// }
-
 	private Text createFilterText(Composite parent) {
 		Text filterTxt = toolkit.createText(parent, "", SWT.BORDER | SWT.SEARCH
 				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
-		filterTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 		return filterTxt;
 	}
 
@@ -453,7 +374,6 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 				refreshFilteredList();
 			}
 		});
-
 	}
 
 	@Override

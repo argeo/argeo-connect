@@ -45,7 +45,7 @@ public class CreatePeopleUser extends AbstractHandler {
 		// NewPeopleUserWizard newUserWizard = new NewPeopleUserWizard(
 		// session, userAdminService,
 		// userManagementService);
-		// WizardDialog dialog = new WizardDialog(
+		// NoProgressBarWizardDialog dialog = new NoProgressBarWizardDialog(
 		// HandlerUtil.getActiveShell(event), newUserWizard);
 		// dialog.open();
 		// } catch (Exception e) {

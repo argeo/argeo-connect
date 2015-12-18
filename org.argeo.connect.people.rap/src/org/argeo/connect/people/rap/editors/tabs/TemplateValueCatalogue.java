@@ -33,6 +33,7 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.ChangeEditingState;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
+import org.argeo.connect.people.rap.dialogs.NoProgressBarWizardDialog;
 import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
 import org.argeo.connect.people.rap.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
@@ -48,10 +49,7 @@ import org.argeo.eclipse.ui.dialogs.SingleValue;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.DecorationOverlayIcon;
-import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -62,13 +60,11 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -76,7 +72,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.AbstractFormPart;
@@ -300,12 +295,10 @@ public class TemplateValueCatalogue extends Composite {
 				String href = event.text;
 				String[] val = href.split(PeopleRapConstants.HREF_SEPARATOR);
 				EditValueWizard wizard = new EditValueWizard(val[0], val[1]);
-				WizardDialog dialog = new WizardDialog(
+				NoProgressBarWizardDialog dialog = new NoProgressBarWizardDialog(
 						TemplateValueCatalogue.this.getShell(), wizard);
-				if (Window.OK == dialog.open()) {
-					// myFormPart.markDirty();
-					// myFormPart.refresh();
 
+				if (Window.OK == dialog.open()) {
 					try {
 						// Session is not saved when no object is linked to this
 						// catalogue value.
@@ -316,22 +309,22 @@ public class TemplateValueCatalogue extends Composite {
 								+ templateNode, re);
 					}
 
-					// Small workaround to keep the calling editor in a clean a
-					// logical state regarding its check out status
-					IWorkbench wb = PlatformUI.getWorkbench();
-					IEditorPart editor = wb.getActiveWorkbenchWindow()
-							.getActivePage().getActiveEditor();
-					if (editor != null && editor instanceof Refreshable) {
-						// Cancel and Check In
-						Map<String, String> params = new HashMap<String, String>();
-						params.put(ChangeEditingState.PARAM_NEW_STATE,
-								ChangeEditingState.NOT_EDITING);
-						params.put(ChangeEditingState.PARAM_PRIOR_ACTION,
-								ChangeEditingState.PRIOR_ACTION_CANCEL);
-						CommandUtils.callCommand(ChangeEditingState.ID);
-						((Refreshable) editor).forceRefresh(null);
-
-					}
+//					// Small workaround to keep the calling editor in a clean a
+//					// logical state regarding its check out status
+//					IWorkbench wb = PlatformUI.getWorkbench();
+//					IEditorPart editor = wb.getActiveWorkbenchWindow()
+//							.getActivePage().getActiveEditor();
+//					if (editor != null && editor instanceof Refreshable) {
+//						// Cancel and Check In
+//						Map<String, String> params = new HashMap<String, String>();
+//						params.put(ChangeEditingState.PARAM_NEW_STATE,
+//								ChangeEditingState.NOT_EDITING);
+//						params.put(ChangeEditingState.PARAM_PRIOR_ACTION,
+//								ChangeEditingState.PRIOR_ACTION_CANCEL);
+//						CommandUtils.callCommand(ChangeEditingState.ID);
+//						((Refreshable) editor).forceRefresh(null);
+//
+//					}
 				}
 			}
 		}
@@ -361,8 +354,8 @@ public class TemplateValueCatalogue extends Composite {
 		ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
 		colDefs.add(new PeopleColumnDefinition(taggableType,
 				Property.JCR_TITLE, PropertyType.STRING, "Instances",
-				new MyTitleIconRowLP(peopleWorkbenchService, taggableType,
-						Property.JCR_TITLE), 400));
+				new TitleIconRowLP(peopleWorkbenchService, taggableType,
+						Property.JCR_TITLE), 350));
 		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent,
 				SWT.MULTI, colDefs);
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
@@ -557,7 +550,7 @@ public class TemplateValueCatalogue extends Composite {
 			public RecapPage(String pageName) {
 				super(pageName);
 				setTitle("Check and confirm");
-				setMessage("The below listed items will be impacted.\nAre you sure you want to procede?");
+				setMessage("The below listed items will be impacted.\nAre you sure you want to proceed?");
 			}
 
 			public void createControl(Composite parent) {
@@ -575,72 +568,54 @@ public class TemplateValueCatalogue extends Composite {
 				// investigate on potential blockers before launching the batch
 				// update
 
-				// if (visible == true) {
-				// long checkoutItemNb = 0;
-				// RowIterator rit = query(oldValue);
-				// List<Row> rows = new ArrayList<Row>();
-				// while (rit.hasNext()) {
-				// Row currRow = rit.nextRow();
-				// rows.add(currRow);
-				// Node currNode = JcrUiUtils.getNode(currRow,
-				// taggableType);
-				// if (JcrUiUtils.isNodeCheckedOut(currNode))
-				// checkoutItemNb++;
-				// }
-				// setViewerInput(membersViewer, rows.toArray(new Row[0]));
-				// if (checkoutItemNb > 0)
-				// setErrorMessage("Warning: "
-				// + checkoutItemNb
-				// + " entities are currently checked out. Updating might "
-				// + "prevent some users from saving their latest changes. "
-				// + "Are you sure you want to procede?");
-				// else
-				// setErrorMessage(null);
-				// }
+				RowIterator rit = query(oldValue);
+				List<Row> rows = new ArrayList<Row>();
+				while (rit.hasNext())
+					rows.add(rit.nextRow());
+				setViewerInput(membersViewer, rows.toArray(new Row[0]));
 			}
 		}
 	}
 
 	// Add a decorator to the checked out instances
-	private class MyTitleIconRowLP extends TitleIconRowLP {
-		private static final long serialVersionUID = 1L;
-		private final Map<Image, Image> images = new HashMap<Image, Image>();
-		private final ImageDescriptor failedDesc;
-		private final String selectorName;
-
-		public MyTitleIconRowLP(PeopleWorkbenchService peopleUiService,
-				String selectorName, String propertyName) {
-			super(peopleUiService, selectorName, propertyName);
-			this.selectorName = selectorName;
-			failedDesc = workbench.getSharedImages().getImageDescriptor(
-					ISharedImages.IMG_DEC_FIELD_ERROR);
-		}
-
-		@Override
-		public Image getImage(Object element) {
-			Image image = super.getImage(element);
-			// Node currEntity = JcrUiUtils.getNode((Row) element,
-			// selectorName);
-			// JcrUiUtils.isNodeCheckedOut(currEntity)
-			if (editor.isEditing() && image != null) {
-				if (images.containsKey(image)) {
-					image = images.get(image);
-				} else {
-					Image descImage = new DecorationOverlayIcon(image,
-							failedDesc, IDecoration.BOTTOM_RIGHT).createImage();
-					images.put(image, descImage);
-					image = descImage;
-				}
-			}
-			return image;
-		}
-
-		@Override
-		public void dispose() {
-			// Free created image resources
-			for (Image image : images.values())
-				image.dispose();
-			super.dispose();
-		}
-	}
+	// private class MyTitleIconRowLP extends TitleIconRowLP {
+	// private static final long serialVersionUID = 1L;
+	// private final Map<Image, Image> images = new HashMap<Image, Image>();
+	// private final ImageDescriptor failedDesc;
+	//
+	// public MyTitleIconRowLP(PeopleWorkbenchService peopleUiService,
+	// String selectorName, String propertyName) {
+	// super(peopleUiService, selectorName, propertyName);
+	// // this.selectorName = selectorName;
+	// failedDesc = workbench.getSharedImages().getImageDescriptor(
+	// ISharedImages.IMG_DEC_FIELD_ERROR);
+	// }
+	//
+	// @Override
+	// public Image getImage(Object element) {
+	// Image image = super.getImage(element);
+	// // Node currEntity = JcrUiUtils.getNode((Row) element,
+	// // selectorName);
+	// // JcrUiUtils.isNodeCheckedOut(currEntity)
+	// if (editor.isEditing() && image != null) {
+	// if (images.containsKey(image)) {
+	// image = images.get(image);
+	// } else {
+	// Image descImage = new DecorationOverlayIcon(image,
+	// failedDesc, IDecoration.BOTTOM_RIGHT).createImage();
+	// images.put(image, descImage);
+	// image = descImage;
+	// }
+	// }
+	// return image;
+	// }
+	//
+	// @Override
+	// public void dispose() {
+	// // Free created image resources
+	// for (Image image : images.values())
+	// image.dispose();
+	// super.dispose();
+	// }
+	// }
 }

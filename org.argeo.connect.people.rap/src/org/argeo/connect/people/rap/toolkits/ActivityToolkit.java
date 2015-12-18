@@ -279,7 +279,7 @@
 //			List<Node> relatedTo = new ArrayList<Node>();
 //			relatedTo.add(relatedEntity);
 //			wizard.setRelatedTo(relatedTo);
-//			WizardDialog dialog = new WizardDialog(shell, wizard);
+//			NoProgressBarWizardDialog dialog = new NoProgressBarWizardDialog(shell, wizard);
 //			dialog.open();
 //			// int result = dialog.open();
 //			// Node createdTask = wizard.getCreatedTask();

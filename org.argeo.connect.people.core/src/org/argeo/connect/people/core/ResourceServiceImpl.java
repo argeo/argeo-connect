@@ -568,8 +568,7 @@ public class ResourceServiceImpl implements ResourceService {
 			while (nit.hasNext()) {
 				Node currNode = nit.nextNode();
 				String currKey = JcrUiUtils.get(currNode, keyPropName);
-				if (notEmpty(currKey)
-						&& !registeredTags.contains(currKey))
+				if (notEmpty(currKey) && !registeredTags.contains(currKey))
 					registeredTags.add(currKey);
 			}
 
@@ -635,48 +634,33 @@ public class ResourceServiceImpl implements ResourceService {
 	@Override
 	public boolean updateTag(Node tagInstance, String newValue)
 			throws RepositoryException {
-		// TODO double check and clean
-
+		// TODO use a transaction
 		Node tagParent = retrieveTagParentFromTag(tagInstance);
-
 		Value[] values = tagParent.getProperty(
 				PeopleNames.PEOPLE_TAGGABLE_PROP_NAME).getValues();
 		if (values.length > 1)
 			// unimplemented multiple value
 			return false;
 		String propName = values[0].getString();
-
 		String oldValue = tagInstance.getProperty(Property.JCR_TITLE)
 				.getString();
-
-		// boolean wasCO =
-		JcrUiUtils.checkCOStatusBeforeUpdate(tagInstance); // = false;
-		// if (tagInstance.isNodeType(NodeType.MIX_VERSIONABLE)
-		// && !JcrUiUtils.isNodeCheckedOutByMe(tagInstance)) {
-		// wasCheckedIn = true;
-		// JcrUiUtils.checkout(tagInstance);
-		// }
-
+		JcrUiUtils.checkCOStatusBeforeUpdate(tagInstance);
 		Session session = tagInstance.getSession();
-		// TODO use a transaction
+		
 		// Retrieve all node that reference this tag and update them
 		NodeIterator nit = getTaggedEntities(tagParent, oldValue);
 		while (nit.hasNext())
 			updateOneTag(nit.nextNode(), propName, oldValue, newValue);
 
-		// update the tag
-		String newPath = tagParent.getPath() + "/" + getTagRelPath(newValue);
-		// insure the parent node is already existing
-		JcrUtils.mkdirs(session, JcrUtils.parentPath(newPath));
-		session.move(tagInstance.getPath(), newPath);
+		String newRelPath = "/" + getTagRelPath(newValue);
+		// Insure the parent node is already existing
+		// Rather use the parent node than the abs path: we might have not the
+		// right on the full workspace
+		Node newIntancePar = JcrUtils.mkdirs(tagParent,
+				JcrUtils.parentPath(newRelPath), NodeType.NT_UNSTRUCTURED);
+		session.move(tagInstance.getPath(), newIntancePar.getPath() + "/"
+				+ JcrUtils.lastPathElement(newRelPath));
 		tagInstance.setProperty(Property.JCR_TITLE, newValue);
-
-		// if (wasCO)
-		// log.warn("Tag " + );
-		// JcrUiUtils.saveAndCheckin(tagInstance);
-		// if (wasCheckedIn)
-		//
-		// else
 		tagInstance.getSession().save();
 		return true;
 	}
@@ -694,8 +678,11 @@ public class ResourceServiceImpl implements ResourceService {
 			String oldValue, String newValue) {
 		try {
 			Node versionable = JcrUiUtils.getParentVersionableNode(taggable);
-			if (versionable != null)
-				JcrUiUtils.checkCOStatusBeforeUpdate(versionable);
+			if (versionable != null
+					&& !JcrUiUtils.checkCOStatusBeforeUpdate(versionable))
+				log.warn(versionable + " was checked-in as we want to update "
+						+ tagPropName + " of " + taggable + " form " + oldValue
+						+ " to " + newValue);
 			Property property = taggable.getProperty(tagPropName);
 			if (property.isMultiple()) {
 				List<String> oldValues = JcrUiUtils.getMultiAsList(taggable,
@@ -722,8 +709,9 @@ public class ResourceServiceImpl implements ResourceService {
 
 	@Override
 	public void unregisterTag(Session session, String tagId, String tag) {
-		// TODO Auto-generated method stub
-
+		throw new PeopleException("Unimplemented method "
+				+ "ResourceService.unregisterTag("
+				+ "Session session, String tagId, String tag) ");
 	}
 
 	@Override
