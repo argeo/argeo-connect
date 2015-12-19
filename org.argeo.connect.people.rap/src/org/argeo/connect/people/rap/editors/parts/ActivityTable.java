@@ -121,8 +121,8 @@ public class ActivityTable extends Composite implements ArgeoNames {
 
 		// Types
 		col = new TableColumn(table, SWT.LEFT);
-		tableColumnLayout
-				.setColumnData(col, new ColumnWeightData(30, 80, true));
+		tableColumnLayout.setColumnData(col,
+				new ColumnWeightData(30, 120, true));
 		tvCol = new TableViewerColumn(viewer, col);
 		tvCol.setLabelProvider(new TypeLabelProvider());
 		col.addSelectionListener(getNodeSelectionAdapter(colIndex++,
@@ -146,7 +146,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 				PropertyType.STRING, PeopleNames.PEOPLE_ASSIGNED_TO,
 				comparator, viewer));
 		tableColumnLayout.setColumnData(col,
-				new ColumnWeightData(60, 150, true));
+				new ColumnWeightData(60, 180, true));
 		tvCol = new TableViewerColumn(viewer, col);
 		tvCol.setLabelProvider(new UsersLabelProvider());
 
@@ -279,22 +279,22 @@ public class ActivityTable extends Composite implements ArgeoNames {
 					if (activityNode.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE)) {
 						date = activityNode.getProperty(
 								PeopleNames.PEOPLE_CLOSE_DATE).getDate();
-						builder.append("Done on: ").append(funkyFormat(date))
-								.append("<br />");
+						builder.append(funkyFormat(date))
+								.append(" (Done date)").append("<br />");
 
 						if (activityNode
 								.hasProperty(PeopleNames.PEOPLE_DUE_DATE)) {
 							date = activityNode.getProperty(
 									PeopleNames.PEOPLE_DUE_DATE).getDate();
-							builder.append("Due date: ").append(
-									funkyFormat(date));
+							builder.append(funkyFormat(date)).append(
+									" (Due date)");
 
 						}
 					} else if (activityNode
 							.hasProperty(PeopleNames.PEOPLE_DUE_DATE)) {
 						date = activityNode.getProperty(
 								PeopleNames.PEOPLE_DUE_DATE).getDate();
-						builder.append("Due date: ").append(funkyFormat(date))
+						builder.append(funkyFormat(date)).append(" (Due date)")
 								.append("<br />");
 
 						boolean sleeping = false;
@@ -304,8 +304,8 @@ public class ActivityTable extends Composite implements ArgeoNames {
 									PeopleNames.PEOPLE_WAKE_UP_DATE).getDate();
 							Calendar now = GregorianCalendar.getInstance();
 							if (date.after(now)) {
-								builder.append("Sleep until: ").append(
-										funkyFormat(date));
+								builder.append(funkyFormat(date)).append(
+										" (Sleep until)");
 								sleeping = true;
 							}
 						}
@@ -315,30 +315,30 @@ public class ActivityTable extends Composite implements ArgeoNames {
 								&& !sleeping) {
 							date = activityNode.getProperty(
 									Property.JCR_LAST_MODIFIED).getDate();
-							builder.append("Last update: ").append(
-									funkyFormat(date));
+							builder.append(funkyFormat(date)).append(
+									" (Last update)");
 						}
 					} else {
 						if (activityNode
 								.hasProperty(Property.JCR_LAST_MODIFIED)) {
 							date = activityNode.getProperty(
 									Property.JCR_LAST_MODIFIED).getDate();
-							builder.append("Last update: ")
-									.append(funkyFormat(date)).append("<br />");
+							builder.append(funkyFormat(date))
+									.append(" (Last update)").append("<br />");
 						}
 
 						if (activityNode
 								.hasProperty(PeopleNames.PEOPLE_ACTIVITY_DATE)) {
 							date = activityNode.getProperty(
 									PeopleNames.PEOPLE_ACTIVITY_DATE).getDate();
-							builder.append("Created on: ").append(
-									funkyFormat(date));
+							builder.append(funkyFormat(date)).append(
+									" (Creation date)");
 						} else if (activityNode
 								.hasProperty(Property.JCR_CREATED)) {
 							date = activityNode.getProperty(
 									Property.JCR_CREATED).getDate();
-							builder.append("Created on: ").append(
-									funkyFormat(date));
+							builder.append(funkyFormat(date)).append(
+									" (Creation date)");
 						}
 					}
 				} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
@@ -354,11 +354,11 @@ public class ActivityTable extends Composite implements ArgeoNames {
 							.hasProperty(PeopleNames.PEOPLE_ACTIVITY_DATE)) {
 						happened = activityNode.getProperty(
 								PeopleNames.PEOPLE_ACTIVITY_DATE).getDate();
-						happenedLbl = "Done on: ";
+						happenedLbl = " (Done date)";
 					} else if (activityNode.hasProperty(Property.JCR_CREATED)) {
 						happened = activityNode.getProperty(
 								Property.JCR_CREATED).getDate();
-						happenedLbl = "Created on: ";
+						happenedLbl = " (Creation date)";
 					}
 					boolean addUpdateDt = happened == null;
 					if (!addUpdateDt) {
@@ -368,11 +368,11 @@ public class ActivityTable extends Composite implements ArgeoNames {
 							addUpdateDt = lastMod.after(date);
 					}
 					if (addUpdateDt)
-						builder.append("Last update: ")
-								.append(funkyFormat(lastMod)).append("<br />");
+						builder.append(funkyFormat(lastMod))
+								.append(" (Last update)").append("<br />");
 					if (happened != null)
-						builder.append(happenedLbl).append(
-								funkyFormat(happened));
+						builder.append(funkyFormat(happened)).append(
+								happenedLbl);
 				}
 				return builder.toString();
 			} catch (RepositoryException e) {
@@ -408,25 +408,25 @@ public class ActivityTable extends Composite implements ArgeoNames {
 						value = getDNameFromProp(activityNode,
 								PeopleNames.PEOPLE_CLOSED_BY);
 						if (EclipseUiUtils.notEmpty(value))
-							builder.append("Done by: ").append(value)
+							builder.append(value).append(" (Closed by)")
 									.append("<br />");
 						value = activityService
 								.getAssignedToDisplayName(activityNode);
 						if (EclipseUiUtils.notEmpty(value))
-							builder.append("Assigned to: ").append(value)
+							builder.append(value).append(" (Assignee)")
 									.append("<br />");
 					} else {
 						value = activityService
 								.getAssignedToDisplayName(activityNode);
 						if (EclipseUiUtils.notEmpty(value))
-							builder.append("Assigned to: ").append(value)
+							builder.append(value).append(" (Assignee)")
 									.append("<br />");
 
 						value = JcrUiUtils.get(activityNode,
 								Property.JCR_LAST_MODIFIED_BY);
 						if (EclipseUiUtils.notEmpty(value))
-							builder.append("Last updated by: ").append(
-									getDisplayName(value));
+							builder.append(getDisplayName(value)).append(
+									" (Last updater)");
 					}
 				} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
 					String reporter = getDNameFromProp(activityNode,
@@ -439,11 +439,11 @@ public class ActivityTable extends Composite implements ArgeoNames {
 								Property.JCR_CREATED_BY);
 
 					if (EclipseUiUtils.notEmpty(reporter))
-						builder.append("Reported by: ").append(reporter)
+						builder.append(reporter).append(" (Reporter)")
 								.append("<br />");
 					if (EclipseUiUtils.notEmpty(updater)
 							&& (reporter == null || !reporter.equals(updater)))
-						builder.append("Last updated by: ").append(updater)
+						builder.append(updater).append(" (Last updater)")
 								.append("<br />");
 				}
 				return builder.toString();
