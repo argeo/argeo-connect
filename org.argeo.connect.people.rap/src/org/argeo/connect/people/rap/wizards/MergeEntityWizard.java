@@ -215,7 +215,8 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 							else
 								chosenItemLabel.setText(overviewLP
 										.getText(masterNode));
-							chosenItemLabel.getParent().getParent().layout(true, true);
+							chosenItemLabel.getParent().getParent()
+									.layout(true, true);
 						}
 					});
 
@@ -233,18 +234,10 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 				} else {
 					Object obj = ((IStructuredSelection) evt.getSelection())
 							.getFirstElement();
-					// try {
 					if (obj instanceof Row)
 						masterNode = JcrUiUtils
 								.getNode((Row) obj, selectorName);
-
-					// masterNode = ((Row) obj).getNode(selectorName);
 					getContainer().showPage(getNextPage());
-
-					// } catch (RepositoryException e) {
-					// throw new PeopleException(
-					// "unable to change master with " + obj, e);
-					// }
 				}
 			}
 		}
@@ -429,17 +422,6 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 				}
 
 				// Update the user interface asynchronously
-				// wait one second so that the monitor & the dialog are
-				// disposed.
-				// Do something later in the UI thread
-				// callingPage.asyncExec(new Runnable() {
-				// public void run() {
-				// callingPage.timerExec(1000, new Runnable() {
-				// @Override
-				// public void run() {
-				// // Refresh list
-				// CommandUtils.callCommand(ForceRefresh.ID);
-				// }});}});
 				Display currDisplay = callingPage.getWorkbenchWindow()
 						.getShell().getDisplay();
 				currDisplay.asyncExec(new Runnable() {

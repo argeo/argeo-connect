@@ -21,6 +21,8 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoMonitor;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -29,12 +31,16 @@ import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.rap.commands.ForceRefresh;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
+import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
+import org.argeo.connect.people.rap.util.Refreshable;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseArgeoMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.security.ui.PrivilegedJob;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -50,7 +56,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
 
 /**
  * Generic wizard to edit the value/title of a tag like property
@@ -61,7 +70,7 @@ import org.eclipse.swt.widgets.Text;
  */
 
 public class EditTagWizard extends Wizard implements PeopleNames {
-	// private final static Log log = LogFactory.getLog(EditTagWizard.class);
+	private final static Log log = LogFactory.getLog(EditTagWizard.class);
 
 	// Context
 	private PeopleService peopleService;
@@ -156,7 +165,6 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 
 			new UpdateTagAndInstancesJob(resourceService, tagInstance,
 					newTitle, newDesc).schedule();
-
 			return true;
 		} catch (RepositoryException re) {
 			throw new PeopleException(
@@ -320,13 +328,13 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 		private String tagPath;
 		private String newTitle, newDesc;
 
+		// To refresh the calling editor after refresh
+		private String tagJcrId;
+		private IWorkbenchPage callingPage;
+
 		public UpdateTagAndInstancesJob(ResourceService resourceService,
 				Node tagInstance, String newTitle, String newDesc) {
 			super("Updating");
-			// // Must be called *before* the job is scheduled so that a
-			// progress
-			// // window appears.
-			// setUser(true);
 			this.resourceService = resourceService;
 			this.newTitle = newTitle;
 			this.newDesc = newDesc;
@@ -337,6 +345,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 				throw new PeopleException("Unable to init "
 						+ "tag instance batch update for " + tagId, e);
 			}
+			callingPage = PeopleRapUtils.getActivePage();
 		}
 
 		protected IStatus doRun(IProgressMonitor progressMonitor) {
@@ -359,15 +368,17 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 						tagInstance.setProperty(Property.JCR_DESCRIPTION,
 								newDesc);
 					else if (tagInstance.hasProperty(Property.JCR_DESCRIPTION))
-						tagInstance.getProperty(Property.JCR_DESCRIPTION).remove();
+						tagInstance.getProperty(Property.JCR_DESCRIPTION)
+								.remove();
 
 					// Do we really want a new version at each and every time
-					if (tagInstance
-							.isNodeType(NodeType.MIX_VERSIONABLE))
+					if (tagInstance.isNodeType(NodeType.MIX_VERSIONABLE))
 						JcrUiUtils.checkPoint(tagInstance);
 					else
 						tagInstance.getSession().save();
 					monitor.worked(1);
+					tagJcrId = tagInstance.getIdentifier();
+					doRefresh();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -377,6 +388,32 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 				JcrUtils.logoutQuietly(session);
 			}
 			return Status.OK_STATUS;
+		}
+
+		private void doRefresh() {
+			// Update the user interface asynchronously
+			Display currDisplay = callingPage.getWorkbenchWindow().getShell()
+					.getDisplay();
+			currDisplay.asyncExec(new Runnable() {
+				public void run() {
+					try {
+						// Refresh tag editor if it is still opened
+						EntityEditorInput eei = new EntityEditorInput(tagJcrId);
+						IEditorPart iep = callingPage.findEditor(eei);
+						if (iep != null && iep instanceof Refreshable)
+							((Refreshable) iep).forceRefresh(null);
+
+						// Refresh list
+						CommandUtils.callCommand(ForceRefresh.ID);
+					} catch (Exception e) {
+						// Fail without notifying the user
+						log.error("Unable to refresh the workbench after merge");
+						e.printStackTrace();
+					}
+				}
+
+			});
+
 		}
 	}
 }

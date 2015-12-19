@@ -45,8 +45,6 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.client.service.UrlLauncher;
 import org.eclipse.swt.SWT;
@@ -125,8 +123,10 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 				new JcrHtmlLabelProvider(PEOPLE_TAGS), 300));
 	}
 
-	protected void afterNameUpdate() {
-		String name = JcrUiUtils.get(mailingList, Property.JCR_TITLE);
+	protected void afterNameUpdate(String name) {
+		if (EclipseUiUtils.isEmpty(name))
+			name = JcrUiUtils.get(mailingList, Property.JCR_TITLE);
+
 		if (EclipseUiUtils.notEmpty(name)) {
 			setPartName(name);
 			((EntityEditorInput) getEditorInput())
@@ -145,7 +145,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		form = toolkit.createForm(parent);
 		Composite main = form.getBody();
 		createMainLayout(main);
-		afterNameUpdate();
+		afterNameUpdate(null);
 	}
 
 	protected void createMainLayout(Composite parent) {
@@ -184,17 +184,14 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
 
-					Wizard wizard = new EditTagWizard(peopleService,
+					EditTagWizard wizard = new EditTagWizard(peopleService,
 							peopleWorkbenchService, mailingList,
 							PeopleTypes.PEOPLE_MAILING_LIST,
 							PeopleNames.PEOPLE_MAILING_LISTS);
 
 					NoProgressBarWizardDialog dialog = new NoProgressBarWizardDialog(
 							titleROLbl.getShell(), wizard);
-					int result = dialog.open();
-					if (result == WizardDialog.OK) {
-						afterNameUpdate();
-					}
+					dialog.open();
 				}
 			});
 		}
@@ -378,6 +375,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 
 	@Override
 	public void forceRefresh(Object object) {
+		afterNameUpdate(null);
 		refreshFilteredList();
 	}
 

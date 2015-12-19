@@ -44,8 +44,6 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -110,8 +108,9 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 				new JcrHtmlLabelProvider(PEOPLE_TAGS), 300));
 	}
 
-	protected void afterNameUpdate() {
-		String name = JcrUiUtils.get(node, Property.JCR_TITLE);
+	protected void afterNameUpdate(String name) {
+		if (EclipseUiUtils.isEmpty(name))
+			name = JcrUiUtils.get(node, Property.JCR_TITLE);
 		if (EclipseUiUtils.notEmpty(name)) {
 			setPartName(name);
 			((EntityEditorInput) getEditorInput())
@@ -135,7 +134,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		Form form = toolkit.createForm(parent);
 		Composite main = form.getBody();
 		createMainLayout(main);
-		afterNameUpdate();
+		afterNameUpdate(null);
 	}
 
 	protected void createMainLayout(Composite parent) {
@@ -173,16 +172,13 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
-					Wizard wizard = new EditTagWizard(peopleService,
+					EditTagWizard wizard = new EditTagWizard(peopleService,
 							peopleWorkbenchService, getNode(),
 							PeopleConstants.RESOURCE_TAG,
 							PeopleNames.PEOPLE_TAGS);
 					NoProgressBarWizardDialog dialog = new NoProgressBarWizardDialog(
 							titleROLbl.getShell(), wizard);
-					int result = dialog.open();
-					if (result == WizardDialog.OK) {
-						afterNameUpdate();
-					}
+					dialog.open();
 				}
 			});
 		}
@@ -264,44 +260,6 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 						+ ").");
 			}
 
-			// QueryManager queryManager = session.getWorkspace()
-			// .getQueryManager();
-			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			// Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
-			// PeopleTypes.PEOPLE_ENTITY);
-			//
-			// String filter = filterTxt.getText();
-			// String currVal = JcrUiUtils.get(getNode(),
-			// Property.JCR_TITLE);
-			// StaticOperand so = factory.literal(session.getValueFactory()
-			// .createValue(currVal));
-			// DynamicOperand dyo = factory.propertyValue(
-			// source.getSelectorName(), PEOPLE_TAGS);
-			// Constraint constraint = factory.comparison(dyo,
-			// QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
-			//
-			// if (JcrUiUtils.checkNotEmptyString(filter)) {
-			// String[] strs = filter.trim().split(" ");
-			// for (String token : strs) {
-			// StaticOperand soTmp = factory.literal(session
-			// .getValueFactory().createValue("*" + token + "*"));
-			// Constraint currC = factory.fullTextSearch(
-			// source.getSelectorName(), null, soTmp);
-			// constraint = JcrUiUtils.localAnd(factory, constraint,
-			// currC);
-			// }
-			// }
-			//
-			// Ordering order = factory.ascending(factory.propertyValue(
-			// source.getSelectorName(), Property.JCR_TITLE));
-			// Ordering[] orderings = { order };
-			// QueryObjectModel query = factory.createQuery(source, constraint,
-			// orderings, null);
-			// QueryResult result = query.execute();
-			// Row[] rows =
-			// JcrUiUtils.rowIteratorToArray(result.getRows());
-			// setViewerInput(rows);
-
 		} catch (RepositoryException e) {
 			throw new PeopleException(
 					"Unable to list entities with static filter for tag "
@@ -353,6 +311,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 	@Override
 	public void forceRefresh(Object object) {
+		afterNameUpdate(null);
 		refreshFilteredList();
 	}
 
