@@ -12,6 +12,7 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.parts.TaskBasicHeader;
 import org.argeo.connect.people.rap.editors.tabs.ActivityList;
 import org.argeo.connect.people.rap.editors.util.AbstractPeopleCTabEditor;
+import org.argeo.connect.people.rap.editors.util.LazyCTabControl;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;
@@ -27,7 +28,7 @@ public class TaskEditor extends AbstractPeopleCTabEditor {
 
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".taskEditor";
 
-	// context
+	// Context
 	private Node task;
 
 	public void init(IEditorSite site, IEditorInput input)
@@ -55,15 +56,14 @@ public class TaskEditor extends AbstractPeopleCTabEditor {
 	}
 
 	@Override
-	protected void populateTabFolder(CTabFolder tabFolder) {
+	protected void populateTabFolder(CTabFolder folder) {
 		// Activities and tasks
 		String tooltip = "Activities and tasks related to "
 				+ JcrUtils.get(task, Property.JCR_TITLE);
-		Composite innerPannel = addTabToFolder(tabFolder, PeopleRapConstants.CTAB_COMP_STYLE,
-				"Activity log", PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
-		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite activitiesCmp = new ActivityList(this, innerPannel, SWT.NONE,
-				getPeopleService(), getPeopleWorkbenchService(), task);
+		LazyCTabControl activitiesCmp = new ActivityList(folder, SWT.NO_FOCUS,
+				this, getPeopleService(), getPeopleWorkbenchService(), task);
 		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
+		addLazyTabToFolder(folder, activitiesCmp, "Activity log",
+				PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 	}
 }

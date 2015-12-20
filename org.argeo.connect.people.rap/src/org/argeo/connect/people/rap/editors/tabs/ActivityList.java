@@ -22,6 +22,7 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.editors.parts.ActivityTable;
 import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.rap.wizards.NewSimpleTaskWizard;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -47,7 +48,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
-public class ActivityList extends Composite {
+public class ActivityList extends LazyCTabControl {
 	private static final long serialVersionUID = 5906357274592489553L;
 
 	// private final static Log log = LogFactory.getLog(ActivityList.class);
@@ -64,8 +65,14 @@ public class ActivityList extends Composite {
 	private MyFormPart myFormPart;
 	private MyActivityTableCmp activityTable;
 
-	public ActivityList(AbstractPeopleEditor editor, Composite parent,
-			int style, PeopleService peopleService,
+	@Override
+	public void refreshPartControl() {
+		myFormPart.refresh();
+		ActivityList.this.layout(true, true);
+	}
+
+	public ActivityList(Composite parent, int style,
+			AbstractPeopleEditor editor, PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, Node entity) {
 		super(parent, style);
 		this.editor = editor;
@@ -74,12 +81,10 @@ public class ActivityList extends Composite {
 		activityService = peopleService.getActivityService();
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.entity = entity;
-
-		// Populate
-		populate(this);
 	}
 
-	private void populate(Composite parent) {
+	@Override
+	public void createPartControl(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		try {
 			Composite addCmp = null;

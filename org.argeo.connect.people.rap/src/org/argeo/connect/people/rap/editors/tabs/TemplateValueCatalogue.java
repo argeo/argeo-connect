@@ -1,9 +1,7 @@
 package org.argeo.connect.people.rap.editors.tabs;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -30,15 +28,14 @@ import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.commands.ChangeEditingState;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.dialogs.NoProgressBarWizardDialog;
 import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.rap.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.rap.util.AbstractPanelFormPart;
-import org.argeo.connect.people.rap.util.Refreshable;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
@@ -71,11 +68,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
  * A composite to include in a form and that enables edition of the values of a
@@ -85,7 +78,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * perimeter on which the current catalog might apply (typically, if we use two
  * distinct nomenclature for a same property that are bound to a given projects)
  */
-public class TemplateValueCatalogue extends Composite {
+public class TemplateValueCatalogue extends LazyCTabControl {
 	private static final long serialVersionUID = -5018569293721397600L;
 
 	// Context
@@ -95,27 +88,33 @@ public class TemplateValueCatalogue extends Composite {
 	private final String propertyName;
 	private final String taggableType;
 
-	// UI Context
-	private final IWorkbench workbench;
-	private final FormToolkit toolkit;
+	// UI Context private final FormToolkit toolkit;
 	private final AbstractPeopleEditor editor;
-	private final MyFormPart myFormPart;
+	private MyFormPart myFormPart;
 
-	public TemplateValueCatalogue(IWorkbench workbench,
-			AbstractPeopleEditor editor, Composite parent, int style,
-			PeopleService peopleService,
+	public TemplateValueCatalogue(Composite parent, int style,
+			AbstractPeopleEditor editor, PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, Node templateNode,
 			String propertyName, String taggableType) {
 		super(parent, style);
-		this.workbench = workbench;
 		this.editor = editor;
-		this.toolkit = editor.getFormToolkit();
 		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.templateNode = templateNode;
 		this.propertyName = propertyName;
 		this.taggableType = taggableType;
-		this.setLayout(EclipseUiUtils.noSpaceGridLayout());
+	}
+
+	@Override
+	public void refreshPartControl() {
+		myFormPart.refresh();
+		layout(true, true);
+	}
+
+	@Override
+	public void createPartControl(Composite parent) {
+
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		myFormPart = new MyFormPart(this);
 		myFormPart.initialize(editor.getManagedForm());
 		editor.getManagedForm().addPart(myFormPart);
@@ -134,7 +133,8 @@ public class TemplateValueCatalogue extends Composite {
 			Button addBtn = null;
 			if (isEditing()) {
 				panel.setLayout(new GridLayout());
-				addBtn = toolkit.createButton(panel, "Add a value", SWT.PUSH);
+				addBtn = new Button(panel, SWT.PUSH);
+				addBtn.setText("Add a value");
 				configureAddValueBtn(this, addBtn);
 			} else {
 				GridLayout gl = EclipseUiUtils.noSpaceGridLayout();
@@ -309,22 +309,24 @@ public class TemplateValueCatalogue extends Composite {
 								+ templateNode, re);
 					}
 
-//					// Small workaround to keep the calling editor in a clean a
-//					// logical state regarding its check out status
-//					IWorkbench wb = PlatformUI.getWorkbench();
-//					IEditorPart editor = wb.getActiveWorkbenchWindow()
-//							.getActivePage().getActiveEditor();
-//					if (editor != null && editor instanceof Refreshable) {
-//						// Cancel and Check In
-//						Map<String, String> params = new HashMap<String, String>();
-//						params.put(ChangeEditingState.PARAM_NEW_STATE,
-//								ChangeEditingState.NOT_EDITING);
-//						params.put(ChangeEditingState.PARAM_PRIOR_ACTION,
-//								ChangeEditingState.PRIOR_ACTION_CANCEL);
-//						CommandUtils.callCommand(ChangeEditingState.ID);
-//						((Refreshable) editor).forceRefresh(null);
-//
-//					}
+					// // Small workaround to keep the calling editor in a clean
+					// a
+					// // logical state regarding its check out status
+					// IWorkbench wb = PlatformUI.getWorkbench();
+					// IEditorPart editor = wb.getActiveWorkbenchWindow()
+					// .getActivePage().getActiveEditor();
+					// if (editor != null && editor instanceof Refreshable) {
+					// // Cancel and Check In
+					// Map<String, String> params = new HashMap<String,
+					// String>();
+					// params.put(ChangeEditingState.PARAM_NEW_STATE,
+					// ChangeEditingState.NOT_EDITING);
+					// params.put(ChangeEditingState.PARAM_PRIOR_ACTION,
+					// ChangeEditingState.PRIOR_ACTION_CANCEL);
+					// CommandUtils.callCommand(ChangeEditingState.ID);
+					// ((Refreshable) editor).forceRefresh(null);
+					//
+					// }
 				}
 			}
 		}

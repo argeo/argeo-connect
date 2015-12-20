@@ -104,9 +104,7 @@ public abstract class GroupEditor extends AbstractPeopleCTabEditor {
 			editPart.initialize(getManagedForm());
 			getManagedForm().addPart(editPart);
 		} catch (Exception e) {
-			// } catch (RepositoryException e) {
 			throw new PeopleException("Cannot create main info section", e);
 		}
 	}
-
 }

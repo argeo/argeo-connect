@@ -23,6 +23,7 @@ import org.argeo.connect.people.rap.editors.tabs.ActivityList;
 import org.argeo.connect.people.rap.editors.tabs.ContactList;
 import org.argeo.connect.people.rap.editors.tabs.JobList;
 import org.argeo.connect.people.rap.editors.util.AbstractPeopleCTabEditor;
+import org.argeo.connect.people.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.util.JcrUiUtils;
@@ -113,45 +114,29 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements
 		// Contact informations
 		String tooltip = "Contact information for "
 				+ JcrUtils.get(person, Property.JCR_TITLE);
-		Composite innerPannel = addTabToFolder(folder, PeopleRapConstants.CTAB_COMP_STYLE,
-				"Contact details", PeopleRapConstants.CTAB_CONTACT_DETAILS,
-				tooltip);
-		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		ContactList cpc = new ContactList(this, innerPannel, SWT.NO_FOCUS,
+		LazyCTabControl cpc = new ContactList(folder, SWT.NO_FOCUS, this,
 				getNode(), getPeopleService(), getPeopleWorkbenchService());
 		cpc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		addLazyTabToFolder(folder, cpc, "Contact details",
+				PeopleRapConstants.CTAB_CONTACT_DETAILS, tooltip);
 
 		// Activities and tasks
 		tooltip = "Activities and tasks related to "
 				+ JcrUtils.get(person, Property.JCR_TITLE);
-		innerPannel = addTabToFolder(folder, PeopleRapConstants.CTAB_COMP_STYLE, "Activity log",
-				PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
-		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite activitiesCmp = new ActivityList(this, innerPannel, SWT.NONE,
-				getPeopleService(), getPeopleWorkbenchService(), person);
+		LazyCTabControl activitiesCmp = new ActivityList(folder, SWT.NO_FOCUS,
+				this, getPeopleService(), getPeopleWorkbenchService(), person);
 		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
+		addLazyTabToFolder(folder, activitiesCmp, "Activity log",
+				PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 
 		// Jobs panel
 		tooltip = "Organisations linked to "
 				+ JcrUtils.get(person, Property.JCR_TITLE);
-		innerPannel = addTabToFolder(folder, PeopleRapConstants.CTAB_COMP_STYLE, "Organisations",
-				PeopleRapConstants.CTAB_JOBS, tooltip);
-		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite crewCmp = new JobList(this, innerPannel, SWT.NONE,
+		LazyCTabControl crewCmp = new JobList(folder, SWT.NO_FOCUS, this,
 				getPeopleService(), getPeopleWorkbenchService(), person);
 		crewCmp.setLayoutData(EclipseUiUtils.fillAll());
-
-		// // History panel
-		// tooltip = "History of information about "
-		// + JcrUtils.get(person, Property.JCR_TITLE);
-		// innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "History",
-		// PeopleRapConstants.CTAB_HISTORY, tooltip);
-		// innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		// Composite historyLogCmp = new HistoryLog(this, innerPannel, SWT.NONE,
-		// getPeopleService(), person);
-		// historyLogCmp.setLayoutData(EclipseUiUtils.fillAll());
-		//
-		// // folder.layout();
+		addLazyTabToFolder(folder, crewCmp, "Organisations",
+				PeopleRapConstants.CTAB_JOBS, tooltip);
 	}
 
 	protected void populateTitleComposite(Composite parent) {

@@ -12,6 +12,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.composites.BankAccountComposite;
 import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.OrgJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -33,7 +34,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * 
  * TODO Legacy code. Should be reviewed and enhanced.
  */
-public class OrgAdminInfo extends Composite {
+public class OrgAdminInfo extends LazyCTabControl {
 	private static final long serialVersionUID = -7033074223243935324L;
 
 	private final AbstractPeopleEditor editor;
@@ -41,28 +42,34 @@ public class OrgAdminInfo extends Composite {
 	private final Node entity;
 
 	// this page UI Objects
+	private AbstractFormPart notePart;
+	private AbstractFormPart formPart;
 
-	public OrgAdminInfo(AbstractPeopleEditor editor, Composite parent,
-			int style, Node entity) {
+	public OrgAdminInfo(Composite parent, int style,
+			AbstractPeopleEditor editor, Node entity) {
 		super(parent, style);
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
 		this.entity = entity;
-
-		// Populate
-		populateLegalInfoPanel(this);
 	}
 
-	public void populateLegalInfoPanel(Composite parent) {
+	@Override
+	public void refreshPartControl() {
+		notePart.refresh();
+		formPart.refresh();
+		layout(true, true);
+	}
+
+	@Override
+	public void createPartControl(Composite parent) {
 		parent.setLayout(new GridLayout());
 
 		Composite adminInfoCmp = toolkit.createComposite(parent);
-		adminInfoCmp
-				.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		adminInfoCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		populateAdminInfoCmp(adminInfoCmp);
 
 		Composite payAccCmp = toolkit.createComposite(parent);
-		payAccCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		payAccCmp.setLayoutData(EclipseUiUtils.fillAll());
 		populateBankAccountGroup(payAccCmp);
 	}
 
@@ -86,7 +93,7 @@ public class OrgAdminInfo extends Composite {
 		final Text vatIDTxt = toolkit.createText(parent, "", SWT.BORDER);
 		vatIDTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		final AbstractFormPart notePart = new AbstractFormPart() {
+		notePart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
 				PeopleRapUtils.refreshFormTextWidget(editor, legalNameTxt,
@@ -114,10 +121,9 @@ public class OrgAdminInfo extends Composite {
 					if (JcrUiUtils.setJcrProperty(entity,
 							PeopleNames.PEOPLE_LEGAL_NAME, PropertyType.STRING,
 							legalNameTxt.getText())) {
-						Boolean defineDistinct = JcrUiUtils
-								.getBooleanValue(
-										entity,
-										PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME);
+						Boolean defineDistinct = JcrUiUtils.getBooleanValue(
+								entity,
+								PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 						if (defineDistinct == null || !defineDistinct)
 							entity.setProperty(Property.JCR_TITLE,
 									legalNameTxt.getText());
@@ -139,7 +145,7 @@ public class OrgAdminInfo extends Composite {
 		group.setText("Payment account");
 		group.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
-		AbstractFormPart formPart = new AbstractFormPart() {
+		formPart = new AbstractFormPart() {
 			public void refresh() {
 				// TODO Manage multiple bank account
 				super.refresh();

@@ -18,6 +18,7 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.tabs.TemplateValueCatalogue;
 import org.argeo.connect.people.rap.editors.util.AbstractPeopleCTabEditor;
 import org.argeo.connect.people.rap.editors.util.IVersionedItemEditor;
+import org.argeo.connect.people.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -71,55 +72,47 @@ public class TemplateEditor extends AbstractPeopleCTabEditor implements
 							+ nodeTemplate, e);
 		}
 
-		String shortName = resourceService
-				.getItemDefaultEnLabel(JcrUiUtils.get(nodeTemplate,
-						PeopleNames.PEOPLE_TEMPLATE_ID));
+		String shortName = resourceService.getItemDefaultEnLabel(JcrUiUtils
+				.get(nodeTemplate, PeopleNames.PEOPLE_TEMPLATE_ID));
 		setPartName(shortName);
 		resourceService = getPeopleService().getResourceService();
 	}
 
 	protected void populateTabFolder(CTabFolder folder) {
 		String tooltip;
-		Composite innerPannel;
-
 		try {
 			PropertyIterator pit = nodeTemplate.getProperties();
 
 			loop: while (pit.hasNext()) {
 				Property property = pit.nextProperty();
-
 				String propName = property.getName();
 
 				// TODO make this more robust
 				if (!property.isMultiple() || propName.startsWith("jcr:"))
 					continue loop;
-
 				// TODO enhance
 				String propLabel = propName;
 
 				tooltip = "Manage and edit the \"" + propLabel + "\" catalogue";
-				innerPannel = addTabToFolder(folder, PeopleRapConstants.CTAB_COMP_STYLE,
-						propLabel, PeopleRapConstants.CTAB_EDIT_CATALOGUE + "/"
-								+ propName, tooltip);
-				innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-				Composite oneBusinessPropertyCatalogue = new TemplateValueCatalogue(
-						getSite().getWorkbenchWindow().getWorkbench(), this,
-						innerPannel, SWT.NO_FOCUS, getPeopleService(),
+				LazyCTabControl oneBusinessPropertyCatalogue = new TemplateValueCatalogue(
+						folder, SWT.NO_FOCUS, this, getPeopleService(),
 						getPeopleWorkbenchService(), nodeTemplate, propName,
 						JcrUiUtils.get(nodeTemplate,
 								PeopleNames.PEOPLE_TEMPLATE_ID));
-				oneBusinessPropertyCatalogue.setLayoutData(EclipseUiUtils.fillAll());
+				oneBusinessPropertyCatalogue.setLayoutData(EclipseUiUtils
+						.fillAll());
+				addLazyTabToFolder(folder, oneBusinessPropertyCatalogue,
+						propLabel, PeopleRapConstants.CTAB_EDIT_CATALOGUE + "/"
+								+ propName, tooltip);
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"unable to create property tabs for node template "
-							+ nodeTemplate, e);
+			throw new PeopleException("unable to create property "
+					+ "tabs for node template " + nodeTemplate, e);
 		}
 	}
 
 	@Override
 	protected void populateHeader(final Composite parent) {
-
 		try {
 			parent.setLayout(new GridLayout());
 			final Label editionInfoROLbl = getManagedForm().getToolkit()
@@ -143,11 +136,6 @@ public class TemplateEditor extends AbstractPeopleCTabEditor implements
 		}
 	}
 
-	// @Override
-	// protected Boolean deleteParentOnRemove() {
-	// return false;
-	// }
-
 	@Override
 	protected boolean showDeleteButton() {
 		return false;
@@ -160,20 +148,11 @@ public class TemplateEditor extends AbstractPeopleCTabEditor implements
 		@Override
 		public String getText(Object element) {
 			Node node = (Node) element;
-
 			StringBuilder builder = new StringBuilder();
 			builder.append("<span style='font-size:15px;'>");
-
-			// first line
 			builder.append("<b><big>");
-			builder.append(JcrUiUtils.get(node,
-					PeopleNames.PEOPLE_TEMPLATE_ID));
+			builder.append(JcrUiUtils.get(node, PeopleNames.PEOPLE_TEMPLATE_ID));
 			builder.append("</big></b> ");
-			// builder.append("<br/><i>");
-			// builder.append(JcrUiUtils.get(editionInfo,
-			// Property.JCR_DESCRIPTION));
-			// builder.append("</i>");
-			// builder.append(getFromToSnippet(editionInfo));
 			builder.append("</span>");
 			return builder.toString();
 		}

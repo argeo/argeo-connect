@@ -24,6 +24,7 @@ import org.argeo.connect.people.rap.commands.EditJob;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.rap.editors.util.BooleanEditingSupport;
+import org.argeo.connect.people.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.rap.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.rap.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.rap.providers.BasicNodeListContentProvider;
@@ -55,34 +56,41 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * A composite to include in a form and that displays an editable list of jobs
  * or employees
  */
-public class JobList extends Composite {
+public class JobList extends LazyCTabControl {
 	private static final long serialVersionUID = -4736848221960630767L;
 
-	private final FormToolkit toolkit;
+	// Context
 	private final PeopleService peopleService;
 	private final PeopleWorkbenchService peopleWorkbenchService;
+	private final AbstractPeopleEditor editor;
+	private final FormToolkit toolkit;
 	private final Node entity;
 	private final boolean isBackward;
 
 	// UI Objects
-	private final AbstractPeopleEditor editor;
-	private final MyFormPart myFormPart;
+	private MyFormPart myFormPart;
 
-	public JobList(AbstractPeopleEditor editor, Composite parent, int style,
+	public JobList(Composite parent, int style, AbstractPeopleEditor editor,
 			PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, Node entity) {
 		super(parent, style);
-
 		toolkit = editor.getFormToolkit();
 		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.entity = entity;
-
+		this.editor = editor;
 		// Participations are stored in the projects.
 		isBackward = JcrUiUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG);
+	}
 
-		// Populate
-		this.editor = editor;
+	@Override
+	public void refreshPartControl() {
+		myFormPart.refresh();
+		layout(true, true);
+	}
+
+	@Override
+	public void createPartControl(Composite parent) {
 		myFormPart = new MyFormPart(this);
 		myFormPart.initialize(editor.getManagedForm());
 		editor.getManagedForm().addPart(myFormPart);
@@ -245,12 +253,11 @@ public class JobList extends Composite {
 				Node link = (Node) obj;
 				Node toOpen;
 				if (isBackward) {
-					toOpen = JcrUiUtils.getParent(JcrUiUtils
-							.getParent(link));
+					toOpen = JcrUiUtils.getParent(JcrUiUtils.getParent(link));
 				} else {
-					toOpen = peopleService.getEntityByUid(JcrUiUtils
-							.getSession(entity), JcrUiUtils.get(link,
-							PeopleNames.PEOPLE_REF_UID));
+					toOpen = peopleService.getEntityByUid(
+							JcrUiUtils.getSession(entity),
+							JcrUiUtils.get(link, PeopleNames.PEOPLE_REF_UID));
 				}
 				CommandUtils.callCommand(
 						peopleWorkbenchService.getOpenEntityEditorCmdId(),

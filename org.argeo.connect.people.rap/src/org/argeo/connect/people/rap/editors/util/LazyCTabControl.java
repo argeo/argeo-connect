@@ -15,12 +15,14 @@ public abstract class LazyCTabControl extends Composite {
 
 	@Override
 	public void setVisible(boolean visible) {
+		// Creates the child controls if needed before showing the tab to avoid
+		// moving content
+		if (visible) {
+			if (this.getChildren().length == 0)
+				createPartControl(this);
+			refreshPartControl();
+		}
 		super.setVisible(visible);
-
-		if (this.getChildren().length == 0)
-			createPartControl(this);
-
-		refreshPartControl();
 	}
 
 	public abstract void createPartControl(Composite parent);

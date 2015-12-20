@@ -23,6 +23,7 @@ import org.argeo.connect.people.rap.composites.ContactComposite;
 import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.PeopleJcrUtils;
@@ -48,48 +49,52 @@ import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /** A panel to display contacts */
-public class ContactList extends Composite {
+public class ContactList extends LazyCTabControl {
 	private static final long serialVersionUID = 58381532068661087L;
 
-	// private final static Log log = LogFactory
-	// .getLog(ContactPanelComposite.class);
-
-	private final AbstractPeopleEditor editor;
-	private final FormToolkit toolkit;
-
+	// Context
 	private final PeopleService peopleService;
 	private final PeopleWorkbenchService peopleWorkbenchService;
 	private final Node entity;
-	private ContactFormPart formPart;
 
+	// UI Objects
+	private final AbstractPeopleEditor editor;
+	private final FormToolkit toolkit;
+	private ContactFormPart myFormPart;
 	private Composite innerCmp;
-
 	// Caches the add new contact combo
 	private Combo addContactCmb;
 
-	public ContactList(AbstractPeopleEditor editor, Composite parent,
-			int style, Node entityNode, PeopleService peopleService,
-			PeopleWorkbenchService peopleUiService) {
+	public ContactList(Composite parent, int style,
+			AbstractPeopleEditor editor, Node entityNode,
+			PeopleService peopleService, PeopleWorkbenchService peopleUiService) {
 		super(parent, style);
-
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
 		this.entity = entityNode;
 		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleUiService;
+	}
 
-		this.setLayout(new GridLayout());
+	@Override
+	public void refreshPartControl() {
+		myFormPart.refresh();
+		layout(true, true);
+	}
 
-		// Populate
+	@Override
+	public void createPartControl(Composite parent) {
+		parent.setLayout(new GridLayout());
 		ScrolledPage scrolled = new ScrolledPage(this, SWT.NO_FOCUS);
 		scrolled.setLayoutData(EclipseUiUtils.fillAll());
 		scrolled.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		innerCmp = new Composite(scrolled, SWT.NO_FOCUS);
 		innerCmp.setLayoutData(EclipseUiUtils.fillAll());
 		innerCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		formPart = new ContactFormPart();
-		formPart.initialize(editor.getManagedForm());
-		editor.getManagedForm().addPart(formPart);
+
+		myFormPart = new ContactFormPart();
+		myFormPart.initialize(editor.getManagedForm());
+		editor.getManagedForm().addPart(myFormPart);
 	}
 
 	private class ContactFormPart extends AbstractFormPart {
@@ -112,8 +117,7 @@ public class ContactList extends Composite {
 				if (checkedOut) {
 					newContactCmp = toolkit.createComposite(innerCmp,
 							SWT.NO_FOCUS);
-					gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
-					newContactCmp.setLayoutData(gd);
+					newContactCmp.setLayoutData(EclipseUiUtils.fillWidth());
 					populateAddContactPanel(newContactCmp);
 				}
 
@@ -191,11 +195,11 @@ public class ContactList extends Composite {
 						if (JcrUiUtils.isNodeType(currNode,
 								PeopleTypes.PEOPLE_ADDRESS))
 							new ContactAddressComposite(parent, SWT.NO_FOCUS,
-									editor, formPart, peopleService,
+									editor, myFormPart, peopleService,
 									peopleWorkbenchService, currNode, entity);
 						else
 							new ContactComposite(parent, SWT.NO_FOCUS, editor,
-									formPart, currNode, entity,
+									myFormPart, currNode, entity,
 									peopleWorkbenchService, peopleService);
 					}
 				}
@@ -221,7 +225,7 @@ public class ContactList extends Composite {
 		notesTxt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		PeopleRapUtils.refreshFormTextWidget(editor, notesTxt, entity,
 				Property.JCR_DESCRIPTION);
-		PeopleRapUtils.addTxtModifyListener(formPart, notesTxt, entity,
+		PeopleRapUtils.addTxtModifyListener(myFormPart, notesTxt, entity,
 				Property.JCR_DESCRIPTION, PropertyType.STRING);
 	}
 
@@ -487,8 +491,8 @@ public class ContactList extends Composite {
 		PeopleJcrUtils.createContact(peopleService, entity, contactType, name,
 				value, isPrimary, nature, category, label);
 		addContactCmb.select(0);
-		formPart.markDirty();
-		formPart.refresh();
+		myFormPart.markDirty();
+		myFormPart.refresh();
 	}
 
 	private Control createAddressWidgets(Composite parent,
@@ -543,8 +547,8 @@ public class ContactList extends Composite {
 						stateTxt.getText(), countryDD.getText(),
 						geoPointTxt.getText(), isPrimary, nature, cat, label);
 				PeopleJcrUtils.updateDisplayAddress(node);
-				formPart.markDirty();
-				formPart.refresh();
+				myFormPart.markDirty();
+				myFormPart.refresh();
 			}
 
 		});
@@ -567,8 +571,8 @@ public class ContactList extends Composite {
 							geoPointTxt.getText(), isPrimary, nature, cat,
 							label);
 					PeopleJcrUtils.updateDisplayAddress(node);
-					formPart.markDirty();
-					formPart.refresh();
+					myFormPart.markDirty();
+					myFormPart.refresh();
 				}
 			}
 		};
@@ -598,8 +602,7 @@ public class ContactList extends Composite {
 			catCmb.select(0);
 
 			final Text valueTxt = createRowDataLT(parent, "Linked company", 200);
-			CmsUtils.style(valueTxt,
-					PeopleStyles.PEOPLE_CLASS_FORCE_BORDER);
+			CmsUtils.style(valueTxt, PeopleStyles.PEOPLE_CLASS_FORCE_BORDER);
 			valueTxt.setEnabled(false);
 
 			final Link chooseOrgLk = new Link(parent, SWT.BOTTOM);
@@ -647,8 +650,8 @@ public class ContactList extends Composite {
 					Node node = PeopleJcrUtils.createWorkAddress(peopleService,
 							entity, selected, isPrimary, cat, label);
 					PeopleJcrUtils.updateDisplayAddress(node);
-					formPart.markDirty();
-					formPart.refresh();
+					myFormPart.markDirty();
+					myFormPart.refresh();
 				}
 			});
 			return catCmb;

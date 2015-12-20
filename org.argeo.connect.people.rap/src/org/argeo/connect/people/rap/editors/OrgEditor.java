@@ -19,6 +19,7 @@ import org.argeo.connect.people.rap.editors.tabs.ContactList;
 import org.argeo.connect.people.rap.editors.tabs.JobList;
 import org.argeo.connect.people.rap.editors.tabs.OrgAdminInfo;
 import org.argeo.connect.people.rap.editors.util.AbstractPeopleCTabEditor;
+import org.argeo.connect.people.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.util.JcrUiUtils;
@@ -42,29 +43,21 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
 
-/**
- * Editor page that display an organisation with corresponding details
- */
+/** Display an organisation with corresponding details */
 public class OrgEditor extends AbstractPeopleCTabEditor {
-	final static Log log = LogFactory.getLog(OrgEditor.class);
-
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".orgEditor";
 
-	// Main business Objects
-	private Node org;
+	final static Log log = LogFactory.getLog(OrgEditor.class);
 
-	// getFormToolkit()s
-	// private ListgetFormToolkit() listTK;
-	// private LegalInfogetFormToolkit() legalTK;
-	// private ActivitygetFormToolkit() activityTK;
+	// Context
+	private Node org;
 
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
 		org = getNode();
 
-		String shortName = JcrUiUtils.get(org,
-				PeopleNames.PEOPLE_LEGAL_NAME);
+		String shortName = JcrUiUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		if (EclipseUiUtils.notEmpty(shortName)) {
 			if (shortName.length() > SHORT_NAME_LENGHT)
 				shortName = shortName.substring(0, SHORT_NAME_LENGHT - 1)
@@ -105,52 +98,38 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 		// Contact informations
 		String tooltip = "Contact information for "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-		Composite innerPannel = addTabToFolder(folder, PeopleRapConstants.CTAB_COMP_STYLE,
-				"Details", PeopleRapConstants.CTAB_CONTACT_DETAILS, tooltip);
-		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		ContactList cpc = new ContactList(this, innerPannel, SWT.NO_FOCUS,
+		LazyCTabControl cpc = new ContactList(folder, SWT.NO_FOCUS, this,
 				getNode(), getPeopleService(), getPeopleWorkbenchService());
-		cpc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		cpc.setLayoutData(EclipseUiUtils.fillAll());
+		addLazyTabToFolder(folder, cpc, "Details",
+				PeopleRapConstants.CTAB_CONTACT_DETAILS, tooltip);
 
 		// Activities and tasks
 		tooltip = "Activities and tasks related to "
 				+ JcrUtils.get(org, Property.JCR_TITLE);
-		innerPannel = addTabToFolder(folder, PeopleRapConstants.CTAB_COMP_STYLE, "Activity log",
-				PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
-		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite activitiesCmp = new ActivityList(this, innerPannel, SWT.NONE,
-				getPeopleService(), getPeopleWorkbenchService(), org);
+		LazyCTabControl activitiesCmp = new ActivityList(folder, SWT.NO_FOCUS,
+				this, getPeopleService(), getPeopleWorkbenchService(), org);
 		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
+		addLazyTabToFolder(folder, activitiesCmp, "Activity log",
+				PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 
 		// Employees
 		tooltip = "Known employees of "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-		innerPannel = addTabToFolder(folder, PeopleRapConstants.CTAB_COMP_STYLE, "Team",
-				PeopleRapConstants.CTAB_EMPLOYEES, tooltip);
-		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite employeesCmp = new JobList(this, innerPannel, SWT.NONE,
+		LazyCTabControl employeesCmp = new JobList(folder, SWT.NO_FOCUS, this,
 				getPeopleService(), getPeopleWorkbenchService(), org);
 		employeesCmp.setLayoutData(EclipseUiUtils.fillAll());
+		addLazyTabToFolder(folder, employeesCmp, "Team",
+				PeopleRapConstants.CTAB_EMPLOYEES, tooltip);
 
 		// Legal informations
 		tooltip = "Legal information for "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-		innerPannel = addTabToFolder(folder, PeopleRapConstants.CTAB_COMP_STYLE, "Admin.",
-				PeopleRapConstants.CTAB_LEGAL_INFO, tooltip);
-		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite legalCmp = new OrgAdminInfo(this, innerPannel, SWT.NONE, org);
+		LazyCTabControl legalCmp = new OrgAdminInfo(folder, SWT.NO_FOCUS, this,
+				org);
 		legalCmp.setLayoutData(EclipseUiUtils.fillAll());
-
-		// History panel
-		// tooltip = "History of information about "
-		// + JcrUtils.get(org, Property.JCR_TITLE);
-		// innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "History",
-		// PeopleRapConstants.CTAB_HISTORY, tooltip);
-		// innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		// Composite historyLogCmp = new HistoryLog(this, innerPannel, SWT.NONE,
-		// getPeopleService(), org);
-		// historyLogCmp.setLayoutData(EclipseUiUtils.fillAll());
-
+		addLazyTabToFolder(folder, legalCmp, "Admin.",
+				PeopleRapConstants.CTAB_LEGAL_INFO, tooltip);
 	}
 
 	protected void populateTitleComposite(final Composite parent) {
@@ -231,9 +210,8 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 						if (!defineDistinct) {
 							String displayName = JcrUiUtils.get(org,
 									PeopleNames.PEOPLE_LEGAL_NAME);
-							JcrUiUtils.setJcrProperty(org,
-									Property.JCR_TITLE, PropertyType.STRING,
-									displayName);
+							JcrUiUtils.setJcrProperty(org, Property.JCR_TITLE,
+									PropertyType.STRING, displayName);
 							displayNameTxt.setText(displayName);
 							displayNameTxt.setEnabled(false);
 						} else

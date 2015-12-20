@@ -24,6 +24,7 @@ import org.argeo.connect.people.core.versioning.ItemDiff;
 import org.argeo.connect.people.core.versioning.VersionDiff;
 import org.argeo.connect.people.core.versioning.VersionUtils;
 import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -41,7 +42,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * A composite to include in a form and that displays the evolutions of a given
  * versionable Node over the time.
  */
-public class HistoryLog extends Composite {
+public class HistoryLog extends LazyCTabControl {
 	private static final long serialVersionUID = -4736848221960630767L;
 	// private final static Log log = LogFactory.getLog(HistoryLog.class);
 
@@ -58,27 +59,26 @@ public class HistoryLog extends Composite {
 
 	public HistoryLog(AbstractPeopleEditor editor, Composite parent, int style,
 			PeopleService peopleService, Node entity) {
-		// PeopleWorkbenchService peopleWorkbenchService,
 		super(parent, style);
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
 		this.peopleService = peopleService;
-		// this.peopleWorkbenchService = peopleWorkbenchService;
 		this.entity = entity;
-
-		// Populate
-		populate(this);
 	}
 
-	private void populate(Composite parent) {
+	@Override
+	public void refreshPartControl() {
+		myFormPart.refresh();
+		layout(true, true);
+	}
 
+	@Override
+	public void createPartControl(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
-		UserAdminService userService = peopleService
-				.getUserAdminService();
+		UserAdminService userService = peopleService.getUserAdminService();
 		// Add info to be able to find the node via the data explorer
 		if (userService.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)) {
-			// || userService.amIInRole(PeopleConstants.ROLE_ADMIN)) {
 			Label label = new Label(parent, SWT.WRAP);
 			CmsUtils.markup(label);
 			GridData gd = EclipseUiUtils.fillWidth();

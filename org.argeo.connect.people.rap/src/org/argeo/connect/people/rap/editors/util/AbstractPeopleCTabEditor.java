@@ -142,9 +142,14 @@ public abstract class AbstractPeopleCTabEditor extends
 	}
 
 	protected void addLazyTabToFolder(CTabFolder tabFolder,
+			LazyCTabControl contentCmp, String label, String id, String tooltip) {
+		addLazyTabToFolder(tabFolder, contentCmp, label, id, tooltip, null);
+	}
+
+	protected void addLazyTabToFolder(CTabFolder tabFolder,
 			LazyCTabControl contentCmp, String label, String id,
 			String tooltip, String afterTabId) {
-		// retrieve index of the existing tab
+		// Retrieve index of the existing tab
 		CTabItem[] items = folder.getItems();
 		int i = 0;
 		if (afterTabId != null)
@@ -154,12 +159,16 @@ public abstract class AbstractPeopleCTabEditor extends
 				if (currId != null && currId.equals(afterTabId))
 					break loop;
 			}
+		else
+			// put last
+			i = items.length;
 
 		CTabItem item;
 		if (i == items.length)
 			item = new CTabItem(tabFolder, PeopleRapConstants.CTAB_COMP_STYLE);
 		else
-			item = new CTabItem(tabFolder, PeopleRapConstants.CTAB_COMP_STYLE, i);
+			item = new CTabItem(tabFolder, PeopleRapConstants.CTAB_COMP_STYLE,
+					i);
 		item.setData(CTAB_INSTANCE_ID, id);
 		item.setText(label);
 		item.setToolTipText(tooltip);
