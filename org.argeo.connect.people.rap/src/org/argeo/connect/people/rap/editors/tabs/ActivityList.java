@@ -21,7 +21,7 @@ import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.editors.parts.ActivityTable;
-import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.rap.wizards.NewSimpleTaskWizard;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -125,8 +125,6 @@ public class ActivityList extends Composite {
 			final MyActivityTableCmp activityTable) {
 		// The Add Activity bar
 		addActivityBar.setLayoutData(EclipseUiUtils.fillWidth());
-		// GridLayout gl = new GridLayout(7, false);
-		// gl.marginHeight = gl.marginWidth = 0;
 		addActivityBar.setLayout(new GridLayout(7, false));
 
 		// Activity type
@@ -196,8 +194,7 @@ public class ActivityList extends Composite {
 		});
 	}
 
-	// ///////////////////////
-	// HELPERS
+	// LOCAL UI HELPERS
 
 	private class ActivityTableDCL implements IDoubleClickListener {
 
@@ -285,8 +282,6 @@ public class ActivityList extends Composite {
 			wizard.setRelatedTo(relatedTo);
 			WizardDialog dialog = new WizardDialog(shell, wizard);
 			dialog.open();
-			// int result = dialog.open();
-			// Node createdTask = wizard.getCreatedTask();
 			session.save();
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to create task node related to "

@@ -26,7 +26,7 @@ import org.argeo.connect.people.rap.PeopleStyles;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
-import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;

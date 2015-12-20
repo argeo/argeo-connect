@@ -2,7 +2,7 @@ package org.argeo.connect.people.rap.commands;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
-import org.argeo.connect.people.rap.editors.utils.SingletonEditorInput;
+import org.argeo.connect.people.rap.editors.util.SingletonEditorInput;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;

@@ -3,8 +3,8 @@ package org.argeo.connect.people.rap.util;
 import javax.jcr.Node;
 
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
-import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor.PeopleManagedForm;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor.PeopleManagedForm;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.AbstractFormPart;
 

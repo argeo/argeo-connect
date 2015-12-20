@@ -19,7 +19,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.editors.utils.AbstractPeopleBasicEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleBasicEditor;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.providers.SimpleLazyContentProvider;
 import org.argeo.connect.people.rap.util.Refreshable;

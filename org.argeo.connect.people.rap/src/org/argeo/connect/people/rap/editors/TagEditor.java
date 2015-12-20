@@ -27,7 +27,7 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.dialogs.NoProgressBarWizardDialog;
-import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
+import org.argeo.connect.people.rap.editors.util.EntityEditorInput;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.people.rap.providers.TagLabelProvider;

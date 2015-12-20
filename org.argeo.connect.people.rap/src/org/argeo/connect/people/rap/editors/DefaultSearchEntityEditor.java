@@ -15,7 +15,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
-import org.argeo.connect.people.rap.editors.utils.AbstractSearchEntityEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractSearchEntityEditor;
 import org.argeo.connect.people.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.util.JcrUiUtils;

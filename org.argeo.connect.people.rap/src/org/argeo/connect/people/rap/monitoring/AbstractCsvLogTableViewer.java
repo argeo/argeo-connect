@@ -15,7 +15,7 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.rap.editors.utils.AbstractPeopleBasicEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleBasicEditor;
 import org.argeo.connect.people.rap.providers.SimpleLazyContentProvider;
 import org.argeo.connect.people.rap.util.Refreshable;
 import org.argeo.eclipse.ui.EclipseUiUtils;

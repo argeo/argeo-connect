@@ -16,7 +16,7 @@ import org.argeo.connect.people.rap.PeopleStyles;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.dialogs.PickUpRelatedDialog;
-import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;

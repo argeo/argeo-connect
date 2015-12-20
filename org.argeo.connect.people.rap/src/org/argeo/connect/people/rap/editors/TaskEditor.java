@@ -11,7 +11,7 @@ import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.parts.TaskBasicHeader;
 import org.argeo.connect.people.rap.editors.tabs.ActivityList;
-import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleCTabEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;
@@ -22,7 +22,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 
 /** Default connect task editor */
-public class TaskEditor extends AbstractEntityCTabEditor {
+public class TaskEditor extends AbstractPeopleCTabEditor {
 	final static Log log = LogFactory.getLog(TaskEditor.class);
 
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".taskEditor";

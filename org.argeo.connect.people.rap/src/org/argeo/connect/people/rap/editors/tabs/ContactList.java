@@ -22,7 +22,7 @@ import org.argeo.connect.people.rap.composites.ContactAddressComposite;
 import org.argeo.connect.people.rap.composites.ContactComposite;
 import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
-import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.PeopleJcrUtils;

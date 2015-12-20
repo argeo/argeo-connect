@@ -3,7 +3,7 @@ package org.argeo.connect.people.rap.commands;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.editors.DefaultSearchEntityEditor;
-import org.argeo.connect.people.rap.editors.utils.SearchNodeEditorInput;
+import org.argeo.connect.people.rap.editors.util.SearchNodeEditorInput;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;

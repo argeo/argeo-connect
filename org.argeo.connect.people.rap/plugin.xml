@@ -289,7 +289,7 @@
 				tooltip="Check Out item for edit">
 				<visibleWhen>
 					<!-- <with variable="activePart">
-							<instanceof value="org.argeo.connect.people.rap.editors.utils.IVersionedItemEditor" />
+							<instanceof value="org.argeo.connect.people.rap.editors.util.IVersionedItemEditor" />
 					</with> --> 
 					<and>
 						<with variable="activePart">
@@ -425,7 +425,7 @@
 						<equals value="checkedOut" />
 					</with>
 					<with variable="activePart">
-						<instanceof value="org.argeo.connect.people.rap.editors.utils.IVersionedItemEditor" />
+						<instanceof value="org.argeo.connect.people.rap.editors.util.IVersionedItemEditor" />
 					</with>
 				</and>
 			</activeWhen>

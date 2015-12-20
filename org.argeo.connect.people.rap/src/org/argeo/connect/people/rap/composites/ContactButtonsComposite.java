@@ -10,7 +10,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleStyles;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.eclipse.swt.SWT;

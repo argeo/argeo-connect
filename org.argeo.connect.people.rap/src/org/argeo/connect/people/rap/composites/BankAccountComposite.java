@@ -4,7 +4,7 @@ import javax.jcr.Node;
 
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.rap.PeopleRapUtils;
-import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;

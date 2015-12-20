@@ -15,7 +15,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.PeopleAbstractDropDown;
-import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;

@@ -15,7 +15,7 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleStyles;
-import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.util.JcrUiUtils;

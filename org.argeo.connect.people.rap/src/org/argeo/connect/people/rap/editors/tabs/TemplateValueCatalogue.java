@@ -34,7 +34,7 @@ import org.argeo.connect.people.rap.commands.ChangeEditingState;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.dialogs.NoProgressBarWizardDialog;
-import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.rap.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.rap.util.AbstractPanelFormPart;

@@ -1,4 +1,4 @@
-package org.argeo.connect.people.rap.editors.utils;
+package org.argeo.connect.people.rap.editors.util;
 
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.resource.ImageDescriptor;

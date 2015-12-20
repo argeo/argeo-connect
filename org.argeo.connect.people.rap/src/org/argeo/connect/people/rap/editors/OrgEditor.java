@@ -18,7 +18,7 @@ import org.argeo.connect.people.rap.editors.tabs.ActivityList;
 import org.argeo.connect.people.rap.editors.tabs.ContactList;
 import org.argeo.connect.people.rap.editors.tabs.JobList;
 import org.argeo.connect.people.rap.editors.tabs.OrgAdminInfo;
-import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleCTabEditor;
 import org.argeo.connect.people.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.util.JcrUiUtils;
@@ -45,7 +45,7 @@ import org.eclipse.ui.forms.AbstractFormPart;
 /**
  * Editor page that display an organisation with corresponding details
  */
-public class OrgEditor extends AbstractEntityCTabEditor {
+public class OrgEditor extends AbstractPeopleCTabEditor {
 	final static Log log = LogFactory.getLog(OrgEditor.class);
 
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".orgEditor";

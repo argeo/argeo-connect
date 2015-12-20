@@ -16,7 +16,7 @@ import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.rap.dialogs.PickUpOrgDialog;
-import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.ui.PeopleUiUtils;

@@ -20,7 +20,7 @@ import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.dialogs.PickUpGroupDialog;
-import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.rap.util.AbstractPanelFormPart;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.util.JcrUiUtils;

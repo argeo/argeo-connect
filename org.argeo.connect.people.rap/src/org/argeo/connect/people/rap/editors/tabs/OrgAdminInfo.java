@@ -11,7 +11,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.composites.BankAccountComposite;
-import org.argeo.connect.people.rap.editors.utils.AbstractPeopleEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.OrgJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;

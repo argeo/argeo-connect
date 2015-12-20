@@ -22,7 +22,7 @@ import org.argeo.connect.people.rap.editors.parts.TagLikeListPart;
 import org.argeo.connect.people.rap.editors.tabs.ActivityList;
 import org.argeo.connect.people.rap.editors.tabs.ContactList;
 import org.argeo.connect.people.rap.editors.tabs.JobList;
-import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleCTabEditor;
 import org.argeo.connect.people.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.util.JcrUiUtils;
@@ -51,7 +51,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
 
 /** Edit a person with corresponding details */
-public class PersonEditor extends AbstractEntityCTabEditor implements
+public class PersonEditor extends AbstractPeopleCTabEditor implements
 		PeopleNames {
 	final static Log log = LogFactory.getLog(PersonEditor.class);
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".personEditor";

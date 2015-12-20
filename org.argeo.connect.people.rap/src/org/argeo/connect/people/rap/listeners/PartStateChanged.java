@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.CmsEditable;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.rap.editors.utils.IVersionedItemEditor;
+import org.argeo.connect.people.rap.editors.util.IVersionedItemEditor;
 import org.argeo.connect.people.rap.util.EditionSourceProvider;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.widgets.Display;

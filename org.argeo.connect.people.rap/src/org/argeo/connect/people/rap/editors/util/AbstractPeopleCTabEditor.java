@@ -1,4 +1,4 @@
-package org.argeo.connect.people.rap.editors.utils;
+package org.argeo.connect.people.rap.editors.util;
 
 import javax.jcr.Property;
 import javax.jcr.nodetype.NodeType;
@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Control;
  * is bound to it. It provides a header with some meta informations and a body
  * to add tabs with further details.
  */
-public abstract class AbstractEntityCTabEditor extends
+public abstract class AbstractPeopleCTabEditor extends
 		AbstractPeopleWithImgEditor implements IVersionedItemEditor {
 
 	/* CONSTANTS */
@@ -57,19 +57,6 @@ public abstract class AbstractEntityCTabEditor extends
 		return tabFolder;
 	}
 
-	protected Composite addTabToFolder(CTabFolder tabFolder, int style,
-			String label, String id, String tooltip) {
-		CTabItem item = new CTabItem(tabFolder, style);
-		item.setData(CTAB_INSTANCE_ID, id);
-		item.setText(label);
-		item.setToolTipText(tooltip);
-		Composite innerPannel = getManagedForm().getToolkit().createComposite(
-				tabFolder, SWT.V_SCROLL);
-		// must set control
-		item.setControl(innerPannel);
-		return innerPannel;
-	}
-
 	@Override
 	protected void addEditButtons(final Composite parent) {
 		if (JcrUiUtils.isNodeType(getNode(), NodeType.MIX_VERSIONABLE)) {
@@ -89,7 +76,7 @@ public abstract class AbstractEntityCTabEditor extends
 							PeopleRapConstants.CTAB_HISTORY, tooltip);
 					innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 					HistoryLog historyLogCmp = new HistoryLog(
-							AbstractEntityCTabEditor.this, innerPannel,
+							AbstractPeopleCTabEditor.this, innerPannel,
 							SWT.NONE, getPeopleService(), getNode());
 					historyLogCmp.setLayoutData(EclipseUiUtils.fillAll());
 					if (!showHistoryBtn.isDisposed()) {
@@ -102,6 +89,19 @@ public abstract class AbstractEntityCTabEditor extends
 				}
 			});
 		}
+	}
+
+	protected Composite addTabToFolder(CTabFolder tabFolder, int style,
+			String label, String id, String tooltip) {
+		CTabItem item = new CTabItem(tabFolder, style);
+		item.setData(CTAB_INSTANCE_ID, id);
+		item.setText(label);
+		item.setToolTipText(tooltip);
+		Composite innerPannel = getManagedForm().getToolkit().createComposite(
+				tabFolder, SWT.V_SCROLL);
+		// must set control
+		item.setControl(innerPannel);
+		return innerPannel;
 	}
 
 	/**

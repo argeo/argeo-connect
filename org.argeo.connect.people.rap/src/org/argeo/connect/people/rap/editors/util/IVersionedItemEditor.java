@@ -1,4 +1,4 @@
-package org.argeo.connect.people.rap.editors.utils;
+package org.argeo.connect.people.rap.editors.util;
 
 /** Enable centralisation of versioned items check-out and in management */
 // @Deprecated

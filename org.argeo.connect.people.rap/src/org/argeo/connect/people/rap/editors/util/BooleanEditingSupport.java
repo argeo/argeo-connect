@@ -1,4 +1,4 @@
-package org.argeo.connect.people.rap.editors.utils;
+package org.argeo.connect.people.rap.editors.util;
 
 import javax.jcr.Node;
 import javax.jcr.PropertyType;

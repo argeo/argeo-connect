@@ -24,7 +24,7 @@ import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.dialogs.AskTitleDescriptionDialog;
-import org.argeo.connect.people.rap.editors.utils.SearchNodeEditorInput;
+import org.argeo.connect.people.rap.editors.util.SearchNodeEditorInput;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.people.rap.util.Refreshable;

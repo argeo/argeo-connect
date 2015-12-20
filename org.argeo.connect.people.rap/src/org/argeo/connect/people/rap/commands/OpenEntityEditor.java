@@ -19,8 +19,8 @@ import org.argeo.connect.people.rap.editors.OrgEditor;
 import org.argeo.connect.people.rap.editors.PersonEditor;
 import org.argeo.connect.people.rap.editors.TagEditor;
 import org.argeo.connect.people.rap.editors.TaskEditor;
-import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
-import org.argeo.connect.people.rap.editors.utils.EntityEditorInput;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleCTabEditor;
+import org.argeo.connect.people.rap.editors.util.EntityEditorInput;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -38,7 +38,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * JCR ID or a business defined UID
  * 
  * If the parameter param.cTabId is set, if the opened editor is of type
- * {@link AbstractEntityCTabEditor}, and if a tab with such an id exists, it is
+ * {@link AbstractPeopleCTabEditor}, and if a tab with such an id exists, it is
  * opened, otherwise it fails silently and open the default state of the
  * corresponding editor
  */
@@ -87,8 +87,8 @@ public class OpenEntityEditor extends AbstractHandler {
 
 				String tabId = event.getParameter(PARAM_CTAB_ID);
 				if (EclipseUiUtils.notEmpty(tabId)
-						&& editor instanceof AbstractEntityCTabEditor)
-					((AbstractEntityCTabEditor) editor).openTabItem(tabId);
+						&& editor instanceof AbstractPeopleCTabEditor)
+					((AbstractPeopleCTabEditor) editor).openTabItem(tabId);
 			}
 		} catch (PartInitException pie) {
 			throw new PeopleException(

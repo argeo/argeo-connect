@@ -10,7 +10,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleRapUtils;
-import org.argeo.connect.people.rap.editors.utils.AbstractEntityCTabEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleCTabEditor;
 import org.argeo.connect.people.rap.providers.GroupLabelProvider;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -29,7 +29,7 @@ import org.eclipse.ui.forms.AbstractFormPart;
 /**
  * Editor page that display a group with corresponding details
  */
-public abstract class GroupEditor extends AbstractEntityCTabEditor {
+public abstract class GroupEditor extends AbstractPeopleCTabEditor {
 	final static Log log = LogFactory.getLog(GroupEditor.class);
 
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".groupEditor";
