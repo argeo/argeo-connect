@@ -29,10 +29,8 @@ import org.eclipse.swt.widgets.Text;
  */
 
 public class NewOrgWizard extends Wizard implements PeopleNames {
-	// private final static Log log = LogFactory.getLog(NewOrgWizard.class);
 
 	// Context
-	// private PeopleService peopleService;
 	private Node org;
 
 	// This page widgets
@@ -42,7 +40,6 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 	private Text legalFormTxt;
 
 	public NewOrgWizard(PeopleService peopleService, Node org) {
-		// this.peopleService = peopleService;
 		this.org = org;
 	}
 

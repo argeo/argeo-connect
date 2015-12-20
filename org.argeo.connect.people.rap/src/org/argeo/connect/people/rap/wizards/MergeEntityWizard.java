@@ -111,7 +111,6 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.rows = rows;
 		this.selectorName = selectorName;
-		// might be refined.
 		this.overviewLP = overviewLP;
 	}
 
@@ -368,7 +367,6 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 				for (Object element : toUpdateElements) {
 					Node currNode = JcrUiUtils.getNodeFromElement(element,
 							selectorName);
-					// Node currNode = row.getNode(selectorName);
 					slavePathes.add(currNode.getPath());
 				}
 			} catch (RepositoryException e) {
