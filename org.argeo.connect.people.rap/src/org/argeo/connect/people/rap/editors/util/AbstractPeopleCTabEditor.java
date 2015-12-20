@@ -28,9 +28,6 @@ import org.eclipse.swt.widgets.Control;
 public abstract class AbstractPeopleCTabEditor extends
 		AbstractPeopleWithImgEditor implements IVersionedItemEditor {
 
-	/* CONSTANTS */
-	protected final static int CTAB_COMP_STYLE = SWT.NO_FOCUS;
-
 	// Manage tab Folder
 	private CTabFolder folder;
 	protected String CTAB_INSTANCE_ID = "CTabId";
@@ -72,7 +69,7 @@ public abstract class AbstractPeopleCTabEditor extends
 					String tooltip = "History of information about "
 							+ JcrUtils.get(getNode(), Property.JCR_TITLE);
 					Composite innerPannel = addTabToFolder(folder,
-							CTAB_COMP_STYLE, "History",
+							PeopleRapConstants.CTAB_COMP_STYLE, "History",
 							PeopleRapConstants.CTAB_HISTORY, tooltip);
 					innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 					HistoryLog historyLogCmp = new HistoryLog(
@@ -144,6 +141,32 @@ public abstract class AbstractPeopleCTabEditor extends
 		return innerPannel;
 	}
 
+	protected void addLazyTabToFolder(CTabFolder tabFolder,
+			LazyCTabControl contentCmp, String label, String id,
+			String tooltip, String afterTabId) {
+		// retrieve index of the existing tab
+		CTabItem[] items = folder.getItems();
+		int i = 0;
+		if (afterTabId != null)
+			loop: for (CTabItem item : items) {
+				String currId = (String) item.getData(CTAB_INSTANCE_ID);
+				i++;
+				if (currId != null && currId.equals(afterTabId))
+					break loop;
+			}
+
+		CTabItem item;
+		if (i == items.length)
+			item = new CTabItem(tabFolder, PeopleRapConstants.CTAB_COMP_STYLE);
+		else
+			item = new CTabItem(tabFolder, PeopleRapConstants.CTAB_COMP_STYLE, i);
+		item.setData(CTAB_INSTANCE_ID, id);
+		item.setText(label);
+		item.setToolTipText(tooltip);
+		// must set control
+		item.setControl(contentCmp);
+	}
+
 	/** Opens the corresponding tab if it has been defined */
 	public void openTabItem(String id) {
 		CTabItem[] items = folder.getItems();
@@ -169,15 +192,6 @@ public abstract class AbstractPeopleCTabEditor extends
 	}
 
 	/* UTILITES */
-	/**
-	 * Generally, generic entity editors displays the *business* node. Yet
-	 * sometimes parent node should also be removed on delete.
-	 */
-	// @Override
-	// protected Boolean deleteParentOnRemove() {
-	// return false;
-	// }
-
 	protected boolean checkControl(Control control) {
 		return control != null && !control.isDisposed();
 	}

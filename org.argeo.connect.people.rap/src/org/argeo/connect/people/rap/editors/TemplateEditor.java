@@ -98,7 +98,7 @@ public class TemplateEditor extends AbstractPeopleCTabEditor implements
 				String propLabel = propName;
 
 				tooltip = "Manage and edit the \"" + propLabel + "\" catalogue";
-				innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
+				innerPannel = addTabToFolder(folder, PeopleRapConstants.CTAB_COMP_STYLE,
 						propLabel, PeopleRapConstants.CTAB_EDIT_CATALOGUE + "/"
 								+ propName, tooltip);
 				innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());

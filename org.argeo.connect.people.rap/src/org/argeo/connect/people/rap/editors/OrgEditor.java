@@ -105,7 +105,7 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 		// Contact informations
 		String tooltip = "Contact information for "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
+		Composite innerPannel = addTabToFolder(folder, PeopleRapConstants.CTAB_COMP_STYLE,
 				"Details", PeopleRapConstants.CTAB_CONTACT_DETAILS, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		ContactList cpc = new ContactList(this, innerPannel, SWT.NO_FOCUS,
@@ -115,7 +115,7 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 		// Activities and tasks
 		tooltip = "Activities and tasks related to "
 				+ JcrUtils.get(org, Property.JCR_TITLE);
-		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
+		innerPannel = addTabToFolder(folder, PeopleRapConstants.CTAB_COMP_STYLE, "Activity log",
 				PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite activitiesCmp = new ActivityList(this, innerPannel, SWT.NONE,
@@ -125,7 +125,7 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 		// Employees
 		tooltip = "Known employees of "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Team",
+		innerPannel = addTabToFolder(folder, PeopleRapConstants.CTAB_COMP_STYLE, "Team",
 				PeopleRapConstants.CTAB_EMPLOYEES, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite employeesCmp = new JobList(this, innerPannel, SWT.NONE,
@@ -135,7 +135,7 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 		// Legal informations
 		tooltip = "Legal information for "
 				+ JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Admin.",
+		innerPannel = addTabToFolder(folder, PeopleRapConstants.CTAB_COMP_STYLE, "Admin.",
 				PeopleRapConstants.CTAB_LEGAL_INFO, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite legalCmp = new OrgAdminInfo(this, innerPannel, SWT.NONE, org);

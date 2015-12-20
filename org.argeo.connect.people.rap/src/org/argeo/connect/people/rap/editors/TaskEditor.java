@@ -59,7 +59,7 @@ public class TaskEditor extends AbstractPeopleCTabEditor {
 		// Activities and tasks
 		String tooltip = "Activities and tasks related to "
 				+ JcrUtils.get(task, Property.JCR_TITLE);
-		Composite innerPannel = addTabToFolder(tabFolder, CTAB_COMP_STYLE,
+		Composite innerPannel = addTabToFolder(tabFolder, PeopleRapConstants.CTAB_COMP_STYLE,
 				"Activity log", PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite activitiesCmp = new ActivityList(this, innerPannel, SWT.NONE,

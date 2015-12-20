@@ -113,7 +113,7 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements
 		// Contact informations
 		String tooltip = "Contact information for "
 				+ JcrUtils.get(person, Property.JCR_TITLE);
-		Composite innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE,
+		Composite innerPannel = addTabToFolder(folder, PeopleRapConstants.CTAB_COMP_STYLE,
 				"Contact details", PeopleRapConstants.CTAB_CONTACT_DETAILS,
 				tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
@@ -124,7 +124,7 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements
 		// Activities and tasks
 		tooltip = "Activities and tasks related to "
 				+ JcrUtils.get(person, Property.JCR_TITLE);
-		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Activity log",
+		innerPannel = addTabToFolder(folder, PeopleRapConstants.CTAB_COMP_STYLE, "Activity log",
 				PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite activitiesCmp = new ActivityList(this, innerPannel, SWT.NONE,
@@ -134,7 +134,7 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements
 		// Jobs panel
 		tooltip = "Organisations linked to "
 				+ JcrUtils.get(person, Property.JCR_TITLE);
-		innerPannel = addTabToFolder(folder, CTAB_COMP_STYLE, "Organisations",
+		innerPannel = addTabToFolder(folder, PeopleRapConstants.CTAB_COMP_STYLE, "Organisations",
 				PeopleRapConstants.CTAB_JOBS, tooltip);
 		innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite crewCmp = new JobList(this, innerPannel, SWT.NONE,

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.argeo.connect.people.PeopleTypes;
+import org.eclipse.swt.SWT;
 
 /** Defines the constants that are specific for People Rap Workbench UI **/
 public interface PeopleRapConstants {
@@ -53,4 +54,7 @@ public interface PeopleRapConstants {
 	// the separator used in the various href local values to provide internal
 	// browsing using links in table / label / trees
 	public final String HREF_SEPARATOR = "/";
+
+	/* CONSTANTS */
+	public final static int CTAB_COMP_STYLE = SWT.NO_FOCUS;
 }
