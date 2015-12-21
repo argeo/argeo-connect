@@ -493,10 +493,12 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 	
 	/* CONFIGURE QUERIES */
+	@Override
 	public boolean lazyLoadLists(){
 		return false;
 	}
 
+	@Override
 	public boolean queryWhenTyping(){
 		return true;
 	}
