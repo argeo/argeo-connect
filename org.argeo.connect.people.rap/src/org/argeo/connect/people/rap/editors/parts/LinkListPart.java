@@ -137,7 +137,6 @@ public class LinkListPart extends Composite implements PeopleNames {
 			if (editor.isEditing()) {
 				// The add button
 				Link newRelatedLk = new Link(relatedCmp, SWT.CENTER);
-				editor.getFormToolkit().adapt(newRelatedLk, false, false);
 				newRelatedLk.setText("<a>Add</a>");
 				addNewRelatedSelList(newRelatedLk);
 			}
@@ -154,7 +153,6 @@ public class LinkListPart extends Composite implements PeopleNames {
 		part.setData(VALUE_KEY, value);
 
 		Link relatedLk = new Link(part, SWT.LEFT);
-		editor.getFormToolkit().adapt(relatedLk, false, false);
 		relatedLk.setText("<a>" + label + "</a>");
 		CmsUtils.style(relatedLk, PeopleStyles.PEOPLE_CLASS_ENTITY_HEADER);
 
@@ -172,8 +170,8 @@ public class LinkListPart extends Composite implements PeopleNames {
 
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
-					JcrUiUtils.removeRefFromMultiValuedProp(entity,
-							propName, value);
+					JcrUiUtils.removeRefFromMultiValuedProp(entity, propName,
+							value);
 					formPart.refresh();
 					formPart.markDirty();
 				}
@@ -269,8 +267,8 @@ public class LinkListPart extends Composite implements PeopleNames {
 					int result = diag.open();
 					if (Window.OK == result) {
 						Node node = diag.getSelected();
-						String errMsg = JcrUiUtils
-								.addRefToMultiValuedProp(entity, propName, node);
+						String errMsg = JcrUiUtils.addRefToMultiValuedProp(
+								entity, propName, node);
 						if (errMsg != null)
 							MessageDialog.openError(link.getShell(),
 									"Duplicates", errMsg);
