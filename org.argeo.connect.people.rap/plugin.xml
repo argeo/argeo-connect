@@ -438,7 +438,9 @@
 -->
 	<!-- Workbench listeners --> 
 	<extension point="org.eclipse.ui.startup">
-   		<startup class="org.argeo.connect.people.rap.listeners.PartStateChanged"/>
+   		<startup class="org.argeo.eclipse.spring.SpringExtensionFactory"
+   			        id="org.argeo.connect.people.rap.partStateChanged">
+   		</startup>
 	</extension>
 
 	<!-- Services -->

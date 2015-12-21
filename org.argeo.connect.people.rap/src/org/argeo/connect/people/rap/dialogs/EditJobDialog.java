@@ -15,6 +15,8 @@
  */
 package org.argeo.connect.people.rap.dialogs;
 
+import static org.argeo.connect.people.rap.PeopleRapConstants.SEARCH_TEXT_DELAY;
+
 import java.util.List;
 
 import javax.jcr.Node;
@@ -36,6 +38,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleStyles;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.providers.EntitySingleColumnLabelProvider;
+import org.argeo.connect.people.ui.DelayedText;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -52,7 +55,10 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.service.ServerPushSession;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
@@ -203,8 +209,7 @@ public class EditJobDialog extends TrayDialog {
 		// Display chosen org or person
 		selectedItemTxt = createLT(dialogarea, chosenItemLbl);
 		selectedItemTxt.setEnabled(false);
-		CmsUtils.style(selectedItemTxt,
-				PeopleStyles.PEOPLE_CLASS_FORCE_BORDER);
+		CmsUtils.style(selectedItemTxt, PeopleStyles.PEOPLE_CLASS_FORCE_BORDER);
 
 		if (isBackward) {
 			if (oldReferencing != null)
@@ -234,6 +239,8 @@ public class EditJobDialog extends TrayDialog {
 		dialogarea.layout();
 		// Set the focus on the first field.
 		filterTxt.setFocus();
+		if (!peopleService.lazyLoadLists())
+			refreshFilteredList(toSearchNodeType);
 		return dialogarea;
 	}
 
@@ -335,13 +342,36 @@ public class EditJobDialog extends TrayDialog {
 				false));
 		layout.horizontalSpacing = 5;
 		parent.setLayout(layout);
-		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
-				| SWT.ICON_CANCEL);
+
+		boolean isDyn = peopleService.queryWhenTyping();
+		int style = SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL;
+		if (isDyn)
+			filterTxt = new DelayedText(parent, style, SEARCH_TEXT_DELAY);
+		else
+			filterTxt = new Text(parent, style);
 		filterTxt.setMessage("Search and choose a corresponding entity");
 		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
 		okBtn = new Button(parent, SWT.FLAT);
 		okBtn.setText("Find");
+
+		if (isDyn) {
+			final ServerPushSession pushSession = new ServerPushSession();
+			((DelayedText) filterTxt).addDelayedModifyListener(pushSession,
+					new ModifyListener() {
+						private static final long serialVersionUID = 5003010530960334977L;
+
+						public void modifyText(ModifyEvent event) {
+							filterTxt.getDisplay().asyncExec(new Runnable() {
+								@Override
+								public void run() {
+									refreshFilteredList(toSearchNodeType);
+								}
+							});
+							pushSession.stop();
+						}
+					});
+		}
 
 		filterTxt.addTraverseListener(new TraverseListener() {
 			private static final long serialVersionUID = 3886722799404099828L;
@@ -363,14 +393,6 @@ public class EditJobDialog extends TrayDialog {
 				refreshFilteredList(toSearchNodeType);
 			}
 		});
-
-		// filterTxt.addModifyListener(new ModifyListener() {
-		// private static final long serialVersionUID = 5003010530960334977L;
-		//
-		// public void modifyText(ModifyEvent event) {
-		// refreshFilteredList(toSearchNodeType);
-		// }
-		// });
 	}
 
 	protected TableViewer createListPart(Composite tableComposite,
@@ -413,8 +435,8 @@ public class EditJobDialog extends TrayDialog {
 
 				try {
 					if (selectedEntity.isNodeType(NodeType.MIX_TITLE))
-						selectedItemTxt.setText(JcrUiUtils.get(
-								selectedEntity, Property.JCR_TITLE));
+						selectedItemTxt.setText(JcrUiUtils.get(selectedEntity,
+								Property.JCR_TITLE));
 				} catch (RepositoryException e) {
 					throw new PeopleException("Unable to update "
 							+ "selected item", e);

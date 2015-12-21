@@ -4,6 +4,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.CmsEditable;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.editors.util.IVersionedItemEditor;
 import org.argeo.connect.people.rap.util.EditionSourceProvider;
 import org.eclipse.jface.action.IStatusLineManager;
@@ -19,10 +21,16 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.contexts.IContextActivation;
 import org.eclipse.ui.services.ISourceProviderService;
 
-/** Manage enable state of the CheckOut command depending on the active part */
+/**
+ * Manage enable state of the CheckOut command depending on the active part.
+ * DRAFT we also use this to insure a correct people service has been attached
+ * to the display
+ */
 public class PartStateChanged implements IPartListener, IStartup {
 	private final static Log log = LogFactory.getLog(PartStateChanged.class);
 	IContextActivation contextActivation;
+
+	private PeopleService peopleService;
 
 	@Override
 	public void earlyStartup() {
@@ -33,6 +41,8 @@ public class PartStateChanged implements IPartListener, IStartup {
 							.getActiveWorkbenchWindow().getActivePage();
 					if (iwp != null)
 						iwp.addPartListener(new PartStateChanged());
+					Display.getCurrent()
+							.setData(PeopleRapConstants.KEY_PEOPLE_SERVICE, peopleService);
 				} catch (Exception e) {
 					throw new PeopleException(
 							"Error while registering the PartStateChangedListener",
@@ -110,5 +120,10 @@ public class PartStateChanged implements IPartListener, IStartup {
 
 	@Override
 	public void partOpened(IWorkbenchPart part) {
+	}
+
+	/* DEPENDENCY INJECTION */
+	public void setPeopleService(PeopleService peopleService) {
+		this.peopleService = peopleService;
 	}
 }

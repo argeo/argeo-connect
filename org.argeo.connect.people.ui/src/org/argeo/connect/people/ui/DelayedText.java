@@ -14,8 +14,8 @@ import org.eclipse.swt.widgets.Text;
  * Text that introduce a timer in the attached ModifyListener.
  * 
  * Note that corresponding ModifyEvent will *NOT* be sent in the UI thread.
- * Calling ModifierInstance must be implemented in consequence. Not also that
- * this delayed text will only manage one listener for the time being
+ * Calling ModifierInstance must be implemented in consequence. Note also that
+ * this delayed text only manages one listener at a time.
  *
  */
 public class DelayedText extends Text {

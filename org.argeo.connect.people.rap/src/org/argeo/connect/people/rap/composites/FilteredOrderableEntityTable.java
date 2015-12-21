@@ -19,7 +19,6 @@ import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;

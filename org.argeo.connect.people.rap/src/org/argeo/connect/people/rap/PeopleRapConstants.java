@@ -11,6 +11,10 @@ public interface PeopleRapConstants {
 
 	// Default messages
 	public final static String FILTER_HELP_MSG = "Enter filter criterion";
+	// Duration in ms before a search is launched
+	public final static int SEARCH_TEXT_DELAY = 800;
+
+	public final static String KEY_PEOPLE_SERVICE = "PeopleService";
 
 	// Various types for list label providers
 	public final static int LIST_TYPE_OVERVIEW_TITLE = 0;

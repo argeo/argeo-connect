@@ -12,6 +12,7 @@ import javax.jcr.RepositoryException;
 import org.argeo.cms.CmsEditable;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.rap.composites.dropdowns.PeopleAbstractDropDown;
@@ -39,6 +40,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Table;
@@ -57,6 +59,13 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * context
  */
 public class PeopleRapUtils {
+
+	// Experimental
+	public static PeopleService getPeopleService() {
+		return (PeopleService) Display.getDefault().getData(
+				PeopleRapConstants.KEY_PEOPLE_SERVICE);
+	}
+
 	/**
 	 * Shortcut to retrieve the current active page. It assumes the bundle
 	 * WorkbenchUiPlugin is started (it is by the way the basis of all apps

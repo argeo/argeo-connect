@@ -1,5 +1,7 @@
 package org.argeo.connect.people.rap.composites;
 
+import static org.argeo.connect.people.rap.PeopleRapConstants.SEARCH_TEXT_DELAY;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +20,10 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
+import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.providers.TitleIconLP;
+import org.argeo.connect.people.ui.DelayedText;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -33,7 +37,10 @@ import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.rap.rwt.service.ServerPushSession;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
@@ -94,8 +101,9 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 		createTableViewer(parent);
 		this.layout();
 		EclipseUiSpecificUtils.enableToolTipSupport(entityViewer);
-		// Do not execute the query by default
-		// refreshFilteredList();
+
+		if (!PeopleRapUtils.getPeopleService().lazyLoadLists())
+			refreshFilteredList();
 	}
 
 	protected int getTableHeight() {
@@ -182,13 +190,37 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 		layout.horizontalSpacing = 5;
 		filterCmp.setLayout(layout);
 		filterCmp.setLayoutData(EclipseUiUtils.fillWidth());
-		filterTxt = new Text(filterCmp, SWT.BORDER | SWT.SEARCH
-				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+
+		int style = SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL;
+
+		boolean isDyn = PeopleRapUtils.getPeopleService().queryWhenTyping();
+		if (isDyn)
+			filterTxt = new DelayedText(parent, style, SEARCH_TEXT_DELAY);
+		else
+			filterTxt = new Text(filterCmp, style);
 		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
 		Button okBtn = new Button(filterCmp, SWT.FLAT);
 		okBtn.setText("Find");
+
+		if (isDyn) {
+			final ServerPushSession pushSession = new ServerPushSession();
+			((DelayedText) filterTxt).addDelayedModifyListener(pushSession,
+					new ModifyListener() {
+						private static final long serialVersionUID = 5003010530960334977L;
+
+						public void modifyText(ModifyEvent event) {
+							filterTxt.getDisplay().asyncExec(new Runnable() {
+								@Override
+								public void run() {
+									refreshFilteredList();
+								}
+							});
+							pushSession.stop();
+						}
+					});
+		}
 
 		filterTxt.addTraverseListener(new TraverseListener() {
 			private static final long serialVersionUID = 3946973977865345010L;

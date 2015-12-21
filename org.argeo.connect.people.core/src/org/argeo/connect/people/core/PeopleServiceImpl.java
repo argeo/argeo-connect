@@ -415,25 +415,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			QueryResult result = xpathQuery.execute();
 			NodeIterator ni = result.getNodes();
 
-			// Session session = entity.getSession();
-			// QueryManager queryManager = session.getWorkspace()
-			// .getQueryManager();
-			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			// final String typeSelector = "relatedType";
-			// Selector source = factory.selector(linkNodeType, typeSelector);
-			// DynamicOperand dynOp = factory.propertyValue(
-			// source.getSelectorName(), PeopleNames.PEOPLE_REF_UID);
-			// StaticOperand statOp = factory.literal(session.getValueFactory()
-			// .createValue(
-			// entity.getProperty(PeopleNames.PEOPLE_UID)
-			// .getString()));
-			// Constraint defaultC = factory.comparison(dynOp,
-			// QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
-			// QueryObjectModel query = factory.createQuery(source, defaultC,
-			// null, null);
-			// QueryResult queryResult = query.execute();
-			// NodeIterator ni = queryResult.getNodes();
-
 			if (relatedEntityType == null)
 				return JcrUtils.nodeIteratorToList(ni);
 			else {
@@ -454,10 +435,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		}
 	}
 
-	/**
-	 * Do not use this, there is further more a problem with the checkPoint
-	 * method
-	 */
+	/** Do not use this, there is a problem with the checkPoint method */
 	@Deprecated
 	@Override
 	public long publishAll(Session session, ArgeoMonitor monitor) {
@@ -513,6 +491,16 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		}
 		return inputStream;
 	}
+	
+	/* CONFIGURE QUERIES */
+	public boolean lazyLoadLists(){
+		return false;
+	}
+
+	public boolean queryWhenTyping(){
+		return true;
+	}
+
 
 	/* EXPOSED SERVICES */
 	@Override

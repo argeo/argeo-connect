@@ -119,6 +119,11 @@ public interface PeopleService {
 	 * */
 	public List<Node> getRelatedEntities(Node entity, String linkNodeType,
 			String relatedEntityType);
+	
+	/* CONFIGURE QUERIES */
+	public boolean lazyLoadLists();
+
+	public boolean queryWhenTyping();
 
 	/* MISCELLANEOUS */
 	/**

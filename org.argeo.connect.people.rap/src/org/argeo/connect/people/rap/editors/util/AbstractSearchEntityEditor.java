@@ -1,5 +1,7 @@
 package org.argeo.connect.people.rap.editors.util;
 
+import static org.argeo.connect.people.rap.PeopleRapConstants.SEARCH_TEXT_DELAY;
+
 import java.util.List;
 
 import javax.jcr.Repository;
@@ -10,7 +12,6 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleStyles;
@@ -20,6 +21,7 @@ import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.util.Refreshable;
 import org.argeo.connect.people.rap.wizards.TagOrUntagInstancesWizard;
+import org.argeo.connect.people.ui.DelayedText;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -29,7 +31,10 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.rap.rwt.service.ServerPushSession;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -115,8 +120,9 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		createListPart(tableCmp);
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 
-		// initialize table
-		// refreshFilteredList();
+		if (!peopleService.lazyLoadLists())
+			// initialize the table
+			refreshFilteredList();
 	}
 
 	protected abstract void refreshFilteredList();
@@ -167,7 +173,6 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	protected void createCheckBoxMenu(Composite parent) {
 		RowLayout layout = new RowLayout(SWT.HORIZONTAL);
-		// layout.pack = false;
 		parent.setLayout(layout);
 
 		final Button selectAllBtn = new Button(parent, SWT.PUSH);
@@ -193,12 +198,6 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 				}
 			}
 		});
-
-		// // an empty cell to give some air to the layout
-		// Label emptyLbl = new Label(parent, SWT.NONE);
-		// emptyLbl.setText("");
-		// rd = new RowData(60, SWT.DEFAULT);
-		// emptyLbl.setLayoutData(rd);
 
 		Button addTagBtn = new Button(parent, SWT.TOGGLE);
 		addTagBtn.setText("Tag");
@@ -261,8 +260,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 			populate();
 			// Add border and shadow style
-			CmsUtils.style(DropDownPopup.this,
-					PeopleStyles.POPUP_SHELL);
+			CmsUtils.style(DropDownPopup.this, PeopleStyles.POPUP_SHELL);
 			pack();
 			layout();
 
@@ -437,29 +435,6 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		// initialise the layout
 		listener.refresh();
 		more.addSelectionListener(listener);
-
-		// more.addSelectionListener(new SelectionAdapter() {
-		// private static final long serialVersionUID = 2092985883844558754L;
-		// private boolean isShown = false;
-		// private Composite staticFiltersCmp;
-		//
-		// @Override
-		// public void widgetSelected(SelectionEvent e) {
-		// if (isShown) {
-		// CmsUtils.clear(staticFiltersCmp);
-		// staticFiltersCmp.dispose();
-		// more.setText("<a> More... </a>");
-		// } else {
-		// staticFiltersCmp = new Composite(parent, SWT.NO_FOCUS);
-		// staticFiltersCmp.setLayoutData(EclipseUiUtils.fillWidth(2));
-		// populateStaticFilters(staticFiltersCmp);
-		// more.setText("<a> Less... </a>");
-		// }
-		// parent.layout();
-		// parent.getParent().layout();
-		// isShown = !isShown;
-		// }
-		// });
 	}
 
 	private class MoreLinkListener extends SelectionAdapter {
@@ -502,11 +477,31 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	/** Refresh the table viewer based on the free text search field */
 	protected void populateSearchPanel(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
-				| SWT.ICON_CANCEL);
-		// TODO internationalize this
-		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
+		boolean isDyn = peopleService.queryWhenTyping();
+		int style = SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL;
+		if (isDyn)
+			filterTxt = new DelayedText(parent, style, SEARCH_TEXT_DELAY);
+		else
+			filterTxt = new Text(parent, style);
 		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
+
+		if (isDyn) {
+			final ServerPushSession pushSession = new ServerPushSession();
+			((DelayedText) filterTxt).addDelayedModifyListener(pushSession,
+					new ModifyListener() {
+						private static final long serialVersionUID = 5003010530960334977L;
+
+						public void modifyText(ModifyEvent event) {
+							filterTxt.getDisplay().asyncExec(new Runnable() {
+								@Override
+								public void run() {
+									refreshFilteredList();
+								}
+							});
+							pushSession.stop();
+						}
+					});
+		}
 
 		traverseListener = new TraverseListener() {
 			private static final long serialVersionUID = 1914600503113422597L;
