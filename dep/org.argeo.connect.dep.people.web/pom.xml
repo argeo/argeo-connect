@@ -26,17 +26,10 @@
 			<version>2.1.40-SNAPSHOT</version>
 		</dependency>
 
-		<!-- Base CMS distribution -->
+		<!-- Base Argeo platform distribution -->
 		<dependency>
 			<groupId>org.argeo.commons</groupId>
-			<artifactId>org.argeo.dep.cms</artifactId>
-			<version>${version.argeo-commons}</version>
-		</dependency>
-
-		<!-- The node -->
-		<dependency>
-			<groupId>org.argeo.commons</groupId>
-			<artifactId>org.argeo.security.dep.node.rap</artifactId>
+			<artifactId>org.argeo.dep.cms.platform</artifactId>
 			<version>${version.argeo-commons}</version>
 			<type>pom</type>
 		</dependency>
