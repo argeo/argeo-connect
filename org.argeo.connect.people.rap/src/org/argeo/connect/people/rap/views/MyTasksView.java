@@ -67,9 +67,9 @@ public class MyTasksView extends ViewPart implements Refreshable {
 	@Override
 	public void createPartControl(Composite parent) {
 		// Finalise initialisation
+		session = JcrUiUtils.login(repository);
 		activityService = peopleService.getActivityService();
 		userAdminService = peopleService.getUserAdminService();
-		session = JcrUiUtils.login(repository);
 
 		GridLayout layout = EclipseUiUtils.noSpaceGridLayout();
 		layout.verticalSpacing = 5;
@@ -123,7 +123,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 
 		// Date
 		column = ViewerUtils.createTableViewerColumn(viewer, "Due Date",
-				SWT.RIGHT, 72);
+				SWT.RIGHT, 80);
 		column.setLabelProvider(new DateLabelProvider());
 		column.getColumn().addSelectionListener(
 				getNodeSelectionAdapter(0, PropertyType.DATE,
