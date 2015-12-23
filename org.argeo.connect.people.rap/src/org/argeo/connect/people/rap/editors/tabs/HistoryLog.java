@@ -57,7 +57,7 @@ public class HistoryLog extends LazyCTabControl {
 	// this page UI Objects
 	private MyFormPart myFormPart;
 
-	public HistoryLog(AbstractPeopleEditor editor, Composite parent, int style,
+	public HistoryLog(Composite parent, int style, AbstractPeopleEditor editor,
 			PeopleService peopleService, Node entity) {
 		super(parent, style);
 		this.editor = editor;
@@ -189,10 +189,6 @@ public class HistoryLog extends LazyCTabControl {
 			throw new PeopleException(
 					"Cannot generate history for current entity.", e);
 		}
-	}
-
-	public void refresh() {
-		myFormPart.refresh();
 	}
 
 	private String getValueAsString(Value refValue) throws RepositoryException {

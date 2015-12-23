@@ -68,21 +68,19 @@ public abstract class AbstractPeopleCTabEditor extends
 					// History panel
 					String tooltip = "History of information about "
 							+ JcrUtils.get(getNode(), Property.JCR_TITLE);
-					Composite innerPannel = addTabToFolder(folder,
-							PeopleRapConstants.CTAB_COMP_STYLE, "History",
-							PeopleRapConstants.CTAB_HISTORY, tooltip);
-					innerPannel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 					HistoryLog historyLogCmp = new HistoryLog(
-							AbstractPeopleCTabEditor.this, innerPannel,
-							SWT.NONE, getPeopleService(), getNode());
+							folder, SWT.NO_FOCUS,
+							AbstractPeopleCTabEditor.this, getPeopleService(), getNode());
 					historyLogCmp.setLayoutData(EclipseUiUtils.fillAll());
+					addLazyTabToFolder(folder, historyLogCmp, "History",
+							PeopleRapConstants.CTAB_HISTORY, tooltip);
 					if (!showHistoryBtn.isDisposed()) {
 						Composite par = showHistoryBtn.getParent();
 						showHistoryBtn.dispose();
 						par.layout(true, true);
 					}
 					openTabItem(PeopleRapConstants.CTAB_HISTORY);
-					historyLogCmp.refresh();
+					historyLogCmp.refreshPartControl();
 				}
 			});
 		}
