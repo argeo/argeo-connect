@@ -155,8 +155,8 @@ public class VersionUtils {
 					ItemDiff iDiff = new ItemDiff(ItemDiff.ADDED, currNodePath,
 							null, n);
 					localDiffs.put(currNodePath, iDiff);
-					addAllProperties(localDiffs, ItemDiff.ADDED, true, n,
-							excludedProperties);
+//					addAllProperties(localDiffs, ItemDiff.ADDED, true, n,
+//							excludedProperties);
 				}
 			}
 			// modification found, we add them
@@ -173,7 +173,6 @@ public class VersionUtils {
 								.remove(localDiffs.keySet().iterator().next());
 					}
 				}
-
 				diffs.putAll(localDiffs);
 			}
 		} catch (RepositoryException e) {
