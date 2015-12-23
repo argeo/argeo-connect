@@ -396,23 +396,31 @@ public class PeopleUiSnippets {
 				builder.append(peopleService.getDisplayName(person)).append(
 						"<br/>");
 
-			// phone
-			String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
-					PeopleTypes.PEOPLE_PHONE);
-			if (notEmpty(tmpStr))
-				builder.append(getPhoneLink(tmpStr)).append("<br/>");
-
-			// mail
-			tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
-					PeopleTypes.PEOPLE_EMAIL);
-			if (notEmpty(tmpStr))
-				builder.append(getMailLink(tmpStr)).append("<br/>");
-
+			String pam = getEntityPhoneAndMailFormatted(entity);
+			if (notEmpty(pam))
+				builder.append(pam);
 			return PeopleUiUtils.replaceAmpersand(builder.toString());
 		} catch (RepositoryException re) {
 			throw new PeopleException(
 					"Unable to create contact snippet for node " + entity, re);
 		}
+	}
+
+	
+	public static String getEntityPhoneAndMailFormatted(Node entity) {
+		StringBuilder builder = new StringBuilder();
+		// phone
+		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
+				PeopleTypes.PEOPLE_PHONE);
+		if (notEmpty(tmpStr))
+			builder.append(getPhoneLink(tmpStr)).append("<br/>");
+
+		// mail
+		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity,
+				PeopleTypes.PEOPLE_EMAIL);
+		if (notEmpty(tmpStr))
+			builder.append(getMailLink(tmpStr)).append("<br/>");
+		return PeopleUiUtils.replaceAmpersand(builder.toString());
 	}
 
 	/**
