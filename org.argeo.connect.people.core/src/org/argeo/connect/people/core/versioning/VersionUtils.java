@@ -155,8 +155,12 @@ public class VersionUtils {
 					ItemDiff iDiff = new ItemDiff(ItemDiff.ADDED, currNodePath,
 							null, n);
 					localDiffs.put(currNodePath, iDiff);
-//					addAllProperties(localDiffs, ItemDiff.ADDED, true, n,
-//							excludedProperties);
+					// This triggers the display of duplicated properties when a
+					// sub node is added. vilently commented out for the time
+					// being.
+					// TODO rework this
+					// addAllProperties(localDiffs, ItemDiff.ADDED, true, n,
+					// excludedProperties);
 				}
 			}
 			// modification found, we add them
@@ -188,8 +192,8 @@ public class VersionUtils {
 		return tmpItem instanceof Node;
 	}
 
-	static void addAllProperties(Map<String, ItemDiff> diffs, Integer type, boolean trackSubNode,
-			Node node, List<String> excludedProperties)
+	static void addAllProperties(Map<String, ItemDiff> diffs, Integer type,
+			boolean trackSubNode, Node node, List<String> excludedProperties)
 			throws RepositoryException {
 		PropertyIterator pit = node.getProperties();
 		props: while (pit.hasNext()) {
@@ -204,10 +208,12 @@ public class VersionUtils {
 				iDiff = new ItemDiff(ItemDiff.REMOVED, name, p, null);
 			diffs.put(name, iDiff);
 		}
-		
-		// TODO: for the time being, we do not yet add sub nodes and their properties in the diff
-		// Investigate: We might have to also deal and update this to correctly managed added rel pathes.
-		
+
+		// TODO: for the time being, we do not yet add sub nodes and their
+		// properties in the diff
+		// Investigate: We might have to also deal and update this to correctly
+		// managed added rel pathes.
+
 		// NodeIterator nit = node.getNodes();
 		// nodes: while (nit.hasNext()) {
 		// Node n = nit.nextNode();
@@ -229,9 +235,8 @@ public class VersionUtils {
 		// iDiff = new ItemDiff(ItemDiff.REMOVED, name, p, null);
 		// diffs.put(name, iDiff);
 		// }
-		//	
-		
-		
+		//
+
 	}
 
 	/**
