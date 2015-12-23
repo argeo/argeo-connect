@@ -1,5 +1,7 @@
 package org.argeo.connect.people.rap;
 
+import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
@@ -60,6 +62,53 @@ public class PeopleRapSnippets {
 				+ "=" + toEditJcrId + "/" + EditJob.PARAM_IS_BACKWARD + "="
 				+ isBackward;
 		return PeopleUiSnippets.getRWTLink(href, PeopleUiConstants.CRUD_EDIT);
+	}
+
+	public static String getClickableEntityContact(PeopleService peopleService,
+			Node entity, String label, String openCmdId) {
+		try {
+			// local cache
+			Node person = null, org = null;
+
+			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
+				person = entity;
+				Node currContact = PeopleJcrUtils.getPrimaryContact(person,
+						PeopleTypes.PEOPLE_ADDRESS);
+				if (!(currContact == null || !currContact
+						.isNodeType(PeopleTypes.PEOPLE_CONTACT_REF))) {
+					org = peopleService.getEntityByUid(JcrUiUtils
+							.getSession(currContact), JcrUiUtils.get(
+							currContact, PeopleNames.PEOPLE_REF_UID));
+				}
+			} else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
+				org = entity;
+
+			StringBuilder builder = new StringBuilder();
+
+			builder.append("<b>");
+			if (notEmpty(label))
+				builder.append(label);
+			if (org != null) {
+				String title = JcrUiUtils.get(org, Property.JCR_TITLE);
+				String snippet = getOpenEditorSnippet(openCmdId, org, title);
+				builder.append(snippet).append("<br/>");
+			}
+			builder.append("</b>");
+			if (person != null) {
+				String title = peopleService.getDisplayName(person);
+				String snippet = getOpenEditorSnippet(openCmdId, person, title);
+				builder.append(snippet).append("<br/>");
+			}
+
+			String pam = PeopleUiSnippets
+					.getEntityPhoneAndMailFormatted(entity);
+			if (notEmpty(pam))
+				builder.append(pam);
+			return PeopleUiUtils.replaceAmpersand(builder.toString());
+		} catch (RepositoryException re) {
+			throw new PeopleException(
+					"Unable to create contact snippet for node " + entity, re);
+		}
 	}
 
 	/**
@@ -146,8 +195,7 @@ public class PeopleRapSnippets {
 				for (Value value : entity
 						.getProperty((PeopleNames.PEOPLE_TAGS)).getValues())
 					tags.append("#")
-							.append(getTagLink(
-									JcrUiUtils.getSession(entity),
+							.append(getTagLink(JcrUiUtils.getSession(entity),
 									peopleService, peopleWorkbenchService,
 									PeopleConstants.RESOURCE_TAG,
 									value.getString())).append("  ");
