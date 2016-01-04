@@ -21,6 +21,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /**
@@ -199,7 +200,8 @@ public class StripeTokenCollectorComposite extends Composite implements
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				doPay();
+				if (lastCheckBeforeCreatingCharge(e.display.getActiveShell()))
+					doPay();
 			}
 
 			@Override
@@ -297,6 +299,14 @@ public class StripeTokenCollectorComposite extends Composite implements
 	 * Behavior on cancel
 	 */
 	protected void cancelPayment() {
+	}
+
+	/**
+	 * Implementing class might choose to extend this method to provide specific
+	 * check just before launching the charge creation
+	 */
+	protected boolean lastCheckBeforeCreatingCharge(Shell shell) {
+		return true;
 	}
 
 	/**
