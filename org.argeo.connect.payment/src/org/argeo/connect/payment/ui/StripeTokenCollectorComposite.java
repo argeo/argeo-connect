@@ -38,12 +38,13 @@ public class StripeTokenCollectorComposite extends Composite implements
 	private final StripeService stripeService;
 	// Prepared map with relevant transaction info
 	private Map<String, Object> chargeParams;
-
+	private String mainInfoFormTitle = "Please provide your card information";
+	private String cvcFormTitle = "Review card information and valid";
 	private String acceptedCardDesc = "We accept: Visa, MasterCard, American Express";
 	private String stripeDesc = "All Payments are processed by "
 			+ "<a href='http://stripe.com' target='_blank'>Stripe</a>.<br />"
 			+ "We do not store your card information.";
-	
+
 	// Card info
 	private Map<String, Object> cardParams;
 	private Text cardNameTxt;
@@ -75,52 +76,25 @@ public class StripeTokenCollectorComposite extends Composite implements
 		int colNb = 3;
 		parent.setLayout(new GridLayout(colNb, false));
 
-		// Title 
-		Composite titleCmp = new Composite(parent, SWT.NO_FOCUS);
-		titleCmp.setLayout(EclipseUiUtils.noSpaceGridLayout(new GridLayout(2,  false)));
-		titleCmp.setBackground(parent.getBackground());
-		titleCmp.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, colNb, 1));
-		
-		Label imgLbl = new Label(titleCmp, SWT.NONE);
-		imgLbl.setImage(PaymentImages.ICON_LOCK);
-		CmsUtils.style(imgLbl, PaymentStyles.CARD_INFO_TEXT);
-		// imgLbl.setBackground(titleCmp.getBackground());
-		Label cardInfoTitleLbl = createLabel(titleCmp,
-				PaymentStyles.CARD_INFO_TITLE, 1);
-		cardInfoTitleLbl.setText("Please provide your card information");
-	
-		Label descLbl = new Label(parent, SWT.WRAP | SWT.CENTER);
-		CmsUtils.markup(descLbl);
-		CmsUtils.style(descLbl, PaymentStyles.CARD_INFO_TEXT);
-		// FIXME rather use a box and some css padding
-		GridData gd = new GridData(SWT.CENTER, SWT.CENTER, true, false, colNb, 1);
-		gd.verticalIndent = 15;
-		descLbl.setLayoutData(gd);
-		// descLbl.setText((String) chargeParams
-		// .get(PaymentConstants.PAYMENT_DESC));
-		descLbl.setText(acceptedCardDesc);
-		
-		// Empty line
-		createLabel(parent, PaymentStyles.CARD_INFO_TEXT, colNb);
+		// Header
+		populateHeader(parent, mainInfoFormTitle, colNb);
 
+		// Gather user info form
 		cardNameTxt = createLt(parent, "Cardholder's name", "your name");
 		cardNameTxt.setText(CurrentUser.getDisplayName());
-
 		cardCountryTxt = createLt(parent, "Card country", "");
 		cardNbTxt = createLt(parent, "Card number", "");
-
 		// Expiration date
-		createBoldLabel(parent, "Expiration date (MM/YYYY)");
+		createBoldLabel(parent, "Expiration date");// (MM/YYYY)");
 		cardExpMonthTxt = new Text(parent, SWT.LEAD | SWT.BORDER);
 		cardExpMonthTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false));
 		cardExpMonthTxt.setMessage("MM");
-
 		cardExpYearTxt = new Text(parent, SWT.LEAD | SWT.BORDER);
 		cardExpYearTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false));
 		cardExpYearTxt.setMessage("YYYY");
-
+		// Init fields if coming back to this page
 		if (cardParams != null) {
 			resetText(CARD_NAME, cardNameTxt);
 			resetText(CARD_COUNTRY, cardCountryTxt);
@@ -129,14 +103,16 @@ public class StripeTokenCollectorComposite extends Composite implements
 			resetText(CARD_EXP_YEAR, cardExpYearTxt);
 		}
 
+		// Navigation buttons
 		Composite buttonCmp = new Composite(parent, SWT.NO_FOCUS);
 		buttonCmp.setBackground(parent.getBackground());
-		gd = EclipseUiUtils.fillWidth(colNb);
+		GridData gd = EclipseUiUtils.fillWidth(colNb);
 		gd.horizontalAlignment = SWT.CENTER;
 		gd.verticalIndent = 10;
 		buttonCmp.setLayoutData(gd);
 		populateNewChargeButton(buttonCmp);
-		
+
+		// Stripe disclaimer
 		Label stripeLbl = new Label(parent, SWT.WRAP | SWT.CENTER);
 		CmsUtils.markup(stripeLbl);
 		CmsUtils.style(stripeLbl, PaymentStyles.CARD_INFO_TEXT);
@@ -155,23 +131,10 @@ public class StripeTokenCollectorComposite extends Composite implements
 		int colNb = 2;
 		parent.setLayout(new GridLayout(colNb, false));
 
-		// Card info
-		Label cardInfoTitleLbl = createLabel(parent,
-				PaymentStyles.CARD_INFO_TITLE, colNb);
-		cardInfoTitleLbl.setText("Review card information and valid");
+		// Header
+		populateHeader(parent, cvcFormTitle, colNb);
 
-		Label descLbl = createLabel(parent, PaymentStyles.CARD_INFO_TEXT, colNb);
-		// FIXME rather use a box and some css padding
-		GridData gd = ((GridData) descLbl.getLayoutData());
-		gd.verticalIndent = 15;
-		gd.grabExcessHorizontalSpace = true;
-		gd.horizontalAlignment = SWT.CENTER;
-		// descLbl.setText((String) chargeParams
-		// .get(PaymentConstants.PAYMENT_DESC));
-		descLbl.setText(acceptedCardDesc);
-
-		createLabel(parent, PaymentStyles.CARD_INFO_TEXT, colNb);
-
+		// Main info recap
 		createLL(parent, "Holder name", (String) cardParams.get(CARD_NAME));
 		createLL(parent, "Card country", (String) cardParams.get(CARD_COUNTRY));
 		String formattedNb = formatNb((String) cardParams.get(CARD_NB));
@@ -179,13 +142,15 @@ public class StripeTokenCollectorComposite extends Composite implements
 		createLL(parent, "Expiration Date (MM/YYYY)",
 				(String) cardParams.get(CARD_EXP_MONTH) + "/"
 						+ (String) cardParams.get(CARD_EXP_YEAR));
+
+		// CVC text field
 		createBoldLabel(parent, "CVC");
 		cardCvcTxt = new Text(parent, SWT.LEAD | SWT.BORDER);
 		cardCvcTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
 		Composite buttonCmp = new Composite(parent, SWT.NO_FOCUS);
 		buttonCmp.setBackground(parent.getBackground());
-		gd = EclipseUiUtils.fillWidth(colNb);
+		GridData gd = EclipseUiUtils.fillWidth(colNb);
 		gd.horizontalAlignment = SWT.CENTER;
 		gd.verticalIndent = 10;
 		buttonCmp.setLayoutData(gd);
@@ -280,7 +245,8 @@ public class StripeTokenCollectorComposite extends Composite implements
 				|| EclipseUiUtils.isEmpty(month)
 				|| EclipseUiUtils.isEmpty(year)) {
 			MessageDialog.openError(getShell(), "Unvalid information",
-					"All field are required, please update and try again");
+					"All fields should be completed, "
+							+ "please update information provided.");
 			return;
 		}
 		cardParams.put(CARD_NAME, name);
@@ -341,6 +307,39 @@ public class StripeTokenCollectorComposite extends Composite implements
 	}
 
 	// UI HELPERS
+	private void populateHeader(Composite parent, String titleLabel, int colNb) {
+		// Header: title with lock icon & accepted cards
+		Composite titleCmp = new Composite(parent, SWT.NO_FOCUS);
+		titleCmp.setLayout(EclipseUiUtils.noSpaceGridLayout(new GridLayout(2,
+				false)));
+		titleCmp.setBackground(parent.getBackground());
+		titleCmp.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true,
+				false, colNb, 1));
+		// Lock icon
+		Label imgLbl = new Label(titleCmp, SWT.NONE);
+		imgLbl.setImage(PaymentImages.ICON_LOCK);
+		CmsUtils.style(imgLbl, PaymentStyles.CARD_INFO_TEXT);
+		// Title
+		Label cardInfoTitleLbl = new Label(titleCmp, SWT.WRAP);
+		CmsUtils.markup(cardInfoTitleLbl);
+		CmsUtils.style(cardInfoTitleLbl, PaymentStyles.CARD_INFO_TITLE);
+		GridData gd = EclipseUiUtils.fillWidth();
+		gd.verticalIndent = 10; // workaround to keep aligned with the icon
+		gd.horizontalIndent = 5; // workaround to keep aligned with the icon
+		cardInfoTitleLbl.setLayoutData(gd);
+		cardInfoTitleLbl.setText(titleLabel);
+		// Accepted cards
+		Label acceptedCardsLbl = new Label(parent, SWT.WRAP | SWT.CENTER);
+		CmsUtils.markup(acceptedCardsLbl);
+		CmsUtils.style(acceptedCardsLbl, PaymentStyles.CARD_INFO_TEXT);
+		// FIXME rather use a box and some css padding
+		gd = new GridData(SWT.CENTER, SWT.CENTER, true, false, colNb, 1);
+		// gd.verticalIndent = 5;
+		acceptedCardsLbl.setLayoutData(gd);
+		acceptedCardsLbl.setText(acceptedCardDesc);
+		createLabel(parent, PaymentStyles.CARD_INFO_TEXT, colNb);// Empty line
+	}
+
 	private Button createCancelButton(Composite parent) {
 		Button cancelBtn = new Button(parent, SWT.FLAT);
 		cancelBtn.setText("Cancel");
