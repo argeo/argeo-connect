@@ -1,12 +1,13 @@
-Bundle-SymbolicName: org.argeo.connect.payment.ui;singleton:=true
-Bundle-Activator: org.argeo.connect.payment.ui.PaymentUiPlugin
-Bundle-ActivationPolicy: lazy
-
-Require-Bundle:	org.eclipse.core.runtime
-
 Import-Package:com.stripe.*;resolution:=optional,\
 com.stripe.net;resolution:=optional,\
 com.google.gson;resolution:=optional,\
 org.eclipse.swt,\
 org.argeo.cms.text,\
 *
+
+
+#Bundle-SymbolicName: org.argeo.connect.payment.ui;singleton:=true
+#Bundle-Activator: org.argeo.connect.payment.ui.PaymentUiPlugin
+#Bundle-ActivationPolicy: lazy
+#
+#Require-Bundle:	org.eclipse.core.runtime

@@ -63,5 +63,4 @@
 		<property name="repository" ref="repository" />
 		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
-
 </beans>
