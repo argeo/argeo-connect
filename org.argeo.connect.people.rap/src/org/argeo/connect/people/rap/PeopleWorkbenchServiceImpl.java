@@ -52,9 +52,9 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 	@Override
 	public Wizard getCreationWizard(PeopleService peopleService, Node node) {
 		if (JcrUiUtils.isNodeType(node, PeopleTypes.PEOPLE_PERSON))
-			return new NewPersonWizard(peopleService, node);
+			return new NewPersonWizard(node);
 		else if (JcrUiUtils.isNodeType(node, PeopleTypes.PEOPLE_ORG))
-			return new NewOrgWizard(peopleService, node);
+			return new NewOrgWizard(node);
 		else
 			throw new PeopleException("No defined wizard for node " + node);
 	}

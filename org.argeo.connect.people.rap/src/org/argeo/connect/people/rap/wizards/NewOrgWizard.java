@@ -6,7 +6,6 @@ import javax.jcr.PropertyType;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -23,9 +22,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Generic wizard to manually create a new organisation in the system. The node
- * must have been created and is only updated with user filled info. The session
- * is *NOT* saved.
+ * Ask legal name and form, and an optional display name. Update the node that
+ * has been created and passed on finish. The session is *NOT* saved.
  */
 
 public class NewOrgWizard extends Wizard implements PeopleNames {
@@ -39,20 +37,19 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 	private Text displayNameTxt;
 	private Text legalFormTxt;
 
-	public NewOrgWizard(PeopleService peopleService, Node org) {
+	public NewOrgWizard(Node org) {
 		this.org = org;
 	}
 
 	@Override
 	public void addPages() {
-		// Configure the wizard
-		// setDefaultPageImageDescriptor(PeopleImages.);
 		try {
 			MainInfoPage page = new MainInfoPage("Main page");
 			addPage(page);
 		} catch (Exception e) {
 			throw new PeopleException("Cannot add page to wizard", e);
 		}
+		setWindowTitle("New organisation contact");
 	}
 
 	/**

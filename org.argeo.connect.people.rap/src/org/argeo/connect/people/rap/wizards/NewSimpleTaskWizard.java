@@ -41,7 +41,7 @@ import org.eclipse.swt.widgets.Text;
  * return Window.OK.
  * 
  * Warning: the passed session is not saved: the task stays in a transient mode
- * until the caller save the session.
+ * until the caller save the session to enable rollback.
  */
 
 public class NewSimpleTaskWizard extends Wizard {
@@ -83,16 +83,14 @@ public class NewSimpleTaskWizard extends Wizard {
 		this.currSession = session;
 	}
 
-	// Exposes to children
+	// Exposes to extending classes
 	protected Session getSession() {
 		return currSession;
 	}
 
 	@Override
 	public void addPages() {
-		// Configure the wizard
 		setWindowTitle("Create a task");
-		// setDefaultPageImageDescriptor(ActivitiesImages.TODO_IMGDESC);
 		try {
 			SelectChildrenPage page = new SelectChildrenPage("Main page");
 			addPage(page);
@@ -134,10 +132,10 @@ public class NewSimpleTaskWizard extends Wizard {
 		return true;
 	}
 
-	@Override
-	public void dispose() {
-		super.dispose();
-	}
+//	@Override
+//	public void dispose() {
+//		super.dispose();
+//	}
 
 	protected class SelectChildrenPage extends WizardPage {
 		private static final long serialVersionUID = 1L;

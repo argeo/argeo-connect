@@ -7,7 +7,6 @@ import javax.jcr.PropertyType;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -22,40 +21,30 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
-/**
- * Generic wizard to manually create a new "Person" entry in the system
- * 
- * The node must have been created. But the wizard will try to save and commit
- * using the PeopleService before returning SWT.OK. The caller might then call
- * the "open entity editor" command if needed.
- */
-
+/** Ask first & last name. Update the passed node on finish */
 public class NewPersonWizard extends Wizard implements PeopleNames {
 	// private final static Log log = LogFactory.getLog(NewPersonWizard.class);
 
 	// Context
-	// private PeopleService peopleService;
 	private Node person;
 
 	// This page widgets
 	protected Text lastNameTxt;
 	protected Text firstNameTxt;
 
-	public NewPersonWizard(PeopleService peopleService, Node person) {
-		// this.peopleService = peopleService;
+	public NewPersonWizard(Node person) {
 		this.person = person;
 	}
 
 	@Override
 	public void addPages() {
-		// Configure the wizard
-		// setDefaultPageImageDescriptor(PeopleImages.);
 		try {
 			MainInfoPage page = new MainInfoPage("Main page");
 			addPage(page);
 		} catch (Exception e) {
 			throw new PeopleException("Cannot add page to wizard", e);
 		}
+		setWindowTitle("New person");
 	}
 
 	/**
