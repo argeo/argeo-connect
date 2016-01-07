@@ -9,7 +9,6 @@ import javax.jcr.Session;
 
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.ActivityService;
-import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.rap.PeopleRapUtils;
@@ -91,12 +90,8 @@ public class NewSimpleTaskWizard extends Wizard {
 	@Override
 	public void addPages() {
 		setWindowTitle("Create a task");
-		try {
-			SelectChildrenPage page = new SelectChildrenPage("Main page");
-			addPage(page);
-		} catch (Exception e) {
-			throw new PeopleException("Cannot add page to wizard", e);
-		}
+		SelectChildrenPage page = new SelectChildrenPage("Main page");
+		addPage(page);
 	}
 
 	/**
@@ -132,18 +127,13 @@ public class NewSimpleTaskWizard extends Wizard {
 		return true;
 	}
 
-//	@Override
-//	public void dispose() {
-//		super.dispose();
-//	}
-
 	protected class SelectChildrenPage extends WizardPage {
 		private static final long serialVersionUID = 1L;
 
 		public SelectChildrenPage(String pageName) {
 			super(pageName);
-			setTitle("New task...");
-			setMessage("Create a new task with basic information.");
+			setTitle("Create a new simple task");
+			setMessage("Please fill out following information.");
 		}
 
 		public void createControl(Composite parent) {
@@ -159,21 +149,25 @@ public class NewSimpleTaskWizard extends Wizard {
 
 			// ASSIGNED TO
 			PeopleRapUtils.createBoldLabel(parent, "Assigned to");
-			final Text assignedToTxt = new Text(parent, SWT.BORDER
+			Composite assignedToCmp = new Composite(parent, SWT.NO_FOCUS);
+			gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
+			assignedToCmp.setLayoutData(gd);
+			GridLayout gl = EclipseUiUtils.noSpaceGridLayout(new GridLayout(2,
+					false));
+			gl.horizontalSpacing = 5;
+			assignedToCmp.setLayout(gl);
+			final Text assignedToTxt = new Text(assignedToCmp, SWT.BORDER
 					| SWT.NO_FOCUS);
 			assignedToTxt.setMessage("Assign a group to manage this task");
 			CmsUtils.style(assignedToTxt,
 					PeopleStyles.PEOPLE_CLASS_FORCE_BORDER);
-
-			gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
-			assignedToTxt.setLayoutData(gd);
+			assignedToTxt.setLayoutData(EclipseUiUtils.fillWidth());
 			assignedToTxt.setEnabled(false);
 
-			Link assignedToLk = new Link(parent, SWT.NONE);
+			Link assignedToLk = new Link(assignedToCmp, SWT.NONE);
 			assignedToLk.setText("<a>Pick up</a>");
-			assignedToLk.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER,
-					false, false));
-
+			// assignedToLk.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER,
+			// false, false));
 			assignedToLk.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;
 
@@ -183,7 +177,6 @@ public class NewSimpleTaskWizard extends Wizard {
 							assignedToTxt.getShell(), "Choose a group",
 							peopleService);
 					if (diag.open() == Window.OK) {
-
 						assignedToGroupId = diag.getSelected();
 						if (EclipseUiUtils.notEmpty(assignedToGroupId))
 							assignedToTxt.setText(userAdminService
@@ -197,7 +190,10 @@ public class NewSimpleTaskWizard extends Wizard {
 			dueDateCmp = new DateText(parent, SWT.NO_FOCUS);
 
 			// WAKE UP DATE
-			PeopleRapUtils.createBoldLabel(parent, "Wake up date");
+			Label lbl = PeopleRapUtils.createBoldLabel(parent, "Wake up date");
+			gd = new GridData();
+			gd.horizontalIndent = 15;
+			lbl.setLayoutData(gd);
 			wakeUpDateCmp = new DateText(parent, SWT.NO_FOCUS);
 
 			// DESCRIPTION

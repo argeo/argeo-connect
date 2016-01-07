@@ -49,7 +49,7 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 		} catch (Exception e) {
 			throw new PeopleException("Cannot add page to wizard", e);
 		}
-		setWindowTitle("New organisation contact");
+		setWindowTitle("New organisation");
 	}
 
 	/**
