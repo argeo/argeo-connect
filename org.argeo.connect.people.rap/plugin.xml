@@ -465,7 +465,7 @@
 		  <enabledWhen>
 		    <with variable="roles">
 		      <iterate ifEmpty="false" operator="or">
-		        <equals value="cn=org.argeo.connect.people.manager,ou=roles,ou=node" />
+		        <equals value="cn=org.argeo.connect.people.member,ou=roles,ou=node" />
 		      </iterate>
 		    </with>
 		 </enabledWhen>
