@@ -195,7 +195,7 @@ public class StripeTokenCollectorComposite extends Composite implements
 		});
 
 		Button okBtn = new Button(parent, SWT.FLAT);
-		okBtn.setText("Do pay");
+		okBtn.setText("Confirm payment");
 		okBtn.addSelectionListener(new SelectionListener() {
 			private static final long serialVersionUID = -6650512174441009678L;
 
