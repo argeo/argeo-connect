@@ -8,6 +8,7 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.security.Privilege;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -63,7 +64,7 @@ public class DemoServiceImpl extends PeopleServiceImpl implements
 	}
 
 	// HELPERS
-	/** Creates various usefull parent nodes if needed */
+	/** Creates various useful parent nodes if needed */
 	@Override
 	protected void initialiseModel(Session adminSession)
 			throws RepositoryException {
@@ -76,6 +77,24 @@ public class DemoServiceImpl extends PeopleServiceImpl implements
 			adminSession.save();
 			log.info("Repository has been initialized " + "with People's model");
 		}
+		configureACL(adminSession);
+	}
+
+	// First draft of configuration of the people specific rights
+	private void configureACL(Session session) throws RepositoryException {
+		// Every one seems to not work.
+
+		String memberGroupDn = "cn=" + PeopleConstants.ROLE_MEMBER
+				+ ",ou=roles,ou=node";
+		// Give full access to the business admin role
+		JcrUtils.addPrivilege(session, getBasePath(null), memberGroupDn,
+				Privilege.JCR_ALL);
+
+		// TODO Session is not marked as dirty after policy change?
+		// if (session.hasPendingChanges()) {
+		session.save();
+		log.info("Access control configured with Scoolgate's model");
+		// }
 	}
 
 	// MODEL INITIALISATION
@@ -92,8 +111,8 @@ public class DemoServiceImpl extends PeopleServiceImpl implements
 			resourceService.createTagLikeResourceParent(adminSession,
 					PeopleConstants.RESOURCE_COUNTRY,
 					PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE,
-					PeopleNames.PEOPLE_CODE, getBasePath(null), JcrUiUtils
-							.getLocalJcrItemName(NodeType.NT_UNSTRUCTURED),
+					PeopleNames.PEOPLE_CODE, getBasePath(null),
+					JcrUiUtils.getLocalJcrItemName(NodeType.NT_UNSTRUCTURED),
 					new ArrayList<String>());
 			String EN_SHORT_NAME = "English short name (upper-lower case)";
 			String ISO_CODE = "Alpha-2 code";
@@ -108,8 +127,8 @@ public class DemoServiceImpl extends PeopleServiceImpl implements
 			resourceService.createTagLikeResourceParent(adminSession,
 					PeopleConstants.RESOURCE_LANG,
 					PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE,
-					PeopleNames.PEOPLE_CODE, getBasePath(null), JcrUiUtils
-							.getLocalJcrItemName(NodeType.NT_UNSTRUCTURED),
+					PeopleNames.PEOPLE_CODE, getBasePath(null),
+					JcrUiUtils.getLocalJcrItemName(NodeType.NT_UNSTRUCTURED),
 					new ArrayList<String>());
 			String EN_SHORT_NAME = "Language name";
 			String ISO_CODE = "639-1";
