@@ -30,7 +30,7 @@ public interface UserAdminService {
 	/** Returns the display name of the current logged in user */
 	public String getMyDisplayName();
 
-	/** Returns the display name of the current logged in user */
+	/** Returns the e-mail of the current logged in user */
 	public String getMyMail();
 
 	/** Returns true if the current user is in the specified role */
