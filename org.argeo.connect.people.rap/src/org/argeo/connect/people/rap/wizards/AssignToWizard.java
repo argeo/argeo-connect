@@ -51,6 +51,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.osgi.service.useradmin.Group;
+import org.osgi.service.useradmin.User;
 
 /** Update the status of the selected tasks (with only one node type) as batch */
 public class AssignToWizard extends Wizard implements PeopleNames {
@@ -59,6 +60,8 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 	// Context
 	private final PeopleService peopleService;
 	private final PeopleWorkbenchService peopleUiService;
+	private final UserAdminService userAdminService;
+
 	private final Object[] elements;
 	private final String selectorName;
 
@@ -80,6 +83,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 		this.peopleUiService = peopleWorkbenchService;
 		this.elements = elements;
 		this.selectorName = selectorName;
+		userAdminService = peopleService.getUserAdminService();
 	}
 
 	@Override
@@ -159,7 +163,15 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 
 			column = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE,
 					100);
-			column.setLabelProvider(new ColumnLabelProvider());
+			column.setLabelProvider(new ColumnLabelProvider() {
+				private static final long serialVersionUID = -3677453559279606328L;
+
+				@Override
+				public String getText(Object element) {
+					User user = (User) element;
+					return userAdminService.getUserDisplayName(user.getName());
+				}
+			});
 			tableColumnLayout.setColumnData(column.getColumn(),
 					new ColumnWeightData(100, 100, true));
 
@@ -177,7 +189,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 
 				@Override
 				public Object[] getElements(Object inputElement) {
-					return (String[]) inputElement;
+					return (User[]) inputElement;
 				}
 			});
 
@@ -185,13 +197,13 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			viewer.addDoubleClickListener(new MyDoubleClickListener());
 
 			box.setLayout(tableColumnLayout);
-			UserAdminService usm = peopleService.getUserAdminService();
-			List<Group> groups = usm.listGroups(null);
-			List<String> values = new ArrayList<String>();
-			for (Group group : groups) {
-				values.add(usm.getUserDisplayName(group.getName()));
-			}
-			viewer.setInput(values.toArray(new String[0]));
+			List<Group> groups = userAdminService.listGroups(null);
+
+			// // List<String> values = new ArrayList<String>();
+			// for (Group group : groups) {
+			// values.add();
+			// }
+			viewer.setInput(groups.toArray(new Group[0]));
 			viewer.refresh();
 			setControl(body);
 			body.setFocus();
@@ -205,8 +217,8 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 				else {
 					Object obj = ((IStructuredSelection) event.getSelection())
 							.getFirstElement();
-					if (obj instanceof String) {
-						chosenGroupId = (String) obj;
+					if (obj instanceof User) {
+						chosenGroupId = ((User) obj).getName();
 					}
 				}
 				getContainer().updateButtons();
@@ -220,8 +232,8 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 				} else {
 					Object obj = ((IStructuredSelection) evt.getSelection())
 							.getFirstElement();
-					if (obj instanceof String) {
-						chosenGroupId = (String) obj;
+					if (obj instanceof User) {
+						chosenGroupId = ((User) obj).getName();
 						getContainer().showPage(getNextPage());
 					}
 				}
@@ -244,9 +256,11 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			super.setVisible(visible);
 			if (visible == true) {
 				setErrorMessage(null);
-				setTitle("Assign to " + chosenGroupId + ": check and confirm.");
+				String dName = userAdminService
+						.getUserDisplayName(chosenGroupId);
+				setTitle("Assign to " + dName + ": check and confirm.");
 				setMessage("Your are about to assign the below listed "
-						+ elements.length + " tasks to " + chosenGroupId
+						+ elements.length + " tasks to " + dName
 						+ ". Are you sure you want to proceed?");
 			}
 		}

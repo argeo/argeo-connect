@@ -12,7 +12,6 @@ import javax.jcr.Session;
 import org.argeo.ArgeoException;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ActivityValueCatalogs;
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -86,30 +85,25 @@ public class ActivityList extends LazyCTabControl {
 	@Override
 	public void createPartControl(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		try {
-			Composite addCmp = null;
-			if (peopleService.getUserAdminService().amIInRole(
-					PeopleConstants.ROLE_MEMBER)) {
-				addCmp = toolkit.createComposite(parent);
-				addCmp.setLayoutData(EclipseUiUtils.fillWidth());
-			}
-
-			// The Table that displays corresponding activities
-			activityTable = new MyActivityTableCmp(parent, SWT.MULTI, entity);
-			activityTable.setLayoutData(EclipseUiUtils.fillAll());
-
-			if (addCmp != null)
-				addNewActivityPanel(addCmp, entity,
-						peopleWorkbenchService.getOpenEntityEditorCmdId(),
-						activityTable);
-
-			// Doubleclick listener
-			activityTable.getTableViewer().addDoubleClickListener(
-					new ActivityTableDCL(peopleWorkbenchService
-							.getOpenEntityEditorCmdId()));
-		} catch (RepositoryException re) {
-			throw new PeopleException("unable to create activity log", re);
+		Composite addCmp = null;
+		// if (peopleService.getUserAdminService().amIInRole(
+		// PeopleConstants.ROLE_MEMBER)) {
+		if (JcrUiUtils.canEdit(entity)) {
+			addCmp = toolkit.createComposite(parent);
+			addCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		}
+
+		// The Table that displays corresponding activities
+		activityTable = new MyActivityTableCmp(parent, SWT.MULTI, entity);
+		activityTable.setLayoutData(EclipseUiUtils.fillAll());
+		if (addCmp != null)
+			addNewActivityPanel(addCmp, entity,
+					peopleWorkbenchService.getOpenEntityEditorCmdId(),
+					activityTable);
+		// Doubleclick listener
+		activityTable.getTableViewer().addDoubleClickListener(
+				new ActivityTableDCL(peopleWorkbenchService
+						.getOpenEntityEditorCmdId()));
 
 		myFormPart = new MyFormPart();
 		myFormPart.initialize(editor.getManagedForm());
@@ -232,8 +226,7 @@ public class ActivityList extends LazyCTabControl {
 	private class MyActivityTableCmp extends ActivityTable {
 		private static final long serialVersionUID = 1L;
 
-		public MyActivityTableCmp(Composite parent, int style, Node entity)
-				throws RepositoryException {
+		public MyActivityTableCmp(Composite parent, int style, Node entity) {
 			super(parent, style, peopleService, peopleWorkbenchService, entity);
 		}
 

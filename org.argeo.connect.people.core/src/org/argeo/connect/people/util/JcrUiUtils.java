@@ -1,5 +1,6 @@
 package org.argeo.connect.people.util;
 
+import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -58,6 +59,20 @@ public class JcrUiUtils {
 			return "nt:" + name.substring(nt.length());
 		else
 			throw new PeopleException("Unknown prefix for " + name);
+	}
+
+	public static boolean canEdit(Node entity) {
+		boolean canEdit = false;
+		try {
+			entity.getSession().checkPermission(entity.getPath(), "add_node");
+			canEdit = true;
+		} catch (AccessControlException ace) {
+			// silent
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"Unable to check permission on " + entity, e);
+		}
+		return canEdit;
 	}
 
 	/**

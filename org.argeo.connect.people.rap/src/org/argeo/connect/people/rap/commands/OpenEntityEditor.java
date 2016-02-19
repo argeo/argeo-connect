@@ -57,11 +57,9 @@ public class OpenEntityEditor extends AbstractHandler {
 	public final static String PARAM_CTAB_ID = "param.cTabId";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-
 		EntityEditorInput eei = null;
 		Node entity = null;
 		Session session = null;
-
 		String jcrId = event.getParameter(PARAM_JCR_ID);
 		try {
 			session = repository.login();
