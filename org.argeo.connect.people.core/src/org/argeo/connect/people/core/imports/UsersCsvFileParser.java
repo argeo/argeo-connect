@@ -27,11 +27,11 @@ public class UsersCsvFileParser extends CsvParserWithLinesAsMap {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	protected void processLine(Integer lineNumber, Map<String, String> line) {
-		String userName = line.get("people:username");
-		String firstName = line.get("people:firstName");
-		String lastName = line.get("people:lastName");
-		String email = line.get("people:email");
-		String desc = line.get("people:description");
+		String userName = line.get("username");
+		String firstName = line.get("firstName");
+		String lastName = line.get("lastName");
+		String email = line.get("email");
+		String desc = line.get("description");
 
 		User existingUser = userAdminWrapper.getUserFromLocalId(userName);
 		if (existingUser != null){
@@ -65,6 +65,5 @@ public class UsersCsvFileParser extends CsvParserWithLinesAsMap {
 		// user before launching the import
 		char[] password = "demo".toCharArray();
 		user.getCredentials().put(null, password);
-
 	}
 }

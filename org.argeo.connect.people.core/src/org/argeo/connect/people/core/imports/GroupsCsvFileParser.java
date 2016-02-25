@@ -37,18 +37,20 @@ public class GroupsCsvFileParser extends CsvParserWithLinesAsMap {
 		String memberStr = line.get("members");
 
 		User existingUser = userAdminWrapper.getUserFromLocalId(cn);
+		Group group = null;
 		if (existingUser != null) {
-			log.warn("Group " + cn
-					+ " already exists in the system, skipping line");
-			return;
+			log.warn("Group "
+					+ cn
+					+ " already exists in the system, check if some user must yet be added");
+			group = (Group) existingUser;
+		} else {
+			String dn = userAdminWrapper.buildDefaultDN(cn, Role.GROUP);
+			group = (Group) userAdminWrapper.getUserAdmin().createRole(dn,
+					Role.GROUP);
+			Dictionary props = group.getProperties();
+			if (EclipseUiUtils.notEmpty(desc))
+				props.put(LdifName.description.name(), desc);
 		}
-		String dn = userAdminWrapper.buildDefaultDN(cn, Role.GROUP);
-		Group group = (Group) userAdminWrapper.getUserAdmin().createRole(dn,
-				Role.GROUP);
-
-		Dictionary props = group.getProperties();
-		if (EclipseUiUtils.notEmpty(desc))
-			props.put(LdifName.description.name(), desc);
 
 		String[] members = JcrUiUtils.parseAndClean(memberStr, ",", true);
 		for (String member : members) {
