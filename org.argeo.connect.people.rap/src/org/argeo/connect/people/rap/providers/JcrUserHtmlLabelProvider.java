@@ -2,6 +2,7 @@ package org.argeo.connect.people.rap.providers;
 
 import javax.jcr.Node;
 
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.ui.PeopleUiUtils;
@@ -19,10 +20,12 @@ public class JcrUserHtmlLabelProvider extends JcrRowLabelProvider {
 
 	private final UserAdminService userAdminService;
 	private String selectorName;
+	private String propertyName;
 
 	public JcrUserHtmlLabelProvider(PeopleService peopleService,
 			String selectorName, String propertyName) {
 		super(propertyName);
+		this.propertyName = propertyName;
 		userAdminService = peopleService.getUserAdminService();
 		if (EclipseUiUtils.notEmpty(selectorName))
 			this.selectorName = selectorName;
@@ -37,12 +40,17 @@ public class JcrUserHtmlLabelProvider extends JcrRowLabelProvider {
 	@Override
 	public String getText(Object element) {
 		Node currNode = JcrUiUtils.getNodeFromElement(element, selectorName);
-		String userId = super.getText(currNode);
-		String displayName = null;
-		if (EclipseUiUtils.notEmpty(userId))
-			displayName = userAdminService.getUserDisplayName(userId);
-		if (EclipseUiUtils.isEmpty(displayName))
-			displayName = userId;
-		return PeopleUiUtils.replaceAmpersand(displayName);
+		try {
+			String userId = super.getText(currNode);
+			String displayName = null;
+			if (EclipseUiUtils.notEmpty(userId))
+				displayName = userAdminService.getUserDisplayName(userId);
+			if (EclipseUiUtils.isEmpty(displayName))
+				displayName = userId;
+			return PeopleUiUtils.replaceAmpersand(displayName);
+		} catch (Exception e) {
+			throw new PeopleException("Unable to get display name for prop: "
+					+ propertyName + " of " + currNode, e);
+		}
 	}
 }
