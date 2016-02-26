@@ -91,6 +91,9 @@ public class HistoryLog extends LazyCTabControl {
 				builder.append("People UID: ").append(puid);
 				builder.append(" <br/>");
 			}
+			builder.append("JcrID: ").append(JcrUiUtils.getIdentifier(entity));
+			builder.append(" <br/>");
+
 			builder.append("Path: ").append(JcrUiUtils.getPath(entity));
 			label.setText(builder.toString());
 		}

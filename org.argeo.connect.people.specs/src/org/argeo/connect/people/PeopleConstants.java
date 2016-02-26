@@ -58,7 +58,7 @@ public interface PeopleConstants {
 	// System roles exposed by people
 	public final static String ROLE_GUEST = "org.argeo.connect.people.guest";
 	public final static String ROLE_MEMBER = "org.argeo.connect.people.member";
-	public final static String ROLE_BUSINESS_ADMIN = "org.argeo.connect.people.admin";
+	public final static String ROLE_BUSINESS_ADMIN = "cn=businessAdmin,ou=roles,ou=node";
 	// Give access to people specific perspectives
 	// public final static String ROLE_MANAGER =
 	// "org.argeo.connect.people.manager";
