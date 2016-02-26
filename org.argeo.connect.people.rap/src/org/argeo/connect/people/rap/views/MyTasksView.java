@@ -152,6 +152,13 @@ public class MyTasksView extends ViewPart implements Refreshable {
 		column.getColumn().addSelectionListener(
 				getNodeSelectionAdapter(3, PropertyType.STRING,
 						PeopleNames.PEOPLE_RELATED_TO, comparator, viewer));
+		// Status
+		column = ViewerUtils.createTableViewerColumn(viewer, "Status",
+				SWT.NONE, 250);
+		column.setLabelProvider(new StatusLabelProvider());
+		column.getColumn().addSelectionListener(
+				getNodeSelectionAdapter(4, PropertyType.STRING,
+						PeopleNames.PEOPLE_TASK_STATUS, comparator, viewer));
 
 		// Warning: initialise comparator before setting it
 		comparator.setColumn(PropertyType.DATE,
@@ -225,6 +232,16 @@ public class MyTasksView extends ViewPart implements Refreshable {
 				throw new ArgeoException("Unable to get date from node "
 						+ element, re);
 			}
+		}
+	}
+
+	private class StatusLabelProvider extends ColumnLabelProvider {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public String getText(Object element) {
+			return JcrUiUtils.get((Node) element,
+					PeopleNames.PEOPLE_TASK_STATUS);
 		}
 	}
 
