@@ -7,10 +7,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.Repository;
@@ -80,7 +80,6 @@ public class MyTasksView extends ViewPart implements Refreshable {
 		tableViewer.addDoubleClickListener(new ViewDoubleClickListener());
 
 		refreshFilteredList();
-
 	}
 
 	@Override
@@ -168,9 +167,13 @@ public class MyTasksView extends ViewPart implements Refreshable {
 	 * all nodes
 	 */
 	protected void refreshFilteredList() {
-		List<Node> tasks = activityService.getMyTasks(session, true);
-		tableViewer.setInput(tasks.toArray());
-		tableViewer.setItemCount(tasks.size());
+		NodeIterator tasks = activityService.getMyTasks(session, false);
+		setInput(tasks);
+	}
+
+	protected final void setInput(NodeIterator tasks) {
+		tableViewer.setInput(JcrUtils.nodeIteratorToList(tasks).toArray());
+		tableViewer.setItemCount((int) tasks.getSize());
 		tableViewer.refresh();
 	}
 
@@ -323,6 +326,10 @@ public class MyTasksView extends ViewPart implements Refreshable {
 		}
 	}
 
+	protected Session getSession() {
+		return session;
+	}
+
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
@@ -336,5 +343,4 @@ public class MyTasksView extends ViewPart implements Refreshable {
 			PeopleWorkbenchService peopleWorkbenchService) {
 		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
-
 }

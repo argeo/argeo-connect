@@ -2,7 +2,6 @@ package org.argeo.connect.people.core;
 
 import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -164,7 +163,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 
 	/* TASKS */
 	@Override
-	public List<Node> getMyTasks(Session session, boolean onlyOpenTasks) {
+	public NodeIterator getMyTasks(Session session, boolean onlyOpenTasks) {
 		return getTasksForUser(session, session.getUserID(), onlyOpenTasks);
 	}
 
@@ -176,17 +175,21 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	 * @return an empty list if none were found
 	 */
 	@Override
-	public List<Node> getTasksForUser(Session session, String username,
+	public NodeIterator getTasksForUser(Session session, String username,
 			boolean onlyOpenTasks) {
 		UserAdminService usm = peopleService.getUserAdminService();
-		String[] roles = usm.getUserRoles(username);
-		List<Node> tasks = new ArrayList<Node>();
-		for (String role : roles)
-			tasks.addAll(getTasksForGroup(session, role, onlyOpenTasks));
-		return tasks;
+		return getTasksForGroup(session, usm.getUserRoles(username),
+				onlyOpenTasks);
+
+		// String[] roles = usm.getUserRoles(username);
+		//
+		// List<Node> tasks = new ArrayList<Node>();
+		// for (String role : roles)
+		// tasks.addAll(getTasksForGroup(session, role, onlyOpenTasks));
+		// return tasks;
 	}
 
-	public List<Node> getTasksForGroup(Session session, String groupId,
+	public NodeIterator getTasksForGroup(Session session, String[] roles,
 			boolean onlyOpenTasks) {
 		try {
 			QueryManager queryManager = session.getWorkspace()
@@ -196,30 +199,48 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			StringBuilder builder = new StringBuilder();
 			builder.append("//element(*, ").append(PeopleTypes.PEOPLE_TASK)
 					.append(")");
-			String attrQuery = XPathUtils.getPropertyEquals(
-					PeopleNames.PEOPLE_ASSIGNED_TO, groupId);
-			if (notEmpty(attrQuery))
-				builder.append("[").append(attrQuery).append("]");
-			builder.append("order by @").append(PeopleNames.JCR_LAST_MODIFIED)
+
+			StringBuilder tmpBuilder = new StringBuilder();
+			for (String role : roles) {
+				String attrQuery = XPathUtils.getPropertyEquals(
+						PeopleNames.PEOPLE_ASSIGNED_TO, role);
+				if (notEmpty(attrQuery))
+					tmpBuilder.append(attrQuery).append(" or ");
+			}
+
+			if (tmpBuilder.length() > 4)
+				builder.append("[")
+						.append(tmpBuilder.substring(0, tmpBuilder.length() - 3))
+						.append("]");
+
+			// Implement the sleeping task query
+			if (onlyOpenTasks)
+				throw new PeopleException(
+						"Unimplemented feature: search only open tasks");
+
+			builder.append(" order by @").append(PeopleNames.JCR_LAST_MODIFIED)
 					.append(" descending");
+
+			// builder.append(" order by @").append(PeopleNames.PEOPLE_DUE_DATE)
+			// .append(" ascending");
 
 			Query query = queryManager.createQuery(builder.toString(),
 					PeopleConstants.QUERY_XPATH);
 
-			NodeIterator nit = query.execute().getNodes();
-			if (onlyOpenTasks) {
-				List<Node> tasks = new ArrayList<Node>();
-				while (nit.hasNext()) {
-					Node currNode = nit.nextNode();
-					if (!isTaskDone(currNode) && !isTaskSleeping(currNode))
-						tasks.add(currNode);
-				}
-				return tasks;
-			} else
-				return JcrUtils.nodeIteratorToList(nit);
+			return query.execute().getNodes();
+			// if (onlyOpenTasks) {
+			// List<Node> tasks = new ArrayList<Node>();
+			// while (nit.hasNext()) {
+			// Node currNode = nit.nextNode();
+			// if (!isTaskDone(currNode) && !isTaskSleeping(currNode))
+			// tasks.add(currNode);
+			// }
+			// return tasks;
+			// } else
+			// return JcrUtils.nodeIteratorToList(nit);
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to get tasks for group "
-					+ groupId);
+			throw new PeopleException("Unable to get tasks for groups "
+					+ roles.toString());
 		}
 	}
 

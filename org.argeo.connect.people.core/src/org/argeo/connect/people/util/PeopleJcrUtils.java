@@ -949,8 +949,15 @@ public class PeopleJcrUtils implements PeopleNames {
 	public static Node getDraftParent(Session session,
 			PeopleService peopleService) {
 		String draftPath = peopleService.getTmpPath();
-		String datePath = JcrUtils.dateAsPath(Calendar.getInstance(), true);
-		return JcrUtils.mkdirs(session, draftPath + "/" + datePath + "drafts");
+		try {
+			String datePath = JcrUtils.dateAsPath(Calendar.getInstance(), true);
+			Node draftParent = session.getNode(draftPath);
+			return JcrUtils.mkdirs(draftParent, datePath + "drafts",
+					NodeType.NT_UNSTRUCTURED);
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Unable to get draft parent node at "
+					+ draftPath, e);
+		}
 	}
 
 	public static Node getImportTmpParent(Session session,

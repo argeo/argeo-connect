@@ -9,7 +9,6 @@ import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.query.Row;
 
 import org.argeo.ArgeoMonitor;
 import org.argeo.connect.people.PeopleException;
@@ -61,8 +60,7 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 	private final PeopleService peopleService;
 	private final PeopleWorkbenchService peopleUiService;
 	private final String taskId;
-	private final Row[] rows;
-	private final String selectorName;
+	private final Node[] nodes;
 	// Cache to ease implementation
 	private final Session session;
 	private final ResourceService resourceService;
@@ -84,17 +82,13 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 	 * @param taskId
 	 */
 	public UpdateStatusWizard(Session session, PeopleService peopleService,
-			PeopleWorkbenchService peopleWorkbenchService, Row[] rows,
+			PeopleWorkbenchService peopleWorkbenchService, Node[] nodes,
 			String selectorName, String taskId) {
-
 		this.session = session;
 		this.peopleService = peopleService;
 		this.peopleUiService = peopleWorkbenchService;
-
-		this.rows = rows;
-		this.selectorName = selectorName;
+		this.nodes = nodes;
 		this.taskId = taskId;
-
 		resourceService = peopleService.getResourceService();
 	}
 
@@ -130,8 +124,8 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 			MessageDialog.openError(getShell(), "Unvalid information", errMsg);
 			return false;
 		}
-		new UpdateStatusesJob(peopleService, rows, selectorName, taskId,
-				chosenStatus).schedule();
+		new UpdateStatusesJob(peopleService, nodes, taskId, chosenStatus)
+				.schedule();
 		return true;
 	}
 
@@ -264,7 +258,7 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 				setErrorMessage(null);
 				setTitle("Update to " + chosenStatus + ": check and confirm.");
 				setMessage("Your are about to update the below listed "
-						+ rows.length + " task to status " + chosenStatus
+						+ nodes.length + " task to status " + chosenStatus
 						+ ". Are you sure you want to proceed?");
 			}
 		}
@@ -276,9 +270,8 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 			layout.marginTop = layout.marginWidth = 10;
 			body.setLayout(layout);
 			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
-			colDefs.add(new PeopleColumnDefinition(selectorName,
-					Property.JCR_TITLE, PropertyType.STRING, "Display Name",
-					new TitleIconRowLP(peopleUiService, selectorName,
+			colDefs.add(new PeopleColumnDefinition("Display Name",
+					new TitleIconRowLP(peopleUiService, null,
 							Property.JCR_TITLE), 300));
 
 			VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(body,
@@ -286,7 +279,7 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 			TableViewer membersViewer = tableCmp.getTableViewer();
 			membersViewer.setContentProvider(new MyLazyContentProvider(
 					membersViewer));
-			setViewerInput(membersViewer, rows);
+			setViewerInput(membersViewer, nodes);
 			// workaround the issue with fill layout and virtual viewer
 			GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
 			gd.heightHint = 400;
@@ -296,17 +289,17 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 	}
 
 	/** Use this method to update the result table */
-	protected void setViewerInput(TableViewer membersViewer, Row[] rows) {
-		membersViewer.setInput(rows);
+	protected void setViewerInput(TableViewer membersViewer, Node[] nodes) {
+		membersViewer.setInput(nodes);
 		// we must explicitly set the items count
-		membersViewer.setItemCount(rows.length);
+		membersViewer.setItemCount(nodes.length);
 		membersViewer.refresh();
 	}
 
 	private class MyLazyContentProvider implements ILazyContentProvider {
 		private static final long serialVersionUID = 1L;
 		private TableViewer viewer;
-		private Row[] elements;
+		private Node[] elements;
 
 		public MyLazyContentProvider(TableViewer viewer) {
 			this.viewer = viewer;
@@ -319,7 +312,7 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 			// IMPORTANT: don't forget this: an exception will be thrown if a
 			// selected object is not part of the results anymore.
 			viewer.setSelection(null);
-			this.elements = (Row[]) newInput;
+			this.elements = (Node[]) newInput;
 		}
 
 		public void updateElement(int index) {
@@ -329,33 +322,23 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 
 	/** Privileged job that performs the update asynchronously */
 	private class UpdateStatusesJob extends PrivilegedJob {
-
 		private Repository repository;
-		// private String tagPath;
-		// private String tagPropName;
 
 		final private List<String> pathes = new ArrayList<String>();
-		// private final String selectorName;
 		private final String chosenStatus;
 		private final String taskTypeId;
 
-		// callingDisplay, peopleService,
-		// rows, selectorName, chosenStatus
-
 		public UpdateStatusesJob(PeopleService peopleService,
-				Row[] toUpdateRows, String selectorName, String taskTypeId,
+				Node[] toUpdateNodes, String taskTypeId,
 				String chosenStatus) {
 			super("Updating");
 
 			this.taskTypeId = taskTypeId;
 			this.chosenStatus = chosenStatus;
 			try {
-				Node tmpNode = toUpdateRows[0].getNode(selectorName);
-				repository = tmpNode.getSession().getRepository();
-				for (Row row : toUpdateRows) {
-					Node currNode = row.getNode(selectorName);
-					pathes.add(currNode.getPath());
-				}
+				repository = toUpdateNodes[0].getSession().getRepository();
+				for (Node node : toUpdateNodes) 
+					pathes.add(node.getPath());
 			} catch (RepositoryException e) {
 				throw new PeopleException("Unable to initialise "
 						+ "status batch update ", e);
@@ -387,8 +370,7 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 			} catch (Exception e) {
 				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
 						"Unable to perform batch update to status "
-								+ chosenStatus + " on " + taskTypeId + " for "
-								+ selectorName + " row list ", e);
+								+ chosenStatus + " on " + taskTypeId + " for node list ", e);
 			} finally {
 				JcrUtils.logoutQuietly(session);
 			}

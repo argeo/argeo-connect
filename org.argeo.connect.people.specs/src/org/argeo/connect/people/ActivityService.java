@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.Session;
 
 /**
@@ -148,10 +149,11 @@ public interface ActivityService {
 	 * Retrieves tasks assigned to one of the group that contain the username
 	 * retrieved from the current session
 	 */
-	public List<Node> getMyTasks(Session session, boolean onlyOpenTasks);
+	// public List<Node> getMyTasks(Session session, boolean onlyOpenTasks);
+	public NodeIterator getMyTasks(Session session, boolean onlyOpenTasks);
 
 	/** Retrieves tasks assigned to one of the group that contain this username */
-	public List<Node> getTasksForUser(Session session, String username,
+	public NodeIterator getTasksForUser(Session session, String username,
 			boolean onlyOpenTasks);
 
 	/** Get the display name of the assigned to group for this task */
