@@ -1,5 +1,7 @@
 package org.argeo.connect.people.rap.editors;
 
+import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -187,8 +189,11 @@ public class RateEditor extends AbstractPeopleEditor {
 				pollNameLbl.setText(ActivityUtils.getPollName(activity));
 				String manager = JcrUiUtils.get(activity,
 						PeopleNames.PEOPLE_REPORTED_BY);
-				if (EclipseUiUtils.notEmpty(manager))
-					managerLbl.setText(manager);
+				if (notEmpty(manager)) {
+					String dName = getPeopleService().getUserAdminService()
+							.getUserDisplayName(manager);
+					managerLbl.setText(notEmpty(dName) ? dName : manager);
+				}
 				try {
 					if (activity.hasProperty(PeopleNames.PEOPLE_ACTIVITY_DATE)) {
 						Calendar cal = activity.getProperty(
