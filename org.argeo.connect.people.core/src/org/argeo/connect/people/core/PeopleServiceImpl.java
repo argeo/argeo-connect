@@ -40,6 +40,7 @@ import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.PeopleJcrUtils;
+import org.argeo.connect.people.util.PersonJcrUtils;
 import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.jcr.JcrUtils;
 import org.springframework.core.io.ClassPathResource;
@@ -108,19 +109,19 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	@Override
 	public String getCurrentUserHomePath() {
-		return getHomeBasePath()+"/"+UserAdminUtils.getCurrentUserHomeRelPath();
+		return getHomeBasePath() + "/"
+				+ UserAdminUtils.getCurrentUserHomeRelPath();
 	}
 
 	@Override
 	public String getUserHomePath(String dn) {
-		return getHomeBasePath()+"/"+UserAdminUtils.getHomeRelPath(dn);
+		return getHomeBasePath() + "/" + UserAdminUtils.getHomeRelPath(dn);
 	}
-	
-	protected String getHomeBasePath(){
+
+	protected String getHomeBasePath() {
 		return "/home";
 	}
 
-	
 	@Override
 	public String getResourceBasePath(String resourceType) {
 		// resourceType
@@ -240,6 +241,13 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 				if (pNode != null)
 					PeopleJcrUtils
 							.updatePrimaryCache(this, entity, pNode, true);
+			}
+
+			// Also update primary job
+			if (JcrUiUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)) {
+				Node pJob = PersonJcrUtils.getPrimaryJob(entity);
+				if (pJob != null)
+					PeopleJcrUtils.updatePrimaryCache(this, entity, pJob, true);
 			}
 		} else
 			log.warn("Trying to update primary cache on " + entity
@@ -491,18 +499,17 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		}
 		return inputStream;
 	}
-	
+
 	/* CONFIGURE QUERIES */
 	@Override
-	public boolean lazyLoadLists(){
+	public boolean lazyLoadLists() {
 		return false;
 	}
 
 	@Override
-	public boolean queryWhenTyping(){
+	public boolean queryWhenTyping() {
 		return true;
 	}
-
 
 	/* EXPOSED SERVICES */
 	@Override

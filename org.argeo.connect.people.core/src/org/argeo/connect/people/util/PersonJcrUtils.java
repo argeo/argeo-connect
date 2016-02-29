@@ -17,6 +17,7 @@ import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -26,34 +27,6 @@ import org.argeo.jcr.JcrUtils;
  * methods than direct JCR queries in order to ease model evolution.
  */
 public class PersonJcrUtils implements PeopleNames {
-
-	/**
-	 * Get the display name
-	 */
-	// public static String getPersonDisplayName(Node person) {
-	// String displayName = null;
-	// try {
-	// if (person.hasProperty(PEOPLE_USE_DEFAULT_DISPLAY_NAME)
-	// && person.getProperty(PEOPLE_USE_DEFAULT_DISPLAY_NAME)
-	// .getBoolean()) {
-	// String lastName = JcrUiUtils.get(person, PEOPLE_LAST_NAME);
-	// String firstName = JcrUiUtils.get(person,
-	// PEOPLE_FIRST_NAME);
-	// if (JcrUiUtils.checkNotEmptyString(firstName)
-	// || JcrUiUtils.checkNotEmptyString(lastName)) {
-	// displayName = firstName;
-	// if (JcrUiUtils.checkNotEmptyString(firstName)
-	// && JcrUiUtils.checkNotEmptyString(lastName))
-	// displayName += " ";
-	// displayName += lastName;
-	// }
-	// } else
-	// displayName = JcrUiUtils.get(person, Property.JCR_TITLE);
-	// } catch (RepositoryException e) {
-	// throw new PeopleException("Unable to get Person display name", e);
-	// }
-	// return displayName;
-	// }
 
 	public static String getVariousNameInfo(Node person) {
 		StringBuilder nameInfo = new StringBuilder();
@@ -201,4 +174,19 @@ public class PersonJcrUtils implements PeopleNames {
 				null);
 	}
 
+	public static Node getPrimaryJob(Node person)
+			throws RepositoryException {
+		// Rather
+		if (person.hasNode(PEOPLE_JOBS)) {
+			NodeIterator ni = person.getNode(PEOPLE_JOBS).getNodes();
+			while (ni.hasNext()) {
+				Node pJob = ni.nextNode();
+				if (pJob.hasProperty(PeopleNames.PEOPLE_IS_PRIMARY)
+						&& pJob.getProperty(PeopleNames.PEOPLE_IS_PRIMARY)
+								.getBoolean())
+					return pJob;
+			}
+		}
+		return null;
+	}
 }

@@ -23,6 +23,49 @@ import org.argeo.connect.people.PeopleTypes;
  */
 public class OrgJcrUtils implements PeopleNames {
 
+	/* PAYMENT MANAGEMENT */
+	public static NodeIterator getPaymentAccounts(Node entity) {
+		try {
+			if (entity.hasNode(PEOPLE_PAYMENT_ACCOUNTS))
+				return entity.getNode(PEOPLE_PAYMENT_ACCOUNTS).getNodes();
+			else
+				return null;
+		} catch (RepositoryException e) {
+			throw new PeopleException("Error while getting "
+					+ "payment accounts for node " + entity, e);
+		}
+	}
+
+	public static Node getPrimaryPaymentAccount(Node entity) {
+		NodeIterator nit = getPaymentAccounts(entity);
+		if (nit == null || nit.getSize() == 0)
+			return null;
+		else if (nit.getSize() > 1)
+			throw new PeopleException(
+					"Unable to get primary payment accounts for " + entity
+							+ ". Multiple accounts is not implemented and "
+							+ nit.getSize() + " accounts has been found.");
+		else
+			return nit.nextNode();
+	}
+
+	public static Node createPaymentAccount(Node entity, String nodeType,
+			String name) {
+		try {
+			Node accounts = null;
+			if (entity.hasNode(PEOPLE_PAYMENT_ACCOUNTS))
+				accounts = entity.getNode(PEOPLE_PAYMENT_ACCOUNTS);
+			else
+				accounts = entity.addNode(PEOPLE_PAYMENT_ACCOUNTS);
+			return accounts.addNode(name, nodeType);
+		} catch (RepositoryException e) {
+			throw new PeopleException(
+					"Error while creating new payment account for node "
+							+ entity, e);
+		}
+	}
+
+	// IMPORTS AND DEMO UTILS
 	/**
 	 * Mainly used during imports to provide a key to a given organisation. Do
 	 * not rely on this for production purposes. *
@@ -83,45 +126,4 @@ public class OrgJcrUtils implements PeopleNames {
 					+ " has been found.");
 	}
 
-	/* PAYMENT MANAGEMENT */
-	public static NodeIterator getPaymentAccounts(Node entity) {
-		try {
-			if (entity.hasNode(PEOPLE_PAYMENT_ACCOUNTS))
-				return entity.getNode(PEOPLE_PAYMENT_ACCOUNTS).getNodes();
-			else
-				return null;
-		} catch (RepositoryException e) {
-			throw new PeopleException("Error while getting "
-					+ "payment accounts for node " + entity, e);
-		}
-	}
-
-	public static Node getPrimaryPaymentAccount(Node entity) {
-		NodeIterator nit = getPaymentAccounts(entity);
-		if (nit == null || nit.getSize() == 0)
-			return null;
-		else if (nit.getSize() > 1)
-			throw new PeopleException(
-					"Unable to get primary payment accounts for " + entity
-							+ ". Multiple accounts is not implemented and "
-							+ nit.getSize() + " accounts has been found.");
-		else
-			return nit.nextNode();
-	}
-
-	public static Node createPaymentAccount(Node entity, String nodeType,
-			String name) {
-		try {
-			Node accounts = null;
-			if (entity.hasNode(PEOPLE_PAYMENT_ACCOUNTS))
-				accounts = entity.getNode(PEOPLE_PAYMENT_ACCOUNTS);
-			else
-				accounts = entity.addNode(PEOPLE_PAYMENT_ACCOUNTS);
-			return accounts.addNode(name, nodeType);
-		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Error while creating new payment account for node "
-							+ entity, e);
-		}
-	}
 }

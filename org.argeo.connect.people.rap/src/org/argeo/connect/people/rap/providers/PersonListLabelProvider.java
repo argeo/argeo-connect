@@ -31,7 +31,6 @@ public class PersonListLabelProvider extends LabelProvider implements
 		builder.append("<b>");
 		builder.append(peopleService.getDisplayName(person));
 		builder.append("</b>");
-
 		try {
 			NodeIterator ni = person.getNode(PEOPLE_JOBS).getNodes();
 			while (ni.hasNext()) {
@@ -49,7 +48,6 @@ public class PersonListLabelProvider extends LabelProvider implements
 					builder.append("]");
 				}
 			}
-
 		} catch (RepositoryException re) {
 			// Cannot get corresponding jobs, fail silently
 		}
