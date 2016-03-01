@@ -1353,10 +1353,12 @@ public class JcrUiUtils {
 			if (ni.getSize() == 0)
 				return null;
 			else if (ni.getSize() > 1) {
+				Node first = ni.nextNode();
 				throw new PeopleException("Found " + ni.getSize()
 						+ " entities for People UID " + uid
-						+ " (first occurence node type: "
-						+ ni.nextNode().getPrimaryNodeType().getName() + ")");
+						+ "\n Info on first occurence: " + "\n Path: "
+						+ first.getPath() + "\n Node type: "
+						+ first.getPrimaryNodeType().getName());
 			} else
 				return ni.nextNode();
 		} catch (RepositoryException e) {
