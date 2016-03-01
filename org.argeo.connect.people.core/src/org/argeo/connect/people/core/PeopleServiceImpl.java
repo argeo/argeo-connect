@@ -320,10 +320,24 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			if (ni.getSize() == 0)
 				return null;
 			else if (ni.getSize() > 1) {
+				// TODO find a way to include the calling stack in the thrown
+				// Exception
+				log.error("Found " + ni.getSize()
+						+ " entities with PeopleUID [" + uid
+						+ "] - calling stack:\n "
+						+ Thread.currentThread().getStackTrace().toString());
+				
+				
+				
+				
 				throw new PeopleException("Found " + ni.getSize()
-						+ " entities for People UID " + uid
-						+ " (first occurence node type: "
-						+ ni.nextNode().getPrimaryNodeType().getName() + ")");
+						+ " entities for People UID [" + uid
+						+ "], First occurence's node type: "
+						+ ni.nextNode().getPrimaryNodeType().getName() + "");
+
+			
+			
+			
 			} else
 				return ni.nextNode();
 		} catch (RepositoryException e) {
