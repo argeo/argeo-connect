@@ -281,6 +281,9 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	@Override
 	public Node getEntityByUid(Session session, String uid) {
+		if (isEmpty(uid))
+			throw new PeopleException(
+					"Cannot get entity by id by providing an empty people:uid");
 		try {
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
@@ -295,54 +298,26 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			QueryResult result = xpathQuery.execute();
 			NodeIterator ni = result.getNodes();
 
-			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			// Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
-			// PeopleTypes.PEOPLE_ENTITY);
-			//
-			// // Only look within the business path
-			// Constraint c1 = factory.descendantNode(source.getSelectorName(),
-			// getBasePath(null));
-			//
-			// // Retrieve correct ID
-			// DynamicOperand dynOp = factory.propertyValue(
-			// source.getSelectorName(), PeopleNames.PEOPLE_UID);
-			// StaticOperand statOp = factory.literal(session.getValueFactory()
-			// .createValue(uid));
-			// Constraint c2 = factory.comparison(dynOp,
-			// QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
-			//
-			// // Effective query
-			// QueryObjectModel query = factory.createQuery(source,
-			// factory.and(c1, c2), null, null);
-			// QueryResult queryResult = query.execute();
-			// NodeIterator ni = queryResult.getNodes();
-
-			if (ni.getSize() == 0)
+			long niSize = ni.getSize();
+			if (niSize == 0)
 				return null;
-			else if (ni.getSize() > 1) {
+			else if (niSize > 1) {
 				// TODO find a way to include the calling stack in the thrown
 				// Exception
-				log.error("Found " + ni.getSize()
-						+ " entities with PeopleUID [" + uid
-						+ "] - calling stack:\n "
+				log.error("Found " + niSize + " entities with PeopleUID ["
+						+ uid + "] - calling stack:\n "
 						+ Thread.currentThread().getStackTrace().toString());
-				
-				
-				
-				
-				throw new PeopleException("Found " + ni.getSize()
+				Node first = ni.nextNode();
+				throw new PeopleException("Found " + niSize
 						+ " entities for People UID [" + uid
-						+ "], First occurence's node type: "
-						+ ni.nextNode().getPrimaryNodeType().getName() + "");
-
-			
-			
-			
+						+ "], First occurence info:\npath: " + first.getPath()
+						+ ", node type: "
+						+ first.getPrimaryNodeType().getName() + "");
 			} else
 				return ni.nextNode();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrieve entity of uid: "
-					+ uid, e);
+			throw new PeopleException("Unable to retrieve entity with people uid: ["
+					+ uid+"]", e);
 		}
 	}
 
