@@ -646,7 +646,7 @@ public class ResourceServiceImpl implements ResourceService {
 				.getString();
 		JcrUiUtils.checkCOStatusBeforeUpdate(tagInstance);
 		Session session = tagInstance.getSession();
-		
+
 		// Retrieve all node that reference this tag and update them
 		NodeIterator nit = getTaggedEntities(tagParent, oldValue);
 		while (nit.hasNext())
@@ -768,6 +768,9 @@ public class ResourceServiceImpl implements ResourceService {
 		// remove trailing and starting space
 		tag = tag.trim();
 		String cleanedTag = JcrUtils.replaceInvalidChars(tag).trim();
+		// corner case when second character is a space
+		if (cleanedTag.charAt(1) == ' ')
+			cleanedTag = cleanedTag.charAt(0) + ' ' + cleanedTag.substring(2);
 		String relPath = JcrUtils.firstCharsToPath(cleanedTag, 2);
 		return relPath + "/" + cleanedTag;
 	}
