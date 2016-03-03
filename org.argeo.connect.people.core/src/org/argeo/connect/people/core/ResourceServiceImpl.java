@@ -550,10 +550,11 @@ public class ResourceServiceImpl implements ResourceService {
 	public void refreshKnownTags(Node tagParent) {
 		try {
 			// Initialisation
-			List<String> existingValues = new ArrayList<String>();
+			List<String> newExistingValues = new ArrayList<String>();
 			List<String> registeredTags = new ArrayList<String>();
 			Session session = tagParent.getSession();
-
+			if (log.isDebugEnabled())
+				log.debug("Starting known tag refresh for " + tagParent);
 			String keyPropName = getTagKeyPropName(tagParent);
 			String taggableNodeType = tagParent.getProperty(
 					PeopleNames.PEOPLE_TAGGABLE_NODE_TYPE).getString();
@@ -564,6 +565,8 @@ public class ResourceServiceImpl implements ResourceService {
 			List<String> propNames = JcrUiUtils.getMultiAsList(tagParent,
 					PeopleNames.PEOPLE_TAGGABLE_PROP_NAME);
 
+			if (log.isTraceEnabled())
+				log.trace("Getting already registered tags");
 			NodeIterator nit = getRegisteredTags(tagParent, null);
 			while (nit.hasNext()) {
 				Node currNode = nit.nextNode();
@@ -571,6 +574,9 @@ public class ResourceServiceImpl implements ResourceService {
 				if (notEmpty(currKey) && !registeredTags.contains(currKey))
 					registeredTags.add(currKey);
 			}
+			if (log.isTraceEnabled())
+				log.trace("Found already " + registeredTags.size()
+						+ " registered tags");
 
 			// Look for not yet registered tags
 			Query query = session
@@ -582,6 +588,9 @@ public class ResourceServiceImpl implements ResourceService {
 									+ taggableParentPath + "') ",
 							Query.JCR_SQL2);
 			nit = query.execute().getNodes();
+			if (log.isDebugEnabled())
+				log.debug("Searching new tags on " + nit.getSize()
+						+ " elements of type " + taggableNodeType);
 			while (nit.hasNext()) {
 				Node currNode = nit.nextNode();
 				for (String propName : propNames) {
@@ -600,21 +609,26 @@ public class ResourceServiceImpl implements ResourceService {
 											+ JcrUiUtils.get(currNode,
 													Property.JCR_TITLE) + " - "
 											+ currNode);
-								} else
-									existingValues.add(currTag);
+								} else if (!newExistingValues.contains(currTag))
+									newExistingValues.add(currTag);
 							}
 						}
 					}
 				}
 			}
+
+			if (log.isTraceEnabled())
+				log.trace("Start processing the " + newExistingValues.size()
+						+ " new used tags found.");
+
 			// Add the newly found tags.
 			if (isEmpty(codeProp))
-				for (String tag : existingValues) {
+				for (String tag : newExistingValues) {
 					createTagInstanceInternal(tagParent, tag);
 					session.save();
 				}
 			else {
-				for (String tag : existingValues) {
+				for (String tag : newExistingValues) {
 					Node curr = createTagInstanceInternal(tagParent, tag);
 					JcrUiUtils.setJcrProperty(curr, Property.JCR_TITLE,
 							PropertyType.STRING, tag);
@@ -625,6 +639,10 @@ public class ResourceServiceImpl implements ResourceService {
 						+ "with the same value as the code because we "
 						+ "have no information on the corresponding label.");
 			}
+			if (log.isDebugEnabled())
+				log.debug("Tag refresh for " + tagParent
+						+ " has been done, creating "
+						+ newExistingValues.size() + " new tag instances.");
 		} catch (RepositoryException ee) {
 			throw new PeopleException("Unable to refresh cache of known tags",
 					ee);

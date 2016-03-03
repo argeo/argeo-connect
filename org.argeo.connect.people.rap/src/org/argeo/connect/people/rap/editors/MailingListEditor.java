@@ -120,7 +120,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		colDefs.add(new PeopleColumnDefinition("Primary mail",
 				new JcrHtmlLabelProvider(PEOPLE_CACHE_PMAIL), 300));
 		colDefs.add(new PeopleColumnDefinition("Mailing lists",
-				new JcrHtmlLabelProvider(PEOPLE_TAGS), 300));
+				new JcrHtmlLabelProvider(PEOPLE_MAILING_LISTS), 300));
 	}
 
 	protected void afterNameUpdate(String name) {
