@@ -1,5 +1,7 @@
 package org.argeo.connect.people.util;
 
+import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
+
 import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -1333,6 +1335,9 @@ public class JcrUiUtils {
 
 	public static Node getEntityByUid(Session session, String uid,
 			String nodeType, String basePath) {
+		if (isEmpty(uid))
+			throw new PeopleException(
+					"Cannot get entity by id by providing an empty people:uid");
 		try {
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
@@ -1355,8 +1360,8 @@ public class JcrUiUtils {
 			else if (ni.getSize() > 1) {
 				Node first = ni.nextNode();
 				throw new PeopleException("Found " + ni.getSize()
-						+ " entities for People UID " + uid
-						+ "\n Info on first occurence: " + "\n Path: "
+						+ " entities for People UID [" + uid
+						+ "]\n Info on first occurence: " + "\n Path: "
 						+ first.getPath() + "\n Node type: "
 						+ first.getPrimaryNodeType().getName());
 			} else
