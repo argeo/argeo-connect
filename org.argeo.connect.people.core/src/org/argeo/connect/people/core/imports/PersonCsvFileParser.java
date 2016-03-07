@@ -55,7 +55,8 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 			// Create corresponding node
 			String path = getPeopleService().getDefaultPathForEntity(peopleUid,
 					PeopleTypes.PEOPLE_PERSON);
-			Node parent = JcrUtils.mkdirs(adminSession, path);
+			String parPath = JcrUtils.parentPath(path);
+			Node parent = JcrUtils.mkdirs(adminSession, parPath);
 			Node person = parent.addNode(peopleUid, PeopleTypes.PEOPLE_PERSON);
 
 			// Mandatory properties
