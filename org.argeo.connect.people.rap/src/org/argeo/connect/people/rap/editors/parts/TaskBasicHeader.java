@@ -12,19 +12,21 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ResourceService;
+import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.rap.PeopleRapUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
-import org.argeo.connect.people.rap.dialogs.PickUpGroupDialog;
 import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.rap.util.AbstractPanelFormPart;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.eclipse.ui.workbench.users.PickUpUserDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -38,6 +40,7 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.osgi.service.useradmin.User;
 
 /** Provides basic information about a task in a form context */
 public class TaskBasicHeader extends Composite implements PeopleNames {
@@ -340,12 +343,15 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				try {
-					PickUpGroupDialog diag = new PickUpGroupDialog(
+					UserAdminService uas = peopleService.getUserAdminService();
+					PickUpUserDialog diag = new PickUpUserDialog(
 							changeAssignationLk.getShell(), "Choose a group",
-							peopleService);
+							uas.getUserAdmin());
 					int result = diag.open();
 					if (Window.OK == result) {
-						String newGroupId = diag.getSelected();
+						User newGroup = diag.getSelected();
+						String newGroupId = UserAdminUtils
+								.getUsername(newGroup);
 						if (newGroupId == null
 								|| newGroupId.equals(assignedToGroupId))
 							return; // nothing has changed

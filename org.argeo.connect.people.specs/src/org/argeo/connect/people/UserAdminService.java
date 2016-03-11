@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.osgi.service.useradmin.Group;
 import org.osgi.service.useradmin.User;
+import org.osgi.service.useradmin.UserAdmin;
 
 /**
  * Provide method interfaces to manage user concepts without accessing directly
@@ -67,5 +68,6 @@ public interface UserAdminService {
 	public User getUserFromLocalId(String localId);
 
 	/* EXPOSE */
+	public UserAdmin getUserAdmin();
 
 }
