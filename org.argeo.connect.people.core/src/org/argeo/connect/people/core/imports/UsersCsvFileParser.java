@@ -31,10 +31,11 @@ public class UsersCsvFileParser extends CsvParserWithLinesAsMap {
 		String firstName = line.get("firstName");
 		String lastName = line.get("lastName");
 		String email = line.get("email");
+		String pwd = line.get("password");
 		String desc = line.get("description");
 
 		User existingUser = userAdminWrapper.getUserFromLocalId(userName);
-		if (existingUser != null){
+		if (existingUser != null) {
 			log.warn("User " + userName
 					+ " already exists in the system, skipping line");
 			return;
@@ -60,10 +61,11 @@ public class UsersCsvFileParser extends CsvParserWithLinesAsMap {
 
 		if (EclipseUiUtils.notEmpty(desc))
 			props.put(LdifName.description.name(), desc);
-
-		// TODO add the ability to define a common password for all imported
-		// user before launching the import
-		char[] password = "demo".toCharArray();
+		char[] password = null;
+		if (EclipseUiUtils.notEmpty(pwd))
+			password = pwd.toCharArray();
+		else
+			password = "demo".toCharArray();
 		user.getCredentials().put(null, password);
 	}
 }

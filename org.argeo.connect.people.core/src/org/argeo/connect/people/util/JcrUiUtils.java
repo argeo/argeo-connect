@@ -1326,7 +1326,6 @@ public class JcrUiUtils {
 							updateChildren);
 				}
 			}
-
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to perform post import "
 					+ "translation on Node " + node, re);

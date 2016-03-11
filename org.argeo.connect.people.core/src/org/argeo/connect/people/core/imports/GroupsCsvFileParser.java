@@ -16,7 +16,7 @@ import org.osgi.service.useradmin.Role;
 import org.osgi.service.useradmin.User;
 
 /**
- * Parse csv file and create correponding groups. A UserTransaction must exists
+ * Parse csv file and create corresponding groups. A UserTransaction must exists
  * and it is the caller duty to commit it afterwards
  */
 public class GroupsCsvFileParser extends CsvParserWithLinesAsMap {
