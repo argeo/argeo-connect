@@ -1340,11 +1340,8 @@ public class JcrUiUtils {
 		try {
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
-
-			if (EclipseUiUtils.isEmpty(basePath) || "/".equals(basePath.trim()))
-				basePath = "";
-
-			String xpathQueryStr = basePath + "//element(*, " + nodeType + ")";
+			String xpathQueryStr = XPathUtils.descendantFrom(basePath)
+					+ "//element(*, " + nodeType + ")";
 			String attrQuery = XPathUtils.getPropertyEquals(
 					PeopleNames.PEOPLE_UID, uid);
 			if (EclipseUiUtils.notEmpty(attrQuery))

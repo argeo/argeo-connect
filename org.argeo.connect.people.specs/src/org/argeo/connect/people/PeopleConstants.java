@@ -14,6 +14,7 @@ public interface PeopleConstants {
 
 	// Base path
 	public final static String PEOPLE_BASE_PATH = "/people";
+	public final static String PEOPLE_PUBLIC_PATH = "/public";
 	public final static String PEOPLE_TMP_PATH = "/tmp";
 
 	// Types that do not correspond to a Jcr type

@@ -30,6 +30,12 @@ public interface PeopleService {
 	public String getTmpPath();
 
 	/**
+	 * Provides a system specific public path typically for CMS or users with
+	 * limited access rights
+	 */
+	public String getPublicPath();
+
+	/**
 	 * Returns the path to a node that centralises information about the current
 	 * instance
 	 */
@@ -119,7 +125,7 @@ public interface PeopleService {
 	 * */
 	public List<Node> getRelatedEntities(Node entity, String linkNodeType,
 			String relatedEntityType);
-	
+
 	/* CONFIGURE QUERIES */
 	public boolean lazyLoadLists();
 

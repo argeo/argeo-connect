@@ -103,6 +103,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	@Override
+	public String getPublicPath() {
+		return PeopleConstants.PEOPLE_PUBLIC_PATH;
+	}
+
+	@Override
 	public String getInstanceConfPath() {
 		return getBasePath(null) + "/" + PeopleNames.PEOPLE_CONF;
 	}
@@ -169,8 +174,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	/** Creates various useful parent nodes if needed */
 	protected void initialiseModel(Session adminSession)
 			throws RepositoryException {
+		// TODO configure privileges?
+
 		JcrUtils.mkdirs(adminSession, getBasePath(null));// Root business node
 		JcrUtils.mkdirs(adminSession, getTmpPath());// Root tmp node
+		JcrUtils.mkdirs(adminSession, getPublicPath());// Root public node
 
 		// Various business parents
 		JcrUtils.mkdirs(adminSession, getBasePath(PeopleTypes.PEOPLE_PERSON));
@@ -316,8 +324,9 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			} else
 				return ni.nextNode();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrieve entity with people uid: ["
-					+ uid+"]", e);
+			throw new PeopleException(
+					"Unable to retrieve entity with people uid: [" + uid + "]",
+					e);
 		}
 	}
 
