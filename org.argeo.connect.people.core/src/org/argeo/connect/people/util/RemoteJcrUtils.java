@@ -24,7 +24,6 @@ import javax.jcr.nodetype.NodeType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.ArgeoException;
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.jcr.ArgeoJcrConstants;
 import org.argeo.jcr.JcrUtils;
@@ -103,8 +102,8 @@ public class RemoteJcrUtils {
 			if (toNode.isNodeType(NodeType.MIX_LAST_MODIFIED))
 				JcrUtils.updateLastModified(toNode);
 
-			if (log.isDebugEnabled())
-				log.debug("Copied " + toNode);
+			if (log.isTraceEnabled())
+				log.trace("Copied " + toNode);
 
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Cannot copy " + fromNode + " to "
@@ -171,22 +170,23 @@ public class RemoteJcrUtils {
 		node.setProperty(propertyName, values);
 	}
 
+	/**
+	 * Easily get a session on a remote repository. It is caller duty to close
+	 * the session
+	 */
 	public static Session getSessionOnRemote(
-			RepositoryFactory repositoryFactory, String repoUrl, String wkspName)
+			RepositoryFactory repositoryFactory, String repoUrl,
+			String wkspName, String login, char[] pwd)
 			throws RepositoryException {
 		Hashtable<String, String> params = new Hashtable<String, String>();
-		params.put(ArgeoJcrConstants.JCR_REPOSITORY_URI,
-				RemoteJcrUtils.checkUri(repoUrl).toString());
+		params.put(ArgeoJcrConstants.JCR_REPOSITORY_URI, RemoteJcrUtils
+				.checkUri(repoUrl).toString());
 		Repository remoteRepo = repositoryFactory.getRepository(params);
-		String userStr = System
-				.getProperty(PeopleConstants.MIGRATION_USER_LOGIN);
-		String keyStr = System.getProperty(PeopleConstants.MIGRATION_USER_PWD);
-		char[] pwd = keyStr.toCharArray();
-		SimpleCredentials sc = new SimpleCredentials(userStr, pwd);
+		SimpleCredentials sc = new SimpleCredentials(login, pwd);
 		return remoteRepo.login(sc, wkspName);
 	}
 
-	public static URI checkUri(String repoUrl) {
+	private static URI checkUri(String repoUrl) {
 		try {
 			return new URI(repoUrl);
 		} catch (URISyntaxException e) {
