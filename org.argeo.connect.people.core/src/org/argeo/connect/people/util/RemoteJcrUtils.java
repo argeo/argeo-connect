@@ -42,7 +42,7 @@ public class RemoteJcrUtils {
 	 * @param toNode
 	 *            the target node in the local repo
 	 */
-	public static void copy(Node fromNode, Node toNode) {
+	public static void copy(Node fromNode, Node toNode, boolean copyChildren) {
 		try {
 			if (toNode.getDefinition().isProtected())
 				return;
@@ -71,10 +71,6 @@ public class RemoteJcrUtils {
 						|| propertyName.equals("jcr:lastModifiedBy"))
 					continue properties;
 
-				// FIXME SPECIFIC for the scoolgate migration
-				if (propertyName.equals("sg:location"))
-					continue properties;
-
 				if (PropertyType.REFERENCE == fromProperty.getType()
 						|| PropertyType.WEAKREFERENCE == fromProperty.getType()) {
 					copyReference(fromProperty, toNode);
@@ -85,20 +81,22 @@ public class RemoteJcrUtils {
 			}
 
 			// Child nodes
-			NodeIterator nit = fromNode.getNodes();
-			while (nit.hasNext()) {
-				Node fromChild = nit.nextNode();
-				Integer index = fromChild.getIndex();
-				String nodeRelPath = fromChild.getName() + "[" + index + "]";
-				Node toChild;
-				if (toNode.hasNode(nodeRelPath))
-					toChild = toNode.getNode(nodeRelPath);
-				else
-					toChild = toNode.addNode(fromChild.getName(), fromChild
-							.getPrimaryNodeType().getName());
-				copy(fromChild, toChild);
+			if (copyChildren) {
+				NodeIterator nit = fromNode.getNodes();
+				while (nit.hasNext()) {
+					Node fromChild = nit.nextNode();
+					Integer index = fromChild.getIndex();
+					String nodeRelPath = fromChild.getName() + "[" + index
+							+ "]";
+					Node toChild;
+					if (toNode.hasNode(nodeRelPath))
+						toChild = toNode.getNode(nodeRelPath);
+					else
+						toChild = toNode.addNode(fromChild.getName(), fromChild
+								.getPrimaryNodeType().getName());
+					copy(fromChild, toChild, true);
+				}
 			}
-
 			if (toNode.isNodeType(NodeType.MIX_LAST_MODIFIED))
 				JcrUtils.updateLastModified(toNode);
 
