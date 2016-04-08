@@ -122,7 +122,8 @@ mixin
 - people:tags (STRING) *
 
 //
-// USER MANAGEMENT 
+// LEGACY USER MANAGEMENT.
+// TODO: Remove before 2.2 release 
 //
 [people:profile] > nt:unstructured, mix:versionable, mix:lastModified
 - people:relatedPersons (REFERENCE) * // towards people:person types 
