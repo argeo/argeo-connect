@@ -226,7 +226,39 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	/**
 	 * Typically used to move temporary import nodes to the main business
 	 * repository
+	 * 
+	 * FIXME: induce the necessity to give JCR_READ right to almost everyone
+	 * that might modify a node in the repository: the mkdir method using the
+	 * session needs having JCR read rights on all nodes from the root node to
+	 * function correctly
 	 */
+
+	// TODO work in progress
+	// @Override
+	// public void checkPathAndMoveIfNeeded(Node entity, String entityNodeType)
+	// throws RepositoryException {
+	// String destPath = getDefaultPathForEntity(entity, entityNodeType);
+	// if (!destPath.equals(entity.getPath())) {
+	// String parPath = JcrUtils.parentPath(destPath);
+	//
+	// String typeBasePath = getBasePath(entityNodeType);
+	// String parRelPath = null;
+	// if (parPath.startsWith(typeBasePath))
+	// parRelPath = parPath.substring(typeBasePath.length() + 1);
+	// else
+	// throw new PeopleException("Unable to move entity of type "
+	// + entityNodeType + ", Computed parent path " + parPath
+	// + " does not match.");
+	// entity.getSession().save();
+	// Node parNode = JcrUtils.mkdirs(
+	// entity.getSession().getNode(typeBasePath), parRelPath,
+	// NodeType.NT_UNSTRUCTURED, NodeType.NT_UNSTRUCTURED);
+	// entity.getSession().save();
+	// entity.getSession().move(entity.getPath(), destPath);
+	// entity.getSession().save();
+	// }
+	// }
+
 	@Override
 	public void checkPathAndMoveIfNeeded(Node entity, String entityNodeType)
 			throws RepositoryException {
