@@ -234,41 +234,41 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	 */
 
 	// TODO work in progress
-	// @Override
-	// public void checkPathAndMoveIfNeeded(Node entity, String entityNodeType)
-	// throws RepositoryException {
-	// String destPath = getDefaultPathForEntity(entity, entityNodeType);
-	// if (!destPath.equals(entity.getPath())) {
-	// String parPath = JcrUtils.parentPath(destPath);
-	//
-	// String typeBasePath = getBasePath(entityNodeType);
-	// String parRelPath = null;
-	// if (parPath.startsWith(typeBasePath))
-	// parRelPath = parPath.substring(typeBasePath.length() + 1);
-	// else
-	// throw new PeopleException("Unable to move entity of type "
-	// + entityNodeType + ", Computed parent path " + parPath
-	// + " does not match.");
-	// entity.getSession().save();
-	// Node parNode = JcrUtils.mkdirs(
-	// entity.getSession().getNode(typeBasePath), parRelPath,
-	// NodeType.NT_UNSTRUCTURED, NodeType.NT_UNSTRUCTURED);
-	// entity.getSession().save();
-	// entity.getSession().move(entity.getPath(), destPath);
-	// entity.getSession().save();
-	// }
-	// }
-
 	@Override
 	public void checkPathAndMoveIfNeeded(Node entity, String entityNodeType)
 			throws RepositoryException {
 		String destPath = getDefaultPathForEntity(entity, entityNodeType);
 		if (!destPath.equals(entity.getPath())) {
 			String parPath = JcrUtils.parentPath(destPath);
-			JcrUtils.mkdirs(entity.getSession(), parPath);
+
+			String typeBasePath = getBasePath(entityNodeType);
+			String parRelPath = null;
+			if (parPath.startsWith(typeBasePath))
+				parRelPath = parPath.substring(typeBasePath.length() + 1);
+			else
+				throw new PeopleException("Unable to move entity of type "
+						+ entityNodeType + ", Computed parent path " + parPath
+						+ " does not match.");
+			entity.getSession().save();
+			Node parNode = JcrUtils.mkdirs(
+					entity.getSession().getNode(typeBasePath), parRelPath,
+					NodeType.NT_UNSTRUCTURED, NodeType.NT_UNSTRUCTURED);
+			entity.getSession().save();
 			entity.getSession().move(entity.getPath(), destPath);
+			entity.getSession().save();
 		}
 	}
+
+	// @Override
+	// public void checkPathAndMoveIfNeeded(Node entity, String entityNodeType)
+	// throws RepositoryException {
+	// String destPath = getDefaultPathForEntity(entity, entityNodeType);
+	// if (!destPath.equals(entity.getPath())) {
+	// String parPath = JcrUtils.parentPath(destPath);
+	// JcrUtils.mkdirs(entity.getSession(), parPath);
+	// entity.getSession().move(entity.getPath(), destPath);
+	// }
+	// }
 
 	/** Simply look for primary information and update primary cache if needed */
 	@Override
