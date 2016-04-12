@@ -18,18 +18,10 @@
 	<reference id="nodeRepository" interface="javax.jcr.Repository"
 		filter="(argeo.jcr.repository.alias=node)" />
 
-	<beans:bean class="org.argeo.security.core.OsgiModuleLabel">
-		<beans:property name="bundleContext" ref="bundleContext" />
-	</beans:bean>
-
-	<reference id="userAdmin" interface="org.osgi.service.useradmin.UserAdmin" />
-	<reference id="userTransaction" interface="javax.transaction.UserTransaction" />
-
 	<!-- SERVICES -->
 	<service ref="peopleRepository" interface="javax.jcr.Repository">
 		<service-properties>
 			<beans:entry key="argeo.jcr.repository.alias" value="people" />
 		</service-properties>
 	</service>
-
 </beans:beans>

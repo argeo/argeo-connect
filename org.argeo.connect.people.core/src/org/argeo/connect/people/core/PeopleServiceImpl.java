@@ -170,7 +170,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	/* DEFINITION OF THE PEOPLE DEFAULT TREE STRUCTURE */
-
 	/** Creates various useful parent nodes if needed */
 	protected void initialiseModel(Session adminSession)
 			throws RepositoryException {
