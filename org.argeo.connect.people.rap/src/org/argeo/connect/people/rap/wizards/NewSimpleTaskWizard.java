@@ -177,7 +177,7 @@ public class NewSimpleTaskWizard extends Wizard {
 							assignedToTxt.getShell(), "Choose a group",
 							peopleService);
 					if (diag.open() == Window.OK) {
-						assignedToGroupId = diag.getSelected();
+						assignedToGroupId = diag.getSelected().getName();
 						if (EclipseUiUtils.notEmpty(assignedToGroupId))
 							assignedToTxt.setText(userAdminService
 									.getUserDisplayName(assignedToGroupId));

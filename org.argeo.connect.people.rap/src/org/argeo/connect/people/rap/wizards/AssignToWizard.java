@@ -10,11 +10,14 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.argeo.ArgeoException;
 import org.argeo.ArgeoMonitor;
+import org.argeo.cms.auth.AuthConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
+import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.composites.VirtualJcrTableViewer;
@@ -25,6 +28,7 @@ import org.argeo.eclipse.ui.EclipseArgeoMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.osgi.useradmin.LdifName;
 import org.argeo.security.ui.PrivilegedJob;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -46,11 +50,16 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
-import org.osgi.service.useradmin.Group;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.service.useradmin.Role;
 import org.osgi.service.useradmin.User;
 
 /** Update the status of the selected tasks (with only one node type) as batch */
@@ -136,6 +145,9 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 	protected class MainInfoPage extends WizardPage {
 		private static final long serialVersionUID = 1L;
 
+		private TableViewer viewer;
+		private Button showUserBtn;
+
 		public MainInfoPage(String pageName) {
 			super(pageName);
 			setTitle("Select a group");
@@ -151,6 +163,9 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			layout.marginTop = layout.marginWidth = 10;
 			body.setLayout(layout);
 
+			showUserBtn = new Button(body, SWT.CHECK);
+			showUserBtn.setText("Show users");
+
 			Composite box = new Composite(body, SWT.NO_FOCUS);
 			box.setLayoutData(EclipseUiUtils.fillAll());
 
@@ -159,12 +174,25 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			table.setLinesVisible(true);
 			TableViewerColumn column;
 			TableColumnLayout tableColumnLayout = new TableColumnLayout();
-			TableViewer viewer = new TableViewer(table);
+			viewer = new TableViewer(table);
 
 			column = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE,
 					100);
 			column.setLabelProvider(new ColumnLabelProvider() {
 				private static final long serialVersionUID = -3677453559279606328L;
+
+				@Override
+				public Image getImage(Object element) {
+					User user = (User) element;
+					String dn = (String) user.getProperties().get(
+							LdifName.dn.name());
+					if (dn.endsWith(AuthConstants.ROLES_BASEDN))
+						return PeopleRapImages.ICON_ROLE;
+					else if (user.getType() == Role.GROUP)
+						return PeopleRapImages.ICON_GROUP;
+					else
+						return PeopleRapImages.ICON_USER;
+				}
 
 				@Override
 				public String getText(Object element) {
@@ -189,24 +217,85 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 
 				@Override
 				public Object[] getElements(Object inputElement) {
-					return (User[]) inputElement;
+					return (Role[]) inputElement;
 				}
 			});
 
+			refreshList(null);
 			viewer.addSelectionChangedListener(new MySelectionChangedListener());
 			viewer.addDoubleClickListener(new MyDoubleClickListener());
+			showUserBtn.addSelectionListener(new SelectionListener() {
+				private static final long serialVersionUID = -6302066420365139940L;
+
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					refreshList(null);
+				}
+
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {
+					// TODO Auto-generated method stub
+
+				}
+			});
 
 			box.setLayout(tableColumnLayout);
-			List<Group> groups = userAdminService.listGroups(null);
+			setControl(body);
+			body.setFocus();
+		}
+
+		private final String[] knownProps = { LdifName.uid.name(),
+				LdifName.cn.name(), LdifName.dn.name() };
+
+		private void refreshList(String filter) {
+			// List<Role> groups = userAdminService.listGroups(null);
+			Role[] roles;
+			try {
+				StringBuilder builder = new StringBuilder();
+
+				StringBuilder filterBuilder = new StringBuilder();
+				if (EclipseUiUtils.notEmpty(filter))
+					for (String prop : knownProps) {
+						filterBuilder.append("(");
+						filterBuilder.append(prop);
+						filterBuilder.append("=*");
+						filterBuilder.append(filter);
+						filterBuilder.append("*)");
+					}
+
+				String typeStr = "(" + LdifName.objectClass.name() + "="
+						+ LdifName.groupOfNames.name() + ")";
+				if ((showUserBtn.getSelection()))
+					typeStr = "(|(" + LdifName.objectClass.name() + "="
+							+ LdifName.inetOrgPerson.name() + ")" + typeStr
+							+ ")";
+
+				// if (!showSystemRoleBtn.getSelection())
+				typeStr = "(& " + typeStr + "(!(" + LdifName.dn.name() + "=*"
+						+ AuthConstants.ROLES_BASEDN + ")))";
+
+				if (filterBuilder.length() > 1) {
+					builder.append("(&" + typeStr);
+					builder.append("(|");
+					builder.append(filterBuilder.toString());
+					builder.append("))");
+				} else {
+					builder.append(typeStr);
+				}
+				roles = userAdminService.getUserAdmin().getRoles(
+						builder.toString());
+			} catch (InvalidSyntaxException e) {
+				throw new ArgeoException("Unable to get roles with filter: "
+						+ filter, e);
+			}
 
 			// // List<String> values = new ArrayList<String>();
 			// for (Group group : groups) {
 			// values.add();
 			// }
-			viewer.setInput(groups.toArray(new Group[0]));
+			viewer.setInput(roles);
 			viewer.refresh();
-			setControl(body);
-			body.setFocus();
+
 		}
 
 		class MySelectionChangedListener implements ISelectionChangedListener {
