@@ -404,7 +404,7 @@ public class JcrUiUtils {
 	}
 
 	// ENCAPSULATE COMMONS JCR CALLS
-	// with the try/catch block to simplify the code
+	// with the try/catch block to simplify simple UI code
 	/**
 	 * Call {@link Repository#login()} without exceptions (useful in super
 	 * constructors).
@@ -455,6 +455,16 @@ public class JcrUiUtils {
 		else
 			absPath = parPath + "/" + nodeName;
 		return absPath;
+	}
+
+	/** Simply calls {@link Session#itemExists(String)} with no try/catch */
+	public static boolean itemExists(Session session, String absPath) {
+		try {
+			return session.itemExists(absPath);
+		} catch (RepositoryException re) {
+			throw new ArgeoException("Unable to check existence of item at "
+					+ absPath, re);
+		}
 	}
 
 	/**
@@ -1194,25 +1204,7 @@ public class JcrUiUtils {
 		return nodes;
 	}
 
-	// /**
-	// * Check if a string is null or an empty string (a string with only spaces
-	// * is considered as empty
-	// */
-	// public static boolean isEmpty(String stringToTest) {
-	// return stringToTest == null || "".equals(stringToTest.trim());
-	// }
-	//
-	// /**
-	// * Check if a string is null or an empty string (a string with only spaces
-	// * is considered as empty
-	// */
-	// public static boolean notEmpty(String string) {
-	// return string != null && !"".equals(string.trim());
-	// }
-
-	/**
-	 * Parse and trim a String of values
-	 */
+	/** Parses and trims a String of values */
 	public static String[] parseAndClean(String string, String regExp,
 			boolean clean) {
 		String[] temp = string.split(regExp);
@@ -1228,9 +1220,7 @@ public class JcrUiUtils {
 		return temp;
 	}
 
-	/**
-	 * concatenate 2 strings with given separator if they are both not empty
-	 */
+	/** Concatenates 2 strings with given separator if they are not empty */
 	public static String concatIfNotEmpty(String str1, String str2,
 			String separator) {
 		StringBuilder builder = new StringBuilder();
@@ -1247,7 +1237,7 @@ public class JcrUiUtils {
 
 	/* QOM HELPERS */
 	/**
-	 * returns and(constraintA, constraintB) if constraintA != null, or
+	 * Returns and(constraintA, constraintB) if constraintA != null, or
 	 * constraintB otherwise (that cannot be null)
 	 */
 	public static Constraint localAnd(QueryObjectModelFactory factory,
@@ -1258,7 +1248,7 @@ public class JcrUiUtils {
 			return factory.and(defaultC, newC);
 	}
 
-	/** widely used pattern in various UI Parts */
+	/** Widely used pattern in various UI Parts */
 	public static Constraint getFreeTextConstraint(Session session,
 			QueryObjectModelFactory factory, Selector source, String filter)
 			throws RepositoryException {
@@ -1278,7 +1268,7 @@ public class JcrUiUtils {
 
 	/* IMPORT HELPERS */
 	/**
-	 * Transform String property that use the people UID to reference other
+	 * Transforms String property that use the people UID to reference other
 	 * entities during import to JCR References. Manage both single and multi
 	 * value prop It retrieves and process all properties that have a _puid
 	 * suffix
