@@ -112,8 +112,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 		resourceService = peopleService.getResourceService();
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
-		tagInstanceType = JcrUiUtils.get(tagParent,
-				PEOPLE_TAG_INSTANCE_TYPE);
+		tagInstanceType = JcrUiUtils.get(tagParent, PEOPLE_TAG_INSTANCE_TYPE);
 	}
 
 	@Override
@@ -190,8 +189,8 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 					.getTagLikeResourceParent(session, tagId);
 			int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
 			tableCmp = new SimpleJcrTableComposite(body, style, session,
-					JcrUiUtils.getPath(tagParent), tagInstanceType,
-					colDefs, true, false);
+					JcrUiUtils.getPath(tagParent), tagInstanceType, colDefs,
+					true, false);
 			GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 			gd.heightHint = 400;
 			tableCmp.setLayoutData(gd);
@@ -381,15 +380,15 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 						if (actionType == TYPE_ADD) {
 							// Duplication will return an error message that we
 							// ignore
-							JcrUiUtils.addStringToMultiValuedProp(
-									currNode, tagPropName, value);
+							JcrUiUtils.addStringToMultiValuedProp(currNode,
+									tagPropName, value);
 						} else if (actionType == TYPE_REMOVE) {
 							// Duplication will return an error message that we
 							// ignore
 							JcrUiUtils.removeStringFromMultiValuedProp(
 									currNode, tagPropName, value);
 						}
-						JcrUiUtils.save(currNode, true);
+						JcrUiUtils.saveAndPublish(currNode, true);
 					}
 					monitor.worked(1);
 

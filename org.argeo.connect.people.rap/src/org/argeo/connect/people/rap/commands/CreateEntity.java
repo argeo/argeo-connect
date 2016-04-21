@@ -63,8 +63,7 @@ public class CreateEntity extends AbstractHandler {
 			int result = dialog.open();
 			if (result == WizardDialog.OK) {
 				// Save the newly created entity and create a base version
-				peopleService.saveEntity(newNode, true);
-
+				newNode = peopleService.saveEntity(newNode, true);
 				// Open the corresponding editor
 				String jcrId = newNode.getIdentifier();
 				PeopleRapUtils.callCommand(

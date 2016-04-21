@@ -62,13 +62,15 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 	}
 
 	@Override
-	public void saveEntity(Node entity, boolean commit) throws PeopleException,
+	public Node saveEntity(Node entity, boolean commit) throws PeopleException,
 			RepositoryException {
 		if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
-			savePerson(entity, commit);
+			return savePerson(entity, commit);
 		else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
-			saveOrganisation(entity, commit);
-
+			return saveOrganisation(entity, commit);
+		else
+			throw new PeopleException("Cannot save " + entity
+					+ ", Unknown entity type");
 	}
 
 	/**
@@ -76,7 +78,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 	 * it updates cache information. Extend to provide business specific rules
 	 * before save and commit
 	 */
-	protected void savePerson(Node person, boolean commit)
+	protected Node savePerson(Node person, boolean publish)
 			throws PeopleException, RepositoryException {
 		String lastName = JcrUiUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
 		String firstName = JcrUiUtils
@@ -84,6 +86,8 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 		Boolean useDistinctDName = JcrUiUtils.getBooleanValue(person,
 				PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 		String displayName = null;
+
+		JcrUiUtils.saveAndPublish(person, publish);
 
 		// Update display name cache if needed
 		if (useDistinctDName == null || !useDistinctDName) {
@@ -100,21 +104,20 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 			throw new PeopleException(msg);
 		}
 
-		peopleService.checkPathAndMoveIfNeeded(person,
+		person = peopleService.checkPathAndMoveIfNeeded(person,
 				PeopleTypes.PEOPLE_PERSON);
-		person.getSession().save();
+		JcrUiUtils.saveAndPublish(person, publish);
 
+		// person.getSession().save();
 		// Update cache
 		peopleService.updatePrimaryCache(person);
-
-		if (commit)
-			JcrUiUtils.checkPoint(person);
-		else
-			person.getSession().save();
+		// real save
+		JcrUiUtils.saveAndPublish(person, publish);
+		return person;
 	}
 
 	/** Override to provide business specific rules before save and commit */
-	protected void saveOrganisation(Node org, boolean commit)
+	protected Node saveOrganisation(Node org, boolean publish)
 			throws PeopleException, RepositoryException {
 		// Check validity of main info
 		String legalName = JcrUiUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
@@ -135,18 +138,13 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 					+ "update this organisation.";
 			throw new PeopleException(msg);
 		}
-
-		// Finalise save process.
-		peopleService.checkPathAndMoveIfNeeded(org, PeopleTypes.PEOPLE_ORG);
-		org.getSession().save();
-
+		org = peopleService.checkPathAndMoveIfNeeded(org,
+				PeopleTypes.PEOPLE_ORG);
 		// Update cache
 		peopleService.updatePrimaryCache(org);
-
-		if (commit)
-			JcrUiUtils.checkPoint(org);
-		else
-			org.getSession().save();
+		// real save
+		JcrUiUtils.saveAndPublish(org, publish);
+		return org;
 	}
 
 	@Override

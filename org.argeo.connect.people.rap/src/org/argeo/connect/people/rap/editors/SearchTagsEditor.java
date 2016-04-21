@@ -171,7 +171,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 						if (EclipseUiUtils.notEmpty(desc))
 							tag.setProperty(Property.JCR_DESCRIPTION, desc);
 						if (tag.isNodeType(NodeType.MIX_VERSIONABLE))
-							JcrUiUtils.checkPoint(tag);
+							JcrUiUtils.saveAndPublish(tag, true);
 						else
 							session.save();
 						refreshStaticFilteredList();

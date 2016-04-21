@@ -66,24 +66,29 @@ public interface PeopleService {
 
 	/**
 	 * Typically used to move temporary import nodes to the main business
-	 * repository
+	 * repository. Returns the new node: warning if a move happened, the node
+	 * has been copied and the returned node is not the same as the passed one
 	 */
-	public void checkPathAndMoveIfNeeded(Node entity, String entityNodeType)
+	public Node checkPathAndMoveIfNeeded(Node entity, String entityNodeType)
 			throws RepositoryException;
 
 	/* GENERIC */
 	/**
-	 * Try to save and optionally commit a business object after applying
-	 * context specific rules and special behaviours (typically cache updates).
+	 * Try to save and optionally publish a business object after applying
+	 * context specific rules and special behaviors (typically cache updates).
 	 * 
+	 * @return the entity that has been saved (and optionnaly published): note
+	 *         that is some cases (typically, the first save of a draft node in
+	 *         the business sub tree) the returned node is not the same as the
+	 *         one that has been passed
 	 * @param entity
-	 * @param commit
-	 *            also commit the corresponding node
+	 * @param publish
+	 *            also publish the corresponding node
 	 * @throws PeopleException
 	 *             If one a the rule defined for this type is not respected. Use
 	 *             getMessage to display to the user if needed
 	 */
-	public void saveEntity(Node entity, boolean commit) throws PeopleException;
+	public Node saveEntity(Node entity, boolean publish) throws PeopleException;
 
 	/**
 	 * Returns the corresponding entity or null if not found. This Uid is

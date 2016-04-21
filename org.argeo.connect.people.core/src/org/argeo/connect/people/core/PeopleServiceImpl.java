@@ -16,12 +16,16 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
+import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
+import javax.jcr.version.VersionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,6 +45,7 @@ import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.util.PersonJcrUtils;
+import org.argeo.connect.people.util.RemoteJcrUtils;
 import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.jcr.JcrUtils;
 import org.springframework.core.io.ClassPathResource;
@@ -89,9 +94,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		if (BUSINESS_REL_PATHES.containsKey(entityType))
 			return getBasePath(null) + "/"
 					+ BUSINESS_REL_PATHES.get(entityType);
-		// String parentName = getParentNameFromType(entityType);
-		// if (PeopleConstants.PEOPLE_KNOWN_PARENT_NAMES.contains(parentName))
-		// return getBasePath(null) + "/" + parentName;
 		else
 			throw new PeopleException("Unable to find base path with ID "
 					+ entityType);
@@ -129,7 +131,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	@Override
 	public String getResourceBasePath(String resourceType) {
-		// resourceType
 		if (resourceType == null)
 			return getBasePath(PeopleConstants.PEOPLE_RESOURCE);
 		else
@@ -142,8 +143,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		return getResourceBasePath(resourceType) + "/" + resourceId;
 	}
 
-	// Clean this: small helper to retrieve the parent node name given a
-	// NodeType or a Property name
+	// Clean this: retrieve a parent node name given a NodeType or a Property
+	// name
 	protected String getParentNameFromType(String typeId) {
 		if (typeId.endsWith("y"))
 			return typeId.substring(0, typeId.length() - 1) + "ies";
@@ -173,8 +174,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	/** Creates various useful parent nodes if needed */
 	protected void initialiseModel(Session adminSession)
 			throws RepositoryException {
-		// TODO configure privileges?
-
 		JcrUtils.mkdirs(adminSession, getBasePath(null));// Root business node
 		JcrUtils.mkdirs(adminSession, getTmpPath());// Root tmp node
 		JcrUtils.mkdirs(adminSession, getPublicPath());// Root public node
@@ -194,29 +193,23 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	/* ENTITY SERVICES */
-	public void saveEntity(Node entity, boolean commit) throws PeopleException {
+	public Node saveEntity(Node entity, boolean publish) throws PeopleException {
 		try {
 
 			if (entity.isNodeType(PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE)
 					|| entity.isNodeType(PeopleTypes.PEOPLE_TAG_INSTANCE)
 					|| entity.isNodeType(PeopleTypes.PEOPLE_NODE_TEMPLATE)) {
 				// Known types that does not have a specific save strategy
-				if (commit)
-					JcrUiUtils.checkPoint(entity);
-				else
-					entity.getSession().save();
+				JcrUiUtils.saveAndPublish(entity, publish);
 			} else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)
 					|| entity.isNodeType(PeopleTypes.PEOPLE_ORG))
-				getPersonService().saveEntity(entity, commit);
+				entity = getPersonService().saveEntity(entity, publish);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
-				// TODO implement generic People behavior for tasks and
-				// activities
-				if (commit)
-					JcrUiUtils.checkPoint(entity);
-				else
-					entity.getSession().save();
+				// TODO implement specific behavior for tasks and activities
+				JcrUiUtils.saveAndPublish(entity, publish);
 			else
 				throw new PeopleException("Unknown entity type for " + entity);
+			return entity;
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to save " + entity, e);
 		}
@@ -232,14 +225,18 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	 * function correctly
 	 */
 
-	// TODO work in progress
 	@Override
-	public void checkPathAndMoveIfNeeded(Node entity, String entityNodeType)
+	public Node checkPathAndMoveIfNeeded(Node entity, String entityNodeType)
 			throws RepositoryException {
 		String destPath = getDefaultPathForEntity(entity, entityNodeType);
-		if (!destPath.equals(entity.getPath())) {
+		if (destPath.equals(entity.getPath()))
+			return entity;
+		else {
+			// FIXME there are strange side effects for user that have no read
+			// access on root if the save is not made regularly on this method.
+			// Find the bug and fix.
+			Session session = entity.getSession();
 			String parPath = JcrUtils.parentPath(destPath);
-
 			String typeBasePath = getBasePath(entityNodeType);
 			String parRelPath = null;
 			if (parPath.startsWith(typeBasePath))
@@ -248,14 +245,53 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 				throw new PeopleException("Unable to move entity of type "
 						+ entityNodeType + ", Computed parent path " + parPath
 						+ " does not match.");
-			entity.getSession().save();
-			Node parNode = JcrUtils.mkdirs(
-					entity.getSession().getNode(typeBasePath), parRelPath,
-					NodeType.NT_UNSTRUCTURED, NodeType.NT_UNSTRUCTURED);
-			entity.getSession().save();
-			entity.getSession().move(entity.getPath(), destPath);
-			entity.getSession().save();
+			session.save();
+			Node parNode = JcrUtils.mkdirs(session.getNode(typeBasePath),
+					parRelPath, NodeType.NT_UNSTRUCTURED,
+					NodeType.NT_UNSTRUCTURED);
+			session.save();
+			Node target = parNode.addNode(JcrUtils.lastPathElement(destPath),
+					entity.getPrimaryNodeType().getName());
+			RemoteJcrUtils.copy(entity, target, true);
+			updateReferenceAfterMove(target, entity.getIdentifier(),
+					target.getIdentifier());
+			session.save();
+			entity.remove();
+			session.save();
+			return target;
 		}
+	}
+
+	protected void updateReferenceAfterMove(Node currentNode, String oldJcrId,
+			String newJcrId) throws RepositoryException {
+		PropertyIterator pit = currentNode.getProperties();
+		while (pit.hasNext()) {
+			Property prop = pit.nextProperty();
+			if (prop.getType() == PropertyType.REFERENCE
+					|| prop.getType() == PropertyType.WEAKREFERENCE) {
+				if (prop.isMultiple()) {
+					Value[] values = prop.getValues();
+					List<String> newIds = new ArrayList<String>();
+					boolean hasChanged = false;
+
+					for (Value val : values) {
+						String currValueStr = val.getString();
+						if (oldJcrId.equals(currValueStr)) {
+							newIds.add(newJcrId);
+							hasChanged = true;
+						} else
+							newIds.add(currValueStr);
+					}
+					if (hasChanged)
+						prop.setValue(newIds.toArray(new String[0]));
+				} else if (oldJcrId.equals(prop.getString()))
+					prop.setValue(newJcrId);
+			}
+		}
+
+		NodeIterator nit = currentNode.getNodes();
+		while (nit.hasNext())
+			updateReferenceAfterMove(nit.nextNode(), oldJcrId, newJcrId);
 	}
 
 	// @Override
@@ -498,8 +534,10 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 			}
 			long i = 0;
+			VersionManager vm = session.getWorkspace().getVersionManager();
 			while (nit.hasNext()) {
-				JcrUiUtils.checkPoint(nit.nextNode());
+				String currPath = nit.nextNode().getPath();
+				vm.checkpoint(currPath);
 				if (i % 100 == 0 && monitor != null && !monitor.isCanceled())
 					monitor.worked(1);
 				i++;

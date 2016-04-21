@@ -373,7 +373,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 
 					// Do we really want a new version at each and every time
 					if (tagInstance.isNodeType(NodeType.MIX_VERSIONABLE))
-						JcrUiUtils.checkPoint(tagInstance);
+						JcrUiUtils.saveAndPublish(tagInstance, true);
 					else
 						tagInstance.getSession().save();
 					monitor.worked(1);

@@ -133,7 +133,10 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		public void commit(boolean onSave) {
 			super.commit(onSave);
 			if (onSave) {
-				JcrUiUtils.save(task);
+				JcrUiUtils.saveAndPublish(task, false);
+				String path = JcrUiUtils.getPath(task);
+				if (!modifiedPaths.contains(path))
+					modifiedPaths.add(path);
 				JcrUiUtils.checkPoint(JcrUiUtils.getSession(task),
 						modifiedPaths, true);
 				modifiedPaths.clear();

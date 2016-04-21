@@ -34,7 +34,6 @@ public class RemoveEntityReference extends AbstractHandler {
 	public final static String PARAM_TOREMOVE_JCR_ID = "param.toRemoveJcrId";
 
 	/* DEPENDENCY INJECTION */
-	// private PeopleService peopleService;
 	private Repository repository;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
@@ -56,8 +55,7 @@ public class RemoveEntityReference extends AbstractHandler {
 		try {
 			session = repository.login();
 			toRemoveNode = session.getNodeByIdentifier(toRemoveJcrId);
-			versionableParent = JcrUiUtils
-					.getVersionableAncestor(toRemoveNode);
+			versionableParent = JcrUiUtils.getVersionableAncestor(toRemoveNode);
 
 			if (versionableParent == null) {
 				log.warn("Found no versionnable node in ancestors of "
@@ -65,14 +63,13 @@ public class RemoveEntityReference extends AbstractHandler {
 				toRemoveNode.remove();
 				session.save();
 			} else {
-				// boolean wasCO = 
-				JcrUiUtils
-						.checkCOStatusBeforeUpdate(versionableParent);
+				// boolean wasCO =
+				JcrUiUtils.checkCOStatusBeforeUpdate(versionableParent);
 				toRemoveNode.remove();
 				// FIXME should we save ? commit ? do nothing
-				JcrUiUtils.save(versionableParent);
-//				JcrUiUtils.checkCOStatusAfterUpdate(versionableParent,
-//						wasCO);
+				JcrUiUtils.saveAndPublish(versionableParent, true);
+				// JcrUiUtils.checkCOStatusAfterUpdate(versionableParent,
+				// wasCO);
 			}
 		} catch (RepositoryException e) {
 			StringBuilder errMsg = new StringBuilder();

@@ -299,7 +299,7 @@ public class ActivityList extends LazyCTabControl {
 			relatedTo.add(relatedEntity);
 			Node activity = activityService.createActivity(session, type,
 					title, desc, relatedTo);
-			JcrUiUtils.checkPoint(activity);
+			JcrUiUtils.saveAndPublish(activity, true);
 			return activity;
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to create activity node", e);

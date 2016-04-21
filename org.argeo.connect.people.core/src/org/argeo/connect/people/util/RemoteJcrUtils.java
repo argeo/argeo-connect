@@ -34,13 +34,13 @@ public class RemoteJcrUtils {
 
 	/**
 	 * Copy a node from the remote repository to the local repository, including
-	 * all sub nodes. The target "toNode" must already exists in transiant
+	 * all sub nodes. The target "toNode" must already exists in transient
 	 * state.
 	 * 
 	 * @param fromNode
-	 *            the node to copy in the remote repo
+	 *            the node to be copied in the remote repository
 	 * @param toNode
-	 *            the target node in the local repo
+	 *            the target node in the local repository
 	 */
 	public static void copy(Node fromNode, Node toNode, boolean copyChildren) {
 		try {
@@ -99,10 +99,8 @@ public class RemoteJcrUtils {
 			}
 			if (toNode.isNodeType(NodeType.MIX_LAST_MODIFIED))
 				JcrUtils.updateLastModified(toNode);
-
 			if (log.isTraceEnabled())
 				log.trace("Copied " + toNode);
-
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Cannot copy " + fromNode + " to "
 					+ toNode, e);

@@ -34,17 +34,14 @@ public class ChangeEditingState extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		String priorAction = event.getParameter(PARAM_PRIOR_ACTION);
 		String newState = event.getParameter(PARAM_NEW_STATE);
-
 		IWorkbenchPart iwp = HandlerUtil.getActiveWorkbenchWindow(event)
 				.getActivePage().getActivePart();
-
 		if (iwp instanceof AbstractPeopleEditor) {
 			AbstractPeopleEditor editor = (AbstractPeopleEditor) iwp;
-
 			// prior action
 			Node node = editor.getNode();
 			if (PRIOR_ACTION_SAVE.equals(priorAction))
-				JcrUiUtils.checkPoint(node);
+				JcrUiUtils.saveAndPublish(node, true);
 			else if (PRIOR_ACTION_CANCEL.equals(priorAction))
 				JcrUtils.discardUnderlyingSessionQuietly(node);
 			else if (PRIOR_ACTION_CHECKOUT.equals(priorAction)) {
@@ -52,7 +49,6 @@ public class ChangeEditingState extends AbstractHandler {
 					log.warn("Referencing node " + node
 							+ " was checked in when we wanted to update");
 			}
-
 			// new State
 			if (EDITING.equals(newState))
 				editor.startEditing();

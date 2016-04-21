@@ -110,7 +110,7 @@ public class DeleteEntity extends AbstractHandler {
 			JcrUtils.discardUnderlyingSessionQuietly(toRemoveNode);
 			toRemoveNode.remove();
 			if (parentVersionableNode != null)
-				JcrUiUtils.checkPoint(parentVersionableNode);
+				JcrUiUtils.saveAndPublish(parentVersionableNode, true);
 			else
 				session.save();
 

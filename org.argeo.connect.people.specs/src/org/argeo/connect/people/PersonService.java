@@ -18,7 +18,7 @@ public interface PersonService {
 	
 	/**
 	 * Try to save and optionally commit a person or an organisation after applying
-	 * context specific rules and special behaviours (typically cache updates).
+	 * context specific rules and special behaviors (typically cache updates).
 	 * 
 	 * @param entity
 	 * @param commit
@@ -27,7 +27,7 @@ public interface PersonService {
 	 *             If one a the rule defined for this type is not respected. Use
 	 *             getMessage to display to the user if needed
 	 */
-	public void saveEntity(Node entity, boolean commit) throws PeopleException, RepositoryException;
+	public Node saveEntity(Node entity, boolean commit) throws PeopleException, RepositoryException;
 	
 	/**
 	 * 

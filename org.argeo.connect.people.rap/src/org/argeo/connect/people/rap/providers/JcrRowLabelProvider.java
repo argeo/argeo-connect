@@ -23,6 +23,13 @@ public class JcrRowLabelProvider extends SimpleJcrNodeLabelProvider {
 			this.selectorName = selectorName;
 	}
 
+	public JcrRowLabelProvider(String selectorName, String propertyName,
+			String dateFormatPattern, String numberFormatPattern) {
+		super(propertyName, dateFormatPattern, numberFormatPattern);
+		if (EclipseUiUtils.notEmpty(selectorName))
+			this.selectorName = selectorName;
+	}
+
 	public JcrRowLabelProvider(String propertyName) {
 		super(propertyName);
 	}
