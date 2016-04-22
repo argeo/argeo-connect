@@ -18,7 +18,9 @@ public class EditionSourceProvider extends AbstractSourceProvider {
 			+ ".editingState";
 	private final static String EDITING = "editing";
 	private final static String NOT_EDITING = "notEditing";
+	private final static String NOT_EDITABLE = "notEditable";
 	boolean isEditing = false;
+	boolean isEditable = true;
 
 	@Override
 	public String[] getProvidedSourceNames() {
@@ -28,7 +30,11 @@ public class EditionSourceProvider extends AbstractSourceProvider {
 	@Override
 	public Map<String, String> getCurrentState() {
 		Map<String, String> currentState = new HashMap<String, String>(1);
-		String currEditingState = isEditing ? EDITING : NOT_EDITING;
+		String currEditingState = null;
+		if (isEditable)
+			currEditingState = isEditing ? EDITING : NOT_EDITING;
+		else
+			currEditingState = NOT_EDITABLE;
 		currentState.put(EDITING_STATE, currEditingState);
 		return currentState;
 	}
@@ -42,9 +48,14 @@ public class EditionSourceProvider extends AbstractSourceProvider {
 	 * it can disable or enable check out button when relevant item is
 	 * respectively checked-out or checked in..
 	 */
-	public void setCurrentItemEditingState(boolean isEditing) {
+	public void setCurrentItemEditingState(boolean isEditable, boolean isEditing) {
 		this.isEditing = isEditing;
-		String currEditingState = isEditing ? EDITING : NOT_EDITING;
+		this.isEditable = isEditable;
+		String currEditingState = null;
+		if (isEditable)
+			currEditingState = isEditing ? EDITING : NOT_EDITING;
+		else
+			currEditingState = NOT_EDITABLE;
 		fireSourceChanged(ISources.WORKBENCH, EDITING_STATE, currEditingState);
 	}
 }

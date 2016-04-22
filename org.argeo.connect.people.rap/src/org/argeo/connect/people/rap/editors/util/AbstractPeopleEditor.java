@@ -421,7 +421,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 				.getService(ISourceProviderService.class);
 		EditionSourceProvider csp = (EditionSourceProvider) sourceProviderService
 				.getSourceProvider(EditionSourceProvider.EDITING_STATE);
-		csp.setCurrentItemEditingState(isEditing());
+		csp.setCurrentItemEditingState(canEdit(), isEditing());
 		firePropertyChange(PROP_DIRTY);
 		forceRefresh();
 	}

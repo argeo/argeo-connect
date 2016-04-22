@@ -41,8 +41,9 @@ public class PartStateChanged implements IPartListener, IStartup {
 							.getActiveWorkbenchWindow().getActivePage();
 					if (iwp != null)
 						iwp.addPartListener(new PartStateChanged());
-					Display.getCurrent()
-							.setData(PeopleRapConstants.KEY_PEOPLE_SERVICE, peopleService);
+					Display.getCurrent().setData(
+							PeopleRapConstants.KEY_PEOPLE_SERVICE,
+							peopleService);
 				} catch (Exception e) {
 					throw new PeopleException(
 							"Error while registering the PartStateChangedListener",
@@ -80,10 +81,11 @@ public class PartStateChanged implements IPartListener, IStartup {
 		}
 		if (part instanceof CmsEditable) {
 			CmsEditable editor = (CmsEditable) part;
+
 			// Processing the ability to checkout is delegated to the editor
-			esp.setCurrentItemEditingState(editor.isEditing());
+			esp.setCurrentItemEditingState(editor.canEdit(), editor.isEditing());
 		} else {// force button to be disabled if another part has the focus.
-			esp.setCurrentItemEditingState(true);
+			esp.setCurrentItemEditingState(false, true);
 		}
 	}
 
@@ -114,7 +116,7 @@ public class PartStateChanged implements IPartListener, IStartup {
 					.getService(ISourceProviderService.class);
 			EditionSourceProvider esp = (EditionSourceProvider) sourceProviderService
 					.getSourceProvider(EditionSourceProvider.EDITING_STATE);
-			esp.setCurrentItemEditingState(true);
+			esp.setCurrentItemEditingState(false, true);
 		}
 	}
 

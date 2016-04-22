@@ -294,17 +294,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			updateReferenceAfterMove(nit.nextNode(), oldJcrId, newJcrId);
 	}
 
-	// @Override
-	// public void checkPathAndMoveIfNeeded(Node entity, String entityNodeType)
-	// throws RepositoryException {
-	// String destPath = getDefaultPathForEntity(entity, entityNodeType);
-	// if (!destPath.equals(entity.getPath())) {
-	// String parPath = JcrUtils.parentPath(destPath);
-	// JcrUtils.mkdirs(entity.getSession(), parPath);
-	// entity.getSession().move(entity.getPath(), destPath);
-	// }
-	// }
-
 	/** Simply look for primary information and update primary cache if needed */
 	@Override
 	public void updatePrimaryCache(Node entity) throws PeopleException,

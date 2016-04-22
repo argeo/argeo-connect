@@ -20,8 +20,8 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.util.CsvParserWithLinesAsMap;
-import org.springframework.core.io.Resource;
 import org.eclipse.gemini.blueprint.io.OsgiBundleResource;
+import org.springframework.core.io.Resource;
 
 /** Base utility to load CSV data in a People repository **/
 public abstract class AbstractPeopleCsvFileParser extends
@@ -33,7 +33,7 @@ public abstract class AbstractPeopleCsvFileParser extends
 	protected VersionManager vm;
 	private PeopleService peopleService;
 
-	protected DateFormat dateFormat;
+	protected DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 	// Enable importing images
 	private Resource images = null;
@@ -50,12 +50,6 @@ public abstract class AbstractPeopleCsvFileParser extends
 			throw new PeopleException("Unable to get version manager "
 					+ "while trying to import nodes", e);
 		}
-
-		// initialize formats
-		dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		// numberFormat = DecimalFormat.getInstance();
-		// ((DecimalFormat) numberFormat)
-		// .applyPattern(MsmConstants.NUMBER_FORMAT);
 	}
 
 	public AbstractPeopleCsvFileParser(Session adminSession,
@@ -98,5 +92,4 @@ public abstract class AbstractPeopleCsvFileParser extends
 	protected PeopleService getPeopleService() {
 		return peopleService;
 	}
-
 }

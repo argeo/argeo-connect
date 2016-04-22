@@ -156,14 +156,14 @@ public class VersionUtils {
 							null, n);
 					localDiffs.put(currNodePath, iDiff);
 					// This triggers the display of duplicated properties when a
-					// sub node is added. vilently commented out for the time
+					// sub node is added. Violently commented out for the time
 					// being.
 					// TODO rework this
 					// addAllProperties(localDiffs, ItemDiff.ADDED, true, n,
 					// excludedProperties);
 				}
 			}
-			// modification found, we add them
+			// Modification found, we add them
 			if (!localDiffs.isEmpty()) {
 				// Small hack to avoid putting a line for parent node with only
 				// a modification on their children

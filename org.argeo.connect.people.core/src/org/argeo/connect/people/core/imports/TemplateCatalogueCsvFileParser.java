@@ -14,7 +14,7 @@ import org.argeo.util.CsvParserWithLinesAsMap;
  * Base utility to load a catalogue of property values for a given business type
  * in a repository.
  * 
- * Expected file format is a Csv with 2 columns, the first with the property
+ * Expected file format is a .CSV with 2 columns, the first with the property
  * names and the second with a '; ' separated list of String values.
  * 
  * By default, found values are stored in a multi-String property with this

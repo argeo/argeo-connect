@@ -256,79 +256,6 @@ public class JcrUiUtils {
 	}
 
 	/**
-	 * Force a version snapshot of the current state of the given versionable
-	 * node. It wraps a JCR checkPoint methods
-	 */
-	// public static void forceCheckPoint(Node node) {
-	// try {
-	// Session session = node.getSession();
-	// JcrUtils.updateLastModified(node);
-	// if (isVersionable(node)) {
-	// VersionManager vm = session.getWorkspace().getVersionManager();
-	// String path = node.getPath();
-	// vm.checkpoint(path);
-	// }
-	// } catch (RepositoryException re) {
-	// throw new PeopleException("Unable to perform check point on "
-	// + node, re);
-	// }
-	// }
-
-	// /** Concisely save the underlying session if some changes have been done
-	// */
-	// public static boolean save(Node node) {
-	// return save(node, false);
-	// }
-
-	/**
-	 * Concisely save the underlying session if some changes have been done and
-	 * make a version tag if asked and if the node is already versionable
-	 */
-	// public static boolean save(Node node, boolean tagVersion) {
-	// try {
-	// if (tagVersion)
-	// return checkPoint(node);
-	// else {
-	// Session session = node.getSession();
-	// if (session.hasPendingChanges()) {
-	// session.save();
-	// return true;
-	// }
-	// }
-	// return false;
-	// } catch (RepositoryException e) {
-	// throw new PeopleException("Unable to save session  for " + node, e);
-	// }
-	// }
-
-	/**
-	 * Wraps the versionMananger.checkedIn(path) method to adapt it to the
-	 * current check in / check out policy.
-	 * 
-	 * It also checked if the current entity has to be moved or not. TODO : add
-	 * management of check out by others.
-	 */
-	// public static void saveAndCheckin(Node node) {
-	// try {
-	// if (!node.isCheckedOut())
-	// // versionable & already published, nothing to do.
-	// return;
-	// if (node.isNodeType(NodeType.MIX_VERSIONABLE)) {
-	// JcrUtils.updateLastModified(node);
-	// node.getSession().save();
-	// node.getSession().getWorkspace().getVersionManager()
-	// .checkin(node.getPath());
-	// } else {
-	// // JcrUtils.updateLastModified(node);
-	// node.getSession().save();
-	// }
-	// } catch (RepositoryException re) {
-	// throw new PeopleException(
-	// "Unable to save and chek in node " + node, re);
-	// }
-	// }
-
-	/**
 	 * Wraps a best effort to versionMananger.checkedPoint(path) a list of path.
 	 * We check if the node still exists because the list might be out-dated
 	 * 
@@ -375,19 +302,6 @@ public class JcrUiUtils {
 			checkout(node);
 		return wasCheckedOut;
 	}
-
-	/**
-	 * Simplify the save strategy keeping the check-in status unchanged. Goes
-	 * together with <code>checkCOStatusBeforeUpdate</code>
-	 */
-	// public static void checkCOStatusAfterUpdate(Node node, boolean
-	// wasCheckedOut)
-	// throws RepositoryException {
-	// if (!wasCheckedOut)
-	// saveAndCheckin(node);
-	// else
-	// node.getSession().save();
-	// }
 
 	/**
 	 * Simply retrieves the first versionable node in the current node ancestor

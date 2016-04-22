@@ -288,9 +288,6 @@
 				style="push"
 				tooltip="Check Out item for edit">
 				<visibleWhen>
-					<!-- <with variable="activePart">
-							<instanceof value="org.argeo.connect.people.rap.editors.util.IVersionedItemEditor" />
-					</with> --> 
 					<and>
 						<with variable="activePart">
 							<instanceof value="org.argeo.cms.CmsEditable" />
@@ -298,13 +295,6 @@
 						<with variable="org.argeo.connect.people.rap.editingState">
 							<equals value="notEditing" />
 						</with>
-						<!-- FIXME : never true, the role condition does not work -->
-						<!-- <with variable="roles">
-			      			<iterate ifEmpty="false" operator="or">
-			        			<equals value="ROLE_BUSINESS_ADMIN" />
-			        			<equals value="ROLE_REGISTERED_MEMBER" />
-			      			</iterate>
-			    		</with> -->
 			    	</and>
 				</visibleWhen>
 				<parameter name="param.newEditingState" value="editing" />
@@ -326,12 +316,6 @@
 						<with variable="org.argeo.connect.people.rap.editingState">
 							<equals value="editing" />
 						</with>
-						<!-- <with variable="roles">
-			      			<iterate ifEmpty="false" operator="or">
-			        			<equals value="ROLE_BUSINESS_ADMIN" />
-			        			<equals value="ROLE_REGISTERED_MEMBER" />
-			      			</iterate>
-			    		</with> -->
 			    	</and>
 				</visibleWhen>
 				<parameter name="param.newEditingState" value="notEditing" />
@@ -411,31 +395,6 @@
         </menuContribution>
 	</extension>
 	
-	<!-- SPECIFIC MANAGEMENT OF THE CHECK OUT ITEM -->
-<!--	<extension
-
-		point="org.eclipse.ui.handlers">
-		<handler
-			class="org.argeo.connect.people.rap.commands.CancelAndCheckInItem"
-			commandId="org.argeo.connect.people.rap.cancelAndCheckInItem">
-			<activeWhen>
-				<and> 
-					<with
-						variable="org.argeo.connect.people.rap.checkOutState">
-						<equals value="checkedOut" />
-					</with>
-					<with variable="activePart">
-						<instanceof value="org.argeo.connect.people.rap.editors.util.IVersionedItemEditor" />
-					</with>
-				</and>
-			</activeWhen>
-		</handler>
-		<handler
-			class="org.argeo.connect.people.rap.commands.ChangeEditingState"
-			commandId="org.argeo.connect.people.rap.changeEditingState">
-		</handler>
-	</extension>
--->
 	<!-- Workbench listeners --> 
 	<extension point="org.eclipse.ui.startup">
    		<startup class="org.argeo.eclipse.spring.SpringExtensionFactory"

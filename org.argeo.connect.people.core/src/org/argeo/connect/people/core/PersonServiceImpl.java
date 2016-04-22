@@ -86,7 +86,6 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 		Boolean useDistinctDName = JcrUiUtils.getBooleanValue(person,
 				PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 		String displayName = null;
-
 		JcrUiUtils.saveAndPublish(person, publish);
 
 		// Update display name cache if needed
@@ -108,10 +107,8 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 				PeopleTypes.PEOPLE_PERSON);
 		JcrUiUtils.saveAndPublish(person, publish);
 
-		// person.getSession().save();
 		// Update cache
 		peopleService.updatePrimaryCache(person);
-		// real save
 		JcrUiUtils.saveAndPublish(person, publish);
 		return person;
 	}
@@ -162,14 +159,10 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 				String oldPath = oldPerson.getPath();
 				String newPath = person.getPath();
 				if (!newPath.equals(oldPath)) {
-					// remove old
-					// boolean wasCO =
 					JcrUiUtils.checkCOStatusBeforeUpdate(oldPerson);
 					oldJob.remove();
 					// FIXME we should not save the session anymore
 					oldPerson.getSession().save();
-					// JcrUiUtils.checkCOStatusAfterUpdate(oldPerson,
-					// wasCO);
 				} else
 					newJob = oldJob;
 			}
@@ -188,7 +181,6 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 			} else
 				newNodeName = orgUid;
 
-			// boolean wasCO =
 			JcrUiUtils.checkCOStatusBeforeUpdate(person);
 			// Create node if necessary
 			if (newJob == null) {
@@ -229,7 +221,6 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 				newJob.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, isPrimary);
 			// FIXME we should not save the session anymore
 			person.getSession().save();
-			// JcrUiUtils.checkCOStatusAfterUpdate(person, wasCO);
 		} catch (RepositoryException re) {
 			throw new PeopleException("unable to create or update job "
 					+ oldJob + " for person " + person + " and org "

@@ -180,13 +180,6 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 		UserAdminService usm = peopleService.getUserAdminService();
 		return getTasksForGroup(session, usm.getUserRoles(username),
 				onlyOpenTasks);
-
-		// String[] roles = usm.getUserRoles(username);
-		//
-		// List<Node> tasks = new ArrayList<Node>();
-		// for (String role : roles)
-		// tasks.addAll(getTasksForGroup(session, role, onlyOpenTasks));
-		// return tasks;
 	}
 
 	public NodeIterator getTasksForGroup(Session session, String[] roles,
@@ -221,23 +214,10 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			builder.append(" order by @").append(PeopleNames.JCR_LAST_MODIFIED)
 					.append(" descending");
 
-			// builder.append(" order by @").append(PeopleNames.PEOPLE_DUE_DATE)
-			// .append(" ascending");
-
 			Query query = queryManager.createQuery(builder.toString(),
 					PeopleConstants.QUERY_XPATH);
 
 			return query.execute().getNodes();
-			// if (onlyOpenTasks) {
-			// List<Node> tasks = new ArrayList<Node>();
-			// while (nit.hasNext()) {
-			// Node currNode = nit.nextNode();
-			// if (!isTaskDone(currNode) && !isTaskSleeping(currNode))
-			// tasks.add(currNode);
-			// }
-			// return tasks;
-			// } else
-			// return JcrUtils.nodeIteratorToList(nit);
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to get tasks for groups "
 					+ roles.toString());
@@ -471,6 +451,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 
 			// TODO clean this
 			// Enhance task naming
+			// FIXME use the genereric move strategy
 			Session session = parentNode.getSession();
 			session.move(poll.getPath(), newPath);
 		} catch (RepositoryException e) {
