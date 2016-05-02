@@ -119,7 +119,7 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 	}
 
 	private final String[] knownProps = { LdifName.cn.name(),
-			LdifName.sn.name(), LdifName.uid.name() };
+			LdifName.sn.name(), LdifName.givenName.name(), LdifName.uid.name() };
 
 	public List<Group> listGroups(String filter) {
 		Role[] roles;
@@ -156,6 +156,54 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 					&& !role.getName().toLowerCase()
 							.endsWith(AuthConstants.ROLES_BASEDN))
 				users.add((Group) role);
+		return users;
+	}
+
+	public List<User> listGroups(String filter, boolean includeUsers,
+			boolean includeSystemRoles) {
+		Role[] roles;
+		try {
+			StringBuilder tmpBuilder = new StringBuilder();
+
+			// Build filter String
+			String filterStr = null;
+			if (UsersUtils.notNull(filter)) {
+				for (String prop : knownProps) {
+					tmpBuilder.append("(");
+					tmpBuilder.append(prop);
+					tmpBuilder.append("=*");
+					tmpBuilder.append(filter);
+					tmpBuilder.append("*)");
+				}
+				filterStr = "(|" + tmpBuilder.toString() + ")";
+			}
+
+			String typeStr = null;
+			if (!includeUsers)
+				typeStr = "(" + LdifName.objectClass.name() + "="
+						+ LdifName.groupOfNames.name() + ")";
+
+			// Construct statement
+			String statement = null;
+			if (typeStr != null && filterStr != null) {
+				statement = "(&" + typeStr + filterStr + ")";
+			} else if (typeStr != null)
+				statement = typeStr;
+			else if (filterStr != null)
+				statement = filterStr;
+
+			roles = getUserAdmin().getRoles(statement);
+		} catch (InvalidSyntaxException e) {
+			throw new ArgeoException("Unable to get roles with filter: "
+					+ filter, e);
+		}
+		List<User> users = new ArrayList<User>();
+		for (Role role : roles)
+			if (role.getType() == Role.USER
+					&& !users.contains(role)
+					&& (includeSystemRoles || !role.getName().toLowerCase()
+							.endsWith(AuthConstants.ROLES_BASEDN)))
+				users.add((User) role);
 		return users;
 	}
 

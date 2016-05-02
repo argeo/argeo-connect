@@ -53,6 +53,10 @@ public interface UserAdminService {
 	/** Search among defined groups */
 	public List<Group> listGroups(String filter);
 
+	/** Search among defined groups including system roles and users if needed */
+	public List<User> listGroups(String filter, boolean includeUsers,
+			boolean includeSystemRoles);
+
 	/* MISCELLANEOUS */
 	/** Simply returns the dn of a role given its local ID */
 	public String buildDefaultDN(String localId, int type);
