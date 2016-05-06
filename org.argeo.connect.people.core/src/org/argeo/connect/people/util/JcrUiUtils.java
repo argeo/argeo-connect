@@ -3,6 +3,7 @@ package org.argeo.connect.people.util;
 import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
 
 import java.security.AccessControlException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -524,6 +525,25 @@ public class JcrUiUtils {
 					+ " of " + node, e);
 		}
 	}
+	
+	/**
+	 * Concisely gets the value of a date property formatted as String or an empty String this node doesn't
+	 * have this property
+	 */
+	public static String getDateFormattedAsString(Node node, String propertyName, String dateFormatPattern) {
+		try {
+			if (!node.hasProperty(propertyName))
+				return null;
+			else{
+				Calendar cal = node.getProperty(propertyName).getDate();
+				return 	new SimpleDateFormat(dateFormatPattern).format(cal.getTime());
+			}
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Cannot get date property " + propertyName
+					+ " on " + node, e);
+		}
+	}
+	
 
 	/**
 	 * Concisely gets the value of a boolean property or null if this node
@@ -757,9 +777,9 @@ public class JcrUiUtils {
 			if (!node.hasProperty(propertyName))
 				return "";
 			else {
-				Value[] langs = node.getProperty(propertyName).getValues();
+				Value[] values = node.getProperty(propertyName).getValues();
 				StringBuilder builder = new StringBuilder();
-				for (Value val : langs) {
+				for (Value val : values) {
 					String currStr = val.getString();
 					if (EclipseUiUtils.notEmpty(currStr))
 						builder.append(currStr).append(separator);
