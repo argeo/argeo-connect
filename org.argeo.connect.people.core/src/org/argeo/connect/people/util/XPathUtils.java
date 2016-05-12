@@ -89,6 +89,7 @@ public class XPathUtils {
 
 	public static String getPropertyEquals(String propertyName, String value) {
 		if (notEmpty(value))
+			// TODO escape single quote?
 			return "@" + propertyName + "='" + value + "'";
 		return "";
 	}
