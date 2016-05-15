@@ -1,2 +1,3 @@
+Provide-Capability: cms.datamodel; name=media; cnd=/org/argeo/connect/media/media.cnd
 Import-Package: javax.jcr.nodetype,\
 *
