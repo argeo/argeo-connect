@@ -18,12 +18,6 @@
 			<version>2.1.48-SNAPSHOT</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.people.services</artifactId>
-			<version>2.1.48-SNAPSHOT</version>
-		</dependency>
-
 		<!-- COMMONS -->
 		<!-- Rap default Argeo Utilities: this bundle explicitly use the RAP workbench. -->
 		<dependency>

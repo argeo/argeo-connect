@@ -1,4 +1,0 @@
-Import-Package: org.argeo.connect.people,\
-	org.osgi.service.useradmin,\
-	javax.transaction,\
-	*

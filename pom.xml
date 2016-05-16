@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.argeo.commons</groupId>
 		<artifactId>argeo-commons</artifactId>
-		<version>2.1.38</version>
+		<version>2.1.39-SNAPSHOT</version>
 	</parent>
 	<groupId>org.argeo.connect</groupId>
 	<artifactId>argeo-connect</artifactId>
@@ -19,7 +19,6 @@
 		<module>org.argeo.connect.people.specs</module>
 		<module>org.argeo.connect.media.specs</module>
 		<module>org.argeo.connect.people.core</module>
-		<module>org.argeo.connect.people.services</module>
 		<module>org.argeo.connect.people.ui</module>
 		<module>org.argeo.connect.people.rap</module>
 		<module>org.argeo.connect.people.web</module>
