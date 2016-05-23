@@ -357,6 +357,17 @@ public class JcrUiUtils {
 		}
 	}
 
+	/** Centralizes exception management to call {@link Node#getName()} */
+	public static String getName(Node node) {
+		try {
+			return node.getName();
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to retrieve name for node "
+					+ node, re);
+		}
+
+	}
+
 	/** Centralizes exception management to call {@link Node#getPath()} */
 	public static String getPath(Node node) {
 		try {
@@ -525,25 +536,26 @@ public class JcrUiUtils {
 					+ " of " + node, e);
 		}
 	}
-	
+
 	/**
-	 * Concisely gets the value of a date property formatted as String or an empty String this node doesn't
-	 * have this property
+	 * Concisely gets the value of a date property formatted as String or an
+	 * empty String this node doesn't have this property
 	 */
-	public static String getDateFormattedAsString(Node node, String propertyName, String dateFormatPattern) {
+	public static String getDateFormattedAsString(Node node,
+			String propertyName, String dateFormatPattern) {
 		try {
 			if (!node.hasProperty(propertyName))
 				return null;
-			else{
+			else {
 				Calendar cal = node.getProperty(propertyName).getDate();
-				return 	new SimpleDateFormat(dateFormatPattern).format(cal.getTime());
+				return new SimpleDateFormat(dateFormatPattern).format(cal
+						.getTime());
 			}
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Cannot get date property " + propertyName
 					+ " on " + node, e);
 		}
 	}
-	
 
 	/**
 	 * Concisely gets the value of a boolean property or null if this node
