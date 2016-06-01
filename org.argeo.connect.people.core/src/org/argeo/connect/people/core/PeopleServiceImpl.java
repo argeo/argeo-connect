@@ -47,6 +47,7 @@ import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.util.PersonJcrUtils;
 import org.argeo.connect.people.util.RemoteJcrUtils;
 import org.argeo.connect.people.util.XPathUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -90,7 +91,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	public String getBasePath(String entityType) {
 		if (entityType == null)
 			return PeopleConstants.PEOPLE_BASE_PATH;
-
 		if (BUSINESS_REL_PATHES.containsKey(entityType))
 			return getBasePath(null) + "/"
 					+ BUSINESS_REL_PATHES.get(entityType);
@@ -174,7 +174,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	/** Creates various useful parent nodes if needed */
 	protected void initialiseModel(Session adminSession)
 			throws RepositoryException {
-		JcrUtils.mkdirs(adminSession, getBasePath(null));// Root business node
+
+			// Root business node
+		if (EclipseUiUtils.notEmpty(getBasePath(null)))
+			JcrUtils.mkdirs(adminSession, getBasePath(null));
+
 		JcrUtils.mkdirs(adminSession, getTmpPath());// Root tmp node
 		JcrUtils.mkdirs(adminSession, getPublicPath());// Root public node
 

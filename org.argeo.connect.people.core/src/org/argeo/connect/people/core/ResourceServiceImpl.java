@@ -539,14 +539,23 @@ public class ResourceServiceImpl implements ResourceService {
 						+ " registered tags");
 
 			// Look for not yet registered tags
-			Query query = session
-					.getWorkspace()
-					.getQueryManager()
-					.createQuery(
-							"select * from [" + taggableNodeType
-									+ "] as instances where ISDESCENDANTNODE('"
-									+ taggableParentPath + "') ",
-							Query.JCR_SQL2);
+			// Query query = session
+			// .getWorkspace()
+			// .getQueryManager()
+			// .createQuery(
+			// "select * from [" + taggableNodeType
+			// + "] as instances where ISDESCENDANTNODE('"
+			// + taggableParentPath + "') ",
+			// Query.JCR_SQL2);
+
+			String xpathQueryStr = XPathUtils
+					.descendantFrom(taggableParentPath)
+					+ "//element(*, "
+					+ taggableNodeType + ")";
+			QueryManager queryManager = session.getWorkspace()
+					.getQueryManager();
+			Query query = queryManager.createQuery(xpathQueryStr,
+					PeopleConstants.QUERY_XPATH);
 			nit = query.execute().getNodes();
 			if (log.isDebugEnabled())
 				log.debug("Searching new tags on " + nit.getSize()

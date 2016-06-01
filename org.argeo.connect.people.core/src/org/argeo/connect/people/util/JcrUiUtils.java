@@ -434,6 +434,18 @@ public class JcrUiUtils {
 	/**
 	 * Call {@link Row#getNode()} catching {@link RepositoryException}
 	 */
+	public static Node getNode(Session session, String absPath) {
+		try {
+			return session.getNode(absPath);
+		} catch (RepositoryException re) {
+			throw new PeopleException("Unable to retrieve Node at path "
+					+ absPath, re);
+		}
+	}
+
+	/**
+	 * Call {@link Row#getNode()} catching {@link RepositoryException}
+	 */
 	public static Node getNode(Row row, String selectorName) {
 		try {
 			if (selectorName == null)
