@@ -27,14 +27,8 @@
 		</dependency>
 		<!-- Providers -->
 		<dependency>
-			<groupId>org.argeo.tp.extras.payment</groupId>
+			<groupId>org.argeo.tp.payment</groupId>
 			<artifactId>com.stripe</artifactId>
 		</dependency>
-		<!-- Useless we build against Full TP -->
-		<!-- Used by Stripe -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.argeo.tp.misc</groupId> -->
-		<!-- <artifactId>com.google.gson</artifactId> -->
-		<!-- </dependency> -->
 	</dependencies>
 </project>

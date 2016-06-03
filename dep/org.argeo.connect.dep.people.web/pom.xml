@@ -36,30 +36,8 @@
 			<version>${version.argeo-distribution}</version>
 		</dependency>
 
-		<!-- Additional third parties: we cannot add the full tp-extra distribution: 
-			by construction it is not OSGI complete -->
 		<dependency>
-			<groupId>org.argeo.tp.extras</groupId>
-			<artifactId>net.sf.jxl</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.extras.apache</groupId>
-			<artifactId>org.apache.pdfbox</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.extras.apache</groupId>
-			<artifactId>org.apache.pdfbox.fontbox</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.extras.apache</groupId>
-			<artifactId>org.apache.pdfbox.jempbox</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.extras</groupId>
-			<artifactId>org.postgresql.postgresql</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.extras.payment</groupId>
+			<groupId>org.argeo.tp.payment</groupId>
 			<artifactId>com.stripe</artifactId>
 		</dependency>
 	</dependencies>
