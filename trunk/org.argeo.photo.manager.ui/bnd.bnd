@@ -1,0 +1,10 @@
+Bundle-SymbolicName: org.argeo.photo.manager.ui;singleton:=true
+Bundle-Activator: org.argeo.photo.manager.ui.PhotoManagerUiPlugin
+Require-Bundle: org.eclipse.ui;resolution:=optional,\
+ org.eclipse.core.runtime;resolution:=optional,\
+ org.eclipse.rap.ui;resolution:=optional,\
+ org.eclipse.rap.ui.workbench;resolution:=optional
+Import-Package:*,\
+	org.argeo.eclipse.spring,\
+	org.h2,\
+	javax.jcr.nodetype

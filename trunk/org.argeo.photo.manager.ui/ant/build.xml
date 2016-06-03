@@ -1,0 +1,24 @@
+<project>
+
+	<target name="rename">
+		<renameFiles fromdir="C:\docs\Labo\D200\0702-0035-ManifNonAffiliated\Selection"
+		todir="C:\docs\Labo\D200\0702-0035-ManifWakeUp\Selection"
+		from="0702-ManifNonAffiliated-*"
+		to="0702-ManifWakeUp-*"/>
+	</target>
+	
+	<macrodef name="renameFiles">
+		<attribute name="fromdir"/>
+		<attribute name="todir"/>
+		<attribute name="from"/>
+		<attribute name="to"/>
+		<sequential>
+			<mkdir dir="@{todir}"/>
+			<copy todir="@{todir}">
+				<fileset dir="@{fromdir}" includes="**/*"/>
+				<globmapper from="@{from}" to="@{to}"/>
+			</copy>
+		</sequential>
+	</macrodef>
+
+</project>

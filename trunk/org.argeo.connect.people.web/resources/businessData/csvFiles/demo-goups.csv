@@ -1,0 +1,7 @@
+people:groupName,jcr:title,jcr:description,people:members
+administration,Administration,All administrative stuff should be assigned to this group,"bsinou, psmith"
+programmers,Programmers,Make the final decisions,aking
+customerRelations,Customer Relations,"In charge of managing customers, typically sending rejection letters or retrieving fees.",sboyle
+validationEN,English text validation,Checks and validates English texts,jchan
+validationDE,German text validation,Checks and validates German texts and subtitles,ijake
+designerManagement,Designers management,Prepare all material and manage relationship with the designers,ijake

@@ -1,0 +1,11 @@
+people:firstName,people:lastName,people:salutation,people:personTitle,people:pseudonym,people:nameSuffix,people:maidenName,people:phoneNumber,Interest,Profession,people:languages,people:tags,people:mailingLists,people:birthDate,people:emailAddress,people:emailAddressOther,people:org,people:role,people:department,PhoneDirect,Facebook,jcr:description
+,Beck,Mr.,,,,,,,Redakteur,,"Press, TV","Generic Newsletter, Jury",,,,,Director Main Editorial,Main Editorial,+49 9999 99 99,,
+Anne-Lise,Bickel,Mrs.,,Anli,,,+49 152 5525526,,Producer,,Film Production,Public Newsletter,,al@posteo.org,annela@bickel.fr,,Managing Director,,+49 30 00000000,,
+Bob,Corman,Mr.,,,,,,,,,,"Public Newsletter, Invitation - Opening Ceremony",,,,,,,,,
+Janina,Eldred,Mrs.,,Jani,,Barlu,,Documentary,"Filmmaker, Producer",German,Film Production,"Generic Newsletter, Jury, Invitation - Opening Ceremony",,j.eldred@example.com,,www.babylontheater.de,Managing Director,,+49 30 00000000,,Very professional person.
+Titi,Frandsen,Mrs.,,,,,,,"Filmmaker, Producer",,Film Production,"Generic Newsletter, Jury",13/08/1968,,,,"Managing Director, Producer",,,,
+Tito,Fukasaku,Mr.,,,,,,,,,,,,,,,,,,,
+Bruno,Greiner,Mr.,,Brunals,,,,,"Producer, Distributor",,"Film Production, Distributor, VIP",Public Newsletter,,,,,Managing Director,,+49 30 11 11 1111,,
+Ulla,Helbling,Mrs.,,,,,+49 179 344 99 99,Documentary,Press,,"Press, Radio",Public Newsletter,,u.helbling@laposte.de,,www.babylontheater.de,Director,,+49 30 244 44 444,,
+Giogio,Hempel,,,,,,,,Producer,,Film Production,,,office@argeo.org,,,Managing Director,,+49 30 11223344,,
+Rickie,Hendel,Mr.,,Rocky,,,+49 176 4333 4333,Kids Film,Producer,,Film Production,Generic Newsletter,,rickie@example.com,,,Managing Director,,,,

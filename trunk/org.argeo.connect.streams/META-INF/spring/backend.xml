@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<!-- BACKEND -->
+	<bean id="rssManager" class="org.argeo.connect.streams.backend.RssManagerImpl"
+		init-method="init" destroy-method="destroy">
+		<property name="defaultChannels">
+			<map>
+				<entry key="http://feeds.nytimes.com/nyt/rss/Technology">
+					<list>
+						<value>New York Times</value>
+					</list>
+				</entry>
+			</map>
+		</property>
+		<property name="pollingPeriod" value="${argeo.connect.streams.pollingPeriod}" />
+		<property name="repository" ref="rssRepository" />
+	</bean>
+
+	<!-- Channel that has the weird bug with descriptions -->
+	<!-- <entry key="http://projects.apache.org/feeds/rss.xml"> -->
+	<!-- <list> -->
+	<!-- <value>Apache</value> -->
+	<!-- </list> -->
+	<!-- </entry> -->
+
+	<bean id="rssRepository" class="org.argeo.jackrabbit.JackrabbitWrapper"
+		init-method="init" destroy-method="destroy">
+		<property name="cndFiles">
+			<list>
+				<value>/org/argeo/connect/streams/rss.cnd</value>
+			</list>
+		</property>
+		<property name="repository" ref="repository" />
+		<property name="bundleContext" ref="bundleContext" />
+	</bean>
+
+	<!-- Execute initialization with a system authentication -->
+	<bean
+		class="org.argeo.security.core.AuthenticatedApplicationContextInitialization">
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="beanNames">
+			<list>
+				<value>rssManager</value>
+				<value>rssRepository</value>
+			</list>
+		</property>
+	</bean>
+</beans>

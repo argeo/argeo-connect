@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+	<!-- Perspective --> 
+	<extension
+    	point="org.eclipse.ui.perspectives">
+    	<!-- People default standalone perspective --> 
+		<perspective
+            id="org.argeo.connect.people.rap.peoplePerspective"
+			icon="icons/people.gif"
+			class="org.argeo.connect.people.rap.PeoplePerspective"
+            name="People">
+		</perspective>
+	</extension>
+
+    <!-- VIEWS -->
+    <extension
+		point="org.eclipse.ui.views">
+		<view
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/people.gif"
+			id="org.argeo.connect.people.rap.peopleDefaultView"
+			name="Search"
+			restorable="true">
+		</view>
+		<!-- Todo list -->
+		<view
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/activities/todo.gif"
+			id="org.argeo.connect.people.rap.myTasksView"
+			name="My tasks"
+			restorable="true">
+		</view>
+	</extension>
+	
+	<!-- EDITORS -->
+    <extension
+		point="org.eclipse.ui.editors">
+		
+		<!-- Search -->
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/search.png"
+			id="org.argeo.connect.people.rap.defaultSearchEntityEditor"
+			name="Search">
+		</editor>
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/search.png"
+			id="org.argeo.connect.people.rap.listValuesEditor"
+			name="Search">
+		</editor>
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/search.png"
+			id="org.argeo.connect.people.rap.searchByTagEditor"
+			name="Search by Tag">
+		</editor>
+		
+		<!-- Entities -->
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/person.gif"
+			id="org.argeo.connect.people.rap.personEditor"
+			name="Person editor">
+		</editor>
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/company.png"
+			id="org.argeo.connect.people.rap.orgEditor"
+			name="Organisation editor">
+		</editor>
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/group.gif"
+			id="org.argeo.connect.people.rap.groupEditor"
+			name="Group">
+		</editor>
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/entities/tag.png"
+			id="org.argeo.connect.people.rap.tagEditor"
+			name="Tag">
+		</editor>
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/mailingList.gif"
+			id="org.argeo.connect.people.rap.mailingListEditor"
+			name="Mailing List">
+		</editor>
+		
+		<!-- Activities -->
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/activities/todo.gif"
+			id="org.argeo.connect.people.rap.activityEditor"
+			name="Activity editor">
+		</editor>
+		<editor
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/activities/todo.gif"
+			id="org.argeo.connect.people.rap.taskEditor"
+			name="Task editor">
+		</editor>
+	</extension>
+	
+	<!-- COMMANDS -->
+	<extension
+		point="org.eclipse.ui.commands">
+		<!-- Open correct editor given the node type --> 
+    	<command
+			id="org.argeo.connect.people.rap.openEntityEditor"
+			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
+			name="Open Editor">
+			<commandParameter
+         		id="param.jcrId"
+         		name="The jcr identifier">
+         	</commandParameter>
+			<commandParameter
+				id="param.cTabId"
+				name="The id of the tab to open if such a tab exists">
+			</commandParameter>
+			<commandParameter
+				id="param.openForEdit"
+				name="A flag to try to open the corresponding entity for edition">
+			</commandParameter>
+			<!-- Still used to open editor with the linked list (employees...) -->
+			<commandParameter
+				id="param.entityUid"
+				name="The Model Specific Entity Uid">
+			</commandParameter>
+		</command>    
+		
+		<!-- Search entities by type -->
+		<command
+			id="org.argeo.connect.people.rap.openSearchEntityEditor"
+			defaultHandler="org.argeo.connect.people.rap.commands.OpenSearchEntityEditor"
+			name="Open Search Entity Editor">
+			<commandParameter
+				id="param.nodeType"
+				name="Node Type">
+			</commandParameter>
+			<commandParameter
+				id="param.editorName"
+				name="Editor Name">
+			</commandParameter>
+			<commandParameter
+				id="param.basePath"
+				name="Parent base path">
+			</commandParameter>
+		</command>
+
+		<!-- Person and organisation management --> 
+		<command
+			id="org.argeo.connect.people.rap.editJob"
+            defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		name="Create or edit a job">
+            <commandParameter
+         		id="param.relevantNodeJcrId"
+         		name="Jcr ID of the node to edit">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.isBackward"
+         		name="When editing an existing job, true if editing an org">
+  	 		</commandParameter>
+    	</command>
+   	
+    	<!-- Activities and tasks management --> 
+    	<command
+      		id="org.argeo.connect.people.rap.createSimpleTask"
+            defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		name="Create simple task">
+        </command>
+    	
+    	<!-- Add global life cycle on Editors  -->
+		<!-- Note: corresponding handler could also be defined below in the startup part -->
+		<command
+      		defaultHandler="org.argeo.connect.people.rap.commands.ChangeEditingState"
+			id="org.argeo.connect.people.rap.changeEditingState"
+            name="changeEditingState">
+			<commandParameter
+         		id="param.newEditingState"
+         		name="The new global editing state">
+  	 		</commandParameter>
+  	 		<commandParameter
+         		id="param.priorAction"
+         		name="checkout, save or cancel">
+  	 		</commandParameter>
+    	</command>
+    	
+    	<!-- Entity CRUD --> 
+		<command
+      		id="org.argeo.connect.people.rap.createEntity"
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+            name="createEntity">
+            <commandParameter
+         		id="param.targetNodeType"
+         		name="Target Node Type">
+  	 		</commandParameter>
+    	</command>
+    	
+		<command
+			id="org.argeo.connect.people.rap.deleteEntity"
+            defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		name="deleteEntity">
+            <commandParameter
+         		id="param.toRemoveJcrId"
+         		name="Jcr ID of the node to remove">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.removeParent"
+         		name="Indicates whether parent node should also be deleted">
+  	 		</commandParameter>
+    	</command>
+    
+		<!-- Entity References CRUD --> 
+		<command
+			id="org.argeo.connect.people.rap.removeEntityReference"
+        	defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      	    name="removeEntityReference">
+            <commandParameter
+         		id="param.toRemoveJcrId"
+         		name="Jcr ID of the node to remove">
+  	 		</commandParameter>
+    	</command>
+    	<!-- Utility command to simply open an URL --> 
+    	<command
+			defaultHandler="org.argeo.connect.people.rap.commands.OpenUrl"
+			id="org.argeo.connect.people.rap.openUrl"
+			name="Open an URL in the end user browser">
+			<commandParameter
+     			id="param.urlValue"
+     			name="The url">
+ 			</commandParameter>
+			<commandParameter
+     			id="param.urlType"
+     			name="The type of the url">
+ 			</commandParameter>
+  		</command>
+
+  		<!-- Miscelleanous -->
+  		<command
+			id="org.argeo.connect.people.rap.forceRefresh"
+			defaultHandler="org.argeo.connect.people.rap.commands.ForceRefresh"
+			name="Force refresh of the current active part if such an action is possible">
+			<commandParameter
+					id="param.viewId"
+					name="optionnaly, the id of the view to refresh">
+ 			</commandParameter>
+  		</command>
+
+  		<!-- Utility to provide sub menues when we don't want to define a default command for this menu -->
+		<command
+			id="org.argeo.connect.people.rap.doNothing"
+			defaultHandler="org.argeo.connect.people.rap.commands.DoNothing"
+			name="Open menu">
+		</command>    
+	</extension>		
+	
+	<!-- Menus -->
+	<extension
+		point="org.eclipse.ui.menus">
+		<!-- Generic commands provided by the people app --> 
+		<menuContribution
+			locationURI="toolbar:org.argeo.security.ui.rap.userToolbar?before=org.eclipse.ui.file.save"> 
+			<!-- Force resfresh if possible --> 
+			<command
+				commandId="org.argeo.connect.people.rap.forceRefresh"
+				icon="icons/refresh.png"
+				label="Force refresh of the current active part"
+				style="push"
+				tooltip="Force refresh of the current active part">
+				<visibleWhen>
+					<with variable="activePart">
+						<instanceof value="org.argeo.connect.people.rap.util.Refreshable" />
+					</with>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+		
+		<menuContribution
+			locationURI="toolbar:org.argeo.security.ui.rap.userToolbar?after=org.eclipse.ui.file.saveAll"> 
+			<!-- Check in and out management --> 
+ 			<command
+				commandId="org.argeo.connect.people.rap.changeEditingState"
+				icon="icons/checkout.gif"
+				label="Check Out"
+				style="push"
+				tooltip="Check Out item for edit">
+				<visibleWhen>
+					<and>
+						<with variable="activePart">
+							<instanceof value="org.argeo.cms.CmsEditable" />
+						</with>
+						<with variable="org.argeo.connect.people.rap.editingState">
+							<equals value="notEditing" />
+						</with>
+			    	</and>
+				</visibleWhen>
+				<parameter name="param.newEditingState" value="editing" />
+  	 			<parameter name="param.priorAction" value="checkout" />
+			</command>
+			
+			<!-- Add global life cycle on Editors  -->
+			<command
+				commandId="org.argeo.connect.people.rap.changeEditingState"
+				icon="icons/cancelEdit.gif"
+				label="Cancel edit"
+				style="push"
+				tooltip="Abandon changes and check back in">
+				<visibleWhen>
+					<and>
+						<with variable="activePart">
+							<instanceof value="org.argeo.cms.CmsEditable" />
+						</with>
+						<with variable="org.argeo.connect.people.rap.editingState">
+							<equals value="editing" />
+						</with>
+			    	</and>
+				</visibleWhen>
+				<parameter name="param.newEditingState" value="notEditing" />
+  	 			<parameter name="param.priorAction" value="cancel" />
+    		</command>
+		</menuContribution>
+		
+		<!-- Add entity menu (only when people perspective is active)--> 
+		<menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.argeo.security.ui.rap.userToolbar">
+			<toolbar id="org.argeo.connect.people.rap.dropDownsToolbar">
+				<command
+					commandId="org.argeo.connect.people.rap.doNothing"
+					icon="icons/add.png"
+					label="Create"
+					tooltip="Create a new object"
+					id="org.argeo.connect.people.rap.addEntityToolbar"
+					style="pulldown">
+					<visibleWhen checkEnabled="false">
+    					<with variable="activeWorkbenchWindow.activePerspective">
+        					<equals value="org.argeo.connect.people.rap.peoplePerspective"/>
+						</with>
+					</visibleWhen>
+				</command>
+			</toolbar>
+		</menuContribution>
+		
+		<!-- Corresponding submenus --> 
+		<menuContribution locationURI="menu:org.argeo.connect.people.rap.addEntityToolbar">
+			<command
+				commandId="org.argeo.connect.people.rap.createEntity"
+				icon="icons/person.gif"
+				label="Person">
+				<parameter
+         		name="param.targetNodeType"
+         		value="people:person" />
+			</command>	
+			<command
+				commandId="org.argeo.connect.people.rap.createEntity"
+				icon="icons/company.png"
+				label="Organisation">
+				<parameter
+         		name="param.targetNodeType"
+         		value="people:org" />
+			</command>	
+			<command
+				commandId="org.argeo.connect.people.rap.createSimpleTask"
+				icon="icons/activities/todo.gif"
+				label="Task">
+			</command>	
+			<command
+				commandId="org.argeo.connect.people.rap.createEntity"
+				icon="icons/mailingList.gif"
+				label="Mailing List">
+				<parameter
+         		name="param.targetNodeType"
+         		value="people:mailingList" />
+			</command>
+		</menuContribution>
+		
+		<!-- MyTasksView tool bar menu --> 
+		<menuContribution
+            locationURI="toolbar:org.argeo.connect.people.rap.myTasksView">
+            <command
+				commandId="org.argeo.connect.people.rap.createSimpleTask"
+				icon="icons/newGroup.gif"
+				label="Task">
+			</command>	
+            <command
+				commandId="org.argeo.connect.people.rap.forceRefresh"
+                icon="icons/refresh.png"
+				label="Refresh"
+				tooltip="Force task list refresh">
+				<parameter
+					name="param.viewId"
+					value="org.argeo.connect.people.rap.myTasksView" />
+            </command>
+        </menuContribution>
+	</extension>
+	
+	<!-- Workbench listeners --> 
+	<extension point="org.eclipse.ui.startup">
+   		<startup class="org.argeo.eclipse.spring.SpringExtensionFactory"
+   			        id="org.argeo.connect.people.rap.partStateChanged">
+   		</startup>
+	</extension>
+
+	<!-- Services -->
+	<extension
+      	point="org.eclipse.ui.services">
+	   	<sourceProvider
+	        provider="org.argeo.connect.people.rap.util.EditionSourceProvider">
+	     	<variable
+	            name="org.argeo.connect.people.rap.editingState"
+	            priorityLevel="workbench">
+	      	</variable>
+	   	</sourceProvider>
+	</extension>
+
+	<extension
+		point="org.eclipse.ui.activities">
+		<!-- People specific activities --> 
+		<activity
+              description="Generic people app"
+              id="org.argeo.connect.people.rap.peopleAppActivity"
+              name="People App Activity">
+		  <enabledWhen>
+		    <with variable="roles">
+		      <iterate ifEmpty="false" operator="or">
+		        <equals value="cn=org.argeo.connect.people.member,ou=roles,ou=node" />
+		      </iterate>
+		    </with>
+		 </enabledWhen>
+        </activity>
+        
+        <activityPatternBinding
+              activityId="org.argeo.connect.people.rap.peopleAppActivity"
+              isEqualityPattern="true"
+              pattern="org.argeo.connect.people.rap/org.argeo.connect.people.rap.peoplePerspective">
+        </activityPatternBinding>
+
+		<!-- Business admin activities --> 
+		<activity
+              description="Business admin activities"
+              id="org.argeo.connect.people.rap.businessAdminActivity"
+              name="People Business Admin">
+		  <enabledWhen>
+		    <with variable="roles">
+		      <iterate ifEmpty="false" operator="or">
+		        <equals value="cn=org.argeo.connect.people.admin,ou=roles,ou=node" />
+		      </iterate>
+		    </with>
+		  </enabledWhen>
+        </activity>
+
+        
+		<!-- Technical admin activities --> 
+		<!-- TODO clean the activity strategy -->
+		<activity
+              description="Only for admins"
+              id="org.argeo.connect.people.rap.adminActivity"
+              name="People Admin">
+		  <enabledWhen>
+		    <with variable="roles">
+		      <iterate ifEmpty="false" operator="or">
+		        <equals value="cn=org.argeo.connect.people.admin,ou=roles,ou=node" />
+		      </iterate>
+		    </with>
+		  </enabledWhen>
+        </activity>
+     </extension>
+</plugin>

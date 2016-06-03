@@ -1,0 +1,116 @@
+// MAP means "Media or Artwork Project"
+<map = 'http://www.argeo.org/ns/map'>
+<film = 'http://www.argeo.org/ns/film'>
+
+//
+// GENERIC MAP PROJECT: Can be a film, a performance, a music album... 
+//
+[map:project] > people:group
+- map:projectId (STRING) // a business specific film ID
++ map:titles (nt:unstructured) // Alternative titles
++ map:synopses (nt:unstructured) // Synopses and log-lines 
++ map:timestamps (nt:unstructured) // Remarkable time stamps and awards
+
+// Generic properties for all type of Media or Artwork projects
+- map:type (STRING) 
+- map:genres (STRING) *
+- map:categories (STRING) *
+- map:length (LONG) ='0' a // the length in seconds
+
+// Use a URI rather than a String for the 3 following properties?  
+- map:website (STRING) 
+- map:trailerUrl (STRING) 
+- map:previewUrl (STRING) 
+- map:hasTrailer (BOOLEAN)
+- map:allowExcerptsOnTv (BOOLEAN)
+- map:allowExcerptsOnWeb (BOOLEAN)
+- map:premiere (STRING)
+
+- map:prodYear (LONG)
+- map:prodCountries (STRING) * // A list of countries as defined in ISO 3166-1
+                               // primary production country must be the first of the list
+
+- map:prodCosts (STRING) // Approximative production costs. There is an application specific list
+- map:originalLanguages (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
+- map:availableSubtitles (STRING) * // Tag like list of available subtitles
+
+// maybe too specific 
+- map:isStudentProject (BOOLEAN)
+
+// Cache some values to ease rendering
+- map:cachePTitle (STRING) IGNORE
+- map:cachePTitleArticle (STRING) IGNORE
+- map:cachePTitleLatin (STRING) IGNORE
+- map:cacheDirectors (STRING) * IGNORE
+
+
+// GENERIC SUBCONCEPTS FOR MAP
+[map:synopsis] > nt:unstructured, people:language
+- map:synopsisContent (STRING)
+- map:synopsisContentShort (STRING)
+- map:logLine (STRING)
+- map:relatedBiography (STRING)
+
+[map:title] > nt:unstructured, people:language, people:orderable
+- map:titleValue (STRING)
+- map:titleArticle (STRING)
+- map:titleLatinPronunciation (STRING) // Helper to be able to read the original title when it is in a foreign alphabet
+- map:titleIsOrig (BOOLEAN)
+
+// Time stamp
+[map:timestamp] > nt:unstructured, mix:title
+- map:timestampValue (DATE)
+
+// Awards 
+[map:award] > map:timestamp
+- map:awardCountryIso (STRING)
+
+//
+// FILM
+//
+
+[map:film] > map:project
+- film:shootingFormat (STRING)
+- film:animationTechnique (STRING) // only if animation is in categories
+- film:soundType (STRING)
+- film:colourType (STRING)
+- film:isDebutFilm (BOOLEAN)
++ film:prints (nt:unstructured) // Film prints
+
+//
+// FILM PRINT
+//
+ // Should we rather use a versionable node?
+[film:print] > nt:unstructured, mix:title, mix:referenceable, people:orderable
+- film:printType (STRING)
+- film:printNumber (STRING)
+- film:printDuration (LONG) // length in seconds
+- film:tcIn (STRING) // time codes
+- film:tcOut (STRING) // time codes
+
+- film:printPictureFormat (STRING)
+- film:printAspectRatio (STRING)
+- film:printFrameRate (STRING)
+- film:printVideoStereoscopic (STRING)
+- film:printVideoCodec (STRING)
+- film:printHRes (STRING)
+- film:printVRes (STRING)
+- film:printAvgBitrate (STRING)
+
+- film:printAudioLanguages (STRING) *
+- film:printSoundFormat (STRING)
+
+- film:printSubtitleLanguages (STRING) *
+- film:printSubtitleFormat (STRING)
+- film:printFee (STRING)
+- film:printFeeInfo (STRING)
+
+// Optional contact 
+- film:printDefaultSourceContact (REFERENCE)
+- film:printDefaultReturnContact (REFERENCE)
+
+
+[film:printDcp] > film:print
+- film:printFileName (STRING)
+- film:printRes (STRING)
+- film:printEncrypted (BOOLEAN)

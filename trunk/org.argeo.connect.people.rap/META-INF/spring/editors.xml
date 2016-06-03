@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- Default People entity editors -->
+	<bean id="personEditor" class="org.argeo.connect.people.rap.editors.PersonEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+	</bean>
+
+	<bean id="orgEditor" class="org.argeo.connect.people.rap.editors.OrgEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+	</bean>
+
+	<!-- Default Task and Activities editors -->
+	<bean id="activityEditor" class="org.argeo.connect.people.rap.editors.ActivityEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+	</bean>
+
+	<bean id="taskEditor" class="org.argeo.connect.people.rap.editors.TaskEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+	</bean>
+
+	<!-- Search editors -->
+	<bean id="defaultSearchEntityEditor"
+		class="org.argeo.connect.people.rap.editors.DefaultSearchEntityEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+	</bean>
+
+	<!-- Management of tags and static lists -->
+	<bean id="tagEditor" class="org.argeo.connect.people.rap.editors.TagEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+	</bean>
+
+	<bean id="mailingListEditor" class="org.argeo.connect.people.rap.editors.MailingListEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+	</bean>
+
+	<bean id="listValuesEditor" class="org.argeo.connect.people.rap.editors.ListValuesEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+	</bean>
+</beans>

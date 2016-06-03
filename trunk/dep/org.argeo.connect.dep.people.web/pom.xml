@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.argeo.connect</groupId>
+		<version>2.1.49</version>
+		<artifactId>dep</artifactId>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>org.argeo.connect.dep.people.web</artifactId>
+	<name>Connect People Web-based UIs</name>
+	<dependencies>
+		<!-- People UIs -->
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.people.rap</artifactId>
+			<version>2.1.49</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.people.web</artifactId>
+			<version>2.1.49</version>
+		</dependency>
+
+		<!-- Base Argeo platform distribution -->
+		<dependency>
+			<groupId>org.argeo.commons</groupId>
+			<artifactId>org.argeo.dep.cms.platform</artifactId>
+			<version>${version.argeo-commons}</version>
+			<type>pom</type>
+		</dependency>
+
+		<!-- We put the full TP distribution in the target platform -->
+		<dependency>
+			<groupId>org.argeo.tp</groupId>
+			<artifactId>argeo-tp</artifactId>
+			<version>${version.argeo-distribution}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.argeo.tp.payment</groupId>
+			<artifactId>com.stripe</artifactId>
+		</dependency>
+	</dependencies>
+</project>

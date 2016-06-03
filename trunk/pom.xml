@@ -1,0 +1,121 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.argeo.commons</groupId>
+		<artifactId>argeo-commons</artifactId>
+		<version>2.1.40</version>
+	</parent>
+	<groupId>org.argeo.connect</groupId>
+	<artifactId>argeo-connect</artifactId>
+	<packaging>pom</packaging>
+	<name>Argeo Connect</name>
+	<description />
+	<version>2.1.49</version>
+	<properties>
+		<version.connect>2.1.49</version.connect>
+		<version.argeo-tp-extras>2.1.9</version.argeo-tp-extras>
+	</properties>
+	<modules>
+		<module>org.argeo.connect.people.specs</module>
+		<module>org.argeo.connect.media.specs</module>
+		<module>org.argeo.connect.people.core</module>
+		<module>org.argeo.connect.people.ui</module>
+		<module>org.argeo.connect.people.rap</module>
+		<module>org.argeo.connect.people.web</module>
+		<!-- Depends on org.eclipse.ui.form that must be added to eclipse RCP repo -->
+		<!-- <module>org.argeo.photo.manager.ui</module> -->
+		<module>org.argeo.connect.payment</module>
+		<!-- Depends on com.sun.syndication that must be added to argeo-extras 
+			repo -->
+		<!-- <module>org.argeo.connect.streams</module> -->
+		<module>dep</module>
+	</modules>
+	<url>${site.urlBase}/${developmentCycle.connect}</url>
+	<scm>
+		<connection>scm:svn:https://svn.argeo.org/connect/tags/argeo-connect-2.1.49</connection>
+		<developerConnection>scm:svn:https://svn.argeo.org/connect/tags/argeo-connect-2.1.49</developerConnection>
+		<url>https://svn.argeo.org/connect/tags/argeo-connect-2.1.49</url>
+	</scm>
+	<licenses>
+		<license>
+			<name>GPL v3 with exception</name>
+			<url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+			<distribution>repo</distribution>
+			<comments><![CDATA[
+Argeo Connect - Data management and communications
+Copyright (C) 2016 Argeo GmbH
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+TGNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses />
+
+Additional permission under GNU GPL version 3 section 7
+
+If you modify this Program, or any covered work, by linking or combining it 
+with software covered by the terms of the Eclipse Public License, the 
+licensors of this Program grant you additional permission to convey the 
+resulting work. Corresponding Source for a non-source form of such a 
+combination shall include the source code for the parts of such software 
+which are used as well as that of the covered work.]]>
+			</comments>
+		</license>
+	</licenses>
+	<repositories>
+		<repository>
+			<id>argeo</id>
+			<url>http://forge.argeo.org/data/public/java/argeo-2.1/</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+		</repository>
+		<repository>
+			<id>argeo-extras</id>
+			<url>http://forge.argeo.org/data/public/java/argeo-extras-2.1</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+		</repository>
+		<!-- Disable Maven default repository -->
+		<repository>
+			<id>central</id>
+			<url>http://repo1.maven.org/maven2</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.argeo.tp.extras</groupId>
+				<artifactId>argeo-tp-extras</artifactId>
+				<version>${version.argeo-tp-extras}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<distributionManagement>
+		<repository>
+			<id>staging</id>
+			<url>dav:https://forge.argeo.org/data/files/java/argeo-extras-2.1</url>
+			<uniqueVersion>false</uniqueVersion>
+		</repository>
+	</distributionManagement>
+</project>
