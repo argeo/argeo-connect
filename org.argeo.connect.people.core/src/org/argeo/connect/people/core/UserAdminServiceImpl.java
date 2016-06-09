@@ -199,7 +199,7 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 		}
 		List<User> users = new ArrayList<User>();
 		for (Role role : roles)
-			if (role.getType() == Role.USER
+			if ((role.getType() == Role.USER || role.getType() == Role.GROUP)
 					&& !users.contains(role)
 					&& (includeSystemRoles || !role.getName().toLowerCase()
 							.endsWith(AuthConstants.ROLES_BASEDN)))
