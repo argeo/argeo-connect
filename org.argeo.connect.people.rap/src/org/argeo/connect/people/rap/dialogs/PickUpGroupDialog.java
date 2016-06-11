@@ -53,7 +53,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.service.useradmin.Group;
 import org.osgi.service.useradmin.Role;
 import org.osgi.service.useradmin.User;
 import org.osgi.service.useradmin.UserAdmin;
@@ -174,8 +173,8 @@ public class PickUpGroupDialog extends TrayDialog {
 			}
 			Object obj = ((IStructuredSelection) event.getSelection())
 					.getFirstElement();
-			if (obj instanceof Group) {
-				selectedUser = (Group) obj;
+			if (obj instanceof User) {
+				selectedUser = (User) obj;
 			}
 		}
 	}
@@ -272,39 +271,11 @@ public class PickUpGroupDialog extends TrayDialog {
 	private abstract class UserAdminAbstractLP extends ColumnLabelProvider {
 		private static final long serialVersionUID = 137336765024922368L;
 
-		// private Font italic;
-		// private Font bold;
-		//
-		// @Override
-		// public Font getFont(Object element) {
-		// // Self as bold
-		// try {
-		// LdapName selfUserName = new LdapName(
-		// userAdminService.getMyUsername());
-		// String userName = UsersUtils.getProperty((User) element,
-		// LdifName.dn.name());
-		// LdapName userLdapName = new LdapName(userName);
-		// if (userLdapName.equals(selfUserName))
-		// return bold;
-		// } catch (InvalidNameException e) {
-		// throw new PeopleException("unable to define font for "
-		// + element, e);
-		// }
-		// return null;
-		// }
-
 		@Override
 		public String getText(Object element) {
 			User user = (User) element;
 			return getText(user);
 		}
-
-		// public void setDisplay(Display display) {
-		// // italic = JFaceResources.getFontRegistry().defaultFontDescriptor()
-		// // .setStyle(SWT.ITALIC).createFont(display);
-		// bold = JFaceResources.getFontRegistry().defaultFontDescriptor()
-		// .setStyle(SWT.BOLD).createFont(display);
-		// }
 
 		public abstract String getText(User user);
 
@@ -365,94 +336,4 @@ public class PickUpGroupDialog extends TrayDialog {
 				return "";
 		}
 	}
-
 }
-
-// public class PickUpGroupDialog extends TrayDialog {
-// private static final long serialVersionUID = -1420106871173920369L;
-//
-// // Business objects
-// private PeopleService peopleService;
-// // private final PeopleService peopleService;
-// private Group selectedGroup;
-//
-// // this page widgets and UI objects
-// private GroupsTableViewer tableCmp;
-// private String title;
-//
-// public PickUpGroupDialog(Shell parentShell, String title,
-// UserAdmin userAdmin) {
-// // PeopleService peopleService) {
-// super(parentShell);
-// this.title = title;
-// // this.peopleService = peopleService;
-// }
-//
-// protected Point getInitialSize() {
-// return new Point(400, 500);
-// }
-//
-// protected Control createDialogArea(Composite parent) {
-// Composite dialogArea = (Composite) super.createDialogArea(parent);
-// dialogArea.setLayout(new FillLayout());
-//
-// Composite bodyCmp = new Composite(dialogArea, SWT.NO_FOCUS);
-// bodyCmp.setLayout(new GridLayout());
-//
-// tableCmp = new GroupsTableViewer(bodyCmp, SWT.NO_FOCUS,
-// peopleService.getUserAdminService());
-// tableCmp.populate(true, false);
-// tableCmp.setLayoutData(EclipseUiUtils.fillAll());
-// tableCmp.refresh();
-//
-// // Add listeners
-// tableCmp.getTableViewer().addDoubleClickListener(
-// new MyDoubleClickListener());
-// tableCmp.getTableViewer().addSelectionChangedListener(
-// new MySelectionChangedListener());
-//
-// parent.pack();
-// return dialogArea;
-// }
-//
-// public String getSelected() {
-// if (selectedGroup == null)
-// return null;
-// else
-// return selectedGroup.getName();
-// }
-//
-// protected void configureShell(Shell shell) {
-// super.configureShell(shell);
-// shell.setText(title);
-// }
-//
-// class MyDoubleClickListener implements IDoubleClickListener {
-// public void doubleClick(DoubleClickEvent evt) {
-// if (evt.getSelection().isEmpty())
-// return;
-//
-// Object obj = ((IStructuredSelection) evt.getSelection())
-// .getFirstElement();
-// if (obj instanceof Group) {
-// selectedGroup = (Group) obj;
-// okPressed();
-// }
-// }
-// }
-//
-// class MySelectionChangedListener implements ISelectionChangedListener {
-// @Override
-// public void selectionChanged(SelectionChangedEvent event) {
-// if (event.getSelection().isEmpty()) {
-// selectedGroup = null;
-// return;
-// }
-// Object obj = ((IStructuredSelection) event.getSelection())
-// .getFirstElement();
-// if (obj instanceof Group) {
-// selectedGroup = (Group) obj;
-// }
-// }
-// }
-// }
