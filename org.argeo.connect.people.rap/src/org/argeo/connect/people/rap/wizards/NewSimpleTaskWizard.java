@@ -108,7 +108,6 @@ public class NewSimpleTaskWizard extends Wizard {
 			MessageDialog.openError(getShell(), "Uncomplete information", msg);
 			return false;
 		}
-
 		createdTask = activityService.createTask(currSession, null,
 				titleTxt.getText(), descTxt.getText(), assignedToGroupId,
 				relatedTo, dueDateCmp.getCalendar(),

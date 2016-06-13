@@ -27,6 +27,7 @@ import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.XPathUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
 /** Concrete access to People's {@link ActivityService} */
@@ -340,9 +341,9 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	public Node createTask(Session session, Node parentNode, String title,
 			String description, String assignedTo, List<Node> relatedTo,
 			Calendar dueDate, Calendar wakeUpDate) {
-		return createTask(session, parentNode, session.getUserID(), title,
-				description, assignedTo, relatedTo, new GregorianCalendar(),
-				dueDate, wakeUpDate);
+		return createTask(session, parentNode, null, title, description,
+				assignedTo, relatedTo, new GregorianCalendar(), dueDate,
+				wakeUpDate);
 	}
 
 	@Override
@@ -386,6 +387,9 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 
 			if (notEmpty(description))
 				taskNode.setProperty(Property.JCR_DESCRIPTION, description);
+
+			if (EclipseUiUtils.isEmpty(reporterId))
+				reporterId = session.getUserID();
 
 			taskNode.setProperty(PeopleNames.PEOPLE_REPORTED_BY, reporterId);
 

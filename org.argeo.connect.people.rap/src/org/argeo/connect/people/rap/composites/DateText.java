@@ -60,6 +60,10 @@ public class DateText extends Composite {
 		populate(this);
 	}
 
+	/**
+	 * Returns the user defined date as Calendar or null if none has been
+	 * defined
+	 */
 	public Calendar getCalendar() {
 		return calendar;
 	}
@@ -154,8 +158,7 @@ public class DateText extends Composite {
 			super(source.getDisplay(), SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
 			populate();
 			// Add border and shadow style
-			CmsUtils.style(CalendarPopup.this,
-					PeopleStyles.POPUP_SHELL);
+			CmsUtils.style(CalendarPopup.this, PeopleStyles.POPUP_SHELL);
 			pack();
 			layout();
 			setLocation(source.toDisplay((source.getLocation().x - 2),
