@@ -2,7 +2,6 @@ package org.argeo.connect.people;
 
 import java.util.List;
 
-import org.osgi.service.useradmin.Group;
 import org.osgi.service.useradmin.User;
 import org.osgi.service.useradmin.UserAdmin;
 
@@ -50,8 +49,8 @@ public interface UserAdminService {
 	/** Lists all roles of the given user */
 	public String[] getUserRoles(String dn);
 
-	/** Search among defined groups */
-	public List<Group> listGroups(String filter);
+	// /** Search among defined groups */
+	// public List<Group> listGroups(String filter);
 
 	/** Search among defined groups including system roles and users if needed */
 	public List<User> listGroups(String filter, boolean includeUsers,
@@ -73,5 +72,4 @@ public interface UserAdminService {
 
 	/* EXPOSE */
 	public UserAdmin getUserAdmin();
-
 }

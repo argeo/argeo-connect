@@ -17,7 +17,6 @@ import org.argeo.osgi.useradmin.LdifName;
 import org.argeo.osgi.useradmin.UserAdminConf;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.useradmin.Authorization;
-import org.osgi.service.useradmin.Group;
 import org.osgi.service.useradmin.Role;
 import org.osgi.service.useradmin.User;
 
@@ -84,7 +83,7 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 
 		String roledn = role.getName();
 
-		for (String currRole : getMyRoles()){
+		for (String currRole : getMyRoles()) {
 			if (roledn.equals(currRole))
 				return true;
 		}
@@ -123,89 +122,45 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 	private final String[] knownProps = { LdifName.cn.name(),
 			LdifName.sn.name(), LdifName.givenName.name(), LdifName.uid.name() };
 
-	public List<Group> listGroups(String filter) {
-		Role[] roles;
-		try {
-			StringBuilder builder = new StringBuilder();
-			StringBuilder tmpBuilder = new StringBuilder();
-			if (UsersUtils.notNull(filter))
-				for (String prop : knownProps) {
-					tmpBuilder.append("(");
-					tmpBuilder.append(prop);
-					tmpBuilder.append("=*");
-					tmpBuilder.append(filter);
-					tmpBuilder.append("*)");
-				}
-			if (tmpBuilder.length() > 1) {
-				builder.append("(&(").append(LdifName.objectClass.name())
-						.append("=").append(LdifName.groupOfNames.name())
-						.append(")(|");
-				builder.append(tmpBuilder.toString());
-				builder.append("))");
-			} else
-				builder.append("(").append(LdifName.objectClass.name())
-						.append("=").append(LdifName.groupOfNames.name())
-						.append(")");
-			roles = getUserAdmin().getRoles(builder.toString());
-		} catch (InvalidSyntaxException e) {
-			throw new ArgeoException("Unable to get roles with filter: "
-					+ filter, e);
-		}
-		List<Group> users = new ArrayList<Group>();
-		for (Role role : roles)
-			if (role.getType() == Role.GROUP
-					&& !users.contains(role)
-					&& !role.getName().toLowerCase()
-							.endsWith(AuthConstants.ROLES_BASEDN))
-				users.add((Group) role);
-		return users;
-	}
-
 	public List<User> listGroups(String filter, boolean includeUsers,
 			boolean includeSystemRoles) {
-		Role[] roles;
+
+		Role[] roles = null;
 		try {
-			StringBuilder tmpBuilder = new StringBuilder();
-
-			// Build filter String
-			String filterStr = null;
-			if (UsersUtils.notNull(filter)) {
-				for (String prop : knownProps) {
-					tmpBuilder.append("(");
-					tmpBuilder.append(prop);
-					tmpBuilder.append("=*");
-					tmpBuilder.append(filter);
-					tmpBuilder.append("*)");
-				}
-				filterStr = "(|" + tmpBuilder.toString() + ")";
-			}
-
-			String typeStr = null;
-			if (!includeUsers)
-				typeStr = "(" + LdifName.objectClass.name() + "="
-						+ LdifName.groupOfNames.name() + ")";
-
-			// Construct statement
-			String statement = null;
-			if (typeStr != null && filterStr != null) {
-				statement = "(&" + typeStr + filterStr + ")";
-			} else if (typeStr != null)
-				statement = typeStr;
-			else if (filterStr != null)
-				statement = filterStr;
-
-			roles = getUserAdmin().getRoles(statement);
+			roles = getUserAdmin().getRoles(null);
 		} catch (InvalidSyntaxException e) {
 			throw new ArgeoException("Unable to get roles with filter: "
 					+ filter, e);
 		}
+
 		List<User> users = new ArrayList<User>();
-		for (Role role : roles)
-			if ((role.getType() == Role.USER || role.getType() == Role.GROUP)
+		boolean doFilter = UsersUtils.notNull(filter);
+		loop: for (Role role : roles) {
+			if ((includeUsers && role.getType() == Role.USER || role.getType() == Role.GROUP)
 					&& !users.contains(role)
 					&& (includeSystemRoles || !role.getName().toLowerCase()
-							.endsWith(AuthConstants.ROLES_BASEDN)))
-				users.add((User) role);
+							.endsWith(AuthConstants.ROLES_BASEDN))) {
+				if (doFilter) {
+					for (String prop : knownProps) {
+						Object currProp = null;
+						try {
+							currProp = role.getProperties().get(prop);
+						} catch (Exception e) {
+							throw e;
+						}
+						if (currProp != null) {
+							String currPropStr = ((String) currProp)
+									.toLowerCase();
+							if (currPropStr.contains(filter.toLowerCase())) {
+								users.add((User) role);
+								continue loop;
+							}
+						}
+					}
+				} else
+					users.add((User) role);
+			}
+		}
 		return users;
 	}
 
@@ -247,5 +202,4 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 					+ " base dns: " + dns.keySet().toString()
 					+ ". Unable to chose a default one.");
 	}
-
 }
