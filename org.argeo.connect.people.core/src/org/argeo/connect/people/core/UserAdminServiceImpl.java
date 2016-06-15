@@ -71,7 +71,8 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 	public boolean amIInRole(String rolename) {
 		// FIXME clean this
 		String dn;
-		if (rolename.startsWith(LdifName.cn.name() + "="))
+		if (rolename.startsWith(LdifName.cn.name() + "=")
+				|| rolename.startsWith(LdifName.uid.name() + "="))
 			dn = rolename;
 		else
 			dn = LdifName.cn.name() + "=" + rolename + ","
@@ -83,9 +84,10 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 
 		String roledn = role.getName();
 
-		for (String currRole : getMyRoles())
+		for (String currRole : getMyRoles()){
 			if (roledn.equals(currRole))
 				return true;
+		}
 		return false;
 	}
 
