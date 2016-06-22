@@ -451,10 +451,16 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 					session = repository.login();
 
 					// TODO use transaction
-					for (String currPath : pathes) {
+					// TODO manage finer authorisation: update assigned to for
+					// children task if needed, update JCR rights
+					loop: for (String currPath : pathes) {
 						Node currNode = session.getNode(currPath);
+						String oldAssignedTo = JcrUiUtils.get(currNode,
+								PeopleNames.PEOPLE_ASSIGNED_TO);
+						if (chosenGroup.equals(oldAssignedTo))
+							continue loop;
 						// Legacy insure the node is checked out before update
-						JcrUiUtils.checkCOStatusBeforeUpdate(currNode);
+						// JcrUiUtils.checkCOStatusBeforeUpdate(currNode);
 						if (JcrUiUtils.setJcrProperty(currNode,
 								PeopleNames.PEOPLE_ASSIGNED_TO,
 								PropertyType.STRING, chosenGroup))

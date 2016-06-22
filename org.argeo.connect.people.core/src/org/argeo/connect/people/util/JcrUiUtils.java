@@ -217,12 +217,10 @@ public class JcrUiUtils {
 		}
 	}
 
-	// FIXME
 	/* VERSIONING MANAGEMENT */
 	/**
-	 * For the time being, same as isNodeCheckedOut(Node node).
-	 * 
-	 * TODO : add management of check out by others.
+	 * For the time being, same as isNodeCheckedOut(Node node). TODO : add
+	 * management of check out by others.
 	 */
 	public static boolean isNodeCheckedOutByMe(Node node) {
 		return isNodeCheckedOut(node);

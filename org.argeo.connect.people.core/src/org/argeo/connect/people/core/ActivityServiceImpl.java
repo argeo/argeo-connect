@@ -293,8 +293,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	@Override
 	public boolean isTaskDone(Node taskNode) {
 		try {
-			// We only rely on the non-nullity of the closed date for the time
-			// being.
+			// Only rely on the non-nullity of the closed date
 			return taskNode.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to get done status for task "
@@ -381,7 +380,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			}
 
 			Node taskNode = parentNode.addNode(taskNodeType, taskNodeType);
-
+			
 			if (notEmpty(title))
 				taskNode.setProperty(Property.JCR_TITLE, title);
 
