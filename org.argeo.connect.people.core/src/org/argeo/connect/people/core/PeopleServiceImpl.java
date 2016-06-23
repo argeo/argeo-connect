@@ -33,6 +33,7 @@ import org.argeo.ArgeoMonitor;
 import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ContactService;
+import org.argeo.connect.people.ImportService;
 import org.argeo.connect.people.MaintenanceService;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
@@ -63,6 +64,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private PersonService personService = new PersonServiceImpl(this);
 	private ContactService contactService = new ContactServiceImpl(this);
 	private ActivityService activityService = new ActivityServiceImpl(this);
+	private ImportService importService = new ImportServiceImpl(this);
 	private ResourceService resourceService = new ResourceServiceImpl(this);
 	private MaintenanceService maintenanceService = new MaintenanceServiceImpl(
 			this);
@@ -175,7 +177,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	protected void initialiseModel(Session adminSession)
 			throws RepositoryException {
 
-			// Root business node
+		// Root business node
 		if (EclipseUiUtils.notEmpty(getBasePath(null)))
 			JcrUtils.mkdirs(adminSession, getBasePath(null));
 
@@ -595,6 +597,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	@Override
 	public MaintenanceService getMaintenanceService() {
 		return maintenanceService;
+	}
+
+	@Override
+	public ImportService getImportService() {
+		return importService;
 	}
 
 	@Override

@@ -169,6 +169,9 @@ public interface PeopleService {
 	/** Returns the corresponding {@link ResourceService} */
 	public ResourceService getResourceService();
 
+	/** Returns the corresponding {@link ImportService} */
+	public ImportService getImportService();
+
 	/** Returns the corresponding {@link MaintenanceService} */
 	public MaintenanceService getMaintenanceService();
 

@@ -18,7 +18,6 @@ import javax.jcr.ValueFactory;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.Row;
-import javax.jcr.version.VersionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -345,12 +344,10 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 
 		private Repository repository;
 		private String masterPath;
-
 		private Session session;
 
 		private List<String> slavePathes = new ArrayList<String>();
 		private List<String> modifiedPathes = new ArrayList<String>();
-
 		private List<String> removedIds = new ArrayList<String>();
 
 		private IWorkbenchPage callingPage;
@@ -380,19 +377,17 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 				ArgeoMonitor monitor = new EclipseArgeoMonitor(progressMonitor);
 				if (monitor != null && !monitor.isCanceled()) {
 					monitor.beginTask("Updating objects",
-							modifiedPathes.size() * 2);
+							modifiedPathes.size() + 1);
 					session = repository.login();
 					Node masterNode = session.getNode(masterPath);
-					checkCOStatusBeforeUpdate(masterNode);
+					// checkCOStatusBeforeUpdate(masterNode);
 
 					loop: for (String currPath : slavePathes) {
 						if (masterPath.equals(currPath))
 							continue loop;
 						else {
-							Node currSlave = masterNode.getSession().getNode(
-									currPath);
+							Node currSlave = session.getNode(currPath);
 							mergeNodes(null, masterNode, currSlave);
-
 							if (log.isDebugEnabled()) {
 								log.debug("About to remove node "
 										+ currSlave.getPath()
@@ -400,7 +395,6 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 										+ JcrUiUtils.get(currSlave,
 												Property.JCR_TITLE));
 							}
-
 							removedIds.add(currSlave.getIdentifier());
 							currSlave.remove();
 						}
@@ -409,14 +403,8 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 
 					if (session.hasPendingChanges())
 						session.save();
-
-					VersionManager vManager = session.getWorkspace()
-							.getVersionManager();
-					for (String currPath : modifiedPathes) {
-						if (session.nodeExists(currPath))
-							vManager.checkin(currPath);
-						monitor.worked(1);
-					}
+					JcrUiUtils.checkPoint(session, modifiedPathes, true);
+					monitor.worked(1);
 				}
 
 				// Update the user interface asynchronously
@@ -461,16 +449,16 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 			return Status.OK_STATUS;
 		}
 
-		private boolean checkCOStatusBeforeUpdate(Node node) {
-			// Look for the parent versionable;
-			Node parentV = JcrUiUtils.getVersionableAncestor(node);
-			if (parentV == null)
-				return true;
-			boolean wasCo = JcrUiUtils.checkCOStatusBeforeUpdate(parentV);
-			if (!wasCo)
-				modifiedPathes.add(JcrUiUtils.getPath(parentV));
-			return wasCo;
-		}
+//		private boolean checkCOStatusBeforeUpdate(Node node) {
+//			// Look for the parent versionable;
+//			Node parentV = JcrUiUtils.getVersionableAncestor(node);
+//			if (parentV == null)
+//				return true;
+//			boolean wasCo = JcrUiUtils.checkCOStatusBeforeUpdate(parentV);
+//			if (!wasCo)
+//				modifiedPathes.add(JcrUiUtils.getPath(parentV));
+//			return wasCo;
+//		}
 
 		// Filtered properties
 		private final List<String> TECHNICAL_PROPERTIES = asList("jcr:uuid",
@@ -484,7 +472,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 
 		private void mergeNodes(Node parentNode, Node masterNode, Node slaveNode)
 				throws RepositoryException {
-			checkCOStatusBeforeUpdate(slaveNode);
+			// checkCOStatusBeforeUpdate(slaveNode);
 			// particular case for child nodes
 			if (masterNode == null) {
 				String slavePath = slaveNode.getPath();
@@ -534,7 +522,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 			while (pit.hasNext()) {
 				Property ref = pit.nextProperty();
 				Node referencing = ref.getParent();
-				checkCOStatusBeforeUpdate(referencing);
+				// checkCOStatusBeforeUpdate(referencing);
 				if (ref.isMultiple()) {
 					JcrUiUtils.removeRefFromMultiValuedProp(referencing,
 							ref.getName(), slaveNode.getIdentifier());
@@ -551,7 +539,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 			String peopleUId = masterNode.getProperty(PEOPLE_UID).getString();
 			while (nit.hasNext()) {
 				Node referencing = nit.nextNode();
-				checkCOStatusBeforeUpdate(referencing);
+				// checkCOStatusBeforeUpdate(referencing);
 				referencing.setProperty(PEOPLE_REF_UID, peopleUId);
 			}
 		}
