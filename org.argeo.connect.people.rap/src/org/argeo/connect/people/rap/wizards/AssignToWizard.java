@@ -184,8 +184,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 				@Override
 				public Image getImage(Object element) {
 					User user = (User) element;
-					String dn = (String) user.getProperties().get(
-							LdifName.dn.name());
+					String dn = user.getName();
 					if (dn.endsWith(AuthConstants.ROLES_BASEDN))
 						return PeopleRapImages.ICON_ROLE;
 					else if (user.getType() == Role.GROUP)
