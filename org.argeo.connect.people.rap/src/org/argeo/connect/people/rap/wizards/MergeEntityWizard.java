@@ -1,22 +1,13 @@
 package org.argeo.connect.people.rap.wizards;
 
-import static java.util.Arrays.asList;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.Value;
-import javax.jcr.ValueFactory;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
 import javax.jcr.query.Row;
 
 import org.apache.commons.logging.Log;
@@ -343,6 +334,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 	private class MergeEntitiesJob extends PrivilegedJob {
 
 		private Repository repository;
+		private PeopleService peopleService;
 		private String masterPath;
 		private Session session;
 
@@ -357,7 +349,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 				Object[] toUpdateElements, String selectorName) {
 			super("Updating");
 			this.callingPage = callingPage;
-
+			this.peopleService = peopleService;
 			try {
 				this.masterPath = masterNode.getPath();
 				repository = masterNode.getSession().getRepository();
@@ -380,14 +372,14 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 							modifiedPathes.size() + 1);
 					session = repository.login();
 					Node masterNode = session.getNode(masterPath);
-					// checkCOStatusBeforeUpdate(masterNode);
 
 					loop: for (String currPath : slavePathes) {
 						if (masterPath.equals(currPath))
 							continue loop;
 						else {
 							Node currSlave = session.getNode(currPath);
-							mergeNodes(null, masterNode, currSlave);
+							peopleService.getImportService().mergeNodes(
+									masterNode, currSlave);
 							if (log.isDebugEnabled()) {
 								log.debug("About to remove node "
 										+ currSlave.getPath()
@@ -401,8 +393,11 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 						monitor.worked(1);
 					}
 
-					if (session.hasPendingChanges())
+					if (session.hasPendingChanges()) {
 						session.save();
+						if (!modifiedPathes.contains(masterPath))
+							modifiedPathes.add(masterPath);
+					}
 					JcrUiUtils.checkPoint(session, modifiedPathes, true);
 					monitor.worked(1);
 				}
@@ -447,169 +442,6 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 				JcrUtils.logoutQuietly(session);
 			}
 			return Status.OK_STATUS;
-		}
-
-//		private boolean checkCOStatusBeforeUpdate(Node node) {
-//			// Look for the parent versionable;
-//			Node parentV = JcrUiUtils.getVersionableAncestor(node);
-//			if (parentV == null)
-//				return true;
-//			boolean wasCo = JcrUiUtils.checkCOStatusBeforeUpdate(parentV);
-//			if (!wasCo)
-//				modifiedPathes.add(JcrUiUtils.getPath(parentV));
-//			return wasCo;
-//		}
-
-		// Filtered properties
-		private final List<String> TECHNICAL_PROPERTIES = asList("jcr:uuid",
-				"jcr:baseVersion", "jcr:isCheckedOut", "jcr:predecessors",
-				"jcr:frozenUuid", "jcr:versionHistory",
-				"jcr:frozenPrimaryType", "jcr:primaryType", "jcr:mixinTypes",
-				"jcr:created", "jcr:createdBy", "jcr:lastModified",
-				"jcr:lastModifiedBy");
-
-		private final List<String> TECHNICAL_NODES = asList("rep:policy");
-
-		private void mergeNodes(Node parentNode, Node masterNode, Node slaveNode)
-				throws RepositoryException {
-			// checkCOStatusBeforeUpdate(slaveNode);
-			// particular case for child nodes
-			if (masterNode == null) {
-				String slavePath = slaveNode.getPath();
-				slaveNode.isCheckedOut();
-				slaveNode.isNodeType("mix:versionable");
-				String destPath = parentNode.getPath() + "/"
-						+ JcrUtils.lastPathElement(slavePath);
-				session.move(slavePath, destPath);
-				return;
-			}
-
-			// current nodes
-			PropertyIterator pit = slaveNode.getProperties();
-			props: while (pit.hasNext()) {
-				Property currProp = pit.nextProperty();
-				if (TECHNICAL_PROPERTIES.contains(currProp.getName()))
-					continue props;
-
-				Property masterCurrProp = null;
-				if (masterNode.hasProperty(currProp.getName()))
-					masterCurrProp = masterNode.getProperty(currProp.getName());
-				mergeProperty(masterNode, masterCurrProp, currProp);
-			}
-
-			NodeIterator nit = slaveNode.getNodes();
-			nodes: while (nit.hasNext()) {
-				Node currNode = nit.nextNode();
-				if (TECHNICAL_NODES.contains(currNode.getName()))
-					continue nodes;
-				Node masterCurrChild = null;
-				if (masterNode.hasNode(currNode.getName()))
-					masterCurrChild = masterNode.getNode(currNode.getName());
-				mergeNodes(masterNode, masterCurrChild, currNode);
-			}
-
-			if (slaveNode.hasProperty(PeopleNames.PEOPLE_UID))
-				mergeInternalReferences(masterNode, slaveNode);
-
-			if (slaveNode.isNodeType("mix:referenceable"))
-				mergeJcrReferences(masterNode, slaveNode);
-			// current property
-		}
-
-		private void mergeJcrReferences(Node masterNode, Node slaveNode)
-				throws RepositoryException {
-			PropertyIterator pit = slaveNode.getReferences();
-			while (pit.hasNext()) {
-				Property ref = pit.nextProperty();
-				Node referencing = ref.getParent();
-				// checkCOStatusBeforeUpdate(referencing);
-				if (ref.isMultiple()) {
-					JcrUiUtils.removeRefFromMultiValuedProp(referencing,
-							ref.getName(), slaveNode.getIdentifier());
-					JcrUiUtils.addRefToMultiValuedProp(referencing,
-							ref.getName(), masterNode);
-				} else
-					referencing.setProperty(ref.getName(), masterNode);
-			}
-		}
-
-		private void mergeInternalReferences(Node masterNode, Node slaveNode)
-				throws RepositoryException {
-			NodeIterator nit = internalReferencing(slaveNode);
-			String peopleUId = masterNode.getProperty(PEOPLE_UID).getString();
-			while (nit.hasNext()) {
-				Node referencing = nit.nextNode();
-				// checkCOStatusBeforeUpdate(referencing);
-				referencing.setProperty(PEOPLE_REF_UID, peopleUId);
-			}
-		}
-
-		private NodeIterator internalReferencing(Node slaveNode)
-				throws RepositoryException {
-			String peopleUId = slaveNode.getProperty(PEOPLE_UID).getString();
-			QueryManager qm = session.getWorkspace().getQueryManager();
-			Query query = qm.createQuery(
-					"select * from [nt:base] as nodes where ISDESCENDANTNODE('"
-							+ peopleService.getBasePath(null) + "') AND ["
-							+ PEOPLE_REF_UID + "]='" + peopleUId + "'" + " ",
-					Query.JCR_SQL2);
-			return query.execute().getNodes();
-		}
-
-		private void mergeProperty(Node masterNode, Property masterProp,
-				Property slaveProp) throws RepositoryException {
-			if (slaveProp.isMultiple())
-				mergeMultipleProperty(masterNode, masterProp, slaveProp);
-			else if (masterProp == null) {
-				masterNode.setProperty(slaveProp.getName(),
-						slaveProp.getValue());
-			}
-			// TODO won't merge properties with empty values.
-		}
-
-		private void mergeMultipleProperty(Node masterNode,
-				Property masterProp, Property slaveProp)
-				throws RepositoryException {
-			Value[] slaveVals = slaveProp.getValues();
-			if (masterProp == null) {
-				masterNode.setProperty(slaveProp.getName(), slaveVals);
-			} else {
-				Value[] vals = masterProp.getValues();
-				if (vals[0].getType() == PropertyType.STRING) {
-					List<String> res = new ArrayList<String>();
-					for (Value val : vals)
-						res.add(val.getString());
-					for (Value val : slaveVals) {
-						String currStr = val.getString();
-						if (!res.contains(currStr))
-							res.add(currStr);
-					}
-					masterProp.setValue(res.toArray(new String[0]));
-				} else if (vals[0].getType() == PropertyType.REFERENCE) {
-					List<String> res = new ArrayList<String>();
-					for (Value val : vals)
-						res.add(val.getString());
-					for (Value val : slaveVals) {
-						String currStr = val.getString();
-						if (!res.contains(currStr))
-							res.add(currStr);
-					}
-					ValueFactory vFactory = session.getValueFactory();
-					int size = res.size();
-					Value[] values = new Value[size];
-					int i = 0;
-					for (String id : res) {
-						Value val = vFactory.createValue(id,
-								PropertyType.REFERENCE);
-						values[i++] = val;
-					}
-					masterNode.setProperty(slaveProp.getName(), values);
-				} else {
-					throw new PeopleException(
-							"Unsupported multiple property type on property "
-									+ masterProp + "for node " + masterNode);
-				}
-			}
 		}
 	}
 }
