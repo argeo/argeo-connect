@@ -111,6 +111,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					JcrUiUtils.getSession(contactNode), refUid);
 
 			Link readOnlyInfoLk = new Link(readOnlyPanel, SWT.WRAP);
+			// CmsUtils.markup(readOnlyInfoLk);
 			StringBuilder builder = new StringBuilder();
 			// the referenced org
 			if (referencedEntity != null) {
@@ -136,9 +137,8 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 							peopleService, primaryAddress));
 				}
 			}
-			readOnlyInfoLk.setText(PeopleUiUtils.replaceAmpersand(builder
+			readOnlyInfoLk.setText(PeopleUiUtils.replaceAmpersandforSWTLink(builder
 					.toString()));
-
 			OrgLinkListener oll = new OrgLinkListener();
 			oll.setOrg(referencedEntity);
 			readOnlyInfoLk.addSelectionListener(oll);

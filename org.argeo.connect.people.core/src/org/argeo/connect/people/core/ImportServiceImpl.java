@@ -77,7 +77,7 @@ public class ImportServiceImpl implements ImportService, PeopleNames {
 			mergeJcrReferences(masterNode, slaveNode);
 	}
 
-	private void mergeJcrReferences(Node masterNode, Node slaveNode)
+	protected void mergeJcrReferences(Node masterNode, Node slaveNode)
 			throws RepositoryException {
 		PropertyIterator pit = slaveNode.getReferences();
 		while (pit.hasNext()) {
@@ -94,7 +94,7 @@ public class ImportServiceImpl implements ImportService, PeopleNames {
 		}
 	}
 
-	private void mergeInternalReferences(Node masterNode, Node slaveNode)
+	protected void mergeInternalReferences(Node masterNode, Node slaveNode)
 			throws RepositoryException {
 		NodeIterator nit = internalReferencing(slaveNode);
 		String peopleUId = masterNode.getProperty(PEOPLE_UID).getString();
@@ -105,7 +105,7 @@ public class ImportServiceImpl implements ImportService, PeopleNames {
 		}
 	}
 
-	private NodeIterator internalReferencing(Node slaveNode)
+	protected NodeIterator internalReferencing(Node slaveNode)
 			throws RepositoryException {
 		String peopleUId = slaveNode.getProperty(PEOPLE_UID).getString();
 		QueryManager qm = slaveNode.getSession().getWorkspace()
@@ -118,7 +118,7 @@ public class ImportServiceImpl implements ImportService, PeopleNames {
 		return query.execute().getNodes();
 	}
 
-	private void mergeProperty(Node masterNode, Property masterProp,
+	protected void mergeProperty(Node masterNode, Property masterProp,
 			Property slaveProp) throws RepositoryException {
 		if (slaveProp.isMultiple())
 			mergeMultipleProperty(masterNode, masterProp, slaveProp);

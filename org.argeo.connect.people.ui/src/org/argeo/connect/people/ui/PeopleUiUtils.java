@@ -26,6 +26,16 @@ public class PeopleUiUtils {
 	}
 
 	/**
+	 * Cleans a String by replacing any '&' by its HTML encoding '&nbsp;' to
+	 * insure they are displayed in SWT.Link controls
+	 */
+	public static String replaceAmpersandforSWTLink(String value) {
+		value = value.replaceAll("&",
+				"&&");
+		return value;
+	}
+
+	/**
 	 * Shortcut to create a {@link GridLayout} with the given column number with
 	 * no margin and no spacing (default are normally 5 px).
 	 * makeColumnsEqualWidth parameter is set to false.
