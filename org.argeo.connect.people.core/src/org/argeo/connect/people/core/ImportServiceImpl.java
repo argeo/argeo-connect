@@ -61,6 +61,8 @@ public class ImportServiceImpl implements ImportService, PeopleNames {
 			if (TECHNICAL_NODES.contains(currNode.getName()))
 				continue nodes;
 			Node masterCurrChild = null;
+			// TODO: this skips the additional external IDs from same source as
+			// external ID node name is the source ID
 			if (masterNode.hasNode(currNode.getName()))
 				masterCurrChild = masterNode.getNode(currNode.getName());
 			else

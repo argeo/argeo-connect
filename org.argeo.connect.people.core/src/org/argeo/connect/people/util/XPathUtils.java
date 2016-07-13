@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.util.ISO9075;
 
+/** Ease XPath generation for JCR requests */
 public class XPathUtils {
 	private final static Log log = LogFactory.getLog(XPathUtils.class);
 

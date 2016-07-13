@@ -319,17 +319,6 @@ public class ContactList extends LazyCTabControl {
 			Control[] controls = new Control[1];
 			controls[0] = parent;
 			ContactList.this.layout(controls);
-
-			// innerCmp.pack(true);
-			// innerCmp.layout();
-			//
-			// // innerCmp.getParent().pack(true);
-			// // parent.layout();
-			// innerCmp.getParent().layout();
-
-			// for (Control ctl : parent.getChildren()) {
-			// log.debug("Current children controls " + ctl.toString());
-			// }
 		}
 	}
 

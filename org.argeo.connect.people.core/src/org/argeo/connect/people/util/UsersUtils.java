@@ -92,5 +92,4 @@ public class UsersUtils {
 		else
 			return "".equals(string.trim());
 	}
-
 }

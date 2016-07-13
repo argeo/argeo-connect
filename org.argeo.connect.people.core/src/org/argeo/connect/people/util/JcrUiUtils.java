@@ -49,19 +49,89 @@ import org.argeo.jcr.JcrUtils;
 public class JcrUiUtils {
 	private final static Log log = LogFactory.getLog(JcrUiUtils.class);
 
+	private final static String NS_JCR = "http://www.jcp.org/jcr/1.0";
+	private final static String NS_NT = "http://www.jcp.org/jcr/nt/1.0";
+
 	/**
 	 * Replace the generic namespace with the local "jcr:" value. It is a
 	 * workaround that must be later cleaned
 	 */
 	public static String getLocalJcrItemName(String name) {
-		String jcr = "{http://www.jcp.org/jcr/1.0}";
-		String nt = "{http://www.jcp.org/jcr/nt/1.0}";
+		String jcr = "{" + NS_JCR + "}";
+		String nt = "{" + NS_NT + "}";
 		if (name.startsWith(jcr))
 			return "jcr:" + name.substring(jcr.length());
 		else if (name.startsWith(nt))
 			return "nt:" + name.substring(nt.length());
 		else
 			throw new PeopleException("Unknown prefix for " + name);
+	}
+
+	public static String checkAndLocalzeNamespaces(String name) {
+		String jcr = "{" + NS_JCR + "}";
+		String nt = "{" + NS_NT + "}";
+		if (name.startsWith(jcr))
+			return "jcr:" + name.substring(jcr.length());
+		else if (name.startsWith(nt))
+			return "nt:" + name.substring(nt.length());
+		else
+			return name;
+	}
+
+	public static String cleanNodeName(String name) {
+		String cleanName = name.trim().replaceAll("[^a-zA-Z0-9-. ]", "");
+		return cleanName;
+	}
+
+	/**
+	 * Add '?' to the list of forbidden characters. See
+	 * JcrUtils.replaceInvalidChars(String name)
+	 */
+	public final static char[] INVALID_NAME_CHARACTERS = { '/', ':', '[', ']',
+			'|', '*', '?', /*
+							 * invalid XML chars :
+							 */
+			'<', '>', '&' };
+
+	/**
+	 * Replaces characters which are invalid in a JCR name by '_'. Currently not
+	 * exhaustive.
+	 * 
+	 * @see JcrUtils#INVALID_NAME_CHARACTERS
+	 */
+	public static String replaceInvalidChars(String name) {
+		return replaceInvalidChars(name, '_');
+	}
+
+	/**
+	 * Replaces characters which are invalid in a JCR name. Currently not
+	 * exhaustive.
+	 * 
+	 * @see JcrUtils#INVALID_NAME_CHARACTERS
+	 */
+	public static String replaceInvalidChars(String name, char replacement) {
+		boolean modified = false;
+		char[] arr = name.toCharArray();
+		for (int i = 0; i < arr.length; i++) {
+			char c = arr[i];
+			invalid: for (char invalid : INVALID_NAME_CHARACTERS) {
+				if (c == invalid) {
+					arr[i] = replacement;
+					modified = true;
+					break invalid;
+				}
+			}
+		}
+		if (modified)
+			return new String(arr);
+		else
+			// do not create new object if unnecessary
+			return name;
+	}
+
+	private static String encodeXPathStringValue(String propertyValue) {
+		String result = propertyValue.replaceAll("'", "''");
+		return result;
 	}
 
 	public static boolean canEdit(Node entity) {
@@ -192,6 +262,58 @@ public class JcrUiUtils {
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to retrieve node of type "
 					+ nodeType + " under " + parentPath, re);
+		}
+	}
+
+	public static Node getByPropertyValue(Session session, String parentPath,
+			String nodeType, String propName, String propValue) {
+		NodeIterator nit = getByPropertyValue(session, parentPath, nodeType,
+				propName, propValue, false);
+		if (nit != null && nit.hasNext())
+			return nit.nextNode();
+		else
+			return null;
+	}
+
+	public static NodeIterator getByPropertyValue(Session session,
+			String parentPath, String nodeType, String propName,
+			String propValue, boolean acceptMultipleResult) {
+		try {
+			QueryManager queryManager = session.getWorkspace()
+					.getQueryManager();
+			String xpathQueryStr = XPathUtils.descendantFrom(parentPath)
+					+ "//element(*, " + checkAndLocalzeNamespaces(nodeType)
+					+ ")";
+
+			String cleanProp = encodeXPathStringValue(propValue);
+			String attrQuery = XPathUtils.getPropertyEquals(
+					checkAndLocalzeNamespaces(propName), cleanProp);
+
+			xpathQueryStr += "[" + attrQuery + "]";
+			// String cleanStr = cleanStatement(xpathQueryStr);
+
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
+					PeopleConstants.QUERY_XPATH);
+			QueryResult result = xpathQuery.execute();
+			NodeIterator ni = result.getNodes();
+
+			long niSize = ni.getSize();
+			if (niSize == 0)
+				return null;
+			else if (niSize > 1) {
+				if (acceptMultipleResult)
+					return ni;
+				else
+					throw new PeopleException("Found " + niSize
+							+ " entities of type " + nodeType + "with "
+							+ propName + " =[" + propValue + "] under "
+							+ parentPath);
+			} else
+				return ni;
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to retrieve entities of type "
+					+ nodeType + " with " + propName + " = [" + propValue
+					+ "] under " + parentPath, e);
 		}
 	}
 

@@ -125,5 +125,4 @@ public class OrgJcrUtils implements PeopleNames {
 			throw new PeopleException("More than 1 org with name " + name
 					+ " has been found.");
 	}
-
 }
