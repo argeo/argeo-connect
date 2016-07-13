@@ -240,8 +240,6 @@ public class JcrUiUtils {
 		try {
 			if (parentPath == null)
 				parentPath = "/";
-
-			// XPath
 			StringBuilder builder = new StringBuilder();
 			builder.append(XPathUtils.descendantFrom(parentPath));
 			builder.append("//element(*, ").append(nodeType).append(")");
@@ -250,14 +248,6 @@ public class JcrUiUtils {
 					.getQueryManager()
 					.createQuery(builder.toString(),
 							PeopleConstants.QUERY_XPATH);
-
-			// SQL2
-			// String sqlStr = "select * from [" + nodeType
-			// + "] as nodes where ISDESCENDANTNODE('" + parentPath
-			// + "') ";
-			// Query query2 = session.getWorkspace().getQueryManager()
-			// .createQuery(sqlStr, Query.JCR_SQL2);
-
 			return query.execute().getNodes();
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to retrieve node of type "

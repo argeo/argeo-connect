@@ -512,10 +512,16 @@ public class PeopleJcrUtils implements PeopleNames {
 	public static Node createPhone(PeopleService peopleService,
 			Node parentNode, String phoneNumber, boolean primary,
 			String nature, String category, String label) {
-		return createContact(peopleService, parentNode,
-				PeopleTypes.PEOPLE_PHONE,
-				JcrUiUtils.cleanNodeName(phoneNumber), phoneNumber,
-				primary, nature, category, label);
+		// Dirty work around to address node name issue when some invalid phone
+		// number has been added
+		String nodeName = JcrUiUtils.cleanNodeName(phoneNumber);
+		String numbers = nodeName.trim().replaceAll("[^0-9]", "");
+		if (EclipseUiUtils.isEmpty(nodeName) || EclipseUiUtils.isEmpty(numbers))
+			return null;
+		else
+			return createContact(peopleService, parentNode,
+					PeopleTypes.PEOPLE_PHONE, nodeName, phoneNumber, primary,
+					nature, category, label);
 	}
 
 	/**
