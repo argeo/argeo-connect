@@ -60,8 +60,8 @@ import org.osgi.service.useradmin.UserAdmin;
 /** Dialog with a user (or group) list to pick up one */
 public class PickUpGroupDialog extends TrayDialog {
 	private static final long serialVersionUID = -7137186164861036609L;
+
 	// Business objects
-	// private final PeopleService peopleService;
 	private final UserAdminService userAdminService;
 	private final UserAdmin userAdmin;
 	private User selectedUser;
@@ -80,7 +80,6 @@ public class PickUpGroupDialog extends TrayDialog {
 			PeopleService peopleService) {
 		super(parentShell);
 		this.title = title;
-		// this.peopleService = peopleService;
 		this.userAdminService = peopleService.getUserAdminService();
 		this.userAdmin = userAdminService.getUserAdmin();
 
@@ -95,7 +94,6 @@ public class PickUpGroupDialog extends TrayDialog {
 			PeopleService peopleService, List<ColumnDefinition> columnDefs) {
 		super(parentShell);
 		this.title = title;
-		// this.peopleService = peopleService;
 		this.userAdminService = peopleService.getUserAdminService();
 		this.userAdmin = userAdminService.getUserAdmin();
 		this.columnDefs = columnDefs;
@@ -309,7 +307,7 @@ public class PickUpGroupDialog extends TrayDialog {
 		@Override
 		public String getText(User user) {
 			String dn = user.getName();
-// 			if (dn.endsWith(AuthConstants.ROLES_BASEDN))
+			// if (dn.endsWith(AuthConstants.ROLES_BASEDN))
 			if (dn.matches(".*(" + AuthConstants.ROLES_BASEDN + ")"))
 				return "System roles";
 			try {

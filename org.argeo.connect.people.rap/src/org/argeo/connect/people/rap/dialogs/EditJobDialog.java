@@ -180,6 +180,46 @@ public class EditJobDialog extends TrayDialog {
 			}
 		}
 	}
+	
+	/** Override to provide business specific addition behavior */
+	protected boolean performFinish() {
+		// Sanity check
+		String msg = null;
+		if (selectedItem == null && oldLinkNode == null)
+			msg = "Please select an entity.";
+		if (msg != null) {
+			MessageDialog.openError(getShell(), "Non valid information", msg);
+			return false;
+		}
+
+		// Retrieve values
+		String position = positionTxt.getText();
+		String department = departmentTxt.getText();
+		boolean isPrimary = wasPrimary;
+		if (isPrimaryBtn != null)
+			isPrimary = isPrimaryBtn.getSelection();
+		Node person, organisation;
+
+		if (isBackward) {
+			organisation = oldReferenced;
+			if (selectedItem == null)
+				person = oldReferencing;
+			else
+				person = selectedItem;
+		} else {
+			person = oldReferencing;
+			if (selectedItem == null)
+				organisation = oldReferenced;
+			else
+				organisation = selectedItem;
+		}
+
+		// Real update
+		peopleService.getPersonService().createOrUpdateJob(oldLinkNode, person,
+				organisation, position, department, isPrimary);
+		return true;
+	}
+	
 
 	protected Control createDialogArea(Composite parent) {
 		// MAIN LAYOUT
@@ -244,44 +284,7 @@ public class EditJobDialog extends TrayDialog {
 		return dialogarea;
 	}
 
-	/** Override to provide business specific addition behavior */
-	protected boolean performFinish() {
-		// Sanity check
-		String msg = null;
-		if (selectedItem == null && oldLinkNode == null)
-			msg = "Please select an entity.";
-		if (msg != null) {
-			MessageDialog.openError(getShell(), "Non valid information", msg);
-			return false;
-		}
-
-		// Retrieve values
-		String position = positionTxt.getText();
-		String department = departmentTxt.getText();
-		boolean isPrimary = wasPrimary;
-		if (isPrimaryBtn != null)
-			isPrimary = isPrimaryBtn.getSelection();
-		Node person, organisation;
-
-		if (isBackward) {
-			organisation = oldReferenced;
-			if (selectedItem == null)
-				person = oldReferencing;
-			else
-				person = selectedItem;
-		} else {
-			person = oldReferencing;
-			if (selectedItem == null)
-				organisation = oldReferenced;
-			else
-				organisation = selectedItem;
-		}
-
-		// Real update
-		peopleService.getPersonService().createOrUpdateJob(oldLinkNode, person,
-				organisation, position, department, isPrimary);
-		return true;
-	}
+	
 
 	// This dialog life cycle
 	@Override
