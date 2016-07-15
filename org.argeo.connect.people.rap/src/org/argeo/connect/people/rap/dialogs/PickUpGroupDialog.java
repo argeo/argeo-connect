@@ -292,8 +292,9 @@ public class PickUpGroupDialog extends TrayDialog {
 		@Override
 		public Image getImage(Object element) {
 			User user = (User) element;
-			String dn = (String) user.getProperties().get(LdifName.dn.name());
-			if (dn.endsWith(AuthConstants.ROLES_BASEDN))
+			String dn = user.getName();
+			// if (dn.endsWith(AuthConstants.ROLES_BASEDN))
+			if (dn.matches(".*(" + AuthConstants.ROLES_BASEDN + ")"))
 				return PeopleRapImages.ICON_ROLE;
 			else if (user.getType() == Role.GROUP)
 				return PeopleRapImages.ICON_GROUP;
@@ -307,8 +308,9 @@ public class PickUpGroupDialog extends TrayDialog {
 
 		@Override
 		public String getText(User user) {
-			String dn = (String) user.getProperties().get(LdifName.dn.name());
-			if (dn.endsWith(AuthConstants.ROLES_BASEDN))
+			String dn = user.getName();
+// 			if (dn.endsWith(AuthConstants.ROLES_BASEDN))
+			if (dn.matches(".*(" + AuthConstants.ROLES_BASEDN + ")"))
 				return "System roles";
 			try {
 				LdapName name;
