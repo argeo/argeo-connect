@@ -134,6 +134,20 @@ public class JcrUiUtils {
 		return result;
 	}
 
+	// PATH MANAGEMENT
+	/** Simply retrieves the parent rel path of the provided relative path */
+	public static String parentRelPath(String relPath) {
+		// Remove trailing slash ?
+		// String pathT = relPath;
+		// if (pathT.charAt(pathT.length() - 1) == '/')
+		// pathT = pathT.substring(0, pathT.length() - 2);
+		int index = relPath.lastIndexOf('/');
+		if (index < 0)
+			return "";
+		else
+			return relPath.substring(0, index);
+	}
+
 	public static boolean canEdit(Node entity) {
 		boolean canEdit = false;
 		try {
