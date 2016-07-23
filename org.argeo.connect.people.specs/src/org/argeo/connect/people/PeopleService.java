@@ -91,10 +91,22 @@ public interface PeopleService {
 	public Node saveEntity(Node entity, boolean publish) throws PeopleException;
 
 	/**
-	 * Returns the corresponding entity or null if not found. This Uid is
-	 * implementation specific and is not a JCR Identifier
+	 * Searches the workspace corresponding to the passed session under the
+	 * default base path. It returns the corresponding entity or null if none
+	 * has been found. This UID is implementation specific and is not a JCR
+	 * Identifier
 	 */
 	public Node getEntityByUid(Session session, String uid);
+
+	/**
+	 * Searches the workspace corresponding to the passed session. It returns
+	 * the corresponding entity or null if none has been found. This UID is
+	 * implementation specific and is not a JCR Identifier.
+	 * 
+	 * It will throw a PeopleException if more than one item with this ID has
+	 * been found
+	 */
+	public Node getEntityByUid(Session session, String parentPath, String uid);
 
 	/**
 	 * Returns the corresponding people entity using the People UID that is

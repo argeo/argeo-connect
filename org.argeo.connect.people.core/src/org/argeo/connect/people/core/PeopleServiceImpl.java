@@ -351,13 +351,19 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	@Override
 	public Node getEntityByUid(Session session, String uid) {
+		return getEntityByUid(session, getBasePath(null), uid);
+	}
+
+	
+	@Override
+	public Node getEntityByUid(Session session, String parentPath, String uid) {
 		if (isEmpty(uid))
 			throw new PeopleException(
 					"Cannot get entity by id by providing an empty people:uid");
 		try {
 			QueryManager queryManager = session.getWorkspace()
 					.getQueryManager();
-			String xpathQueryStr = XPathUtils.descendantFrom(getBasePath(null))
+			String xpathQueryStr = XPathUtils.descendantFrom(parentPath)
 					+ "//element(*, " + PeopleTypes.PEOPLE_ENTITY + ")";
 			String attrQuery = XPathUtils.getPropertyEquals(
 					PeopleNames.PEOPLE_UID, uid);
@@ -392,6 +398,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		}
 	}
 
+	
 	@Override
 	public Node getEntityFromNodeReference(Node node, String propName) {
 		try {
