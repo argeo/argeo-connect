@@ -69,7 +69,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
 	private PeopleWorkbenchService peopleWorkbenchService;
-	// There *one session per editor*
+	// There is *one session per editor*
 	private Repository repository;
 	private Session session;
 
@@ -150,7 +150,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		right.setLayoutData(gd);
 		populateButtonsComposite(right);
 
-		// the body
+		// body
 		Composite body = toolkit.createComposite(parent, SWT.NO_FOCUS);
 		body.setLayoutData(EclipseUiUtils.fillAll());
 		populateBody(body);
@@ -177,13 +177,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		// setTitleToolTip("Display and edit information for " +
 		// displayName);
 	}
-
-	/**
-	 * Old approach to enable management of the edition / edition info duality.
-	 * Not used anymore with the new model. Double check and remove
-	 */
-	// @Deprecated
-	// protected abstract Boolean deleteParentOnRemove();
 
 	/** Overwrite following methods to create a nice editor... */
 	protected abstract void populateBody(Composite parent);
@@ -254,6 +247,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 							CommandUtils
 									.callCommand(IWorkbenchCommandConstants.FILE_SAVE);
 						else {
+							// Nothing has changed we in fact call cancel
 							Map<String, String> params = new HashMap<String, String>();
 							params.put(ChangeEditingState.PARAM_NEW_STATE,
 									ChangeEditingState.NOT_EDITING);
@@ -264,7 +258,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 						}
 				} catch (RepositoryException re) {
 					throw new PeopleException(
-							"Unable to save pending changes for " + node, re);
+							"Unable to save pending changes on " + node, re);
 				}
 			}
 		});
@@ -272,7 +266,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		Button cancelBtn = toolkit.createButton(editPanelCmp, "Cancel",
 				SWT.PUSH);
 		cancelBtn.setLayoutData(new RowData(60, 20));
-
 		cancelBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
@@ -371,10 +364,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	/* UTILITES */
 	/** Forces refresh of all form parts of the current editor */
 	public void forceRefresh(Object object) {
-
 		if (log.isTraceEnabled())
 			log.trace("Starting Editor refresh");
-
 		long start, tmpStart, tmpEnd;
 		start = System.currentTimeMillis();
 		for (IFormPart part : mForm.getParts()) {
@@ -439,10 +430,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Unable to check privilege on " + node, e);
 		}
-		// return getPeopleService().getUserAdminService().amIInRole(
-		// PeopleConstants.ROLE_MEMBER)
-		// || getPeopleService().getUserAdminService().amIInRole(
-		// PeopleConstants.ROLE_BUSINESS_ADMIN);
 	}
 
 	public void startEditing() {
