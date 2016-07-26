@@ -10,7 +10,7 @@
 	<packaging>pom</packaging>
 	<name>Argeo Connect</name>
 	<description>Real world IT</description>
-	<version>2.1.54-SNAPSHOT</version>
+	<version>2.1.54</version>
 	<properties>
 		<version.connect>2.1.54</version.connect>
 		<version.argeo-tp-extras>2.1.9</version.argeo-tp-extras>
@@ -32,9 +32,9 @@
 	</modules>
 	<url>${site.urlBase}/${developmentCycle.connect}</url>
 	<scm>
-		<connection>scm:svn:https://svn.argeo.org/connect/trunk</connection>
-		<developerConnection>scm:svn:https://svn.argeo.org/connect/trunk</developerConnection>
-		<url>https://svn.argeo.org/connect/trunk</url>
+		<connection>scm:svn:https://svn.argeo.org/connect/tags/argeo-connect-2.1.54</connection>
+		<developerConnection>scm:svn:https://svn.argeo.org/connect/tags/argeo-connect-2.1.54</developerConnection>
+		<url>https://svn.argeo.org/connect/tags/argeo-connect-2.1.54</url>
 	</scm>
 	<licenses>
 		<license>
