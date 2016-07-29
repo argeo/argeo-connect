@@ -2,6 +2,7 @@ package org.argeo.connect.people.util;
 
 import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
 
+import java.math.BigDecimal;
 import java.security.AccessControlException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -739,34 +740,34 @@ public class JcrUiUtils {
 	public static boolean setJcrProperty(Node node, String propName,
 			int propertyType, Object value) {
 		try {
-			switch (propertyType) {
-			case PropertyType.STRING:
-				if ("".equals((String) value)
-						&& (!node.hasProperty(propName) || node
-								.hasProperty(propName)
-								&& "".equals(node.getProperty(propName)
-										.getString())))
-					return false;
-				else if (node.hasProperty(propName)
-						&& node.getProperty(propName).getString()
-								.equals((String) value))
-					return false;
-				else {
-					node.setProperty(propName, (String) value);
-					return true;
-				}
-			case PropertyType.REFERENCE:
-				if ((!node.hasProperty(propName) && value == null)
-						|| (node.hasProperty(propName) && ((Node) value)
-								.getIdentifier().equals(
-										node.getProperty(propName).getNode()
-												.getIdentifier()))) {
-					return false;
-				} else if (value == null) {
+			// Manage null value
+			if (value == null)
+				if (node.hasProperty(propName)) {
 					node.getProperty(propName).remove();
 					return true;
-				} else {
-					node.setProperty(propName, (Node) value);
+				} else
+					return false;
+
+			switch (propertyType) {
+			case PropertyType.STRING:
+				String strValue = (String) value;
+				if (node.hasProperty(propName)
+						&& node.getProperty(propName).getString()
+								.equals(strValue))
+					return false;
+				else {
+					node.setProperty(propName, strValue);
+					return true;
+				}
+			case PropertyType.REFERENCE | PropertyType.WEAKREFERENCE:
+				Node nodeValue = (Node) value;
+				if (node.hasProperty(propName)
+						&& nodeValue.getIdentifier().equals(
+								node.getProperty(propName).getNode()
+										.getIdentifier()))
+					return false;
+				else {
+					node.setProperty(propName, nodeValue);
 					return true;
 				}
 			case PropertyType.BOOLEAN:
@@ -781,7 +782,6 @@ public class JcrUiUtils {
 				if (node.hasProperty(propName)
 						&& node.getProperty(propName).getDate()
 								.equals((Calendar) value))
-					// nothing changed yet
 					return false;
 				else {
 					node.setProperty(propName, (Calendar) value);
@@ -789,19 +789,31 @@ public class JcrUiUtils {
 				}
 			case PropertyType.LONG:
 				Long lgValue = (Long) value;
-
-				if (lgValue == null)
-					lgValue = 0L;
-
 				if (node.hasProperty(propName)
 						&& node.getProperty(propName).getLong() == lgValue)
-					// nothing changed yet
 					return false;
 				else {
 					node.setProperty(propName, lgValue);
 					return true;
 				}
-
+			case PropertyType.DOUBLE:
+				Double dbValue = (Double) value;
+				if (node.hasProperty(propName)
+						&& node.getProperty(propName).getDouble() == dbValue)
+					return false;
+				else {
+					node.setProperty(propName, dbValue);
+					return true;
+				}
+			case PropertyType.DECIMAL:
+				BigDecimal bdValue = (BigDecimal) value;
+				if (node.hasProperty(propName)
+						&& node.getProperty(propName).getDecimal() == bdValue)
+					return false;
+				else {
+					node.setProperty(propName, bdValue);
+					return true;
+				}
 			default:
 				throw new PeopleException(
 						"Update unimplemented for property type "
