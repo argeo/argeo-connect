@@ -646,15 +646,31 @@ public class JcrUiUtils {
 	 * Concisely gets the value of a long property or null if this node doesn't
 	 * have this property
 	 */
-	public static Long getLongValue(Node node, String propertyName) {
+	public static Long getLongValue(Node node, String propRelPath) {
 		try {
-			if (!node.hasProperty(propertyName))
+			if (!node.hasProperty(propRelPath))
 				return null;
 			else
-				return node.getProperty(propertyName).getLong();
+				return node.getProperty(propRelPath).getLong();
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get long property " + propertyName
+			throw new ArgeoException("Cannot get long property " + propRelPath
 					+ " of " + node, e);
+		}
+	}
+
+	/**
+	 * Concisely gets the value of a double property or null if this node
+	 * doesn't have this property
+	 */
+	public static Double getDoubleValue(Node node, String propRelPath) {
+		try {
+			if (!node.hasProperty(propRelPath))
+				return null;
+			else
+				return node.getProperty(propRelPath).getDouble();
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Cannot get double property "
+					+ propRelPath + " of " + node, e);
 		}
 	}
 
@@ -662,15 +678,31 @@ public class JcrUiUtils {
 	 * Concisely gets the value of a date property or null if this node doesn't
 	 * have this property
 	 */
-	public static Calendar getDateValue(Node node, String propertyName) {
+	public static Calendar getDateValue(Node node, String propRelPath) {
+		try {
+			if (!node.hasProperty(propRelPath))
+				return null;
+			else
+				return node.getProperty(propRelPath).getDate();
+		} catch (RepositoryException e) {
+			throw new ArgeoException("Cannot get date property " + propRelPath
+					+ " of " + node, e);
+		}
+	}
+
+	/**
+	 * Concisely gets the value of a boolean property or null if this node
+	 * doesn't have this property
+	 */
+	public static Boolean getBooleanValue(Node node, String propertyName) {
 		try {
 			if (!node.hasProperty(propertyName))
 				return null;
 			else
-				return node.getProperty(propertyName).getDate();
+				return node.getProperty(propertyName).getBoolean();
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get date property " + propertyName
-					+ " of " + node, e);
+			throw new ArgeoException("Cannot get boolean property "
+					+ propertyName + " of " + node, e);
 		}
 	}
 
@@ -691,22 +723,6 @@ public class JcrUiUtils {
 		} catch (RepositoryException e) {
 			throw new ArgeoException("Cannot get date property " + propertyName
 					+ " on " + node, e);
-		}
-	}
-
-	/**
-	 * Concisely gets the value of a boolean property or null if this node
-	 * doesn't have this property
-	 */
-	public static Boolean getBooleanValue(Node node, String propertyName) {
-		try {
-			if (!node.hasProperty(propertyName))
-				return null;
-			else
-				return node.getProperty(propertyName).getBoolean();
-		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get boolean property "
-					+ propertyName + " of " + node, e);
 		}
 	}
 
