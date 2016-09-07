@@ -775,7 +775,8 @@ public class JcrUiUtils {
 					node.setProperty(propName, strValue);
 					return true;
 				}
-			case PropertyType.REFERENCE | PropertyType.WEAKREFERENCE:
+			case PropertyType.REFERENCE:
+			case PropertyType.WEAKREFERENCE:
 				Node nodeValue = (Node) value;
 				if (node.hasProperty(propName)
 						&& nodeValue.getIdentifier().equals(
