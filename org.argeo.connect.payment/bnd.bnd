@@ -1,7 +1,8 @@
-Import-Package:com.stripe.*;resolution:=optional,\
-com.stripe.net;resolution:=optional,\
+Import-Package:com.stripe.net;resolution:=optional,\
 com.google.gson;resolution:=optional,\
 org.eclipse.swt,\
 org.argeo.cms.text,\
 *
 
+
+## com.stripe.*;resolution:=optional,\
