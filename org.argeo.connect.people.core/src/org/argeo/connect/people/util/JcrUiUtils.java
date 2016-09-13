@@ -36,7 +36,6 @@ import javax.jcr.version.VersionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -339,7 +338,7 @@ public class JcrUiUtils {
 					new GregorianCalendar());
 			node.setProperty(Property.JCR_LAST_MODIFIED_BY, userId);
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot update last modified on " + node,
+			throw new PeopleException("Cannot update last modified on " + node,
 					e);
 		}
 	}
@@ -518,7 +517,7 @@ public class JcrUiUtils {
 		try {
 			return session.itemExists(absPath);
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to check existence of item at "
+			throw new PeopleException("Unable to check existence of item at "
 					+ absPath, re);
 		}
 	}
@@ -637,7 +636,7 @@ public class JcrUiUtils {
 			else
 				return node.getProperty(propertyName).getString();
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get property " + propertyName
+			throw new PeopleException("Cannot get property " + propertyName
 					+ " of " + node, e);
 		}
 	}
@@ -653,7 +652,7 @@ public class JcrUiUtils {
 			else
 				return node.getProperty(propRelPath).getLong();
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get long property " + propRelPath
+			throw new PeopleException("Cannot get long property " + propRelPath
 					+ " of " + node, e);
 		}
 	}
@@ -669,7 +668,7 @@ public class JcrUiUtils {
 			else
 				return node.getProperty(propRelPath).getDouble();
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get double property "
+			throw new PeopleException("Cannot get double property "
 					+ propRelPath + " of " + node, e);
 		}
 	}
@@ -685,7 +684,7 @@ public class JcrUiUtils {
 			else
 				return node.getProperty(propRelPath).getDate();
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get date property " + propRelPath
+			throw new PeopleException("Cannot get date property " + propRelPath
 					+ " of " + node, e);
 		}
 	}
@@ -701,7 +700,7 @@ public class JcrUiUtils {
 			else
 				return node.getProperty(propertyName).getBoolean();
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get boolean property "
+			throw new PeopleException("Cannot get boolean property "
 					+ propertyName + " of " + node, e);
 		}
 	}
@@ -721,8 +720,8 @@ public class JcrUiUtils {
 						.getTime());
 			}
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get date property " + propertyName
-					+ " on " + node, e);
+			throw new PeopleException("Cannot get date property "
+					+ propertyName + " on " + node, e);
 		}
 	}
 
@@ -909,7 +908,7 @@ public class JcrUiUtils {
 			node.setProperty(propName, valuesStr);
 			return null;
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to set tags", re);
+			throw new PeopleException("Unable to set tags", re);
 		}
 	}
 
@@ -931,7 +930,7 @@ public class JcrUiUtils {
 				node.setProperty(propName, newValList.toArray(new String[0]));
 			}
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to set multi value property "
+			throw new PeopleException("Unable to set multi value property "
 					+ propName + " of node " + node + " with values [" + values
 					+ "]", re);
 		}
@@ -968,7 +967,7 @@ public class JcrUiUtils {
 					return builder.toString();
 			}
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get multi valued property "
+			throw new PeopleException("Cannot get multi valued property "
 					+ propertyName + " of " + node, e);
 		}
 	}
@@ -989,7 +988,7 @@ public class JcrUiUtils {
 				}
 			}
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get multi valued property "
+			throw new PeopleException("Cannot get multi valued property "
 					+ propertyName + " of " + node, e);
 		}
 		return results;
@@ -1067,7 +1066,7 @@ public class JcrUiUtils {
 			setMultipleReferences(node, propName, nodes);
 			return null;
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to add reference ", re);
+			throw new PeopleException("Unable to add reference ", re);
 		}
 	}
 
@@ -1132,7 +1131,7 @@ public class JcrUiUtils {
 			}
 			return false;
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to set tags", re);
+			throw new PeopleException("Unable to set tags", re);
 		}
 	}
 
@@ -1177,7 +1176,7 @@ public class JcrUiUtils {
 			node.setProperty(propName, valuesStr);
 			return null;
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to set tags", re);
+			throw new PeopleException("Unable to set tags", re);
 		}
 	}
 
@@ -1232,7 +1231,7 @@ public class JcrUiUtils {
 				return currentNode.getNode(relPath + "/" + lang);
 			}
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get alt property for " + lang, e);
+			throw new PeopleException("Cannot get alt property for " + lang, e);
 		}
 	}
 

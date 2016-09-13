@@ -21,7 +21,6 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.argeo.ArgeoException;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleConstants;
@@ -196,7 +195,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 					.nodeIteratorToList(listFilteredElements(session, null));
 			tableViewer.setInput(nodes.toArray());
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Unable to list activities", e);
+			throw new PeopleException("Unable to list activities", e);
 		}
 	}
 
@@ -258,7 +257,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 				}
 				return builder.toString();
 			} catch (RepositoryException re) {
-				throw new ArgeoException("Unable to get type snippet for "
+				throw new PeopleException("Unable to get type snippet for "
 						+ currNode, re);
 			}
 		}
@@ -496,7 +495,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 				}
 				return "";
 			} catch (RepositoryException re) {
-				throw new ArgeoException("Unable to get date from node "
+				throw new PeopleException("Unable to get date from node "
 						+ element, re);
 			}
 		}
@@ -528,7 +527,7 @@ public class ActivityTable extends Composite implements ArgeoNames {
 				}
 				return "";
 			} catch (RepositoryException re) {
-				throw new ArgeoException("Unable to get date from node "
+				throw new PeopleException("Unable to get date from node "
 						+ element, re);
 			}
 		}

@@ -29,7 +29,6 @@ import jxl.write.biff.RowsExceededException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
@@ -230,7 +229,7 @@ public class NodesToCalcWriter {
 			try {
 				sheet.setRowView(j, maxHeigth + 1);
 			} catch (RowsExceededException re) {
-				throw new ArgeoException("unable to resize row " + j, re);
+				throw new PeopleException("unable to resize row " + j, re);
 			}
 			j++;
 		}

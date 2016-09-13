@@ -7,10 +7,10 @@ import java.util.Map;
 
 import javax.naming.ldap.LdapName;
 
-import org.argeo.ArgeoException;
 import org.argeo.cms.auth.AuthConstants;
 import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.cms.util.useradmin.UserAdminWrapper;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.util.UsersUtils;
 import org.argeo.osgi.useradmin.LdifName;
@@ -129,7 +129,7 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 		try {
 			roles = getUserAdmin().getRoles(null);
 		} catch (InvalidSyntaxException e) {
-			throw new ArgeoException("Unable to get roles with filter: "
+			throw new PeopleException("Unable to get roles with filter: "
 					+ filter, e);
 		}
 
@@ -188,7 +188,7 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 			dn = LdifName.uid.name() + "=" + localId + ","
 					+ UserAdminConf.userBase.getValue(props) + "," + baseDn;
 		else
-			throw new ArgeoException("Unknown role type. "
+			throw new PeopleException("Unknown role type. "
 					+ "Cannot deduce dn for " + localId);
 		return dn;
 	}
@@ -198,7 +198,7 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 		if (dns.size() == 1)
 			return dns.keySet().iterator().next();
 		else
-			throw new ArgeoException("Current context contains " + dns.size()
+			throw new PeopleException("Current context contains " + dns.size()
 					+ " base dns: " + dns.keySet().toString()
 					+ ". Unable to chose a default one.");
 	}

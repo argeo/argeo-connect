@@ -10,7 +10,6 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.argeo.ArgeoException;
 import org.argeo.ArgeoMonitor;
 import org.argeo.cms.auth.AuthConstants;
 import org.argeo.connect.people.PeopleException;
@@ -284,7 +283,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 				roles = userAdminService.getUserAdmin().getRoles(
 						builder.toString());
 			} catch (InvalidSyntaxException e) {
-				throw new ArgeoException("Unable to get roles with filter: "
+				throw new PeopleException("Unable to get roles with filter: "
 						+ filter, e);
 			}
 

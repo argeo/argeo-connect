@@ -16,9 +16,8 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
-import org.argeo.connect.people.util.JcrUiUtils;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
@@ -158,7 +157,7 @@ public class SimpleJcrTableComposite extends Composite implements ArgeoNames {
 			}
 			return result;
 		} else
-			throw new ArgeoException("Unvalid request: no selection column "
+			throw new PeopleException("Unvalid request: no selection column "
 					+ "has been created for the current table");
 	}
 
@@ -303,7 +302,7 @@ public class SimpleJcrTableComposite extends Composite implements ArgeoNames {
 					hasFilter ? filterTxt.getText() : null));
 			tableViewer.setInput(nodes.toArray());
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Unable to list users", e);
+			throw new PeopleException("Unable to list users", e);
 		}
 	}
 

@@ -16,7 +16,6 @@ import javax.jcr.security.Privilege;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.ArgeoException;
 import org.argeo.cms.CmsEditable;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
@@ -106,7 +105,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			updatePartName();
 			updateToolTip();
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Unable to create new session"
+			throw new PeopleException("Unable to create new session"
 					+ " to use with current editor", e);
 		}
 	}
@@ -428,7 +427,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			Privilege[] privs = { acm.privilegeFromName(Privilege.JCR_WRITE) };
 			return acm.hasPrivileges(node.getPath(), privs);
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Unable to check privilege on " + node, e);
+			throw new PeopleException("Unable to check privilege on " + node, e);
 		}
 	}
 

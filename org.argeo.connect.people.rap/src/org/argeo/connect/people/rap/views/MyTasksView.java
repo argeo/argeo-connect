@@ -18,8 +18,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 
-import org.argeo.ArgeoException;
 import org.argeo.connect.people.ActivityService;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
@@ -201,7 +201,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 				}
 				return "";
 			} catch (RepositoryException re) {
-				throw new ArgeoException("Unable to get date from node "
+				throw new PeopleException("Unable to get date from node "
 						+ element, re);
 			}
 		}
@@ -229,7 +229,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 				}
 				return "";
 			} catch (RepositoryException re) {
-				throw new ArgeoException("Unable to get date from node "
+				throw new PeopleException("Unable to get date from node "
 						+ element, re);
 			}
 		}
@@ -262,7 +262,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 				}
 				return "";
 			} catch (RepositoryException re) {
-				throw new ArgeoException("Unable to get date from node "
+				throw new PeopleException("Unable to get date from node "
 						+ element, re);
 			}
 		}
@@ -337,7 +337,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 							peopleWorkbenchService.getOpenEntityEditorCmdId(),
 							paramName, jcrId);
 				} catch (RepositoryException e) {
-					throw new ArgeoException("Cannot open user editor", e);
+					throw new PeopleException("Cannot open user editor", e);
 				}
 			}
 		}

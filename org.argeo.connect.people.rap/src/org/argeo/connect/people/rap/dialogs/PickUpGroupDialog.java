@@ -22,8 +22,8 @@ import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 
-import org.argeo.ArgeoException;
 import org.argeo.cms.auth.AuthConstants;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.rap.PeopleRapImages;
@@ -248,7 +248,7 @@ public class PickUpGroupDialog extends TrayDialog {
 				}
 				roles = userAdmin.getRoles(builder.toString());
 			} catch (InvalidSyntaxException e) {
-				throw new ArgeoException("Unable to get roles with filter: "
+				throw new PeopleException("Unable to get roles with filter: "
 						+ filter, e);
 			}
 			List<User> users = new ArrayList<User>();
@@ -317,8 +317,8 @@ public class PickUpGroupDialog extends TrayDialog {
 				return (String) rdns.get(1).getValue() + '.'
 						+ (String) rdns.get(0).getValue();
 			} catch (InvalidNameException e) {
-				throw new ArgeoException("Unable to get domain name for " + dn,
-						e);
+				throw new PeopleException(
+						"Unable to get domain name for " + dn, e);
 			}
 		}
 	}

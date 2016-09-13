@@ -42,7 +42,7 @@ public class SingletonEditorInput implements IEditorInput {
 		return "Simple editor";
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Object getAdapter(Class adapter) {
 		return null;
 	}

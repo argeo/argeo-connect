@@ -22,7 +22,6 @@ import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
 
-import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleException;
 
 /** History management */
@@ -180,7 +179,7 @@ public class VersionUtils {
 				diffs.putAll(localDiffs);
 			}
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot diff " + reference + " and "
+			throw new PeopleException("Cannot diff " + reference + " and "
 					+ observed, e);
 		}
 	}
@@ -318,7 +317,7 @@ public class VersionUtils {
 				}
 			}
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot diff " + reference + " and "
+			throw new PeopleException("Cannot diff " + reference + " and "
 					+ observed, e);
 		}
 	}

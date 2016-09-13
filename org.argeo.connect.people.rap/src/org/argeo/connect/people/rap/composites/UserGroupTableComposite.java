@@ -13,8 +13,8 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiUtils;
@@ -121,7 +121,7 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 			}
 			return result;
 		} else
-			throw new ArgeoException("Unvalid request: no selection column "
+			throw new PeopleException("Unvalid request: no selection column "
 					+ "has been created for the current table");
 	}
 
@@ -300,7 +300,7 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 					hasFilter ? filterTxt.getText() : null));
 			userGroupViewer.setInput(nodes.toArray());
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Unable to list users", e);
+			throw new PeopleException("Unable to list users", e);
 		}
 	}
 
@@ -319,16 +319,18 @@ public class UserGroupTableComposite extends Composite implements ArgeoNames {
 		builder.append("[");
 		String groupOnlyCond = "";
 		if (displayUserChk != null && !displayUserChk.getSelection()) {
-			groupOnlyCond = "(not(@"+PeopleNames.PEOPLE_IS_SINGLE_USER_GROUP+"='true'))";
+			groupOnlyCond = "(not(@" + PeopleNames.PEOPLE_IS_SINGLE_USER_GROUP
+					+ "='true'))";
 		}
-		builder.append(XPathUtils.localAnd(XPathUtils.getFreeTextConstraint(filter), groupOnlyCond));
+		builder.append(XPathUtils.localAnd(
+				XPathUtils.getFreeTextConstraint(filter), groupOnlyCond));
 		builder.append("]");
 		builder.append(" order by @");
 		builder.append(PeopleNames.JCR_TITLE);
 		builder.append(" ascending ");
 		Query query = queryManager.createQuery(builder.toString(),
 				PeopleConstants.QUERY_XPATH);
-		
+
 		// QOM
 		// QueryObjectModelFactory factory = queryManager.getQOMFactory();
 		// Selector source = factory.selector(PeopleTypes.PEOPLE_USER_GROUP,

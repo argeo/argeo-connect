@@ -15,9 +15,9 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.argeo.ArgeoException;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapUtils;
@@ -252,7 +252,7 @@ public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames 
 			entityViewer.setItemCount(nodes.size());
 			entityViewer.refresh();
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Unable to refresh filtered list of "
+			throw new PeopleException("Unable to refresh filtered list of "
 					+ nodeType + " with filter " + filterTxt.getText(), e);
 		}
 	}

@@ -13,7 +13,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 
-import org.argeo.ArgeoException;
 import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
@@ -148,7 +147,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			}
 			return null;
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to get primary contact of type "
+			throw new PeopleException("Unable to get primary contact of type "
 					+ nodeType + " for " + entity, re);
 		}
 	}
@@ -169,7 +168,7 @@ public class PeopleJcrUtils implements PeopleNames {
 				}
 			}
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to get contact list of type "
+			throw new PeopleException("Unable to get contact list of type "
 					+ contactNodeType + " for " + entity, re);
 		}
 		return result;
@@ -234,7 +233,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			updatePrimaryCache(peopleService, parentNode, primaryChild, true);
 			return true;
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to mark " + primaryChild
+			throw new PeopleException("Unable to mark " + primaryChild
 					+ " as primary", re);
 		}
 	}
@@ -270,7 +269,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			// throw new PeopleException("We should have found current "
 			// + "node and never reach this point");
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to check primary status for "
+			throw new PeopleException("Unable to check primary status for "
 					+ primaryChild, re);
 		}
 	}
@@ -363,7 +362,7 @@ public class PeopleJcrUtils implements PeopleNames {
 				}
 			}
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to mark " + primaryChild
+			throw new PeopleException("Unable to mark " + primaryChild
 					+ " as primary", re);
 		}
 	}
@@ -429,7 +428,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			setContactNature(contact, nature, linkedOrg);
 			return contact;
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to add a new "
+			throw new PeopleException("Unable to add a new "
 					+ "contact node with value [" + value + "] on "
 					+ parentNode, re);
 		}
@@ -719,7 +718,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			return JcrUtils.mkdirs(draftParent, datePath + "drafts",
 					NodeType.NT_UNSTRUCTURED);
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Unable to get draft parent node at "
+			throw new PeopleException("Unable to get draft parent node at "
 					+ draftPath, e);
 		}
 	}

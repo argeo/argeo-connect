@@ -36,7 +36,7 @@ public class SearchNodeEditorInput implements IEditorInput {
 			this.name = nodeType;
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public Object getAdapter(Class adapter) {
 		return null;

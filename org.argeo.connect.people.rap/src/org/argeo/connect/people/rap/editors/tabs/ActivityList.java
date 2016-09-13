@@ -9,7 +9,6 @@ import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.argeo.ArgeoException;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ActivityValueCatalogs;
 import org.argeo.connect.people.PeopleException;
@@ -244,7 +243,7 @@ public class ActivityList extends LazyCTabControl {
 				}
 				getTableViewer().setInput(nodes.toArray());
 			} catch (RepositoryException e) {
-				throw new ArgeoException("Unable to list activities", e);
+				throw new PeopleException("Unable to list activities", e);
 			}
 		}
 	}

@@ -13,7 +13,6 @@ import javax.jcr.version.VersionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.ArgeoException;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
@@ -399,7 +398,7 @@ public class TagLikeListPart extends Composite {
 			part.markDirty();
 			part.refresh();
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to set " + taggablePropName
+			throw new PeopleException("Unable to set " + taggablePropName
 					+ " on " + taggable, re);
 		}
 	}

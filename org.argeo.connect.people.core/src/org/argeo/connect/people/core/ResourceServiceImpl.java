@@ -23,7 +23,6 @@ import javax.jcr.query.QueryResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -447,7 +446,7 @@ public class ResourceServiceImpl implements ResourceService {
 					return builder.toString();
 			}
 		} catch (RepositoryException e) {
-			throw new ArgeoException("Cannot get values of " + tagId
+			throw new PeopleException("Cannot get values of " + tagId
 					+ " for property " + propertyName + " of " + node, e);
 		}
 	}

@@ -7,7 +7,7 @@ import javax.naming.ldap.LdapName;
 import javax.security.auth.Subject;
 import javax.security.auth.x500.X500Principal;
 
-import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.osgi.useradmin.LdifName;
 import org.osgi.service.useradmin.Role;
 import org.osgi.service.useradmin.User;
@@ -37,7 +37,7 @@ public class UsersUtils {
 			else
 				return false;
 		} catch (InvalidNameException e) {
-			throw new ArgeoException("User " + user + " has an unvalid dn: "
+			throw new PeopleException("User " + user + " has an unvalid dn: "
 					+ userName, e);
 		}
 	}
@@ -50,7 +50,7 @@ public class UsersUtils {
 		try {
 			dn = new LdapName(name);
 		} catch (InvalidNameException e) {
-			throw new ArgeoException("Invalid user dn " + name, e);
+			throw new PeopleException("Invalid user dn " + name, e);
 		}
 		return dn;
 	}

@@ -10,7 +10,7 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
-import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
@@ -81,7 +81,7 @@ public class BaseJcrNodeLabelProvider extends ColumnLabelProvider {
 			} else
 				return "";
 		} catch (RepositoryException re) {
-			throw new ArgeoException("Unable to get text from row", re);
+			throw new PeopleException("Unable to get text from row", re);
 		}
 	}
 
@@ -101,7 +101,7 @@ public class BaseJcrNodeLabelProvider extends ColumnLabelProvider {
 		case PropertyType.DOUBLE:
 			return numberFormat.format(value.getDouble());
 		default:
-			throw new ArgeoException("Unimplemented label provider "
+			throw new PeopleException("Unimplemented label provider "
 					+ "for property type " + value.getType());
 		}
 	}
