@@ -29,7 +29,7 @@ import javax.jcr.version.VersionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.ArgeoMonitor;
+import org.argeo.jcr.JcrMonitor;
 import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ContactService;
@@ -513,7 +513,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	/** Do not use this, there is a problem with the checkPoint method */
 	@Deprecated
 	@Override
-	public long publishAll(Session session, ArgeoMonitor monitor) {
+	public long publishAll(Session session, JcrMonitor monitor) {
 		Query query;
 		long nodeNb = 0;
 		try {

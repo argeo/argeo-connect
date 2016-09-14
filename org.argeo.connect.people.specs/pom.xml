@@ -12,7 +12,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.argeo.commons</groupId>
-			<artifactId>org.argeo.security.core</artifactId>
+			<artifactId>org.argeo.jcr</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
 	</dependencies>

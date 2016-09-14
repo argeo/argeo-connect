@@ -6,7 +6,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.argeo.ArgeoMonitor;
+import org.argeo.jcr.JcrMonitor;
 
 /** Provides method interfaces to manage a people repository */
 public interface PeopleService {
@@ -163,7 +163,7 @@ public interface PeopleService {
 	 * Use with caution. Publishes all versionable Nodes that are in this
 	 * workspace and in a "checked out" state.
 	 */
-	public long publishAll(Session session, ArgeoMonitor monitor);
+	public long publishAll(Session session, JcrMonitor monitor);
 
 	/* EXPOSE THE VARIOUS BUSINESS SERVICES */
 	/** Returns the corresponding {@link PersonService} */

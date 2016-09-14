@@ -29,7 +29,7 @@
 		<!-- Also brings the CMS and the security bundles -->
 		<dependency>
 			<groupId>org.argeo.commons</groupId>
-			<artifactId>org.argeo.security.ui.admin</artifactId>
+			<artifactId>org.argeo.cms.ui.workbench.rap</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
 
