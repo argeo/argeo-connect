@@ -8,7 +8,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
 import org.apache.commons.io.IOUtils;
-import org.argeo.cms.CmsUiProvider;
+import org.argeo.cms.ui.CmsUiProvider;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;

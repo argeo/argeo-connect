@@ -7,8 +7,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 
-import org.argeo.cms.CmsUiProvider;
-import org.argeo.cms.LifeCycleUiProvider;
+import org.argeo.cms.ui.CmsUiProvider;
+import org.argeo.cms.ui.LifeCycleUiProvider;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.eclipse.swt.widgets.Composite;

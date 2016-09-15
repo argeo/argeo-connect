@@ -9,7 +9,7 @@ import javax.jcr.Node;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
-import org.argeo.cms.CmsEditable;
+import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.workbench.SecurityUiPlugin;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;

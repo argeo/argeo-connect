@@ -3,7 +3,7 @@ package org.argeo.connect.people.web.pages;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.cms.CmsUiProvider;
+import org.argeo.cms.ui.CmsUiProvider;
 import org.argeo.connect.people.web.parts.ActivitiesPart;
 import org.argeo.connect.people.web.parts.ContactsWithNotePart;
 import org.argeo.connect.people.web.parts.OrgHeaderPart;
