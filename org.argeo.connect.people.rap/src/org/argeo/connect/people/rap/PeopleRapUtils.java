@@ -10,6 +10,7 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.CmsEditable;
+import org.argeo.cms.ui.workbench.SecurityUiPlugin;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
@@ -23,7 +24,6 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
-import org.argeo.eclipse.ui.workbench.WorkbenchUiPlugin;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -72,7 +72,7 @@ public class PeopleRapUtils {
 	 * based upon argeo framework that use the workbench)
 	 */
 	public static IWorkbenchPage getActivePage() {
-		return WorkbenchUiPlugin.getDefault().getWorkbench()
+		return SecurityUiPlugin.getDefault().getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage();
 	}
 
