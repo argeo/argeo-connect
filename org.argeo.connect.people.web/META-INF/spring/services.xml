@@ -24,7 +24,7 @@
 	<!-- IMPORTANT: Enable auto magic admin login in the repository during the 
 		"init" phase -->
 	<bean
-		class="org.argeo.security.core.AuthenticatedApplicationContextInitialization">
+		class="org.argeo.cms.spring.AuthenticatedApplicationContextInitialization">
 		<property name="beanNames" ref="adminServices" />
 	</bean>
 

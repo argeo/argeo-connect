@@ -11,7 +11,7 @@
 	<beans:description>People web - Specific Bindings</beans:description>
 
 	<!-- LABEL : logs an INFO message once the bundle has been started -->
-	<beans:bean class="org.argeo.security.core.OsgiModuleLabel">
+	<beans:bean class="org.argeo.cms.spring.osgi.OsgiModuleLabel">
 		<beans:property name="bundleContext" ref="bundleContext" />
 	</beans:bean>
 
