@@ -11,9 +11,9 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
-import org.argeo.cms.CmsException;
-import org.argeo.cms.util.CmsLink;
 import org.argeo.cms.CmsUiProvider;
+import org.argeo.cms.util.CmsLink;
+import org.argeo.connect.people.PeopleException;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -29,7 +29,7 @@ public class SimpleBrowsingPage implements CmsUiProvider {
 	public Control createUi(Composite parent, Node context)
 			throws RepositoryException {
 		if (context == null)
-			throw new CmsException("Context cannot be null");
+			throw new PeopleException("Context cannot be null");
 		parent.setLayout(new GridLayout(2, false));
 
 		// parent
