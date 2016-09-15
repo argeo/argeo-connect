@@ -21,15 +21,15 @@ import javax.jcr.query.Query;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.argeo.ArgeoMonitor;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.editors.util.AbstractPeopleBasicEditor;
 import org.argeo.connect.people.rap.providers.SimpleLazyContentProvider;
 import org.argeo.connect.people.rap.util.Refreshable;
-import org.argeo.eclipse.ui.EclipseArgeoMonitor;
+import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
+import org.argeo.jcr.JcrMonitor;
 import org.argeo.security.ui.PrivilegedJob;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -139,7 +139,7 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 		}
 
 		protected IStatus doRun(IProgressMonitor progressMonitor) {
-			ArgeoMonitor monitor = new EclipseArgeoMonitor(progressMonitor);
+			JcrMonitor monitor = new EclipseJcrMonitor(progressMonitor);
 			if (monitor != null && !monitor.isCanceled())
 				monitor.beginTask("Retrieving defined node types", -1);
 

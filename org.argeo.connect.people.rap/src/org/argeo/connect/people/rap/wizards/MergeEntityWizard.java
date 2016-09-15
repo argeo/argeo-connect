@@ -12,7 +12,6 @@ import javax.jcr.query.Row;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.ArgeoMonitor;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -27,9 +26,10 @@ import org.argeo.connect.people.rap.util.Refreshable;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.util.JcrUiUtils;
-import org.argeo.eclipse.ui.EclipseArgeoMonitor;
+import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.workbench.CommandUtils;
+import org.argeo.jcr.JcrMonitor;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.security.ui.PrivilegedJob;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -366,7 +366,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 
 		protected IStatus doRun(IProgressMonitor progressMonitor) {
 			try {
-				ArgeoMonitor monitor = new EclipseArgeoMonitor(progressMonitor);
+				JcrMonitor monitor = new EclipseJcrMonitor(progressMonitor);
 				if (monitor != null && !monitor.isCanceled()) {
 					monitor.beginTask("Updating objects",
 							modifiedPathes.size() + 1);

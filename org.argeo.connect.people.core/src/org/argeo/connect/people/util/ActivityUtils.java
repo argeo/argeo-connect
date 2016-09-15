@@ -11,7 +11,6 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
-import org.argeo.ArgeoException;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -50,7 +49,7 @@ public class ActivityUtils {
 			Session session = pollable.getSession();
 
 			if (onlyOpenPolls)
-				throw new ArgeoException("Unimplemented feature");
+				throw new PeopleException("Unimplemented feature");
 
 			// XPath
 			StringBuilder builder = new StringBuilder();

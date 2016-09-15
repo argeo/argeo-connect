@@ -29,7 +29,6 @@ import javax.jcr.version.VersionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.jcr.JcrMonitor;
 import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ContactService;
@@ -49,6 +48,7 @@ import org.argeo.connect.people.util.PersonJcrUtils;
 import org.argeo.connect.people.util.RemoteJcrUtils;
 import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.jcr.JcrMonitor;
 import org.argeo.jcr.JcrUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;

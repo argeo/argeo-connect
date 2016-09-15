@@ -3,12 +3,12 @@ package org.argeo.connect.people.rap.commands;
 import javax.jcr.Repository;
 import javax.jcr.Session;
 
-import org.argeo.ArgeoMonitor;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
-import org.argeo.eclipse.ui.EclipseArgeoMonitor;
+import org.argeo.eclipse.ui.EclipseJcrMonitor;
+import org.argeo.jcr.JcrMonitor;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.security.ui.PrivilegedJob;
 import org.eclipse.core.commands.AbstractHandler;
@@ -72,7 +72,7 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 		protected IStatus doRun(IProgressMonitor progressMonitor) {
 			Session session = null;
 			try {
-				ArgeoMonitor monitor = new EclipseArgeoMonitor(progressMonitor);
+				JcrMonitor monitor = new EclipseJcrMonitor(progressMonitor);
 				if (monitor != null && !monitor.isCanceled()) {
 					monitor.beginTask("Updating objects", -1);
 

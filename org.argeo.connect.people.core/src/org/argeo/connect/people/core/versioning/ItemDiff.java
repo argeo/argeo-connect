@@ -17,7 +17,7 @@ package org.argeo.connect.people.core.versioning;
 
 import javax.jcr.Item;
 
-import org.argeo.ArgeoException;
+import org.argeo.connect.people.PeopleException;
 
 /** The result of the comparison of two JCR items. */
 public class ItemDiff {
@@ -42,22 +42,22 @@ public class ItemDiff {
 			Item observedItem) {
 		if (type == MODIFIED) {
 			if (referenceItem == null || observedItem == null)
-				throw new ArgeoException(
+				throw new PeopleException(
 						"Reference and new items must be specified.");
 		} else if (type == ADDED) {
 			if (referenceItem != null || observedItem == null)
-				throw new ArgeoException(
+				throw new PeopleException(
 						"New item and only it must be specified.");
 		} else if (type == REMOVED) {
 			if (referenceItem == null || observedItem != null)
-				throw new ArgeoException(
+				throw new PeopleException(
 						"Reference item and only it must be specified.");
 		} else {
-			throw new ArgeoException("Unkown diff type " + type);
+			throw new PeopleException("Unkown diff type " + type);
 		}
 
 		if (relPath == null)
-			throw new ArgeoException("Relative path must be specified");
+			throw new PeopleException("Relative path must be specified");
 
 		this.type = type;
 		this.relPath = relPath;
