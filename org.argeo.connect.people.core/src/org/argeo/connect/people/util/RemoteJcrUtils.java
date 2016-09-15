@@ -3,7 +3,6 @@ package org.argeo.connect.people.util;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 
 import javax.jcr.ItemNotFoundException;
@@ -12,11 +11,9 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
 import javax.jcr.PropertyType;
-import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.RepositoryFactory;
 import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
 import javax.jcr.Value;
 import javax.jcr.ValueFactory;
 import javax.jcr.nodetype.NodeType;
@@ -24,7 +21,6 @@ import javax.jcr.nodetype.NodeType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.jcr.ArgeoJcrConstants;
 import org.argeo.jcr.JcrUtils;
 
 /** Centralize convenience methods to manage a remote JCR repository */
@@ -173,12 +169,15 @@ public class RemoteJcrUtils {
 			RepositoryFactory repositoryFactory, String repoUrl,
 			String wkspName, String login, char[] pwd)
 			throws RepositoryException {
-		Hashtable<String, String> params = new Hashtable<String, String>();
-		params.put(ArgeoJcrConstants.JCR_REPOSITORY_URI, RemoteJcrUtils
-				.checkUri(repoUrl).toString());
-		Repository remoteRepo = repositoryFactory.getRepository(params);
-		SimpleCredentials sc = new SimpleCredentials(login, pwd);
-		return remoteRepo.login(sc, wkspName);
+		// Hashtable<String, String> params = new Hashtable<String, String>();
+		// params.put(ArgeoJcrConstants.JCR_REPOSITORY_URI, RemoteJcrUtils
+		// .checkUri(repoUrl).toString());
+		// Repository remoteRepo = repositoryFactory.getRepository(params);
+		// SimpleCredentials sc = new SimpleCredentials(login, pwd);
+		// return remoteRepo.login(sc, wkspName);
+		
+		return RemoteJcrUtils.getSessionOnRemote(repositoryFactory, repoUrl, wkspName, login, pwd);
+
 	}
 
 	private static URI checkUri(String repoUrl) {

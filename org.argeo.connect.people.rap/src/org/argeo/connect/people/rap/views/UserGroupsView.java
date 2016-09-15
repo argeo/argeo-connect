@@ -28,7 +28,6 @@ import org.argeo.connect.people.rap.composites.UserGroupTableComposite;
 import org.argeo.connect.people.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.rap.util.Refreshable;
 import org.argeo.connect.people.util.JcrUiUtils;
-import org.argeo.jcr.ArgeoJcrConstants;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
@@ -127,14 +126,17 @@ public class UserGroupsView extends ViewPart implements Refreshable {
 		}
 	}
 
+	@Deprecated
+	private final static String PEOPLE_BASE_PATH = "/argeo:system/argeo:people";
 	/**
 	 * Overwrite to provide an application specific base path for the user
 	 * groups
 	 * 
 	 * @return
 	 */
+	@Deprecated
 	protected String getGroupsBasePath() {
-		return ArgeoJcrConstants.PEOPLE_BASE_PATH;
+		return PEOPLE_BASE_PATH;
 	}
 
 	/* DEPENDENCY INJECTION */

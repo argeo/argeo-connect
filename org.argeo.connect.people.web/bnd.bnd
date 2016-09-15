@@ -3,4 +3,5 @@ org.springframework.core,\
 org.eclipse.rap.rwt,\
 org.eclipse.swt,\
 org.argeo.util,\
+org.argeo.node,\
 *

@@ -29,7 +29,6 @@ import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
-import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -53,7 +52,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
 /** Almost canonical implementation of a table that display entities */
-public class FilterEntitiesVirtualTable extends Composite implements ArgeoNames {
+public class FilterEntitiesVirtualTable extends Composite {
 	private static final long serialVersionUID = 1262369448445021926L;
 
 	// Context

@@ -6,7 +6,6 @@ import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
-import org.argeo.jcr.ArgeoNames;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -23,7 +22,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 /** Utility class that wraps a table viewer to display JCR rows */
-public class PeopleTableViewer extends Composite implements ArgeoNames {
+public class PeopleTableViewer extends Composite {
 	private static final long serialVersionUID = 1L;
 	private TableViewer viewer;
 	private MyViewerComparator comparator;

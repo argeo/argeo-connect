@@ -40,7 +40,6 @@ import org.argeo.connect.people.util.ActivityUtils;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -55,7 +54,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 /** Basic implementation of a table that displays both activities and tasks */
-public class ActivityTable extends Composite implements ArgeoNames {
+public class ActivityTable extends Composite {
 	private static final long serialVersionUID = 1L;
 
 	private TableViewer tableViewer;

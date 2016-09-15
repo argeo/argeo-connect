@@ -8,7 +8,6 @@ import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
-import org.argeo.jcr.ArgeoNames;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
@@ -25,7 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 
 /** Utility class that wraps a virtual table viewer to display JCR rows or nodes */
-public class VirtualJcrTableViewer extends Composite implements ArgeoNames {
+public class VirtualJcrTableViewer extends Composite {
 	// private final static Log log = LogFactory
 	// .getLog(VirtualJcrTableViewer.class);
 

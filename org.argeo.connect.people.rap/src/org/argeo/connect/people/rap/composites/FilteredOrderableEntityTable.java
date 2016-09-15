@@ -26,7 +26,6 @@ import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
-import org.argeo.jcr.ArgeoNames;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -46,8 +45,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
 /** Almost canonical implementation of a table that display entities */
-public class FilteredOrderableEntityTable extends Composite implements
-		ArgeoNames {
+public class FilteredOrderableEntityTable extends Composite {
 	// private final static Log log =
 	// LogFactory.getLog(EntityTableComposite.class);
 	private static final long serialVersionUID = 1262369448445021926L;
