@@ -30,7 +30,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
  * A composite to include in a form and that displays all administrative and
- * legal information for a given organisation
+ * legal information for a given organization
  * 
  * TODO Legacy code. Should be reviewed and enhanced.
  */
@@ -138,7 +138,7 @@ public class OrgAdminInfo extends LazyCTabControl {
 		editor.getManagedForm().addPart(notePart);
 	}
 
-	private void populateBankAccountGroup(Composite parent) {
+	private void populateBankAccountGroup(final Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		final Group group = new Group(parent, 0);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -173,10 +173,9 @@ public class OrgAdminInfo extends LazyCTabControl {
 					cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
 							false));
 				}
-				group.layout();
+				parent.layout(true, true);
 			}
 		};
-		parent.layout();
 		formPart.initialize(editor.getManagedForm());
 		editor.getManagedForm().addPart(formPart);
 	}

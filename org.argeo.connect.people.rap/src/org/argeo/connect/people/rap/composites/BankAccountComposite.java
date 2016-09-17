@@ -81,7 +81,6 @@ public class BankAccountComposite extends Composite {
 		formPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
-
 				if (!holderTxt.isDisposed()) {
 					PeopleRapUtils.refreshFormTextWidget(editor, holderTxt,
 							currAccount, PeopleNames.PEOPLE_ACCOUNT_HOLDER);
@@ -97,9 +96,14 @@ public class BankAccountComposite extends Composite {
 							currAccount, PeopleNames.PEOPLE_BIC);
 					PeopleRapUtils.refreshFormTextWidget(editor, ibanTxt,
 							currAccount, PeopleNames.PEOPLE_IBAN);
+					holderTxt.getParent().layout(true, true);
 				}
 			}
 		};
+
+		// TODO must explicitly be called because it is created by the refresh
+		// of a form part
+		formPart.refresh();
 
 		// Listeners
 		PeopleRapUtils.addModifyListener(holderTxt, currAccount,
@@ -116,10 +120,6 @@ public class BankAccountComposite extends Composite {
 				PeopleNames.PEOPLE_BIC, formPart);
 		PeopleRapUtils.addModifyListener(ibanTxt, currAccount,
 				PeopleNames.PEOPLE_IBAN, formPart);
-
-		// Superstition?
-		formPart.refresh();
-		parent.layout();
 
 		formPart.initialize(form);
 		form.addPart(formPart);

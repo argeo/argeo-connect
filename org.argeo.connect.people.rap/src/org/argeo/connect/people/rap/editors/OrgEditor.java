@@ -43,7 +43,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
 
-/** Display an organisation with corresponding details */
+/** Display an organization with corresponding details */
 public class OrgEditor extends AbstractPeopleCTabEditor {
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".orgEditor";
 

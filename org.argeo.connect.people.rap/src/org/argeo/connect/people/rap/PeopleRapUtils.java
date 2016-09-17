@@ -141,10 +141,12 @@ public class PeopleRapUtils {
 	 */
 	public static String refreshFormTextWidget(CmsEditable editable, Text text,
 			Node node, String propName) {
-		String tmpStr = JcrUiUtils.get(node, propName);
-		text.setText(tmpStr);
+		String newStr = JcrUiUtils.get(node, propName);
+		String oldStr = text.getText();
+		if (!newStr.equals(oldStr))
+			text.setText(newStr);
 		text.setEnabled(editable.isEditing());
-		return tmpStr;
+		return newStr;
 	}
 
 	/**
