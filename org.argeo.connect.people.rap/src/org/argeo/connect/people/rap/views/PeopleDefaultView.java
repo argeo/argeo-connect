@@ -13,6 +13,7 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
+import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
@@ -30,7 +31,6 @@ import org.argeo.connect.people.rap.providers.EntitySingleColumnLabelProvider;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;

@@ -21,6 +21,7 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -44,7 +45,6 @@ import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.dialogs.SingleValue;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
-import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILazyContentProvider;

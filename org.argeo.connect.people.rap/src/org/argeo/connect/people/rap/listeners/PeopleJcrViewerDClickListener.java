@@ -4,12 +4,12 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Row;
 
+import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;

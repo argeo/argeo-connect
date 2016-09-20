@@ -1,8 +1,8 @@
 package org.argeo.connect.people.rap.listeners;
 
+import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.rap.commands.OpenEntityEditor;
-import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 

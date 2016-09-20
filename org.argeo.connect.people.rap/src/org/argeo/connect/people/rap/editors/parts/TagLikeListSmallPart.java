@@ -13,6 +13,7 @@ import javax.jcr.version.VersionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
@@ -29,7 +30,6 @@ import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.eclipse.ui.workbench.CommandUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;

@@ -13,6 +13,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.Query;
 
+import org.argeo.cms.ui.workbench.util.PrivilegedJob;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -29,7 +30,6 @@ import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrMonitor;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.security.ui.PrivilegedJob;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;

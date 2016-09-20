@@ -13,12 +13,12 @@ import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 
 import org.apache.commons.io.IOUtils;
+import org.argeo.cms.ui.workbench.util.PrivilegedJob;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.rap.providers.SimpleLazyContentProvider;
 import org.argeo.connect.people.rap.util.Refreshable;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.jcr.JcrMonitor;
-import org.argeo.security.ui.PrivilegedJob;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;

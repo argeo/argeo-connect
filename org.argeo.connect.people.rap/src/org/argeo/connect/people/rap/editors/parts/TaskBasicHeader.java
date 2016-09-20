@@ -12,6 +12,7 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.argeo.cms.ui.workbench.useradmin.PickUpUserDialog;
 import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
@@ -26,7 +27,6 @@ import org.argeo.connect.people.rap.util.AbstractPanelFormPart;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.eclipse.ui.workbench.users.PickUpUserDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
