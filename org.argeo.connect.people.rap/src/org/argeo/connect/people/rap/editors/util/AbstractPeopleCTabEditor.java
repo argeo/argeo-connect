@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Control;
  * to add tabs with further details.
  */
 public abstract class AbstractPeopleCTabEditor extends
-		AbstractPeopleWithImgEditor implements IVersionedItemEditor {
+		AbstractPeopleWithImgEditor {
 
 	// Manage tab Folder
 	private CTabFolder folder;

@@ -113,8 +113,8 @@ public class ActivityList extends LazyCTabControl {
 
 		@Override
 		public void refresh() {
-			super.refresh();
 			activityTable.refresh();
+			super.refresh();
 		}
 	}
 

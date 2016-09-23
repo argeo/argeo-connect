@@ -32,7 +32,6 @@ import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -61,7 +60,7 @@ import org.eclipse.ui.services.ISourceProviderService;
  * from the header with some buttons.
  */
 public abstract class AbstractPeopleEditor extends EditorPart implements
-		CmsEditable, IVersionedItemEditor, Refreshable {
+		CmsEditable, Refreshable {
 	private final static Log log = LogFactory
 			.getLog(AbstractPeopleEditor.class);
 
@@ -202,6 +201,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
+					// Superstition? we can only be here when we can edit.
 					if (canEdit()) {
 						Map<String, String> params = new HashMap<String, String>();
 						params.put(ChangeEditingState.PARAM_NEW_STATE,
@@ -360,52 +360,70 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		return repository;
 	}
 
-	/* UTILITES */
-	/** Forces refresh of all form parts of the current editor */
-	public void forceRefresh(Object object) {
-		if (log.isTraceEnabled())
-			log.trace("Starting Editor refresh");
-		long start, tmpStart, tmpEnd;
-		start = System.currentTimeMillis();
-		for (IFormPart part : mForm.getParts()) {
-			tmpStart = System.currentTimeMillis();
-			part.refresh();
-			tmpEnd = System.currentTimeMillis();
+	// LIFE CYCLE
 
-			if (log.isTraceEnabled())
-				log.trace("FormPart " + part.getClass().getName()
-						+ " refreshed in " + (tmpEnd - tmpStart) + " ms");
+	@Override
+	public void doSave(IProgressMonitor monitor) {
+		if (canSave())
+			mForm.commit(true);
+		stopEditing();
+	}
+
+	// public void cancelAndStopEditing() {
+	// JcrUtils.discardUnderlyingSessionQuietly(node);
+	// stopEditing();
+	// }
+
+	/**
+	 * Overwrite to provide specific behaviour on save.
+	 * 
+	 * Introduced as a consequence of the use of a specific ManagedForm
+	 */
+	protected void commitInternalLinkedForm(boolean onSave) {
+		// Enable specific pre-save processing in each form part before the
+		// session.save();
+		for (IFormPart part : mForm.getParts()) {
+			if (part.isDirty())
+				part.commit(onSave);
 		}
-		tmpStart = System.currentTimeMillis();
-		main.layout(true);
-		mForm.reflow(true);
-		tmpEnd = System.currentTimeMillis();
-		if (log.isTraceEnabled()) {
-			log.trace("Layout and reflow in in " + (tmpEnd - tmpStart) + " ms");
-			log.trace("Full refresh of " + this.getClass().getName() + " in "
-					+ (tmpEnd - start) + " ms");
+		if (onSave) {
+			peopleService.saveEntity(node, true);
+			updatePartName();
 		}
 	}
 
-	public void forceRefresh() {
-		forceRefresh(null);
+	public void startEditing() {
+		if (!isEditing) {
+			isEditing = true;
+			markAllStale();
+			// Must force the refresh: the stale mechanism is broken due to the
+			// use of our twicked form.
+			forceRefresh();
+			notifyEditionStateChange();
+		}
+	}
+
+	public void stopEditing() {
+		if (isEditing) {
+			isEditing = false;
+			markAllStale();
+			forceRefresh();
+			notifyEditionStateChange();
+		}
+	}
+
+	protected void markAllStale() {
+		if (mForm != null)
+			for (IFormPart part : mForm.getParts())
+				if (part instanceof AbstractFormPart)
+					((AbstractFormPart) part).markStale();
 	}
 
 	/**
-	 * Overwrite to provide entity specific before save validation
+	 * Notify the workbench that editable status as changed in order to update
+	 * external extension (typically the toolbar buttons)
 	 */
-	protected boolean canSave() {
-		return true;
-	}
-
-	// ////////////////////////////
-	// IVersionedItemEditor methods
-
-	/** Checks whether the current user can edit the node */
-
-	/** Manage check out state and corresponding refresh of the UI */
 	protected void notifyEditionStateChange() {
-		// update enable state of the check out button
 		ISourceProviderService sourceProviderService = (ISourceProviderService) this
 				.getSite().getWorkbenchWindow()
 				.getService(ISourceProviderService.class);
@@ -413,10 +431,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 				.getSourceProvider(EditionSourceProvider.EDITING_STATE);
 		csp.setCurrentItemEditingState(canEdit(), isEditing());
 		firePropertyChange(PROP_DIRTY);
-		forceRefresh();
 	}
 
-	// Enable life cycle management
 	public Boolean isEditing() {
 		return isEditing;
 	}
@@ -431,51 +447,42 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		}
 	}
 
-	public void startEditing() {
-		if (!isEditing) {
-			isEditing = true;
-			notifyEditionStateChange();
+	/** Forces refresh of all form parts of the current editor */
+	public void forceRefresh(Object object) {
+		if (log.isTraceEnabled())
+			log.trace("Starting Editor refresh");
+		long start, lap, lapEnd, end;
+		start = System.currentTimeMillis();
+		for (IFormPart part : mForm.getParts()) {
+			lap = System.currentTimeMillis();
+			part.refresh();
+			lapEnd = System.currentTimeMillis();
+			if (log.isTraceEnabled())
+				log.trace("FormPart " + part.getClass().getName()
+						+ " refreshed in " + (lapEnd - lap) + " ms");
+		}
+		lap = System.currentTimeMillis();
+		mForm.reflow(true);
+		end = System.currentTimeMillis();
+		if (log.isTraceEnabled()) {
+			log.trace("Reflow done in " + (end - lap) + " ms");
+			log.trace("Full refresh of " + this.getClass().getName() + " in "
+					+ (end - start) + " ms");
 		}
 	}
 
-	public void stopEditing() {
-		if (isEditing) {
-			isEditing = false;
-			notifyEditionStateChange();
-		}
+	public void forceRefresh() {
+		forceRefresh(null);
 	}
 
-	public void saveAndStopEditing() {
-		try {
-			peopleService.saveEntity(node, true);
-			mForm.commit(true);
-			// TODO Why do we have to call the commit for each part.
-			// (Problematic use case might be when trying to check-in newly
-			// created versionable tags)
-			// Why is it not done automagicaly ?
-			for (IFormPart part : mForm.getParts()) {
-				part.commit(true);
-			}
-			stopEditing();
-			updatePartName();
-		} catch (PeopleException pe) {
-			MessageDialog.openError(this.getSite().getShell(),
-					"Unable to save node " + node, pe.getMessage());
-			if (log.isDebugEnabled()) {
-				log.warn("Unable to save node " + node + " - "
-						+ pe.getMessage());
-				pe.printStackTrace();
-			}
-		}
+	/**
+	 * Overwrite to provide entity specific before save validation
+	 */
+	protected boolean canSave() {
+		return true;
 	}
 
-	public void cancelAndStopEditing() {
-		JcrUtils.discardUnderlyingSessionQuietly(node);
-		stopEditing();
-	}
-
-	@Override
-	public String getlastUpdateMessage() {
+	public String getLastModifiedMessage() {
 		Node currNode = getNode();
 		StringBuilder builder = new StringBuilder();
 		try {
@@ -483,14 +490,12 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 				builder.append(JcrUiUtils.get(currNode, Property.JCR_TITLE))
 						.append(" - ");
 			}
-
 			if (currNode.isNodeType(NodeType.MIX_LAST_MODIFIED)) {
 				builder.append("Last updated on ");
 				builder.append(df.format(currNode
 						.getProperty(Property.JCR_LAST_MODIFIED).getDate()
 						.getTime()));
 				builder.append(", by ");
-
 				String lstModByDn = currNode.getProperty(
 						Property.JCR_LAST_MODIFIED_BY).getString();
 				builder.append(peopleService.getUserAdminService()
@@ -499,38 +504,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			}
 			return builder.toString();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Cannot create organizations content", re);
-		}
-	}
-
-	/** Overwrite to hide the delete button */
-	protected boolean showDeleteButton() {
-		return canEdit();
-	}
-
-	/* EDITOR LIFE CYCLE MANAGEMENT */
-	@Override
-	public void dispose() {
-		try {
-			if (node != null)
-				JcrUtils.discardUnderlyingSessionQuietly(node);
-		} finally {
-			JcrUtils.logoutQuietly(session);
-		}
-		super.dispose();
-	}
-
-	@Override
-	public void doSaveAs() {
-		// unused compulsory method
-	}
-
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-		if (canSave()) {
-			saveAndStopEditing();
-			notifyEditionStateChange();
-			firePropertyChange(PROP_DIRTY);
+			throw new PeopleException("Unable to create last "
+					+ "modified message for " + currNode, re);
 		}
 	}
 
@@ -546,12 +521,27 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	}
 
 	@Override
-	public boolean isSaveAsAllowed() {
-		return false;
+	public void dispose() {
+		try {
+			if (node != null)
+				JcrUtils.discardUnderlyingSessionQuietly(node);
+		} finally {
+			JcrUtils.logoutQuietly(session);
+		}
+		super.dispose();
 	}
 
 	@Override
 	public void setFocus() {
+	}
+
+	@Override
+	public void doSaveAs() {
+	}
+
+	@Override
+	public boolean isSaveAsAllowed() {
+		return false;
 	}
 
 	public class PeopleManagedForm extends CompositeManagedForm {
@@ -569,16 +559,17 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		 * table
 		 */
 		public void commit(boolean onSave) {
-			super.commit(onSave);
-			if (onSave) {
-				AbstractPeopleEditor.this.firePropertyChange(PROP_DIRTY);
-			}
+			commitInternalLinkedForm(onSave);
 		}
 
 		public AbstractPeopleEditor getEditor() {
 			return (AbstractPeopleEditor) getContainer();
 		}
+	}
 
+	/** Overwrite to hide the delete button */
+	protected boolean showDeleteButton() {
+		return canEdit();
 	}
 
 	/* DEPENDENCY INJECTION */

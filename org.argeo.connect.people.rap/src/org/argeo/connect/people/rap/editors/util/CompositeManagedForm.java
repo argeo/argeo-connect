@@ -207,6 +207,13 @@ class CompositeManagedForm implements IManagedForm {
 
 	@Override
 	public void staleStateChanged() {
+		// // TODO enhance stale state management: workaround to refresh active
+		// // part when stale state change
+		// for (IFormPart part : parts) {
+		// if (part.isStale()) {
+		// part.refresh();
+		// }
+		// }
 	}
 
 	@Override

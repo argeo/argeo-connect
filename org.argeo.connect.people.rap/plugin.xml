@@ -290,7 +290,7 @@
 				<visibleWhen>
 					<and>
 						<with variable="activePart">
-							<instanceof value="org.argeo.cms.CmsEditable" />
+							<instanceof value="org.argeo.cms.ui.CmsEditable" />
 						</with>
 						<with variable="org.argeo.connect.people.rap.editingState">
 							<equals value="notEditing" />
@@ -311,7 +311,7 @@
 				<visibleWhen>
 					<and>
 						<with variable="activePart">
-							<instanceof value="org.argeo.cms.CmsEditable" />
+							<instanceof value="org.argeo.cms.ui.CmsEditable" />
 						</with>
 						<with variable="org.argeo.connect.people.rap.editingState">
 							<equals value="editing" />

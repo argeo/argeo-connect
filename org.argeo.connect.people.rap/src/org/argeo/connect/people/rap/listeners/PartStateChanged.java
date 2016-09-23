@@ -6,7 +6,7 @@ import org.argeo.cms.ui.CmsEditable;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
-import org.argeo.connect.people.rap.editors.util.IVersionedItemEditor;
+import org.argeo.connect.people.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.rap.util.EditionSourceProvider;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.widgets.Display;
@@ -58,7 +58,6 @@ public class PartStateChanged implements IPartListener, IStartup {
 		if (log.isTraceEnabled())
 			log.trace("Part activated: " + part.getTitle() + " - "
 					+ part.getClass());
-
 		// Try to avoid NPE when closing the application
 		IWorkbenchPartSite site = part.getSite();
 		if (site == null)
@@ -67,25 +66,26 @@ public class PartStateChanged implements IPartListener, IStartup {
 		if (window == null)
 			return;
 
-		// Retrieve the service to enable/disable checkout button
+		// Enable/disable checkout button
 		ISourceProviderService sourceProviderService = (ISourceProviderService) window
 				.getService(ISourceProviderService.class);
 		EditionSourceProvider esp = (EditionSourceProvider) sourceProviderService
 				.getSourceProvider(EditionSourceProvider.EDITING_STATE);
-		if (part instanceof IVersionedItemEditor) {
-			IStatusLineManager manager = ((IEditorPart) part).getEditorSite()
-					.getActionBars().getStatusLineManager();
-			manager.setMessage(((IVersionedItemEditor) part)
-					.getlastUpdateMessage());
-
-		}
 		if (part instanceof CmsEditable) {
 			CmsEditable editor = (CmsEditable) part;
-
 			// Processing the ability to checkout is delegated to the editor
 			esp.setCurrentItemEditingState(editor.canEdit(), editor.isEditing());
-		} else {// force button to be disabled if another part has the focus.
+		} else
+			// force button to be disabled if another part has the focus.
 			esp.setCurrentItemEditingState(false, true);
+
+		// Update the status bar
+		if (part instanceof AbstractPeopleEditor) {
+			IStatusLineManager manager = ((IEditorPart) part).getEditorSite()
+					.getActionBars().getStatusLineManager();
+			manager.setMessage(((AbstractPeopleEditor) part)
+					.getLastModifiedMessage());
+
 		}
 	}
 
@@ -102,7 +102,7 @@ public class PartStateChanged implements IPartListener, IStartup {
 	@Override
 	public void partDeactivated(IWorkbenchPart part) {
 		// Always remove checkOut button when the editor is left.
-		if (part instanceof IVersionedItemEditor) {
+		if (part instanceof AbstractPeopleEditor) {
 			// Try to avoid NPE when closing the application
 			IWorkbenchPartSite site = part.getSite();
 			if (site == null)
