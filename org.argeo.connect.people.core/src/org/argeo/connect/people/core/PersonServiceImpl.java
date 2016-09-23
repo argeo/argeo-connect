@@ -86,7 +86,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 		Boolean useDistinctDName = JcrUiUtils.getBooleanValue(person,
 				PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 		String displayName = null;
-		JcrUiUtils.saveAndPublish(person, publish);
+		JcrUiUtils.saveAndPublish(person, false);
 
 		// Update display name cache if needed
 		if (useDistinctDName == null || !useDistinctDName) {
@@ -105,7 +105,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 
 		person = peopleService.checkPathAndMoveIfNeeded(person,
 				PeopleTypes.PEOPLE_PERSON);
-		JcrUiUtils.saveAndPublish(person, publish);
+		JcrUiUtils.saveAndPublish(person, false);
 
 		// Update cache
 		peopleService.updatePrimaryCache(person);
