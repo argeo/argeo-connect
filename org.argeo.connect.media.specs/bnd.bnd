@@ -1,4 +1,4 @@
 Require-Capability: cms.datamodel; filter:="(name=people)"
-Provide-Capability: cms.datamodel; name=media; cnd=/org/argeo/connect/media/media.cnd
+Provide-Capability: cms.datamodel; name=media; cnd=/org/argeo/connect/media/media.cnd; abstract=true
 Import-Package: javax.jcr.nodetype,\
 *
