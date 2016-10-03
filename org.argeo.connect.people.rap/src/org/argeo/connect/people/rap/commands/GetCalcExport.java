@@ -157,11 +157,10 @@ public class GetCalcExport extends AbstractHandler {
 					// Effective generation
 					callCalcGenerator(elements, cols, exportId, tmpFile);
 
+					// Call the open file command from the UI thread
 					display.asyncExec(new Runnable() {
-
 						@Override
 						public void run() {
-							// Open result file
 							Map<String, String> params = new HashMap<String, String>();
 							params.put(OpenFile.PARAM_FILE_NAME,
 									getFileName(provider));
@@ -170,7 +169,6 @@ public class GetCalcExport extends AbstractHandler {
 							CommandUtils.callCommand(
 									peopleWorkbenchService.getOpenFileCmdId(),
 									params);
-
 						}
 					});
 				}
