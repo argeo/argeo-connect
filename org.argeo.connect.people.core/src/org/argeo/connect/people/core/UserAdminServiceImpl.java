@@ -7,13 +7,13 @@ import java.util.Map;
 
 import javax.naming.ldap.LdapName;
 
-import org.argeo.cms.auth.AuthConstants;
 import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.cms.util.useradmin.UserAdminWrapper;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.util.UsersUtils;
-import org.argeo.osgi.useradmin.LdifName;
+import org.argeo.naming.LdapAttrs;
+import org.argeo.node.NodeConstants;
 import org.argeo.osgi.useradmin.UserAdminConf;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.useradmin.Authorization;
@@ -70,12 +70,12 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 	public boolean amIInRole(String rolename) {
 		// FIXME clean this
 		String dn;
-		if (rolename.startsWith(LdifName.cn.name() + "=")
-				|| rolename.startsWith(LdifName.uid.name() + "="))
+		if (rolename.startsWith(LdapAttrs.cn.name() + "=")
+				|| rolename.startsWith(LdapAttrs.uid.name() + "="))
 			dn = rolename;
 		else
-			dn = LdifName.cn.name() + "=" + rolename + ","
-					+ AuthConstants.ROLES_BASEDN;
+			dn = LdapAttrs.cn.name() + "=" + rolename + ","
+					+ NodeConstants.ROLES_BASEDN;
 
 		Role role = getUserAdmin().getRole(dn);
 		if (role == null)
@@ -119,8 +119,9 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 		return currAuth.getRoles();
 	}
 
-	private final String[] knownProps = { LdifName.cn.name(),
-			LdifName.sn.name(), LdifName.givenName.name(), LdifName.uid.name() };
+	private final String[] knownProps = { LdapAttrs.cn.name(),
+			LdapAttrs.sn.name(), LdapAttrs.givenName.name(),
+			LdapAttrs.uid.name() };
 
 	public List<User> listGroups(String filter, boolean includeUsers,
 			boolean includeSystemRoles) {
@@ -139,7 +140,7 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 			if ((includeUsers && role.getType() == Role.USER || role.getType() == Role.GROUP)
 					&& !users.contains(role)
 					&& (includeSystemRoles || !role.getName().toLowerCase()
-							.endsWith(AuthConstants.ROLES_BASEDN))) {
+							.endsWith(NodeConstants.ROLES_BASEDN))) {
 				if (doFilter) {
 					for (String prop : knownProps) {
 						Object currProp = null;
@@ -166,9 +167,9 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 
 	@Override
 	public User getUserFromLocalId(String localId) {
-		User user = getUserAdmin().getUser(LdifName.uid.name(), localId);
+		User user = getUserAdmin().getUser(LdapAttrs.uid.name(), localId);
 		if (user == null)
-			user = getUserAdmin().getUser(LdifName.cn.name(), localId);
+			user = getUserAdmin().getUser(LdapAttrs.cn.name(), localId);
 		return user;
 	}
 
@@ -182,10 +183,10 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 				.get(baseDn));
 		String dn = null;
 		if (Role.GROUP == type)
-			dn = LdifName.cn.name() + "=" + localId + ","
+			dn = LdapAttrs.cn.name() + "=" + localId + ","
 					+ UserAdminConf.groupBase.getValue(props) + "," + baseDn;
 		else if (Role.USER == type)
-			dn = LdifName.uid.name() + "=" + localId + ","
+			dn = LdapAttrs.uid.name() + "=" + localId + ","
 					+ UserAdminConf.userBase.getValue(props) + "," + baseDn;
 		else
 			throw new PeopleException("Unknown role type. "

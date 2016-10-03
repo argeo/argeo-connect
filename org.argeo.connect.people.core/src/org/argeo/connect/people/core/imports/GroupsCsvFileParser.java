@@ -9,7 +9,7 @@ import org.argeo.cms.util.useradmin.UserAdminWrapper;
 import org.argeo.connect.people.core.UserAdminServiceImpl;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.osgi.useradmin.LdifName;
+import org.argeo.naming.LdapAttrs;
 import org.argeo.util.CsvParserWithLinesAsMap;
 import org.osgi.service.useradmin.Group;
 import org.osgi.service.useradmin.Role;
@@ -49,7 +49,7 @@ public class GroupsCsvFileParser extends CsvParserWithLinesAsMap {
 					Role.GROUP);
 			Dictionary props = group.getProperties();
 			if (EclipseUiUtils.notEmpty(desc))
-				props.put(LdifName.description.name(), desc);
+				props.put(LdapAttrs.description.name(), desc);
 		}
 
 		String[] members = JcrUiUtils.parseAndClean(memberStr, ",", true);

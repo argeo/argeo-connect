@@ -1,7 +1,5 @@
 package org.argeo.connect.people.util;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -180,11 +178,11 @@ public class RemoteJcrUtils {
 
 	}
 
-	private static URI checkUri(String repoUrl) {
-		try {
-			return new URI(repoUrl);
-		} catch (URISyntaxException e) {
-			throw new PeopleException("Unvalid URI " + repoUrl, e);
-		}
-	}
+	// private static URI checkUri(String repoUrl) {
+	// try {
+	// return new URI(repoUrl);
+	// } catch (URISyntaxException e) {
+	// throw new PeopleException("Unvalid URI " + repoUrl, e);
+	// }
+	// }
 }

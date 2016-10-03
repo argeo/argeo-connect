@@ -10,7 +10,6 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.argeo.cms.auth.AuthConstants;
 import org.argeo.cms.ui.workbench.util.PrivilegedJob;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -28,7 +27,9 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrMonitor;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.osgi.useradmin.LdifName;
+import org.argeo.naming.LdapAttrs;
+import org.argeo.naming.LdapObjs;
+import org.argeo.node.NodeConstants;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -184,7 +185,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 				public Image getImage(Object element) {
 					User user = (User) element;
 					String dn = user.getName();
-					if (dn.endsWith(AuthConstants.ROLES_BASEDN))
+					if (dn.endsWith(NodeConstants.ROLES_BASEDN))
 						return PeopleRapImages.ICON_ROLE;
 					else if (user.getType() == Role.GROUP)
 						return PeopleRapImages.ICON_GROUP;
@@ -242,8 +243,8 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			body.setFocus();
 		}
 
-		private final String[] knownProps = { LdifName.uid.name(),
-				LdifName.cn.name(), LdifName.dn.name() };
+		private final String[] knownProps = { LdapAttrs.uid.name(),
+				LdapAttrs.cn.name(), LdapAttrs.DN };
 
 		private void refreshList(String filter) {
 			// List<Role> groups = userAdminService.listGroups(null);
@@ -261,16 +262,16 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 						filterBuilder.append("*)");
 					}
 
-				String typeStr = "(" + LdifName.objectClass.name() + "="
-						+ LdifName.groupOfNames.name() + ")";
+				String typeStr = "(" + LdapAttrs.objectClass.name() + "="
+						+ LdapObjs.groupOfNames.name() + ")";
 				if ((showUserBtn.getSelection()))
-					typeStr = "(|(" + LdifName.objectClass.name() + "="
-							+ LdifName.inetOrgPerson.name() + ")" + typeStr
+					typeStr = "(|(" + LdapAttrs.objectClass.name() + "="
+							+ LdapObjs.inetOrgPerson.name() + ")" + typeStr
 							+ ")";
 
 				// if (!showSystemRoleBtn.getSelection())
-				typeStr = "(& " + typeStr + "(!(" + LdifName.dn.name() + "=*"
-						+ AuthConstants.ROLES_BASEDN + ")))";
+				typeStr = "(& " + typeStr + "(!(" + LdapAttrs.DN + "=*"
+						+ NodeConstants.ROLES_BASEDN + ")))";
 
 				if (filterBuilder.length() > 1) {
 					builder.append("(&" + typeStr);

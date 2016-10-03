@@ -8,7 +8,7 @@ import javax.security.auth.Subject;
 import javax.security.auth.x500.X500Principal;
 
 import org.argeo.connect.people.PeopleException;
-import org.argeo.osgi.useradmin.LdifName;
+import org.argeo.naming.LdapAttrs;
 import org.osgi.service.useradmin.Role;
 import org.osgi.service.useradmin.User;
 import org.osgi.service.useradmin.UserAdmin;
@@ -28,7 +28,7 @@ public class UsersUtils {
 	}
 
 	final static boolean isCurrentUser(User user) {
-		String userName = getProperty(user, LdifName.uid.name());
+		String userName = getProperty(user, LdapAttrs.uid.name());
 		try {
 			LdapName selfUserName = getLdapName();
 			LdapName userLdapName = new LdapName(userName);
@@ -56,14 +56,14 @@ public class UsersUtils {
 	}
 
 	public final static User getUser(UserAdmin userAdmin, LdapName dn) {
-		User user = userAdmin.getUser(LdifName.uid.name(), dn.toString());
+		User user = userAdmin.getUser(LdapAttrs.uid.name(), dn.toString());
 		return user;
 	}
 
 	public final static String getUsername(User user) {
-		String cn = getProperty(user, LdifName.cn.name());
+		String cn = getProperty(user, LdapAttrs.cn.name());
 		if (isEmpty(cn))
-			cn = getProperty(user, LdifName.uid.name());
+			cn = getProperty(user, LdapAttrs.uid.name());
 		return cn;
 	}
 

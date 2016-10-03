@@ -22,7 +22,6 @@ import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 
-import org.argeo.cms.auth.AuthConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
@@ -30,7 +29,9 @@ import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.parts.LdifUsersTable;
-import org.argeo.osgi.useradmin.LdifName;
+import org.argeo.naming.LdapAttrs;
+import org.argeo.naming.LdapObjs;
+import org.argeo.node.NodeConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -180,8 +181,8 @@ public class PickUpGroupDialog extends TrayDialog {
 	private class MyUserTableViewer extends LdifUsersTable {
 		private static final long serialVersionUID = -2106849828614352347L;
 
-		private final String[] knownProps = { LdifName.uid.name(),
-				LdifName.cn.name(), LdifName.dn.name() };
+		private final String[] knownProps = { LdapAttrs.uid.name(),
+				LdapAttrs.cn.name(), LdapAttrs.DN };
 
 		private Button showSystemRoleBtn;
 		private Button showUserBtn;
@@ -227,16 +228,16 @@ public class PickUpGroupDialog extends TrayDialog {
 						filterBuilder.append("*)");
 					}
 
-				String typeStr = "(" + LdifName.objectClass.name() + "="
-						+ LdifName.groupOfNames.name() + ")";
+				String typeStr = "(" + LdapAttrs.objectClass.name() + "="
+						+ LdapObjs.groupOfNames.name() + ")";
 				if ((showUserBtn.getSelection()))
-					typeStr = "(|(" + LdifName.objectClass.name() + "="
-							+ LdifName.inetOrgPerson.name() + ")" + typeStr
+					typeStr = "(|(" + LdapAttrs.objectClass.name() + "="
+							+ LdapObjs.inetOrgPerson.name() + ")" + typeStr
 							+ ")";
 
 				if (!showSystemRoleBtn.getSelection())
-					typeStr = "(& " + typeStr + "(!(" + LdifName.dn.name()
-							+ "=*" + AuthConstants.ROLES_BASEDN + ")))";
+					typeStr = "(& " + typeStr + "(!(" + LdapAttrs.DN + "=*"
+							+ NodeConstants.ROLES_BASEDN + ")))";
 
 				if (filterBuilder.length() > 1) {
 					builder.append("(&" + typeStr);
@@ -292,7 +293,7 @@ public class PickUpGroupDialog extends TrayDialog {
 			User user = (User) element;
 			String dn = user.getName();
 			// if (dn.endsWith(AuthConstants.ROLES_BASEDN))
-			if (dn.matches(".*(" + AuthConstants.ROLES_BASEDN + ")"))
+			if (dn.matches(".*(" + NodeConstants.ROLES_BASEDN + ")"))
 				return PeopleRapImages.ICON_ROLE;
 			else if (user.getType() == Role.GROUP)
 				return PeopleRapImages.ICON_GROUP;
@@ -308,7 +309,7 @@ public class PickUpGroupDialog extends TrayDialog {
 		public String getText(User user) {
 			String dn = user.getName();
 			// if (dn.endsWith(AuthConstants.ROLES_BASEDN))
-			if (dn.matches(".*(" + AuthConstants.ROLES_BASEDN + ")"))
+			if (dn.matches(".*(" + NodeConstants.ROLES_BASEDN + ")"))
 				return "System roles";
 			try {
 				LdapName name;
@@ -328,8 +329,7 @@ public class PickUpGroupDialog extends TrayDialog {
 
 		@Override
 		public String getText(User user) {
-			Object obj = user.getProperties().get(
-					org.argeo.osgi.useradmin.LdifName.cn.name());
+			Object obj = user.getProperties().get(LdapAttrs.cn.name());
 			if (obj != null)
 				return (String) obj;
 			else
