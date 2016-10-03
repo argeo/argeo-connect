@@ -400,6 +400,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			// use of our twicked form.
 			forceRefresh();
 			notifyEditionStateChange();
+			main.layout(true,true);
 		}
 	}
 
@@ -409,6 +410,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			markAllStale();
 			forceRefresh();
 			notifyEditionStateChange();
+			main.layout(true,true);
 		}
 	}
 
