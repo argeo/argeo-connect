@@ -1,4 +1,4 @@
 Import-Package: javax.jcr.nodetype,\
 org.osgi.framework,\
-org.argeo.cms.auth,\
+org.argeo.node,\
 *
