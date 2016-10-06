@@ -12,7 +12,7 @@
 	<description>Real world IT</description>
 	<version>2.1.59-SNAPSHOT</version>
 	<properties>
-		<version.connect>2.1.58</version.connect>
+		<version.connect>2.1.59-SNAPSHOT</version.connect>
 		<version.argeo-tp-extras>2.1.9</version.argeo-tp-extras>
 	</properties>
 	<modules>
