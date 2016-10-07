@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.cms.util.useradmin.UserAdminWrapper;
+import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.core.UserAdminServiceImpl;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -16,15 +16,15 @@ import org.osgi.service.useradmin.Role;
 import org.osgi.service.useradmin.User;
 
 /**
- * Parse a CSV file and create corresponding groups. A UserTransaction must exists
- * and it is the caller duty to commit it afterwards
+ * Parse a CSV file and create corresponding groups. A UserTransaction must
+ * exists and it is the caller duty to commit it afterwards
  */
 public class GroupsCsvFileParser extends CsvParserWithLinesAsMap {
 	private final static Log log = LogFactory.getLog(GroupsCsvFileParser.class);
 
 	private final UserAdminServiceImpl userAdminWrapper;
 
-	public GroupsCsvFileParser(UserAdminWrapper userAdminWrapper) {
+	public GroupsCsvFileParser(UserAdminService userAdminWrapper) {
 		this.userAdminWrapper = (UserAdminServiceImpl) userAdminWrapper;
 	}
 

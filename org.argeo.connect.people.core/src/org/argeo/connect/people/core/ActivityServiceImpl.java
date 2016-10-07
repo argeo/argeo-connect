@@ -15,7 +15,6 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 
-import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ActivityValueCatalogs;
 import org.argeo.connect.people.PeopleConstants;
@@ -26,6 +25,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.util.JcrUiUtils;
+import org.argeo.connect.people.util.UserAdminUtils;
 import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -380,7 +380,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			}
 
 			Node taskNode = parentNode.addNode(taskNodeType, taskNodeType);
-			
+
 			if (notEmpty(title))
 				taskNode.setProperty(Property.JCR_TITLE, title);
 

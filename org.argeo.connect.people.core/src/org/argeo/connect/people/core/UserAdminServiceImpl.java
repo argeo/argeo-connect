@@ -2,23 +2,26 @@ package org.argeo.connect.people.core;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.naming.ldap.LdapName;
+import javax.transaction.UserTransaction;
 
-import org.argeo.cms.util.useradmin.UserAdminUtils;
-import org.argeo.cms.util.useradmin.UserAdminWrapper;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.UserAdminService;
+import org.argeo.connect.people.util.UserAdminUtils;
 import org.argeo.connect.people.util.UsersUtils;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.node.NodeConstants;
 import org.argeo.osgi.useradmin.UserAdminConf;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.useradmin.Authorization;
 import org.osgi.service.useradmin.Role;
 import org.osgi.service.useradmin.User;
+import org.osgi.service.useradmin.UserAdmin;
 
 /**
  * Canonical implementation of the people {@link UserAdminService}. Wraps
@@ -31,8 +34,11 @@ import org.osgi.service.useradmin.User;
  * <li>If sufficient rights: retrieve a given user and its information</li>
  * </ul>
  */
-public class UserAdminServiceImpl extends UserAdminWrapper implements
-		UserAdminService {
+public class UserAdminServiceImpl implements UserAdminService {
+
+	private UserAdmin userAdmin;
+	private ServiceReference<UserAdmin> userAdminServiceReference;
+	private UserTransaction userTransaction;
 
 	// CURRENT USER
 	/** Returns the current user */
@@ -173,8 +179,38 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 		return user;
 	}
 
+	@Override
 	public String buildDefaultDN(String localId, int type) {
 		return buildDistinguishedName(localId, getDefaultDomainName(), type);
+	}
+
+	@Override
+	public String getDefaultDomainName() {
+		Map<String, String> dns = getKnownBaseDns(true);
+		if (dns.size() == 1)
+			return dns.keySet().iterator().next();
+		else
+			throw new PeopleException("Current context contains " + dns.size()
+					+ " base dns: " + dns.keySet().toString()
+					+ ". Unable to chose a default one.");
+	}
+
+	public Map<String, String> getKnownBaseDns(boolean onlyWritable) {
+		Map<String, String> dns = new HashMap<String, String>();
+		for (String uri : userAdminServiceReference.getPropertyKeys()) {
+			if (!uri.startsWith("/"))
+				continue;
+			Dictionary<String, ?> props = UserAdminConf.uriAsProperties(uri);
+			String readOnly = UserAdminConf.readOnly.getValue(props);
+			String baseDn = UserAdminConf.baseDn.getValue(props);
+
+			if (onlyWritable && "true".equals(readOnly))
+				continue;
+			if (baseDn.equalsIgnoreCase(NodeConstants.ROLES_BASEDN))
+				continue;
+			dns.put(baseDn, uri);
+		}
+		return dns;
 	}
 
 	public String buildDistinguishedName(String localId, String baseDn, int type) {
@@ -194,13 +230,75 @@ public class UserAdminServiceImpl extends UserAdminWrapper implements
 		return dn;
 	}
 
-	public String getDefaultDomainName() {
-		Map<String, String> dns = getKnownBaseDns(true);
-		if (dns.size() == 1)
-			return dns.keySet().iterator().next();
-		else
-			throw new PeopleException("Current context contains " + dns.size()
-					+ " base dns: " + dns.keySet().toString()
-					+ ". Unable to chose a default one.");
+	// public String buildDefaultDN(String localId, int type) {
+	// return buildDistinguishedName(localId, getDefaultDomainName(), type);
+	// }
+
+	// public String buildDistinguishedName(String localId, String baseDn, int
+	// type) {
+	// Map<String, String> dns = getKnownBaseDns(true);
+	// Dictionary<String, ?> props = UserAdminConf.uriAsProperties(dns
+	// .get(baseDn));
+	// String dn = null;
+	// if (Role.GROUP == type)
+	// dn = LdapAttrs.cn.name() + "=" + localId + ","
+	// + UserAdminConf.groupBase.getValue(props) + "," + baseDn;
+	// else if (Role.USER == type)
+	// dn = LdapAttrs.uid.name() + "=" + localId + ","
+	// + UserAdminConf.userBase.getValue(props) + "," + baseDn;
+	// else
+	// throw new PeopleException("Unknown role type. "
+	// + "Cannot deduce dn for " + localId);
+	// return dn;
+	// }
+	//
+	// public String getDefaultDomainName() {
+	// Map<String, String> dns = getKnownBaseDns(true);
+	// if (dns.size() == 1)
+	// return dns.keySet().iterator().next();
+	// else
+	// throw new PeopleException("Current context contains " + dns.size()
+	// + " base dns: " + dns.keySet().toString()
+	// + ". Unable to chose a default one.");
+	// }
+
+	// public Map<String, String> getKnownBaseDns(boolean onlyWritable) {
+	// Map<String, String> dns = new HashMap<String, String>();
+	// for (String uri : userAdminServiceReference.getPropertyKeys()) {
+	// if (!uri.startsWith("/"))
+	// continue;
+	// Dictionary<String, ?> props = UserAdminConf.uriAsProperties(uri);
+	// String readOnly = UserAdminConf.readOnly.getValue(props);
+	// String baseDn = UserAdminConf.baseDn.getValue(props);
+	//
+	// if (onlyWritable && "true".equals(readOnly))
+	// continue;
+	// if (baseDn.equalsIgnoreCase(NodeConstants.ROLES_BASEDN))
+	// continue;
+	// dns.put(baseDn, uri);
+	// }
+	// return dns;
+	// }
+
+	public UserAdmin getUserAdmin() {
+		return userAdmin;
+	}
+
+	public UserTransaction getUserTransaction() {
+		return userTransaction;
+	}
+
+	/* DEPENDENCY INJECTION */
+	public void setUserAdmin(UserAdmin userAdmin) {
+		this.userAdmin = userAdmin;
+	}
+
+	public void setUserTransaction(UserTransaction userTransaction) {
+		this.userTransaction = userTransaction;
+	}
+
+	public void setUserAdminServiceReference(
+			ServiceReference<UserAdmin> userAdminServiceReference) {
+		this.userAdminServiceReference = userAdminServiceReference;
 	}
 }
