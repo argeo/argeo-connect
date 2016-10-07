@@ -12,7 +12,7 @@
 
 	<!-- REFERENCES -->
 	<reference id="repository" interface="javax.jcr.Repository"
-		filter="(argeo.jcr.repository.alias=people)" cardinality="0..1" />
+		filter="(cn=people)" cardinality="0..1" />
 
 	<reference id="peopleService" interface="org.argeo.connect.people.PeopleService" />
 

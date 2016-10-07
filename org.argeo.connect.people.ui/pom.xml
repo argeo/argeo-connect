@@ -23,10 +23,5 @@
 			<artifactId>org.argeo.eclipse.ui</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.argeo.commons</groupId>
-			<artifactId>org.argeo.cms.ui</artifactId>
-			<version>${version.argeo-commons}</version>
-		</dependency>
 	</dependencies>
 </project>
