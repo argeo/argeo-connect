@@ -6,7 +6,7 @@ public interface MediaNames {
 	/* GENERIC CONCEPT */
 	public final static String MAP_PROJECT_ID = "map:projectId";
 
-	// Cache some children properties to ease full text search:
+	// Cache some child properties to ease full text search:
 	// primary title info, directors...
 	// These properties are all "on parent version" ignore and are used to
 	// store primary information and thus fasten fulltextsearch
