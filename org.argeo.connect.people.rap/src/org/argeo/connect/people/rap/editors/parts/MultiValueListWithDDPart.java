@@ -47,9 +47,8 @@ public abstract class MultiValueListWithDDPart extends Composite {
 	private String propertyName;
 	private String addMsg;
 
-	public MultiValueListWithDDPart(FormToolkit toolkit, AbstractFormPart part,
-			Composite parent, int style, Node node, String propertyName,
-			String addMsg) {
+	public MultiValueListWithDDPart(FormToolkit toolkit, AbstractFormPart part, Composite parent, int style, Node node,
+			String propertyName, String addMsg) {
 		super(parent, style);
 		this.toolkit = toolkit;
 		this.part = part;
@@ -68,14 +67,11 @@ public abstract class MultiValueListWithDDPart extends Composite {
 		if (EclipseUiUtils.isEmpty(value))
 			return;
 		if (!getFilteredValues(null).contains(value))
-			errMsg = value + " is not a legal choice, "
-					+ "please correct and try again";
+			errMsg = value + " is not a legal choice, " + "please correct and try again";
 		else
-			errMsg = JcrUiUtils.addStringToMultiValuedProp(node, propertyName,
-					value);
+			errMsg = JcrUiUtils.addStringToMultiValuedProp(node, propertyName, value);
 		if (errMsg != null)
-			MessageDialog.openError(MultiValueListWithDDPart.this.getShell(),
-					"Addition not allowed", errMsg);
+			MessageDialog.openError(MultiValueListWithDDPart.this.getShell(), "Addition not allowed", errMsg);
 		else {
 			part.refresh();
 			part.markDirty();
@@ -101,8 +97,7 @@ public abstract class MultiValueListWithDDPart extends Composite {
 				for (final Value value : values) {
 					// Workaround the fact that row layout elements are top
 					// aligned
-					Composite valCmp = toolkit.createComposite(parent,
-							SWT.NO_FOCUS);
+					Composite valCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
 					GridLayout gl = PeopleUiUtils.noSpaceGridLayout(2);
 					gl.marginTop = 2;
 					valCmp.setLayout(gl);
@@ -110,12 +105,10 @@ public abstract class MultiValueListWithDDPart extends Composite {
 					// Label and delete button
 					Label label = new Label(valCmp, SWT.BOTTOM);
 					label.setText(value.getString());
-					CmsUtils.style(label,
-							PeopleStyles.PEOPLE_CLASS_ENTITY_HEADER);
+					CmsUtils.style(label, PeopleStyles.PEOPLE_CLASS_ENTITY_HEADER);
 					CmsUtils.markup(label);
 					Button deleteBtn = createDeleteButton(valCmp);
-					deleteBtn.addSelectionListener(getDeleteBtnListener(value
-							.getString()));
+					deleteBtn.addSelectionListener(getDeleteBtnListener(value.getString()));
 				}
 			}
 
@@ -126,8 +119,7 @@ public abstract class MultiValueListWithDDPart extends Composite {
 			// This does not work
 			// CmsUtils.style(tagTxt, "add_value");
 
-			final PeopleAbstractDropDown addValueDD = new AddValueDD(tagTxt,
-					SWT.READ_ONLY, true);
+			final PeopleAbstractDropDown addValueDD = new AddValueDD(tagTxt, SWT.READ_ONLY, true);
 
 			tagTxt.addTraverseListener(new TraverseListener() {
 				private static final long serialVersionUID = 1L;
@@ -144,8 +136,7 @@ public abstract class MultiValueListWithDDPart extends Composite {
 			tagTxt.getParent().layout();
 			int height = tagTxt.getSize().y;
 
-			Button okBtn = toolkit.createButton(parent, "OK", SWT.BORDER
-					| SWT.PUSH | SWT.BOTTOM);
+			Button okBtn = toolkit.createButton(parent, "OK", SWT.BORDER | SWT.PUSH | SWT.BOTTOM);
 			rd = new RowData(SWT.DEFAULT, height - 2);
 			okBtn.setLayoutData(rd);
 
@@ -159,10 +150,8 @@ public abstract class MultiValueListWithDDPart extends Composite {
 			});
 
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Unable to recreate multi value list composite "
-							+ "content for prop " + propertyName + " on "
-							+ node, e);
+			throw new PeopleException("Unable to recreate multi value list composite " + "content for prop "
+					+ propertyName + " on " + node, e);
 		}
 		parent.layout();
 	}

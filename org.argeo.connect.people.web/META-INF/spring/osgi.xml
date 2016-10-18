@@ -16,13 +16,16 @@
 	</beans:bean>
 
 	<!-- REFERENCES -->
-	<!--  define this in the client application -->
-<!-- 	<reference id="peopleRepository" interface="javax.jcr.Repository" -->
-<!-- 		filter="(argeo.jcr.repository.alias=people)" /> -->
-<!-- 	<reference id="userAdmin" interface="org.osgi.service.useradmin.UserAdmin" />  -->
-<!-- 	<reference id="userTransaction" interface="javax.transaction.UserTransaction" /> -->
+	<!-- define this in the client application -->
+	<!-- <reference id="peopleRepository" interface="javax.jcr.Repository" -->
+	<!-- filter="(argeo.jcr.repository.alias=people)" /> -->
+	<!-- <reference id="userAdmin" interface="org.osgi.service.useradmin.UserAdmin" 
+		/> -->
+	<!-- <reference id="userTransaction" interface="javax.transaction.UserTransaction" 
+		/> -->
 
 	<!-- SERVICES -->
-	<!-- The APP SPecific implementation of the People / MSM Service -->
-<!-- 	<service ref="peopleDemoService" interface="org.argeo.connect.people.PeopleService" /> -->
+	<!-- The APP SPecific implementation of the People Service -->
+	<!-- <service ref="peopleDemoService" interface="org.argeo.connect.people.PeopleService" 
+		/> -->
 </beans:beans>

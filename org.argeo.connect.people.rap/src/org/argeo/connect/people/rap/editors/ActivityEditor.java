@@ -127,7 +127,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 
 		public ActivityHeader(FormToolkit toolkit, IManagedForm form,
 				Composite parent, int style, PeopleService peopleService,
-				PeopleWorkbenchService msmWorkbenchService, Node activity) {
+				PeopleWorkbenchService peopleWorkbenchService, Node activity) {
 			super(parent, style);
 			this.toolkit = toolkit;
 			this.activity = activity;

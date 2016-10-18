@@ -35,22 +35,18 @@ import org.eclipse.ui.PartInitException;
 /** Search the repository with a given entity type */
 public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 
-	public final static String ID = PeopleRapPlugin.PLUGIN_ID
-			+ ".defaultSearchEntityEditor";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".defaultSearchEntityEditor";
 
 	// Default column
 	private List<PeopleColumnDefinition> colDefs;
 	private TagLikeDropDown tagDD;
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
 		colDefs = new ArrayList<PeopleColumnDefinition>();
-		colDefs.add(new PeopleColumnDefinition("Display Name",
-				new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
-		colDefs.add(new PeopleColumnDefinition("Tags",
-				new JcrHtmlLabelProvider(PEOPLE_TAGS), 300));
+		colDefs.add(new PeopleColumnDefinition("Display Name", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
+		colDefs.add(new PeopleColumnDefinition("Tags", new JcrHtmlLabelProvider(PEOPLE_TAGS), 300));
 	}
 
 	/** Override this to provide type specific static filters */
@@ -59,8 +55,8 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 
 		Text tagTxt = createBoldLT(body, "Tag", "",
 				"Select from list to find entities that are categorised with this tag");
-		tagDD = new TagLikeDropDown(getSession(), getPeopleService()
-				.getResourceService(), PeopleConstants.RESOURCE_TAG, tagTxt);
+		tagDD = new TagLikeDropDown(getSession(), getPeopleService().getResourceService(), PeopleConstants.RESOURCE_TAG,
+				tagTxt);
 
 		Button goBtn = new Button(body, SWT.PUSH);
 		goBtn.setText("Search");
@@ -88,69 +84,23 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 	/** Refresh the table viewer based on the free text search field */
 	protected void refreshFilteredList() {
 		try {
-			QueryManager queryManager = getSession().getWorkspace()
-					.getQueryManager();
+			QueryManager queryManager = getSession().getWorkspace().getQueryManager();
 
 			// XPath
 			StringBuilder builder = new StringBuilder();
 			builder.append("//element(*, ").append(getEntityType()).append(")");
-			String attrQuery = XPathUtils
-					.localAnd(XPathUtils.getFreeTextConstraint(getFilterText()
-							.getText()), XPathUtils.getPropertyEquals(
-							PEOPLE_TAGS, tagDD.getText()));
+			String attrQuery = XPathUtils.localAnd(XPathUtils.getFreeTextConstraint(getFilterText().getText()),
+					XPathUtils.getPropertyEquals(PEOPLE_TAGS, tagDD.getText()));
 			if (EclipseUiUtils.notEmpty(attrQuery))
 				builder.append("[").append(attrQuery).append("]");
-			builder.append(" order by @").append(PeopleNames.JCR_TITLE)
-					.append(" ascending");
-			Query query = queryManager.createQuery(builder.toString(),
-					PeopleConstants.QUERY_XPATH);
+			builder.append(" order by @").append(PeopleNames.JCR_TITLE).append(" ascending");
+			Query query = queryManager.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH);
 
-			// boolean showAll = showAllResultsBtn != null
-			// && !(showAllResultsBtn.isDisposed())
-			// && showAllResultsBtn.getSelection();
-			//
-			// if (!showAll)
-			// xpathQuery.setLimit(MsmUiConstants.SEARCH_DEFAULT_LIMIT);
-			//
-			// RowIterator xPathRit = xpathQuery.execute().getRows();
-			// if (log.isDebugEnabled()) {
-			// long end = System.currentTimeMillis();
-			// log.debug("Found: " + xPathRit.getSize() + " persons in "
-			// + (end - begin) + " ms by executing XPath query ("
-			// + xpathQueryStr + ").");
-			// }
-			//
-			//
-			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			// Selector source = factory
-			// .selector(getEntityType(), getEntityType());
-			//
-			// Constraint defaultC = getFreeTextConstraint(factory, source);
-			//
-			// // Tag
-			// String currVal = tagDD.getText();
-			// if (JcrUiUtils.checkNotEmptyString(currVal)) {
-			// StaticOperand so = factory.literal(getSession()
-			// .getValueFactory().createValue(currVal));
-			// DynamicOperand dyo = factory.propertyValue(
-			// source.getSelectorName(), );
-			// Constraint currC = factory.comparison(dyo,
-			// QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
-			// defaultC = JcrUiUtils.localAnd(factory, defaultC, currC);
-			// }
-			//
-			// // TODO handle the case where no TITLE prop is available
-			// Ordering order = factory.ascending(factory.propertyValue(
-			// source.getSelectorName(), Property.JCR_TITLE));
-			// Ordering[] orderings = { order };
-			// QueryObjectModel query = factory.createQuery(source, defaultC,
-			// orderings, null);
 			QueryResult result = query.execute();
 			Row[] rows = JcrUiUtils.rowIteratorToArray(result.getRows());
 			setViewerInput(rows);
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to list " + getEntityType()
-					+ " entities with static filter ", e);
+			throw new PeopleException("Unable to list " + getEntityType() + " entities with static filter ", e);
 		}
 	}
 

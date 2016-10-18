@@ -65,9 +65,9 @@ public class LinkListPart extends Composite implements PeopleNames {
 
 	public LinkListPart(AbstractPeopleEditor editor, AbstractFormPart formPart,
 			Composite parent, int style,
-			PeopleWorkbenchService msmWorkbenchService, Node entity,
+			PeopleWorkbenchService peopleWorkbenchService, Node entity,
 			String propName) {
-		this(editor, formPart, parent, style, msmWorkbenchService, entity,
+		this(editor, formPart, parent, style, peopleWorkbenchService, entity,
 				propName, null);
 	}
 
@@ -78,19 +78,19 @@ public class LinkListPart extends Composite implements PeopleNames {
 	 * @param formPart
 	 * @param parent
 	 * @param style
-	 * @param msmWorkbenchService
+	 * @param peopleWorkbenchService
 	 * @param entity
 	 * @param propName
 	 * @param hiddenItemIds
 	 */
 	public LinkListPart(AbstractPeopleEditor editor, AbstractFormPart formPart,
 			Composite parent, int style,
-			PeopleWorkbenchService msmWorkbenchService, Node entity,
+			PeopleWorkbenchService peopleWorkbenchService, Node entity,
 			String propName, List<String> hiddenItemIds) {
 		super(parent, style);
 		this.formPart = formPart;
 		this.editor = editor;
-		this.peopleWorkbenchService = msmWorkbenchService;
+		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.entity = entity;
 		this.propName = propName;
 
