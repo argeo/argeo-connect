@@ -652,5 +652,4 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 			PeopleWorkbenchService peopleWorkbenchService) {
 		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
-
 }

@@ -45,7 +45,6 @@ import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.util.PersonJcrUtils;
 import org.argeo.connect.people.util.RemoteJcrUtils;
-import org.argeo.connect.people.util.UserAdminUtils;
 import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrMonitor;
@@ -114,21 +113,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	@Override
 	public String getInstanceConfPath() {
 		return getBasePath(null) + "/" + PeopleNames.PEOPLE_CONF;
-	}
-
-	@Override
-	public String getCurrentUserHomePath() {
-		return getHomeBasePath() + "/"
-				+ UserAdminUtils.getCurrentUserHomeRelPath();
-	}
-
-	@Override
-	public String getUserHomePath(String dn) {
-		return getHomeBasePath() + "/" + UserAdminUtils.getHomeRelPath(dn);
-	}
-
-	protected String getHomeBasePath() {
-		return "/home";
 	}
 
 	@Override
@@ -354,7 +338,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		return getEntityByUid(session, getBasePath(null), uid);
 	}
 
-	
 	@Override
 	public Node getEntityByUid(Session session, String parentPath, String uid) {
 		if (isEmpty(uid))
@@ -398,7 +381,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		}
 	}
 
-	
 	@Override
 	public Node getEntityFromNodeReference(Node node, String propName) {
 		try {

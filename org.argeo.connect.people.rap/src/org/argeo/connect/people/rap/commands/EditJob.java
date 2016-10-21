@@ -35,8 +35,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
  */
 public class EditJob extends AbstractHandler {
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".editJob";
-	public final static ImageDescriptor DEFAULT_IMG_DESCRIPTOR = PeopleRapPlugin
-			.getImageDescriptor("icons/add.png");
+	public final static ImageDescriptor DEFAULT_IMG_DESCRIPTOR = PeopleRapPlugin.getImageDescriptor("icons/add.png");
 	public final static String PARAM_RELEVANT_NODE_JCR_ID = "param.relevantNodeJcrId";
 	public final static String PARAM_IS_BACKWARD = "param.isBackward";
 
@@ -47,8 +46,7 @@ public class EditJob extends AbstractHandler {
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
-		String relevantNodeJcrId = event
-				.getParameter(PARAM_RELEVANT_NODE_JCR_ID);
+		String relevantNodeJcrId = event.getParameter(PARAM_RELEVANT_NODE_JCR_ID);
 
 		Session session = null;
 		try {
@@ -61,28 +59,23 @@ public class EditJob extends AbstractHandler {
 			if (relevantNode.isNodeType(PeopleTypes.PEOPLE_JOB)) {
 				// Edit an existing job
 				isBackward = new Boolean(event.getParameter(PARAM_IS_BACKWARD));
-				diag = new EditJobDialog(HandlerUtil.getActiveShell(event),
-						"Edit employee information", peopleService,
+				diag = new EditJobDialog(HandlerUtil.getActiveShell(event), "Edit employee information", peopleService,
 						peopleWorkbenchService, relevantNode, null, isBackward);
 			} else {
 				// Create a new job
-				isBackward = relevantNode
-						.isNodeType(PeopleTypes.PEOPLE_ORG);
-				diag = new EditJobDialog(HandlerUtil.getActiveShell(event),
-						"Edit position", peopleService, peopleWorkbenchService, null,
-						relevantNode, isBackward);
+				isBackward = relevantNode.isNodeType(PeopleTypes.PEOPLE_ORG);
+				diag = new EditJobDialog(HandlerUtil.getActiveShell(event), "Edit position", peopleService,
+						peopleWorkbenchService, null, relevantNode, isBackward);
 			}
 
 			int result = diag.open();
 			if (result == Window.OK) {
-				IEditorPart iep = HandlerUtil.getActiveWorkbenchWindow(event)
-						.getActivePage().getActiveEditor();
+				IEditorPart iep = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().getActiveEditor();
 				if (iep != null && iep instanceof AbstractPeopleEditor)
 					((AbstractPeopleEditor) iep).forceRefresh();
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("unexpected JCR error while opening "
-					+ "editor for newly created programm", e);
+			throw new PeopleException("unexpected JCR error while opening " + "editor for newly created programm", e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}

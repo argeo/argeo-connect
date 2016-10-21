@@ -2,33 +2,34 @@ package org.argeo.connect.people;
 
 import java.util.List;
 
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.service.useradmin.Role;
 import org.osgi.service.useradmin.User;
 import org.osgi.service.useradmin.UserAdmin;
 
 /**
+ * Temporary service to communicate with the userAdmin until API are stabilised
+ * 
  * Provide method interfaces to manage user concepts without accessing directly
  * the userAdmin.
  * 
- * The correct instance of this interface is usually acquired through the
- * peopleService.
- * */
+ * @deprecated
+ * 
+ */
 public interface UserAdminService {
 
 	/* USERS */
-	/** Returns the current user */
-	public User getMyUser();
+	/** Returns the absolute path to the home node of the current user */
+	public String getCurrentUserHomePath();
 
-	/** Returns the DN of the current user */
-	public String getMyUsername();
+	/** Returns the absolute path to the home node of the current user */
+	public String getUserHomePath(String dn);
 
 	/** Lists all roles of the current user */
 	public String[] getMyRoles();
 
 	/** Returns the local uid of the current connected user */
 	public String getMyLocalName();
-
-	/** Returns the display name of the current logged in user */
-	public String getMyDisplayName();
 
 	/** Returns the e-mail of the current logged in user */
 	public String getMyMail();
@@ -40,6 +41,7 @@ public interface UserAdminService {
 	/** Returns a {@link User} given a username */
 	public User getUser(String username);
 
+	//
 	/** Can be a group or a user */
 	public String getUserDisplayName(String dn);
 
@@ -52,9 +54,13 @@ public interface UserAdminService {
 	// /** Search among defined groups */
 	// public List<Group> listGroups(String filter);
 
-	/** Search among defined groups including system roles and users if needed */
-	public List<User> listGroups(String filter, boolean includeUsers,
-			boolean includeSystemRoles);
+	/** Returns a filter list of roles */
+	public Role[] getRoles(String filter) throws InvalidSyntaxException;
+
+	/**
+	 * Search among defined groups including system roles and users if needed
+	 */
+	public List<User> listGroups(String filter, boolean includeUsers, boolean includeSystemRoles);
 
 	/* MISCELLANEOUS */
 	/** Simply returns the dn of a role given its local ID */
@@ -71,5 +77,6 @@ public interface UserAdminService {
 	public User getUserFromLocalId(String localId);
 
 	/* EXPOSE */
+	@Deprecated
 	public UserAdmin getUserAdmin();
 }

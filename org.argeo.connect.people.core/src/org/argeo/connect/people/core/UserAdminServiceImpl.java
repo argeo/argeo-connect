@@ -9,10 +9,11 @@ import java.util.Map;
 import javax.naming.ldap.LdapName;
 import javax.transaction.UserTransaction;
 
+import org.argeo.cms.auth.CurrentUser;
+import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.people.util.UserAdminUtils;
-import org.argeo.connect.people.util.UsersUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.node.NodeConstants;
 import org.argeo.osgi.useradmin.UserAdminConf;
@@ -29,7 +30,8 @@ import org.osgi.service.useradmin.UserAdmin;
  * 
  * In a *READ-ONLY* mode. We want to be able to:
  * <ul>
- * <li>Retrieve my user and corresponding information (main info, groups...)</li>
+ * <li>Retrieve my user and corresponding information (main info,
+ * groups...)</li>
  * <li>List all local groups (not the system roles)</li>
  * <li>If sufficient rights: retrieve a given user and its information</li>
  * </ul>
@@ -48,7 +50,12 @@ public class UserAdminServiceImpl implements UserAdminService {
 
 	/** Returns the DN of the current user */
 	public String getMyUsername() {
-		return UserAdminUtils.getCurrentUsername();
+		return CurrentUser.getUsername();
+	}
+
+	@Override
+	public String getMyMail() {
+		return getUserMail(CurrentUser.getUsername());
 	}
 
 	/** Lists all roles of the current user */
@@ -62,8 +69,22 @@ public class UserAdminServiceImpl implements UserAdminService {
 	}
 
 	@Override
-	public String getMyMail() {
-		return UserAdminUtils.getCurrentUserMail(getUserAdmin());
+	public String getCurrentUserHomePath() {
+		return getHomeBasePath() + "/" + UserAdminUtils.getCurrentUserHomeRelPath();
+	}
+
+	@Override
+	public String getUserHomePath(String dn) {
+		return getHomeBasePath() + "/" + UserAdminUtils.getHomeRelPath(dn);
+	}
+
+	protected String getHomeBasePath() {
+		return "/home";
+	}
+
+	@Override
+	public Role[] getRoles(String filter) throws InvalidSyntaxException {
+		return userAdmin.getRoles(filter);
 	}
 
 	/** Returns the display name of the current logged in user */
@@ -76,12 +97,10 @@ public class UserAdminServiceImpl implements UserAdminService {
 	public boolean amIInRole(String rolename) {
 		// FIXME clean this
 		String dn;
-		if (rolename.startsWith(LdapAttrs.cn.name() + "=")
-				|| rolename.startsWith(LdapAttrs.uid.name() + "="))
+		if (rolename.startsWith(LdapAttrs.cn.name() + "=") || rolename.startsWith(LdapAttrs.uid.name() + "="))
 			dn = rolename;
 		else
-			dn = LdapAttrs.cn.name() + "=" + rolename + ","
-					+ NodeConstants.ROLES_BASEDN;
+			dn = LdapAttrs.cn.name() + "=" + rolename + "," + NodeConstants.ROLES_BASEDN;
 
 		Role role = getUserAdmin().getRole(dn);
 		if (role == null)
@@ -98,7 +117,7 @@ public class UserAdminServiceImpl implements UserAdminService {
 
 	// ALL USER: WARNING access to this will be later reduced
 
-	/** Returns the current user */
+	/** Retrieve a user given his dn */
 	public User getUser(String dn) {
 		LdapName ln = UserAdminUtils.getLdapName(dn);
 		return (User) UserAdminUtils.getRole(getUserAdmin(), ln);
@@ -125,28 +144,23 @@ public class UserAdminServiceImpl implements UserAdminService {
 		return currAuth.getRoles();
 	}
 
-	private final String[] knownProps = { LdapAttrs.cn.name(),
-			LdapAttrs.sn.name(), LdapAttrs.givenName.name(),
+	private final String[] knownProps = { LdapAttrs.cn.name(), LdapAttrs.sn.name(), LdapAttrs.givenName.name(),
 			LdapAttrs.uid.name() };
 
-	public List<User> listGroups(String filter, boolean includeUsers,
-			boolean includeSystemRoles) {
+	public List<User> listGroups(String filter, boolean includeUsers, boolean includeSystemRoles) {
 
 		Role[] roles = null;
 		try {
 			roles = getUserAdmin().getRoles(null);
 		} catch (InvalidSyntaxException e) {
-			throw new PeopleException("Unable to get roles with filter: "
-					+ filter, e);
+			throw new PeopleException("Unable to get roles with filter: " + filter, e);
 		}
 
 		List<User> users = new ArrayList<User>();
-		boolean doFilter = UsersUtils.notNull(filter);
+		boolean doFilter = EclipseUiUtils.notEmpty(filter);
 		loop: for (Role role : roles) {
-			if ((includeUsers && role.getType() == Role.USER || role.getType() == Role.GROUP)
-					&& !users.contains(role)
-					&& (includeSystemRoles || !role.getName().toLowerCase()
-							.endsWith(NodeConstants.ROLES_BASEDN))) {
+			if ((includeUsers && role.getType() == Role.USER || role.getType() == Role.GROUP) && !users.contains(role)
+					&& (includeSystemRoles || !role.getName().toLowerCase().endsWith(NodeConstants.ROLES_BASEDN))) {
 				if (doFilter) {
 					for (String prop : knownProps) {
 						Object currProp = null;
@@ -156,8 +170,7 @@ public class UserAdminServiceImpl implements UserAdminService {
 							throw e;
 						}
 						if (currProp != null) {
-							String currPropStr = ((String) currProp)
-									.toLowerCase();
+							String currPropStr = ((String) currProp).toLowerCase();
 							if (currPropStr.contains(filter.toLowerCase())) {
 								users.add((User) role);
 								continue loop;
@@ -170,6 +183,12 @@ public class UserAdminServiceImpl implements UserAdminService {
 		}
 		return users;
 	}
+
+	// @Override
+	// public List<Group> listGroups(String filter) {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
 
 	@Override
 	public User getUserFromLocalId(String localId) {
@@ -190,8 +209,7 @@ public class UserAdminServiceImpl implements UserAdminService {
 		if (dns.size() == 1)
 			return dns.keySet().iterator().next();
 		else
-			throw new PeopleException("Current context contains " + dns.size()
-					+ " base dns: " + dns.keySet().toString()
+			throw new PeopleException("Current context contains " + dns.size() + " base dns: " + dns.keySet().toString()
 					+ ". Unable to chose a default one.");
 	}
 
@@ -215,18 +233,14 @@ public class UserAdminServiceImpl implements UserAdminService {
 
 	public String buildDistinguishedName(String localId, String baseDn, int type) {
 		Map<String, String> dns = getKnownBaseDns(true);
-		Dictionary<String, ?> props = UserAdminConf.uriAsProperties(dns
-				.get(baseDn));
+		Dictionary<String, ?> props = UserAdminConf.uriAsProperties(dns.get(baseDn));
 		String dn = null;
 		if (Role.GROUP == type)
-			dn = LdapAttrs.cn.name() + "=" + localId + ","
-					+ UserAdminConf.groupBase.getValue(props) + "," + baseDn;
+			dn = LdapAttrs.cn.name() + "=" + localId + "," + UserAdminConf.groupBase.getValue(props) + "," + baseDn;
 		else if (Role.USER == type)
-			dn = LdapAttrs.uid.name() + "=" + localId + ","
-					+ UserAdminConf.userBase.getValue(props) + "," + baseDn;
+			dn = LdapAttrs.uid.name() + "=" + localId + "," + UserAdminConf.userBase.getValue(props) + "," + baseDn;
 		else
-			throw new PeopleException("Unknown role type. "
-					+ "Cannot deduce dn for " + localId);
+			throw new PeopleException("Unknown role type. " + "Cannot deduce dn for " + localId);
 		return dn;
 	}
 
@@ -297,8 +311,8 @@ public class UserAdminServiceImpl implements UserAdminService {
 		this.userTransaction = userTransaction;
 	}
 
-	public void setUserAdminServiceReference(
-			ServiceReference<UserAdmin> userAdminServiceReference) {
+	public void setUserAdminServiceReference(ServiceReference<UserAdmin> userAdminServiceReference) {
 		this.userAdminServiceReference = userAdminServiceReference;
 	}
+
 }

@@ -25,11 +25,9 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * parameters.
  */
 public class RemoveEntityReference extends AbstractHandler {
-	private final static Log log = LogFactory
-			.getLog(RemoveEntityReference.class);
+	private final static Log log = LogFactory.getLog(RemoveEntityReference.class);
 
-	public final static String ID = PeopleRapPlugin.PLUGIN_ID
-			+ ".removeEntityReference";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".removeEntityReference";
 	public final static String DEFAULT_LABEL = "Delete";
 	public final static String PARAM_TOREMOVE_JCR_ID = "param.toRemoveJcrId";
 
@@ -38,11 +36,9 @@ public class RemoveEntityReference extends AbstractHandler {
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
-		String msg = "Your are about to definitively remove this reference.\n"
-				+ "Are you sure you want to proceed ?";
+		String msg = "Your are about to definitively remove this reference.\n" + "Are you sure you want to proceed ?";
 
-		boolean result = MessageDialog.openConfirm(
-				HandlerUtil.getActiveShell(event), "Confirm Deletion", msg);
+		boolean result = MessageDialog.openConfirm(HandlerUtil.getActiveShell(event), "Confirm Deletion", msg);
 
 		if (!result)
 			return null;
@@ -58,8 +54,7 @@ public class RemoveEntityReference extends AbstractHandler {
 			versionableParent = JcrUiUtils.getVersionableAncestor(toRemoveNode);
 
 			if (versionableParent == null) {
-				log.warn("Found no versionnable node in ancestors of "
-						+ toRemoveNode + "\n Simply removing.");
+				log.warn("Found no versionnable node in ancestors of " + toRemoveNode + "\n Simply removing.");
 				toRemoveNode.remove();
 				session.save();
 			} else {
@@ -76,16 +71,14 @@ public class RemoveEntityReference extends AbstractHandler {
 			errMsg.append("Unable to remove ");
 			if (toRemoveNode != null)
 				errMsg.append(toRemoveNode).append(" - ");
-			errMsg.append("JcrID: " + toRemoveJcrId).append(
-					" on parent versionnable node ");
+			errMsg.append("JcrID: " + toRemoveJcrId).append(" on parent versionnable node ");
 			if (versionableParent != null)
 				errMsg.append(versionableParent);
 			throw new PeopleException(errMsg.toString(), e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}
-		IEditorPart iep = HandlerUtil.getActiveWorkbenchWindow(event)
-				.getActivePage().getActiveEditor();
+		IEditorPart iep = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().getActiveEditor();
 		if (iep != null && iep instanceof AbstractPeopleCTabEditor)
 			((AbstractPeopleCTabEditor) iep).forceRefresh();
 		return null;

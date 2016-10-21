@@ -56,7 +56,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.useradmin.Role;
 import org.osgi.service.useradmin.User;
-import org.osgi.service.useradmin.UserAdmin;
 
 /** Dialog with a user (or group) list to pick up one */
 public class PickUpGroupDialog extends TrayDialog {
@@ -64,7 +63,7 @@ public class PickUpGroupDialog extends TrayDialog {
 
 	// Business objects
 	private final UserAdminService userAdminService;
-	private final UserAdmin userAdmin;
+	// private final UserAdmin userAdmin;
 	private User selectedUser;
 
 	// this page widgets and UI objects
@@ -82,7 +81,6 @@ public class PickUpGroupDialog extends TrayDialog {
 		super(parentShell);
 		this.title = title;
 		this.userAdminService = peopleService.getUserAdminService();
-		this.userAdmin = userAdminService.getUserAdmin();
 
 		columnDefs.add(new ColumnDefinition(new RoleIconLP(), "", 26));
 		columnDefs.add(new ColumnDefinition(new CommonNameLP(), "Common Name",
@@ -96,7 +94,6 @@ public class PickUpGroupDialog extends TrayDialog {
 		super(parentShell);
 		this.title = title;
 		this.userAdminService = peopleService.getUserAdminService();
-		this.userAdmin = userAdminService.getUserAdmin();
 		this.columnDefs = columnDefs;
 	}
 
@@ -247,7 +244,7 @@ public class PickUpGroupDialog extends TrayDialog {
 				} else {
 					builder.append(typeStr);
 				}
-				roles = userAdmin.getRoles(builder.toString());
+				roles = userAdminService.getRoles(builder.toString());
 			} catch (InvalidSyntaxException e) {
 				throw new PeopleException("Unable to get roles with filter: "
 						+ filter, e);

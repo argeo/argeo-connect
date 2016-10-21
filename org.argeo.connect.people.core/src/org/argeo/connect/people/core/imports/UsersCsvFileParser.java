@@ -7,7 +7,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.core.UserAdminServiceImpl;
-import org.argeo.connect.people.util.UserAdminUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.util.CsvParserWithLinesAsMap;
@@ -52,7 +51,7 @@ public class UsersCsvFileParser extends CsvParserWithLinesAsMap {
 		if (EclipseUiUtils.notEmpty(firstName))
 			props.put(LdapAttrs.givenName.name(), firstName);
 
-		String cn = UserAdminUtils.buildDefaultCn(firstName, lastName);
+		String cn = (firstName.trim() + " " + lastName.trim() + " ").trim();
 		if (EclipseUiUtils.notEmpty(cn))
 			props.put(LdapAttrs.cn.name(), cn);
 
