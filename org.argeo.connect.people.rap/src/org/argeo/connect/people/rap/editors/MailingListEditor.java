@@ -15,8 +15,8 @@ import javax.jcr.query.RowIterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -164,7 +164,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		titleROLbl.setLayoutData(EclipseUiUtils.fillWidth());
 
 		Link editTitleLink = null;
-		if (UserAdminUtils.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)) {
+		if (CurrentUser.isInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)) {
 			editTitleLink = new Link(parent, SWT.NONE);
 			editTitleLink.setText("<a>Edit Mailing List</a>");
 		} else

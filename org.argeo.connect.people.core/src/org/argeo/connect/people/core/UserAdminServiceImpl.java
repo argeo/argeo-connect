@@ -9,7 +9,7 @@ import java.util.Map;
 import javax.transaction.UserTransaction;
 
 import org.argeo.cms.auth.CurrentUser;
-import org.argeo.cms.util.useradmin.UserAdminUtils;
+import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.eclipse.ui.EclipseUiUtils;

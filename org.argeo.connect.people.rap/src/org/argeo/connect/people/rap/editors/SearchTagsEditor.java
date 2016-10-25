@@ -13,7 +13,7 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 
-import org.argeo.cms.util.useradmin.UserAdminUtils;
+import org.argeo.cms.auth.CurrentUser;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -243,7 +243,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 	}
 
 	private boolean canEdit() {
-		return UserAdminUtils.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN);
+		return CurrentUser.isInRole(PeopleConstants.ROLE_BUSINESS_ADMIN);
 	}
 
 	private boolean canDelete(Node currNode) {

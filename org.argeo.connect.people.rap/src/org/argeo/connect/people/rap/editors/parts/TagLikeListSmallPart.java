@@ -13,9 +13,9 @@ import javax.jcr.version.VersionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -298,7 +298,7 @@ public class TagLikeListSmallPart extends Composite {
 				if (registered == null) {
 					boolean canAdd = !"true"
 							.equals(peopleService.getConfigProperty(PeopleConstants.PEOPLE_PROP_PREVENT_TAG_ADDITION))
-							|| UserAdminUtils.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN);
+							|| CurrentUser.isInRole(PeopleConstants.ROLE_BUSINESS_ADMIN);
 					if (canAdd) {
 						// Ask end user if we create a new tag
 						msg = "\"" + newTag + "\" is not yet registered.\n Are you sure you want to create it?";

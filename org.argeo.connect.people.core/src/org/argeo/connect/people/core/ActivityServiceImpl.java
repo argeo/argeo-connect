@@ -15,7 +15,7 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 
-import org.argeo.cms.util.useradmin.UserAdminUtils;
+import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ActivityValueCatalogs;
 import org.argeo.connect.people.PeopleConstants;

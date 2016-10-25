@@ -14,8 +14,8 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
+import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -78,7 +78,7 @@ public class HistoryLog extends LazyCTabControl {
 
 		UserAdminService userService = peopleService.getUserAdminService();
 		// Add info to be able to find the node via the data explorer
-		if (UserAdminUtils.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)) {
+		if (CurrentUser.isInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)) {
 			Label label = new Label(parent, SWT.WRAP);
 			CmsUtils.markup(label);
 			GridData gd = EclipseUiUtils.fillWidth();
