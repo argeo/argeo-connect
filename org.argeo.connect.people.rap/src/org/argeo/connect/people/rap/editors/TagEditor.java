@@ -16,12 +16,12 @@ import javax.jcr.query.RowIterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
@@ -87,8 +87,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 	private Node node;
 
 	// LIFE CYCLE
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		setSite(site);
 		setInput(input);
 		EntityEditorInput sei = (EntityEditorInput) getEditorInput();
@@ -102,10 +101,8 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		// peopleUiService
 		colDefs = new ArrayList<PeopleColumnDefinition>();
 		colDefs.add(new PeopleColumnDefinition("Display Name",
-				new TitleIconRowLP(peopleWorkbenchService, null,
-						Property.JCR_TITLE), 300));
-		colDefs.add(new PeopleColumnDefinition("Tags",
-				new JcrHtmlLabelProvider(PEOPLE_TAGS), 300));
+				new TitleIconRowLP(peopleWorkbenchService, null, Property.JCR_TITLE), 300));
+		colDefs.add(new PeopleColumnDefinition("Tags", new JcrHtmlLabelProvider(PEOPLE_TAGS), 300));
 	}
 
 	protected void afterNameUpdate(String name) {
@@ -113,8 +110,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 			name = JcrUiUtils.get(node, Property.JCR_TITLE);
 		if (EclipseUiUtils.notEmpty(name)) {
 			setPartName(name);
-			((EntityEditorInput) getEditorInput())
-					.setTooltipText("List contacts tagged as " + name);
+			((EntityEditorInput) getEditorInput()).setTooltipText("List contacts tagged as " + name);
 		}
 		if (titleROLbl != null && !titleROLbl.isDisposed())
 			titleROLbl.setText(groupTitleLP.getText(node));
@@ -159,8 +155,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		titleROLbl.setLayoutData(EclipseUiUtils.fillWidth());
 
 		Link editTitleLink = null;
-		UserAdminService userService = peopleService.getUserAdminService();
-		if (userService.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)) {
+		if (UserAdminUtils.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)) {
 			editTitleLink = new Link(parent, SWT.NONE);
 			editTitleLink.setText("<a>Edit Tag</a>");
 		} else
@@ -172,12 +167,9 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
-					EditTagWizard wizard = new EditTagWizard(peopleService,
-							peopleWorkbenchService, getNode(),
-							PeopleConstants.RESOURCE_TAG,
-							PeopleNames.PEOPLE_TAGS);
-					NoProgressBarWizardDialog dialog = new NoProgressBarWizardDialog(
-							titleROLbl.getShell(), wizard);
+					EditTagWizard wizard = new EditTagWizard(peopleService, peopleWorkbenchService, getNode(),
+							PeopleConstants.RESOURCE_TAG, PeopleNames.PEOPLE_TAGS);
+					NoProgressBarWizardDialog dialog = new NoProgressBarWizardDialog(titleROLbl.getShell(), wizard);
 					dialog.open();
 				}
 			});
@@ -197,19 +189,16 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		tableComp.setLayoutData(EclipseUiUtils.fillAll());
 
 		membersViewer = createTableViewer(tableComp);
-		membersViewer.setContentProvider(new MyLazyContentProvider(
-				membersViewer));
+		membersViewer.setContentProvider(new MyLazyContentProvider(membersViewer));
 		refreshFilteredList();
 
 		// Double click
-		PeopleJcrViewerDClickListener ndcl = new PeopleJcrViewerDClickListener(
-				null, peopleWorkbenchService);
+		PeopleJcrViewerDClickListener ndcl = new PeopleJcrViewerDClickListener(null, peopleWorkbenchService);
 		membersViewer.addDoubleClickListener(ndcl);
 	}
 
 	private Text createFilterText(Composite parent) {
-		Text filterTxt = toolkit.createText(parent, "", SWT.BORDER | SWT.SEARCH
-				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+		Text filterTxt = toolkit.createText(parent, "", SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		filterTxt.addModifyListener(new ModifyListener() {
@@ -227,26 +216,21 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		long begin = System.currentTimeMillis();
 
 		try {
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
+			QueryManager queryManager = session.getWorkspace().getQueryManager();
 
-			String xpathQueryStr = XPathUtils.descendantFrom(peopleService
-					.getBasePath(null))
-					+ "//element(*, "
+			String xpathQueryStr = XPathUtils.descendantFrom(peopleService.getBasePath(null)) + "//element(*, "
 					+ PeopleTypes.PEOPLE_ENTITY + ")";
 
 			String filter = filterTxt.getText();
 			String currVal = JcrUiUtils.get(getNode(), Property.JCR_TITLE);
 
 			String freeTxtCond = XPathUtils.getFreeTextConstraint(filter);
-			String mlNamecond = XPathUtils.getPropertyEquals(PEOPLE_TAGS,
-					currVal);
+			String mlNamecond = XPathUtils.getPropertyEquals(PEOPLE_TAGS, currVal);
 			String conditions = XPathUtils.localAnd(freeTxtCond, mlNamecond);
 
 			if (EclipseUiUtils.notEmpty(conditions))
 				xpathQueryStr += "[" + conditions + "]";
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
-					PeopleConstants.QUERY_XPATH);
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr, PeopleConstants.QUERY_XPATH);
 
 			RowIterator xPathRit = xpathQuery.execute().getRows();
 			Row[] rows = JcrUiUtils.rowIteratorToArray(xPathRit);
@@ -254,23 +238,18 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 			if (log.isDebugEnabled()) {
 				long end = System.currentTimeMillis();
-				log.debug("Found: " + xPathRit.getSize() + " members for tag "
-						+ getNode() + " in " + (end - begin)
-						+ " ms by executing XPath query (" + xpathQueryStr
-						+ ").");
+				log.debug("Found: " + xPathRit.getSize() + " members for tag " + getNode() + " in " + (end - begin)
+						+ " ms by executing XPath query (" + xpathQueryStr + ").");
 			}
 
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Unable to list entities with static filter for tag "
-							+ getNode(), e);
+			throw new PeopleException("Unable to list entities with static filter for tag " + getNode(), e);
 		}
 	}
 
 	private TableViewer createTableViewer(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent,
-				SWT.MULTI, colDefs, enableBatchUpdate());
+		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent, SWT.MULTI, colDefs, enableBatchUpdate());
 		TableViewer tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 		return tableViewer;
@@ -367,8 +346,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleWorkbenchService(
-			PeopleWorkbenchService peopleWorkbenchService) {
+	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
 		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 

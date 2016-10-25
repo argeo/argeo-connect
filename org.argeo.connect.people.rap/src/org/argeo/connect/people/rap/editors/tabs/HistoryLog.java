@@ -15,6 +15,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -51,14 +52,13 @@ public class HistoryLog extends LazyCTabControl {
 	private final PeopleService peopleService;
 	// private final PeopleWorkbenchService peopleWorkbenchService;
 	private final Node entity;
-	private DateFormat dateTimeFormat = new SimpleDateFormat(
-			PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
+	private DateFormat dateTimeFormat = new SimpleDateFormat(PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
 	// this page UI Objects
 	private MyFormPart myFormPart;
 
-	public HistoryLog(Composite parent, int style, AbstractPeopleEditor editor,
-			PeopleService peopleService, Node entity) {
+	public HistoryLog(Composite parent, int style, AbstractPeopleEditor editor, PeopleService peopleService,
+			Node entity) {
 		super(parent, style);
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
@@ -78,7 +78,7 @@ public class HistoryLog extends LazyCTabControl {
 
 		UserAdminService userService = peopleService.getUserAdminService();
 		// Add info to be able to find the node via the data explorer
-		if (userService.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)) {
+		if (UserAdminUtils.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)) {
 			Label label = new Label(parent, SWT.WRAP);
 			CmsUtils.markup(label);
 			GridData gd = EclipseUiUtils.fillWidth();
@@ -100,8 +100,7 @@ public class HistoryLog extends LazyCTabControl {
 		Composite historyCmp = new Composite(parent, SWT.NONE);
 		historyCmp.setLayoutData(EclipseUiUtils.fillAll());
 		historyCmp.setLayout(new FillLayout());
-		final Text styledText = toolkit.createText(historyCmp, "", SWT.BORDER
-				| SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+		final Text styledText = toolkit.createText(historyCmp, "", SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 		myFormPart = new MyFormPart(styledText);
 		myFormPart.initialize(editor.getManagedForm());
 		editor.getManagedForm().addPart(myFormPart);
@@ -123,8 +122,7 @@ public class HistoryLog extends LazyCTabControl {
 
 	protected void refreshHistory(Text styledText) {
 		try {
-			List<VersionDiff> lst = VersionUtils.listHistoryDiff(entity,
-					VersionUtils.DEFAULT_FILTERED_OUT_PROP_NAMES);
+			List<VersionDiff> lst = VersionUtils.listHistoryDiff(entity, VersionUtils.DEFAULT_FILTERED_OUT_PROP_NAMES);
 			StringBuilder main = new StringBuilder();
 
 			for (int i = lst.size() - 1; i >= 0; i--) {
@@ -136,13 +134,10 @@ public class HistoryLog extends LazyCTabControl {
 
 				if (lst.get(i).getUserId() != null)
 					firstL.append("User : "
-							+ peopleService.getUserAdminService()
-									.getUserDisplayName(lst.get(i).getUserId())
-							+ ", ");
+							+ peopleService.getUserAdminService().getUserDisplayName(lst.get(i).getUserId()) + ", ");
 				if (lst.get(i).getUpdateTime() != null) {
 					firstL.append("Date : ");
-					firstL.append(dateTimeFormat.format(lst.get(i)
-							.getUpdateTime().getTime()));
+					firstL.append(dateTimeFormat.format(lst.get(i).getUpdateTime().getTime()));
 				}
 				firstL.append(")");
 				String fl = firstL.toString();
@@ -160,28 +155,21 @@ public class HistoryLog extends LazyCTabControl {
 					Item tmpItem = refItem == null ? newItem : refItem;
 					if (tmpItem instanceof Property)
 						if (((Property) tmpItem).isMultiple())
-							appendMultiplePropertyModif(buf,
-									(Property) newItem, (Property) refItem);
+							appendMultiplePropertyModif(buf, (Property) newItem, (Property) refItem);
 						else {
 							String refValueStr = "";
 							String newValueStr = "";
 							if (refItem != null)
-								refValueStr = getValueAsString(((Property) refItem)
-										.getValue());
+								refValueStr = getValueAsString(((Property) refItem).getValue());
 							if (newItem != null)
-								newValueStr = getValueAsString(((Property) newItem)
-										.getValue());
-							appendPropModif(buf, diff.getType(),
-									propLabel(diff.getRelPath()), refValueStr,
+								newValueStr = getValueAsString(((Property) newItem).getValue());
+							appendPropModif(buf, diff.getType(), propLabel(diff.getRelPath()), refValueStr,
 									newValueStr);
 						}
 					else { // node
-						String refStr = refItem == null ? null
-								: ((Node) refItem).getName();
-						String obsStr = newItem == null ? null
-								: ((Node) newItem).getName();
-						appendNodeModif(buf, (Node) newItem, diff.getType(),
-								diff.getRelPath(), refStr, obsStr);
+						String refStr = refItem == null ? null : ((Node) refItem).getName();
+						String obsStr = newItem == null ? null : ((Node) newItem).getName();
+						appendNodeModif(buf, (Node) newItem, diff.getType(), diff.getRelPath(), refStr, obsStr);
 					}
 				}
 				buf.append("\n");
@@ -189,8 +177,7 @@ public class HistoryLog extends LazyCTabControl {
 			}
 			styledText.setText(main.toString());
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Cannot generate history for current entity.", e);
+			throw new PeopleException("Cannot generate history for current entity.", e);
 		}
 	}
 
@@ -206,8 +193,7 @@ public class HistoryLog extends LazyCTabControl {
 		return refValueStr;
 	}
 
-	private void appendPropModif(StringBuilder buf, Integer type, String label,
-			String oldValue, String newValue) {
+	private void appendPropModif(StringBuilder buf, Integer type, String label, String oldValue, String newValue) {
 
 		if (type == ItemDiff.MODIFIED) {
 			buf.append("\t");
@@ -233,9 +219,8 @@ public class HistoryLog extends LazyCTabControl {
 		}
 	}
 
-	private void appendNodeModif(StringBuilder buf, Node node, Integer type,
-			String label, String oldValue, String newValue)
-			throws RepositoryException {
+	private void appendNodeModif(StringBuilder buf, Node node, Integer type, String label, String oldValue,
+			String newValue) throws RepositoryException {
 		if (type == PropertyDiff.MODIFIED) {
 			buf.append("Node ");
 			buf.append(label).append(" modified: ");
@@ -253,21 +238,18 @@ public class HistoryLog extends LazyCTabControl {
 	}
 
 	// Small hack to list the properties of a added sub node
-	private void appendAddedNodeProperties(StringBuilder builder, Node node,
-			int level) throws RepositoryException {
+	private void appendAddedNodeProperties(StringBuilder builder, Node node, int level) throws RepositoryException {
 		PropertyIterator pit = node.getProperties();
 		while (pit.hasNext()) {
 			Property prop = pit.nextProperty();
-			if (!VersionUtils.DEFAULT_FILTERED_OUT_PROP_NAMES.contains(prop
-					.getName())) {
+			if (!VersionUtils.DEFAULT_FILTERED_OUT_PROP_NAMES.contains(prop.getName())) {
 				String label = propLabel(prop.getName());
 				for (int i = 0; i < level; i++)
 					builder.append("\t");
 				builder.append(label).append(": ");
 				builder.append(" + ");
 				if (prop.isMultiple())
-					builder.append(JcrUiUtils.getMultiAsString(
-							prop.getParent(), prop.getName(), "; "));
+					builder.append(JcrUiUtils.getMultiAsString(prop.getParent(), prop.getName(), "; "));
 				else
 					builder.append(getValueAsString(prop.getValue()));
 				builder.append("\n");
@@ -285,8 +267,8 @@ public class HistoryLog extends LazyCTabControl {
 		}
 	}
 
-	private void appendMultiplePropertyModif(StringBuilder builder,
-			Property obsProp, Property refProp) throws RepositoryException {
+	private void appendMultiplePropertyModif(StringBuilder builder, Property obsProp, Property refProp)
+			throws RepositoryException {
 
 		Value[] refValues = null;
 		if (refProp != null)
@@ -302,9 +284,8 @@ public class HistoryLog extends LazyCTabControl {
 						if (refValue.equals(newValue))
 							continue refValues;
 					}
-				appendPropModif(builder, PropertyDiff.REMOVED,
-						propLabel(refProp.getName()),
-						getValueAsString(refValue), null);
+				appendPropModif(builder, PropertyDiff.REMOVED, propLabel(refProp.getName()), getValueAsString(refValue),
+						null);
 			}
 		if (obsProp != null)
 			newValues: for (Value newValue : newValues) {
@@ -313,8 +294,7 @@ public class HistoryLog extends LazyCTabControl {
 						if (refValue.equals(newValue))
 							continue newValues;
 					}
-				appendPropModif(builder, PropertyDiff.ADDED,
-						propLabel(obsProp.getName()), null,
+				appendPropModif(builder, PropertyDiff.ADDED, propLabel(obsProp.getName()), null,
 						getValueAsString(newValue));
 			}
 	}

@@ -16,6 +16,7 @@ import javax.jcr.query.RowIterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -67,12 +68,10 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.EditorPart;
 
 /** Editor page that displays a mailing list and its members */
-public class MailingListEditor extends EditorPart implements PeopleNames,
-		Refreshable {
+public class MailingListEditor extends EditorPart implements PeopleNames, Refreshable {
 	private final static Log log = LogFactory.getLog(MailingListEditor.class);
 
-	public final static String ID = PeopleRapPlugin.PLUGIN_ID
-			+ ".mailingListEditor";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".mailingListEditor";
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
@@ -99,8 +98,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 	private Form form;
 
 	// LIFE CYCLE
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		setSite(site);
 		setInput(input);
 		EntityEditorInput sei = (EntityEditorInput) getEditorInput();
@@ -115,12 +113,9 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		// injected peopleUiService
 		colDefs = new ArrayList<PeopleColumnDefinition>();
 		colDefs.add(new PeopleColumnDefinition("Display Name",
-				new TitleIconRowLP(peopleWorkbenchService, null,
-						Property.JCR_TITLE), 300));
-		colDefs.add(new PeopleColumnDefinition("Primary mail",
-				new JcrHtmlLabelProvider(PEOPLE_CACHE_PMAIL), 300));
-		colDefs.add(new PeopleColumnDefinition("Mailing lists",
-				new JcrHtmlLabelProvider(PEOPLE_MAILING_LISTS), 300));
+				new TitleIconRowLP(peopleWorkbenchService, null, Property.JCR_TITLE), 300));
+		colDefs.add(new PeopleColumnDefinition("Primary mail", new JcrHtmlLabelProvider(PEOPLE_CACHE_PMAIL), 300));
+		colDefs.add(new PeopleColumnDefinition("Mailing lists", new JcrHtmlLabelProvider(PEOPLE_MAILING_LISTS), 300));
 	}
 
 	protected void afterNameUpdate(String name) {
@@ -129,9 +124,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 
 		if (EclipseUiUtils.notEmpty(name)) {
 			setPartName(name);
-			((EntityEditorInput) getEditorInput())
-					.setTooltipText("List contacts referenced by Mailing List "
-							+ name);
+			((EntityEditorInput) getEditorInput()).setTooltipText("List contacts referenced by Mailing List " + name);
 		}
 		if (titleROLbl != null && !titleROLbl.isDisposed())
 			titleROLbl.setText(mlTitleLP.getText(mailingList));
@@ -171,7 +164,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		titleROLbl.setLayoutData(EclipseUiUtils.fillWidth());
 
 		Link editTitleLink = null;
-		if (userService.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)) {
+		if (UserAdminUtils.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)) {
 			editTitleLink = new Link(parent, SWT.NONE);
 			editTitleLink.setText("<a>Edit Mailing List</a>");
 		} else
@@ -184,13 +177,10 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
 
-					EditTagWizard wizard = new EditTagWizard(peopleService,
-							peopleWorkbenchService, mailingList,
-							PeopleTypes.PEOPLE_MAILING_LIST,
-							PeopleNames.PEOPLE_MAILING_LISTS);
+					EditTagWizard wizard = new EditTagWizard(peopleService, peopleWorkbenchService, mailingList,
+							PeopleTypes.PEOPLE_MAILING_LIST, PeopleNames.PEOPLE_MAILING_LISTS);
 
-					NoProgressBarWizardDialog dialog = new NoProgressBarWizardDialog(
-							titleROLbl.getShell(), wizard);
+					NoProgressBarWizardDialog dialog = new NoProgressBarWizardDialog(titleROLbl.getShell(), wizard);
 					dialog.open();
 				}
 			});
@@ -209,20 +199,16 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		// Button to launch a mail client (depending on the end user brower and
 		// system configuration), and create a new mail adding in BCC all
 		// addresses that are found from the currently displayed items
-		final Button mailToBtn = toolkit.createButton(buttonsCmp, "Mail to",
-				SWT.PUSH);
-		mailToBtn
-				.setToolTipText("Open a mail client with the mails of all "
-						+ "members of this list that fit current search already set as BCC"
-						+ " target");
+		final Button mailToBtn = toolkit.createButton(buttonsCmp, "Mail to", SWT.PUSH);
+		mailToBtn.setToolTipText("Open a mail client with the mails of all "
+				+ "members of this list that fit current search already set as BCC" + " target");
 		mailToBtn.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
 		mailToBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				UrlLauncher launcher = RWT.getClient().getService(
-						UrlLauncher.class);
+				UrlLauncher launcher = RWT.getClient().getService(UrlLauncher.class);
 				launcher.openURL("mailto:?bcc=" + getCurrentMails());
 			}
 		});
@@ -232,11 +218,9 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		tableComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		membersViewer = createTableViewer(tableComp);
-		membersViewer.setContentProvider(new MyLazyContentProvider(
-				membersViewer));
+		membersViewer.setContentProvider(new MyLazyContentProvider(membersViewer));
 		// Double click
-		PeopleJcrViewerDClickListener ndcl = new PeopleJcrViewerDClickListener(
-				null, peopleWorkbenchService);
+		PeopleJcrViewerDClickListener ndcl = new PeopleJcrViewerDClickListener(null, peopleWorkbenchService);
 		membersViewer.addDoubleClickListener(ndcl);
 
 		addFilterListener(filterTxt, membersViewer);
@@ -249,26 +233,21 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		long begin = System.currentTimeMillis();
 		try {
 
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
+			QueryManager queryManager = session.getWorkspace().getQueryManager();
 
-			String xpathQueryStr = XPathUtils.descendantFrom(peopleService
-					.getBasePath(null))
-					+ "//element(*, "
+			String xpathQueryStr = XPathUtils.descendantFrom(peopleService.getBasePath(null)) + "//element(*, "
 					+ PeopleTypes.PEOPLE_ENTITY + ")";
 
 			String filter = filterTxt.getText();
 			String currVal = JcrUiUtils.get(mailingList, Property.JCR_TITLE);
 
 			String freeTxtCond = XPathUtils.getFreeTextConstraint(filter);
-			String mlNamecond = XPathUtils.getPropertyEquals(
-					PEOPLE_MAILING_LISTS, currVal);
+			String mlNamecond = XPathUtils.getPropertyEquals(PEOPLE_MAILING_LISTS, currVal);
 			String conditions = XPathUtils.localAnd(freeTxtCond, mlNamecond);
 
 			if (EclipseUiUtils.notEmpty(conditions))
 				xpathQueryStr += "[" + conditions + "]";
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
-					PeopleConstants.QUERY_XPATH);
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr, PeopleConstants.QUERY_XPATH);
 
 			RowIterator xPathRit = xpathQuery.execute().getRows();
 			Row[] rows = JcrUiUtils.rowIteratorToArray(xPathRit);
@@ -276,15 +255,12 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 
 			if (log.isDebugEnabled()) {
 				long end = System.currentTimeMillis();
-				log.debug("Found: " + xPathRit.getSize()
-						+ " members for mailing list " + mailingList + " in "
-						+ (end - begin) + " ms by executing XPath query ("
-						+ xpathQueryStr + ").");
+				log.debug("Found: " + xPathRit.getSize() + " members for mailing list " + mailingList + " in "
+						+ (end - begin) + " ms by executing XPath query (" + xpathQueryStr + ").");
 			}
 
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to list contacts "
-					+ "for mailing list " + mailingList, e);
+			throw new PeopleException("Unable to list contacts " + "for mailing list " + mailingList, e);
 		}
 	}
 
@@ -295,8 +271,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 
 	private TableViewer createTableViewer(Composite parent) {
 		parent.setLayout(new GridLayout());
-		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent,
-				SWT.MULTI, colDefs);
+		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent, SWT.MULTI, colDefs);
 		TableViewer tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 		return tableViewer;
@@ -343,8 +318,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		try {
 			for (Row row : rows) {
 				Node node = row.getNode(); // PeopleTypes.PEOPLE_ENTITY
-				String mailValue = PeopleJcrUtils.getPrimaryContactValue(node,
-						PeopleTypes.PEOPLE_EMAIL);
+				String mailValue = PeopleJcrUtils.getPrimaryContactValue(node, PeopleTypes.PEOPLE_EMAIL);
 				if (EclipseUiUtils.notEmpty(mailValue))
 					builder.append(mailValue).append(",");
 			}
@@ -355,15 +329,13 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 	}
 
 	private Text createFilterText(Composite parent) {
-		Text filterTxt = toolkit.createText(parent, "", SWT.BORDER | SWT.SEARCH
-				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+		Text filterTxt = toolkit.createText(parent, "", SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 		return filterTxt;
 	}
 
-	private void addFilterListener(final Text filterTxt,
-			final TableViewer viewer) {
+	private void addFilterListener(final Text filterTxt, final TableViewer viewer) {
 		filterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 5003010530960334977L;
 
@@ -431,8 +403,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames,
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleWorkbenchService(
-			PeopleWorkbenchService peopleWorkbenchService) {
+	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
 		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 }

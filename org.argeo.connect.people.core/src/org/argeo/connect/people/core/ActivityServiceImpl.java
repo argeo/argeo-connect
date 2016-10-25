@@ -76,7 +76,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 		try {
 			Node activityBase = session.getNode(peopleService
 					.getBasePath(PeopleTypes.PEOPLE_ACTIVITY));
-			String localId = UserAdminUtils.getUserUid(reporterId);
+			String localId = UserAdminUtils.getUserLocalId(reporterId);
 			Node parent = JcrUtils.mkdirs(activityBase,
 					getActivityParentRelPath(session, date, localId),
 					NodeType.NT_UNSTRUCTURED);
@@ -372,7 +372,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			if (parentNode == null) {
 				Node activityBase = session.getNode(peopleService
 						.getBasePath(PeopleTypes.PEOPLE_ACTIVITY));
-				String localId = UserAdminUtils.getUserUid(reporterId);
+				String localId = UserAdminUtils.getUserLocalId(reporterId);
 				parentNode = JcrUtils
 						.mkdirs(activityBase,
 								getActivityParentRelPath(session, creationDate,

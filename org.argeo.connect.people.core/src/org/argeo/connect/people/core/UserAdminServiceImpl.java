@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.ldap.LdapName;
 import javax.transaction.UserTransaction;
 
 import org.argeo.cms.auth.CurrentUser;
@@ -42,41 +41,43 @@ public class UserAdminServiceImpl implements UserAdminService {
 	private ServiceReference<UserAdmin> userAdminServiceReference;
 	private UserTransaction userTransaction;
 
-	// CURRENT USER
-	/** Returns the current user */
-	public User getMyUser() {
-		return UserAdminUtils.getCurrentUser(getUserAdmin());
-	}
-
-	/** Returns the DN of the current user */
-	public String getMyUsername() {
-		return CurrentUser.getUsername();
-	}
-
+	// // CURRENT USER
+	// /** Returns the current user */
+	// public User getMyUser() {
+	// return UserAdminUtils.getCurrentUser(getUserAdmin());
+	// }
+	//
+	// /** Returns the DN of the current user */
+	// public String getMyUsername() {
+	// return CurrentUser.getUsername();
+	// }
+	//
 	@Override
 	public String getMyMail() {
 		return getUserMail(CurrentUser.getUsername());
 	}
+	//
+	// /** Lists all roles of the current user */
+	// public String[] getMyRoles() {
+	// return getUserRoles(getMyUsername());
+	// }
+	//
+	// /** Returns the local uid of the current connected user in this context
+	// */
+	// public String getMyLocalName() {
+	// return getMyUser().getName();
+	// }
 
-	/** Lists all roles of the current user */
-	public String[] getMyRoles() {
-		return getUserRoles(getMyUsername());
-	}
-
-	/** Returns the local uid of the current connected user in this context */
-	public String getMyLocalName() {
-		return getMyUser().getName();
-	}
-
-	@Override
-	public String getCurrentUserHomePath() {
-		return getHomeBasePath() + "/" + UserAdminUtils.getCurrentUserHomeRelPath();
-	}
-
-	@Override
-	public String getUserHomePath(String dn) {
-		return getHomeBasePath() + "/" + UserAdminUtils.getHomeRelPath(dn);
-	}
+	// @Override
+	// public String getCurrentUserHomePath() {
+	// return getHomeBasePath() + "/" +
+	// UserAdminUtils.getCurrentUserHomeRelPath();
+	// }
+	//
+	// @Override
+	// public String getUserHomePath(String dn) {
+	// return getHomeBasePath() + "/" + UserAdminUtils.getHomeRelPath(dn);
+	// }
 
 	protected String getHomeBasePath() {
 		return "/home";
@@ -87,40 +88,41 @@ public class UserAdminServiceImpl implements UserAdminService {
 		return userAdmin.getRoles(filter);
 	}
 
-	/** Returns the display name of the current logged in user */
-	public String getMyDisplayName() {
-		return getUserDisplayName(getMyUsername());
-	}
+	// /** Returns the display name of the current logged in user */
+	// public String getMyDisplayName() {
+	// return getUserDisplayName(getMyUsername());
+	// }
 
-	/** Returns true if the current user is in the specified role */
-	@Override
-	public boolean amIInRole(String rolename) {
-		// FIXME clean this
-		String dn;
-		if (rolename.startsWith(LdapAttrs.cn.name() + "=") || rolename.startsWith(LdapAttrs.uid.name() + "="))
-			dn = rolename;
-		else
-			dn = LdapAttrs.cn.name() + "=" + rolename + "," + NodeConstants.ROLES_BASEDN;
-
-		Role role = getUserAdmin().getRole(dn);
-		if (role == null)
-			return false;
-
-		String roledn = role.getName();
-
-		for (String currRole : getMyRoles()) {
-			if (roledn.equals(currRole))
-				return true;
-		}
-		return false;
-	}
+	// /** Returns true if the current user is in the specified role */
+	// @Override
+	// public boolean amIInRole(String rolename) {
+	// // FIXME clean this
+	// String dn;
+	// if (rolename.startsWith(LdapAttrs.cn.name() + "=") ||
+	// rolename.startsWith(LdapAttrs.uid.name() + "="))
+	// dn = rolename;
+	// else
+	// dn = LdapAttrs.cn.name() + "=" + rolename + "," +
+	// NodeConstants.ROLES_BASEDN;
+	//
+	// Role role = getUserAdmin().getRole(dn);
+	// if (role == null)
+	// return false;
+	//
+	// String roledn = role.getName();
+	//
+	// for (String currRole : getMyRoles()) {
+	// if (roledn.equals(currRole))
+	// return true;
+	// }
+	// return false;
+	// }
 
 	// ALL USER: WARNING access to this will be later reduced
 
 	/** Retrieve a user given his dn */
 	public User getUser(String dn) {
-		LdapName ln = UserAdminUtils.getLdapName(dn);
-		return (User) UserAdminUtils.getRole(getUserAdmin(), ln);
+		return (User) getUserAdmin().getRole(dn);
 	}
 
 	/** Can be a group or a user */
@@ -314,5 +316,4 @@ public class UserAdminServiceImpl implements UserAdminService {
 	public void setUserAdminServiceReference(ServiceReference<UserAdmin> userAdminServiceReference) {
 		this.userAdminServiceReference = userAdminServiceReference;
 	}
-
 }

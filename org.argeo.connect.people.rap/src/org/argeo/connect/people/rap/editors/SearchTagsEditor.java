@@ -13,6 +13,7 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 
+import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -60,11 +61,9 @@ import org.eclipse.ui.part.EditorPart;
  * Display a list for all values of a given tag like resource (Typically a tag
  * or a mailing list).
  */
-public class SearchTagsEditor extends EditorPart implements PeopleNames,
-		Refreshable {
+public class SearchTagsEditor extends EditorPart implements PeopleNames, Refreshable {
 
-	public final static String ID = PeopleRapPlugin.PLUGIN_ID
-			+ ".searchTagsEditor";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".searchTagsEditor";
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
@@ -85,23 +84,20 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 	private Text filterTxt;
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		setSite(site);
 		setInput(input);
 		String label = ((SearchNodeEditorInput) getEditorInput()).getName();
 		setPartName(label);
 
 		this.resourceService = peopleService.getResourceService();
-		String basePath = ((SearchNodeEditorInput) getEditorInput())
-				.getBasePath();
+		String basePath = ((SearchNodeEditorInput) getEditorInput()).getBasePath();
 		try {
 			session = JcrUiUtils.login(repository);
 			tagParent = session.getNode(basePath);
 		} catch (RepositoryException e) {
 			throw new PeopleException(
-					"Unable to retrieve tag parent with path " + basePath
-							+ "\nUnable to open search editor.", e);
+					"Unable to retrieve tag parent with path " + basePath + "\nUnable to open search editor.", e);
 		}
 		tagInstanceType = JcrUiUtils.get(tagParent, PEOPLE_TAG_INSTANCE_TYPE);
 		tagId = JcrUiUtils.get(tagParent, PEOPLE_TAG_ID);
@@ -112,16 +108,12 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		} else if (PeopleTypes.PEOPLE_MAILING_LIST.equals(tagId)) {
 			propertyName = PeopleNames.PEOPLE_MAILING_LISTS;
 		} else
-			throw new PeopleException("Unknown tag like property at base path "
-					+ basePath);
+			throw new PeopleException("Unknown tag like property at base path " + basePath);
 
-		colDefs.add(new PeopleColumnDefinition("Title",
-				new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
-		colDefs.add(new PeopleColumnDefinition("Member count",
-				new CountMemberLP(), 85));
+		colDefs.add(new PeopleColumnDefinition("Title", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
+		colDefs.add(new PeopleColumnDefinition("Member count", new CountMemberLP(), 85));
 		if (canEdit())
-			colDefs.add(new PeopleColumnDefinition("", new EditLabelProvider(),
-					80));
+			colDefs.add(new PeopleColumnDefinition("", new EditLabelProvider(), 80));
 	}
 
 	// MAIN LAYOUT
@@ -142,8 +134,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 	// Header
 	protected void populateSearchPanel(Composite parent) {
 		parent.setLayout(new GridLayout(2, false));
-		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
-				| SWT.ICON_CANCEL);
+		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 		filterTxt.addModifyListener(new ModifyListener() {
@@ -161,12 +152,10 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				AskTitleDescriptionDialog dialog = new AskTitleDescriptionDialog(
-						e.display.getActiveShell(), "Create");
+				AskTitleDescriptionDialog dialog = new AskTitleDescriptionDialog(e.display.getActiveShell(), "Create");
 				if (Dialog.OK == dialog.open()) {
 					try {
-						Node tag = resourceService.registerTag(session, tagId,
-								dialog.getTitle());
+						Node tag = resourceService.registerTag(session, tagId, dialog.getTitle());
 						String desc = dialog.getDescription();
 						if (EclipseUiUtils.notEmpty(desc))
 							tag.setProperty(Property.JCR_DESCRIPTION, desc);
@@ -176,8 +165,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 							session.save();
 						refreshStaticFilteredList();
 					} catch (RepositoryException re) {
-						throw new PeopleException("Unable to create new "
-								+ propertyName, re);
+						throw new PeopleException("Unable to create new " + propertyName, re);
 					}
 				}
 			}
@@ -186,31 +174,25 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 
 	protected void createListPart(Composite parent) {
 		parent.setLayout(new GridLayout());
-		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent,
-				SWT.MULTI, colDefs);
+		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent, SWT.MULTI, colDefs);
 		tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
-		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-				null, peopleWorkbenchService));
+		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(null, peopleWorkbenchService));
 		tableViewer.getTable().addSelectionListener(new HtmlRwtAdapter());
 	}
 
 	/** Refresh the table viewer based on the free text search field */
 	protected void refreshStaticFilteredList() {
 		try {
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
-			String queryStr = XPathUtils.descendantFrom(peopleService
-					.getBasePath(PeopleConstants.PEOPLE_RESOURCE))
+			QueryManager queryManager = session.getWorkspace().getQueryManager();
+			String queryStr = XPathUtils.descendantFrom(peopleService.getBasePath(PeopleConstants.PEOPLE_RESOURCE))
 					+ "//element(*, " + tagInstanceType + ")";
-			String attrQuery = XPathUtils.getFreeTextConstraint(filterTxt
-					.getText());
+			String attrQuery = XPathUtils.getFreeTextConstraint(filterTxt.getText());
 			if (EclipseUiUtils.notEmpty(attrQuery))
 				queryStr += "[" + attrQuery + "]";
 			// always order ?
 			queryStr += " order by @" + PeopleNames.JCR_TITLE;
-			Query query = queryManager.createQuery(queryStr,
-					PeopleConstants.QUERY_XPATH);
+			Query query = queryManager.createQuery(queryStr, PeopleConstants.QUERY_XPATH);
 			NodeIterator nit = query.execute().getNodes();
 			Node[] nodes = JcrUiUtils.nodeIteratorToArray(nit);
 			setViewerInput(nodes);
@@ -248,24 +230,20 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 				String jcrId = currNode.getIdentifier();
 				StringBuilder builder = new StringBuilder();
 				if (canEdit())
-					builder.append("<a " + PeopleRapConstants.PEOPLE_STYLE_LINK
-							+ " href=\"edit/" + jcrId
+					builder.append("<a " + PeopleRapConstants.PEOPLE_STYLE_LINK + " href=\"edit/" + jcrId
 							+ "\" target=\"_rwt\">Edit</a> ");
 				if (canDelete(currNode))
-					builder.append("<a " + PeopleRapConstants.PEOPLE_STYLE_LINK
-							+ " href=\"delete/" + jcrId
+					builder.append("<a " + PeopleRapConstants.PEOPLE_STYLE_LINK + " href=\"delete/" + jcrId
 							+ "\" target=\"_rwt\">Delete</a> ");
 				return builder.toString();
 			} catch (RepositoryException re) {
-				throw new PeopleException(
-						"Unable to create edit/remove link for " + currNode, re);
+				throw new PeopleException("Unable to create edit/remove link for " + currNode, re);
 			}
 		}
 	}
 
 	private boolean canEdit() {
-		return peopleService.getUserAdminService().amIInRole(
-				PeopleConstants.ROLE_BUSINESS_ADMIN);
+		return UserAdminUtils.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN);
 	}
 
 	private boolean canDelete(Node currNode) {
@@ -284,23 +262,18 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 					Node node = session.getNodeByIdentifier(token[1]);
 
 					if ("edit".equals(token[0])) {
-						Wizard wizard = new EditTagWizard(peopleService,
-								peopleWorkbenchService, node, tagId,
+						Wizard wizard = new EditTagWizard(peopleService, peopleWorkbenchService, node, tagId,
 								propertyName);
-						WizardDialog dialog = new WizardDialog(
-								event.display.getActiveShell(), wizard);
+						WizardDialog dialog = new WizardDialog(event.display.getActiveShell(), wizard);
 						int result = dialog.open();
 						if (result == WizardDialog.OK) {
 							refreshStaticFilteredList();
 						}
 					} else {
 						if (canDelete(node)) { // Superstition
-							String msg = "Are you sure you want to delete \""
-									+ JcrUiUtils.get(node, Property.JCR_TITLE)
+							String msg = "Are you sure you want to delete \"" + JcrUiUtils.get(node, Property.JCR_TITLE)
 									+ "\" ?";
-							if (MessageDialog.openConfirm(
-									event.display.getActiveShell(),
-									"Confirm deletion", msg)) {
+							if (MessageDialog.openConfirm(event.display.getActiveShell(), "Confirm deletion", msg)) {
 								JcrUiUtils.checkCOStatusBeforeUpdate(node);
 								session.removeItem(node.getPath());
 								session.save();
@@ -309,8 +282,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 						}
 					}
 				} catch (RepositoryException re) {
-					throw new PeopleException(
-							"unable to retrieve Node with ID " + token[1], re);
+					throw new PeopleException("unable to retrieve Node with ID " + token[1], re);
 				}
 			}
 		}
@@ -337,8 +309,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames,
 		this.repository = repository;
 	}
 
-	public void setPeopleWorkbenchService(
-			PeopleWorkbenchService peopleWorkbenchService) {
+	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
 		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 

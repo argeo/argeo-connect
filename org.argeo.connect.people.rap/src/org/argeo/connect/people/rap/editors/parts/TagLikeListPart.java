@@ -15,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.util.useradmin.UserAdminUtils;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -90,10 +91,9 @@ public class TagLikeListPart extends Composite {
 	 * @param tagId
 	 * @param newTagMsg
 	 */
-	public TagLikeListPart(AbstractPeopleEditor editor, Composite parent,
-			int style, PeopleService peopleService,
-			PeopleWorkbenchService peopleWorkbenchService, String tagId,
-			Node taggable, String taggablePropName, String newTagMsg) {
+	public TagLikeListPart(AbstractPeopleEditor editor, Composite parent, int style, PeopleService peopleService,
+			PeopleWorkbenchService peopleWorkbenchService, String tagId, Node taggable, String taggablePropName,
+			String newTagMsg) {
 		super(parent, style);
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
@@ -136,13 +136,11 @@ public class TagLikeListPart extends Composite {
 				try {
 					Session session = taggable.getSession();
 					if (session.hasPendingChanges()) {
-						log.warn("Session have been saved before commit "
-								+ "of newly created tags when saving node "
+						log.warn("Session have been saved before commit " + "of newly created tags when saving node "
 								+ taggable);
 						session.save();
 					}
-					VersionManager manager = session.getWorkspace()
-							.getVersionManager();
+					VersionManager manager = session.getWorkspace().getVersionManager();
 					for (String path : createdTagPath) {
 						Node newTag = session.getNode(path);
 						if (newTag.isCheckedOut()) {
@@ -151,9 +149,7 @@ public class TagLikeListPart extends Composite {
 					}
 					createdTagPath.clear();
 				} catch (RepositoryException re) {
-					throw new PeopleException(
-							"Error while committing tagrefreshing tag like list for "
-									+ taggable, re);
+					throw new PeopleException("Error while committing tagrefreshing tag like list for " + taggable, re);
 				}
 			}
 			super.commit(onSave);
@@ -171,54 +167,41 @@ public class TagLikeListPart extends Composite {
 
 			try {
 				if (taggable.hasProperty(taggablePropName)) {
-					Value[] values = taggable.getProperty(taggablePropName)
-							.getValues();
+					Value[] values = taggable.getProperty(taggablePropName).getValues();
 					for (final Value value : values) {
 						final String tagValue = value.getString();
 
-						Composite tagCmp = toolkit.createComposite(parentCmp,
-								SWT.NO_FOCUS);
+						Composite tagCmp = toolkit.createComposite(parentCmp, SWT.NO_FOCUS);
 						tagCmp.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 						Link link = new Link(tagCmp, SWT.NONE);
 
 						link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 						if (taggablePropName.equals(PeopleNames.PEOPLE_TAGS))
 							link.setText(" #<a>" + tagValue + "</a>");
-						else if (taggablePropName
-								.equals(PeopleNames.PEOPLE_MAILING_LISTS))
+						else if (taggablePropName.equals(PeopleNames.PEOPLE_MAILING_LISTS))
 							link.setText(" @<a>" + tagValue + "</a>");
 						else
 							link.setText(" <a>" + tagValue + "</a>");
 
-						CmsUtils.style(link,
-								PeopleStyles.PEOPLE_CLASS_ENTITY_HEADER);
+						CmsUtils.style(link, PeopleStyles.PEOPLE_CLASS_ENTITY_HEADER);
 						link.addSelectionListener(new SelectionAdapter() {
 							private static final long serialVersionUID = 1L;
 
 							@Override
-							public void widgetSelected(
-									final SelectionEvent event) {
-								Node tag = peopleService.getResourceService()
-										.getRegisteredTag(tagParent, tagValue);
+							public void widgetSelected(final SelectionEvent event) {
+								Node tag = peopleService.getResourceService().getRegisteredTag(tagParent, tagValue);
 
 								try {
 									if (createdTagPath.contains(tag.getPath())) {
 										String msg = "This category is still in a draft state.\n"
 												+ "Please save first.";
-										MessageDialog.openInformation(
-												parentCmp.getShell(),
-												"Forbidden action", msg);
+										MessageDialog.openInformation(parentCmp.getShell(), "Forbidden action", msg);
 									} else
-										CommandUtils.callCommand(
-												peopleWorkbenchService
-														.getOpenEntityEditorCmdId(),
-												OpenEntityEditor.PARAM_JCR_ID,
-												JcrUiUtils.getIdentifier(tag));
+										CommandUtils.callCommand(peopleWorkbenchService.getOpenEntityEditorCmdId(),
+												OpenEntityEditor.PARAM_JCR_ID, JcrUiUtils.getIdentifier(tag));
 								} catch (RepositoryException e) {
-									throw new PeopleException(
-											"unable to get path for resource tag node "
-													+ tag + " while editing "
-													+ taggable, e);
+									throw new PeopleException("unable to get path for resource tag node " + tag
+											+ " while editing " + taggable, e);
 								}
 							}
 						});
@@ -229,14 +212,12 @@ public class TagLikeListPart extends Composite {
 					}
 				}
 				if (isCO) {
-					final Text tagTxt = toolkit.createText(parentCmp, "",
-							SWT.BORDER);
+					final Text tagTxt = toolkit.createText(parentCmp, "", SWT.BORDER);
 					tagTxt.setMessage(newTagMsg);
 					RowData rd = new RowData(120, SWT.DEFAULT);
 					tagTxt.setLayoutData(rd);
 
-					final TagLikeDropDown tagDD = new TagLikeDropDown(
-							taggable.getSession(),
+					final TagLikeDropDown tagDD = new TagLikeDropDown(taggable.getSession(),
 							peopleService.getResourceService(), tagId, tagTxt);
 
 					tagTxt.addTraverseListener(new TraverseListener() {
@@ -245,8 +226,7 @@ public class TagLikeListPart extends Composite {
 						public void keyTraversed(TraverseEvent e) {
 							if (e.keyCode == SWT.CR) {
 								String newTag = tagDD.getText();
-								addTag(tagTxt.getShell(), TagFormPart.this,
-										newTag);
+								addTag(tagTxt.getShell(), TagFormPart.this, newTag);
 								e.doit = false;
 								// if (!tagTxt.isDisposed())
 								// tagDD.reset("");
@@ -257,8 +237,7 @@ public class TagLikeListPart extends Composite {
 
 					tagTxt.getParent().layout();
 
-					Button okBtn = toolkit.createButton(parentCmp, "OK",
-							SWT.BORDER | SWT.PUSH | SWT.BOTTOM);
+					Button okBtn = toolkit.createButton(parentCmp, "OK", SWT.BORDER | SWT.PUSH | SWT.BOTTOM);
 					rd = new RowData(SWT.DEFAULT, tagTxt.getSize().y - 2);
 					okBtn.setLayoutData(rd);
 
@@ -271,8 +250,7 @@ public class TagLikeListPart extends Composite {
 							if (EclipseUiUtils.isEmpty(newTag))
 								return;
 							else
-								addTag(parentCmp.getShell(), TagFormPart.this,
-										newTag);
+								addTag(parentCmp.getShell(), TagFormPart.this, newTag);
 						}
 					});
 
@@ -281,19 +259,15 @@ public class TagLikeListPart extends Composite {
 				parentCmp.getParent().getParent().layout();
 
 			} catch (RepositoryException re) {
-				throw new PeopleException(
-						"Error while refreshing tag like list for " + taggable,
-						re);
+				throw new PeopleException("Error while refreshing tag like list for " + taggable, re);
 			}
 		}
 	}
 
-	private void addDeleteButton(final AbstractFormPart part, Composite parent,
-			final Value value) {
+	private void addDeleteButton(final AbstractFormPart part, Composite parent, final Value value) {
 		final Button deleteBtn = new Button(parent, SWT.FLAT);
 		CmsUtils.style(deleteBtn, PeopleStyles.FLAT_BTN);
-		deleteBtn
-				.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		deleteBtn.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		deleteBtn.setImage(PeopleRapImages.DELETE_BTN_LEFT);
 		deleteBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
@@ -303,20 +277,17 @@ public class TagLikeListPart extends Composite {
 				try {
 					String tagToRemove = value.getString();
 					List<String> tags = new ArrayList<String>();
-					Value[] values = taggable.getProperty(taggablePropName)
-							.getValues();
+					Value[] values = taggable.getProperty(taggablePropName).getValues();
 					for (int i = 0; i < values.length; i++) {
 						String curr = values[i].getString();
 						if (!tagToRemove.equals(curr))
 							tags.add(curr);
 					}
-					taggable.setProperty(taggablePropName,
-							tags.toArray(new String[tags.size()]));
+					taggable.setProperty(taggablePropName, tags.toArray(new String[tags.size()]));
 					part.markDirty();
 					part.refresh();
 				} catch (RepositoryException e) {
-					throw new PeopleException("unable to initialise deletion",
-							e);
+					throw new PeopleException("unable to initialise deletion", e);
 				}
 			}
 		});
@@ -328,37 +299,27 @@ public class TagLikeListPart extends Composite {
 		try {
 			Session session = taggable.getSession();
 			// Check if such a tag is already registered
-			Node registered = peopleService.getResourceService()
-					.getRegisteredTag(tagParent, newTag);
+			Node registered = peopleService.getResourceService().getRegisteredTag(tagParent, newTag);
 
 			if (registered == null) {
 				boolean canAdd = !"true"
-						.equals(peopleService
-								.getConfigProperty(PeopleConstants.PEOPLE_PROP_PREVENT_TAG_ADDITION))
-						|| userService
-								.amIInRole(PeopleConstants.ROLE_BUSINESS_ADMIN);
+						.equals(peopleService.getConfigProperty(PeopleConstants.PEOPLE_PROP_PREVENT_TAG_ADDITION))
+						|| UserAdminUtils.isUserInRole(PeopleConstants.ROLE_BUSINESS_ADMIN);
 				// || userService.amIInRole(PeopleConstants.ROLE_ADMIN);
 
 				if (canAdd) {
 					// Ask end user if we create a new tag
-					msg = "\""
-							+ newTag
-							+ "\" is not yet registered.\n Are you sure you want to create it?";
-					if (MessageDialog.openConfirm(shell, "Confirm creation",
-							msg)) {
-						registered = peopleService.getResourceService()
-								.registerTag(session, tagId, newTag);
+					msg = "\"" + newTag + "\" is not yet registered.\n Are you sure you want to create it?";
+					if (MessageDialog.openConfirm(shell, "Confirm creation", msg)) {
+						registered = peopleService.getResourceService().registerTag(session, tagId, newTag);
 						if (registered.isNodeType(NodeType.MIX_VERSIONABLE))
 							createdTagPath.add(registered.getPath());
 					} else
 						return;
 				} else {
-					msg = "\""
-							+ newTag
-							+ "\" is not yet registered "
+					msg = "\"" + newTag + "\" is not yet registered "
 							+ "and you don't have sufficient rights to create it.\n"
-							+ "Please contact a Business Admin and ask him "
-							+ "to register it for you if it is valid.";
+							+ "Please contact a Business Admin and ask him " + "to register it for you if it is valid.";
 					MessageDialog.openError(shell, "Unvalid choice", msg);
 					return;
 				}
@@ -371,14 +332,10 @@ public class TagLikeListPart extends Composite {
 
 				// Check duplicates
 				for (Value tag : values) {
-					String curTagUpperCase = tag.getString().toUpperCase()
-							.trim();
+					String curTagUpperCase = tag.getString().toUpperCase().trim();
 					if (newTag.toUpperCase().trim().equals(curTagUpperCase)) {
-						msg = "\""
-								+ JcrUiUtils.get(taggable, Property.JCR_TITLE)
-								+ "\" is already linked with \""
-								+ tag.getString()
-								+ "\". Nothing has been done.";
+						msg = "\"" + JcrUiUtils.get(taggable, Property.JCR_TITLE) + "\" is already linked with \""
+								+ tag.getString() + "\". Nothing has been done.";
 						MessageDialog.openError(shell, "Duplicate link", msg);
 						return;
 					}
@@ -398,8 +355,7 @@ public class TagLikeListPart extends Composite {
 			part.markDirty();
 			part.refresh();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to set " + taggablePropName
-					+ " on " + taggable, re);
+			throw new PeopleException("Unable to set " + taggablePropName + " on " + taggable, re);
 		}
 	}
 }

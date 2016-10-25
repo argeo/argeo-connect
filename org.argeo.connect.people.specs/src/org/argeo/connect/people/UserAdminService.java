@@ -8,34 +8,30 @@ import org.osgi.service.useradmin.User;
 import org.osgi.service.useradmin.UserAdmin;
 
 /**
- * Temporary service to communicate with the userAdmin until API are stabilised
- * 
  * Provide method interfaces to manage user concepts without accessing directly
  * the userAdmin.
- * 
- * @deprecated
- * 
  */
 public interface UserAdminService {
 
-	/* USERS */
-	/** Returns the absolute path to the home node of the current user */
-	public String getCurrentUserHomePath();
-
-	/** Returns the absolute path to the home node of the current user */
-	public String getUserHomePath(String dn);
-
-	/** Lists all roles of the current user */
-	public String[] getMyRoles();
-
-	/** Returns the local uid of the current connected user */
-	public String getMyLocalName();
-
+	/* SELF */
 	/** Returns the e-mail of the current logged in user */
 	public String getMyMail();
 
-	/** Returns true if the current user is in the specified role */
-	public boolean amIInRole(String role);
+	// /** Returns the absolute path to the home node of the current user */
+	// public String getCurrentUserHomePath();
+	//
+	// /** Returns the absolute path to the home node of the current user */
+	// public String getUserHomePath(String dn);
+
+	// /** Lists all roles of the current user */
+	// public String[] getMyRoles();
+	//
+	// /** Returns the local id of the current connected user */
+	// public String getMyLocalName();
+	//
+	//
+	// /** Returns true if the current user is in the specified role */
+	// public boolean amIInRole(String role);
 
 	// ALL USER: WARNING access to this will be later reduced
 	/** Returns a {@link User} given a username */
@@ -54,7 +50,7 @@ public interface UserAdminService {
 	// /** Search among defined groups */
 	// public List<Group> listGroups(String filter);
 
-	/** Returns a filter list of roles */
+	/** Returns a filtered list of roles */
 	public Role[] getRoles(String filter) throws InvalidSyntaxException;
 
 	/**
