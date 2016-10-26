@@ -13,31 +13,14 @@ import org.osgi.service.useradmin.UserAdmin;
  */
 public interface UserAdminService {
 
-	/* SELF */
+	// CurrentUser
 	/** Returns the e-mail of the current logged in user */
 	public String getMyMail();
 
-	// /** Returns the absolute path to the home node of the current user */
-	// public String getCurrentUserHomePath();
-	//
-	// /** Returns the absolute path to the home node of the current user */
-	// public String getUserHomePath(String dn);
-
-	// /** Lists all roles of the current user */
-	// public String[] getMyRoles();
-	//
-	// /** Returns the local id of the current connected user */
-	// public String getMyLocalName();
-	//
-	//
-	// /** Returns true if the current user is in the specified role */
-	// public boolean amIInRole(String role);
-
-	// ALL USER: WARNING access to this will be later reduced
+	// Other users
 	/** Returns a {@link User} given a username */
 	public User getUser(String username);
 
-	//
 	/** Can be a group or a user */
 	public String getUserDisplayName(String dn);
 
@@ -47,19 +30,18 @@ public interface UserAdminService {
 	/** Lists all roles of the given user */
 	public String[] getUserRoles(String dn);
 
-	// /** Search among defined groups */
-	// public List<Group> listGroups(String filter);
+	/** Checks if the passed user belongs to the passed role */
+	public boolean isUserInRole(String userDn, String roleDn);
 
+	// Search
 	/** Returns a filtered list of roles */
 	public Role[] getRoles(String filter) throws InvalidSyntaxException;
 
-	/**
-	 * Search among defined groups including system roles and users if needed
-	 */
+	/** Search among groups including system roles and users if needed */
 	public List<User> listGroups(String filter, boolean includeUsers, boolean includeSystemRoles);
 
 	/* MISCELLANEOUS */
-	/** Simply returns the dn of a role given its local ID */
+	/** Returns the dn of a role given its local ID */
 	public String buildDefaultDN(String localId, int type);
 
 	/** Exposes the main default domain name for this instance */

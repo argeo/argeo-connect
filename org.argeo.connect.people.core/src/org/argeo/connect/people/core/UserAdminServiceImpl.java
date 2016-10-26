@@ -141,9 +141,20 @@ public class UserAdminServiceImpl implements UserAdminService {
 	}
 
 	/** Lists all roles of the given user */
+	@Override
 	public String[] getUserRoles(String dn) {
 		Authorization currAuth = getUserAdmin().getAuthorization(getUser(dn));
 		return currAuth.getRoles();
+	}
+
+	@Override
+	public boolean isUserInRole(String userDn, String roleDn) {
+		String[] roles = getUserRoles(userDn);
+		for (String role : roles) {
+			if (role.equalsIgnoreCase(roleDn))
+				return true;
+		}
+		return false;
 	}
 
 	private final String[] knownProps = { LdapAttrs.cn.name(), LdapAttrs.sn.name(), LdapAttrs.givenName.name(),
