@@ -9,6 +9,7 @@ public interface PeopleUiConstants {
 
 	// Crud ID & Default label to manage list items among others.
 	public final static String CRUD_CREATE = "Create";
+	public final static String CRUD_VIEW = "View";
 	public final static String CRUD_EDIT = "Edit";
 	public final static String CRUD_DELETE = "Delete";
 
