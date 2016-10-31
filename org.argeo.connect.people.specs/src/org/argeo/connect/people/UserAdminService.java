@@ -2,6 +2,8 @@ package org.argeo.connect.people;
 
 import java.util.List;
 
+import javax.transaction.UserTransaction;
+
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.useradmin.Role;
 import org.osgi.service.useradmin.User;
@@ -57,4 +59,7 @@ public interface UserAdminService {
 	/* EXPOSE */
 	@Deprecated
 	public UserAdmin getUserAdmin();
+
+	@Deprecated
+	public UserTransaction getUserTransaction();
 }
