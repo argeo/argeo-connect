@@ -23,7 +23,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 
-/** Utility class that wraps a virtual table viewer to display JCR rows or nodes */
+/**
+ * Utility class that wraps a virtual table viewer to display JCR rows or nodes
+ */
 public class VirtualJcrTableViewer extends Composite {
 	// private final static Log log = LogFactory
 	// .getLog(VirtualJcrTableViewer.class);
@@ -50,16 +52,15 @@ public class VirtualJcrTableViewer extends Composite {
 	}
 
 	// CONSTRUCTOR
-	public VirtualJcrTableViewer(Composite parent, int style,
-			List<PeopleColumnDefinition> columns) {
+	public VirtualJcrTableViewer(Composite parent, int style, List<PeopleColumnDefinition> columns) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.colDefs = columns;
 		populate();
 	}
 
-	public VirtualJcrTableViewer(Composite parent, int style,
-			List<PeopleColumnDefinition> columns, boolean addCheckBoxes) {
+	public VirtualJcrTableViewer(Composite parent, int style, List<PeopleColumnDefinition> columns,
+			boolean addCheckBoxes) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.colDefs = columns;
@@ -95,8 +96,7 @@ public class VirtualJcrTableViewer extends Composite {
 
 		if (hasCheckBoxes) {
 			// check column
-			column = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE,
-					20);
+			column = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE, 20);
 			column.setLabelProvider(new ColumnLabelProvider() {
 				private static final long serialVersionUID = 1L;
 
@@ -113,18 +113,15 @@ public class VirtualJcrTableViewer extends Composite {
 				}
 			});
 			column.setEditingSupport(new SelectionEditingSupport());
-			tableColumnLayout.setColumnData(column.getColumn(),
-					new ColumnWeightData(20, 24, true));
+			tableColumnLayout.setColumnData(column.getColumn(), new ColumnWeightData(20, 24, true));
 		}
 
 		for (PeopleColumnDefinition colDef : colDefs) {
-			column = ViewerUtils.createTableViewerColumn(viewer,
-					colDef.getHeaderLabel(), SWT.NONE, colDef.getColumnSize());
+			column = ViewerUtils.createTableViewerColumn(viewer, colDef.getHeaderLabel(), SWT.NONE,
+					colDef.getColumnSize());
 			column.setLabelProvider(colDef.getColumnLabelProvider());
-			tableColumnLayout.setColumnData(
-					column.getColumn(),
-					new ColumnWeightData(colDef.getColumnSize(), colDef
-							.getColumnSize(), true));
+			tableColumnLayout.setColumnData(column.getColumn(),
+					new ColumnWeightData(colDef.getColumnSize(), colDef.getColumnSize(), true));
 		}
 
 		lazyContentProvider = new MyLazyContentProvider(viewer);

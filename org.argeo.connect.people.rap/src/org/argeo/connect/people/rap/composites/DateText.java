@@ -34,7 +34,7 @@ import org.eclipse.swt.widgets.Text;
 /**
  * A text composite to request end user for a date using a text and a calendar
  * popup
- * */
+ */
 public class DateText extends Composite {
 	private static final long serialVersionUID = 7651166365139278532L;
 
@@ -45,8 +45,7 @@ public class DateText extends Composite {
 	private Text dateTxt;
 	private Button openCalBtn;
 
-	private DateFormat dateFormat = new SimpleDateFormat(
-			PeopleUiConstants.DEFAULT_SHORT_DATE_FORMAT);
+	private DateFormat dateFormat = new SimpleDateFormat(PeopleUiConstants.DEFAULT_SHORT_DATE_FORMAT);
 
 	/**
 	 * 
@@ -85,9 +84,8 @@ public class DateText extends Composite {
 		dateTxt = new Text(dateComposite, SWT.BORDER);
 		CmsUtils.style(dateTxt, PeopleStyles.PEOPLE_CLASS_FORCE_BORDER);
 		dateTxt.setLayoutData(new GridData(80, SWT.DEFAULT));
-		dateTxt.setToolTipText("Enter a date with form \""
-				+ PeopleUiConstants.DEFAULT_SHORT_DATE_FORMAT
-				+ "\" or use the calendar");
+		dateTxt.setToolTipText(
+				"Enter a date with form \"" + PeopleUiConstants.DEFAULT_SHORT_DATE_FORMAT + "\" or use the calendar");
 		openCalBtn = new Button(dateComposite, SWT.FLAT);
 		CmsUtils.style(openCalBtn, PeopleStyles.FLAT_BTN);
 		GridData gd = new GridData(SWT.CENTER, SWT.CENTER, false, false);
@@ -161,8 +159,7 @@ public class DateText extends Composite {
 			CmsUtils.style(CalendarPopup.this, PeopleStyles.POPUP_SHELL);
 			pack();
 			layout();
-			setLocation(source.toDisplay((source.getLocation().x - 2),
-					(source.getSize().y) + 3));
+			setLocation(source.toDisplay((source.getLocation().x - 2), (source.getSize().y) + 3));
 
 			addShellListener(new ShellAdapter() {
 				private static final long serialVersionUID = 5178980294808435833L;
@@ -178,8 +175,7 @@ public class DateText extends Composite {
 
 		private void setProperty() {
 			Calendar cal = new GregorianCalendar();
-			cal.set(dateTimeCtl.getYear(), dateTimeCtl.getMonth(),
-					dateTimeCtl.getDay(), 12, 0);
+			cal.set(dateTimeCtl.getYear(), dateTimeCtl.getMonth(), dateTimeCtl.getDay(), 12, 0);
 			dateTxt.setText(dateFormat.format(cal.getTime()));
 			calendar = cal;
 		}
@@ -190,8 +186,7 @@ public class DateText extends Composite {
 			dateTimeCtl = new DateTime(this, SWT.CALENDAR);
 			dateTimeCtl.setLayoutData(EclipseUiUtils.fillAll());
 			if (calendar != null)
-				dateTimeCtl.setDate(calendar.get(Calendar.YEAR),
-						calendar.get(Calendar.MONTH),
+				dateTimeCtl.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
 						calendar.get(Calendar.DAY_OF_MONTH));
 
 			dateTimeCtl.addSelectionListener(new SelectionAdapter() {

@@ -44,7 +44,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 /**
  * Simple widget composite to display and edit a contact of type post mail
  * address information.
- * 
  */
 public class ContactAddressComposite extends Composite implements PeopleNames {
 	private static final long serialVersionUID = 4475049051062923873L;
@@ -61,10 +60,8 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 	private final AbstractFormPart formPart;
 	private final FormToolkit toolkit;
 
-	public ContactAddressComposite(Composite parent, int style,
-			AbstractPeopleEditor editor, AbstractFormPart formPart,
-			PeopleService peopleService,
-			PeopleWorkbenchService peopleUiService, Node contactNode,
+	public ContactAddressComposite(Composite parent, int style, AbstractPeopleEditor editor, AbstractFormPart formPart,
+			PeopleService peopleService, PeopleWorkbenchService peopleUiService, Node contactNode,
 			Node parentVersionableNode) {
 		super(parent, style);
 		this.peopleService = peopleService;
@@ -84,9 +81,8 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 
 		// BUTTONS
-		Composite buttCmp = new ContactButtonsComposite(editor, formPart,
-				parent, SWT.NONE, contactNode, parentVersionableNode,
-				peopleWorkbenchService, peopleService);
+		Composite buttCmp = new ContactButtonsComposite(editor, formPart, parent, SWT.NONE, contactNode,
+				parentVersionableNode, peopleWorkbenchService, peopleService);
 		toolkit.adapt(buttCmp, false, false);
 		buttCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
@@ -104,50 +100,41 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		readOnlyPanel.setLayout(new GridLayout());
 
 		String refUid = JcrUiUtils.get(contactNode, PeopleNames.PEOPLE_REF_UID);
-		if (JcrUiUtils.isNodeType(contactNode, PeopleTypes.PEOPLE_CONTACT_REF)
-				&& EclipseUiUtils.notEmpty(refUid)) {
+		if (JcrUiUtils.isNodeType(contactNode, PeopleTypes.PEOPLE_CONTACT_REF) && EclipseUiUtils.notEmpty(refUid)) {
 
-			final Node referencedEntity = peopleService.getEntityByUid(
-					JcrUiUtils.getSession(contactNode), refUid);
+			final Node referencedEntity = peopleService.getEntityByUid(JcrUiUtils.getSession(contactNode), refUid);
 
 			Link readOnlyInfoLk = new Link(readOnlyPanel, SWT.WRAP);
 			// CmsUtils.markup(readOnlyInfoLk);
 			StringBuilder builder = new StringBuilder();
 			// the referenced org
 			if (referencedEntity != null) {
-				String label = JcrUiUtils.get(referencedEntity,
-						Property.JCR_TITLE);
+				String label = JcrUiUtils.get(referencedEntity, Property.JCR_TITLE);
 				builder.append("<a>").append(label).append("</a> ");
 			}
 			// current contact meta data
 			String meta = PeopleUiSnippets.getContactMetaData(contactNode);
 			// work around to remove the encoded space. To be cleaned.
 			if (meta.startsWith(PeopleUiConstants.NB_DOUBLE_SPACE))
-				meta = meta.substring(PeopleUiConstants.NB_DOUBLE_SPACE
-						.length());
+				meta = meta.substring(PeopleUiConstants.NB_DOUBLE_SPACE.length());
 			builder.append(meta);
 
 			// Referenced org primary address
 			if (referencedEntity != null) {
-				Node primaryAddress = PeopleJcrUtils.getPrimaryContact(
-						referencedEntity, PeopleTypes.PEOPLE_ADDRESS);
+				Node primaryAddress = PeopleJcrUtils.getPrimaryContact(referencedEntity, PeopleTypes.PEOPLE_ADDRESS);
 				if (primaryAddress != null) {
 					builder.append("\n");
-					builder.append(PeopleUiSnippets.getAddressDisplayValue(
-							peopleService, primaryAddress));
+					builder.append(PeopleUiSnippets.getAddressDisplayValue(peopleService, primaryAddress));
 				}
 			}
-			readOnlyInfoLk.setText(PeopleUiUtils.replaceAmpersandforSWTLink(builder
-					.toString()));
+			readOnlyInfoLk.setText(PeopleUiUtils.replaceAmpersandforSWTLink(builder.toString()));
 			OrgLinkListener oll = new OrgLinkListener();
 			oll.setOrg(referencedEntity);
 			readOnlyInfoLk.addSelectionListener(oll);
 		} else {
-			Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
-					SWT.WRAP);
+			Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "", SWT.WRAP);
 			readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-			String addressHtml = PeopleUiSnippets.getContactDisplaySnippet(
-					peopleService, contactNode);
+			String addressHtml = PeopleUiSnippets.getContactDisplaySnippet(peopleService, contactNode);
 			readOnlyInfoLbl.setText(addressHtml);
 		}
 	}
@@ -159,8 +146,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		parent.setLayout(rl);
 
 		String refUid = JcrUiUtils.get(contactNode, PeopleNames.PEOPLE_REF_UID);
-		if (JcrUiUtils.isNodeType(contactNode, PeopleTypes.PEOPLE_CONTACT_REF)
-				&& EclipseUiUtils.notEmpty(refUid))
+		if (JcrUiUtils.isNodeType(contactNode, PeopleTypes.PEOPLE_CONTACT_REF) && EclipseUiUtils.notEmpty(refUid))
 			populateWorkAdresseCmp(parent, contactNode);
 		else
 			populateAdresseCmp(parent, contactNode);
@@ -175,44 +161,32 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			Link chooseOrgLk = new Link(parent, SWT.LEFT | SWT.BOTTOM);
 			chooseOrgLk.setText("<a>Change</a>");
 
-			Text labelTxt = PeopleRapUtils.createRDText(toolkit, parent,
-					"A custom label", "A custom label", 120);
+			Text labelTxt = PeopleRapUtils.createRDText(toolkit, parent, "A custom label", "A custom label", 120);
 
 			Combo catCmb = new Combo(parent, SWT.BOTTOM | SWT.READ_ONLY);
-			catCmb.setItems(peopleService.getContactService()
-					.getContactPossibleValues(contactNode,
-							PEOPLE_CONTACT_CATEGORY));
+			catCmb.setItems(
+					peopleService.getContactService().getContactPossibleValues(contactNode, PEOPLE_CONTACT_CATEGORY));
 
-			final PickUpOrgDialog diag = new PickUpOrgDialog(
-					chooseOrgLk.getShell(), "Choose an organisation",
-					contactNode.getSession(), peopleWorkbenchService,
-					contactNode.getParent().getParent());
+			final PickUpOrgDialog diag = new PickUpOrgDialog(chooseOrgLk.getShell(), "Choose an organisation",
+					contactNode.getSession(), peopleWorkbenchService, contactNode.getParent().getParent());
 
 			// REFRESH VALUES
-			PeopleRapUtils.refreshFormText(editor, labelTxt, contactNode,
-					PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
-			PeopleRapUtils.refreshFormCombo(editor, catCmb, contactNode,
-					PeopleNames.PEOPLE_CONTACT_CATEGORY);
+			PeopleRapUtils.refreshFormText(editor, labelTxt, contactNode, PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
+			PeopleRapUtils.refreshFormCombo(editor, catCmb, contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY);
 
 			if (contactNode.hasProperty(PeopleNames.PEOPLE_REF_UID)) {
-				Node linkedOrg = peopleService.getEntityByUid(contactNode
-						.getSession(),
-						contactNode.getProperty(PeopleNames.PEOPLE_REF_UID)
-								.getString());
+				Node linkedOrg = peopleService.getEntityByUid(contactNode.getSession(),
+						contactNode.getProperty(PeopleNames.PEOPLE_REF_UID).getString());
 				if (linkedOrg != null) {
 					nameLkListener.setOrg(linkedOrg);
-					nameLk.setText("<a>"
-							+ JcrUiUtils.get(linkedOrg, Property.JCR_TITLE)
-							+ "</a>");
+					nameLk.setText("<a>" + JcrUiUtils.get(linkedOrg, Property.JCR_TITLE) + "</a>");
 				}
 			}
 
 			// Listeners
-			PeopleRapUtils.addTxtModifyListener(formPart, labelTxt,
-					contactNode, PeopleNames.PEOPLE_CONTACT_LABEL,
+			PeopleRapUtils.addTxtModifyListener(formPart, labelTxt, contactNode, PeopleNames.PEOPLE_CONTACT_LABEL,
 					PropertyType.STRING);
-			PeopleRapUtils.addComboSelectionListener(formPart, catCmb,
-					contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY,
+			PeopleRapUtils.addComboSelectionListener(formPart, catCmb, contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY,
 					PropertyType.STRING);
 
 			chooseOrgLk.addSelectionListener(new SelectionAdapter() {
@@ -224,23 +198,18 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					Node currNode = diag.getSelected();
 					if (currNode != null) {
 						nameLkListener.setOrg(currNode);
-						nameLk.setText("<a>"
-								+ JcrUiUtils.get(currNode, Property.JCR_TITLE)
-								+ "</a>");
+						nameLk.setText("<a>" + JcrUiUtils.get(currNode, Property.JCR_TITLE) + "</a>");
 
-						String uid = JcrUiUtils.get(currNode,
-								PeopleNames.PEOPLE_UID);
-						if (JcrUiUtils.setJcrProperty(contactNode,
-								PeopleNames.PEOPLE_REF_UID,
-								PropertyType.STRING, uid))
+						String uid = JcrUiUtils.get(currNode, PeopleNames.PEOPLE_UID);
+						if (JcrUiUtils.setJcrProperty(contactNode, PeopleNames.PEOPLE_REF_UID, PropertyType.STRING,
+								uid))
 							formPart.markDirty();
 					}
 				}
 			});
 			parent.pack(true);
 		} catch (RepositoryException e1) {
-			throw new PeopleException(
-					"Unable to refresh editable panel for work address", e1);
+			throw new PeopleException("Unable to refresh editable panel for work address", e1);
 		}
 	}
 
@@ -255,10 +224,8 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		@Override
 		public void widgetSelected(final SelectionEvent event) {
 			if (org != null) {
-				CommandUtils.callCommand(
-						peopleWorkbenchService.getOpenEntityEditorCmdId(),
-						OpenEntityEditor.PARAM_JCR_ID,
-						JcrUiUtils.getIdentifier(org));
+				CommandUtils.callCommand(peopleWorkbenchService.getOpenEntityEditorCmdId(),
+						OpenEntityEditor.PARAM_JCR_ID, JcrUiUtils.getIdentifier(org));
 			}
 
 		}
@@ -269,89 +236,64 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		EclipseUiUtils.clear(parent);
 		if (editor.isEditing()) {
 			// specific for addresses
-			final Text streetTxt = PeopleRapUtils.createRDText(toolkit, parent,
-					"Street", "Street", 0);
-			final Text street2Txt = PeopleRapUtils.createRDText(toolkit,
-					parent, "Street Complement", "", 0);
-			final Text zipTxt = PeopleRapUtils.createRDText(toolkit, parent,
-					"Zip code", "", 0);
-			final Text cityTxt = PeopleRapUtils.createRDText(toolkit, parent,
-					"City", "", 0);
-			final Text stateTxt = PeopleRapUtils.createRDText(toolkit, parent,
-					"State", "", 0);
-			Text countryTxt = PeopleRapUtils.createRDText(toolkit, parent,
-					"Country", "", 110);
+			final Text streetTxt = PeopleRapUtils.createRDText(toolkit, parent, "Street", "Street", 0);
+			final Text street2Txt = PeopleRapUtils.createRDText(toolkit, parent, "Street Complement", "", 0);
+			final Text zipTxt = PeopleRapUtils.createRDText(toolkit, parent, "Zip code", "", 0);
+			final Text cityTxt = PeopleRapUtils.createRDText(toolkit, parent, "City", "", 0);
+			final Text stateTxt = PeopleRapUtils.createRDText(toolkit, parent, "State", "", 0);
+			Text countryTxt = PeopleRapUtils.createRDText(toolkit, parent, "Country", "", 110);
 
 			// The country drop down
 			Session session = JcrUiUtils.getSession(contactNode);
-			final TagLikeDropDown countryDD = new TagLikeDropDown(session,
-					peopleService.getResourceService(),
+			final TagLikeDropDown countryDD = new TagLikeDropDown(session, peopleService.getResourceService(),
 					PeopleConstants.RESOURCE_COUNTRY, countryTxt);
 
-			final Text geoPointTxt = PeopleRapUtils.createRDText(toolkit,
-					parent, "Geopoint", "", 0);
-			final Text labelTxt = PeopleRapUtils.createRDText(toolkit, parent,
-					"Label", "", 0);
+			final Text geoPointTxt = PeopleRapUtils.createRDText(toolkit, parent, "Geopoint", "", 0);
+			final Text labelTxt = PeopleRapUtils.createRDText(toolkit, parent, "Label", "", 0);
 
 			Combo catCmb = new Combo(parent, SWT.READ_ONLY);
-			catCmb.setItems(peopleService.getContactService()
-					.getContactPossibleValues(contactNode,
-							PEOPLE_CONTACT_CATEGORY));
+			catCmb.setItems(
+					peopleService.getContactService().getContactPossibleValues(contactNode, PEOPLE_CONTACT_CATEGORY));
 
 			// Refresh
-			PeopleRapUtils.refreshFormText(editor, streetTxt, contactNode,
-					PeopleNames.PEOPLE_STREET, "Street");
-			PeopleRapUtils.refreshFormText(editor, street2Txt, contactNode,
-					PeopleNames.PEOPLE_STREET_COMPLEMENT, "Street complement");
-			PeopleRapUtils.refreshFormText(editor, zipTxt, contactNode,
-					PeopleNames.PEOPLE_ZIP_CODE, "Zip code");
-			PeopleRapUtils.refreshFormText(editor, cityTxt, contactNode,
-					PeopleNames.PEOPLE_CITY, "City");
-			PeopleRapUtils.refreshFormText(editor, stateTxt, contactNode,
-					PeopleNames.PEOPLE_STATE, "State");
-			PeopleRapUtils.refreshFormText(editor, geoPointTxt, contactNode,
-					PeopleNames.PEOPLE_GEOPOINT, "Geo point");
-			PeopleRapUtils.refreshFormText(editor, labelTxt, contactNode,
-					PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
-			PeopleRapUtils.refreshFormCombo(editor, catCmb, contactNode,
-					PeopleNames.PEOPLE_CONTACT_CATEGORY);
+			PeopleRapUtils.refreshFormText(editor, streetTxt, contactNode, PeopleNames.PEOPLE_STREET, "Street");
+			PeopleRapUtils.refreshFormText(editor, street2Txt, contactNode, PeopleNames.PEOPLE_STREET_COMPLEMENT,
+					"Street complement");
+			PeopleRapUtils.refreshFormText(editor, zipTxt, contactNode, PeopleNames.PEOPLE_ZIP_CODE, "Zip code");
+			PeopleRapUtils.refreshFormText(editor, cityTxt, contactNode, PeopleNames.PEOPLE_CITY, "City");
+			PeopleRapUtils.refreshFormText(editor, stateTxt, contactNode, PeopleNames.PEOPLE_STATE, "State");
+			PeopleRapUtils.refreshFormText(editor, geoPointTxt, contactNode, PeopleNames.PEOPLE_GEOPOINT, "Geo point");
+			PeopleRapUtils.refreshFormText(editor, labelTxt, contactNode, PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
+			PeopleRapUtils.refreshFormCombo(editor, catCmb, contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY);
 
 			// add listeners
-			addAddressTxtModifyListener(formPart, streetTxt, contactNode,
-					PeopleNames.PEOPLE_STREET, PropertyType.STRING);
-			addAddressTxtModifyListener(formPart, street2Txt, contactNode,
-					PeopleNames.PEOPLE_STREET_COMPLEMENT, PropertyType.STRING);
-			addAddressTxtModifyListener(formPart, zipTxt, contactNode,
-					PeopleNames.PEOPLE_ZIP_CODE, PropertyType.STRING);
-			addAddressTxtModifyListener(formPart, cityTxt, contactNode,
-					PeopleNames.PEOPLE_CITY, PropertyType.STRING);
-			addAddressTxtModifyListener(formPart, stateTxt, contactNode,
-					PeopleNames.PEOPLE_STATE, PropertyType.STRING);
-			PeopleRapUtils.addTxtModifyListener(formPart, geoPointTxt,
-					contactNode, PeopleNames.PEOPLE_GEOPOINT,
+			addAddressTxtModifyListener(formPart, streetTxt, contactNode, PeopleNames.PEOPLE_STREET,
 					PropertyType.STRING);
-			PeopleRapUtils.addTxtModifyListener(formPart, labelTxt,
-					contactNode, PeopleNames.PEOPLE_CONTACT_LABEL,
+			addAddressTxtModifyListener(formPart, street2Txt, contactNode, PeopleNames.PEOPLE_STREET_COMPLEMENT,
 					PropertyType.STRING);
-			PeopleRapUtils.addComboSelectionListener(formPart, catCmb,
-					contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY,
+			addAddressTxtModifyListener(formPart, zipTxt, contactNode, PeopleNames.PEOPLE_ZIP_CODE,
+					PropertyType.STRING);
+			addAddressTxtModifyListener(formPart, cityTxt, contactNode, PeopleNames.PEOPLE_CITY, PropertyType.STRING);
+			addAddressTxtModifyListener(formPart, stateTxt, contactNode, PeopleNames.PEOPLE_STATE, PropertyType.STRING);
+			PeopleRapUtils.addTxtModifyListener(formPart, geoPointTxt, contactNode, PeopleNames.PEOPLE_GEOPOINT,
+					PropertyType.STRING);
+			PeopleRapUtils.addTxtModifyListener(formPart, labelTxt, contactNode, PeopleNames.PEOPLE_CONTACT_LABEL,
+					PropertyType.STRING);
+			PeopleRapUtils.addComboSelectionListener(formPart, catCmb, contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY,
 					PropertyType.STRING);
 
 			// specific for drop downs
-			String countryIso = JcrUiUtils.get(contactNode,
-					PeopleNames.PEOPLE_COUNTRY);
+			String countryIso = JcrUiUtils.get(contactNode, PeopleNames.PEOPLE_COUNTRY);
 			if (EclipseUiUtils.notEmpty(countryIso)) {
-				String countryVal = peopleService.getResourceService()
-						.getEncodedTagValue(session,
-								PeopleConstants.RESOURCE_COUNTRY, countryIso);
+				String countryVal = peopleService.getResourceService().getEncodedTagValue(session,
+						PeopleConstants.RESOURCE_COUNTRY, countryIso);
 				countryDD.reset(countryVal);
 			}
 			addCountryTxtModifyListener(formPart, countryTxt);
 		}
 	}
 
-	private void addCountryTxtModifyListener(final AbstractFormPart part,
-			final Text text) {
+	private void addCountryTxtModifyListener(final AbstractFormPart part, final Text text) {
 
 		text.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 1549789407363632491L;
@@ -363,29 +305,24 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 				if (EclipseUiUtils.isEmpty(label))
 					return;
 				Session session = JcrUiUtils.getSession(contactNode);
-				String iso = peopleService.getResourceService()
-						.getEncodedTagCodeFromValue(session,
-								PeopleConstants.RESOURCE_COUNTRY, label);
-				if (EclipseUiUtils.notEmpty(iso)
-						&& JcrUiUtils.setJcrProperty(contactNode,
-								PeopleNames.PEOPLE_COUNTRY,
-								PropertyType.STRING, iso)) {
+				String iso = peopleService.getResourceService().getEncodedTagCodeFromValue(session,
+						PeopleConstants.RESOURCE_COUNTRY, label);
+				if (EclipseUiUtils.notEmpty(iso) && JcrUiUtils.setJcrProperty(contactNode, PeopleNames.PEOPLE_COUNTRY,
+						PropertyType.STRING, iso)) {
 					part.markDirty();
 				}
 			}
 		});
 	}
 
-	private void addAddressTxtModifyListener(final AbstractFormPart part,
-			final Text text, final Node entity, final String propName,
-			final int propType) {
+	private void addAddressTxtModifyListener(final AbstractFormPart part, final Text text, final Node entity,
+			final String propName, final int propType) {
 		text.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 1549789407363632491L;
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				if (JcrUiUtils.setJcrProperty(entity, propName, propType,
-						text.getText())) {
+				if (JcrUiUtils.setJcrProperty(entity, propName, propType, text.getText())) {
 					part.markDirty();
 					PeopleJcrUtils.updateDisplayAddress(entity);
 				}

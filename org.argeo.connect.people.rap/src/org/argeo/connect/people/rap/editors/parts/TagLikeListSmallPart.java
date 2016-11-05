@@ -21,7 +21,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.rap.PeopleRapImages;
 import org.argeo.connect.people.rap.PeopleStyles;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
@@ -74,7 +73,6 @@ public class TagLikeListSmallPart extends Composite {
 
 	// Deduced from the context, shortcut for this class
 	private final ResourceService resourceService;
-	private final UserAdminService userService;
 	private final Session session;
 
 	/**
@@ -104,7 +102,6 @@ public class TagLikeListSmallPart extends Composite {
 
 		// Cache some context object to ease implementation
 		this.resourceService = peopleService.getResourceService();
-		this.userService = peopleService.getUserAdminService();
 		session = JcrUiUtils.getSession(taggable);
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
 

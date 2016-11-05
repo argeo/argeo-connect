@@ -52,8 +52,7 @@ public class FilteredOrderableEntityTable extends Composite {
 
 	private TableViewer entityViewer;
 	private Text filterTxt;
-	private final static String FILTER_HELP_MSG = "Type filter criterion "
-			+ "separated by a space";
+	private final static String FILTER_HELP_MSG = "Type filter criterion " + "separated by a space";
 	private Session session;
 
 	private int tableStyle;
@@ -62,8 +61,7 @@ public class FilteredOrderableEntityTable extends Composite {
 	private boolean hasSelectionColumn = false;
 	private List<JcrColumnDefinition> colDefs = new ArrayList<JcrColumnDefinition>();
 	{ // By default, it displays only title
-		colDefs.add(new JcrColumnDefinition(null, Property.JCR_TITLE,
-				PropertyType.STRING, "Name", 300));
+		colDefs.add(new JcrColumnDefinition(null, Property.JCR_TITLE, PropertyType.STRING, "Name", 300));
 	};
 	private String nodeType = PeopleTypes.PEOPLE_ENTITY;
 
@@ -84,8 +82,7 @@ public class FilteredOrderableEntityTable extends Composite {
 	 *            the style of the table
 	 * @param session
 	 */
-	public FilteredOrderableEntityTable(Composite parent, int style,
-			Session session) {
+	public FilteredOrderableEntityTable(Composite parent, int style, Session session) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.session = session;
@@ -103,8 +100,8 @@ public class FilteredOrderableEntityTable extends Composite {
 	 * @param addFilter
 	 * @param addSelection
 	 */
-	public FilteredOrderableEntityTable(Composite parent, int style,
-			Session session, boolean addFilter, boolean addSelection) {
+	public FilteredOrderableEntityTable(Composite parent, int style, Session session, boolean addFilter,
+			boolean addSelection) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.session = session;
@@ -121,8 +118,8 @@ public class FilteredOrderableEntityTable extends Composite {
 	 * @param session
 	 * @param colDefs
 	 */
-	public FilteredOrderableEntityTable(Composite parent, int style,
-			Session session, List<JcrColumnDefinition> colDefs) {
+	public FilteredOrderableEntityTable(Composite parent, int style, Session session,
+			List<JcrColumnDefinition> colDefs) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.session = session;
@@ -142,10 +139,8 @@ public class FilteredOrderableEntityTable extends Composite {
 	 * @param addFilter
 	 * @param addSelection
 	 */
-	public FilteredOrderableEntityTable(Composite parent, int style,
-			Session session, String nodeType,
-			List<JcrColumnDefinition> colDefs, boolean addFilter,
-			boolean addSelection) {
+	public FilteredOrderableEntityTable(Composite parent, int style, Session session, String nodeType,
+			List<JcrColumnDefinition> colDefs, boolean addFilter, boolean addSelection) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.session = session;
@@ -178,8 +173,7 @@ public class FilteredOrderableEntityTable extends Composite {
 
 	public List<Node> getSelectedEntities() {
 		if (hasSelectionColumn) {
-			Object[] elements = ((CheckboxTableViewer) entityViewer)
-					.getCheckedElements();
+			Object[] elements = ((CheckboxTableViewer) entityViewer).getCheckedElements();
 
 			List<Node> result = new ArrayList<Node>();
 			for (Object obj : elements) {
@@ -187,8 +181,8 @@ public class FilteredOrderableEntityTable extends Composite {
 			}
 			return result;
 		} else
-			throw new PeopleException("Unvalid request: no selection column "
-					+ "has been created for the current table");
+			throw new PeopleException(
+					"Unvalid request: no selection column " + "has been created for the current table");
 	}
 
 	/** Returns the User table viewer, typically to add doubleclick listener */
@@ -216,8 +210,7 @@ public class FilteredOrderableEntityTable extends Composite {
 		int offset = 0;
 		if (hasSelectionColumn) {
 			offset = 1;
-			column = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE,
-					25);
+			column = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE, 25);
 			column.setLabelProvider(new ColumnLabelProvider() {
 				private static final long serialVersionUID = 1L;
 
@@ -233,8 +226,7 @@ public class FilteredOrderableEntityTable extends Composite {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					allSelected = !allSelected;
-					((CheckboxTableViewer) entityViewer)
-							.setAllChecked(allSelected);
+					((CheckboxTableViewer) entityViewer).setAllChecked(allSelected);
 				}
 			};
 			column.getColumn().addSelectionListener(selectionAdapter);
@@ -243,19 +235,17 @@ public class FilteredOrderableEntityTable extends Composite {
 		NodeViewerComparator comparator = new NodeViewerComparator();
 		int i = offset;
 		for (JcrColumnDefinition colDef : colDefs) {
-			column = ViewerUtils.createTableViewerColumn(viewer,
-					colDef.getHeaderLabel(), SWT.NONE, colDef.getColumnSize());
+			column = ViewerUtils.createTableViewerColumn(viewer, colDef.getHeaderLabel(), SWT.NONE,
+					colDef.getColumnSize());
 			column.setLabelProvider(new CLProvider(colDef.getPropertyName()));
 			column.getColumn().addSelectionListener(
-					getNodeSelectionAdapter(i, colDef.getPropertyType(),
-							colDef.getPropertyName(), comparator, viewer));
+					getNodeSelectionAdapter(i, colDef.getPropertyType(), colDef.getPropertyName(), comparator, viewer));
 			i++;
 		}
 
 		// IMPORTANT: initialize comparator before setting it
 		JcrColumnDefinition firstCol = colDefs.get(0);
-		comparator.setColumn(firstCol.getPropertyType(),
-				firstCol.getPropertyName());
+		comparator.setColumn(firstCol.getPropertyType(), firstCol.getPropertyName());
 		viewer.setComparator(comparator);
 
 		return viewer;
@@ -305,11 +295,9 @@ public class FilteredOrderableEntityTable extends Composite {
 	/* MANAGE FILTER */
 	private void createFilterPart(Composite parent) {
 		// Text Area for the filter
-		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
-				| SWT.ICON_CANCEL);
+		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		filterTxt.setMessage(FILTER_HELP_MSG);
-		filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
-				| GridData.HORIZONTAL_ALIGN_FILL));
+		filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
 		filterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -326,8 +314,7 @@ public class FilteredOrderableEntityTable extends Composite {
 	protected void refreshFilteredList() {
 		List<Node> nodes;
 		try {
-			nodes = JcrUtils.nodeIteratorToList(listFilteredElements(session,
-					hasFilter ? filterTxt.getText() : null));
+			nodes = JcrUtils.nodeIteratorToList(listFilteredElements(session, hasFilter ? filterTxt.getText() : null));
 			entityViewer.setInput(nodes.toArray());
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list users", e);
@@ -338,16 +325,14 @@ public class FilteredOrderableEntityTable extends Composite {
 	 * Build repository request : caller might overwrite in order to display a
 	 * subset
 	 */
-	protected NodeIterator listFilteredElements(Session session, String filter)
-			throws RepositoryException {
+	protected NodeIterator listFilteredElements(Session session, String filter) throws RepositoryException {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
 		String xpathQueryStr = "//element(*, " + nodeType + ")";
 		String attrQuery = XPathUtils.getFreeTextConstraint(filter);
 		if (EclipseUiUtils.notEmpty(attrQuery))
 			xpathQueryStr += "[" + attrQuery + "]";
 		xpathQueryStr += " order by @" + PeopleNames.JCR_TITLE;
-		Query xpathQuery = queryManager.createQuery(xpathQueryStr,
-				PeopleConstants.QUERY_XPATH);
+		Query xpathQuery = queryManager.createQuery(xpathQueryStr, PeopleConstants.QUERY_XPATH);
 		xpathQuery.setLimit(100);
 		QueryResult result = xpathQuery.execute();
 

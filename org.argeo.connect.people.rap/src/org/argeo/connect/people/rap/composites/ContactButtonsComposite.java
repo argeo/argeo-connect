@@ -22,10 +22,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.AbstractFormPart;
 
-/**
- * Centralizes management of contacts buttons.
- * 
- */
+/** Centralize management of contacts buttons */
 public class ContactButtonsComposite extends Composite {
 	private static final long serialVersionUID = 2331713954300845292L;
 
@@ -41,8 +38,7 @@ public class ContactButtonsComposite extends Composite {
 	// PeopleImageProvider();
 
 	public ContactButtonsComposite(AbstractPeopleEditor editor, AbstractFormPart formPart, Composite parent, int style,
-			Node contactNode,
-			Node parentVersionableNode, PeopleWorkbenchService peopleUiService,
+			Node contactNode, Node parentVersionableNode, PeopleWorkbenchService peopleUiService,
 			PeopleService peopleService) {
 		super(parent, style);
 		this.peopleService = peopleService;
@@ -103,9 +99,8 @@ public class ContactButtonsComposite extends Composite {
 			CmsUtils.style(btn, PeopleStyles.FLAT_BTN);
 
 			// update image
-			boolean isPrimary = (contactNode
-					.hasProperty(PeopleNames.PEOPLE_IS_PRIMARY) && contactNode
-					.getProperty(PeopleNames.PEOPLE_IS_PRIMARY).getBoolean());
+			boolean isPrimary = (contactNode.hasProperty(PeopleNames.PEOPLE_IS_PRIMARY)
+					&& contactNode.getProperty(PeopleNames.PEOPLE_IS_PRIMARY).getBoolean());
 			if (isPrimary)
 				btn.setImage(PeopleRapImages.PRIMARY_BTN);
 			else
@@ -119,9 +114,7 @@ public class ContactButtonsComposite extends Composite {
 			btn.setLayoutData(gd);
 			return btn;
 		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"Unable to create primary button for node " + contactNode,
-					re);
+			throw new PeopleException("Unable to create primary button for node " + contactNode, re);
 		}
 	}
 
@@ -133,17 +126,14 @@ public class ContactButtonsComposite extends Composite {
 			public void widgetSelected(final SelectionEvent event) {
 				try {
 					// update primary cache
-					if (PeopleJcrUtils.isPrimary(parentVersionableNode,
-							contactNode))
-						PeopleJcrUtils.updatePrimaryCache(peopleService,
-								parentVersionableNode, contactNode, false);
+					if (PeopleJcrUtils.isPrimary(parentVersionableNode, contactNode))
+						PeopleJcrUtils.updatePrimaryCache(peopleService, parentVersionableNode, contactNode, false);
 
 					contactNode.remove();
 					formPart.markDirty();
 					formPart.refresh();
 				} catch (RepositoryException e) {
-					throw new PeopleException("unable to initialise deletion",
-							e);
+					throw new PeopleException("unable to initialise deletion", e);
 				}
 			}
 		});
@@ -155,8 +145,7 @@ public class ContactButtonsComposite extends Composite {
 
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
-				boolean hasChanged = PeopleJcrUtils.markAsPrimary(
-						peopleService, parentVersionableNode, contactNode);
+				boolean hasChanged = PeopleJcrUtils.markAsPrimary(peopleService, parentVersionableNode, contactNode);
 
 				if (hasChanged) {
 					formPart.markDirty();

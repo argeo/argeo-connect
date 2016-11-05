@@ -20,7 +20,6 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.core.versioning.ItemDiff;
 import org.argeo.connect.people.core.versioning.VersionDiff;
 import org.argeo.connect.people.core.versioning.VersionUtils;
@@ -76,7 +75,6 @@ public class HistoryLog extends LazyCTabControl {
 	public void createPartControl(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
-		UserAdminService userService = peopleService.getUserAdminService();
 		// Add info to be able to find the node via the data explorer
 		if (CurrentUser.isInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)) {
 			Label label = new Label(parent, SWT.WRAP);

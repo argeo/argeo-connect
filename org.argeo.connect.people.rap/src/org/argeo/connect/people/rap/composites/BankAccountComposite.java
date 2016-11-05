@@ -14,10 +14,7 @@ import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
-/**
- * Simple composite widget to display and edit information about a bank account
- * 
- */
+/** Simple composite to display and edit information about a bank account */
 public class BankAccountComposite extends Composite {
 	private static final long serialVersionUID = -3303030374442774568L;
 
@@ -29,8 +26,7 @@ public class BankAccountComposite extends Composite {
 	// Don't forget to unregister on dispose
 	private AbstractFormPart formPart;
 
-	public BankAccountComposite(Composite parent, int style,
-			AbstractPeopleEditor editor, Node bankAccount) {
+	public BankAccountComposite(Composite parent, int style, AbstractPeopleEditor editor, Node bankAccount) {
 		super(parent, style);
 		this.currAccount = bankAccount;
 		this.editor = editor;
@@ -66,8 +62,7 @@ public class BankAccountComposite extends Composite {
 
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Bank Number");
 		final Text bankNbTxt = toolkit.createText(parent, "", SWT.BORDER);
-		bankNbTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3,
-				1));
+		bankNbTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
 		// BIC / IBAN
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "BIC");
@@ -82,20 +77,15 @@ public class BankAccountComposite extends Composite {
 			public void refresh() {
 				super.refresh();
 				if (!holderTxt.isDisposed()) {
-					PeopleRapUtils.refreshFormTextWidget(editor, holderTxt,
-							currAccount, PeopleNames.PEOPLE_ACCOUNT_HOLDER);
-					PeopleRapUtils.refreshFormTextWidget(editor, bankNameTxt,
-							currAccount, PeopleNames.PEOPLE_BANK_NAME);
-					PeopleRapUtils.refreshFormTextWidget(editor, currencyTxt,
-							currAccount, PeopleNames.PEOPLE_CURRENCY);
-					PeopleRapUtils.refreshFormTextWidget(editor, accNbTxt,
-							currAccount, PeopleNames.PEOPLE_ACCOUNT_NB);
-					PeopleRapUtils.refreshFormTextWidget(editor, bankNbTxt,
-							currAccount, PeopleNames.PEOPLE_BANK_NB);
-					PeopleRapUtils.refreshFormTextWidget(editor, bicTxt,
-							currAccount, PeopleNames.PEOPLE_BIC);
-					PeopleRapUtils.refreshFormTextWidget(editor, ibanTxt,
-							currAccount, PeopleNames.PEOPLE_IBAN);
+					PeopleRapUtils.refreshFormTextWidget(editor, holderTxt, currAccount,
+							PeopleNames.PEOPLE_ACCOUNT_HOLDER);
+					PeopleRapUtils.refreshFormTextWidget(editor, bankNameTxt, currAccount,
+							PeopleNames.PEOPLE_BANK_NAME);
+					PeopleRapUtils.refreshFormTextWidget(editor, currencyTxt, currAccount, PeopleNames.PEOPLE_CURRENCY);
+					PeopleRapUtils.refreshFormTextWidget(editor, accNbTxt, currAccount, PeopleNames.PEOPLE_ACCOUNT_NB);
+					PeopleRapUtils.refreshFormTextWidget(editor, bankNbTxt, currAccount, PeopleNames.PEOPLE_BANK_NB);
+					PeopleRapUtils.refreshFormTextWidget(editor, bicTxt, currAccount, PeopleNames.PEOPLE_BIC);
+					PeopleRapUtils.refreshFormTextWidget(editor, ibanTxt, currAccount, PeopleNames.PEOPLE_IBAN);
 					holderTxt.getParent().layout(true, true);
 				}
 			}
@@ -106,20 +96,13 @@ public class BankAccountComposite extends Composite {
 		formPart.refresh();
 
 		// Listeners
-		PeopleRapUtils.addModifyListener(holderTxt, currAccount,
-				PeopleNames.PEOPLE_ACCOUNT_HOLDER, formPart);
-		PeopleRapUtils.addModifyListener(bankNameTxt, currAccount,
-				PeopleNames.PEOPLE_BANK_NAME, formPart);
-		PeopleRapUtils.addModifyListener(currencyTxt, currAccount,
-				PeopleNames.PEOPLE_CURRENCY, formPart);
-		PeopleRapUtils.addModifyListener(accNbTxt, currAccount,
-				PeopleNames.PEOPLE_ACCOUNT_NB, formPart);
-		PeopleRapUtils.addModifyListener(bankNbTxt, currAccount,
-				PeopleNames.PEOPLE_BANK_NB, formPart);
-		PeopleRapUtils.addModifyListener(bicTxt, currAccount,
-				PeopleNames.PEOPLE_BIC, formPart);
-		PeopleRapUtils.addModifyListener(ibanTxt, currAccount,
-				PeopleNames.PEOPLE_IBAN, formPart);
+		PeopleRapUtils.addModifyListener(holderTxt, currAccount, PeopleNames.PEOPLE_ACCOUNT_HOLDER, formPart);
+		PeopleRapUtils.addModifyListener(bankNameTxt, currAccount, PeopleNames.PEOPLE_BANK_NAME, formPart);
+		PeopleRapUtils.addModifyListener(currencyTxt, currAccount, PeopleNames.PEOPLE_CURRENCY, formPart);
+		PeopleRapUtils.addModifyListener(accNbTxt, currAccount, PeopleNames.PEOPLE_ACCOUNT_NB, formPart);
+		PeopleRapUtils.addModifyListener(bankNbTxt, currAccount, PeopleNames.PEOPLE_BANK_NB, formPart);
+		PeopleRapUtils.addModifyListener(bicTxt, currAccount, PeopleNames.PEOPLE_BIC, formPart);
+		PeopleRapUtils.addModifyListener(ibanTxt, currAccount, PeopleNames.PEOPLE_IBAN, formPart);
 
 		formPart.initialize(form);
 		form.addPart(formPart);

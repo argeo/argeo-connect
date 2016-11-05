@@ -28,7 +28,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 /**
  * Simple widget composite to display and edit contact information. Must be
  * disposed and re-created when the corresponding form part refreshes
- * 
  */
 public class ContactComposite extends Composite {
 	private static final long serialVersionUID = -789885142022513273L;
@@ -43,10 +42,9 @@ public class ContactComposite extends Composite {
 	private final AbstractFormPart formPart;
 	private final boolean isCheckedOut;
 
-	public ContactComposite(Composite parent, int style,
-			AbstractPeopleEditor editor, AbstractFormPart formPart,
-			Node contactNode, Node parentVersionableNode,
-			PeopleWorkbenchService peopleUiService, PeopleService peopleService) {
+	public ContactComposite(Composite parent, int style, AbstractPeopleEditor editor, AbstractFormPart formPart,
+			Node contactNode, Node parentVersionableNode, PeopleWorkbenchService peopleUiService,
+			PeopleService peopleService) {
 		super(parent, style);
 		this.peopleService = peopleService;
 		this.peopleUiService = peopleUiService;
@@ -66,9 +64,8 @@ public class ContactComposite extends Composite {
 		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 
 		// buttons
-		Composite buttCmp = new ContactButtonsComposite(editor, formPart,
-				parent, SWT.NO_FOCUS, contactNode, parentVersionableNode,
-				peopleUiService, peopleService);
+		Composite buttCmp = new ContactButtonsComposite(editor, formPart, parent, SWT.NO_FOCUS, contactNode,
+				parentVersionableNode, peopleUiService, peopleService);
 		toolkit.adapt(buttCmp, false, false);
 		buttCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
@@ -83,11 +80,9 @@ public class ContactComposite extends Composite {
 
 	protected void populateReadOnlyPanel(final Composite readOnlyPanel) {
 		readOnlyPanel.setLayout(new GridLayout());
-		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "",
-				SWT.WRAP);
+		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "", SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		String addressHtml = PeopleUiSnippets.getContactDisplaySnippet(
-				peopleService, contactNode);
+		String addressHtml = PeopleUiSnippets.getContactDisplaySnippet(peopleService, contactNode);
 		readOnlyInfoLbl.setText(addressHtml);
 	}
 
@@ -98,9 +93,8 @@ public class ContactComposite extends Composite {
 		rl.marginWidth = 0;
 		parent.setLayout(rl);
 
-		boolean hasCat = !(JcrUiUtils.isNodeType(contactNode,
-				PeopleTypes.PEOPLE_URL) || JcrUiUtils.isNodeType(
-				contactNode, PeopleTypes.PEOPLE_EMAIL));
+		boolean hasCat = !(JcrUiUtils.isNodeType(contactNode, PeopleTypes.PEOPLE_URL)
+				|| JcrUiUtils.isNodeType(contactNode, PeopleTypes.PEOPLE_EMAIL));
 
 		// The widgets
 		final Text valueTxt = createAddressTxt(parent, "Value", 150);
@@ -108,36 +102,30 @@ public class ContactComposite extends Composite {
 		final Combo catCmb = hasCat ? new Combo(parent, SWT.READ_ONLY) : null;
 
 		if (catCmb != null) {
-			catCmb.setItems(peopleService.getContactService()
-					.getContactPossibleValues(contactNode,
-							PeopleNames.PEOPLE_CONTACT_CATEGORY));
+			catCmb.setItems(peopleService.getContactService().getContactPossibleValues(contactNode,
+					PeopleNames.PEOPLE_CONTACT_CATEGORY));
 			catCmb.select(0);
 		}
 
-		PeopleRapUtils.refreshFormText(editor, labelTxt, contactNode,
-				PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
-		PeopleRapUtils.refreshFormText(editor, valueTxt, contactNode,
-				PeopleNames.PEOPLE_CONTACT_VALUE, "Value");
+		PeopleRapUtils.refreshFormText(editor, labelTxt, contactNode, PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
+		PeopleRapUtils.refreshFormText(editor, valueTxt, contactNode, PeopleNames.PEOPLE_CONTACT_VALUE, "Value");
 		if (catCmb != null)
-			PeopleRapUtils.refreshFormCombo(editor, catCmb, contactNode,
-					PeopleNames.PEOPLE_CONTACT_CATEGORY);
+			PeopleRapUtils.refreshFormCombo(editor, catCmb, contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY);
 
 		// Listeners
-		PeopleRapUtils.addTxtModifyListener(formPart, valueTxt, contactNode,
-				PeopleNames.PEOPLE_CONTACT_VALUE, PropertyType.STRING);
-		PeopleRapUtils.addTxtModifyListener(formPart, labelTxt, contactNode,
-				PeopleNames.PEOPLE_CONTACT_LABEL, PropertyType.STRING);
+		PeopleRapUtils.addTxtModifyListener(formPart, valueTxt, contactNode, PeopleNames.PEOPLE_CONTACT_VALUE,
+				PropertyType.STRING);
+		PeopleRapUtils.addTxtModifyListener(formPart, labelTxt, contactNode, PeopleNames.PEOPLE_CONTACT_LABEL,
+				PropertyType.STRING);
 		if (catCmb != null)
-			PeopleRapUtils.addComboSelectionListener(formPart, catCmb,
-					contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY,
+			PeopleRapUtils.addComboSelectionListener(formPart, catCmb, contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY,
 					PropertyType.STRING);
 	}
 
 	protected Text createAddressTxt(Composite parent, String msg, int width) {
 		Text text = toolkit.createText(parent, null, SWT.BORDER);
 		text.setMessage(msg);
-		text.setLayoutData(width == 0 ? new RowData() : new RowData(width,
-				SWT.DEFAULT));
+		text.setLayoutData(width == 0 ? new RowData() : new RowData(width, SWT.DEFAULT));
 		return text;
 	}
 

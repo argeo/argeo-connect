@@ -146,5 +146,4 @@ public class AskTitleDescriptionDialog extends TrayDialog {
 		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		return text;
 	}
-
 }

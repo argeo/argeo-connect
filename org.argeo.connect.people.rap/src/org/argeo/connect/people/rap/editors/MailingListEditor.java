@@ -22,7 +22,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.rap.PeopleRapConstants;
 import org.argeo.connect.people.rap.PeopleRapPlugin;
 import org.argeo.connect.people.rap.PeopleWorkbenchService;
@@ -83,7 +82,6 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 
 	// Context
 	private Session session;
-	private UserAdminService userService;
 
 	// UI objects
 	protected FormToolkit toolkit;
@@ -104,7 +102,6 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		EntityEditorInput sei = (EntityEditorInput) getEditorInput();
 
 		// Initialise context
-		userService = peopleService.getUserAdminService();
 		session = JcrUiUtils.login(repository);
 		mailingList = JcrUiUtils.getNodeByIdentifier(session, sei.getUid());
 
