@@ -62,8 +62,7 @@ public class PeopleRapUtils {
 
 	// Experimental
 	public static PeopleService getPeopleService() {
-		return (PeopleService) Display.getDefault().getData(
-				PeopleRapConstants.KEY_PEOPLE_SERVICE);
+		return (PeopleService) Display.getDefault().getData(PeopleRapConstants.KEY_PEOPLE_SERVICE);
 	}
 
 	/**
@@ -72,8 +71,7 @@ public class PeopleRapUtils {
 	 * based upon argeo framework that use the workbench)
 	 */
 	public static IWorkbenchPage getActivePage() {
-		return WorkbenchUiPlugin.getDefault().getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage();
+		return WorkbenchUiPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
 	}
 
 	/**
@@ -95,8 +93,7 @@ public class PeopleRapUtils {
 	 * 
 	 * If the property does not yet exits, it is not created and the
 	 */
-	public static void refreshFormDateTimeWidget(CmsEditable editable,
-			DateTime dateTime, Node node, String propName) {
+	public static void refreshFormDateTimeWidget(CmsEditable editable, DateTime dateTime, Node node, String propName) {
 		try {
 			Calendar dateToDisplay = null;
 			if (node.hasProperty(propName))
@@ -104,15 +101,13 @@ public class PeopleRapUtils {
 			else
 				dateToDisplay = GregorianCalendar.getInstance();
 
-			dateTime.setDate(dateToDisplay.get(Calendar.YEAR),
-					dateToDisplay.get(Calendar.MONTH),
+			dateTime.setDate(dateToDisplay.get(Calendar.YEAR), dateToDisplay.get(Calendar.MONTH),
 					dateToDisplay.get(Calendar.DAY_OF_MONTH));
 			dateTime.setTime(12, 0, 0);
 			dateTime.setEnabled(editable.isEditing());
 		} catch (RepositoryException re) {
 			throw new PeopleException(
-					"unable to refresh DateTime widget for node " + node
-							+ " and property " + propName, re);
+					"unable to refresh DateTime widget for node " + node + " and property " + propName, re);
 		}
 	}
 
@@ -139,8 +134,7 @@ public class PeopleRapUtils {
 	 * Shortcut to refresh a <code>Text</code> widget given a Node in a form and
 	 * a property Name. Also manages its enable state
 	 */
-	public static String refreshFormTextWidget(CmsEditable editable, Text text,
-			Node node, String propName) {
+	public static String refreshFormTextWidget(CmsEditable editable, Text text, Node node, String propName) {
 		String newStr = JcrUiUtils.get(node, propName);
 		String oldStr = text.getText();
 		if (!newStr.equals(oldStr))
@@ -154,11 +148,10 @@ public class PeopleRapUtils {
 	 * a property Name. Also manages its enable state and set a default message
 	 * if corresponding Text value is empty
 	 */
-	public static String refreshFormText(CmsEditable editable, Text text,
-			Node entity, String propName, String defaultMsg) {
+	public static String refreshFormText(CmsEditable editable, Text text, Node entity, String propName,
+			String defaultMsg) {
 		String tmpStr = refreshFormTextWidget(editable, text, entity, propName);
-		if (EclipseUiUtils.isEmpty(tmpStr)
-				&& EclipseUiUtils.notEmpty(defaultMsg))
+		if (EclipseUiUtils.isEmpty(tmpStr) && EclipseUiUtils.notEmpty(defaultMsg))
 			text.setMessage(defaultMsg);
 		return tmpStr;
 	}
@@ -167,8 +160,7 @@ public class PeopleRapUtils {
 	 * Shortcut to select an item of a <code>Combo</code> widget given a Node in
 	 * a form, a property Name. Also manages its enable state.
 	 */
-	public static void refreshFormCombo(CmsEditable editable, Combo combo,
-			Node node, String propName) {
+	public static void refreshFormCombo(CmsEditable editable, Combo combo, Node node, String propName) {
 		String currValue = JcrUiUtils.get(node, propName);
 		if (EclipseUiUtils.notEmpty(currValue))
 			combo.select(combo.indexOf(currValue));
@@ -179,8 +171,8 @@ public class PeopleRapUtils {
 	 * Shortcut to refresh a Check box <code>Button</code> with an encoded
 	 * boolean flag widget given a node in a form and a property name.
 	 */
-	public static boolean refreshFlagFormCheckBox(CmsEditable editable,
-			Button button, Node entity, String propName, int cache) {
+	public static boolean refreshFlagFormCheckBox(CmsEditable editable, Button button, Node entity, String propName,
+			int cache) {
 		long val = 0;
 		Boolean tmp = null;
 		try {
@@ -192,8 +184,7 @@ public class PeopleRapUtils {
 				tmp = false;
 			button.setEnabled(editable.isEditing());
 		} catch (RepositoryException re) {
-			throw new PeopleException("unable get boolean value for property "
-					+ propName);
+			throw new PeopleException("unable get boolean value for property " + propName);
 		}
 		return tmp;
 	}
@@ -202,8 +193,7 @@ public class PeopleRapUtils {
 	 * Shortcut to refresh a Check box <code>Button</code> widget given a Node
 	 * in a form and a property Name.
 	 */
-	public static boolean refreshFormCheckBox(CmsEditable editable,
-			Button button, Node entity, String propName) {
+	public static boolean refreshFormCheckBox(CmsEditable editable, Button button, Node entity, String propName) {
 		Boolean tmp = null;
 		try {
 			if (entity.hasProperty(propName)) {
@@ -213,8 +203,7 @@ public class PeopleRapUtils {
 				tmp = false;
 			button.setEnabled(editable.isEditing());
 		} catch (RepositoryException re) {
-			throw new PeopleException("unable get boolean value for property "
-					+ propName);
+			throw new PeopleException("unable get boolean value for property " + propName);
 		}
 		return tmp;
 	}
@@ -223,8 +212,7 @@ public class PeopleRapUtils {
 	 * Shortcut to refresh the text underlying a DropDown widget given a Node
 	 * and a property Name.
 	 */
-	public static String refreshDropDown(PeopleAbstractDropDown dropDown,
-			Node entity, String propName) {
+	public static String refreshDropDown(PeopleAbstractDropDown dropDown, Node entity, String propName) {
 		String tmp = null;
 		try {
 			if (entity.hasProperty(propName)) {
@@ -233,8 +221,7 @@ public class PeopleRapUtils {
 			} else
 				dropDown.reset(null);
 		} catch (RepositoryException re) {
-			throw new PeopleException("unable get boolean value for property "
-					+ propName);
+			throw new PeopleException("unable get boolean value for property " + propName);
 		}
 		return tmp;
 	}
@@ -243,21 +230,17 @@ public class PeopleRapUtils {
 	 * Shortcut to refresh a radio <code>Button</code> widget given a Node in a
 	 * form and a property Name. Also manage its enabled state
 	 */
-	public static void refreshFormRadio(AbstractPeopleEditor editor,
-			Button button, Node entity, String propName) {
+	public static void refreshFormRadio(AbstractPeopleEditor editor, Button button, Node entity, String propName) {
 		Boolean tmp = null;
 		try {
 			if (entity.hasProperty(propName)) {
-				tmp = entity.getProperty(propName).getString()
-						.equals(button.getText());
+				tmp = entity.getProperty(propName).getString().equals(button.getText());
 			} else
 				tmp = false;
 			button.setSelection(tmp);
 			button.setEnabled(editor.isEditing());
 		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"Unable to get boolean value for property " + propName
-							+ " on " + entity, re);
+			throw new PeopleException("Unable to get boolean value for property " + propName + " on " + entity, re);
 		}
 	}
 
@@ -273,9 +256,8 @@ public class PeopleRapUtils {
 	 * @param viewer
 	 * @return
 	 */
-	public static SelectionAdapter getSelectionAdapter(final int index,
-			final int propertyType, final String selectorName,
-			final String propertyName, final RowViewerComparator comparator,
+	public static SelectionAdapter getSelectionAdapter(final int index, final int propertyType,
+			final String selectorName, final String propertyName, final RowViewerComparator comparator,
 			final TableViewer viewer) {
 		SelectionAdapter selectionAdapter = new SelectionAdapter() {
 			private static final long serialVersionUID = -3452356616673385039L;
@@ -310,9 +292,8 @@ public class PeopleRapUtils {
 	 * @param viewer
 	 * @return
 	 */
-	public static SelectionAdapter getSelectionAdapter(final int index,
-			final int propertyType, final String propertyName,
-			final NodeViewerComparator comparator, final TableViewer viewer) {
+	public static SelectionAdapter getSelectionAdapter(final int index, final int propertyType,
+			final String propertyName, final NodeViewerComparator comparator, final TableViewer viewer) {
 		SelectionAdapter selectionAdapter = new SelectionAdapter() {
 			private static final long serialVersionUID = -3452356616673385039L;
 
@@ -339,19 +320,17 @@ public class PeopleRapUtils {
 	 * widget that is bound a JCR String Property. Any change in the text is
 	 * immediately stored in the active session, but no save is done.
 	 */
-	public static void addSelectionListener(final DateTime dateTime,
-			final Node node, final String propName, final AbstractFormPart part) {
+	public static void addSelectionListener(final DateTime dateTime, final Node node, final String propName,
+			final AbstractFormPart part) {
 		dateTime.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Calendar value = GregorianCalendar.getInstance();
-				value.set(dateTime.getYear(), dateTime.getMonth(),
-						dateTime.getDay(), dateTime.getHours(),
+				value.set(dateTime.getYear(), dateTime.getMonth(), dateTime.getDay(), dateTime.getHours(),
 						dateTime.getMinutes());
-				if (JcrUiUtils.setJcrProperty(node, propName,
-						PropertyType.DATE, value))
+				if (JcrUiUtils.setJcrProperty(node, propName, PropertyType.DATE, value))
 					part.markDirty();
 			}
 		});
@@ -363,16 +342,15 @@ public class PeopleRapUtils {
 	 * change in the selection is immediately stored in the active session, but
 	 * not saved
 	 */
-	public static void addCheckBoxListener(final Button button,
-			final Node node, final String propName, final AbstractFormPart part) {
+	public static void addCheckBoxListener(final Button button, final Node node, final String propName,
+			final AbstractFormPart part) {
 		button.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				boolean value = button.getSelection();
-				if (JcrUiUtils.setJcrProperty(node, propName,
-						PropertyType.BOOLEAN, value))
+				if (JcrUiUtils.setJcrProperty(node, propName, PropertyType.BOOLEAN, value))
 					part.markDirty();
 			}
 		});
@@ -384,9 +362,8 @@ public class PeopleRapUtils {
 	 * change in the selection is immediately stored in the active session, but
 	 * not saved
 	 */
-	public static void addFlagCheckBoxListener(final Button button,
-			final Node node, final String propName, final int cache,
-			final AbstractFormPart part) {
+	public static void addFlagCheckBoxListener(final Button button, final Node node, final String propName,
+			final int cache, final AbstractFormPart part) {
 		button.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
@@ -400,8 +377,7 @@ public class PeopleRapUtils {
 				boolean oldFlag = (oldValue & cache) != 0;
 				if (value != oldFlag) {
 					long newValue = oldValue ^ cache;
-					JcrUiUtils.setJcrProperty(node, propName,
-							PropertyType.LONG, newValue);
+					JcrUiUtils.setJcrProperty(node, propName, PropertyType.LONG, newValue);
 					part.markDirty();
 				}
 			}
@@ -413,15 +389,14 @@ public class PeopleRapUtils {
 	 * that is bound a JCR String Property. Any change in the text is
 	 * immediately stored in the active session, but no save is done.
 	 */
-	public static void addModifyListener(final Text text, final Node node,
-			final String propName, final AbstractFormPart part) {
+	public static void addModifyListener(final Text text, final Node node, final String propName,
+			final AbstractFormPart part) {
 		text.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				if (JcrUiUtils.setJcrProperty(node, propName,
-						PropertyType.STRING, text.getText()))
+				if (JcrUiUtils.setJcrProperty(node, propName, PropertyType.STRING, text.getText()))
 					part.markDirty();
 			}
 		});
@@ -430,16 +405,14 @@ public class PeopleRapUtils {
 	/**
 	 * Shortcut to add a Text Modifylistener that updates a property on a Node
 	 */
-	public static void addTxtModifyListener(final AbstractFormPart part,
-			final Text text, final Node entity, final String propName,
-			final int propType) {
+	public static void addTxtModifyListener(final AbstractFormPart part, final Text text, final Node entity,
+			final String propName, final int propType) {
 		text.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 1549789407363632491L;
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				if (JcrUiUtils.setJcrProperty(entity, propName, propType,
-						text.getText()))
+				if (JcrUiUtils.setJcrProperty(entity, propName, propType, text.getText()))
 					part.markDirty();
 			}
 		});
@@ -449,9 +422,8 @@ public class PeopleRapUtils {
 	 * Shortcut to add a SelectionListener on a combo that updates a property on
 	 * a Node
 	 */
-	public static void addComboSelectionListener(final AbstractFormPart part,
-			final Combo combo, final Node entity, final String propName,
-			final int propType) {
+	public static void addComboSelectionListener(final AbstractFormPart part, final Combo combo, final Node entity,
+			final String propName, final int propType) {
 		combo.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
@@ -460,8 +432,7 @@ public class PeopleRapUtils {
 				int index = combo.getSelectionIndex();
 				if (index != -1) {
 					String selectedCategory = combo.getItem(index);
-					if (JcrUiUtils.setJcrProperty(entity, propName, propType,
-							selectedCategory))
+					if (JcrUiUtils.setJcrProperty(entity, propName, propType, selectedCategory))
 						part.markDirty();
 				}
 
@@ -473,13 +444,10 @@ public class PeopleRapUtils {
 	 * Shortcut to add a Text Modifylistener that updates a LONG property on a
 	 * Node. Checks the input validity while the user is typing
 	 */
-	public static void addNbOnlyTxtModifyListener(IWorkbench workbench,
-			final AbstractFormPart part, final Text text, final Node entity,
-			final String propName, final int propType) {
-		final ControlDecoration decoration = new ControlDecoration(text,
-				SWT.TOP | SWT.LEFT);
-		decoration.setImage(workbench.getSharedImages().getImage(
-				ISharedImages.IMG_DEC_FIELD_ERROR));
+	public static void addNbOnlyTxtModifyListener(IWorkbench workbench, final AbstractFormPart part, final Text text,
+			final Node entity, final String propName, final int propType) {
+		final ControlDecoration decoration = new ControlDecoration(text, SWT.TOP | SWT.LEFT);
+		decoration.setImage(workbench.getSharedImages().getImage(ISharedImages.IMG_DEC_FIELD_ERROR));
 		decoration.hide();
 
 		text.addModifyListener(new ModifyListener() {
@@ -488,20 +456,16 @@ public class PeopleRapUtils {
 			public void modifyText(ModifyEvent event) {
 				String lengthStr = text.getText();
 				if (!PeopleUiUtils.isNumbers(lengthStr)) {
-					text.setBackground(new Color(text.getDisplay(), 250, 200,
-							150));
+					text.setBackground(new Color(text.getDisplay(), 250, 200, 150));
 					decoration.show();
-					decoration
-							.setDescriptionText("Length can only be a number: "
-									+ lengthStr);
+					decoration.setDescriptionText("Length can only be a number: " + lengthStr);
 				} else {
 					text.setBackground(null);
 					decoration.hide();
 					Long length = null;
 					if (EclipseUiUtils.notEmpty(lengthStr))
 						length = new Long(lengthStr);
-					if (JcrUiUtils.setJcrProperty(entity, propName, propType,
-							length))
+					if (JcrUiUtils.setJcrProperty(entity, propName, propType, length))
 						part.markDirty();
 				}
 			}
@@ -518,10 +482,8 @@ public class PeopleRapUtils {
 	 * @param basePath
 	 * @return
 	 */
-	public static Link createOpenSearchEditorLink(
-			final PeopleWorkbenchService peopleWorkbenchService,
-			Composite parent, final String label, final String nodeType,
-			final String basePath) {
+	public static Link createOpenSearchEditorLink(final PeopleWorkbenchService peopleWorkbenchService, Composite parent,
+			final String label, final String nodeType, final String basePath) {
 		Link link = new Link(parent, SWT.NONE);
 		link.setText("<a>" + label + "</a>");
 		link.setLayoutData(EclipseUiUtils.fillWidth());
@@ -534,9 +496,8 @@ public class PeopleRapUtils {
 				params.put(OpenSearchEntityEditor.PARAM_NODE_TYPE, nodeType);
 				params.put(OpenSearchEntityEditor.PARAM_EDITOR_NAME, label);
 				params.put(OpenSearchEntityEditor.PARAM_BASE_PATH, basePath);
-				CommandUtils.callCommand(
-						peopleWorkbenchService.getOpenSearchEntityEditorCmdId(),
-						params);
+				String cmdId = peopleWorkbenchService.getOpenSearchEntityEditorCmdId();
+				CommandUtils.callCommand(cmdId, params);
 			}
 		});
 		return link;
@@ -552,9 +513,8 @@ public class PeopleRapUtils {
 	 * @param label
 	 * @return
 	 */
-	public static Link createOpenEditorLink(final IWorkbenchPage iwPage,
-			Composite parent, final IEditorInput editorInput,
-			final String editorId, final String label) {
+	public static Link createOpenEditorLink(final IWorkbenchPage iwPage, Composite parent,
+			final IEditorInput editorInput, final String editorId, final String label) {
 		Link link = new Link(parent, SWT.NONE);
 		link.setText("<a>" + label + "</a>");
 		link.setLayoutData(EclipseUiUtils.fillWidth());
@@ -571,8 +531,7 @@ public class PeopleRapUtils {
 						iwPage.activate(iep);
 
 				} catch (PartInitException e) {
-					throw new PeopleException("Unable to open editor with ID "
-							+ editorId, e);
+					throw new PeopleException("Unable to open editor with ID " + editorId, e);
 				}
 			}
 		});
@@ -587,8 +546,7 @@ public class PeopleRapUtils {
 	 * @param entity
 	 * @return
 	 */
-	public static Link createOpenEntityEditorLink(
-			final PeopleWorkbenchService peopleUiService, Composite parent,
+	public static Link createOpenEntityEditorLink(final PeopleWorkbenchService peopleUiService, Composite parent,
 			final String label, final Node entity) {
 		Link link = new Link(parent, SWT.NONE);
 		link.setText("<a>" + label + "</a>");
@@ -599,10 +557,8 @@ public class PeopleRapUtils {
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				Map<String, String> params = new HashMap<String, String>();
-				params.put(OpenEntityEditor.PARAM_JCR_ID,
-						JcrUiUtils.getIdentifier(entity));
-				CommandUtils.callCommand(
-						peopleUiService.getOpenEntityEditorCmdId(), params);
+				params.put(OpenEntityEditor.PARAM_JCR_ID, JcrUiUtils.getIdentifier(entity));
+				CommandUtils.callCommand(peopleUiService.getOpenEntityEditorCmdId(), params);
 			}
 		});
 		return link;
@@ -624,14 +580,11 @@ public class PeopleRapUtils {
 	}
 
 	/** Creates a text widget with RowData already set */
-	public static Text createRDText(FormToolkit toolkit, Composite parent,
-			String msg, String toolTip, int width) {
-		Text text = toolkit.createText(parent, "", SWT.BORDER | SWT.SINGLE
-				| SWT.LEFT);
+	public static Text createRDText(FormToolkit toolkit, Composite parent, String msg, String toolTip, int width) {
+		Text text = toolkit.createText(parent, "", SWT.BORDER | SWT.SINGLE | SWT.LEFT);
 		text.setMessage(msg);
 		text.setToolTipText(toolTip);
-		text.setLayoutData(width == 0 ? new RowData() : new RowData(width,
-				SWT.DEFAULT));
+		text.setLayoutData(width == 0 ? new RowData() : new RowData(width, SWT.DEFAULT));
 		return text;
 	}
 
@@ -639,8 +592,7 @@ public class PeopleRapUtils {
 	 * Creates the basic right aligned bold label that is used in various forms
 	 * using a pre-defined toolkit.
 	 */
-	public static Label createBoldLabel(FormToolkit toolkit, Composite parent,
-			String value) {
+	public static Label createBoldLabel(FormToolkit toolkit, Composite parent, String value) {
 
 		// We add a blank space before to workaround the cropping of the word
 		// first letter in some OS/Browsers (typically MAC/Firefox 31 )
@@ -666,8 +618,7 @@ public class PeopleRapUtils {
 	 * Creates a basic right aligned bold label with no specific toolkit.
 	 * precise vertical alignment
 	 */
-	public static Label createBoldLabel(Composite parent, String value,
-			int verticalAlign) {
+	public static Label createBoldLabel(Composite parent, String value, int verticalAlign) {
 		Label label = new Label(parent, SWT.RIGHT);
 		label.setText(" " + value);
 		label.setFont(EclipseUiUtils.getBoldFont(parent));
@@ -686,10 +637,9 @@ public class PeopleRapUtils {
 	 * @param colSpan
 	 * @return
 	 */
-	public static Text createGDText(FormToolkit toolkit, Composite parent,
-			String msg, String toolTip, int width, int colSpan) {
-		Text text = toolkit.createText(parent, "", SWT.BORDER | SWT.SINGLE
-				| SWT.LEFT);
+	public static Text createGDText(FormToolkit toolkit, Composite parent, String msg, String toolTip, int width,
+			int colSpan) {
+		Text text = toolkit.createText(parent, "", SWT.BORDER | SWT.SINGLE | SWT.LEFT);
 		text.setMessage(msg);
 		text.setToolTipText(toolTip);
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
@@ -699,8 +649,7 @@ public class PeopleRapUtils {
 		return text;
 	}
 
-	public static void setTableDefaultStyle(TableViewer viewer,
-			int customItemHeight) {
+	public static void setTableDefaultStyle(TableViewer viewer, int customItemHeight) {
 		setTableDefaultStyle(viewer.getTable(), customItemHeight);
 	}
 
@@ -733,8 +682,7 @@ public class PeopleRapUtils {
 	 * @param bottom
 	 * @return
 	 */
-	public static FormData createformData(int left, int top, int right,
-			int bottom) {
+	public static FormData createformData(int left, int top, int right, int bottom) {
 		FormData formData = new FormData();
 		formData.left = new FormAttachment(left, 0);
 		formData.top = new FormAttachment(top, 0);
