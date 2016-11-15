@@ -44,16 +44,10 @@ public class ResourceServiceImpl implements ResourceService {
 	}
 
 	@Override
-	public void initialiseResources(Session adminSession)
-			throws RepositoryException {
-		Node resourceParent = JcrUtils.mkdirs(adminSession,
-				peopleService.getBasePath(PeopleConstants.PEOPLE_RESOURCE));
-		JcrUtils.mkdirs(resourceParent,
-				PeopleConstants.PEOPLE_RESOURCE_TEMPLATE,
-				NodeType.NT_UNSTRUCTURED);
-		JcrUtils.mkdirs(resourceParent,
-				PeopleConstants.PEOPLE_RESOURCE_TAG_LIKE,
-				NodeType.NT_UNSTRUCTURED);
+	public void initialiseResources(Session adminSession) throws RepositoryException {
+		Node resourceParent = JcrUtils.mkdirs(adminSession, peopleService.getBasePath(PeopleConstants.PEOPLE_RESOURCE));
+		JcrUtils.mkdirs(resourceParent, PeopleConstants.PEOPLE_RESOURCE_TEMPLATE, NodeType.NT_UNSTRUCTURED);
+		JcrUtils.mkdirs(resourceParent, PeopleConstants.PEOPLE_RESOURCE_TAG_LIKE, NodeType.NT_UNSTRUCTURED);
 	}
 
 	/* LABEL FOR NODE TYPES AND PROPERTY NAMES */
@@ -81,16 +75,14 @@ public class ResourceServiceImpl implements ResourceService {
 
 	@Override
 	public String getItemLabel(String itemName, String langIso) {
-		log.warn("Item label retrieval is not yet internationnalized. "
-				+ "Returning english default label for " + itemName
-				+ " instead.");
+		log.warn("Item label retrieval is not yet internationnalized. " + "Returning english default label for "
+				+ itemName + " instead.");
 		return getItemDefaultEnLabel(itemName);
 	}
 
 	/* TEMPLATES AND CORRESPONDING CATALOGUES */
 	@Override
-	public List<String> getTemplateCatalogue(Session session,
-			String templateId, String propertyName, String filter) {
+	public List<String> getTemplateCatalogue(Session session, String templateId, String propertyName, String filter) {
 		Node node = getNodeTemplate(session, templateId);
 		if (node != null)
 			return getTemplateCatalogue(node, propertyName, filter);
@@ -100,93 +92,78 @@ public class ResourceServiceImpl implements ResourceService {
 	}
 
 	@Override
-	public List<String> getTemplateCatalogue(Node node, String propertyName,
-			String filter) {
+	public List<String> getTemplateCatalogue(Node node, String propertyName, String filter) {
 		List<String> result = new ArrayList<String>();
 		try {
 			if (node.hasProperty(propertyName)) {
 				Value[] values = node.getProperty(propertyName).getValues();
 				for (Value value : values) {
 					String curr = value.getString();
-					if (isEmpty(filter)
-							|| notEmpty(curr)
-							&& curr.toLowerCase()
-									.contains(filter.toLowerCase()))
+					if (isEmpty(filter) || notEmpty(curr) && curr.toLowerCase().contains(filter.toLowerCase()))
 						result.add(curr);
 				}
 			}
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get " + propertyName
-					+ " values for template " + node, re);
+			throw new PeopleException("Unable to get " + propertyName + " values for template " + node, re);
 		}
 		return result;
 	}
 
 	@Override
 	public Node getNodeTemplate(Session session, String templateId) {
-		String path = getPathForId(PeopleConstants.RESOURCE_TYPE_ID_TEMPLATE,
-				templateId);
+		String path = getPathForId(PeopleConstants.RESOURCE_TYPE_ID_TEMPLATE, templateId);
 		try {
 			if (session.nodeExists(path)) {
 				return session.getNode(path);
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrieve template instance "
-					+ "at path " + path + " for templateId " + templateId, e);
+			throw new PeopleException(
+					"Unable to retrieve template instance " + "at path " + path + " for templateId " + templateId, e);
 		}
 		return null;
 	}
 
 	@Override
-	public Node createTemplateForType(Session session, String nodeType,
-			String templateId) {
+	public Node createTemplateForType(Session session, String nodeType, String templateId) {
 		String currId = templateId == null ? nodeType : templateId;
 		Node node = getNodeTemplate(session, currId);
 		if (node != null)
 			return node;
 		else {
-			String path = getPathForId(
-					PeopleConstants.RESOURCE_TYPE_ID_TEMPLATE, currId);
+			String path = getPathForId(PeopleConstants.RESOURCE_TYPE_ID_TEMPLATE, currId);
 			String parPath = JcrUtils.parentPath(path);
 			try {
 				if (!session.nodeExists(parPath))
 					throw new PeopleException(
-							"Default tree structure "
-									+ "for template resources must have been created. "
-									+ "Please fix this before trying to create template "
-									+ currId);
+							"Default tree structure " + "for template resources must have been created. "
+									+ "Please fix this before trying to create template " + currId);
 				Node parent = session.getNode(parPath);
-				Node template = parent.addNode(currId,
-						PeopleTypes.PEOPLE_NODE_TEMPLATE);
+				Node template = parent.addNode(currId, PeopleTypes.PEOPLE_NODE_TEMPLATE);
 				template.setProperty(PeopleNames.PEOPLE_TEMPLATE_ID, currId);
 				return template;
 			} catch (RepositoryException e) {
-				throw new PeopleException("Unable to create new temaple "
-						+ currId + " at path " + path, e);
+				throw new PeopleException("Unable to create new temaple " + currId + " at path " + path, e);
 			}
 		}
 	}
 
 	@Override
-	public NodeIterator getCatalogueValueInstances(Session session,
-			String entityType, String propName, String value) {
+	public NodeIterator getCatalogueValueInstances(Session session, String entityType, String propName, String value) {
 		try {
 			QueryManager qm = session.getWorkspace().getQueryManager();
-			Query query = qm.createQuery("select * from [" + entityType
-					+ "] as nodes where [" + propName + "]='" + value + "'"
-					+ " ", Query.JCR_SQL2);
+			Query query = qm.createQuery(
+					"select * from [" + entityType + "] as nodes where [" + propName + "]='" + value + "'" + " ",
+					Query.JCR_SQL2);
 			return query.execute().getNodes();
 		} catch (RepositoryException ee) {
-			throw new PeopleException(
-					"Unable to retrieve catalogue value instances for type "
-							+ entityType + " and property " + propName
-							+ " for value " + value, ee);
+			throw new PeopleException("Unable to retrieve catalogue value instances for type " + entityType
+					+ " and property " + propName + " for value " + value, ee);
 		}
 	}
 
 	@Override
-	public void updateCatalogueValue(Node templateNode, String taggableType,
-			String propertyName, String oldValue, String newValue) {
+	public void updateCatalogueValue(Node templateNode, String taggableType, String propertyName, String oldValue,
+			String newValue) {
 		try {
 
 			if (isEmpty(oldValue))
@@ -203,154 +180,122 @@ public class ResourceServiceImpl implements ResourceService {
 				} else
 					newValues.add(currValStr);
 			}
-			templateNode.setProperty(propertyName,
-					newValues.toArray(new String[0]));
+			templateNode.setProperty(propertyName, newValues.toArray(new String[0]));
 
 			// TODO use a transaction
 			// Retrieve all node that reference this tag and update them
-			NodeIterator nit = getCatalogueValueInstances(
-					JcrUiUtils.getSession(templateNode), taggableType,
+			NodeIterator nit = getCatalogueValueInstances(JcrUiUtils.getSession(templateNode), taggableType,
 					propertyName, oldValue);
 			while (nit.hasNext())
 				updateOneTag(nit.nextNode(), propertyName, oldValue, newValue);
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to update " + templateNode
-					+ " with values on " + taggableType + " for property "
-					+ propertyName + " with old value '" + oldValue
-					+ "' and new value '" + newValue + "'.", e);
+			throw new PeopleException(
+					"Unable to update " + templateNode + " with values on " + taggableType + " for property "
+							+ propertyName + " with old value '" + oldValue + "' and new value '" + newValue + "'.",
+					e);
 		}
 	}
 
 	/* TAG LIKE INSTANCES MANAGEMENT */
 	@Override
-	public Node createTagLikeResourceParent(Session session, String tagId,
-			String tagInstanceType, String codePropName,
-			String taggableParentPath, String taggableNodeType,
-			String taggablePropName) {
+	public Node createTagLikeResourceParent(Session session, String tagId, String tagInstanceType, String codePropName,
+			String taggableParentPath, String taggableNodeType, String taggablePropName) {
 		List<String> names = new ArrayList<String>();
 		names.add(taggablePropName);
-		return createTagLikeResourceParent(session, tagId, tagInstanceType,
-				codePropName, taggableParentPath, taggableNodeType, names);
+		return createTagLikeResourceParent(session, tagId, tagInstanceType, codePropName, taggableParentPath,
+				taggableNodeType, names);
 	}
 
-	public Node createTagLikeResourceParent(Session session, String tagId,
-			String tagInstanceType, String codePropName,
-			String taggableParentPath, String taggableNodeType,
-			List<String> taggablePropNames) {
+	public Node createTagLikeResourceParent(Session session, String tagId, String tagInstanceType, String codePropName,
+			String taggableParentPath, String taggableNodeType, List<String> taggablePropNames) {
 		String currId = tagId == null ? tagInstanceType : tagId;
 		Node node = getTagLikeResourceParent(session, currId);
 		if (node != null)
 			return node;
 		else {
-			String path = getPathForId(
-					PeopleConstants.RESOURCE_TYPE_ID_TAG_LIKE, currId);
+			String path = getPathForId(PeopleConstants.RESOURCE_TYPE_ID_TAG_LIKE, currId);
 			String parPath = JcrUtils.parentPath(path);
 			try {
 				if (!session.nodeExists(parPath))
 					throw new PeopleException("Default tree structure "
 							+ "for tag like resources must have been created. "
-							+ "Please fix this before trying to create "
-							+ "tag like resource parent " + currId);
+							+ "Please fix this before trying to create " + "tag like resource parent " + currId);
 				Node parent = session.getNode(parPath);
-				Node tagLikeParent = parent.addNode(currId,
-						PeopleTypes.PEOPLE_TAG_PARENT);
+				Node tagLikeParent = parent.addNode(currId, PeopleTypes.PEOPLE_TAG_PARENT);
 				tagLikeParent.setProperty(PeopleNames.PEOPLE_TAG_ID, currId);
-				tagLikeParent.setProperty(PeopleNames.PEOPLE_TAG_INSTANCE_TYPE,
-						tagInstanceType);
+				tagLikeParent.setProperty(PeopleNames.PEOPLE_TAG_INSTANCE_TYPE, tagInstanceType);
 				// If this property is not set, the key property of the tag
 				// instance is the JCR_TITLE Property
 				if (notEmpty(codePropName))
-					tagLikeParent
-							.setProperty(PeopleNames.PEOPLE_TAG_CODE_PROP_NAME,
-									codePropName);
-				tagLikeParent.setProperty(
-						PeopleNames.PEOPLE_TAGGABLE_PARENT_PATH,
-						taggableParentPath);
-				tagLikeParent
-						.setProperty(PeopleNames.PEOPLE_TAGGABLE_NODE_TYPE,
-								taggableNodeType);
-				tagLikeParent.setProperty(
-						PeopleNames.PEOPLE_TAGGABLE_PROP_NAME,
+					tagLikeParent.setProperty(PeopleNames.PEOPLE_TAG_CODE_PROP_NAME, codePropName);
+				tagLikeParent.setProperty(PeopleNames.PEOPLE_TAGGABLE_PARENT_PATH, taggableParentPath);
+				tagLikeParent.setProperty(PeopleNames.PEOPLE_TAGGABLE_NODE_TYPE, taggableNodeType);
+				tagLikeParent.setProperty(PeopleNames.PEOPLE_TAGGABLE_PROP_NAME,
 						taggablePropNames.toArray(new String[0]));
 				return tagLikeParent;
 			} catch (RepositoryException e) {
-				throw new PeopleException("Unable to create new temaple "
-						+ currId + " at path " + path, e);
+				throw new PeopleException("Unable to create new temaple " + currId + " at path " + path, e);
 			}
 		}
 	}
 
 	@Override
 	public Node getTagLikeResourceParent(Session session, String tagId) {
-		String path = getPathForId(PeopleConstants.RESOURCE_TYPE_ID_TAG_LIKE,
-				tagId);
+		String path = getPathForId(PeopleConstants.RESOURCE_TYPE_ID_TAG_LIKE, tagId);
 		try {
 			if (session.nodeExists(path)) {
 				return session.getNode(path);
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrieve tag like parent "
-					+ "at path " + path + " for tagId " + tagId, e);
+			throw new PeopleException("Unable to retrieve tag like parent " + "at path " + path + " for tagId " + tagId,
+					e);
 		}
 		return null;
 	}
 
 	@Override
-	public Node registerTag(Session session, String tagId, String tagValue)
-			throws RepositoryException {
+	public Node registerTag(Session session, String tagId, String tagValue) throws RepositoryException {
 		Node tagInstance = getRegisteredTag(session, tagId, tagValue);
 		if (tagInstance != null) {
 			// Tag already exists, we do nothing.
 			if (log.isTraceEnabled()) {
-				String registeredKey = JcrUiUtils.get(
-						tagInstance,
-						getTagKeyPropName(getTagLikeResourceParent(session,
-								tagId)));
-				log.debug("Tag [" + tagId + "] with key " + tagValue
-						+ " already exists (registered key is ["
+				String registeredKey = JcrUiUtils.get(tagInstance,
+						getTagKeyPropName(getTagLikeResourceParent(session, tagId)));
+				log.debug("Tag [" + tagId + "] with key " + tagValue + " already exists (registered key is ["
 						+ registeredKey + "]), nothing has been done.");
 			}
 			return tagInstance;
 		} else {
-			Node newTag = createTagInstanceInternal(
-					getExistingTagLikeParent(session, tagId), tagValue);
+			Node newTag = createTagInstanceInternal(getExistingTagLikeParent(session, tagId), tagValue);
 			return newTag;
 		}
 	}
 
 	@Override
-	public Node registerTag(Session session, String tagId, String tagCode,
-			String tagValue) throws RepositoryException {
+	public Node registerTag(Session session, String tagId, String tagCode, String tagValue) throws RepositoryException {
 		// Check if such a tag already exists
 		Node tagInstance = getRegisteredTag(session, tagId, tagCode);
 		if (tagInstance != null) {
 			// Tag already exists, we do nothing.
 			if (log.isTraceEnabled()) {
-				String registeredKey = JcrUiUtils.get(
-						tagInstance,
-						getTagKeyPropName(getTagLikeResourceParent(session,
-								tagId)));
-				log.debug("Tag [" + tagId + "] with key " + tagCode
-						+ " already exists (registered key is ["
+				String registeredKey = JcrUiUtils.get(tagInstance,
+						getTagKeyPropName(getTagLikeResourceParent(session, tagId)));
+				log.debug("Tag [" + tagId + "] with key " + tagCode + " already exists (registered key is ["
 						+ registeredKey + "]), nothing has been done.");
 			}
 			return tagInstance;
 		} else {
-			Node newTag = createTagInstanceInternal(
-					getExistingTagLikeParent(session, tagId), tagCode);
+			Node newTag = createTagInstanceInternal(getExistingTagLikeParent(session, tagId), tagCode);
 			// remove trailing and starting space
 			tagValue = tagValue.trim();
-			JcrUiUtils.setJcrProperty(newTag, Property.JCR_TITLE,
-					PropertyType.STRING, tagValue);
+			JcrUiUtils.setJcrProperty(newTag, Property.JCR_TITLE, PropertyType.STRING, tagValue);
 			return newTag;
 		}
 	}
 
 	@Override
-	public Node getRegisteredTag(Session session, String tagId,
-			String instanceKey) {
-		return getRegisteredTag(getExistingTagLikeParent(session, tagId),
-				instanceKey);
+	public Node getRegisteredTag(Session session, String tagId, String instanceKey) {
+		return getRegisteredTag(getExistingTagLikeParent(session, tagId), instanceKey);
 	}
 
 	@Override
@@ -359,16 +304,14 @@ public class ResourceServiceImpl implements ResourceService {
 			String relPath = getTagRelPath(instanceKey);
 			if (tagParent.hasNode(relPath)) {
 				Node existing = tagParent.getNode(relPath);
-				String existingValue = JcrUiUtils.get(existing,
-						getTagKeyPropName(tagParent));
+				String existingValue = JcrUiUtils.get(existing, getTagKeyPropName(tagParent));
 				if (instanceKey.equalsIgnoreCase(existingValue)) {
 					return existing;
 				}
 			}
 			return null;
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrieve existing tag "
-					+ tagParent + " for key " + instanceKey, e);
+			throw new PeopleException("Unable to retrieve existing tag " + tagParent + " for key " + instanceKey, e);
 		}
 	}
 
@@ -379,33 +322,26 @@ public class ResourceServiceImpl implements ResourceService {
 			if (tag != null && tag.hasProperty(Property.JCR_TITLE))
 				return tag.getProperty(Property.JCR_TITLE).getString();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrieve tag " + tagId
-					+ " value with key " + code, e);
+			throw new PeopleException("Unable to retrieve tag " + tagId + " value with key " + code, e);
 		}
 		return code;
 	}
 
 	@Override
-	public String getEncodedTagCodeFromValue(Session session, String tagId,
-			String value) {
+	public String getEncodedTagCodeFromValue(Session session, String tagId, String value) {
 		try {
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
+			QueryManager queryManager = session.getWorkspace().getQueryManager();
 			Node tagParent = getExistingTagLikeParent(session, tagId);
-			String tagNodeType = tagParent.getProperty(
-					PeopleNames.PEOPLE_TAG_INSTANCE_TYPE).getString();
-			String tagCodePropName = tagParent.getProperty(
-					PeopleNames.PEOPLE_TAG_CODE_PROP_NAME).getString();
+			String tagNodeType = tagParent.getProperty(PeopleNames.PEOPLE_TAG_INSTANCE_TYPE).getString();
+			String tagCodePropName = tagParent.getProperty(PeopleNames.PEOPLE_TAG_CODE_PROP_NAME).getString();
 			// XPath
 			StringBuilder builder = new StringBuilder();
 			builder.append(XPathUtils.descendantFrom(tagParent.getPath()));
 			builder.append("//element(*, ").append(tagNodeType).append(")");
 			builder.append("[");
-			builder.append(XPathUtils.getPropertyEquals(PeopleNames.JCR_TITLE,
-					value));
+			builder.append(XPathUtils.getPropertyEquals(PeopleNames.JCR_TITLE, value));
 			builder.append("]");
-			Query query = queryManager.createQuery(builder.toString(),
-					PeopleConstants.QUERY_XPATH);
+			Query query = queryManager.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH);
 
 			QueryResult queryResult = query.execute();
 			NodeIterator ni = queryResult.getNodes();
@@ -415,14 +351,12 @@ public class ResourceServiceImpl implements ResourceService {
 				return null;
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to get code for encodedTag "
-					+ tagId + " with value " + value, e);
+			throw new PeopleException("Unable to get code for encodedTag " + tagId + " with value " + value, e);
 		}
 	}
 
 	@Override
-	public String getEncodedTagValuesAsString(String tagId, Node node,
-			String propertyName, String separator) {
+	public String getEncodedTagValuesAsString(String tagId, Node node, String propertyName, String separator) {
 		try {
 			Session session = node.getSession();
 
@@ -434,26 +368,22 @@ public class ResourceServiceImpl implements ResourceService {
 				for (Value val : codes) {
 					String currCode = val.getString();
 					if (notEmpty(currCode)) {
-						builder.append(
-								getEncodedTagValue(session, tagId, currCode))
-								.append(separator);
+						builder.append(getEncodedTagValue(session, tagId, currCode)).append(separator);
 					}
 				}
 				if (builder.lastIndexOf(separator) >= 0)
-					return builder.substring(0,
-							builder.length() - separator.length());
+					return builder.substring(0, builder.length() - separator.length());
 				else
 					return builder.toString();
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get values of " + tagId
-					+ " for property " + propertyName + " of " + node, e);
+			throw new PeopleException("Cannot get values of " + tagId + " for property " + propertyName + " of " + node,
+					e);
 		}
 	}
 
 	@Override
-	public NodeIterator getTaggedEntities(Session session, String tagId,
-			String key) {
+	public NodeIterator getTaggedEntities(Session session, String tagId, String key) {
 		Node tagParent = getExistingTagLikeParent(session, tagId);
 		return getTaggedEntities(tagParent, key);
 	}
@@ -461,21 +391,16 @@ public class ResourceServiceImpl implements ResourceService {
 	@Override
 	public NodeIterator getTaggedEntities(Node tagParent, String key) {
 		try {
-			// TODO clean this
-			String cleanedKey = key.replaceAll("(?:')", "''");
 
-			String nodeType = tagParent.getProperty(
-					PeopleNames.PEOPLE_TAGGABLE_NODE_TYPE).getString();
-			String parentPath = tagParent.getProperty(
-					PeopleNames.PEOPLE_TAGGABLE_PARENT_PATH).getString();
-			List<String> propNames = JcrUiUtils.getMultiAsList(tagParent,
-					PeopleNames.PEOPLE_TAGGABLE_PROP_NAME);
+			String nodeType = tagParent.getProperty(PeopleNames.PEOPLE_TAGGABLE_NODE_TYPE).getString();
+			String parentPath = tagParent.getProperty(PeopleNames.PEOPLE_TAGGABLE_PARENT_PATH).getString();
+			List<String> propNames = JcrUiUtils.getMultiAsList(tagParent, PeopleNames.PEOPLE_TAGGABLE_PROP_NAME);
 
 			// Build xpath for property names;
 			StringBuilder builder = new StringBuilder();
+			// String cleanedKey = key.replaceAll("(?:')", "''");
 			for (String propName : propNames) {
-				builder.append(XPathUtils.getPropertyEquals(propName,
-						cleanedKey));
+				builder.append(XPathUtils.getPropertyEquals(propName, key));
 				builder.append(" OR ");
 			}
 			String condition = builder.toString();
@@ -483,20 +408,16 @@ public class ResourceServiceImpl implements ResourceService {
 			// force error if no property is defined for this tag
 			condition = condition.substring(0, condition.length() - 4);
 
-			String xpathQueryStr = XPathUtils.descendantFrom(parentPath)
-					+ "//element(*, " + nodeType + ")";
+			String xpathQueryStr = XPathUtils.descendantFrom(parentPath) + "//element(*, " + nodeType + ")";
 
 			xpathQueryStr += "[" + condition + "]";
-			QueryManager queryManager = tagParent.getSession().getWorkspace()
-					.getQueryManager();
-			Query query = queryManager.createQuery(xpathQueryStr,
-					PeopleConstants.QUERY_XPATH);
+			QueryManager queryManager = tagParent.getSession().getWorkspace().getQueryManager();
+			Query query = queryManager.createQuery(xpathQueryStr, PeopleConstants.QUERY_XPATH);
 			NodeIterator nit = query.execute().getNodes();
 			return nit;
 		} catch (RepositoryException ee) {
-			throw new PeopleException(
-					"Unable to retrieve tagged entities for key " + key
-							+ " on parent " + tagParent, ee);
+			throw new PeopleException("Unable to retrieve tagged entities for key " + key + " on parent " + tagParent,
+					ee);
 		}
 	}
 
@@ -515,14 +436,10 @@ public class ResourceServiceImpl implements ResourceService {
 			if (log.isDebugEnabled())
 				log.debug("Starting known tag refresh for " + tagParent);
 			String keyPropName = getTagKeyPropName(tagParent);
-			String taggableNodeType = tagParent.getProperty(
-					PeopleNames.PEOPLE_TAGGABLE_NODE_TYPE).getString();
-			String taggableParentPath = tagParent.getProperty(
-					PeopleNames.PEOPLE_TAGGABLE_PARENT_PATH).getString();
-			String codeProp = JcrUiUtils
-					.get(tagParent, PeopleNames.PEOPLE_CODE);
-			List<String> propNames = JcrUiUtils.getMultiAsList(tagParent,
-					PeopleNames.PEOPLE_TAGGABLE_PROP_NAME);
+			String taggableNodeType = tagParent.getProperty(PeopleNames.PEOPLE_TAGGABLE_NODE_TYPE).getString();
+			String taggableParentPath = tagParent.getProperty(PeopleNames.PEOPLE_TAGGABLE_PARENT_PATH).getString();
+			String codeProp = JcrUiUtils.get(tagParent, PeopleNames.PEOPLE_CODE);
+			List<String> propNames = JcrUiUtils.getMultiAsList(tagParent, PeopleNames.PEOPLE_TAGGABLE_PROP_NAME);
 
 			if (log.isTraceEnabled())
 				log.trace("Getting already registered tags");
@@ -534,8 +451,7 @@ public class ResourceServiceImpl implements ResourceService {
 					registeredTags.add(currKey);
 			}
 			if (log.isTraceEnabled())
-				log.trace("Found already " + registeredTags.size()
-						+ " registered tags");
+				log.trace("Found already " + registeredTags.size() + " registered tags");
 
 			// Look for not yet registered tags
 			// Query query = session
@@ -547,36 +463,25 @@ public class ResourceServiceImpl implements ResourceService {
 			// + taggableParentPath + "') ",
 			// Query.JCR_SQL2);
 
-			String xpathQueryStr = XPathUtils
-					.descendantFrom(taggableParentPath)
-					+ "//element(*, "
-					+ taggableNodeType + ")";
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
-			Query query = queryManager.createQuery(xpathQueryStr,
-					PeopleConstants.QUERY_XPATH);
+			String xpathQueryStr = XPathUtils.descendantFrom(taggableParentPath) + "//element(*, " + taggableNodeType
+					+ ")";
+			QueryManager queryManager = session.getWorkspace().getQueryManager();
+			Query query = queryManager.createQuery(xpathQueryStr, PeopleConstants.QUERY_XPATH);
 			nit = query.execute().getNodes();
 			if (log.isDebugEnabled())
-				log.debug("Searching new tags on " + nit.getSize()
-						+ " elements of type " + taggableNodeType);
+				log.debug("Searching new tags on " + nit.getSize() + " elements of type " + taggableNodeType);
 			while (nit.hasNext()) {
 				Node currNode = nit.nextNode();
 				for (String propName : propNames) {
 					if (currNode.hasProperty(propName)) {
-						Value[] tags = currNode.getProperty(propName)
-								.getValues();
+						Value[] tags = currNode.getProperty(propName).getValues();
 						for (Value tagV : tags) {
 							String currTag = tagV.getString().trim();
 
-							if (notEmpty(currTag)
-									&& !registeredTags.contains(currTag)) {
+							if (notEmpty(currTag) && !registeredTags.contains(currTag)) {
 								if (currTag.length() < 2) {
-									log.warn("Unable to cache tag ["
-											+ currTag
-											+ "] for "
-											+ JcrUiUtils.get(currNode,
-													Property.JCR_TITLE) + " - "
-											+ currNode);
+									log.warn("Unable to cache tag [" + currTag + "] for "
+											+ JcrUiUtils.get(currNode, Property.JCR_TITLE) + " - " + currNode);
 								} else if (!newExistingValues.contains(currTag))
 									newExistingValues.add(currTag);
 							}
@@ -586,8 +491,7 @@ public class ResourceServiceImpl implements ResourceService {
 			}
 
 			if (log.isTraceEnabled())
-				log.trace("Start processing the " + newExistingValues.size()
-						+ " new used tags found.");
+				log.trace("Start processing the " + newExistingValues.size() + " new used tags found.");
 
 			// Add the newly found tags.
 			if (isEmpty(codeProp))
@@ -598,38 +502,31 @@ public class ResourceServiceImpl implements ResourceService {
 			else {
 				for (String tag : newExistingValues) {
 					Node curr = createTagInstanceInternal(tagParent, tag);
-					JcrUiUtils.setJcrProperty(curr, Property.JCR_TITLE,
-							PropertyType.STRING, tag);
+					JcrUiUtils.setJcrProperty(curr, Property.JCR_TITLE, PropertyType.STRING, tag);
 					session.save();
 				}
-				log.warn("We refreshed an encoded tag like subtree, for "
-						+ tagParent + ". All tag values have been set "
-						+ "with the same value as the code because we "
+				log.warn("We refreshed an encoded tag like subtree, for " + tagParent
+						+ ". All tag values have been set " + "with the same value as the code because we "
 						+ "have no information on the corresponding label.");
 			}
 			if (log.isDebugEnabled())
-				log.debug("Tag refresh for " + tagParent
-						+ " has been done, creating "
-						+ newExistingValues.size() + " new tag instances.");
+				log.debug("Tag refresh for " + tagParent + " has been done, creating " + newExistingValues.size()
+						+ " new tag instances.");
 		} catch (RepositoryException ee) {
-			throw new PeopleException("Unable to refresh cache of known tags",
-					ee);
+			throw new PeopleException("Unable to refresh cache of known tags", ee);
 		}
 	}
 
 	@Override
-	public boolean updateTag(Node tagInstance, String newValue)
-			throws RepositoryException {
+	public boolean updateTag(Node tagInstance, String newValue) throws RepositoryException {
 		// TODO use a transaction
 		Node tagParent = retrieveTagParentFromTag(tagInstance);
-		Value[] values = tagParent.getProperty(
-				PeopleNames.PEOPLE_TAGGABLE_PROP_NAME).getValues();
+		Value[] values = tagParent.getProperty(PeopleNames.PEOPLE_TAGGABLE_PROP_NAME).getValues();
 		if (values.length > 1)
 			// unimplemented multiple value
 			return false;
 		String propName = values[0].getString();
-		String oldValue = tagInstance.getProperty(Property.JCR_TITLE)
-				.getString();
+		String oldValue = tagInstance.getProperty(Property.JCR_TITLE).getString();
 		JcrUiUtils.checkCOStatusBeforeUpdate(tagInstance);
 		Session session = tagInstance.getSession();
 
@@ -642,10 +539,8 @@ public class ResourceServiceImpl implements ResourceService {
 		// Insure the parent node is already existing
 		// Rather use the parent node than the abs path: we might have not the
 		// right on the full workspace
-		Node newIntancePar = JcrUtils.mkdirs(tagParent,
-				JcrUtils.parentPath(newRelPath), NodeType.NT_UNSTRUCTURED);
-		session.move(tagInstance.getPath(), newIntancePar.getPath() + "/"
-				+ JcrUtils.lastPathElement(newRelPath));
+		Node newIntancePar = JcrUtils.mkdirs(tagParent, JcrUtils.parentPath(newRelPath), NodeType.NT_UNSTRUCTURED);
+		session.move(tagInstance.getPath(), newIntancePar.getPath() + "/" + JcrUtils.lastPathElement(newRelPath));
 		tagInstance.setProperty(Property.JCR_TITLE, newValue);
 		tagInstance.getSession().save();
 		return true;
@@ -660,19 +555,15 @@ public class ResourceServiceImpl implements ResourceService {
 	 * @param oldValue
 	 * @param newValue
 	 */
-	private void updateOneTag(Node taggable, String tagPropName,
-			String oldValue, String newValue) {
+	private void updateOneTag(Node taggable, String tagPropName, String oldValue, String newValue) {
 		try {
 			Node versionable = JcrUiUtils.getParentVersionableNode(taggable);
-			if (versionable != null
-					&& !JcrUiUtils.checkCOStatusBeforeUpdate(versionable))
-				log.warn(versionable + " was checked-in as we want to update "
-						+ tagPropName + " of " + taggable + " form " + oldValue
-						+ " to " + newValue);
+			if (versionable != null && !JcrUiUtils.checkCOStatusBeforeUpdate(versionable))
+				log.warn(versionable + " was checked-in as we want to update " + tagPropName + " of " + taggable
+						+ " form " + oldValue + " to " + newValue);
 			Property property = taggable.getProperty(tagPropName);
 			if (property.isMultiple()) {
-				List<String> oldValues = JcrUiUtils.getMultiAsList(taggable,
-						tagPropName);
+				List<String> oldValues = JcrUiUtils.getMultiAsList(taggable, tagPropName);
 				List<String> newValues = new ArrayList<String>();
 				for (String val : oldValues) {
 					if (oldValue.equals(val) && newValue != null)
@@ -680,23 +571,19 @@ public class ResourceServiceImpl implements ResourceService {
 					else
 						newValues.add(val);
 				}
-				taggable.setProperty(tagPropName,
-						newValues.toArray(new String[0]));
+				taggable.setProperty(tagPropName, newValues.toArray(new String[0]));
 			} else
 				taggable.setProperty(tagPropName, newValue);
 			taggable.getSession().save();
 		} catch (RepositoryException ee) {
-			throw new PeopleException(
-					"Unable to update tag like multiple value property "
-							+ tagPropName + " removing " + oldValue
-							+ " and adding " + newValue + " on " + taggable, ee);
+			throw new PeopleException("Unable to update tag like multiple value property " + tagPropName + " removing "
+					+ oldValue + " and adding " + newValue + " on " + taggable, ee);
 		}
 	}
 
 	@Override
 	public void unregisterTag(Session session, String tagId, String tag) {
-		throw new PeopleException("Unimplemented method "
-				+ "ResourceService.unregisterTag("
+		throw new PeopleException("Unimplemented method " + "ResourceService.unregisterTag("
 				+ "Session session, String tagId, String tag) ");
 	}
 
@@ -704,14 +591,12 @@ public class ResourceServiceImpl implements ResourceService {
 	public long countMembers(Node tag) {
 		Node parent = retrieveTagParentFromTag(tag);
 		String keyPropName = getTagKeyPropName(parent);
-		NodeIterator nit = getTaggedEntities(parent,
-				JcrUiUtils.get(tag, keyPropName));
+		NodeIterator nit = getTaggedEntities(parent, JcrUiUtils.get(tag, keyPropName));
 		return nit.getSize();
 	}
 
 	@Override
-	public List<String> getRegisteredTagValueList(Session session,
-			String tagId, String filter) {
+	public List<String> getRegisteredTagValueList(Session session, String tagId, String filter) {
 		Node tagParent = getTagLikeResourceParent(session, tagId);
 		List<String> values = new ArrayList<String>();
 		try {
@@ -723,8 +608,7 @@ public class ResourceServiceImpl implements ResourceService {
 			}
 			return values;
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get values for tag of ID "
-					+ tagId, re);
+			throw new PeopleException("Unable to get values for tag of ID " + tagId, re);
 		}
 	}
 
@@ -734,8 +618,7 @@ public class ResourceServiceImpl implements ResourceService {
 		try {
 			// retrieve parameters for this tag
 			String relPath = getTagRelPath(tagKey);
-			String instanceType = tagParent.getProperty(
-					PeopleNames.PEOPLE_TAG_INSTANCE_TYPE).getString();
+			String instanceType = tagParent.getProperty(PeopleNames.PEOPLE_TAG_INSTANCE_TYPE).getString();
 			// create and set props
 			Node newTag = JcrUtils.mkdirs(tagParent, relPath, instanceType);
 			newTag.setProperty(getTagKeyPropName(tagParent), tagKey);
@@ -745,8 +628,7 @@ public class ResourceServiceImpl implements ResourceService {
 			}
 			return newTag;
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to create tag instance " + tagKey
-					+ " for tag " + tagParent, e);
+			throw new PeopleException("Unable to create tag instance " + tagKey + " for tag " + tagParent, e);
 		}
 	}
 
@@ -771,13 +653,11 @@ public class ResourceServiceImpl implements ResourceService {
 	protected String getTagKeyPropName(Node tagParent) {
 		try {
 			if (tagParent.hasProperty(PeopleNames.PEOPLE_TAG_CODE_PROP_NAME))
-				return tagParent.getProperty(
-						PeopleNames.PEOPLE_TAG_CODE_PROP_NAME).getString();
+				return tagParent.getProperty(PeopleNames.PEOPLE_TAG_CODE_PROP_NAME).getString();
 			else
 				return JcrUiUtils.getLocalJcrItemName(Property.JCR_TITLE);
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"unable to retrieve key property name for " + tagParent);
+			throw new PeopleException("unable to retrieve key property name for " + tagParent);
 		}
 	}
 
@@ -785,42 +665,36 @@ public class ResourceServiceImpl implements ResourceService {
 	private Node getExistingTagLikeParent(Session session, String tagId) {
 		Node tagInstanceParent = getTagLikeResourceParent(session, tagId);
 		if (tagInstanceParent == null)
-			throw new PeopleException("Tag like resource with ID " + tagId
-					+ " does not exist. Cannot process current action.");
+			throw new PeopleException(
+					"Tag like resource with ID " + tagId + " does not exist. Cannot process current action.");
 		else
 			return tagInstanceParent;
 	}
 
 	private NodeIterator getRegisteredTags(Node tagParent, String filter) {
 		try {
-			String nodeType = tagParent.getProperty(
-					PeopleNames.PEOPLE_TAG_INSTANCE_TYPE).getString();
-			String queryStr = "select * from [" + nodeType
-					+ "] as nodes where ISDESCENDANTNODE('"
-					+ tagParent.getPath() + "')";
+			String nodeType = tagParent.getProperty(PeopleNames.PEOPLE_TAG_INSTANCE_TYPE).getString();
+			String queryStr = "select * from [" + nodeType + "] as nodes where ISDESCENDANTNODE('" + tagParent.getPath()
+					+ "')";
 			if (notEmpty(filter))
-				queryStr += " AND LOWER(nodes.[" + Property.JCR_TITLE
-						+ "]) like \"%" + filter.toLowerCase() + "%\"";
+				queryStr += " AND LOWER(nodes.[" + Property.JCR_TITLE + "]) like \"%" + filter.toLowerCase() + "%\"";
 			queryStr += " ORDER BY nodes.[" + Property.JCR_TITLE + "]";
 
-			Query query = tagParent.getSession().getWorkspace()
-					.getQueryManager().createQuery(queryStr, Query.JCR_SQL2);
+			Query query = tagParent.getSession().getWorkspace().getQueryManager().createQuery(queryStr, Query.JCR_SQL2);
 			return query.execute().getNodes();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get values for " + tagParent
-					+ " with filter " + filter, re);
+			throw new PeopleException("Unable to get values for " + tagParent + " with filter " + filter, re);
 		}
 	}
 
 	private String getPathForId(String resourceType, String id) {
 		if (PeopleConstants.RESOURCE_TYPE_ID_TEMPLATE.equals(resourceType))
-			return peopleService.getBasePath(PeopleConstants.PEOPLE_RESOURCE)
-					+ "/" + PeopleConstants.PEOPLE_RESOURCE_TEMPLATE + "/" + id;
+			return peopleService.getBasePath(PeopleConstants.PEOPLE_RESOURCE) + "/"
+					+ PeopleConstants.PEOPLE_RESOURCE_TEMPLATE + "/" + id;
 		else if (PeopleConstants.RESOURCE_TYPE_ID_TAG_LIKE.equals(resourceType))
-			return peopleService.getBasePath(PeopleConstants.PEOPLE_RESOURCE)
-					+ "/" + PeopleConstants.PEOPLE_RESOURCE_TAG_LIKE + "/" + id;
+			return peopleService.getBasePath(PeopleConstants.PEOPLE_RESOURCE) + "/"
+					+ PeopleConstants.PEOPLE_RESOURCE_TAG_LIKE + "/" + id;
 		else
-			throw new PeopleException("Unknown resource type " + resourceType
-					+ " for id " + id);
+			throw new PeopleException("Unknown resource type " + resourceType + " for id " + id);
 	}
 }

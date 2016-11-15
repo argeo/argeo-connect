@@ -129,11 +129,6 @@ public class JcrUiUtils {
 			return name;
 	}
 
-	private static String encodeXPathStringValue(String propertyValue) {
-		String result = propertyValue.replaceAll("'", "''");
-		return result;
-	}
-
 	// PATH MANAGEMENT
 	/** Simply retrieves the parent rel path of the provided relative path */
 	public static String parentRelPath(String relPath) {
@@ -289,9 +284,8 @@ public class JcrUiUtils {
 					+ "//element(*, " + checkAndLocalzeNamespaces(nodeType)
 					+ ")";
 
-			String cleanProp = encodeXPathStringValue(propValue);
 			String attrQuery = XPathUtils.getPropertyEquals(
-					checkAndLocalzeNamespaces(propName), cleanProp);
+					checkAndLocalzeNamespaces(propName), propValue);
 
 			xpathQueryStr += "[" + attrQuery + "]";
 			// String cleanStr = cleanStatement(xpathQueryStr);

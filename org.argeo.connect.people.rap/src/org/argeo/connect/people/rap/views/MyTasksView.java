@@ -121,7 +121,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 				activityService, lpMap);
 
 		// Date
-		column = ViewerUtils.createTableViewerColumn(viewer, "Due Date",
+		column = ViewerUtils.createTableViewerColumn(viewer, "Date",
 				SWT.RIGHT, 80);
 		column.setLabelProvider(new DateLabelProvider());
 		column.getColumn().addSelectionListener(

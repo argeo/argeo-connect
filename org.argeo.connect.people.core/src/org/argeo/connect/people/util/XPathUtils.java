@@ -52,8 +52,7 @@ public class XPathUtils {
 			return "";
 	}
 
-	public static String getFreeTextConstraint(String filter)
-			throws RepositoryException {
+	public static String getFreeTextConstraint(String filter) throws RepositoryException {
 		StringBuilder builder = new StringBuilder();
 		if (notEmpty(filter)) {
 			String[] strs = filter.trim().split(" ");
@@ -65,24 +64,21 @@ public class XPathUtils {
 		return "";
 	}
 
-	public static String getPropertyContains(String propertyName, String filter)
-			throws RepositoryException {
+	public static String getPropertyContains(String propertyName, String filter) throws RepositoryException {
 		if (notEmpty(filter))
 			return "jcr:contains(@" + propertyName + ",'*" + filter + "*')";
 		return "";
 	}
 
-	private final static DateFormat jcrRefFormatter = new SimpleDateFormat(
-			"yyyy-MM-dd'T'hh:mm:ss.SSS'+02:00'");
+	private final static DateFormat jcrRefFormatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.SSS'+02:00'");
 
-	public static String getPropertyDateComparaison(String propertyName,
-			Calendar cal, String lowerOrGreater) throws RepositoryException {
+	public static String getPropertyDateComparaison(String propertyName, Calendar cal, String lowerOrGreater)
+			throws RepositoryException {
 		if (cal != null) {
 			String jcrDateStr = jcrRefFormatter.format(cal.getTime());
 
 			// jcrDateStr = "2015-08-03T05:00:03:000Z";
-			String result = "@" + propertyName + " " + lowerOrGreater
-					+ " xs:dateTime('" + jcrDateStr + "')";
+			String result = "@" + propertyName + " " + lowerOrGreater + " xs:dateTime('" + jcrDateStr + "')";
 			return result;
 		}
 		return "";
@@ -90,9 +86,16 @@ public class XPathUtils {
 
 	public static String getPropertyEquals(String propertyName, String value) {
 		if (notEmpty(value))
-			// TODO escape single quote?
-			return "@" + propertyName + "='" + value + "'";
+			return "@" + propertyName + "='" + encodeXPathStringValue(value) + "'";
 		return "";
+	}
+
+	private static String encodeXPathStringValue(String propertyValue) {
+		// TODO implement safer mechanism to escape invalid characters
+		// Also check why we have used this regex in ResourceSerrviceImpl l 474
+		// String cleanedKey = key.replaceAll("(?:')", "''");
+		String result = propertyValue.replaceAll("'", "''");
+		return result;
 	}
 
 	public static void andAppend(StringBuilder builder, String condition) {
@@ -102,8 +105,7 @@ public class XPathUtils {
 		}
 	}
 
-	public static void appendOrderByProperties(StringBuilder builder,
-			boolean ascending, String... propertyNames) {
+	public static void appendOrderByProperties(StringBuilder builder, boolean ascending, String... propertyNames) {
 		if (propertyNames.length > 0) {
 			builder.append(" order by ");
 			for (String propName : propertyNames)
@@ -116,15 +118,15 @@ public class XPathUtils {
 		}
 	}
 
-	public static void appendAndPropStringCondition(StringBuilder builder,
-			String propertyName, String filter) throws RepositoryException {
+	public static void appendAndPropStringCondition(StringBuilder builder, String propertyName, String filter)
+			throws RepositoryException {
 		if (notEmpty(filter)) {
 			andAppend(builder, getPropertyContains(propertyName, filter));
 		}
 	}
 
-	public static void appendAndNotPropStringCondition(StringBuilder builder,
-			String propertyName, String filter) throws RepositoryException {
+	public static void appendAndNotPropStringCondition(StringBuilder builder, String propertyName, String filter)
+			throws RepositoryException {
 		if (notEmpty(filter)) {
 			String cond = getPropertyContains(propertyName, filter);
 			builder.append(xPathNot(cond));
