@@ -1,0 +1,7 @@
+Import-Package: org.eclipse.swt,\
+org.eclipse.core.commands,\
+org.argeo.cms.maintenance,\
+*
+
+
+#javax.jcr.nodetype,\
