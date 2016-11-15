@@ -1,6 +1,9 @@
 Import-Package: org.eclipse.swt,\
 org.eclipse.core.commands,\
 org.argeo.cms.maintenance,\
+org.eclipse.ui;ui.workbench=split,\
+org.eclipse.ui.browser;ui.workbench=split,\
+org.eclipse.ui.part;ui.workbench=split,\
 *
 
 
