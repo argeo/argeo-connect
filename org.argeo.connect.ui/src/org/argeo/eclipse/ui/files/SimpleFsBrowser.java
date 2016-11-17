@@ -9,8 +9,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.maintenance.MaintenanceStyles;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILazyContentProvider;
@@ -22,6 +25,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -29,6 +33,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -39,90 +44,96 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 
 public class SimpleFsBrowser {
+	private final static Log log = LogFactory.getLog(SimpleFsBrowser.class);
 
 	// Some local constants to experiment. should be cleaned
 	private final static int THUMBNAIL_WIDTH = 400;
 	private final static int COLUMN_WIDTH = 160;
 
-	// Keep a cache of the opened directories
-	// Key is the path
-	private LinkedHashMap<Path, FilterEntitiesVirtualTable> browserCols = new LinkedHashMap<>();
-	private Composite pathDisplayParent;
-	private Composite colViewer;
-	private ScrolledComposite scrolledCmp;
+	private Path initialPath;
+	private Path currEdited;
+	// Filter
+	private Composite displayBoxCmp;
 	private Text parentPathTxt;
 	private Text filterTxt;
-	private Path currEdited;
+	// Browser columns
+	private ScrolledComposite scrolledCmp;
+	// Keep a cache of the opened directories
+	private LinkedHashMap<Path, FilterEntitiesVirtualTable> browserCols = new LinkedHashMap<>();
+	private Composite scrolledCmpBody;
 
-	private Path initialPath;
-
-	public Control createUi(Composite parent, Path context) {
-		if (context == null)
-			// return null;
+	public Control createUi(Composite parent, Path basePath) {
+		if (basePath == null)
 			throw new IllegalArgumentException("Context cannot be null");
-		GridLayout layout = EclipseUiUtils.noSpaceGridLayout();
-		layout.numColumns = 2;
-		parent.setLayout(layout);
+		parent.setLayout(new GridLayout());
 
-		// TODO use a sash
-		// Left
-		Composite leftCmp = new Composite(parent, SWT.NO_FOCUS);
-		leftCmp.setLayoutData(EclipseUiUtils.fillAll());
-		createBrowserPart(leftCmp, context);
+		// top filter
+		Composite filterCmp = new Composite(parent, SWT.NO_FOCUS);
+		filterCmp.setLayoutData(EclipseUiUtils.fillWidth());
+		addFilterPanel(filterCmp);
 
-		// Right
-		pathDisplayParent = new Composite(parent, SWT.NO_FOCUS | SWT.BORDER);
-		GridData gd = new GridData(SWT.RIGHT, SWT.FILL, false, true);
-		gd.widthHint = THUMBNAIL_WIDTH;
-		pathDisplayParent.setLayoutData(gd);
-		createPathView(pathDisplayParent, context);
+		// Bottom part a sash with browser on the left
+		SashForm form = new SashForm(parent, SWT.HORIZONTAL);
+		// form.setLayout(new FillLayout());
+		form.setLayoutData(EclipseUiUtils.fillAll());
+		Composite leftCmp = new Composite(form, SWT.NO_FOCUS);
+		displayBoxCmp = new Composite(form, SWT.NONE);
+		form.setWeights(new int[] { 3, 1 });
+
+		createBrowserPart(leftCmp, basePath);
+//		leftCmp.addControlListener(new ControlAdapter() {
+//			@Override
+//			public void controlResized(ControlEvent e) {
+//				Rectangle r = leftCmp.getClientArea();
+//				log.warn("Browser resized: " + r.toString());
+//				scrolledCmp.setMinSize(browserCols.size() * (COLUMN_WIDTH + 2), SWT.DEFAULT);
+//				// scrolledCmp.setMinSize(scrolledCmpBody.computeSize(SWT.DEFAULT,
+//				// r.height));
+//			}
+//		});
+
+		populateCurrEditedDisplay(displayBoxCmp, basePath);
 
 		// INIT
-		setEdited(context);
-		initialPath = context;
-
-		// Workaround we don't yet manage the delete to display parent of the
-		// initial context node
-
-		return null;
+		setEdited(basePath);
+		initialPath = basePath;
+		// form.layout(true, true);
+		return parent;
 	}
 
 	private void createBrowserPart(Composite parent, Path context) {
-		GridLayout layout = EclipseUiUtils.noSpaceGridLayout();
-		parent.setLayout(layout);
-		Composite filterCmp = new Composite(parent, SWT.NO_FOCUS);
-		filterCmp.setLayoutData(EclipseUiUtils.fillWidth());
-
-		// top filter
-		addFilterPanel(filterCmp);
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// scrolled composite
 		scrolledCmp = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.BORDER | SWT.NO_FOCUS);
-		scrolledCmp.setLayoutData(EclipseUiUtils.fillAll());
+		scrolledCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		scrolledCmp.setExpandVertical(true);
 		scrolledCmp.setExpandHorizontal(true);
 		scrolledCmp.setShowFocusedControl(true);
 
-		colViewer = new Composite(scrolledCmp, SWT.NO_FOCUS);
-		scrolledCmp.setContent(colViewer);
-		scrolledCmp.addControlListener(new ControlAdapter() {
-			private static final long serialVersionUID = 45632468266199163L;
+		scrolledCmpBody = new Composite(scrolledCmp, SWT.NO_FOCUS);
+		scrolledCmp.setContent(scrolledCmpBody);
+		scrolledCmpBody.addControlListener(new ControlAdapter() {
 
 			@Override
 			public void controlResized(ControlEvent e) {
 				Rectangle r = scrolledCmp.getClientArea();
-				scrolledCmp.setMinSize(colViewer.computeSize(SWT.DEFAULT, r.height));
+				scrolledCmp.setMinSize(scrolledCmpBody.computeSize(SWT.DEFAULT, r.height));
 			}
 		});
-		initExplorer(colViewer, context);
+		initExplorer(scrolledCmpBody, context);
+		scrolledCmpBody.layout(true, true);
+		scrolledCmp.layout();
+		
 	}
 
 	private Control initExplorer(Composite parent, Path context) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		createBrowserColumn(parent, context);
-		return null;
+		return createBrowserColumn(parent, context);
 	}
 
 	private Control createBrowserColumn(Composite parent, Path context) {
@@ -132,16 +143,16 @@ public class SimpleFsBrowser {
 		table.filterList("*");
 		table.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
 		browserCols.put(context, table);
-		return null;
+		parent.layout(true, true);
+		return table;
 	}
 
 	public void addFilterPanel(Composite parent) {
-
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout(new GridLayout(2, false)));
 
-		// Text Area for the filter
 		parentPathTxt = new Text(parent, SWT.NO_FOCUS);
 		parentPathTxt.setEditable(false);
+
 		filterTxt = new Text(parent, SWT.SEARCH | SWT.ICON_CANCEL);
 		filterTxt.setMessage("Filter current list");
 		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
@@ -152,7 +163,6 @@ public class SimpleFsBrowser {
 				modifyFilter(false);
 			}
 		});
-
 		filterTxt.addKeyListener(new KeyListener() {
 			private static final long serialVersionUID = 2533535233583035527L;
 
@@ -171,29 +181,29 @@ public class SimpleFsBrowser {
 						currTable = table;
 				}
 
-				// try {
 				if (e.keyCode == SWT.ARROW_DOWN)
 					currTable.setFocus();
 				else if (e.keyCode == SWT.BS) {
 					if (filterTxt.getText().equals("")
 							&& !(currEdited.getNameCount() == 1 || currEdited.equals(initialPath))) {
-						setEdited(currEdited.getParent());
-						e.doit = false;
+						Path oldEdited = currEdited;
+						Path parentPath = currEdited.getParent();
+						setEdited(parentPath);
+						if (browserCols.containsKey(parentPath))
+							browserCols.get(parentPath).setSelected(oldEdited);
 						filterTxt.setFocus();
+						e.doit = false;
 					}
 				} else if (e.keyCode == SWT.TAB && !shiftPressed) {
 					Path uniqueChild = getOnlyChild(currEdited, filterTxt.getText());
-					if (uniqueChild != null)
+					if (uniqueChild != null) {
+						// Highlight the unique chosen child
+						currTable.setSelected(uniqueChild);
 						setEdited(uniqueChild);
+					}
 					filterTxt.setFocus();
 					e.doit = false;
 				}
-				// } catch (RepositoryException e1) {
-				// throw new CmsException("Unexpected error in key management
-				// for " + currEdited + "with filter "
-				// + filterTxt.getText(), e1);
-				// }
-
 			}
 		});
 	}
@@ -222,9 +232,8 @@ public class SimpleFsBrowser {
 
 	private void setEdited(Path path) {
 		currEdited = path;
-		CmsUtils.clear(pathDisplayParent);
-		createPathView(pathDisplayParent, currEdited);
-		pathDisplayParent.layout();
+		CmsUtils.clear(displayBoxCmp);
+		populateCurrEditedDisplay(displayBoxCmp, currEdited);
 		refreshFilters(path);
 		refreshBrowser(path);
 	}
@@ -236,66 +245,47 @@ public class SimpleFsBrowser {
 	}
 
 	private void refreshBrowser(Path currPath) {
-
-		// Retrieve
 		Path currParPath = currPath.getParent();
-
 		Object[][] colMatrix = new Object[browserCols.size()][2];
 
-		int i = 0, j = -1, k = -1;
+		int i = 0, currPathIndex = -1, lastLeftOpenedIndex = -1;
 		for (Path path : browserCols.keySet()) {
 			colMatrix[i][0] = path;
 			colMatrix[i][1] = browserCols.get(path);
-			if (j >= 0 && k < 0 && currParPath != null) {
+			if (currPathIndex >= 0 && lastLeftOpenedIndex < 0 && currParPath != null) {
 				boolean leaveOpened = path.startsWith(currPath);
-
-				// // workaround for same name siblings
-				// // fix me weird side effect when we go left or click on anb
-				// // already selected, unfocused node
-				// if (leaveOpened && (path.lastIndexOf("/") == 0 &&
-				// currNodePath.lastIndexOf("/") == 0
-				// ||
-				// JcrUtils.parentPath(path).equals(JcrUtils.parentPath(currNodePath))))
-				// leaveOpened =
-				// JcrUtils.lastPathElement(path).equals(JcrUtils.lastPathElement(currNodePath));
-
 				if (!leaveOpened)
-					k = i;
+					lastLeftOpenedIndex = i;
 			}
 			if (currParPath.equals(path))
-				j = i;
+				currPathIndex = i;
 			i++;
 		}
 
-		if (j >= 0 && k >= 0)
-			// remove useless cols
-			for (int l = i - 1; l >= k; l--) {
-			browserCols.remove(colMatrix[l][0]);
-			((FilterEntitiesVirtualTable) colMatrix[l][1]).dispose();
+		if (currPathIndex >= 0 && lastLeftOpenedIndex >= 0) {
+			// dispose and remove useless cols
+			for (int l = i - 1; l >= lastLeftOpenedIndex; l--) {
+				((FilterEntitiesVirtualTable) colMatrix[l][1]).dispose();
+				browserCols.remove(colMatrix[l][0]);
 			}
-
-		// Remove disposed columns
-		// TODO investigate and fix the mechanism that leave them there after
-		// disposal
-		if (browserCols.containsKey(currPath)) {
-			FilterEntitiesVirtualTable currCol = browserCols.get(currPath);
-			if (currCol.isDisposed())
-				browserCols.remove(currPath);
 		}
 
-		if (!browserCols.containsKey(currPath))
-			createBrowserColumn(colViewer, currPath);
+		if (browserCols.containsKey(currPath)) {
+			FilterEntitiesVirtualTable currCol = browserCols.get(currPath);
+			if (currCol.isDisposed()) {
+				// Does it still happen ?
+				log.warn(currPath + " browser column was disposed and still listed");
+				browserCols.remove(currPath);
+			}
+		}
 
-		colViewer.setLayout(EclipseUiUtils.noSpaceGridLayout(new GridLayout(browserCols.size(), false)));
-		// colViewer.pack();
-		colViewer.layout();
+		if (!browserCols.containsKey(currPath) && Files.isDirectory(currPath))
+			createBrowserColumn(scrolledCmpBody, currPath);
+
+		scrolledCmpBody.setLayout(EclipseUiUtils.noSpaceGridLayout(new GridLayout(browserCols.size(), false)));
+		scrolledCmpBody.layout(true, true);
 		// also resize the scrolled composite
 		scrolledCmp.layout();
-		scrolledCmp.getShowFocusedControl();
-		// colViewer.getParent().layout();
-		// if (JcrUtils.parentPath(currNodePath).equals(currBrowserKey)) {
-		// } else {
-		// }
 	}
 
 	private void modifyFilter(boolean fromOutside) {
@@ -308,23 +298,14 @@ public class SimpleFsBrowser {
 			}
 	}
 
-	// private String getPath(Node node) {
-	// try {
-	// return node.getPath();
-	// } catch (RepositoryException e) {
-	// throw new CmsException("Unable to get path for node " + node, e);
-	// }
-	// }
-
 	private Point imageWidth = new Point(250, 0);
 
 	/**
 	 * Recreates the content of the box that displays information about the
 	 * current selected node.
 	 */
-	private Control createPathView(Composite parent, Path context) {
-
-		parent.setLayout(new GridLayout(2, false));
+	private void populateCurrEditedDisplay(Composite parent, Path context) {
+		parent.setLayout(new GridLayout());
 
 		// if (isImg(context)) {
 		// EditableImage image = new Img(parent, RIGHT, context, imageWidth);
@@ -332,153 +313,111 @@ public class SimpleFsBrowser {
 		// 2, 1));
 		// }
 
-		// Name and primary type
-		Label contextL = new Label(parent, SWT.NONE);
-		CmsUtils.markup(contextL);
-		contextL.setText("<b>" + context.getFileName() + "</b>");
-		// new Label(parent,
-		// SWT.NONE).setText(context.getPrimaryNodeType().getName());
-
-		// Children
-		// for (NodeIterator nIt = context.getNodes(); nIt.hasNext();) {
-		// Node child = nIt.nextNode();
-		// new CmsLink(child.getName(), BROWSE_PREFIX +
-		// child.getPath()).createUi(parent, context);
-		// new Label(parent,
-		// SWT.NONE).setText(child.getPrimaryNodeType().getName());
-		// }
-
-		// Properties
-		// for (PropertyIterator pIt = context.getProperties(); pIt.hasNext();)
-		// {
-		// Property property = pIt.nextProperty();
-		// Label label = new Label(parent, SWT.NONE);
-		// label.setText(property.getName());
-		// label.setToolTipText(JcrUtils.getPropertyDefinitionAsString(property));
-		// new Label(parent, SWT.NONE).setText(getPropAsString(property));
-		// }
-
-		return null;
+		try {
+			Label contextL = new Label(parent, SWT.NONE);
+			CmsUtils.markup(contextL);
+			contextL.setText("<b>" + ConnectUiUtils.replaceAmpersand(context.getFileName().toString()) + "</b>");
+			addProperty(parent, "Last modified", Files.getLastModifiedTime(context).toString());
+			addProperty(parent, "Owner", Files.getOwner(context).getName());
+			if (Files.isDirectory(context)) {
+				addProperty(parent, "Type", "Folder");
+			} else {
+				String mimeType = Files.probeContentType(context);
+				if (EclipseUiUtils.isEmpty(mimeType))
+					mimeType = "<i>Unknown</i>";
+				addProperty(parent, "Type", mimeType);
+				addProperty(parent, "Size", FilesUiUtils.humanReadableByteCount(Files.size(context), false));
+			}
+			parent.layout(true, true);
+		} catch (IOException e) {
+			throw new FilesException("Cannot display details for " + context, e);
+		}
 	}
 
-	// private boolean isImg(Node node) throws RepositoryException {
-	// return node.hasNode(JCR_CONTENT) && node.isNodeType(CmsTypes.CMS_IMAGE);
-	// }
+	private void addProperty(Composite parent, String propName, String value) {
+		Label contextL = new Label(parent, SWT.NONE);
+		CmsUtils.markup(contextL);
+		contextL.setText(ConnectUiUtils.replaceAmpersand(propName + ": " + value));
+	}
 
-	// private String getPropAsString(Property property) throws
-	// RepositoryException {
-	// String result = "";
-	// if (property.isMultiple()) {
-	// result = getMultiAsString(property, ", ");
-	// } else {
-	// Value value = property.getValue();
-	// if (value.getType() == PropertyType.BINARY)
-	// result = "<binary>";
-	// else if (value.getType() == PropertyType.DATE)
-	// result = timeFormatter.format(value.getDate().getTime());
-	// else
-	// result = value.getString();
-	// }
-	// return result;
-	// }
-	//
-	// private String getMultiAsString(Property property, String separator)
-	// throws RepositoryException {
-	// if (separator == null)
-	// separator = "; ";
-	// Value[] values = property.getValues();
-	// StringBuilder builder = new StringBuilder();
-	// for (Value val : values) {
-	// String currStr = val.getString();
-	// if (!"".equals(currStr.trim()))
-	// builder.append(currStr).append(separator);
-	// }
-	// if (builder.lastIndexOf(separator) >= 0)
-	// return builder.substring(0, builder.length() - separator.length());
-	// else
-	// return builder.toString();
-	// }
-
-	/** Almost canonical implementation of a table that display entities */
+	/**
+	 * Almost canonical implementation of a table that displays the content of a
+	 * directory
+	 */
 	private class FilterEntitiesVirtualTable extends Composite {
 		private static final long serialVersionUID = 2223410043691844875L;
 
 		// Context
 		private Path context;
+		private Path currSelected = null;
 
 		// UI Objects
 		private TableViewer entityViewer;
-
-		// enable management of multiple columns
-		// Path getPath() {
-		// return context;
-		// }
 
 		@Override
 		public boolean setFocus() {
 			if (entityViewer.getTable().isDisposed())
 				return false;
-			if (entityViewer.getSelection().isEmpty()) {
+			if (currSelected != null)
+				entityViewer.setSelection(new StructuredSelection(currSelected), true);
+			else if (entityViewer.getSelection().isEmpty()) {
 				Object first = entityViewer.getElementAt(0);
-				if (first != null) {
+				if (first != null)
 					entityViewer.setSelection(new StructuredSelection(first), true);
-				}
 			}
 			return entityViewer.getTable().setFocus();
 		}
 
+		/**
+		 * Enable highlighting the correct element in the table when externally
+		 * browsing (typically via the command-line-like Text field)
+		 */
+		void setSelected(Path selected) {
+			// to prevent change selection event to be thrown
+			currSelected = selected;
+			entityViewer.setSelection(new StructuredSelection(currSelected), true);
+		}
+
 		void filterList(String filter) {
-			try (DirectoryStream<Path> stream = Files.newDirectoryStream(context)) {
-				refreshFilteredList(stream);
-			} catch (IOException | DirectoryIteratorException e) {
-				throw new FilesException("Unable to filter " + context + " children with filter " + filter, e);
-			}
-
-			// try {
-			// FIXME list children path
-			// NodeIterator nit = context.getNodes(filter);
-			// } catch (RepositoryException e) {
-			// throw new CmsException("Unable to filter " + getNode() + "
-			// children with filter " + filter, e);
-			// }
-
+			refreshFilteredList(context, filter);
 		}
 
 		public FilterEntitiesVirtualTable(Composite parent, int style, Path context) {
 			super(parent, SWT.NO_FOCUS);
 			this.context = context;
-			populate();
-		}
-
-		protected void populate() {
-			Composite parent = this;
-			GridLayout layout = EclipseUiUtils.noSpaceGridLayout();
-
-			this.setLayout(layout);
-			createTableViewer(parent);
+			createTableViewer(this);
 		}
 
 		private void createTableViewer(final Composite parent) {
-			// the list
+			parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
+
 			// We must limit the size of the table otherwise the full list is
-			// loaded
-			// before the layout happens
-			Composite listCmp = new Composite(parent, SWT.NO_FOCUS);
-			GridData gd = new GridData(SWT.LEFT, SWT.FILL, false, true);
-			gd.widthHint = COLUMN_WIDTH;
-			listCmp.setLayoutData(gd);
-			listCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
-
-			entityViewer = new TableViewer(listCmp, SWT.VIRTUAL | SWT.SINGLE);
+			// loaded before the layout happens
+			// Composite listCmp = new Composite(parent, SWT.NO_FOCUS);
+			// GridData gd = new GridData(SWT.LEFT, SWT.FILL, false, true);
+			// gd.widthHint = COLUMN_WIDTH;
+			// listCmp.setLayoutData(gd);
+			// listCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
+			// entityViewer = new TableViewer(listCmp, SWT.VIRTUAL | SWT.MULTI |
+			// SWT.V_SCROLL);
+			// Table table = entityViewer.getTable();
+			// table.setLayoutData(EclipseUiUtils.fillAll());
+			//
+			//// Composite listCmp = new Composite(parent, SWT.NO_FOCUS);
+			//// listCmp.setLayoutData(gd);
+			//// listCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
+			//
+			entityViewer = new TableViewer(parent, SWT.VIRTUAL | SWT.MULTI);
 			Table table = entityViewer.getTable();
+			GridData gd = new GridData(SWT.LEFT, SWT.FILL, false, false);
+			gd.widthHint = COLUMN_WIDTH;
+			table.setLayoutData(gd);
 
-			table.setLayoutData(EclipseUiUtils.fillAll());
 			table.setLinesVisible(true);
 			table.setHeaderVisible(false);
 			CmsUtils.markup(table);
 			CmsUtils.style(table, MaintenanceStyles.BROWSER_COLUMN);
 
-			// first column
 			TableViewerColumn column = new TableViewerColumn(entityViewer, SWT.NONE);
 			TableColumn tcol = column.getColumn();
 			tcol.setWidth(COLUMN_WIDTH);
@@ -493,8 +432,13 @@ public class SimpleFsBrowser {
 					IStructuredSelection selection = (IStructuredSelection) entityViewer.getSelection();
 					if (selection.isEmpty())
 						return;
-					else
-						setEdited((Path) selection.getFirstElement());
+					else {
+						Path newSelected = (Path) selection.getFirstElement();
+						if (newSelected.equals(currSelected))
+							return;
+						currSelected = newSelected;
+						setEdited(newSelected);
+					}
 
 				}
 			});
@@ -508,34 +452,27 @@ public class SimpleFsBrowser {
 
 				@Override
 				public void keyPressed(KeyEvent e) {
-
 					IStructuredSelection selection = (IStructuredSelection) entityViewer.getSelection();
 					Path selected = null;
 					if (!selection.isEmpty())
 						selected = ((Path) selection.getFirstElement());
-					// try {
 					if (e.keyCode == SWT.ARROW_RIGHT) {
+						if (!Files.isDirectory(selected))
+							return;
 						if (selected != null) {
 							setEdited(selected);
 							browserCols.get(selected).setFocus();
 						}
 					} else if (e.keyCode == SWT.ARROW_LEFT) {
-						Path parent = selected.getParent();
-						;
+						if (context.equals(initialPath))
+							return;
+						Path parent = context.getParent();
 						if (parent == null)
 							return;
 
-						selected = parent;
-
-						setEdited(selected);
-						if (browserCols.containsKey(selected))
-							browserCols.get(selected).setFocus();
+						setEdited(parent);
+						browserCols.get(parent).setFocus();
 					}
-					// } catch (RepositoryException ie) {
-					// throw new CmsException("Error while managing arrow " +
-					// "events in the browser for " + selected,
-					// ie);
-					// }
 				}
 			});
 		}
@@ -564,16 +501,20 @@ public class SimpleFsBrowser {
 			}
 		}
 
-		protected void refreshFilteredList(DirectoryStream<Path> children) throws IOException {
-			// TODO make this lazy
-			List<Path> paths = new ArrayList<>();
-			for (Path entry : children) {
-				paths.add(entry);
+		protected void refreshFilteredList(Path dir, String filter) {
+			try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, filter)) {
+				// TODO make this lazy
+				List<Path> paths = new ArrayList<>();
+				for (Path entry : stream) {
+					paths.add(entry);
+				}
+				Object[] rows = paths.toArray(new Object[0]);
+				entityViewer.setInput(rows);
+				entityViewer.setItemCount(rows.length);
+				entityViewer.refresh();
+			} catch (IOException | DirectoryIteratorException e) {
+				throw new FilesException("Unable to filter " + dir + " children with filter " + filter, e);
 			}
-			Object[] rows = paths.toArray(new Object[0]);
-			entityViewer.setInput(rows);
-			entityViewer.setItemCount(rows.length);
-			entityViewer.refresh();
 		}
 
 		public class SimpleNameLP extends ColumnLabelProvider {
@@ -586,6 +527,18 @@ public class SimpleFsBrowser {
 					return curr.getFileName().toString();
 				}
 				return super.getText(element);
+			}
+
+			@Override
+			public Image getImage(Object element) {
+				if (element instanceof Path) {
+					Path curr = ((Path) element);
+					if (Files.isDirectory(curr))
+						return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+					else
+						return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FILE);
+				} else
+					return super.getImage(element);
 			}
 		}
 	}

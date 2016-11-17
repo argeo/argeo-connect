@@ -27,12 +27,6 @@ public class DelayedText extends Text {
 	private ModifyListener delayedModifyListener;
 	private ServerPushSession pushSession;
 
-	public DelayedText(Composite parent, int style, int delayInMs) {
-		super(parent, style);
-		this.delay = delayInMs;
-		this.addModifyListener(modifyListener);
-	}
-
 	private ModifyListener modifyListener = new ModifyListener() {
 		private static final long serialVersionUID = 1117506414462641980L;
 
@@ -85,6 +79,13 @@ public class DelayedText extends Text {
 		};
 	};
 
+	public DelayedText(Composite parent, int style, int delayInMs) {
+		super(parent, style);
+		this.delay = delayInMs;
+		this.addModifyListener(modifyListener);
+	}
+
+	
 	/**
 	 * Adds a modify text listener that will be delayed. If another Modify event
 	 * happens during the waiting delay, the older event will be canceled an a
