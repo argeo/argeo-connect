@@ -262,7 +262,7 @@
 		point="org.eclipse.ui.menus">
 		<!-- Generic commands provided by the people app --> 
 		<menuContribution
-			locationURI="toolbar:org.argeo.security.ui.rap.userToolbar?before=org.eclipse.ui.file.save"> 
+			locationURI="toolbar:org.argeo.cms.ui.workbench.rap.userToolbar?before=org.eclipse.ui.file.save"> 
 			<!-- Force resfresh if possible --> 
 			<command
 				commandId="org.argeo.connect.people.rap.forceRefresh"
@@ -279,7 +279,7 @@
 		</menuContribution>
 		
 		<menuContribution
-			locationURI="toolbar:org.argeo.security.ui.rap.userToolbar?after=org.eclipse.ui.file.saveAll"> 
+			locationURI="toolbar:org.argeo.cms.ui.workbench.rap.userToolbar?after=org.eclipse.ui.file.saveAll"> 
 			<!-- Check in and out management --> 
  			<command
 				commandId="org.argeo.connect.people.rap.changeEditingState"
@@ -324,7 +324,7 @@
 		</menuContribution>
 		
 		<!-- Add entity menu (only when people perspective is active)--> 
-		<menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.argeo.security.ui.rap.userToolbar">
+		<menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.argeo.cms.ui.workbench.rap.userToolbar">
 			<toolbar id="org.argeo.connect.people.rap.dropDownsToolbar">
 				<command
 					commandId="org.argeo.connect.people.rap.doNothing"
