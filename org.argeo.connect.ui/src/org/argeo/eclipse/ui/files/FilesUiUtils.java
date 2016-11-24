@@ -1,5 +1,6 @@
 package org.argeo.eclipse.ui.files;
 
+/** Centralize additionnal utilitary methods to manage Java7 NIO files */
 public class FilesUiUtils {
 
 	/**
