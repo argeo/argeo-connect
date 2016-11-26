@@ -1,29 +1,20 @@
-package org.argeo.eclipse.ui.files;
+package org.argeo.eclipse.ui.fs;
 
 import java.io.IOException;
-import java.nio.file.DirectoryIteratorException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.cms.maintenance.MaintenanceStyles;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -33,7 +24,6 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -42,10 +32,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 
 public class AdvancedFsBrowser {
 	private final static Log log = LogFactory.getLog(AdvancedFsBrowser.class);
@@ -85,16 +72,17 @@ public class AdvancedFsBrowser {
 		form.setWeights(new int[] { 3, 1 });
 
 		createBrowserPart(leftCmp, basePath);
-//		leftCmp.addControlListener(new ControlAdapter() {
-//			@Override
-//			public void controlResized(ControlEvent e) {
-//				Rectangle r = leftCmp.getClientArea();
-//				log.warn("Browser resized: " + r.toString());
-//				scrolledCmp.setMinSize(browserCols.size() * (COLUMN_WIDTH + 2), SWT.DEFAULT);
-//				// scrolledCmp.setMinSize(scrolledCmpBody.computeSize(SWT.DEFAULT,
-//				// r.height));
-//			}
-//		});
+		// leftCmp.addControlListener(new ControlAdapter() {
+		// @Override
+		// public void controlResized(ControlEvent e) {
+		// Rectangle r = leftCmp.getClientArea();
+		// log.warn("Browser resized: " + r.toString());
+		// scrolledCmp.setMinSize(browserCols.size() * (COLUMN_WIDTH + 2),
+		// SWT.DEFAULT);
+		// // scrolledCmp.setMinSize(scrolledCmpBody.computeSize(SWT.DEFAULT,
+		// // r.height));
+		// }
+		// });
 
 		populateCurrEditedDisplay(displayBoxCmp, basePath);
 
@@ -128,7 +116,7 @@ public class AdvancedFsBrowser {
 		initExplorer(scrolledCmpBody, context);
 		scrolledCmpBody.layout(true, true);
 		scrolledCmp.layout();
-		
+
 	}
 
 	private Control initExplorer(Composite parent, Path context) {
@@ -224,7 +212,7 @@ public class AdvancedFsBrowser {
 				return uniqueChild;
 			return null;
 		} catch (IOException ioe) {
-			throw new FilesException(
+			throw new FsUiException(
 					"Unable to determine unique child existence and get it under " + parent + " with filter " + filter,
 					ioe);
 		}
@@ -326,11 +314,11 @@ public class AdvancedFsBrowser {
 				if (EclipseUiUtils.isEmpty(mimeType))
 					mimeType = "<i>Unknown</i>";
 				addProperty(parent, "Type", mimeType);
-				addProperty(parent, "Size", FilesUiUtils.humanReadableByteCount(Files.size(context), false));
+				addProperty(parent, "Size", FsUiUtils.humanReadableByteCount(Files.size(context), false));
 			}
 			parent.layout(true, true);
 		} catch (IOException e) {
-			throw new FilesException("Cannot display details for " + context, e);
+			throw new FsUiException("Cannot display details for " + context, e);
 		}
 	}
 
@@ -352,7 +340,7 @@ public class AdvancedFsBrowser {
 		private Path currSelected = null;
 
 		// UI Objects
-		private DirectoryTableViewer viewer;
+		private FsTableViewer viewer;
 
 		@Override
 		public boolean setFocus() {
@@ -402,8 +390,8 @@ public class AdvancedFsBrowser {
 			// SWT.V_SCROLL);
 			// Table table = viewer.getTable();
 			// table.setLayoutData(EclipseUiUtils.fillAll());
-			
-			viewer = new DirectoryTableViewer(parent, SWT.MULTI);
+
+			viewer = new FsTableViewer(parent, SWT.MULTI);
 			Table table = viewer.configureDefaultSingleColumnTable(COLUMN_WIDTH);
 
 			viewer.addSelectionChangedListener(new ISelectionChangedListener() {

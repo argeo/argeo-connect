@@ -1,6 +1,6 @@
-package org.argeo.eclipse.ui.files;
+package org.argeo.eclipse.ui.fs;
 
-public class FileBrowserEditor {}
+public class FsBrowserEditor {}
 
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
@@ -12,8 +12,8 @@ public class FileBrowserEditor {}
 //import org.eclipse.ui.part.EditorPart;
 //
 ///** Default file browser editor */
-//public class FileBrowserEditor extends EditorPart {
-//	final static Log log = LogFactory.getLog(FileBrowserEditor.class);
+//public class FsBrowserEditor extends EditorPart {
+//	final static Log log = LogFactory.getLog(FsBrowserEditor.class);
 //
 //	@Override
 //	public void init(IEditorSite site, IEditorInput input) throws PartInitException {

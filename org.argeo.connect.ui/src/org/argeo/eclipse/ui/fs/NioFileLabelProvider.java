@@ -1,4 +1,4 @@
-package org.argeo.eclipse.ui.files;
+package org.argeo.eclipse.ui.fs;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,10 +10,6 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 /** Expect a {@link Path} as input element */
 public class NioFileLabelProvider extends ColumnLabelProvider {
 	private static final long serialVersionUID = 2160026425187796930L;
-	public final static String SIZE = "size";
-	public final static String LAST_MODIFIED = "last-modified";
-	public final static String TYPE = "type";
-
 	private final String propName;
 
 	public NioFileLabelProvider(String propName) {
@@ -25,11 +21,11 @@ public class NioFileLabelProvider extends ColumnLabelProvider {
 		Path path = (Path) element;
 		try {
 			switch (propName) {
-			case SIZE:
-				return FilesUiUtils.humanReadableByteCount(Files.size(path), false);
-			case LAST_MODIFIED:
+			case FsUiConstants.PROPERTY_SIZE:
+				return FsUiUtils.humanReadableByteCount(Files.size(path), false);
+			case FsUiConstants.PROPERTY_LAST_MODIFIED:
 				return Files.getLastModifiedTime(path).toString();
-			case TYPE:
+			case FsUiConstants.PROPERTY_TYPE:
 				if (Files.isDirectory(path))
 					return "Folder";
 				else {
@@ -43,7 +39,7 @@ public class NioFileLabelProvider extends ColumnLabelProvider {
 				throw new IllegalArgumentException("Unsupported property " + propName);
 			}
 		} catch (IOException ioe) {
-			throw new FilesException("Cannot get property " + propName + " on " + path.toString());
+			throw new FsUiException("Cannot get property " + propName + " on " + path.toString());
 		}
 	}
 }

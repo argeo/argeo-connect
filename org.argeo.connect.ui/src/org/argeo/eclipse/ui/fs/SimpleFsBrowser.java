@@ -1,10 +1,7 @@
-package org.argeo.eclipse.ui.files;
+package org.argeo.eclipse.ui.fs;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.spi.FileSystemProvider;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +9,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.jackrabbit.fs.JackrabbitMemoryFsProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -32,8 +28,8 @@ public class SimpleFsBrowser extends Composite {
 	private static final long serialVersionUID = -40347919096946585L;
 
 	private Path currSelected;
-	private DirectoryTableViewer bookmarksViewer;
-	private DirectoryTableViewer directoryDisplayViewer;
+	private FsTableViewer bookmarksViewer;
+	private FsTableViewer directoryDisplayViewer;
 
 	public SimpleFsBrowser(Composite parent, int style) {
 		super(parent, style);
@@ -67,7 +63,7 @@ public class SimpleFsBrowser extends Composite {
 		ISelectionChangedListener selList = new MySelectionChangedListener();
 
 		appendTitle(parent, "My bookmarks");
-		bookmarksViewer = new DirectoryTableViewer(parent, SWT.MULTI | SWT.NO_SCROLL);
+		bookmarksViewer = new FsTableViewer(parent, SWT.MULTI | SWT.NO_SCROLL);
 		Table table = bookmarksViewer.configureDefaultSingleColumnTable(500);
 		GridData gd = EclipseUiUtils.fillWidth();
 		gd.horizontalIndent = 10;
@@ -75,21 +71,21 @@ public class SimpleFsBrowser extends Composite {
 		bookmarksViewer.addSelectionChangedListener(selList);
 
 		appendTitle(parent, "Jcr + File");
-		DirectoryTableViewer jcrFilesViewers = new DirectoryTableViewer(parent, SWT.MULTI | SWT.NO_SCROLL);
+		FsTableViewer jcrFilesViewers = new FsTableViewer(parent, SWT.MULTI | SWT.NO_SCROLL);
 		table = jcrFilesViewers.configureDefaultSingleColumnTable(500);
 		gd = EclipseUiUtils.fillWidth();
 		gd.horizontalIndent = 10;
 		table.setLayoutData(gd);
 		jcrFilesViewers.addSelectionChangedListener(selList);
 
-		FileSystemProvider fsProvider = new JackrabbitMemoryFsProvider();
-		try {
-			Path testPath = fsProvider.getPath(new URI("jcr+memory:/"));
-			jcrFilesViewers.setPathsInput(testPath);
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// FileSystemProvider fsProvider = new JackrabbitMemoryFsProvider();
+		// try {
+		// Path testPath = fsProvider.getPath(new URI("jcr+memory:/"));
+		// jcrFilesViewers.setPathsInput(testPath);
+		// } catch (URISyntaxException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 	}
 
 	private Label appendTitle(Composite parent, String value) {
@@ -122,13 +118,13 @@ public class SimpleFsBrowser extends Composite {
 
 	private void populateDisplay(final Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		directoryDisplayViewer = new DirectoryTableViewer(parent, SWT.MULTI);
+		directoryDisplayViewer = new FsTableViewer(parent, SWT.MULTI);
 		List<ColumnDefinition> colDefs = new ArrayList<>();
-		colDefs.add(new ColumnDefinition(DirectoryTableViewer.getSimpleNameLp(), "Name", 200, 200));
-		colDefs.add(new ColumnDefinition(new NioFileLabelProvider(NioFileLabelProvider.SIZE), "Size", 100, 100));
-		colDefs.add(new ColumnDefinition(new NioFileLabelProvider(NioFileLabelProvider.TYPE), "Type", 300, 300));
-		colDefs.add(new ColumnDefinition(new NioFileLabelProvider(NioFileLabelProvider.LAST_MODIFIED), "Last modified",
-				100, 100));
+		colDefs.add(new ColumnDefinition(new FileIconNameLabelProvider(), "Name", 200));
+		colDefs.add(new ColumnDefinition(new NioFileLabelProvider(FsUiConstants.PROPERTY_SIZE), "Size", 100));
+		colDefs.add(new ColumnDefinition(new NioFileLabelProvider(FsUiConstants.PROPERTY_TYPE), "Type", 250));
+		colDefs.add(new ColumnDefinition(new NioFileLabelProvider(FsUiConstants.PROPERTY_LAST_MODIFIED),
+				"Last modified", 200));
 		Table table = directoryDisplayViewer.configureDefaultTable(colDefs);
 		table.setLayoutData(EclipseUiUtils.fillAll());
 
