@@ -4,6 +4,7 @@ org.argeo.cms.maintenance,\
 org.eclipse.ui;ui.workbench=split,\
 org.eclipse.ui.browser;ui.workbench=split,\
 org.eclipse.ui.part;ui.workbench=split,\
+org.eclipse.jface.resource,\
 *
 
 
