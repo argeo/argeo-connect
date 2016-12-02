@@ -13,7 +13,6 @@ import javax.jcr.Repository;
 import javax.jcr.Session;
 import javax.jcr.query.Row;
 
-import org.argeo.cms.ui.workbench.commands.OpenFile;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.ui.workbench.util.PrivilegedJob;
 import org.argeo.connect.people.PeopleException;
@@ -26,6 +25,7 @@ import org.argeo.connect.people.rap.exports.calc.RowsToCalcWriter;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.eclipse.ui.specific.OpenFile;
 import org.argeo.jcr.JcrMonitor;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -44,12 +44,10 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * must implement ICalcExtractProvider interface.
  */
 public class GetCalcExport extends AbstractHandler {
-	public final static String ID = PeopleRapPlugin.PLUGIN_ID
-			+ ".getCalcExport";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".getCalcExport";
 	public final static String PARAM_EXPORT_ID = "param.exportId";
 
-	private final static DateFormat df = new SimpleDateFormat(
-			"yyyy-MM-dd_HH-mm");
+	private final static DateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
 
 	/* DEPENDENCY INJECTION */
 	private PeopleWorkbenchService peopleWorkbenchService;
@@ -62,8 +60,7 @@ public class GetCalcExport extends AbstractHandler {
 			exportId = PeopleRapConstants.DEFAULT_CALC_EXPORT;
 
 		try {
-			IWorkbenchPart iwp = HandlerUtil.getActiveWorkbenchWindow(event)
-					.getActivePage().getActivePart();
+			IWorkbenchPart iwp = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().getActivePart();
 			if (iwp instanceof IJcrTableViewer) {
 				IJcrTableViewer provider = (IJcrTableViewer) iwp;
 
@@ -71,22 +68,17 @@ public class GetCalcExport extends AbstractHandler {
 					return null;
 				else {
 					Object[] elements = provider.getElements(exportId);
-					List<PeopleColumnDefinition> cols = provider
-							.getColumnDefinition(exportId);
-					new GenerateExtract(HandlerUtil.getActivePart(event)
-							.getSite().getShell().getDisplay(), repository,
+					List<PeopleColumnDefinition> cols = provider.getColumnDefinition(exportId);
+					new GenerateExtract(HandlerUtil.getActivePart(event).getSite().getShell().getDisplay(), repository,
 							elements, cols, provider, exportId).schedule();
 				}
 			} else
-				throw new PeopleException(iwp.toString()
-						+ " is not an instance of "
-						+ "ICalcExtractProvider interface." + " Command " + ID
-						+ " can be call only when active part "
+				throw new PeopleException(iwp.toString() + " is not an instance of " + "ICalcExtractProvider interface."
+						+ " Command " + ID + " can be call only when active part "
 						+ "implements ICalcExtractProvider interface.");
 			return null;
 		} catch (Exception e) {
-			throw new PeopleException("Cannot create and populate spreadsheet",
-					e);
+			throw new PeopleException("Cannot create and populate spreadsheet", e);
 		}
 	}
 
@@ -98,9 +90,8 @@ public class GetCalcExport extends AbstractHandler {
 	}
 
 	/** Real call to spreadsheet generator. */
-	protected synchronized void callCalcGenerator(Object[] elements,
-			List<PeopleColumnDefinition> cols, String exportId, File file)
-			throws Exception {
+	protected synchronized void callCalcGenerator(Object[] elements, List<PeopleColumnDefinition> cols, String exportId,
+			File file) throws Exception {
 		if (elements instanceof Row[]) {
 			RowsToCalcWriter writer = new RowsToCalcWriter();
 			writer.writeTableFromRows(file, (Row[]) elements, cols);
@@ -121,9 +112,8 @@ public class GetCalcExport extends AbstractHandler {
 
 		private String exportId;
 
-		public GenerateExtract(Display display, Repository repository,
-				Object[] elements, List<PeopleColumnDefinition> cols,
-				IJcrTableViewer provider, String exportId) {
+		public GenerateExtract(Display display, Repository repository, Object[] elements,
+				List<PeopleColumnDefinition> cols, IJcrTableViewer provider, String exportId) {
 			super("Generating the export");
 			this.display = display;
 			this.repository = repository;
@@ -144,8 +134,7 @@ public class GetCalcExport extends AbstractHandler {
 					session = repository.login();
 
 					// Create file
-					final File tmpFile = File.createTempFile("people-extract",
-							".ods");
+					final File tmpFile = File.createTempFile("people-extract", ".ods");
 					// TODO does not work: files are deleted only when the
 					// corresponding JVM is closed
 					tmpFile.deleteOnExit();
@@ -162,19 +151,14 @@ public class GetCalcExport extends AbstractHandler {
 						@Override
 						public void run() {
 							Map<String, String> params = new HashMap<String, String>();
-							params.put(OpenFile.PARAM_FILE_NAME,
-									getFileName(provider));
-							params.put(OpenFile.PARAM_FILE_URI, "file://"
-									+ tmpFile.getAbsolutePath());
-							CommandUtils.callCommand(
-									peopleWorkbenchService.getOpenFileCmdId(),
-									params);
+							params.put(OpenFile.PARAM_FILE_NAME, getFileName(provider));
+							params.put(OpenFile.PARAM_FILE_URI, "file://" + tmpFile.getAbsolutePath());
+							CommandUtils.callCommand(peopleWorkbenchService.getOpenFileCmdId(), params);
 						}
 					});
 				}
 			} catch (Exception e) {
-				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
-						"Unable to generate export " + exportId, e);
+				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID, "Unable to generate export " + exportId, e);
 			} finally {
 				JcrUtils.logoutQuietly(session);
 			}
@@ -183,8 +167,7 @@ public class GetCalcExport extends AbstractHandler {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setPeopleWorkbenchService(
-			PeopleWorkbenchService peopleWorkbenchService) {
+	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
 		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 
