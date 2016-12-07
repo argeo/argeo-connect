@@ -39,6 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.eclipse.ui.EclipseUiException;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
@@ -87,10 +88,10 @@ public class JcrUiUtils {
 	 * Add '?' to the list of forbidden characters. See
 	 * JcrUtils.replaceInvalidChars(String name)
 	 */
-	public final static char[] INVALID_NAME_CHARACTERS = { '/', ':', '[', ']',
-			'|', '*', '?', /*
-							 * invalid XML chars :
-							 */
+	public final static char[] INVALID_NAME_CHARACTERS = { '/', ':', '[', ']', '|', '*',
+			'?', /*
+					 * invalid XML chars :
+					 */
 			'<', '>', '&' };
 
 	/**
@@ -151,8 +152,7 @@ public class JcrUiUtils {
 		} catch (AccessControlException ace) {
 			// silent
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Unable to check permission on " + entity, e);
+			throw new PeopleException("Unable to check permission on " + entity, e);
 		}
 		return canEdit;
 	}
@@ -174,14 +174,12 @@ public class JcrUiUtils {
 					currNode = currRow.getNode();
 			} catch (RepositoryException re) {
 				throw new PeopleException(
-						"Unable to retrieve Node with selector name "
-								+ selectorName + " on " + currRow, re);
+						"Unable to retrieve Node with selector name " + selectorName + " on " + currRow, re);
 			}
 		} else if (element instanceof Node)
 			currNode = (Node) element;
 		else
-			throw new PeopleException("unsupported element type: "
-					+ element.getClass().getName());
+			throw new PeopleException("unsupported element type: " + element.getClass().getName());
 		return currNode;
 	}
 
@@ -198,8 +196,7 @@ public class JcrUiUtils {
 			else
 				return getVersionableAncestor(node.getParent());
 		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"Unable to get check out status for node " + node, re);
+			throw new PeopleException("Unable to get check out status for node " + node, re);
 		}
 	}
 
@@ -232,11 +229,9 @@ public class JcrUiUtils {
 			if (!node.isNodeType(NodeType.MIX_VERSIONABLE))
 				return true;
 			else
-				return node.getSession().getWorkspace().getVersionManager()
-						.isCheckedOut(node.getPath());
+				return node.getSession().getWorkspace().getVersionManager().isCheckedOut(node.getPath());
 		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"Unable to get check out status for node " + node, re);
+			throw new PeopleException("Unable to get check out status for node " + node, re);
 		}
 	}
 
@@ -244,54 +239,43 @@ public class JcrUiUtils {
 	 * Shortcut to get a node iterator on all nodes of a given type under a
 	 * given subpath.
 	 */
-	public static NodeIterator getNodesOfType(Session session,
-			String parentPath, String nodeType) {
+	public static NodeIterator getNodesOfType(Session session, String parentPath, String nodeType) {
 		try {
 			if (parentPath == null)
 				parentPath = "/";
 			StringBuilder builder = new StringBuilder();
 			builder.append(XPathUtils.descendantFrom(parentPath));
 			builder.append("//element(*, ").append(nodeType).append(")");
-			Query query = session
-					.getWorkspace()
-					.getQueryManager()
-					.createQuery(builder.toString(),
-							PeopleConstants.QUERY_XPATH);
+			Query query = session.getWorkspace().getQueryManager().createQuery(builder.toString(),
+					PeopleConstants.QUERY_XPATH);
 			return query.execute().getNodes();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve node of type "
-					+ nodeType + " under " + parentPath, re);
+			throw new PeopleException("Unable to retrieve node of type " + nodeType + " under " + parentPath, re);
 		}
 	}
 
-	public static Node getByPropertyValue(Session session, String parentPath,
-			String nodeType, String propName, String propValue) {
-		NodeIterator nit = getByPropertyValue(session, parentPath, nodeType,
-				propName, propValue, false);
+	public static Node getByPropertyValue(Session session, String parentPath, String nodeType, String propName,
+			String propValue) {
+		NodeIterator nit = getByPropertyValue(session, parentPath, nodeType, propName, propValue, false);
 		if (nit != null && nit.hasNext())
 			return nit.nextNode();
 		else
 			return null;
 	}
 
-	public static NodeIterator getByPropertyValue(Session session,
-			String parentPath, String nodeType, String propName,
+	public static NodeIterator getByPropertyValue(Session session, String parentPath, String nodeType, String propName,
 			String propValue, boolean acceptMultipleResult) {
 		try {
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
-			String xpathQueryStr = XPathUtils.descendantFrom(parentPath)
-					+ "//element(*, " + checkAndLocalzeNamespaces(nodeType)
-					+ ")";
+			QueryManager queryManager = session.getWorkspace().getQueryManager();
+			String xpathQueryStr = XPathUtils.descendantFrom(parentPath) + "//element(*, "
+					+ checkAndLocalzeNamespaces(nodeType) + ")";
 
-			String attrQuery = XPathUtils.getPropertyEquals(
-					checkAndLocalzeNamespaces(propName), propValue);
+			String attrQuery = XPathUtils.getPropertyEquals(checkAndLocalzeNamespaces(propName), propValue);
 
 			xpathQueryStr += "[" + attrQuery + "]";
 			// String cleanStr = cleanStatement(xpathQueryStr);
 
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
-					PeopleConstants.QUERY_XPATH);
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr, PeopleConstants.QUERY_XPATH);
 			QueryResult result = xpathQuery.execute();
 			NodeIterator ni = result.getNodes();
 
@@ -302,16 +286,22 @@ public class JcrUiUtils {
 				if (acceptMultipleResult)
 					return ni;
 				else
-					throw new PeopleException("Found " + niSize
-							+ " entities of type " + nodeType + "with "
-							+ propName + " =[" + propValue + "] under "
-							+ parentPath);
+					throw new PeopleException("Found " + niSize + " entities of type " + nodeType + "with " + propName
+							+ " =[" + propValue + "] under " + parentPath);
 			} else
 				return ni;
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrieve entities of type "
-					+ nodeType + " with " + propName + " = [" + propValue
-					+ "] under " + parentPath, e);
+			throw new PeopleException("Unable to retrieve entities of type " + nodeType + " with " + propName + " = ["
+					+ propValue + "] under " + parentPath, e);
+		}
+	}
+
+	/** Retrieves the human readable label of a property */
+	public static String getPropertyTypeAsString(Property prop) {
+		try {
+			return PropertyType.nameFromValue(prop.getType());
+		} catch (RepositoryException e) {
+			throw new EclipseUiException("Cannot check type for " + prop, e);
 		}
 	}
 
@@ -319,8 +309,8 @@ public class JcrUiUtils {
 	 * If this node is has the {@link NodeType#MIX_LAST_MODIFIED} mixin, it
 	 * updates the {@link Property#JCR_LAST_MODIFIED} property with the current
 	 * time and the {@link Property#JCR_LAST_MODIFIED_BY} property with the
-	 * passed user id. In Jackrabbit 2.x, <a
-	 * href="https://issues.apache.org/jira/browse/JCR-2233">these properties
+	 * passed user id. In Jackrabbit 2.x,
+	 * <a href="https://issues.apache.org/jira/browse/JCR-2233">these properties
 	 * are not automatically updated</a>, hence the need for manual update. The
 	 * session is not saved.
 	 */
@@ -328,12 +318,10 @@ public class JcrUiUtils {
 		try {
 			if (!node.isNodeType(NodeType.MIX_LAST_MODIFIED))
 				node.addMixin(NodeType.MIX_LAST_MODIFIED);
-			node.setProperty(Property.JCR_LAST_MODIFIED,
-					new GregorianCalendar());
+			node.setProperty(Property.JCR_LAST_MODIFIED, new GregorianCalendar());
 			node.setProperty(Property.JCR_LAST_MODIFIED_BY, userId);
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot update last modified on " + node,
-					e);
+			throw new PeopleException("Cannot update last modified on " + node, e);
 		}
 	}
 
@@ -364,13 +352,11 @@ public class JcrUiUtils {
 				String path = node.getPath();
 				vm.checkpoint(path);
 			} else if (publish && !isVersionable(node)) {
-				log.warn("Cannot publish unversionnable node at "
-						+ node.getPath());
+				log.warn("Cannot publish unversionnable node at " + node.getPath());
 			}
 			return changed;
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to perform check point on "
-					+ node, re);
+			throw new PeopleException("Unable to perform check point on " + node, re);
 		}
 	}
 
@@ -383,8 +369,7 @@ public class JcrUiUtils {
 	 * Not that are not versionable won't be touched TODO : add management of
 	 * check out by others.
 	 */
-	public static void checkPoint(Session session, List<String> pathes,
-			boolean updateLastModified) {
+	public static void checkPoint(Session session, List<String> pathes, boolean updateLastModified) {
 		try {
 			VersionManager vm = session.getWorkspace().getVersionManager();
 			loop: for (String currPath : pathes) {
@@ -401,13 +386,11 @@ public class JcrUiUtils {
 					}
 					vm.checkpoint(currPath);
 				} catch (RepositoryException re) {
-					throw new PeopleException(
-							"Unable to perform check point on " + currPath, re);
+					throw new PeopleException("Unable to perform check point on " + currPath, re);
 				}
 			}
 		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"Unexpected error when performing batch check point ", re);
+			throw new PeopleException("Unexpected error when performing batch check point ", re);
 		}
 	}
 
@@ -426,8 +409,7 @@ public class JcrUiUtils {
 	 * Simply retrieves the first versionable node in the current node ancestor
 	 * tree (might be the ndoe itself) or null if none of them is versionable
 	 */
-	public static Node getParentVersionableNode(Node node)
-			throws RepositoryException {
+	public static Node getParentVersionableNode(Node node) throws RepositoryException {
 		Node curr = node;
 		while (true) {
 			if (curr.isNodeType(NodeType.MIX_VERSIONABLE))
@@ -460,8 +442,7 @@ public class JcrUiUtils {
 		try {
 			return node.getSession();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve session for node "
-					+ node, re);
+			throw new PeopleException("Unable to retrieve session for node " + node, re);
 		}
 	}
 
@@ -470,8 +451,7 @@ public class JcrUiUtils {
 		try {
 			return node.getIdentifier();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve identifier for node "
-					+ node, re);
+			throw new PeopleException("Unable to retrieve identifier for node " + node, re);
 		}
 	}
 
@@ -480,8 +460,7 @@ public class JcrUiUtils {
 		try {
 			return node.getName();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve name for node "
-					+ node, re);
+			throw new PeopleException("Unable to retrieve name for node " + node, re);
 		}
 
 	}
@@ -491,8 +470,7 @@ public class JcrUiUtils {
 		try {
 			return node.getPath();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve path for node "
-					+ node, re);
+			throw new PeopleException("Unable to retrieve path for node " + node, re);
 		}
 	}
 
@@ -511,8 +489,7 @@ public class JcrUiUtils {
 		try {
 			return session.itemExists(absPath);
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to check existence of item at "
-					+ absPath, re);
+			throw new PeopleException("Unable to check existence of item at " + absPath, re);
 		}
 	}
 
@@ -524,9 +501,7 @@ public class JcrUiUtils {
 		try {
 			return session.getNodeByIdentifier(identifier);
 		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"Unable to retrieve node by identifier with " + identifier,
-					re);
+			throw new PeopleException("Unable to retrieve node by identifier with " + identifier, re);
 		}
 	}
 
@@ -535,8 +510,7 @@ public class JcrUiUtils {
 		try {
 			return child.getParent();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve parent node for "
-					+ child, re);
+			throw new PeopleException("Unable to retrieve parent node for " + child, re);
 		}
 	}
 
@@ -556,8 +530,7 @@ public class JcrUiUtils {
 		try {
 			return session.getNode(absPath);
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve Node at path "
-					+ absPath, re);
+			throw new PeopleException("Unable to retrieve Node at path " + absPath, re);
 		}
 	}
 
@@ -571,9 +544,7 @@ public class JcrUiUtils {
 			else
 				return row.getNode(selectorName);
 		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"Unable to retrieve Node with selector name "
-							+ selectorName + " on " + row, re);
+			throw new PeopleException("Unable to retrieve Node with selector name " + selectorName + " on " + row, re);
 		}
 	}
 
@@ -582,8 +553,7 @@ public class JcrUiUtils {
 		try {
 			return node.isNodeType(nodeTypeName);
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to test NodeType " + nodeTypeName
-					+ " for " + node, re);
+			throw new PeopleException("Unable to test NodeType " + nodeTypeName + " for " + node, re);
 		}
 	}
 
@@ -592,16 +562,14 @@ public class JcrUiUtils {
 		try {
 			return node.getPrimaryNodeType().getName();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve node type name for "
-					+ node, re);
+			throw new PeopleException("Unable to retrieve node type name for " + node, re);
 		}
 	}
 
 	/** Concisely check out a node. */
 	private static void checkout(Node node) {
 		try {
-			node.getSession().getWorkspace().getVersionManager()
-					.checkout(node.getPath());
+			node.getSession().getWorkspace().getVersionManager().checkout(node.getPath());
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to check out node  " + node, re);
 		}
@@ -612,8 +580,7 @@ public class JcrUiUtils {
 		try {
 			return node.isNodeType(NodeType.MIX_VERSIONABLE);
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to test versionability  of "
-					+ node, re);
+			throw new PeopleException("Unable to test versionability  of " + node, re);
 		}
 	}
 
@@ -630,8 +597,7 @@ public class JcrUiUtils {
 			else
 				return node.getProperty(propertyName).getString();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get property " + propertyName
-					+ " of " + node, e);
+			throw new PeopleException("Cannot get property " + propertyName + " of " + node, e);
 		}
 	}
 
@@ -646,8 +612,7 @@ public class JcrUiUtils {
 			else
 				return node.getProperty(propRelPath).getLong();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get long property " + propRelPath
-					+ " of " + node, e);
+			throw new PeopleException("Cannot get long property " + propRelPath + " of " + node, e);
 		}
 	}
 
@@ -662,8 +627,7 @@ public class JcrUiUtils {
 			else
 				return node.getProperty(propRelPath).getDouble();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get double property "
-					+ propRelPath + " of " + node, e);
+			throw new PeopleException("Cannot get double property " + propRelPath + " of " + node, e);
 		}
 	}
 
@@ -678,8 +642,7 @@ public class JcrUiUtils {
 			else
 				return node.getProperty(propRelPath).getDate();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get date property " + propRelPath
-					+ " of " + node, e);
+			throw new PeopleException("Cannot get date property " + propRelPath + " of " + node, e);
 		}
 	}
 
@@ -694,8 +657,7 @@ public class JcrUiUtils {
 			else
 				return node.getProperty(propertyName).getBoolean();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get boolean property "
-					+ propertyName + " of " + node, e);
+			throw new PeopleException("Cannot get boolean property " + propertyName + " of " + node, e);
 		}
 	}
 
@@ -703,19 +665,16 @@ public class JcrUiUtils {
 	 * Concisely gets the value of a date property formatted as String or an
 	 * empty String this node doesn't have this property
 	 */
-	public static String getDateFormattedAsString(Node node,
-			String propertyName, String dateFormatPattern) {
+	public static String getDateFormattedAsString(Node node, String propertyName, String dateFormatPattern) {
 		try {
 			if (!node.hasProperty(propertyName))
 				return null;
 			else {
 				Calendar cal = node.getProperty(propertyName).getDate();
-				return new SimpleDateFormat(dateFormatPattern).format(cal
-						.getTime());
+				return new SimpleDateFormat(dateFormatPattern).format(cal.getTime());
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get date property "
-					+ propertyName + " on " + node, e);
+			throw new PeopleException("Cannot get date property " + propertyName + " on " + node, e);
 		}
 	}
 
@@ -734,8 +693,7 @@ public class JcrUiUtils {
 			}
 			return ref;
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get reference " + propName
-					+ " for node " + node, re);
+			throw new PeopleException("Unable to get reference " + propName + " for node " + node, re);
 		}
 	}
 
@@ -746,8 +704,7 @@ public class JcrUiUtils {
 	 * 
 	 * @return true if the value as changed
 	 */
-	public static boolean setJcrProperty(Node node, String propName,
-			int propertyType, Object value) {
+	public static boolean setJcrProperty(Node node, String propName, int propertyType, Object value) {
 		try {
 			// Manage null value
 			if (value == null)
@@ -760,9 +717,7 @@ public class JcrUiUtils {
 			switch (propertyType) {
 			case PropertyType.STRING:
 				String strValue = (String) value;
-				if (node.hasProperty(propName)
-						&& node.getProperty(propName).getString()
-								.equals(strValue))
+				if (node.hasProperty(propName) && node.getProperty(propName).getString().equals(strValue))
 					return false;
 				else {
 					node.setProperty(propName, strValue);
@@ -772,26 +727,21 @@ public class JcrUiUtils {
 			case PropertyType.WEAKREFERENCE:
 				Node nodeValue = (Node) value;
 				if (node.hasProperty(propName)
-						&& nodeValue.getIdentifier().equals(
-								node.getProperty(propName).getNode()
-										.getIdentifier()))
+						&& nodeValue.getIdentifier().equals(node.getProperty(propName).getNode().getIdentifier()))
 					return false;
 				else {
 					node.setProperty(propName, nodeValue);
 					return true;
 				}
 			case PropertyType.BOOLEAN:
-				if (node.hasProperty(propName)
-						&& node.getProperty(propName).getBoolean() == (Boolean) value)
+				if (node.hasProperty(propName) && node.getProperty(propName).getBoolean() == (Boolean) value)
 					return false;
 				else {
 					node.setProperty(propName, (Boolean) value);
 					return true;
 				}
 			case PropertyType.DATE:
-				if (node.hasProperty(propName)
-						&& node.getProperty(propName).getDate()
-								.equals((Calendar) value))
+				if (node.hasProperty(propName) && node.getProperty(propName).getDate().equals((Calendar) value))
 					return false;
 				else {
 					node.setProperty(propName, (Calendar) value);
@@ -799,8 +749,7 @@ public class JcrUiUtils {
 				}
 			case PropertyType.LONG:
 				Long lgValue = (Long) value;
-				if (node.hasProperty(propName)
-						&& node.getProperty(propName).getLong() == lgValue)
+				if (node.hasProperty(propName) && node.getProperty(propName).getLong() == lgValue)
 					return false;
 				else {
 					node.setProperty(propName, lgValue);
@@ -808,8 +757,7 @@ public class JcrUiUtils {
 				}
 			case PropertyType.DOUBLE:
 				Double dbValue = (Double) value;
-				if (node.hasProperty(propName)
-						&& node.getProperty(propName).getDouble() == dbValue)
+				if (node.hasProperty(propName) && node.getProperty(propName).getDouble() == dbValue)
 					return false;
 				else {
 					node.setProperty(propName, dbValue);
@@ -817,23 +765,18 @@ public class JcrUiUtils {
 				}
 			case PropertyType.DECIMAL:
 				BigDecimal bdValue = (BigDecimal) value;
-				if (node.hasProperty(propName)
-						&& node.getProperty(propName).getDecimal() == bdValue)
+				if (node.hasProperty(propName) && node.getProperty(propName).getDecimal() == bdValue)
 					return false;
 				else {
 					node.setProperty(propName, bdValue);
 					return true;
 				}
 			default:
-				throw new PeopleException(
-						"Update unimplemented for property type "
-								+ propertyType + ". Unable to update property "
-								+ propName + " on " + node);
+				throw new PeopleException("Update unimplemented for property type " + propertyType
+						+ ". Unable to update property " + propName + " on " + node);
 			}
 		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"Unexpected error while setting property " + propName
-							+ " on " + node, re);
+			throw new PeopleException("Unexpected error while setting property " + propName + " on " + node, re);
 		}
 	}
 
@@ -842,8 +785,7 @@ public class JcrUiUtils {
 	 * Removes a given String from a multi value property of a node. If the
 	 * String is not found, it does nothing
 	 */
-	public static void removeMultiPropertyValue(Node node, String propName,
-			String stringToRemove) {
+	public static void removeMultiPropertyValue(Node node, String propName, String stringToRemove) {
 		try {
 			boolean foundValue = false;
 
@@ -859,9 +801,8 @@ public class JcrUiUtils {
 			if (foundValue)
 				node.setProperty(propName, strings.toArray(new String[0]));
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to remove value "
-					+ stringToRemove + " for property " + propName + " of "
-					+ node, e);
+			throw new PeopleException(
+					"Unable to remove value " + stringToRemove + " for property " + propName + " of " + node, e);
 		}
 	}
 
@@ -870,8 +811,7 @@ public class JcrUiUtils {
 	 * part of the list, it returns an error message. We use case insensitive
 	 * comparison
 	 */
-	public static String addMultiPropertyValue(Node node, String propName,
-			String value) {
+	public static String addMultiPropertyValue(Node node, String propName, String value) {
 		try {
 			Value[] values;
 			String[] valuesStr;
@@ -881,11 +821,9 @@ public class JcrUiUtils {
 
 				// Check dupplicate
 				for (Value currVal : values) {
-					String curTagUpperCase = currVal.getString().toUpperCase()
-							.trim();
+					String curTagUpperCase = currVal.getString().toUpperCase().trim();
 					if (value.toUpperCase().trim().equals(curTagUpperCase)) {
-						errMsg = value
-								+ " is already in the list and thus could not be added.";
+						errMsg = value + " is already in the list and thus could not be added.";
 						return errMsg;
 					}
 				}
@@ -910,8 +848,7 @@ public class JcrUiUtils {
 	 * Add a string value on a multivalued property. WARNING if values is not an
 	 * empty String, it overrides any existing value, and delete old ones.
 	 */
-	public static void setMultiValueStringPropFromString(Node node,
-			String propName, String values, String separator) {
+	public static void setMultiValueStringPropFromString(Node node, String propName, String values, String separator) {
 		try {
 			if (EclipseUiUtils.notEmpty(values)) {
 				String[] valArray = values.split(separator);
@@ -924,9 +861,8 @@ public class JcrUiUtils {
 				node.setProperty(propName, newValList.toArray(new String[0]));
 			}
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to set multi value property "
-					+ propName + " of node " + node + " with values [" + values
-					+ "]", re);
+			throw new PeopleException("Unable to set multi value property " + propName + " of node " + node
+					+ " with values [" + values + "]", re);
 		}
 	}
 
@@ -939,8 +875,7 @@ public class JcrUiUtils {
 	 * Useful in the read only label providers. Caller might define a
 	 * concatenation string, otherwise a semi-colon and a space are used.
 	 */
-	public static String getMultiAsString(Node node, String propertyName,
-			String separator) {
+	public static String getMultiAsString(Node node, String propertyName, String separator) {
 		try {
 			if (separator == null)
 				separator = "; ";
@@ -955,14 +890,12 @@ public class JcrUiUtils {
 						builder.append(currStr).append(separator);
 				}
 				if (builder.lastIndexOf(separator) >= 0)
-					return builder.substring(0,
-							builder.length() - separator.length());
+					return builder.substring(0, builder.length() - separator.length());
 				else
 					return builder.toString();
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get multi valued property "
-					+ propertyName + " of " + node, e);
+			throw new PeopleException("Cannot get multi valued property " + propertyName + " of " + node, e);
 		}
 	}
 
@@ -982,8 +915,7 @@ public class JcrUiUtils {
 				}
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get multi valued property "
-					+ propertyName + " of " + node, e);
+			throw new PeopleException("Cannot get multi valued property " + propertyName + " of " + node, e);
 		}
 		return results;
 	}
@@ -992,23 +924,21 @@ public class JcrUiUtils {
 	 * Sets a property of type REFERENCE that is multiple. Overrides any already
 	 * defined value of this property
 	 */
-	public static void setMultipleReferences(Node node, String propertyName,
-			List<Node> nodes) throws RepositoryException {
+	public static void setMultipleReferences(Node node, String propertyName, List<Node> nodes)
+			throws RepositoryException {
 		ValueFactory vFactory = node.getSession().getValueFactory();
 		int size = nodes.size();
 		Value[] values = new Value[size];
 		int i = 0;
 		for (Node currNode : nodes) {
-			Value val = vFactory.createValue(currNode.getIdentifier(),
-					PropertyType.REFERENCE);
+			Value val = vFactory.createValue(currNode.getIdentifier(), PropertyType.REFERENCE);
 			values[i++] = val;
 		}
 		node.setProperty(propertyName, values);
 	}
 
 	/** Remove a Reference from a multi valued property */
-	public static void removeRefFromMultiValuedProp(Node node, String propName,
-			String identifier) {
+	public static void removeRefFromMultiValuedProp(Node node, String propName, String identifier) {
 		try {
 			Session session = node.getSession();
 			List<Node> nodes = new ArrayList<Node>();
@@ -1020,9 +950,7 @@ public class JcrUiUtils {
 			}
 			setMultipleReferences(node, propName, nodes);
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Unable to remove reference from property " + propName
-							+ " of Node " + node, e);
+			throw new PeopleException("Unable to remove reference from property " + propName + " of Node " + node, e);
 		}
 	}
 
@@ -1035,8 +963,7 @@ public class JcrUiUtils {
 	 * TODO Enable definition of a primary item by adding the new property as
 	 * first element in the list
 	 */
-	public static String addRefToMultiValuedProp(Node node, String propName,
-			Node nodeToReference) {
+	public static String addRefToMultiValuedProp(Node node, String propName, Node nodeToReference) {
 		try {
 			Session session = node.getSession();
 			Value[] values;
@@ -1048,8 +975,7 @@ public class JcrUiUtils {
 				for (Value currValue : values) {
 					String jcrId = currValue.getString();
 					if (nodeToReference.getIdentifier().equals(jcrId)) {
-						errMsg = JcrUiUtils.get(nodeToReference,
-								Property.JCR_TITLE)
+						errMsg = JcrUiUtils.get(nodeToReference, Property.JCR_TITLE)
 								+ " is already in the list and thus could not be added.";
 						return errMsg;
 					} else
@@ -1072,8 +998,7 @@ public class JcrUiUtils {
 	 * mechanism also check if another occurence of the source reference is
 	 * present and remove it
 	 */
-	public static void orderReferenceBefore(Node node, String propName,
-			Node sourceNode, Node targetNode) {
+	public static void orderReferenceBefore(Node node, String propName, Node sourceNode, Node targetNode) {
 		try {
 			Session session = node.getSession();
 			String sourceId = sourceNode.getIdentifier();
@@ -1101,9 +1026,8 @@ public class JcrUiUtils {
 			}
 			setMultipleReferences(node, propName, nodes);
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to update node " + node
-					+ " to order " + sourceNode + " before " + targetNode
-					+ " in multi value reference property " + propName, re);
+			throw new PeopleException("Unable to update node " + node + " to order " + sourceNode + " before "
+					+ targetNode + " in multi value reference property " + propName, re);
 		}
 	}
 
@@ -1138,8 +1062,7 @@ public class JcrUiUtils {
 	 * TODO Enable definition of a primary item by adding the new property as
 	 * first element in the list
 	 */
-	public static String addStringToMultiValuedProp(Node node, String propName,
-			String value) {
+	public static String addStringToMultiValuedProp(Node node, String propName, String value) {
 		try {
 			Value[] values;
 			String[] valuesStr;
@@ -1151,8 +1074,7 @@ public class JcrUiUtils {
 				for (Value currVal : values) {
 					String currStr = currVal.getString();
 					if (value.equals(currStr)) {
-						errMsg = value + " is already in the list and thus "
-								+ "could not be added.";
+						errMsg = value + " is already in the list and thus " + "could not be added.";
 						return errMsg;
 					}
 				}
@@ -1175,8 +1097,7 @@ public class JcrUiUtils {
 	}
 
 	/** Remove a String from a multi valued property */
-	public static void removeStringFromMultiValuedProp(Node node,
-			String propName, String value) {
+	public static void removeStringFromMultiValuedProp(Node node, String propName, String value) {
 		try {
 			if (node.hasProperty(propName)) {
 				List<Value> nodes = new ArrayList<Value>();
@@ -1190,9 +1111,7 @@ public class JcrUiUtils {
 				node.setProperty(propName, results);
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Unable to remove reference from property " + propName
-							+ " of Node " + node, e);
+			throw new PeopleException("Unable to remove reference from property " + propName + " of Node " + node, e);
 		}
 	}
 
@@ -1214,8 +1133,7 @@ public class JcrUiUtils {
 	 * If no rel path is given, we use the default
 	 * {@link PeopleNames#PEOPLE_ALT_LANGS}
 	 */
-	public static Node getAltLangNode(Node currentNode, String relPath,
-			String lang) {
+	public static Node getAltLangNode(Node currentNode, String relPath, String lang) {
 		try {
 			if (EclipseUiUtils.isEmpty(relPath))
 				relPath = PeopleNames.PEOPLE_ALT_LANGS;
@@ -1229,17 +1147,13 @@ public class JcrUiUtils {
 		}
 	}
 
-	public static Node getOrCreateAltLanguageNode(Node node, String lang,
-			List<String> mixins) {
-		return getOrCreateAltLanguageNode(node, PeopleNames.PEOPLE_ALT_LANGS,
-				lang, mixins);
+	public static Node getOrCreateAltLanguageNode(Node node, String lang, List<String> mixins) {
+		return getOrCreateAltLanguageNode(node, PeopleNames.PEOPLE_ALT_LANGS, lang, mixins);
 	}
 
-	public static Node getOrCreateAltLanguageNode(Node node, String relPath,
-			String lang, List<String> mixins) {
+	public static Node getOrCreateAltLanguageNode(Node node, String relPath, String lang, List<String> mixins) {
 		try {
-			Node child = JcrUtils.mkdirs(node, relPath + "/" + lang,
-					NodeType.NT_UNSTRUCTURED);
+			Node child = JcrUtils.mkdirs(node, relPath + "/" + lang, NodeType.NT_UNSTRUCTURED);
 			child.addMixin(NodeType.MIX_LANGUAGE);
 			if (mixins != null && !mixins.isEmpty())
 				for (String mixin : mixins)
@@ -1248,8 +1162,7 @@ public class JcrUiUtils {
 			child.setProperty(Property.JCR_LANGUAGE, lang);
 			return child;
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot create child for language "
-					+ lang, e);
+			throw new PeopleException("Cannot create child for language " + lang, e);
 		}
 	}
 
@@ -1280,8 +1193,8 @@ public class JcrUiUtils {
 	 * Performs a kind of "select distinct" based on the JcrUID of the nodes
 	 * designed by the selector name
 	 */
-	public static Row[] rowIteratorToDistinctArray(RowIterator rit,
-			String distinctSelectorName) throws RepositoryException {
+	public static Row[] rowIteratorToDistinctArray(RowIterator rit, String distinctSelectorName)
+			throws RepositoryException {
 		List<Row> rows = new ArrayList<Row>();
 		List<String> jcrIds = new ArrayList<String>();
 		while (rit.hasNext()) {
@@ -1302,8 +1215,8 @@ public class JcrUiUtils {
 	 * name. It relies on the <code>Row.getNode(String selectorName)</code>
 	 * method.
 	 */
-	public static List<Node> rowIteratorToNodeList(RowIterator rowIterator,
-			String selectorName) throws RepositoryException {
+	public static List<Node> rowIteratorToNodeList(RowIterator rowIterator, String selectorName)
+			throws RepositoryException {
 		List<Node> nodes = new ArrayList<Node>();
 		while (rowIterator.hasNext()) {
 			Row row = rowIterator.nextRow();
@@ -1314,8 +1227,7 @@ public class JcrUiUtils {
 	}
 
 	/** Parses and trims a String of values */
-	public static String[] parseAndClean(String string, String regExp,
-			boolean clean) {
+	public static String[] parseAndClean(String string, String regExp, boolean clean) {
 		String[] temp = string.split(regExp);
 		if (clean) {
 			String[] cleanRes = new String[temp.length];
@@ -1330,8 +1242,7 @@ public class JcrUiUtils {
 	}
 
 	/** Concatenates 2 strings with given separator if they are not empty */
-	public static String concatIfNotEmpty(String str1, String str2,
-			String separator) {
+	public static String concatIfNotEmpty(String str1, String str2, String separator) {
 		StringBuilder builder = new StringBuilder();
 		if (EclipseUiUtils.notEmpty(str1))
 			builder.append(str1);
@@ -1349,8 +1260,8 @@ public class JcrUiUtils {
 	 * Returns and(constraintA, constraintB) if constraintA != null, or
 	 * constraintB otherwise (that cannot be null)
 	 */
-	public static Constraint localAnd(QueryObjectModelFactory factory,
-			Constraint defaultC, Constraint newC) throws RepositoryException {
+	public static Constraint localAnd(QueryObjectModelFactory factory, Constraint defaultC, Constraint newC)
+			throws RepositoryException {
 		if (defaultC == null)
 			return newC;
 		else
@@ -1358,17 +1269,14 @@ public class JcrUiUtils {
 	}
 
 	/** Widely used pattern in various UI Parts */
-	public static Constraint getFreeTextConstraint(Session session,
-			QueryObjectModelFactory factory, Selector source, String filter)
-			throws RepositoryException {
+	public static Constraint getFreeTextConstraint(Session session, QueryObjectModelFactory factory, Selector source,
+			String filter) throws RepositoryException {
 		Constraint defaultC = null;
 		if (EclipseUiUtils.notEmpty(filter)) {
 			String[] strs = filter.trim().split(" ");
 			for (String token : strs) {
-				StaticOperand so = factory.literal(session.getValueFactory()
-						.createValue("*" + token + "*"));
-				Constraint currC = factory.fullTextSearch(
-						source.getSelectorName(), null, so);
+				StaticOperand so = factory.literal(session.getValueFactory().createValue("*" + token + "*"));
+				Constraint currC = factory.fullTextSearch(source.getSelectorName(), null, so);
 				defaultC = localAnd(factory, defaultC, currC);
 			}
 		}
@@ -1382,8 +1290,7 @@ public class JcrUiUtils {
 	 * value prop It retrieves and process all properties that have a _puid
 	 * suffix
 	 */
-	public static void translatePuidToRef(Node node, String nodeType,
-			String basePath, boolean updateChildren) {
+	public static void translatePuidToRef(Node node, String nodeType, String basePath, boolean updateChildren) {
 		try {
 			Session session = node.getSession();
 			PropertyIterator pit = node.getProperties();
@@ -1391,18 +1298,16 @@ public class JcrUiUtils {
 				Property currProp = pit.nextProperty();
 				String currName = currProp.getName();
 				if (currName.endsWith(PeopleConstants.IMPORT_REF_SUFFIX)) {
-					String newName = currName.substring(0, currName.length()
-							- PeopleConstants.IMPORT_REF_SUFFIX.length());
+					String newName = currName.substring(0,
+							currName.length() - PeopleConstants.IMPORT_REF_SUFFIX.length());
 					if (currProp.isMultiple()) {
 						Value[] values = currProp.getValues();
 						List<Node> nodes = new ArrayList<Node>();
 						for (Value val : values) {
 							String currId = val.getString();
-							Node referenced = getEntityByUid(session, currId,
-									nodeType, basePath);
+							Node referenced = getEntityByUid(session, currId, nodeType, basePath);
 							if (referenced == null)
-								log.warn("Unable to find referenced node with ID "
-										+ currId + " for " + currProp);
+								log.warn("Unable to find referenced node with ID " + currId + " for " + currProp);
 							else
 								nodes.add(referenced);
 						}
@@ -1410,8 +1315,7 @@ public class JcrUiUtils {
 						currProp.remove();
 					} else {
 						String currId = currProp.getString();
-						Node referenced = getEntityByUid(session, currId,
-								nodeType, basePath);
+						Node referenced = getEntityByUid(session, currId, nodeType, basePath);
 						node.setProperty(newName, referenced);
 						currProp.remove();
 					}
@@ -1421,32 +1325,24 @@ public class JcrUiUtils {
 				NodeIterator nit = node.getNodes();
 				while (nit.hasNext()) {
 					Node currChild = nit.nextNode();
-					translatePuidToRef(currChild, nodeType, basePath,
-							updateChildren);
+					translatePuidToRef(currChild, nodeType, basePath, updateChildren);
 				}
 			}
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to perform post import "
-					+ "translation on Node " + node, re);
+			throw new PeopleException("Unable to perform post import " + "translation on Node " + node, re);
 		}
 	}
 
-	public static Node getEntityByUid(Session session, String uid,
-			String nodeType, String basePath) {
+	public static Node getEntityByUid(Session session, String uid, String nodeType, String basePath) {
 		if (isEmpty(uid))
-			throw new PeopleException(
-					"Cannot get entity by id by providing an empty people:uid");
+			throw new PeopleException("Cannot get entity by id by providing an empty people:uid");
 		try {
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
-			String xpathQueryStr = XPathUtils.descendantFrom(basePath)
-					+ "//element(*, " + nodeType + ")";
-			String attrQuery = XPathUtils.getPropertyEquals(
-					PeopleNames.PEOPLE_UID, uid);
+			QueryManager queryManager = session.getWorkspace().getQueryManager();
+			String xpathQueryStr = XPathUtils.descendantFrom(basePath) + "//element(*, " + nodeType + ")";
+			String attrQuery = XPathUtils.getPropertyEquals(PeopleNames.PEOPLE_UID, uid);
 			if (EclipseUiUtils.notEmpty(attrQuery))
 				xpathQueryStr += "[" + attrQuery + "]";
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
-					PeopleConstants.QUERY_XPATH);
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr, PeopleConstants.QUERY_XPATH);
 			QueryResult result = xpathQuery.execute();
 			NodeIterator ni = result.getNodes();
 
@@ -1454,16 +1350,13 @@ public class JcrUiUtils {
 				return null;
 			else if (ni.getSize() > 1) {
 				Node first = ni.nextNode();
-				throw new PeopleException("Found " + ni.getSize()
-						+ " entities for People UID [" + uid
-						+ "]\n Info on first occurence: " + "\n Path: "
-						+ first.getPath() + "\n Node type: "
+				throw new PeopleException("Found " + ni.getSize() + " entities for People UID [" + uid
+						+ "]\n Info on first occurence: " + "\n Path: " + first.getPath() + "\n Node type: "
 						+ first.getPrimaryNodeType().getName());
 			} else
 				return ni.nextNode();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrieve entity of uid: "
-					+ uid + " under " + basePath, e);
+			throw new PeopleException("Unable to retrieve entity of uid: " + uid + " under " + basePath, e);
 		}
 	}
 
