@@ -73,7 +73,7 @@ which are used as well as that of the covered work.]]>
 	<repositories>
 		<repository>
 			<id>argeo</id>
-			<url>http://forge.argeo.org/data/public/java/argeo-2.1/</url>
+			<url>http://forge.argeo.org/data/java/argeo-2.1/</url>
 			<releases>
 				<enabled>true</enabled>
 				<updatePolicy>daily</updatePolicy>
@@ -82,7 +82,7 @@ which are used as well as that of the covered work.]]>
 		</repository>
 		<repository>
 			<id>argeo-extras</id>
-			<url>http://forge.argeo.org/data/public/java/argeo-extras-2.1</url>
+			<url>http://forge.argeo.org/data/java/argeo-extras-2.1</url>
 			<releases>
 				<enabled>true</enabled>
 				<updatePolicy>daily</updatePolicy>
@@ -115,7 +115,7 @@ which are used as well as that of the covered work.]]>
 	<distributionManagement>
 		<repository>
 			<id>staging</id>
-			<url>dav:https://forge.argeo.org/data/files/java/argeo-extras-2.1</url>
+			<url>dav:https://forge.argeo.org/data/java/argeo-extras-2.1</url>
 			<uniqueVersion>false</uniqueVersion>
 		</repository>
 	</distributionManagement>
