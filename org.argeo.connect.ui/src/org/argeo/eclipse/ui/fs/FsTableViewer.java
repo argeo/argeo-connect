@@ -70,7 +70,8 @@ public class FsTableViewer extends TableViewer {
 	public void setInput(Path dir, String filter) {
 		Object[] rows = FsUiUtils.getChildren(dir, filter, showHiddenItems, folderFirst, orderProperty, reverseOrder);
 		this.setInput(rows);
-		this.setItemCount(rows.length);
+		int length = rows == null ? 0 : rows.length;
+		this.setItemCount(length);
 		this.refresh();
 	}
 

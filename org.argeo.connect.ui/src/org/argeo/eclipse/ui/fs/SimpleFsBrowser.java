@@ -9,6 +9,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -71,6 +73,7 @@ public class SimpleFsBrowser extends Composite {
 		bookmarksViewer.addSelectionChangedListener(selList);
 
 		appendTitle(parent, "Jcr + File");
+
 		FsTableViewer jcrFilesViewers = new FsTableViewer(parent, SWT.MULTI | SWT.NO_SCROLL);
 		table = jcrFilesViewers.configureDefaultSingleColumnTable(500);
 		gd = EclipseUiUtils.fillWidth();
@@ -153,6 +156,22 @@ public class SimpleFsBrowser extends Composite {
 					currSelected = currSelected.getParent();
 					directoryDisplayViewer.setInput(currSelected, "*");
 					directoryDisplayViewer.getTable().setFocus();
+				}
+			}
+		});
+
+		directoryDisplayViewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				IStructuredSelection selection = (IStructuredSelection) directoryDisplayViewer.getSelection();
+				Path selected = null;
+				if (!selection.isEmpty())
+					selected = ((Path) selection.getFirstElement());
+				if (!Files.isDirectory(selected))
+					return;
+				if (selected != null) {
+					currSelected = selected;
+					directoryDisplayViewer.setInput(currSelected, "*");
 				}
 			}
 		});
