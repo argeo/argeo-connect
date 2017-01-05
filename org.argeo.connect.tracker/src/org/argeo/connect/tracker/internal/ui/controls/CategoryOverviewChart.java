@@ -46,7 +46,7 @@ public class CategoryOverviewChart extends Composite {
 		String html;
 		InputStream in = null;
 		try {
-			in = getClass().getResourceAsStream("/org/argeo/apps/tracker/internal/ui/charts/ChartJs.html");
+			in = getClass().getResourceAsStream("/org/argeo/connect/tracker/internal/ui/charts/ChartJs.html");
 			html = IOUtils.toString(in);
 		} catch (IOException e) {
 			throw new TrackerException("Cannot read HTML", e);

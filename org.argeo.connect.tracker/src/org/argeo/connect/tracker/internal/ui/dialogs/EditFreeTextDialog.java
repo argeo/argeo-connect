@@ -23,7 +23,7 @@ public class EditFreeTextDialog extends TrayDialog {
 	private final String propName;
 	private String updatedText;
 
-	// this page widgets and UI objects
+	// UI objects
 	private Text text;
 	private final String title;
 
@@ -48,7 +48,7 @@ public class EditFreeTextDialog extends TrayDialog {
 	protected Control createDialogArea(Composite parent) {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 		dialogArea.setLayout(new GridLayout());
-		new Label(dialogArea, SWT.WRAP).setText("PLease modify the below text");
+		new Label(dialogArea, SWT.WRAP).setText("Please modify the below text");
 		text = new Text(dialogArea, SWT.WRAP | SWT.MULTI | SWT.BORDER);
 		text.setLayoutData(EclipseUiUtils.fillAll());
 		text.setText(JcrUiUtils.get(node, propName));
