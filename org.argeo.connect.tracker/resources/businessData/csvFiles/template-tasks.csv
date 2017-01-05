@@ -1,0 +1,4 @@
+Field,Values
+people:taskStatus,New; Sleeping; In progress; Done; Canceled
+people:closingStatuses,Done; Canceled
+single:people:defaultStatus,New

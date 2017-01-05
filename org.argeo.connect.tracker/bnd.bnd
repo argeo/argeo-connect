@@ -1,0 +1,24 @@
+Require-Capability: cms.datamodel; filter:="(name=people)",\
+cms.datamodel; filter:="(name=cms)"
+Provide-Capability: cms.datamodel; name=tracker; cnd=/org/argeo/connect/tracker/tracker.cnd; abstract=true
+
+Bundle-Activator: org.argeo.connect.tracker.ui.TrackerUiPlugin
+Bundle-SymbolicName: org.argeo.connect.tracker;singleton:=true
+Require-Bundle: org.eclipse.core.runtime
+
+Import-Package:\
+javax.jcr.nodetype,\
+javax.jcr.security,\
+org.argeo.cms,\
+org.argeo.cms.auth,\
+org.argeo.connect.people,\
+org.argeo.connect.people.rap.views,\
+org.argeo.eclipse.spring,\
+org.eclipse.jface.dialogs,\
+org.eclipse.jface.window,\
+org.eclipse.ui;ui.workbench=split,\
+org.eclipse.ui.browser;ui.workbench=split,\
+org.eclipse.ui.part;ui.workbench=split,\
+org.argeo.node,\
+org.argeo.util,\
+*

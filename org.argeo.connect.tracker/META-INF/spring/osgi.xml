@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/osgi"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/osgi  
+       http://www.springframework.org/schema/osgi/spring-osgi-1.1.xsd
+       http://www.springframework.org/schema/beans   
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<!-- REFERENCES -->
+	<!-- TODO we implicitly expect that People repository has been instrumented 
+		with the Tracker cnd, to leave the Tracker data model abstract -->
+	<reference id="trackerRepository" interface="javax.jcr.Repository"
+		filter="(cn=people)" />
+	<!-- <reference id="trackerRepository" interface="javax.jcr.Repository" 
+		filter="(cn=tracker)" /> -->
+
+	<reference id="userAdmin" interface="org.osgi.service.useradmin.UserAdmin" />
+	<reference id="userTransaction" interface="javax.transaction.UserTransaction" />
+
+</beans:beans>

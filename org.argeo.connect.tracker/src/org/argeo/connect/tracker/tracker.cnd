@@ -1,0 +1,43 @@
+<tracker = 'http://www.argeo.org/ns/tracker'>
+
+// A project for a given account 
+[tracker:project] > mix:title, mix:versionable, tracker:managed
+mixin
+- tracker:cpGroupId (STRING) // ID of the group that contains external users registered for this counterparty
++ data (nt:folder) 
++ spec (cms:text) 
++ versions (nt:unstructured) // tracks also future milestones 
++ components (nt:unstructured) 
++ issues (nt:unstructured)
+
+
+// Mixin for tasks
+[tracker:issue] > tracker:managed, mix:versionable, mix:title, mix:created, mix:lastModified
+mixin 
+- tracker:id (LONG) 
+- tracker:targetId (STRING) 
+- tracker:versionIds (STRING) * // Ids of the versions in which the issue appears 
+- tracker:componentIds (STRING) * // Ids the components to which this issue belongs 
+- tracker:priority (LONG) // highest, high, normal, low, lowest
+- tracker:importance (LONG) // blocker, critical, major, normal, minor ...
++ comments (nt:unstructured) 
+
+[tracker:comment] > mix:title, mix:created, mix:lastModified
+mixin 
+
+
+[tracker:version] > mix:title 
+mixin
+- tracker:id (STRING) 
+- tracker:targetDate (DATE) 
+- tracker:releaseDate (DATE) 
+
+[tracker:component] > mix:title 
+mixin
+- tracker:id (STRING) 
+
+
+[tracker:managed] 
+mixin
+- tracker:manager (STRING) * //  DN of the user or group that is responsible for this business object
+

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.6"?>
+<plugin>
+	
+	<!-- VIEWS --> 
+	<extension
+		point="org.eclipse.ui.views">
+	</extension>
+	
+	<!-- EDITORS --> 
+	<extension point="org.eclipse.ui.editors">
+		<editor
+			id="org.argeo.connect.tracker.projectEditor"
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			name="Project Editor"
+			icon="theme/icons/types/project.gif"
+			default="false">
+		</editor>
+		<editor
+        	id="org.argeo.connect.tracker.categoryEditor"
+        	class="org.argeo.eclipse.spring.SpringExtensionFactory"
+        	default="false"
+        	icon="theme/icons/types/category.gif"
+        	name="Category Editor">
+  		</editor>
+		<editor
+			id="org.argeo.connect.tracker.issueEditor"
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			name="Issue Editor"
+			icon="theme/icons/types/issue.png"
+			default="false">
+		</editor>
+		<!-- search editors -->
+		<editor
+			id="org.argeo.connect.tracker.allProjectsEditor"
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			name="Search among projects"
+			icon="theme/icons/actions/search.png"
+			default="false">
+		</editor>
+	</extension>
+	
+	<!-- COMMANDS --> 
+	<extension point="org.eclipse.ui.commands">
+		<command
+	   		id="org.argeo.connect.tracker.openTrackerEntityEditor"
+   			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+            name="openDefaultEditor">
+            <commandParameter
+         		id="param.jcrId"
+         		name="The JCR identifier">
+         	</commandParameter>
+         	<commandParameter
+				id="param.openForEdit"
+				name="A flag to try to open the corresponding entity for edition">
+			</commandParameter>
+         	<commandParameter
+				id="param.cTabId"
+				name="The ID of the tab to open if such a tab exists">
+			</commandParameter>
+		</command>    	
+ 	</extension>
+	
+	<!-- MENU CONTRIBUTION --> 
+	<extension
+		id="menu:org.eclipse.ui.main.menu"
+		point="org.eclipse.ui.menus">
+	</extension>
+</plugin>

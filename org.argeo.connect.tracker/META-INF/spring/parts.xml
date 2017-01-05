@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<!-- EDITORS -->
+	<bean id="projectEditor" class="org.argeo.connect.tracker.internal.ui.parts.ProjectEditor"
+		scope="prototype">
+		<property name="repository" ref="trackerRepository" />
+		<property name="peopleTrackerService" ref="peopleTrackerService" />
+		<property name="trackerWbService" ref="trackerWbService" />
+	</bean>
+	<bean id="categoryEditor" class="org.argeo.connect.tracker.internal.ui.parts.CategoryEditor"
+		scope="prototype">
+		<property name="repository" ref="trackerRepository" />
+		<property name="peopleTrackerService" ref="peopleTrackerService" />
+		<property name="trackerWbService" ref="trackerWbService" />
+	</bean>
+	<bean id="issueEditor" class="org.argeo.connect.tracker.internal.ui.parts.IssueEditor"
+		scope="prototype">
+		<property name="repository" ref="trackerRepository" />
+		<property name="peopleTrackerService" ref="peopleTrackerService" />
+		<property name="trackerWbService" ref="trackerWbService" />
+	</bean>
+	<bean id="allProjectsEditor"
+		class="org.argeo.connect.tracker.internal.ui.parts.AllProjectsEditor"
+		scope="prototype">
+		<property name="repository" ref="trackerRepository" />
+		<property name="peopleService" ref="peopleTrackerService" />
+		<property name="peopleWorkbenchService" ref="trackerWbService" />
+	</bean>
+	<!-- COMMANDS -->
+	<bean id="openTrackerEntityEditor"
+		class="org.argeo.connect.tracker.ui.commands.OpenTrackerEntityEditor"
+		scope="prototype">
+		<property name="repository" ref="trackerRepository" />
+		<property name="peopleService" ref="peopleTrackerService" />
+	</bean>
+</beans>
