@@ -28,6 +28,7 @@ import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.eclipse.ui.forms.widgets.TableWrapData;
 
 /** Centralize usefull methods to ease implementation of the UI */
 public class TrackerUiUtils {
@@ -90,20 +91,28 @@ public class TrackerUiUtils {
 		return tvc;
 	}
 
-	/** Appends a section with a title */
-	public static Section addSection(FormToolkit tk, Composite parent, String title) {
+	public static Label createFormBoldLabel(FormToolkit toolkit, Composite parent, String value) {
+		// We add a blank space before to workaround the cropping of the word
+		// first letter in some OS/Browsers (typically MAC/Firefox 31 )
+		Label label = toolkit.createLabel(parent, " " + value, SWT.END);
+		label.setFont(EclipseUiUtils.getBoldFont(parent));
+		label.setLayoutData(new TableWrapData(TableWrapData.RIGHT));
+		return label;
+	}
+
+	
+	/** Appends a section with a title in a table wrap layout */
+	public static Section addFormSection(FormToolkit tk, Composite parent, String title) {
 		Section section = tk.createSection(parent, Section.TITLE_BAR);
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, false, false);
-		gd.verticalAlignment = PRE_TITLE_INDENT;
-		section.setLayoutData(gd);
+		section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 		section.setText(title);
-		Composite body = tk.createComposite(section, SWT.WRAP);
+		Composite body = tk.createComposite(section, SWT.NO_FOCUS);
 		section.setClient(body);
 		return section;
 	}
 
 	/** Appends an expendable section with a title */
-	public static Section addSection(final IManagedForm form, FormToolkit tk, Composite parent, String title,
+	public static Section addFormSection(final IManagedForm form, FormToolkit tk, Composite parent, String title,
 			boolean isExpended) {
 		int style = Section.TITLE_BAR | Section.TWISTIE;
 		if (isExpended)
@@ -114,12 +123,9 @@ public class TrackerUiUtils {
 				form.reflow(true);
 			}
 		});
-		GridData gd = EclipseUiUtils.fillWidth();
-		gd.verticalAlignment = PRE_TITLE_INDENT;
-		section.setLayoutData(gd);
+		section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 		section.setText(title);
-		Composite body = tk.createComposite(section, SWT.WRAP);
-		body.setLayoutData(EclipseUiUtils.fillAll());
+		Composite body = tk.createComposite(section, SWT.NO_FOCUS);
 		section.setClient(body);
 		return section;
 	}

@@ -1,5 +1,7 @@
 package org.argeo.connect.tracker.internal.ui.parts;
 
+import static org.eclipse.ui.forms.widgets.TableWrapData.FILL_GRAB;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +64,8 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.eclipse.ui.forms.widgets.TableWrapData;
+import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
 /** Default editor to display and edit a project definition */
 public class ProjectEditor extends AbstractTrackerEditor {
@@ -119,9 +123,8 @@ public class ProjectEditor extends AbstractTrackerEditor {
 		protected void createFormContent(final IManagedForm mf) {
 			ScrolledForm form = mf.getForm();
 			Composite body = form.getBody();
-			GridLayout mainLayout = new GridLayout();
-			body.setLayout(mainLayout);
-			body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+			TableWrapLayout layout = new TableWrapLayout();
+			body.setLayout(layout);
 			appendOverviewPart(body);
 			appendIssueListPart(body);
 		}
@@ -130,15 +133,19 @@ public class ProjectEditor extends AbstractTrackerEditor {
 		private void appendOverviewPart(Composite parent) {
 			FormToolkit tk = getManagedForm().getToolkit();
 
-			Section section = TrackerUiUtils.addSection(tk, parent,
+			Section section = TrackerUiUtils.addFormSection(tk, parent,
 					JcrUiUtils.get(project, Property.JCR_TITLE) + " - Overview");
-			section.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+			section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 
 			Composite body = (Composite) section.getClient();
-			body.setLayout(new GridLayout(4, false));
+			TableWrapLayout layout = new TableWrapLayout();
+			layout.numColumns = 4;
+			body.setLayout(layout);
 
 			final Label descLbl = tk.createLabel(body, "", SWT.WRAP);
-			descLbl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, true, 4, 1));
+			TableWrapData twd = new TableWrapData(FILL_GRAB);
+			twd.colspan = 4;
+			descLbl.setLayoutData(twd);
 
 			SectionPart part = new SectionPart((Section) body.getParent()) {
 
@@ -157,11 +164,11 @@ public class ProjectEditor extends AbstractTrackerEditor {
 		// Some monitoring indicators
 		private Section appendIssueListPart(Composite parent) {
 			FormToolkit tk = getManagedForm().getToolkit();
-			Section section = TrackerUiUtils.addSection(tk, parent, "Future Milestones");
+			Section section = TrackerUiUtils.addFormSection(tk, parent, "Future Milestones");
+			section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 
 			final Composite body = (Composite) section.getClient();
-			// body.setLayout(EclipseUiUtils.noSpaceGridLayout());
-			body.setLayout(new GridLayout());
+			body.setLayout(new TableWrapLayout());
 
 			SectionPart part = new SectionPart(section) {
 
@@ -205,21 +212,28 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			return;
 
 		Composite boxCmp = new Composite(parent, SWT.NO_FOCUS | SWT.BORDER); //
-		boxCmp.setLayoutData(EclipseUiUtils.fillWidth());
+		boxCmp.setLayoutData(new TableWrapData(FILL_GRAB));
 
-		boxCmp.setLayout(new GridLayout(2, false));
+		TableWrapLayout layout = new TableWrapLayout();
+		layout.numColumns = 2;
+		boxCmp.setLayout(layout);
 
 		Label titleLbl = new Label(boxCmp, SWT.WRAP);
-		titleLbl.setLayoutData(EclipseUiUtils.fillWidth());
+		titleLbl.setLayoutData(new TableWrapData(FILL_GRAB));
 		titleLbl.setFont(EclipseUiUtils.getBoldFont(boxCmp));
 		titleLbl.setText(currId);
+		
+		Composite chartCmp = new Composite(boxCmp, SWT.NO_FOCUS);
+		TableWrapData twd = new TableWrapData();
+		twd.rowspan = 3;
+		twd.heightHint = 40;
+		twd.valign = TableWrapData.CENTER;
+		chartCmp.setLayoutData(twd);
+		chartCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
-		CategoryOverviewChart coc = new CategoryOverviewChart(boxCmp, SWT.NO_FOCUS);
+		CategoryOverviewChart coc = new CategoryOverviewChart(chartCmp, SWT.NO_FOCUS);
 		coc.setInput(currTitle, closeNb, totalNb);
-		GridData gd = new GridData(SWT.RIGHT, SWT.TOP, false, false, 1, 3);
-		gd.widthHint = 310;
-		gd.heightHint = 40;
-		coc.setLayoutData(gd);
+		coc.setLayoutData(new GridData(310, 40));
 		coc.layout(true, true);
 
 		Label datesLbl = new Label(boxCmp, SWT.WRAP);
@@ -237,7 +251,6 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			descLbl.setText("-");
 		else
 			descLbl.setText(desc);
-
 	}
 
 	private class IssuesPage extends FormPage implements ArgeoNames {

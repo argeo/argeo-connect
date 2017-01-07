@@ -1,6 +1,7 @@
 package org.argeo.connect.tracker.internal.ui.parts;
 
 import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+import static org.eclipse.ui.forms.widgets.TableWrapData.FILL_GRAB;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,6 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -71,6 +71,8 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.eclipse.ui.forms.widgets.TableWrapData;
+import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.osgi.service.useradmin.User;
 
 /** Default editor to display and edit an issue */
@@ -107,7 +109,8 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 			IssueMainPage issueMainPage = new IssueMainPage(this);
 			addPage(issueMainPage);
 
-			TechnicalInfoPage techInfoPage = new TechnicalInfoPage(this, TrackerUiPlugin.PLUGIN_ID + ".issueEditor.techInfoPage", getNode());
+			TechnicalInfoPage techInfoPage = new TechnicalInfoPage(this,
+					TrackerUiPlugin.PLUGIN_ID + ".issueEditor.techInfoPage", getNode());
 			addPage(techInfoPage);
 		} catch (PartInitException e) {
 			throw new TrackerException("Cannot add pages for editor of " + getNode(), e);
@@ -162,7 +165,8 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		protected void createFormContent(final IManagedForm mf) {
 			ScrolledForm form = mf.getForm();
 			Composite body = form.getBody();
-			body.setLayout(new GridLayout());
+			TableWrapLayout layout = new TableWrapLayout();
+			body.setLayout(layout);
 			appendOverviewPart(body);
 			appendCommentListPart(body);
 		}
@@ -171,42 +175,43 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		private void appendOverviewPart(Composite parent) {
 			FormToolkit tk = getManagedForm().getToolkit();
 
-			final Section section = TrackerUiUtils.addSection(tk, parent, getIssueTitle());
+			final Section section = TrackerUiUtils.addFormSection(tk, parent, getIssueTitle());
+			section.setLayoutData(new TableWrapData(FILL_GRAB));
+
 			Composite body = (Composite) section.getClient();
-			body.setLayout(new GridLayout(6, false));
-			body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+			TableWrapLayout layout = new TableWrapLayout();
+			layout.numColumns = 6;
+			body.setLayout(layout);
 
-			// 1st line (NOTE: it defines the grid data layout of this part)
-			PeopleRapUtils.createBoldLabel(tk, body, "Status");
+			// 1st line: Status, Importance and Priority
+			TrackerUiUtils.createFormBoldLabel(tk, body, "Status");
 			statusCmb = new Combo(body, SWT.READ_ONLY);
-			statusCmb.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true, false));
-
-			// Importance
-			PeopleRapUtils.createBoldLabel(tk, body, "Importance");
+			statusCmb.setLayoutData(new TableWrapData(FILL_GRAB));
+			TrackerUiUtils.createFormBoldLabel(tk, body, "Importance");
 			importanceCmb = new Combo(body, SWT.READ_ONLY);
-			importanceCmb.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
+			importanceCmb.setLayoutData(new TableWrapData(FILL_GRAB));
 			importanceCmb.setItems(TrackerUtils.MAPS_ISSUE_IMPORTANCES.values().toArray(new String[0]));
-
-			// Priority
-			PeopleRapUtils.createBoldLabel(tk, body, "Priority");
+			TrackerUiUtils.createFormBoldLabel(tk, body, "Priority");
 			priorityCmb = new Combo(body, SWT.READ_ONLY);
-			priorityCmb.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
+			priorityCmb.setLayoutData(new TableWrapData(FILL_GRAB));
 			priorityCmb.setItems(TrackerUtils.MAPS_ISSUE_PRIORITIES.values().toArray(new String[0]));
 
 			// Assigned to
-			PeopleRapUtils.createBoldLabel(tk, body, "Assigned to");
+			TrackerUiUtils.createFormBoldLabel(tk, body, "Assigned to");
 			changeAssignationLk = new Link(body, SWT.NONE);
-			changeAssignationLk.setLayoutData(EclipseUiUtils.fillWidth());
+			changeAssignationLk.setLayoutData(new TableWrapData(FILL_GRAB));
 
 			// Reported by
-			PeopleRapUtils.createBoldLabel(tk, body, "Reported by");
+			TrackerUiUtils.createFormBoldLabel(tk, body, "Reported by");
 			reporterLk = new Link(body, SWT.NONE);
-			reporterLk.setLayoutData(EclipseUiUtils.fillWidth(3));
+			TableWrapData twd = new TableWrapData(FILL_GRAB);
+			twd.colspan = 3;
+			reporterLk.setLayoutData(twd);
 
 			// Project
-			PeopleRapUtils.createBoldLabel(tk, body, "Project");
+			TrackerUiUtils.createFormBoldLabel(tk, body, "Project");
 			projectLk = new Link(body, SWT.NONE);
-			projectLk.setLayoutData(EclipseUiUtils.fillWidth());
+			projectLk.setLayoutData(new TableWrapData(FILL_GRAB));
 			projectLk.setText("<a>" + JcrUiUtils.get(project, Property.JCR_TITLE) + "</a>");
 			projectLk.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;
@@ -219,41 +224,43 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 			});
 
 			// Components
-			PeopleRapUtils.createBoldLabel(tk, body, "Components");
+			TrackerUiUtils.createFormBoldLabel(tk, body, "Components");
 			ComponentListFormPart clfp = new ComponentListFormPart(getManagedForm(), body, SWT.NO_FOCUS);
-			clfp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+			twd = new TableWrapData(FILL_GRAB);
+			twd.colspan = 3;
+			clfp.setLayoutData(twd);
 
 			// Target milestone
-			PeopleRapUtils.createBoldLabel(tk, body, "Target");
+			TrackerUiUtils.createFormBoldLabel(tk, body, "Target");
 			Text targetTxt = tk.createText(body, "", SWT.BORDER);
-			targetTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+			targetTxt.setLayoutData(new TableWrapData(FILL_GRAB));
 			targetDD = new MilestoneDropDown(TrackerUtils.getProjectFromChild(issue), targetTxt);
 
 			// Versions
-			PeopleRapUtils.createBoldLabel(tk, body, "Versions");
+			TrackerUiUtils.createFormBoldLabel(tk, body, "Versions");
 			VersionListFormPart vlfp = new VersionListFormPart(getManagedForm(), body, SWT.NO_FOCUS);
-			vlfp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+			twd = new TableWrapData(FILL_GRAB);
+			twd.colspan = 3;
+			vlfp.setLayoutData(twd);
 
-			// TODO updated documents
+			// TODO add linked documents
 
 			// Description
-			GridData gd = ((GridData) PeopleRapUtils.createBoldLabel(tk, body, "Description").getLayoutData());
-			gd.verticalAlignment = SWT.TOP;
-			// gd.verticalIndent = 1;
+			twd = (TableWrapData) TrackerUiUtils.createFormBoldLabel(tk, body, "Description").getLayoutData();
+			twd.valign = TableWrapData.TOP;
 			descTxt = new Text(body, SWT.MULTI | SWT.WRAP | SWT.BORDER);
-			gd = new GridData(SWT.FILL, SWT.CENTER, false, false, 5, 1);
-			gd.heightHint = 160;
-			descTxt.setLayoutData(gd);
-
-			// final Label descLbl = tk.createLabel(body, "", SWT.WRAP);
-			// descLbl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
-			// true, 4, 1));
+			twd = new TableWrapData(FILL_GRAB);
+			twd.colspan = 5;
+			twd.heightHint = 160;
+			descTxt.setLayoutData(twd);
 
 			// create form part (controller)
 			SectionPart part = new SectionPart((Section) body.getParent()) {
 
 				@Override
 				public void refresh() {
+					// TODO Prevent edition for user that do not have sufficient
+					// rights
 
 					String manager = getPeopleService().getActivityService().getAssignedToDisplayName(issue);
 					refreshStatusCombo(statusCmb, issue);
@@ -284,8 +291,6 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 					descTxt.setText(desc);
 					statusCmb.getParent().layout();
 
-					// TODO Prevent edition for user that do not have sufficient
-					// rights
 					super.refresh();
 				}
 			};
@@ -338,20 +343,22 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		// THE COMMENT LIST
 		private Section appendCommentListPart(Composite parent) {
 			FormToolkit tk = getManagedForm().getToolkit();
-			Section section = TrackerUiUtils.addSection(tk, parent, "Comments");
+			Section section = TrackerUiUtils.addFormSection(tk, parent, "Comments");
+			section.setLayoutData(new TableWrapData(FILL_GRAB));
 
 			Composite body = ((Composite) section.getClient());
-			body.setLayout(EclipseUiUtils.noSpaceGridLayout());
+			body.setLayout(new TableWrapLayout());
 
 			Composite newCommentCmp = new Composite(body, SWT.NO_FOCUS);
-			newCommentCmp.setLayout(new GridLayout(2, false));
-			newCommentCmp.setLayoutData(EclipseUiUtils.fillWidth());
+			TableWrapLayout layout = new TableWrapLayout();
+			layout.numColumns = 2;
+			newCommentCmp.setLayout(layout);
 
 			// Add a new comment fields
 			final Text newCommentTxt = new Text(newCommentCmp, SWT.MULTI | SWT.WRAP | SWT.BORDER);
-			GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
-			gd.heightHint = SWT.DEFAULT;
-			newCommentTxt.setLayoutData(gd);
+			TableWrapData twd = new TableWrapData(FILL_GRAB);
+			newCommentTxt.setLayoutData(twd);
+
 			newCommentTxt.setMessage("Enter a new comment...");
 			newCommentTxt.addFocusListener(new FocusListener() {
 				private static final long serialVersionUID = 1L;
@@ -360,8 +367,8 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 				public void focusLost(FocusEvent event) {
 					String currText = newCommentTxt.getText();
 					if (EclipseUiUtils.isEmpty(currText)) {
-						GridData gd = ((GridData) newCommentTxt.getLayoutData());
-						gd.heightHint = SWT.DEFAULT;
+						TableWrapData twd = ((TableWrapData) newCommentTxt.getLayoutData());
+						twd.heightHint = SWT.DEFAULT;
 						newCommentTxt.getParent().layout(true, true);
 						getManagedForm().reflow(true);
 					}
@@ -369,20 +376,20 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 
 				@Override
 				public void focusGained(FocusEvent event) {
-					GridData gd = ((GridData) newCommentTxt.getLayoutData());
-					gd.heightHint = 200;
+					TableWrapData twd = ((TableWrapData) newCommentTxt.getLayoutData());
+					twd.heightHint = 200;
 					newCommentTxt.getParent().layout(true, true);
 					getManagedForm().reflow(true);
 				}
 			});
 			Button okBtn = new Button(newCommentCmp, SWT.BORDER | SWT.PUSH | SWT.BOTTOM);
-			okBtn.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, false, false));
+			okBtn.setLayoutData(new TableWrapData(TableWrapData.CENTER, TableWrapData.TOP));
 			okBtn.setText("OK");
 
 			// Existing comment list
 			final Composite commentsCmp = new Composite(body, SWT.NO_FOCUS);
-			commentsCmp.setLayout(new GridLayout());
-			commentsCmp.setLayoutData(EclipseUiUtils.fillWidth());
+			commentsCmp.setLayout(new TableWrapLayout());
+			commentsCmp.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 
 			SectionPart part = new SectionPart(section) {
 				@Override
@@ -457,12 +464,12 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		String description = JcrUiUtils.get(comment, Property.JCR_DESCRIPTION);
 
 		Composite commentCmp = new Composite(parent, SWT.NO_FOCUS);
-		commentCmp.setLayoutData(EclipseUiUtils.fillWidth());
-		commentCmp.setLayout(new GridLayout());
+		commentCmp.setLayoutData(new TableWrapData(FILL_GRAB));
+		commentCmp.setLayout(new TableWrapLayout());
 
 		// First line
 		Label overviewLabel = new Label(commentCmp, SWT.WRAP);
-		overviewLabel.setLayoutData(EclipseUiUtils.fillWidth());
+		overviewLabel.setLayoutData(new TableWrapData(FILL_GRAB));
 		StringBuilder builder = new StringBuilder();
 		builder.append(UserAdminUtils.getUserLocalId(createdBy)).append(" on ").append(createdOn);
 		if (EclipseUiUtils.notEmpty(lastUpdatedBy))
@@ -472,12 +479,12 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 
 		// Second line: description
 		Label descLabel = new Label(commentCmp, SWT.WRAP);
-		descLabel.setLayoutData(EclipseUiUtils.fillWidth());
+		descLabel.setLayoutData(new TableWrapData(FILL_GRAB));
 		descLabel.setText(description);
 
 		// third line: separator
 		Label sepLbl = new Label(commentCmp, SWT.HORIZONTAL | SWT.SEPARATOR);
-		sepLbl.setLayoutData(EclipseUiUtils.fillWidth());
+		sepLbl.setLayoutData(new TableWrapData(FILL_GRAB));
 	}
 
 	// SECTION MENU
@@ -579,9 +586,9 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 	/** Override this to add specific rights for status change */
 	protected void refreshStatusCombo(Combo combo, Node currTask) {
 		ResourceService rs = getPeopleService().getResourceService();
-		
-		List<String> values = rs.getTemplateCatalogue(session,
-				TrackerTypes.TRACKER_ISSUE, PeopleNames.PEOPLE_TASK_STATUS, null);
+
+		List<String> values = rs.getTemplateCatalogue(session, TrackerTypes.TRACKER_ISSUE,
+				PeopleNames.PEOPLE_TASK_STATUS, null);
 		combo.setItems(values.toArray(new String[values.size()]));
 		PeopleRapUtils.refreshFormCombo(IssueEditor.this, combo, currTask, PeopleNames.PEOPLE_TASK_STATUS);
 		combo.setEnabled(IssueEditor.this.isEditing());
