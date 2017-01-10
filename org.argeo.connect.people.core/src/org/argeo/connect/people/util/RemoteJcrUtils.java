@@ -9,9 +9,11 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
 import javax.jcr.PropertyType;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.RepositoryFactory;
 import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
 import javax.jcr.Value;
 import javax.jcr.ValueFactory;
 import javax.jcr.nodetype.NodeType;
@@ -20,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.node.NodeUtils;
 
 /** Centralize convenience methods to manage a remote JCR repository */
 public class RemoteJcrUtils {
@@ -50,18 +53,14 @@ public class RemoteJcrUtils {
 			properties: while (pit.hasNext()) {
 				Property fromProperty = pit.nextProperty();
 				String propertyName = fromProperty.getName();
-				if (toNode.hasProperty(propertyName)
-						&& toNode.getProperty(propertyName).getDefinition()
-								.isProtected())
+				if (toNode.hasProperty(propertyName) && toNode.getProperty(propertyName).getDefinition().isProtected())
 					continue properties;
 
 				if (fromProperty.getDefinition().isProtected())
 					continue properties;
 
-				if (propertyName.equals("jcr:created")
-						|| propertyName.equals("jcr:createdBy")
-						|| propertyName.equals("jcr:lastModified")
-						|| propertyName.equals("jcr:lastModifiedBy"))
+				if (propertyName.equals("jcr:created") || propertyName.equals("jcr:createdBy")
+						|| propertyName.equals("jcr:lastModified") || propertyName.equals("jcr:lastModifiedBy"))
 					continue properties;
 
 				if (PropertyType.REFERENCE == fromProperty.getType()
@@ -79,14 +78,12 @@ public class RemoteJcrUtils {
 				while (nit.hasNext()) {
 					Node fromChild = nit.nextNode();
 					Integer index = fromChild.getIndex();
-					String nodeRelPath = fromChild.getName() + "[" + index
-							+ "]";
+					String nodeRelPath = fromChild.getName() + "[" + index + "]";
 					Node toChild;
 					if (toNode.hasNode(nodeRelPath))
 						toChild = toNode.getNode(nodeRelPath);
 					else
-						toChild = toNode.addNode(fromChild.getName(), fromChild
-								.getPrimaryNodeType().getName());
+						toChild = toNode.addNode(fromChild.getName(), fromChild.getPrimaryNodeType().getName());
 					copy(fromChild, toChild, true);
 				}
 			}
@@ -95,13 +92,11 @@ public class RemoteJcrUtils {
 			if (log.isTraceEnabled())
 				log.trace("Copied " + toNode);
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot copy " + fromNode + " to "
-					+ toNode, e);
+			throw new PeopleException("Cannot copy " + fromNode + " to " + toNode, e);
 		}
 	}
 
-	public static void copyReference(Property fromProperty, Node toNode)
-			throws RepositoryException {
+	public static void copyReference(Property fromProperty, Node toNode) throws RepositoryException {
 		String propertyName = fromProperty.getName();
 		if (fromProperty.isMultiple()) {
 			Value[] vals = fromProperty.getValues();
@@ -110,14 +105,10 @@ public class RemoteJcrUtils {
 				String fromRefJcrId = val.getString();
 				Node oldReferencedNode = null;
 				try {
-					oldReferencedNode = fromProperty.getSession()
-							.getNodeByIdentifier(fromRefJcrId);
+					oldReferencedNode = fromProperty.getSession().getNodeByIdentifier(fromRefJcrId);
 				} catch (ItemNotFoundException e) {
-					log.warn("Cannot resolve reference for multi-valued property "
-							+ fromProperty
-							+ " with ID "
-							+ fromRefJcrId
-							+ ". Corresponding value has not been copied.");
+					log.warn("Cannot resolve reference for multi-valued property " + fromProperty + " with ID "
+							+ fromRefJcrId + ". Corresponding value has not been copied.");
 					continue values;
 				}
 				String oldRefPath = oldReferencedNode.getPath();
@@ -125,10 +116,8 @@ public class RemoteJcrUtils {
 				if (toSession.nodeExists(oldRefPath))
 					toNodes.add(toSession.getNode(oldRefPath));
 				else
-					log.warn("Node with path: " + oldRefPath
-							+ " does not exist in target repository. "
-							+ " Reference on this node while copying property "
-							+ fromProperty + " has been ignored.");
+					log.warn("Node with path: " + oldRefPath + " does not exist in target repository. "
+							+ " Reference on this node while copying property " + fromProperty + " has been ignored.");
 			}
 			if (!toNodes.isEmpty())
 				setMultipleReferences(toNode, propertyName, toNodes);
@@ -140,49 +129,32 @@ public class RemoteJcrUtils {
 				// log.warn("Skiping ref prop copy: " + fromProperty.getPath());
 				toNode.setProperty(propertyName, newRef);
 			} else
-				log.warn("Cannot resolve reference for property "
-						+ fromProperty.getPath() + ". It has not been copied.");
+				log.warn("Cannot resolve reference for property " + fromProperty.getPath()
+						+ ". It has not been copied.");
 		}
 	}
 
-	public static void setMultipleReferences(Node node, String propertyName,
-			List<Node> nodes) throws RepositoryException {
+	public static void setMultipleReferences(Node node, String propertyName, List<Node> nodes)
+			throws RepositoryException {
 		ValueFactory vFactory = node.getSession().getValueFactory();
 		int size = nodes.size();
 		Value[] values = new Value[size];
 		int i = 0;
 		for (Node currNode : nodes) {
-			Value val = vFactory.createValue(currNode.getIdentifier(),
-					PropertyType.REFERENCE);
+			Value val = vFactory.createValue(currNode.getIdentifier(), PropertyType.REFERENCE);
 			values[i++] = val;
 		}
 		node.setProperty(propertyName, values);
 	}
 
 	/**
-	 * Easily get a session on a remote repository. It is caller duty to close
-	 * the session
+	 * Wraps session opening on a remote repository. The caller must close the
+	 * session
 	 */
-	public static Session getSessionOnRemote(
-			RepositoryFactory repositoryFactory, String repoUrl,
-			String wkspName, String login, char[] pwd)
-			throws RepositoryException {
-		// Hashtable<String, String> params = new Hashtable<String, String>();
-		// params.put(ArgeoJcrConstants.JCR_REPOSITORY_URI, RemoteJcrUtils
-		// .checkUri(repoUrl).toString());
-		// Repository remoteRepo = repositoryFactory.getRepository(params);
-		// SimpleCredentials sc = new SimpleCredentials(login, pwd);
-		// return remoteRepo.login(sc, wkspName);
-		
-		return RemoteJcrUtils.getSessionOnRemote(repositoryFactory, repoUrl, wkspName, login, pwd);
-
+	public static Session getSessionOnRemote(RepositoryFactory repositoryFactory, String repoUrl, String wkspName,
+			String login, char[] pwd) throws RepositoryException {
+		Repository remoteRepo = NodeUtils.getRepositoryByUri(repositoryFactory, repoUrl);
+		SimpleCredentials sc = new SimpleCredentials(login, pwd);
+		return remoteRepo.login(sc, wkspName);
 	}
-
-	// private static URI checkUri(String repoUrl) {
-	// try {
-	// return new URI(repoUrl);
-	// } catch (URISyntaxException e) {
-	// throw new PeopleException("Unvalid URI " + repoUrl, e);
-	// }
-	// }
 }

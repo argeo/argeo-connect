@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.TableColumn;
 
 /**
  * Canonical implementation of a JFace table viewer to display the content of a
- * repository
+ * file folder
  */
 public class FsTableViewer extends TableViewer {
 	private static final long serialVersionUID = -5632407542678477234L;

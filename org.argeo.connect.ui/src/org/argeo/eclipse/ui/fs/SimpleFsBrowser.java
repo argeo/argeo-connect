@@ -24,7 +24,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 
-/** Draft for some UI upon Java 7 nio files api */
+/**
+ * Experimental UI upon Java 7 nio files api: SashForm layout with bookmarks on
+ * the left hand side and a simple table on the right hand side.
+ */
 public class SimpleFsBrowser extends Composite {
 	private final static Log log = LogFactory.getLog(SimpleFsBrowser.class);
 	private static final long serialVersionUID = -40347919096946585L;
@@ -43,11 +46,11 @@ public class SimpleFsBrowser extends Composite {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		SashForm form = new SashForm(parent, SWT.HORIZONTAL);
-		Composite child1 = new Composite(form, SWT.NONE);
-		populateBookmarks(child1);
+		Composite leftCmp = new Composite(form, SWT.NONE);
+		populateBookmarks(leftCmp);
 
-		Composite child2 = new Composite(form, SWT.BORDER);
-		populateDisplay(child2);
+		Composite rightCmp = new Composite(form, SWT.BORDER);
+		populateDisplay(rightCmp);
 		form.setLayoutData(EclipseUiUtils.fillAll());
 		form.setWeights(new int[] { 1, 3 });
 	}
@@ -156,6 +159,22 @@ public class SimpleFsBrowser extends Composite {
 					currSelected = currSelected.getParent();
 					directoryDisplayViewer.setInput(currSelected, "*");
 					directoryDisplayViewer.getTable().setFocus();
+				}
+			}
+		});
+
+		directoryDisplayViewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				IStructuredSelection selection = (IStructuredSelection) directoryDisplayViewer.getSelection();
+				Path selected = null;
+				if (!selection.isEmpty())
+					selected = ((Path) selection.getFirstElement());
+				if (!Files.isDirectory(selected))
+					return;
+				if (selected != null) {
+					currSelected = selected;
+					directoryDisplayViewer.setInput(currSelected, "*");
 				}
 			}
 		});

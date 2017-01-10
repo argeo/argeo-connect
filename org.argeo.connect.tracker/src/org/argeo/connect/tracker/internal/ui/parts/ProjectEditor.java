@@ -27,6 +27,7 @@ import org.argeo.connect.tracker.internal.ui.TrackerLps;
 import org.argeo.connect.tracker.internal.ui.TrackerUiConstants;
 import org.argeo.connect.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.connect.tracker.internal.ui.controls.CategoryOverviewChart;
+import org.argeo.connect.tracker.internal.ui.dialogs.NewComponentWizard;
 import org.argeo.connect.tracker.internal.ui.dialogs.NewIssueWizard;
 import org.argeo.connect.tracker.internal.ui.dialogs.NewVersionWizard;
 import org.argeo.connect.tracker.ui.TrackerUiPlugin;
@@ -55,6 +56,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
@@ -218,11 +220,21 @@ public class ProjectEditor extends AbstractTrackerEditor {
 		layout.numColumns = 2;
 		boxCmp.setLayout(layout);
 
-		Label titleLbl = new Label(boxCmp, SWT.WRAP);
-		titleLbl.setLayoutData(new TableWrapData(FILL_GRAB));
-		titleLbl.setFont(EclipseUiUtils.getBoldFont(boxCmp));
-		titleLbl.setText(currId);
-		
+		Link titleLk = new Link(boxCmp, SWT.WRAP);
+		titleLk.setLayoutData(new TableWrapData(FILL_GRAB));
+		titleLk.setFont(EclipseUiUtils.getBoldFont(boxCmp));
+		titleLk.setText("<a>" + currId + "</a>");
+		titleLk.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 5342086098924045174L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String jcrId = JcrUiUtils.getIdentifier(milestone);
+				CommandUtils.callCommand(getAoWbService().getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
+						jcrId);
+			}
+		});
+
 		Composite chartCmp = new Composite(boxCmp, SWT.NO_FOCUS);
 		TableWrapData twd = new TableWrapData();
 		twd.rowspan = 3;
@@ -511,7 +523,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					NewVersionWizard wizard = new NewVersionWizard(issueService, project);
+					NewComponentWizard wizard = new NewComponentWizard(issueService, project);
 					WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);
 					if (dialog.open() == Window.OK) {
 						try {
