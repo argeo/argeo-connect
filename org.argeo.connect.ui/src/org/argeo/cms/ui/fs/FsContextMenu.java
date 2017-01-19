@@ -15,7 +15,6 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.dialogs.SingleValue;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -25,7 +24,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
@@ -41,8 +39,13 @@ public class FsContextMenu extends Shell {
 	public final static String ACTION_ID_UPLOAD_FILE = "uploadFiles";
 	public final static String ACTION_ID_OPEN = "open";
 
+	// TODO
+	private final static String cmBox = "contextMenu_box";
+	private final static String button_suffix = "_btn";
+
 	// Local context
-	private final Viewer viewer;
+	private final CmsFsBrowser browser;
+	// private final Viewer viewer;
 	private final static String KEY_ACTION_ID = "actionId";
 	private final static String[] DEFAULT_ACTIONS = { ACTION_ID_CREATE_FOLDER, ACTION_ID_SHARE_FOLDER,
 			ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_DELETE, ACTION_ID_UPLOAD_FILE, ACTION_ID_OPEN };
@@ -50,14 +53,15 @@ public class FsContextMenu extends Shell {
 
 	private Path currFolderPath;
 
-	public FsContextMenu(Viewer viewer, Display display) {
-		super(display, SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
-		this.viewer = viewer;
+	public FsContextMenu(CmsFsBrowser browser) { // Viewer viewer, Display
+													// display) {
+		super(browser.getDisplay(), SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
+		this.browser = browser;
 		setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		Composite boxCmp = new Composite(this, SWT.NO_FOCUS | SWT.BORDER);
 		boxCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		CmsUtils.style(boxCmp, "contextMenu_box");
+		CmsUtils.style(boxCmp, cmBox);
 		createContextMenu(boxCmp);
 
 		addShellListener(new ActionsShellListener());
@@ -70,7 +74,7 @@ public class FsContextMenu extends Shell {
 			btn.setText(getLabel(actionId));
 			btn.setLayoutData(EclipseUiUtils.fillWidth());
 			CmsUtils.markup(btn);
-			CmsUtils.style(btn, actionId + "_btn");
+			CmsUtils.style(btn, actionId + button_suffix);
 			btn.setData(KEY_ACTION_ID, actionId);
 			btn.addSelectionListener(asl);
 			actionButtons.put(actionId, btn);
@@ -97,7 +101,7 @@ public class FsContextMenu extends Shell {
 	}
 
 	protected void aboutToShow(Control source, Point location) {
-		IStructuredSelection selection = ((IStructuredSelection) viewer.getSelection());
+		IStructuredSelection selection = ((IStructuredSelection) browser.getViewer().getSelection());
 		boolean emptySel = true;
 		boolean multiSel = false;
 		boolean isFolder = true;
@@ -220,7 +224,8 @@ public class FsContextMenu extends Shell {
 					// return "Open";
 				}
 			}
-			viewer.getControl().setFocus();
+			browser.setFocus();
+			// viewer.getControl().setFocus();
 			// setVisible(false);
 
 		}
@@ -240,7 +245,7 @@ public class FsContextMenu extends Shell {
 	}
 
 	private void deleteItems() {
-		IStructuredSelection selection = ((IStructuredSelection) viewer.getSelection());
+		IStructuredSelection selection = ((IStructuredSelection) browser.getViewer().getSelection());
 		if (selection.isEmpty())
 			return;
 
@@ -265,7 +270,7 @@ public class FsContextMenu extends Shell {
 					throw new ConnectException("Cannot delete path " + path, e);
 				}
 			}
-			viewer.refresh();
+			browser.refresh();
 		}
 	}
 
@@ -281,10 +286,14 @@ public class FsContextMenu extends Shell {
 							+ currFolderPath.toString() + ", cannot create");
 				else
 					Files.createDirectories(child);
-				viewer.refresh();
+				browser.refresh();
 			} catch (IOException e) {
 				throw new ConnectException("Cannot create folder " + name + " at " + currFolderPath.toString(), e);
 			}
 		}
+	}
+
+	public void setCurrFolderPath(Path currFolderPath) {
+		this.currFolderPath = currFolderPath;
 	}
 }

@@ -1,16 +1,29 @@
 package org.argeo.cms.ui.fs;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.spi.FileSystemProvider;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jcr.Node;
+import javax.jcr.Property;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.util.UserAdminUtils;
+import org.argeo.connect.ConnectException;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.fs.FileIconNameLabelProvider;
@@ -19,6 +32,7 @@ import org.argeo.eclipse.ui.fs.FsUiConstants;
 import org.argeo.eclipse.ui.fs.FsUiException;
 import org.argeo.eclipse.ui.fs.FsUiUtils;
 import org.argeo.eclipse.ui.fs.NioFileLabelProvider;
+import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -31,9 +45,18 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
@@ -46,45 +69,58 @@ public class CmsFsBrowser extends Composite {
 	private final static Log log = LogFactory.getLog(CmsFsBrowser.class);
 	private static final long serialVersionUID = -40347919096946585L;
 
+	private final FileSystemProvider nodeFileSystemProvider;
+	private final Node currentBaseContext;
+
 	// UI Parts for the browser
 	private Composite leftPannelCmp;
-	private Text parentPathTxt;
+	private Composite filterCmp;
 	private Text filterTxt;
 	private FsTableViewer directoryDisplayViewer;
 	private Composite rightPannelCmp;
+
+	private FsContextMenu contextMenu;
 
 	// Local context (this composite is state full)
 	private Path initialPath;
 	private Path currDisplayedFolder;
 	private Path currSelected;
-	
+
 	// local variables (to be cleaned)
 	private int bookmarkColWith = 500;
 
-	public CmsFsBrowser(Composite parent, int style) {
+	public CmsFsBrowser(Composite parent, int style, Node context, FileSystemProvider fileSystemProvider) {
 		super(parent, style);
+		this.nodeFileSystemProvider = fileSystemProvider;
+		this.currentBaseContext = context;
+
 		this.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		SashForm form = new SashForm(this, SWT.HORIZONTAL);
 
-		leftPannelCmp = new Composite(form, SWT.NONE);
+		leftPannelCmp = new Composite(form, SWT.NO_FOCUS);
 		// Bookmarks are still static
 		populateBookmarks(leftPannelCmp);
 
-		Composite centerCmp = new Composite(form, SWT.BORDER);
+		Composite centerCmp = new Composite(form, SWT.BORDER | SWT.NO_FOCUS);
 		createDisplay(centerCmp);
 
-		rightPannelCmp = new Composite(form, SWT.BORDER);
+		rightPannelCmp = new Composite(form, SWT.NO_FOCUS);
 
-		form.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true	));
-		form.setWeights(new int[] { 15, 40, 20});
+		form.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		form.setWeights(new int[] { 15, 40, 20 });
+	}
+
+	void refresh() {
+		modifyFilter(false);
+		// also refresh bookmarks and groups
 	}
 
 	private void createDisplay(final Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// top filter
-		Composite filterCmp = new Composite(parent, SWT.NO_FOCUS);
+		filterCmp = new Composite(parent, SWT.NO_FOCUS);
 		filterCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		addFilterPanel(filterCmp);
 
@@ -96,7 +132,7 @@ public class CmsFsBrowser extends Composite {
 		colDefs.add(new ColumnDefinition(new NioFileLabelProvider(FsUiConstants.PROPERTY_TYPE), "Type", 150));
 		colDefs.add(new ColumnDefinition(new NioFileLabelProvider(FsUiConstants.PROPERTY_LAST_MODIFIED),
 				"Last modified", 400));
-		Table table = directoryDisplayViewer.configureDefaultTable(colDefs);
+		final Table table = directoryDisplayViewer.configureDefaultTable(colDefs);
 		table.setLayoutData(EclipseUiUtils.fillAll());
 
 		// table.addKeyListener(new KeyListener() {
@@ -161,14 +197,58 @@ public class CmsFsBrowser extends Composite {
 				}
 			}
 		});
+
+		// The context menu
+		contextMenu = new FsContextMenu(this);
+
+		table.addMouseListener(new MouseAdapter() {
+			private static final long serialVersionUID = 6737579410648595940L;
+
+			@Override
+			public void mouseDown(MouseEvent e) {
+				if (e.button == 3) {
+					// contextMenu.setCurrFolderPath(currDisplayedFolder);
+					contextMenu.show(table, new Point(e.x, e.y), currDisplayedFolder);
+				}
+			}
+		});
+	}
+
+	private void addPathElementBtn(Path path) {
+		Button elemBtn = new Button(filterCmp, SWT.PUSH);
+		elemBtn.setText(path.getFileName().toString() + " >> ");
+		CmsUtils.style(elemBtn, FsStyles.BREAD_CRUMB_BTN);
+		elemBtn.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				setInput(path);
+			}
+		});
 	}
 
 	public void setInput(Path path) {
 		if (path.equals(currDisplayedFolder))
 			return;
 		currDisplayedFolder = path;
+
+		Path diff = initialPath.relativize(currDisplayedFolder);
+
+		for (Control child : filterCmp.getChildren())
+			if (!child.equals(filterTxt))
+				child.dispose();
+
+		addPathElementBtn(initialPath);
+		Path currTarget = initialPath;
+		if (!diff.toString().equals(""))
+			for (Path pathElem : diff) {
+				currTarget = currTarget.resolve(pathElem);
+				addPathElementBtn(currTarget);
+			}
+
 		filterTxt.setText("");
+		filterTxt.moveBelow(null);
 		setSelected(null);
+		filterCmp.getParent().layout(true, true);
 	}
 
 	private void setSelected(Path path) {
@@ -176,15 +256,40 @@ public class CmsFsBrowser extends Composite {
 		setOverviewInput(path);
 	}
 
-	// private void refreshFilters(Path path) {
-	// parentPathTxt.setText(path.toUri().toString());
-	// filterTxt.setText("");
-	// filterTxt.getParent().layout();
-	// }
+	private String getCurrentHomePath() {
+		// FIXME
+		String id = UserAdminUtils.getUserLocalId(CurrentUser.getUsername());
+		String homepath = "/home/" + JcrUtils.firstCharsToPath(id, 2) + "/" + id;
+		// FIXME also insure the file subfolder is here
+		try {
+			Session session = currentBaseContext.getSession();
+			Node home = session.getNode(homepath);
+			Node fileParent = JcrUtils.mkdirs(home, FS_FILES, NodeType.NT_FOLDER);
+			fileParent.addMixin(NodeType.MIX_TITLE);
+			fileParent.setProperty(Property.JCR_TITLE, "My Files");
+			if (session.hasPendingChanges())
+				session.save();
+		} catch (RepositoryException e) {
+			throw new ConnectException("Cannot initialise parent node for My files at " + homepath, e);
+		}
+		return homepath;
+	}
+
+	private final static String NODE_PREFIX = "node://";
+	private final static String FS_FILES = "files";
 
 	protected Path getMyFilesPath() {
-		// TODO
-		return Paths.get(System.getProperty("user.dir"));
+		String currHomeUriStr = NODE_PREFIX + getCurrentHomePath() + "/" + FS_FILES;
+		try {
+			URI uri = new URI(currHomeUriStr);
+			FileSystem fileSystem = nodeFileSystemProvider.getFileSystem(uri);
+			if (fileSystem == null)
+				fileSystem = nodeFileSystemProvider.newFileSystem(uri, null);
+			return fileSystem.getPath(getCurrentHomePath() + "/" + FS_FILES);
+		} catch (URISyntaxException | IOException e) {
+			throw new RuntimeException("unable to initialise home file system for " + currHomeUriStr, e);
+		}
+		// return Paths.get(System.getProperty("user.dir"));
 	}
 
 	private Path[] getMyGroupsFilesPath() {
@@ -256,7 +361,7 @@ public class CmsFsBrowser extends Composite {
 				contextL.setText(path.getFileName().toString());
 				contextL.setFont(EclipseUiUtils.getBoldFont(rightPannelCmp));
 				addProperty(rightPannelCmp, "Last modified", Files.getLastModifiedTime(path).toString());
-				addProperty(rightPannelCmp, "Owner", Files.getOwner(path).getName());
+				// addProperty(rightPannelCmp, "Owner", Files.getOwner(path).getName());
 				if (Files.isDirectory(path)) {
 					addProperty(rightPannelCmp, "Type", "Folder");
 				} else {
@@ -274,14 +379,15 @@ public class CmsFsBrowser extends Composite {
 	}
 
 	private void addFilterPanel(Composite parent) {
-		parent.setLayout(EclipseUiUtils.noSpaceGridLayout(new GridLayout(2, false)));
-
-		parentPathTxt = new Text(parent, SWT.NO_FOCUS);
-		parentPathTxt.setEditable(false);
+		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
+		rl.wrap = true;
+		parent.setLayout(rl);
+		// parent.setLayout(EclipseUiUtils.noSpaceGridLayout(new GridLayout(2,
+		// false)));
 
 		filterTxt = new Text(parent, SWT.SEARCH | SWT.ICON_CANCEL);
-		filterTxt.setMessage("Filter current list");
-		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
+		filterTxt.setMessage("Search current folder");
+		filterTxt.setLayoutData(new RowData(250, SWT.DEFAULT));
 		filterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -400,5 +506,4 @@ public class CmsFsBrowser extends Composite {
 		titleLbl.setLayoutData(gd);
 		return titleLbl;
 	}
-
 }

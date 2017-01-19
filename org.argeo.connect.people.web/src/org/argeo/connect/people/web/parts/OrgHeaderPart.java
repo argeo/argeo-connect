@@ -23,27 +23,31 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
-/** Creates header for people:org nodes */
+/** Overview header for Node of type people:org */
 public class OrgHeaderPart implements CmsUiProvider {
 
-	/* dependency injection */
 	private PeopleService peopleService;
 	private TagLikeValuesPart tagsPart;
 	private TagLikeValuesPart mailingListsPart;
 
-	@Override
-	public Control createUi(Composite parent, Node context)
-			throws RepositoryException {
+	public OrgHeaderPart() {
+	}
 
+	public OrgHeaderPart(PeopleService peopleService) {
+		this.peopleService = peopleService;
+		tagsPart = new TagLikeValuesPart(PeopleNames.PEOPLE_TAGS);
+		mailingListsPart = new TagLikeValuesPart(PeopleNames.PEOPLE_MAILING_LISTS);
+	}
+
+	@Override
+	public Control createUi(Composite parent, Node context) throws RepositoryException {
 		InputStream is = null;
 		Image itemPicture = null;
 		// Initialize image
 		try {
 			if (context.hasNode(PeopleNames.PEOPLE_PICTURE)) {
-				Node imageNode = context.getNode(PeopleNames.PEOPLE_PICTURE)
-						.getNode(Node.JCR_CONTENT);
-				is = imageNode.getProperty(Property.JCR_DATA).getBinary()
-						.getStream();
+				Node imageNode = context.getNode(PeopleNames.PEOPLE_PICTURE).getNode(Node.JCR_CONTENT);
+				is = imageNode.getProperty(Property.JCR_DATA).getBinary().getStream();
 				itemPicture = new Image(parent.getShell().getDisplay(), is);
 			} else
 				itemPicture = null;
@@ -54,23 +58,20 @@ public class OrgHeaderPart implements CmsUiProvider {
 
 		if (itemPicture != null) {
 			parent.setLayout(new GridLayout(2, false));
-			Composite imgCmp = new Composite(parent, SWT.NO_FOCUS
-					| SWT.NO_SCROLL | SWT.NO_TRIM);
+			Composite imgCmp = new Composite(parent, SWT.NO_FOCUS | SWT.NO_SCROLL | SWT.NO_TRIM);
 			imgCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			imgCmp.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
 			new ImageLabel(imgCmp, SWT.NO_FOCUS, itemPicture);
 
 			Composite rightCmp = new Composite(parent, SWT.NO_FOCUS);
-			rightCmp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
-					false));
+			rightCmp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 			parent = rightCmp;
 		}
 		parent.setLayout(new GridLayout());
 
 		final Label readOnlyInfoLbl = new Label(parent, SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		ILabelProvider orgLP = new OrgOverviewLP(
-				PeopleWebConstants.OVERVIEW_TYPE_HEADER, peopleService);
+		ILabelProvider orgLP = new OrgOverviewLP(PeopleWebConstants.OVERVIEW_TYPE_HEADER, peopleService);
 		readOnlyInfoLbl.setText(orgLP.getText(context));
 
 		Composite tagsCmp = new Composite(parent, SWT.NO_FOCUS);
@@ -123,5 +124,4 @@ public class OrgHeaderPart implements CmsUiProvider {
 	public void setMailingListsPart(TagLikeValuesPart mailingListsPart) {
 		this.mailingListsPart = mailingListsPart;
 	}
-
 }

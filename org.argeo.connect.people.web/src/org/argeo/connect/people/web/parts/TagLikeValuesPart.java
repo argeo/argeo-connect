@@ -23,12 +23,18 @@ import org.eclipse.swt.widgets.Label;
  **/
 public class TagLikeValuesPart implements CmsUiProvider {
 
-	/* DEPENDENCY INJECTION */
 	private String propertyName;
 
+	/** Don't forget to inject propertyName */
+	public TagLikeValuesPart() {
+	}
+
+	public TagLikeValuesPart(String propertyName) {
+		this.propertyName = propertyName;
+	}
+
 	@Override
-	public Control createUi(Composite preParent, final Node context)
-			throws RepositoryException {
+	public Control createUi(Composite preParent, final Node context) throws RepositoryException {
 		Composite parent = new Composite(preParent, SWT.NO_FOCUS);
 
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
@@ -50,8 +56,7 @@ public class TagLikeValuesPart implements CmsUiProvider {
 
 					@Override
 					public void widgetSelected(SelectionEvent e) {
-						JcrUiUtils.removeStringFromMultiValuedProp(
-								context, propertyName, valueStr);
+						JcrUiUtils.removeStringFromMultiValuedProp(context, propertyName, valueStr);
 						// FIXME won't work: node is checked in
 						// TODO refresh this part or the whole body
 					}

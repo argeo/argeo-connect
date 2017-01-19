@@ -4,15 +4,24 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.ui.CmsUiProvider;
+import org.argeo.connect.people.PeopleService;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /** Part that display a list of activities for a people:contactable node */
 public class ActivitiesPart implements CmsUiProvider {
 
+	private PeopleService peopleService;
+
+	public ActivitiesPart() {
+	}
+
+	public ActivitiesPart(PeopleService peopleService) {
+		this.peopleService = peopleService;
+	}
+
 	@Override
-	public Control createUi(Composite parent, Node context)
-			throws RepositoryException {
+	public Control createUi(Composite parent, Node context) throws RepositoryException {
 		// createContactPanel(parent, context);
 		return parent;
 	}

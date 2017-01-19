@@ -4,9 +4,12 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.ui.CmsUiProvider;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.web.parts.ActivitiesPart;
+import org.argeo.connect.people.web.parts.ContactButtonsPart;
 import org.argeo.connect.people.web.parts.ContactsWithNotePart;
 import org.argeo.connect.people.web.parts.OrgHeaderPart;
+import org.argeo.connect.people.web.parts.SingleContactPart;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -19,14 +22,29 @@ import org.eclipse.swt.widgets.Control;
  */
 public class OrgPage implements CmsUiProvider {
 
-	/* DEPENDENCY INJECTION */
+	/* We can override defaults parts with dependency injection */
 	private OrgHeaderPart orgHeaderPart;
 	private ContactsWithNotePart contactsWithNotePart;
 	private ActivitiesPart activitiesPart;
 
+	/** Inject various subparts */
+	public OrgPage() {
+	}
+
+	public OrgPage(PeopleService peopleService) {
+		orgHeaderPart = new OrgHeaderPart(peopleService);
+
+		ContactButtonsPart cbp = new ContactButtonsPart();
+		SingleContactPart scp = new SingleContactPart();
+		scp.setPeopleService(peopleService);
+		scp.setContactButtonsPart(cbp);
+		contactsWithNotePart = new ContactsWithNotePart(scp);
+
+		activitiesPart = new ActivitiesPart(peopleService);
+	}
+
 	@Override
-	public Control createUi(Composite parent, Node context)
-			throws RepositoryException {
+	public Control createUi(Composite parent, Node context) throws RepositoryException {
 
 		// TODO use a scrollable composite
 		Composite body = new Composite(parent, SWT.NO_FOCUS);
@@ -57,8 +75,7 @@ public class OrgPage implements CmsUiProvider {
 		this.orgHeaderPart = orgHeaderPart;
 	}
 
-	public void setContactsWithNotePart(
-			ContactsWithNotePart contactsWithNotePart) {
+	public void setContactsWithNotePart(ContactsWithNotePart contactsWithNotePart) {
 		this.contactsWithNotePart = contactsWithNotePart;
 	}
 

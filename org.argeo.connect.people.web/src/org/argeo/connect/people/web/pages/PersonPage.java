@@ -4,9 +4,12 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.ui.CmsUiProvider;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.web.parts.ActivitiesPart;
+import org.argeo.connect.people.web.parts.ContactButtonsPart;
 import org.argeo.connect.people.web.parts.ContactsWithNotePart;
 import org.argeo.connect.people.web.parts.PersonHeaderPart;
+import org.argeo.connect.people.web.parts.SingleContactPart;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -24,9 +27,23 @@ public class PersonPage implements CmsUiProvider {
 	private ContactsWithNotePart contactsWithNotePart;
 	private ActivitiesPart activitiesPart;
 
+	public PersonPage() {
+	}
+
+	public PersonPage(PeopleService peopleService) {
+		personHeaderPart = new PersonHeaderPart(peopleService);
+
+		ContactButtonsPart cbp = new ContactButtonsPart();
+		SingleContactPart scp = new SingleContactPart();
+		scp.setPeopleService(peopleService);
+		scp.setContactButtonsPart(cbp);
+		contactsWithNotePart = new ContactsWithNotePart(scp);
+
+		activitiesPart = new ActivitiesPart(peopleService);
+	}
+
 	@Override
-	public Control createUi(Composite parent, Node context)
-			throws RepositoryException {
+	public Control createUi(Composite parent, Node context) throws RepositoryException {
 
 		// TODO use a scrollable composite
 		Composite body = new Composite(parent, SWT.NO_FOCUS);
@@ -57,8 +74,7 @@ public class PersonPage implements CmsUiProvider {
 		this.personHeaderPart = personHeaderPart;
 	}
 
-	public void setContactsWithNotePart(
-			ContactsWithNotePart contactsWithNotePart) {
+	public void setContactsWithNotePart(ContactsWithNotePart contactsWithNotePart) {
 		this.contactsWithNotePart = contactsWithNotePart;
 	}
 

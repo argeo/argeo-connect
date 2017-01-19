@@ -8,6 +8,7 @@ import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -19,22 +20,29 @@ import org.eclipse.swt.widgets.Label;
  */
 public class ContactsWithNotePart extends ContactsPart {
 
+	public ContactsWithNotePart() {
+	}
+
+	public ContactsWithNotePart(SingleContactPart singleContactPart) {
+		super(singleContactPart);
+	}
+
 	@Override
-	public Control createUi(Composite parent, Node context)
-			throws RepositoryException {
+	public Control createUi(Composite parent, Node context) throws RepositoryException {
 		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
 		Composite left = new Composite(parent, SWT.NO_FOCUS);
 		left.setLayoutData(EclipseUiUtils.fillWidth());
 		createContactPanel(left, context);
 
 		Composite right = new Composite(parent, SWT.NO_FOCUS);
-		right.setLayoutData(EclipseUiUtils.fillAll());
+		GridData gd = EclipseUiUtils.fillAll();
+		// gd.minimumHeight = 300;
+		right.setLayoutData(gd);
 		createNotePanel(right, context);
 		return parent;
 	}
 
-	private void createNotePanel(Composite parent, Node context)
-			throws RepositoryException {
+	private void createNotePanel(Composite parent, Node context) throws RepositoryException {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// FIXME add description in the demo data and change the below

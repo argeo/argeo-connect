@@ -16,20 +16,24 @@ public class ContactsPart implements CmsUiProvider {
 	/* dependency injection */
 	private SingleContactPart singleContactPart;
 
+	public ContactsPart() {
+	}
+	
+	public ContactsPart(SingleContactPart singleContactPart) {
+		this.singleContactPart= singleContactPart;
+	}
+	
 	@Override
-	public Control createUi(Composite parent, Node context)
-			throws RepositoryException {
+	public Control createUi(Composite parent, Node context) throws RepositoryException {
 		createContactPanel(parent, context);
 		return parent;
 	}
 
-	protected void createContactPanel(Composite parent, Node context)
-			throws RepositoryException {
+	protected void createContactPanel(Composite parent, Node context) throws RepositoryException {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		if (context.hasNode(PeopleNames.PEOPLE_CONTACTS)) {
-			NodeIterator nit = context.getNode(PeopleNames.PEOPLE_CONTACTS)
-					.getNodes();
+			NodeIterator nit = context.getNode(PeopleNames.PEOPLE_CONTACTS).getNodes();
 			while (nit.hasNext()) {
 				Composite contactCmp = new Composite(parent, SWT.NO_FOCUS);
 				contactCmp.setLayoutData(EclipseUiUtils.fillWidth());
