@@ -279,17 +279,17 @@ public class CmsFsBrowser extends Composite {
 	private final static String FS_FILES = "files";
 
 	protected Path getMyFilesPath() {
-		String currHomeUriStr = NODE_PREFIX + getCurrentHomePath() + "/" + FS_FILES;
-		try {
-			URI uri = new URI(currHomeUriStr);
-			FileSystem fileSystem = nodeFileSystemProvider.getFileSystem(uri);
-			if (fileSystem == null)
-				fileSystem = nodeFileSystemProvider.newFileSystem(uri, null);
-			return fileSystem.getPath(getCurrentHomePath() + "/" + FS_FILES);
-		} catch (URISyntaxException | IOException e) {
-			throw new RuntimeException("unable to initialise home file system for " + currHomeUriStr, e);
-		}
-		// return Paths.get(System.getProperty("user.dir"));
+//		String currHomeUriStr = NODE_PREFIX + getCurrentHomePath() + "/" + FS_FILES;
+//		try {
+//			URI uri = new URI(currHomeUriStr);
+//			FileSystem fileSystem = nodeFileSystemProvider.getFileSystem(uri);
+//			if (fileSystem == null)
+//				fileSystem = nodeFileSystemProvider.newFileSystem(uri, null);
+//			return fileSystem.getPath(getCurrentHomePath() + "/" + FS_FILES);
+//		} catch (URISyntaxException | IOException e) {
+//			throw new RuntimeException("unable to initialise home file system for " + currHomeUriStr, e);
+//		}
+		 return Paths.get(System.getProperty("user.dir"));
 	}
 
 	private Path[] getMyGroupsFilesPath() {

@@ -1,4 +1,5 @@
-Import-Package: org.eclipse.swt,\
+Import-Package: javax.jcr.nodetype,\
+org.eclipse.swt,\
 org.eclipse.core.commands,\
 org.argeo.cms.maintenance,\
 org.eclipse.ui;ui.workbench=split,\

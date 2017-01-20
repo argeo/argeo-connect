@@ -22,11 +22,11 @@ import org.argeo.connect.people.core.PeopleServiceImpl;
 import org.argeo.connect.people.core.imports.EncodedTagCsvFileParser;
 import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.node.NodeConstants;
 import org.springframework.core.io.Resource;
 
 /** Exemplary implementation of the people specific Backend */
-public class DemoServiceImpl extends PeopleServiceImpl implements
-		PeopleService, PeopleConstants {
+public class DemoServiceImpl extends PeopleServiceImpl implements PeopleService, PeopleConstants {
 	private final static Log log = LogFactory.getLog(DemoServiceImpl.class);
 
 	/* DEPENDENCY INJECTION */
@@ -49,8 +49,7 @@ public class DemoServiceImpl extends PeopleServiceImpl implements
 			// Demo specific Initializes the system with dummy data
 			// if the repository is empty (no person defined)
 			if (demoBusinessData != null) {
-				Node personPar = adminSession
-						.getNode(getBasePath(PeopleTypes.PEOPLE_PERSON));
+				Node personPar = adminSession.getNode(getBasePath(PeopleTypes.PEOPLE_PERSON));
 				if (!personPar.hasNodes()) {
 					DemoDataImport importer = new DemoDataImport();
 					importer.doImport(this, adminSession, demoBusinessData);
@@ -64,14 +63,22 @@ public class DemoServiceImpl extends PeopleServiceImpl implements
 	}
 
 	// HELPERS
-	/** Creates various useful parent nodes if needed */
-	@Override
-	protected void initialiseModel(Session adminSession)
-			throws RepositoryException {
-		super.initialiseModel(adminSession);
 
+	// TODO To be cleaned once first init mechanism has been implemented:
+	// default public and shared file directories
+	private final static String publicPath = "/public";
+	private final static String sharedFilePath = "/sharedFiles";
+	private final static String groups = "/groups";
+
+	/** Creates various useful parent nodes if needed */
+
+	@Override
+	protected void initialiseModel(Session adminSession) throws RepositoryException {
+		super.initialiseModel(adminSession);
 		// The resources
 		getResourceService().initialiseResources(adminSession);
+		JcrUtils.mkdirs(adminSession, publicPath, NodeType.NT_UNSTRUCTURED);
+		JcrUtils.mkdirs(adminSession, sharedFilePath, NodeType.NT_FOLDER);
 
 		if (adminSession.hasPendingChanges()) {
 			adminSession.save();
@@ -82,75 +89,62 @@ public class DemoServiceImpl extends PeopleServiceImpl implements
 
 	// First draft of configuration of the people specific rights
 	private void configureACL(Session session) throws RepositoryException {
-		// Every one seems to not work.
-
 		String memberGroupDn = "cn=" + PeopleConstants.ROLE_MEMBER
 				+ ",ou=roles,ou=node";
-		// Give full access to the business admin role
 		JcrUtils.addPrivilege(session, getBasePath(null), memberGroupDn,
 				Privilege.JCR_ALL);
+		JcrUtils.addPrivilege(session, "/", NodeConstants.ROLE_ADMIN, Privilege.JCR_ALL);
+		JcrUtils.addPrivilege(session, publicPath, NodeConstants.ROLE_USER, Privilege.JCR_READ);
+		JcrUtils.addPrivilege(session, publicPath, "anonymous", Privilege.JCR_READ);
+		JcrUtils.addPrivilege(session, publicPath, NodeConstants.ROLE_ANONYMOUS, Privilege.JCR_READ);
+		JcrUtils.addPrivilege(session, sharedFilePath, NodeConstants.ROLE_USER, Privilege.JCR_ALL);
 
 		// TODO Session is not marked as dirty after policy change?
 		// if (session.hasPendingChanges()) {
 		session.save();
-		log.info("Access control configured with Scoolgate's model");
+		log.info("Access control configured with default model");
 		// }
 	}
 
 	// MODEL INITIALISATION
 	// Import resources
-	protected void addModelResources(Session adminSession,
-			Map<String, Resource> initResources) throws Exception {
+	protected void addModelResources(Session adminSession, Map<String, Resource> initResources) throws Exception {
 
 		// initialisation
 		ResourceService resourceService = getResourceService();
 
 		Resource resource = initResources.get("Countries");
-		if (resourceService.getTagLikeResourceParent(adminSession,
-				PeopleConstants.RESOURCE_COUNTRY) == null && resource != null) {
-			resourceService.createTagLikeResourceParent(adminSession,
-					PeopleConstants.RESOURCE_COUNTRY,
-					PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE,
-					PeopleNames.PEOPLE_CODE, getBasePath(null),
-					JcrUiUtils.getLocalJcrItemName(NodeType.NT_UNSTRUCTURED),
-					new ArrayList<String>());
+		if (resourceService.getTagLikeResourceParent(adminSession, PeopleConstants.RESOURCE_COUNTRY) == null
+				&& resource != null) {
+			resourceService.createTagLikeResourceParent(adminSession, PeopleConstants.RESOURCE_COUNTRY,
+					PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE, PeopleNames.PEOPLE_CODE, getBasePath(null),
+					JcrUiUtils.getLocalJcrItemName(NodeType.NT_UNSTRUCTURED), new ArrayList<String>());
 			String EN_SHORT_NAME = "English short name (upper-lower case)";
 			String ISO_CODE = "Alpha-2 code";
-			new EncodedTagCsvFileParser(resourceService, adminSession,
-					PeopleConstants.RESOURCE_COUNTRY, ISO_CODE, EN_SHORT_NAME)
-					.parse(resource.getInputStream(), "UTF-8");
+			new EncodedTagCsvFileParser(resourceService, adminSession, PeopleConstants.RESOURCE_COUNTRY, ISO_CODE,
+					EN_SHORT_NAME).parse(resource.getInputStream(), "UTF-8");
 		}
 
 		resource = initResources.get("Languages");
-		if (resourceService.getTagLikeResourceParent(adminSession,
-				PeopleConstants.RESOURCE_LANG) == null && resource != null) {
-			resourceService.createTagLikeResourceParent(adminSession,
-					PeopleConstants.RESOURCE_LANG,
-					PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE,
-					PeopleNames.PEOPLE_CODE, getBasePath(null),
-					JcrUiUtils.getLocalJcrItemName(NodeType.NT_UNSTRUCTURED),
-					new ArrayList<String>());
+		if (resourceService.getTagLikeResourceParent(adminSession, PeopleConstants.RESOURCE_LANG) == null
+				&& resource != null) {
+			resourceService.createTagLikeResourceParent(adminSession, PeopleConstants.RESOURCE_LANG,
+					PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE, PeopleNames.PEOPLE_CODE, getBasePath(null),
+					JcrUiUtils.getLocalJcrItemName(NodeType.NT_UNSTRUCTURED), new ArrayList<String>());
 			String EN_SHORT_NAME = "Language name";
 			String ISO_CODE = "639-1";
-			new EncodedTagCsvFileParser(resourceService, adminSession,
-					PeopleConstants.RESOURCE_LANG, ISO_CODE, EN_SHORT_NAME)
-					.parse(resource.getInputStream(), "UTF-8");
+			new EncodedTagCsvFileParser(resourceService, adminSession, PeopleConstants.RESOURCE_LANG, ISO_CODE,
+					EN_SHORT_NAME).parse(resource.getInputStream(), "UTF-8");
 		}
 
 		// Create tag & mailing list parents
-		if (resourceService.getTagLikeResourceParent(adminSession,
-				PeopleConstants.RESOURCE_TAG) == null)
-			resourceService.createTagLikeResourceParent(adminSession,
-					PeopleConstants.RESOURCE_TAG,
-					PeopleTypes.PEOPLE_TAG_INSTANCE, null, getBasePath(null),
-					PeopleTypes.PEOPLE_ENTITY, PeopleNames.PEOPLE_TAGS);
-		if (resourceService.getTagLikeResourceParent(adminSession,
-				PeopleTypes.PEOPLE_MAILING_LIST) == null)
-			resourceService
-					.createTagLikeResourceParent(adminSession, null,
-							PeopleTypes.PEOPLE_MAILING_LIST, null,
-							getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
-							PeopleNames.PEOPLE_MAILING_LISTS);
+		if (resourceService.getTagLikeResourceParent(adminSession, PeopleConstants.RESOURCE_TAG) == null)
+			resourceService.createTagLikeResourceParent(adminSession, PeopleConstants.RESOURCE_TAG,
+					PeopleTypes.PEOPLE_TAG_INSTANCE, null, getBasePath(null), PeopleTypes.PEOPLE_ENTITY,
+					PeopleNames.PEOPLE_TAGS);
+		if (resourceService.getTagLikeResourceParent(adminSession, PeopleTypes.PEOPLE_MAILING_LIST) == null)
+			resourceService.createTagLikeResourceParent(adminSession, null, PeopleTypes.PEOPLE_MAILING_LIST, null,
+					getBasePath(null), PeopleTypes.PEOPLE_ENTITY, PeopleNames.PEOPLE_MAILING_LISTS);
 
 		if (adminSession.hasPendingChanges()) {
 			adminSession.save();
