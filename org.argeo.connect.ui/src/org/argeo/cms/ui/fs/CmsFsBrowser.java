@@ -62,7 +62,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Default Cms single page browser: a sashForm layout with bookmarks at the left
+ * Default CMS single page browser: a sashForm layout with bookmarks at the left
  * hand side, a simple table in the middle and an overview at right hand side.
  */
 public class CmsFsBrowser extends Composite {
@@ -219,6 +219,8 @@ public class CmsFsBrowser extends Composite {
 		elemBtn.setText(path.getFileName().toString() + " >> ");
 		CmsUtils.style(elemBtn, FsStyles.BREAD_CRUMB_BTN);
 		elemBtn.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = -4103695476023480651L;
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				setInput(path);
@@ -257,7 +259,7 @@ public class CmsFsBrowser extends Composite {
 	}
 
 	private String getCurrentHomePath() {
-		// FIXME
+		// FIXME dirty retrieval of the default home path
 		String id = UserAdminUtils.getUserLocalId(CurrentUser.getUsername());
 		String homepath = "/home/" + JcrUtils.firstCharsToPath(id, 2) + "/" + id;
 		// FIXME also insure the file subfolder is here
@@ -279,17 +281,17 @@ public class CmsFsBrowser extends Composite {
 	private final static String FS_FILES = "files";
 
 	protected Path getMyFilesPath() {
-//		String currHomeUriStr = NODE_PREFIX + getCurrentHomePath() + "/" + FS_FILES;
-//		try {
-//			URI uri = new URI(currHomeUriStr);
-//			FileSystem fileSystem = nodeFileSystemProvider.getFileSystem(uri);
-//			if (fileSystem == null)
-//				fileSystem = nodeFileSystemProvider.newFileSystem(uri, null);
-//			return fileSystem.getPath(getCurrentHomePath() + "/" + FS_FILES);
-//		} catch (URISyntaxException | IOException e) {
-//			throw new RuntimeException("unable to initialise home file system for " + currHomeUriStr, e);
-//		}
-		 return Paths.get(System.getProperty("user.dir"));
+		String currHomeUriStr = NODE_PREFIX + getCurrentHomePath() + "/" + FS_FILES;
+		try {
+			URI uri = new URI(currHomeUriStr);
+			FileSystem fileSystem = nodeFileSystemProvider.getFileSystem(uri);
+			if (fileSystem == null)
+				fileSystem = nodeFileSystemProvider.newFileSystem(uri, null);
+			return fileSystem.getPath(getCurrentHomePath() + "/" + FS_FILES);
+		} catch (URISyntaxException | IOException e) {
+			throw new RuntimeException("unable to initialise home file system for " + currHomeUriStr, e);
+		}
+		// return Paths.get(System.getProperty("user.dir"));
 	}
 
 	private Path[] getMyGroupsFilesPath() {
@@ -361,7 +363,8 @@ public class CmsFsBrowser extends Composite {
 				contextL.setText(path.getFileName().toString());
 				contextL.setFont(EclipseUiUtils.getBoldFont(rightPannelCmp));
 				addProperty(rightPannelCmp, "Last modified", Files.getLastModifiedTime(path).toString());
-				// addProperty(rightPannelCmp, "Owner", Files.getOwner(path).getName());
+				// addProperty(rightPannelCmp, "Owner",
+				// Files.getOwner(path).getName());
 				if (Files.isDirectory(path)) {
 					addProperty(rightPannelCmp, "Type", "Folder");
 				} else {

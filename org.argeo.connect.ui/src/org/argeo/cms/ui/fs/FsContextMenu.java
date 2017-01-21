@@ -1,14 +1,22 @@
 package org.argeo.cms.ui.fs;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -24,6 +32,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
@@ -31,8 +40,11 @@ import org.eclipse.swt.widgets.Shell;
 public class FsContextMenu extends Shell {
 	private static final long serialVersionUID = -9120261153509855795L;
 
+	private final static Log log = LogFactory.getLog(FsContextMenu.class);
+
 	// Default known actions
 	public final static String ACTION_ID_CREATE_FOLDER = "createFolder";
+	public final static String ACTION_ID_BOOKMARK_FOLDER = "bookmarkFolder";
 	public final static String ACTION_ID_SHARE_FOLDER = "shareFolder";
 	public final static String ACTION_ID_DOWNLOAD_FOLDER = "downloadFolder";
 	public final static String ACTION_ID_DELETE = "delete";
@@ -47,8 +59,9 @@ public class FsContextMenu extends Shell {
 	private final CmsFsBrowser browser;
 	// private final Viewer viewer;
 	private final static String KEY_ACTION_ID = "actionId";
-	private final static String[] DEFAULT_ACTIONS = { ACTION_ID_CREATE_FOLDER, ACTION_ID_SHARE_FOLDER,
-			ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_DELETE, ACTION_ID_UPLOAD_FILE, ACTION_ID_OPEN };
+	private final static String[] DEFAULT_ACTIONS = { ACTION_ID_CREATE_FOLDER, ACTION_ID_BOOKMARK_FOLDER,
+			ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_DELETE, ACTION_ID_UPLOAD_FILE,
+			ACTION_ID_OPEN };
 	private Map<String, Button> actionButtons = new HashMap<String, Button>();
 
 	private Path currFolderPath;
@@ -85,6 +98,8 @@ public class FsContextMenu extends Shell {
 		switch (actionId) {
 		case ACTION_ID_CREATE_FOLDER:
 			return "Create Folder";
+		case ACTION_ID_BOOKMARK_FOLDER:
+			return "Bookmark Folder";
 		case ACTION_ID_SHARE_FOLDER:
 			return "Share Folder";
 		case ACTION_ID_DOWNLOAD_FOLDER:
@@ -114,18 +129,24 @@ public class FsContextMenu extends Shell {
 		}
 		if (emptySel) {
 			setVisible(true, ACTION_ID_CREATE_FOLDER, ACTION_ID_UPLOAD_FILE);
-			setVisible(false, ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_DELETE, ACTION_ID_OPEN);
+			setVisible(false, ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_DELETE, ACTION_ID_OPEN,
+					// to be implemented
+					ACTION_ID_BOOKMARK_FOLDER);
 		} else if (multiSel) {
-			setVisible(true, ACTION_ID_DELETE);
-			setVisible(false, ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_CREATE_FOLDER,
-					ACTION_ID_UPLOAD_FILE, ACTION_ID_OPEN);
+			setVisible(true, ACTION_ID_CREATE_FOLDER, ACTION_ID_UPLOAD_FILE, ACTION_ID_DELETE);
+			setVisible(false, ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_OPEN,
+					// to be implemented
+					ACTION_ID_BOOKMARK_FOLDER);
 		} else if (isFolder) {
-			setVisible(true, ACTION_ID_DELETE, ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER);
-			setVisible(false, ACTION_ID_CREATE_FOLDER, ACTION_ID_UPLOAD_FILE, ACTION_ID_OPEN);
+			setVisible(true, ACTION_ID_CREATE_FOLDER, ACTION_ID_UPLOAD_FILE, ACTION_ID_DELETE);
+			setVisible(false, ACTION_ID_OPEN,
+					// to be implemented
+					ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_BOOKMARK_FOLDER);
 		} else {
-			setVisible(true, ACTION_ID_DELETE, ACTION_ID_OPEN);
-			setVisible(false, ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_CREATE_FOLDER,
-					ACTION_ID_UPLOAD_FILE);
+			setVisible(true, ACTION_ID_CREATE_FOLDER, ACTION_ID_UPLOAD_FILE, ACTION_ID_OPEN, ACTION_ID_DELETE);
+			setVisible(false, ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER,
+					// to be implemented
+					ACTION_ID_BOOKMARK_FOLDER);
 		}
 	}
 
@@ -212,14 +233,18 @@ public class FsContextMenu extends Shell {
 				case ACTION_ID_DELETE:
 					deleteItems();
 					break;
+				case ACTION_ID_OPEN:
+					openFile();
+					break;
+				case ACTION_ID_UPLOAD_FILE:
+					uploadFiles();
+					break;
 				default:
 					throw new IllegalArgumentException("Unimplemented action " + actionId);
 					// case ACTION_ID_SHARE_FOLDER:
 					// return "Share Folder";
 					// case ACTION_ID_DOWNLOAD_FOLDER:
 					// return "Download as zip archive";
-					// case ACTION_ID_UPLOAD_FILE:
-					// return "Upload Files";
 					// case ACTION_ID_OPEN:
 					// return "Open";
 				}
@@ -234,14 +259,14 @@ public class FsContextMenu extends Shell {
 	class ActionsShellListener extends org.eclipse.swt.events.ShellAdapter {
 		private static final long serialVersionUID = -5092341449523150827L;
 
-		// @Override
-		// public void shellActivated(ShellEvent e) {
-		// }
-
 		@Override
 		public void shellDeactivated(ShellEvent e) {
 			setVisible(false);
 		}
+	}
+
+	private void openFile() {
+		log.warn("Implement single sourced, workbench independant \"Open File\" action");
 	}
 
 	private void deleteItems() {
@@ -290,6 +315,70 @@ public class FsContextMenu extends Shell {
 			} catch (IOException e) {
 				throw new ConnectException("Cannot create folder " + name + " at " + currFolderPath.toString(), e);
 			}
+		}
+	}
+
+	private void uploadFiles() {
+		try {
+			FileDialog dialog = new FileDialog(browser.getShell(), SWT.MULTI);
+			dialog.setText("Choose one or more files to upload");
+
+			if (EclipseUiUtils.notEmpty(dialog.open())) {
+				String[] names = dialog.getFileNames();
+				// Workaround small differences between RAP and RCP
+				// 1. returned names are absolute path on RAP and
+				// relative in RCP
+				// 2. in RCP we must use getFilterPath that does not
+				// exists on RAP
+				Method filterMethod = null;
+				Path parPath = null;
+				try {
+					filterMethod = dialog.getClass().getDeclaredMethod("getFilterPath");
+					String filterPath = (String) filterMethod.invoke(dialog);
+					parPath = Paths.get(filterPath);
+				} catch (NoSuchMethodException nsme) { // RAP
+				}
+				if (names.length == 0)
+					return;
+				else {
+					loop: for (String name : names) {
+						Path tmpPath = Paths.get(name);
+						if (parPath != null)
+							tmpPath = parPath.resolve(tmpPath);
+						if (Files.exists(tmpPath)) {
+							URI uri = tmpPath.toUri();
+							String uriStr = uri.toString();
+
+							if (Files.isDirectory(tmpPath)) {
+								MessageDialog.openError(browser.getShell(), "Unimplemented directory import",
+										"Upload of directories in the system is not yet implemented");
+								continue loop;
+							}
+							Path targetPath = currFolderPath.resolve(tmpPath.getFileName().toString());
+							InputStream in = null;
+							try {
+								in = new ByteArrayInputStream(Files.readAllBytes(tmpPath));
+								Files.copy(in, targetPath);
+								Files.delete(tmpPath);
+							} finally {
+								IOUtils.closeQuietly(in);
+							}
+							if (log.isDebugEnabled())
+								log.debug("copied uploaded file " + uriStr + " to " + targetPath.toString());
+						} else {
+							String msg = "Cannot copy tmp file from " + tmpPath.toString();
+							if (parPath != null)
+								msg += "\nPlease remember that file upload fails when choosing files from the \"Recently Used\" bookmarks on some OS";
+							MessageDialog.openError(browser.getShell(), "Missing file", msg);
+							continue loop;
+						}
+					}
+					browser.refresh();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			MessageDialog.openError(getShell(), "Upload has failed", "Cannot import files to " + currFolderPath);
 		}
 	}
 

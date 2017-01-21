@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.argeo.commons</groupId>
 		<artifactId>argeo-commons</artifactId>
-		<version>2.1.57</version>
+		<version>2.1.58-SNAPSHOT</version>
 	</parent>
 	<groupId>org.argeo.connect</groupId>
 	<artifactId>argeo-connect</artifactId>
@@ -12,7 +13,7 @@
 	<description>Real world IT</description>
 	<version>2.1.63-SNAPSHOT</version>
 	<properties>
-		<version.connect>2.1.63-SNAPSHOT</version.connect>
+		<version.argeo-connect>2.1.63-SNAPSHOT</version.argeo-connect>
 		<version.argeo-tp-extras>2.1.9</version.argeo-tp-extras>
 	</properties>
 	<modules>
@@ -22,11 +23,11 @@
 		<module>org.argeo.connect.people.ui</module>
 		<module>org.argeo.connect.people.rap</module>
 		<module>org.argeo.connect.people.web</module>
-		
+
 		<module>org.argeo.connect.media.specs</module>
-		
+
 		<module>org.argeo.connect.tracker</module>
-		
+
 		<!-- Depends on org.eclipse.ui.form that must be added to eclipse RCP repo -->
 		<!-- <module>org.argeo.photo.manager.ui</module> -->
 		<module>org.argeo.connect.payment</module>
