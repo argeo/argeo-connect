@@ -1,7 +1,0 @@
-people:username,people:firstName,people:lastName,people:email,people:description,people:role
-bsinou,Bruno,Sinou,bsinou@argeo.org,"IT expert, Super User","ROLE_ADMIN, ROLE_BUSINESS_ADMIN, ROLE_REGISTERED_MEMBER"
-psmith,Paul,Smith,paul@smith.uk,"Main accounting agent, makes all payment, among other",ROLE_REGISTERED_MEMBER
-sboyle,Susan,Boyle,sboyle@example.com,Customer relations,ROLE_REGISTERED_MEMBER
-ijake,Irene ,Jake,ijake@example.com,Customer relations,ROLE_REGISTERED_MEMBER
-jchan,Jacky,Chan,jchan@example.com,Accountings,ROLE_REGISTERED_MEMBER
-aking,Arthur,King,aking@example.com,Makes the final decision,ROLE_REGISTERED_MEMBER
