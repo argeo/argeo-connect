@@ -1,2 +1,3 @@
 /target/
 /org.argeo.connect.dep.people.web-maven.target
+/org.argeo.connect.dep.people.platform-maven.target
