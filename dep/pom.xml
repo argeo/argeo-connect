@@ -11,7 +11,7 @@
 	<name>Connect Dependencies</name>
 	<packaging>pom</packaging>
 	<modules>
-		<module>org.argeo.connect.dep.people.web</module>
+		<module>org.argeo.connect.dep.people.platform</module>
 	</modules>
 	<build>
 		<plugins>

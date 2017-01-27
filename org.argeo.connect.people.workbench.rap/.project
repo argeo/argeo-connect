@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.argeo.connect.people.specs</name>
+	<name>org.argeo.connect.people.workbench.rap</name>
 	<comment></comment>
-	<projects>
-		<project>org.argeo.connect.people</project>
-	</projects>
-		<buildSpec>
+	<buildSpec>
 		<buildCommand>
 			<name>org.eclipse.jdt.core.javabuilder</name>
 			<arguments>

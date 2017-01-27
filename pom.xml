@@ -17,13 +17,13 @@
 	</properties>
 	<modules>
 		<module>org.argeo.connect.ui</module>
-		<module>org.argeo.connect.people.specs</module>
+		<module>org.argeo.connect.people.api</module>
 		<module>org.argeo.connect.people.core</module>
 		<module>org.argeo.connect.people.ui</module>
-		<module>org.argeo.connect.people.rap</module>
 		<module>org.argeo.connect.people.web</module>
+		<module>org.argeo.connect.people.workbench.rap</module>
 
-		<module>org.argeo.connect.media.specs</module>
+		<module>org.argeo.connect.media.api</module>
 
 		<module>org.argeo.connect.tracker</module>
 

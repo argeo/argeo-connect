@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.argeo.connect.media.specs</name>
+	<name>org.argeo.connect.people.api</name>
 	<comment></comment>
 	<projects>
 		<project>org.argeo.connect.people</project>

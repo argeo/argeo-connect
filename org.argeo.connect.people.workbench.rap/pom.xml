@@ -7,8 +7,8 @@
 		<version>2.1.64-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
-	<artifactId>org.argeo.connect.people.rap</artifactId>
-	<name>Connect People RAP Workbench UI</name>
+	<artifactId>org.argeo.connect.people.workbench.rap</artifactId>
+	<name>Connect People RAP Workbench</name>
 	<packaging>jar</packaging>
 	<dependencies>
 		<!-- People -->

@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.argeo.connect.people.rap</name>
+	<name>org.argeo.connect.media.api</name>
 	<comment></comment>
-	<projects>
-	</projects>
 	<buildSpec>
 		<buildCommand>
 			<name>org.eclipse.jdt.core.javabuilder</name>
