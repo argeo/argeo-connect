@@ -20,7 +20,7 @@ import org.argeo.connect.people.ImportService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 
 /** Default implementation of the import service */
 public class ImportServiceImpl implements ImportService, PeopleNames {
@@ -87,9 +87,9 @@ public class ImportServiceImpl implements ImportService, PeopleNames {
 			Node referencing = ref.getParent();
 			// checkCOStatusBeforeUpdate(referencing);
 			if (ref.isMultiple()) {
-				JcrUiUtils.removeRefFromMultiValuedProp(referencing,
+				ConnectJcrUtils.removeRefFromMultiValuedProp(referencing,
 						ref.getName(), slaveNode.getIdentifier());
-				JcrUiUtils.addRefToMultiValuedProp(referencing, ref.getName(),
+				ConnectJcrUtils.addRefToMultiValuedProp(referencing, ref.getName(),
 						masterNode);
 			} else
 				referencing.setProperty(ref.getName(), masterNode);

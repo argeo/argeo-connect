@@ -26,6 +26,8 @@
  */
 package org.argeo.connect.people.workbench.rap;
 
+import static org.argeo.connect.people.workbench.rap.PeopleRapPlugin.getImageDescriptor;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 
@@ -36,25 +38,18 @@ public class ActivitiesImages {
 
 	// Activities icons
 	// NOTE
-	public final static Image NOTE = PeopleRapPlugin.getImageDescriptor(
-			PREFIX + "note.gif").createImage();
+	public final static Image NOTE = getImageDescriptor(PREFIX + "note.gif").createImage();
 
-	// FIXME We use contact images for the time being
+	// TODO We still use contact images: get more specific icons
 	// SENT EMAIL
-	public final static Image SENT_MAIL = PeopleRapPlugin.getImageDescriptor(
-			"icons/contacts/mail_black.png").createImage();
-
+	public final static Image SENT_MAIL = getImageDescriptor("icons/contacts/mail_black.png").createImage();
 	// PHONE CALL
-	public final static Image PHONE_CALL = PeopleRapPlugin.getImageDescriptor(
-			"icons/contacts/telephone.png").createImage();
-
+	public final static Image PHONE_CALL = getImageDescriptor("icons/contacts/telephone.png").createImage();
 	// SEND FAX
-	public final static Image SENT_FAX = PeopleRapPlugin.getImageDescriptor(
-			"icons/contacts/fax.png").createImage();
+	public final static Image SENT_FAX = getImageDescriptor("icons/contacts/fax.png").createImage();
 
-	// FIXME find icons for other types:
-	private final static Image DUMMY_UNDEFINED = PeopleRapPlugin
-			.getImageDescriptor(PREFIX + "noImage.gif").createImage();
+	// TODO find icons for other types:
+	private final static Image DUMMY_UNDEFINED = getImageDescriptor(PREFIX + "noImage.gif").createImage();
 	public final static Image MEETING = DUMMY_UNDEFINED;
 	public final static Image POST_MAIL = DUMMY_UNDEFINED;
 	public final static Image PAYMENT = DUMMY_UNDEFINED;
@@ -65,12 +60,7 @@ public class ActivitiesImages {
 
 	// TASKS icons
 	// Task
-	public final static Image DONE_TASK = PeopleRapPlugin.getImageDescriptor(
-			PREFIX + "doneTask.png").createImage();
-
-	public final static Image TODO = PeopleRapPlugin.getImageDescriptor(
-			PREFIX + "todo.gif").createImage();
-
-	public final static ImageDescriptor TODO_IMGDESC = PeopleRapPlugin.getImageDescriptor(
-			PREFIX + "todo.gif");
+	public final static Image DONE_TASK = PeopleRapPlugin.getImageDescriptor(PREFIX + "doneTask.png").createImage();
+	public final static Image TODO = PeopleRapPlugin.getImageDescriptor(PREFIX + "todo.gif").createImage();
+	public final static ImageDescriptor TODO_IMGDESC = PeopleRapPlugin.getImageDescriptor(PREFIX + "todo.gif");
 }

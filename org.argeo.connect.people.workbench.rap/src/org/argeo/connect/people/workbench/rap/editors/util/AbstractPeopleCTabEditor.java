@@ -3,9 +3,9 @@ package org.argeo.connect.people.workbench.rap.editors.util;
 import javax.jcr.Property;
 import javax.jcr.nodetype.NodeType;
 
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.editors.tabs.HistoryLog;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;
@@ -56,7 +56,7 @@ public abstract class AbstractPeopleCTabEditor extends
 
 	@Override
 	protected void addEditButtons(final Composite parent) {
-		if (JcrUiUtils.isNodeType(getNode(), NodeType.MIX_VERSIONABLE)) {
+		if (ConnectJcrUtils.isNodeType(getNode(), NodeType.MIX_VERSIONABLE)) {
 			final Button showHistoryBtn = getFormToolkit().createButton(parent,
 					"History", SWT.PUSH);
 			showHistoryBtn.setLayoutData(new RowData(60, 20));

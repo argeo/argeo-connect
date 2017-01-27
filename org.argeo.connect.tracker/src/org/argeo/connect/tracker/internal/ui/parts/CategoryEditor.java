@@ -12,7 +12,6 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerNames;
@@ -23,7 +22,8 @@ import org.argeo.connect.tracker.internal.ui.TrackerLps;
 import org.argeo.connect.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.connect.tracker.internal.ui.dialogs.NewIssueWizard;
 import org.argeo.connect.tracker.ui.TrackerUiPlugin;
-import org.argeo.connect.ui.TechnicalInfoPage;
+import org.argeo.connect.ui.workbench.TechnicalInfoPage;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
@@ -75,7 +75,7 @@ public class CategoryEditor extends AbstractTrackerEditor {
 		// Initialise local cache
 		category = getNode();
 		project = TrackerUtils.getProjectFromChild(category);
-		officeID = JcrUiUtils.get(category, TrackerNames.TRACKER_ID);
+		officeID = ConnectJcrUtils.get(category, TrackerNames.TRACKER_ID);
 		relevantPropName = TrackerUtils.getRelevantPropName(category);
 		try {
 			MainPage mainPage = new MainPage(this);
@@ -137,7 +137,7 @@ public class CategoryEditor extends AbstractTrackerEditor {
 				@Override
 				public void doubleClick(DoubleClickEvent event) {
 					Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
-					String jcrId = JcrUiUtils.getIdentifier((Node) element);
+					String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
 					CommandUtils.callCommand(getAoWbService().getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
 							jcrId);
 				}
@@ -195,10 +195,10 @@ public class CategoryEditor extends AbstractTrackerEditor {
 	}
 
 	private String getCategoryTitle() {
-		String name = JcrUiUtils.get(getNode(), Property.JCR_TITLE);
+		String name = ConnectJcrUtils.get(getNode(), Property.JCR_TITLE);
 		if (notEmpty(name)) {
 			Node project = TrackerUtils.getProjectFromChild(getNode());
-			String pname = JcrUiUtils.get(project, Property.JCR_TITLE);
+			String pname = ConnectJcrUtils.get(project, Property.JCR_TITLE);
 			name = name + (notEmpty(pname) ? " (" + pname + ")" : "");
 		}
 		return name;

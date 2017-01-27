@@ -12,11 +12,11 @@ import javax.jcr.version.VersionManager;
 
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.editors.util.EntityEditorInput;
 import org.argeo.connect.tracker.PeopleTrackerService;
 import org.argeo.connect.tracker.TrackerException;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
@@ -56,7 +56,7 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 
 	/** Overwrite to provide a specific part Name */
 	protected void updatePartName() {
-		String name = JcrUiUtils.get(node, Property.JCR_TITLE);
+		String name = ConnectJcrUtils.get(node, Property.JCR_TITLE);
 		if (notEmpty(name))
 			setPartName(name);
 	}
@@ -64,7 +64,7 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 	/** Overwrite to provide a specific part tooltip */
 	protected void updateToolTip() {
 		EntityEditorInput sei = (EntityEditorInput) getEditorInput();
-		String displayName = JcrUiUtils.get(node, Property.JCR_TITLE);
+		String displayName = ConnectJcrUtils.get(node, Property.JCR_TITLE);
 		if (isEmpty(displayName))
 			displayName = "current objet";
 		sei.setTooltipText("Display and edit information for " + displayName);
@@ -103,7 +103,7 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 				session.save();
 				changed = true;
 			}
-			if (changed && JcrUiUtils.isVersionable(getNode())) {
+			if (changed && ConnectJcrUtils.isVersionable(getNode())) {
 				VersionManager vm = session.getWorkspace().getVersionManager();
 				String path = getNode().getPath();
 				vm.checkpoint(path);

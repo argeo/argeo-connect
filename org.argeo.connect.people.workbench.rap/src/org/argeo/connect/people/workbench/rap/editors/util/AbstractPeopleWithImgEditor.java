@@ -7,8 +7,8 @@ import javax.jcr.Property;
 
 import org.apache.commons.io.IOUtils;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -65,9 +65,9 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
 
 		GridLayout gl;
 		if (displayImage())
-			gl = PeopleUiUtils.noSpaceGridLayout(3);
+			gl = ConnectUiUtils.noSpaceGridLayout(3);
 		else
-			gl = PeopleUiUtils.noSpaceGridLayout(2);
+			gl = ConnectUiUtils.noSpaceGridLayout(2);
 
 		// So that the buttons are not too close to the right border of the
 		// composite.

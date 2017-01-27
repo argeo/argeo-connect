@@ -29,6 +29,7 @@ import javax.jcr.version.VersionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ContactService;
 import org.argeo.connect.people.ImportService;
@@ -41,11 +42,11 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.PersonService;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.util.PersonJcrUtils;
-import org.argeo.connect.people.util.RemoteJcrUtils;
-import org.argeo.connect.people.util.XPathUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.RemoteJcrUtils;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrMonitor;
 import org.argeo.jcr.JcrUtils;
@@ -65,8 +66,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private ActivityService activityService = new ActivityServiceImpl(this);
 	private ImportService importService = new ImportServiceImpl(this);
 	private ResourceService resourceService = new ResourceServiceImpl(this);
-	private MaintenanceService maintenanceService = new MaintenanceServiceImpl(
-			this);
+	private MaintenanceService maintenanceService = new MaintenanceServiceImpl(this);
 
 	/* PATH MANAGEMENT */
 	// TODO clean and generalize this
@@ -75,16 +75,12 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private static final Map<String, String> BUSINESS_REL_PATHES;
 	static {
 		Map<String, String> tmpMap = new HashMap<String, String>();
-		tmpMap.put(PeopleConstants.PEOPLE_RESOURCE,
-				PeopleConstants.PEOPLE_RESOURCES);
+		tmpMap.put(PeopleConstants.PEOPLE_RESOURCE, PeopleConstants.PEOPLE_RESOURCES);
 		tmpMap.put(PeopleTypes.PEOPLE_ORG, PeopleConstants.PEOPLE_ORGS);
 		tmpMap.put(PeopleTypes.PEOPLE_PERSON, PeopleConstants.PEOPLE_PERSONS);
-		tmpMap.put(PeopleConstants.PEOPLE_PROJECT,
-				PeopleConstants.PEOPLE_PROJECTS);
-		tmpMap.put(PeopleTypes.PEOPLE_USER_GROUP,
-				PeopleConstants.PEOPLE_USER_GROUPS);
-		tmpMap.put(PeopleTypes.PEOPLE_ACTIVITY,
-				PeopleConstants.PEOPLE_ACTIVITIES);
+		tmpMap.put(PeopleConstants.PEOPLE_PROJECT, PeopleConstants.PEOPLE_PROJECTS);
+		tmpMap.put(PeopleTypes.PEOPLE_USER_GROUP, PeopleConstants.PEOPLE_USER_GROUPS);
+		tmpMap.put(PeopleTypes.PEOPLE_ACTIVITY, PeopleConstants.PEOPLE_ACTIVITIES);
 		BUSINESS_REL_PATHES = Collections.unmodifiableMap(tmpMap);
 	}
 
@@ -93,11 +89,9 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		if (entityType == null)
 			return PeopleConstants.PEOPLE_BASE_PATH;
 		if (BUSINESS_REL_PATHES.containsKey(entityType))
-			return getBasePath(null) + "/"
-					+ BUSINESS_REL_PATHES.get(entityType);
+			return getBasePath(null) + "/" + BUSINESS_REL_PATHES.get(entityType);
 		else
-			throw new PeopleException("Unable to find base path with ID "
-					+ entityType);
+			throw new PeopleException("Unable to find base path with ID " + entityType);
 	}
 
 	@Override
@@ -140,10 +134,9 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	@Override
 	public String getDefaultPathForEntity(Node node, String nodeType) {
-		String peopleUid = JcrUiUtils.get(node, PEOPLE_UID);
+		String peopleUid = ConnectJcrUtils.get(node, PEOPLE_UID);
 		if (isEmpty(peopleUid))
-			throw new PeopleException("Unable to define default path for "
-					+ node + " of type " + nodeType
+			throw new PeopleException("Unable to define default path for " + node + " of type " + nodeType
 					+ ". No property people:uid is defined");
 		else
 			return getDefaultPathForEntity(peopleUid, nodeType);
@@ -158,8 +151,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	/* DEFINITION OF THE PEOPLE DEFAULT TREE STRUCTURE */
 	/** Creates various useful parent nodes if needed */
-	protected void initialiseModel(Session adminSession)
-			throws RepositoryException {
+	protected void initialiseModel(Session adminSession) throws RepositoryException {
 
 		// Root business node
 		if (EclipseUiUtils.notEmpty(getBasePath(null)))
@@ -172,13 +164,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		JcrUtils.mkdirs(adminSession, getBasePath(PeopleTypes.PEOPLE_PERSON));
 		JcrUtils.mkdirs(adminSession, getBasePath(PeopleTypes.PEOPLE_ORG));
 		JcrUtils.mkdirs(adminSession, getBasePath(PeopleTypes.PEOPLE_ACTIVITY));
-		JcrUtils.mkdirs(adminSession,
-				getBasePath(PeopleConstants.PEOPLE_RESOURCE)); // Resources
+		JcrUtils.mkdirs(adminSession, getBasePath(PeopleConstants.PEOPLE_RESOURCE)); // Resources
 
 		if (adminSession.hasPendingChanges()) {
 			adminSession.save();
-			log.info("Repository has been initialised "
-					+ "with default People's model");
+			log.info("Repository has been initialised " + "with default People's model");
 		}
 	}
 
@@ -190,13 +180,12 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 					|| entity.isNodeType(PeopleTypes.PEOPLE_TAG_INSTANCE)
 					|| entity.isNodeType(PeopleTypes.PEOPLE_NODE_TEMPLATE)) {
 				// Known types that does not have a specific save strategy
-				JcrUiUtils.saveAndPublish(entity, publish);
-			} else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)
-					|| entity.isNodeType(PeopleTypes.PEOPLE_ORG))
+				ConnectJcrUtils.saveAndPublish(entity, publish);
+			} else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON) || entity.isNodeType(PeopleTypes.PEOPLE_ORG))
 				entity = getPersonService().saveEntity(entity, publish);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
 				// TODO implement specific behavior for tasks and activities
-				JcrUiUtils.saveAndPublish(entity, publish);
+				ConnectJcrUtils.saveAndPublish(entity, publish);
 			else
 				throw new PeopleException("Unknown entity type for " + entity);
 			return entity;
@@ -216,8 +205,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	 */
 
 	@Override
-	public Node checkPathAndMoveIfNeeded(Node entity, String entityNodeType)
-			throws RepositoryException {
+	public Node checkPathAndMoveIfNeeded(Node entity, String entityNodeType) throws RepositoryException {
 		String destPath = getDefaultPathForEntity(entity, entityNodeType);
 		if (destPath.equals(entity.getPath()))
 			return entity;
@@ -232,19 +220,15 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			if (parPath.startsWith(typeBasePath))
 				parRelPath = parPath.substring(typeBasePath.length() + 1);
 			else
-				throw new PeopleException("Unable to move entity of type "
-						+ entityNodeType + ", Computed parent path " + parPath
-						+ " does not match.");
+				throw new PeopleException("Unable to move entity of type " + entityNodeType + ", Computed parent path "
+						+ parPath + " does not match.");
 			session.save();
-			Node parNode = JcrUtils.mkdirs(session.getNode(typeBasePath),
-					parRelPath, NodeType.NT_UNSTRUCTURED,
+			Node parNode = JcrUtils.mkdirs(session.getNode(typeBasePath), parRelPath, NodeType.NT_UNSTRUCTURED,
 					NodeType.NT_UNSTRUCTURED);
 			session.save();
-			Node target = parNode.addNode(JcrUtils.lastPathElement(destPath),
-					entity.getPrimaryNodeType().getName());
+			Node target = parNode.addNode(JcrUtils.lastPathElement(destPath), entity.getPrimaryNodeType().getName());
 			RemoteJcrUtils.copy(entity, target, true);
-			updateReferenceAfterMove(target, entity.getIdentifier(),
-					target.getIdentifier());
+			updateReferenceAfterMove(target, entity.getIdentifier(), target.getIdentifier());
 			session.save();
 			entity.remove();
 			session.save();
@@ -252,13 +236,12 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		}
 	}
 
-	protected void updateReferenceAfterMove(Node currentNode, String oldJcrId,
-			String newJcrId) throws RepositoryException {
+	protected void updateReferenceAfterMove(Node currentNode, String oldJcrId, String newJcrId)
+			throws RepositoryException {
 		PropertyIterator pit = currentNode.getProperties();
 		while (pit.hasNext()) {
 			Property prop = pit.nextProperty();
-			if (prop.getType() == PropertyType.REFERENCE
-					|| prop.getType() == PropertyType.WEAKREFERENCE) {
+			if (prop.getType() == PropertyType.REFERENCE || prop.getType() == PropertyType.WEAKREFERENCE) {
 				if (prop.isMultiple()) {
 					Value[] values = prop.getValues();
 					List<String> newIds = new ArrayList<String>();
@@ -284,28 +267,27 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			updateReferenceAfterMove(nit.nextNode(), oldJcrId, newJcrId);
 	}
 
-	/** Simply look for primary information and update primary cache if needed */
+	/**
+	 * Simply look for primary information and update primary cache if needed
+	 */
 	@Override
-	public void updatePrimaryCache(Node entity) throws PeopleException,
-			RepositoryException {
-		if (JcrUiUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)
-				|| JcrUiUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG)) {
+	public void updatePrimaryCache(Node entity) throws PeopleException, RepositoryException {
+		if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)
+				|| ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG)) {
 			for (String currType : PeopleTypes.KNOWN_CONTACT_TYPES) {
 				Node pNode = PeopleJcrUtils.getPrimaryContact(entity, currType);
 				if (pNode != null)
-					PeopleJcrUtils
-							.updatePrimaryCache(this, entity, pNode, true);
+					PeopleJcrUtils.updatePrimaryCache(this, entity, pNode, true);
 			}
 
 			// Also update primary job
-			if (JcrUiUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)) {
+			if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)) {
 				Node pJob = PersonJcrUtils.getPrimaryJob(entity);
 				if (pJob != null)
 					PeopleJcrUtils.updatePrimaryCache(this, entity, pJob, true);
 			}
 		} else
-			log.warn("Trying to update primary cache on " + entity
-					+ " - Unknown type.");
+			log.warn("Trying to update primary cache on " + entity + " - Unknown type.");
 	}
 
 	@Override
@@ -314,21 +296,18 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		try {
 			boolean defineDistinct = false;
 			if (entity.hasProperty(PEOPLE_USE_DISTINCT_DISPLAY_NAME))
-				defineDistinct = entity.getProperty(
-						PEOPLE_USE_DISTINCT_DISPLAY_NAME).getBoolean();
+				defineDistinct = entity.getProperty(PEOPLE_USE_DISTINCT_DISPLAY_NAME).getBoolean();
 			if (defineDistinct)
-				displayName = JcrUiUtils.get(entity, Property.JCR_TITLE);
+				displayName = ConnectJcrUtils.get(entity, Property.JCR_TITLE);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
 				displayName = getPersonService().getDisplayName(entity);
 			} else if (entity.isNodeType(NodeType.MIX_TITLE))
-				displayName = JcrUiUtils.get(entity, Property.JCR_TITLE);
+				displayName = ConnectJcrUtils.get(entity, Property.JCR_TITLE);
 			else
-				throw new PeopleException("Display name not defined for type "
-						+ entity.getPrimaryNodeType().getName() + " - node: "
-						+ entity);
+				throw new PeopleException("Display name not defined for type " + entity.getPrimaryNodeType().getName()
+						+ " - node: " + entity);
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to get display name for node "
-					+ entity, e);
+			throw new PeopleException("Unable to get display name for node " + entity, e);
 		}
 		return displayName;
 	}
@@ -341,19 +320,15 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	@Override
 	public Node getEntityByUid(Session session, String parentPath, String uid) {
 		if (isEmpty(uid))
-			throw new PeopleException(
-					"Cannot get entity by id by providing an empty people:uid");
+			throw new PeopleException("Cannot get entity by id by providing an empty people:uid");
 		try {
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
-			String xpathQueryStr = XPathUtils.descendantFrom(parentPath)
-					+ "//element(*, " + PeopleTypes.PEOPLE_ENTITY + ")";
-			String attrQuery = XPathUtils.getPropertyEquals(
-					PeopleNames.PEOPLE_UID, uid);
+			QueryManager queryManager = session.getWorkspace().getQueryManager();
+			String xpathQueryStr = XPathUtils.descendantFrom(parentPath) + "//element(*, " + PeopleTypes.PEOPLE_ENTITY
+					+ ")";
+			String attrQuery = XPathUtils.getPropertyEquals(PeopleNames.PEOPLE_UID, uid);
 			if (notEmpty(attrQuery))
 				xpathQueryStr += "[" + attrQuery + "]";
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
-					PeopleConstants.QUERY_XPATH);
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 			QueryResult result = xpathQuery.execute();
 			NodeIterator ni = result.getNodes();
 
@@ -363,36 +338,30 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			else if (niSize > 1) {
 				// TODO find a way to include the calling stack in the thrown
 				// Exception
-				log.error("Found " + niSize + " entities with PeopleUID ["
-						+ uid + "] - calling stack:\n "
+				log.error("Found " + niSize + " entities with PeopleUID [" + uid + "] - calling stack:\n "
 						+ Thread.currentThread().getStackTrace().toString());
 				Node first = ni.nextNode();
-				throw new PeopleException("Found " + niSize
-						+ " entities for People UID [" + uid
-						+ "], First occurence info:\npath: " + first.getPath()
-						+ ", node type: "
-						+ first.getPrimaryNodeType().getName() + "");
+				throw new PeopleException(
+						"Found " + niSize + " entities for People UID [" + uid + "], First occurence info:\npath: "
+								+ first.getPath() + ", node type: " + first.getPrimaryNodeType().getName() + "");
 			} else
 				return ni.nextNode();
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Unable to retrieve entity with people uid: [" + uid + "]",
-					e);
+			throw new PeopleException("Unable to retrieve entity with people uid: [" + uid + "]", e);
 		}
 	}
 
 	@Override
 	public Node getEntityFromNodeReference(Node node, String propName) {
 		try {
-			String peopleUid = JcrUiUtils.get(node, propName);
+			String peopleUid = ConnectJcrUtils.get(node, propName);
 			if (isEmpty(peopleUid))
 				return null;
 			else
 				return getEntityByUid(node.getSession(), peopleUid);
 		} catch (RepositoryException re) {
 			throw new PeopleException(
-					"unable to get entity from reference node " + node
-							+ " with ref property " + propName, re);
+					"unable to get entity from reference node " + node + " with ref property " + propName, re);
 		}
 	}
 
@@ -400,48 +369,40 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	 * Creates and returns a model specific Node to store a reference, depending
 	 * on the two object we want to link together. Overwrite to add some new
 	 * link type
-	 * */
+	 */
 	@Override
-	public Node createEntityReference(Node referencingNode,
-			Node referencedNode, String role) {
+	public Node createEntityReference(Node referencingNode, Node referencedNode, String role) {
 		try {
 			Node parentNode = null;
 			String linkNodeType = null;
 			if (referencingNode.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
 				if (referencedNode.isNodeType(PeopleTypes.PEOPLE_ORG)) {
 					linkNodeType = PeopleTypes.PEOPLE_JOB;
-					parentNode = referencingNode
-							.getNode(PeopleNames.PEOPLE_JOBS);
+					parentNode = referencingNode.getNode(PeopleNames.PEOPLE_JOBS);
 				}
 			} else if (referencingNode.isNodeType(PeopleTypes.PEOPLE_GROUP)) {
 				if (referencedNode.isNodeType(PeopleTypes.PEOPLE_ORG)
 						|| referencedNode.isNodeType(PeopleTypes.PEOPLE_PERSON)
-						|| (referencedNode.isNodeType(PeopleTypes.PEOPLE_GROUP) && referencedNode
-								.getIdentifier() != referencingNode
-								.getIdentifier())) {
+						|| (referencedNode.isNodeType(PeopleTypes.PEOPLE_GROUP)
+								&& referencedNode.getIdentifier() != referencingNode.getIdentifier())) {
 					linkNodeType = PeopleTypes.PEOPLE_MEMBER;
-					parentNode = referencingNode
-							.getNode(PeopleNames.PEOPLE_MEMBERS);
+					parentNode = referencingNode.getNode(PeopleNames.PEOPLE_MEMBERS);
 				}
 			}
 			if (parentNode == null || linkNodeType == null)
-				throw new PeopleException("Unsupported reference: from "
-						+ referencingNode + "("
-						+ referencingNode.getPrimaryNodeType() + ")" + " to "
-						+ referencedNode + "("
-						+ referencedNode.getPrimaryNodeType() + ")");
+				throw new PeopleException(
+						"Unsupported reference: from " + referencingNode + "(" + referencingNode.getPrimaryNodeType()
+								+ ")" + " to " + referencedNode + "(" + referencedNode.getPrimaryNodeType() + ")");
 
 			// Legacy: force node to be checked-out
-			if (!JcrUiUtils.checkCOStatusBeforeUpdate(referencingNode))
-				log.warn("Referencing node " + referencingNode
-						+ " was checked in when we wanted to update");
+			if (!ConnectJcrUtils.checkCOStatusBeforeUpdate(referencingNode))
+				log.warn("Referencing node " + referencingNode + " was checked in when we wanted to update");
 
-			Node link = parentNode.addNode(notEmpty(role) ? role
-					: "Unnamed_role", linkNodeType);
+			Node link = parentNode.addNode(notEmpty(role) ? role : "Unnamed_role", linkNodeType);
 			if (notEmpty(role))
 				link.setProperty(PeopleNames.PEOPLE_ROLE, role);
-			link.setProperty(PeopleNames.PEOPLE_REF_UID, referencedNode
-					.getProperty(PeopleNames.PEOPLE_UID).getString());
+			link.setProperty(PeopleNames.PEOPLE_REF_UID,
+					referencedNode.getProperty(PeopleNames.PEOPLE_UID).getString());
 			referencingNode.getSession().save();
 
 			return link;
@@ -451,24 +412,19 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	@Override
-	public List<Node> getRelatedEntities(Node entity, String linkNodeType,
-			String relatedEntityType) {
+	public List<Node> getRelatedEntities(Node entity, String linkNodeType, String relatedEntityType) {
 		try {
 			if (!entity.hasProperty(PeopleNames.PEOPLE_UID))
 				return null;
 
 			Session session = entity.getSession();
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
-			String xpathQueryStr = XPathUtils.descendantFrom(getBasePath(null))
-					+ "//element(*, " + linkNodeType + ")";
-			String attrQuery = XPathUtils.getPropertyEquals(
-					PeopleNames.PEOPLE_REF_UID,
+			QueryManager queryManager = session.getWorkspace().getQueryManager();
+			String xpathQueryStr = XPathUtils.descendantFrom(getBasePath(null)) + "//element(*, " + linkNodeType + ")";
+			String attrQuery = XPathUtils.getPropertyEquals(PeopleNames.PEOPLE_REF_UID,
 					entity.getProperty(PeopleNames.PEOPLE_UID).getString());
 			if (notEmpty(attrQuery))
 				xpathQueryStr += "[" + attrQuery + "]";
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
-					PeopleConstants.QUERY_XPATH);
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 			QueryResult result = xpathQuery.execute();
 			NodeIterator ni = result.getNodes();
 
@@ -478,17 +434,14 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 				List<Node> cleaned = new ArrayList<Node>();
 				while (ni.hasNext()) {
 					Node currNode = ni.nextNode();
-					if (currNode.getParent().getParent()
-							.isNodeType(relatedEntityType))
+					if (currNode.getParent().getParent().isNodeType(relatedEntityType))
 						cleaned.add(currNode);
 				}
 				return cleaned;
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrieve " + linkNodeType
-					+ " related "
-					+ (relatedEntityType == null ? "" : relatedEntityType)
-					+ " entities for " + entity, e);
+			throw new PeopleException("Unable to retrieve " + linkNodeType + " related "
+					+ (relatedEntityType == null ? "" : relatedEntityType) + " entities for " + entity, e);
 		}
 	}
 
@@ -499,14 +452,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		Query query;
 		long nodeNb = 0;
 		try {
-			query = session
-					.getWorkspace()
-					.getQueryManager()
-					.createQuery(
-							"SELECT * FROM [" + NodeType.MIX_VERSIONABLE
-									+ "] ORDER BY ["
-									+ Property.JCR_LAST_MODIFIED + "] DESC ",
-							Query.JCR_SQL2);
+			query = session.getWorkspace().getQueryManager().createQuery("SELECT * FROM [" + NodeType.MIX_VERSIONABLE
+					+ "] ORDER BY [" + Property.JCR_LAST_MODIFIED + "] DESC ", Query.JCR_SQL2);
 			if (monitor != null && !monitor.isCanceled())
 				monitor.beginTask("Gathering versionnable items", -1);
 			NodeIterator nit = query.execute().getNodes();
@@ -528,8 +475,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			}
 			return nodeNb;
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to publish the workspace for "
-					+ session, e);
+			throw new PeopleException("Unable to publish the workspace for " + session, e);
 		}
 
 	}
@@ -602,7 +548,9 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	/* MISCEALLENEOUS */
 	@Override
-	/** Override to define app specific properties that are not system properties */
+	/**
+	 * Override to define app specific properties that are not system properties
+	 */
 	public String getConfigProperty(String key) {
 		return System.getProperty(key);
 	}

@@ -1,10 +1,10 @@
-package org.argeo.connect.people.util;
+package org.argeo.connect.util;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-/** Utilities around people management. */
-public class PeopleUtils {
+/** Utilities around date and time management. */
+public class DateTimeUtils {
 	public static Integer computeAge(Calendar dateOfBirth) {
 		Calendar now = new GregorianCalendar();
 		int factor = 0;
@@ -53,6 +53,6 @@ public class PeopleUtils {
 				getSecondsFromLength(lengthInSeconds));
 	}
 
-	private PeopleUtils() {
+	private DateTimeUtils() {
 	}
 }

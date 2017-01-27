@@ -8,9 +8,9 @@ import javax.jcr.Session;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEditor;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -51,7 +51,7 @@ public class RemoveEntityReference extends AbstractHandler {
 		try {
 			session = repository.login();
 			toRemoveNode = session.getNodeByIdentifier(toRemoveJcrId);
-			versionableParent = JcrUiUtils.getVersionableAncestor(toRemoveNode);
+			versionableParent = ConnectJcrUtils.getVersionableAncestor(toRemoveNode);
 
 			if (versionableParent == null) {
 				log.warn("Found no versionnable node in ancestors of " + toRemoveNode + "\n Simply removing.");
@@ -59,11 +59,11 @@ public class RemoveEntityReference extends AbstractHandler {
 				session.save();
 			} else {
 				// boolean wasCO =
-				JcrUiUtils.checkCOStatusBeforeUpdate(versionableParent);
+				ConnectJcrUtils.checkCOStatusBeforeUpdate(versionableParent);
 				toRemoveNode.remove();
 				// FIXME should we save ? commit ? do nothing
-				JcrUiUtils.saveAndPublish(versionableParent, true);
-				// JcrUiUtils.checkCOStatusAfterUpdate(versionableParent,
+				ConnectJcrUtils.saveAndPublish(versionableParent, true);
+				// ConnectJcrUtils.checkCOStatusAfterUpdate(versionableParent,
 				// wasCO);
 			}
 		} catch (RepositoryException e) {

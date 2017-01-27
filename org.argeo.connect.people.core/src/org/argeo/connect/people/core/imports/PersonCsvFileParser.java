@@ -19,10 +19,10 @@ import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.OrgJcrUtils;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.util.PersonJcrUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.springframework.core.io.Resource;
 
@@ -94,13 +94,13 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 			String tags = line.get(PEOPLE_TAGS);
 			if (notEmpty(tags))
 				person.setProperty(PEOPLE_TAGS,
-						JcrUiUtils.parseAndClean(tags, ",", true));
+						ConnectJcrUtils.parseAndClean(tags, ",", true));
 
 			// Mailing lists
 			String mailingLists = line.get(PEOPLE_MAILING_LISTS);
 			if (notEmpty(mailingLists))
 				person.setProperty(PEOPLE_MAILING_LISTS,
-						JcrUiUtils.parseAndClean(mailingLists, ",", true));
+						ConnectJcrUtils.parseAndClean(mailingLists, ",", true));
 
 			// TODO Add spoken languages.
 

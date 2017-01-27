@@ -9,11 +9,11 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapSnippets;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
@@ -65,7 +65,7 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 				builder.append("<span "
 						+ PeopleRapConstants.PEOPLE_STYLE_ENTITY_HEADER + " >");
 			builder.append("<big><b>");
-			builder.append(JcrUiUtils.get(orga, Property.JCR_TITLE));
+			builder.append(ConnectJcrUtils.get(orga, Property.JCR_TITLE));
 			builder.append("</b></big> ");
 
 			String local = PeopleUiSnippets.getLocalisationInfo(peopleService,
@@ -89,7 +89,7 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 			}
 
 			builder.append("</span>");
-			String result = PeopleUiUtils.replaceAmpersand(builder.toString());
+			String result = ConnectUiUtils.replaceAmpersand(builder.toString());
 			return result;
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot create organizations content", re);

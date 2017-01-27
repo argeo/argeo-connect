@@ -18,9 +18,9 @@
 		</dependency>
 		<!-- Base UI Utilities -->
 		<dependency>
-			<groupId>org.argeo.commons</groupId>
-			<artifactId>org.argeo.eclipse.ui</artifactId>
-			<version>${version.argeo-commons}</version>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.ui</artifactId>
+			<version>1.5.2-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

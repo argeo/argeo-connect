@@ -7,8 +7,8 @@ import javax.jcr.PropertyType;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
@@ -61,9 +61,9 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 					"Please enter at least a name that is not empty.");
 			return false;
 		} else {
-			JcrUiUtils.setJcrProperty(person, PEOPLE_LAST_NAME,
+			ConnectJcrUtils.setJcrProperty(person, PEOPLE_LAST_NAME,
 					PropertyType.STRING, lastName);
-			JcrUiUtils.setJcrProperty(person, PEOPLE_FIRST_NAME,
+			ConnectJcrUtils.setJcrProperty(person, PEOPLE_FIRST_NAME,
 					PropertyType.STRING, firstName);
 			return true;
 		}

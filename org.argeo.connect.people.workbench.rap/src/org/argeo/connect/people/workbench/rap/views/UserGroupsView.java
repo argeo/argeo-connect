@@ -36,7 +36,7 @@ public class UserGroupsView {
 //
 // @Override
 // public void createPartControl(Composite parent) {
-// this.session = JcrUiUtils.login(repository);
+// this.session = ConnectJcrUtils.login(repository);
 //
 // parent.setLayout(new FillLayout());
 //

@@ -13,12 +13,12 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -54,7 +54,7 @@ public class DateTextPart extends Composite {
 	private Button openCalBtn;
 
 	private DateFormat dateFormat = new SimpleDateFormat(
-			PeopleUiConstants.DEFAULT_SHORT_DATE_FORMAT);
+			ConnectUiConstants.DEFAULT_SHORT_DATE_FORMAT);
 
 	/**
 	 * 
@@ -108,14 +108,14 @@ public class DateTextPart extends Composite {
 	}
 
 	private void populate(Composite dateComposite) {
-		GridLayout gl = PeopleUiUtils.noSpaceGridLayout(2);
+		GridLayout gl = ConnectUiUtils.noSpaceGridLayout(2);
 		gl.horizontalSpacing = 5;
 		dateComposite.setLayout(gl);
 		dateTxt = new Text(dateComposite, SWT.BORDER);
 		CmsUtils.style(dateTxt, PeopleStyles.PEOPLE_CLASS_FORCE_BORDER);
 		dateTxt.setLayoutData(new GridData(150, SWT.DEFAULT));
 		dateTxt.setToolTipText("Enter a date with form \""
-				+ PeopleUiConstants.DEFAULT_SHORT_DATE_FORMAT
+				+ ConnectUiConstants.DEFAULT_SHORT_DATE_FORMAT
 				+ "\" or use the calendar");
 		openCalBtn = new Button(dateComposite, SWT.FLAT);
 		CmsUtils.style(openCalBtn, PeopleStyles.FLAT_BTN);
@@ -141,7 +141,7 @@ public class DateTextPart extends Composite {
 				try {
 					Calendar newVal = parseDate(false);
 					if (newVal != null) {
-						if (JcrUiUtils.setJcrProperty(node, propName,
+						if (ConnectJcrUtils.setJcrProperty(node, propName,
 								PropertyType.DATE, newVal))
 							formPart.markDirty();
 					} else if (node.hasProperty(propName)) {
@@ -223,7 +223,7 @@ public class DateTextPart extends Composite {
 			cal.set(dateTimeCtl.getYear(), dateTimeCtl.getMonth(),
 					dateTimeCtl.getDay(), 12, 0);
 			dateTxt.setText(dateFormat.format(cal.getTime()));
-			if (JcrUiUtils.setJcrProperty(node, propName,
+			if (ConnectJcrUtils.setJcrProperty(node, propName,
 					PropertyType.DATE, cal))
 				formPart.markDirty();
 		}

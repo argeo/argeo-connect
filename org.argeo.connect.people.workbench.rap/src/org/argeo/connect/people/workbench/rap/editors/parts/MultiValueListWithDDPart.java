@@ -8,11 +8,11 @@ import javax.jcr.Value;
 
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.PeopleAbstractDropDown;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -69,7 +69,7 @@ public abstract class MultiValueListWithDDPart extends Composite {
 		if (!getFilteredValues(null).contains(value))
 			errMsg = value + " is not a legal choice, " + "please correct and try again";
 		else
-			errMsg = JcrUiUtils.addStringToMultiValuedProp(node, propertyName, value);
+			errMsg = ConnectJcrUtils.addStringToMultiValuedProp(node, propertyName, value);
 		if (errMsg != null)
 			MessageDialog.openError(MultiValueListWithDDPart.this.getShell(), "Addition not allowed", errMsg);
 		else {
@@ -98,7 +98,7 @@ public abstract class MultiValueListWithDDPart extends Composite {
 					// Workaround the fact that row layout elements are top
 					// aligned
 					Composite valCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
-					GridLayout gl = PeopleUiUtils.noSpaceGridLayout(2);
+					GridLayout gl = ConnectUiUtils.noSpaceGridLayout(2);
 					gl.marginTop = 2;
 					valCmp.setLayout(gl);
 
@@ -171,7 +171,7 @@ public abstract class MultiValueListWithDDPart extends Composite {
 
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
-				JcrUiUtils.removeMultiPropertyValue(node, propertyName, value);
+				ConnectJcrUtils.removeMultiPropertyValue(node, propertyName, value);
 				part.refresh();
 				part.markDirty();
 			}

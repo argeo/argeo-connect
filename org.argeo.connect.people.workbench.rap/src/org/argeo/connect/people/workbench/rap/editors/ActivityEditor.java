@@ -9,13 +9,13 @@ import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.editors.parts.DateTextPart;
 import org.argeo.connect.people.workbench.rap.editors.parts.LinkListPart;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -153,7 +153,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 					populate(ActivityHeader.this);
 
 				typeLbl.setText(activityService.getActivityLabel(activity));
-				String manager = JcrUiUtils.get(activity,
+				String manager = ConnectJcrUtils.get(activity,
 						PeopleNames.PEOPLE_REPORTED_BY);
 				if (EclipseUiUtils.notEmpty(manager))
 					managerLbl.setText(userAdminService

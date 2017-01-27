@@ -6,9 +6,9 @@ import javax.jcr.Property;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
@@ -45,7 +45,7 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 			throw new PeopleException(
 					"Undefined list type - Unable to provide text for group");
 		}
-		return PeopleUiUtils.replaceAmpersand(result);
+		return ConnectUiUtils.replaceAmpersand(result);
 	}
 
 	private String getOverviewTitle(Node entity) {
@@ -56,13 +56,13 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 
 		// first line
 		builder.append("<b><big> ");
-		builder.append(JcrUiUtils.get(entity, Property.JCR_TITLE));
+		builder.append(ConnectJcrUtils.get(entity, Property.JCR_TITLE));
 		builder.append("</big></b>");
 		long membersNb = tagService.countMembers(entity);
 		builder.append(" <i>(").append(membersNb).append(" members)</i>");
 
 		// Description
-		String desc = JcrUiUtils.get(entity, Property.JCR_DESCRIPTION);
+		String desc = ConnectJcrUtils.get(entity, Property.JCR_DESCRIPTION);
 		if (EclipseUiUtils.notEmpty(desc))
 			builder.append("<br />").append(desc);
 
@@ -73,7 +73,7 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 	private String getOneLineLabel(Node entity) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b>");
-		builder.append(JcrUiUtils.get(entity, Property.JCR_TITLE));
+		builder.append(ConnectJcrUtils.get(entity, Property.JCR_TITLE));
 		builder.append("</b>");
 		long membersNb = tagService.countMembers(entity);
 		builder.append(" <i>(").append(membersNb).append(" members)</i>");

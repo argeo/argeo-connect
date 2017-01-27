@@ -2,8 +2,8 @@ package org.argeo.connect.people.workbench.rap.providers;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -26,7 +26,7 @@ public class TitleIconRowLP extends JcrHtmlLabelProvider {
 
 	@Override
 	public Image getImage(Object element) {
-		Node node = JcrUiUtils.getNodeFromElement(element, selectorName);
+		Node node = ConnectJcrUtils.getNodeFromElement(element, selectorName);
 		return peopleWorkbenchService.getIconForType(node);
 	}
 }

@@ -2,7 +2,7 @@ package org.argeo.connect.people.workbench.rap.providers;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.people.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 
@@ -27,7 +27,7 @@ public class JcrLabelProvider extends SimpleJcrNodeLabelProvider {
 
 	@Override
 	public String getText(Object element) {
-		Node currNode = JcrUiUtils.getNodeFromElement(element,
+		Node currNode = ConnectJcrUtils.getNodeFromElement(element,
 				selectorName);
 		return super.getText(currNode);
 	}

@@ -6,8 +6,8 @@ import javax.jcr.PropertyType;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
@@ -73,16 +73,16 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 			return false;
 		}
 
-		JcrUiUtils.setJcrProperty(org, PEOPLE_LEGAL_NAME, PropertyType.STRING,
+		ConnectJcrUtils.setJcrProperty(org, PEOPLE_LEGAL_NAME, PropertyType.STRING,
 				legalName);
 		if (useDistinctDisplayName) {
-			JcrUiUtils.setJcrProperty(org, PEOPLE_USE_DISTINCT_DISPLAY_NAME,
+			ConnectJcrUtils.setJcrProperty(org, PEOPLE_USE_DISTINCT_DISPLAY_NAME,
 					PropertyType.BOOLEAN, useDistinctDisplayName);
-			JcrUiUtils.setJcrProperty(org, Property.JCR_TITLE,
+			ConnectJcrUtils.setJcrProperty(org, Property.JCR_TITLE,
 					PropertyType.STRING, displayName);
 		}
 		if (EclipseUiUtils.notEmpty(legalForm))
-			JcrUiUtils.setJcrProperty(org, PEOPLE_LEGAL_FORM,
+			ConnectJcrUtils.setJcrProperty(org, PEOPLE_LEGAL_FORM,
 					PropertyType.STRING, legalForm);
 		return true;
 	}

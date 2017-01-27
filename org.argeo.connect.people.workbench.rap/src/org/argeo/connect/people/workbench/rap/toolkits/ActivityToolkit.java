@@ -302,7 +302,7 @@ package org.argeo.connect.people.workbench.rap.toolkits;
 //			relatedTo.add(relatedEntity);
 //			Node activity = activityService.createActivity(session, type,
 //					title, desc, relatedTo);
-//			JcrUiUtils.saveAndCheckin(activity);
+//			ConnectJcrUtils.saveAndCheckin(activity);
 //			return activity;
 //		} catch (RepositoryException e) {
 //			throw new PeopleException("Unable to create activity node", e);

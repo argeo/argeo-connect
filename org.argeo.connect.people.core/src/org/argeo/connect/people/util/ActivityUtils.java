@@ -11,10 +11,12 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
-import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
@@ -37,10 +39,9 @@ public class ActivityUtils {
 					poll = curr;
 				else
 					curr = curr.getParent();
-			return JcrUiUtils.get(poll, PeopleNames.PEOPLE_POLL_NAME);
+			return ConnectJcrUtils.get(poll, PeopleNames.PEOPLE_POLL_NAME);
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get related "
-					+ "poll name for " + rate, re);
+			throw new PeopleException("Unable to get related " + "poll name for " + rate, re);
 		}
 	}
 
@@ -54,17 +55,13 @@ public class ActivityUtils {
 			// XPath
 			StringBuilder builder = new StringBuilder();
 			builder.append(XPathUtils.descendantFrom(pollable.getPath()));
-			builder.append("//element(*, ").append(PeopleTypes.PEOPLE_POLL)
-					.append(")");
-			Query query = session
-					.getWorkspace()
-					.getQueryManager()
-					.createQuery(builder.toString(),
-							PeopleConstants.QUERY_XPATH);
+			builder.append("//element(*, ").append(PeopleTypes.PEOPLE_POLL).append(")");
+			Query query = session.getWorkspace().getQueryManager().createQuery(builder.toString(),
+					ConnectConstants.QUERY_XPATH);
 
 			// SQL2
 			// String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_POLL
-			// + "] WHERE  ISDESCENDANTNODE('" + pollable.getPath() + "')";
+			// + "] WHERE ISDESCENDANTNODE('" + pollable.getPath() + "')";
 			// Query query = session.getWorkspace().getQueryManager()
 			// .createQuery(queryStr, Query.JCR_SQL2);
 			return query.execute().getNodes();
@@ -80,17 +77,13 @@ public class ActivityUtils {
 			// XPath
 			StringBuilder builder = new StringBuilder();
 			builder.append(XPathUtils.descendantFrom(pollable.getPath()));
-			builder.append("//element(*, ").append(PeopleTypes.PEOPLE_RATE)
-					.append(")");
-			Query query = session
-					.getWorkspace()
-					.getQueryManager()
-					.createQuery(builder.toString(),
-							PeopleConstants.QUERY_XPATH);
+			builder.append("//element(*, ").append(PeopleTypes.PEOPLE_RATE).append(")");
+			Query query = session.getWorkspace().getQueryManager().createQuery(builder.toString(),
+					ConnectConstants.QUERY_XPATH);
 
 			// // SQL2
 			// String queryStr = "SELECT * FROM [" + PeopleTypes.PEOPLE_RATE
-			// + "] WHERE  ISDESCENDANTNODE('" + pollable.getPath() + "')";
+			// + "] WHERE ISDESCENDANTNODE('" + pollable.getPath() + "')";
 			// Query query = session.getWorkspace().getQueryManager()
 			// .createQuery(queryStr, Query.JCR_SQL2);
 			return query.execute().getNodes();
@@ -125,23 +118,19 @@ public class ActivityUtils {
 
 	public static Node createOneRating(Node poll, String userID, Long rate) {
 		try {
-			Node parent = JcrUtils.mkdirs(poll, PeopleNames.PEOPLE_RATES,
-					NodeType.NT_UNSTRUCTURED);
+			Node parent = JcrUtils.mkdirs(poll, PeopleNames.PEOPLE_RATES, NodeType.NT_UNSTRUCTURED);
 
-			String nodeName = EclipseUiUtils.isEmpty(userID) ? poll
-					.getSession().getUserID() : userID;
+			String nodeName = EclipseUiUtils.isEmpty(userID) ? poll.getSession().getUserID() : userID;
 
 			Node vote = parent.addNode(nodeName, PeopleTypes.PEOPLE_ACTIVITY);
 			vote.addMixin(PeopleTypes.PEOPLE_RATE);
 			vote.setProperty(PeopleNames.PEOPLE_REPORTED_BY, nodeName);
 
 			// Activity Date
-			vote.setProperty(PeopleNames.PEOPLE_ACTIVITY_DATE,
-					new GregorianCalendar());
+			vote.setProperty(PeopleNames.PEOPLE_ACTIVITY_DATE, new GregorianCalendar());
 
 			// related to
-			JcrUiUtils.addRefToMultiValuedProp(vote,
-					PeopleNames.PEOPLE_RELATED_TO, poll);
+			ConnectJcrUtils.addRefToMultiValuedProp(vote, PeopleNames.PEOPLE_RELATED_TO, poll);
 
 			JcrUtils.updateLastModified(vote);
 
@@ -161,13 +150,11 @@ public class ActivityUtils {
 			long total = 0;
 
 			if (poll.hasNode(PeopleNames.PEOPLE_RATES)) {
-				NodeIterator nit = poll.getNode(PeopleNames.PEOPLE_RATES)
-						.getNodes();
+				NodeIterator nit = poll.getNode(PeopleNames.PEOPLE_RATES).getNodes();
 				while (nit.hasNext()) {
 					Node node = nit.nextNode();
 					if (node.hasProperty(PeopleNames.PEOPLE_RATE)) {
-						total += node.getProperty(PeopleNames.PEOPLE_RATE)
-								.getLong();
+						total += node.getProperty(PeopleNames.PEOPLE_RATE).getLong();
 						nb++;
 					}
 				}
@@ -176,8 +163,7 @@ public class ActivityUtils {
 				average = (double) total / (double) nb;
 			poll.setProperty(PeopleNames.PEOPLE_CACHE_AVG_RATE, average);
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to compute "
-					+ "average rating for " + poll, e);
+			throw new PeopleException("Unable to compute " + "average rating for " + poll, e);
 		}
 	}
 
@@ -185,22 +171,18 @@ public class ActivityUtils {
 		try {
 			Double avg = -1d;
 			if (poll.hasProperty(PeopleNames.PEOPLE_CACHE_AVG_RATE))
-				avg = poll.getProperty(PeopleNames.PEOPLE_CACHE_AVG_RATE)
-						.getDouble();
+				avg = poll.getProperty(PeopleNames.PEOPLE_CACHE_AVG_RATE).getDouble();
 
 			if (avg <= 0)
 				return "(none yet)";
 			else {
 				// TODO enhance retrieval of vote count
-				long nb = poll.getNode(PeopleNames.PEOPLE_RATES).getNodes()
-						.getSize();
-				String result = nbFormat.format(avg) + " (" + nb
-						+ (nb == 1 ? " vote)" : " votes)");
+				long nb = poll.getNode(PeopleNames.PEOPLE_RATES).getNodes().getSize();
+				String result = nbFormat.format(avg) + " (" + nb + (nb == 1 ? " vote)" : " votes)");
 				return result;
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("unable to compute "
-					+ "average rating for " + poll, e);
+			throw new PeopleException("unable to compute " + "average rating for " + poll, e);
 		}
 	}
 

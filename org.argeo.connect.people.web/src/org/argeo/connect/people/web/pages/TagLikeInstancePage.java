@@ -22,8 +22,8 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.web.providers.SearchEntitiesLP;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -69,7 +69,7 @@ public class TagLikeInstancePage implements CmsUiProvider {
 		CmsUtils.markup(title);
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b><big> ");
-		builder.append(JcrUiUtils.get(context, Property.JCR_TITLE));
+		builder.append(ConnectJcrUtils.get(context, Property.JCR_TITLE));
 		builder.append("</big></b>");
 		title.setText(builder.toString());
 
@@ -117,7 +117,7 @@ public class TagLikeInstancePage implements CmsUiProvider {
 			public void doubleClick(DoubleClickEvent event) {
 				Object firstObj = ((IStructuredSelection) event.getSelection())
 						.getFirstElement();
-				String path = JcrUiUtils.getPath((Node) firstObj);
+				String path = ConnectJcrUtils.getPath((Node) firstObj);
 				CmsUtils.getCmsView().navigateTo(path);
 			}
 		});

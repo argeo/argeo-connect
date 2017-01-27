@@ -1,3 +1,5 @@
 Import-Package: javax.jcr.nodetype,\
+org.argeo.connect,\
+org.argeo.connect.ui,\
 org.eclipse.swt,\
 *

@@ -15,12 +15,12 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.PeopleAbstractDropDown;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;
@@ -118,15 +118,15 @@ public class PeopleRapUtils {
 	// */
 	// public static String refreshFormTextWidget(Text text, Node entity,
 	// String propName) {
-	// String tmpStr = JcrUiUtils.get(entity, propName);
+	// String tmpStr = ConnectJcrUtils.get(entity, propName);
 	// // Check if there is no side effect.
 	// // Commented out to manage the following case in a film header:
 	// // Primary Title has a latin pronunciation,
 	// // we define another primary title that has no such value,
 	// // the text must be reset to blank.
-	// // if (JcrUiUtils.checkNotEmptyString(tmpStr))
+	// // if (ConnectJcrUtils.checkNotEmptyString(tmpStr))
 	// text.setText(tmpStr);
-	// text.setEnabled(JcrUiUtils.isNodeCheckedOutByMe(entity));
+	// text.setEnabled(ConnectJcrUtils.isNodeCheckedOutByMe(entity));
 	// return tmpStr;
 	// }
 
@@ -135,7 +135,7 @@ public class PeopleRapUtils {
 	 * a property Name. Also manages its enable state
 	 */
 	public static String refreshFormTextWidget(CmsEditable editable, Text text, Node node, String propName) {
-		String newStr = JcrUiUtils.get(node, propName);
+		String newStr = ConnectJcrUtils.get(node, propName);
 		String oldStr = text.getText();
 		if (!newStr.equals(oldStr))
 			text.setText(newStr);
@@ -161,7 +161,7 @@ public class PeopleRapUtils {
 	 * a form, a property Name. Also manages its enable state.
 	 */
 	public static void refreshFormCombo(CmsEditable editable, Combo combo, Node node, String propName) {
-		String currValue = JcrUiUtils.get(node, propName);
+		String currValue = ConnectJcrUtils.get(node, propName);
 		if (EclipseUiUtils.notEmpty(currValue))
 			combo.select(combo.indexOf(currValue));
 		combo.setEnabled(editable.isEditing());
@@ -217,7 +217,7 @@ public class PeopleRapUtils {
 		try {
 			if (entity.hasProperty(propName)) {
 				tmp = entity.getProperty(propName).getString();
-				dropDown.reset(JcrUiUtils.get(entity, propName));
+				dropDown.reset(ConnectJcrUtils.get(entity, propName));
 			} else
 				dropDown.reset(null);
 		} catch (RepositoryException re) {
@@ -330,7 +330,7 @@ public class PeopleRapUtils {
 				Calendar value = GregorianCalendar.getInstance();
 				value.set(dateTime.getYear(), dateTime.getMonth(), dateTime.getDay(), dateTime.getHours(),
 						dateTime.getMinutes());
-				if (JcrUiUtils.setJcrProperty(node, propName, PropertyType.DATE, value))
+				if (ConnectJcrUtils.setJcrProperty(node, propName, PropertyType.DATE, value))
 					part.markDirty();
 			}
 		});
@@ -350,7 +350,7 @@ public class PeopleRapUtils {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				boolean value = button.getSelection();
-				if (JcrUiUtils.setJcrProperty(node, propName, PropertyType.BOOLEAN, value))
+				if (ConnectJcrUtils.setJcrProperty(node, propName, PropertyType.BOOLEAN, value))
 					part.markDirty();
 			}
 		});
@@ -371,13 +371,13 @@ public class PeopleRapUtils {
 			public void widgetSelected(SelectionEvent e) {
 				boolean value = button.getSelection();
 
-				Long oldValue = JcrUiUtils.getLongValue(node, propName);
+				Long oldValue = ConnectJcrUtils.getLongValue(node, propName);
 				if (oldValue == null)
 					oldValue = 0L;
 				boolean oldFlag = (oldValue & cache) != 0;
 				if (value != oldFlag) {
 					long newValue = oldValue ^ cache;
-					JcrUiUtils.setJcrProperty(node, propName, PropertyType.LONG, newValue);
+					ConnectJcrUtils.setJcrProperty(node, propName, PropertyType.LONG, newValue);
 					part.markDirty();
 				}
 			}
@@ -396,7 +396,7 @@ public class PeopleRapUtils {
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				if (JcrUiUtils.setJcrProperty(node, propName, PropertyType.STRING, text.getText()))
+				if (ConnectJcrUtils.setJcrProperty(node, propName, PropertyType.STRING, text.getText()))
 					part.markDirty();
 			}
 		});
@@ -412,7 +412,7 @@ public class PeopleRapUtils {
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				if (JcrUiUtils.setJcrProperty(entity, propName, propType, text.getText()))
+				if (ConnectJcrUtils.setJcrProperty(entity, propName, propType, text.getText()))
 					part.markDirty();
 			}
 		});
@@ -432,7 +432,7 @@ public class PeopleRapUtils {
 				int index = combo.getSelectionIndex();
 				if (index != -1) {
 					String selectedCategory = combo.getItem(index);
-					if (JcrUiUtils.setJcrProperty(entity, propName, propType, selectedCategory))
+					if (ConnectJcrUtils.setJcrProperty(entity, propName, propType, selectedCategory))
 						part.markDirty();
 				}
 
@@ -455,7 +455,7 @@ public class PeopleRapUtils {
 
 			public void modifyText(ModifyEvent event) {
 				String lengthStr = text.getText();
-				if (!PeopleUiUtils.isNumbers(lengthStr)) {
+				if (!ConnectUiUtils.isNumbers(lengthStr)) {
 					text.setBackground(new Color(text.getDisplay(), 250, 200, 150));
 					decoration.show();
 					decoration.setDescriptionText("Length can only be a number: " + lengthStr);
@@ -465,7 +465,7 @@ public class PeopleRapUtils {
 					Long length = null;
 					if (EclipseUiUtils.notEmpty(lengthStr))
 						length = new Long(lengthStr);
-					if (JcrUiUtils.setJcrProperty(entity, propName, propType, length))
+					if (ConnectJcrUtils.setJcrProperty(entity, propName, propType, length))
 						part.markDirty();
 				}
 			}
@@ -557,7 +557,7 @@ public class PeopleRapUtils {
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				Map<String, String> params = new HashMap<String, String>();
-				params.put(OpenEntityEditor.PARAM_JCR_ID, JcrUiUtils.getIdentifier(entity));
+				params.put(OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(entity));
 				CommandUtils.callCommand(peopleUiService.getOpenEntityEditorCmdId(), params);
 			}
 		});

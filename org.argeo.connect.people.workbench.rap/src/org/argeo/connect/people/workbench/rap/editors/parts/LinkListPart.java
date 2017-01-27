@@ -12,13 +12,13 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.dialogs.PickUpRelatedDialog;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
@@ -124,7 +124,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 					String valueStr = value.getString();
 					if (!hiddenItemIds.contains(valueStr)) {
 						Node targetNode = getTargetWithValue(valueStr);
-						String labelStr = JcrUiUtils.get(targetNode,
+						String labelStr = ConnectJcrUtils.get(targetNode,
 								Property.JCR_TITLE);
 						createDeletableClickable(relatedCmp, valueStr,
 								labelStr, editor.isEditing());
@@ -170,7 +170,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
-					JcrUiUtils.removeRefFromMultiValuedProp(entity, propName,
+					ConnectJcrUtils.removeRefFromMultiValuedProp(entity, propName,
 							value);
 					formPart.refresh();
 					formPart.markDirty();
@@ -267,7 +267,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 					int result = diag.open();
 					if (Window.OK == result) {
 						Node node = diag.getSelected();
-						String errMsg = JcrUiUtils.addRefToMultiValuedProp(
+						String errMsg = ConnectJcrUtils.addRefToMultiValuedProp(
 								entity, propName, node);
 						if (errMsg != null)
 							MessageDialog.openError(link.getShell(),

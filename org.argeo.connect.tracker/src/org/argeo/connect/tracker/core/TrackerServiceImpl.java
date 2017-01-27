@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import org.argeo.connect.ConnectConstants;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -23,13 +24,13 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.core.ActivityServiceImpl;
-import org.argeo.connect.people.util.JcrUiUtils;
-import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerNames;
 import org.argeo.connect.tracker.TrackerService;
 import org.argeo.connect.tracker.TrackerTypes;
 import org.argeo.connect.tracker.internal.ui.TrackerUiConstants;
+import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
@@ -111,13 +112,13 @@ public class TrackerServiceImpl extends ActivityServiceImpl implements TrackerSe
 		String timeStamp = isobdf.format(new Date());
 		Node comment = comments.addNode(timeStamp + "_" + currUid);
 		comment.addMixin(TrackerTypes.TRACKER_COMMENT);
-		JcrUiUtils.setJcrProperty(comment, Property.JCR_DESCRIPTION, PropertyType.STRING, description);
+		ConnectJcrUtils.setJcrProperty(comment, Property.JCR_DESCRIPTION, PropertyType.STRING, description);
 		return comment;
 	}
 
 	@Override
 	public boolean updateComment(Node comment, String newDescription) throws RepositoryException {
-		boolean hasChanged = JcrUiUtils.setJcrProperty(comment, Property.JCR_DESCRIPTION, PropertyType.STRING,
+		boolean hasChanged = ConnectJcrUtils.setJcrProperty(comment, Property.JCR_DESCRIPTION, PropertyType.STRING,
 				newDescription);
 		if (hasChanged)
 			JcrUtils.updateLastModified(comment);
@@ -181,19 +182,19 @@ public class TrackerServiceImpl extends ActivityServiceImpl implements TrackerSe
 	// FIXME harden to avoid discrepancy in numbering while having concurrent
 	// access
 	protected long createIssueIdIfNeeded(Node project, Node issue) throws RepositoryException {
-		Long issueId = JcrUiUtils.getLongValue(issue, TrackerNames.TRACKER_ID);
+		Long issueId = ConnectJcrUtils.getLongValue(issue, TrackerNames.TRACKER_ID);
 		if (issueId == null) {
 			Node issueParent = getIssueParent(project);
 			String xpathQueryStr = XPathUtils.descendantFrom(issueParent.getPath()) + "//element(*, "
 					+ TrackerTypes.TRACKER_ISSUE + ")";
 			xpathQueryStr += " order by @" + TrackerNames.TRACKER_ID + " descending";
 			QueryManager queryManager = project.getSession().getWorkspace().getQueryManager();
-			Query query = queryManager.createQuery(xpathQueryStr, PeopleConstants.QUERY_XPATH);
+			Query query = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 			query.setLimit(1);
 			NodeIterator nit = query.execute().getNodes();
 			issueId = 1l;
 			if (nit.hasNext())
-				issueId = JcrUiUtils.getLongValue(nit.nextNode(), TrackerNames.TRACKER_ID) + 1;
+				issueId = ConnectJcrUtils.getLongValue(nit.nextNode(), TrackerNames.TRACKER_ID) + 1;
 			issue.setProperty(TrackerNames.TRACKER_ID, issueId);
 		}
 		return issueId;

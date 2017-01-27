@@ -13,7 +13,6 @@ import javax.jcr.RepositoryException;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.tracker.PeopleTrackerService;
 import org.argeo.connect.tracker.TrackerException;
@@ -31,7 +30,8 @@ import org.argeo.connect.tracker.internal.ui.dialogs.NewComponentWizard;
 import org.argeo.connect.tracker.internal.ui.dialogs.NewIssueWizard;
 import org.argeo.connect.tracker.internal.ui.dialogs.NewVersionWizard;
 import org.argeo.connect.tracker.ui.TrackerUiPlugin;
-import org.argeo.connect.ui.TechnicalInfoPage;
+import org.argeo.connect.ui.workbench.TechnicalInfoPage;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
@@ -136,7 +136,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			FormToolkit tk = getManagedForm().getToolkit();
 
 			Section section = TrackerUiUtils.addFormSection(tk, parent,
-					JcrUiUtils.get(project, Property.JCR_TITLE) + " - Overview");
+					ConnectJcrUtils.get(project, Property.JCR_TITLE) + " - Overview");
 			section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 
 			Composite body = (Composite) section.getClient();
@@ -153,7 +153,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 
 				@Override
 				public void refresh() {
-					String desc = JcrUiUtils.get(project, Property.JCR_DESCRIPTION);
+					String desc = ConnectJcrUtils.get(project, Property.JCR_DESCRIPTION);
 					descLbl.setText(desc);
 					descLbl.getParent().layout();
 					getManagedForm().reflow(true);
@@ -203,8 +203,8 @@ public class ProjectEditor extends AbstractTrackerEditor {
 	}
 
 	private void appendMilestoneCmp(Composite parent, Node milestone) {
-		String currTitle = JcrUiUtils.get(milestone, Property.JCR_TITLE);
-		String currId = JcrUiUtils.get(milestone, TrackerNames.TRACKER_ID);
+		String currTitle = ConnectJcrUtils.get(milestone, Property.JCR_TITLE);
+		String currId = ConnectJcrUtils.get(milestone, TrackerNames.TRACKER_ID);
 		int totalNb = (int) TrackerUtils.getIssues(project, null, TrackerNames.TRACKER_TARGET_ID, currId).getSize();
 		int openNb = (int) TrackerUtils.getIssues(project, null, TrackerNames.TRACKER_TARGET_ID, currId, true)
 				.getSize();
@@ -229,7 +229,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String jcrId = JcrUiUtils.getIdentifier(milestone);
+				String jcrId = ConnectJcrUtils.getIdentifier(milestone);
 				CommandUtils.callCommand(getAoWbService().getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
 						jcrId);
 			}
@@ -249,7 +249,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 		coc.layout(true, true);
 
 		Label datesLbl = new Label(boxCmp, SWT.WRAP);
-		String ddVal = JcrUiUtils.getDateFormattedAsString(milestone, PeopleNames.PEOPLE_DUE_DATE,
+		String ddVal = ConnectJcrUtils.getDateFormattedAsString(milestone, PeopleNames.PEOPLE_DUE_DATE,
 				TrackerUiConstants.defaultDateFormat);
 		if (EclipseUiUtils.isEmpty(ddVal)) {
 			datesLbl.setText("No due date defined");
@@ -258,7 +258,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			datesLbl.setText("Due by " + ddVal);
 
 		Label descLbl = new Label(boxCmp, SWT.WRAP);
-		String desc = JcrUiUtils.get(milestone, Property.JCR_DESCRIPTION);
+		String desc = ConnectJcrUtils.get(milestone, Property.JCR_DESCRIPTION);
 		if (EclipseUiUtils.isEmpty(desc))
 			descLbl.setText("-");
 		else
@@ -394,7 +394,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 					Node n1 = (Node) e1;
 					Node n2 = (Node) e2;
 					// Last must be first: we skip 1 & 2
-					return comp.compare(viewer, JcrUiUtils.getName(n2), JcrUiUtils.getName(n1));
+					return comp.compare(viewer, ConnectJcrUtils.getName(n2), ConnectJcrUtils.getName(n1));
 				};
 			});
 			addDClickListener(tableViewer);
@@ -484,8 +484,8 @@ public class ProjectEditor extends AbstractTrackerEditor {
 				public int compare(Viewer viewer, Object e1, Object e2) {
 					Node n1 = (Node) e1;
 					Node n2 = (Node) e2;
-					return JcrUiUtils.get(n1, Property.JCR_TITLE)
-							.compareToIgnoreCase(JcrUiUtils.get(n2, Property.JCR_TITLE));
+					return ConnectJcrUtils.get(n1, Property.JCR_TITLE)
+							.compareToIgnoreCase(ConnectJcrUtils.get(n2, Property.JCR_TITLE));
 				};
 			});
 			addDClickListener(tableViewer);
@@ -610,7 +610,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
 				Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
-				String jcrId = JcrUiUtils.getIdentifier((Node) element);
+				String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
 				CommandUtils.callCommand(getAoWbService().getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
 						jcrId);
 			}

@@ -16,16 +16,17 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.DelayedText;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconLP;
+import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.widgets.DelayedText;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -67,9 +68,8 @@ public class FilterEntitiesVirtualTable extends Composite {
 	// Defaults
 	private String nodeType = PeopleTypes.PEOPLE_ENTITY;
 
-	public FilterEntitiesVirtualTable(Composite parent, int style,
-			Session session, PeopleWorkbenchService peopleWorkbenchService,
-			String nodeType) {
+	public FilterEntitiesVirtualTable(Composite parent, int style, Session session,
+			PeopleWorkbenchService peopleWorkbenchService, String nodeType) {
 		this(parent, style, session, peopleWorkbenchService, nodeType, false);
 	}
 
@@ -78,9 +78,8 @@ public class FilterEntitiesVirtualTable extends Composite {
 	 * Enable further configuration of the table before display, like typically
 	 * definition of other column
 	 */
-	public FilterEntitiesVirtualTable(Composite parent, int style,
-			Session session, PeopleWorkbenchService peopleWorkbenchService,
-			String nodeType, boolean lazy) {
+	public FilterEntitiesVirtualTable(Composite parent, int style, Session session,
+			PeopleWorkbenchService peopleWorkbenchService, String nodeType, boolean lazy) {
 		super(parent, SWT.NONE);
 		this.session = session;
 		this.peopleWorkbenchService = peopleWorkbenchService;
@@ -128,14 +127,12 @@ public class FilterEntitiesVirtualTable extends Composite {
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 		TableViewerColumn column;
 
-		for (PeopleColumnDefinition colDef : getColumnsDef()) {
-			column = ViewerUtils.createTableViewerColumn(entityViewer,
-					colDef.getHeaderLabel(), SWT.NONE, colDef.getColumnSize());
+		for (ConnectColumnDefinition colDef : getColumnsDef()) {
+			column = ViewerUtils.createTableViewerColumn(entityViewer, colDef.getHeaderLabel(), SWT.NONE,
+					colDef.getColumnSize());
 			column.setLabelProvider(colDef.getColumnLabelProvider());
-			tableColumnLayout.setColumnData(
-					column.getColumn(),
-					new ColumnWeightData(colDef.getColumnSize(), colDef
-							.getColumnSize(), true));
+			tableColumnLayout.setColumnData(column.getColumn(),
+					new ColumnWeightData(colDef.getColumnSize(), colDef.getColumnSize(), true));
 		}
 		listCmp.setLayout(tableColumnLayout);
 		entityViewer.setContentProvider(new MyLazyCP(entityViewer));
@@ -165,12 +162,11 @@ public class FilterEntitiesVirtualTable extends Composite {
 		}
 	}
 
-	protected List<PeopleColumnDefinition> getColumnsDef() {
-		List<PeopleColumnDefinition> colDefs;
-		colDefs = new ArrayList<PeopleColumnDefinition>();
-		colDefs.add(new PeopleColumnDefinition(null, Property.JCR_TITLE,
-				PropertyType.STRING, "Name", new TitleIconLP(
-						peopleWorkbenchService, Property.JCR_TITLE), 300));
+	protected List<ConnectColumnDefinition> getColumnsDef() {
+		List<ConnectColumnDefinition> colDefs;
+		colDefs = new ArrayList<ConnectColumnDefinition>();
+		colDefs.add(new ConnectColumnDefinition(null, Property.JCR_TITLE, PropertyType.STRING, "Name",
+				new TitleIconLP(peopleWorkbenchService, Property.JCR_TITLE), 300));
 		return colDefs;
 	}
 
@@ -184,8 +180,7 @@ public class FilterEntitiesVirtualTable extends Composite {
 		// Text Area for the filter
 
 		Composite filterCmp = new Composite(parent, SWT.NO_FOCUS);
-		GridLayout layout = EclipseUiUtils.noSpaceGridLayout(new GridLayout(2,
-				false));
+		GridLayout layout = EclipseUiUtils.noSpaceGridLayout(new GridLayout(2, false));
 		layout.horizontalSpacing = 5;
 		filterCmp.setLayout(layout);
 		filterCmp.setLayoutData(EclipseUiUtils.fillWidth());
@@ -205,20 +200,19 @@ public class FilterEntitiesVirtualTable extends Composite {
 
 		if (isDyn) {
 			final ServerPushSession pushSession = new ServerPushSession();
-			((DelayedText) filterTxt).addDelayedModifyListener(pushSession,
-					new ModifyListener() {
-						private static final long serialVersionUID = 5003010530960334977L;
+			((DelayedText) filterTxt).addDelayedModifyListener(pushSession, new ModifyListener() {
+				private static final long serialVersionUID = 5003010530960334977L;
 
-						public void modifyText(ModifyEvent event) {
-							filterTxt.getDisplay().asyncExec(new Runnable() {
-								@Override
-								public void run() {
-									refreshFilteredList();
-								}
-							});
-							pushSession.stop();
+				public void modifyText(ModifyEvent event) {
+					filterTxt.getDisplay().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							refreshFilteredList();
 						}
 					});
+					pushSession.stop();
+				}
+			});
 		}
 
 		filterTxt.addTraverseListener(new TraverseListener() {
@@ -245,14 +239,13 @@ public class FilterEntitiesVirtualTable extends Composite {
 	private void refreshFilteredList() {
 		List<Node> nodes;
 		try {
-			nodes = JcrUtils.nodeIteratorToList(listFilteredElements(session,
-					filterTxt.getText()));
+			nodes = JcrUtils.nodeIteratorToList(listFilteredElements(session, filterTxt.getText()));
 			entityViewer.setInput(nodes.toArray());
 			entityViewer.setItemCount(nodes.size());
 			entityViewer.refresh();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to refresh filtered list of "
-					+ nodeType + " with filter " + filterTxt.getText(), e);
+			throw new PeopleException(
+					"Unable to refresh filtered list of " + nodeType + " with filter " + filterTxt.getText(), e);
 		}
 	}
 
@@ -260,15 +253,13 @@ public class FilterEntitiesVirtualTable extends Composite {
 	 * Build repository request : caller might overwrite in order to display a
 	 * subset
 	 */
-	protected NodeIterator listFilteredElements(Session session, String filter)
-			throws RepositoryException {
+	protected NodeIterator listFilteredElements(Session session, String filter) throws RepositoryException {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
 		String xpathQueryStr = "//element(*, " + nodeType + ")";
 		String attrQuery = XPathUtils.getFreeTextConstraint(filter);
 		if (EclipseUiUtils.notEmpty(attrQuery))
 			xpathQueryStr += "[" + attrQuery + "]";
-		Query xpathQuery = queryManager.createQuery(xpathQueryStr,
-				PeopleConstants.QUERY_XPATH);
+		Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 		xpathQuery.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
 		QueryResult result = xpathQuery.execute();
 		return result.getNodes();

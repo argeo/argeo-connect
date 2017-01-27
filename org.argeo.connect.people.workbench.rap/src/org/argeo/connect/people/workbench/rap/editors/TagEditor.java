@@ -17,14 +17,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.util.JcrUiUtils;
-import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
@@ -37,6 +35,9 @@ import org.argeo.connect.people.workbench.rap.providers.TagLabelProvider;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.workbench.rap.util.Refreshable;
 import org.argeo.connect.people.workbench.rap.wizards.EditTagWizard;
+import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -76,7 +77,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 	// UI Objects
 	protected FormToolkit toolkit;
-	private List<PeopleColumnDefinition> colDefs;
+	private List<ConnectColumnDefinition> colDefs;
 	private TableViewer membersViewer;
 	private Text filterTxt;
 	private Label titleROLbl;
@@ -93,21 +94,21 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		EntityEditorInput sei = (EntityEditorInput) getEditorInput();
 
 		// Initialise context
-		session = JcrUiUtils.login(repository);
-		node = JcrUiUtils.getNodeByIdentifier(session, sei.getUid());
+		session = ConnectJcrUtils.login(repository);
+		node = ConnectJcrUtils.getNodeByIdentifier(session, sei.getUid());
 
 		// Initialize column definition
 		// Cannot be statically done to have a valid reference to the injected
 		// peopleUiService
-		colDefs = new ArrayList<PeopleColumnDefinition>();
-		colDefs.add(new PeopleColumnDefinition("Display Name",
+		colDefs = new ArrayList<ConnectColumnDefinition>();
+		colDefs.add(new ConnectColumnDefinition("Display Name",
 				new TitleIconRowLP(peopleWorkbenchService, null, Property.JCR_TITLE), 300));
-		colDefs.add(new PeopleColumnDefinition("Tags", new JcrHtmlLabelProvider(PEOPLE_TAGS), 300));
+		colDefs.add(new ConnectColumnDefinition("Tags", new JcrHtmlLabelProvider(PEOPLE_TAGS), 300));
 	}
 
 	protected void afterNameUpdate(String name) {
 		if (EclipseUiUtils.isEmpty(name))
-			name = JcrUiUtils.get(node, Property.JCR_TITLE);
+			name = ConnectJcrUtils.get(node, Property.JCR_TITLE);
 		if (EclipseUiUtils.notEmpty(name)) {
 			setPartName(name);
 			((EntityEditorInput) getEditorInput()).setTooltipText("List contacts tagged as " + name);
@@ -222,7 +223,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 					+ PeopleTypes.PEOPLE_ENTITY + ")";
 
 			String filter = filterTxt.getText();
-			String currVal = JcrUiUtils.get(getNode(), Property.JCR_TITLE);
+			String currVal = ConnectJcrUtils.get(getNode(), Property.JCR_TITLE);
 
 			String freeTxtCond = XPathUtils.getFreeTextConstraint(filter);
 			String mlNamecond = XPathUtils.getPropertyEquals(PEOPLE_TAGS, currVal);
@@ -230,10 +231,10 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 			if (EclipseUiUtils.notEmpty(conditions))
 				xpathQueryStr += "[" + conditions + "]";
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr, PeopleConstants.QUERY_XPATH);
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 
 			RowIterator xPathRit = xpathQuery.execute().getRows();
-			Row[] rows = JcrUiUtils.rowIteratorToArray(xPathRit);
+			Row[] rows = ConnectJcrUtils.rowIteratorToArray(xPathRit);
 			setViewerInput(rows);
 
 			if (log.isDebugEnabled()) {

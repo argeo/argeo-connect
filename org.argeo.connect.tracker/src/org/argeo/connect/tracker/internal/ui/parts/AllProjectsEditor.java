@@ -10,17 +10,17 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.util.JcrUiUtils;
-import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractSearchEntityEditor;
 import org.argeo.connect.people.workbench.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.core.TrackerUtils;
 import org.argeo.connect.tracker.ui.TrackerUiPlugin;
+import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.ui.IEditorInput;
@@ -33,15 +33,15 @@ public class AllProjectsEditor extends AbstractSearchEntityEditor {
 	public final static String ID = TrackerUiPlugin.PLUGIN_ID + ".allProjectsEditor";
 
 	// Default column
-	private List<PeopleColumnDefinition> colDefs;
+	private List<ConnectColumnDefinition> colDefs;
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
-		colDefs = new ArrayList<PeopleColumnDefinition>();
-		colDefs.add(new PeopleColumnDefinition("Name", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
-		colDefs.add(new PeopleColumnDefinition("Account", new AccountLp(), 300));
-		colDefs.add(new PeopleColumnDefinition("Open Issues", new CountLp(), 150));
+		colDefs = new ArrayList<ConnectColumnDefinition>();
+		colDefs.add(new ConnectColumnDefinition("Name", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
+		colDefs.add(new ConnectColumnDefinition("Account", new AccountLp(), 300));
+		colDefs.add(new ConnectColumnDefinition("Open Issues", new CountLp(), 150));
 	}
 
 	// public void createPartControl(Composite parent) {
@@ -71,9 +71,9 @@ public class AllProjectsEditor extends AbstractSearchEntityEditor {
 			if (EclipseUiUtils.notEmpty(filter))
 				builder.append("[").append(XPathUtils.getFreeTextConstraint(filter)).append("]");
 			builder.append(" order by @").append(PeopleNames.JCR_TITLE).append(" ascending");
-			Query query = queryManager.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH);
+			Query query = queryManager.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH);
 			QueryResult result = query.execute();
-			Node[] nodes = JcrUiUtils.nodeIteratorToArray(result.getNodes());
+			Node[] nodes = ConnectJcrUtils.nodeIteratorToArray(result.getNodes());
 			setViewerInput(nodes);
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list " + getEntityType() + " entities with static filter ", e);
@@ -82,7 +82,7 @@ public class AllProjectsEditor extends AbstractSearchEntityEditor {
 
 	/** Overwrite to provide corresponding column definitions */
 	@Override
-	public List<PeopleColumnDefinition> getColumnDefinition(String extractId) {
+	public List<ConnectColumnDefinition> getColumnDefinition(String extractId) {
 		return colDefs;
 	}
 
@@ -106,7 +106,7 @@ public class AllProjectsEditor extends AbstractSearchEntityEditor {
 			try {
 				// TODO this is defined in a client app.
 				Node account = project.getReferences().nextProperty().getParent().getParent().getParent();
-				return JcrUiUtils.get(account, Property.JCR_TITLE);
+				return ConnectJcrUtils.get(account, Property.JCR_TITLE);
 			} catch (RepositoryException e) {
 				throw new TrackerException("unable to retrieve related account ", e);
 

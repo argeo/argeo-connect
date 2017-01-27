@@ -6,7 +6,7 @@ import javax.jcr.Value;
 
 import org.argeo.cms.ui.CmsUiProvider;
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -56,7 +56,7 @@ public class TagLikeValuesPart implements CmsUiProvider {
 
 					@Override
 					public void widgetSelected(SelectionEvent e) {
-						JcrUiUtils.removeStringFromMultiValuedProp(context, propertyName, valueStr);
+						ConnectJcrUtils.removeStringFromMultiValuedProp(context, propertyName, valueStr);
 						// FIXME won't work: node is checked in
 						// TODO refresh this part or the whole body
 					}

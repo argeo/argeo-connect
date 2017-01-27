@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.argeo.connect</groupId>
 		<version>1.5.2-SNAPSHOT</version>
-		<artifactId>argeo-connect</artifactId>
+ 		<artifactId>argeo-connect</artifactId>
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>org.argeo.connect.tracker</artifactId>

@@ -11,11 +11,11 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapSnippets;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
@@ -66,7 +66,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 			default:
 				throw new PeopleException("Unable to provide text for person");
 			}
-			return PeopleUiUtils.replaceAmpersand(result);
+			return ConnectUiUtils.replaceAmpersand(result);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot create organizations content", re);
 		}
@@ -81,13 +81,13 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		String displayName = peopleService.getDisplayName(person);
 		builder.append(displayName);
 		builder.append("</big></b>");
-		String fmn = PeopleUiSnippets.getFullMontyName(person);
+		String fmn = PeopleUiSnippets.getLongName(person);
 		String local = PeopleUiSnippets.getLocalisationInfo(peopleService,
 				person);
 		String primaryContacts = PeopleUiSnippets.getPrimaryContacts(person);
-		Boolean politeFormFlag = JcrUiUtils.getBooleanValue(person,
+		Boolean politeFormFlag = ConnectJcrUtils.getBooleanValue(person,
 				PEOPLE_USE_POLITE_FORM);
-		List<String> spokenLanguages = JcrUiUtils.getMultiAsList(person,
+		List<String> spokenLanguages = ConnectJcrUtils.getMultiAsList(person,
 				PEOPLE_SPOKEN_LANGUAGES);
 
 		if (EclipseUiUtils.notEmpty(fmn) || EclipseUiUtils.notEmpty(local)) {
@@ -108,7 +108,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 			if (!spokenLanguages.isEmpty()) {
 				for (String str : spokenLanguages) {
 					String language = peopleService.getResourceService()
-							.getEncodedTagValue(JcrUiUtils.getSession(person),
+							.getEncodedTagValue(ConnectJcrUtils.getSession(person),
 									PeopleConstants.RESOURCE_LANG, str);
 					builder.append(language).append(", ");
 				}

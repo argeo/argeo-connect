@@ -1,7 +1,11 @@
-package org.argeo.connect.people.ui;
+package org.argeo.connect.ui;
 
-/** Centralizes management of constants for the various People UIs */
-public interface PeopleUiConstants {
+/**
+ * Centralizes management of UI constants for the various Connect UIs
+ * 
+ * TODO handle this cleanly.
+ */
+public interface ConnectUiConstants {
 	// Characters that must be replaced by their codes for RWT
 	public static String NB_SPACE = "&#160;";
 	public static String NB_DOUBLE_SPACE = "&#160;&#160;";

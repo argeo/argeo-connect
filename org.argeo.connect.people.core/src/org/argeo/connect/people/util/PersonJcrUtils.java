@@ -18,6 +18,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
@@ -30,33 +31,33 @@ public class PersonJcrUtils implements PeopleNames {
 	public static String getVariousNameInfo(Node person) {
 		StringBuilder nameInfo = new StringBuilder();
 
-		if (JcrUiUtils.get(person, PEOPLE_SALUTATION) != null) {
-			nameInfo.append(JcrUiUtils.get(person, PEOPLE_SALUTATION));
+		if (ConnectJcrUtils.get(person, PEOPLE_SALUTATION) != null) {
+			nameInfo.append(ConnectJcrUtils.get(person, PEOPLE_SALUTATION));
 			nameInfo.append(" ");
 		}
-		if (JcrUiUtils.get(person, PEOPLE_HONORIFIC_TITLE) != null) {
-			nameInfo.append(JcrUiUtils.get(person, PEOPLE_HONORIFIC_TITLE));
-			nameInfo.append(" ");
-		}
-
-		if (JcrUiUtils.get(person, PEOPLE_FIRST_NAME) != null) {
-			nameInfo.append(JcrUiUtils.get(person, PEOPLE_FIRST_NAME));
+		if (ConnectJcrUtils.get(person, PEOPLE_HONORIFIC_TITLE) != null) {
+			nameInfo.append(ConnectJcrUtils.get(person, PEOPLE_HONORIFIC_TITLE));
 			nameInfo.append(" ");
 		}
 
-		if (JcrUiUtils.get(person, PEOPLE_NICKNAME) != null) {
+		if (ConnectJcrUtils.get(person, PEOPLE_FIRST_NAME) != null) {
+			nameInfo.append(ConnectJcrUtils.get(person, PEOPLE_FIRST_NAME));
+			nameInfo.append(" ");
+		}
+
+		if (ConnectJcrUtils.get(person, PEOPLE_NICKNAME) != null) {
 			nameInfo.append("(");
-			nameInfo.append(JcrUiUtils.get(person, PEOPLE_NICKNAME));
+			nameInfo.append(ConnectJcrUtils.get(person, PEOPLE_NICKNAME));
 			nameInfo.append(") ");
 		}
 
-		if (JcrUiUtils.get(person, PEOPLE_LAST_NAME) != null) {
-			nameInfo.append(JcrUiUtils.get(person, PEOPLE_LAST_NAME));
+		if (ConnectJcrUtils.get(person, PEOPLE_LAST_NAME) != null) {
+			nameInfo.append(ConnectJcrUtils.get(person, PEOPLE_LAST_NAME));
 			nameInfo.append(" ");
 		}
 
-		if (JcrUiUtils.get(person, PEOPLE_NAME_SUFFIX) != null) {
-			nameInfo.append(JcrUiUtils.get(person, PEOPLE_NAME_SUFFIX));
+		if (ConnectJcrUtils.get(person, PEOPLE_NAME_SUFFIX) != null) {
+			nameInfo.append(ConnectJcrUtils.get(person, PEOPLE_NAME_SUFFIX));
 			nameInfo.append(" ");
 		}
 		return nameInfo.toString();
@@ -64,13 +65,13 @@ public class PersonJcrUtils implements PeopleNames {
 
 	public static String getSecondaryName(Node person) {
 		String secondaryName = null;
-		String nickName = JcrUiUtils.get(person, PEOPLE_NICKNAME);
+		String nickName = ConnectJcrUtils.get(person, PEOPLE_NICKNAME);
 
 		if (EclipseUiUtils.notEmpty(nickName)) {
 			secondaryName = "Nickname: " + nickName;
 		}
 
-		String maidenName = JcrUiUtils.get(person, PEOPLE_MAIDEN_NAME);
+		String maidenName = ConnectJcrUtils.get(person, PEOPLE_MAIDEN_NAME);
 		if (EclipseUiUtils.notEmpty(maidenName)) {
 			if (secondaryName != null)
 				secondaryName += "   ";

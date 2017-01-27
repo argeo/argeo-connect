@@ -15,12 +15,10 @@ import javax.jcr.query.QueryResult;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.util.JcrUiUtils;
-import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
@@ -30,6 +28,8 @@ import org.argeo.connect.people.workbench.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.workbench.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.workbench.rap.providers.EntitySingleColumnLabelProvider;
+import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -79,7 +79,7 @@ public class PeopleDefaultView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		this.session = JcrUiUtils.login(repository);
+		this.session = ConnectJcrUtils.login(repository);
 
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
@@ -241,7 +241,7 @@ public class PeopleDefaultView extends ViewPart {
 			xpathQueryStr += "[" + xpathFilter + "]";
 
 		Query xpathQuery = queryManager.createQuery(xpathQueryStr,
-				PeopleConstants.QUERY_XPATH);
+				ConnectConstants.QUERY_XPATH);
 		xpathQuery.setLimit(ROW_LIMIT);
 		QueryResult result = xpathQuery.execute();
 		return result.getNodes();

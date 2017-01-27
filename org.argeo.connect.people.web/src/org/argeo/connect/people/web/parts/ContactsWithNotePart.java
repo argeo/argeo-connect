@@ -4,11 +4,11 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -29,7 +29,7 @@ public class ContactsWithNotePart extends ContactsPart {
 
 	@Override
 	public Control createUi(Composite parent, Node context) throws RepositoryException {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
+		parent.setLayout(EclipseUiUtils.noSpaceGridLayout(new GridLayout(2, false)));
 		Composite left = new Composite(parent, SWT.NO_FOCUS);
 		left.setLayoutData(EclipseUiUtils.fillWidth());
 		createContactPanel(left, context);
@@ -53,7 +53,7 @@ public class ContactsWithNotePart extends ContactsPart {
 
 			group.setText("Note");
 			Label label = new Label(group, SWT.WRAP);
-			label.setText(JcrUiUtils.get(context, Property.JCR_TITLE));
+			label.setText(ConnectJcrUtils.get(context, Property.JCR_TITLE));
 		}
 	}
 }

@@ -82,7 +82,4 @@ public interface PeopleConstants {
 	public static final String IMPORT_CATALOGUE_VALUES_COL = "Values";
 	public static final String IMPORT_CATALOGUE_VALUES_SEPARATOR = "; ";
 
-	// Workaround the JCR deprecation of XPath
-	@SuppressWarnings("deprecation")
-	public final static String QUERY_XPATH = Query.XPATH;
 }

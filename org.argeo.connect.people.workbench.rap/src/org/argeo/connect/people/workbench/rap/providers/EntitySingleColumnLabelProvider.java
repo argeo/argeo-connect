@@ -7,9 +7,9 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
@@ -53,7 +53,7 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 				result = groupLp.getText(element);
 			else
 				result = "";
-			return PeopleUiUtils.replaceAmpersand(result);
+			return ConnectUiUtils.replaceAmpersand(result);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to get formatted value for node",
 					re);

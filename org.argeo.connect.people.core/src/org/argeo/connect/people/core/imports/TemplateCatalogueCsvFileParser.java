@@ -7,7 +7,7 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.util.CsvParserWithLinesAsMap;
 
 /**
@@ -46,7 +46,7 @@ public class TemplateCatalogueCsvFileParser extends CsvParserWithLinesAsMap {
 						propName.substring(SINGLE_VALUE_PROP_PREFIX.length()),
 						valuesStr);
 			} else {
-				String[] values = JcrUiUtils
+				String[] values = ConnectJcrUtils
 						.parseAndClean(
 								valuesStr,
 								PeopleConstants.IMPORT_CATALOGUE_VALUES_SEPARATOR,

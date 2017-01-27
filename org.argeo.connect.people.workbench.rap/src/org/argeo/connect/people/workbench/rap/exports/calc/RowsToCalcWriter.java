@@ -31,8 +31,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.ConnectColumnDefinition;
 
 /** Generate a spreadsheet from a Row array using jxl */
 public class RowsToCalcWriter {
@@ -40,7 +40,7 @@ public class RowsToCalcWriter {
 	private final static Log log = LogFactory.getLog(RowsToCalcWriter.class);
 
 	// Must be set first
-	private List<PeopleColumnDefinition> columnDefs;
+	private List<ConnectColumnDefinition> columnDefs;
 	private WritableCellFormat tableHeaderFormat;
 	private WritableCellFormat tableBodyStringFormat;
 	private WritableCellFormat tableBodyDateFormat;
@@ -75,7 +75,7 @@ public class RowsToCalcWriter {
 			tableBodyStringFormat.setWrap(true);
 
 			DateFormat currDF = new DateFormat(
-					PeopleUiConstants.DEFAULT_DATE_FORMAT);
+					ConnectUiConstants.DEFAULT_DATE_FORMAT);
 			tableBodyDateFormat = new WritableCellFormat(new WritableFont(
 					WritableFont.ARIAL, 9), currDF);
 			tableBodyDateFormat.setBorder(Border.ALL, BorderLineStyle.THIN);
@@ -86,7 +86,7 @@ public class RowsToCalcWriter {
 
 			tableBodyFloatFormat = new WritableCellFormat(new WritableFont(
 					WritableFont.ARIAL, 9), new NumberFormat(
-					PeopleUiConstants.DEFAULT_NUMBER_FORMAT));
+					ConnectUiConstants.DEFAULT_NUMBER_FORMAT));
 			tableBodyFloatFormat.setBorder(Border.ALL, BorderLineStyle.THIN);
 
 		} catch (Exception e) {
@@ -98,7 +98,7 @@ public class RowsToCalcWriter {
 	 * Build excel file from the passed {@code Row} array.
 	 */
 	public void writeTableFromRows(File outputFile, Row[] rows,
-			List<PeopleColumnDefinition> columnDefs) {
+			List<ConnectColumnDefinition> columnDefs) {
 		try {
 			WritableWorkbook workbook = null;
 			try {
@@ -140,7 +140,7 @@ public class RowsToCalcWriter {
 		try {
 			int currentRow = 0;
 			int i = 0;
-			for (PeopleColumnDefinition currColDef : columnDefs) {
+			for (ConnectColumnDefinition currColDef : columnDefs) {
 				sheet.addCell(new Label(i++, currentRow, currColDef
 						.getHeaderLabel(), tableHeaderFormat));
 			}
@@ -156,7 +156,7 @@ public class RowsToCalcWriter {
 			// while (iterator.hasNext()) {
 			// Row row = iterator.nextRow();
 			int i = 0;
-			for (PeopleColumnDefinition currCol : columnDefs) {
+			for (ConnectColumnDefinition currCol : columnDefs) {
 				i = updateCell(currentRow, i, sheet, row, currCol);
 			}
 			currentRow++;
@@ -169,7 +169,7 @@ public class RowsToCalcWriter {
 
 	// Specific behaviour
 	private int updateCell(int currRowIndex, int currColIndex,
-			WritableSheet sheet, Row row, PeopleColumnDefinition currCol) {
+			WritableSheet sheet, Row row, ConnectColumnDefinition currCol) {
 		try {
 			if (PropertyType.LONG == currCol.getPropertyType()) {
 				sheet.addCell(new jxl.write.Number(

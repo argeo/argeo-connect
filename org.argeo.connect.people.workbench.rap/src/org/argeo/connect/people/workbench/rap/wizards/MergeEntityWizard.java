@@ -18,9 +18,6 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.commands.ForceRefresh;
@@ -28,6 +25,9 @@ import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.editors.util.EntityEditorInput;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.workbench.rap.util.Refreshable;
+import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrMonitor;
@@ -172,8 +172,8 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 			chosenItemLabel = new Label(headerCmp, SWT.NONE);
 			chosenItemLabel.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 
-			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
-			colDefs.add(new PeopleColumnDefinition("Display Name",
+			ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
+			colDefs.add(new ConnectColumnDefinition("Display Name",
 					new TitleIconRowLP(peopleWorkbenchService, selectorName,
 							Property.JCR_TITLE), 300));
 
@@ -194,7 +194,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 							Object first = ((IStructuredSelection) event
 									.getSelection()).getFirstElement();
 							if (first instanceof Row) {
-								masterNode = JcrUiUtils.getNode((Row) first,
+								masterNode = ConnectJcrUtils.getNode((Row) first,
 										selectorName);
 							} else if (first instanceof Node) {
 								masterNode = (Node) first;
@@ -224,7 +224,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 					Object obj = ((IStructuredSelection) evt.getSelection())
 							.getFirstElement();
 					if (obj instanceof Row)
-						masterNode = JcrUiUtils
+						masterNode = ConnectJcrUtils
 								.getNode((Row) obj, selectorName);
 					getContainer().showPage(getNextPage());
 				}
@@ -236,10 +236,10 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 			if (visible) {
 				if (masterNode == null)
 					chosenItemLabel.setText("<br/><big><i> "
-							+ PeopleUiConstants.NB_DOUBLE_SPACE
+							+ ConnectUiConstants.NB_DOUBLE_SPACE
 							+ "No master has "
 							+ "yet been chosen </i></big><br/> "
-							+ PeopleUiConstants.NB_DOUBLE_SPACE);
+							+ ConnectUiConstants.NB_DOUBLE_SPACE);
 				else
 					chosenItemLabel.setText(overviewLP.getText(masterNode));
 				chosenItemLabel.getParent().getParent().layout(true, true);
@@ -268,8 +268,8 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 			chosenItemLabel = new Label(headerCmp, SWT.NONE);
 			CmsUtils.markup(chosenItemLabel);
 
-			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
-			colDefs.add(new PeopleColumnDefinition("Display Name",
+			ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
+			colDefs.add(new ConnectColumnDefinition("Display Name",
 					new TitleIconRowLP(peopleWorkbenchService, selectorName,
 							Property.JCR_TITLE), 300));
 
@@ -354,7 +354,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 				this.masterPath = masterNode.getPath();
 				repository = masterNode.getSession().getRepository();
 				for (Object element : toUpdateElements) {
-					Node currNode = JcrUiUtils.getNodeFromElement(element,
+					Node currNode = ConnectJcrUtils.getNodeFromElement(element,
 							selectorName);
 					slavePathes.add(currNode.getPath());
 				}
@@ -384,7 +384,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 								log.debug("About to remove node "
 										+ currSlave.getPath()
 										+ "\n with title: "
-										+ JcrUiUtils.get(currSlave,
+										+ ConnectJcrUtils.get(currSlave,
 												Property.JCR_TITLE));
 							}
 							removedIds.add(currSlave.getIdentifier());
@@ -398,7 +398,7 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 						if (!modifiedPathes.contains(masterPath))
 							modifiedPathes.add(masterPath);
 					}
-					JcrUiUtils.checkPoint(session, modifiedPathes, true);
+					ConnectJcrUtils.checkPoint(session, modifiedPathes, true);
 					monitor.worked(1);
 				}
 

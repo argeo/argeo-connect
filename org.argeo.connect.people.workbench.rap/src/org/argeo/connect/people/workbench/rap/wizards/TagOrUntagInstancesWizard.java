@@ -15,13 +15,13 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.composites.SimpleJcrTableComposite;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
+import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
@@ -112,7 +112,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 		resourceService = peopleService.getResourceService();
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
-		tagInstanceType = JcrUiUtils.get(tagParent, PEOPLE_TAG_INSTANCE_TYPE);
+		tagInstanceType = ConnectJcrUtils.get(tagParent, PEOPLE_TAG_INSTANCE_TYPE);
 	}
 
 	@Override
@@ -189,7 +189,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 					.getTagLikeResourceParent(session, tagId);
 			int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
 			tableCmp = new SimpleJcrTableComposite(body, style, session,
-					JcrUiUtils.getPath(tagParent), tagInstanceType, colDefs,
+					ConnectJcrUtils.getPath(tagParent), tagInstanceType, colDefs,
 					true, false);
 			GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 			gd.heightHint = 400;
@@ -253,7 +253,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 					setErrorMessage("Please choose a tag value to be used");
 				else {
 					setErrorMessage(null);
-					String name = JcrUiUtils.get(tagInstance,
+					String name = ConnectJcrUtils.get(tagInstance,
 							Property.JCR_TITLE);
 					if (actionType == TYPE_ADD)
 						setMessage("Your are about to add [" + name
@@ -272,8 +272,8 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 		public void createControl(Composite parent) {
 			Composite body = new Composite(parent, SWT.NONE);
 			body.setLayout(EclipseUiUtils.noSpaceGridLayout());
-			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
-			colDefs.add(new PeopleColumnDefinition("Display Name",
+			ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
+			colDefs.add(new ConnectColumnDefinition("Display Name",
 					new TitleIconRowLP(peopleUiService, selectorName,
 							Property.JCR_TITLE), 300));
 
@@ -346,7 +346,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 				this.tagPath = tagInstance.getPath();
 				repository = tagInstance.getSession().getRepository();
 				for (Object element : toUpdateElements) {
-					Node currNode = JcrUiUtils.getNodeFromElement(element,
+					Node currNode = ConnectJcrUtils.getNodeFromElement(element,
 							selectorName);
 					pathes.add(currNode.getPath());
 				}
@@ -368,7 +368,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 					// TODO use transaction
 					// Legacy insure the node is checked out before update
-					JcrUiUtils.checkCOStatusBeforeUpdate(tagInstance);
+					ConnectJcrUtils.checkCOStatusBeforeUpdate(tagInstance);
 
 					// TODO hardcoded prop name
 					String value = targetTagInstance.getProperty(
@@ -376,19 +376,19 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 					for (String currPath : pathes) {
 						Node currNode = session.getNode(currPath);
-						JcrUiUtils.checkCOStatusBeforeUpdate(currNode);
+						ConnectJcrUtils.checkCOStatusBeforeUpdate(currNode);
 						if (actionType == TYPE_ADD) {
 							// Duplication will return an error message that we
 							// ignore
-							JcrUiUtils.addStringToMultiValuedProp(currNode,
+							ConnectJcrUtils.addStringToMultiValuedProp(currNode,
 									tagPropName, value);
 						} else if (actionType == TYPE_REMOVE) {
 							// Duplication will return an error message that we
 							// ignore
-							JcrUiUtils.removeStringFromMultiValuedProp(
+							ConnectJcrUtils.removeStringFromMultiValuedProp(
 									currNode, tagPropName, value);
 						}
-						JcrUiUtils.saveAndPublish(currNode, true);
+						ConnectJcrUtils.saveAndPublish(currNode, true);
 					}
 					monitor.worked(1);
 

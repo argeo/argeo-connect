@@ -16,7 +16,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
@@ -36,6 +35,7 @@ import org.argeo.connect.people.workbench.rap.providers.OrgOverviewLabelProvider
 import org.argeo.connect.people.workbench.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.workbench.rap.providers.RoleListLabelProvider;
 import org.argeo.connect.people.workbench.rap.util.AbstractPanelFormPart;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -80,7 +80,7 @@ public class JobList extends LazyCTabControl {
 		this.entity = entity;
 		this.editor = editor;
 		// Participations are stored in the projects.
-		isBackward = JcrUiUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG);
+		isBackward = ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG);
 	}
 
 	@Override
@@ -240,7 +240,7 @@ public class JobList extends LazyCTabControl {
 			public void widgetSelected(SelectionEvent e) {
 				Map<String, String> params = new HashMap<String, String>();
 				params.put(EditJob.PARAM_RELEVANT_NODE_JCR_ID,
-						JcrUiUtils.getIdentifier(entity));
+						ConnectJcrUtils.getIdentifier(entity));
 				CommandUtils.callCommand(EditJob.ID, params);
 			}
 		});
@@ -253,16 +253,16 @@ public class JobList extends LazyCTabControl {
 				Node link = (Node) obj;
 				Node toOpen;
 				if (isBackward) {
-					toOpen = JcrUiUtils.getParent(JcrUiUtils.getParent(link));
+					toOpen = ConnectJcrUtils.getParent(ConnectJcrUtils.getParent(link));
 				} else {
 					toOpen = peopleService.getEntityByUid(
-							JcrUiUtils.getSession(entity),
-							JcrUiUtils.get(link, PeopleNames.PEOPLE_REF_UID));
+							ConnectJcrUtils.getSession(entity),
+							ConnectJcrUtils.get(link, PeopleNames.PEOPLE_REF_UID));
 				}
 				CommandUtils.callCommand(
 						peopleWorkbenchService.getOpenEntityEditorCmdId(),
 						OpenEntityEditor.PARAM_JCR_ID,
-						JcrUiUtils.getIdentifier(toOpen));
+						ConnectJcrUtils.getIdentifier(toOpen));
 			}
 		}
 	}
@@ -301,13 +301,13 @@ public class JobList extends LazyCTabControl {
 					node1 = node1.getParent().getParent();
 				if (node2 != null)
 					node2 = node2.getParent().getParent();
-				String lastName1 = JcrUiUtils.get(node1,
+				String lastName1 = ConnectJcrUtils.get(node1,
 						PeopleNames.PEOPLE_LAST_NAME).toLowerCase();
-				String lastName2 = JcrUiUtils.get(node2,
+				String lastName2 = ConnectJcrUtils.get(node2,
 						PeopleNames.PEOPLE_LAST_NAME).toLowerCase();
-				String firstName1 = JcrUiUtils.get(node1,
+				String firstName1 = ConnectJcrUtils.get(node1,
 						PeopleNames.PEOPLE_FIRST_NAME).toLowerCase();
-				String firstName2 = JcrUiUtils.get(node2,
+				String firstName2 = ConnectJcrUtils.get(node2,
 						PeopleNames.PEOPLE_FIRST_NAME).toLowerCase();
 				rc = lastName1.compareTo(lastName2);
 				if (rc == 0)

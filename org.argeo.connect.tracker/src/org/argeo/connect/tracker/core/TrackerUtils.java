@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.argeo.connect.ConnectConstants;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -23,16 +24,16 @@ import javax.jcr.query.QueryResult;
 
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
-import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.connect.tracker.PeopleTrackerService;
 import org.argeo.connect.tracker.TrackerConstants;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerNames;
 import org.argeo.connect.tracker.TrackerService;
 import org.argeo.connect.tracker.TrackerTypes;
+import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 
 public class TrackerUtils {
@@ -113,7 +114,7 @@ public class TrackerUtils {
 			builder.append("//element(*, ").append(TrackerTypes.TRACKER_PROJECT).append(")");
 			builder.append(" order by @").append(PeopleNames.JCR_TITLE);
 			QueryManager qm = session.getWorkspace().getQueryManager();
-			QueryResult result = qm.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH).execute();
+			QueryResult result = qm.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH).execute();
 			return result.getNodes();
 		} catch (RepositoryException e) {
 			throw new TrackerException(
@@ -139,7 +140,7 @@ public class TrackerUtils {
 			builder.append("]");
 			builder.append(" order by @").append(TrackerNames.TRACKER_ID).append(" descending");
 			QueryManager qm = parent.getSession().getWorkspace().getQueryManager();
-			QueryResult result = qm.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH).execute();
+			QueryResult result = qm.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH).execute();
 			return result.getNodes();
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to get milestones on " + project + " with filter:" + filter, e);
@@ -151,7 +152,7 @@ public class TrackerUtils {
 		List<String> milestoneIds = new ArrayList<String>();
 		while (nit.hasNext()) {
 			Node currNode = nit.nextNode();
-			milestoneIds.add(JcrUiUtils.get(currNode, TrackerNames.TRACKER_ID));
+			milestoneIds.add(ConnectJcrUtils.get(currNode, TrackerNames.TRACKER_ID));
 		}
 		return milestoneIds;
 	}
@@ -167,7 +168,7 @@ public class TrackerUtils {
 		builder.append("]");
 		builder.append(" order by @").append(TrackerNames.TRACKER_ID).append(" descending");
 		QueryManager qm = parent.getSession().getWorkspace().getQueryManager();
-		QueryResult result = qm.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH).execute();
+		QueryResult result = qm.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH).execute();
 		return result.getNodes();
 	}
 
@@ -177,7 +178,7 @@ public class TrackerUtils {
 			List<String> versionIds = new ArrayList<String>();
 			while (nit.hasNext()) {
 				Node currNode = nit.nextNode();
-				versionIds.add(JcrUiUtils.get(currNode, TrackerNames.TRACKER_ID));
+				versionIds.add(ConnectJcrUtils.get(currNode, TrackerNames.TRACKER_ID));
 			}
 			return versionIds;
 		} catch (RepositoryException e) {
@@ -196,7 +197,7 @@ public class TrackerUtils {
 			builder.append(" order by @").append(TrackerNames.TRACKER_ID);
 			// .append(" descending");
 			QueryManager qm = project.getSession().getWorkspace().getQueryManager();
-			QueryResult result = qm.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH).execute();
+			QueryResult result = qm.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH).execute();
 			return result.getNodes();
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to get issues for " + project + " with filter: " + filter, e);
@@ -254,7 +255,7 @@ public class TrackerUtils {
 				builder.append("[").append(tmpBuilder.substring(0, tmpBuilder.length() - andStr.length())).append("]");
 
 			builder.append(" order by @" + TrackerNames.TRACKER_ID);
-			Query xpathQuery = queryManager.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH);
+			Query xpathQuery = queryManager.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH);
 			QueryResult result = xpathQuery.execute();
 			return result.getNodes();
 		} catch (RepositoryException e) {
@@ -272,7 +273,7 @@ public class TrackerUtils {
 				builder.append("[").append(XPathUtils.getFreeTextConstraint(filter)).append("]");
 			builder.append(" order by @").append(TrackerNames.TRACKER_ID).append(" descending");
 			QueryManager qm = parent.getSession().getWorkspace().getQueryManager();
-			QueryResult result = qm.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH).execute();
+			QueryResult result = qm.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH).execute();
 			return result.getNodes();
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to get version for " + project + " with filter: " + filter, e);
@@ -292,7 +293,7 @@ public class TrackerUtils {
 			if (EclipseUiUtils.notEmpty(filter))
 				builder.append("[").append(XPathUtils.getFreeTextConstraint(filter)).append("]");
 			builder.append(" order by @").append(TrackerNames.TRACKER_ID).append(" ascending");
-			QueryResult result = queryManager.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH).execute();
+			QueryResult result = queryManager.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH).execute();
 			return result.getNodes();
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to get components for " + project + " with filter: " + filter, e);
@@ -306,7 +307,7 @@ public class TrackerUtils {
 			String xpathQueryStr = XPathUtils.descendantFrom(parent.getPath());
 			xpathQueryStr += "//element(*, " + TrackerTypes.TRACKER_VERSION + ")";
 			xpathQueryStr += "[" + XPathUtils.getPropertyEquals(TrackerNames.TRACKER_ID, versionId) + "]";
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr, PeopleConstants.QUERY_XPATH);
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 			NodeIterator results = xpathQuery.execute().getNodes();
 			if (!results.hasNext())
 				return null;
@@ -327,7 +328,7 @@ public class TrackerUtils {
 			xpathQueryStr += "//element(*, " + TrackerTypes.TRACKER_COMPONENT + ")";
 			xpathQueryStr += "[" + XPathUtils.getPropertyEquals(TrackerNames.TRACKER_ID, officeId) + "]";
 			QueryManager qm = parent.getSession().getWorkspace().getQueryManager();
-			Query xpathQuery = qm.createQuery(xpathQueryStr, PeopleConstants.QUERY_XPATH);
+			Query xpathQuery = qm.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 			NodeIterator results = xpathQuery.execute().getNodes();
 			if (!results.hasNext())
 				return null;
@@ -344,7 +345,7 @@ public class TrackerUtils {
 	public static long getIssueNb(Node category, boolean onlyOpen) {
 		Node project = getProjectFromChild(category);
 		String relProp = getRelevantPropName(category);
-		NodeIterator nit = getIssues(project, null, relProp, JcrUiUtils.get(category, TrackerNames.TRACKER_ID),
+		NodeIterator nit = getIssues(project, null, relProp, ConnectJcrUtils.get(category, TrackerNames.TRACKER_ID),
 				onlyOpen);
 		return nit.getSize();
 	}
@@ -393,8 +394,8 @@ public class TrackerUtils {
 			}
 
 			if (issue.hasProperty(Property.JCR_CREATED)) {
-				result += " on " + JcrUiUtils.getDateFormattedAsString(issue, Property.JCR_CREATED,
-						PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
+				result += " on " + ConnectJcrUtils.getDateFormattedAsString(issue, Property.JCR_CREATED,
+						ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
 			}
 			return result;
 		} catch (RepositoryException e) {
@@ -402,40 +403,40 @@ public class TrackerUtils {
 		}
 	}
 
-	private static DateFormat dtFormat = new SimpleDateFormat(PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
+	private static DateFormat dtFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
 	public static String getStatusText(PeopleTrackerService aoService, Node issue) {
 		try {
 			StringBuilder builder = new StringBuilder();
 
 			// status, importance, priority
-			builder.append("<b> Status: </b>").append(JcrUiUtils.get(issue, PeopleNames.PEOPLE_TASK_STATUS))
+			builder.append("<b> Status: </b>").append(ConnectJcrUtils.get(issue, PeopleNames.PEOPLE_TASK_STATUS))
 					.append(" ");
 			builder.append("[").append(TrackerUtils.getImportanceLabel(issue)).append("/")
 					.append(TrackerUtils.getPriorityLabel(issue)).append("] - ");
 
 			// milestone, version
-			String targetId = JcrUiUtils.get(issue, TrackerNames.TRACKER_TARGET_ID);
+			String targetId = ConnectJcrUtils.get(issue, TrackerNames.TRACKER_TARGET_ID);
 			if (notEmpty(targetId))
 				builder.append("<b>Target milestone: </b> ").append(targetId).append(" - ");
-			String versionId = JcrUiUtils.getMultiAsString(issue, TrackerNames.TRACKER_VERSION_IDS, ", ");
+			String versionId = ConnectJcrUtils.getMultiAsString(issue, TrackerNames.TRACKER_VERSION_IDS, ", ");
 			builder.append(" - ");
 			if (notEmpty(versionId))
 				builder.append("<b>Affected version: </b> ").append(versionId).append(" - ");
 
 			// assigned to
 			if (aoService.getActivityService().isTaskDone(issue)) {
-				String closeBy = JcrUiUtils.get(issue, PeopleNames.PEOPLE_CLOSED_BY);
+				String closeBy = ConnectJcrUtils.get(issue, PeopleNames.PEOPLE_CLOSED_BY);
 				Calendar closedDate = issue.getProperty(PeopleNames.PEOPLE_CLOSE_DATE).getDate();
 				builder.append(" - Marked as closed by ").append(closeBy);
 				builder.append(" on ").append(dtFormat.format(closedDate.getTime())).append(".");
 			} else {
-				String assignedToId = JcrUiUtils.get(issue, PeopleNames.PEOPLE_ASSIGNED_TO);
+				String assignedToId = ConnectJcrUtils.get(issue, PeopleNames.PEOPLE_ASSIGNED_TO);
 				String dName = aoService.getUserAdminService().getUserDisplayName(assignedToId);
 				if (notEmpty(dName))
 					builder.append("<b>Assigned to: </b>").append(dName);
 			}
-			return PeopleUiUtils.replaceAmpersand(builder.toString());
+			return ConnectUiUtils.replaceAmpersand(builder.toString());
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to get status text for issue " + issue, e);
 		}

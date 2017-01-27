@@ -1,4 +1,4 @@
-package org.argeo.connect.people.ui;
+package org.argeo.connect.ui;
 
 import javax.jcr.PropertyType;
 
@@ -10,7 +10,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
  * in order to ease table management in a JCR Context. Might be factorized if it
  * seems relevant after being used for a while.
  */
-public class PeopleColumnDefinition extends JcrColumnDefinition {
+public class ConnectColumnDefinition extends JcrColumnDefinition {
 
 	private ColumnLabelProvider labelProvider;
 	private int columnStyle;
@@ -19,7 +19,7 @@ public class PeopleColumnDefinition extends JcrColumnDefinition {
 	 * Basic default column definition that only has a header label and a label
 	 * provider
 	 */
-	public PeopleColumnDefinition(String headerLabel,
+	public ConnectColumnDefinition(String headerLabel,
 			ColumnLabelProvider labelProvider) {
 		super(null, null, PropertyType.STRING, headerLabel);
 		this.labelProvider = labelProvider;
@@ -29,27 +29,27 @@ public class PeopleColumnDefinition extends JcrColumnDefinition {
 	 * Basic default column definition that only has a header label and a label
 	 * provider
 	 */
-	public PeopleColumnDefinition(String headerLabel,
+	public ConnectColumnDefinition(String headerLabel,
 			ColumnLabelProvider labelProvider, int columnSize) {
 		super(null, null, PropertyType.STRING, headerLabel, columnSize);
 		this.labelProvider = labelProvider;
 	}
 
-	public PeopleColumnDefinition(String selectorName, String propertyName,
+	public ConnectColumnDefinition(String selectorName, String propertyName,
 			int propertyType, String headerLabel,
 			ColumnLabelProvider labelProvider) {
 		super(selectorName, propertyName, propertyType, headerLabel);
 		this.labelProvider = labelProvider;
 	}
 
-	public PeopleColumnDefinition(String selectorName, String propertyName,
+	public ConnectColumnDefinition(String selectorName, String propertyName,
 			int propertyType, String headerLabel,
 			ColumnLabelProvider labelProvider, int columnSize) {
 		super(selectorName, propertyName, propertyType, headerLabel, columnSize);
 		this.labelProvider = labelProvider;
 	}
 
-	public PeopleColumnDefinition(String selectorName, String propertyName,
+	public ConnectColumnDefinition(String selectorName, String propertyName,
 			int propertyType, String headerLabel,
 			ColumnLabelProvider labelProvider, int columnSize, int columnStyle) {
 		super(selectorName, propertyName, propertyType, headerLabel, columnSize);

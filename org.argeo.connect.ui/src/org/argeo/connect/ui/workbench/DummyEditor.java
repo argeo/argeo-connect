@@ -1,4 +1,4 @@
-package org.argeo.connect.ui;
+package org.argeo.connect.ui.workbench;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Composite;

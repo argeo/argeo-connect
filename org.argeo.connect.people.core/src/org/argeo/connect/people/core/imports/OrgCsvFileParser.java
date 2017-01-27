@@ -20,8 +20,8 @@ import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.PeopleJcrUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.springframework.core.io.Resource;
 
@@ -127,13 +127,13 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 				String tags = line.get(PEOPLE_TAGS);
 				if (notEmpty(tags))
 					orga.setProperty(PEOPLE_TAGS,
-							JcrUiUtils.parseAndClean(tags, ",", true));
+							ConnectJcrUtils.parseAndClean(tags, ",", true));
 
 				// Mailing lists
 				String mailingLists = line.get(PEOPLE_MAILING_LISTS);
 				if (notEmpty(mailingLists))
 					orga.setProperty(PEOPLE_MAILING_LISTS,
-							JcrUiUtils.parseAndClean(mailingLists, ",", true));
+							ConnectJcrUtils.parseAndClean(mailingLists, ",", true));
 				getPeopleService().saveEntity(orga, true);
 			}
 

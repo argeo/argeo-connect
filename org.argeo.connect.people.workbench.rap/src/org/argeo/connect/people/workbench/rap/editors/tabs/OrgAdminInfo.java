@@ -9,12 +9,12 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.OrgJcrUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.composites.BankAccountComposite;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -118,10 +118,10 @@ public class OrgAdminInfo extends LazyCTabControl {
 			@Override
 			public void modifyText(ModifyEvent event) {
 				try {
-					if (JcrUiUtils.setJcrProperty(entity,
+					if (ConnectJcrUtils.setJcrProperty(entity,
 							PeopleNames.PEOPLE_LEGAL_NAME, PropertyType.STRING,
 							legalNameTxt.getText())) {
-						Boolean defineDistinct = JcrUiUtils.getBooleanValue(
+						Boolean defineDistinct = ConnectJcrUtils.getBooleanValue(
 								entity,
 								PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 						if (defineDistinct == null || !defineDistinct)

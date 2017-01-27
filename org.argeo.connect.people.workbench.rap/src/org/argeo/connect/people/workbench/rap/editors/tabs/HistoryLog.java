@@ -20,13 +20,13 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.core.versioning.ItemDiff;
-import org.argeo.connect.people.core.versioning.VersionDiff;
-import org.argeo.connect.people.core.versioning.VersionUtils;
-import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
+import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.versioning.ItemDiff;
+import org.argeo.connect.versioning.VersionDiff;
+import org.argeo.connect.versioning.VersionUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.PropertyDiff;
 import org.eclipse.swt.SWT;
@@ -51,7 +51,7 @@ public class HistoryLog extends LazyCTabControl {
 	private final PeopleService peopleService;
 	// private final PeopleWorkbenchService peopleWorkbenchService;
 	private final Node entity;
-	private DateFormat dateTimeFormat = new SimpleDateFormat(PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
+	private DateFormat dateTimeFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
 	// this page UI Objects
 	private MyFormPart myFormPart;
@@ -84,15 +84,15 @@ public class HistoryLog extends LazyCTabControl {
 			gd.horizontalIndent = 5;
 			label.setLayoutData(gd);
 			StringBuilder builder = new StringBuilder();
-			String puid = JcrUiUtils.get(entity, PeopleNames.PEOPLE_UID);
+			String puid = ConnectJcrUtils.get(entity, PeopleNames.PEOPLE_UID);
 			if (EclipseUiUtils.notEmpty(puid)) {
 				builder.append("People UID: ").append(puid);
 				builder.append(" <br/>");
 			}
-			builder.append("JcrID: ").append(JcrUiUtils.getIdentifier(entity));
+			builder.append("JcrID: ").append(ConnectJcrUtils.getIdentifier(entity));
 			builder.append(" <br/>");
 
-			builder.append("Path: ").append(JcrUiUtils.getPath(entity));
+			builder.append("Path: ").append(ConnectJcrUtils.getPath(entity));
 			label.setText(builder.toString());
 		}
 		Composite historyCmp = new Composite(parent, SWT.NONE);
@@ -247,7 +247,7 @@ public class HistoryLog extends LazyCTabControl {
 				builder.append(label).append(": ");
 				builder.append(" + ");
 				if (prop.isMultiple())
-					builder.append(JcrUiUtils.getMultiAsString(prop.getParent(), prop.getName(), "; "));
+					builder.append(ConnectJcrUtils.getMultiAsString(prop.getParent(), prop.getName(), "; "));
 				else
 					builder.append(getValueAsString(prop.getValue()));
 				builder.append("\n");

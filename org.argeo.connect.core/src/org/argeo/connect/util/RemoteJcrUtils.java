@@ -1,4 +1,4 @@
-package org.argeo.connect.people.util;
+package org.argeo.connect.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.ConnectException;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.node.NodeUtils;
 
@@ -92,7 +92,7 @@ public class RemoteJcrUtils {
 			if (log.isTraceEnabled())
 				log.trace("Copied " + toNode);
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot copy " + fromNode + " to " + toNode, e);
+			throw new ConnectException("Cannot copy " + fromNode + " to " + toNode, e);
 		}
 	}
 

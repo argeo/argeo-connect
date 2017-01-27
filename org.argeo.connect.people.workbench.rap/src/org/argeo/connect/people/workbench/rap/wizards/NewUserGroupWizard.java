@@ -178,7 +178,7 @@ public class NewUserGroupWizard {}
 //
 // List<String> usernames = new ArrayList<String>();
 // for (Node currNode : selectedNodes) {
-// usernames.add(JcrUiUtils.get(currNode,
+// usernames.add(ConnectJcrUtils.get(currNode,
 // ArgeoNames.ARGEO_USER_ID));
 // }
 // return usernames;
