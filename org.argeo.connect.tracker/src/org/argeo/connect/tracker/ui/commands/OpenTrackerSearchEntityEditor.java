@@ -1,7 +1,7 @@
 package org.argeo.connect.tracker.ui.commands;
 
-import org.argeo.connect.people.rap.commands.OpenSearchEntityEditor;
-import org.argeo.connect.people.rap.editors.util.SearchNodeEditorInput;
+import org.argeo.connect.people.workbench.rap.commands.OpenSearchEntityEditor;
+import org.argeo.connect.people.workbench.rap.editors.util.SearchNodeEditorInput;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerTypes;
 import org.argeo.connect.tracker.internal.ui.parts.AllProjectsEditor;

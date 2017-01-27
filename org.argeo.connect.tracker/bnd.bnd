@@ -12,7 +12,7 @@ javax.jcr.security,\
 org.argeo.cms,\
 org.argeo.cms.auth,\
 org.argeo.connect.people,\
-org.argeo.connect.people.rap.views,\
+org.argeo.connect.people.workbench.rap.views,\
 org.argeo.eclipse.spring,\
 org.eclipse.jface.dialogs,\
 org.eclipse.jface.window,\

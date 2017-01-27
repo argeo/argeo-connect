@@ -6,27 +6,27 @@
 
 	<!-- Centralizes the intelligence to open the correct editor depending on 
 		the node type -->
-	<bean id="openEntityEditor" class="org.argeo.connect.people.rap.commands.OpenEntityEditor"
+	<bean id="openEntityEditor" class="org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
 	</bean>
 
 	<!-- Entities and links CRUDs -->
-	<bean id="createEntity" class="org.argeo.connect.people.rap.commands.CreateEntity"
+	<bean id="createEntity" class="org.argeo.connect.people.workbench.rap.commands.CreateEntity"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
 		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
-	<bean id="deleteEntity" class="org.argeo.connect.people.rap.commands.DeleteEntity"
+	<bean id="deleteEntity" class="org.argeo.connect.people.workbench.rap.commands.DeleteEntity"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
 	</bean>
 
-	<bean id="editJob" class="org.argeo.connect.people.rap.commands.EditJob"
+	<bean id="editJob" class="org.argeo.connect.people.workbench.rap.commands.EditJob"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
@@ -34,13 +34,13 @@
 	</bean>
 
 	<bean id="removeEntityReference"
-		class="org.argeo.connect.people.rap.commands.RemoveEntityReference"
+		class="org.argeo.connect.people.workbench.rap.commands.RemoveEntityReference"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 	</bean>
 
 	<!-- Tasks and Activities -->
-	<bean id="createSimpleTask" class="org.argeo.connect.people.rap.commands.CreateSimpleTask"
+	<bean id="createSimpleTask" class="org.argeo.connect.people.workbench.rap.commands.CreateSimpleTask"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />

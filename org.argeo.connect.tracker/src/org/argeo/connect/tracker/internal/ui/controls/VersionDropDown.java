@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.people.rap.composites.dropdowns.PeopleAbstractDropDown;
+import org.argeo.connect.people.workbench.rap.composites.dropdowns.PeopleAbstractDropDown;
 import org.argeo.connect.tracker.core.TrackerUtils;
 import org.eclipse.swt.widgets.Text;
 

@@ -4,7 +4,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.rap.PeopleWorkbenchServiceImpl;
+import org.argeo.connect.people.workbench.rap.PeopleWorkbenchServiceImpl;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerTypes;
 import org.argeo.connect.tracker.ui.commands.OpenTrackerEntityEditor;

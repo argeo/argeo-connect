@@ -257,56 +257,6 @@ public class UserAdminServiceImpl implements UserAdminService {
 		return dn;
 	}
 
-	// public String buildDefaultDN(String localId, int type) {
-	// return buildDistinguishedName(localId, getDefaultDomainName(), type);
-	// }
-
-	// public String buildDistinguishedName(String localId, String baseDn, int
-	// type) {
-	// Map<String, String> dns = getKnownBaseDns(true);
-	// Dictionary<String, ?> props = UserAdminConf.uriAsProperties(dns
-	// .get(baseDn));
-	// String dn = null;
-	// if (Role.GROUP == type)
-	// dn = LdapAttrs.cn.name() + "=" + localId + ","
-	// + UserAdminConf.groupBase.getValue(props) + "," + baseDn;
-	// else if (Role.USER == type)
-	// dn = LdapAttrs.uid.name() + "=" + localId + ","
-	// + UserAdminConf.userBase.getValue(props) + "," + baseDn;
-	// else
-	// throw new PeopleException("Unknown role type. "
-	// + "Cannot deduce dn for " + localId);
-	// return dn;
-	// }
-	//
-	// public String getDefaultDomainName() {
-	// Map<String, String> dns = getKnownBaseDns(true);
-	// if (dns.size() == 1)
-	// return dns.keySet().iterator().next();
-	// else
-	// throw new PeopleException("Current context contains " + dns.size()
-	// + " base dns: " + dns.keySet().toString()
-	// + ". Unable to chose a default one.");
-	// }
-
-	// public Map<String, String> getKnownBaseDns(boolean onlyWritable) {
-	// Map<String, String> dns = new HashMap<String, String>();
-	// for (String uri : userAdminServiceReference.getPropertyKeys()) {
-	// if (!uri.startsWith("/"))
-	// continue;
-	// Dictionary<String, ?> props = UserAdminConf.uriAsProperties(uri);
-	// String readOnly = UserAdminConf.readOnly.getValue(props);
-	// String baseDn = UserAdminConf.baseDn.getValue(props);
-	//
-	// if (onlyWritable && "true".equals(readOnly))
-	// continue;
-	// if (baseDn.equalsIgnoreCase(NodeConstants.ROLES_BASEDN))
-	// continue;
-	// dns.put(baseDn, uri);
-	// }
-	// return dns;
-	// }
-
 	public UserAdmin getUserAdmin() {
 		return userAdmin;
 	}

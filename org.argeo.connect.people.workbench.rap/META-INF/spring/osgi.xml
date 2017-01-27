@@ -18,7 +18,7 @@
 
 	<!-- LOCAL BEANS -->
 	<beans:bean id="peopleWorkbenchService"
-		class="org.argeo.connect.people.rap.PeopleWorkbenchServiceImpl" scope="prototype">
+		class="org.argeo.connect.people.workbench.rap.PeopleWorkbenchServiceImpl" scope="prototype">
 	</beans:bean>
 
 </beans:beans>
