@@ -28,7 +28,7 @@ import org.argeo.connect.people.workbench.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.workbench.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.workbench.rap.providers.EntitySingleColumnLabelProvider;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -79,7 +79,7 @@ public class PeopleDefaultView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		this.session = JcrUiUtils.login(repository);
+		this.session = ConnectJcrUtils.login(repository);
 
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 

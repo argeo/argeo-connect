@@ -44,8 +44,8 @@ import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.util.PersonJcrUtils;
-import org.argeo.connect.people.util.RemoteJcrUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.RemoteJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrMonitor;
@@ -134,7 +134,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	@Override
 	public String getDefaultPathForEntity(Node node, String nodeType) {
-		String peopleUid = JcrUiUtils.get(node, PEOPLE_UID);
+		String peopleUid = ConnectJcrUtils.get(node, PEOPLE_UID);
 		if (isEmpty(peopleUid))
 			throw new PeopleException("Unable to define default path for " + node + " of type " + nodeType
 					+ ". No property people:uid is defined");
@@ -180,12 +180,12 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 					|| entity.isNodeType(PeopleTypes.PEOPLE_TAG_INSTANCE)
 					|| entity.isNodeType(PeopleTypes.PEOPLE_NODE_TEMPLATE)) {
 				// Known types that does not have a specific save strategy
-				JcrUiUtils.saveAndPublish(entity, publish);
+				ConnectJcrUtils.saveAndPublish(entity, publish);
 			} else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON) || entity.isNodeType(PeopleTypes.PEOPLE_ORG))
 				entity = getPersonService().saveEntity(entity, publish);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
 				// TODO implement specific behavior for tasks and activities
-				JcrUiUtils.saveAndPublish(entity, publish);
+				ConnectJcrUtils.saveAndPublish(entity, publish);
 			else
 				throw new PeopleException("Unknown entity type for " + entity);
 			return entity;
@@ -272,8 +272,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	 */
 	@Override
 	public void updatePrimaryCache(Node entity) throws PeopleException, RepositoryException {
-		if (JcrUiUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)
-				|| JcrUiUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG)) {
+		if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)
+				|| ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG)) {
 			for (String currType : PeopleTypes.KNOWN_CONTACT_TYPES) {
 				Node pNode = PeopleJcrUtils.getPrimaryContact(entity, currType);
 				if (pNode != null)
@@ -281,7 +281,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			}
 
 			// Also update primary job
-			if (JcrUiUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)) {
+			if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)) {
 				Node pJob = PersonJcrUtils.getPrimaryJob(entity);
 				if (pJob != null)
 					PeopleJcrUtils.updatePrimaryCache(this, entity, pJob, true);
@@ -298,11 +298,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			if (entity.hasProperty(PEOPLE_USE_DISTINCT_DISPLAY_NAME))
 				defineDistinct = entity.getProperty(PEOPLE_USE_DISTINCT_DISPLAY_NAME).getBoolean();
 			if (defineDistinct)
-				displayName = JcrUiUtils.get(entity, Property.JCR_TITLE);
+				displayName = ConnectJcrUtils.get(entity, Property.JCR_TITLE);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
 				displayName = getPersonService().getDisplayName(entity);
 			} else if (entity.isNodeType(NodeType.MIX_TITLE))
-				displayName = JcrUiUtils.get(entity, Property.JCR_TITLE);
+				displayName = ConnectJcrUtils.get(entity, Property.JCR_TITLE);
 			else
 				throw new PeopleException("Display name not defined for type " + entity.getPrimaryNodeType().getName()
 						+ " - node: " + entity);
@@ -354,7 +354,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	@Override
 	public Node getEntityFromNodeReference(Node node, String propName) {
 		try {
-			String peopleUid = JcrUiUtils.get(node, propName);
+			String peopleUid = ConnectJcrUtils.get(node, propName);
 			if (isEmpty(peopleUid))
 				return null;
 			else
@@ -395,7 +395,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 								+ ")" + " to " + referencedNode + "(" + referencedNode.getPrimaryNodeType() + ")");
 
 			// Legacy: force node to be checked-out
-			if (!JcrUiUtils.checkCOStatusBeforeUpdate(referencingNode))
+			if (!ConnectJcrUtils.checkCOStatusBeforeUpdate(referencingNode))
 				log.warn("Referencing node " + referencingNode + " was checked in when we wanted to update");
 
 			Node link = parentNode.addNode(notEmpty(role) ? role : "Unnamed_role", linkNodeType);

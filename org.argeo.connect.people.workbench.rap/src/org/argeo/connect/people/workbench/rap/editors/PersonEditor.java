@@ -26,7 +26,7 @@ import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEdi
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.workbench.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -68,9 +68,9 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements
 
 	@Override
 	protected void updatePartName() {
-		String shortName = JcrUiUtils.get(getNode(), PEOPLE_LAST_NAME);
+		String shortName = ConnectJcrUtils.get(getNode(), PEOPLE_LAST_NAME);
 		if (EclipseUiUtils.isEmpty(shortName)) {
-			shortName = JcrUiUtils.get(getNode(), Property.JCR_TITLE);
+			shortName = ConnectJcrUtils.get(getNode(), Property.JCR_TITLE);
 		}
 		if (EclipseUiUtils.notEmpty(shortName)) {
 			if (shortName.length() > SHORT_NAME_LENGHT)
@@ -261,7 +261,7 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements
 				ConnectUiUtils.refreshTextWidgetValue(displayNameTxt, person,
 						Property.JCR_TITLE);
 
-				Boolean defineDistinct = JcrUiUtils.getBooleanValue(person,
+				Boolean defineDistinct = ConnectJcrUtils.getBooleanValue(person,
 						PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 				if (defineDistinct == null)
 					defineDistinct = false;
@@ -318,9 +318,9 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements
 			@Override
 			public void modifyText(ModifyEvent event) {
 				try {
-					if (JcrUiUtils.setJcrProperty(person, PEOPLE_FIRST_NAME,
+					if (ConnectJcrUtils.setJcrProperty(person, PEOPLE_FIRST_NAME,
 							PropertyType.STRING, firstNameTxt.getText())) {
-						Boolean defineDistinct = JcrUiUtils.getBooleanValue(
+						Boolean defineDistinct = ConnectJcrUtils.getBooleanValue(
 								person, PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 						if (defineDistinct == null || !defineDistinct) {
 							String displayName = getPeopleService()
@@ -342,9 +342,9 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements
 			@Override
 			public void modifyText(ModifyEvent event) {
 				try {
-					if (JcrUiUtils.setJcrProperty(person, PEOPLE_LAST_NAME,
+					if (ConnectJcrUtils.setJcrProperty(person, PEOPLE_LAST_NAME,
 							PropertyType.STRING, lastNameTxt.getText())) {
-						Boolean defineDistinct = JcrUiUtils.getBooleanValue(
+						Boolean defineDistinct = ConnectJcrUtils.getBooleanValue(
 								person, PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 						if (defineDistinct == null || !defineDistinct) {
 							String displayName = getPeopleService()
@@ -367,7 +367,7 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements
 			public void modifyText(ModifyEvent event) {
 				boolean defineDistinct = defineDistinctBtn.getSelection();
 				if (defineDistinct)
-					if (JcrUiUtils.setJcrProperty(person, Property.JCR_TITLE,
+					if (ConnectJcrUtils.setJcrProperty(person, Property.JCR_TITLE,
 							PropertyType.STRING, displayNameTxt.getText())) {
 						editPart.markDirty();
 					}
@@ -380,13 +380,13 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				boolean defineDistinct = defineDistinctBtn.getSelection();
-				if (JcrUiUtils.setJcrProperty(person,
+				if (ConnectJcrUtils.setJcrProperty(person,
 						PEOPLE_USE_DISTINCT_DISPLAY_NAME, PropertyType.BOOLEAN,
 						defineDistinct)) {
 					if (!defineDistinct) {
 						String displayName = getPeopleService().getDisplayName(
 								person);
-						JcrUiUtils.setJcrProperty(person, Property.JCR_TITLE,
+						ConnectJcrUtils.setJcrProperty(person, Property.JCR_TITLE,
 								PropertyType.STRING, displayName);
 						displayNameTxt.setText(displayName);
 						displayNameTxt.setEnabled(false);
@@ -425,7 +425,7 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements
 				if (!btn.getSelection())
 					return;
 				boolean value = "Formal".equals(btn.getText());
-				if (JcrUiUtils.setJcrProperty(person, PEOPLE_USE_POLITE_FORM,
+				if (ConnectJcrUtils.setJcrProperty(person, PEOPLE_USE_POLITE_FORM,
 						PropertyType.BOOLEAN, value))
 					editPart.markDirty();
 			}
@@ -442,7 +442,7 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements
 					if (!btn.getSelection())
 						return;
 
-					Session session = JcrUiUtils.getSession(person);
+					Session session = ConnectJcrUtils.getSession(person);
 					String newValueIso = getPeopleService()
 							.getResourceService().getEncodedTagCodeFromValue(
 									session, PeopleConstants.RESOURCE_LANG,

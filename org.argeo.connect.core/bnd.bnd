@@ -1,5 +1,6 @@
 Import-Package: javax.jcr.nodetype,\
 org.argeo.jcr,\
+org.argeo.node,\
 org.apache.jackrabbit.util,\
 *
 

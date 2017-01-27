@@ -17,7 +17,7 @@ import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.PeopleWebSnippets;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
@@ -69,13 +69,13 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 		String displayName = peopleService.getDisplayName(person);
 		builder.append(displayName);
 		builder.append("</big></b>");
-		String fmn = PeopleUiSnippets.getFullMontyName(person);
+		String fmn = PeopleUiSnippets.getLongName(person);
 		String localisationStr = PeopleUiSnippets.getLocalisationInfo(
 				peopleService, person);
 		String primContactStr = PeopleUiSnippets.getPrimaryContacts(person);
-		Boolean politeFormFlag = JcrUiUtils.getBooleanValue(person,
+		Boolean politeFormFlag = ConnectJcrUtils.getBooleanValue(person,
 				PEOPLE_USE_POLITE_FORM);
-		List<String> spokenLanguages = JcrUiUtils.getMultiAsList(person,
+		List<String> spokenLanguages = ConnectJcrUtils.getMultiAsList(person,
 				PEOPLE_SPOKEN_LANGUAGES);
 
 		if (notEmpty(fmn) || notEmpty(localisationStr)) {

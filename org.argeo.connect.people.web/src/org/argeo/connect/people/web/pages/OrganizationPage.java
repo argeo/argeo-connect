@@ -14,7 +14,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.providers.OrgOverviewLP;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.rap.rwt.RWT;
@@ -131,7 +131,7 @@ public class OrganizationPage implements CmsUiProvider {
 
 					@Override
 					public void widgetSelected(SelectionEvent e) {
-						JcrUiUtils.removeStringFromMultiValuedProp(
+						ConnectJcrUtils.removeStringFromMultiValuedProp(
 								context, PeopleNames.PEOPLE_MAILING_LISTS,
 								valueStr);
 						// FIXME won't work: node is checked in

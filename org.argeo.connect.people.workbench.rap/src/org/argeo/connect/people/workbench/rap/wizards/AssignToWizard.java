@@ -15,13 +15,13 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -359,8 +359,8 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			GridLayout layout = new GridLayout();
 			layout.marginTop = layout.marginWidth = 10;
 			body.setLayout(layout);
-			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
-			colDefs.add(new PeopleColumnDefinition(selectorName,
+			ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
+			colDefs.add(new ConnectColumnDefinition(selectorName,
 					Property.JCR_TITLE, PropertyType.STRING, "Display Name",
 					new TitleIconRowLP(peopleUiService, selectorName,
 							Property.JCR_TITLE), 300));
@@ -426,11 +426,11 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			// this.taskTypeId = taskTypeId;
 			this.chosenGroup = chosenGroup;
 			try {
-				Node tmpNode = JcrUiUtils.getNodeFromElement(toUpdateItems[0],
+				Node tmpNode = ConnectJcrUtils.getNodeFromElement(toUpdateItems[0],
 						selectorName);
 				repository = tmpNode.getSession().getRepository();
 				for (Object element : toUpdateItems) {
-					Node currNode = JcrUiUtils.getNodeFromElement(element,
+					Node currNode = ConnectJcrUtils.getNodeFromElement(element,
 							selectorName);
 					pathes.add(currNode.getPath());
 				}
@@ -454,13 +454,13 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 					// children task if needed, update JCR rights
 					loop: for (String currPath : pathes) {
 						Node currNode = session.getNode(currPath);
-						String oldAssignedTo = JcrUiUtils.get(currNode,
+						String oldAssignedTo = ConnectJcrUtils.get(currNode,
 								PeopleNames.PEOPLE_ASSIGNED_TO);
 						if (chosenGroup.equals(oldAssignedTo))
 							continue loop;
 						// Legacy insure the node is checked out before update
-						// JcrUiUtils.checkCOStatusBeforeUpdate(currNode);
-						if (JcrUiUtils.setJcrProperty(currNode,
+						// ConnectJcrUtils.checkCOStatusBeforeUpdate(currNode);
+						if (ConnectJcrUtils.setJcrProperty(currNode,
 								PeopleNames.PEOPLE_ASSIGNED_TO,
 								PropertyType.STRING, chosenGroup))
 							peopleService.saveEntity(currNode, true);

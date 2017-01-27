@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.argeo.connect.people.core.versioning;
+package org.argeo.connect.versioning;
 
 import javax.jcr.Item;
 
-import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.ConnectException;
 
 /** The result of the comparison of two JCR items. */
 public class ItemDiff {
@@ -38,26 +38,22 @@ public class ItemDiff {
 	 * @param referenceItem
 	 * @param observedItem
 	 */
-	public ItemDiff(Integer type, String relPath, Item referenceItem,
-			Item observedItem) {
+	public ItemDiff(Integer type, String relPath, Item referenceItem, Item observedItem) {
 		if (type == MODIFIED) {
 			if (referenceItem == null || observedItem == null)
-				throw new PeopleException(
-						"Reference and new items must be specified.");
+				throw new ConnectException("Reference and new items must be specified.");
 		} else if (type == ADDED) {
 			if (referenceItem != null || observedItem == null)
-				throw new PeopleException(
-						"New item and only it must be specified.");
+				throw new ConnectException("New item and only it must be specified.");
 		} else if (type == REMOVED) {
 			if (referenceItem == null || observedItem != null)
-				throw new PeopleException(
-						"Reference item and only it must be specified.");
+				throw new ConnectException("Reference item and only it must be specified.");
 		} else {
-			throw new PeopleException("Unkown diff type " + type);
+			throw new ConnectException("Unkown diff type " + type);
 		}
 
 		if (relPath == null)
-			throw new PeopleException("Relative path must be specified");
+			throw new ConnectException("Relative path must be specified");
 
 		this.type = type;
 		this.relPath = relPath;

@@ -18,7 +18,7 @@ import org.argeo.connect.people.workbench.rap.composites.dropdowns.PeopleAbstrac
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.internal.ui.AbstractTrackerEditor;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -279,7 +279,7 @@ public abstract class TagListFormPart extends Composite {
 				for (Value tag : values) {
 					String curTagUpperCase = tag.getString().toUpperCase().trim();
 					if (newTag.toUpperCase().trim().equals(curTagUpperCase)) {
-						msg = "\"" + JcrUiUtils.get(taggable, Property.JCR_TITLE) + "\" is already linked with \""
+						msg = "\"" + ConnectJcrUtils.get(taggable, Property.JCR_TITLE) + "\" is already linked with \""
 								+ tag.getString() + "\". Nothing has been done.";
 						MessageDialog.openError(shell, "Duplicate link", msg);
 						return;
@@ -362,7 +362,7 @@ public abstract class TagListFormPart extends Composite {
 
 	/** Overwrite to store the tag key in another property */
 	protected String getTagKey(Node tagDefinition) {
-		return JcrUiUtils.get(tagDefinition, Property.JCR_TITLE);
+		return ConnectJcrUtils.get(tagDefinition, Property.JCR_TITLE);
 	}
 
 	/** Overwrite to display a label rather than the stored value */

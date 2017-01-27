@@ -22,9 +22,9 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.composites.FilterEntitiesVirtualTable;
+import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -56,7 +56,7 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 	private final PeopleWorkbenchService peopleWorkbenchService;
 	private final String nodeType;
 	private Node selectedNode;
-	private List<PeopleColumnDefinition> colDefs;
+	private List<ConnectColumnDefinition> colDefs;
 
 	// this page widgets and UI objects
 	private FilterEntitiesVirtualTable tableCmp;
@@ -77,7 +77,7 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 
 	public PickUpByNodeTypeDialog(Shell parentShell, String title,
 			Session session, PeopleWorkbenchService peopleWorkbenchService,
-			String nodeType, List<PeopleColumnDefinition> colDefs) {
+			String nodeType, List<ConnectColumnDefinition> colDefs) {
 		super(parentShell);
 		this.title = title;
 		this.session = session;
@@ -188,7 +188,7 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 	private class MyFilterEntitiesVirtualTable extends
 			FilterEntitiesVirtualTable {
 		private static final long serialVersionUID = 3122449385321832511L;
-		private List<PeopleColumnDefinition> colDefs;
+		private List<ConnectColumnDefinition> colDefs;
 
 		public MyFilterEntitiesVirtualTable(Composite parent, int style,
 				Session session, PeopleWorkbenchService peopleWorkbenchService,
@@ -198,7 +198,7 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 
 		public MyFilterEntitiesVirtualTable(Composite parent, int style,
 				Session session, PeopleWorkbenchService peopleWorkbenchService,
-				String nodeType, List<PeopleColumnDefinition> colDefs) {
+				String nodeType, List<ConnectColumnDefinition> colDefs) {
 			super(parent, style, session, peopleWorkbenchService, nodeType,
 					true);
 			this.colDefs = colDefs;
@@ -213,7 +213,7 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 				return super.listFilteredElements(session, filter);
 		}
 
-		protected List<PeopleColumnDefinition> getColumnsDef() {
+		protected List<ConnectColumnDefinition> getColumnsDef() {
 			if (colDefs == null)
 				return super.getColumnsDef();
 			else

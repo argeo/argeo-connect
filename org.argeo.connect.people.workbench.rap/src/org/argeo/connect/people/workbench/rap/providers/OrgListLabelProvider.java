@@ -6,7 +6,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.LabelProvider;
 
@@ -27,7 +27,7 @@ public class OrgListLabelProvider extends LabelProvider implements PeopleNames {
 		Node orga = (Node) element;
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b>");
-		builder.append(JcrUiUtils.get(orga, PEOPLE_LEGAL_NAME));
+		builder.append(ConnectJcrUtils.get(orga, PEOPLE_LEGAL_NAME));
 		builder.append("</b> ");
 
 		String local = PeopleUiSnippets.getLocalisationInfo(peopleService,

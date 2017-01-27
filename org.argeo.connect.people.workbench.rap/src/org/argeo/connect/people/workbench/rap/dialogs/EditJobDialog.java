@@ -40,7 +40,7 @@ import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.providers.EntitySingleColumnLabelProvider;
 import org.argeo.connect.ui.widgets.DelayedText;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -153,7 +153,7 @@ public class EditJobDialog extends TrayDialog {
 			toSearchNodeType = PeopleTypes.PEOPLE_ORG;
 
 		if (oldLink == null) { // CREATE
-			session = JcrUiUtils.getSession(toUpdateNode);
+			session = ConnectJcrUtils.getSession(toUpdateNode);
 			if (isBackward)
 				oldReferenced = toUpdateNode;
 			else
@@ -163,11 +163,11 @@ public class EditJobDialog extends TrayDialog {
 			try {
 				// Initialize with old values
 				session = oldLink.getSession();
-				oldPosition = JcrUiUtils.get(oldLinkNode,
+				oldPosition = ConnectJcrUtils.get(oldLinkNode,
 						PeopleNames.PEOPLE_ROLE);
-				oldDepartment = JcrUiUtils.get(oldLinkNode,
+				oldDepartment = ConnectJcrUtils.get(oldLinkNode,
 						PeopleNames.PEOPLE_DEPARTMENT);
-				Boolean tmp = JcrUiUtils.getBooleanValue(oldLink,
+				Boolean tmp = ConnectJcrUtils.getBooleanValue(oldLink,
 						PeopleNames.PEOPLE_IS_PRIMARY);
 				if (tmp != null)
 					wasPrimary = tmp;
@@ -254,11 +254,11 @@ public class EditJobDialog extends TrayDialog {
 
 		if (isBackward) {
 			if (oldReferencing != null)
-				selectedItemTxt.setText(JcrUiUtils.get(oldReferencing,
+				selectedItemTxt.setText(ConnectJcrUtils.get(oldReferencing,
 						Property.JCR_TITLE));
 		} else {
 			if (oldReferenced != null)
-				selectedItemTxt.setText(JcrUiUtils.get(oldReferenced,
+				selectedItemTxt.setText(ConnectJcrUtils.get(oldReferenced,
 						Property.JCR_TITLE));
 		}
 		// Role
@@ -439,7 +439,7 @@ public class EditJobDialog extends TrayDialog {
 
 				try {
 					if (selectedEntity.isNodeType(NodeType.MIX_TITLE))
-						selectedItemTxt.setText(JcrUiUtils.get(selectedEntity,
+						selectedItemTxt.setText(ConnectJcrUtils.get(selectedEntity,
 								Property.JCR_TITLE));
 				} catch (RepositoryException e) {
 					throw new PeopleException("Unable to update "

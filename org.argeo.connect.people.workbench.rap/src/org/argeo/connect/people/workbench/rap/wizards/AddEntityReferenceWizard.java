@@ -16,7 +16,7 @@ import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEditor;
 import org.argeo.connect.people.workbench.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.workbench.rap.providers.EntitySingleColumnLabelProvider;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.CellEditor;
@@ -71,7 +71,7 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 			PeopleService peopleService,
 			PeopleWorkbenchService peopleUiService, IWorkbench workbench) {
 		this.repository = repository;
-		this.currSession = JcrUiUtils.login(repository);
+		this.currSession = ConnectJcrUtils.login(repository);
 		this.peopleService = peopleService;
 		this.peopleUiService = peopleUiService;
 		this.workbench = workbench;

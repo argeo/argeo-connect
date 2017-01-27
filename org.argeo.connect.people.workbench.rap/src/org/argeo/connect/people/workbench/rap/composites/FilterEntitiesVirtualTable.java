@@ -20,11 +20,11 @@ import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconLP;
+import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -127,7 +127,7 @@ public class FilterEntitiesVirtualTable extends Composite {
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 		TableViewerColumn column;
 
-		for (PeopleColumnDefinition colDef : getColumnsDef()) {
+		for (ConnectColumnDefinition colDef : getColumnsDef()) {
 			column = ViewerUtils.createTableViewerColumn(entityViewer, colDef.getHeaderLabel(), SWT.NONE,
 					colDef.getColumnSize());
 			column.setLabelProvider(colDef.getColumnLabelProvider());
@@ -162,10 +162,10 @@ public class FilterEntitiesVirtualTable extends Composite {
 		}
 	}
 
-	protected List<PeopleColumnDefinition> getColumnsDef() {
-		List<PeopleColumnDefinition> colDefs;
-		colDefs = new ArrayList<PeopleColumnDefinition>();
-		colDefs.add(new PeopleColumnDefinition(null, Property.JCR_TITLE, PropertyType.STRING, "Name",
+	protected List<ConnectColumnDefinition> getColumnsDef() {
+		List<ConnectColumnDefinition> colDefs;
+		colDefs = new ArrayList<ConnectColumnDefinition>();
+		colDefs.add(new ConnectColumnDefinition(null, Property.JCR_TITLE, PropertyType.STRING, "Name",
 				new TitleIconLP(peopleWorkbenchService, Property.JCR_TITLE), 300));
 		return colDefs;
 	}

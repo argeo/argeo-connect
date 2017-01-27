@@ -2,7 +2,7 @@ package org.argeo.connect.tracker.internal.ui.dialogs;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
@@ -51,7 +51,7 @@ public class EditFreeTextDialog extends TrayDialog {
 		new Label(dialogArea, SWT.WRAP).setText("Please modify the below text");
 		text = new Text(dialogArea, SWT.WRAP | SWT.MULTI | SWT.BORDER);
 		text.setLayoutData(EclipseUiUtils.fillAll());
-		text.setText(JcrUiUtils.get(node, propName));
+		text.setText(ConnectJcrUtils.get(node, propName));
 		parent.pack();
 		return dialogArea;
 	}

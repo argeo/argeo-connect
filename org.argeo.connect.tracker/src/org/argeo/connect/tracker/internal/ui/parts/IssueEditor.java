@@ -38,8 +38,8 @@ import org.argeo.connect.tracker.internal.ui.controls.MilestoneDropDown;
 import org.argeo.connect.tracker.internal.ui.controls.TagListFormPart;
 import org.argeo.connect.tracker.internal.ui.dialogs.EditFreeTextDialog;
 import org.argeo.connect.tracker.ui.TrackerUiPlugin;
-import org.argeo.connect.ui.TechnicalInfoPage;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.ui.workbench.TechnicalInfoPage;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.node.ArgeoNames;
 import org.eclipse.jface.action.Action;
@@ -102,7 +102,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 	protected void addPages() {
 		// Initialise the nodes
 		issue = getNode();
-		session = JcrUiUtils.getSession(issue);
+		session = ConnectJcrUtils.getSession(issue);
 		project = TrackerUtils.getProjectFromChild(issue);
 		issueService = getPeopleService().getTrackerService();
 		try {
@@ -212,14 +212,14 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 			TrackerUiUtils.createFormBoldLabel(tk, body, "Project");
 			projectLk = new Link(body, SWT.NONE);
 			projectLk.setLayoutData(new TableWrapData(FILL_GRAB));
-			projectLk.setText("<a>" + JcrUiUtils.get(project, Property.JCR_TITLE) + "</a>");
+			projectLk.setText("<a>" + ConnectJcrUtils.get(project, Property.JCR_TITLE) + "</a>");
 			projectLk.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					CommandUtils.callCommand(getAoWbService().getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
-							JcrUiUtils.getIdentifier(project));
+							ConnectJcrUtils.getIdentifier(project));
 				}
 			});
 
@@ -271,23 +271,23 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 					}
 					changeAssignationLk.setText(manager);
 					reporterLk.setText(TrackerUtils.getCreationLabel(getPeopleService(), issue));
-					statusCmb.setText(JcrUiUtils.get(issue, PeopleNames.PEOPLE_TASK_STATUS));
-					Long importance = JcrUiUtils.getLongValue(issue, TrackerNames.TRACKER_IMPORTANCE);
+					statusCmb.setText(ConnectJcrUtils.get(issue, PeopleNames.PEOPLE_TASK_STATUS));
+					Long importance = ConnectJcrUtils.getLongValue(issue, TrackerNames.TRACKER_IMPORTANCE);
 					if (importance != null) {
 						String strVal = importance + "";
 						String iv = TrackerUtils.MAPS_ISSUE_IMPORTANCES.get(strVal);
 						importanceCmb.setText(iv);
 					}
-					Long priority = JcrUiUtils.getLongValue(issue, TrackerNames.TRACKER_PRIORITY);
+					Long priority = ConnectJcrUtils.getLongValue(issue, TrackerNames.TRACKER_PRIORITY);
 					if (priority != null) {
 						String strVal = priority + "";
 						String iv = TrackerUtils.MAPS_ISSUE_PRIORITIES.get(strVal);
 						priorityCmb.setText(iv);
 					}
-					String target = JcrUiUtils.get(issue, TrackerNames.TRACKER_TARGET_ID);
+					String target = ConnectJcrUtils.get(issue, TrackerNames.TRACKER_TARGET_ID);
 					targetDD.reset(target);
 
-					String desc = JcrUiUtils.get(issue, Property.JCR_DESCRIPTION);
+					String desc = ConnectJcrUtils.get(issue, Property.JCR_DESCRIPTION);
 					descTxt.setText(desc);
 					statusCmb.getParent().layout();
 
@@ -455,13 +455,13 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 
 	private void addCommentCmp(Composite parent, AbstractFormPart formPart, Node comment) {
 		// retrieve properties
-		String createdBy = JcrUiUtils.get(comment, Property.JCR_CREATED_BY);
-		String createdOn = JcrUiUtils.getDateFormattedAsString(comment, Property.JCR_CREATED,
+		String createdBy = ConnectJcrUtils.get(comment, Property.JCR_CREATED_BY);
+		String createdOn = ConnectJcrUtils.getDateFormattedAsString(comment, Property.JCR_CREATED,
 				TrackerUiConstants.simpleDateTimeFormat);
-		String lastUpdatedBy = JcrUiUtils.get(comment, Property.JCR_LAST_MODIFIED_BY);
-		String lastUpdatedOn = JcrUiUtils.getDateFormattedAsString(comment, Property.JCR_LAST_MODIFIED,
+		String lastUpdatedBy = ConnectJcrUtils.get(comment, Property.JCR_LAST_MODIFIED_BY);
+		String lastUpdatedOn = ConnectJcrUtils.getDateFormattedAsString(comment, Property.JCR_LAST_MODIFIED,
 				TrackerUiConstants.simpleDateTimeFormat);
-		String description = JcrUiUtils.get(comment, Property.JCR_DESCRIPTION);
+		String description = ConnectJcrUtils.get(comment, Property.JCR_DESCRIPTION);
 
 		Composite commentCmp = new Composite(parent, SWT.NO_FOCUS);
 		commentCmp.setLayoutData(new TableWrapData(FILL_GRAB));
@@ -517,7 +517,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 					MessageDialog.openError(currShell, "Title cannot be null or empty", "Please provide a valid title");
 					return;
 				}
-				if (JcrUiUtils.setJcrProperty(issue, Property.JCR_TITLE, PropertyType.STRING, newTitle)) {
+				if (ConnectJcrUtils.setJcrProperty(issue, Property.JCR_TITLE, PropertyType.STRING, newTitle)) {
 					sectionPart.getSection().setText(getIssueTitle());
 					updatePartName();
 					sectionPart.markDirty();
@@ -557,7 +557,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 					String selectedValue = combo.getItem(index);
 					String longStr = TrackerUtils.getKeyByValue(map, selectedValue);
 					long value = new Long(longStr).longValue();
-					if (JcrUiUtils.setJcrProperty(entity, propName, PropertyType.LONG, value))
+					if (ConnectJcrUtils.setJcrProperty(entity, propName, PropertyType.LONG, value))
 						part.markDirty();
 				}
 			}
@@ -573,7 +573,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 			public void focusLost(FocusEvent event) {
 				// TODO check if the value is correct
 				String newValue = text.getText();
-				if (JcrUiUtils.setJcrProperty(entity, propName, PropertyType.STRING, newValue))
+				if (ConnectJcrUtils.setJcrProperty(entity, propName, PropertyType.STRING, newValue))
 					part.markDirty();
 			}
 
@@ -595,10 +595,10 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 	}
 
 	private String getIssueTitle() {
-		String name = JcrUiUtils.get(getNode(), Property.JCR_TITLE);
+		String name = ConnectJcrUtils.get(getNode(), Property.JCR_TITLE);
 		if (notEmpty(name)) {
 			Node project = TrackerUtils.getProjectFromChild(getNode());
-			String pname = JcrUiUtils.get(project, Property.JCR_TITLE);
+			String pname = ConnectJcrUtils.get(project, Property.JCR_TITLE);
 			name = name + (notEmpty(pname) ? " (" + pname + ")" : "");
 		}
 		return name;
@@ -627,14 +627,14 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		}
 
 		protected String getTagKey(Node tagDefinition) {
-			return JcrUiUtils.get(tagDefinition, TrackerNames.TRACKER_ID);
+			return ConnectJcrUtils.get(tagDefinition, TrackerNames.TRACKER_ID);
 		}
 
 		protected void callOpenEditor(String tagKey) {
 			Node node = TrackerUtils.getVersionById(project, tagKey);
 			if (node != null)
 				CommandUtils.callCommand(getAoWbService().getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
-						JcrUiUtils.getIdentifier(node));
+						ConnectJcrUtils.getIdentifier(node));
 		}
 
 	}
@@ -662,14 +662,14 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		}
 
 		protected String getTagKey(Node tagDefinition) {
-			return JcrUiUtils.get(tagDefinition, TrackerNames.TRACKER_ID);
+			return ConnectJcrUtils.get(tagDefinition, TrackerNames.TRACKER_ID);
 		}
 
 		protected void callOpenEditor(String tagKey) {
 			Node node = TrackerUtils.getComponentById(project, tagKey);
 			if (node != null)
 				CommandUtils.callCommand(getAoWbService().getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
-						JcrUiUtils.getIdentifier(node));
+						ConnectJcrUtils.getIdentifier(node));
 		}
 	}
 }

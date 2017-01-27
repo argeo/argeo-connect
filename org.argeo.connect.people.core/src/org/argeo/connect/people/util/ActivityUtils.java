@@ -15,7 +15,7 @@ import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -39,7 +39,7 @@ public class ActivityUtils {
 					poll = curr;
 				else
 					curr = curr.getParent();
-			return JcrUiUtils.get(poll, PeopleNames.PEOPLE_POLL_NAME);
+			return ConnectJcrUtils.get(poll, PeopleNames.PEOPLE_POLL_NAME);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to get related " + "poll name for " + rate, re);
 		}
@@ -130,7 +130,7 @@ public class ActivityUtils {
 			vote.setProperty(PeopleNames.PEOPLE_ACTIVITY_DATE, new GregorianCalendar());
 
 			// related to
-			JcrUiUtils.addRefToMultiValuedProp(vote, PeopleNames.PEOPLE_RELATED_TO, poll);
+			ConnectJcrUtils.addRefToMultiValuedProp(vote, PeopleNames.PEOPLE_RELATED_TO, poll);
 
 			JcrUtils.updateLastModified(vote);
 

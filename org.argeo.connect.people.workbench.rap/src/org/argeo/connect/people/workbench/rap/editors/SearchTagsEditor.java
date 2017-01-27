@@ -21,7 +21,6 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
@@ -32,7 +31,8 @@ import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickLis
 import org.argeo.connect.people.workbench.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.people.workbench.rap.util.Refreshable;
 import org.argeo.connect.people.workbench.rap.wizards.EditTagWizard;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -80,7 +80,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 	private String propertyName;
 
 	// UI Objects
-	private List<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
+	private List<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
 	private TableViewer tableViewer;
 	private Text filterTxt;
 
@@ -94,14 +94,14 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 		this.resourceService = peopleService.getResourceService();
 		String basePath = ((SearchNodeEditorInput) getEditorInput()).getBasePath();
 		try {
-			session = JcrUiUtils.login(repository);
+			session = ConnectJcrUtils.login(repository);
 			tagParent = session.getNode(basePath);
 		} catch (RepositoryException e) {
 			throw new PeopleException(
 					"Unable to retrieve tag parent with path " + basePath + "\nUnable to open search editor.", e);
 		}
-		tagInstanceType = JcrUiUtils.get(tagParent, PEOPLE_TAG_INSTANCE_TYPE);
-		tagId = JcrUiUtils.get(tagParent, PEOPLE_TAG_ID);
+		tagInstanceType = ConnectJcrUtils.get(tagParent, PEOPLE_TAG_INSTANCE_TYPE);
+		tagId = ConnectJcrUtils.get(tagParent, PEOPLE_TAG_ID);
 
 		// TODO this info should be stored in the parent path
 		if (tagId.equals(PeopleConstants.RESOURCE_TAG)) {
@@ -111,10 +111,10 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 		} else
 			throw new PeopleException("Unknown tag like property at base path " + basePath);
 
-		colDefs.add(new PeopleColumnDefinition("Title", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
-		colDefs.add(new PeopleColumnDefinition("Member count", new CountMemberLP(), 85));
+		colDefs.add(new ConnectColumnDefinition("Title", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
+		colDefs.add(new ConnectColumnDefinition("Member count", new CountMemberLP(), 85));
 		if (canEdit())
-			colDefs.add(new PeopleColumnDefinition("", new EditLabelProvider(), 80));
+			colDefs.add(new ConnectColumnDefinition("", new EditLabelProvider(), 80));
 	}
 
 	// MAIN LAYOUT
@@ -161,7 +161,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 						if (EclipseUiUtils.notEmpty(desc))
 							tag.setProperty(Property.JCR_DESCRIPTION, desc);
 						if (tag.isNodeType(NodeType.MIX_VERSIONABLE))
-							JcrUiUtils.saveAndPublish(tag, true);
+							ConnectJcrUtils.saveAndPublish(tag, true);
 						else
 							session.save();
 						refreshStaticFilteredList();
@@ -195,7 +195,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 			queryStr += " order by @" + PeopleNames.JCR_TITLE;
 			Query query = queryManager.createQuery(queryStr, ConnectConstants.QUERY_XPATH);
 			NodeIterator nit = query.execute().getNodes();
-			Node[] nodes = JcrUiUtils.nodeIteratorToArray(nit);
+			Node[] nodes = ConnectJcrUtils.nodeIteratorToArray(nit);
 			setViewerInput(nodes);
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list " + tagInstanceType, e);
@@ -215,7 +215,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 
 		@Override
 		public String getText(Object element) {
-			Node currNode = JcrUiUtils.getNodeFromElement(element, null);
+			Node currNode = ConnectJcrUtils.getNodeFromElement(element, null);
 			long count = resourceService.countMembers(currNode);
 			return "" + count;
 		}
@@ -226,7 +226,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 
 		@Override
 		public String getText(Object element) {
-			Node currNode = JcrUiUtils.getNodeFromElement(element, null);
+			Node currNode = ConnectJcrUtils.getNodeFromElement(element, null);
 			try {
 				String jcrId = currNode.getIdentifier();
 				StringBuilder builder = new StringBuilder();
@@ -272,10 +272,10 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 						}
 					} else {
 						if (canDelete(node)) { // Superstition
-							String msg = "Are you sure you want to delete \"" + JcrUiUtils.get(node, Property.JCR_TITLE)
+							String msg = "Are you sure you want to delete \"" + ConnectJcrUtils.get(node, Property.JCR_TITLE)
 									+ "\" ?";
 							if (MessageDialog.openConfirm(event.display.getActiveShell(), "Confirm deletion", msg)) {
-								JcrUiUtils.checkCOStatusBeforeUpdate(node);
+								ConnectJcrUtils.checkCOStatusBeforeUpdate(node);
 								session.removeItem(node.getPath());
 								session.save();
 								refreshStaticFilteredList();

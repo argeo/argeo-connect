@@ -9,7 +9,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.LabelProvider;
 
@@ -40,10 +40,10 @@ public class PersonListLabelProvider extends LabelProvider implements
 							person.getSession(),
 							currNode.getProperty(PEOPLE_REF_UID).getString());
 					builder.append(" [");
-					String role = JcrUiUtils.get(currNode, PEOPLE_ROLE);
+					String role = ConnectJcrUtils.get(currNode, PEOPLE_ROLE);
 					if (EclipseUiUtils.notEmpty(role))
 						builder.append(role).append(", ");
-					builder.append(org != null ? JcrUiUtils.get(org,
+					builder.append(org != null ? ConnectJcrUtils.get(org,
 							Property.JCR_TITLE) : "-");
 					builder.append("]");
 				}

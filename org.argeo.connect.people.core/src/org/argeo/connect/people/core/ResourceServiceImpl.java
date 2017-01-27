@@ -30,7 +30,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.jcr.JcrUtils;
 
@@ -185,7 +185,7 @@ public class ResourceServiceImpl implements ResourceService {
 
 			// TODO use a transaction
 			// Retrieve all node that reference this tag and update them
-			NodeIterator nit = getCatalogueValueInstances(JcrUiUtils.getSession(templateNode), taggableType,
+			NodeIterator nit = getCatalogueValueInstances(ConnectJcrUtils.getSession(templateNode), taggableType,
 					propertyName, oldValue);
 			while (nit.hasNext())
 				updateOneTag(nit.nextNode(), propertyName, oldValue, newValue);
@@ -260,7 +260,7 @@ public class ResourceServiceImpl implements ResourceService {
 		if (tagInstance != null) {
 			// Tag already exists, we do nothing.
 			if (log.isTraceEnabled()) {
-				String registeredKey = JcrUiUtils.get(tagInstance,
+				String registeredKey = ConnectJcrUtils.get(tagInstance,
 						getTagKeyPropName(getTagLikeResourceParent(session, tagId)));
 				log.debug("Tag [" + tagId + "] with key " + tagValue + " already exists (registered key is ["
 						+ registeredKey + "]), nothing has been done.");
@@ -279,7 +279,7 @@ public class ResourceServiceImpl implements ResourceService {
 		if (tagInstance != null) {
 			// Tag already exists, we do nothing.
 			if (log.isTraceEnabled()) {
-				String registeredKey = JcrUiUtils.get(tagInstance,
+				String registeredKey = ConnectJcrUtils.get(tagInstance,
 						getTagKeyPropName(getTagLikeResourceParent(session, tagId)));
 				log.debug("Tag [" + tagId + "] with key " + tagCode + " already exists (registered key is ["
 						+ registeredKey + "]), nothing has been done.");
@@ -289,7 +289,7 @@ public class ResourceServiceImpl implements ResourceService {
 			Node newTag = createTagInstanceInternal(getExistingTagLikeParent(session, tagId), tagCode);
 			// remove trailing and starting space
 			tagValue = tagValue.trim();
-			JcrUiUtils.setJcrProperty(newTag, Property.JCR_TITLE, PropertyType.STRING, tagValue);
+			ConnectJcrUtils.setJcrProperty(newTag, Property.JCR_TITLE, PropertyType.STRING, tagValue);
 			return newTag;
 		}
 	}
@@ -305,7 +305,7 @@ public class ResourceServiceImpl implements ResourceService {
 			String relPath = getTagRelPath(instanceKey);
 			if (tagParent.hasNode(relPath)) {
 				Node existing = tagParent.getNode(relPath);
-				String existingValue = JcrUiUtils.get(existing, getTagKeyPropName(tagParent));
+				String existingValue = ConnectJcrUtils.get(existing, getTagKeyPropName(tagParent));
 				if (instanceKey.equalsIgnoreCase(existingValue)) {
 					return existing;
 				}
@@ -395,7 +395,7 @@ public class ResourceServiceImpl implements ResourceService {
 
 			String nodeType = tagParent.getProperty(PeopleNames.PEOPLE_TAGGABLE_NODE_TYPE).getString();
 			String parentPath = tagParent.getProperty(PeopleNames.PEOPLE_TAGGABLE_PARENT_PATH).getString();
-			List<String> propNames = JcrUiUtils.getMultiAsList(tagParent, PeopleNames.PEOPLE_TAGGABLE_PROP_NAME);
+			List<String> propNames = ConnectJcrUtils.getMultiAsList(tagParent, PeopleNames.PEOPLE_TAGGABLE_PROP_NAME);
 
 			// Build xpath for property names;
 			StringBuilder builder = new StringBuilder();
@@ -439,15 +439,15 @@ public class ResourceServiceImpl implements ResourceService {
 			String keyPropName = getTagKeyPropName(tagParent);
 			String taggableNodeType = tagParent.getProperty(PeopleNames.PEOPLE_TAGGABLE_NODE_TYPE).getString();
 			String taggableParentPath = tagParent.getProperty(PeopleNames.PEOPLE_TAGGABLE_PARENT_PATH).getString();
-			String codeProp = JcrUiUtils.get(tagParent, PeopleNames.PEOPLE_CODE);
-			List<String> propNames = JcrUiUtils.getMultiAsList(tagParent, PeopleNames.PEOPLE_TAGGABLE_PROP_NAME);
+			String codeProp = ConnectJcrUtils.get(tagParent, PeopleNames.PEOPLE_CODE);
+			List<String> propNames = ConnectJcrUtils.getMultiAsList(tagParent, PeopleNames.PEOPLE_TAGGABLE_PROP_NAME);
 
 			if (log.isTraceEnabled())
 				log.trace("Getting already registered tags");
 			NodeIterator nit = getRegisteredTags(tagParent, null);
 			while (nit.hasNext()) {
 				Node currNode = nit.nextNode();
-				String currKey = JcrUiUtils.get(currNode, keyPropName);
+				String currKey = ConnectJcrUtils.get(currNode, keyPropName);
 				if (notEmpty(currKey) && !registeredTags.contains(currKey))
 					registeredTags.add(currKey);
 			}
@@ -482,7 +482,7 @@ public class ResourceServiceImpl implements ResourceService {
 							if (notEmpty(currTag) && !registeredTags.contains(currTag)) {
 								if (currTag.length() < 2) {
 									log.warn("Unable to cache tag [" + currTag + "] for "
-											+ JcrUiUtils.get(currNode, Property.JCR_TITLE) + " - " + currNode);
+											+ ConnectJcrUtils.get(currNode, Property.JCR_TITLE) + " - " + currNode);
 								} else if (!newExistingValues.contains(currTag))
 									newExistingValues.add(currTag);
 							}
@@ -503,7 +503,7 @@ public class ResourceServiceImpl implements ResourceService {
 			else {
 				for (String tag : newExistingValues) {
 					Node curr = createTagInstanceInternal(tagParent, tag);
-					JcrUiUtils.setJcrProperty(curr, Property.JCR_TITLE, PropertyType.STRING, tag);
+					ConnectJcrUtils.setJcrProperty(curr, Property.JCR_TITLE, PropertyType.STRING, tag);
 					session.save();
 				}
 				log.warn("We refreshed an encoded tag like subtree, for " + tagParent
@@ -528,7 +528,7 @@ public class ResourceServiceImpl implements ResourceService {
 			return false;
 		String propName = values[0].getString();
 		String oldValue = tagInstance.getProperty(Property.JCR_TITLE).getString();
-		JcrUiUtils.checkCOStatusBeforeUpdate(tagInstance);
+		ConnectJcrUtils.checkCOStatusBeforeUpdate(tagInstance);
 		Session session = tagInstance.getSession();
 
 		// Retrieve all node that reference this tag and update them
@@ -558,13 +558,13 @@ public class ResourceServiceImpl implements ResourceService {
 	 */
 	private void updateOneTag(Node taggable, String tagPropName, String oldValue, String newValue) {
 		try {
-			Node versionable = JcrUiUtils.getParentVersionableNode(taggable);
-			if (versionable != null && !JcrUiUtils.checkCOStatusBeforeUpdate(versionable))
+			Node versionable = ConnectJcrUtils.getParentVersionableNode(taggable);
+			if (versionable != null && !ConnectJcrUtils.checkCOStatusBeforeUpdate(versionable))
 				log.warn(versionable + " was checked-in as we want to update " + tagPropName + " of " + taggable
 						+ " form " + oldValue + " to " + newValue);
 			Property property = taggable.getProperty(tagPropName);
 			if (property.isMultiple()) {
-				List<String> oldValues = JcrUiUtils.getMultiAsList(taggable, tagPropName);
+				List<String> oldValues = ConnectJcrUtils.getMultiAsList(taggable, tagPropName);
 				List<String> newValues = new ArrayList<String>();
 				for (String val : oldValues) {
 					if (oldValue.equals(val) && newValue != null)
@@ -592,7 +592,7 @@ public class ResourceServiceImpl implements ResourceService {
 	public long countMembers(Node tag) {
 		Node parent = retrieveTagParentFromTag(tag);
 		String keyPropName = getTagKeyPropName(parent);
-		NodeIterator nit = getTaggedEntities(parent, JcrUiUtils.get(tag, keyPropName));
+		NodeIterator nit = getTaggedEntities(parent, ConnectJcrUtils.get(tag, keyPropName));
 		return nit.getSize();
 	}
 
@@ -646,8 +646,8 @@ public class ResourceServiceImpl implements ResourceService {
 
 	protected Node retrieveTagParentFromTag(Node tag) {
 		Node parent = tag;
-		while (!JcrUiUtils.isNodeType(parent, PeopleTypes.PEOPLE_TAG_PARENT))
-			parent = JcrUiUtils.getParent(parent);
+		while (!ConnectJcrUtils.isNodeType(parent, PeopleTypes.PEOPLE_TAG_PARENT))
+			parent = ConnectJcrUtils.getParent(parent);
 		return parent;
 	}
 
@@ -656,7 +656,7 @@ public class ResourceServiceImpl implements ResourceService {
 			if (tagParent.hasProperty(PeopleNames.PEOPLE_TAG_CODE_PROP_NAME))
 				return tagParent.getProperty(PeopleNames.PEOPLE_TAG_CODE_PROP_NAME).getString();
 			else
-				return JcrUiUtils.getLocalJcrItemName(Property.JCR_TITLE);
+				return ConnectJcrUtils.getLocalJcrItemName(Property.JCR_TITLE);
 		} catch (RepositoryException e) {
 			throw new PeopleException("unable to retrieve key property name for " + tagParent);
 		}

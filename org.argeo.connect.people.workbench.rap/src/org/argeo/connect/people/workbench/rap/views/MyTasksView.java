@@ -30,7 +30,7 @@ import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.util.ActivityViewerComparator;
 import org.argeo.connect.people.workbench.rap.util.Refreshable;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -67,7 +67,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 	@Override
 	public void createPartControl(Composite parent) {
 		// Finalise initialisation
-		session = JcrUiUtils.login(repository);
+		session = ConnectJcrUtils.login(repository);
 		activityService = peopleService.getActivityService();
 		userAdminService = peopleService.getUserAdminService();
 
@@ -194,7 +194,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
 					return activityService.getAssignedToDisplayName(currNode);
 				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-					String id = JcrUiUtils.get(currNode,
+					String id = ConnectJcrUtils.get(currNode,
 							PeopleNames.PEOPLE_REPORTED_BY);
 					if (EclipseUiUtils.notEmpty(id))
 						return userAdminService.getUserDisplayName(id);
@@ -222,7 +222,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 						String id = value.getString();
 						Node currReferenced = session.getNodeByIdentifier(id);
 						builder.append(
-								JcrUiUtils.get(currReferenced,
+								ConnectJcrUtils.get(currReferenced,
 										Property.JCR_TITLE)).append(", ");
 					}
 					return builder.toString();
@@ -240,7 +240,7 @@ public class MyTasksView extends ViewPart implements Refreshable {
 
 		@Override
 		public String getText(Object element) {
-			return JcrUiUtils.get((Node) element,
+			return ConnectJcrUtils.get((Node) element,
 					PeopleNames.PEOPLE_TASK_STATUS);
 		}
 	}
@@ -254,11 +254,11 @@ public class MyTasksView extends ViewPart implements Refreshable {
 				Node currNode = (Node) element;
 
 				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
-					String title = JcrUiUtils.get(currNode, Property.JCR_TITLE);
+					String title = ConnectJcrUtils.get(currNode, Property.JCR_TITLE);
 
-					String desc = JcrUiUtils.get(currNode,
+					String desc = ConnectJcrUtils.get(currNode,
 							Property.JCR_DESCRIPTION);
-					return JcrUiUtils.concatIfNotEmpty(title, desc, " - ");
+					return ConnectJcrUtils.concatIfNotEmpty(title, desc, " - ");
 				}
 				return "";
 			} catch (RepositoryException re) {

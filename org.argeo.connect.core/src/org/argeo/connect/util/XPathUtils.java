@@ -1,6 +1,6 @@
 package org.argeo.connect.util;
 
-import static org.argeo.connect.util.JcrUiUtils.notEmpty;
+import static org.argeo.connect.util.ConnectJcrUtils.notEmpty;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

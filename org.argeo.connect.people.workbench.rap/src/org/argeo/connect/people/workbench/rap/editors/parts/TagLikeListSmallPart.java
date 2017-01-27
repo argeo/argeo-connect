@@ -28,7 +28,7 @@ import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.rap.rwt.RWT;
@@ -102,7 +102,7 @@ public class TagLikeListSmallPart extends Composite {
 
 		// Cache some context object to ease implementation
 		this.resourceService = peopleService.getResourceService();
-		session = JcrUiUtils.getSession(taggable);
+		session = ConnectJcrUtils.getSession(taggable);
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
 
 		try {
@@ -214,7 +214,7 @@ public class TagLikeListSmallPart extends Composite {
 										MessageDialog.openInformation(parentCmp.getShell(), "Forbidden action", msg);
 									} else
 										CommandUtils.callCommand(peopleWorkbenchService.getOpenEntityEditorCmdId(),
-												OpenEntityEditor.PARAM_JCR_ID, JcrUiUtils.getIdentifier(tag));
+												OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(tag));
 								} catch (RepositoryException e) {
 									throw new PeopleException("unable to get path for resource tag node " + tag
 											+ " while editing " + taggable, e);
@@ -324,7 +324,7 @@ public class TagLikeListSmallPart extends Composite {
 					for (Value tag : values) {
 						String curTagUpperCase = tag.getString().toUpperCase().trim();
 						if (newTag.toUpperCase().trim().equals(curTagUpperCase)) {
-							msg = "\"" + JcrUiUtils.get(taggable, Property.JCR_TITLE) + "\" is already linked with \""
+							msg = "\"" + ConnectJcrUtils.get(taggable, Property.JCR_TITLE) + "\" is already linked with \""
 									+ tag.getString() + "\". Nothing has been done.";
 							MessageDialog.openError(shell, "Duplicate link", msg);
 							return;

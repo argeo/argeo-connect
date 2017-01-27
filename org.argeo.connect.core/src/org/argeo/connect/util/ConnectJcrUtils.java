@@ -38,11 +38,11 @@ import org.argeo.connect.ConnectException;
 import org.argeo.jcr.JcrUtils;
 
 /**
- * Utility methods to ease interaction with a JCR repository while implementing
- * UI. This might move to commons in a near future
+ * Utility methods to ease interaction with a JCR repository while implementing.
+ * This might move to commons in a near future
  */
-public class JcrUiUtils {
-	private final static Log log = LogFactory.getLog(JcrUiUtils.class);
+public class ConnectJcrUtils {
+	private final static Log log = LogFactory.getLog(ConnectJcrUtils.class);
 
 	private final static String NS_JCR = "http://www.jcp.org/jcr/1.0";
 	private final static String NS_NT = "http://www.jcp.org/jcr/nt/1.0";
@@ -969,7 +969,7 @@ public class JcrUiUtils {
 				for (Value currValue : values) {
 					String jcrId = currValue.getString();
 					if (nodeToReference.getIdentifier().equals(jcrId)) {
-						errMsg = JcrUiUtils.get(nodeToReference, Property.JCR_TITLE)
+						errMsg = ConnectJcrUtils.get(nodeToReference, Property.JCR_TITLE)
 								+ " is already in the list and thus could not be added.";
 						return errMsg;
 					} else
@@ -1232,6 +1232,6 @@ public class JcrUiUtils {
 	}
 
 	/* PREVENTS INSTANTIATION */
-	private JcrUiUtils() {
+	private ConnectJcrUtils() {
 	}
 }

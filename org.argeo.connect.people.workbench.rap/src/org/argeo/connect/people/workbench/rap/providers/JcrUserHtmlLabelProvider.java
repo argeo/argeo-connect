@@ -6,7 +6,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 
 /**
@@ -39,7 +39,7 @@ public class JcrUserHtmlLabelProvider extends JcrRowLabelProvider {
 
 	@Override
 	public String getText(Object element) {
-		Node currNode = JcrUiUtils.getNodeFromElement(element, selectorName);
+		Node currNode = ConnectJcrUtils.getNodeFromElement(element, selectorName);
 		try {
 			String userId = super.getText(currNode);
 			String displayName = null;

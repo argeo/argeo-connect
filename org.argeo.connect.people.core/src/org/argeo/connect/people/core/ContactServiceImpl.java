@@ -23,7 +23,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 
 /**
  * Canonical implementation of the People's {@link ContactService}. Among
@@ -52,8 +52,8 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 
 	@Override
 	public String[] getContactTypeLabels(Node entity) {
-		if (JcrUiUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)
-				|| JcrUiUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG))
+		if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)
+				|| ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG))
 			return ContactValueCatalogs.ARRAY_CONTACT_TYPES;
 		else
 			return null;
@@ -64,7 +64,7 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 		try {
 			// Retrieves parent entity to enable decision
 			Node entity = contact.getParent().getParent();
-			String nature = JcrUiUtils.get(contact, PEOPLE_CONTACT_NATURE);
+			String nature = ConnectJcrUtils.get(contact, PEOPLE_CONTACT_NATURE);
 			if (PEOPLE_CONTACT_CATEGORY.equals(property)) {
 				if (contact.isNodeType(PeopleTypes.PEOPLE_PHONE)) {
 					if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {

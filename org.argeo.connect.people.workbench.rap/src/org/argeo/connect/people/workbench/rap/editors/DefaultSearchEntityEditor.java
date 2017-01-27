@@ -14,12 +14,12 @@ import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractSearchEntityEditor;
 import org.argeo.connect.people.workbench.rap.providers.JcrHtmlLabelProvider;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
@@ -39,15 +39,15 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".defaultSearchEntityEditor";
 
 	// Default column
-	private List<PeopleColumnDefinition> colDefs;
+	private List<ConnectColumnDefinition> colDefs;
 	private TagLikeDropDown tagDD;
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
-		colDefs = new ArrayList<PeopleColumnDefinition>();
-		colDefs.add(new PeopleColumnDefinition("Display Name", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
-		colDefs.add(new PeopleColumnDefinition("Tags", new JcrHtmlLabelProvider(PEOPLE_TAGS), 300));
+		colDefs = new ArrayList<ConnectColumnDefinition>();
+		colDefs.add(new ConnectColumnDefinition("Display Name", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
+		colDefs.add(new ConnectColumnDefinition("Tags", new JcrHtmlLabelProvider(PEOPLE_TAGS), 300));
 	}
 
 	/** Override this to provide type specific static filters */
@@ -98,7 +98,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 			Query query = queryManager.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH);
 
 			QueryResult result = query.execute();
-			Row[] rows = JcrUiUtils.rowIteratorToArray(result.getRows());
+			Row[] rows = ConnectJcrUtils.rowIteratorToArray(result.getRows());
 			setViewerInput(rows);
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list " + getEntityType() + " entities with static filter ", e);
@@ -107,7 +107,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 
 	/** Overwrite to provide corresponding column definitions */
 	@Override
-	public List<PeopleColumnDefinition> getColumnDefinition(String extractId) {
+	public List<ConnectColumnDefinition> getColumnDefinition(String extractId) {
 		return colDefs;
 	}
 }

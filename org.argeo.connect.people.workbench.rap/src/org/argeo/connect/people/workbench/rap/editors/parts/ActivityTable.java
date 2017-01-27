@@ -37,7 +37,7 @@ import org.argeo.connect.people.workbench.rap.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.workbench.rap.util.ActivityViewerComparator;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -80,7 +80,7 @@ public class ActivityTable extends Composite {
 			PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, Node entity) {
 		super(parent, SWT.NONE);
-		session = JcrUiUtils.getSession(entity);
+		session = ConnectJcrUtils.getSession(entity);
 		// this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		activityService = peopleService.getActivityService();
@@ -161,7 +161,7 @@ public class ActivityTable extends Composite {
 		col = new TableColumn(table, SWT.LEFT | SWT.WRAP);
 		tableColumnLayout.setColumnData(col, new ColumnWeightData(200, 150,
 				true));
-		// col.addSelectionListener(JcrUiUtils.getNodeSelectionAdapter(colIndex++,
+		// col.addSelectionListener(ConnectJcrUtils.getNodeSelectionAdapter(colIndex++,
 		// PropertyType.STRING, Property.JCR_TITLE, comparator, viewer));
 		tvCol = new TableViewerColumn(viewer, col);
 		tvCol.setLabelProvider(new TitleDescLabelProvider());
@@ -239,7 +239,7 @@ public class ActivityTable extends Composite {
 									.getPrimaryNodeType().getName()));
 					builder.append("</b>");
 					builder.append("<br />");
-					builder.append(JcrUiUtils.get(currNode,
+					builder.append(ConnectJcrUtils.get(currNode,
 							PeopleNames.PEOPLE_TASK_STATUS));
 
 				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
@@ -247,7 +247,7 @@ public class ActivityTable extends Composite {
 					builder.append(activityService.getActivityLabel(currNode));
 					// specific for rate
 					if (currNode.isNodeType(PeopleTypes.PEOPLE_RATE)) {
-						Long rate = JcrUiUtils.getLongValue(currNode,
+						Long rate = ConnectJcrUtils.getLongValue(currNode,
 								PeopleNames.PEOPLE_RATE);
 						if (rate != null)
 							builder.append(": " + rate);
@@ -385,7 +385,7 @@ public class ActivityTable extends Composite {
 	}
 
 	private String getDNameFromProp(Node node, String propName) {
-		String id = JcrUiUtils.get(node, propName);
+		String id = ConnectJcrUtils.get(node, propName);
 		if (EclipseUiUtils.notEmpty(id))
 			return userAdminService.getUserDisplayName(id);
 		return "";
@@ -420,7 +420,7 @@ public class ActivityTable extends Composite {
 							builder.append(value).append(" (Assignee)")
 									.append("<br />");
 
-						value = JcrUiUtils.get(activityNode,
+						value = ConnectJcrUtils.get(activityNode,
 								Property.JCR_LAST_MODIFIED_BY);
 						if (EclipseUiUtils.notEmpty(value))
 							builder.append(getDisplayName(value)).append(
@@ -477,7 +477,7 @@ public class ActivityTable extends Composite {
 										.getOpenEditorSnippet(
 												peopleWorkbenchService
 														.getOpenEntityEditorCmdId(),
-												currReferenced, JcrUiUtils.get(
+												currReferenced, ConnectJcrUtils.get(
 														currReferenced,
 														Property.JCR_TITLE));
 								builder.append(label).append(", ");
@@ -509,18 +509,18 @@ public class ActivityTable extends Composite {
 				Node currNode = (Node) element;
 
 				if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-					String title = JcrUiUtils.get(currNode, Property.JCR_TITLE);
+					String title = ConnectJcrUtils.get(currNode, Property.JCR_TITLE);
 					// Specific behaviour for polls
 					if (currNode.isNodeType(PeopleTypes.PEOPLE_POLL)) {
-						title = JcrUiUtils.get(currNode,
+						title = ConnectJcrUtils.get(currNode,
 								PeopleNames.PEOPLE_POLL_NAME)
 								+ ": "
 								+ ActivityUtils.getAvgRating(currNode);
 					}
 
-					String desc = JcrUiUtils.get(currNode,
+					String desc = ConnectJcrUtils.get(currNode,
 							Property.JCR_DESCRIPTION);
-					String res = JcrUiUtils
+					String res = ConnectJcrUtils
 							.concatIfNotEmpty(title, desc, " - ");
 					return wrapThis(res);
 				}

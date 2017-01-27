@@ -22,7 +22,7 @@ import org.argeo.connect.people.workbench.rap.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -99,17 +99,17 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 	protected void populateReadOnlyPanel(Composite readOnlyPanel) {
 		readOnlyPanel.setLayout(new GridLayout());
 
-		String refUid = JcrUiUtils.get(contactNode, PeopleNames.PEOPLE_REF_UID);
-		if (JcrUiUtils.isNodeType(contactNode, PeopleTypes.PEOPLE_CONTACT_REF) && EclipseUiUtils.notEmpty(refUid)) {
+		String refUid = ConnectJcrUtils.get(contactNode, PeopleNames.PEOPLE_REF_UID);
+		if (ConnectJcrUtils.isNodeType(contactNode, PeopleTypes.PEOPLE_CONTACT_REF) && EclipseUiUtils.notEmpty(refUid)) {
 
-			final Node referencedEntity = peopleService.getEntityByUid(JcrUiUtils.getSession(contactNode), refUid);
+			final Node referencedEntity = peopleService.getEntityByUid(ConnectJcrUtils.getSession(contactNode), refUid);
 
 			Link readOnlyInfoLk = new Link(readOnlyPanel, SWT.WRAP);
 			// CmsUtils.markup(readOnlyInfoLk);
 			StringBuilder builder = new StringBuilder();
 			// the referenced org
 			if (referencedEntity != null) {
-				String label = JcrUiUtils.get(referencedEntity, Property.JCR_TITLE);
+				String label = ConnectJcrUtils.get(referencedEntity, Property.JCR_TITLE);
 				builder.append("<a>").append(label).append("</a> ");
 			}
 			// current contact meta data
@@ -145,8 +145,8 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		rl.center = true;
 		parent.setLayout(rl);
 
-		String refUid = JcrUiUtils.get(contactNode, PeopleNames.PEOPLE_REF_UID);
-		if (JcrUiUtils.isNodeType(contactNode, PeopleTypes.PEOPLE_CONTACT_REF) && EclipseUiUtils.notEmpty(refUid))
+		String refUid = ConnectJcrUtils.get(contactNode, PeopleNames.PEOPLE_REF_UID);
+		if (ConnectJcrUtils.isNodeType(contactNode, PeopleTypes.PEOPLE_CONTACT_REF) && EclipseUiUtils.notEmpty(refUid))
 			populateWorkAdresseCmp(parent, contactNode);
 		else
 			populateAdresseCmp(parent, contactNode);
@@ -179,7 +179,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 						contactNode.getProperty(PeopleNames.PEOPLE_REF_UID).getString());
 				if (linkedOrg != null) {
 					nameLkListener.setOrg(linkedOrg);
-					nameLk.setText("<a>" + JcrUiUtils.get(linkedOrg, Property.JCR_TITLE) + "</a>");
+					nameLk.setText("<a>" + ConnectJcrUtils.get(linkedOrg, Property.JCR_TITLE) + "</a>");
 				}
 			}
 
@@ -198,10 +198,10 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					Node currNode = diag.getSelected();
 					if (currNode != null) {
 						nameLkListener.setOrg(currNode);
-						nameLk.setText("<a>" + JcrUiUtils.get(currNode, Property.JCR_TITLE) + "</a>");
+						nameLk.setText("<a>" + ConnectJcrUtils.get(currNode, Property.JCR_TITLE) + "</a>");
 
-						String uid = JcrUiUtils.get(currNode, PeopleNames.PEOPLE_UID);
-						if (JcrUiUtils.setJcrProperty(contactNode, PeopleNames.PEOPLE_REF_UID, PropertyType.STRING,
+						String uid = ConnectJcrUtils.get(currNode, PeopleNames.PEOPLE_UID);
+						if (ConnectJcrUtils.setJcrProperty(contactNode, PeopleNames.PEOPLE_REF_UID, PropertyType.STRING,
 								uid))
 							formPart.markDirty();
 					}
@@ -225,7 +225,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		public void widgetSelected(final SelectionEvent event) {
 			if (org != null) {
 				CommandUtils.callCommand(peopleWorkbenchService.getOpenEntityEditorCmdId(),
-						OpenEntityEditor.PARAM_JCR_ID, JcrUiUtils.getIdentifier(org));
+						OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(org));
 			}
 
 		}
@@ -244,7 +244,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			Text countryTxt = PeopleRapUtils.createRDText(toolkit, parent, "Country", "", 110);
 
 			// The country drop down
-			Session session = JcrUiUtils.getSession(contactNode);
+			Session session = ConnectJcrUtils.getSession(contactNode);
 			final TagLikeDropDown countryDD = new TagLikeDropDown(session, peopleService.getResourceService(),
 					PeopleConstants.RESOURCE_COUNTRY, countryTxt);
 
@@ -283,7 +283,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					PropertyType.STRING);
 
 			// specific for drop downs
-			String countryIso = JcrUiUtils.get(contactNode, PeopleNames.PEOPLE_COUNTRY);
+			String countryIso = ConnectJcrUtils.get(contactNode, PeopleNames.PEOPLE_COUNTRY);
 			if (EclipseUiUtils.notEmpty(countryIso)) {
 				String countryVal = peopleService.getResourceService().getEncodedTagValue(session,
 						PeopleConstants.RESOURCE_COUNTRY, countryIso);
@@ -304,10 +304,10 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 				String label = text.getText();
 				if (EclipseUiUtils.isEmpty(label))
 					return;
-				Session session = JcrUiUtils.getSession(contactNode);
+				Session session = ConnectJcrUtils.getSession(contactNode);
 				String iso = peopleService.getResourceService().getEncodedTagCodeFromValue(session,
 						PeopleConstants.RESOURCE_COUNTRY, label);
-				if (EclipseUiUtils.notEmpty(iso) && JcrUiUtils.setJcrProperty(contactNode, PeopleNames.PEOPLE_COUNTRY,
+				if (EclipseUiUtils.notEmpty(iso) && ConnectJcrUtils.setJcrProperty(contactNode, PeopleNames.PEOPLE_COUNTRY,
 						PropertyType.STRING, iso)) {
 					part.markDirty();
 				}
@@ -322,7 +322,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				if (JcrUiUtils.setJcrProperty(entity, propName, propType, text.getText())) {
+				if (ConnectJcrUtils.setJcrProperty(entity, propName, propType, text.getText())) {
 					part.markDirty();
 					PeopleJcrUtils.updateDisplayAddress(entity);
 				}

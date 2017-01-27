@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.argeo.connect.people.core.versioning;
+package org.argeo.connect.versioning;
 
 import java.util.Calendar;
 import java.util.Map;

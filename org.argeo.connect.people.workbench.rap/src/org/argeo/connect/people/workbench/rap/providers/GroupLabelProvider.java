@@ -10,7 +10,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
@@ -59,7 +59,7 @@ public class GroupLabelProvider extends ColumnLabelProvider implements
 			builder.append("<span style='font-size:15px;'>");
 			// first line
 			builder.append("<b><big> ");
-			builder.append(JcrUiUtils.get(entity, Property.JCR_TITLE));
+			builder.append(ConnectJcrUtils.get(entity, Property.JCR_TITLE));
 			builder.append("</big></b>");
 
 			if (entity.hasNode(PEOPLE_MEMBERS)) { // Nb of members
@@ -77,7 +77,7 @@ public class GroupLabelProvider extends ColumnLabelProvider implements
 						.append(" members)</i>");
 			}
 			// Description
-			String desc = JcrUiUtils.get(entity, Property.JCR_DESCRIPTION);
+			String desc = ConnectJcrUtils.get(entity, Property.JCR_DESCRIPTION);
 			if (EclipseUiUtils.notEmpty(desc))
 				builder.append("<br />").append(desc);
 			builder.append("</span>");
@@ -95,7 +95,7 @@ public class GroupLabelProvider extends ColumnLabelProvider implements
 	// while (ni.hasNext()) {
 	// currCount = countMembers(ni.nextNode(), currCount);
 	// }
-	// if (JcrUiUtils.isNodeType(node,
+	// if (ConnectJcrUtils.isNodeType(node,
 	// PeopleTypes.PEOPLE_MAILING_LIST_ITEM)) {
 	// currCount++;
 	// }
@@ -110,7 +110,7 @@ public class GroupLabelProvider extends ColumnLabelProvider implements
 		// try {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b>");
-		builder.append(JcrUiUtils.get(entity, Property.JCR_TITLE));
+		builder.append(ConnectJcrUtils.get(entity, Property.JCR_TITLE));
 		builder.append("</b>");
 
 		// Nb of members

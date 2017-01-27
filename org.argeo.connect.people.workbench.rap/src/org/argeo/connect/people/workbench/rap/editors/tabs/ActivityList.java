@@ -23,7 +23,7 @@ import org.argeo.connect.people.workbench.rap.editors.parts.ActivityTable;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.workbench.rap.wizards.NewSimpleTaskWizard;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -87,7 +87,7 @@ public class ActivityList extends LazyCTabControl {
 		Composite addCmp = null;
 		// if (peopleService.getUserAdminService().amIInRole(
 		// PeopleConstants.ROLE_MEMBER)) {
-		if (JcrUiUtils.canEdit(entity)) {
+		if (ConnectJcrUtils.canEdit(entity)) {
 			addCmp = toolkit.createComposite(parent);
 			addCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		}
@@ -298,7 +298,7 @@ public class ActivityList extends LazyCTabControl {
 			relatedTo.add(relatedEntity);
 			Node activity = activityService.createActivity(session, type,
 					title, desc, relatedTo);
-			JcrUiUtils.saveAndPublish(activity, true);
+			ConnectJcrUtils.saveAndPublish(activity, true);
 			return activity;
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to create activity node", e);

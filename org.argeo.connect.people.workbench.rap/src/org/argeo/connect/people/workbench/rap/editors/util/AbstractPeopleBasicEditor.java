@@ -4,7 +4,7 @@ import javax.jcr.Repository;
 import javax.jcr.Session;
 
 import org.argeo.connect.people.workbench.rap.util.Refreshable;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
@@ -25,7 +25,7 @@ public abstract class AbstractPeopleBasicEditor extends EditorPart implements
 			throws PartInitException {
 		setSite(site);
 		setInput(input);
-		session = JcrUiUtils.login(repository);
+		session = ConnectJcrUtils.login(repository);
 	}
 
 	@Override

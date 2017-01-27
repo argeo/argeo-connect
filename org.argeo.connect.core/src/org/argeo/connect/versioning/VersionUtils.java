@@ -1,4 +1,4 @@
-package org.argeo.connect.people.core.versioning;
+package org.argeo.connect.versioning;
 
 import static java.util.Arrays.asList;
 
@@ -22,24 +22,21 @@ import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
 
-import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.ConnectException;
 
 /** History management */
 public class VersionUtils {
 
 	// Filtered properties
-	public static final List<String> DEFAULT_FILTERED_OUT_PROP_NAMES = asList(
-			"jcr:uuid", "jcr:frozenUuid", "jcr:frozenPrimaryType",
-			"jcr:primaryType", "jcr:lastModified", "jcr:lastModifiedBy",
+	public static final List<String> DEFAULT_FILTERED_OUT_PROP_NAMES = asList("jcr:uuid", "jcr:frozenUuid",
+			"jcr:frozenPrimaryType", "jcr:primaryType", "jcr:lastModified", "jcr:lastModifiedBy",
 			Property.JCR_LAST_MODIFIED_BY);
 
-	public static List<VersionDiff> listHistoryDiff(Node entity,
-			List<String> excludedProperties) {
+	public static List<VersionDiff> listHistoryDiff(Node entity, List<String> excludedProperties) {
 		try {
 			Session session = entity.getSession();
 			List<VersionDiff> res = new ArrayList<VersionDiff>();
-			VersionManager versionManager = session.getWorkspace()
-					.getVersionManager();
+			VersionManager versionManager = session.getWorkspace().getVersionManager();
 
 			// if (!entity.hasProperty(Property.JCR_CREATED))
 			// // Transient item. No history
@@ -47,8 +44,7 @@ public class VersionUtils {
 
 			VersionHistory versionHistory = null;
 			try {
-				versionHistory = versionManager.getVersionHistory(entity
-						.getPath());
+				versionHistory = versionManager.getVersionHistory(entity.getPath());
 			} catch (Exception ise) {
 				// TODO clean this:
 				// Transient items that have just been created have no version
@@ -74,26 +70,20 @@ public class VersionUtils {
 				}
 				if (predecessor == null) {// original
 				} else {
-					Map<String, ItemDiff> diffs = VersionUtils.compareNodes(
-							predecessor.getFrozenNode(), node,
+					Map<String, ItemDiff> diffs = VersionUtils.compareNodes(predecessor.getFrozenNode(), node,
 							excludedProperties);
 					if (!diffs.isEmpty()) {
-						String userid = node
-								.hasProperty(Property.JCR_LAST_MODIFIED_BY) ? node
-								.getProperty(Property.JCR_LAST_MODIFIED_BY)
-								.getString() : null;
-						Calendar updateTime = node
-								.hasProperty(Property.JCR_LAST_MODIFIED) ? node
-								.getProperty(Property.JCR_LAST_MODIFIED)
-								.getDate() : null;
+						String userid = node.hasProperty(Property.JCR_LAST_MODIFIED_BY)
+								? node.getProperty(Property.JCR_LAST_MODIFIED_BY).getString() : null;
+						Calendar updateTime = node.hasProperty(Property.JCR_LAST_MODIFIED)
+								? node.getProperty(Property.JCR_LAST_MODIFIED).getDate() : null;
 						res.add(new VersionDiff(null, userid, updateTime, diffs));
 					}
 				}
 			}
 			return res;
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot generate history for node "
-					+ entity, e);
+			throw new ConnectException("Cannot generate history for node " + entity, e);
 		}
 	}
 
@@ -101,8 +91,7 @@ public class VersionUtils {
 	 * Returns an ordered map of differences, either on node or on their
 	 * properties
 	 */
-	public static Map<String, ItemDiff> compareNodes(Node reference,
-			Node observed, List<String> excludedProperties) {
+	public static Map<String, ItemDiff> compareNodes(Node reference, Node observed, List<String> excludedProperties) {
 		// It is important to keep the same order
 		Map<String, ItemDiff> diffs = new LinkedHashMap<String, ItemDiff>();
 		compareNodes(diffs, null, reference, observed, excludedProperties);
@@ -110,12 +99,11 @@ public class VersionUtils {
 	}
 
 	/** Recursively compares 2 nodes */
-	static void compareNodes(Map<String, ItemDiff> diffs, String relPath,
-			Node reference, Node observed, List<String> excludedProperties) {
+	static void compareNodes(Map<String, ItemDiff> diffs, String relPath, Node reference, Node observed,
+			List<String> excludedProperties) {
 		Map<String, ItemDiff> localDiffs = new LinkedHashMap<String, ItemDiff>();
 		try {
-			compareProperties(localDiffs, relPath, reference, observed,
-					excludedProperties);
+			compareProperties(localDiffs, relPath, reference, observed, excludedProperties);
 
 			// Removed and modified Node
 			NodeIterator nit = reference.getNodes();
@@ -123,24 +111,19 @@ public class VersionUtils {
 				Node n = nit.nextNode();
 				String refRelPath = getRelPath(reference, n);
 
-				String currNodePath = (relPath != null ? relPath + "/" : "")
-						+ refRelPath;
+				String currNodePath = (relPath != null ? relPath + "/" : "") + refRelPath;
 				if (observed.hasNode(refRelPath)) {
 					Map<String, ItemDiff> modDiffs = new LinkedHashMap<String, ItemDiff>();
-					compareNodes(modDiffs, currNodePath, n,
-							observed.getNode(refRelPath), excludedProperties);
+					compareNodes(modDiffs, currNodePath, n, observed.getNode(refRelPath), excludedProperties);
 					if (!modDiffs.isEmpty()) {
-						ItemDiff iDiff = new ItemDiff(ItemDiff.MODIFIED,
-								currNodePath, n, observed.getNode(refRelPath));
+						ItemDiff iDiff = new ItemDiff(ItemDiff.MODIFIED, currNodePath, n, observed.getNode(refRelPath));
 						localDiffs.put(currNodePath, iDiff);
 						localDiffs.putAll(modDiffs);
 					}
 				} else {
-					ItemDiff iDiff = new ItemDiff(ItemDiff.REMOVED,
-							currNodePath, n, null);
+					ItemDiff iDiff = new ItemDiff(ItemDiff.REMOVED, currNodePath, n, null);
 					localDiffs.put(currNodePath, iDiff);
-					addAllProperties(localDiffs, ItemDiff.REMOVED, true, n,
-							excludedProperties);
+					addAllProperties(localDiffs, ItemDiff.REMOVED, true, n, excludedProperties);
 				}
 			}
 			// Added nodes
@@ -148,11 +131,9 @@ public class VersionUtils {
 			while (nit.hasNext()) {
 				Node n = nit.nextNode();
 				String obsRelPath = getRelPath(observed, n);
-				String currNodePath = (relPath != null ? relPath + "/" : "")
-						+ obsRelPath;
+				String currNodePath = (relPath != null ? relPath + "/" : "") + obsRelPath;
 				if (!reference.hasNode(obsRelPath)) {
-					ItemDiff iDiff = new ItemDiff(ItemDiff.ADDED, currNodePath,
-							null, n);
+					ItemDiff iDiff = new ItemDiff(ItemDiff.ADDED, currNodePath, null, n);
 					localDiffs.put(currNodePath, iDiff);
 					// This triggers the display of duplicated properties when a
 					// sub node is added. Violently commented out for the time
@@ -172,15 +153,13 @@ public class VersionUtils {
 					Iterator<ItemDiff> it = localDiffs.values().iterator();
 					if (isNodeDiff(it.next()) && isNodeDiff(it.next())) {
 						// remove the first
-						localDiffs
-								.remove(localDiffs.keySet().iterator().next());
+						localDiffs.remove(localDiffs.keySet().iterator().next());
 					}
 				}
 				diffs.putAll(localDiffs);
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot diff " + reference + " and "
-					+ observed, e);
+			throw new ConnectException("Cannot diff " + reference + " and " + observed, e);
 		}
 	}
 
@@ -191,9 +170,8 @@ public class VersionUtils {
 		return tmpItem instanceof Node;
 	}
 
-	static void addAllProperties(Map<String, ItemDiff> diffs, Integer type,
-			boolean trackSubNode, Node node, List<String> excludedProperties)
-			throws RepositoryException {
+	static void addAllProperties(Map<String, ItemDiff> diffs, Integer type, boolean trackSubNode, Node node,
+			List<String> excludedProperties) throws RepositoryException {
 		PropertyIterator pit = node.getProperties();
 		props: while (pit.hasNext()) {
 			Property p = pit.nextProperty();
@@ -246,8 +224,8 @@ public class VersionUtils {
 	 * description properties, among other. Filtering must be applied afterwards
 	 * to only keep relevant properties.
 	 */
-	static void compareProperties(Map<String, ItemDiff> diffs, String relPath,
-			Node reference, Node observed, List<String> excludedProperties) {
+	static void compareProperties(Map<String, ItemDiff> diffs, String relPath, Node reference, Node observed,
+			List<String> excludedProperties) {
 		try {
 			// Removed and modified properties
 			PropertyIterator pit = reference.getProperties();
@@ -258,15 +236,13 @@ public class VersionUtils {
 				if (excludedProperties.contains(name))
 					continue props;
 				if (!observed.hasProperty(name)) {
-					ItemDiff iDiff = new ItemDiff(ItemDiff.REMOVED, name, p,
-							null);
+					ItemDiff iDiff = new ItemDiff(ItemDiff.REMOVED, name, p, null);
 					diffs.put(relName, iDiff);
 				} else {
 					if (p.isMultiple()) {
 
 						Value[] refValues = p.getValues();
-						Value[] newValues = observed.getProperty(name)
-								.getValues();
+						Value[] newValues = observed.getProperty(name).getValues();
 						refValues: for (Value refValue : refValues) {
 							for (Value newValue : newValues) {
 								if (refValue.equals(newValue))
@@ -274,8 +250,7 @@ public class VersionUtils {
 							}
 							// At least one value has been removed -> modified
 							// prop
-							ItemDiff iDiff = new ItemDiff(ItemDiff.MODIFIED,
-									name, p, observed.getProperty(name));
+							ItemDiff iDiff = new ItemDiff(ItemDiff.MODIFIED, name, p, observed.getProperty(name));
 							diffs.put(relName, iDiff);
 							continue props;
 						}
@@ -287,8 +262,7 @@ public class VersionUtils {
 							}
 							// At least one value has been added -> modified
 							// prop
-							ItemDiff iDiff = new ItemDiff(ItemDiff.MODIFIED,
-									name, p, observed.getProperty(name));
+							ItemDiff iDiff = new ItemDiff(ItemDiff.MODIFIED, name, p, observed.getProperty(name));
 							diffs.put(relName, iDiff);
 							continue props;
 						}
@@ -296,8 +270,7 @@ public class VersionUtils {
 						Value referenceValue = p.getValue();
 						Value newValue = observed.getProperty(name).getValue();
 						if (!referenceValue.equals(newValue)) {
-							ItemDiff iDiff = new ItemDiff(ItemDiff.MODIFIED,
-									name, p, observed.getProperty(name));
+							ItemDiff iDiff = new ItemDiff(ItemDiff.MODIFIED, name, p, observed.getProperty(name));
 							diffs.put(relName, iDiff);
 						}
 					}
@@ -317,18 +290,16 @@ public class VersionUtils {
 				}
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot diff " + reference + " and "
-					+ observed, e);
+			throw new ConnectException("Cannot diff " + reference + " and " + observed, e);
 		}
 	}
 
-	private static String getRelPath(Node parent, Node descendant)
-			throws RepositoryException {
+	private static String getRelPath(Node parent, Node descendant) throws RepositoryException {
 		String pPath = parent.getPath();
 		String dPath = descendant.getPath();
 		if (!dPath.startsWith(pPath))
-			throw new PeopleException("Cannot get rel path for " + descendant
-					+ ". It is not a descendant of " + parent);
+			throw new ConnectException(
+					"Cannot get rel path for " + descendant + ". It is not a descendant of " + parent);
 		String relPath = dPath.substring(pPath.length());
 		if (relPath.startsWith("/"))
 			relPath = relPath.substring(1);
@@ -336,8 +307,7 @@ public class VersionUtils {
 	}
 
 	/** Builds a property relPath to be used in the diff map. */
-	private static String propertyRelPath(String baseRelPath,
-			String propertyName) {
+	private static String propertyRelPath(String baseRelPath, String propertyName) {
 		if (baseRelPath == null)
 			return propertyName;
 		else

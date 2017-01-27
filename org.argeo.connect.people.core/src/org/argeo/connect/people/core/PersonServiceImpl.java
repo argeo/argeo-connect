@@ -15,7 +15,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.PersonService;
 import org.argeo.connect.people.util.PeopleJcrUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
@@ -37,10 +37,10 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 				defineDistinct = entity.getProperty(
 						PEOPLE_USE_DISTINCT_DISPLAY_NAME).getBoolean();
 			if (defineDistinct)
-				displayName = JcrUiUtils.get(entity, Property.JCR_TITLE);
+				displayName = ConnectJcrUtils.get(entity, Property.JCR_TITLE);
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
-				String lastName = JcrUiUtils.get(entity, PEOPLE_LAST_NAME);
-				String firstName = JcrUiUtils.get(entity, PEOPLE_FIRST_NAME);
+				String lastName = ConnectJcrUtils.get(entity, PEOPLE_LAST_NAME);
+				String firstName = ConnectJcrUtils.get(entity, PEOPLE_FIRST_NAME);
 				if (EclipseUiUtils.notEmpty(firstName) || notEmpty(lastName)) {
 					displayName = lastName;
 					if (notEmpty(firstName) && notEmpty(lastName))
@@ -49,7 +49,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 				}
 			} else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG)) {
 				// Default display is simply the legal name
-				displayName = JcrUiUtils.get(entity, PEOPLE_LEGAL_NAME);
+				displayName = ConnectJcrUtils.get(entity, PEOPLE_LEGAL_NAME);
 			} else
 				throw new PeopleException("Display name not defined for type "
 						+ entity.getPrimaryNodeType().getName() + " - node: "
@@ -80,20 +80,20 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 	 */
 	protected Node savePerson(Node person, boolean publish)
 			throws PeopleException, RepositoryException {
-		String lastName = JcrUiUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
-		String firstName = JcrUiUtils
+		String lastName = ConnectJcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
+		String firstName = ConnectJcrUtils
 				.get(person, PeopleNames.PEOPLE_FIRST_NAME);
-		Boolean useDistinctDName = JcrUiUtils.getBooleanValue(person,
+		Boolean useDistinctDName = ConnectJcrUtils.getBooleanValue(person,
 				PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 		String displayName = null;
-		JcrUiUtils.saveAndPublish(person, false);
+		ConnectJcrUtils.saveAndPublish(person, false);
 
 		// Update display name cache if needed
 		if (useDistinctDName == null || !useDistinctDName) {
 			displayName = getDisplayName(person);
 			person.setProperty(Property.JCR_TITLE, displayName);
 		} else
-			displayName = JcrUiUtils.get(person, Property.JCR_TITLE);
+			displayName = ConnectJcrUtils.get(person, Property.JCR_TITLE);
 
 		// Check validity of main info
 		if (isEmpty(lastName) && isEmpty(firstName) && isEmpty(displayName)) {
@@ -105,11 +105,11 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 
 		person = peopleService.checkPathAndMoveIfNeeded(person,
 				PeopleTypes.PEOPLE_PERSON);
-		JcrUiUtils.saveAndPublish(person, false);
+		ConnectJcrUtils.saveAndPublish(person, false);
 
 		// Update cache
 		peopleService.updatePrimaryCache(person);
-		JcrUiUtils.saveAndPublish(person, publish);
+		ConnectJcrUtils.saveAndPublish(person, publish);
 		return person;
 	}
 
@@ -117,9 +117,9 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 	protected Node saveOrganisation(Node org, boolean publish)
 			throws PeopleException, RepositoryException {
 		// Check validity of main info
-		String legalName = JcrUiUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
+		String legalName = ConnectJcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 
-		Boolean defineDistinctDefaultDisplay = JcrUiUtils.getBooleanValue(org,
+		Boolean defineDistinctDefaultDisplay = ConnectJcrUtils.getBooleanValue(org,
 				PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 		String displayName;
 		if (defineDistinctDefaultDisplay == null
@@ -127,7 +127,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 			displayName = getDisplayName(org);
 			org.setProperty(Property.JCR_TITLE, legalName);
 		} else
-			displayName = JcrUiUtils.get(org, Property.JCR_TITLE);
+			displayName = ConnectJcrUtils.get(org, Property.JCR_TITLE);
 
 		if (isEmpty(legalName) && isEmpty(displayName)) {
 			String msg = "Please note that you must define a legal "
@@ -140,7 +140,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 		// Update cache
 		peopleService.updatePrimaryCache(org);
 		// real save
-		JcrUiUtils.saveAndPublish(org, publish);
+		ConnectJcrUtils.saveAndPublish(org, publish);
 		return org;
 	}
 
@@ -159,7 +159,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 				String oldPath = oldPerson.getPath();
 				String newPath = person.getPath();
 				if (!newPath.equals(oldPath)) {
-					JcrUiUtils.checkCOStatusBeforeUpdate(oldPerson);
+					ConnectJcrUtils.checkCOStatusBeforeUpdate(oldPerson);
 					oldJob.remove();
 					// FIXME we should not save the session anymore
 					oldPerson.getSession().save();
@@ -168,9 +168,9 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 			}
 
 			// Define the job node new name
-			String orgName = JcrUiUtils.get(organisation,
+			String orgName = ConnectJcrUtils.get(organisation,
 					PeopleNames.PEOPLE_LEGAL_NAME);
-			String orgUid = JcrUiUtils
+			String orgUid = ConnectJcrUtils
 					.get(organisation, PeopleNames.PEOPLE_UID);
 			String newNodeName = null;
 			if (notEmpty(orgName)) {
@@ -181,7 +181,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 			} else
 				newNodeName = orgUid;
 
-			JcrUiUtils.checkCOStatusBeforeUpdate(person);
+			ConnectJcrUtils.checkCOStatusBeforeUpdate(person);
 			// Create node if necessary
 			if (newJob == null) {
 				Node parentNode = JcrUtils.mkdirs(person,

@@ -15,7 +15,7 @@ import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 
 /**
  * Some helper methods to generate html snippets TODO refactor this once the
@@ -27,15 +27,15 @@ public class PeopleUiSnippets {
 	 * Creates a snippet with all information we have about the name of a given
 	 * person
 	 */
-	public static String getFullMontyName(Node node) {
-		String salutation = JcrUiUtils.get(node, PeopleNames.PEOPLE_SALUTATION);
-		String firstName = JcrUiUtils.get(node, PeopleNames.PEOPLE_FIRST_NAME);
-		String lastName = JcrUiUtils.get(node, PeopleNames.PEOPLE_LAST_NAME);
-		String title = JcrUiUtils.get(node, PeopleNames.PEOPLE_HONORIFIC_TITLE);
-		String suffix = JcrUiUtils.get(node, PeopleNames.PEOPLE_NAME_SUFFIX);
-		String nickName = JcrUiUtils.get(node, PeopleNames.PEOPLE_NICKNAME);
-		String maidenName = JcrUiUtils.get(node, PeopleNames.PEOPLE_MAIDEN_NAME);
-		String middleName = JcrUiUtils.get(node, PeopleNames.PEOPLE_MIDDLE_NAME);
+	public static String getLongName(Node node) {
+		String salutation = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_SALUTATION);
+		String firstName = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_FIRST_NAME);
+		String lastName = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_LAST_NAME);
+		String title = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_HONORIFIC_TITLE);
+		String suffix = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_NAME_SUFFIX);
+		String nickName = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_NICKNAME);
+		String maidenName = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_MAIDEN_NAME);
+		String middleName = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_MIDDLE_NAME);
 
 		if (notEmpty(salutation) || notEmpty(title) || notEmpty(suffix) || notEmpty(nickName) || notEmpty(maidenName)
 				|| notEmpty(middleName)) {
@@ -75,7 +75,7 @@ public class PeopleUiSnippets {
 			if (node.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
 				builder.append(getAddressDisplayValue(peopleService, node));
 			} else {
-				String value = JcrUiUtils.get(node, PeopleNames.PEOPLE_CONTACT_VALUE);
+				String value = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_CONTACT_VALUE);
 				if (node.isNodeType(PeopleTypes.PEOPLE_URL) || node.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA))
 					builder.append(ConnectUiSnippets.getUrlLink(value));
 				else if (node.isNodeType(PeopleTypes.PEOPLE_EMAIL))
@@ -99,7 +99,7 @@ public class PeopleUiSnippets {
 		StringBuilder builder = new StringBuilder();
 		// the referenced org
 		if (referencedEntity != null)
-			builder.append(JcrUiUtils.get(referencedEntity, Property.JCR_TITLE));
+			builder.append(ConnectJcrUtils.get(referencedEntity, Property.JCR_TITLE));
 		// current contact meta data
 		builder.append(getContactMetaData(contactNode));
 		// Referenced org primary address
@@ -119,9 +119,9 @@ public class PeopleUiSnippets {
 	public static String getContactMetaData(Node node) {
 		StringBuilder builder = new StringBuilder();
 
-		String nature = JcrUiUtils.get(node, PeopleNames.PEOPLE_CONTACT_NATURE);
-		String category = JcrUiUtils.get(node, PeopleNames.PEOPLE_CONTACT_CATEGORY);
-		String label = JcrUiUtils.get(node, PeopleNames.PEOPLE_CONTACT_LABEL);
+		String nature = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_CONTACT_NATURE);
+		String category = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_CONTACT_CATEGORY);
+		String label = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_CONTACT_LABEL);
 
 		if (notEmpty(nature) || notEmpty(category) || notEmpty(label)) {
 			builder.append(ConnectUiConstants.NB_DOUBLE_SPACE + "[");
@@ -145,12 +145,12 @@ public class PeopleUiSnippets {
 
 	/** creates an address Display value */
 	public static String getAddressDisplayValue(PeopleService peopleService, Node node) {
-		String street = JcrUiUtils.get(node, PeopleNames.PEOPLE_STREET);
-		String street2 = JcrUiUtils.get(node, PeopleNames.PEOPLE_STREET_COMPLEMENT);
-		String zip = JcrUiUtils.get(node, PeopleNames.PEOPLE_ZIP_CODE);
-		String city = JcrUiUtils.get(node, PeopleNames.PEOPLE_CITY);
-		String state = JcrUiUtils.get(node, PeopleNames.PEOPLE_STATE);
-		String country = JcrUiUtils.get(node, PeopleNames.PEOPLE_COUNTRY);
+		String street = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_STREET);
+		String street2 = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_STREET_COMPLEMENT);
+		String zip = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_ZIP_CODE);
+		String city = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_CITY);
+		String state = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_STATE);
+		String country = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_COUNTRY);
 
 		StringBuilder builder = new StringBuilder();
 
@@ -185,7 +185,7 @@ public class PeopleUiSnippets {
 		}
 
 		if (notEmpty(country)) {
-			country = peopleService.getResourceService().getEncodedTagValue(JcrUiUtils.getSession(node),
+			country = peopleService.getResourceService().getEncodedTagValue(ConnectJcrUtils.getSession(node),
 					PeopleConstants.RESOURCE_COUNTRY, country);
 
 			if (builder.length() > 0)
@@ -208,7 +208,7 @@ public class PeopleUiSnippets {
 					builder.append(", ");
 			}
 			if (notEmpty(country)) {
-				country = peopleService.getResourceService().getEncodedTagValue(JcrUiUtils.getSession(entity),
+				country = peopleService.getResourceService().getEncodedTagValue(ConnectJcrUtils.getSession(entity),
 						PeopleConstants.RESOURCE_COUNTRY, country);
 				builder.append(country);
 			}
@@ -259,8 +259,8 @@ public class PeopleUiSnippets {
 				person = entity;
 				Node currContact = PeopleJcrUtils.getPrimaryContact(person, PeopleTypes.PEOPLE_ADDRESS);
 				if (!(currContact == null || !currContact.isNodeType(PeopleTypes.PEOPLE_CONTACT_REF))) {
-					org = peopleService.getEntityByUid(JcrUiUtils.getSession(currContact),
-							JcrUiUtils.get(currContact, PeopleNames.PEOPLE_REF_UID));
+					org = peopleService.getEntityByUid(ConnectJcrUtils.getSession(currContact),
+							ConnectJcrUtils.get(currContact, PeopleNames.PEOPLE_REF_UID));
 				}
 			} else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
 				org = entity;
@@ -271,7 +271,7 @@ public class PeopleUiSnippets {
 			if (notEmpty(label))
 				builder.append(label);
 			if (org != null)
-				builder.append(JcrUiUtils.get(org, Property.JCR_TITLE)).append("<br/>");
+				builder.append(ConnectJcrUtils.get(org, Property.JCR_TITLE)).append("<br/>");
 			builder.append("</b>");
 			if (person != null)
 				builder.append(peopleService.getDisplayName(person)).append("<br/>");

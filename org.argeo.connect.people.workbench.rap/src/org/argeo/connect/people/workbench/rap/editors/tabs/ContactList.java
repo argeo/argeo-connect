@@ -26,7 +26,7 @@ import org.argeo.connect.people.workbench.rap.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;
@@ -192,7 +192,7 @@ public class ContactList extends LazyCTabControl {
 						Node currNode = ni.nextNode();
 						if (!currNode.isNodeType(currType))
 							continue loop;
-						if (JcrUiUtils.isNodeType(currNode,
+						if (ConnectJcrUtils.isNodeType(currNode,
 								PeopleTypes.PEOPLE_ADDRESS))
 							new ContactAddressComposite(parent, SWT.NO_FOCUS,
 									editor, myFormPart, peopleService,
@@ -246,7 +246,7 @@ public class ContactList extends LazyCTabControl {
 		addContactCmb.select(0);
 
 		// NATURE(work or private) is only for persons
-		Combo natureCmb = JcrUiUtils.isNodeType(entity,
+		Combo natureCmb = ConnectJcrUtils.isNodeType(entity,
 				PeopleTypes.PEOPLE_PERSON) ? new Combo(parent, SWT.READ_ONLY)
 				: null;
 		if (natureCmb != null) {
@@ -509,7 +509,7 @@ public class ContactList extends LazyCTabControl {
 		// Country: dropdown + text
 		Text countryTxt = createRowDataLT(parent, "Country", 150);
 		final TagLikeDropDown countryDD = new TagLikeDropDown(
-				JcrUiUtils.getSession(entity),
+				ConnectJcrUtils.getSession(entity),
 				peopleService.getResourceService(),
 				PeopleConstants.RESOURCE_COUNTRY, countryTxt);
 		final Text geoPointTxt = createRowDataLT(parent, "Geopoint", 200);
@@ -615,7 +615,7 @@ public class ContactList extends LazyCTabControl {
 					Node currNode = diag.getSelected();
 					valueTxt.setData(PROP_SELECTED_NODE, currNode);
 					if (currNode != null) {
-						valueTxt.setText(JcrUiUtils.get(currNode,
+						valueTxt.setText(ConnectJcrUtils.get(currNode,
 								Property.JCR_TITLE));
 					}
 				}

@@ -12,7 +12,6 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.PeopleStyles;
@@ -22,8 +21,9 @@ import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.workbench.rap.util.Refreshable;
 import org.argeo.connect.people.workbench.rap.wizards.TagOrUntagInstancesWizard;
+import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.widgets.DelayedText;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -88,7 +88,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		setInput(input);
 		String label = ((SearchNodeEditorInput) getEditorInput()).getName();
 		setPartName(label);
-		session = JcrUiUtils.login(repository);
+		session = ConnectJcrUtils.login(repository);
 	}
 
 	@Override
@@ -372,7 +372,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	 * Overwrite to provide corresponding column definitions. Also used for
 	 * exports generation
 	 */
-	public abstract List<PeopleColumnDefinition> getColumnDefinition(
+	public abstract List<ConnectColumnDefinition> getColumnDefinition(
 			String extractId);
 
 	/**

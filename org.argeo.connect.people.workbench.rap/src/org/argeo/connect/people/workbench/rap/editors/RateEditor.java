@@ -26,7 +26,7 @@ import org.argeo.connect.people.workbench.rap.editors.parts.LinkListPart;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.EntityEditorInput;
 import org.argeo.connect.ui.ConnectUiConstants;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -67,7 +67,7 @@ public class RateEditor extends AbstractPeopleEditor {
 	protected void updateToolTip() {
 		EntityEditorInput sei = (EntityEditorInput) getEditorInput();
 		String pollName = ActivityUtils.getPollName(getNode());
-		String manager = JcrUiUtils.get(getNode(),
+		String manager = ConnectJcrUtils.get(getNode(),
 				PeopleNames.PEOPLE_REPORTED_BY);
 		sei.setTooltipText(manager + "'s rate for " + pollName);
 	}
@@ -125,12 +125,12 @@ public class RateEditor extends AbstractPeopleEditor {
 				super.refresh();
 				boolean canEdit = RateEditor.this.isEditing()
 						&& getSession().getUserID().equals(
-								JcrUiUtils.get(getNode(),
+								ConnectJcrUtils.get(getNode(),
 										PeopleNames.PEOPLE_REPORTED_BY));
 				PeopleRapUtils.refreshFormTextWidget(RateEditor.this, descTxt,
 						rate, Property.JCR_DESCRIPTION);
 				descTxt.setEnabled(canEdit);
-				rateCmb.select(rateCmb.indexOf(JcrUiUtils.get(rate,
+				rateCmb.select(rateCmb.indexOf(ConnectJcrUtils.get(rate,
 						PeopleNames.PEOPLE_RATE)));
 				rateCmb.setEnabled(canEdit);
 			}
@@ -187,7 +187,7 @@ public class RateEditor extends AbstractPeopleEditor {
 					populate(RateHeader.this);
 
 				pollNameLbl.setText(ActivityUtils.getPollName(activity));
-				String manager = JcrUiUtils.get(activity,
+				String manager = ConnectJcrUtils.get(activity,
 						PeopleNames.PEOPLE_REPORTED_BY);
 				if (notEmpty(manager)) {
 					String dName = getPeopleService().getUserAdminService()

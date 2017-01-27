@@ -18,7 +18,7 @@ import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -141,7 +141,7 @@ public class DateTextPart extends Composite {
 				try {
 					Calendar newVal = parseDate(false);
 					if (newVal != null) {
-						if (JcrUiUtils.setJcrProperty(node, propName,
+						if (ConnectJcrUtils.setJcrProperty(node, propName,
 								PropertyType.DATE, newVal))
 							formPart.markDirty();
 					} else if (node.hasProperty(propName)) {
@@ -223,7 +223,7 @@ public class DateTextPart extends Composite {
 			cal.set(dateTimeCtl.getYear(), dateTimeCtl.getMonth(),
 					dateTimeCtl.getDay(), 12, 0);
 			dateTxt.setText(dateFormat.format(cal.getTime()));
-			if (JcrUiUtils.setJcrProperty(node, propName,
+			if (ConnectJcrUtils.setJcrProperty(node, propName,
 					PropertyType.DATE, cal))
 				formPart.markDirty();
 		}

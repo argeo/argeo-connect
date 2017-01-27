@@ -32,7 +32,7 @@ import org.argeo.connect.tracker.TrackerService;
 import org.argeo.connect.tracker.TrackerTypes;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 
@@ -152,7 +152,7 @@ public class TrackerUtils {
 		List<String> milestoneIds = new ArrayList<String>();
 		while (nit.hasNext()) {
 			Node currNode = nit.nextNode();
-			milestoneIds.add(JcrUiUtils.get(currNode, TrackerNames.TRACKER_ID));
+			milestoneIds.add(ConnectJcrUtils.get(currNode, TrackerNames.TRACKER_ID));
 		}
 		return milestoneIds;
 	}
@@ -178,7 +178,7 @@ public class TrackerUtils {
 			List<String> versionIds = new ArrayList<String>();
 			while (nit.hasNext()) {
 				Node currNode = nit.nextNode();
-				versionIds.add(JcrUiUtils.get(currNode, TrackerNames.TRACKER_ID));
+				versionIds.add(ConnectJcrUtils.get(currNode, TrackerNames.TRACKER_ID));
 			}
 			return versionIds;
 		} catch (RepositoryException e) {
@@ -345,7 +345,7 @@ public class TrackerUtils {
 	public static long getIssueNb(Node category, boolean onlyOpen) {
 		Node project = getProjectFromChild(category);
 		String relProp = getRelevantPropName(category);
-		NodeIterator nit = getIssues(project, null, relProp, JcrUiUtils.get(category, TrackerNames.TRACKER_ID),
+		NodeIterator nit = getIssues(project, null, relProp, ConnectJcrUtils.get(category, TrackerNames.TRACKER_ID),
 				onlyOpen);
 		return nit.getSize();
 	}
@@ -394,7 +394,7 @@ public class TrackerUtils {
 			}
 
 			if (issue.hasProperty(Property.JCR_CREATED)) {
-				result += " on " + JcrUiUtils.getDateFormattedAsString(issue, Property.JCR_CREATED,
+				result += " on " + ConnectJcrUtils.getDateFormattedAsString(issue, Property.JCR_CREATED,
 						ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
 			}
 			return result;
@@ -410,28 +410,28 @@ public class TrackerUtils {
 			StringBuilder builder = new StringBuilder();
 
 			// status, importance, priority
-			builder.append("<b> Status: </b>").append(JcrUiUtils.get(issue, PeopleNames.PEOPLE_TASK_STATUS))
+			builder.append("<b> Status: </b>").append(ConnectJcrUtils.get(issue, PeopleNames.PEOPLE_TASK_STATUS))
 					.append(" ");
 			builder.append("[").append(TrackerUtils.getImportanceLabel(issue)).append("/")
 					.append(TrackerUtils.getPriorityLabel(issue)).append("] - ");
 
 			// milestone, version
-			String targetId = JcrUiUtils.get(issue, TrackerNames.TRACKER_TARGET_ID);
+			String targetId = ConnectJcrUtils.get(issue, TrackerNames.TRACKER_TARGET_ID);
 			if (notEmpty(targetId))
 				builder.append("<b>Target milestone: </b> ").append(targetId).append(" - ");
-			String versionId = JcrUiUtils.getMultiAsString(issue, TrackerNames.TRACKER_VERSION_IDS, ", ");
+			String versionId = ConnectJcrUtils.getMultiAsString(issue, TrackerNames.TRACKER_VERSION_IDS, ", ");
 			builder.append(" - ");
 			if (notEmpty(versionId))
 				builder.append("<b>Affected version: </b> ").append(versionId).append(" - ");
 
 			// assigned to
 			if (aoService.getActivityService().isTaskDone(issue)) {
-				String closeBy = JcrUiUtils.get(issue, PeopleNames.PEOPLE_CLOSED_BY);
+				String closeBy = ConnectJcrUtils.get(issue, PeopleNames.PEOPLE_CLOSED_BY);
 				Calendar closedDate = issue.getProperty(PeopleNames.PEOPLE_CLOSE_DATE).getDate();
 				builder.append(" - Marked as closed by ").append(closeBy);
 				builder.append(" on ").append(dtFormat.format(closedDate.getTime())).append(".");
 			} else {
-				String assignedToId = JcrUiUtils.get(issue, PeopleNames.PEOPLE_ASSIGNED_TO);
+				String assignedToId = ConnectJcrUtils.get(issue, PeopleNames.PEOPLE_ASSIGNED_TO);
 				String dName = aoService.getUserAdminService().getUserDisplayName(assignedToId);
 				if (notEmpty(dName))
 					builder.append("<b>Assigned to: </b>").append(dName);

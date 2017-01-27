@@ -12,7 +12,7 @@ import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.workbench.rap.wizards.NewOrgWizard;
 import org.argeo.connect.people.workbench.rap.wizards.NewPersonWizard;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
@@ -51,9 +51,9 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 
 	@Override
 	public Wizard getCreationWizard(PeopleService peopleService, Node node) {
-		if (JcrUiUtils.isNodeType(node, PeopleTypes.PEOPLE_PERSON))
+		if (ConnectJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_PERSON))
 			return new NewPersonWizard(node);
-		else if (JcrUiUtils.isNodeType(node, PeopleTypes.PEOPLE_ORG))
+		else if (ConnectJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_ORG))
 			return new NewOrgWizard(node);
 		else
 			throw new PeopleException("No defined wizard for node " + node);
@@ -86,9 +86,9 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 	protected Image getContactIcon(Node entity) throws RepositoryException {
 
 		Node contactable = entity.getParent().getParent();
-		String category = JcrUiUtils.get(entity,
+		String category = ConnectJcrUtils.get(entity,
 				PeopleNames.PEOPLE_CONTACT_CATEGORY);
-		String nature = JcrUiUtils.get(entity,
+		String nature = ConnectJcrUtils.get(entity,
 				PeopleNames.PEOPLE_CONTACT_NATURE);
 		// EMAIL
 		if (entity.isNodeType(PeopleTypes.PEOPLE_EMAIL)) {

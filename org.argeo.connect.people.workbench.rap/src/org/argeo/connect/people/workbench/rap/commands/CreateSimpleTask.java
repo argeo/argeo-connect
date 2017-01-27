@@ -39,7 +39,7 @@ public class CreateSimpleTask extends AbstractHandler {
 					HandlerUtil.getActiveShell(event), wizard);
 			int result = dialog.open();
 			if (result == WizardDialog.OK) {
-				// JcrUiUtils.saveAndCheckin(wizard.getCreatedTask());
+				// ConnectJcrUtils.saveAndCheckin(wizard.getCreatedTask());
 				session.save();
 				jcrId = wizard.getCreatedTask().getIdentifier();
 			}

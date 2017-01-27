@@ -7,7 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.core.UserAdminServiceImpl;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.util.CsvParserWithLinesAsMap;
@@ -52,7 +52,7 @@ public class GroupsCsvFileParser extends CsvParserWithLinesAsMap {
 				props.put(LdapAttrs.description.name(), desc);
 		}
 
-		String[] members = JcrUiUtils.parseAndClean(memberStr, ",", true);
+		String[] members = ConnectJcrUtils.parseAndClean(memberStr, ",", true);
 		for (String member : members) {
 			User user = userAdminWrapper.getUserFromLocalId(member);
 			if (user != null)

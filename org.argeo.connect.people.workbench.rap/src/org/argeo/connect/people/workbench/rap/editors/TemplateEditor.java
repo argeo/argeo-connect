@@ -18,7 +18,7 @@ import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.editors.tabs.TemplateValueCatalogue;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
@@ -70,7 +70,7 @@ public class TemplateEditor extends AbstractPeopleCTabEditor {
 							+ nodeTemplate, e);
 		}
 
-		String shortName = resourceService.getItemDefaultEnLabel(JcrUiUtils
+		String shortName = resourceService.getItemDefaultEnLabel(ConnectJcrUtils
 				.get(nodeTemplate, PeopleNames.PEOPLE_TEMPLATE_ID));
 		setPartName(shortName);
 		resourceService = getPeopleService().getResourceService();
@@ -95,7 +95,7 @@ public class TemplateEditor extends AbstractPeopleCTabEditor {
 				LazyCTabControl oneBusinessPropertyCatalogue = new TemplateValueCatalogue(
 						folder, SWT.NO_FOCUS, this, getPeopleService(),
 						getPeopleWorkbenchService(), nodeTemplate, propName,
-						JcrUiUtils.get(nodeTemplate,
+						ConnectJcrUtils.get(nodeTemplate,
 								PeopleNames.PEOPLE_TEMPLATE_ID));
 				oneBusinessPropertyCatalogue.setLayoutData(EclipseUiUtils
 						.fillAll());
@@ -149,7 +149,7 @@ public class TemplateEditor extends AbstractPeopleCTabEditor {
 			StringBuilder builder = new StringBuilder();
 			builder.append("<span style='font-size:15px;'>");
 			builder.append("<b><big>");
-			builder.append(JcrUiUtils.get(node, PeopleNames.PEOPLE_TEMPLATE_ID));
+			builder.append(ConnectJcrUtils.get(node, PeopleNames.PEOPLE_TEMPLATE_ID));
 			builder.append("</big></b> ");
 			builder.append("</span>");
 			return builder.toString();

@@ -19,7 +19,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
@@ -47,9 +47,9 @@ public class PeopleJcrUtils implements PeopleNames {
 		Node members = JcrUtils.mkdirs(group, PEOPLE_MEMBERS,
 				NodeType.NT_UNSTRUCTURED);
 		Node member = members.addNode(
-				JcrUiUtils.get(entity, Property.JCR_TITLE),
+				ConnectJcrUtils.get(entity, Property.JCR_TITLE),
 				PeopleTypes.PEOPLE_MEMBER);
-		member.setProperty(PEOPLE_REF_UID, JcrUiUtils.get(entity, PEOPLE_UID));
+		member.setProperty(PEOPLE_REF_UID, ConnectJcrUtils.get(entity, PEOPLE_UID));
 		member.setProperty(PEOPLE_ROLE, role);
 		if (EclipseUiUtils.notEmpty(title))
 			throw new PeopleException(
@@ -96,7 +96,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			Node item) {
 		Node node = getPrimaryContact(item, PeopleTypes.PEOPLE_ADDRESS);
 		if (node != null
-				&& JcrUiUtils.isNodeType(node, PeopleTypes.PEOPLE_CONTACT_REF)) {
+				&& ConnectJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_CONTACT_REF)) {
 			// retrieve primary address for the referenced Node
 			Node referenced = peopleService.getEntityFromNodeReference(node,
 					PEOPLE_REF_UID);
@@ -104,7 +104,7 @@ public class PeopleJcrUtils implements PeopleNames {
 				node = getPrimaryContact(referenced, PeopleTypes.PEOPLE_ADDRESS);
 		}
 		if (node != null)
-			return JcrUiUtils.get(node, PEOPLE_COUNTRY);
+			return ConnectJcrUtils.get(node, PEOPLE_COUNTRY);
 		return "";
 	}
 
@@ -115,7 +115,7 @@ public class PeopleJcrUtils implements PeopleNames {
 	public static String getTownFromItem(PeopleService peopleService, Node item) {
 		Node node = getPrimaryContact(item, PeopleTypes.PEOPLE_ADDRESS);
 		if (node != null
-				&& JcrUiUtils.isNodeType(node, PeopleTypes.PEOPLE_CONTACT_REF)) {
+				&& ConnectJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_CONTACT_REF)) {
 			// retrieve primary address for the referenced Node
 			Node referenced = peopleService.getEntityFromNodeReference(node,
 					PEOPLE_REF_UID);
@@ -123,7 +123,7 @@ public class PeopleJcrUtils implements PeopleNames {
 				node = getPrimaryContact(referenced, PeopleTypes.PEOPLE_ADDRESS);
 		}
 		if (node != null)
-			return JcrUiUtils.get(node, PEOPLE_CITY);
+			return ConnectJcrUtils.get(node, PEOPLE_CITY);
 		return "";
 	}
 
@@ -182,7 +182,7 @@ public class PeopleJcrUtils implements PeopleNames {
 	public static String getPrimaryContactValue(Node item, String nodeType) {
 		Node primary = getPrimaryContact(item, nodeType);
 		if (primary != null)
-			return JcrUiUtils.get(primary, PEOPLE_CONTACT_VALUE);
+			return ConnectJcrUtils.get(primary, PEOPLE_CONTACT_VALUE);
 		else
 			return "";
 	}
@@ -291,7 +291,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			if (primaryChild.isNodeType(PeopleTypes.PEOPLE_PHONE)) {
 				if (isPrimary) {
 					parentNode.setProperty(PEOPLE_CACHE_PPHONE,
-							JcrUiUtils.get(primaryChild, PEOPLE_CONTACT_VALUE));
+							ConnectJcrUtils.get(primaryChild, PEOPLE_CONTACT_VALUE));
 				} else {
 					if (parentNode.hasProperty(PEOPLE_CACHE_PPHONE))
 						parentNode.setProperty(PEOPLE_CACHE_PPHONE, "");
@@ -299,7 +299,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			} else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_EMAIL)) {
 				if (isPrimary) {
 					parentNode.setProperty(PEOPLE_CACHE_PMAIL,
-							JcrUiUtils.get(primaryChild, PEOPLE_CONTACT_VALUE));
+							ConnectJcrUtils.get(primaryChild, PEOPLE_CONTACT_VALUE));
 				} else {
 					if (parentNode.hasProperty(PEOPLE_CACHE_PMAIL))
 						parentNode.setProperty(PEOPLE_CACHE_PMAIL, "");
@@ -307,7 +307,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			} else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_URL)) {
 				if (isPrimary) {
 					parentNode.setProperty(PEOPLE_CACHE_PURL,
-							JcrUiUtils.get(primaryChild, PEOPLE_CONTACT_VALUE));
+							ConnectJcrUtils.get(primaryChild, PEOPLE_CONTACT_VALUE));
 				} else {
 					if (parentNode.hasProperty(PEOPLE_CACHE_PURL))
 						parentNode.setProperty(PEOPLE_CACHE_PURL, "");
@@ -317,7 +317,7 @@ public class PeopleJcrUtils implements PeopleNames {
 					String cityStr = "", countryStr = "";
 
 					if (primaryChild.isNodeType(PeopleTypes.PEOPLE_CONTACT_REF)
-							&& EclipseUiUtils.notEmpty(JcrUiUtils.get(
+							&& EclipseUiUtils.notEmpty(ConnectJcrUtils.get(
 									primaryChild, PEOPLE_REF_UID))) {
 						Node linkedOrg = peopleService
 								.getEntityFromNodeReference(primaryChild,
@@ -328,14 +328,14 @@ public class PeopleJcrUtils implements PeopleNames {
 									linkedOrg);
 						}
 					} else {
-						cityStr = JcrUiUtils.get(primaryChild, PEOPLE_CITY);
-						countryStr = JcrUiUtils.get(primaryChild,
+						cityStr = ConnectJcrUtils.get(primaryChild, PEOPLE_CITY);
+						countryStr = ConnectJcrUtils.get(primaryChild,
 								PEOPLE_COUNTRY);
 						if (EclipseUiUtils.notEmpty(countryStr))
 							countryStr = peopleService
 									.getResourceService()
 									.getEncodedTagValue(
-											JcrUiUtils.getSession(primaryChild),
+											ConnectJcrUtils.getSession(primaryChild),
 											PeopleConstants.RESOURCE_COUNTRY,
 											countryStr);
 
@@ -355,7 +355,7 @@ public class PeopleJcrUtils implements PeopleNames {
 							primaryChild, PEOPLE_REF_UID);
 					if (linkedOrg != null) {
 						parentNode.setProperty(PEOPLE_CACHE_PORG,
-								JcrUiUtils.get(linkedOrg, Property.JCR_TITLE));
+								ConnectJcrUtils.get(linkedOrg, Property.JCR_TITLE));
 					}
 				} else {
 					if (parentNode.hasProperty(PEOPLE_CACHE_PORG))
@@ -514,7 +514,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			String nature, String category, String label) {
 		// Dirty work around to address node name issue when some invalid phone
 		// number has been added
-		String nodeName = JcrUiUtils.cleanNodeName(phoneNumber);
+		String nodeName = ConnectJcrUtils.cleanNodeName(phoneNumber);
 		String numbers = nodeName.trim().replaceAll("[^0-9]", "");
 		if (EclipseUiUtils.isEmpty(nodeName) || EclipseUiUtils.isEmpty(numbers))
 			return null;
@@ -659,13 +659,13 @@ public class PeopleJcrUtils implements PeopleNames {
 			StringBuilder displayAddress = new StringBuilder();
 			List<String> pieces = new ArrayList<String>();
 
-			pieces.add(JcrUiUtils.get(contactNode, PeopleNames.PEOPLE_STREET));
-			pieces.add(JcrUiUtils.get(contactNode,
+			pieces.add(ConnectJcrUtils.get(contactNode, PeopleNames.PEOPLE_STREET));
+			pieces.add(ConnectJcrUtils.get(contactNode,
 					PeopleNames.PEOPLE_STREET_COMPLEMENT));
-			pieces.add(JcrUiUtils.get(contactNode, PeopleNames.PEOPLE_ZIP_CODE));
-			pieces.add(JcrUiUtils.get(contactNode, PeopleNames.PEOPLE_CITY));
-			pieces.add(JcrUiUtils.get(contactNode, PeopleNames.PEOPLE_STATE));
-			pieces.add(JcrUiUtils.get(contactNode, PeopleNames.PEOPLE_COUNTRY));
+			pieces.add(ConnectJcrUtils.get(contactNode, PeopleNames.PEOPLE_ZIP_CODE));
+			pieces.add(ConnectJcrUtils.get(contactNode, PeopleNames.PEOPLE_CITY));
+			pieces.add(ConnectJcrUtils.get(contactNode, PeopleNames.PEOPLE_STATE));
+			pieces.add(ConnectJcrUtils.get(contactNode, PeopleNames.PEOPLE_COUNTRY));
 
 			for (String piece : pieces) {
 				if (EclipseUiUtils.notEmpty(piece))

@@ -22,7 +22,7 @@ import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEdi
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.workbench.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -57,7 +57,7 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 		super.init(site, input);
 		org = getNode();
 
-		String shortName = JcrUiUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
+		String shortName = ConnectJcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		if (EclipseUiUtils.notEmpty(shortName)) {
 			if (shortName.length() > SHORT_NAME_LENGHT)
 				shortName = shortName.substring(0, SHORT_NAME_LENGHT - 1)
@@ -204,13 +204,13 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 				public void widgetSelected(SelectionEvent e) {
 					boolean defineDistinct = useDistinctDisplayBtn
 							.getSelection();
-					if (JcrUiUtils.setJcrProperty(org,
+					if (ConnectJcrUtils.setJcrProperty(org,
 							PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME,
 							PropertyType.BOOLEAN, defineDistinct)) {
 						if (!defineDistinct) {
-							String displayName = JcrUiUtils.get(org,
+							String displayName = ConnectJcrUtils.get(org,
 									PeopleNames.PEOPLE_LEGAL_NAME);
-							JcrUiUtils.setJcrProperty(org, Property.JCR_TITLE,
+							ConnectJcrUtils.setJcrProperty(org, Property.JCR_TITLE,
 									PropertyType.STRING, displayName);
 							displayNameTxt.setText(displayName);
 							displayNameTxt.setEnabled(false);

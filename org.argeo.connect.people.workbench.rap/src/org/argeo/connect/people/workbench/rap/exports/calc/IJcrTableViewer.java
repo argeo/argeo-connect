@@ -2,7 +2,7 @@ package org.argeo.connect.people.workbench.rap.exports.calc;
 
 import java.util.List;
 
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
+import org.argeo.connect.ui.ConnectColumnDefinition;
 
 /**
  * Views and editors can implement this interface so that one of the row list
@@ -18,5 +18,5 @@ public interface IJcrTableViewer {
 	/**
 	 * Returns the column definition for passed ID
 	 */
-	public List<PeopleColumnDefinition> getColumnDefinition(String extractId);
+	public List<ConnectColumnDefinition> getColumnDefinition(String extractId);
 }

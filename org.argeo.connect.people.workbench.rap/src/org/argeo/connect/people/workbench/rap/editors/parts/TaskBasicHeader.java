@@ -24,7 +24,7 @@ import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.workbench.rap.util.AbstractPanelFormPart;
 import org.argeo.connect.ui.ConnectUiConstants;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -101,7 +101,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		// Caches a few context object to ease implementation
 		resourceService = peopleService.getResourceService();
 		activityService = peopleService.getActivityService();
-		session = JcrUiUtils.getSession(task);
+		session = ConnectJcrUtils.getSession(task);
 
 		this.hiddenItemIds = hiddenItemIds;
 
@@ -125,11 +125,11 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		public void commit(boolean onSave) {
 			super.commit(onSave);
 			if (onSave) {
-				JcrUiUtils.saveAndPublish(task, false);
-				String path = JcrUiUtils.getPath(task);
+				ConnectJcrUtils.saveAndPublish(task, false);
+				String path = ConnectJcrUtils.getPath(task);
 				if (!modifiedPaths.contains(path))
 					modifiedPaths.add(path);
-				JcrUiUtils.checkPoint(JcrUiUtils.getSession(task), modifiedPaths, true);
+				ConnectJcrUtils.checkPoint(ConnectJcrUtils.getSession(task), modifiedPaths, true);
 				modifiedPaths.clear();
 			}
 		}
@@ -254,7 +254,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 	private String getStatusText() {
 		try {
 			StringBuilder builder = new StringBuilder();
-			String status = JcrUiUtils.get(task, PEOPLE_TASK_STATUS);
+			String status = ConnectJcrUtils.get(task, PEOPLE_TASK_STATUS);
 
 			String dueDateStr = null;
 			if (task.hasProperty(PEOPLE_DUE_DATE)) {
@@ -264,7 +264,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 			builder.append(status);
 
 			if (activityService.isTaskDone(task)) {
-				String closeBy = JcrUiUtils.get(task, PEOPLE_CLOSED_BY);
+				String closeBy = ConnectJcrUtils.get(task, PEOPLE_CLOSED_BY);
 				Calendar closedDate = task.getProperty(PEOPLE_CLOSE_DATE).getDate();
 				builder.append(" - Marked as closed by ").append(closeBy);
 				builder.append(" on ").append(dtFormat.format(closedDate.getTime())).append(".");
@@ -358,7 +358,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 					// groupId);
 					// // update cache and display.
 					// assignedToNode = newNode;
-					// changeAssignationLk.setText(JcrUiUtils.get(
+					// changeAssignationLk.setText(ConnectJcrUtils.get(
 					// assignedToNode, Property.JCR_TITLE)
 					// + " ~ <a>Change</a>");
 					// myFormPart.markDirty();

@@ -28,7 +28,7 @@ import org.argeo.connect.people.workbench.rap.util.EditionSourceProvider;
 import org.argeo.connect.people.workbench.rap.util.Refreshable;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -156,7 +156,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 	/** Overwrite to provide a specific part Name */
 	protected void updatePartName() {
-		String name = JcrUiUtils.get(node, Property.JCR_TITLE);
+		String name = ConnectJcrUtils.get(node, Property.JCR_TITLE);
 		if (EclipseUiUtils.notEmpty(name)) {
 			if (name.length() > SHORT_NAME_LENGHT)
 				name = name.substring(0, SHORT_NAME_LENGHT - 1) + "...";
@@ -167,7 +167,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	/** Overwrite to provide a specific part tooltip */
 	protected void updateToolTip() {
 		EntityEditorInput sei = (EntityEditorInput) getEditorInput();
-		String displayName = JcrUiUtils.get(node, Property.JCR_TITLE);
+		String displayName = ConnectJcrUtils.get(node, Property.JCR_TITLE);
 		if (EclipseUiUtils.isEmpty(displayName))
 			displayName = "current item";
 		sei.setTooltipText("Display and edit information for " + displayName);
@@ -292,7 +292,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 				public void widgetSelected(SelectionEvent e) {
 					Map<String, String> params = new HashMap<String, String>();
 					params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID,
-							JcrUiUtils.getIdentifier(node));
+							ConnectJcrUtils.getIdentifier(node));
 					// params.put(DeleteEntity.PARAM_REMOVE_ALSO_PARENT,
 					// deleteParentOnRemove().toString());
 					CommandUtils.callCommand(DeleteEntity.ID, params);
@@ -489,7 +489,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		StringBuilder builder = new StringBuilder();
 		try {
 			if (currNode.isNodeType(NodeType.MIX_TITLE)) {
-				builder.append(JcrUiUtils.get(currNode, Property.JCR_TITLE))
+				builder.append(ConnectJcrUtils.get(currNode, Property.JCR_TITLE))
 						.append(" - ");
 			}
 			if (currNode.isNodeType(NodeType.MIX_LAST_MODIFIED)) {

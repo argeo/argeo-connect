@@ -23,7 +23,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
@@ -37,7 +36,8 @@ import org.argeo.connect.people.workbench.rap.providers.TagLabelProvider;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.workbench.rap.util.Refreshable;
 import org.argeo.connect.people.workbench.rap.wizards.EditTagWizard;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -86,7 +86,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 
 	// UI objects
 	protected FormToolkit toolkit;
-	private List<PeopleColumnDefinition> colDefs; // Default columns
+	private List<ConnectColumnDefinition> colDefs; // Default columns
 	private TableViewer membersViewer;
 	private Text filterTxt;
 
@@ -103,22 +103,22 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		EntityEditorInput sei = (EntityEditorInput) getEditorInput();
 
 		// Initialise context
-		session = JcrUiUtils.login(repository);
-		mailingList = JcrUiUtils.getNodeByIdentifier(session, sei.getUid());
+		session = ConnectJcrUtils.login(repository);
+		mailingList = ConnectJcrUtils.getNodeByIdentifier(session, sei.getUid());
 
 		// Initialize column definition
 		// Cannot be done statically: we must have a valid reference to the
 		// injected peopleUiService
-		colDefs = new ArrayList<PeopleColumnDefinition>();
-		colDefs.add(new PeopleColumnDefinition("Display Name",
+		colDefs = new ArrayList<ConnectColumnDefinition>();
+		colDefs.add(new ConnectColumnDefinition("Display Name",
 				new TitleIconRowLP(peopleWorkbenchService, null, Property.JCR_TITLE), 300));
-		colDefs.add(new PeopleColumnDefinition("Primary mail", new JcrHtmlLabelProvider(PEOPLE_CACHE_PMAIL), 300));
-		colDefs.add(new PeopleColumnDefinition("Mailing lists", new JcrHtmlLabelProvider(PEOPLE_MAILING_LISTS), 300));
+		colDefs.add(new ConnectColumnDefinition("Primary mail", new JcrHtmlLabelProvider(PEOPLE_CACHE_PMAIL), 300));
+		colDefs.add(new ConnectColumnDefinition("Mailing lists", new JcrHtmlLabelProvider(PEOPLE_MAILING_LISTS), 300));
 	}
 
 	protected void afterNameUpdate(String name) {
 		if (EclipseUiUtils.isEmpty(name))
-			name = JcrUiUtils.get(mailingList, Property.JCR_TITLE);
+			name = ConnectJcrUtils.get(mailingList, Property.JCR_TITLE);
 
 		if (EclipseUiUtils.notEmpty(name)) {
 			setPartName(name);
@@ -237,7 +237,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 					+ PeopleTypes.PEOPLE_ENTITY + ")";
 
 			String filter = filterTxt.getText();
-			String currVal = JcrUiUtils.get(mailingList, Property.JCR_TITLE);
+			String currVal = ConnectJcrUtils.get(mailingList, Property.JCR_TITLE);
 
 			String freeTxtCond = XPathUtils.getFreeTextConstraint(filter);
 			String mlNamecond = XPathUtils.getPropertyEquals(PEOPLE_MAILING_LISTS, currVal);
@@ -248,7 +248,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 			Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 
 			RowIterator xPathRit = xpathQuery.execute().getRows();
-			Row[] rows = JcrUiUtils.rowIteratorToArray(xPathRit);
+			Row[] rows = ConnectJcrUtils.rowIteratorToArray(xPathRit);
 			setViewerInput(rows);
 
 			if (log.isDebugEnabled()) {

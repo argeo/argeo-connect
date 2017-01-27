@@ -2,7 +2,7 @@ package org.argeo.connect.people.workbench.rap.composites;
 
 import java.util.List;
 
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
+import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -27,16 +27,16 @@ public class PeopleTableViewer extends Composite {
 	private TableViewer viewer;
 	private MyViewerComparator comparator;
 
-	private List<PeopleColumnDefinition> colDefs;
+	private List<ConnectColumnDefinition> colDefs;
 	private int tableStyle;
 
-	public List<PeopleColumnDefinition> getColumnsDef() {
+	public List<ConnectColumnDefinition> getColumnsDef() {
 		return colDefs;
 	}
 
 	// CONSTRUCTOR
 	public PeopleTableViewer(Composite parent, int style,
-			List<PeopleColumnDefinition> columns) {
+			List<ConnectColumnDefinition> columns) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.colDefs = columns;
@@ -73,7 +73,7 @@ public class PeopleTableViewer extends Composite {
 		// Create columns
 		TableViewerColumn column;
 		int i = 0;
-		for (PeopleColumnDefinition colDef : colDefs) {
+		for (ConnectColumnDefinition colDef : colDefs) {
 			column = ViewerUtils.createTableViewerColumn(viewer,
 					colDef.getHeaderLabel(), SWT.NONE, colDef.getColumnSize());
 			column.setLabelProvider(colDef.getColumnLabelProvider());

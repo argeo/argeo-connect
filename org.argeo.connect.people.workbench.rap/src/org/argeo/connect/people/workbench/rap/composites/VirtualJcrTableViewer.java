@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
+import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -33,7 +33,7 @@ public class VirtualJcrTableViewer extends Composite {
 	private static final long serialVersionUID = 1L;
 	private TableViewer viewer;
 
-	private List<PeopleColumnDefinition> colDefs;
+	private List<ConnectColumnDefinition> colDefs;
 	private int tableStyle;
 
 	// Management of displayed row and selection
@@ -47,19 +47,19 @@ public class VirtualJcrTableViewer extends Composite {
 
 	private MyLazyContentProvider lazyContentProvider;
 
-	public List<PeopleColumnDefinition> getColumnsDef() {
+	public List<ConnectColumnDefinition> getColumnsDef() {
 		return colDefs;
 	}
 
 	// CONSTRUCTOR
-	public VirtualJcrTableViewer(Composite parent, int style, List<PeopleColumnDefinition> columns) {
+	public VirtualJcrTableViewer(Composite parent, int style, List<ConnectColumnDefinition> columns) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
 		this.colDefs = columns;
 		populate();
 	}
 
-	public VirtualJcrTableViewer(Composite parent, int style, List<PeopleColumnDefinition> columns,
+	public VirtualJcrTableViewer(Composite parent, int style, List<ConnectColumnDefinition> columns,
 			boolean addCheckBoxes) {
 		super(parent, SWT.NONE);
 		this.tableStyle = style;
@@ -116,7 +116,7 @@ public class VirtualJcrTableViewer extends Composite {
 			tableColumnLayout.setColumnData(column.getColumn(), new ColumnWeightData(20, 24, true));
 		}
 
-		for (PeopleColumnDefinition colDef : colDefs) {
+		for (ConnectColumnDefinition colDef : colDefs) {
 			column = ViewerUtils.createTableViewerColumn(viewer, colDef.getHeaderLabel(), SWT.NONE,
 					colDef.getColumnSize());
 			column.setLabelProvider(colDef.getColumnLabelProvider());

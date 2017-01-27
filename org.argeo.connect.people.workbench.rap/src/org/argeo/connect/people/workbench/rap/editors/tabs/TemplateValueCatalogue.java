@@ -26,7 +26,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
@@ -41,7 +40,8 @@ import org.argeo.connect.people.workbench.rap.util.AbstractPanelFormPart;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.dialogs.SingleValue;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -172,7 +172,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 										.getFirstElement();
 								RowIterator rit = query(currSelected);
 								setViewerInput(instancesViewer,
-										JcrUiUtils.rowIteratorToArray(rit));
+										ConnectJcrUtils.rowIteratorToArray(rit));
 							}
 						}
 					});
@@ -182,7 +182,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 
 		protected void refreshContent(Composite parent, Node editionInfo) {
 			try {
-				valuesViewer.setInput(JcrUiUtils.getMultiAsList(templateNode,
+				valuesViewer.setInput(ConnectJcrUtils.getMultiAsList(templateNode,
 						propertyName).toArray(new String[0]));
 				valuesViewer.refresh();
 				setViewerInput(instancesViewer, null);
@@ -353,8 +353,8 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 
 	private TableViewer createInstancesViewer(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
-		colDefs.add(new PeopleColumnDefinition(taggableType,
+		ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
+		colDefs.add(new ConnectColumnDefinition(taggableType,
 				Property.JCR_TITLE, PropertyType.STRING, "Instances",
 				new TitleIconRowLP(peopleWorkbenchService, taggableType,
 						Property.JCR_TITLE), 350));
@@ -369,11 +369,11 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 	private class InstanceDClickAdapter extends PeopleDoubleClickAdapter {
 		@Override
 		protected void processDoubleClick(Object obj) {
-			Node occurrence = JcrUiUtils.getNode((Row) obj, taggableType);
+			Node occurrence = ConnectJcrUtils.getNode((Row) obj, taggableType);
 			CommandUtils.callCommand(
 					peopleWorkbenchService.getOpenEntityEditorCmdId(),
 					OpenEntityEditor.PARAM_JCR_ID,
-					JcrUiUtils.getIdentifier(occurrence));
+					ConnectJcrUtils.getIdentifier(occurrence));
 		}
 	}
 
@@ -429,7 +429,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 				String value = SingleValue.ask("New Option",
 						"Enrich current catalogue with a new option");
 				if (EclipseUiUtils.notEmpty(value)) {
-					String errMsg = JcrUiUtils.addMultiPropertyValue(
+					String errMsg = ConnectJcrUtils.addMultiPropertyValue(
 							templateNode, propertyName, value);
 					if (EclipseUiUtils.isEmpty(errMsg)) {
 						formPart.markDirty();
@@ -596,9 +596,9 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 	// @Override
 	// public Image getImage(Object element) {
 	// Image image = super.getImage(element);
-	// // Node currEntity = JcrUiUtils.getNode((Row) element,
+	// // Node currEntity = ConnectJcrUtils.getNode((Row) element,
 	// // selectorName);
-	// // JcrUiUtils.isNodeCheckedOut(currEntity)
+	// // ConnectJcrUtils.isNodeCheckedOut(currEntity)
 	// if (editor.isEditing() && image != null) {
 	// if (images.containsKey(image)) {
 	// image = images.get(image);

@@ -25,7 +25,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -85,7 +85,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 
 			// related to
 			if (relatedTo != null && !relatedTo.isEmpty())
-				JcrUiUtils.setMultipleReferences(activity, PeopleNames.PEOPLE_RELATED_TO, relatedTo);
+				ConnectJcrUtils.setMultipleReferences(activity, PeopleNames.PEOPLE_RELATED_TO, relatedTo);
 
 			// Content
 			activity.setProperty(Property.JCR_TITLE, title);
@@ -232,7 +232,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 
 	public boolean updateStatus(String templateId, Node taskNode, String newStatus, List<String> modifiedPaths) {
 		try {
-			String oldStatus = JcrUiUtils.get(taskNode, PeopleNames.PEOPLE_TASK_STATUS);
+			String oldStatus = ConnectJcrUtils.get(taskNode, PeopleNames.PEOPLE_TASK_STATUS);
 			if (notEmpty(oldStatus) && oldStatus.equals(newStatus))
 				return false;
 			else {
@@ -339,7 +339,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			}
 
 			if (relatedTo != null && !relatedTo.isEmpty())
-				JcrUiUtils.setMultipleReferences(taskNode, PeopleNames.PEOPLE_RELATED_TO, relatedTo);
+				ConnectJcrUtils.setMultipleReferences(taskNode, PeopleNames.PEOPLE_RELATED_TO, relatedTo);
 
 			if (creationDate == null)
 				creationDate = new GregorianCalendar();
@@ -365,7 +365,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 		Node template = resourceService.getNodeTemplate(taskNode.getSession(), taskNodeType);
 		String defaultStatus = null;
 		if (template != null)
-			defaultStatus = JcrUiUtils.get(template, PEOPLE_TASK_DEFAULT_STATUS);
+			defaultStatus = ConnectJcrUtils.get(template, PEOPLE_TASK_DEFAULT_STATUS);
 		if (notEmpty(defaultStatus))
 			taskNode.setProperty(PEOPLE_TASK_STATUS, defaultStatus);
 	}

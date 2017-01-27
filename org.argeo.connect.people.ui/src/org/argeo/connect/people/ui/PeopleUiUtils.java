@@ -23,7 +23,7 @@ import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -110,7 +110,7 @@ public class PeopleUiUtils {
 							else
 								nodes.add(referenced);
 						}
-						JcrUiUtils.setMultipleReferences(node, newName, nodes);
+						ConnectJcrUtils.setMultipleReferences(node, newName, nodes);
 						currProp.remove();
 					} else {
 						String currId = currProp.getString();
@@ -158,5 +158,4 @@ public class PeopleUiUtils {
 			throw new PeopleException("Unable to retrieve entity of uid: " + uid + " under " + basePath, e);
 		}
 	}
-
 }

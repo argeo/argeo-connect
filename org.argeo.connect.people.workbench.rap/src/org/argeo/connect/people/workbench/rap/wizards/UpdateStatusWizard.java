@@ -15,12 +15,12 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
@@ -269,8 +269,8 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 			GridLayout layout = new GridLayout();
 			layout.marginTop = layout.marginWidth = 10;
 			body.setLayout(layout);
-			ArrayList<PeopleColumnDefinition> colDefs = new ArrayList<PeopleColumnDefinition>();
-			colDefs.add(new PeopleColumnDefinition("Display Name",
+			ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
+			colDefs.add(new ConnectColumnDefinition("Display Name",
 					new TitleIconRowLP(peopleUiService, null,
 							Property.JCR_TITLE), 300));
 
@@ -357,14 +357,14 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 					// TODO use transaction
 					for (String currPath : pathes) {
 						Node currNode = session.getNode(currPath);
-						JcrUiUtils.checkCOStatusBeforeUpdate(currNode);
+						ConnectJcrUtils.checkCOStatusBeforeUpdate(currNode);
 						boolean changed = peopleService.getActivityService()
 								.updateStatus(taskTypeId, currNode,
 										chosenStatus, modifiedPaths);
 						if (changed)
 							session.save();
 					}
-					JcrUiUtils.checkPoint(session, modifiedPaths, true);
+					ConnectJcrUtils.checkPoint(session, modifiedPaths, true);
 					monitor.worked(1);
 				}
 			} catch (Exception e) {

@@ -29,12 +29,12 @@ import javax.jcr.query.Row;
 
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
@@ -69,7 +69,7 @@ public class PickUpContactableDialog extends TrayDialog {
 	// private EntityTableComposite tableCmp;
 	private final String title;
 
-	private List<PeopleColumnDefinition> colDefs;
+	private List<ConnectColumnDefinition> colDefs;
 	private Text filterTxt;
 	private TableViewer tableViewer;
 
@@ -80,8 +80,8 @@ public class PickUpContactableDialog extends TrayDialog {
 		this.session = session;
 		this.nodeType = nodeType;
 
-		colDefs = new ArrayList<PeopleColumnDefinition>();
-		colDefs.add(new PeopleColumnDefinition("Display Name",
+		colDefs = new ArrayList<ConnectColumnDefinition>();
+		colDefs.add(new ConnectColumnDefinition("Display Name",
 				new TitleIconRowLP(peopleUiService, null, Property.JCR_TITLE), 300));
 	}
 
@@ -131,7 +131,7 @@ public class PickUpContactableDialog extends TrayDialog {
 
 			Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 			if (obj instanceof Row) {
-				selectedNode = JcrUiUtils.getNode((Row) obj, null);
+				selectedNode = ConnectJcrUtils.getNode((Row) obj, null);
 			}
 		}
 	}
@@ -143,7 +143,7 @@ public class PickUpContactableDialog extends TrayDialog {
 
 			Object obj = ((IStructuredSelection) evt.getSelection()).getFirstElement();
 			if (obj instanceof Row) {
-				JcrUiUtils.getNode((Row) obj, null);
+				ConnectJcrUtils.getNode((Row) obj, null);
 				okPressed();
 			}
 		}
@@ -179,7 +179,7 @@ public class PickUpContactableDialog extends TrayDialog {
 			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
 			// Selector source = factory.selector(nodeType, nodeType);
 			//
-			// Constraint defaultC = JcrUiUtils.getFreeTextConstraint(
+			// Constraint defaultC = ConnectJcrUtils.getFreeTextConstraint(
 			// session, factory, source, filterTxt.getText());
 			//
 			// Ordering order = factory.ascending(factory.propertyValue(
@@ -190,7 +190,7 @@ public class PickUpContactableDialog extends TrayDialog {
 			// // TODO rather implement a virtual viewer
 			// query.setLimit(100);
 			// QueryResult result = query.execute();
-			Row[] rows = JcrUiUtils.rowIteratorToArray(result.getRows());
+			Row[] rows = ConnectJcrUtils.rowIteratorToArray(result.getRows());
 			setViewerInput(rows);
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list " + nodeType + " entities", e);

@@ -326,7 +326,7 @@ public class UserEditor{}
 // private static final long serialVersionUID = 1L;
 //
 // public String getText(Object element) {
-// return JcrUiUtils.get((Node) element,
+// return ConnectJcrUtils.get((Node) element,
 // Property.JCR_TITLE);
 // }
 //
@@ -460,7 +460,7 @@ public class UserEditor{}
 // }
 //
 // public void setRepository(Repository repository) {
-// this.session = JcrUiUtils.login(repository);
+// this.session = ConnectJcrUtils.login(repository);
 // }
 //
 // public void setPeopleService(PeopleService peopleService) {

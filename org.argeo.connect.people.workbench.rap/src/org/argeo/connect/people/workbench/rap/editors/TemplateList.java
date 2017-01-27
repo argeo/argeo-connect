@@ -21,7 +21,7 @@ import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.workbench.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.workbench.rap.util.Refreshable;
-import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -70,7 +70,7 @@ public class TemplateList extends EditorPart implements PeopleNames,
 		setSite(site);
 		setInput(input);
 		setPartName("Catalogues");
-		session = JcrUiUtils.login(repository);
+		session = ConnectJcrUtils.login(repository);
 	}
 
 	// MAIN LAYOUT

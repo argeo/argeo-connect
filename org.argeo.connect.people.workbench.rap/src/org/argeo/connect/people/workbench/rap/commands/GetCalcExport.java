@@ -16,13 +16,13 @@ import javax.jcr.query.Row;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.ui.workbench.util.PrivilegedJob;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.ui.PeopleColumnDefinition;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.exports.calc.IJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.exports.calc.NodesToCalcWriter;
 import org.argeo.connect.people.workbench.rap.exports.calc.RowsToCalcWriter;
+import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.OpenFile;
@@ -68,7 +68,7 @@ public class GetCalcExport extends AbstractHandler {
 					return null;
 				else {
 					Object[] elements = provider.getElements(exportId);
-					List<PeopleColumnDefinition> cols = provider.getColumnDefinition(exportId);
+					List<ConnectColumnDefinition> cols = provider.getColumnDefinition(exportId);
 					new GenerateExtract(HandlerUtil.getActivePart(event).getSite().getShell().getDisplay(), repository,
 							elements, cols, provider, exportId).schedule();
 				}
@@ -90,7 +90,7 @@ public class GetCalcExport extends AbstractHandler {
 	}
 
 	/** Real call to spreadsheet generator. */
-	protected synchronized void callCalcGenerator(Object[] elements, List<PeopleColumnDefinition> cols, String exportId,
+	protected synchronized void callCalcGenerator(Object[] elements, List<ConnectColumnDefinition> cols, String exportId,
 			File file) throws Exception {
 		if (elements instanceof Row[]) {
 			RowsToCalcWriter writer = new RowsToCalcWriter();
@@ -108,12 +108,12 @@ public class GetCalcExport extends AbstractHandler {
 		private Repository repository;
 		private IJcrTableViewer provider;
 		private Object[] elements;
-		private List<PeopleColumnDefinition> cols;
+		private List<ConnectColumnDefinition> cols;
 
 		private String exportId;
 
 		public GenerateExtract(Display display, Repository repository, Object[] elements,
-				List<PeopleColumnDefinition> cols, IJcrTableViewer provider, String exportId) {
+				List<ConnectColumnDefinition> cols, IJcrTableViewer provider, String exportId) {
 			super("Generating the export");
 			this.display = display;
 			this.repository = repository;
