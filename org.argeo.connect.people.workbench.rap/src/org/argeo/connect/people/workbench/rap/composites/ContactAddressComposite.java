@@ -12,10 +12,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
@@ -23,6 +20,9 @@ import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.workbench.rap.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -78,7 +78,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 	private void populate() {
 		// Initialization
 		final Composite parent = this;
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
+		parent.setLayout(ConnectUiUtils.noSpaceGridLayout(2));
 
 		// BUTTONS
 		Composite buttCmp = new ContactButtonsComposite(editor, formPart, parent, SWT.NONE, contactNode,
@@ -115,8 +115,8 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			// current contact meta data
 			String meta = PeopleUiSnippets.getContactMetaData(contactNode);
 			// work around to remove the encoded space. To be cleaned.
-			if (meta.startsWith(PeopleUiConstants.NB_DOUBLE_SPACE))
-				meta = meta.substring(PeopleUiConstants.NB_DOUBLE_SPACE.length());
+			if (meta.startsWith(ConnectUiConstants.NB_DOUBLE_SPACE))
+				meta = meta.substring(ConnectUiConstants.NB_DOUBLE_SPACE.length());
 			builder.append(meta);
 
 			// Referenced org primary address
@@ -127,7 +127,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					builder.append(PeopleUiSnippets.getAddressDisplayValue(peopleService, primaryAddress));
 				}
 			}
-			readOnlyInfoLk.setText(PeopleUiUtils.replaceAmpersandforSWTLink(builder.toString()));
+			readOnlyInfoLk.setText(ConnectUiUtils.replaceAmpersandforSWTLink(builder.toString()));
 			OrgLinkListener oll = new OrgLinkListener();
 			oll.setOrg(referencedEntity);
 			readOnlyInfoLk.addSelectionListener(oll);

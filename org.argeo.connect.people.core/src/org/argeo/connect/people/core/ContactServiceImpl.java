@@ -23,7 +23,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.util.JcrUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
 
 /**
  * Canonical implementation of the People's {@link ContactService}. Among
@@ -40,10 +40,8 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 
 	@Override
 	public String[] getKnownContactTypes() {
-		String[] knownTypes = { PeopleTypes.PEOPLE_EMAIL,
-				PeopleTypes.PEOPLE_PHONE, PeopleTypes.PEOPLE_SOCIAL_MEDIA,
-				PeopleTypes.PEOPLE_IMPP, PeopleTypes.PEOPLE_URL,
-				PeopleTypes.PEOPLE_ADDRESS };
+		String[] knownTypes = { PeopleTypes.PEOPLE_EMAIL, PeopleTypes.PEOPLE_PHONE, PeopleTypes.PEOPLE_SOCIAL_MEDIA,
+				PeopleTypes.PEOPLE_IMPP, PeopleTypes.PEOPLE_URL, PeopleTypes.PEOPLE_ADDRESS };
 		return knownTypes;
 	}
 
@@ -70,10 +68,8 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 			if (PEOPLE_CONTACT_CATEGORY.equals(property)) {
 				if (contact.isNodeType(PeopleTypes.PEOPLE_PHONE)) {
 					if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
-						if (notEmpty(nature)
-								&& (nature
-										.equals(ContactValueCatalogs.CONTACT_NATURE_PRIVATE) || nature
-										.equals(ContactValueCatalogs.CONTACT_OTHER)))
+						if (notEmpty(nature) && (nature.equals(ContactValueCatalogs.CONTACT_NATURE_PRIVATE)
+								|| nature.equals(ContactValueCatalogs.CONTACT_OTHER)))
 							return ContactValueCatalogs.ARRAY_PERSON_PRIVATE_PHONES;
 						else
 							return ContactValueCatalogs.ARRAY_PERSON_PRO_PHONES;
@@ -81,9 +77,7 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 						return ContactValueCatalogs.ARRAY_ORG_PHONES;
 				} else if (contact.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
 					if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
-						if (notEmpty(nature)
-								&& nature
-										.equals(ContactValueCatalogs.CONTACT_NATURE_PRO))
+						if (notEmpty(nature) && nature.equals(ContactValueCatalogs.CONTACT_NATURE_PRO))
 							return ContactValueCatalogs.ARRAY_PERSON_WORK_ADDRESSES;
 						else
 							return ContactValueCatalogs.ARRAY_PERSON_HOME_ADDRESSES;
@@ -96,20 +90,16 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 			}
 			return new String[0];
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get " + property
-					+ " value list for " + contact, re);
+			throw new PeopleException("Unable to get " + property + " value list for " + contact, re);
 		}
 	}
 
 	@Override
-	public String[] getContactCategories(String contactableType,
-			String contactType, String nature) {
+	public String[] getContactCategories(String contactableType, String contactType, String nature) {
 
 		if (PeopleTypes.PEOPLE_PHONE.equals(contactType)) {
 			if (PeopleTypes.PEOPLE_PERSON.equals(contactableType)) {
-				if (notEmpty(nature)
-						&& (nature.equals(CONTACT_NATURE_PRIVATE) || nature
-								.equals(CONTACT_OTHER)))
+				if (notEmpty(nature) && (nature.equals(CONTACT_NATURE_PRIVATE) || nature.equals(CONTACT_OTHER)))
 					return ARRAY_PERSON_PRIVATE_PHONES;
 				else
 					return ARRAY_PERSON_PRO_PHONES;

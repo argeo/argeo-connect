@@ -9,9 +9,9 @@ import javax.jcr.Node;
 import org.apache.commons.io.IOUtils;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.rap.rwt.RWT;
@@ -85,24 +85,9 @@ public class SearchEntitiesLP implements ILabelProvider {
 			builder.append("<b>");
 			builder.append(peopleService.getDisplayName(entity));
 			builder.append("</b>");
-			return PeopleUiUtils.replaceAmpersand(builder.toString());
+			return ConnectUiUtils.replaceAmpersand(builder.toString());
 		}
 	}
-
-	// DO NOT USE: it introduces problems in the layout with single line rows
-	// private String prefixWithImage(String nodeType) {
-	// String location = null;
-	// if (iconPathes.containsKey(nodeType)) {
-	// ResourceManager resourceManager = RWT.getResourceManager();
-	// if (resourceManager.isRegistered(iconPathes.get(nodeType)))
-	// location = resourceManager
-	// .getLocation(iconPathes.get(nodeType));
-	// }
-	// if (location != null)
-	// return "<img width='16' height='16' src=\"" + location + "\"/>";
-	// else
-	// return "";
-	// }
 
 	@Override
 	public void addListener(ILabelProviderListener listener) {

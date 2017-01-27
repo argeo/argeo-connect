@@ -3,9 +3,9 @@ package org.argeo.connect.people.workbench.rap.editors.util;
 import javax.jcr.Property;
 import javax.jcr.nodetype.NodeType;
 
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.editors.tabs.HistoryLog;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;

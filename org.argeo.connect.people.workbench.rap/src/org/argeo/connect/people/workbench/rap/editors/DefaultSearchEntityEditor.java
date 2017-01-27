@@ -10,16 +10,17 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
 
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.util.JcrUiUtils;
-import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractSearchEntityEditor;
 import org.argeo.connect.people.workbench.rap.providers.JcrHtmlLabelProvider;
+import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -94,7 +95,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
 			if (EclipseUiUtils.notEmpty(attrQuery))
 				builder.append("[").append(attrQuery).append("]");
 			builder.append(" order by @").append(PeopleNames.JCR_TITLE).append(" ascending");
-			Query query = queryManager.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH);
+			Query query = queryManager.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH);
 
 			QueryResult result = query.execute();
 			Row[] rows = JcrUiUtils.rowIteratorToArray(result.getRows());

@@ -1,4 +1,4 @@
-package org.argeo.connect.people.ui;
+package org.argeo.connect.ui.widgets;
 
 import java.util.Timer;
 import java.util.TimerTask;

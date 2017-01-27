@@ -22,23 +22,23 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.ActivityService;
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.util.ActivityUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
-import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapSnippets;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.workbench.rap.util.ActivityViewerComparator;
+import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -216,7 +216,7 @@ public class ActivityTable extends Composite {
 		if (EclipseUiUtils.notEmpty(attrQuery))
 			xpathQueryStr += "[" + attrQuery + "]";
 		Query xpathQuery = queryManager.createQuery(xpathQueryStr,
-				PeopleConstants.QUERY_XPATH);
+				ConnectConstants.QUERY_XPATH);
 		QueryResult result = xpathQuery.execute();
 		return result.getNodes();
 	}
@@ -484,7 +484,7 @@ public class ActivityTable extends Composite {
 							}
 						}
 						if (builder.lastIndexOf(", ") != -1) {
-							String value = PeopleUiUtils
+							String value = ConnectUiUtils
 									.replaceAmpersand(builder.substring(0,
 											builder.lastIndexOf(", ")));
 							return wrapThis(value);
@@ -535,7 +535,7 @@ public class ActivityTable extends Composite {
 	private DateFormat todayFormat = new SimpleDateFormat("HH:mm");
 	private DateFormat inMonthFormat = new SimpleDateFormat("dd MMM");
 	private DateFormat dateFormat = new SimpleDateFormat(
-			PeopleUiConstants.DEFAULT_SHORT_DATE_FORMAT);
+			ConnectUiConstants.DEFAULT_SHORT_DATE_FORMAT);
 
 	private String funkyFormat(Calendar date) {
 		Calendar now = GregorianCalendar.getInstance();
@@ -569,7 +569,7 @@ public class ActivityTable extends Composite {
 
 	private String wrapThis(String value) {
 		String wrapped = "<span " + LIST_WRAP_STYLE + " >"
-				+ PeopleUiUtils.replaceAmpersand(value) + "</span>";
+				+ ConnectUiUtils.replaceAmpersand(value) + "</span>";
 		return wrapped;
 	}
 

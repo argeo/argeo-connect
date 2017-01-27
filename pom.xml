@@ -16,6 +16,7 @@
 		<version.argeo-tp-extras>2.1.9</version.argeo-tp-extras>
 	</properties>
 	<modules>
+		<module>org.argeo.connect.core</module>
 		<module>org.argeo.connect.ui</module>
 		<module>org.argeo.connect.people.api</module>
 		<module>org.argeo.connect.people.core</module>

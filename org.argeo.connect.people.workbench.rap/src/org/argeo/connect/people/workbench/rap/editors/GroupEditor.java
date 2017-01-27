@@ -7,12 +7,12 @@ import javax.jcr.PropertyType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEditor;
 import org.argeo.connect.people.workbench.rap.providers.GroupLabelProvider;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -77,9 +77,9 @@ public abstract class GroupEditor extends AbstractPeopleCTabEditor {
 				public void refresh() {
 					super.refresh();
 					// EDIT PART
-					PeopleUiUtils.refreshTextWidgetValue(titleTxt, group,
+					ConnectUiUtils.refreshTextWidgetValue(titleTxt, group,
 							Property.JCR_TITLE);
-					PeopleUiUtils.refreshTextWidgetValue(descTxt, group,
+					ConnectUiUtils.refreshTextWidgetValue(descTxt, group,
 							Property.JCR_DESCRIPTION);
 
 					// READ ONLY PART

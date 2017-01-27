@@ -19,8 +19,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.commands.ForceRefresh;
@@ -28,6 +26,8 @@ import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.editors.util.EntityEditorInput;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.workbench.rap.util.Refreshable;
+import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrMonitor;
@@ -236,10 +236,10 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 			if (visible) {
 				if (masterNode == null)
 					chosenItemLabel.setText("<br/><big><i> "
-							+ PeopleUiConstants.NB_DOUBLE_SPACE
+							+ ConnectUiConstants.NB_DOUBLE_SPACE
 							+ "No master has "
 							+ "yet been chosen </i></big><br/> "
-							+ PeopleUiConstants.NB_DOUBLE_SPACE);
+							+ ConnectUiConstants.NB_DOUBLE_SPACE);
 				else
 					chosenItemLabel.setText(overviewLP.getText(masterNode));
 				chosenItemLabel.getParent().getParent().layout(true, true);

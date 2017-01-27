@@ -3,10 +3,10 @@ package org.argeo.connect.tracker.internal.ui;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerNames;
 import org.argeo.connect.tracker.core.TrackerUtils;
+import org.argeo.connect.util.JcrUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
 /** Centralise label providers for Argeo tracker to keep packages simple */

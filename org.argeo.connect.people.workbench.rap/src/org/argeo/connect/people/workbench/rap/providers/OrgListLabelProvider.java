@@ -5,8 +5,8 @@ import javax.jcr.Node;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.LabelProvider;
 
@@ -35,7 +35,7 @@ public class OrgListLabelProvider extends LabelProvider implements PeopleNames {
 		if (EclipseUiUtils.notEmpty(local))
 			builder.append(local);
 
-		String result = PeopleUiUtils.replaceAmpersand(builder.toString());
+		String result = ConnectUiUtils.replaceAmpersand(builder.toString());
 		return result;
 	}
 }

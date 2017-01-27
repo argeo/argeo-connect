@@ -1,6 +1,4 @@
-package org.argeo.connect.people.util;
-
-import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
+package org.argeo.connect.util;
 
 import java.math.BigDecimal;
 import java.security.AccessControlException;
@@ -15,7 +13,6 @@ import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
 import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -36,11 +33,8 @@ import javax.jcr.version.VersionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.people.PeopleConstants;
-import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
-import org.argeo.eclipse.ui.EclipseUiException;
-import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.ConnectException;
 import org.argeo.jcr.JcrUtils;
 
 /**
@@ -65,7 +59,7 @@ public class JcrUiUtils {
 		else if (name.startsWith(nt))
 			return "nt:" + name.substring(nt.length());
 		else
-			throw new PeopleException("Unknown prefix for " + name);
+			throw new ConnectException("Unknown prefix for " + name);
 	}
 
 	public static String checkAndLocalzeNamespaces(String name) {
@@ -152,7 +146,7 @@ public class JcrUiUtils {
 		} catch (AccessControlException ace) {
 			// silent
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to check permission on " + entity, e);
+			throw new ConnectException("Unable to check permission on " + entity, e);
 		}
 		return canEdit;
 	}
@@ -173,13 +167,13 @@ public class JcrUiUtils {
 				else
 					currNode = currRow.getNode();
 			} catch (RepositoryException re) {
-				throw new PeopleException(
+				throw new ConnectException(
 						"Unable to retrieve Node with selector name " + selectorName + " on " + currRow, re);
 			}
 		} else if (element instanceof Node)
 			currNode = (Node) element;
 		else
-			throw new PeopleException("unsupported element type: " + element.getClass().getName());
+			throw new ConnectException("unsupported element type: " + element.getClass().getName());
 		return currNode;
 	}
 
@@ -196,7 +190,7 @@ public class JcrUiUtils {
 			else
 				return getVersionableAncestor(node.getParent());
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get check out status for node " + node, re);
+			throw new ConnectException("Unable to get check out status for node " + node, re);
 		}
 	}
 
@@ -213,7 +207,7 @@ public class JcrUiUtils {
 		} catch (InvalidItemStateException iise) {
 			return false;
 		} catch (RepositoryException re) {
-			throw new PeopleException("Error while testing node existence", re);
+			throw new ConnectException("Error while testing node existence", re);
 		}
 		return true;
 	}
@@ -231,7 +225,7 @@ public class JcrUiUtils {
 			else
 				return node.getSession().getWorkspace().getVersionManager().isCheckedOut(node.getPath());
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get check out status for node " + node, re);
+			throw new ConnectException("Unable to get check out status for node " + node, re);
 		}
 	}
 
@@ -247,10 +241,10 @@ public class JcrUiUtils {
 			builder.append(XPathUtils.descendantFrom(parentPath));
 			builder.append("//element(*, ").append(nodeType).append(")");
 			Query query = session.getWorkspace().getQueryManager().createQuery(builder.toString(),
-					PeopleConstants.QUERY_XPATH);
+					ConnectConstants.QUERY_XPATH);
 			return query.execute().getNodes();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve node of type " + nodeType + " under " + parentPath, re);
+			throw new ConnectException("Unable to retrieve node of type " + nodeType + " under " + parentPath, re);
 		}
 	}
 
@@ -275,7 +269,7 @@ public class JcrUiUtils {
 			xpathQueryStr += "[" + attrQuery + "]";
 			// String cleanStr = cleanStatement(xpathQueryStr);
 
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr, PeopleConstants.QUERY_XPATH);
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 			QueryResult result = xpathQuery.execute();
 			NodeIterator ni = result.getNodes();
 
@@ -286,12 +280,12 @@ public class JcrUiUtils {
 				if (acceptMultipleResult)
 					return ni;
 				else
-					throw new PeopleException("Found " + niSize + " entities of type " + nodeType + "with " + propName
+					throw new ConnectException("Found " + niSize + " entities of type " + nodeType + "with " + propName
 							+ " =[" + propValue + "] under " + parentPath);
 			} else
 				return ni;
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrieve entities of type " + nodeType + " with " + propName + " = ["
+			throw new ConnectException("Unable to retrieve entities of type " + nodeType + " with " + propName + " = ["
 					+ propValue + "] under " + parentPath, e);
 		}
 	}
@@ -301,7 +295,7 @@ public class JcrUiUtils {
 		try {
 			return PropertyType.nameFromValue(prop.getType());
 		} catch (RepositoryException e) {
-			throw new EclipseUiException("Cannot check type for " + prop, e);
+			throw new ConnectException("Cannot check type for " + prop, e);
 		}
 	}
 
@@ -321,7 +315,7 @@ public class JcrUiUtils {
 			node.setProperty(Property.JCR_LAST_MODIFIED, new GregorianCalendar());
 			node.setProperty(Property.JCR_LAST_MODIFIED_BY, userId);
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot update last modified on " + node, e);
+			throw new ConnectException("Cannot update last modified on " + node, e);
 		}
 	}
 
@@ -356,7 +350,7 @@ public class JcrUiUtils {
 			}
 			return changed;
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to perform check point on " + node, re);
+			throw new ConnectException("Unable to perform check point on " + node, re);
 		}
 	}
 
@@ -386,11 +380,11 @@ public class JcrUiUtils {
 					}
 					vm.checkpoint(currPath);
 				} catch (RepositoryException re) {
-					throw new PeopleException("Unable to perform check point on " + currPath, re);
+					throw new ConnectException("Unable to perform check point on " + currPath, re);
 				}
 			}
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unexpected error when performing batch check point ", re);
+			throw new ConnectException("Unexpected error when performing batch check point ", re);
 		}
 	}
 
@@ -433,7 +427,7 @@ public class JcrUiUtils {
 		try {
 			return repository.login();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to login", re);
+			throw new ConnectException("Unable to login", re);
 		}
 	}
 
@@ -442,7 +436,7 @@ public class JcrUiUtils {
 		try {
 			return node.getSession();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve session for node " + node, re);
+			throw new ConnectException("Unable to retrieve session for node " + node, re);
 		}
 	}
 
@@ -451,7 +445,7 @@ public class JcrUiUtils {
 		try {
 			return node.getIdentifier();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve identifier for node " + node, re);
+			throw new ConnectException("Unable to retrieve identifier for node " + node, re);
 		}
 	}
 
@@ -460,7 +454,7 @@ public class JcrUiUtils {
 		try {
 			return node.getName();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve name for node " + node, re);
+			throw new ConnectException("Unable to retrieve name for node " + node, re);
 		}
 
 	}
@@ -470,7 +464,7 @@ public class JcrUiUtils {
 		try {
 			return node.getPath();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve path for node " + node, re);
+			throw new ConnectException("Unable to retrieve path for node " + node, re);
 		}
 	}
 
@@ -489,7 +483,7 @@ public class JcrUiUtils {
 		try {
 			return session.itemExists(absPath);
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to check existence of item at " + absPath, re);
+			throw new ConnectException("Unable to check existence of item at " + absPath, re);
 		}
 	}
 
@@ -501,7 +495,7 @@ public class JcrUiUtils {
 		try {
 			return session.getNodeByIdentifier(identifier);
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve node by identifier with " + identifier, re);
+			throw new ConnectException("Unable to retrieve node by identifier with " + identifier, re);
 		}
 	}
 
@@ -510,7 +504,7 @@ public class JcrUiUtils {
 		try {
 			return child.getParent();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve parent node for " + child, re);
+			throw new ConnectException("Unable to retrieve parent node for " + child, re);
 		}
 	}
 
@@ -530,7 +524,7 @@ public class JcrUiUtils {
 		try {
 			return session.getNode(absPath);
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve Node at path " + absPath, re);
+			throw new ConnectException("Unable to retrieve Node at path " + absPath, re);
 		}
 	}
 
@@ -544,7 +538,7 @@ public class JcrUiUtils {
 			else
 				return row.getNode(selectorName);
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve Node with selector name " + selectorName + " on " + row, re);
+			throw new ConnectException("Unable to retrieve Node with selector name " + selectorName + " on " + row, re);
 		}
 	}
 
@@ -553,7 +547,7 @@ public class JcrUiUtils {
 		try {
 			return node.isNodeType(nodeTypeName);
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to test NodeType " + nodeTypeName + " for " + node, re);
+			throw new ConnectException("Unable to test NodeType " + nodeTypeName + " for " + node, re);
 		}
 	}
 
@@ -562,7 +556,7 @@ public class JcrUiUtils {
 		try {
 			return node.getPrimaryNodeType().getName();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to retrieve node type name for " + node, re);
+			throw new ConnectException("Unable to retrieve node type name for " + node, re);
 		}
 	}
 
@@ -571,7 +565,7 @@ public class JcrUiUtils {
 		try {
 			node.getSession().getWorkspace().getVersionManager().checkout(node.getPath());
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to check out node  " + node, re);
+			throw new ConnectException("Unable to check out node  " + node, re);
 		}
 	}
 
@@ -580,7 +574,7 @@ public class JcrUiUtils {
 		try {
 			return node.isNodeType(NodeType.MIX_VERSIONABLE);
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to test versionability  of " + node, re);
+			throw new ConnectException("Unable to test versionability  of " + node, re);
 		}
 	}
 
@@ -597,7 +591,7 @@ public class JcrUiUtils {
 			else
 				return node.getProperty(propertyName).getString();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get property " + propertyName + " of " + node, e);
+			throw new ConnectException("Cannot get property " + propertyName + " of " + node, e);
 		}
 	}
 
@@ -612,7 +606,7 @@ public class JcrUiUtils {
 			else
 				return node.getProperty(propRelPath).getLong();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get long property " + propRelPath + " of " + node, e);
+			throw new ConnectException("Cannot get long property " + propRelPath + " of " + node, e);
 		}
 	}
 
@@ -627,7 +621,7 @@ public class JcrUiUtils {
 			else
 				return node.getProperty(propRelPath).getDouble();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get double property " + propRelPath + " of " + node, e);
+			throw new ConnectException("Cannot get double property " + propRelPath + " of " + node, e);
 		}
 	}
 
@@ -642,7 +636,7 @@ public class JcrUiUtils {
 			else
 				return node.getProperty(propRelPath).getDate();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get date property " + propRelPath + " of " + node, e);
+			throw new ConnectException("Cannot get date property " + propRelPath + " of " + node, e);
 		}
 	}
 
@@ -657,7 +651,7 @@ public class JcrUiUtils {
 			else
 				return node.getProperty(propertyName).getBoolean();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get boolean property " + propertyName + " of " + node, e);
+			throw new ConnectException("Cannot get boolean property " + propertyName + " of " + node, e);
 		}
 	}
 
@@ -674,7 +668,7 @@ public class JcrUiUtils {
 				return new SimpleDateFormat(dateFormatPattern).format(cal.getTime());
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get date property " + propertyName + " on " + node, e);
+			throw new ConnectException("Cannot get date property " + propertyName + " on " + node, e);
 		}
 	}
 
@@ -693,7 +687,7 @@ public class JcrUiUtils {
 			}
 			return ref;
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get reference " + propName + " for node " + node, re);
+			throw new ConnectException("Unable to get reference " + propName + " for node " + node, re);
 		}
 	}
 
@@ -772,11 +766,11 @@ public class JcrUiUtils {
 					return true;
 				}
 			default:
-				throw new PeopleException("Update unimplemented for property type " + propertyType
+				throw new ConnectException("Update unimplemented for property type " + propertyType
 						+ ". Unable to update property " + propName + " on " + node);
 			}
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unexpected error while setting property " + propName + " on " + node, re);
+			throw new ConnectException("Unexpected error while setting property " + propName + " on " + node, re);
 		}
 	}
 
@@ -801,7 +795,7 @@ public class JcrUiUtils {
 			if (foundValue)
 				node.setProperty(propName, strings.toArray(new String[0]));
 		} catch (RepositoryException e) {
-			throw new PeopleException(
+			throw new ConnectException(
 					"Unable to remove value " + stringToRemove + " for property " + propName + " of " + node, e);
 		}
 	}
@@ -840,7 +834,7 @@ public class JcrUiUtils {
 			node.setProperty(propName, valuesStr);
 			return null;
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to set tags", re);
+			throw new ConnectException("Unable to set tags", re);
 		}
 	}
 
@@ -850,18 +844,18 @@ public class JcrUiUtils {
 	 */
 	public static void setMultiValueStringPropFromString(Node node, String propName, String values, String separator) {
 		try {
-			if (EclipseUiUtils.notEmpty(values)) {
+			if (notEmpty(values)) {
 				String[] valArray = values.split(separator);
 				// Remove any empty value
 				List<String> newValList = new ArrayList<String>();
 				for (String currValue : valArray) {
-					if (EclipseUiUtils.notEmpty(currValue))
+					if (notEmpty(currValue))
 						newValList.add(currValue);
 				}
 				node.setProperty(propName, newValList.toArray(new String[0]));
 			}
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to set multi value property " + propName + " of node " + node
+			throw new ConnectException("Unable to set multi value property " + propName + " of node " + node
 					+ " with values [" + values + "]", re);
 		}
 	}
@@ -886,7 +880,7 @@ public class JcrUiUtils {
 				StringBuilder builder = new StringBuilder();
 				for (Value val : values) {
 					String currStr = val.getString();
-					if (EclipseUiUtils.notEmpty(currStr))
+					if (notEmpty(currStr))
 						builder.append(currStr).append(separator);
 				}
 				if (builder.lastIndexOf(separator) >= 0)
@@ -895,7 +889,7 @@ public class JcrUiUtils {
 					return builder.toString();
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get multi valued property " + propertyName + " of " + node, e);
+			throw new ConnectException("Cannot get multi valued property " + propertyName + " of " + node, e);
 		}
 	}
 
@@ -915,7 +909,7 @@ public class JcrUiUtils {
 				}
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get multi valued property " + propertyName + " of " + node, e);
+			throw new ConnectException("Cannot get multi valued property " + propertyName + " of " + node, e);
 		}
 		return results;
 	}
@@ -950,7 +944,7 @@ public class JcrUiUtils {
 			}
 			setMultipleReferences(node, propName, nodes);
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to remove reference from property " + propName + " of Node " + node, e);
+			throw new ConnectException("Unable to remove reference from property " + propName + " of Node " + node, e);
 		}
 	}
 
@@ -986,7 +980,7 @@ public class JcrUiUtils {
 			setMultipleReferences(node, propName, nodes);
 			return null;
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to add reference ", re);
+			throw new ConnectException("Unable to add reference ", re);
 		}
 	}
 
@@ -1026,7 +1020,7 @@ public class JcrUiUtils {
 			}
 			setMultipleReferences(node, propName, nodes);
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to update node " + node + " to order " + sourceNode + " before "
+			throw new ConnectException("Unable to update node " + node + " to order " + sourceNode + " before "
 					+ targetNode + " in multi value reference property " + propName, re);
 		}
 	}
@@ -1049,7 +1043,7 @@ public class JcrUiUtils {
 			}
 			return false;
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to set tags", re);
+			throw new ConnectException("Unable to set tags", re);
 		}
 	}
 
@@ -1092,7 +1086,7 @@ public class JcrUiUtils {
 			node.setProperty(propName, valuesStr);
 			return null;
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to set tags", re);
+			throw new ConnectException("Unable to set tags", re);
 		}
 	}
 
@@ -1111,58 +1105,7 @@ public class JcrUiUtils {
 				node.setProperty(propName, results);
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to remove reference from property " + propName + " of Node " + node, e);
-		}
-	}
-
-	/* INTERNATIONALISATION HELPERS */
-
-	/**
-	 * Concisely gets the node for the translation of some main properties of
-	 * the current node given a language by default such a name is at
-	 * {@link PeopleNames#PEOPLE_ALT_LANGS}/lang
-	 */
-	public static Node getAltLangNode(Node currentNode, String lang) {
-		return getAltLangNode(currentNode, PeopleNames.PEOPLE_ALT_LANGS, lang);
-	}
-
-	/**
-	 * Concisely gets the node for the translation of some main properties of
-	 * the current node given a language and the name of an intermediary node
-	 * 
-	 * If no rel path is given, we use the default
-	 * {@link PeopleNames#PEOPLE_ALT_LANGS}
-	 */
-	public static Node getAltLangNode(Node currentNode, String relPath, String lang) {
-		try {
-			if (EclipseUiUtils.isEmpty(relPath))
-				relPath = PeopleNames.PEOPLE_ALT_LANGS;
-			if (!currentNode.hasNode(relPath + "/" + lang))
-				return null;
-			else {
-				return currentNode.getNode(relPath + "/" + lang);
-			}
-		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get alt property for " + lang, e);
-		}
-	}
-
-	public static Node getOrCreateAltLanguageNode(Node node, String lang, List<String> mixins) {
-		return getOrCreateAltLanguageNode(node, PeopleNames.PEOPLE_ALT_LANGS, lang, mixins);
-	}
-
-	public static Node getOrCreateAltLanguageNode(Node node, String relPath, String lang, List<String> mixins) {
-		try {
-			Node child = JcrUtils.mkdirs(node, relPath + "/" + lang, NodeType.NT_UNSTRUCTURED);
-			child.addMixin(NodeType.MIX_LANGUAGE);
-			if (mixins != null && !mixins.isEmpty())
-				for (String mixin : mixins)
-					child.addMixin(mixin);
-
-			child.setProperty(Property.JCR_LANGUAGE, lang);
-			return child;
-		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot create child for language " + lang, e);
+			throw new ConnectException("Unable to remove reference from property " + propName + " of Node " + node, e);
 		}
 	}
 
@@ -1244,13 +1187,13 @@ public class JcrUiUtils {
 	/** Concatenates 2 strings with given separator if they are not empty */
 	public static String concatIfNotEmpty(String str1, String str2, String separator) {
 		StringBuilder builder = new StringBuilder();
-		if (EclipseUiUtils.notEmpty(str1))
+		if (notEmpty(str1))
 			builder.append(str1);
 
-		if (EclipseUiUtils.notEmpty(str1) && EclipseUiUtils.notEmpty(str2))
+		if (notEmpty(str1) && notEmpty(str2))
 			builder.append(separator);
 
-		if (EclipseUiUtils.notEmpty(str2))
+		if (notEmpty(str2))
 			builder.append(str2);
 		return builder.toString();
 	}
@@ -1272,7 +1215,7 @@ public class JcrUiUtils {
 	public static Constraint getFreeTextConstraint(Session session, QueryObjectModelFactory factory, Selector source,
 			String filter) throws RepositoryException {
 		Constraint defaultC = null;
-		if (EclipseUiUtils.notEmpty(filter)) {
+		if (notEmpty(filter)) {
 			String[] strs = filter.trim().split(" ");
 			for (String token : strs) {
 				StaticOperand so = factory.literal(session.getValueFactory().createValue("*" + token + "*"));
@@ -1283,81 +1226,9 @@ public class JcrUiUtils {
 		return defaultC;
 	}
 
-	/* IMPORT HELPERS */
-	/**
-	 * Transforms String property that use the people UID to reference other
-	 * entities during import to JCR References. Manage both single and multi
-	 * value prop It retrieves and process all properties that have a _puid
-	 * suffix
-	 */
-	public static void translatePuidToRef(Node node, String nodeType, String basePath, boolean updateChildren) {
-		try {
-			Session session = node.getSession();
-			PropertyIterator pit = node.getProperties();
-			while (pit.hasNext()) {
-				Property currProp = pit.nextProperty();
-				String currName = currProp.getName();
-				if (currName.endsWith(PeopleConstants.IMPORT_REF_SUFFIX)) {
-					String newName = currName.substring(0,
-							currName.length() - PeopleConstants.IMPORT_REF_SUFFIX.length());
-					if (currProp.isMultiple()) {
-						Value[] values = currProp.getValues();
-						List<Node> nodes = new ArrayList<Node>();
-						for (Value val : values) {
-							String currId = val.getString();
-							Node referenced = getEntityByUid(session, currId, nodeType, basePath);
-							if (referenced == null)
-								log.warn("Unable to find referenced node with ID " + currId + " for " + currProp);
-							else
-								nodes.add(referenced);
-						}
-						setMultipleReferences(node, newName, nodes);
-						currProp.remove();
-					} else {
-						String currId = currProp.getString();
-						Node referenced = getEntityByUid(session, currId, nodeType, basePath);
-						node.setProperty(newName, referenced);
-						currProp.remove();
-					}
-				}
-			}
-			if (updateChildren) {
-				NodeIterator nit = node.getNodes();
-				while (nit.hasNext()) {
-					Node currChild = nit.nextNode();
-					translatePuidToRef(currChild, nodeType, basePath, updateChildren);
-				}
-			}
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to perform post import " + "translation on Node " + node, re);
-		}
-	}
-
-	public static Node getEntityByUid(Session session, String uid, String nodeType, String basePath) {
-		if (isEmpty(uid))
-			throw new PeopleException("Cannot get entity by id by providing an empty people:uid");
-		try {
-			QueryManager queryManager = session.getWorkspace().getQueryManager();
-			String xpathQueryStr = XPathUtils.descendantFrom(basePath) + "//element(*, " + nodeType + ")";
-			String attrQuery = XPathUtils.getPropertyEquals(PeopleNames.PEOPLE_UID, uid);
-			if (EclipseUiUtils.notEmpty(attrQuery))
-				xpathQueryStr += "[" + attrQuery + "]";
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr, PeopleConstants.QUERY_XPATH);
-			QueryResult result = xpathQuery.execute();
-			NodeIterator ni = result.getNodes();
-
-			if (ni.getSize() == 0)
-				return null;
-			else if (ni.getSize() > 1) {
-				Node first = ni.nextNode();
-				throw new PeopleException("Found " + ni.getSize() + " entities for People UID [" + uid
-						+ "]\n Info on first occurence: " + "\n Path: " + first.getPath() + "\n Node type: "
-						+ first.getPrimaryNodeType().getName());
-			} else
-				return ni.nextNode();
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrieve entity of uid: " + uid + " under " + basePath, e);
-		}
+	/* HELPERS */
+	static boolean notEmpty(String stringToTest) {
+		return !(stringToTest == null || "".equals(stringToTest.trim()));
 	}
 
 	/* PREVENTS INSTANTIATION */

@@ -15,12 +15,12 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.PeopleAbstractDropDown;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;
@@ -455,7 +455,7 @@ public class PeopleRapUtils {
 
 			public void modifyText(ModifyEvent event) {
 				String lengthStr = text.getText();
-				if (!PeopleUiUtils.isNumbers(lengthStr)) {
+				if (!ConnectUiUtils.isNumbers(lengthStr)) {
 					text.setBackground(new Color(text.getDisplay(), 250, 200, 150));
 					decoration.show();
 					decoration.setDescriptionText("Length can only be a number: " + lengthStr);

@@ -7,12 +7,12 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -53,7 +53,7 @@ public class ContactButtonsComposite extends Composite {
 	private void populate() {
 		// Initialization
 		Composite buttCmp = this;
-		GridLayout gl = PeopleUiUtils.noSpaceGridLayout(3);
+		GridLayout gl = ConnectUiUtils.noSpaceGridLayout(3);
 		buttCmp.setLayout(gl);
 
 		// final Button categoryBtn =

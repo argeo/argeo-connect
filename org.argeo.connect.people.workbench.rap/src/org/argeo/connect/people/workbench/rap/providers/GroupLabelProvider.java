@@ -8,9 +8,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
@@ -37,20 +37,20 @@ public class GroupLabelProvider extends ColumnLabelProvider implements
 		case PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE:
 			result = getOverviewTitle(entity);
 			break;
-		// case PeopleUiConstants.LIST_TYPE_OVERVIEW_DETAIL:
+		// case ConnectUiConstants.LIST_TYPE_OVERVIEW_DETAIL:
 		// result = getOverviewDetails(entity);
 		// break;
 		case PeopleRapConstants.LIST_TYPE_SMALL:
 			result = getOneLineLabel(entity);
 			break;
-		// case PeopleUiConstants.LIST_TYPE_MEDIUM:
+		// case ConnectUiConstants.LIST_TYPE_MEDIUM:
 		// result = getOverviewForList(entity, false);
 		// break;
 		default:
 			throw new PeopleException(
 					"Undefined list type - Unable to provide text for group");
 		}
-		return PeopleUiUtils.replaceAmpersand(result);
+		return ConnectUiUtils.replaceAmpersand(result);
 	}
 
 	private String getOverviewTitle(Node entity) {

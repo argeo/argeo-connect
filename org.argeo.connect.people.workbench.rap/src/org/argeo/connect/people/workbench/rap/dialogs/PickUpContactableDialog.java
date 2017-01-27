@@ -27,15 +27,15 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
 
-import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.util.JcrUiUtils;
-import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
+import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -73,9 +73,8 @@ public class PickUpContactableDialog extends TrayDialog {
 	private Text filterTxt;
 	private TableViewer tableViewer;
 
-	public PickUpContactableDialog(Shell parentShell, String title,
-			Session session, PeopleWorkbenchService peopleUiService,
-			String nodeType) {
+	public PickUpContactableDialog(Shell parentShell, String title, Session session,
+			PeopleWorkbenchService peopleUiService, String nodeType) {
 		super(parentShell);
 		this.title = title;
 		this.session = session;
@@ -83,8 +82,7 @@ public class PickUpContactableDialog extends TrayDialog {
 
 		colDefs = new ArrayList<PeopleColumnDefinition>();
 		colDefs.add(new PeopleColumnDefinition("Display Name",
-				new TitleIconRowLP(peopleUiService, null, Property.JCR_TITLE),
-				300));
+				new TitleIconRowLP(peopleUiService, null, Property.JCR_TITLE), 300));
 	}
 
 	protected Point getInitialSize() {
@@ -95,13 +93,11 @@ public class PickUpContactableDialog extends TrayDialog {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
 		createFilterPart(dialogArea);
-		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(dialogArea,
-				SWT.SINGLE | SWT.BORDER, colDefs);
+		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(dialogArea, SWT.SINGLE | SWT.BORDER, colDefs);
 		tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 		tableViewer.addDoubleClickListener(new MyDoubleClickListener());
-		tableViewer
-				.addSelectionChangedListener(new MySelectionChangedListener());
+		tableViewer.addSelectionChangedListener(new MySelectionChangedListener());
 		parent.pack();
 		refreshFilteredList();
 		filterTxt.setFocus();
@@ -133,8 +129,7 @@ public class PickUpContactableDialog extends TrayDialog {
 				return;
 			}
 
-			Object obj = ((IStructuredSelection) event.getSelection())
-					.getFirstElement();
+			Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 			if (obj instanceof Row) {
 				selectedNode = JcrUiUtils.getNode((Row) obj, null);
 			}
@@ -146,8 +141,7 @@ public class PickUpContactableDialog extends TrayDialog {
 			if (evt.getSelection().isEmpty())
 				return;
 
-			Object obj = ((IStructuredSelection) evt.getSelection())
-					.getFirstElement();
+			Object obj = ((IStructuredSelection) evt.getSelection()).getFirstElement();
 			if (obj instanceof Row) {
 				JcrUiUtils.getNode((Row) obj, null);
 				okPressed();
@@ -157,11 +151,9 @@ public class PickUpContactableDialog extends TrayDialog {
 
 	private void createFilterPart(Composite parent) {
 		// Text Area for the filter
-		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH
-				| SWT.ICON_CANCEL);
+		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
-		filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
-				| GridData.HORIZONTAL_ALIGN_FILL));
+		filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
 		filterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -174,15 +166,12 @@ public class PickUpContactableDialog extends TrayDialog {
 	/** Refresh the table viewer based on the free text search field */
 	protected void refreshFilteredList() {
 		try {
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
+			QueryManager queryManager = session.getWorkspace().getQueryManager();
 			String xpathQueryStr = "//element(*, " + nodeType + ")";
-			String attrQuery = XPathUtils.getFreeTextConstraint(filterTxt
-					.getText());
+			String attrQuery = XPathUtils.getFreeTextConstraint(filterTxt.getText());
 			if (EclipseUiUtils.notEmpty(attrQuery))
 				xpathQueryStr += "[" + attrQuery + "]";
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
-					PeopleConstants.QUERY_XPATH);
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 			QueryResult result = xpathQuery.execute();
 
 			// QueryManager queryManager = session.getWorkspace()
@@ -204,8 +193,7 @@ public class PickUpContactableDialog extends TrayDialog {
 			Row[] rows = JcrUiUtils.rowIteratorToArray(result.getRows());
 			setViewerInput(rows);
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to list " + nodeType
-					+ " entities", e);
+			throw new PeopleException("Unable to list " + nodeType + " entities", e);
 		}
 	}
 }

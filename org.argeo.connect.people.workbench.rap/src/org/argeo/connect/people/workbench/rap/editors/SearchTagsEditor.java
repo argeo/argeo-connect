@@ -14,6 +14,7 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 
 import org.argeo.cms.auth.CurrentUser;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -21,8 +22,6 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.util.JcrUiUtils;
-import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
@@ -33,6 +32,8 @@ import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickLis
 import org.argeo.connect.people.workbench.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.people.workbench.rap.util.Refreshable;
 import org.argeo.connect.people.workbench.rap.wizards.EditTagWizard;
+import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -192,7 +193,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 				queryStr += "[" + attrQuery + "]";
 			// always order ?
 			queryStr += " order by @" + PeopleNames.JCR_TITLE;
-			Query query = queryManager.createQuery(queryStr, PeopleConstants.QUERY_XPATH);
+			Query query = queryManager.createQuery(queryStr, ConnectConstants.QUERY_XPATH);
 			NodeIterator nit = query.execute().getNodes();
 			Node[] nodes = JcrUiUtils.nodeIteratorToArray(nit);
 			setViewerInput(nodes);

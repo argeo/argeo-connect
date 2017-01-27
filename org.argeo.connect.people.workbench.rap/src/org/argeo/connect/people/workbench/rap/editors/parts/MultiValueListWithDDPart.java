@@ -8,11 +8,11 @@ import javax.jcr.Value;
 
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.PeopleAbstractDropDown;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -98,7 +98,7 @@ public abstract class MultiValueListWithDDPart extends Composite {
 					// Workaround the fact that row layout elements are top
 					// aligned
 					Composite valCmp = toolkit.createComposite(parent, SWT.NO_FOCUS);
-					GridLayout gl = PeopleUiUtils.noSpaceGridLayout(2);
+					GridLayout gl = ConnectUiUtils.noSpaceGridLayout(2);
 					gl.marginTop = 2;
 					valCmp.setLayout(gl);
 

@@ -14,16 +14,16 @@ import javax.jcr.Session;
 import javax.jcr.query.Query;
 
 import org.argeo.cms.ui.workbench.util.PrivilegedJob;
-import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleBasicEditor;
 import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.workbench.rap.providers.SimpleLazyContentProvider;
 import org.argeo.connect.people.workbench.rap.util.Refreshable;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
@@ -49,8 +49,7 @@ import org.eclipse.ui.PartInitException;
  * 
  * TODO work on this to enrich the generic monitoring perspective.
  */
-public class LastModificationsList extends AbstractPeopleBasicEditor implements
-		Refreshable {
+public class LastModificationsList extends AbstractPeopleBasicEditor implements Refreshable {
 
 	/* DEPENDENCY INJECTION */
 	private PeopleWorkbenchService peopleWorkbenchService;
@@ -61,16 +60,13 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements
 
 	// Utils
 	final static int QUERY_LIMIT = 100;
-	protected DateFormat dateFormat = new SimpleDateFormat(
-			"dd/MM/yyyy 'at' HH:mm");
+	protected DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy 'at' HH:mm");
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
 		setPartName("Last modif. list");
-		setTitleToolTip("Display the list of the most recent "
-				+ "modifications done on the system");
+		setTitleToolTip("Display the list of the most recent " + "modifications done on the system");
 	}
 
 	@Override
@@ -78,8 +74,7 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		// The table itself
 		tableViewer = createTableViewer(parent, SWT.READ_ONLY | SWT.VIRTUAL);
-		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-				peopleWorkbenchService));
+		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(peopleWorkbenchService));
 		forceRefresh(null);
 	}
 
@@ -92,17 +87,13 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements
 
 		TableViewer viewer = new TableViewer(table);
 		TableViewerColumn column;
-		column = ViewerUtils.createTableViewerColumn(viewer, "Title", SWT.NONE,
-				250);
-		column.setLabelProvider(new SimpleJcrNodeLabelProvider(
-				Property.JCR_TITLE));
+		column = ViewerUtils.createTableViewerColumn(viewer, "Title", SWT.NONE, 250);
+		column.setLabelProvider(new SimpleJcrNodeLabelProvider(Property.JCR_TITLE));
 
-		column = ViewerUtils.createTableViewerColumn(viewer,
-				"Last modif by ... on ...", SWT.NONE, 200);
+		column = ViewerUtils.createTableViewerColumn(viewer, "Last modif by ... on ...", SWT.NONE, 200);
 		column.setLabelProvider(new ModifyLP());
 
-		column = ViewerUtils.createTableViewerColumn(viewer, "Path", SWT.NONE,
-				350);
+		column = ViewerUtils.createTableViewerColumn(viewer, "Path", SWT.NONE, 350);
 		column.setLabelProvider(new PathLP());
 
 		lazyCp = new SimpleLazyContentProvider(viewer);
@@ -136,16 +127,12 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements
 
 					// XPath
 					StringBuilder builder = new StringBuilder();
-					builder.append("//element(*, ")
-							.append(PeopleNames.MIX_LAST_MODIFIED).append(")");
+					builder.append("//element(*, ").append(PeopleNames.MIX_LAST_MODIFIED).append(")");
 					builder.append(" order by @");
 					builder.append(PeopleNames.JCR_LAST_MODIFIED);
 					builder.append(" descending ");
-					Query query = session
-							.getWorkspace()
-							.getQueryManager()
-							.createQuery(builder.toString(),
-									PeopleConstants.QUERY_XPATH);
+					Query query = session.getWorkspace().getQueryManager().createQuery(builder.toString(),
+							ConnectConstants.QUERY_XPATH);
 
 					// SQL2
 					// String queryStr = "SELECT * FROM ["
@@ -173,8 +160,8 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements
 					}
 				});
 			} catch (Exception e) {
-				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
-						"Unable to refresh last modification list", e);
+				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID, "Unable to refresh last modification list",
+						e);
 			}
 			return Status.OK_STATUS;
 		}
@@ -190,8 +177,7 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements
 				Node node = (Node) element;
 				return node.getPath();
 			} catch (RepositoryException e) {
-				throw new PeopleException("Unable to retrieve name " + "for "
-						+ element, e);
+				throw new PeopleException("Unable to retrieve name " + "for " + element, e);
 			}
 		}
 	}
@@ -203,20 +189,16 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements
 		public String getText(Object element) {
 			try {
 				Node currNode = (Node) element;
-				String modifBy = JcrUiUtils.get(currNode,
-						Property.JCR_LAST_MODIFIED_BY);
-				Calendar modifOn = currNode.getProperty(
-						Property.JCR_LAST_MODIFIED).getDate();
+				String modifBy = JcrUiUtils.get(currNode, Property.JCR_LAST_MODIFIED_BY);
+				Calendar modifOn = currNode.getProperty(Property.JCR_LAST_MODIFIED).getDate();
 				return modifBy + " - " + dateFormat.format(modifOn.getTime());
 			} catch (Exception e) {
-				throw new PeopleException("Unable to retrieve and "
-						+ "format last modif info for " + element, e);
+				throw new PeopleException("Unable to retrieve and " + "format last modif info for " + element, e);
 			}
 		}
 	}
 
-	public void setPeopleWorkbenchService(
-			PeopleWorkbenchService peopleWorkbenchService) {
+	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
 		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 }

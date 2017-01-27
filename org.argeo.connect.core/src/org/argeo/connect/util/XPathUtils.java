@@ -1,6 +1,6 @@
-package org.argeo.connect.people.util;
+package org.argeo.connect.util;
 
-import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+import static org.argeo.connect.util.JcrUiUtils.notEmpty;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

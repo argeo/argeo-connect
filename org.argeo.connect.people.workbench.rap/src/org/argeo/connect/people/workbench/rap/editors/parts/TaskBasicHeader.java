@@ -19,12 +19,12 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.workbench.rap.util.AbstractPanelFormPart;
+import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -80,8 +80,8 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 	private Text titleTxt;
 	private Text descTxt;
 
-	private DateFormat dtFormat = new SimpleDateFormat(PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
-	private DateFormat dateFormat = new SimpleDateFormat(PeopleUiConstants.DEFAULT_DATE_FORMAT);
+	private DateFormat dtFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
+	private DateFormat dateFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_FORMAT);
 
 	public TaskBasicHeader(AbstractPeopleEditor editor, Composite parent, int style, PeopleService peopleService,
 			PeopleWorkbenchService peopleWorkbenchService, String taskTypeId, Node task) {

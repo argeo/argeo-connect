@@ -20,7 +20,7 @@ import org.argeo.connect.people.ImportService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.util.JcrUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
 
 /** Default implementation of the import service */
 public class ImportServiceImpl implements ImportService, PeopleNames {

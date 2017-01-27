@@ -30,17 +30,18 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.DelayedText;
-import org.argeo.connect.people.util.JcrUiUtils;
-import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.providers.EntitySingleColumnLabelProvider;
+import org.argeo.connect.ui.widgets.DelayedText;
+import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -493,7 +494,7 @@ public class EditJobDialog extends TrayDialog {
 			if (EclipseUiUtils.notEmpty(attrQuery))
 				xpathQueryStr += "[" + attrQuery + "]";
 			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
-					PeopleConstants.QUERY_XPATH);
+					ConnectConstants.QUERY_XPATH);
 			xpathQuery.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
 			QueryResult result = xpathQuery.execute();
 			return result.getNodes();

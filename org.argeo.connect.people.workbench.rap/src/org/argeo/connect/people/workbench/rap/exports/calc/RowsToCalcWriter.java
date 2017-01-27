@@ -32,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.ui.PeopleUiConstants;
+import org.argeo.connect.ui.ConnectUiConstants;
 
 /** Generate a spreadsheet from a Row array using jxl */
 public class RowsToCalcWriter {
@@ -75,7 +75,7 @@ public class RowsToCalcWriter {
 			tableBodyStringFormat.setWrap(true);
 
 			DateFormat currDF = new DateFormat(
-					PeopleUiConstants.DEFAULT_DATE_FORMAT);
+					ConnectUiConstants.DEFAULT_DATE_FORMAT);
 			tableBodyDateFormat = new WritableCellFormat(new WritableFont(
 					WritableFont.ARIAL, 9), currDF);
 			tableBodyDateFormat.setBorder(Border.ALL, BorderLineStyle.THIN);
@@ -86,7 +86,7 @@ public class RowsToCalcWriter {
 
 			tableBodyFloatFormat = new WritableCellFormat(new WritableFont(
 					WritableFont.ARIAL, 9), new NumberFormat(
-					PeopleUiConstants.DEFAULT_NUMBER_FORMAT));
+					ConnectUiConstants.DEFAULT_NUMBER_FORMAT));
 			tableBodyFloatFormat.setBorder(Border.ALL, BorderLineStyle.THIN);
 
 		} catch (Exception e) {

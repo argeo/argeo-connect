@@ -5,6 +5,8 @@ org.eclipse.rap.ui.workbench
 Import-Package: org.argeo.connect.people,\
 org.argeo.node,\
 org.argeo.cms.ui.workbench.commands,\
+org.argeo.connect,\
+org.argeo.connect.ui,\
 org.argeo.eclipse.spring,\
 org.argeo.eclipse.ui.dialogs,\
 org.osgi.service.useradmin,\

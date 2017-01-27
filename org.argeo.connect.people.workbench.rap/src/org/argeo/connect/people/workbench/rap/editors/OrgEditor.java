@@ -10,8 +10,6 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
@@ -23,6 +21,8 @@ import org.argeo.connect.people.workbench.rap.editors.tabs.OrgAdminInfo;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.workbench.rap.providers.OrgOverviewLabelProvider;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -173,11 +173,11 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 							PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 
 					if (useDistinct) {
-						PeopleUiUtils.refreshTextWidgetValue(displayNameTxt,
+						ConnectUiUtils.refreshTextWidgetValue(displayNameTxt,
 								org, Property.JCR_TITLE);
 						displayNameTxt.setEnabled(true);
 					} else {
-						PeopleUiUtils.refreshTextWidgetValue(displayNameTxt,
+						ConnectUiUtils.refreshTextWidgetValue(displayNameTxt,
 								org, PeopleNames.PEOPLE_LEGAL_NAME);
 						displayNameTxt.setEnabled(false);
 					}

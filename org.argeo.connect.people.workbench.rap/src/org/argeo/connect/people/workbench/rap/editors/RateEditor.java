@@ -19,14 +19,14 @@ import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.util.ActivityUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.editors.parts.LinkListPart;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.EntityEditorInput;
+import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -177,7 +177,7 @@ public class RateEditor extends AbstractPeopleEditor {
 		private class MyFormPart extends AbstractFormPart {
 
 			DateFormat dateFormat = new SimpleDateFormat(
-					PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
+					ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
 			@Override
 			public void refresh() {

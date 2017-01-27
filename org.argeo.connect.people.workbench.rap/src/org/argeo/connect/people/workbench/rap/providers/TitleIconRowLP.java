@@ -2,8 +2,8 @@ package org.argeo.connect.people.workbench.rap.providers;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
+import org.argeo.connect.util.JcrUiUtils;
 import org.eclipse.swt.graphics.Image;
 
 /**

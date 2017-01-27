@@ -15,8 +15,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.PeopleStyles;
@@ -27,6 +25,8 @@ import org.argeo.connect.people.workbench.rap.composites.dropdowns.TagLikeDropDo
 import org.argeo.connect.people.workbench.rap.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;
@@ -212,7 +212,7 @@ public class ContactList extends LazyCTabControl {
 	}
 
 	private void populateNotePanel(Composite parent) {
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
+		parent.setLayout(ConnectUiUtils.noSpaceGridLayout(2));
 		Label label = PeopleRapUtils
 				.createBoldLabel(toolkit, parent, "Notes: ");
 

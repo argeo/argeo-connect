@@ -1,12 +1,11 @@
 Import-Package: javax.jcr.nodetype,\
-org.eclipse.swt,\
-org.eclipse.core.commands,\
+javax.jcr.query,\
+org.argeo.connect,\
 org.argeo.cms.maintenance,\
-org.eclipse.ui;ui.workbench=split,\
+org.eclipse.core.commands,\
+org.eclipse.jface.resource,\
+org.eclipse.swt,\
 org.eclipse.ui.browser;ui.workbench=split,\
 org.eclipse.ui.part;ui.workbench=split,\
-org.eclipse.jface.resource,\
+org.eclipse.ui;ui.workbench=split,\
 *
-
-
-#javax.jcr.nodetype,\

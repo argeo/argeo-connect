@@ -12,13 +12,13 @@ import javax.jcr.Value;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.PeopleAbstractDropDown;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.internal.ui.AbstractTrackerEditor;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -42,6 +42,8 @@ import org.eclipse.ui.forms.IManagedForm;
  * form editor.
  */
 public abstract class TagListFormPart extends Composite {
+
+	private static final long serialVersionUID = 5439358000985800234L;
 
 	// UI Context
 	private final AbstractTrackerEditor editor;
@@ -141,7 +143,7 @@ public abstract class TagListFormPart extends Composite {
 						final String tagKey = value.getString();
 						String tagValue = getEncodedTagValue(tagKey);
 						Composite tagCmp = new Composite(parentCmp, SWT.NO_FOCUS);
-						tagCmp.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
+						tagCmp.setLayout(ConnectUiUtils.noSpaceGridLayout(2));
 						Link link = new Link(tagCmp, SWT.NONE);
 						CmsUtils.markup(link);
 						if (taggablePropName.equals(PeopleNames.PEOPLE_TAGS))

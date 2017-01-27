@@ -23,14 +23,15 @@ import javax.jcr.query.QueryResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.util.JcrUiUtils;
-import org.argeo.connect.people.util.XPathUtils;
+import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.jcr.JcrUtils;
 
 /** Concrete access to people {@link ResourceService} */
@@ -341,7 +342,7 @@ public class ResourceServiceImpl implements ResourceService {
 			builder.append("[");
 			builder.append(XPathUtils.getPropertyEquals(PeopleNames.JCR_TITLE, value));
 			builder.append("]");
-			Query query = queryManager.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH);
+			Query query = queryManager.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH);
 
 			QueryResult queryResult = query.execute();
 			NodeIterator ni = queryResult.getNodes();
@@ -412,7 +413,7 @@ public class ResourceServiceImpl implements ResourceService {
 
 			xpathQueryStr += "[" + condition + "]";
 			QueryManager queryManager = tagParent.getSession().getWorkspace().getQueryManager();
-			Query query = queryManager.createQuery(xpathQueryStr, PeopleConstants.QUERY_XPATH);
+			Query query = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 			NodeIterator nit = query.execute().getNodes();
 			return nit;
 		} catch (RepositoryException ee) {
@@ -466,7 +467,7 @@ public class ResourceServiceImpl implements ResourceService {
 			String xpathQueryStr = XPathUtils.descendantFrom(taggableParentPath) + "//element(*, " + taggableNodeType
 					+ ")";
 			QueryManager queryManager = session.getWorkspace().getQueryManager();
-			Query query = queryManager.createQuery(xpathQueryStr, PeopleConstants.QUERY_XPATH);
+			Query query = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 			nit = query.execute().getNodes();
 			if (log.isDebugEnabled())
 				log.debug("Searching new tags on " + nit.getSize() + " elements of type " + taggableNodeType);

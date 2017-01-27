@@ -12,11 +12,11 @@ import javax.jcr.version.VersionManager;
 
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.editors.util.EntityEditorInput;
 import org.argeo.connect.tracker.PeopleTrackerService;
 import org.argeo.connect.tracker.TrackerException;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;

@@ -15,8 +15,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
@@ -27,6 +25,8 @@ import org.argeo.connect.people.workbench.rap.editors.tabs.JobList;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.workbench.rap.providers.PersonOverviewLabelProvider;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -258,7 +258,7 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements
 			public void refresh() { // update display value
 				super.refresh();
 				// EDIT PART
-				PeopleUiUtils.refreshTextWidgetValue(displayNameTxt, person,
+				ConnectUiUtils.refreshTextWidgetValue(displayNameTxt, person,
 						Property.JCR_TITLE);
 
 				Boolean defineDistinct = JcrUiUtils.getBooleanValue(person,
@@ -268,25 +268,25 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements
 				displayNameTxt.setEnabled(defineDistinct);
 				defineDistinctBtn.setSelection(defineDistinct);
 
-				PeopleUiUtils.refreshTextWidgetValue(salutationTxt, person,
+				ConnectUiUtils.refreshTextWidgetValue(salutationTxt, person,
 						PEOPLE_SALUTATION);
-				PeopleUiUtils.refreshTextWidgetValue(firstNameTxt, person,
+				ConnectUiUtils.refreshTextWidgetValue(firstNameTxt, person,
 						PEOPLE_FIRST_NAME);
-				PeopleUiUtils.refreshTextWidgetValue(middleNameTxt, person,
+				ConnectUiUtils.refreshTextWidgetValue(middleNameTxt, person,
 						PEOPLE_MIDDLE_NAME);
-				PeopleUiUtils.refreshTextWidgetValue(lastNameTxt, person,
+				ConnectUiUtils.refreshTextWidgetValue(lastNameTxt, person,
 						PEOPLE_LAST_NAME);
-				PeopleUiUtils.refreshTextWidgetValue(nickNameTxt, person,
+				ConnectUiUtils.refreshTextWidgetValue(nickNameTxt, person,
 						PEOPLE_NICKNAME);
-				// PeopleUiUtils.refreshTextValue(genderTxt, person,
+				// ConnectUiUtils.refreshTextValue(genderTxt, person,
 				// PEOPLE_GENDER);
-				PeopleUiUtils.refreshTextWidgetValue(maidenNameTxt, person,
+				ConnectUiUtils.refreshTextWidgetValue(maidenNameTxt, person,
 						PEOPLE_MAIDEN_NAME);
-				PeopleUiUtils.refreshTextWidgetValue(titleTxt, person,
+				ConnectUiUtils.refreshTextWidgetValue(titleTxt, person,
 						PEOPLE_HONORIFIC_TITLE);
-				PeopleUiUtils.refreshTextWidgetValue(suffixTxt, person,
+				ConnectUiUtils.refreshTextWidgetValue(suffixTxt, person,
 						PEOPLE_NAME_SUFFIX);
-				PeopleUiUtils.refreshTextWidgetValue(latinPhoneticTxt, person,
+				ConnectUiUtils.refreshTextWidgetValue(latinPhoneticTxt, person,
 						PEOPLE_LATIN_PHONETIC_SPELLING);
 
 				refreshFormalRadio(formalBtn, person);

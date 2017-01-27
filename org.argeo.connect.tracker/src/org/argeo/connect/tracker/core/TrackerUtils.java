@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.argeo.connect.ConnectConstants;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -23,16 +24,16 @@ import javax.jcr.query.QueryResult;
 
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
-import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.connect.tracker.PeopleTrackerService;
 import org.argeo.connect.tracker.TrackerConstants;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerNames;
 import org.argeo.connect.tracker.TrackerService;
 import org.argeo.connect.tracker.TrackerTypes;
+import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 
 public class TrackerUtils {
@@ -113,7 +114,7 @@ public class TrackerUtils {
 			builder.append("//element(*, ").append(TrackerTypes.TRACKER_PROJECT).append(")");
 			builder.append(" order by @").append(PeopleNames.JCR_TITLE);
 			QueryManager qm = session.getWorkspace().getQueryManager();
-			QueryResult result = qm.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH).execute();
+			QueryResult result = qm.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH).execute();
 			return result.getNodes();
 		} catch (RepositoryException e) {
 			throw new TrackerException(
@@ -139,7 +140,7 @@ public class TrackerUtils {
 			builder.append("]");
 			builder.append(" order by @").append(TrackerNames.TRACKER_ID).append(" descending");
 			QueryManager qm = parent.getSession().getWorkspace().getQueryManager();
-			QueryResult result = qm.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH).execute();
+			QueryResult result = qm.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH).execute();
 			return result.getNodes();
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to get milestones on " + project + " with filter:" + filter, e);
@@ -167,7 +168,7 @@ public class TrackerUtils {
 		builder.append("]");
 		builder.append(" order by @").append(TrackerNames.TRACKER_ID).append(" descending");
 		QueryManager qm = parent.getSession().getWorkspace().getQueryManager();
-		QueryResult result = qm.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH).execute();
+		QueryResult result = qm.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH).execute();
 		return result.getNodes();
 	}
 
@@ -196,7 +197,7 @@ public class TrackerUtils {
 			builder.append(" order by @").append(TrackerNames.TRACKER_ID);
 			// .append(" descending");
 			QueryManager qm = project.getSession().getWorkspace().getQueryManager();
-			QueryResult result = qm.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH).execute();
+			QueryResult result = qm.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH).execute();
 			return result.getNodes();
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to get issues for " + project + " with filter: " + filter, e);
@@ -254,7 +255,7 @@ public class TrackerUtils {
 				builder.append("[").append(tmpBuilder.substring(0, tmpBuilder.length() - andStr.length())).append("]");
 
 			builder.append(" order by @" + TrackerNames.TRACKER_ID);
-			Query xpathQuery = queryManager.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH);
+			Query xpathQuery = queryManager.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH);
 			QueryResult result = xpathQuery.execute();
 			return result.getNodes();
 		} catch (RepositoryException e) {
@@ -272,7 +273,7 @@ public class TrackerUtils {
 				builder.append("[").append(XPathUtils.getFreeTextConstraint(filter)).append("]");
 			builder.append(" order by @").append(TrackerNames.TRACKER_ID).append(" descending");
 			QueryManager qm = parent.getSession().getWorkspace().getQueryManager();
-			QueryResult result = qm.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH).execute();
+			QueryResult result = qm.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH).execute();
 			return result.getNodes();
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to get version for " + project + " with filter: " + filter, e);
@@ -292,7 +293,7 @@ public class TrackerUtils {
 			if (EclipseUiUtils.notEmpty(filter))
 				builder.append("[").append(XPathUtils.getFreeTextConstraint(filter)).append("]");
 			builder.append(" order by @").append(TrackerNames.TRACKER_ID).append(" ascending");
-			QueryResult result = queryManager.createQuery(builder.toString(), PeopleConstants.QUERY_XPATH).execute();
+			QueryResult result = queryManager.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH).execute();
 			return result.getNodes();
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to get components for " + project + " with filter: " + filter, e);
@@ -306,7 +307,7 @@ public class TrackerUtils {
 			String xpathQueryStr = XPathUtils.descendantFrom(parent.getPath());
 			xpathQueryStr += "//element(*, " + TrackerTypes.TRACKER_VERSION + ")";
 			xpathQueryStr += "[" + XPathUtils.getPropertyEquals(TrackerNames.TRACKER_ID, versionId) + "]";
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr, PeopleConstants.QUERY_XPATH);
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 			NodeIterator results = xpathQuery.execute().getNodes();
 			if (!results.hasNext())
 				return null;
@@ -327,7 +328,7 @@ public class TrackerUtils {
 			xpathQueryStr += "//element(*, " + TrackerTypes.TRACKER_COMPONENT + ")";
 			xpathQueryStr += "[" + XPathUtils.getPropertyEquals(TrackerNames.TRACKER_ID, officeId) + "]";
 			QueryManager qm = parent.getSession().getWorkspace().getQueryManager();
-			Query xpathQuery = qm.createQuery(xpathQueryStr, PeopleConstants.QUERY_XPATH);
+			Query xpathQuery = qm.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 			NodeIterator results = xpathQuery.execute().getNodes();
 			if (!results.hasNext())
 				return null;
@@ -394,7 +395,7 @@ public class TrackerUtils {
 
 			if (issue.hasProperty(Property.JCR_CREATED)) {
 				result += " on " + JcrUiUtils.getDateFormattedAsString(issue, Property.JCR_CREATED,
-						PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
+						ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
 			}
 			return result;
 		} catch (RepositoryException e) {
@@ -402,7 +403,7 @@ public class TrackerUtils {
 		}
 	}
 
-	private static DateFormat dtFormat = new SimpleDateFormat(PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
+	private static DateFormat dtFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
 	public static String getStatusText(PeopleTrackerService aoService, Node issue) {
 		try {
@@ -435,7 +436,7 @@ public class TrackerUtils {
 				if (notEmpty(dName))
 					builder.append("<b>Assigned to: </b>").append(dName);
 			}
-			return PeopleUiUtils.replaceAmpersand(builder.toString());
+			return ConnectUiUtils.replaceAmpersand(builder.toString());
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to get status text for issue " + issue, e);
 		}

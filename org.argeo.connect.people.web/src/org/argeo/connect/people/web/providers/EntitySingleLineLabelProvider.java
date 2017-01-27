@@ -4,9 +4,9 @@ import javax.jcr.Node;
 
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.web.PeopleWebConstants;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
@@ -43,7 +43,7 @@ public class EntitySingleLineLabelProvider implements ILabelProvider {
 			builder.append("<b>");
 			builder.append(peopleService.getDisplayName(entity));
 			builder.append("</b>");
-			return PeopleUiUtils.replaceAmpersand(builder.toString());
+			return ConnectUiUtils.replaceAmpersand(builder.toString());
 		}
 	}
 

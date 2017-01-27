@@ -2,7 +2,7 @@ package org.argeo.connect.tracker.internal.ui.dialogs;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.people.util.JcrUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;

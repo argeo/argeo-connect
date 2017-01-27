@@ -2,8 +2,8 @@ package org.argeo.connect.people.workbench.rap.providers;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.people.ui.PeopleUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
@@ -25,7 +25,7 @@ public class TitleIconLP extends SimpleJcrNodeLabelProvider {
 
 	@Override
 	public String getText(Object element) {
-		return PeopleUiUtils.replaceAmpersand(super.getText(element));
+		return ConnectUiUtils.replaceAmpersand(super.getText(element));
 	}
 
 	@Override

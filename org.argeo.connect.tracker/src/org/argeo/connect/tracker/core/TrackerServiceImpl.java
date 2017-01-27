@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import org.argeo.connect.ConnectConstants;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -23,13 +24,13 @@ import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.core.ActivityServiceImpl;
-import org.argeo.connect.people.util.JcrUiUtils;
-import org.argeo.connect.people.util.XPathUtils;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerNames;
 import org.argeo.connect.tracker.TrackerService;
 import org.argeo.connect.tracker.TrackerTypes;
 import org.argeo.connect.tracker.internal.ui.TrackerUiConstants;
+import org.argeo.connect.util.JcrUiUtils;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
@@ -188,7 +189,7 @@ public class TrackerServiceImpl extends ActivityServiceImpl implements TrackerSe
 					+ TrackerTypes.TRACKER_ISSUE + ")";
 			xpathQueryStr += " order by @" + TrackerNames.TRACKER_ID + " descending";
 			QueryManager queryManager = project.getSession().getWorkspace().getQueryManager();
-			Query query = queryManager.createQuery(xpathQueryStr, PeopleConstants.QUERY_XPATH);
+			Query query = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 			query.setLimit(1);
 			NodeIterator nit = query.execute().getNodes();
 			issueId = 1l;

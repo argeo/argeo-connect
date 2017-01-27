@@ -23,10 +23,10 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.core.versioning.ItemDiff;
 import org.argeo.connect.people.core.versioning.VersionDiff;
 import org.argeo.connect.people.core.versioning.VersionUtils;
-import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
+import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.PropertyDiff;
 import org.eclipse.swt.SWT;
@@ -51,7 +51,7 @@ public class HistoryLog extends LazyCTabControl {
 	private final PeopleService peopleService;
 	// private final PeopleWorkbenchService peopleWorkbenchService;
 	private final Node entity;
-	private DateFormat dateTimeFormat = new SimpleDateFormat(PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
+	private DateFormat dateTimeFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
 	// this page UI Objects
 	private MyFormPart myFormPart;

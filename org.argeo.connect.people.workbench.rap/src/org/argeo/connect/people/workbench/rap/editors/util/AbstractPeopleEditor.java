@@ -20,15 +20,15 @@ import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.commands.ChangeEditingState;
 import org.argeo.connect.people.workbench.rap.commands.DeleteEntity;
 import org.argeo.connect.people.workbench.rap.util.EditionSourceProvider;
 import org.argeo.connect.people.workbench.rap.util.Refreshable;
+import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -81,7 +81,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	protected final static int SHORT_NAME_LENGHT = 10;
 
 	private final static DateFormat df = new SimpleDateFormat(
-			PeopleUiConstants.DEFAULT_DATE_TIME_FORMAT);
+			ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
 	// Context
 	private Node node;
@@ -129,7 +129,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		// Header
 		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS
 				| SWT.NO_SCROLL | SWT.NO_TRIM);
-		GridLayout gl = PeopleUiUtils.noSpaceGridLayout(2);
+		GridLayout gl = ConnectUiUtils.noSpaceGridLayout(2);
 		gl.marginRight = 5; // otherwise buttons are too close from right border
 		header.setLayout(gl);
 		header.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));

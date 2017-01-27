@@ -27,10 +27,6 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.ui.PeopleColumnDefinition;
-import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.ui.PeopleUiSnippets;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
@@ -42,6 +38,10 @@ import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.workbench.rap.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.workbench.rap.util.AbstractPanelFormPart;
+import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.ConnectUiSnippets;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.dialogs.SingleValue;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -251,7 +251,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 
 			@Override
 			public String getText(Object element) {
-				return PeopleUiUtils.replaceAmpersand((String) element);
+				return ConnectUiUtils.replaceAmpersand((String) element);
 			}
 		});
 
@@ -262,21 +262,21 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 
 				@Override
 				public String getText(Object element) {
-					String value = PeopleUiUtils
+					String value = ConnectUiUtils
 							.replaceAmpersand((String) element);
-					String editLink = PeopleUiSnippets
+					String editLink = ConnectUiSnippets
 							.getRWTLink(
-									PeopleUiConstants.CRUD_EDIT
+									ConnectUiConstants.CRUD_EDIT
 											+ PeopleRapConstants.HREF_SEPARATOR
 											+ value,
-									PeopleUiConstants.CRUD_EDIT);
-					String removeLink = PeopleUiSnippets
+									ConnectUiConstants.CRUD_EDIT);
+					String removeLink = ConnectUiSnippets
 							.getRWTLink(
-									PeopleUiConstants.CRUD_DELETE
+									ConnectUiConstants.CRUD_DELETE
 											+ PeopleRapConstants.HREF_SEPARATOR
 											+ value,
-									PeopleUiConstants.CRUD_DELETE);
-					return editLink + PeopleUiConstants.NB_DOUBLE_SPACE
+									ConnectUiConstants.CRUD_DELETE);
+					return editLink + ConnectUiConstants.NB_DOUBLE_SPACE
 							+ removeLink;
 				}
 			});
@@ -461,7 +461,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 		public void addPages() {
 			try {
 				setWindowTitle("Update wizard");
-				if (PeopleUiConstants.CRUD_EDIT.equals(actionType)) {
+				if (ConnectUiConstants.CRUD_EDIT.equals(actionType)) {
 					MainInfoPage inputPage = new MainInfoPage("Configure");
 					addPage(inputPage);
 				}
@@ -486,7 +486,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 					propertyName, null);
 
 			// Sanity checks for update only
-			if (PeopleUiConstants.CRUD_EDIT.equals(actionType)) {
+			if (ConnectUiConstants.CRUD_EDIT.equals(actionType)) {
 				newValue = newValueTxt.getText();
 
 				if (EclipseUiUtils.isEmpty(newValue))

@@ -8,8 +8,8 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.LabelProvider;
 
@@ -51,7 +51,7 @@ public class PersonListLabelProvider extends LabelProvider implements
 		} catch (RepositoryException re) {
 			// Cannot get corresponding jobs, fail silently
 		}
-		String result = PeopleUiUtils.replaceAmpersand(builder.toString());
+		String result = ConnectUiUtils.replaceAmpersand(builder.toString());
 		return result;
 	}
 }

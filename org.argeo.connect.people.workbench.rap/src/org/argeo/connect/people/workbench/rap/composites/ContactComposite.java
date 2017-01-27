@@ -7,11 +7,11 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
-import org.argeo.connect.people.ui.PeopleUiUtils;
-import org.argeo.connect.people.util.JcrUiUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.JcrUiUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -61,7 +61,7 @@ public class ContactComposite extends Composite {
 	private void populate() {
 		// Initialization
 		Composite parent = this;
-		parent.setLayout(PeopleUiUtils.noSpaceGridLayout(2));
+		parent.setLayout(ConnectUiUtils.noSpaceGridLayout(2));
 
 		// buttons
 		Composite buttCmp = new ContactButtonsComposite(editor, formPart, parent, SWT.NO_FOCUS, contactNode,

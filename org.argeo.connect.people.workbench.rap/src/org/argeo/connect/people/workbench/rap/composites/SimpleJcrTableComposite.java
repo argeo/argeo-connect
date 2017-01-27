@@ -16,9 +16,9 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.util.XPathUtils;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
@@ -318,7 +318,7 @@ public class SimpleJcrTableComposite extends Composite {
 		if (EclipseUiUtils.notEmpty(attrQuery))
 			xpathQueryStr += "[" + attrQuery + "]";
 		Query xpathQuery = queryManager.createQuery(xpathQueryStr,
-				PeopleConstants.QUERY_XPATH);
+				ConnectConstants.QUERY_XPATH);
 		QueryResult result = xpathQuery.execute();
 		return result.getNodes();
 	}
