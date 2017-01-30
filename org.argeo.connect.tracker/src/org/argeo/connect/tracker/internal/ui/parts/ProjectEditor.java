@@ -166,7 +166,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 		// Some monitoring indicators
 		private Section appendIssueListPart(Composite parent) {
 			FormToolkit tk = getManagedForm().getToolkit();
-			Section section = TrackerUiUtils.addFormSection(tk, parent, "Future Milestones");
+			Section section = TrackerUiUtils.addFormSection(tk, parent, "Next Milestones");
 			section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 
 			final Composite body = (Composite) section.getClient();

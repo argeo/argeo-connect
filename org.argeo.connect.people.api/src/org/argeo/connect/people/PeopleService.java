@@ -69,9 +69,9 @@ public interface PeopleService {
 	/* GENERIC */
 	/**
 	 * Try to save and optionally publish a business object after applying
-	 * context specific rules and special behaviors (typically cache updates).
+	 * context specific rules and special behaviours (typically cache updates).
 	 * 
-	 * @return the entity that has been saved (and optionnaly published): note
+	 * @return the entity that has been saved (and optionally published): note
 	 *         that is some cases (typically, the first save of a draft node in
 	 *         the business sub tree) the returned node is not the same as the
 	 *         one that has been passed
@@ -127,7 +127,7 @@ public interface PeopleService {
 
 	/**
 	 * Returns all entities with the given NodeType related to this entity or
-	 * null if not has been found. Key for relation is implementation specific:
+	 * null if none has been found. Key for relation is implementation specific:
 	 * it might be a JCR Identifier but must not.
 	 * 
 	 * @param relatedEntityType
