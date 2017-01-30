@@ -585,7 +585,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 	// private final Map<Image, Image> images = new HashMap<Image, Image>();
 	// private final ImageDescriptor failedDesc;
 	//
-	// public MyTitleIconRowLP(PeopleWorkbenchService peopleUiService,
+	// public MyTitleIconRowLP(ConnectWorkbenchService peopleUiService,
 	// String selectorName, String propertyName) {
 	// super(peopleUiService, selectorName, propertyName);
 	// // this.selectorName = selectorName;

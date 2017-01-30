@@ -26,12 +26,11 @@ public class NewProspectWizard extends Wizard implements PeopleNames {
 	private PeopleService peopleService;
 	private Node prospect;
 
-	
 	// Local cache
 	private Node counterparty;
 	private Node contact;
 	// private User manager;
-	
+
 	// This page widgets
 	private Text titleTxt;
 	private Text descTxt;
@@ -40,8 +39,6 @@ public class NewProspectWizard extends Wizard implements PeopleNames {
 	private Text contactTxt;
 	private Text managerTxt;
 
-	
-	
 	public NewProspectWizard(PeopleService peopleService, Node prospect) {
 		this.peopleService = peopleService;
 		this.prospect = prospect;

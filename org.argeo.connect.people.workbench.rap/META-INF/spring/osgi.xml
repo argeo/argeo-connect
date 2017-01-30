@@ -12,13 +12,13 @@
 
 	<!-- REFERENCES -->
 	<reference id="repository" interface="javax.jcr.Repository"
-		filter="(cn=people)" cardinality="0..1" />
+		filter="(cn=home)" />
 
 	<reference id="peopleService" interface="org.argeo.connect.people.PeopleService" />
 
 	<!-- LOCAL BEANS -->
 	<beans:bean id="peopleWorkbenchService"
-		class="org.argeo.connect.people.workbench.rap.PeopleWorkbenchServiceImpl" scope="prototype">
+		class="org.argeo.connect.people.workbench.rap.PeopleWorkbenchServiceImpl"
+		scope="prototype">
 	</beans:bean>
-
 </beans:beans>

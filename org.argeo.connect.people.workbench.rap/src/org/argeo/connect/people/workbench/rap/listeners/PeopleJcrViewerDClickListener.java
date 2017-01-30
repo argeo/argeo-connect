@@ -16,7 +16,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 
 /**
  * Canonic double-click listener for a viewer that displays JCR Rows or Nodes.
- * Calls the OpenEditor command retrieved via the PeopleWorkbenchService
+ * Calls the OpenEditor command retrieved via the ConnectWorkbenchService
  */
 public class PeopleJcrViewerDClickListener implements IDoubleClickListener {
 

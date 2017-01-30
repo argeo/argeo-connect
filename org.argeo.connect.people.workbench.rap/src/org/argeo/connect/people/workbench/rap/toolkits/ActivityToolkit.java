@@ -56,11 +56,11 @@ package org.argeo.connect.people.workbench.rap.toolkits;
 //	private final FormToolkit toolkit;
 //	private final IManagedForm form;
 //	private final PeopleService peopleService;
-//	private final PeopleWorkbenchService peopleUiService;
+//	private final ConnectWorkbenchService peopleUiService;
 //	private final ActivityService activityService;
 //
 //	public ActivityToolkit(FormToolkit toolkit, IManagedForm form,
-//			PeopleService peopleService, PeopleWorkbenchService peopleUiService) {
+//			PeopleService peopleService, ConnectWorkbenchService peopleUiService) {
 //		this.toolkit = toolkit;
 //		this.form = form;
 //		this.peopleService = peopleService;

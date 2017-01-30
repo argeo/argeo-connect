@@ -16,14 +16,14 @@
     <!-- VIEWS -->
     <extension
 		point="org.eclipse.ui.views">
+		<!-- People specific views -->
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/people.gif"
-			id="org.argeo.connect.people.workbench.rap.peopleDefaultView"
-			name="Search"
+			id="org.argeo.connect.people.workbench.rap.quickSearchView"
+			name="Contacts"
 			restorable="true">
 		</view>
-		<!-- Todo list -->
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/activities/todo.gif"
@@ -31,12 +31,19 @@
 			name="My tasks"
 			restorable="true">
 		</view>
+		<!-- Legacy -->
+		<view
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="icons/people.gif"
+			id="org.argeo.connect.people.workbench.rap.peopleDefaultView"
+			name="Search"
+			restorable="true">
+		</view>
 	</extension>
 	
 	<!-- EDITORS -->
     <extension
 		point="org.eclipse.ui.editors">
-		
 		<!-- Search -->
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
@@ -333,11 +340,11 @@
 					tooltip="Create a new object"
 					id="org.argeo.connect.people.workbench.rap.addEntityToolbar"
 					style="pulldown">
-					<visibleWhen checkEnabled="false">
+<!--					<visibleWhen checkEnabled="false">
     					<with variable="activeWorkbenchWindow.activePerspective">
         					<equals value="org.argeo.connect.people.workbench.rap.peoplePerspective"/>
 						</with>
-					</visibleWhen>
+					</visibleWhen> -->
 				</command>
 			</toolbar>
 		</menuContribution>

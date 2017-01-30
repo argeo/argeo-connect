@@ -49,7 +49,7 @@ public class HistoryLog extends LazyCTabControl {
 	private final AbstractPeopleEditor editor;
 	private final FormToolkit toolkit;
 	private final PeopleService peopleService;
-	// private final PeopleWorkbenchService peopleWorkbenchService;
+	// private final ConnectWorkbenchService peopleWorkbenchService;
 	private final Node entity;
 	private DateFormat dateTimeFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
 

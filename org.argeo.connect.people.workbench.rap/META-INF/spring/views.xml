@@ -5,26 +5,32 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-	<bean id="partStateChanged" class="org.argeo.connect.people.workbench.rap.listeners.PartStateChanged"
+	<bean id="partStateChanged"
+		class="org.argeo.connect.people.workbench.rap.listeners.PartStateChanged"
 		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
 	</bean>
 
 	<!-- Views -->
-	<bean id="peopleBrowserView" class="org.argeo.connect.people.workbench.rap.views.PeopleBrowserView"
+	<bean id="quickSearchView"
+		class="org.argeo.connect.people.workbench.rap.views.QuickSearchView"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-	</bean>
-
-	<bean id="peopleDefaultView" class="org.argeo.connect.people.workbench.rap.views.PeopleDefaultView"
-		scope="prototype">
 		<property name="peopleService" ref="peopleService" />
-		<property name="repository" ref="repository" />
 		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
-	<!-- USERS, GROUPS AND ACTIVITIES -->
-	<bean id="myTasksView" class="org.argeo.connect.people.workbench.rap.views.MyTasksView"
+	<bean id="myTasksView"
+		class="org.argeo.connect.people.workbench.rap.views.MyTasksView"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="peopleService" ref="peopleService" />
+		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+	</bean>
+
+	<!-- Legacy -->
+	<bean id="peopleDefaultView"
+		class="org.argeo.connect.people.workbench.rap.views.PeopleDefaultView"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
