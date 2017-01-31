@@ -2,6 +2,7 @@ Import-Package: javax.jcr.nodetype,\
 javax.jcr.query,\
 org.argeo.connect,\
 org.argeo.cms.maintenance,\
+org.argeo.eclipse.ui.specific,\
 org.eclipse.core.commands,\
 org.eclipse.jface.resource,\
 org.eclipse.swt,\

@@ -1,0 +1,5 @@
+<documents = 'http://www.argeo.org/ns/documents'>
+
+[documents:bookmark] > mix:title
+mixin
+- documents:uri (URI) // Only local is supported

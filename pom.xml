@@ -18,6 +18,9 @@
 	<modules>
 		<module>org.argeo.connect.core</module>
 		<module>org.argeo.connect.ui</module>
+
+		<module>org.argeo.connect.documents</module>
+
 		<module>org.argeo.connect.people.api</module>
 		<module>org.argeo.connect.people.core</module>
 		<module>org.argeo.connect.people.ui</module>
