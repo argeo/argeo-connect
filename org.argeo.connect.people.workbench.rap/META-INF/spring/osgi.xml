@@ -15,10 +15,15 @@
 		filter="(cn=home)" />
 
 	<reference id="peopleService" interface="org.argeo.connect.people.PeopleService" />
+	<reference id="peopleWorkbenchService" interface="org.argeo.connect.people.workbench.PeopleWorkbenchService"/>
+
+	<!-- SERVICES -->
+	<!-- Exposes People specific implementation of the AppWorkbenchService -->
+<!-- 	<service ref="peopleWorkbenchService" interface="org.argeo.connect.people.workbench.PeopleWorkbenchService" /> -->
 
 	<!-- LOCAL BEANS -->
-	<beans:bean id="peopleWorkbenchService"
-		class="org.argeo.connect.people.workbench.rap.PeopleWorkbenchServiceImpl"
-		scope="prototype">
-	</beans:bean>
+<!-- 	<beans:bean id="peopleWorkbenchService" -->
+<!-- 		class="org.argeo.connect.people.workbench.rap.PeopleWorkbenchServiceImpl" -->
+<!-- 		scope="prototype"> -->
+<!-- 	</beans:bean> -->
 </beans:beans>

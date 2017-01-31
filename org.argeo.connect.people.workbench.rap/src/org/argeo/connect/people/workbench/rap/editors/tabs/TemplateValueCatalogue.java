@@ -26,9 +26,9 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ResourceService;
+import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
-import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.dialogs.NoProgressBarWizardDialog;
@@ -585,7 +585,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 	// private final Map<Image, Image> images = new HashMap<Image, Image>();
 	// private final ImageDescriptor failedDesc;
 	//
-	// public MyTitleIconRowLP(ConnectWorkbenchService peopleUiService,
+	// public MyTitleIconRowLP(AppWorkbenchService peopleUiService,
 	// String selectorName, String propertyName) {
 	// super(peopleUiService, selectorName, propertyName);
 	// // this.selectorName = selectorName;

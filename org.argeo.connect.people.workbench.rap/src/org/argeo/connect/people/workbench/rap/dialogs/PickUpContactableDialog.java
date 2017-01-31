@@ -29,8 +29,8 @@ import javax.jcr.query.Row;
 
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
+import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
-import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
 import org.argeo.connect.ui.ConnectColumnDefinition;

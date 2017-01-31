@@ -6,7 +6,7 @@ import javax.jcr.query.Row;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -16,7 +16,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 
 /**
  * Canonic double-click listener for a viewer that displays JCR Rows or Nodes.
- * Calls the OpenEditor command retrieved via the ConnectWorkbenchService
+ * Calls the OpenEditor command retrieved via the AppWorkbenchService
  */
 public class PeopleJcrViewerDClickListener implements IDoubleClickListener {
 

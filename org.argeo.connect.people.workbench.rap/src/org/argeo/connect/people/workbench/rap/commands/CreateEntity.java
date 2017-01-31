@@ -11,9 +11,9 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.util.PeopleJcrUtils;
+import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
-import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -56,7 +56,7 @@ public class CreateEntity extends AbstractHandler {
 			newNode.setProperty(PeopleNames.PEOPLE_UID, uuid);
 
 			Wizard wizard = peopleWorkbenchService.getCreationWizard(
-					peopleService, newNode);
+					newNode);
 			WizardDialog dialog = new WizardDialog(
 					HandlerUtil.getActiveShell(event), wizard);
 			dialog.setTitle("New...");

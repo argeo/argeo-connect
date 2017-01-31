@@ -12,7 +12,7 @@ import javax.jcr.version.VersionManager;
 
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.editors.util.EntityEditorInput;
 import org.argeo.connect.tracker.PeopleTrackerService;
 import org.argeo.connect.tracker.TrackerException;

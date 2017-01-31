@@ -19,7 +19,7 @@ import javax.jcr.Node;
 import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.composites.FilterEntitiesVirtualTable;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;

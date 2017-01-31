@@ -3,7 +3,6 @@ package org.argeo.connect.tracker.internal.ui;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.workbench.rap.PeopleWorkbenchServiceImpl;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerTypes;
@@ -30,8 +29,8 @@ public class TrackerWbServiceImpl extends PeopleWorkbenchServiceImpl {
 	}
 
 	@Override
-	public Wizard getCreationWizard(PeopleService peopleService, Node node) {
-		return super.getCreationWizard(peopleService, node);
+	public Wizard getCreationWizard(Node node) {
+		return super.getCreationWizard(node);
 	}
 
 	@Override

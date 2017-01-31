@@ -22,7 +22,7 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.argeo.connect.people.workbench.rap.PeopleWorkbenchService;
+import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.composites.FilterEntitiesVirtualTable;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;

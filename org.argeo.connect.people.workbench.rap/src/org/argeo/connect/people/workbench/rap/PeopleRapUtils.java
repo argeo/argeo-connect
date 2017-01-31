@@ -15,11 +15,13 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.PeopleAbstractDropDown;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
@@ -482,7 +484,7 @@ public class PeopleRapUtils {
 	 * @param basePath
 	 * @return
 	 */
-	public static Link createOpenSearchEditorLink(final PeopleWorkbenchService peopleWorkbenchService, Composite parent,
+	public static Link createOpenSearchEditorLink(final AppWorkbenchService appWorkbenchService, Composite parent,
 			final String label, final String nodeType, final String basePath) {
 		Link link = new Link(parent, SWT.NONE);
 		link.setText("<a>" + label + "</a>");
@@ -496,7 +498,7 @@ public class PeopleRapUtils {
 				params.put(OpenSearchEntityEditor.PARAM_NODE_TYPE, nodeType);
 				params.put(OpenSearchEntityEditor.PARAM_EDITOR_NAME, label);
 				params.put(OpenSearchEntityEditor.PARAM_BASE_PATH, basePath);
-				String cmdId = peopleWorkbenchService.getOpenSearchEntityEditorCmdId();
+				String cmdId = appWorkbenchService.getOpenSearchEntityEditorCmdId();
 				CommandUtils.callCommand(cmdId, params);
 			}
 		});
