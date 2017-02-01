@@ -1,22 +1,24 @@
 package org.argeo.connect.documents;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.spi.FileSystemProvider;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Property;
 import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 
 import org.argeo.cms.auth.CurrentUser;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.node.NodeUtils;
 
@@ -25,95 +27,153 @@ public class DocumentsService {
 	private final static String NODE_PREFIX = "node://";
 
 	public Path[] getMyDocumentsPath(FileSystemProvider nodeFileSystemProvider, Session session) {
-		Path[] paths = { getPath(nodeFileSystemProvider, getMyDocumentsNodePath(session)) };
+		Node home = NodeUtils.getUserHome(session);
+		// Insure the parent node is there.
+		Node documents = JcrUtils.mkdirs(home, DocumentsConstants.SUITE_DOCUMENTS_LBL, NodeType.NT_FOLDER);
+		ConnectJcrUtils.saveIfNecessary(documents);
+		Path[] paths = { getPath(nodeFileSystemProvider, ConnectJcrUtils.getPath(documents)) };
+
+		// CMS: must use a doAs
+		// Path[] paths = { getPath(nodeFileSystemProvider,
+		// getMyDocumentsNodePath(session)) };
 		return paths;
 	}
 
-	public Path[] getMyGroupsFilesPath(FileSystemProvider nodeFileSystemProvider, Session callingSession) {
-		Session session = null;
+	public Path[] getMyGroupsFilesPath(FileSystemProvider nodeFileSystemProvider, Session session) {
 		try {
-			// tryAs is compulsory when not calling from the workbench
-			Repository repo = callingSession.getRepository();
-			session = CurrentUser.tryAs(() -> repo.login());
-			Node home = NodeUtils.getUserHome(session);
-
-			// Insure the parent node is there.
-			if (!home.hasNode(DocumentsConstants.SUITE_DOCUMENTS_LBL))
-				home.addNode(DocumentsConstants.SUITE_DOCUMENTS_LBL, NodeType.NT_FOLDER);
-
-			// return home.getPath();
+			List<Path> paths = new ArrayList<>();
+			for (String cn : CurrentUser.roles()) {
+				Node workgroupHome = NodeUtils.getGroupHome(session, cn);
+				if (workgroupHome != null)
+					paths.add(getPath(nodeFileSystemProvider, ConnectJcrUtils.getPath(workgroupHome)));
+			}
+			return paths.toArray(new Path[0]);
 		} catch (Exception e) {
-			throw new DocumentsException("Cannot retrieve Current User Home Path", e);
-		} finally {
-			JcrUtils.logoutQuietly(session);
+			throw new DocumentsException("Cannot retrieve work group home paths", e);
 		}
-
-		// TODO
-		Path[] paths = { Paths.get(System.getProperty("user.dir")), Paths.get("/tmp") };
-		return paths;
 	}
 
-	public Path[] getMyBookmarks(FileSystemProvider nodeFileSystemProvider, Session callingSession) {
+	public Path[] getMyBookmarks(FileSystemProvider nodeFileSystemProvider, Session session) {
+		try {
+			Node bookmarkParent = getMyBookmarksParent(session);
+			List<Path> bookmarks = new ArrayList<>();
+			NodeIterator nit = bookmarkParent.getNodes();
+			while (nit.hasNext()) {
+				Node currBookmark = nit.nextNode();
+				String uriStr = ConnectJcrUtils.get(currBookmark, DocumentsNames.DOCUMENTS_URI);
+				URI uri = new URI(uriStr);
+				bookmarks.add(getPath(nodeFileSystemProvider, uri));
+			}
+			return bookmarks.toArray(new Path[0]);
+		} catch (URISyntaxException | RepositoryException e) {
+			throw new DocumentsException("Cannot retrieve CurrentUser bookmarks", e);
+		}
+	}
 
-		Session session = null;
+	public Node[] getMyBookmarks(Session session) {
+		try {
+			Node bookmarkParent = getMyBookmarksParent(session);
+			List<Node> bookmarks = new ArrayList<>();
+			NodeIterator nit = bookmarkParent.getNodes();
+			while (nit.hasNext()) {
+				Node currBookmark = nit.nextNode();
+				if (currBookmark.isNodeType(DocumentsTypes.DOCUMENTS_BOOKMARK))
+					bookmarks.add(currBookmark);
+			}
+			return bookmarks.toArray(new Node[0]);
+		} catch (RepositoryException e) {
+			throw new DocumentsException("Cannot retrieve CurrentUser bookmarks", e);
+		}
+	}
+
+	public Node getMyBookmarksParent(Session session) {
 		try {
 			// tryAs is compulsory when not calling from the workbench
-			Repository repo = callingSession.getRepository();
-			session = CurrentUser.tryAs(() -> repo.login());
-			Node home = NodeUtils.getUserHome(session);
+			// Repository repo = callingSession.getRepository();
+			// session = CurrentUser.tryAs(() -> repo.login());
+			// Node home = NodeUtils.getUserHome(session);
+			//
+			// // Insure the parent node is there.
+			// String relPath = DocumentsConstants.SUITE_HOME_SYS_RELPATH + "/"
+			// + DocumentsConstants.FS_BASE_NAME + "/"
+			// + DocumentsConstants.FS_BOOKMARKS;
 
 			// Insure the parent node is there.
+			if (session.hasPendingChanges())
+				throw new DocumentsException("Session must be clean to retrieve bookmarks");
+			Node home = NodeUtils.getUserHome(session);
 			String relPath = DocumentsConstants.SUITE_HOME_SYS_RELPATH + "/" + DocumentsConstants.FS_BASE_NAME + "/"
 					+ DocumentsConstants.FS_BOOKMARKS;
 			Node bookmarkParent = JcrUtils.mkdirs(home, relPath);
 			if (session.hasPendingChanges())
 				session.save();
-
-			List<Path> bookmarks = new ArrayList<>();
-			NodeIterator nit = bookmarkParent.getNodes();
-			while (nit.hasNext())
-
-				if (!home.hasNode(DocumentsConstants.SUITE_DOCUMENTS_LBL))
-					home.addNode(DocumentsConstants.SUITE_DOCUMENTS_LBL, NodeType.NT_FOLDER);
-
-			// TODO
-			Path[] paths = { Paths.get(System.getProperty("user.dir")), Paths.get("/tmp") };
-			return paths;
-
-		} catch (Exception e) {
-			throw new DocumentsException("Cannot retrieve Current User Home Path", e);
-		} finally {
-			JcrUtils.logoutQuietly(session);
-		}
-
-	}
-
-	private String getCurrentHomePath(Session callingSession) {
-		Session session = null;
-		try {
-			// tryAs is compulsory when not calling from the workbench
-			Repository repo = callingSession.getRepository();
-			session = CurrentUser.tryAs(() -> repo.login());
-			String homepath = NodeUtils.getUserHome(session).getPath();
-			return homepath;
-		} catch (Exception e) {
-			throw new DocumentsException("Cannot retrieve Current User Home Path", e);
-		} finally {
-			JcrUtils.logoutQuietly(session);
+			return bookmarkParent;
+		} catch (RepositoryException e) {
+			throw new DocumentsException("Cannot retrieve bookmark parent for session " + session, e);
 		}
 	}
 
-	private Path getPath(FileSystemProvider nodeFileSystemProvider, String nodePath) {
+//	private String getCurrentHomePath(Session callingSession) {
+//		Session session = null;
+//		try {
+//			// tryAs is compulsory when not calling from the workbench
+//			Repository repo = callingSession.getRepository();
+//			session = CurrentUser.tryAs(() -> repo.login());
+//			String homepath = NodeUtils.getUserHome(session).getPath();
+//			return homepath;
+//		} catch (Exception e) {
+//			throw new DocumentsException("Cannot retrieve Current User Home Path", e);
+//		} finally {
+//			JcrUtils.logoutQuietly(session);
+//		}
+//	}
+
+	public Path getPath(FileSystemProvider nodeFileSystemProvider, String nodePath) {
 		try {
 			URI uri = new URI(NODE_PREFIX + nodePath);
 			FileSystem fileSystem = nodeFileSystemProvider.getFileSystem(uri);
 			if (fileSystem == null)
-				// Note that tryAs() is useless in the workbench but compulsory
-				// in the CMS.
-				fileSystem = CurrentUser.tryAs(() -> nodeFileSystemProvider.newFileSystem(uri, null));
+				fileSystem = nodeFileSystemProvider.newFileSystem(uri, null);
+			// Note that tryAs() is compulsory in the CMS.
+			// fileSystem = CurrentUser.tryAs(() ->
+			// nodeFileSystemProvider.newFileSystem(uri, null));
 			return fileSystem.getPath(nodePath);
-		} catch (URISyntaxException | PrivilegedActionException e) {
+		} catch (URISyntaxException | IOException e) {
 			throw new RuntimeException("Unable to initialise file system for " + nodePath, e);
+		}
+	}
+
+	public Path getPath(FileSystemProvider nodeFileSystemProvider, URI uri) {
+		try {
+			FileSystem fileSystem = nodeFileSystemProvider.getFileSystem(uri);
+			if (fileSystem == null)
+				fileSystem = nodeFileSystemProvider.newFileSystem(uri, null);
+			// TODO clean this
+			String path = uri.toString().substring(NODE_PREFIX.length());
+			return fileSystem.getPath(path);
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to initialise file system for " + uri, e);
+		}
+	}
+
+	public Node createFolderBookmark(Path path, String name, Repository repository) {
+		Session session = null;
+		try {
+			session = repository.login();
+			Node bookmarkParent = getMyBookmarksParent(session);
+			String uriStr = NODE_PREFIX + path.toString();
+			uriStr = uriStr.replaceAll(" ", "%20");
+			String nodeName = path.getFileName().toString();
+			Node bookmark = bookmarkParent.addNode(nodeName);
+			bookmark.addMixin(DocumentsTypes.DOCUMENTS_BOOKMARK);
+			bookmark.setProperty(DocumentsNames.DOCUMENTS_URI, uriStr);
+			bookmark.setProperty(Property.JCR_TITLE, name);
+			session.save();
+			return bookmark;
+		} catch (RepositoryException e) {
+			throw new DocumentsException("Cannot create bookmark for " + path + " with name " + name, e);
+		} finally {
+			JcrUtils.logoutQuietly(session);
 		}
 	}
 

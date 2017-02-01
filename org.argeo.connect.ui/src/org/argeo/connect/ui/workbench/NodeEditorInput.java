@@ -1,22 +1,17 @@
-package org.argeo.connect.people.workbench.rap.editors.util;
+package org.argeo.connect.ui.workbench;
 
-import org.argeo.connect.ui.workbench.NodeEditorInput;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 
 /** Editor input for generic editor that display info on a given JCR Node */
-public class EntityEditorInput extends NodeEditorInput {
+public class NodeEditorInput implements IEditorInput {
 
 	private String uid;
-
-	// Workaround to enable setting a dynamic tooltip from the linked editor
-	// part
-	// instance.
-	private String tooltip = "Display and edit current item informations";
+	private String tooltip = "Display and edit current node informations";
 
 	/** uid must not be null */
-	public EntityEditorInput(String uid) {
-		super(uid);
+	public NodeEditorInput(String uid) {
 		this.uid = uid;
 	}
 
@@ -74,7 +69,7 @@ public class EntityEditorInput extends NodeEditorInput {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		EntityEditorInput other = (EntityEditorInput) obj;
+		NodeEditorInput other = (NodeEditorInput) obj;
 		if (!uid.equals(other.getUid()))
 			return false;
 		return true;

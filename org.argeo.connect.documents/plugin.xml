@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.6"?>
+<plugin>
+	
+	<!-- VIEWS --> 
+	<extension
+		point="org.eclipse.ui.views">
+		<view
+			id="org.argeo.connect.documents.myFilesView"
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			icon="theme/icons/documentsBrowser.png"
+			name="Files"
+			restorable="true">
+		</view>
+	</extension>
+	
+	<!-- EDITORS --> 
+	<extension point="org.eclipse.ui.editors">
+		<editor
+			id="org.argeo.connect.documents.folderEditor"
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			name="Folder Editor"
+			icon="theme/icons/types/folder.gif"
+			default="false">
+		</editor>
+		<editor
+			id="org.argeo.connect.documents.fileEditor"
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			name="File Editor"
+			icon="theme/icons/types/file.gif"
+			default="false">
+		</editor>
+		<!-- search editors -->
+	</extension>
+	
+	<!-- COMMANDS --> 
+	<extension point="org.eclipse.ui.commands">
+ 	</extension>
+	
+	<!-- MENU CONTRIBUTION --> 
+	<extension
+		id="menu:org.eclipse.ui.main.menu"
+		point="org.eclipse.ui.menus">
+	</extension>
+</plugin>

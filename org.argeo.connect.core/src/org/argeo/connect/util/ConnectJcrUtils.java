@@ -355,6 +355,24 @@ public class ConnectJcrUtils {
 	}
 
 	/**
+	 * Shortcut to save the underlying session if it has pending changes without
+	 * exception
+	 */
+	public static boolean saveIfNecessary(Node node) {
+		boolean changed = false;
+		try {
+			Session session = node.getSession();
+			if (session.hasPendingChanges()) {
+				session.save();
+				changed = true;
+			}
+			return changed;
+		} catch (RepositoryException re) {
+			throw new ConnectException("Cannot save with node " + node, re);
+		}
+	}
+
+	/**
 	 * Wraps a best effort to versionMananger.checkedPoint(path) a list of path.
 	 * We check if the node still exists because the list might be out-dated
 	 * 
@@ -437,6 +455,18 @@ public class ConnectJcrUtils {
 			return node.getSession();
 		} catch (RepositoryException re) {
 			throw new ConnectException("Unable to retrieve session for node " + node, re);
+		}
+	}
+
+	/**
+	 * Centralizes exception management to call
+	 * {@link Node#getSession()#getRepository}
+	 */
+	public static Repository getRepository(Node node) {
+		try {
+			return node.getSession().getRepository();
+		} catch (RepositoryException re) {
+			throw new ConnectException("Unable to retrieve repository for node " + node, re);
 		}
 	}
 

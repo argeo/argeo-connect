@@ -5,6 +5,7 @@ org.argeo.cms.maintenance,\
 org.argeo.eclipse.ui.specific,\
 org.eclipse.core.commands,\
 org.eclipse.jface.resource,\
+org.eclipse.jface.window,\
 org.eclipse.swt,\
 org.eclipse.ui.browser;ui.workbench=split,\
 org.eclipse.ui.part;ui.workbench=split,\
