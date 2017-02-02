@@ -17,14 +17,14 @@ public class PeopleRapImages {
 
 	// Entities
 	public final static Image ICON_PERSON = PeopleRapPlugin.getImageDescriptor(
-			ENTITY_PATH + "person.png").createImage();
+			ENTITY_PATH + "person.gif").createImage();
 	public final static Image ICON_ORG = PeopleRapPlugin.getImageDescriptor(
 			ENTITY_PATH + "company.png").createImage();
 	public final static Image ICON_FILM = PeopleRapPlugin.getImageDescriptor(
 			ENTITY_PATH + "film.png").createImage();
 
 	public final static Image ICON_MAILING_LIST = PeopleRapPlugin
-			.getImageDescriptor(ENTITY_PATH + "mailingList.png").createImage();
+			.getImageDescriptor(ENTITY_PATH + "mailingList.gif").createImage();
 
 	public final static Image ICON_TAG = PeopleRapPlugin.getImageDescriptor(
 			ENTITY_PATH + "tag.png").createImage();

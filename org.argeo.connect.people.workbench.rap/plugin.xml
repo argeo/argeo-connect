@@ -372,14 +372,14 @@
 				icon="icons/activities/todo.gif"
 				label="Task">
 			</command>	
-			<command
+			<!--<command
 				commandId="org.argeo.connect.people.workbench.rap.createEntity"
 				icon="icons/mailingList.gif"
 				label="Mailing List">
 				<parameter
          		name="param.targetNodeType"
          		value="people:mailingList" />
-			</command>
+			</command>-->
 		</menuContribution>
 		
 		<!-- MyTasksView tool bar menu --> 
