@@ -4,19 +4,19 @@ package org.argeo.connect.people.workbench.rap;
 public interface PeopleStyles {
 
 	// Specific People layouting
-	public final static String LOGO = "people-logo";
-	public final static String LOGO_TABLE = "people-logoTable";
-	public final static String LOGO_BOX = "people-logoComposite";
-	public final static String FLAT_BTN = "people_flat_btn";
-	public final static String POPUP_SHELL = "people_popup_shell";
+	String LOGO = "people-logo";
+	String LOGO_TABLE = "people-logoTable";
+	String LOGO_BOX = "people-logoComposite";
+	String FLAT_BTN = "people_flat_btn";
+	String POPUP_SHELL = "people_popup_shell";
 	// Overwrite normal behavior: show a border even when a Text is disabled.
-	public final static String PEOPLE_CLASS_FORCE_BORDER = "people_force_border";
+	String PEOPLE_CLASS_FORCE_BORDER = "people_force_border";
 
 	// Overview styles
-	public final static String PEOPLE_CLASS_ENTITY_HEADER = "people_entity_header";
-	public final static String SMALL_TEXT = "people_small_text";
+	String PEOPLE_CLASS_ENTITY_HEADER = "people_entity_header";
+	String SMALL_TEXT = "people_small_text";
 
 	// Gadgets (typically in the home page)
-	public final static String GADGET_HEADER = "people_gadget_header";
-	public final static String PEOPLE_CLASS_GADGET = "people_gadget";
+	String GADGET_HEADER = "people_gadget_header";
+	String PEOPLE_CLASS_GADGET = "people_gadget";
 }

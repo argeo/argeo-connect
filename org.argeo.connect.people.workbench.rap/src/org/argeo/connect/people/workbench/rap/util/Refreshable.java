@@ -7,5 +7,4 @@ package org.argeo.connect.people.workbench.rap.util;
 public interface Refreshable {
 
 	public void forceRefresh(Object object);
-
 }
