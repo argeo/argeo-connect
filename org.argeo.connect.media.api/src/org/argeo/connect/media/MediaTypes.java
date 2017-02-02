@@ -4,16 +4,16 @@ package org.argeo.connect.media;
 public interface MediaTypes {
 
 	/* MAIN TYPES */
-	public final static String MAP_PROJECT = "map:project";
-	public final static String MAP_FILM = "map:film";
+	String MAP_PROJECT = "map:project";
+	String MAP_FILM = "map:film";
 
 	/* GENERIC MAP TYPES */
-	public final static String MAP_SYNOPSIS = "map:synopsis";
-	public final static String MAP_TITLE = "map:title";
-	public final static String MAP_TIMESTAMP = "map:timestamp";
-	public final static String MAP_AWARD = "map:award";
+	String MAP_SYNOPSIS = "map:synopsis";
+	String MAP_TITLE = "map:title";
+	String MAP_TIMESTAMP = "map:timestamp";
+	String MAP_AWARD = "map:award";
 
 	/* FILM SPECIFIC TYPES */
-	public final static String FILM_PRINT = "film:print";
-	public final static String FILM_PRINT_DCP = "film:printDcp";
+	String FILM_PRINT = "film:print";
+	String FILM_PRINT_DCP = "film:printDcp";
 }

@@ -94,7 +94,8 @@ public class DocumentsContextMenu extends Shell {
 			btn.setText(getLabel(actionId));
 			btn.setLayoutData(EclipseUiUtils.fillWidth());
 			CmsUtils.markup(btn);
-			CmsUtils.style(btn, actionId + FsStyles.BUTTON_SUFFIX);
+			String styleName = actionId + FsStyles.BUTTON_SUFFIX;
+			CmsUtils.style(btn, styleName);
 			btn.setData(KEY_ACTION_ID, actionId);
 			btn.addSelectionListener(asl);
 			actionButtons.put(actionId, btn);

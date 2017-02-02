@@ -175,7 +175,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	/* ENTITY SERVICES */
 	public Node saveEntity(Node entity, boolean publish) throws PeopleException {
 		try {
-
 			if (entity.isNodeType(PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE)
 					|| entity.isNodeType(PeopleTypes.PEOPLE_TAG_INSTANCE)
 					|| entity.isNodeType(PeopleTypes.PEOPLE_NODE_TEMPLATE)) {
@@ -543,7 +542,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	public UserAdminService getUserAdminService() {
 		return userAdminService;
 	}
-
+	
 	// HELPERS
 
 	/* MISCEALLENEOUS */

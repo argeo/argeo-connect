@@ -18,6 +18,7 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 
 import org.argeo.cms.auth.CurrentUser;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.node.NodeConstants;
@@ -30,7 +31,7 @@ public class DocumentsService {
 	public Path[] getMyDocumentsPath(FileSystemProvider nodeFileSystemProvider, Session session) {
 		Node home = NodeUtils.getUserHome(session);
 		// Insure the parent node is there.
-		Node documents = JcrUtils.mkdirs(home, DocumentsConstants.SUITE_DOCUMENTS_LBL, NodeType.NT_FOLDER);
+		Node documents = JcrUtils.mkdirs(home, DocumentsConstants.DOCUMENTS_APP_LBL, NodeType.NT_FOLDER);
 		ConnectJcrUtils.saveIfNecessary(documents);
 		Path[] paths = { getPath(nodeFileSystemProvider, ConnectJcrUtils.getPath(documents)) };
 
@@ -103,8 +104,8 @@ public class DocumentsService {
 			if (session.hasPendingChanges())
 				throw new DocumentsException("Session must be clean to retrieve bookmarks");
 			Node home = NodeUtils.getUserHome(session);
-			String relPath = DocumentsConstants.SUITE_HOME_SYS_RELPATH + "/" + DocumentsConstants.FS_BASE_NAME + "/"
-					+ DocumentsConstants.FS_BOOKMARKS;
+			String relPath = ConnectConstants.HOME_APP_SYS_RELPARPATH + "/" + DocumentsConstants.DOCUMENTS_APP_BASE_NAME + "/"
+					+ DocumentsConstants.DOCUMENTS_BOOKMARKS;
 			Node bookmarkParent = JcrUtils.mkdirs(home, relPath);
 			if (session.hasPendingChanges())
 				session.save();
@@ -197,9 +198,9 @@ public class DocumentsService {
 			session = CurrentUser.tryAs(() -> repo.login());
 			Node home = NodeUtils.getUserHome(session);
 			// Insure the parent node is there.
-			if (!home.hasNode(DocumentsConstants.SUITE_DOCUMENTS_LBL))
-				home.addNode(DocumentsConstants.SUITE_DOCUMENTS_LBL, NodeType.NT_FOLDER);
-			return home.getPath() + "/" + DocumentsConstants.SUITE_DOCUMENTS_LBL;
+			if (!home.hasNode(DocumentsConstants.DOCUMENTS_APP_LBL))
+				home.addNode(DocumentsConstants.DOCUMENTS_APP_LBL, NodeType.NT_FOLDER);
+			return home.getPath() + "/" + DocumentsConstants.DOCUMENTS_APP_LBL;
 		} catch (Exception e) {
 			throw new DocumentsException("Cannot retrieve Current User Home Path", e);
 		} finally {

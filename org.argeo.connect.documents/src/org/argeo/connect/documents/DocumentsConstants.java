@@ -1,12 +1,8 @@
 package org.argeo.connect.documents;
 
+/** Documents App specific constants */
 public interface DocumentsConstants {
-
-	String SUITE_HOME_SYS_RELPATH = ".local/argeo:sys";
-
-	String SUITE_DOCUMENTS_LBL = "Documents";
-
-	String FS_BASE_NAME = "documents";
-	String FS_BOOKMARKS = "bookmarks";
-
+	String DOCUMENTS_APP_LBL = "Documents";
+	String DOCUMENTS_APP_BASE_NAME = "documents";
+	String DOCUMENTS_BOOKMARKS = "bookmarks";
 }
