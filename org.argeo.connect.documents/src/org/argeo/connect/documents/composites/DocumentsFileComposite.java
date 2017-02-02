@@ -60,6 +60,7 @@ public class DocumentsFileComposite extends Composite {
 	private void createDisplay(final Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Browser browser = new Browser(parent, SWT.NONE);
+		// browser.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
 		browser.setLayoutData(EclipseUiUtils.fillAll());
 		try {
 			String url = CmsUtils.getDataUrl(currentBaseContext, RWT.getRequest());

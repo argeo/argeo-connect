@@ -16,6 +16,9 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.naming.ldap.LdapName;
 
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.connect.ConnectConstants;
@@ -26,7 +29,7 @@ import org.argeo.node.NodeUtils;
 
 /** Default backend for the Argeo Documents App */
 public class DocumentsService {
-//	private final static String NODE_PREFIX = "node://";
+	// private final static String NODE_PREFIX = "node://";
 
 	public Path[] getMyDocumentsPath(FileSystemProvider nodeFileSystemProvider, Session session) {
 		Node home = NodeUtils.getUserHome(session);
@@ -44,10 +47,21 @@ public class DocumentsService {
 	public Path[] getMyGroupsFilesPath(FileSystemProvider nodeFileSystemProvider, Session session) {
 		try {
 			List<Path> paths = new ArrayList<>();
-			for (String cn : CurrentUser.roles()) {
+			for (String dn : CurrentUser.roles()) {
+				LdapName ln = new LdapName(dn);
+				String cn = (String) ln.getRdn(ln.size() - 1).getValue();
 				Node workgroupHome = NodeUtils.getGroupHome(session, cn);
-				if (workgroupHome != null)
-					paths.add(getPath(nodeFileSystemProvider, ConnectJcrUtils.getPath(workgroupHome)));
+				if (workgroupHome != null) {
+					Node documents = JcrUtils.mkdirs(workgroupHome, DocumentsConstants.DOCUMENTS_APP_LBL,
+							NodeType.NT_FOLDER);
+					documents.addMixin(NodeType.MIX_TITLE);
+					if (session.hasPendingChanges()) {
+						documents.setProperty(Property.JCR_TITLE, cn);
+						session.save();
+					}
+					// Insure the correct subNode is there
+					paths.add(getPath(nodeFileSystemProvider, ConnectJcrUtils.getPath(documents)));
+				}
 			}
 			return paths.toArray(new Path[0]);
 		} catch (Exception e) {
@@ -104,8 +118,8 @@ public class DocumentsService {
 			if (session.hasPendingChanges())
 				throw new DocumentsException("Session must be clean to retrieve bookmarks");
 			Node home = NodeUtils.getUserHome(session);
-			String relPath = ConnectConstants.HOME_APP_SYS_RELPARPATH + "/" + DocumentsConstants.DOCUMENTS_APP_BASE_NAME + "/"
-					+ DocumentsConstants.DOCUMENTS_BOOKMARKS;
+			String relPath = ConnectConstants.HOME_APP_SYS_RELPARPATH + "/" + DocumentsConstants.DOCUMENTS_APP_BASE_NAME
+					+ "/" + DocumentsConstants.DOCUMENTS_BOOKMARKS;
 			Node bookmarkParent = JcrUtils.mkdirs(home, relPath);
 			if (session.hasPendingChanges())
 				session.save();
@@ -148,6 +162,20 @@ public class DocumentsService {
 		}
 	}
 
+	public NodeIterator getLastUpdatedDocuments(Session session) {
+		try {
+			String qStr = "//element(*, " + ConnectJcrUtils.getLocalJcrItemName(NodeType.NT_FILE) + ")";
+			qStr += " order by @" + ConnectJcrUtils.getLocalJcrItemName(Property.JCR_LAST_MODIFIED) + " descending";
+			QueryManager queryManager = session.getWorkspace().getQueryManager();
+			Query xpathQuery = queryManager.createQuery(qStr, ConnectConstants.QUERY_XPATH);
+			xpathQuery.setLimit(8);
+			NodeIterator nit = xpathQuery.execute().getNodes();
+			return nit;
+		} catch (RepositoryException e) {
+			throw new DocumentsException("Unable to retrieve last updated documents", e);
+		}
+	}
+
 	public Path getPath(FileSystemProvider nodeFileSystemProvider, URI uri) {
 		try {
 			FileSystem fileSystem = nodeFileSystemProvider.getFileSystem(uri);
@@ -158,7 +186,7 @@ public class DocumentsService {
 			String path = uri.getPath();
 			return fileSystem.getPath(path);
 		} catch (IOException e) {
-			throw new RuntimeException("Unable to initialise file system for " + uri, e);
+			throw new DocumentsException("Unable to initialise file system for " + uri, e);
 		}
 	}
 

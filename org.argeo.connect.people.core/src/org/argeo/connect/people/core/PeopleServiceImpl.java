@@ -27,6 +27,7 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.version.VersionManager;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.ConnectConstants;
@@ -42,6 +43,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.PersonService;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.UserAdminService;
+import org.argeo.connect.people.core.imports.TemplateCatalogueCsvFileParser;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.util.PersonJcrUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -479,6 +481,23 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	}
 
+	protected void importCatalogue(Session session, Resource resource, String templateId) {
+		InputStream stream = null;
+		try {
+			ResourceService resourceService = getResourceService();
+			if (resourceService.getNodeTemplate(session, templateId) == null && resource != null) {
+				Node template = resourceService.createTemplateForType(session, PeopleTypes.PEOPLE_NODE_TEMPLATE,
+						templateId);
+				stream = resource.getInputStream();
+				new TemplateCatalogueCsvFileParser(template).parse(stream, "UTF-8");
+			}
+		} catch (IOException ioe) {
+			throw new PeopleException("Unable to initialise template " + templateId, ioe);
+		} finally {
+			IOUtils.closeQuietly(stream);
+		}
+	}
+
 	protected InputStream getStreamFromUrl(String url) throws IOException {
 		InputStream inputStream = null;
 		if (url.startsWith("classpath:")) {
@@ -542,7 +561,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	public UserAdminService getUserAdminService() {
 		return userAdminService;
 	}
-	
+
 	// HELPERS
 
 	/* MISCEALLENEOUS */

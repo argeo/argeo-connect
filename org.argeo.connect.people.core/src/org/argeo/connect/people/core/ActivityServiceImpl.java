@@ -15,6 +15,7 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 
+import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.ActivityService;
@@ -289,7 +290,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	@Override
 	public Node createTask(Session session, Node parentNode, String title, String description, String assignedTo,
 			List<Node> relatedTo, Calendar dueDate, Calendar wakeUpDate) {
-		return createTask(session, parentNode, null, title, description, assignedTo, relatedTo, new GregorianCalendar(),
+		return createTask(session, parentNode, CurrentUser.getUsername(), title, description, assignedTo, relatedTo, new GregorianCalendar(),
 				dueDate, wakeUpDate);
 	}
 

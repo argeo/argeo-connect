@@ -57,7 +57,7 @@ public class XPathUtils {
 		if (notEmpty(filter)) {
 			String[] strs = filter.trim().split(" ");
 			for (String token : strs) {
-				builder.append("jcr:contains(.,'*" + token + "*') and ");
+				builder.append("jcr:contains(.,'*" + encodeXPathStringValue(token) + "*') and ");
 			}
 			return builder.substring(0, builder.length() - 4);
 		}
@@ -66,7 +66,7 @@ public class XPathUtils {
 
 	public static String getPropertyContains(String propertyName, String filter) throws RepositoryException {
 		if (notEmpty(filter))
-			return "jcr:contains(@" + propertyName + ",'*" + filter + "*')";
+			return "jcr:contains(@" + propertyName + ",'*" + encodeXPathStringValue(filter) + "*')";
 		return "";
 	}
 
@@ -90,7 +90,7 @@ public class XPathUtils {
 		return "";
 	}
 
-	private static String encodeXPathStringValue(String propertyValue) {
+	public static String encodeXPathStringValue(String propertyValue) {
 		// TODO implement safer mechanism to escape invalid characters
 		// Also check why we have used this regex in ResourceSerrviceImpl l 474
 		// String cleanedKey = key.replaceAll("(?:')", "''");

@@ -31,7 +31,6 @@ import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -42,7 +41,6 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -133,7 +131,7 @@ public class TagLikeListPart extends Composite {
 				try {
 					Session session = taggable.getSession();
 					if (session.hasPendingChanges()) {
-						log.warn("Session have been saved before commit " + "of newly created tags when saving node "
+						log.warn("Session have been saved before commit of newly created tags when saving node "
 								+ taggable);
 						session.save();
 					}
@@ -154,11 +152,7 @@ public class TagLikeListPart extends Composite {
 
 		public void refresh() {
 			super.refresh();
-			// We redraw the full control at each refresh, might be a more
-			// efficient way to do
-			Control[] oldChildren = parentCmp.getChildren();
-			for (Control child : oldChildren)
-				child.dispose();
+			EclipseUiUtils.clear(parentCmp);
 
 			boolean isCO = editor.isEditing();
 
@@ -172,7 +166,7 @@ public class TagLikeListPart extends Composite {
 						tagCmp.setLayout(ConnectUiUtils.noSpaceGridLayout(2));
 						Link link = new Link(tagCmp, SWT.NONE);
 
-						link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+						CmsUtils.markup(link);
 						if (taggablePropName.equals(PeopleNames.PEOPLE_TAGS))
 							link.setText(" #<a>" + tagValue + "</a>");
 						else if (taggablePropName.equals(PeopleNames.PEOPLE_MAILING_LISTS))
@@ -281,8 +275,8 @@ public class TagLikeListPart extends Composite {
 							tags.add(curr);
 					}
 					taggable.setProperty(taggablePropName, tags.toArray(new String[tags.size()]));
-					part.markDirty();
 					part.refresh();
+					part.markDirty();
 				} catch (RepositoryException e) {
 					throw new PeopleException("unable to initialise deletion", e);
 				}
@@ -311,6 +305,7 @@ public class TagLikeListPart extends Composite {
 						registered = peopleService.getResourceService().registerTag(session, tagId, newTag);
 						if (registered.isNodeType(NodeType.MIX_VERSIONABLE))
 							createdTagPath.add(registered.getPath());
+
 					} else
 						return;
 				} else {
@@ -349,8 +344,8 @@ public class TagLikeListPart extends Composite {
 				valuesStr[0] = newTag;
 			}
 			taggable.setProperty(taggablePropName, valuesStr);
-			part.markDirty();
 			part.refresh();
+			part.markDirty();
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to set " + taggablePropName + " on " + taggable, re);
 		}
