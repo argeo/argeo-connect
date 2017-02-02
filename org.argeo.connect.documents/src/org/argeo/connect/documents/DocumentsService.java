@@ -20,11 +20,12 @@ import javax.jcr.nodetype.NodeType;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.node.NodeConstants;
 import org.argeo.node.NodeUtils;
 
 /** Default backend for the Argeo Documents App */
 public class DocumentsService {
-	private final static String NODE_PREFIX = "node://";
+//	private final static String NODE_PREFIX = "node://";
 
 	public Path[] getMyDocumentsPath(FileSystemProvider nodeFileSystemProvider, Session session) {
 		Node home = NodeUtils.getUserHome(session);
@@ -113,24 +114,27 @@ public class DocumentsService {
 		}
 	}
 
-//	private String getCurrentHomePath(Session callingSession) {
-//		Session session = null;
-//		try {
-//			// tryAs is compulsory when not calling from the workbench
-//			Repository repo = callingSession.getRepository();
-//			session = CurrentUser.tryAs(() -> repo.login());
-//			String homepath = NodeUtils.getUserHome(session).getPath();
-//			return homepath;
-//		} catch (Exception e) {
-//			throw new DocumentsException("Cannot retrieve Current User Home Path", e);
-//		} finally {
-//			JcrUtils.logoutQuietly(session);
-//		}
-//	}
+	// private String getCurrentHomePath(Session callingSession) {
+	// Session session = null;
+	// try {
+	// // tryAs is compulsory when not calling from the workbench
+	// Repository repo = callingSession.getRepository();
+	// session = CurrentUser.tryAs(() -> repo.login());
+	// String homepath = NodeUtils.getUserHome(session).getPath();
+	// return homepath;
+	// } catch (Exception e) {
+	// throw new DocumentsException("Cannot retrieve Current User Home Path",
+	// e);
+	// } finally {
+	// JcrUtils.logoutQuietly(session);
+	// }
+	// }
 
 	public Path getPath(FileSystemProvider nodeFileSystemProvider, String nodePath) {
 		try {
-			URI uri = new URI(NODE_PREFIX + nodePath);
+			// URI uri = new URI(NODE_PREFIX + nodePath);
+			URI uri = nodePathToURI(nodePath);
+
 			FileSystem fileSystem = nodeFileSystemProvider.getFileSystem(uri);
 			if (fileSystem == null)
 				fileSystem = nodeFileSystemProvider.newFileSystem(uri, null);
@@ -138,7 +142,7 @@ public class DocumentsService {
 			// fileSystem = CurrentUser.tryAs(() ->
 			// nodeFileSystemProvider.newFileSystem(uri, null));
 			return fileSystem.getPath(nodePath);
-		} catch (URISyntaxException | IOException e) {
+		} catch (IOException e) {
 			throw new RuntimeException("Unable to initialise file system for " + nodePath, e);
 		}
 	}
@@ -149,7 +153,8 @@ public class DocumentsService {
 			if (fileSystem == null)
 				fileSystem = nodeFileSystemProvider.newFileSystem(uri, null);
 			// TODO clean this
-			String path = uri.toString().substring(NODE_PREFIX.length());
+			// String path = uri.toString().substring(NODE_PREFIX.length());
+			String path = uri.getPath();
 			return fileSystem.getPath(path);
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to initialise file system for " + uri, e);
@@ -161,12 +166,12 @@ public class DocumentsService {
 		try {
 			session = repository.login();
 			Node bookmarkParent = getMyBookmarksParent(session);
-			String uriStr = NODE_PREFIX + path.toString();
-			uriStr = uriStr.replaceAll(" ", "%20");
+			// String uriStr = NODE_PREFIX + path.toString();
+			// uriStr = uriStr.replaceAll(" ", "%20");
 			String nodeName = path.getFileName().toString();
 			Node bookmark = bookmarkParent.addNode(nodeName);
 			bookmark.addMixin(DocumentsTypes.DOCUMENTS_BOOKMARK);
-			bookmark.setProperty(DocumentsNames.DOCUMENTS_URI, uriStr);
+			bookmark.setProperty(DocumentsNames.DOCUMENTS_URI, nodePathToURI(path.toString()).toString());
 			bookmark.setProperty(Property.JCR_TITLE, name);
 			session.save();
 			return bookmark;
@@ -174,6 +179,14 @@ public class DocumentsService {
 			throw new DocumentsException("Cannot create bookmark for " + path + " with name " + name, e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
+		}
+	}
+
+	private static URI nodePathToURI(String nodePath) {
+		try {
+			return new URI(NodeConstants.SCHEME_NODE, null, nodePath, null);
+		} catch (URISyntaxException e) {
+			throw new DocumentsException("Badly formatted path " + nodePath, e);
 		}
 	}
 
