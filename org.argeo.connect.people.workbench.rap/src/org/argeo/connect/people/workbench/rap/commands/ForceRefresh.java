@@ -1,7 +1,7 @@
 package org.argeo.connect.people.workbench.rap.commands;
 
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.people.workbench.rap.util.Refreshable;
+import org.argeo.connect.ui.workbench.Refreshable;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;

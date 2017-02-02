@@ -26,7 +26,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleBasicEditor;
 import org.argeo.connect.people.workbench.rap.providers.SimpleLazyContentProvider;
-import org.argeo.connect.people.workbench.rap.util.Refreshable;
+import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
