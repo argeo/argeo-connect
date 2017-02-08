@@ -50,6 +50,7 @@ import org.argeo.eclipse.ui.fs.FsTableViewer;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.node.NodeNames;
 import org.argeo.node.NodeTypes;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -341,8 +342,21 @@ public class MyFilesView extends ViewPart implements IDoubleClickListener, Refre
 					try {
 						Path currPath = documentsService.getPath(nodeFileSystemProvider, new URI(uriStr));
 						String jcrPath = currPath.toString();
-						currNode = ConnectJcrUtils.getNode(session, jcrPath);
-					} catch (URISyntaxException e) {
+						if (!session.itemExists(jcrPath)) {
+							String msg = "Bookmarked folder at URI " + uriStr
+									+ " cannot be found. If it is a local folder "
+									+ "it has been removed or renamed.\nDo you want to delete corresponding bookmark?";
+							boolean remove = MessageDialog.openConfirm(event.getViewer().getControl().getShell(),
+									"Missing target folder", msg);
+							if (remove) {
+								tmpNode.remove();
+								session.save();
+								forceRefresh(null);
+							}
+							return;
+						} else
+							currNode = session.getNode(jcrPath);
+					} catch (URISyntaxException | RepositoryException e) {
 						throw new DocumentsException("Cannot get target node for bookmark " + tmpNode, e);
 					}
 				} else

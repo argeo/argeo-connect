@@ -1,33 +1,26 @@
 package org.argeo.connect.documents.composites;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.nio.file.DirectoryNotEmptyException;
+import static org.argeo.connect.documents.DocumentsUiService.ACTION_ID_BOOKMARK_FOLDER;
+import static org.argeo.connect.documents.DocumentsUiService.ACTION_ID_CREATE_FOLDER;
+import static org.argeo.connect.documents.DocumentsUiService.ACTION_ID_DELETE;
+import static org.argeo.connect.documents.DocumentsUiService.ACTION_ID_DOWNLOAD_FOLDER;
+import static org.argeo.connect.documents.DocumentsUiService.ACTION_ID_OPEN;
+import static org.argeo.connect.documents.DocumentsUiService.ACTION_ID_RENAME;
+import static org.argeo.connect.documents.DocumentsUiService.ACTION_ID_SHARE_FOLDER;
+import static org.argeo.connect.documents.DocumentsUiService.ACTION_ID_UPLOAD_FILE;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Repository;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.fs.FsStyles;
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.documents.DocumentsException;
 import org.argeo.connect.documents.DocumentsService;
-import org.argeo.connect.ui.widgets.SingleQuestion;
+import org.argeo.connect.documents.DocumentsUiService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.eclipse.ui.dialogs.SingleValue;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -38,7 +31,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
@@ -46,36 +38,27 @@ import org.eclipse.swt.widgets.Shell;
 public class DocumentsContextMenu extends Shell {
 	private static final long serialVersionUID = -9120261153509855795L;
 
-	private final static Log log = LogFactory.getLog(DocumentsContextMenu.class);
-
-	// Default known actions
-	public final static String ACTION_ID_CREATE_FOLDER = "createFolder";
-	public final static String ACTION_ID_BOOKMARK_FOLDER = "bookmarkFolder";
-	public final static String ACTION_ID_SHARE_FOLDER = "shareFolder";
-	public final static String ACTION_ID_DOWNLOAD_FOLDER = "downloadFolder";
-	public final static String ACTION_ID_DELETE = "delete";
-	public final static String ACTION_ID_UPLOAD_FILE = "uploadFiles";
-	public final static String ACTION_ID_OPEN = "open";
-
 	// Local context
 	private final DocumentsFolderComposite browser;
 	private final DocumentsService docService;
+	private final DocumentsUiService uiService;
 	private final Repository repository;
 
 	// private final Viewer viewer;
 	private final static String KEY_ACTION_ID = "actionId";
 	private final static String[] DEFAULT_ACTIONS = { ACTION_ID_CREATE_FOLDER, ACTION_ID_BOOKMARK_FOLDER,
-			ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_DELETE, ACTION_ID_UPLOAD_FILE,
-			ACTION_ID_OPEN };
+			ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_UPLOAD_FILE, ACTION_ID_RENAME,
+			ACTION_ID_DELETE, ACTION_ID_OPEN };
 	private Map<String, Button> actionButtons = new HashMap<String, Button>();
 
 	private Path currFolderPath;
 
 	public DocumentsContextMenu(DocumentsFolderComposite browser, DocumentsService documentsService,
-			Repository repository) {
+			DocumentsUiService documentsUiService, Repository repository) {
 		super(browser.getDisplay(), SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
 		this.browser = browser;
 		this.docService = documentsService;
+		this.uiService = documentsUiService;
 		this.repository = repository;
 		setLayout(EclipseUiUtils.noSpaceGridLayout());
 
@@ -91,7 +74,7 @@ public class DocumentsContextMenu extends Shell {
 		ActionsSelListener asl = new ActionsSelListener();
 		for (String actionId : DEFAULT_ACTIONS) {
 			Button btn = new Button(boxCmp, SWT.FLAT | SWT.PUSH | SWT.LEAD);
-			btn.setText(getLabel(actionId));
+			btn.setText(uiService.getLabel(actionId));
 			btn.setLayoutData(EclipseUiUtils.fillWidth());
 			CmsUtils.markup(btn);
 			String styleName = actionId + FsStyles.BUTTON_SUFFIX;
@@ -99,27 +82,6 @@ public class DocumentsContextMenu extends Shell {
 			btn.setData(KEY_ACTION_ID, actionId);
 			btn.addSelectionListener(asl);
 			actionButtons.put(actionId, btn);
-		}
-	}
-
-	protected String getLabel(String actionId) {
-		switch (actionId) {
-		case ACTION_ID_CREATE_FOLDER:
-			return "Create Folder";
-		case ACTION_ID_BOOKMARK_FOLDER:
-			return "Bookmark Folder";
-		case ACTION_ID_SHARE_FOLDER:
-			return "Share Folder";
-		case ACTION_ID_DOWNLOAD_FOLDER:
-			return "Download as zip archive";
-		case ACTION_ID_DELETE:
-			return "Delete";
-		case ACTION_ID_UPLOAD_FILE:
-			return "Upload Files";
-		case ACTION_ID_OPEN:
-			return "Open";
-		default:
-			throw new IllegalArgumentException("Unknown action ID " + actionId);
 		}
 	}
 
@@ -137,19 +99,21 @@ public class DocumentsContextMenu extends Shell {
 		}
 		if (emptySel) {
 			setVisible(true, ACTION_ID_CREATE_FOLDER, ACTION_ID_UPLOAD_FILE, ACTION_ID_BOOKMARK_FOLDER);
-			setVisible(false, ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_DELETE, ACTION_ID_OPEN);
+			setVisible(false, ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_RENAME, ACTION_ID_DELETE,
+					ACTION_ID_OPEN);
 		} else if (multiSel) {
 			setVisible(true, ACTION_ID_CREATE_FOLDER, ACTION_ID_UPLOAD_FILE, ACTION_ID_DELETE,
 					ACTION_ID_BOOKMARK_FOLDER);
-			setVisible(false, ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_OPEN);
+			setVisible(false, ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_RENAME, ACTION_ID_OPEN);
 		} else if (isFolder) {
-			setVisible(true, ACTION_ID_CREATE_FOLDER, ACTION_ID_UPLOAD_FILE, ACTION_ID_DELETE,
+			setVisible(true, ACTION_ID_CREATE_FOLDER, ACTION_ID_UPLOAD_FILE, ACTION_ID_RENAME, ACTION_ID_DELETE,
 					ACTION_ID_BOOKMARK_FOLDER);
 			setVisible(false, ACTION_ID_OPEN,
 					// to be implemented
 					ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER);
 		} else {
-			setVisible(true, ACTION_ID_CREATE_FOLDER, ACTION_ID_UPLOAD_FILE, ACTION_ID_OPEN, ACTION_ID_DELETE);
+			setVisible(true, ACTION_ID_CREATE_FOLDER, ACTION_ID_UPLOAD_FILE, ACTION_ID_OPEN, ACTION_ID_RENAME,
+					ACTION_ID_DELETE);
 			setVisible(false, ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_BOOKMARK_FOLDER);
 		}
 	}
@@ -183,43 +147,7 @@ public class DocumentsContextMenu extends Shell {
 		public StyleButton(Composite parent, int swtStyle) {
 			super(parent, swtStyle);
 		}
-
 	}
-
-	// class ActionsMouseListener extends MouseAdapter {
-	// private static final long serialVersionUID = -1041871937815812149L;
-	//
-	// @Override
-	// public void mouseDown(MouseEvent e) {
-	// Object eventSource = e.getSource();
-	// if (e.button == 1) {
-	// if (eventSource instanceof Button) {
-	// Button pressedBtn = (Button) eventSource;
-	// String actionId = (String) pressedBtn.getData(KEY_ACTION_ID);
-	// switch (actionId) {
-	// case ACTION_ID_CREATE_FOLDER:
-	// createFolder();
-	// break;
-	// case ACTION_ID_DELETE:
-	// deleteItems();
-	// break;
-	// default:
-	// throw new IllegalArgumentException("Unimplemented action " + actionId);
-	// // case ACTION_ID_SHARE_FOLDER:
-	// // return "Share Folder";
-	// // case ACTION_ID_DOWNLOAD_FOLDER:
-	// // return "Download as zip archive";
-	// // case ACTION_ID_UPLOAD_FILE:
-	// // return "Upload Files";
-	// // case ACTION_ID_OPEN:
-	// // return "Open";
-	// }
-	// }
-	// }
-	// viewer.getControl().setFocus();
-	// // setVisible(false);
-	// }
-	// }
 
 	class ActionsSelListener extends SelectionAdapter {
 		private static final long serialVersionUID = -1041871937815812149L;
@@ -237,6 +165,9 @@ public class DocumentsContextMenu extends Shell {
 				case ACTION_ID_BOOKMARK_FOLDER:
 					bookmarkFolder();
 					break;
+				case ACTION_ID_RENAME:
+					renameItem();
+					break;
 				case ACTION_ID_DELETE:
 					deleteItems();
 					break;
@@ -252,14 +183,9 @@ public class DocumentsContextMenu extends Shell {
 					// return "Share Folder";
 					// case ACTION_ID_DOWNLOAD_FOLDER:
 					// return "Download as zip archive";
-					// case ACTION_ID_OPEN:
-					// return "Open";
 				}
 			}
 			browser.setFocus();
-			// viewer.getControl().setFocus();
-			// setVisible(false);
-
 		}
 	}
 
@@ -273,69 +199,38 @@ public class DocumentsContextMenu extends Shell {
 	}
 
 	private void openFile() {
-		log.warn("Implement single sourced, workbench independant \"Open File\" action");
+		IStructuredSelection selection = ((IStructuredSelection) browser.getViewer().getSelection());
+		if (selection.isEmpty() || selection.size() > 1)
+			// Should never happen
+			return;
+		Path toOpenPath = ((Path) selection.getFirstElement());
+		uiService.openFile(toOpenPath);
 	}
 
 	private void deleteItems() {
 		IStructuredSelection selection = ((IStructuredSelection) browser.getViewer().getSelection());
 		if (selection.isEmpty())
 			return;
-
-		StringBuilder builder = new StringBuilder();
-		@SuppressWarnings("unchecked")
-		Iterator<Object> iterator = selection.iterator();
-		List<Path> paths = new ArrayList<>();
-
-		while (iterator.hasNext()) {
-			Path path = (Path) iterator.next();
-			builder.append(path.getFileName() + ", ");
-			paths.add(path);
-		}
-		String msg = "You are about to delete following elements: " + builder.substring(0, builder.length() - 2)
-				+ ". Are you sure?";
-		if (MessageDialog.openConfirm(this, "Confirm deletion", msg)) {
-			for (Path path : paths) {
-				try {
-					// Might have already been deleted if we are in a tree
-					Files.deleteIfExists(path);
-				} catch (DirectoryNotEmptyException e) {
-					String errMsg = path.getFileName() + " cannot be deleted: directory is not empty.";
-					MessageDialog.openError(getShell(), "Deletion forbidden", errMsg);
-					throw new DocumentsException("Cannot delete path " + path, e);
-				} catch (IOException e) {
-					String errMsg = e.toString();
-					MessageDialog.openError(getShell(), "Deletion forbidden", errMsg);
-					throw new DocumentsException("Cannot delete path " + path, e);
-				}
-			}
+		else if (uiService.deleteItems(getShell(), selection))
 			browser.refresh();
-		}
+	}
+
+	private void renameItem() {
+		IStructuredSelection selection = ((IStructuredSelection) browser.getViewer().getSelection());
+		if (selection.isEmpty() || selection.size() > 1)
+			// Should never happen
+			return;
+		Path toRenamePath = ((Path) selection.getFirstElement());
+		if (uiService.renameItem(getShell(), currFolderPath, toRenamePath))
+			browser.refresh();
 	}
 
 	private void createFolder() {
-		String msg = "Please provide a name.";
-		String name = SingleValue.ask("Create folder", msg);
-		// TODO enhance check of name validity
-		if (EclipseUiUtils.notEmpty(name)) {
-			try {
-				Path child = currFolderPath.resolve(name);
-				if (Files.exists(child)) {
-					String errMsg = "A folder named " + name + " already exists at " + currFolderPath.toString()
-							+ ", cannot create";
-					MessageDialog.openError(getShell(), "Creation forbidden: dupplicated name", errMsg);
-					throw new DocumentsException(errMsg);
-
-				} else
-					Files.createDirectories(child);
-				browser.refresh();
-			} catch (IOException e) {
-				throw new DocumentsException("Cannot create folder " + name + " at " + currFolderPath.toString(), e);
-			}
-		}
+		if (uiService.createFolder(getShell(), currFolderPath))
+			browser.refresh();
 	}
 
 	private void bookmarkFolder() {
-		// retrieve correct path
 		Path toBookmarkPath = null;
 		IStructuredSelection selection = ((IStructuredSelection) browser.getViewer().getSelection());
 		if (selection.isEmpty())
@@ -349,75 +244,12 @@ public class DocumentsContextMenu extends Shell {
 			else
 				return;
 		}
-
-		String msg = "Please provide a name.";
-		String name = SingleQuestion.ask("Create bookmark", msg, toBookmarkPath.getFileName().toString());
-		if (EclipseUiUtils.notEmpty(name))
-			docService.createFolderBookmark(toBookmarkPath, name, repository);
+		uiService.bookmarkFolder(toBookmarkPath, repository, docService);
 	}
 
 	private void uploadFiles() {
-		try {
-			FileDialog dialog = new FileDialog(browser.getShell(), SWT.MULTI);
-			dialog.setText("Choose one or more files to upload");
-
-			if (EclipseUiUtils.notEmpty(dialog.open())) {
-				String[] names = dialog.getFileNames();
-				// Workaround small differences between RAP and RCP
-				// 1. returned names are absolute path on RAP and
-				// relative in RCP
-				// 2. in RCP we must use getFilterPath that does not
-				// exists on RAP
-				Method filterMethod = null;
-				Path parPath = null;
-				try {
-					filterMethod = dialog.getClass().getDeclaredMethod("getFilterPath");
-					String filterPath = (String) filterMethod.invoke(dialog);
-					parPath = Paths.get(filterPath);
-				} catch (NoSuchMethodException nsme) { // RAP
-				}
-				if (names.length == 0)
-					return;
-				else {
-					loop: for (String name : names) {
-						Path tmpPath = Paths.get(name);
-						if (parPath != null)
-							tmpPath = parPath.resolve(tmpPath);
-						if (Files.exists(tmpPath)) {
-							URI uri = tmpPath.toUri();
-							String uriStr = uri.toString();
-
-							if (Files.isDirectory(tmpPath)) {
-								MessageDialog.openError(browser.getShell(), "Unimplemented directory import",
-										"Upload of directories in the system is not yet implemented");
-								continue loop;
-							}
-							Path targetPath = currFolderPath.resolve(tmpPath.getFileName().toString());
-							InputStream in = null;
-							try {
-								in = new ByteArrayInputStream(Files.readAllBytes(tmpPath));
-								Files.copy(in, targetPath);
-								Files.delete(tmpPath);
-							} finally {
-								IOUtils.closeQuietly(in);
-							}
-							if (log.isDebugEnabled())
-								log.debug("copied uploaded file " + uriStr + " to " + targetPath.toString());
-						} else {
-							String msg = "Cannot copy tmp file from " + tmpPath.toString();
-							if (parPath != null)
-								msg += "\nPlease remember that file upload fails when choosing files from the \"Recently Used\" bookmarks on some OS";
-							MessageDialog.openError(browser.getShell(), "Missing file", msg);
-							continue loop;
-						}
-					}
-					browser.refresh();
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			MessageDialog.openError(getShell(), "Upload has failed", "Cannot import files to " + currFolderPath);
-		}
+		if (uiService.uploadFiles(getShell(), currFolderPath))
+			browser.refresh();
 	}
 
 	public void setCurrFolderPath(Path currFolderPath) {

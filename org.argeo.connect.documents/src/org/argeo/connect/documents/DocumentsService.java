@@ -93,8 +93,9 @@ public class DocumentsService {
 			NodeIterator nit = bookmarkParent.getNodes();
 			while (nit.hasNext()) {
 				Node currBookmark = nit.nextNode();
-				if (currBookmark.isNodeType(DocumentsTypes.DOCUMENTS_BOOKMARK))
+				if (currBookmark.isNodeType(DocumentsTypes.DOCUMENTS_BOOKMARK)) {
 					bookmarks.add(currBookmark);
+				}
 			}
 			return bookmarks.toArray(new Node[0]);
 		} catch (RepositoryException e) {

@@ -11,6 +11,7 @@ import javax.jcr.observation.ObservationManager;
 
 import org.argeo.connect.documents.DocumentsException;
 import org.argeo.connect.documents.DocumentsService;
+import org.argeo.connect.documents.DocumentsUiService;
 import org.argeo.connect.ui.AppUiService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -36,6 +37,7 @@ public class BookmarksTableViewer extends TableViewer {
 
 	private final AppUiService appUiService;
 	private final DocumentsService documentsService;
+	private final DocumentsUiService documentsUiService = new DocumentsUiService();
 	private final Node bookmarkParent;
 	private BookmarksObserver bookmarksObserver = new BookmarksObserver();
 
@@ -57,9 +59,9 @@ public class BookmarksTableViewer extends TableViewer {
 		tcol.setWidth(tableWidthHint);
 		column.setLabelProvider(new BookmarkIconNameLabelProvider());
 		this.setContentProvider(new MyLazyCP());
-		refreshList();
+		refreshMyBookmarksList();
 		// The context menu
-		BookmarksContextMenu contextMenu = new BookmarksContextMenu(bookmarkParent, this);
+		BookmarksContextMenu contextMenu = new BookmarksContextMenu(bookmarkParent, this, documentsUiService);
 		table.addMouseListener(new MouseAdapter() {
 			private static final long serialVersionUID = 6737579410648595940L;
 
@@ -74,7 +76,7 @@ public class BookmarksTableViewer extends TableViewer {
 		return table;
 	}
 
-	private void refreshList() {
+	private void refreshMyBookmarksList() {
 		Node[] rows = documentsService.getMyBookmarks(ConnectJcrUtils.getSession(bookmarkParent));
 		setInput(rows);
 		int length = rows == null ? 0 : rows.length;
@@ -117,7 +119,7 @@ public class BookmarksTableViewer extends TableViewer {
 			BookmarksTableViewer.this.getControl().getDisplay().asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					refreshList();
+					refreshMyBookmarksList();
 					BookmarksTableViewer.this.getControl().getParent().getParent().layout(true, true);
 				}
 			});

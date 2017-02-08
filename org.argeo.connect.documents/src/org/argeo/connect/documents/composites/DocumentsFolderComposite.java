@@ -8,10 +8,13 @@ import java.util.List;
 
 import javax.jcr.Node;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.fs.FsStyles;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.documents.DocumentsException;
 import org.argeo.connect.documents.DocumentsService;
+import org.argeo.connect.documents.DocumentsUiService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -53,12 +56,13 @@ import org.eclipse.swt.widgets.Text;
  * the middle and an overview at right hand side.
  */
 public class DocumentsFolderComposite extends Composite {
-	// private final static Log log = LogFactory.getLog(CmsFsBrowser.class);
+	private final static Log log = LogFactory.getLog(DocumentsFolderComposite.class);
 	private static final long serialVersionUID = -40347919096946585L;
 
 	private final Node currentBaseContext;
 
 	private final DocumentsService documentService;
+	private final DocumentsUiService documentUiService = new DocumentsUiService();
 
 	// UI Parts for the browser
 	private Composite filterCmp;
@@ -152,7 +156,7 @@ public class DocumentsFolderComposite extends Composite {
 		});
 
 		// The context menu
-		contextMenu = new DocumentsContextMenu(this, documentService,
+		contextMenu = new DocumentsContextMenu(this, documentService, documentUiService,
 				ConnectJcrUtils.getRepository(currentBaseContext));
 
 		table.addMouseListener(new MouseAdapter() {
@@ -250,7 +254,12 @@ public class DocumentsFolderComposite extends Composite {
 				Label contextL = new Label(rightPannelCmp, SWT.NONE);
 				contextL.setText(path.getFileName().toString());
 				contextL.setFont(EclipseUiUtils.getBoldFont(rightPannelCmp));
-				addProperty(rightPannelCmp, "Last modified", Files.getLastModifiedTime(path).toString());
+				try {
+					addProperty(rightPannelCmp, "Last modified", Files.getLastModifiedTime(path).toString());
+				} catch (Exception e) {
+					log.error("Workarounded issue while getting last update date for " + path, e);
+					addProperty(rightPannelCmp, "Last modified", "-");
+				}
 				// addProperty(rightPannelCmp, "Owner",
 				// Files.getOwner(path).getName());
 				if (Files.isDirectory(path)) {
