@@ -30,24 +30,26 @@ import org.eclipse.swt.graphics.Image;
 
 /** Shared icons used for contact management */
 public class ContactImages {
-	private final static String PREFIX = "icons/contacts/";
+	private final static String PREFIX = "theme/icons/contactTypes/";
 
 	// Email
-	public final static Image DEFAULT_MAIL = createImg("mail_black.png");
+	public final static Image DEFAULT_MAIL = createImg("email.png");
 	// Phone
-	public final static Image DEFAULT_PHONE = createImg("phone_vintage.png");
+	public final static Image DEFAULT_PHONE = createImg("defaultPhone.png");
 	public final static Image PHONE_DIRECT = createImg("telephone.png");
 	public final static Image FAX = createImg("fax.png");
 	public final static Image MOBILE = createImg("mobile.png");
 	// Addresses
 	public final static Image DEFAULT_ADDRESS = createImg("home.png");
-	public final static Image WORK = createImg("company.png");
+	public final static Image WORK = createImg("workAddress.png");
 	// Phones
 	public final static Image DEFAULT_URL = createImg("link.png");
 	public final static Image PRIVATE_HOME_PAGE = createImg("house_link.png");
 	// Social media
 	public final static Image DEFAULT_SOCIAL_MEDIA = createImg("socialmedia.png");
 	public final static Image GOOGLEPLUS = createImg("googleplus.png");
+	public final static Image SKYPE = createImg("skype.png");
+	public final static Image TWITTER = createImg("twitter.png");
 	public final static Image LINKEDIN = createImg("linkedin.png");
 	public final static Image FACEBOOK = createImg("facebook.png");
 	public final static Image XING = createImg("xing.png");

@@ -3,9 +3,9 @@ They are licenced under Creative Commons Attribution 3.0 License.
 
 These icons were as from October 3rd, 2013 the following:
 fax.png
-house_link
-mail_black.png
-phone-vintage.png
+house_link.png
+email.png
+defaultPhone.png
 telephone.png
 
 Some of the icons have been downloaded from http://somerandomdude.com/work/iconic/.

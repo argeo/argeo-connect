@@ -7,7 +7,7 @@
     	<!-- People default standalone perspective --> 
 		<perspective
             id="org.argeo.connect.people.workbench.rap.peoplePerspective"
-			icon="icons/people.gif"
+			icon="theme/icons/people.gif"
 			class="org.argeo.connect.people.workbench.rap.PeoplePerspective"
             name="People">
 		</perspective>
@@ -19,14 +19,14 @@
 		<!-- People specific views -->
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/people.gif"
+			icon="theme/icons/people.gif"
 			id="org.argeo.connect.people.workbench.rap.quickSearchView"
 			name="Contacts"
 			restorable="true">
 		</view>
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/activities/todo.gif"
+			icon="theme/icons/activities/todo.gif"
 			id="org.argeo.connect.people.workbench.rap.myTodoListView"
 			name="Tasks"
 			restorable="true">
@@ -34,7 +34,7 @@
 		<!-- Legacy -->
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/people.gif"
+			icon="theme/icons/people.gif"
 			id="org.argeo.connect.people.workbench.rap.peopleDefaultView"
 			name="Search"
 			restorable="true">
@@ -47,19 +47,19 @@
 		<!-- Search -->
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/search.png"
+			icon="theme/icons/actions/search.png"
 			id="org.argeo.connect.people.workbench.rap.defaultSearchEntityEditor"
 			name="Search">
 		</editor>
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/search.png"
+			icon="theme/icons/actions/search.png"
 			id="org.argeo.connect.people.workbench.rap.listValuesEditor"
 			name="Search">
 		</editor>
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/search.png"
+			icon="theme/icons/actions/search.png"
 			id="org.argeo.connect.people.workbench.rap.searchByTagEditor"
 			name="Search by Tag">
 		</editor>
@@ -67,31 +67,31 @@
 		<!-- Entities -->
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/person.gif"
+			icon="theme/icons/types/person.gif"
 			id="org.argeo.connect.people.workbench.rap.personEditor"
 			name="Person editor">
 		</editor>
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/company.png"
+			icon="theme/icons/types/company.png"
 			id="org.argeo.connect.people.workbench.rap.orgEditor"
 			name="Organisation editor">
 		</editor>
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/group.gif"
+			icon="theme/icons/types/group.gif"
 			id="org.argeo.connect.people.workbench.rap.groupEditor"
 			name="Group">
 		</editor>
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/entities/tag.png"
+			icon="theme/icons/types/tag.png"
 			id="org.argeo.connect.people.workbench.rap.tagEditor"
 			name="Tag">
 		</editor>
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/mailingList.gif"
+			icon="theme/icons/types/mailingList.gif"
 			id="org.argeo.connect.people.workbench.rap.mailingListEditor"
 			name="Mailing List">
 		</editor>
@@ -99,13 +99,13 @@
 		<!-- Activities -->
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/activities/todo.gif"
+			icon="theme/icons/activities/todo.gif"
 			id="org.argeo.connect.people.workbench.rap.activityEditor"
 			name="Activity editor">
 		</editor>
 		<editor
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="icons/activities/todo.gif"
+			icon="theme/icons/activities/todo.gif"
 			id="org.argeo.connect.people.workbench.rap.taskEditor"
 			name="Task editor">
 		</editor>
@@ -277,7 +277,7 @@
 			<!-- Force resfresh if possible --> 
 			<command
 				commandId="org.argeo.connect.ui.workbench.forceRefresh"
-				icon="icons/refresh.png"
+				icon="theme/icons/actions/refresh.png"
 				label="Force refresh of the current active part"
 				style="push"
 				tooltip="Force refresh of the current active part">
@@ -294,7 +294,7 @@
 			<!-- Check in and out management --> 
  			<command
 				commandId="org.argeo.connect.people.workbench.rap.changeEditingState"
-				icon="icons/checkout.gif"
+				icon="theme/icons/actions/checkout.gif"
 				label="Check Out"
 				style="push"
 				tooltip="Check Out item for edit">
@@ -315,7 +315,7 @@
 			<!-- Add global life cycle on Editors  -->
 			<command
 				commandId="org.argeo.connect.people.workbench.rap.changeEditingState"
-				icon="icons/cancelEdit.gif"
+				icon="theme/icons/actions/cancelEdit.gif"
 				label="Cancel edit"
 				style="push"
 				tooltip="Abandon changes and check back in">
@@ -338,7 +338,7 @@
 		<menuContribution locationURI="menu:org.argeo.connect.ui.workbench.addEntityToolbar">
 			<command
 				commandId="org.argeo.connect.people.workbench.rap.createEntity"
-				icon="icons/person.gif"
+				icon="theme/icons/types/person.gif"
 				label="Person">
 				<parameter
          		name="param.targetNodeType"
@@ -346,7 +346,7 @@
 			</command>	
 			<command
 				commandId="org.argeo.connect.people.workbench.rap.createEntity"
-				icon="icons/company.png"
+				icon="theme/icons/types/company.png"
 				label="Organisation">
 				<parameter
          		name="param.targetNodeType"
@@ -354,7 +354,7 @@
 			</command>	
 			<command
 				commandId="org.argeo.connect.people.workbench.rap.createSimpleTask"
-				icon="icons/activities/todo.gif"
+				icon="theme/icons/activities/todo.gif"
 				label="Task">
 			</command>	
 			<!--<command
@@ -370,21 +370,21 @@
 		<menuContribution locationURI="menu:org.argeo.connect.ui.workbench.openSearchToolbar">
 			<command
 				commandId="org.argeo.connect.people.workbench.rap.openSearchEntityEditor"
-				icon="icons/entities/person.gif"
+				icon="theme/icons/types/person.gif"
 				label="Persons">
 				<parameter name="param.nodeType" value="people:person" />
 				<parameter name="param.editorName" value="Persons" />
 			</command>	
 			<command
 				commandId="org.argeo.connect.people.workbench.rap.openSearchEntityEditor"
-				icon="icons/entities/company.png"
+				icon="theme/icons/types/company.png"
 				label="Organisations">
 				<parameter name="param.nodeType" value="people:org" />
 				<parameter name="param.editorName" value="Organisations" />
 			</command>	
 			<command
 				commandId="org.argeo.connect.people.workbench.rap.openSearchEntityEditor"
-				icon="icons/activities/todo.gif"
+				icon="theme/icons/activities/todo.gif"
 				label="Tasks">
 				<parameter name="param.nodeType" value="people:task" />
 				<parameter name="param.editorName" value="Tasks" />
@@ -397,7 +397,7 @@
 				<!-- Spreadsheet extracts --> 
 				<command
 					commandId="org.argeo.connect.ui.workbench.getJxlExport"
-					icon="icons/spreadsheet.gif"
+					icon="theme/icons/actions/jxlExport.gif"
 					label="Generate extract"
 					style="push"
 					tooltip="Generate a spreadsheet export of the current active filtered list">
@@ -418,12 +418,12 @@
             locationURI="toolbar:org.argeo.connect.people.workbench.rap.myTodoListView">
             <command
 				commandId="org.argeo.connect.people.workbench.rap.createSimpleTask"
-				icon="icons/newGroup.gif"
+				icon="theme/icons/actions/add.gif"
 				label="Task">
 			</command>	
             <command
 				commandId="org.argeo.connect.ui.workbench.forceRefresh"
-                icon="icons/refresh.png"
+                icon="theme/icons/actions/refresh.png"
 				label="Refresh"
 				tooltip="Force task list refresh">
 				<parameter

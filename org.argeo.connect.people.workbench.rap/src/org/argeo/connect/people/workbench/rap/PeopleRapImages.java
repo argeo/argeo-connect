@@ -2,86 +2,42 @@ package org.argeo.connect.people.workbench.rap;
 
 import org.eclipse.swt.graphics.Image;
 
-/**
- * Shared icons specific to the People Rap Workbench UI
- * 
- * TODO Factorize icons that are not specific to the rap workbench
- */
+/** Shared icons specific to the People Rap Workbench UI */
 public class PeopleRapImages {
 
 	// order images in various folder to ease their management
-	final private static String BASE_PATH = "icons/";
-	final private static String ENTITY_PATH = BASE_PATH + "entities/";
-	@SuppressWarnings("unused")
-	final private static String MISC_PATH = BASE_PATH + "miscellaneous/";
+	final private static String BASE_PATH = "theme/icons/";
+	final private static String IMG_PATH = "theme/img/";
+	final private static String TYPE_PATH = BASE_PATH + "types/";
+	final private static String ACTION_PATH = BASE_PATH + "actions/";
 
-	// Entities
-	public final static Image ICON_PERSON = PeopleRapPlugin.getImageDescriptor(
-			ENTITY_PATH + "person.gif").createImage();
-	public final static Image ICON_ORG = PeopleRapPlugin.getImageDescriptor(
-			ENTITY_PATH + "company.png").createImage();
-	public final static Image ICON_FILM = PeopleRapPlugin.getImageDescriptor(
-			ENTITY_PATH + "film.png").createImage();
+	// Various entity types
+	public final static Image ICON_PERSON = createImg(TYPE_PATH, "person.gif");
+	public final static Image ICON_ORG = createImg(TYPE_PATH, "company.png");
+	public final static Image ICON_MAILING_LIST = createImg(TYPE_PATH, "mailingList.gif");
+	public final static Image ICON_TAG = createImg(TYPE_PATH, "tag.png");
 
-	public final static Image ICON_MAILING_LIST = PeopleRapPlugin
-			.getImageDescriptor(ENTITY_PATH + "mailingList.gif").createImage();
+	public final static Image ICON_GROUP = createImg(TYPE_PATH, "group.gif");
+	public final static Image ICON_USER = createImg(TYPE_PATH, "person.gif");
+	public final static Image ICON_ROLE = createImg(TYPE_PATH, "role.gif");
 
-	public final static Image ICON_TAG = PeopleRapPlugin.getImageDescriptor(
-			ENTITY_PATH + "tag.png").createImage();
-
-	public final static Image ICON_GROUP = PeopleRapPlugin.getImageDescriptor(
-			BASE_PATH + "group.gif").createImage();
-	public final static Image ICON_USER = PeopleRapPlugin.getImageDescriptor(
-			BASE_PATH + "person.gif").createImage();
-	public final static Image ICON_ROLE = PeopleRapPlugin.getImageDescriptor(
-			BASE_PATH + "role.gif").createImage();
+	// Actions Icons
+	public final static Image DELETE_BTN = createImg(ACTION_PATH, "delete.gif");
+	public final static Image DELETE_BTN_LEFT = createImg(ACTION_PATH, "delete_left.gif");
+	public final static Image ADD_BTN = createImg(ACTION_PATH, "add.png");
+	public final static Image MERGE_BTN = createImg(ACTION_PATH, "merge.gif");
 
 	// Miscellaneous
-	public final static Image LOGO = PeopleRapPlugin.getImageDescriptor(
-			"icons/logo.gif").createImage();
+	public final static Image LOGO_SMALL = createImg(IMG_PATH, "argeo-smallLogo.png");
+	public final static Image NO_PICTURE = createImg(IMG_PATH, "noPicture.gif");
+	public final static Image PRIMARY_BTN = createImg(BASE_PATH, "primary.gif");
+	public final static Image PRIMARY_NOT_BTN = createImg(BASE_PATH, "primaryNOT.gif");
+	public final static Image ORIGINAL_BTN = createImg(BASE_PATH, "first.png");
+	public final static Image CALENDAR_BTN = createImg(BASE_PATH, "calendar.gif");
+	public final static Image CHECK_SELECTED = createImg(BASE_PATH, "check-selected.png");
+	public final static Image CHECK_UNSELECTED = createImg(BASE_PATH, "check-unselected.png");
 
-	public final static Image LOGO_SMALL = PeopleRapPlugin.getImageDescriptor(
-			"icons/smallerOrnamentLogo.png").createImage();
-
-	public final static Image NO_PICTURE = PeopleRapPlugin.getImageDescriptor(
-			"icons/noPicture.gif").createImage();
-
-	public final static Image PERSON = PeopleRapPlugin.getImageDescriptor(
-			"icons/person.gif").createImage();
-
-	public final static Image DELETE_BTN = PeopleRapPlugin.getImageDescriptor(
-			"icons/delete.gif").createImage();
-
-	public final static Image DELETE_BTN_LEFT = PeopleRapPlugin
-			.getImageDescriptor("icons/delete_left.gif").createImage();
-
-	public final static Image ADD_BTN = PeopleRapPlugin.getImageDescriptor(
-			"icons/add.gif").createImage();
-
-	public final static Image PRIMARY_BTN = PeopleRapPlugin.getImageDescriptor(
-			"icons/primary.gif").createImage();
-
-	public final static Image PRIMARY_NOT_BTN = PeopleRapPlugin
-			.getImageDescriptor("icons/primaryNOT.gif").createImage();
-
-	public final static Image ORIGINAL_BTN = PeopleRapPlugin
-			.getImageDescriptor("icons/first.png").createImage();
-
-	public final static Image CALENDAR_BTN = PeopleRapPlugin
-			.getImageDescriptor("icons/calendar.gif").createImage();
-
-	// Check box icons
-	public final static Image CHECK_SELECTED = PeopleRapPlugin
-			.getImageDescriptor("icons/check-selected.png").createImage();
-
-	public final static Image CHECK_UNSELECTED = PeopleRapPlugin
-			.getImageDescriptor("icons/check-unselected.png").createImage();
-
-	public final static Image MERGE_BTN = PeopleRapPlugin.getImageDescriptor(
-			"icons/merge.gif").createImage();
-
-	// User Management
-	public final static Image ROLE_CHECKED = PeopleRapPlugin
-			.getImageDescriptor("icons/security.gif").createImage();
-
+	private static Image createImg(String prefix, String fileName) {
+		return PeopleRapPlugin.getImageDescriptor(prefix + fileName).createImage();
+	}
 }
