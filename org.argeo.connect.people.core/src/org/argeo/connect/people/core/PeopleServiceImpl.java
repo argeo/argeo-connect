@@ -159,8 +159,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		if (EclipseUiUtils.notEmpty(getBasePath(null)))
 			JcrUtils.mkdirs(adminSession, getBasePath(null));
 
-		JcrUtils.mkdirs(adminSession, getTmpPath());// Root tmp node
-		JcrUtils.mkdirs(adminSession, getPublicPath());// Root public node
+//		JcrUtils.mkdirs(adminSession, getTmpPath());// Root tmp node
+//		JcrUtils.mkdirs(adminSession, getPublicPath());// Root public node
 
 		// Various business parents
 		JcrUtils.mkdirs(adminSession, getBasePath(PeopleTypes.PEOPLE_PERSON));
