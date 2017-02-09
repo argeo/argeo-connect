@@ -4,13 +4,6 @@
 	<!-- Perspective --> 
 	<extension
     	point="org.eclipse.ui.perspectives">
-    	<!-- People default standalone perspective --> 
-		<perspective
-            id="org.argeo.connect.people.workbench.rap.peoplePerspective"
-			icon="theme/icons/people.gif"
-			class="org.argeo.connect.people.workbench.rap.PeoplePerspective"
-            name="People">
-		</perspective>
 	</extension>
 
     <!-- VIEWS -->
@@ -468,12 +461,6 @@
 		 </enabledWhen>
         </activity>
         
-        <activityPatternBinding
-              activityId="org.argeo.connect.people.workbench.rap.peopleAppActivity"
-              isEqualityPattern="true"
-              pattern="org.argeo.connect.people.workbench.rap/org.argeo.connect.people.workbench.rap.peoplePerspective">
-        </activityPatternBinding>
-
 		<!-- Business admin activities --> 
 		<activity
               description="Business admin activities"
@@ -490,7 +477,6 @@
 
         
 		<!-- Technical admin activities --> 
-		<!-- TODO clean the activity strategy -->
 		<activity
               description="Only for admins"
               id="org.argeo.connect.people.workbench.rap.adminActivity"

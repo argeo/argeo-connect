@@ -1,11 +1,5 @@
 package org.argeo.connect.people.workbench.rap;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.argeo.connect.people.PeopleTypes;
-import org.eclipse.swt.SWT;
-
 /** Defines the constants that are specific for People Rap Workbench UI **/
 public interface PeopleRapConstants {
 
@@ -21,18 +15,18 @@ public interface PeopleRapConstants {
 	int LIST_TYPE_SMALL = 2;
 	int LIST_TYPE_MEDIUM = 3;
 
-	Map<String, String> PEOPLE_TYPE_LABELS = new HashMap<String, String>() {
-		private static final long serialVersionUID = 1L;
-		{
-			put(PeopleTypes.PEOPLE_PERSON, "Person");
-			put(PeopleTypes.PEOPLE_ORG, "Organisation");
-			put(PeopleTypes.PEOPLE_MAILING_LIST, "Mailing list");
-			put(PeopleTypes.PEOPLE_GROUP, "Group");
-			put(PeopleTypes.PEOPLE_TASK, "Task");
-		}
-	};
+	// Map<String, String> PEOPLE_TYPE_LABELS = new HashMap<String, String>() {
+	// private static final long serialVersionUID = 1L;
+	// {
+	// put(PeopleTypes.PEOPLE_PERSON, "Person");
+	// put(PeopleTypes.PEOPLE_ORG, "Organisation");
+	// put(PeopleTypes.PEOPLE_MAILING_LIST, "Mailing list");
+	// put(PeopleTypes.PEOPLE_GROUP, "Group");
+	// put(PeopleTypes.PEOPLE_TASK, "Task");
+	// }
+	// };
 
-	// Various dialogs IDs 
+	// Various dialogs IDs
 	String DIALOG_ADD_ML_MEMBERS = "dialog:addMLMembers";
 	String DIALOG_ADD_ML_MEMBERSHIP = "dialog:addMLMembership";
 
@@ -50,11 +44,4 @@ public interface PeopleRapConstants {
 	// we cannot use the CSS class parameter inside of a custom variant control.
 	String PEOPLE_STYLE_ENTITY_HEADER = "style='font-size:14px;'";
 	String PEOPLE_STYLE_LINK = " style='color:#383838; text-decoration:none;' ";
-
-	// the separator used in the various href local values to provide internal
-	// browsing using links in table / label / trees
-	String HREF_SEPARATOR = "/";
-
-	/* CONSTANTS */
-	int CTAB_COMP_STYLE = SWT.NO_FOCUS;
 }

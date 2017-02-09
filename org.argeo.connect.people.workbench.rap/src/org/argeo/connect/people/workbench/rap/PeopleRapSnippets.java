@@ -131,7 +131,7 @@ public class PeopleRapSnippets {
 		if (tag == null)
 			return value;
 		String tagJcrId = ConnectJcrUtils.getIdentifier(tag);
-		String href = commandId + PeopleRapConstants.HREF_SEPARATOR;
+		String href = commandId + ConnectUiConstants.HREF_SEPARATOR;
 		href += OpenEntityEditor.PARAM_JCR_ID + "=" + tagJcrId;
 		return ConnectUiSnippets.getRWTLink(href, value);
 	}

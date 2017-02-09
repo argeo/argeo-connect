@@ -27,7 +27,6 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
-import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
@@ -267,13 +266,13 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 					String editLink = ConnectUiSnippets
 							.getRWTLink(
 									ConnectUiConstants.CRUD_EDIT
-											+ PeopleRapConstants.HREF_SEPARATOR
+											+ ConnectUiConstants.HREF_SEPARATOR
 											+ value,
 									ConnectUiConstants.CRUD_EDIT);
 					String removeLink = ConnectUiSnippets
 							.getRWTLink(
 									ConnectUiConstants.CRUD_DELETE
-											+ PeopleRapConstants.HREF_SEPARATOR
+											+ ConnectUiConstants.HREF_SEPARATOR
 											+ value,
 									ConnectUiConstants.CRUD_DELETE);
 					return editLink + ConnectUiConstants.NB_DOUBLE_SPACE
@@ -293,7 +292,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 		public void widgetSelected(SelectionEvent event) {
 			if (event.detail == RWT.HYPERLINK) {
 				String href = event.text;
-				String[] val = href.split(PeopleRapConstants.HREF_SEPARATOR);
+				String[] val = href.split(ConnectUiConstants.HREF_SEPARATOR);
 				EditValueWizard wizard = new EditValueWizard(val[0], val[1]);
 				NoProgressBarWizardDialog dialog = new NoProgressBarWizardDialog(
 						TemplateValueCatalogue.this.getShell(), wizard);

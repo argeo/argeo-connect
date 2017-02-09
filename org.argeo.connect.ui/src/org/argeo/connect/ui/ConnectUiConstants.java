@@ -37,4 +37,8 @@ public interface ConnectUiConstants {
 
 	// Exports IDs
 	String DEFAULT_JXL_EXPORT = "defaultJxlExport";
+
+	// the separator used in the various href local values to provide internal
+	// browsing using links in table / label / trees
+	String HREF_SEPARATOR = "/";
 }

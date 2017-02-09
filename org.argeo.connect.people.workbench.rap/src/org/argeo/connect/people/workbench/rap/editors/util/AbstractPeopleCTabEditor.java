@@ -25,8 +25,7 @@ import org.eclipse.swt.widgets.Control;
  * is bound to it. It provides a header with some meta informations and a body
  * to add tabs with further details.
  */
-public abstract class AbstractPeopleCTabEditor extends
-		AbstractPeopleWithImgEditor {
+public abstract class AbstractPeopleCTabEditor extends AbstractPeopleWithImgEditor {
 
 	// Manage tab Folder
 	private CTabFolder folder;
@@ -57,8 +56,7 @@ public abstract class AbstractPeopleCTabEditor extends
 	@Override
 	protected void addEditButtons(final Composite parent) {
 		if (ConnectJcrUtils.isNodeType(getNode(), NodeType.MIX_VERSIONABLE)) {
-			final Button showHistoryBtn = getFormToolkit().createButton(parent,
-					"History", SWT.PUSH);
+			final Button showHistoryBtn = getFormToolkit().createButton(parent, "History", SWT.PUSH);
 			showHistoryBtn.setLayoutData(new RowData(60, 20));
 			showHistoryBtn.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;
@@ -66,14 +64,11 @@ public abstract class AbstractPeopleCTabEditor extends
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					// History panel
-					String tooltip = "History of information about "
-							+ JcrUtils.get(getNode(), Property.JCR_TITLE);
-					HistoryLog historyLogCmp = new HistoryLog(
-							folder, SWT.NO_FOCUS,
-							AbstractPeopleCTabEditor.this, getPeopleService(), getNode());
+					String tooltip = "History of information about " + JcrUtils.get(getNode(), Property.JCR_TITLE);
+					HistoryLog historyLogCmp = new HistoryLog(folder, SWT.NO_FOCUS, AbstractPeopleCTabEditor.this,
+							getPeopleService(), getNode());
 					historyLogCmp.setLayoutData(EclipseUiUtils.fillAll());
-					addLazyTabToFolder(folder, historyLogCmp, "History",
-							PeopleRapConstants.CTAB_HISTORY, tooltip);
+					addLazyTabToFolder(folder, historyLogCmp, "History", PeopleRapConstants.CTAB_HISTORY, tooltip);
 					if (!showHistoryBtn.isDisposed()) {
 						Composite par = showHistoryBtn.getParent();
 						showHistoryBtn.dispose();
@@ -86,14 +81,12 @@ public abstract class AbstractPeopleCTabEditor extends
 		}
 	}
 
-	protected Composite addTabToFolder(CTabFolder tabFolder, int style,
-			String label, String id, String tooltip) {
+	protected Composite addTabToFolder(CTabFolder tabFolder, int style, String label, String id, String tooltip) {
 		CTabItem item = new CTabItem(tabFolder, style);
 		item.setData(CTAB_INSTANCE_ID, id);
 		item.setText(label);
 		item.setToolTipText(tooltip);
-		Composite innerPannel = getManagedForm().getToolkit().createComposite(
-				tabFolder, SWT.V_SCROLL);
+		Composite innerPannel = getManagedForm().getToolkit().createComposite(tabFolder, SWT.V_SCROLL);
 		// must set control
 		item.setControl(innerPannel);
 		return innerPannel;
@@ -111,8 +104,8 @@ public abstract class AbstractPeopleCTabEditor extends
 	 *            tab exists of at first place if null.
 	 * @return
 	 */
-	protected Composite addTabToFolder(CTabFolder tabFolder, int style,
-			String label, String id, String tooltip, String afterTabId) {
+	protected Composite addTabToFolder(CTabFolder tabFolder, int style, String label, String id, String tooltip,
+			String afterTabId) {
 		// retrieve index of the existing tab
 		CTabItem[] items = folder.getItems();
 		int i = 0;
@@ -132,20 +125,18 @@ public abstract class AbstractPeopleCTabEditor extends
 		item.setData(CTAB_INSTANCE_ID, id);
 		item.setText(label);
 		item.setToolTipText(tooltip);
-		Composite innerPannel = getManagedForm().getToolkit().createComposite(
-				tabFolder, SWT.V_SCROLL);
+		Composite innerPannel = getManagedForm().getToolkit().createComposite(tabFolder, SWT.V_SCROLL);
 		// must set control
 		item.setControl(innerPannel);
 		return innerPannel;
 	}
 
-	protected void addLazyTabToFolder(CTabFolder tabFolder,
-			LazyCTabControl contentCmp, String label, String id, String tooltip) {
+	protected void addLazyTabToFolder(CTabFolder tabFolder, LazyCTabControl contentCmp, String label, String id,
+			String tooltip) {
 		addLazyTabToFolder(tabFolder, contentCmp, label, id, tooltip, null);
 	}
 
-	protected void addLazyTabToFolder(CTabFolder tabFolder,
-			LazyCTabControl contentCmp, String label, String id,
+	protected void addLazyTabToFolder(CTabFolder tabFolder, LazyCTabControl contentCmp, String label, String id,
 			String tooltip, String afterTabId) {
 		// Retrieve index of the existing tab
 		CTabItem[] items = folder.getItems();
@@ -163,10 +154,9 @@ public abstract class AbstractPeopleCTabEditor extends
 
 		CTabItem item;
 		if (i == items.length)
-			item = new CTabItem(tabFolder, PeopleRapConstants.CTAB_COMP_STYLE);
+			item = new CTabItem(tabFolder, SWT.NO_FOCUS);
 		else
-			item = new CTabItem(tabFolder, PeopleRapConstants.CTAB_COMP_STYLE,
-					i);
+			item = new CTabItem(tabFolder, SWT.NO_FOCUS, i);
 		item.setData(CTAB_INSTANCE_ID, id);
 		item.setText(label);
 		item.setToolTipText(tooltip);
