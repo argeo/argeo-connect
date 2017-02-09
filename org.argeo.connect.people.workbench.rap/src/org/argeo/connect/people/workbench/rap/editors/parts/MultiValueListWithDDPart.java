@@ -11,6 +11,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.PeopleAbstractDropDown;
+import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -158,7 +159,7 @@ public abstract class MultiValueListWithDDPart extends Composite {
 
 	private Button createDeleteButton(Composite parent) {
 		Button button = new Button(parent, SWT.FLAT);
-		CmsUtils.style(button, PeopleStyles.FLAT_BTN);
+		CmsUtils.style(button, ConnectUiStyles.FLAT_BTN);
 		button.setImage(PeopleRapImages.DELETE_BTN);
 		GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		button.setLayoutData(gd);

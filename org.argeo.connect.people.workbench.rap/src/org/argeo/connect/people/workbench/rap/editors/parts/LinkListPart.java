@@ -18,6 +18,7 @@ import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.dialogs.PickUpRelatedDialog;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -162,7 +163,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 		if (isEditing) {
 			// Display delete button only in edit mode.
 			Button deleteBtn = new Button(part, SWT.FLAT);
-			CmsUtils.style(deleteBtn, PeopleStyles.FLAT_BTN);
+			CmsUtils.style(deleteBtn, ConnectUiStyles.FLAT_BTN);
 			deleteBtn.setImage(PeopleRapImages.DELETE_BTN);
 			deleteBtn.setLayoutData(deleteFormData());
 			deleteBtn.addSelectionListener(new SelectionAdapter() {

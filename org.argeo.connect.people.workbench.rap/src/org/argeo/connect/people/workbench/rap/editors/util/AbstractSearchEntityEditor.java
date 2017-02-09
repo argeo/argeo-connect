@@ -15,12 +15,12 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
-import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.composites.DateText;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.workbench.rap.wizards.TagOrUntagInstancesWizard;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -260,7 +260,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 			populate();
 			// Add border and shadow style
-			CmsUtils.style(DropDownPopup.this, PeopleStyles.POPUP_SHELL);
+			CmsUtils.style(DropDownPopup.this, ConnectUiStyles.POPUP_SHELL);
 			pack();
 			layout();
 

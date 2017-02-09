@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-/** Helper methods for various People UIs */
+/** Helper methods for various Connect UIs */
 public class ConnectUiUtils {
 	// private final static Log log = LogFactory.getLog(ConnectUiUtils.class);
 

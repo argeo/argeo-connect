@@ -14,9 +14,9 @@ import javax.jcr.RepositoryException;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
-import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -53,8 +53,7 @@ public class DateTextPart extends Composite {
 	private Text dateTxt;
 	private Button openCalBtn;
 
-	private DateFormat dateFormat = new SimpleDateFormat(
-			ConnectUiConstants.DEFAULT_SHORT_DATE_FORMAT);
+	private DateFormat dateFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_SHORT_DATE_FORMAT);
 
 	/**
 	 * 
@@ -67,8 +66,8 @@ public class DateTextPart extends Composite {
 	 * @param node
 	 * @param propName
 	 */
-	public DateTextPart(AbstractPeopleEditor editor, Composite parent,
-			int style, AbstractFormPart formPart, Node node, String propName) {
+	public DateTextPart(AbstractPeopleEditor editor, Composite parent, int style, AbstractFormPart formPart, Node node,
+			String propName) {
 		super(parent, style);
 		this.editor = editor;
 		this.formPart = formPart;
@@ -101,8 +100,7 @@ public class DateTextPart extends Composite {
 			dateTxt.setEnabled(editor.isEditing());
 			openCalBtn.setEnabled(editor.isEditing());
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to refresh " + propName
-					+ " date property for " + node, e);
+			throw new PeopleException("Unable to refresh " + propName + " date property for " + node, e);
 		}
 		setText(cal);
 	}
@@ -112,13 +110,12 @@ public class DateTextPart extends Composite {
 		gl.horizontalSpacing = 5;
 		dateComposite.setLayout(gl);
 		dateTxt = new Text(dateComposite, SWT.BORDER);
-		CmsUtils.style(dateTxt, PeopleStyles.PEOPLE_CLASS_FORCE_BORDER);
+		CmsUtils.style(dateTxt, ConnectUiStyles.FORCE_BORDER);
 		dateTxt.setLayoutData(new GridData(150, SWT.DEFAULT));
-		dateTxt.setToolTipText("Enter a date with form \""
-				+ ConnectUiConstants.DEFAULT_SHORT_DATE_FORMAT
-				+ "\" or use the calendar");
+		dateTxt.setToolTipText(
+				"Enter a date with form \"" + ConnectUiConstants.DEFAULT_SHORT_DATE_FORMAT + "\" or use the calendar");
 		openCalBtn = new Button(dateComposite, SWT.FLAT);
-		CmsUtils.style(openCalBtn, PeopleStyles.FLAT_BTN);
+		CmsUtils.style(openCalBtn, ConnectUiStyles.FLAT_BTN);
 		GridData gd = new GridData(SWT.CENTER, SWT.CENTER, false, false);
 		gd.heightHint = 17;
 		openCalBtn.setLayoutData(gd);
@@ -141,16 +138,14 @@ public class DateTextPart extends Composite {
 				try {
 					Calendar newVal = parseDate(false);
 					if (newVal != null) {
-						if (ConnectJcrUtils.setJcrProperty(node, propName,
-								PropertyType.DATE, newVal))
+						if (ConnectJcrUtils.setJcrProperty(node, propName, PropertyType.DATE, newVal))
 							formPart.markDirty();
 					} else if (node.hasProperty(propName)) {
 						node.getProperty(propName).remove();
 						formPart.markDirty();
 					}
 				} catch (RepositoryException e) {
-					throw new PeopleException("Unable to update " + propName
-							+ " date property for " + node, e);
+					throw new PeopleException("Unable to update " + propName + " date property for " + node, e);
 				}
 			}
 
@@ -176,9 +171,8 @@ public class DateTextPart extends Composite {
 					if (node.hasProperty(propName))
 						return node.getProperty(propName).getDate();
 				} catch (RepositoryException re) {
-					throw new PeopleException(
-							"Unable to reset text to old value after parsing of invalid value for "
-									+ propName + " of " + node, re);
+					throw new PeopleException("Unable to reset text to old value after parsing of invalid value for "
+							+ propName + " of " + node, re);
 				}
 			}
 		}
@@ -197,13 +191,11 @@ public class DateTextPart extends Composite {
 			populate();
 
 			// Add border and shadow style
-			CmsUtils.style(CalendarPopup.this,
-					PeopleStyles.POPUP_SHELL);
+			CmsUtils.style(CalendarPopup.this, ConnectUiStyles.POPUP_SHELL);
 
 			pack();
 			layout();
-			setLocation(source.toDisplay((source.getLocation().x - 2),
-					(source.getSize().y) + 3));
+			setLocation(source.toDisplay((source.getLocation().x - 2), (source.getSize().y) + 3));
 
 			addShellListener(new ShellAdapter() {
 				private static final long serialVersionUID = 5178980294808435833L;
@@ -220,11 +212,9 @@ public class DateTextPart extends Composite {
 
 		private void setProperty() {
 			Calendar cal = new GregorianCalendar();
-			cal.set(dateTimeCtl.getYear(), dateTimeCtl.getMonth(),
-					dateTimeCtl.getDay(), 12, 0);
+			cal.set(dateTimeCtl.getYear(), dateTimeCtl.getMonth(), dateTimeCtl.getDay(), 12, 0);
 			dateTxt.setText(dateFormat.format(cal.getTime()));
-			if (ConnectJcrUtils.setJcrProperty(node, propName,
-					PropertyType.DATE, cal))
+			if (ConnectJcrUtils.setJcrProperty(node, propName, PropertyType.DATE, cal))
 				formPart.markDirty();
 		}
 
@@ -234,8 +224,7 @@ public class DateTextPart extends Composite {
 			dateTimeCtl = new DateTime(this, SWT.CALENDAR);
 			dateTimeCtl.setLayoutData(EclipseUiUtils.fillAll());
 			if (currCal != null)
-				dateTimeCtl.setDate(currCal.get(Calendar.YEAR),
-						currCal.get(Calendar.MONTH),
+				dateTimeCtl.setDate(currCal.get(Calendar.YEAR), currCal.get(Calendar.MONTH),
 						currCal.get(Calendar.DAY_OF_MONTH));
 
 			dateTimeCtl.addSelectionListener(new SelectionAdapter() {

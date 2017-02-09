@@ -1,6 +1,6 @@
-package org.argeo.connect.people.workbench.rap.commands;
+package org.argeo.connect.ui.workbench.commands;
 
-import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -17,7 +17,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
  */
 public class ForceRefresh extends AbstractHandler {
 
-	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".forceRefresh";
+	public final static String ID = AppWorkbenchService.CONNECT_WORKBENCH_ID_PREFIX + ".forceRefresh";
 	public final static String PARAM_VIEW_ID = "param.viewId";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -26,8 +26,7 @@ public class ForceRefresh extends AbstractHandler {
 		IWorkbenchWindow iww = HandlerUtil.getActiveWorkbenchWindow(event);
 		if (iww == null)
 			return null;
-		
-		
+
 		IWorkbenchPage activePage = iww.getActivePage();
 
 		if (partId != null) {

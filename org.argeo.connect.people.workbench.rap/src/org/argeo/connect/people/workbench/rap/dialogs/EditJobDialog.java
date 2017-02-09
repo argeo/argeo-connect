@@ -37,8 +37,8 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
-import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.providers.EntitySingleColumnLabelProvider;
+import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
@@ -136,10 +136,8 @@ public class EditJobDialog extends TrayDialog {
 	 *            tells if we must remove referenced (if true) or referencing
 	 *            (if false) node
 	 */
-	public EditJobDialog(Shell parentShell, String title,
-			PeopleService peopleService,
-			PeopleWorkbenchService peopleUiService, Node oldLink,
-			Node toUpdateNode, boolean isBackward) {
+	public EditJobDialog(Shell parentShell, String title, PeopleService peopleService,
+			PeopleWorkbenchService peopleUiService, Node oldLink, Node toUpdateNode, boolean isBackward) {
 		// , String toSearchNodeType
 		super(parentShell);
 		this.title = title;
@@ -163,25 +161,21 @@ public class EditJobDialog extends TrayDialog {
 			try {
 				// Initialize with old values
 				session = oldLink.getSession();
-				oldPosition = ConnectJcrUtils.get(oldLinkNode,
-						PeopleNames.PEOPLE_ROLE);
-				oldDepartment = ConnectJcrUtils.get(oldLinkNode,
-						PeopleNames.PEOPLE_DEPARTMENT);
-				Boolean tmp = ConnectJcrUtils.getBooleanValue(oldLink,
-						PeopleNames.PEOPLE_IS_PRIMARY);
+				oldPosition = ConnectJcrUtils.get(oldLinkNode, PeopleNames.PEOPLE_ROLE);
+				oldDepartment = ConnectJcrUtils.get(oldLinkNode, PeopleNames.PEOPLE_DEPARTMENT);
+				Boolean tmp = ConnectJcrUtils.getBooleanValue(oldLink, PeopleNames.PEOPLE_IS_PRIMARY);
 				if (tmp != null)
 					wasPrimary = tmp;
 
 				oldReferencing = oldLink.getParent().getParent();
-				oldReferenced = peopleService.getEntityByUid(session, oldLink
-						.getProperty(PeopleNames.PEOPLE_REF_UID).getString());
+				oldReferenced = peopleService.getEntityByUid(session,
+						oldLink.getProperty(PeopleNames.PEOPLE_REF_UID).getString());
 			} catch (RepositoryException e) {
-				throw new PeopleException("unable to initialize link edition",
-						e);
+				throw new PeopleException("unable to initialize link edition", e);
 			}
 		}
 	}
-	
+
 	/** Override to provide business specific addition behavior */
 	protected boolean performFinish() {
 		// Sanity check
@@ -216,11 +210,10 @@ public class EditJobDialog extends TrayDialog {
 		}
 
 		// Real update
-		peopleService.getPersonService().createOrUpdateJob(oldLinkNode, person,
-				organisation, position, department, isPrimary);
+		peopleService.getPersonService().createOrUpdateJob(oldLinkNode, person, organisation, position, department,
+				isPrimary);
 		return true;
 	}
-	
 
 	protected Control createDialogArea(Composite parent) {
 		// MAIN LAYOUT
@@ -237,9 +230,7 @@ public class EditJobDialog extends TrayDialog {
 		GridData gd = EclipseUiUtils.fillWidth(2);
 		gd.heightHint = 290;
 		listCmp.setLayoutData(gd);
-		entityViewer = createListPart(listCmp,
-				new EntitySingleColumnLabelProvider(peopleService,
-						peopleUiService));
+		entityViewer = createListPart(listCmp, new EntitySingleColumnLabelProvider(peopleService, peopleUiService));
 		refreshFilteredList(toSearchNodeType);
 
 		// An empty line to give some air to the dialog
@@ -250,16 +241,14 @@ public class EditJobDialog extends TrayDialog {
 		// Display chosen org or person
 		selectedItemTxt = createLT(dialogarea, chosenItemLbl);
 		selectedItemTxt.setEnabled(false);
-		CmsUtils.style(selectedItemTxt, PeopleStyles.PEOPLE_CLASS_FORCE_BORDER);
+		CmsUtils.style(selectedItemTxt, ConnectUiStyles.FORCE_BORDER);
 
 		if (isBackward) {
 			if (oldReferencing != null)
-				selectedItemTxt.setText(ConnectJcrUtils.get(oldReferencing,
-						Property.JCR_TITLE));
+				selectedItemTxt.setText(ConnectJcrUtils.get(oldReferencing, Property.JCR_TITLE));
 		} else {
 			if (oldReferenced != null)
-				selectedItemTxt.setText(ConnectJcrUtils.get(oldReferenced,
-						Property.JCR_TITLE));
+				selectedItemTxt.setText(ConnectJcrUtils.get(oldReferenced, Property.JCR_TITLE));
 		}
 		// Role
 		positionTxt = createLT(dialogarea, positionLbl);
@@ -284,8 +273,6 @@ public class EditJobDialog extends TrayDialog {
 			refreshFilteredList(toSearchNodeType);
 		return dialogarea;
 	}
-
-	
 
 	// This dialog life cycle
 	@Override
@@ -342,8 +329,7 @@ public class EditJobDialog extends TrayDialog {
 	}
 
 	protected void addFilterPanel(Composite parent) {
-		GridLayout layout = EclipseUiUtils.noSpaceGridLayout(new GridLayout(2,
-				false));
+		GridLayout layout = EclipseUiUtils.noSpaceGridLayout(new GridLayout(2, false));
 		layout.horizontalSpacing = 5;
 		parent.setLayout(layout);
 
@@ -361,20 +347,19 @@ public class EditJobDialog extends TrayDialog {
 
 		if (isDyn) {
 			final ServerPushSession pushSession = new ServerPushSession();
-			((DelayedText) filterTxt).addDelayedModifyListener(pushSession,
-					new ModifyListener() {
-						private static final long serialVersionUID = 5003010530960334977L;
+			((DelayedText) filterTxt).addDelayedModifyListener(pushSession, new ModifyListener() {
+				private static final long serialVersionUID = 5003010530960334977L;
 
-						public void modifyText(ModifyEvent event) {
-							filterTxt.getDisplay().asyncExec(new Runnable() {
-								@Override
-								public void run() {
-									refreshFilteredList(toSearchNodeType);
-								}
-							});
-							pushSession.stop();
+				public void modifyText(ModifyEvent event) {
+					filterTxt.getDisplay().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							refreshFilteredList(toSearchNodeType);
 						}
 					});
+					pushSession.stop();
+				}
+			});
 		}
 
 		filterTxt.addTraverseListener(new TraverseListener() {
@@ -399,10 +384,8 @@ public class EditJobDialog extends TrayDialog {
 		});
 	}
 
-	protected TableViewer createListPart(Composite tableComposite,
-			ILabelProvider labelProvider) {
-		TableViewer v = new TableViewer(tableComposite, SWT.VIRTUAL
-				| SWT.V_SCROLL | SWT.SINGLE);
+	protected TableViewer createListPart(Composite tableComposite, ILabelProvider labelProvider) {
+		TableViewer v = new TableViewer(tableComposite, SWT.VIRTUAL | SWT.V_SCROLL | SWT.SINGLE);
 		v.setLabelProvider(labelProvider);
 
 		TableColumn singleColumn = new TableColumn(v.getTable(), SWT.LEFT);
@@ -425,25 +408,21 @@ public class EditJobDialog extends TrayDialog {
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				// Avoid NPE on filter reset
-				Object element = ((IStructuredSelection) event.getSelection())
-						.getFirstElement();
+				Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
 				if (element == null) {
 					selectedItem = null;
 					return;
 				}
 
 				// Only single selection is enabled
-				Node selectedEntity = (Node) ((IStructuredSelection) event
-						.getSelection()).getFirstElement();
+				Node selectedEntity = (Node) ((IStructuredSelection) event.getSelection()).getFirstElement();
 				selectedItem = selectedEntity;
 
 				try {
 					if (selectedEntity.isNodeType(NodeType.MIX_TITLE))
-						selectedItemTxt.setText(ConnectJcrUtils.get(selectedEntity,
-								Property.JCR_TITLE));
+						selectedItemTxt.setText(ConnectJcrUtils.get(selectedEntity, Property.JCR_TITLE));
 				} catch (RepositoryException e) {
-					throw new PeopleException("Unable to update "
-							+ "selected item", e);
+					throw new PeopleException("Unable to update " + "selected item", e);
 				}
 				// Sets the focus to next usefull field
 				positionTxt.setFocus();
@@ -486,15 +465,13 @@ public class EditJobDialog extends TrayDialog {
 	protected NodeIterator query(String nodeType) {
 		try {
 			String filter = filterTxt.getText();
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
+			QueryManager queryManager = session.getWorkspace().getQueryManager();
 
 			String xpathQueryStr = "//element(*, " + nodeType + ")";
 			String attrQuery = XPathUtils.getFreeTextConstraint(filter);
 			if (EclipseUiUtils.notEmpty(attrQuery))
 				xpathQueryStr += "[" + attrQuery + "]";
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr,
-					ConnectConstants.QUERY_XPATH);
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 			xpathQuery.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
 			QueryResult result = xpathQuery.execute();
 			return result.getNodes();

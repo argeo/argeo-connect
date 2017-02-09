@@ -20,6 +20,7 @@ import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.PeopleAbstractDropDown;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -56,10 +57,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
-/**
- * Some helper methods to simplify UI implementation in a Rap Workbench People
- * context
- */
+/** Helper methods to ease UI implementation in People's RAP Workbench */
 public class PeopleRapUtils {
 
 	// Experimental
@@ -78,7 +76,7 @@ public class PeopleRapUtils {
 
 	/**
 	 * Helper to call a command with a few parameter easily. The additional
-	 * parameters must be NPairs with each time a parameterID and a
+	 * parameters must be Pairs with each time a parameterID and a
 	 * parameterValue couple in this order
 	 */
 	public static void callCommand(String commandID, String... parameters) {
@@ -112,25 +110,6 @@ public class PeopleRapUtils {
 					"unable to refresh DateTime widget for node " + node + " and property " + propName, re);
 		}
 	}
-
-	// /**
-	// * Shortcut to refresh a <code>Text</code> widget given a Node in a form
-	// and
-	// * a property Name. Also manages its enable state
-	// */
-	// public static String refreshFormTextWidget(Text text, Node entity,
-	// String propName) {
-	// String tmpStr = ConnectJcrUtils.get(entity, propName);
-	// // Check if there is no side effect.
-	// // Commented out to manage the following case in a film header:
-	// // Primary Title has a latin pronunciation,
-	// // we define another primary title that has no such value,
-	// // the text must be reset to blank.
-	// // if (ConnectJcrUtils.checkNotEmptyString(tmpStr))
-	// text.setText(tmpStr);
-	// text.setEnabled(ConnectJcrUtils.isNodeCheckedOutByMe(entity));
-	// return tmpStr;
-	// }
 
 	/**
 	 * Shortcut to refresh a <code>Text</code> widget given a Node in a form and
@@ -572,7 +551,7 @@ public class PeopleRapUtils {
 	 */
 	public static Button createDeleteButton(Composite parent) {
 		Button button = new Button(parent, SWT.FLAT);
-		CmsUtils.style(button, PeopleStyles.FLAT_BTN);
+		CmsUtils.style(button, ConnectUiStyles.FLAT_BTN);
 		button.setImage(PeopleRapImages.DELETE_BTN_LEFT);
 		RowData rd = new RowData();
 		rd.height = 16;
@@ -662,7 +641,6 @@ public class PeopleRapUtils {
 		CmsUtils.markup(table);
 	}
 
-	// /////////////////////////////
 	// Layouts and LayoutData
 
 	/** shortcut to set form data while dealing with switching panel */

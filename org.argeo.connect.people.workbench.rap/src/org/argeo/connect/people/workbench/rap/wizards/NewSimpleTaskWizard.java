@@ -12,9 +12,9 @@ import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
-import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.composites.DateText;
 import org.argeo.connect.people.workbench.rap.dialogs.PickUpGroupDialog;
+import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
@@ -108,10 +108,8 @@ public class NewSimpleTaskWizard extends Wizard {
 			MessageDialog.openError(getShell(), "Uncomplete information", msg);
 			return false;
 		}
-		createdTask = activityService.createTask(currSession, null,
-				titleTxt.getText(), descTxt.getText(), assignedToGroupId,
-				relatedTo, dueDateCmp.getCalendar(),
-				wakeUpDateCmp.getCalendar());
+		createdTask = activityService.createTask(currSession, null, titleTxt.getText(), descTxt.getText(),
+				assignedToGroupId, relatedTo, dueDateCmp.getCalendar(), wakeUpDateCmp.getCalendar());
 
 		return true;
 	}
@@ -151,35 +149,28 @@ public class NewSimpleTaskWizard extends Wizard {
 			Composite assignedToCmp = new Composite(parent, SWT.NO_FOCUS);
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
 			assignedToCmp.setLayoutData(gd);
-			GridLayout gl = EclipseUiUtils.noSpaceGridLayout(new GridLayout(2,
-					false));
+			GridLayout gl = EclipseUiUtils.noSpaceGridLayout(new GridLayout(2, false));
 			gl.horizontalSpacing = 5;
 			assignedToCmp.setLayout(gl);
-			final Text assignedToTxt = new Text(assignedToCmp, SWT.BORDER
-					| SWT.NO_FOCUS);
+			final Text assignedToTxt = new Text(assignedToCmp, SWT.BORDER | SWT.NO_FOCUS);
 			assignedToTxt.setMessage("Assign a group to manage this task");
-			CmsUtils.style(assignedToTxt,
-					PeopleStyles.PEOPLE_CLASS_FORCE_BORDER);
+			CmsUtils.style(assignedToTxt, ConnectUiStyles.FORCE_BORDER);
 			assignedToTxt.setLayoutData(EclipseUiUtils.fillWidth());
 			assignedToTxt.setEnabled(false);
 
 			Link assignedToLk = new Link(assignedToCmp, SWT.NONE);
 			assignedToLk.setText("<a>Pick up</a>");
-			// assignedToLk.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER,
-			// false, false));
 			assignedToLk.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
-					PickUpGroupDialog diag = new PickUpGroupDialog(
-							assignedToTxt.getShell(), "Choose a group",
+					PickUpGroupDialog diag = new PickUpGroupDialog(assignedToTxt.getShell(), "Choose a group",
 							peopleService);
 					if (diag.open() == Window.OK) {
 						assignedToGroupId = diag.getSelected().getName();
 						if (EclipseUiUtils.notEmpty(assignedToGroupId))
-							assignedToTxt.setText(userAdminService
-									.getUserDisplayName(assignedToGroupId));
+							assignedToTxt.setText(userAdminService.getUserDisplayName(assignedToGroupId));
 					}
 				}
 			});

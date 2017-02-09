@@ -258,8 +258,8 @@
 
   		<!-- Miscelleanous -->
   		<command
-			id="org.argeo.connect.people.workbench.rap.forceRefresh"
-			defaultHandler="org.argeo.connect.people.workbench.rap.commands.ForceRefresh"
+			id="org.argeo.connect.ui.workbench.forceRefresh"
+			defaultHandler="org.argeo.connect.ui.workbench.commands.ForceRefresh"
 			name="Force refresh of the current active part if such an action is possible">
 			<commandParameter
 					id="param.viewId"
@@ -276,7 +276,7 @@
 			locationURI="toolbar:org.argeo.cms.ui.workbench.rap.userToolbar?before=org.eclipse.ui.file.save"> 
 			<!-- Force resfresh if possible --> 
 			<command
-				commandId="org.argeo.connect.people.workbench.rap.forceRefresh"
+				commandId="org.argeo.connect.ui.workbench.forceRefresh"
 				icon="icons/refresh.png"
 				label="Force refresh of the current active part"
 				style="push"
@@ -422,7 +422,7 @@
 				label="Task">
 			</command>	
             <command
-				commandId="org.argeo.connect.people.workbench.rap.forceRefresh"
+				commandId="org.argeo.connect.ui.workbench.forceRefresh"
                 icon="icons/refresh.png"
 				label="Refresh"
 				tooltip="Force task list refresh">
