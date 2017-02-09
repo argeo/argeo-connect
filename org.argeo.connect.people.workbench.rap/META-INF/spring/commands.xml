@@ -46,4 +46,10 @@
 		<property name="peopleService" ref="peopleService" />
 		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
+	
+	<!--  Exports  -->
+	<bean id="org.argeo.connect.ui.workbench.getJxlExport" class="org.argeo.connect.ui.workbench.commands.GetJxlExport"
+		scope="prototype">
+		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
+	</bean>
 </beans>

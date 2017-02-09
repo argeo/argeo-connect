@@ -32,9 +32,6 @@ public interface PeopleRapConstants {
 		}
 	};
 
-	// Exports IDs
-	String DEFAULT_CALC_EXPORT = "defaultCalcExport";
-
 	// Various dialogs IDs 
 	String DIALOG_ADD_ML_MEMBERS = "dialog:addMLMembers";
 	String DIALOG_ADD_ML_MEMBERSHIP = "dialog:addMLMembership";

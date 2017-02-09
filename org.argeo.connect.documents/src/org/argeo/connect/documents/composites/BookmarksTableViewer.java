@@ -68,7 +68,7 @@ public class BookmarksTableViewer extends TableViewer {
 			@Override
 			public void mouseDown(MouseEvent e) {
 				if (e.button == 3) {
-					contextMenu.show(table, new Point(e.x, e.y));
+					contextMenu.show(table, new Point(e.x, e.y), BookmarksTableViewer.this.getStructuredSelection());
 				}
 			}
 		});

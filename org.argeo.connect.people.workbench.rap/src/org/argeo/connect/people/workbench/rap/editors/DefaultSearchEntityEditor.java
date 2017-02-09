@@ -19,6 +19,7 @@ import org.argeo.connect.people.workbench.rap.composites.dropdowns.TagLikeDropDo
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractSearchEntityEditor;
 import org.argeo.connect.people.workbench.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -34,7 +35,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 
 /** Search the repository with a given entity type */
-public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor {
+public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor implements IJcrTableViewer {
 
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".defaultSearchEntityEditor";
 

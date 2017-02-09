@@ -11,7 +11,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.PlatformUI;
 
 /**
- * Opens various pre-defined URLs on the internet in a new browser window/tab
+ * Open various pre-defined URLs on the internet in a new browser window/tab
  * (target ="_blank")
  */
 public class OpenUrl extends AbstractHandler {

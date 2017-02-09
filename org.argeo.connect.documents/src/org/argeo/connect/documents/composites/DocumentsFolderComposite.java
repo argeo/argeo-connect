@@ -166,14 +166,15 @@ public class DocumentsFolderComposite extends Composite {
 			public void mouseDown(MouseEvent e) {
 				if (e.button == 3) {
 					// contextMenu.setCurrFolderPath(currDisplayedFolder);
-					contextMenu.show(table, new Point(e.x, e.y), currDisplayedFolder);
+					contextMenu.show(table, new Point(e.x, e.y),
+							(IStructuredSelection) directoryDisplayViewer.getSelection(), currDisplayedFolder);
 				}
 			}
 		});
 	}
 
 	/**
-	 * Overwrite to enable single soucing between workbench and CMS navigation
+	 * Overwrite to enable single sourcing between workbench and CMS navigation
 	 */
 	protected void externalNavigateTo(Path path) {
 

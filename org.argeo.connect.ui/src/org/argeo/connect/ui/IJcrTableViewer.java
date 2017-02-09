@@ -1,8 +1,6 @@
-package org.argeo.connect.people.workbench.rap.exports.calc;
+package org.argeo.connect.ui;
 
 import java.util.List;
-
-import org.argeo.connect.ui.ConnectColumnDefinition;
 
 /**
  * Views and editors can implement this interface so that one of the row list

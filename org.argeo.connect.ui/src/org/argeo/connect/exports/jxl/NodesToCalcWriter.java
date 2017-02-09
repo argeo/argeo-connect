@@ -1,4 +1,4 @@
-package org.argeo.connect.people.workbench.rap.exports.calc;
+package org.argeo.connect.exports.jxl;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,6 +7,12 @@ import java.util.Locale;
 
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.argeo.connect.ConnectException;
+import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.ConnectUiConstants;
 
 import jxl.Cell;
 import jxl.SheetSettings;
@@ -27,13 +33,6 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.people.PeopleConstants;
-import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.ui.ConnectUiConstants;
-import org.argeo.connect.ui.ConnectColumnDefinition;
-
 /** Generate a spreadsheet from a Node array using jxl */
 public class NodesToCalcWriter {
 	private final static Log log = LogFactory.getLog(NodesToCalcWriter.class);
@@ -52,7 +51,7 @@ public class NodesToCalcWriter {
 		try {
 			/* General preferences */
 			wSettings = new WorkbookSettings();
-			wSettings.setLocale(new Locale(PeopleConstants.LANG_EN));
+			wSettings.setLocale(new Locale("en"));
 
 			String excelRegionalSettings = CountryCode.UK.getCode();
 			wSettings.setExcelDisplayLanguage(excelRegionalSettings);
@@ -69,33 +68,27 @@ public class NodesToCalcWriter {
 			// Body fonts
 			tableBodyStringFormat = new WritableCellFormat();
 			tableBodyStringFormat.setBorder(Border.ALL, BorderLineStyle.THIN);
-			tableBodyStringFormat.setFont(new WritableFont(WritableFont.ARIAL,
-					9));
+			tableBodyStringFormat.setFont(new WritableFont(WritableFont.ARIAL, 9));
 			tableBodyStringFormat.setWrap(true);
 
-			DateFormat currDF = new DateFormat(
-					ConnectUiConstants.DEFAULT_DATE_FORMAT);
-			tableBodyDateFormat = new WritableCellFormat(new WritableFont(
-					WritableFont.ARIAL, 9), currDF);
+			DateFormat currDF = new DateFormat(ConnectUiConstants.DEFAULT_DATE_FORMAT);
+			tableBodyDateFormat = new WritableCellFormat(new WritableFont(WritableFont.ARIAL, 9), currDF);
 			tableBodyDateFormat.setBorder(Border.ALL, BorderLineStyle.THIN);
 
-			tableBodyIntFormat = new WritableCellFormat(new WritableFont(
-					WritableFont.ARIAL, 9), NumberFormats.INTEGER);
+			tableBodyIntFormat = new WritableCellFormat(new WritableFont(WritableFont.ARIAL, 9), NumberFormats.INTEGER);
 			tableBodyIntFormat.setBorder(Border.ALL, BorderLineStyle.THIN);
 
-			tableBodyFloatFormat = new WritableCellFormat(new WritableFont(
-					WritableFont.ARIAL, 9), new NumberFormat(
-					ConnectUiConstants.DEFAULT_NUMBER_FORMAT));
+			tableBodyFloatFormat = new WritableCellFormat(new WritableFont(WritableFont.ARIAL, 9),
+					new NumberFormat(ConnectUiConstants.DEFAULT_NUMBER_FORMAT));
 			tableBodyFloatFormat.setBorder(Border.ALL, BorderLineStyle.THIN);
 
 		} catch (Exception e) {
-			throw new PeopleException("Error preparing spreadsheet export.", e);
+			throw new ConnectException("Error preparing spreadsheet export.", e);
 		}
 	}
 
 	/** Write a calc file from the passed {@code Node} array */
-	public void writeTableFromNodes(File outputFile, Node[] nodes,
-			List<ConnectColumnDefinition> columnDefs) {
+	public void writeTableFromNodes(File outputFile, Node[] nodes, List<ConnectColumnDefinition> columnDefs) {
 		try {
 			WritableWorkbook workbook = null;
 			try {
@@ -103,7 +96,7 @@ public class NodesToCalcWriter {
 				if (log.isTraceEnabled())
 					log.trace("Workbook " + outputFile.getName() + " created");
 			} catch (FileNotFoundException fnfe) {
-				throw new PeopleException("Cannot create workbook", fnfe);
+				throw new ConnectException("Cannot create workbook", fnfe);
 			}
 
 			WritableSheet sheet = workbook.createSheet("Main", 0);
@@ -125,8 +118,7 @@ public class NodesToCalcWriter {
 			if (log.isDebugEnabled())
 				log.debug("Workbook generated in file " + outputFile.getName());
 		} catch (Exception e) {
-			throw new PeopleException("Could not write spreadsheet to file '"
-					+ outputFile + "'.", e);
+			throw new ConnectException("Could not write spreadsheet to file '" + outputFile + "'.", e);
 		}
 	}
 
@@ -135,11 +127,10 @@ public class NodesToCalcWriter {
 			int currentRow = 0;
 			int i = 0;
 			for (ConnectColumnDefinition currColDef : columnDefs) {
-				sheet.addCell(new Label(i++, currentRow, currColDef
-						.getHeaderLabel(), tableHeaderFormat));
+				sheet.addCell(new Label(i++, currentRow, currColDef.getHeaderLabel(), tableHeaderFormat));
 			}
 		} catch (Exception e) {
-			throw new PeopleException("Could not write header.", e);
+			throw new ConnectException("Could not write header.", e);
 		}
 	}
 
@@ -158,33 +149,27 @@ public class NodesToCalcWriter {
 	}
 
 	// Specific behaviour
-	private int updateCell(int currRowIndex, int currColIndex,
-			WritableSheet sheet, Node node, ConnectColumnDefinition currCol) {
+	private int updateCell(int currRowIndex, int currColIndex, WritableSheet sheet, Node node,
+			ConnectColumnDefinition currCol) {
 		try {
 			if (PropertyType.LONG == currCol.getPropertyType()) {
-				sheet.addCell(new jxl.write.Number(
-						currColIndex,
-						currRowIndex,
-						new Long(currCol.getColumnLabelProvider().getText(node)),
-						tableBodyIntFormat));
+				sheet.addCell(new jxl.write.Number(currColIndex, currRowIndex,
+						new Long(currCol.getColumnLabelProvider().getText(node)), tableBodyIntFormat));
 				return currColIndex + 1;
 			} else if (PropertyType.DECIMAL == currCol.getPropertyType()
 					|| PropertyType.DOUBLE == currCol.getPropertyType()) {
 				sheet.addCell(new jxl.write.Number(currColIndex, currRowIndex,
-						new Double(currCol.getColumnLabelProvider().getText(
-								node)), tableBodyFloatFormat));
+						new Double(currCol.getColumnLabelProvider().getText(node)), tableBodyFloatFormat));
 				return currColIndex + 1;
 			} else {
-				sheet.addCell(new Label(currColIndex, currRowIndex, currCol
-						.getColumnLabelProvider().getText(node),
+				sheet.addCell(new Label(currColIndex, currRowIndex, currCol.getColumnLabelProvider().getText(node),
 						tableBodyStringFormat));
 				return currColIndex + 1;
 			}
 		} catch (RowsExceededException e) {
-			throw new PeopleException("Too many rows", e);
+			throw new ConnectException("Too many rows", e);
 		} catch (WriteException e) {
-			throw new PeopleException(
-					"Error while generating the body of the extract", e);
+			throw new ConnectException("Error while generating the body of the extract", e);
 		}
 	}
 
@@ -229,7 +214,7 @@ public class NodesToCalcWriter {
 			try {
 				sheet.setRowView(j, maxHeigth + 1);
 			} catch (RowsExceededException re) {
-				throw new PeopleException("unable to resize row " + j, re);
+				throw new ConnectException("unable to resize row " + j, re);
 			}
 			j++;
 		}

@@ -34,4 +34,7 @@ public interface ConnectUiConstants {
 
 	// Default column size for various tables and extracts
 	int DEFAULT_COLUMN_SIZE = 120;
+
+	// Exports IDs
+	String DEFAULT_JXL_EXPORT = "defaultJxlExport";
 }

@@ -11,6 +11,13 @@
 	<name>Connect UI Utilities</name>
 	<packaging>jar</packaging>
 	<dependencies>
+		<!--  Optional XLS Export feature -->
+		<dependency>
+			<groupId>org.argeo.tp.misc</groupId>
+			<artifactId>net.sf.jxl</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.core</artifactId>

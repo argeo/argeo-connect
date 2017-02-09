@@ -13,7 +13,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
 
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.UserAdminUtils;
@@ -163,30 +162,34 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 
 	public NodeIterator getTasksForGroup(Session session, String[] roles, boolean onlyOpenTasks) {
 		try {
-			QueryManager queryManager = session.getWorkspace().getQueryManager();
-
 			// XPath
 			StringBuilder builder = new StringBuilder();
 			builder.append("//element(*, ").append(PeopleTypes.PEOPLE_TASK).append(")");
 
+			// Assigned to
 			StringBuilder tmpBuilder = new StringBuilder();
 			for (String role : roles) {
 				String attrQuery = XPathUtils.getPropertyEquals(PeopleNames.PEOPLE_ASSIGNED_TO, role);
 				if (notEmpty(attrQuery))
 					tmpBuilder.append(attrQuery).append(" or ");
 			}
-
+			String groupCond = null;
 			if (tmpBuilder.length() > 4)
-				builder.append("[").append(tmpBuilder.substring(0, tmpBuilder.length() - 3)).append("]");
+				groupCond = "(" +tmpBuilder.substring(0, tmpBuilder.length() - 3) +")";
 
-			// Implement the sleeping task query
+			// Only opened tasks
+			String notClosedCond = null;
 			if (onlyOpenTasks)
-				throw new PeopleException("Unimplemented feature: search only open tasks");
+				notClosedCond = "not(@" + PeopleNames.PEOPLE_CLOSE_DATE + ")";
+
+			String allCond = XPathUtils.localAnd(groupCond, notClosedCond);
+			if (EclipseUiUtils.notEmpty(allCond))
+				builder.append("[").append(allCond).append("]");
 
 			builder.append(" order by @").append(PeopleNames.JCR_LAST_MODIFIED).append(" descending");
 
-			Query query = queryManager.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH);
-
+			Query query = session.getWorkspace().getQueryManager().createQuery(builder.toString(),
+					ConnectConstants.QUERY_XPATH);
 			return query.execute().getNodes();
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to get tasks for groups " + roles.toString());
@@ -290,8 +293,8 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	@Override
 	public Node createTask(Session session, Node parentNode, String title, String description, String assignedTo,
 			List<Node> relatedTo, Calendar dueDate, Calendar wakeUpDate) {
-		return createTask(session, parentNode, CurrentUser.getUsername(), title, description, assignedTo, relatedTo, new GregorianCalendar(),
-				dueDate, wakeUpDate);
+		return createTask(session, parentNode, CurrentUser.getUsername(), title, description, assignedTo, relatedTo,
+				new GregorianCalendar(), dueDate, wakeUpDate);
 	}
 
 	@Override

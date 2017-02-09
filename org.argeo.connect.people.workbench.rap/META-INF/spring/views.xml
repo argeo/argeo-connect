@@ -20,12 +20,12 @@
 		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
-	<bean id="myTasksView"
-		class="org.argeo.connect.people.workbench.rap.views.MyTasksView"
+	<bean id="myTodoListView"
+		class="org.argeo.connect.people.workbench.rap.views.MyTodoListView"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
-		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
 	<!-- Legacy -->

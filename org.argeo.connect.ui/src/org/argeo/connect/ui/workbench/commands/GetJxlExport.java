@@ -1,4 +1,4 @@
-package org.argeo.connect.people.workbench.rap.commands;
+package org.argeo.connect.ui.workbench.commands;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -9,25 +9,23 @@ import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
-import javax.jcr.Repository;
-import javax.jcr.Session;
 import javax.jcr.query.Row;
 
+import org.argeo.cms.ui.workbench.WorkbenchUiPlugin;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.ui.workbench.util.PrivilegedJob;
-import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
-import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
-import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.people.workbench.rap.exports.calc.IJcrTableViewer;
-import org.argeo.connect.people.workbench.rap.exports.calc.NodesToCalcWriter;
-import org.argeo.connect.people.workbench.rap.exports.calc.RowsToCalcWriter;
+import org.argeo.connect.ConnectException;
+import org.argeo.connect.exports.jxl.NodesToCalcWriter;
+import org.argeo.connect.exports.jxl.RowsToCalcWriter;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.IJcrTableViewer;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.OpenFile;
+import org.argeo.eclipse.ui.utils.SingleSourcingConstants;
 import org.argeo.jcr.JcrMonitor;
-import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -39,58 +37,57 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 /**
- * Command handler to generate a spreadsheet displaying nodes and corresponding
- * values for the current active view or editor. Note that this IWorkbenchPart
- * must implement ICalcExtractProvider interface.
+ * Launch the generation of a spreadsheet displaying nodes or rows values for
+ * the current active view or editor. This current active {@link IWorkbenchPart}
+ * must implement the {@link IJcrTableViewer} interface.
  */
-public class GetCalcExport extends AbstractHandler {
-	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".getCalcExport";
+public class GetJxlExport extends AbstractHandler {
+	public final static String ID = AppWorkbenchService.CONNECT_WORKBENCH_ID_PREFIX + ".getJxlExport";
 	public final static String PARAM_EXPORT_ID = "param.exportId";
 
 	private final static DateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
+	private final static String URI_FILE_PREFIX = SingleSourcingConstants.FILE_SCHEME
+			+ SingleSourcingConstants.SCHEME_HOST_SEPARATOR;
 
 	/* DEPENDENCY INJECTION */
-	private PeopleWorkbenchService peopleWorkbenchService;
-	private Repository repository;
+	private AppWorkbenchService appWorkbenchService;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		String exportId = event.getParameter(PARAM_EXPORT_ID);
-		// force default
 		if (EclipseUiUtils.isEmpty(exportId))
-			exportId = PeopleRapConstants.DEFAULT_CALC_EXPORT;
+			exportId = ConnectUiConstants.DEFAULT_JXL_EXPORT;
 
 		try {
 			IWorkbenchPart iwp = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().getActivePart();
 			if (iwp instanceof IJcrTableViewer) {
 				IJcrTableViewer provider = (IJcrTableViewer) iwp;
-
-				if ((provider).getColumnDefinition(exportId) == null)
+				if (provider.getColumnDefinition(exportId) == null)
 					return null;
 				else {
 					Object[] elements = provider.getElements(exportId);
 					List<ConnectColumnDefinition> cols = provider.getColumnDefinition(exportId);
-					new GenerateExtract(HandlerUtil.getActivePart(event).getSite().getShell().getDisplay(), repository,
-							elements, cols, provider, exportId).schedule();
+					new GenerateExtract(HandlerUtil.getActivePart(event).getSite().getShell().getDisplay(), elements,
+							cols, exportId, getFileName(provider)).schedule();
 				}
 			} else
-				throw new PeopleException(iwp.toString() + " is not an instance of " + "ICalcExtractProvider interface."
-						+ " Command " + ID + " can be call only when active part "
+				throw new ConnectException(iwp.toString() + " is not an instance of "
+						+ "ICalcExtractProvider interface." + " Command " + ID + " can be call only when active part "
 						+ "implements ICalcExtractProvider interface.");
-			return null;
 		} catch (Exception e) {
-			throw new PeopleException("Cannot create and populate spreadsheet", e);
+			throw new ConnectException("Cannot create and populate spreadsheet", e);
 		}
+		return null;
 	}
 
 	/** Override to provide other naming strategy */
 	protected String getFileName(IJcrTableViewer provider) {
 		String prefix = "PeopleExport-";
 		String dateVal = df.format(new GregorianCalendar().getTime());
-		return prefix + dateVal + ".ods";
+		return prefix + dateVal + ".xls";
 	}
 
 	/** Real call to spreadsheet generator. */
-	protected synchronized void callCalcGenerator(Object[] elements, List<ConnectColumnDefinition> cols, String exportId,
+	protected synchronized void callJxlEngine(Object[] elements, List<ConnectColumnDefinition> cols, String exportId,
 			File file) throws Exception {
 		if (elements instanceof Row[]) {
 			RowsToCalcWriter writer = new RowsToCalcWriter();
@@ -105,73 +102,57 @@ public class GetCalcExport extends AbstractHandler {
 	private class GenerateExtract extends PrivilegedJob {
 
 		private Display display;
-		private Repository repository;
-		private IJcrTableViewer provider;
 		private Object[] elements;
 		private List<ConnectColumnDefinition> cols;
 
 		private String exportId;
+		private String targetFileName;
 
-		public GenerateExtract(Display display, Repository repository, Object[] elements,
-				List<ConnectColumnDefinition> cols, IJcrTableViewer provider, String exportId) {
+		public GenerateExtract(Display display, Object[] elements, List<ConnectColumnDefinition> cols, String exportId,
+				String targetFileName) {
 			super("Generating the export");
 			this.display = display;
-			this.repository = repository;
 			this.elements = elements;
 			this.cols = cols;
-			this.provider = provider;
 			this.exportId = exportId;
-
+			this.targetFileName = targetFileName;
 		}
 
 		protected IStatus doRun(IProgressMonitor progressMonitor) {
-			Session session = null;
 			try {
 				JcrMonitor monitor = new EclipseJcrMonitor(progressMonitor);
 				if (monitor != null && !monitor.isCanceled()) {
 					monitor.beginTask("Getting objects", -1);
-
-					session = repository.login();
-
-					// Create file
-					final File tmpFile = File.createTempFile("people-extract", ".ods");
-					// TODO does not work: files are deleted only when the
-					// corresponding JVM is closed
+					// session = repository.login();
+					final File tmpFile = File.createTempFile("people-extract", ".xls");
 					tmpFile.deleteOnExit();
 
+					callJxlEngine(elements, cols, exportId, tmpFile);
+
+					// Call the open file command from the UI thread
 					// TODO An error will be thrown if the end user click on
 					// "run in background" and then close the corresponding
 					// editor
-
-					// Effective generation
-					callCalcGenerator(elements, cols, exportId, tmpFile);
-
-					// Call the open file command from the UI thread
 					display.asyncExec(new Runnable() {
 						@Override
 						public void run() {
 							Map<String, String> params = new HashMap<String, String>();
-							params.put(OpenFile.PARAM_FILE_NAME, getFileName(provider));
-							params.put(OpenFile.PARAM_FILE_URI, "file://" + tmpFile.getAbsolutePath());
-							CommandUtils.callCommand(peopleWorkbenchService.getOpenFileCmdId(), params);
+							params.put(OpenFile.PARAM_FILE_NAME, targetFileName);
+							params.put(OpenFile.PARAM_FILE_URI, URI_FILE_PREFIX + tmpFile.getAbsolutePath());
+							CommandUtils.callCommand(appWorkbenchService.getOpenFileCmdId(), params);
 						}
 					});
 				}
 			} catch (Exception e) {
-				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID, "Unable to generate export " + exportId, e);
-			} finally {
-				JcrUtils.logoutQuietly(session);
+				return new Status(IStatus.ERROR, WorkbenchUiPlugin.PLUGIN_ID, "Unable to generate export " + exportId,
+						e);
 			}
 			return Status.OK_STATUS;
 		}
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
-		this.peopleWorkbenchService = peopleWorkbenchService;
-	}
-
-	public void setRepository(Repository repository) {
-		this.repository = repository;
+	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
+		this.appWorkbenchService = appWorkbenchService;
 	}
 }

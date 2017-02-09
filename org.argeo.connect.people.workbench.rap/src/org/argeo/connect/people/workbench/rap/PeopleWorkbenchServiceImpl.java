@@ -104,12 +104,6 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 	}
 
 	@Override
-	public String getOpenFileCmdId() {
-		// TODO clean this.
-		throw new PeopleException("OpenFile command is undefined for the PeopleWorkbenchService base implementation");
-	}
-
-	@Override
 	public String getDefaultEditorId() {
 		throw new PeopleException("No default editor has been defined for PeopleWorkbenchService base implementation");
 	}

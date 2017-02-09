@@ -1,12 +1,12 @@
-package org.argeo.connect.people.workbench.rap.exports.calc;
+package org.argeo.connect.exports.jxl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
+import javax.jcr.nodetype.NodeType;
 
-import org.argeo.connect.people.PeopleTypes;
 import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
 
 public interface ExtractDefinition {
@@ -14,8 +14,7 @@ public interface ExtractDefinition {
 	public final static List<JcrColumnDefinition> EXTRACT_SIMPLE_MAILING_LIST = new ArrayList<JcrColumnDefinition>() {
 		private static final long serialVersionUID = 1L;
 		{
-			add(new JcrColumnDefinition(PeopleTypes.PEOPLE_ENTITY,
-					Property.JCR_TITLE, PropertyType.STRING, "Display name"));
+			add(new JcrColumnDefinition(NodeType.MIX_TITLE, Property.JCR_TITLE, PropertyType.STRING, "Display name"));
 		}
 	};
 
@@ -23,5 +22,4 @@ public interface ExtractDefinition {
 	// List<String> list3 = new ArrayList<String>(
 	// Arrays.asList("String A", "String B", "String C")
 	// );
-
 }

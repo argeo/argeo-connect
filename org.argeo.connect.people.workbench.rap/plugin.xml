@@ -27,7 +27,7 @@
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="icons/activities/todo.gif"
-			id="org.argeo.connect.people.workbench.rap.myTasksView"
+			id="org.argeo.connect.people.workbench.rap.myTodoListView"
 			name="Tasks"
 			restorable="true">
 		</view>
@@ -157,6 +157,17 @@
 			</commandParameter>
 		</command>
 
+		<!-- Exports -->
+		<command
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		id="org.argeo.connect.ui.workbench.getJxlExport"
+            name="Generate a spreadsheet export">
+            <commandParameter
+         		id="param.exportId"
+         		name="An export ID">
+  	 		</commandParameter>
+    	</command>
+
 		<!-- Person and organisation management --> 
 		<command
 			id="org.argeo.connect.people.workbench.rap.editJob"
@@ -255,13 +266,6 @@
 					name="optionnaly, the id of the view to refresh">
  			</commandParameter>
   		</command>
-
-  		<!-- Utility to provide sub menues when we don't want to define a default command for this menu -->
-		<command
-			id="org.argeo.connect.people.workbench.rap.doNothing"
-			defaultHandler="org.argeo.connect.people.workbench.rap.commands.DoNothing"
-			name="Open menu">
-		</command>    
 	</extension>		
 	
 	<!-- Menus -->
@@ -329,28 +333,9 @@
   	 			<parameter name="param.priorAction" value="cancel" />
     		</command>
 		</menuContribution>
-		
-		<!-- Add entity menu (only when people perspective is active)--> 
-		<menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.argeo.cms.ui.workbench.rap.userToolbar">
-			<toolbar id="org.argeo.connect.people.workbench.rap.dropDownsToolbar">
-				<command
-					commandId="org.argeo.connect.people.workbench.rap.doNothing"
-					icon="icons/add.png"
-					label="Create"
-					tooltip="Create a new object"
-					id="org.argeo.connect.people.workbench.rap.addEntityToolbar"
-					style="pulldown">
-<!--					<visibleWhen checkEnabled="false">
-    					<with variable="activeWorkbenchWindow.activePerspective">
-        					<equals value="org.argeo.connect.people.workbench.rap.peoplePerspective"/>
-						</with>
-					</visibleWhen> -->
-				</command>
-			</toolbar>
-		</menuContribution>
-		
+				
 		<!-- Corresponding submenus --> 
-		<menuContribution locationURI="menu:org.argeo.connect.people.workbench.rap.addEntityToolbar">
+		<menuContribution locationURI="menu:org.argeo.connect.ui.workbench.addEntityToolbar">
 			<command
 				commandId="org.argeo.connect.people.workbench.rap.createEntity"
 				icon="icons/person.gif"
@@ -382,9 +367,55 @@
 			</command>-->
 		</menuContribution>
 		
-		<!-- MyTasksView tool bar menu --> 
+		<menuContribution locationURI="menu:org.argeo.connect.ui.workbench.openSearchToolbar">
+			<command
+				commandId="org.argeo.connect.people.workbench.rap.openSearchEntityEditor"
+				icon="icons/entities/person.gif"
+				label="Persons">
+				<parameter name="param.nodeType" value="people:person" />
+				<parameter name="param.editorName" value="Persons" />
+			</command>	
+			<command
+				commandId="org.argeo.connect.people.workbench.rap.openSearchEntityEditor"
+				icon="icons/entities/company.png"
+				label="Organisations">
+				<parameter name="param.nodeType" value="people:org" />
+				<parameter name="param.editorName" value="Organisations" />
+			</command>	
+			<command
+				commandId="org.argeo.connect.people.workbench.rap.openSearchEntityEditor"
+				icon="icons/activities/todo.gif"
+				label="Tasks">
+				<parameter name="param.nodeType" value="people:task" />
+				<parameter name="param.editorName" value="Tasks" />
+			</command>	
+		</menuContribution>		
+		
+		<!-- EXPORTS MENU -->
+		<menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.argeo.cms.ui.workbench.rap.userToolbar">
+			<toolbar id="org.argeo.connect.people.workbench.rap.exportToolbar">
+				<!-- Spreadsheet extracts --> 
+				<command
+					commandId="org.argeo.connect.ui.workbench.getJxlExport"
+					icon="icons/spreadsheet.gif"
+					label="Generate extract"
+					style="push"
+					tooltip="Generate a spreadsheet export of the current active filtered list">
+					<visibleWhen>
+						<and>
+							<with variable="activePart">
+								<instanceof value="org.argeo.connect.ui.IJcrTableViewer" />
+							</with>
+						</and>
+					</visibleWhen>
+				</command>
+			</toolbar>
+		</menuContribution>
+	
+		
+		<!-- MyTodoListView tool bar menu --> 
 		<menuContribution
-            locationURI="toolbar:org.argeo.connect.people.workbench.rap.myTasksView">
+            locationURI="toolbar:org.argeo.connect.people.workbench.rap.myTodoListView">
             <command
 				commandId="org.argeo.connect.people.workbench.rap.createSimpleTask"
 				icon="icons/newGroup.gif"
@@ -397,7 +428,7 @@
 				tooltip="Force task list refresh">
 				<parameter
 					name="param.viewId"
-					value="org.argeo.connect.people.workbench.rap.myTasksView" />
+					value="org.argeo.connect.people.workbench.rap.myTodoListView" />
             </command>
         </menuContribution>
 	</extension>
