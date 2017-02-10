@@ -14,12 +14,22 @@ import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.exports.AssignedToLP;
+import org.argeo.connect.people.ui.exports.CountMemberLP;
+import org.argeo.connect.people.ui.exports.NotPrimContactValueLP;
+import org.argeo.connect.people.ui.exports.PrimAddressLP;
+import org.argeo.connect.people.ui.exports.PrimBankAccountLP;
+import org.argeo.connect.people.ui.exports.PrimContactValueLP;
+import org.argeo.connect.people.ui.exports.PrimOrgNameLP;
+import org.argeo.connect.people.ui.exports.UserNameLP;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractSearchEntityEditor;
 import org.argeo.connect.people.workbench.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.IJcrTableViewer;
+import org.argeo.connect.ui.JcrRowLabelProvider;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -109,6 +119,141 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor implem
 	/** Overwrite to provide corresponding column definitions */
 	@Override
 	public List<ConnectColumnDefinition> getColumnDefinition(String extractId) {
-		return colDefs;
+
+		String currType = getEntityType();
+		List<ConnectColumnDefinition> columns = new ArrayList<ConnectColumnDefinition>();
+
+		// The editor table sends a null ID whereas the JxlExport mechanism
+		// always passes an ID
+		if (EclipseUiUtils.isEmpty(extractId)) {
+			if (PeopleTypes.PEOPLE_TASK.equals(currType)) {
+				columns.add(new ConnectColumnDefinition("Status",
+						new JcrRowLabelProvider(PeopleNames.PEOPLE_TASK_STATUS), 80));
+				columns.add(new ConnectColumnDefinition("Title", new JcrRowLabelProvider(Property.JCR_TITLE), 200));
+				columns.add(new ConnectColumnDefinition("Assigned To",
+						new AssignedToLP(getPeopleService(), null, Property.JCR_DESCRIPTION), 150));
+				columns.add(new ConnectColumnDefinition("Due Date", new JcrRowLabelProvider(PEOPLE_DUE_DATE), 100));
+				columns.add(new ConnectColumnDefinition("Close Date", new JcrRowLabelProvider(PEOPLE_CLOSE_DATE), 100));
+				columns.add(new ConnectColumnDefinition("Closed by",
+						new UserNameLP(getPeopleService(), null, PEOPLE_CLOSED_BY), 120));
+				return columns;
+			} else if (PeopleTypes.PEOPLE_MAILING_LIST.equals(currType)
+					|| PeopleTypes.PEOPLE_TAG_INSTANCE.equals(currType)) {
+				columns.add(new ConnectColumnDefinition("Title", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
+				columns.add(new ConnectColumnDefinition("Nb of members",
+						new CountMemberLP(getPeopleService().getResourceService()), 85));
+
+				// columns.add(new ConnectColumnDefinition("Name", new
+				// JcrRowLabelProvider(Property.JCR_TITLE), 200));
+				// columns.add(new ConnectColumnDefinition("Assigned To",
+				// new AssignedToLP(getPeopleService(), null,
+				// Property.JCR_DESCRIPTION), 150));
+				// columns.add(new ConnectColumnDefinition("Due Date", new
+				// JcrRowLabelProvider(PEOPLE_DUE_DATE), 100));
+				// columns.add(new ConnectColumnDefinition("Close Date", new
+				// JcrRowLabelProvider(PEOPLE_CLOSE_DATE), 100));
+				// columns.add(new ConnectColumnDefinition("Closed by",
+				// new UserNameLP(getPeopleService(), null, PEOPLE_CLOSED_BY),
+				// 120));
+				return columns;
+			} else
+				return colDefs;
+		}
+
+		if (PeopleTypes.PEOPLE_PERSON.equals(currType)) {
+			columns.add(new ConnectColumnDefinition("Display Name", new JcrRowLabelProvider(Property.JCR_TITLE)));
+			columns.add(new ConnectColumnDefinition("Salutation", new JcrRowLabelProvider(PEOPLE_SALUTATION)));
+			columns.add(new ConnectColumnDefinition("Title", new JcrRowLabelProvider(PEOPLE_HONORIFIC_TITLE)));
+			columns.add(new ConnectColumnDefinition("First name", new JcrRowLabelProvider(PEOPLE_FIRST_NAME)));
+			columns.add(new ConnectColumnDefinition("Middle name", new JcrRowLabelProvider(PEOPLE_MIDDLE_NAME)));
+			columns.add(new ConnectColumnDefinition("Last name", new JcrRowLabelProvider(PEOPLE_LAST_NAME)));
+			columns.add(new ConnectColumnDefinition("Name Suffix", new JcrRowLabelProvider(PEOPLE_NAME_SUFFIX)));
+			columns.add(new ConnectColumnDefinition("Organisation", new PrimOrgNameLP(getPeopleService(), null)));
+			columns.add(new ConnectColumnDefinition("Primary Street",
+					new PrimAddressLP(getPeopleService(), null, PEOPLE_STREET)));
+			columns.add(new ConnectColumnDefinition("Primary Street2",
+					new PrimAddressLP(getPeopleService(), null, PEOPLE_STREET_COMPLEMENT)));
+			columns.add(new ConnectColumnDefinition("Primary Zip",
+					new PrimAddressLP(getPeopleService(), null, PEOPLE_ZIP_CODE)));
+			columns.add(new ConnectColumnDefinition("Primary City",
+					new PrimAddressLP(getPeopleService(), null, PEOPLE_CITY)));
+			columns.add(new ConnectColumnDefinition("Primary State",
+					new PrimAddressLP(getPeopleService(), null, PEOPLE_STATE)));
+			columns.add(new ConnectColumnDefinition("Primary Country ISO",
+					new PrimAddressLP(getPeopleService(), null, PEOPLE_COUNTRY)));
+			columns.add(new ConnectColumnDefinition("Primary Phone",
+					new PrimContactValueLP(null, PeopleTypes.PEOPLE_PHONE)));
+			columns.add(new ConnectColumnDefinition("Primary Email",
+					new PrimContactValueLP(null, PeopleTypes.PEOPLE_EMAIL)));
+			columns.add(new ConnectColumnDefinition("Other Emails",
+					new NotPrimContactValueLP(null, PeopleTypes.PEOPLE_EMAIL)));
+			columns.add(new ConnectColumnDefinition("Primary Website",
+					new PrimContactValueLP(null, PeopleTypes.PEOPLE_URL)));
+			columns.add(new ConnectColumnDefinition("Notes", new JcrRowLabelProvider(Property.JCR_DESCRIPTION)));
+			columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(PEOPLE_TAGS)));
+			columns.add(new ConnectColumnDefinition("Mailing Lists", new JcrRowLabelProvider(PEOPLE_MAILING_LISTS)));
+		} else if (PeopleTypes.PEOPLE_ORG.equals(currType)) {
+
+			// DISPLAY NAME
+			columns.add(new ConnectColumnDefinition("Display Name", new JcrRowLabelProvider(Property.JCR_TITLE)));
+
+			// PRIMARY ADDRESS
+			columns.add(new ConnectColumnDefinition("Primary Street",
+					new PrimAddressLP(getPeopleService(), null, PEOPLE_STREET)));
+			columns.add(new ConnectColumnDefinition("Primary Street2",
+					new PrimAddressLP(getPeopleService(), null, PEOPLE_STREET_COMPLEMENT)));
+			columns.add(new ConnectColumnDefinition("Primary City",
+					new PrimAddressLP(getPeopleService(), null, PEOPLE_CITY)));
+			columns.add(new ConnectColumnDefinition("Primary State",
+					new PrimAddressLP(getPeopleService(), null, PEOPLE_STATE)));
+			columns.add(new ConnectColumnDefinition("Primary Zip",
+					new PrimAddressLP(getPeopleService(), null, PEOPLE_ZIP_CODE)));
+			columns.add(new ConnectColumnDefinition("Primary Country ISO",
+					new PrimAddressLP(getPeopleService(), null, PEOPLE_COUNTRY)));
+
+			// PRIMARY CONTACTS
+			columns.add(
+					new ConnectColumnDefinition("Primary Phone", new PrimContactValueLP("", PeopleTypes.PEOPLE_PHONE)));
+			columns.add(
+					new ConnectColumnDefinition("Primary Email", new PrimContactValueLP("", PeopleTypes.PEOPLE_EMAIL)));
+			columns.add(new ConnectColumnDefinition("Other Emails",
+					new NotPrimContactValueLP("", PeopleTypes.PEOPLE_EMAIL)));
+			columns.add(new ConnectColumnDefinition("Primary Website",
+					new PrimContactValueLP("", PeopleTypes.PEOPLE_URL), 100));
+
+			// LEGAL INFO
+			columns.add(new ConnectColumnDefinition("Legal name", new JcrRowLabelProvider(PEOPLE_LEGAL_NAME)));
+			columns.add(new ConnectColumnDefinition("Legal form", new JcrRowLabelProvider(PEOPLE_LEGAL_FORM)));
+			columns.add(new ConnectColumnDefinition("VAT ID", new JcrRowLabelProvider(PEOPLE_VAT_ID_NB)));
+
+			// PRIMARY PAIEMENT ACCOUNT
+			columns.add(new ConnectColumnDefinition("Bank Name", new PrimBankAccountLP("", PEOPLE_BANK_NAME)));
+			columns.add(
+					new ConnectColumnDefinition("Account Holder", new PrimBankAccountLP("", PEOPLE_ACCOUNT_HOLDER)));
+			columns.add(
+					new ConnectColumnDefinition("Account Number", new PrimBankAccountLP("", PEOPLE_ACCOUNT_NB), 100));
+			columns.add(new ConnectColumnDefinition("Bank Number", new PrimBankAccountLP("", PEOPLE_BANK_NB)));
+			columns.add(new ConnectColumnDefinition("BIC", new PrimBankAccountLP("", PEOPLE_BIC)));
+			columns.add(new ConnectColumnDefinition("IBAN", new PrimBankAccountLP("", PEOPLE_IBAN)));
+
+			// Tags, notes and mailing list
+			columns.add(new ConnectColumnDefinition("Notes", new JcrRowLabelProvider(Property.JCR_DESCRIPTION)));
+			columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(PEOPLE_TAGS)));
+			columns.add(new ConnectColumnDefinition("Mailing Lists", new JcrRowLabelProvider(PEOPLE_MAILING_LISTS)));
+		} else if (PeopleTypes.PEOPLE_TASK.equals(currType)) {
+			columns.add(new ConnectColumnDefinition("Status", new JcrRowLabelProvider(PeopleNames.PEOPLE_TASK_STATUS)));
+			columns.add(new ConnectColumnDefinition("Title", new JcrRowLabelProvider(Property.JCR_TITLE)));
+			columns.add(new ConnectColumnDefinition("Description", new JcrRowLabelProvider(Property.JCR_DESCRIPTION)));
+			columns.add(new ConnectColumnDefinition("Assigned To",
+					new AssignedToLP(getPeopleService(), null, Property.JCR_DESCRIPTION)));
+			columns.add(new ConnectColumnDefinition("Due Date", new JcrRowLabelProvider(PEOPLE_DUE_DATE)));
+			columns.add(new ConnectColumnDefinition("Wake-Up Date", new JcrRowLabelProvider(PEOPLE_WAKE_UP_DATE)));
+			columns.add(new ConnectColumnDefinition("Close Date", new JcrRowLabelProvider(PEOPLE_CLOSE_DATE)));
+			columns.add(new ConnectColumnDefinition("Closed by",
+					new UserNameLP(getPeopleService(), null, PEOPLE_CLOSED_BY)));
+		} else
+			return null;
+
+		return columns;
 	}
 }

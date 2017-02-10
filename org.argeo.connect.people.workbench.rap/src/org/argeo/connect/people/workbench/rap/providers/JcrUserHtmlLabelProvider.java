@@ -6,6 +6,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.JcrRowLabelProvider;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 

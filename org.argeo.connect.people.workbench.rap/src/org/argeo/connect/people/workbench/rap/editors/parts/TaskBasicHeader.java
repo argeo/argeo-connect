@@ -296,9 +296,13 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 			public void widgetSelected(SelectionEvent e) {
 				int index = combo.getSelectionIndex();
 				if (index != -1) {
-					String selectedCategory = combo.getItem(index);
-					if (activityService.updateStatus(taskTypeId, task, selectedCategory, modifiedPaths))
-						part.markDirty();
+					String newStatus = combo.getItem(index);
+					try {
+						if (activityService.updateStatus(taskTypeId, task, newStatus, modifiedPaths))
+							part.markDirty();
+					} catch (RepositoryException e1) {
+						throw new PeopleException("Cannot update status to " + newStatus + " for " + task, e1);
+					}
 				}
 
 			}

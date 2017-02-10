@@ -1,4 +1,4 @@
-package org.argeo.connect.people.workbench.rap.providers;
+package org.argeo.connect.ui;
 
 import javax.jcr.Node;
 

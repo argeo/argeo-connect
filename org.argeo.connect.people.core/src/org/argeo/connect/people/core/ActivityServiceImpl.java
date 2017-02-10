@@ -175,7 +175,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			}
 			String groupCond = null;
 			if (tmpBuilder.length() > 4)
-				groupCond = "(" +tmpBuilder.substring(0, tmpBuilder.length() - 3) +")";
+				groupCond = "(" + tmpBuilder.substring(0, tmpBuilder.length() - 3) + ")";
 
 			// Only opened tasks
 			String notClosedCond = null;
@@ -197,7 +197,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	}
 
 	protected boolean manageClosedState(String templateId, Node taskNode, String oldStatus, String newStatus,
-			List<String> modifiedPaths) {
+			List<String> modifiedPaths) throws RepositoryException {
 		try {
 			Session session = taskNode.getSession();
 			ResourceService resourceService = peopleService.getResourceService();
@@ -229,12 +229,13 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			}
 			return changed;
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to manage closed state for " + newStatus + " status for task " + taskNode
-					+ " of template ID " + templateId, re);
+			throw new RepositoryException("Unable to manage closed state for " + newStatus + " status for task "
+					+ taskNode + " of template ID " + templateId, re);
 		}
 	}
 
-	public boolean updateStatus(String templateId, Node taskNode, String newStatus, List<String> modifiedPaths) {
+	public boolean updateStatus(String templateId, Node taskNode, String newStatus, List<String> modifiedPaths)
+			throws RepositoryException {
 		try {
 			String oldStatus = ConnectJcrUtils.get(taskNode, PeopleNames.PEOPLE_TASK_STATUS);
 			if (notEmpty(oldStatus) && oldStatus.equals(newStatus))
@@ -245,7 +246,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 				return true;
 			}
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to set new status " + newStatus + " status for task " + taskNode
+			throw new RepositoryException("Unable to set new status " + newStatus + " status for task " + taskNode
 					+ " of template ID " + templateId, re);
 		}
 	}

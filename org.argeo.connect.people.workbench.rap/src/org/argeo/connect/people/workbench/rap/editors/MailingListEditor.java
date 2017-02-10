@@ -23,6 +23,10 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.exports.PrimAddressLP;
+import org.argeo.connect.people.ui.exports.PrimContactValueLP;
+import org.argeo.connect.people.ui.exports.PrimOrgNameLP;
+import org.argeo.connect.people.ui.exports.PrimaryTypeLP;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
@@ -36,6 +40,8 @@ import org.argeo.connect.people.workbench.rap.providers.TagLabelProvider;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.workbench.rap.wizards.EditTagWizard;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.IJcrTableViewer;
+import org.argeo.connect.ui.JcrRowLabelProvider;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
@@ -68,7 +74,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.EditorPart;
 
 /** Editor page that displays a mailing list and its members */
-public class MailingListEditor extends EditorPart implements PeopleNames, Refreshable {
+public class MailingListEditor extends EditorPart implements PeopleNames, Refreshable, IJcrTableViewer {
 	private final static Log log = LogFactory.getLog(MailingListEditor.class);
 
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".mailingListEditor";
@@ -185,6 +191,58 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		}
 	}
 
+	/* Provide extraction ability */
+	@Override
+	public Row[] getElements(String extractId) {
+		return rows;
+	}
+
+	@Override
+	public List<ConnectColumnDefinition> getColumnDefinition(String extractId) {
+		List<ConnectColumnDefinition> columns = new ArrayList<ConnectColumnDefinition>();
+
+		columns.add(
+				new ConnectColumnDefinition("Type", new PrimaryTypeLP(getPeopleService().getResourceService(), null)));
+
+		columns.add(new ConnectColumnDefinition("Name", new JcrRowLabelProvider(Property.JCR_TITLE)));
+
+		columns.add(
+				new ConnectColumnDefinition("Primary Email", new PrimContactValueLP(null, PeopleTypes.PEOPLE_EMAIL)));
+		columns.add(
+				new ConnectColumnDefinition("Primary Phone", new PrimContactValueLP(null, PeopleTypes.PEOPLE_PHONE)));
+
+		columns.add(new ConnectColumnDefinition("Salutation", new JcrRowLabelProvider(PEOPLE_SALUTATION)));
+		columns.add(new ConnectColumnDefinition("Title", new JcrRowLabelProvider(PEOPLE_HONORIFIC_TITLE)));
+		columns.add(new ConnectColumnDefinition("First name", new JcrRowLabelProvider(PEOPLE_FIRST_NAME)));
+		columns.add(new ConnectColumnDefinition("Middle name", new JcrRowLabelProvider(PEOPLE_MIDDLE_NAME)));
+		columns.add(new ConnectColumnDefinition("Last name", new JcrRowLabelProvider(PEOPLE_LAST_NAME)));
+		columns.add(new ConnectColumnDefinition("Name Suffix", new JcrRowLabelProvider(PEOPLE_NAME_SUFFIX)));
+
+		columns.add(new ConnectColumnDefinition("Organisation", new PrimOrgNameLP(getPeopleService(), null)));
+
+		columns.add(new ConnectColumnDefinition("Primary Street",
+				new PrimAddressLP(getPeopleService(), null, PEOPLE_STREET)));
+		columns.add(new ConnectColumnDefinition("Primary Street2",
+				new PrimAddressLP(getPeopleService(), null, PEOPLE_STREET_COMPLEMENT), 100));
+		columns.add(
+				new ConnectColumnDefinition("Primary City", new PrimAddressLP(getPeopleService(), null, PEOPLE_CITY)));
+		columns.add(new ConnectColumnDefinition("Primary State",
+				new PrimAddressLP(getPeopleService(), null, PEOPLE_STATE)));
+		columns.add(new ConnectColumnDefinition("Primary Zip",
+				new PrimAddressLP(getPeopleService(), null, PEOPLE_ZIP_CODE)));
+		columns.add(new ConnectColumnDefinition("Primary Country",
+				new PrimAddressLP(getPeopleService(), null, PEOPLE_COUNTRY)));
+
+		columns.add(
+				new ConnectColumnDefinition("Primary Website", new PrimContactValueLP(null, PeopleTypes.PEOPLE_URL)));
+
+		columns.add(new ConnectColumnDefinition("Notes", new JcrRowLabelProvider(Property.JCR_DESCRIPTION)));
+		columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(PEOPLE_TAGS)));
+		columns.add(new ConnectColumnDefinition("Mailing Lists", new JcrRowLabelProvider(PEOPLE_MAILING_LISTS)));
+
+		return columns;
+	}
+
 	public void createMembersList(Composite parent, final Node entity) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
@@ -230,12 +288,8 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 	protected void refreshFilteredList() {
 		long begin = System.currentTimeMillis();
 		try {
-
-			QueryManager queryManager = session.getWorkspace().getQueryManager();
-
 			String xpathQueryStr = XPathUtils.descendantFrom(peopleService.getBasePath(null)) + "//element(*, "
 					+ PeopleTypes.PEOPLE_ENTITY + ")";
-
 			String filter = filterTxt.getText();
 			String currVal = ConnectJcrUtils.get(mailingList, Property.JCR_TITLE);
 
@@ -245,27 +299,22 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 
 			if (EclipseUiUtils.notEmpty(conditions))
 				xpathQueryStr += "[" + conditions + "]";
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 
+			QueryManager queryManager = session.getWorkspace().getQueryManager();
+			Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 			RowIterator xPathRit = xpathQuery.execute().getRows();
 			Row[] rows = ConnectJcrUtils.rowIteratorToArray(xPathRit);
 			setViewerInput(rows);
-
 			if (log.isDebugEnabled()) {
 				long end = System.currentTimeMillis();
 				log.debug("Found: " + xPathRit.getSize() + " members for mailing list " + mailingList + " in "
 						+ (end - begin) + " ms by executing XPath query (" + xpathQueryStr + ").");
 			}
-
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list contacts " + "for mailing list " + mailingList, e);
 		}
 	}
 
-	/* Provide extraction ability */
-	public Row[] getElements(String extractId) {
-		return rows;
-	}
 
 	private TableViewer createTableViewer(Composite parent) {
 		parent.setLayout(new GridLayout());

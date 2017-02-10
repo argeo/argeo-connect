@@ -4,9 +4,12 @@ import static org.argeo.eclipse.ui.jcr.JcrUiUtils.getNodeSelectionAdapter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
@@ -28,6 +31,7 @@ import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.util.ActivityViewerComparator;
+import org.argeo.connect.ui.widgets.AbstractConnectContextMenu;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -44,8 +48,12 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.part.ViewPart;
 
@@ -64,6 +72,10 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 
 	private TableViewer tableViewer;
 
+	// Default known actions
+	private final static String ACTION_ID_MARK_AS_DONE = "markAsDone";
+	private final static String ACTION_ID_CANCEL = "cancel";
+
 	@Override
 	public void createPartControl(Composite parent) {
 		// Finalise initialisation
@@ -76,9 +88,24 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 		parent.setLayout(layout);
 		tableViewer = createTableViewer(parent);
 		EclipseUiSpecificUtils.enableToolTipSupport(tableViewer);
+
 		tableViewer.setContentProvider(new MyLazyCP(tableViewer));
 		tableViewer.addDoubleClickListener(new ViewDoubleClickListener());
 
+		// The context menu
+		final TodoListContextMenu contextMenu = new TodoListContextMenu(peopleService.getActivityService());
+		tableViewer.getTable().addMouseListener(new MouseAdapter() {
+			private static final long serialVersionUID = 6737579410648595940L;
+
+			@Override
+			public void mouseDown(MouseEvent e) {
+				if (e.button == 3) {
+					// contextMenu.setCurrFolderPath(currDisplayedFolder);
+					contextMenu.show(tableViewer.getTable(), new Point(e.x, e.y),
+							(IStructuredSelection) tableViewer.getSelection());
+				}
+			}
+		});
 		refreshFilteredList();
 	}
 
@@ -103,7 +130,7 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 	}
 
 	private TableViewer createTableViewer(final Composite parent) {
-		int tableStyle = SWT.SINGLE | SWT.VIRTUAL;
+		int tableStyle = SWT.MULTI | SWT.VIRTUAL;
 		Table table = new Table(parent, tableStyle);
 		table.setLayoutData(EclipseUiUtils.fillAll());
 
@@ -313,6 +340,106 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 					throw new PeopleException("Cannot open user editor", e);
 				}
 			}
+		}
+	}
+
+	private final static String[] DEFAULT_ACTIONS = { ACTION_ID_MARK_AS_DONE, ACTION_ID_CANCEL };
+
+	private class TodoListContextMenu extends AbstractConnectContextMenu {
+		private static final long serialVersionUID = 1028389681695028210L;
+
+		private final ActivityService activityService;
+
+		public TodoListContextMenu(ActivityService activityService) {
+			super(MyTodoListView.this.getViewSite().getPage().getWorkbenchWindow().getShell().getDisplay(),
+					DEFAULT_ACTIONS);
+			this.activityService = activityService;
+			createControl();
+		}
+
+		protected void performAction(String actionId) {
+			boolean hasChanged = false;
+			switch (actionId) {
+			case ACTION_ID_MARK_AS_DONE:
+				hasChanged = markAsDone();
+				break;
+			case ACTION_ID_CANCEL:
+				hasChanged = cancel();
+				break;
+			default:
+				throw new IllegalArgumentException("Unimplemented action " + actionId);
+			}
+			if (hasChanged) {
+				refreshFilteredList();
+				tableViewer.getTable().setFocus();
+			}
+		}
+
+		protected String getLabel(String actionId) {
+			switch (actionId) {
+			case ACTION_ID_MARK_AS_DONE:
+				return "Mark as done";
+			case ACTION_ID_CANCEL:
+				return "Cancel";
+			default:
+				throw new IllegalArgumentException("Unimplemented action " + actionId);
+			}
+		}
+
+		@Override
+		protected boolean aboutToShow(Control source, Point location, IStructuredSelection selection) {
+			boolean emptySel = selection == null || selection.isEmpty();
+			if (emptySel)
+				return false;
+			else {
+				setVisible(true, ACTION_ID_MARK_AS_DONE, ACTION_ID_CANCEL);
+				return true;
+			}
+		}
+
+		private boolean markAsDone() {
+			IStructuredSelection selection = ((IStructuredSelection) tableViewer.getSelection());
+			@SuppressWarnings("unchecked")
+			Iterator<Node> it = (Iterator<Node>) selection.iterator();
+			List<String> modifiedPaths = new ArrayList<>();
+			boolean hasChanged = false;
+			try {
+				while (it.hasNext()) {
+					Node currNode = it.next();
+					hasChanged |= activityService.updateStatus(PeopleTypes.PEOPLE_TASK, currNode, "Done",
+							modifiedPaths);
+				}
+				if (hasChanged) {
+					session.save();
+					ConnectJcrUtils.checkPoint(session, modifiedPaths, true);
+				}
+				return hasChanged;
+			} catch (RepositoryException e1) {
+				throw new PeopleException("Cannot mark tasks as done", e1);
+			}
+		}
+
+		private boolean cancel() {
+			IStructuredSelection selection = ((IStructuredSelection) tableViewer.getSelection());
+			@SuppressWarnings("unchecked")
+			Iterator<Node> it = (Iterator<Node>) selection.iterator();
+			List<String> modifiedPaths = new ArrayList<>();
+			boolean hasChanged = false;
+			try {
+				while (it.hasNext()) {
+					Node currNode = it.next();
+					hasChanged |= activityService.updateStatus(PeopleTypes.PEOPLE_TASK, currNode, "Canceled",
+							modifiedPaths);
+				}
+				if (hasChanged) {
+					session.save();
+					ConnectJcrUtils.checkPoint(session, modifiedPaths, true);
+				}
+				return hasChanged;
+			} catch (RepositoryException e1) {
+				throw new PeopleException("Cannot mark tasks as done", e1);
+			}
+
 		}
 	}
 

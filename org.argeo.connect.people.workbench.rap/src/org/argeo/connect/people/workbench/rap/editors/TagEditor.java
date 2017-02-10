@@ -23,6 +23,10 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.people.ui.exports.PrimAddressLP;
+import org.argeo.connect.people.ui.exports.PrimContactValueLP;
+import org.argeo.connect.people.ui.exports.PrimOrgNameLP;
+import org.argeo.connect.people.ui.exports.PrimaryTypeLP;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
@@ -35,6 +39,8 @@ import org.argeo.connect.people.workbench.rap.providers.TagLabelProvider;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.workbench.rap.wizards.EditTagWizard;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.IJcrTableViewer;
+import org.argeo.connect.ui.JcrRowLabelProvider;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
@@ -63,10 +69,8 @@ import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.EditorPart;
 
-/**
- * Editor that display a filtered list of entities that have a given Tag.
- */
-public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
+/** display a filtered list of entities for a given Tag */
+public class TagEditor extends EditorPart implements PeopleNames, Refreshable, IJcrTableViewer {
 	private final static Log log = LogFactory.getLog(TagEditor.class);
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".tagEditor";
 
@@ -76,6 +80,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 	private PeopleWorkbenchService peopleWorkbenchService;
 
 	// UI Objects
+	private Row[] rows;
 	protected FormToolkit toolkit;
 	private List<ConnectColumnDefinition> colDefs;
 	private TableViewer membersViewer;
@@ -93,13 +98,9 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 		setInput(input);
 		EntityEditorInput sei = (EntityEditorInput) getEditorInput();
 
-		// Initialise context
 		session = ConnectJcrUtils.login(repository);
 		node = ConnectJcrUtils.getNodeByIdentifier(session, sei.getUid());
 
-		// Initialize column definition
-		// Cannot be statically done to have a valid reference to the injected
-		// peopleUiService
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition("Display Name",
 				new TitleIconRowLP(peopleWorkbenchService, null, Property.JCR_TITLE), 300));
@@ -175,7 +176,58 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 				}
 			});
 		}
+	}
 
+	/* Provide extraction ability */
+	@Override
+	public Row[] getElements(String extractId) {
+		return rows;
+	}
+
+	@Override
+	public List<ConnectColumnDefinition> getColumnDefinition(String extractId) {
+		List<ConnectColumnDefinition> columns = new ArrayList<ConnectColumnDefinition>();
+
+		columns.add(
+				new ConnectColumnDefinition("Type", new PrimaryTypeLP(getPeopleService().getResourceService(), null)));
+
+		columns.add(new ConnectColumnDefinition("Name", new JcrRowLabelProvider(Property.JCR_TITLE)));
+
+		columns.add(
+				new ConnectColumnDefinition("Primary Email", new PrimContactValueLP(null, PeopleTypes.PEOPLE_EMAIL)));
+		columns.add(
+				new ConnectColumnDefinition("Primary Phone", new PrimContactValueLP(null, PeopleTypes.PEOPLE_PHONE)));
+
+		columns.add(new ConnectColumnDefinition("Salutation", new JcrRowLabelProvider(PEOPLE_SALUTATION)));
+		columns.add(new ConnectColumnDefinition("Title", new JcrRowLabelProvider(PEOPLE_HONORIFIC_TITLE)));
+		columns.add(new ConnectColumnDefinition("First name", new JcrRowLabelProvider(PEOPLE_FIRST_NAME)));
+		columns.add(new ConnectColumnDefinition("Middle name", new JcrRowLabelProvider(PEOPLE_MIDDLE_NAME)));
+		columns.add(new ConnectColumnDefinition("Last name", new JcrRowLabelProvider(PEOPLE_LAST_NAME)));
+		columns.add(new ConnectColumnDefinition("Name Suffix", new JcrRowLabelProvider(PEOPLE_NAME_SUFFIX)));
+
+		columns.add(new ConnectColumnDefinition("Organisation", new PrimOrgNameLP(getPeopleService(), null)));
+
+		columns.add(new ConnectColumnDefinition("Primary Street",
+				new PrimAddressLP(getPeopleService(), null, PEOPLE_STREET)));
+		columns.add(new ConnectColumnDefinition("Primary Street2",
+				new PrimAddressLP(getPeopleService(), null, PEOPLE_STREET_COMPLEMENT), 100));
+		columns.add(
+				new ConnectColumnDefinition("Primary City", new PrimAddressLP(getPeopleService(), null, PEOPLE_CITY)));
+		columns.add(new ConnectColumnDefinition("Primary State",
+				new PrimAddressLP(getPeopleService(), null, PEOPLE_STATE)));
+		columns.add(new ConnectColumnDefinition("Primary Zip",
+				new PrimAddressLP(getPeopleService(), null, PEOPLE_ZIP_CODE)));
+		columns.add(new ConnectColumnDefinition("Primary Country",
+				new PrimAddressLP(getPeopleService(), null, PEOPLE_COUNTRY)));
+
+		columns.add(
+				new ConnectColumnDefinition("Primary Website", new PrimContactValueLP(null, PeopleTypes.PEOPLE_URL)));
+
+		columns.add(new ConnectColumnDefinition("Notes", new JcrRowLabelProvider(Property.JCR_DESCRIPTION)));
+		columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(PEOPLE_TAGS)));
+		columns.add(new ConnectColumnDefinition("Mailing Lists", new JcrRowLabelProvider(PEOPLE_MAILING_LISTS)));
+
+		return columns;
 	}
 
 	public void createMembersList(Composite parent, final Node entity) {
@@ -258,7 +310,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable {
 
 	/** Use this method to update the result table */
 	protected void setViewerInput(Row[] rows) {
-		// this.rows = rows;
+		this.rows = rows;
 		membersViewer.setInput(rows);
 		// we must explicitly set the items count
 		membersViewer.setItemCount(rows.length);

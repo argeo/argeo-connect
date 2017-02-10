@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 /**
@@ -14,7 +15,7 @@ import javax.jcr.Session;
  * 
  * The correct instance of this interface is usually acquired through the
  * peopleService.
- * */
+ */
 public interface ActivityService {
 
 	/* ACTIVITIES */
@@ -30,8 +31,7 @@ public interface ActivityService {
 	 * Creates a new simple activity using the default path with default manager
 	 * (the current logged in user) and default date (now)
 	 */
-	public Node createActivity(Session session, String type, String title,
-			String desc, List<Node> relatedTo);
+	public Node createActivity(Session session, String type, String title, String desc, List<Node> relatedTo);
 
 	/**
 	 * Creates a new simple activity using the default path
@@ -40,9 +40,9 @@ public interface ActivityService {
 	 * JCR_CREATED_BY fields because we cannot force these fields for the time
 	 * being and set these property. It is problematic for instance in case of
 	 * import of old tasks
-	 * */
-	public Node createActivity(Session session, String reporterId, String type,
-			String title, String desc, List<Node> relatedTo, Calendar date);
+	 */
+	public Node createActivity(Session session, String reporterId, String type, String title, String desc,
+			List<Node> relatedTo, Calendar date);
 
 	/**
 	 * Returns the default activity English Label if defined.
@@ -85,9 +85,8 @@ public interface ActivityService {
 	 * @param wakeUpDate
 	 * @return
 	 */
-	public Node createTask(Session session, Node parentNode, String title,
-			String description, String assignedTo, List<Node> relatedTo,
-			Calendar dueDate, Calendar wakeUpDate);
+	public Node createTask(Session session, Node parentNode, String title, String description, String assignedTo,
+			List<Node> relatedTo, Calendar dueDate, Calendar wakeUpDate);
 
 	/**
 	 * Creates a new default task given some information. If no parent node is
@@ -109,10 +108,8 @@ public interface ActivityService {
 	 * @param wakeUpDate
 	 * @return
 	 */
-	public Node createTask(Session session, Node parentNode, String reporterId,
-			String title, String description, String assignedTo,
-			List<Node> relatedTo, Calendar creationDate, Calendar dueDate,
-			Calendar wakeUpDate);
+	public Node createTask(Session session, Node parentNode, String reporterId, String title, String description,
+			String assignedTo, List<Node> relatedTo, Calendar creationDate, Calendar dueDate, Calendar wakeUpDate);
 
 	/**
 	 * Creates a new task of given type with some information. If no parent node
@@ -135,15 +132,12 @@ public interface ActivityService {
 	 * @param wakeUpDate
 	 * @return
 	 */
-	public Node createTask(Session session, Node parentNode,
-			String taskNodeType, String reporterId, String title,
-			String description, String assignedTo, List<Node> relatedTo,
-			Calendar creationDate, Calendar dueDate, Calendar wakeUpDate);
-
-	public Node createPoll(Node parentNode, String reporterId, String pollName,
-			String title, String description, String assignedTo,
-			List<Node> relatedTo, Calendar creationDate, Calendar dueDate,
+	public Node createTask(Session session, Node parentNode, String taskNodeType, String reporterId, String title,
+			String description, String assignedTo, List<Node> relatedTo, Calendar creationDate, Calendar dueDate,
 			Calendar wakeUpDate);
+
+	public Node createPoll(Node parentNode, String reporterId, String pollName, String title, String description,
+			String assignedTo, List<Node> relatedTo, Calendar creationDate, Calendar dueDate, Calendar wakeUpDate);
 
 	/**
 	 * Retrieves tasks assigned to one of the group that contain the username
@@ -152,9 +146,10 @@ public interface ActivityService {
 	// public List<Node> getMyTasks(Session session, boolean onlyOpenTasks);
 	public NodeIterator getMyTasks(Session session, boolean onlyOpenTasks);
 
-	/** Retrieves tasks assigned to one of the group that contain this username */
-	public NodeIterator getTasksForUser(Session session, String username,
-			boolean onlyOpenTasks);
+	/**
+	 * Retrieves tasks assigned to one of the group that contain this username
+	 */
+	public NodeIterator getTasksForUser(Session session, String username, boolean onlyOpenTasks);
 
 	/** Get the display name of the assigned to group for this task */
 	public String getAssignedToDisplayName(Node taskNode);
@@ -181,8 +176,8 @@ public interface ActivityService {
 	 * It will return true if anything has changed but *DOES NOT SAVE* the
 	 * session
 	 */
-	public boolean updateStatus(String templateId, Node taskNode,
-			String newStatus, List<String> modifiedPaths);
+	public boolean updateStatus(String templateId, Node taskNode, String newStatus, List<String> modifiedPaths)
+			throws RepositoryException;
 
 	/**
 	 * Determines whether a task has been done. Application should override or

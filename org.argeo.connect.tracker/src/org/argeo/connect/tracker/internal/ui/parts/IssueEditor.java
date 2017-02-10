@@ -537,9 +537,13 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 				int index = combo.getSelectionIndex();
 				if (index != -1) {
 					String selectedStatus = combo.getItem(index);
-					if (getPeopleService().getActivityService().updateStatus(TrackerTypes.TRACKER_ISSUE, issue,
-							selectedStatus, new ArrayList<String>()))
-						part.markDirty();
+					try {
+						if (getPeopleService().getActivityService().updateStatus(TrackerTypes.TRACKER_ISSUE, issue,
+								selectedStatus, new ArrayList<String>()))
+							part.markDirty();
+					} catch (RepositoryException e1) {
+						throw new TrackerException("Cannot update status to " + selectedStatus + " for " + issue, e1);
+					}
 				}
 			}
 		});

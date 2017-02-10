@@ -21,7 +21,7 @@
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="theme/icons/activities/todo.gif"
 			id="org.argeo.connect.people.workbench.rap.myTodoListView"
-			name="Tasks"
+			name="To Do"
 			restorable="true">
 		</view>
 		<!-- Legacy -->
