@@ -13,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.documents.DocumentsException;
 import org.argeo.connect.documents.DocumentsService;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.fs.FsUiUtils;
@@ -118,8 +119,8 @@ public class DocumentsFileComposite extends Composite {
 
 	// Simplify UI implementation
 	private void addProperty(Composite parent, String propName, String value) {
-		Label propertYLbl = new Label(parent, SWT.NONE);
-		propertYLbl.setText(propName + ": " + value);
-		CmsUtils.markup(propertYLbl);
+		Label propLbl = new Label(parent, SWT.NONE);
+		propLbl.setText(ConnectUiUtils.replaceAmpersand(propName + ": " + value));
+		CmsUtils.markup(propLbl);
 	}
 }

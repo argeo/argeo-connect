@@ -15,6 +15,7 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.documents.DocumentsException;
 import org.argeo.connect.documents.DocumentsService;
 import org.argeo.connect.documents.DocumentsUiService;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -379,7 +380,8 @@ public class DocumentsFolderComposite extends Composite {
 
 	// Simplify UI implementation
 	private void addProperty(Composite parent, String propName, String value) {
-		Label contextL = new Label(parent, SWT.NONE);
-		contextL.setText(propName + ": " + value);
+		Label propLbl = new Label(parent, SWT.NONE);
+		propLbl.setText(ConnectUiUtils.replaceAmpersand(propName + ": " + value));
+		CmsUtils.markup(propLbl);
 	}
 }
