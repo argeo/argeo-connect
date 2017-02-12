@@ -60,7 +60,8 @@ public class DocumentsFileComposite extends Composite {
 	private void createDisplay(final Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Browser browser = new Browser(parent, SWT.NONE);
-		// browser.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
+		// browser.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true,
+		// true));
 		browser.setLayoutData(EclipseUiUtils.fillAll());
 		try {
 			String url = CmsUtils.getDataUrl(currentBaseContext, RWT.getRequest());
@@ -70,6 +71,7 @@ public class DocumentsFileComposite extends Composite {
 			if (log.isTraceEnabled())
 				log.debug("Trying to display " + url);
 			browser.setUrl(url);
+			browser.layout(true, true);
 		} catch (RepositoryException re) {
 			throw new DocumentsException("Cannot open file at " + currentBaseContext, re);
 		}
@@ -116,7 +118,8 @@ public class DocumentsFileComposite extends Composite {
 
 	// Simplify UI implementation
 	private void addProperty(Composite parent, String propName, String value) {
-		Label contextL = new Label(parent, SWT.NONE);
-		contextL.setText(propName + ": " + value);
+		Label propertYLbl = new Label(parent, SWT.NONE);
+		propertYLbl.setText(propName + ": " + value);
+		CmsUtils.markup(propertYLbl);
 	}
 }
