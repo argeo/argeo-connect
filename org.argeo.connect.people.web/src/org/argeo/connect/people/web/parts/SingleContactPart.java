@@ -5,7 +5,7 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.cms.ui.CmsUiProvider;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Label;
  */
 public class SingleContactPart implements CmsUiProvider {
 	/* DEPENDENCY INJECTION */
-	private ResourceService resourceService;
+	private ResourcesService resourcesService;
 	private ContactButtonsPart contactButtonsPart;
 
 	@Override
@@ -39,13 +39,13 @@ public class SingleContactPart implements CmsUiProvider {
 		readOnlyPanel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Label label = new Label(readOnlyPanel, SWT.WRAP);
 		label.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		String addressHtml = PeopleUiSnippets.getContactDisplaySnippet(resourceService, context);
+		String addressHtml = PeopleUiSnippets.getContactDisplaySnippet(resourcesService, context);
 		label.setText(addressHtml);
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setResourceService(ResourceService resourceService) {
-		this.resourceService = resourceService;
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 
 	public void setContactButtonsPart(ContactButtonsPart contactButtonsPart) {

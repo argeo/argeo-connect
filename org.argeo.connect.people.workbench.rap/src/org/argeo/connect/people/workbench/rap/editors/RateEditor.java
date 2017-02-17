@@ -20,11 +20,11 @@ import org.argeo.connect.activities.core.ActivityUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.editors.parts.LinkListPart;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
-import org.argeo.connect.people.workbench.rap.editors.util.EntityEditorInput;
 import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.ui.workbench.parts.EntityEditorInput;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
@@ -71,7 +71,7 @@ public class RateEditor extends AbstractPeopleEditor {
 
 	@Override
 	protected void updatePartName() {
-		String name = getActivityService().getActivityLabel(getNode());
+		String name = getActivitiesService().getActivityLabel(getNode());
 		if (EclipseUiUtils.notEmpty(name))
 			setPartName(name);
 	}
@@ -97,7 +97,7 @@ public class RateEditor extends AbstractPeopleEditor {
 		FormToolkit toolkit = getFormToolkit();
 
 		// Rate
-		PeopleRapUtils.createBoldLabel(toolkit, parent, "Rate");
+		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Rate");
 		final Combo rateCmb = new Combo(parent, SWT.READ_ONLY);
 		GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		gd.widthHint = 100;
@@ -105,7 +105,7 @@ public class RateEditor extends AbstractPeopleEditor {
 		rateCmb.setItems(getPossibleRates().toArray(new String[0]));
 
 		// Bottom part: optional comment
-		Label label = PeopleRapUtils.createBoldLabel(toolkit, parent, "Comment");
+		Label label = ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Comment");
 		gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
 		gd.widthHint = firstColWHint;
 		gd.verticalIndent = 2;
@@ -118,15 +118,15 @@ public class RateEditor extends AbstractPeopleEditor {
 				super.refresh();
 				boolean canEdit = RateEditor.this.isEditing() && getSession().getUserID()
 						.equals(ConnectJcrUtils.get(getNode(), ActivitiesNames.ACTIVITIES_REPORTED_BY));
-				PeopleRapUtils.refreshFormTextWidget(RateEditor.this, descTxt, rate, Property.JCR_DESCRIPTION);
+				ConnectWorkbenchUtils.refreshFormTextWidget(RateEditor.this, descTxt, rate, Property.JCR_DESCRIPTION);
 				descTxt.setEnabled(canEdit);
 				rateCmb.select(rateCmb.indexOf(ConnectJcrUtils.get(rate, ActivitiesNames.ACTIVITIES_RATE)));
 				rateCmb.setEnabled(canEdit);
 			}
 		};
 
-		PeopleRapUtils.addModifyListener(descTxt, rate, Property.JCR_DESCRIPTION, formPart);
-		PeopleRapUtils.addComboSelectionListener(formPart, rateCmb, rate, ActivitiesNames.ACTIVITIES_RATE,
+		ConnectWorkbenchUtils.addModifyListener(descTxt, rate, Property.JCR_DESCRIPTION, formPart);
+		ConnectWorkbenchUtils.addComboSelectionListener(formPart, rateCmb, rate, ActivitiesNames.ACTIVITIES_RATE,
 				PropertyType.LONG);
 
 		formPart.initialize(getManagedForm());
@@ -203,7 +203,7 @@ public class RateEditor extends AbstractPeopleEditor {
 				// 1st line (NOTE: it defines the grid data layout of this part)
 				// Work around to be able to kind of also align bold labels of
 				// the body
-				Label label = PeopleRapUtils.createBoldLabel(toolkit, parent, "Category");
+				Label label = ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Category");
 				GridData gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 				gd.widthHint = firstColWHint;
 				label.setLayoutData(gd);
@@ -213,7 +213,7 @@ public class RateEditor extends AbstractPeopleEditor {
 				gd.verticalIndent = 2;
 				pollNameLbl.setLayoutData(gd);
 
-				PeopleRapUtils.createBoldLabel(toolkit, parent, "Rated by");
+				ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Rated by");
 				managerLbl = toolkit.createLabel(parent, "");
 
 				gd = EclipseUiUtils.fillWidth();
@@ -221,7 +221,7 @@ public class RateEditor extends AbstractPeopleEditor {
 				managerLbl.setLayoutData(gd);
 
 				// ACTIVITY DATE
-				PeopleRapUtils.createBoldLabel(toolkit, parent, "On");
+				ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "On");
 				dateLbl = toolkit.createLabel(parent, "");
 
 				// dateComposite = new DateTextPart(RateEditor.this, parent,
@@ -230,7 +230,7 @@ public class RateEditor extends AbstractPeopleEditor {
 				// dateComposite.setLayoutData(EclipseUiUtils.fillWidth());
 
 				// 2nd line - RELATED ENTITIES
-				label = PeopleRapUtils.createBoldLabel(toolkit, parent, "Related to");
+				label = ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Related to");
 				gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 				gd.verticalIndent = 2;
 				label.setLayoutData(gd);

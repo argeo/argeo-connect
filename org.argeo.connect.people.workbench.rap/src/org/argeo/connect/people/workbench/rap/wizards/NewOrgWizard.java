@@ -6,7 +6,7 @@ import javax.jcr.PropertyType;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -110,14 +110,14 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 			parent.setLayout(new GridLayout(2, false));
 
 			// Legal Name
-			PeopleRapUtils.createBoldLabel(parent, "Legal Name");
+			ConnectWorkbenchUtils.createBoldLabel(parent, "Legal Name");
 			legalNameTxt = new Text(parent, SWT.BORDER);
 			legalNameTxt.setMessage("the legal name");
 			legalNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 					false));
 
 			// Legal Form
-			PeopleRapUtils.createBoldLabel(parent, "Legal Form");
+			ConnectWorkbenchUtils.createBoldLabel(parent, "Legal Form");
 			legalFormTxt = new Text(parent, SWT.BORDER);
 			legalFormTxt.setMessage("the legal name (Ltd, Org, GmbH...) ");
 			legalFormTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
@@ -130,7 +130,7 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 			useDistinctDisplayNameBtn.setLayoutData(new GridData(SWT.FILL,
 					SWT.CENTER, true, false, 2, 1));
 
-			PeopleRapUtils.createBoldLabel(parent, "Display Name");
+			ConnectWorkbenchUtils.createBoldLabel(parent, "Display Name");
 			displayNameTxt = new Text(parent, SWT.BORDER);
 			displayNameTxt.setMessage("an optional display name");
 			displayNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,

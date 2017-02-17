@@ -25,7 +25,7 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.activities.ActivitiesNames;
 import org.argeo.connect.activities.ActivitiesTypes;
-import org.argeo.connect.activities.ActivityService;
+import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
@@ -63,7 +63,7 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 	private Repository repository;
 	private Session session;
 	private UserAdminService userAdminService;
-	private ActivityService activityService;
+	private ActivitiesService activitiesService;
 	private AppWorkbenchService appWorkbenchService;
 
 	private TableViewer tableViewer;
@@ -87,7 +87,7 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 		tableViewer.addDoubleClickListener(new ViewDoubleClickListener());
 
 		// The context menu
-		final TodoListContextMenu contextMenu = new TodoListContextMenu(activityService);
+		final TodoListContextMenu contextMenu = new TodoListContextMenu(activitiesService);
 		tableViewer.getTable().addMouseListener(new MouseAdapter() {
 			private static final long serialVersionUID = 6737579410648595940L;
 
@@ -138,7 +138,7 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 		lpMap.put(ActivitiesNames.ACTIVITIES_ASSIGNED_TO, new AssignedToLabelProvider());
 		lpMap.put(ActivitiesNames.ACTIVITIES_RELATED_TO, new RelatedToLabelProvider());
 
-		ActivityViewerComparator comparator = new ActivityViewerComparator(activityService, lpMap);
+		ActivityViewerComparator comparator = new ActivityViewerComparator(activitiesService, lpMap);
 
 		// Date
 		column = ViewerUtils.createTableViewerColumn(viewer, "Date", SWT.RIGHT, 80);
@@ -182,7 +182,7 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 	 * all nodes
 	 */
 	protected void refreshFilteredList() {
-		NodeIterator tasks = activityService.getMyTasks(session, true);
+		NodeIterator tasks = activitiesService.getMyTasks(session, true);
 		setInput(tasks);
 	}
 
@@ -200,7 +200,7 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 			try {
 				Node currNode = (Node) element;
 				if (currNode.isNodeType(ActivitiesTypes.ACTIVITIES_TASK)) {
-					return activityService.getAssignedToDisplayName(currNode);
+					return activitiesService.getAssignedToDisplayName(currNode);
 				} else if (currNode.isNodeType(ActivitiesTypes.ACTIVITIES_ACTIVITY)) {
 					String id = ConnectJcrUtils.get(currNode, ActivitiesNames.ACTIVITIES_REPORTED_BY);
 					if (EclipseUiUtils.notEmpty(id))
@@ -278,7 +278,7 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 		public String getText(Object element) {
 			Node currNode = (Node) element;
 
-			Calendar dateToDisplay = activityService.getActivityRelevantDate(currNode);
+			Calendar dateToDisplay = activitiesService.getActivityRelevantDate(currNode);
 			if (dateToDisplay == null)
 				return "";
 
@@ -342,9 +342,9 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 	private class TodoListContextMenu extends AbstractConnectContextMenu {
 		private static final long serialVersionUID = 1028389681695028210L;
 
-		private final ActivityService activityService;
+		private final ActivitiesService activityService;
 
-		public TodoListContextMenu(ActivityService activityService) {
+		public TodoListContextMenu(ActivitiesService activityService) {
 			super(MyTodoListView.this.getViewSite().getPage().getWorkbenchWindow().getShell().getDisplay(),
 					DEFAULT_ACTIONS);
 			this.activityService = activityService;
@@ -446,8 +446,8 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 		this.repository = repository;
 	}
 
-	public void setActivityService(ActivityService activityService) {
-		this.activityService = activityService;
+	public void setActivitiesService(ActivitiesService activitiesService) {
+		this.activitiesService = activitiesService;
 	}
 
 	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {

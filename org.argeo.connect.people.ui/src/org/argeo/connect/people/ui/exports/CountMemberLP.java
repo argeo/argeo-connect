@@ -2,16 +2,16 @@ package org.argeo.connect.people.ui.exports;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
 public class CountMemberLP extends ColumnLabelProvider {
 	private static final long serialVersionUID = 1L;
 
-	private final ResourceService resourceService;
+	private final ResourcesService resourceService;
 
-	public CountMemberLP(ResourceService resourceService) {
+	public CountMemberLP(ResourcesService resourceService) {
 		this.resourceService = resourceService;
 	}
 

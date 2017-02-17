@@ -7,7 +7,7 @@ import javax.jcr.PropertyType;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -97,14 +97,14 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 			parent.setLayout(new GridLayout(2, false));
 
 			// LastName
-			PeopleRapUtils.createBoldLabel(parent, "Last Name");
+			ConnectWorkbenchUtils.createBoldLabel(parent, "Last Name");
 			lastNameTxt = new Text(parent, SWT.BORDER);
 			lastNameTxt.setMessage("a last name");
 			lastNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 					false));
 
 			// FirstName
-			PeopleRapUtils.createBoldLabel(parent, "First Name");
+			ConnectWorkbenchUtils.createBoldLabel(parent, "First Name");
 			firstNameTxt = new Text(parent, SWT.BORDER);
 			firstNameTxt.setMessage("a first name");
 			firstNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,

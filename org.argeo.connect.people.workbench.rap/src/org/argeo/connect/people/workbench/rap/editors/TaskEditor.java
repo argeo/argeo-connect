@@ -48,7 +48,7 @@ public class TaskEditor extends AbstractPeopleCTabEditor {
 	protected void populateHeader(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite headerCmp = new TaskBasicHeader(this, parent, SWT.NO_FOCUS, getUserAdminService(),
-				getResourceService(), getActivityService(), getAppWorkbenchService(), getCurrentTaskType(), task);
+				getResourcesService(), getActivitiesService(), getAppWorkbenchService(), getCurrentTaskType(), task);
 		headerCmp.setLayoutData(EclipseUiUtils.fillWidth());
 	}
 
@@ -57,7 +57,7 @@ public class TaskEditor extends AbstractPeopleCTabEditor {
 		// Activities and tasks
 		String tooltip = "Activities and tasks related to " + JcrUtils.get(task, Property.JCR_TITLE);
 		LazyCTabControl activitiesCmp = new ActivityList(folder, SWT.NO_FOCUS, this, getUserAdminService(),
-				getResourceService(), getActivityService(), getAppWorkbenchService(), task);
+				getResourcesService(), getActivitiesService(), getAppWorkbenchService(), task);
 		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, activitiesCmp, "Activity log", PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 	}

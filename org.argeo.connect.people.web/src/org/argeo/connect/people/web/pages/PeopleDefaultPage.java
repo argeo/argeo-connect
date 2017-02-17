@@ -10,7 +10,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.web.parts.PeopleSearchCmp;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Label;
 /** Default cms page layout for the People apps */
 public class PeopleDefaultPage implements CmsUiProvider {
 
-	private ResourceService resourceService;
+	private ResourcesService resourceService;
 	private PeopleService peopleService;
 	private Map<String, String> peopleIconPaths;
 
@@ -36,7 +36,7 @@ public class PeopleDefaultPage implements CmsUiProvider {
 	private CmsUiProvider personPage;
 	// private CmsUiProvider tagLikeInstancePage;
 
-	public PeopleDefaultPage(ResourceService resourceService, PeopleService peopleService,
+	public PeopleDefaultPage(ResourcesService resourceService, PeopleService peopleService,
 			Map<String, String> peopleIconPaths) {
 		this.peopleService = peopleService;
 		this.resourceService = resourceService;

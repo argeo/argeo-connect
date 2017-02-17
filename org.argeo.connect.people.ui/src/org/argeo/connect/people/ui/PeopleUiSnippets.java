@@ -12,7 +12,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.util.PeopleJcrUtils;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -69,7 +69,7 @@ public class PeopleUiSnippets {
 	}
 
 	/** creates the display ReadOnly HTML snippet for various contacts */
-	public static String getContactDisplaySnippet(ResourceService resourceService, Node node) {
+	public static String getContactDisplaySnippet(ResourcesService resourceService, Node node) {
 		try {
 			StringBuilder builder = new StringBuilder();
 
@@ -96,7 +96,7 @@ public class PeopleUiSnippets {
 	}
 
 	/** creates the display ReadOnly HTML snippet for a work address */
-	public static String getWorkAddress(ResourceService resourceService, Node contactNode, Node referencedEntity) {
+	public static String getWorkAddress(ResourcesService resourceService, Node contactNode, Node referencedEntity) {
 		StringBuilder builder = new StringBuilder();
 		// the referenced org
 		if (referencedEntity != null)
@@ -145,7 +145,7 @@ public class PeopleUiSnippets {
 	}
 
 	/** creates an address Display value */
-	public static String getAddressDisplayValue(ResourceService resourceService, Node node) {
+	public static String getAddressDisplayValue(ResourcesService resourceService, Node node) {
 		String street = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_STREET);
 		String street2 = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_STREET_COMPLEMENT);
 		String zip = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_ZIP_CODE);
@@ -197,7 +197,7 @@ public class PeopleUiSnippets {
 	}
 
 	/** creates the localisation snippet */
-	public static String getLocalisationInfo(ResourceService resourceService, PeopleService peopleService,
+	public static String getLocalisationInfo(ResourcesService resourceService, PeopleService peopleService,
 			Node entity) {
 		String town = PeopleJcrUtils.getTownFromItem(peopleService, entity);
 		String country = PeopleJcrUtils.getCountryFromItem(peopleService, entity);

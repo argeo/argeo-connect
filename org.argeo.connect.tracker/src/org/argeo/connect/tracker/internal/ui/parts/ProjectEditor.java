@@ -13,7 +13,6 @@ import javax.jcr.RepositoryException;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.activities.ActivitiesNames;
-import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerNames;

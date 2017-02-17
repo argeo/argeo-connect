@@ -9,10 +9,10 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEditor;
 import org.argeo.connect.people.workbench.rap.providers.GroupLabelProvider;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -51,7 +51,7 @@ public abstract class GroupEditor extends AbstractPeopleCTabEditor {
 			// READ ONLY PANEL
 			final Composite roPanelCmp = getFormToolkit().createComposite(
 					parent, SWT.NO_FOCUS);
-			PeopleRapUtils.setSwitchingFormData(roPanelCmp);
+			ConnectWorkbenchUtils.setSwitchingFormData(roPanelCmp);
 			roPanelCmp.setLayout(new GridLayout());
 
 			// Add a label with info provided by the FilmOverviewLabelProvider
@@ -64,13 +64,13 @@ public abstract class GroupEditor extends AbstractPeopleCTabEditor {
 			// EDIT PANEL
 			final Composite editPanel = getFormToolkit().createComposite(
 					parent, SWT.NO_FOCUS);
-			PeopleRapUtils.setSwitchingFormData(editPanel);
+			ConnectWorkbenchUtils.setSwitchingFormData(editPanel);
 
 			// intern layout
 			editPanel.setLayout(new GridLayout(1, false));
-			final Text titleTxt = PeopleRapUtils.createGDText(getFormToolkit(),
+			final Text titleTxt = ConnectWorkbenchUtils.createGDText(getFormToolkit(),
 					editPanel, "A title", "The title of this group", 200, 1);
-			final Text descTxt = PeopleRapUtils.createGDText(getFormToolkit(),
+			final Text descTxt = ConnectWorkbenchUtils.createGDText(getFormToolkit(),
 					editPanel, "A Description", "", 400, 1);
 
 			AbstractFormPart editPart = new AbstractFormPart() {
@@ -94,9 +94,9 @@ public abstract class GroupEditor extends AbstractPeopleCTabEditor {
 			};
 
 			// Listeners
-			PeopleRapUtils.addTxtModifyListener(editPart, titleTxt, group,
+			ConnectWorkbenchUtils.addTxtModifyListener(editPart, titleTxt, group,
 					Property.JCR_TITLE, PropertyType.STRING);
-			PeopleRapUtils.addTxtModifyListener(editPart, descTxt, group,
+			ConnectWorkbenchUtils.addTxtModifyListener(editPart, descTxt, group,
 					Property.JCR_DESCRIPTION, PropertyType.STRING);
 
 			// compulsory because we broke normal life cycle while implementing

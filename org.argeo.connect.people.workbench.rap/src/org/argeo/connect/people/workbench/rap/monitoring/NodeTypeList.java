@@ -9,7 +9,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -19,7 +18,6 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.argeo.cms.ui.workbench.util.PrivilegedJob;
 import org.argeo.connect.people.PeopleException;
@@ -293,15 +291,16 @@ public class NodeTypeList extends AbstractPeopleBasicEditor implements
 
 	protected File createLogFile(String relPath, String filePrefix)
 			throws IOException {
-		File file = null;
-		String path = getPeopleService().getMaintenanceService()
-				.getMonitoringLogFolderPath() + relPath;
-		File parentFolder = new File(path);
-		FileUtils.forceMkdir(parentFolder);
-		String nowIso = isoFormat.format(new GregorianCalendar().getTime());
-		file = new File(path + "/" + filePrefix + "_" + nowIso + ".csv");
-		file.createNewFile();
-		return file;
+		throw new RuntimeException("Unimplemented method");
+		// File file = null;
+		// String path = getPeopleService().getMaintenanceService()
+		// .getMonitoringLogFolderPath() + relPath;
+		// File parentFolder = new File(path);
+		// FileUtils.forceMkdir(parentFolder);
+		// String nowIso = isoFormat.format(new GregorianCalendar().getTime());
+		// file = new File(path + "/" + filePrefix + "_" + nowIso + ".csv");
+		// file.createNewFile();
+		// return file;
 	}
 
 	/* DEPENDENCY INJECTION */

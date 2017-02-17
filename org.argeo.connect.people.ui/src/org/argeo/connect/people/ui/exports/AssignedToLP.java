@@ -4,7 +4,7 @@ import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.activities.ActivityService;
+import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 
@@ -16,9 +16,9 @@ public class AssignedToLP extends SimpleJcrNodeLabelProvider {
 	private static final long serialVersionUID = 1L;
 
 	private String selectorName;
-	private ActivityService activityService;
+	private ActivitiesService activityService;
 
-	public AssignedToLP(ActivityService activityService, String selectorName, String propertyName) {
+	public AssignedToLP(ActivitiesService activityService, String selectorName, String propertyName) {
 		super(propertyName);
 		if (notEmpty(selectorName))
 			this.selectorName = selectorName;

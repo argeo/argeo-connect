@@ -11,7 +11,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapSnippets;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -22,14 +22,14 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 	private static final long serialVersionUID = -7687462900742079263L;
 
-	private final ResourceService resourceService;
+	private final ResourcesService resourceService;
 	private final PeopleService peopleService;
 	private AppWorkbenchService appWorkbenchService;
 
 	private boolean isSmallList;
 
 	
-	public OrgOverviewLabelProvider(boolean isSmallList, ResourceService resourceService, PeopleService peopleService,
+	public OrgOverviewLabelProvider(boolean isSmallList, ResourcesService resourceService, PeopleService peopleService,
 			AppWorkbenchService appWorkbenchService) {
 		this.isSmallList = isSmallList;
 		this.resourceService = resourceService;

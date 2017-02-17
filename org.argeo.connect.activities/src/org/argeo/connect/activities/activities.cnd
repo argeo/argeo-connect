@@ -1,4 +1,4 @@
-//<projects = 'http://www.argeo.org/ns/projects'>
+<activities = 'http://www.argeo.org/ns/activities'>
 
 // [projects:project] > mix:title
 // mixin
@@ -8,3 +8,77 @@
 
 //[projects:projectInfo] > mix:title
 // mixin
+
+
+// ACTIVITIES AND TASKS
+
+// Activities
+[activities:activity] > connect:base
+mixin
+- activities:activityDate (DATE) // References the relevant date for this activity. Generally, the creation date. 
+- activities:reportedBy (STRING) // Tracks the user that has reported (and generally created) this activity. 
+							 // It is used instead of jcr:createdBy because we cannot force the JCR protected property;
+							 // which is useful, among others, in case of an import 
+- activities:relatedTo (REFERENCE) * // Related entities like persons, orgs or documents
+// + activities:attachments (nt:unstructured) // an optional list of related documents
+// - activities:boundActivities (REFERENCE) * // Enable linking activities together, especially enable referencing of related tasks and workflows.
+
+
+// Various activity types, we use mixin to be able to later enrich the model
+[activities:note]
+mixin 
+
+[activities:sentEmail] 
+mixin  
+
+[activities:call]
+mixin 
+
+[activities:meeting]
+mixin 
+
+[activities:sentLetter]
+mixin 
+
+[activities:sentFax]
+mixin 
+
+[activities:payment]
+mixin 
+
+[activities:review]
+mixin 
+
+[activities:chat]
+mixin 
+
+[activities:tweet]
+mixin 
+
+[activities:blogPost]
+mixin 
+
+[activities:rate]
+mixin 
+- activities:rate (LONG) // the note attributed by the current user  
+
+// Tasks 
+[activities:task] > activities:activity
+- activities:taskStatus (String) // the current status of this task
+- activities:assignedTo (String) // the dn of a group or a user
+- activities:dueDate (DATE) 
+- activities:closeDate (DATE) 
+- activities:closedBy (STRING) // The dn of the user who closed this task
+- activities:wakeUpDate (DATE) 
+//various sub nodes
++ activities:activities (nt:unstructured)
+// - activities:dependsOn (REFERENCE) *
+// + activities:tasks (nt:unstructured)
+
+
+// Gathers user feedback and votes (rates)
+[activities:poll] > activities:task
+- activities:pollName (STRING) // a specific name. Useful?
+- activities:cacheAvgRate (DOUBLE) IGNORE // caches the current average of the children rates
+// Contains the child rating activities
++ activities:rates (nt:unstructured)

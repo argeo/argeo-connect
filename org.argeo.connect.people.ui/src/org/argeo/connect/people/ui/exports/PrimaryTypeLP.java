@@ -2,7 +2,7 @@ package org.argeo.connect.people.ui.exports;
 
 import javax.jcr.Property;
 
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.JcrRowLabelProvider;
 
 /**
@@ -13,9 +13,9 @@ import org.argeo.connect.ui.JcrRowLabelProvider;
 public class PrimaryTypeLP extends JcrRowLabelProvider {
 	private static final long serialVersionUID = 1L;
 
-	private ResourceService resourceService;
+	private ResourcesService resourceService;
 
-	public PrimaryTypeLP(ResourceService resourceService, String selectorName) {
+	public PrimaryTypeLP(ResourcesService resourceService, String selectorName) {
 		super(selectorName, Property.JCR_PRIMARY_TYPE);
 		this.resourceService = resourceService;
 	}

@@ -8,7 +8,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -28,7 +28,7 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements Pe
 	private GroupLabelProvider groupLp = new GroupLabelProvider(PeopleRapConstants.LIST_TYPE_SMALL);
 	private TagLabelProvider mlInstanceLp;
 
-	public EntitySingleColumnLabelProvider(ResourceService resourceService, PeopleService peopleService,
+	public EntitySingleColumnLabelProvider(ResourcesService resourceService, PeopleService peopleService,
 			AppWorkbenchService appWorkbenchService) {
 		this.appWorkbenchService = appWorkbenchService;
 		personLp = new PersonListLabelProvider(peopleService);

@@ -32,18 +32,18 @@ import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.dialogs.NoProgressBarWizardDialog;
-import org.argeo.connect.people.workbench.rap.editors.util.EntityEditorInput;
 import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.workbench.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.people.workbench.rap.providers.TagLabelProvider;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.workbench.rap.wizards.EditTagWizard;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.JcrRowLabelProvider;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.Refreshable;
+import org.argeo.connect.ui.workbench.parts.EntityEditorInput;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -78,7 +78,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable, I
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private ResourceService resourceService;
+	private ResourcesService resourceService;
 	private PeopleService peopleService;
 	private AppWorkbenchService appWorkbenchService;
 
@@ -400,7 +400,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable, I
 		this.repository = repository;
 	}
 
-	public void setResourceService(ResourceService resourceService) {
+	public void setResourceService(ResourcesService resourceService) {
 		this.resourceService = resourceService;
 	}
 

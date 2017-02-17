@@ -6,6 +6,7 @@ mixin
 
 // ENTITY TYPE: it is the parent of all connect business types.
 [connect:entity] > connect:base,  mix:referenceable
+mixin
 - connect:uid (String) m nofulltext // An implementation dependent UID for each entity
 + connect:externalIds (nt:unstructured) // Optional, enable synchronisation with third party systems
 
@@ -16,87 +17,15 @@ mixin
 - connect:externalUid (String) nofulltext // This entity's unique ID in the external system
 										 // Might be the FN value of a vCard
 
+//
+// RESOURCE MANAGEMENT
+// 
+
 // TAGGABLE
 [connect:taggable] 
 mixin
 - connect:tags (STRING) *
 
-// ACTIVITIES AND TASKS
-
-// Activities
-[connect:activity] > connect:base
-mixin
-- connect:activityDate (DATE) // References the relevant date for this activity. Generally, the creation date. 
-- connect:reportedBy (STRING) // Tracks the user that has reported (and generally created) this activity. 
-							 // It is used instead of jcr:createdBy because we cannot force the JCR protected property;
-							 // which is useful, among others, in case of an import 
-- connect:relatedTo (REFERENCE) * // Related entities like persons, orgs or documents
-// + connect:attachments (nt:unstructured) // an optional list of related documents
-// - connect:boundActivities (REFERENCE) * // Enable linking activities together, especially enable referencing of related tasks and workflows.
-
-
-// Various activity types, we use mixin to be able to later enrich the model
-[connect:note]
-mixin 
-
-[connect:sentEmail] 
-mixin  
-
-[connect:call]
-mixin 
-
-[connect:meeting]
-mixin 
-
-[connect:sentLetter]
-mixin 
-
-[connect:sentFax]
-mixin 
-
-[connect:payment]
-mixin 
-
-[connect:review]
-mixin 
-
-[connect:chat]
-mixin 
-
-[connect:tweet]
-mixin 
-
-[connect:blogPost]
-mixin 
-
-[connect:rate]
-mixin 
-- connect:rate (LONG) // the note attributed by the current user  
-
-// Tasks 
-[connect:task] > connect:activity
-- connect:taskStatus (String) // the current status of this task
-- connect:assignedTo (String) // the dn of a group or a user
-- connect:dueDate (DATE) 
-- connect:closeDate (DATE) 
-- connect:closedBy (STRING) // The dn of the user who closed this task
-- connect:wakeUpDate (DATE) 
-//various sub nodes
-+ connect:activities (nt:unstructured)
-// - connect:dependsOn (REFERENCE) *
-// + connect:tasks (nt:unstructured)
-
-
-// Gathers user feedback and votes (rates)
-[connect:poll] > connect:task
-- connect:pollName (STRING) // a specific name. Useful?
-- connect:cacheAvgRate (DOUBLE) IGNORE // caches the current average of the children rates
-// Contains the child rating activities
-+ connect:rates (nt:unstructured)
-
-//
-// RESOURCE MANAGEMENT
-// 
 
 // Defines the template of a given type of node in the system, with, 
 // among others, the various catalogues of pre-defined possible values 

@@ -17,7 +17,7 @@
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="peopleService" ref="peopleService" />
-		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
 	<bean id="deleteEntity" class="org.argeo.connect.people.workbench.rap.commands.DeleteEntity"
@@ -29,8 +29,9 @@
 	<bean id="editJob" class="org.argeo.connect.people.workbench.rap.commands.EditJob"
 		scope="prototype">
 		<property name="repository" ref="repository" />
+		<property name="resourcesService" ref="resourcesService" />
 		<property name="peopleService" ref="peopleService" />
-		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
 	<bean id="removeEntityReference"

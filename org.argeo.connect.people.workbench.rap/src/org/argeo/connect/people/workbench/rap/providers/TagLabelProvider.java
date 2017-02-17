@@ -6,7 +6,7 @@ import javax.jcr.Property;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -23,9 +23,9 @@ public class TagLabelProvider extends ColumnLabelProvider implements
 	private static final long serialVersionUID = 9156065705311297011L;
 	private final int listType;
 
-	private final ResourceService tagService;
+	private final ResourcesService tagService;
 
-	public TagLabelProvider(ResourceService resourceService, int listType) {
+	public TagLabelProvider(ResourcesService resourceService, int listType) {
 		this.tagService = resourceService;
 		this.listType = listType;
 	}

@@ -15,15 +15,15 @@ import javax.jcr.Session;
 import org.argeo.cms.ui.workbench.useradmin.PickUpUserDialog;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.activities.ActivitiesNames;
-import org.argeo.connect.activities.ActivityService;
+import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.workbench.rap.util.AbstractPanelFormPart;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.window.Window;
@@ -49,8 +49,8 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 	private final Session session;
 
 	private final UserAdminService userAdminService;
-	private final ResourceService resourceService;
-	private final ActivityService activityService;
+	private final ResourcesService resourceService;
+	private final ActivitiesService activityService;
 	private final AppWorkbenchService appWorkbenchService;
 	private final Node task;
 	private final String taskTypeId;
@@ -85,14 +85,14 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 	private DateFormat dateFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_FORMAT);
 
 	public TaskBasicHeader(AbstractPeopleEditor editor, Composite parent, int style, UserAdminService uas,
-			ResourceService resourceService, ActivityService activityService,
+			ResourcesService resourceService, ActivitiesService activityService,
 			AppWorkbenchService peopleWorkbenchService, String taskTypeId, Node task) {
 		this(editor, parent, style, uas, resourceService, activityService, peopleWorkbenchService, taskTypeId, task,
 				null);
 	}
 
 	public TaskBasicHeader(AbstractPeopleEditor editor, Composite parent, int style, UserAdminService uas,
-			ResourceService resourceService, ActivityService activityService, AppWorkbenchService appWorkbenchService,
+			ResourcesService resourceService, ActivitiesService activityService, AppWorkbenchService appWorkbenchService,
 			String taskTypeId, Node task, List<String> hiddenItemIds) {
 		super(parent, style);
 		this.editor = editor;
@@ -164,8 +164,8 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 				assignedToROLbl.setText(activityService.getAssignedToDisplayName(task));
 			}
 
-			PeopleRapUtils.refreshFormTextWidget(editor, titleTxt, task, Property.JCR_TITLE);
-			PeopleRapUtils.refreshFormTextWidget(editor, descTxt, task, Property.JCR_DESCRIPTION);
+			ConnectWorkbenchUtils.refreshFormTextWidget(editor, titleTxt, task, Property.JCR_TITLE);
+			ConnectWorkbenchUtils.refreshFormTextWidget(editor, descTxt, task, Property.JCR_DESCRIPTION);
 			relatedCmp.refresh();
 			// Refresh the parent because the whole header must be
 			// re-layouted if some added relations triggers the creation
@@ -178,28 +178,28 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 	private void createROComposite(Composite parent) {
 		parent.setLayout(new GridLayout(2, false));
 
-		PeopleRapUtils.createBoldLabel(toolkit, parent, "Status");
+		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Status");
 		statusROLbl = new Label(parent, SWT.NO_FOCUS | SWT.WRAP);
 		statusROLbl.setLayoutData(EclipseUiUtils.fillWidth());
 
-		PeopleRapUtils.createBoldLabel(toolkit, parent, "Assigned to");
+		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Assigned to");
 		assignedToROLbl = new Label(parent, SWT.NO_FOCUS | SWT.WRAP);
 		assignedToROLbl.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// RELATED ENTITIES
 		// Label label =
-		PeopleRapUtils.createBoldLabel(toolkit, parent, "Related to");
+		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Related to");
 		relatedCmp = new LinkListPart(editor, myFormPart, parent, SWT.NO_FOCUS, appWorkbenchService, task,
 				ActivitiesNames.ACTIVITIES_RELATED_TO, hiddenItemIds);
 		relatedCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// Title
-		PeopleRapUtils.createBoldLabel(parent, "Title");
+		ConnectWorkbenchUtils.createBoldLabel(parent, "Title");
 		titleTxt = toolkit.createText(parent, "", SWT.BORDER);
 		titleTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// Description
-		PeopleRapUtils.createBoldLabel(parent, "Description");
+		ConnectWorkbenchUtils.createBoldLabel(parent, "Description");
 		descTxt = toolkit.createText(parent, "", SWT.BORDER);
 		descTxt.setLayoutData(EclipseUiUtils.fillWidth());
 	}
@@ -209,41 +209,41 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		parent.setLayout(new GridLayout(4, false));
 
 		// 1st line (NOTE: it defines the grid data layout of this part)
-		PeopleRapUtils.createBoldLabel(toolkit, parent, "Status");
+		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Status");
 		statusCmb = new Combo(parent, SWT.READ_ONLY);
 		statusCmb.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
 
 		// DUE DATE
-		PeopleRapUtils.createBoldLabel(toolkit, parent, "Due date");
+		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Due date");
 		dueDateCmp = new DateTextPart(editor, parent, SWT.NO_FOCUS, myFormPart, task,
 				ActivitiesNames.ACTIVITIES_DUE_DATE);
 		dueDateCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// ASSIGNED TO
-		PeopleRapUtils.createBoldLabel(toolkit, parent, "Assigned to");
+		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Assigned to");
 		changeAssignationLk = new Link(parent, SWT.NONE);
 		changeAssignationLk.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// WAKE UP DATE
-		PeopleRapUtils.createBoldLabel(toolkit, parent, "Wake up date");
+		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Wake up date");
 		wakeUpDateCmp = new DateTextPart(editor, parent, SWT.NO_FOCUS, myFormPart, task,
 				ActivitiesNames.ACTIVITIES_WAKE_UP_DATE);
 		wakeUpDateCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// RELATED ENTITIES
-		PeopleRapUtils.createBoldLabel(toolkit, parent, "Related to");
+		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Related to");
 		relatedCmp = new LinkListPart(editor, myFormPart, parent, SWT.NO_FOCUS, appWorkbenchService, task,
 				ActivitiesNames.ACTIVITIES_RELATED_TO, hiddenItemIds);
 		relatedCmp.setLayoutData(EclipseUiUtils.fillWidth(3));
 		relatedCmp.layout();
 
 		// Title
-		PeopleRapUtils.createBoldLabel(parent, "Title");
+		ConnectWorkbenchUtils.createBoldLabel(parent, "Title");
 		titleTxt = toolkit.createText(parent, "", SWT.BORDER);
 		titleTxt.setLayoutData(EclipseUiUtils.fillWidth(3));
 
 		// Description
-		PeopleRapUtils.createBoldLabel(parent, "Description");
+		ConnectWorkbenchUtils.createBoldLabel(parent, "Description");
 		descTxt = toolkit.createText(parent, "", SWT.BORDER);
 		descTxt.setLayoutData(EclipseUiUtils.fillWidth(3));
 
@@ -252,8 +252,8 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		wakeUpDateCmp.setFormPart(myFormPart);
 		addStatusCmbSelListener(myFormPart, statusCmb, task, ActivitiesNames.ACTIVITIES_TASK_STATUS,
 				PropertyType.STRING);
-		PeopleRapUtils.addModifyListener(titleTxt, task, Property.JCR_TITLE, myFormPart);
-		PeopleRapUtils.addModifyListener(descTxt, task, Property.JCR_DESCRIPTION, myFormPart);
+		ConnectWorkbenchUtils.addModifyListener(titleTxt, task, Property.JCR_TITLE, myFormPart);
+		ConnectWorkbenchUtils.addModifyListener(descTxt, task, Property.JCR_DESCRIPTION, myFormPart);
 		addChangeAssignListener();
 	}
 
@@ -320,7 +320,7 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		List<String> values = resourceService.getTemplateCatalogue(session, taskTypeId,
 				ActivitiesNames.ACTIVITIES_TASK_STATUS, null);
 		combo.setItems(values.toArray(new String[values.size()]));
-		PeopleRapUtils.refreshFormCombo(editor, combo, currTask, ActivitiesNames.ACTIVITIES_TASK_STATUS);
+		ConnectWorkbenchUtils.refreshFormCombo(editor, combo, currTask, ActivitiesNames.ACTIVITIES_TASK_STATUS);
 		combo.setEnabled(editor.isEditing());
 	}
 

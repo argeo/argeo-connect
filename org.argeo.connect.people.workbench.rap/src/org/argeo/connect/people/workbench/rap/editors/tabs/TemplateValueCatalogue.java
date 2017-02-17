@@ -24,7 +24,6 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.dialogs.NoProgressBarWizardDialog;
@@ -33,12 +32,13 @@ import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.workbench.rap.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.workbench.rap.util.AbstractPanelFormPart;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.dialogs.SingleValue;
@@ -80,7 +80,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 	private static final long serialVersionUID = -5018569293721397600L;
 
 	// Context
-	private final ResourceService resourceService;
+	private final ResourcesService resourceService;
 	private final AppWorkbenchService peopleWorkbenchService;
 	private final Node templateNode;
 	private final String propertyName;
@@ -91,7 +91,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 	private MyFormPart myFormPart;
 
 	public TemplateValueCatalogue(Composite parent, int style, AbstractPeopleEditor editor,
-			ResourceService resourceService, AppWorkbenchService peopleWorkbenchService, Node templateNode,
+			ResourcesService resourceService, AppWorkbenchService peopleWorkbenchService, Node templateNode,
 			String propertyName, String taggableType) {
 		super(parent, style);
 		this.editor = editor;
@@ -490,7 +490,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 				body.setLayout(new GridLayout(2, false));
 
 				// New Title Value
-				PeopleRapUtils.createBoldLabel(body, "New Value");
+				ConnectWorkbenchUtils.createBoldLabel(body, "New Value");
 				newValueTxt = new Text(body, SWT.BORDER);
 				newValueTxt.setMessage("was: " + oldValue);
 				newValueTxt.setText(oldValue);

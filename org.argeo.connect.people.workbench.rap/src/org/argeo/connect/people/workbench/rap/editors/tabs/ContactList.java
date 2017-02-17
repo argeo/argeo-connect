@@ -16,17 +16,17 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.util.PeopleJcrUtils;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.composites.ContactAddressComposite;
 import org.argeo.connect.people.workbench.rap.composites.ContactComposite;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.workbench.rap.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -54,7 +54,7 @@ public class ContactList extends LazyCTabControl {
 	private static final long serialVersionUID = 58381532068661087L;
 
 	// Context
-	private final ResourceService resourceService;
+	private final ResourcesService resourcesService;
 	private final PeopleService peopleService;
 	private final AppWorkbenchService appWorkbenchService;
 	private final Node entity;
@@ -68,12 +68,12 @@ public class ContactList extends LazyCTabControl {
 	private Combo addContactCmb;
 
 	public ContactList(Composite parent, int style, AbstractPeopleEditor editor, Node entityNode,
-			ResourceService resourceService, PeopleService peopleService, AppWorkbenchService appWorkbenchService) {
+			ResourcesService resourcesService, PeopleService peopleService, AppWorkbenchService appWorkbenchService) {
 		super(parent, style);
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
 		this.entity = entityNode;
-		this.resourceService = resourceService;
+		this.resourcesService = resourcesService;
 		this.peopleService = peopleService;
 		this.appWorkbenchService = appWorkbenchService;
 	}
@@ -188,11 +188,11 @@ public class ContactList extends LazyCTabControl {
 						if (!currNode.isNodeType(currType))
 							continue loop;
 						if (ConnectJcrUtils.isNodeType(currNode, PeopleTypes.PEOPLE_ADDRESS))
-							new ContactAddressComposite(parent, SWT.NO_FOCUS, editor, myFormPart, resourceService,
+							new ContactAddressComposite(parent, SWT.NO_FOCUS, editor, myFormPart, resourcesService,
 									peopleService, appWorkbenchService, currNode, entity);
 						else
 							new ContactComposite(parent, SWT.NO_FOCUS, editor, myFormPart, currNode, entity,
-									resourceService, appWorkbenchService, peopleService);
+									resourcesService, appWorkbenchService, peopleService);
 					}
 				}
 			}
@@ -203,7 +203,7 @@ public class ContactList extends LazyCTabControl {
 
 	private void populateNotePanel(Composite parent) {
 		parent.setLayout(ConnectUiUtils.noSpaceGridLayout(2));
-		Label label = PeopleRapUtils.createBoldLabel(toolkit, parent, "Notes: ");
+		Label label = ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Notes: ");
 
 		GridData gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
 		gd.verticalIndent = 3;
@@ -211,8 +211,8 @@ public class ContactList extends LazyCTabControl {
 
 		Text notesTxt = toolkit.createText(parent, "", SWT.BORDER | SWT.MULTI | SWT.WRAP);
 		notesTxt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		PeopleRapUtils.refreshFormTextWidget(editor, notesTxt, entity, Property.JCR_DESCRIPTION);
-		PeopleRapUtils.addTxtModifyListener(myFormPart, notesTxt, entity, Property.JCR_DESCRIPTION,
+		ConnectWorkbenchUtils.refreshFormTextWidget(editor, notesTxt, entity, Property.JCR_DESCRIPTION);
+		ConnectWorkbenchUtils.addTxtModifyListener(myFormPart, notesTxt, entity, Property.JCR_DESCRIPTION,
 				PropertyType.STRING);
 	}
 
@@ -436,7 +436,7 @@ public class ContactList extends LazyCTabControl {
 	private void saveAndRefresh(String contactType, String name, String value, boolean isPrimary, String nature,
 			String category, String label) {
 
-		PeopleJcrUtils.createContact(peopleService, resourceService, entity, contactType, name, value, isPrimary,
+		PeopleJcrUtils.createContact(peopleService, resourcesService, entity, contactType, name, value, isPrimary,
 				nature, category, label);
 		addContactCmb.select(0);
 		myFormPart.markDirty();
@@ -463,7 +463,7 @@ public class ContactList extends LazyCTabControl {
 		final Text stateTxt = createRowDataLT(parent, "State", 150);
 		// Country: dropdown + text
 		Text countryTxt = createRowDataLT(parent, "Country", 150);
-		final TagLikeDropDown countryDD = new TagLikeDropDown(ConnectJcrUtils.getSession(entity), resourceService,
+		final TagLikeDropDown countryDD = new TagLikeDropDown(ConnectJcrUtils.getSession(entity), resourcesService,
 				ConnectConstants.RESOURCE_COUNTRY, countryTxt);
 		final Text geoPointTxt = createRowDataLT(parent, "Geopoint", 200);
 		final Text labelTxt = createRowDataLT(parent, "Label", 120);
@@ -482,7 +482,7 @@ public class ContactList extends LazyCTabControl {
 				String label = labelTxt.getText();
 				boolean isPrimary = primaryChk.getSelection();
 
-				Node node = PeopleJcrUtils.createAddress(peopleService, resourceService, entity, streetTxt.getText(),
+				Node node = PeopleJcrUtils.createAddress(peopleService, resourcesService, entity, streetTxt.getText(),
 						street2Txt.getText(), zipTxt.getText(), cityTxt.getText(), stateTxt.getText(),
 						countryDD.getText(), geoPointTxt.getText(), isPrimary, nature, cat, label);
 				PeopleJcrUtils.updateDisplayAddress(node);
@@ -503,7 +503,7 @@ public class ContactList extends LazyCTabControl {
 					String label = labelTxt.getText();
 					boolean isPrimary = primaryChk.getSelection();
 
-					Node node = PeopleJcrUtils.createAddress(peopleService, resourceService, entity,
+					Node node = PeopleJcrUtils.createAddress(peopleService, resourcesService, entity,
 							streetTxt.getText(), street2Txt.getText(), zipTxt.getText(), cityTxt.getText(),
 							stateTxt.getText(), countryDD.getText(), geoPointTxt.getText(), isPrimary, nature, cat,
 							label);
@@ -577,7 +577,7 @@ public class ContactList extends LazyCTabControl {
 					String label = labelTxt.getText();
 					String cat = catCmb.getText();
 					boolean isPrimary = primaryChk.getSelection();
-					Node node = PeopleJcrUtils.createWorkAddress(peopleService, resourceService, entity, selected,
+					Node node = PeopleJcrUtils.createWorkAddress(peopleService, resourcesService, entity, selected,
 							isPrimary, cat, label);
 					PeopleJcrUtils.updateDisplayAddress(node);
 					myFormPart.markDirty();

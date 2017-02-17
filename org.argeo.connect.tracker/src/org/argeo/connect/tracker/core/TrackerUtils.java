@@ -24,8 +24,7 @@ import javax.jcr.query.QueryResult;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.activities.ActivitiesNames;
-import org.argeo.connect.activities.ActivityService;
-import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.tracker.TrackerConstants;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerNames;
@@ -113,9 +112,8 @@ public class TrackerUtils {
 			StringBuilder builder = new StringBuilder();
 			builder.append(XPathUtils.descendantFrom(projectParentPath));
 			builder.append("//element(*, ").append(TrackerTypes.TRACKER_PROJECT).append(")");
-			builder.append(" order by @").append(PeopleNames.JCR_TITLE);
-			QueryManager qm = session.getWorkspace().getQueryManager();
-			QueryResult result = qm.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH).execute();
+			builder.append(" order by @").append(Property.JCR_TITLE);
+			QueryResult result = XPathUtils.createQuery(session, builder.toString()).execute();
 			return result.getNodes();
 		} catch (RepositoryException e) {
 			throw new TrackerException(
@@ -140,8 +138,7 @@ public class TrackerUtils {
 				builder.append(" and ").append(XPathUtils.getFreeTextConstraint(filter));
 			builder.append("]");
 			builder.append(" order by @").append(TrackerNames.TRACKER_ID).append(" descending");
-			QueryManager qm = parent.getSession().getWorkspace().getQueryManager();
-			QueryResult result = qm.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH).execute();
+			QueryResult result = XPathUtils.createQuery(parent.getSession(), builder.toString()).execute();
 			return result.getNodes();
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to get milestones on " + project + " with filter:" + filter, e);
@@ -406,7 +403,8 @@ public class TrackerUtils {
 
 	private static DateFormat dtFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
-	public static String getStatusText(UserAdminService userAdminService, ActivityService activityService, Node issue) {
+	public static String getStatusText(UserAdminService userAdminService, ActivitiesService activityService,
+			Node issue) {
 		try {
 			StringBuilder builder = new StringBuilder();
 

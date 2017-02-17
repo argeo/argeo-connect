@@ -134,7 +134,7 @@
 		<!-- Search entities by type -->
 		<command
 			id="org.argeo.connect.people.workbench.rap.openSearchEntityEditor"
-			defaultHandler="org.argeo.connect.people.workbench.rap.commands.OpenSearchEntityEditor"
+			defaultHandler="org.argeo.connect.ui.workbench.commands.OpenSearchEntityEditor"
 			name="Open Search Entity Editor">
 			<commandParameter
 				id="param.nodeType"

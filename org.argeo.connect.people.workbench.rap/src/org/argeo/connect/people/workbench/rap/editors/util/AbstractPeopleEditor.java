@@ -19,18 +19,19 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.activities.ActivityService;
+import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.commands.ChangeEditingState;
 import org.argeo.connect.people.workbench.rap.commands.DeleteEntity;
 import org.argeo.connect.people.workbench.rap.util.EditionSourceProvider;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.workbench.Refreshable;
+import org.argeo.connect.ui.workbench.parts.EntityEditorInput;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -69,8 +70,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements CmsEdit
 	private Repository repository;
 	private Session session; // There is *one* session per editor
 	private UserAdminService userAdminService;
-	private ResourceService resourceService;
-	private ActivityService activityService;
+	private ResourcesService resourcesService;
+	private ActivitiesService activitiesService;
 	private PeopleService peopleService;
 	private AppWorkbenchService appWorkbenchService;
 
@@ -184,7 +185,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements CmsEdit
 
 		// READ ONLY PANEL
 		final Composite roPanelCmp = toolkit.createComposite(buttons, SWT.NO_FOCUS);
-		PeopleRapUtils.setSwitchingFormData(roPanelCmp);
+		ConnectWorkbenchUtils.setSwitchingFormData(roPanelCmp);
 		roPanelCmp.setLayout(new RowLayout(SWT.VERTICAL));
 
 		// Do not show the edit button if the user does not have sufficient
@@ -222,7 +223,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements CmsEdit
 
 		// EDIT PANEL
 		final Composite editPanelCmp = toolkit.createComposite(buttons, SWT.NONE);
-		PeopleRapUtils.setSwitchingFormData(editPanelCmp);
+		ConnectWorkbenchUtils.setSwitchingFormData(editPanelCmp);
 		editPanelCmp.setLayout(new RowLayout(SWT.VERTICAL));
 
 		Button saveBtn = toolkit.createButton(editPanelCmp, "Save", SWT.PUSH);
@@ -542,12 +543,12 @@ public abstract class AbstractPeopleEditor extends EditorPart implements CmsEdit
 		return userAdminService;
 	}
 
-	protected ResourceService getResourceService() {
-		return resourceService;
+	protected ResourcesService getResourcesService() {
+		return resourcesService;
 	}
 
-	protected ActivityService getActivityService() {
-		return activityService;
+	protected ActivitiesService getActivitiesService() {
+		return activitiesService;
 	}
 
 	protected PeopleService getPeopleService() {
@@ -567,12 +568,12 @@ public abstract class AbstractPeopleEditor extends EditorPart implements CmsEdit
 		this.userAdminService = userAdminService;
 	}
 
-	public void setResourceService(ResourceService resourceService) {
-		this.resourceService = resourceService;
+	public void setResourceService(ResourcesService resourceService) {
+		this.resourcesService = resourceService;
 	}
 
-	public void setActivityService(ActivityService activityService) {
-		this.activityService = activityService;
+	public void setActivityService(ActivitiesService activityService) {
+		this.activitiesService = activityService;
 	}
 
 	public void setPeopleService(PeopleService peopleService) {

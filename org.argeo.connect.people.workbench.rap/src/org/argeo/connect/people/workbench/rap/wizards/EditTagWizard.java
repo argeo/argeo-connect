@@ -28,16 +28,16 @@ import org.argeo.cms.ui.workbench.util.PrivilegedJob;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
-import org.argeo.connect.people.workbench.rap.editors.util.EntityEditorInput;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.ui.workbench.commands.ForceRefresh;
+import org.argeo.connect.ui.workbench.parts.EntityEditorInput;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -73,7 +73,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 	private final static Log log = LogFactory.getLog(EditTagWizard.class);
 
 	// Context
-	private ResourceService resourceService;
+	private ResourcesService resourceService;
 	private AppWorkbenchService appWorkbenchService;
 
 	private String tagId;
@@ -98,7 +98,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 	 * @param tagId
 	 * @param tagPropName
 	 */
-	public EditTagWizard(ResourceService resourceService, AppWorkbenchService appWorkbenchService, Node tagInstanceNode,
+	public EditTagWizard(ResourcesService resourceService, AppWorkbenchService appWorkbenchService, Node tagInstanceNode,
 			String tagId, String tagPropName) {
 		this.resourceService = resourceService;
 		this.appWorkbenchService = appWorkbenchService;
@@ -108,8 +108,8 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 
 		session = ConnectJcrUtils.getSession(tagInstance);
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
-		taggableNodeType = ConnectJcrUtils.get(tagParent, ResourcesNames.PEOPLE_TAGGABLE_NODE_TYPE);
-		taggableParentPath = ConnectJcrUtils.get(tagParent, ResourcesNames.PEOPLE_TAGGABLE_PARENT_PATH);
+		taggableNodeType = ConnectJcrUtils.get(tagParent, ResourcesNames.CONNECT_TAGGABLE_NODE_TYPE);
+		taggableParentPath = ConnectJcrUtils.get(tagParent, ResourcesNames.CONNECT_TAGGABLE_PARENT_PATH);
 	}
 
 	@Override
@@ -184,14 +184,14 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			body.setLayout(new GridLayout(2, false));
 
 			// New Title Value
-			PeopleRapUtils.createBoldLabel(body, "Title");
+			ConnectWorkbenchUtils.createBoldLabel(body, "Title");
 			newTitleTxt = new Text(body, SWT.BORDER);
 			newTitleTxt.setMessage("was: " + ConnectJcrUtils.get(tagInstance, Property.JCR_TITLE));
 			newTitleTxt.setText(ConnectJcrUtils.get(tagInstance, Property.JCR_TITLE));
 			newTitleTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 			// New Description Value
-			PeopleRapUtils.createBoldLabel(body, "Description", SWT.TOP);
+			ConnectWorkbenchUtils.createBoldLabel(body, "Description", SWT.TOP);
 			newDescTxt = new Text(body, SWT.BORDER | SWT.MULTI | SWT.WRAP);
 			newDescTxt.setMessage("was: " + ConnectJcrUtils.get(tagInstance, Property.JCR_DESCRIPTION));
 			newDescTxt.setText(ConnectJcrUtils.get(tagInstance, Property.JCR_DESCRIPTION));
@@ -291,7 +291,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 	private class UpdateTagAndInstancesJob extends PrivilegedJob {
 
 		private Repository repository;
-		private ResourceService resourceService;
+		private ResourcesService resourceService;
 		private String tagPath;
 		private String newTitle, newDesc;
 
@@ -299,7 +299,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 		private String tagJcrId;
 		private IWorkbenchPage callingPage;
 
-		public UpdateTagAndInstancesJob(ResourceService resourceService, Node tagInstance, String newTitle,
+		public UpdateTagAndInstancesJob(ResourcesService resourceService, Node tagInstance, String newTitle,
 				String newDesc) {
 			super("Updating");
 			this.resourceService = resourceService;
@@ -311,7 +311,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			} catch (RepositoryException e) {
 				throw new PeopleException("Unable to init " + "tag instance batch update for " + tagId, e);
 			}
-			callingPage = PeopleRapUtils.getActivePage();
+			callingPage = ConnectWorkbenchUtils.getActivePage();
 		}
 
 		protected IStatus doRun(IProgressMonitor progressMonitor) {

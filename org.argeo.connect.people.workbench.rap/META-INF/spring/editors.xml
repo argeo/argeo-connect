@@ -5,33 +5,47 @@
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<!-- Default People entity editors -->
-	<bean id="personEditor" class="org.argeo.connect.people.workbench.rap.editors.PersonEditor"
+	<bean id="personEditor"
+		class="org.argeo.connect.people.workbench.rap.editors.PersonEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="resourcesService" ref="resourcesService" />
+		<property name="activitiesService" ref="activitiesService" />
 		<property name="peopleService" ref="peopleService" />
-		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
-	<bean id="orgEditor" class="org.argeo.connect.people.workbench.rap.editors.OrgEditor"
+	<bean id="orgEditor"
+		class="org.argeo.connect.people.workbench.rap.editors.OrgEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="resourcesService" ref="resourcesService" />
+		<property name="activitiesService" ref="activitiesService" />
 		<property name="peopleService" ref="peopleService" />
-		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
 	<!-- Default Task and Activities editors -->
-	<bean id="activityEditor" class="org.argeo.connect.people.workbench.rap.editors.ActivityEditor"
+	<bean id="activityEditor"
+		class="org.argeo.connect.people.workbench.rap.editors.ActivityEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="peopleService" ref="peopleService" />
-		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="resourcesService" ref="resourcesService" />
+		<property name="activitiesService" ref="activitiesService" />
+		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
-	<bean id="taskEditor" class="org.argeo.connect.people.workbench.rap.editors.TaskEditor"
+	<bean id="taskEditor"
+		class="org.argeo.connect.people.workbench.rap.editors.TaskEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="peopleService" ref="peopleService" />
-		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="resourcesService" ref="resourcesService" />
+		<property name="activitiesService" ref="activitiesService" />
+		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
 	<!-- Search editors -->
@@ -44,23 +58,31 @@
 	</bean>
 
 	<!-- Management of tags and static lists -->
-	<bean id="tagEditor" class="org.argeo.connect.people.workbench.rap.editors.TagEditor"
+	<bean id="tagEditor"
+		class="org.argeo.connect.people.workbench.rap.editors.TagEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="peopleService" ref="peopleService" />
-		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="resourcesService" ref="resourcesService" />
+		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
-	<bean id="mailingListEditor" class="org.argeo.connect.people.workbench.rap.editors.MailingListEditor"
+	<bean id="mailingListEditor"
+		class="org.argeo.connect.people.workbench.rap.editors.MailingListEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="resourcesService" ref="resourcesService" />
 		<property name="peopleService" ref="peopleService" />
-		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
-	<bean id="listValuesEditor" class="org.argeo.connect.people.workbench.rap.editors.ListValuesEditor"
+	<bean id="listValuesEditor"
+		class="org.argeo.connect.people.workbench.rap.editors.ListValuesEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="resourcesService" ref="resourcesService" />
+		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 </beans>

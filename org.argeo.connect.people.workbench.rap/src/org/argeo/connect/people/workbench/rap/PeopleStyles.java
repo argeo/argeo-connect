@@ -11,8 +11,4 @@ public interface PeopleStyles {
 	// Overview styles
 	String PEOPLE_CLASS_ENTITY_HEADER = "people_entity_header";
 	String SMALL_TEXT = "people_small_text";
-
-	// Gadgets (typically in the home page)
-	String GADGET_HEADER = "people_gadget_header";
-	String PEOPLE_CLASS_GADGET = "people_gadget";
 }

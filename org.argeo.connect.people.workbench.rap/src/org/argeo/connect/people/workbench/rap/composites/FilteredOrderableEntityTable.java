@@ -12,12 +12,9 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -326,16 +323,14 @@ public class FilteredOrderableEntityTable extends Composite {
 	 * subset
 	 */
 	protected NodeIterator listFilteredElements(Session session, String filter) throws RepositoryException {
-		QueryManager queryManager = session.getWorkspace().getQueryManager();
 		String xpathQueryStr = "//element(*, " + nodeType + ")";
 		String attrQuery = XPathUtils.getFreeTextConstraint(filter);
 		if (EclipseUiUtils.notEmpty(attrQuery))
 			xpathQueryStr += "[" + attrQuery + "]";
-		xpathQueryStr += " order by @" + PeopleNames.JCR_TITLE;
-		Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
+		xpathQueryStr += " order by @" + Property.JCR_TITLE;
+		Query xpathQuery = XPathUtils.createQuery(session, xpathQueryStr);
 		xpathQuery.setLimit(100);
 		QueryResult result = xpathQuery.execute();
-
 		return result.getNodes();
 	}
 }

@@ -22,7 +22,7 @@ import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -61,7 +61,7 @@ public class TagLikeListSmallPart extends Composite {
 	private final String newTagMsg;
 
 	// Context
-	private final ResourceService resourceService;
+	private final ResourcesService resourceService;
 	private final AppWorkbenchService appWorkbenchService;
 	private final Node taggable;
 	private final Node tagParent;
@@ -86,7 +86,7 @@ public class TagLikeListSmallPart extends Composite {
 	 * @param newTagMsg
 	 */
 	public TagLikeListSmallPart(AbstractPeopleEditor editor, Composite parent, int style,
-			ResourceService resourceService, AppWorkbenchService appWorkbenchService, String tagId, Node taggable,
+			ResourcesService resourceService, AppWorkbenchService appWorkbenchService, String tagId, Node taggable,
 			String taggablePropName, String newTagMsg) {
 		super(parent, style);
 		this.editor = editor;
@@ -103,8 +103,8 @@ public class TagLikeListSmallPart extends Composite {
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
 
 		try {
-			if (tagParent.hasProperty(ResourcesNames.PEOPLE_TAG_CODE_PROP_NAME))
-				tagCodePropName = tagParent.getProperty(ResourcesNames.PEOPLE_TAG_CODE_PROP_NAME).getString();
+			if (tagParent.hasProperty(ResourcesNames.CONNECT_TAG_CODE_PROP_NAME))
+				tagCodePropName = tagParent.getProperty(ResourcesNames.CONNECT_TAG_CODE_PROP_NAME).getString();
 		} catch (RepositoryException e) {
 			throw new PeopleException("unable to get tag prop name for " + tagParent, e);
 		}

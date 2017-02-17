@@ -19,7 +19,7 @@ import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.composites.SimpleJcrTableComposite;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
@@ -81,7 +81,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 	// Cache to ease implementation
 	private Session session;
-	private ResourceService resourceService;
+	private ResourcesService resourceService;
 	private Node tagParent;
 	private String tagInstanceType;
 
@@ -96,7 +96,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 	 * @param tagPropName
 	 */
 	public TagOrUntagInstancesWizard(Display callingDisplay, int actionType, Session session,
-			ResourceService resourceService, AppWorkbenchService peopleUiService, Object[] elements,
+			ResourcesService resourceService, AppWorkbenchService peopleUiService, Object[] elements,
 			String selectorName, String tagId, String tagPropName) {
 
 		this.callingDisplay = callingDisplay;
@@ -112,7 +112,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 		this.actionType = actionType;
 
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
-		tagInstanceType = ConnectJcrUtils.get(tagParent, ResourcesNames.PEOPLE_TAG_INSTANCE_TYPE);
+		tagInstanceType = ConnectJcrUtils.get(tagParent, ResourcesNames.CONNECT_TAG_INSTANCE_TYPE);
 	}
 
 	@Override

@@ -10,7 +10,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
@@ -28,7 +28,7 @@ public class ContactButtonsComposite extends Composite {
 	private static final long serialVersionUID = 2331713954300845292L;
 
 	// Context
-	private final ResourceService resourceService;
+	private final ResourcesService resourceService;
 	private final PeopleService peopleService;
 	private final AppWorkbenchService appWorkbenchService;
 	private final Node contactNode;
@@ -40,7 +40,7 @@ public class ContactButtonsComposite extends Composite {
 	// PeopleImageProvider();
 
 	public ContactButtonsComposite(AbstractPeopleEditor editor, AbstractFormPart formPart, Composite parent, int style,
-			Node contactNode, Node parentVersionableNode, ResourceService resourceService, PeopleService peopleService,
+			Node contactNode, Node parentVersionableNode, ResourcesService resourceService, PeopleService peopleService,
 			AppWorkbenchService appWorkbenchService) {
 		super(parent, style);
 		this.resourceService = resourceService;

@@ -21,7 +21,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.web.providers.SearchEntitiesLP;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -52,7 +52,7 @@ public class PeopleSearchPage implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
-	private ResourceService resourceService;
+	private ResourcesService resourceService;
 
 	private Map<String, String> iconPathes;
 
@@ -171,7 +171,7 @@ public class PeopleSearchPage implements CmsUiProvider {
 		this.peopleService = peopleService;
 	}
 
-	public void setResourceService(ResourceService resourceService) {
+	public void setResourceService(ResourcesService resourceService) {
 		this.resourceService = resourceService;
 	}
 

@@ -9,11 +9,11 @@ import javax.jcr.Session;
 
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.activities.ActivityService;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
+import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.people.workbench.rap.composites.DateText;
 import org.argeo.connect.people.workbench.rap.dialogs.PickUpGroupDialog;
 import org.argeo.connect.ui.ConnectUiStyles;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
@@ -48,7 +48,7 @@ public class NewSimpleTaskWizard extends Wizard {
 
 	// Set upon instantiation
 	private Session currSession;
-	private ActivityService activityService;
+	private ActivitiesService activityService;
 	private UserAdminService userAdminService;
 
 	// Business objects
@@ -65,7 +65,7 @@ public class NewSimpleTaskWizard extends Wizard {
 
 	protected TableViewer itemsViewer;
 
-	public NewSimpleTaskWizard(Session session, UserAdminService userAdminService, ActivityService activityService) {
+	public NewSimpleTaskWizard(Session session, UserAdminService userAdminService, ActivitiesService activityService) {
 		this.userAdminService = userAdminService;
 		this.activityService = activityService;
 		this.currSession = session;
@@ -134,7 +134,7 @@ public class NewSimpleTaskWizard extends Wizard {
 			parent.setLayout(new GridLayout(4, false));
 
 			// TITLE
-			PeopleRapUtils.createBoldLabel(parent, "Title");
+			ConnectWorkbenchUtils.createBoldLabel(parent, "Title");
 			titleTxt = new Text(parent, SWT.BORDER);
 			titleTxt.setMessage("A title for the new task");
 			GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -142,7 +142,7 @@ public class NewSimpleTaskWizard extends Wizard {
 			titleTxt.setLayoutData(gd);
 
 			// ASSIGNED TO
-			PeopleRapUtils.createBoldLabel(parent, "Assigned to");
+			ConnectWorkbenchUtils.createBoldLabel(parent, "Assigned to");
 			Composite assignedToCmp = new Composite(parent, SWT.NO_FOCUS);
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
 			assignedToCmp.setLayoutData(gd);
@@ -173,11 +173,11 @@ public class NewSimpleTaskWizard extends Wizard {
 			});
 
 			// DUE DATE
-			PeopleRapUtils.createBoldLabel(parent, "Due date");
+			ConnectWorkbenchUtils.createBoldLabel(parent, "Due date");
 			dueDateCmp = new DateText(parent, SWT.NO_FOCUS);
 
 			// WAKE UP DATE
-			Label lbl = PeopleRapUtils.createBoldLabel(parent, "Wake up date");
+			Label lbl = ConnectWorkbenchUtils.createBoldLabel(parent, "Wake up date");
 			gd = new GridData();
 			gd.horizontalIndent = 15;
 			lbl.setLayoutData(gd);

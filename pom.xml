@@ -23,13 +23,12 @@
 
 		<module>org.argeo.connect.documents</module>
 	
-		<module>org.argeo.connect.people.api</module>
-		<module>org.argeo.connect.people.core</module>
+		<module>org.argeo.connect.people</module>
 		<module>org.argeo.connect.people.ui</module>
 		<module>org.argeo.connect.people.web</module>
 		<module>org.argeo.connect.people.workbench.rap</module>
 
-		<module>org.argeo.connect.media.api</module>
+		<module>org.argeo.connect.media</module>
 
 		<module>org.argeo.connect.tracker</module>
 

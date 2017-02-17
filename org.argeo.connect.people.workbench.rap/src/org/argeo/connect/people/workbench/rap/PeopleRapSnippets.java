@@ -19,7 +19,7 @@ import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.commands.EditJob;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.commands.RemoveEntityReference;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -106,7 +106,7 @@ public class PeopleRapSnippets {
 	/**
 	 * a snippet to display clickable tags that are linked to the current entity
 	 */
-	public static String getTags(ResourceService resourceService, AppWorkbenchService appWorkbenchService,
+	public static String getTags(ResourcesService resourceService, AppWorkbenchService appWorkbenchService,
 			Node entity) {
 		try {
 			StringBuilder tags = new StringBuilder();
@@ -126,7 +126,7 @@ public class PeopleRapSnippets {
 	 * tag if it is already registered. The corresponding Label / List must have
 	 * a HtmlRWTAdapter to catch when the user click on the link
 	 */
-	public static String getTagLink(Session session, ResourceService resourceService,
+	public static String getTagLink(Session session, ResourcesService resourceService,
 			AppWorkbenchService appWorkbenchService, String tagId, String value) {
 		String commandId = appWorkbenchService.getOpenEntityEditorCmdId();
 		Node tag = resourceService.getRegisteredTag(session, tagId, value);
@@ -139,7 +139,7 @@ public class PeopleRapSnippets {
 	}
 
 	/** creates the display ReadOnly HTML snippet for a work address */
-	public static String getWorkAddressForList(ResourceService resourceService,
+	public static String getWorkAddressForList(ResourcesService resourceService,
 			PeopleWorkbenchService peopleWorkbenchService, Node contactNode, Node referencedEntity) {
 		StringBuilder builder = new StringBuilder();
 		// the referenced org

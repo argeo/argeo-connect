@@ -13,7 +13,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.PeopleWebSnippets;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -29,9 +29,9 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 	private final int listType;
 
 	private PeopleService peopleService;
-	private ResourceService resourceService;
+	private ResourcesService resourceService;
 
-	public OrgOverviewLP(ResourceService resourceService, PeopleService peopleService, int listType) {
+	public OrgOverviewLP(ResourcesService resourceService, PeopleService peopleService, int listType) {
 		this.listType = listType;
 		this.peopleService = peopleService;
 		this.resourceService = resourceService;

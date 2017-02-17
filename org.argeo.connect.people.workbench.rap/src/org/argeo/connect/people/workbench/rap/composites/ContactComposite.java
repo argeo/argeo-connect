@@ -7,11 +7,11 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -33,7 +33,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class ContactComposite extends Composite {
 	private static final long serialVersionUID = -789885142022513273L;
 
-	private final ResourceService resourceService;
+	private final ResourcesService resourceService;
 	private final PeopleService peopleService;
 	private final AppWorkbenchService appWorkbenchService;
 	private final Node contactNode;
@@ -45,7 +45,7 @@ public class ContactComposite extends Composite {
 	private final boolean isCheckedOut;
 
 	public ContactComposite(Composite parent, int style, AbstractPeopleEditor editor, AbstractFormPart formPart,
-			Node contactNode, Node parentVersionableNode, ResourceService resourceService,
+			Node contactNode, Node parentVersionableNode, ResourcesService resourceService,
 			AppWorkbenchService appWorkbenchService, PeopleService peopleService) {
 		super(parent, style);
 		this.resourceService = resourceService;
@@ -110,18 +110,18 @@ public class ContactComposite extends Composite {
 			catCmb.select(0);
 		}
 
-		PeopleRapUtils.refreshFormText(editor, labelTxt, contactNode, PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
-		PeopleRapUtils.refreshFormText(editor, valueTxt, contactNode, PeopleNames.PEOPLE_CONTACT_VALUE, "Value");
+		ConnectWorkbenchUtils.refreshFormText(editor, labelTxt, contactNode, PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
+		ConnectWorkbenchUtils.refreshFormText(editor, valueTxt, contactNode, PeopleNames.PEOPLE_CONTACT_VALUE, "Value");
 		if (catCmb != null)
-			PeopleRapUtils.refreshFormCombo(editor, catCmb, contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY);
+			ConnectWorkbenchUtils.refreshFormCombo(editor, catCmb, contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY);
 
 		// Listeners
-		PeopleRapUtils.addTxtModifyListener(formPart, valueTxt, contactNode, PeopleNames.PEOPLE_CONTACT_VALUE,
+		ConnectWorkbenchUtils.addTxtModifyListener(formPart, valueTxt, contactNode, PeopleNames.PEOPLE_CONTACT_VALUE,
 				PropertyType.STRING);
-		PeopleRapUtils.addTxtModifyListener(formPart, labelTxt, contactNode, PeopleNames.PEOPLE_CONTACT_LABEL,
+		ConnectWorkbenchUtils.addTxtModifyListener(formPart, labelTxt, contactNode, PeopleNames.PEOPLE_CONTACT_LABEL,
 				PropertyType.STRING);
 		if (catCmb != null)
-			PeopleRapUtils.addComboSelectionListener(formPart, catCmb, contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY,
+			ConnectWorkbenchUtils.addComboSelectionListener(formPart, catCmb, contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY,
 					PropertyType.STRING);
 	}
 

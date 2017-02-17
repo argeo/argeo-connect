@@ -15,7 +15,7 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.web.providers.SearchEntitiesLP;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -42,13 +42,13 @@ import org.eclipse.swt.widgets.Text;
 public class PeopleQueryPage implements CmsUiProvider {
 
 	private PeopleService peopleService;
-	private ResourceService resourceService;
+	private ResourcesService resourcesService;
 	private Map<String, String> iconPathes;
 
-	public PeopleQueryPage(PeopleService peopleService, ResourceService resourceService,
+	public PeopleQueryPage(PeopleService peopleService, ResourcesService resourcesService,
 			Map<String, String> iconPathes) {
 		this.peopleService = peopleService;
-		this.resourceService = resourceService;
+		this.resourcesService = resourcesService;
 		this.iconPathes = iconPathes;
 	}
 
@@ -96,7 +96,7 @@ public class PeopleQueryPage implements CmsUiProvider {
 		CmsUtils.markup(table);
 		CmsUtils.setItemHeight(table, 23);
 		v.setContentProvider(new BasicContentProvider());
-		ILabelProvider labelProvider = new SearchEntitiesLP(resourceService, peopleService, table.getDisplay(),
+		ILabelProvider labelProvider = new SearchEntitiesLP(resourcesService, peopleService, table.getDisplay(),
 				iconPathes);
 		v.setLabelProvider(labelProvider);
 		v.addDoubleClickListener(new IDoubleClickListener() {

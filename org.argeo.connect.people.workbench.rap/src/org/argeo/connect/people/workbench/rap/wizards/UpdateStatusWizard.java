@@ -12,14 +12,14 @@ import javax.jcr.Session;
 
 import org.argeo.cms.ui.workbench.util.PrivilegedJob;
 import org.argeo.connect.activities.ActivitiesNames;
-import org.argeo.connect.activities.ActivityService;
+import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -61,8 +61,8 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 	// private final static Log log = LogFactory.getLog(EditTagWizard.class);
 
 	// Context
-	private final ResourceService resourceService;
-	private final ActivityService activityService;
+	private final ResourcesService resourceService;
+	private final ActivitiesService activityService;
 	private final AppWorkbenchService peopleUiService;
 	private final String taskId;
 	private final Node[] nodes;
@@ -85,7 +85,7 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 	 * @param selectorName
 	 * @param taskId
 	 */
-	public UpdateStatusWizard(Session session, ResourceService resourceService, ActivityService activityService,
+	public UpdateStatusWizard(Session session, ResourcesService resourceService, ActivitiesService activityService,
 			PeopleWorkbenchService peopleWorkbenchService, Node[] nodes, String selectorName, String taskId) {
 		this.session = session;
 		this.activityService = activityService;
@@ -314,12 +314,12 @@ public class UpdateStatusWizard extends Wizard implements PeopleNames {
 	private class UpdateStatusesJob extends PrivilegedJob {
 
 		final private Repository repository;
-		final private ActivityService activityService;
+		final private ActivitiesService activityService;
 		final private List<String> pathes = new ArrayList<String>();
 		private final String chosenStatus;
 		private final String taskTypeId;
 
-		public UpdateStatusesJob(ActivityService activityService, Node[] toUpdateNodes, String taskTypeId,
+		public UpdateStatusesJob(ActivitiesService activityService, Node[] toUpdateNodes, String taskTypeId,
 				String chosenStatus) {
 			super("Updating");
 

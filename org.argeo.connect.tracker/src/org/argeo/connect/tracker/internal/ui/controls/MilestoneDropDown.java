@@ -4,12 +4,12 @@ import java.util.List;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.people.workbench.rap.composites.dropdowns.PeopleAbstractDropDown;
 import org.argeo.connect.tracker.core.TrackerUtils;
+import org.argeo.connect.ui.widgets.ConnectAbstractDropDown;
 import org.eclipse.swt.widgets.Text;
 
 /** Simple DropDown that displays the list of future milestones */
-public class MilestoneDropDown extends PeopleAbstractDropDown {
+public class MilestoneDropDown extends ConnectAbstractDropDown {
 
 	private final Node project;
 

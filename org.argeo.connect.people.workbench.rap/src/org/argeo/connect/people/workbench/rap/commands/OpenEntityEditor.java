@@ -18,8 +18,8 @@ import org.argeo.connect.people.workbench.rap.editors.OrgEditor;
 import org.argeo.connect.people.workbench.rap.editors.PersonEditor;
 import org.argeo.connect.people.workbench.rap.editors.TagEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEditor;
-import org.argeo.connect.people.workbench.rap.editors.util.EntityEditorInput;
 import org.argeo.connect.resources.ResourcesTypes;
+import org.argeo.connect.ui.workbench.parts.EntityEditorInput;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -104,7 +104,7 @@ public class OpenEntityEditor extends AbstractHandler {
 	 */
 	protected String getEditorIdFromNode(Node curNode) {
 		try {
-			if (curNode.isNodeType(ResourcesTypes.PEOPLE_TAG_INSTANCE))
+			if (curNode.isNodeType(ResourcesTypes.RESOURCES_TAG_INSTANCE))
 				return TagEditor.ID;
 			else if (curNode.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST))
 				return MailingListEditor.ID;

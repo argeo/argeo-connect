@@ -6,16 +6,14 @@ import java.util.List;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
 
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.activities.ActivityService;
 import org.argeo.connect.activities.ActivitiesNames;
+import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.activities.ActivitiesTypes;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.exports.AssignedToLP;
@@ -55,7 +53,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor implem
 
 	// Context
 	private PeopleService peopleService;
-	private ActivityService activityService;
+	private ActivitiesService activityService;
 
 	// Default column
 	private List<ConnectColumnDefinition> colDefs;
@@ -103,8 +101,6 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor implem
 	/** Refresh the table viewer based on the free text search field */
 	protected void refreshFilteredList() {
 		try {
-			QueryManager queryManager = getSession().getWorkspace().getQueryManager();
-
 			// XPath
 			StringBuilder builder = new StringBuilder();
 			builder.append("//element(*, ").append(getEntityType()).append(")");
@@ -112,9 +108,8 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor implem
 					XPathUtils.getPropertyEquals(PEOPLE_TAGS, tagDD.getText()));
 			if (EclipseUiUtils.notEmpty(attrQuery))
 				builder.append("[").append(attrQuery).append("]");
-			builder.append(" order by @").append(PeopleNames.JCR_TITLE).append(" ascending");
-			Query query = queryManager.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH);
-
+			builder.append(" order by @").append(Property.JCR_TITLE).append(" ascending");
+			Query query = XPathUtils.createQuery(getSession(), builder.toString());
 			QueryResult result = query.execute();
 			Row[] rows = ConnectJcrUtils.rowIteratorToArray(result.getRows());
 			setViewerInput(rows);
@@ -139,13 +134,15 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor implem
 				columns.add(new ConnectColumnDefinition("Title", new JcrRowLabelProvider(Property.JCR_TITLE), 200));
 				columns.add(new ConnectColumnDefinition("Assigned To",
 						new AssignedToLP(activityService, null, Property.JCR_DESCRIPTION), 150));
-				columns.add(new ConnectColumnDefinition("Due Date", new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_DUE_DATE), 100));
-				columns.add(new ConnectColumnDefinition("Close Date", new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_CLOSE_DATE), 100));
+				columns.add(new ConnectColumnDefinition("Due Date",
+						new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_DUE_DATE), 100));
+				columns.add(new ConnectColumnDefinition("Close Date",
+						new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_CLOSE_DATE), 100));
 				columns.add(new ConnectColumnDefinition("Closed by",
 						new UserNameLP(getUserAdminService(), null, ActivitiesNames.ACTIVITIES_CLOSED_BY), 120));
 				return columns;
 			} else if (PeopleTypes.PEOPLE_MAILING_LIST.equals(currType)
-					|| ResourcesTypes.PEOPLE_TAG_INSTANCE.equals(currType)) {
+					|| ResourcesTypes.RESOURCES_TAG_INSTANCE.equals(currType)) {
 				columns.add(new ConnectColumnDefinition("Title", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
 				columns.add(new ConnectColumnDefinition("Nb of members", new CountMemberLP(getResourceService()), 85));
 
@@ -247,14 +244,18 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor implem
 			columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(PEOPLE_TAGS)));
 			columns.add(new ConnectColumnDefinition("Mailing Lists", new JcrRowLabelProvider(PEOPLE_MAILING_LISTS)));
 		} else if (ActivitiesTypes.ACTIVITIES_TASK.equals(currType)) {
-			columns.add(new ConnectColumnDefinition("Status", new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_TASK_STATUS)));
+			columns.add(new ConnectColumnDefinition("Status",
+					new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_TASK_STATUS)));
 			columns.add(new ConnectColumnDefinition("Title", new JcrRowLabelProvider(Property.JCR_TITLE)));
 			columns.add(new ConnectColumnDefinition("Description", new JcrRowLabelProvider(Property.JCR_DESCRIPTION)));
 			columns.add(new ConnectColumnDefinition("Assigned To",
 					new AssignedToLP(activityService, null, Property.JCR_DESCRIPTION)));
-			columns.add(new ConnectColumnDefinition("Due Date", new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_DUE_DATE)));
-			columns.add(new ConnectColumnDefinition("Wake-Up Date", new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE)));
-			columns.add(new ConnectColumnDefinition("Close Date", new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_CLOSE_DATE)));
+			columns.add(new ConnectColumnDefinition("Due Date",
+					new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_DUE_DATE)));
+			columns.add(new ConnectColumnDefinition("Wake-Up Date",
+					new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE)));
+			columns.add(new ConnectColumnDefinition("Close Date",
+					new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_CLOSE_DATE)));
 			columns.add(new ConnectColumnDefinition("Closed by",
 					new UserNameLP(getUserAdminService(), null, ActivitiesNames.ACTIVITIES_CLOSED_BY)));
 		} else
@@ -263,7 +264,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor implem
 		return columns;
 	}
 
-	public void setActivityService(ActivityService activityService) {
+	public void setActivityService(ActivitiesService activityService) {
 		this.activityService = activityService;
 	}
 

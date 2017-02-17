@@ -12,7 +12,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.providers.OrgOverviewLP;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.rap.rwt.RWT;
@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Label;
 public class OrgHeaderPart implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
-	private ResourceService resourceService;
+	private ResourcesService resourcesService;
 	private PeopleService peopleService;
 	private TagLikeValuesPart tagsPart;
 	private TagLikeValuesPart mailingListsPart;
@@ -36,8 +36,8 @@ public class OrgHeaderPart implements CmsUiProvider {
 	public OrgHeaderPart() {
 	}
 
-	public OrgHeaderPart(ResourceService resourceService, PeopleService peopleService) {
-		this.resourceService = resourceService;
+	public OrgHeaderPart(ResourcesService resourceService, PeopleService peopleService) {
+		this.resourcesService = resourceService;
 		this.peopleService = peopleService;
 		tagsPart = new TagLikeValuesPart(PeopleNames.PEOPLE_TAGS);
 		mailingListsPart = new TagLikeValuesPart(PeopleNames.PEOPLE_MAILING_LISTS);
@@ -75,7 +75,7 @@ public class OrgHeaderPart implements CmsUiProvider {
 
 		final Label readOnlyInfoLbl = new Label(parent, SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		ILabelProvider orgLP = new OrgOverviewLP(resourceService, peopleService,
+		ILabelProvider orgLP = new OrgOverviewLP(resourcesService, peopleService,
 				PeopleWebConstants.OVERVIEW_TYPE_HEADER);
 		readOnlyInfoLbl.setText(orgLP.getText(context));
 
@@ -122,8 +122,8 @@ public class OrgHeaderPart implements CmsUiProvider {
 		this.peopleService = peopleService;
 	}
 
-	public void setResourceService(ResourceService resourceService) {
-		this.resourceService = resourceService;
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 
 	public void setTagsPart(TagLikeValuesPart tagsPart) {

@@ -6,13 +6,13 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.argeo.connect.activities.ActivityService;
+import org.argeo.connect.activities.ActivitiesService;
 
 /**
  * Manage Issue tracking concepts based on the Argeo People activity management
  * processes
  */
-public interface TrackerService extends ActivityService {
+public interface TrackerService extends ActivitiesService {
 
 	/** Create a new project. Session is saved so that we can configure ACL */
 	public Node createProject(Session session, String title, String description, String managerId,

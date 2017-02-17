@@ -20,7 +20,6 @@ import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleRapSnippets;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.commands.EditJob;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
@@ -34,8 +33,9 @@ import org.argeo.connect.people.workbench.rap.providers.OrgOverviewLabelProvider
 import org.argeo.connect.people.workbench.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.workbench.rap.providers.RoleListLabelProvider;
 import org.argeo.connect.people.workbench.rap.util.AbstractPanelFormPart;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -61,7 +61,7 @@ public class JobList extends LazyCTabControl {
 	private static final long serialVersionUID = -4736848221960630767L;
 
 	// Context
-	private final ResourceService resourceService;
+	private final ResourcesService resourceService;
 	private final PeopleService peopleService;
 	private final AppWorkbenchService peopleWorkbenchService;
 	private final AbstractPeopleEditor editor;
@@ -72,7 +72,7 @@ public class JobList extends LazyCTabControl {
 	// UI Objects
 	private MyFormPart myFormPart;
 
-	public JobList(Composite parent, int style, AbstractPeopleEditor editor, ResourceService resourceService,
+	public JobList(Composite parent, int style, AbstractPeopleEditor editor, ResourcesService resourceService,
 			PeopleService peopleService, AppWorkbenchService peopleWorkbenchService, Node entity) {
 		super(parent, style);
 		toolkit = editor.getFormToolkit();
@@ -152,7 +152,7 @@ public class JobList extends LazyCTabControl {
 
 	private TableViewer createItemViewer(Composite parent) {
 		TableViewer viewer = new TableViewer(parent, SWT.V_SCROLL);
-		PeopleRapUtils.setTableDefaultStyle(viewer, 60);
+		ConnectWorkbenchUtils.setTableDefaultStyle(viewer, 60);
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 		TableViewerColumn col;
 

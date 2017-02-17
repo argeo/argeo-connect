@@ -35,7 +35,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.rap.providers.EntitySingleColumnLabelProvider;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
@@ -91,7 +91,7 @@ public class EditJobDialog extends TrayDialog {
 
 	// Context
 	private Session session;
-	private final ResourceService resourceService;
+	private final ResourcesService resourceService;
 	private final PeopleService peopleService;
 	private final AppWorkbenchService appWorkbenchService;
 
@@ -138,7 +138,7 @@ public class EditJobDialog extends TrayDialog {
 	 *            tells if we must remove referenced (if true) or referencing
 	 *            (if false) node
 	 */
-	public EditJobDialog(Shell parentShell, String title, ResourceService resourceService, PeopleService peopleService,
+	public EditJobDialog(Shell parentShell, String title, ResourcesService resourceService, PeopleService peopleService,
 			AppWorkbenchService appWorkbenchService, Node oldLink, Node toUpdateNode, boolean isBackward) {
 		super(parentShell);
 		this.title = title;

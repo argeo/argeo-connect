@@ -11,12 +11,11 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
 import org.argeo.cms.ui.workbench.util.PrivilegedJob;
-import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleBasicEditor;
@@ -24,6 +23,7 @@ import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickLis
 import org.argeo.connect.people.workbench.rap.providers.SimpleLazyContentProvider;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
@@ -127,12 +127,11 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements 
 
 					// XPath
 					StringBuilder builder = new StringBuilder();
-					builder.append("//element(*, ").append(PeopleNames.MIX_LAST_MODIFIED).append(")");
+					builder.append("//element(*, ").append(NodeType.MIX_LAST_MODIFIED).append(")");
 					builder.append(" order by @");
-					builder.append(PeopleNames.JCR_LAST_MODIFIED);
+					builder.append(Property.JCR_LAST_MODIFIED);
 					builder.append(" descending ");
-					Query query = session.getWorkspace().getQueryManager().createQuery(builder.toString(),
-							ConnectConstants.QUERY_XPATH);
+					Query query = XPathUtils.createQuery(session, builder.toString());
 
 					// SQL2
 					// String queryStr = "SELECT * FROM ["
@@ -143,7 +142,6 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements 
 
 					query.setLimit(QUERY_LIMIT);
 					NodeIterator nit = query.execute().getNodes();
-
 					if (nit.hasNext())
 						elements.addAll(JcrUtils.nodeIteratorToList(nit));
 				}

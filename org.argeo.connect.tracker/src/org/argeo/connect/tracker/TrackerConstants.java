@@ -4,6 +4,9 @@ package org.argeo.connect.tracker;
 public interface TrackerConstants {
 	String TRACKER_DOMAIN_PREFIX = "org.argeo";
 
+	String TRACKER_APP_PREFIX = "org.argeo.connect.tracker";
+	String TRACKER_APP_BASE_NAME = "tracker";
+
 	// ISSUE PRIORITY STATUSES
 	int TRACKER_PRIORITY_LOWEST = 0;
 	int TRACKER_PRIORITY_LOW = 25;

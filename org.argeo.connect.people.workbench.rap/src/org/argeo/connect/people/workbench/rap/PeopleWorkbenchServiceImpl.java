@@ -9,7 +9,6 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
-import org.argeo.connect.people.workbench.rap.commands.OpenSearchEntityEditor;
 import org.argeo.connect.people.workbench.rap.editors.ActivityEditor;
 import org.argeo.connect.people.workbench.rap.editors.DefaultSearchEntityEditor;
 import org.argeo.connect.people.workbench.rap.editors.GroupEditor;
@@ -21,6 +20,7 @@ import org.argeo.connect.people.workbench.rap.editors.TaskEditor;
 import org.argeo.connect.people.workbench.rap.wizards.NewOrgWizard;
 import org.argeo.connect.people.workbench.rap.wizards.NewPersonWizard;
 import org.argeo.connect.resources.ResourcesTypes;
+import org.argeo.connect.ui.workbench.commands.OpenSearchEntityEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
@@ -35,7 +35,7 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 	@Override
 	public String getEntityEditorId(Node curNode) {
 		try {
-			if (curNode.isNodeType(ResourcesTypes.PEOPLE_TAG_INSTANCE))
+			if (curNode.isNodeType(ResourcesTypes.RESOURCES_TAG_INSTANCE))
 				return TagEditor.ID;
 			else if (curNode.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST))
 				return MailingListEditor.ID;

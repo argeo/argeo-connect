@@ -16,7 +16,6 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.editors.parts.TagLikeListPart;
 import org.argeo.connect.people.workbench.rap.editors.tabs.ActivityList;
 import org.argeo.connect.people.workbench.rap.editors.tabs.ContactList;
@@ -24,8 +23,9 @@ import org.argeo.connect.people.workbench.rap.editors.tabs.JobList;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.workbench.rap.providers.PersonOverviewLabelProvider;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -89,13 +89,13 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements PeopleName
 		populateTitleComposite(titleCmp);
 
 		// Tag Management
-		Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourceService(),
+		Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
 				getAppWorkbenchService(), ConnectConstants.RESOURCE_TAG, person, PeopleNames.PEOPLE_TAGS, "Add a tag");
 
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// Mailing list management
-		Composite mlCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourceService(),
+		Composite mlCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
 				getAppWorkbenchService(), PeopleTypes.PEOPLE_MAILING_LIST, person, PEOPLE_MAILING_LISTS,
 				"Add a mailing");
 
@@ -106,7 +106,7 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements PeopleName
 	protected void populateTabFolder(CTabFolder folder) {
 		// Contact informations
 		String tooltip = "Contact information for " + JcrUtils.get(person, Property.JCR_TITLE);
-		LazyCTabControl cpc = new ContactList(folder, SWT.NO_FOCUS, this, getNode(), getResourceService(),
+		LazyCTabControl cpc = new ContactList(folder, SWT.NO_FOCUS, this, getNode(), getResourcesService(),
 				getPeopleService(), getAppWorkbenchService());
 		cpc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		addLazyTabToFolder(folder, cpc, "Contact details", PeopleRapConstants.CTAB_CONTACT_DETAILS, tooltip);
@@ -114,13 +114,13 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements PeopleName
 		// Activities and tasks
 		tooltip = "Activities and tasks related to " + JcrUtils.get(person, Property.JCR_TITLE);
 		LazyCTabControl activitiesCmp = new ActivityList(folder, SWT.NO_FOCUS, this, getUserAdminService(),
-				getResourceService(), getActivityService(), getAppWorkbenchService(), person);
+				getResourcesService(), getActivitiesService(), getAppWorkbenchService(), person);
 		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, activitiesCmp, "Activity log", PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 
 		// Jobs panel
 		tooltip = "Organisations linked to " + JcrUtils.get(person, Property.JCR_TITLE);
-		LazyCTabControl crewCmp = new JobList(folder, SWT.NO_FOCUS, this, getResourceService(), getPeopleService(),
+		LazyCTabControl crewCmp = new JobList(folder, SWT.NO_FOCUS, this, getResourcesService(), getPeopleService(),
 				getAppWorkbenchService(), person);
 		crewCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, crewCmp, "Organisations", PeopleRapConstants.CTAB_JOBS, tooltip);
@@ -131,19 +131,19 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements PeopleName
 
 		// READ ONLY
 		final Composite readOnlyPanel = getFormToolkit().createComposite(parent, SWT.NO_FOCUS);
-		PeopleRapUtils.setSwitchingFormData(readOnlyPanel);
+		ConnectWorkbenchUtils.setSwitchingFormData(readOnlyPanel);
 		readOnlyPanel.setLayout(new GridLayout());
 
 		// Add a label with info provided by the PersonOverviewLabelProvider
 		final Label readOnlyInfoLbl = getFormToolkit().createLabel(readOnlyPanel, "", SWT.WRAP);
 		CmsUtils.markup(readOnlyInfoLbl);
 		final ColumnLabelProvider personLP = new PersonOverviewLabelProvider(
-				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE, getResourceService(), getPeopleService(),
+				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE, getResourcesService(), getPeopleService(),
 				getAppWorkbenchService());
 
 		// EDIT
 		final Composite editPanel = getFormToolkit().createComposite(parent, SWT.NO_FOCUS);
-		PeopleRapUtils.setSwitchingFormData(editPanel);
+		ConnectWorkbenchUtils.setSwitchingFormData(editPanel);
 		editPanel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// First Line - display Name management
@@ -173,35 +173,35 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements PeopleName
 		fourthCmp.setLayout(new GridLayout(4, false));
 
 		// Create edit text
-		final Text displayNameTxt = PeopleRapUtils.createRDText(getFormToolkit(), firstCmp, "Display name",
+		final Text displayNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), firstCmp, "Display name",
 				"Default display name for this person", 300);
 		final Button defineDistinctBtn = getFormToolkit().createButton(firstCmp, "Define a distinct display name",
 				SWT.CHECK);
 		defineDistinctBtn.setToolTipText("Default is \"Firstname LASTNAME\"");
 
-		final Text salutationTxt = PeopleRapUtils.createRDText(getFormToolkit(), secondCmp, "Salutation", "Mr, Mrs...",
+		final Text salutationTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "Salutation", "Mr, Mrs...",
 				60);
-		final Text firstNameTxt = PeopleRapUtils.createRDText(getFormToolkit(), secondCmp, "First Name",
+		final Text firstNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "First Name",
 				"Usual first name for this person", 100);
-		final Text middleNameTxt = PeopleRapUtils.createRDText(getFormToolkit(), secondCmp, "Middle Name",
+		final Text middleNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "Middle Name",
 				"The second name if it exists", 100);
-		final Text lastNameTxt = PeopleRapUtils.createRDText(getFormToolkit(), secondCmp, "Last Name",
+		final Text lastNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "Last Name",
 				"Usual last name for this person", 100);
-		final Text suffixTxt = PeopleRapUtils.createRDText(getFormToolkit(), secondCmp, "Suffix",
+		final Text suffixTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "Suffix",
 				"Junior, the third...", 80);
 
 		// final Text genderTxt = entityTK.createText(thirdCmp, "Gender", "...",
 		// 80);
-		final Text titleTxt = PeopleRapUtils.createRDText(getFormToolkit(), thirdCmp, "Title", "Doc., Sir...", 60);
-		final Text maidenNameTxt = PeopleRapUtils.createRDText(getFormToolkit(), thirdCmp, "Maiden Name",
+		final Text titleTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), thirdCmp, "Title", "Doc., Sir...", 60);
+		final Text maidenNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), thirdCmp, "Maiden Name",
 				"Birth Name before getting maried", 100);
-		final Text nickNameTxt = PeopleRapUtils.createRDText(getFormToolkit(), thirdCmp, "Nickame", "A pseudonym...",
+		final Text nickNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), thirdCmp, "Nickame", "A pseudonym...",
 				100);
-		final Text latinPhoneticTxt = PeopleRapUtils.createRDText(getFormToolkit(), thirdCmp, "Latin Phonetic",
+		final Text latinPhoneticTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), thirdCmp, "Latin Phonetic",
 				"A helper to know how to pronounce this name", 100);
 
 		// Fourth Line
-		PeopleRapUtils.createBoldLabel(getFormToolkit(), fourthCmp, "Form Of Address");
+		ConnectWorkbenchUtils.createBoldLabel(getFormToolkit(), fourthCmp, "Form Of Address");
 		Composite politeCmp = getFormToolkit().createComposite(fourthCmp, SWT.NO_FOCUS);
 		politeCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
 		GridLayout layout = new GridLayout(2, false);
@@ -212,7 +212,7 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements PeopleName
 		final Button informalBtn = new Button(politeCmp, SWT.RADIO);
 		informalBtn.setText("Informal");
 
-		PeopleRapUtils.createBoldLabel(getFormToolkit(), fourthCmp, "Language");
+		ConnectWorkbenchUtils.createBoldLabel(getFormToolkit(), fourthCmp, "Language");
 		Composite languageCmp = getFormToolkit().createComposite(fourthCmp, SWT.NO_FOCUS);
 		languageCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
 		layout = new GridLayout(2, false);
@@ -351,16 +351,16 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements PeopleName
 			}
 		});
 
-		PeopleRapUtils.addTxtModifyListener(editPart, salutationTxt, person, PEOPLE_SALUTATION, PropertyType.STRING);
-		PeopleRapUtils.addTxtModifyListener(editPart, middleNameTxt, person, PEOPLE_MIDDLE_NAME, PropertyType.STRING);
-		PeopleRapUtils.addTxtModifyListener(editPart, lastNameTxt, person, PEOPLE_LAST_NAME, PropertyType.STRING);
-		PeopleRapUtils.addTxtModifyListener(editPart, nickNameTxt, person, PEOPLE_NICKNAME, PropertyType.STRING);
+		ConnectWorkbenchUtils.addTxtModifyListener(editPart, salutationTxt, person, PEOPLE_SALUTATION, PropertyType.STRING);
+		ConnectWorkbenchUtils.addTxtModifyListener(editPart, middleNameTxt, person, PEOPLE_MIDDLE_NAME, PropertyType.STRING);
+		ConnectWorkbenchUtils.addTxtModifyListener(editPart, lastNameTxt, person, PEOPLE_LAST_NAME, PropertyType.STRING);
+		ConnectWorkbenchUtils.addTxtModifyListener(editPart, nickNameTxt, person, PEOPLE_NICKNAME, PropertyType.STRING);
 		// entityTK.addTxtModifyListener(editPart, genderTxt, person,
 		// PEOPLE_GENDER, PropertyType.STRING);
-		PeopleRapUtils.addTxtModifyListener(editPart, maidenNameTxt, person, PEOPLE_MAIDEN_NAME, PropertyType.STRING);
-		PeopleRapUtils.addTxtModifyListener(editPart, titleTxt, person, PEOPLE_HONORIFIC_TITLE, PropertyType.STRING);
-		PeopleRapUtils.addTxtModifyListener(editPart, suffixTxt, person, PEOPLE_NAME_SUFFIX, PropertyType.STRING);
-		PeopleRapUtils.addTxtModifyListener(editPart, latinPhoneticTxt, person, PEOPLE_LATIN_PHONETIC_SPELLING,
+		ConnectWorkbenchUtils.addTxtModifyListener(editPart, maidenNameTxt, person, PEOPLE_MAIDEN_NAME, PropertyType.STRING);
+		ConnectWorkbenchUtils.addTxtModifyListener(editPart, titleTxt, person, PEOPLE_HONORIFIC_TITLE, PropertyType.STRING);
+		ConnectWorkbenchUtils.addTxtModifyListener(editPart, suffixTxt, person, PEOPLE_NAME_SUFFIX, PropertyType.STRING);
+		ConnectWorkbenchUtils.addTxtModifyListener(editPart, latinPhoneticTxt, person, PEOPLE_LATIN_PHONETIC_SPELLING,
 				PropertyType.STRING);
 
 		Listener formalRadioListener = new Listener() {
@@ -388,7 +388,7 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements PeopleName
 						return;
 
 					Session session = ConnectJcrUtils.getSession(person);
-					String newValueIso = getResourceService().getEncodedTagCodeFromValue(session,
+					String newValueIso = getResourcesService().getEncodedTagCodeFromValue(session,
 							ConnectConstants.RESOURCE_LANG, btn.getText());
 					String oldValueIso = null;
 					if (person.hasProperty(PEOPLE_SPOKEN_LANGUAGES)) {
@@ -438,7 +438,7 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements PeopleName
 				String isoVal = null;
 				if (values[0] != null)
 					isoVal = values[0].getString();
-				ResourceService rs = getResourceService();
+				ResourcesService rs = getResourcesService();
 				if (isoVal != null && rs.getEncodedTagValue(getSession(), ConnectConstants.RESOURCE_LANG, isoVal)
 						.equals(button.getText()))
 					tmp = true;

@@ -11,9 +11,9 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.util.PeopleJcrUtils;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -32,15 +32,14 @@ public class CreateEntity extends AbstractHandler {
 	// private final static Log log = LogFactory.getLog(CreateEntity.class);
 
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".createEntity";
-	public final static ImageDescriptor DEFAULT_IMG_DESCRIPTOR = PeopleRapPlugin
-			.getImageDescriptor("icons/add.png");
+	public final static ImageDescriptor DEFAULT_IMG_DESCRIPTOR = PeopleRapPlugin.getImageDescriptor("icons/add.png");
 	public final static String DEFAULT_LABEL = "Create";
 	public final static String PARAM_TARGET_NODE_TYPE = "param.targetNodeType";
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleWorkbenchService;
+	private AppWorkbenchService appWorkbenchService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
@@ -55,10 +54,8 @@ public class CreateEntity extends AbstractHandler {
 			newNode = parent.addNode(uuid, nodeType);
 			newNode.setProperty(PeopleNames.PEOPLE_UID, uuid);
 
-			Wizard wizard = peopleWorkbenchService.getCreationWizard(
-					newNode);
-			WizardDialog dialog = new WizardDialog(
-					HandlerUtil.getActiveShell(event), wizard);
+			Wizard wizard = appWorkbenchService.getCreationWizard(newNode);
+			WizardDialog dialog = new WizardDialog(HandlerUtil.getActiveShell(event), wizard);
 			dialog.setTitle("New...");
 			int result = dialog.open();
 			if (result == WizardDialog.OK) {
@@ -66,10 +63,8 @@ public class CreateEntity extends AbstractHandler {
 				newNode = peopleService.saveEntity(newNode, true);
 				// Open the corresponding editor
 				String jcrId = newNode.getIdentifier();
-				PeopleRapUtils.callCommand(
-						peopleWorkbenchService.getOpenEntityEditorCmdId(),
-						OpenEntityEditor.PARAM_JCR_ID, jcrId,
-						OpenEntityEditor.PARAM_OPEN_FOR_EDIT, "true");
+				ConnectWorkbenchUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(),
+						OpenEntityEditor.PARAM_JCR_ID, jcrId, OpenEntityEditor.PARAM_OPEN_FOR_EDIT, "true");
 
 				return newNode.getPath();
 			} else {
@@ -78,8 +73,7 @@ public class CreateEntity extends AbstractHandler {
 				JcrUtils.discardQuietly(session);
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("unexpected JCR error while opening "
-					+ "editor for newly created programm", e);
+			throw new PeopleException("unexpected JCR error while opening " + "editor for newly created programm", e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}
@@ -91,8 +85,8 @@ public class CreateEntity extends AbstractHandler {
 		return repository;
 	}
 
-	protected PeopleWorkbenchService getPeopleWorkbenchService() {
-		return peopleWorkbenchService;
+	protected AppWorkbenchService getAppWorkbenchService() {
+		return appWorkbenchService;
 	}
 
 	protected PeopleService getPeopleService() {
@@ -108,8 +102,7 @@ public class CreateEntity extends AbstractHandler {
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleWorkbenchService(
-			PeopleWorkbenchService peopleWorkbenchService) {
-		this.peopleWorkbenchService = peopleWorkbenchService;
+	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
+		this.appWorkbenchService = appWorkbenchService;
 	}
 }

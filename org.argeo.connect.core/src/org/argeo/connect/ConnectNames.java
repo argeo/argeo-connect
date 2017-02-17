@@ -10,7 +10,7 @@ public interface ConnectNames {
 	 * <code>UUID.randomUUID().toString()</code> Class 3 UUID of the
 	 * distinguished name in UTF-8
 	 */
-	String CONNECT_UID = "conect:uid";
+	String CONNECT_UID = "connect:uid";
 
 	String CONNECT_TAGS = "connect:tags";
 	String CONNECT_EXTERNAL_IDS = "connect:externalIds";
@@ -25,22 +25,19 @@ public interface ConnectNames {
 	/* EXTERNAL IDS */
 	String CONNECT_SOURCE_ID = "connect:sourceId";
 	String CONNECT_EXTERNAL_UID = "connect:externalUid";
-	
-	/* RESOURCES */
-	// Generally the corresponding node type. Might be something else.
-	String CONNECT_TEMPLATE_ID = "connect:templateId"; 
-	String CONNECT_TAG_ID = "connect:tagId";
-	String CONNECT_TAG_INSTANCE_TYPE = "connect:tagInstanceType";
-	String CONNECT_TAG_CODE_PROP_NAME = "connect:codePropName";
-	String CONNECT_CODE = "connect:code";
-	String CONNECT_TAGGABLE_PARENT_PATH = "connect:taggableParentPath";
-	String CONNECT_TAGGABLE_NODE_TYPE = "connect:taggableNodeType";
-	String CONNECT_TAGGABLE_PROP_NAME = "connect:taggablePropNames";
 
-	
+	/* RESOURCES */
+	// // Generally the corresponding node type. Might be something else.
+	// String CONNECT_TEMPLATE_ID = "connect:templateId";
+	// String CONNECT_TAG_ID = "connect:tagId";
+	// String CONNECT_TAG_INSTANCE_TYPE = "connect:tagInstanceType";
+	// String CONNECT_TAG_CODE_PROP_NAME = "connect:codePropName";
+	// String CONNECT_CODE = "connect:code";
+	// String CONNECT_TAGGABLE_PARENT_PATH = "connect:taggableParentPath";
+	// String CONNECT_TAGGABLE_NODE_TYPE = "connect:taggableNodeType";
+	// String CONNECT_TAGGABLE_PROP_NAME = "connect:taggablePropNames";
+
 	// Various
 	String CONNECT_DATE_BEGIN = "connect:dateBegin";
 	String CONNECT_DATE_END = "connect:dateEnd";
-	
-
 }

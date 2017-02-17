@@ -10,7 +10,6 @@ import javax.jcr.RepositoryException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.composites.DateText;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.ExistingGroupsDropDown;
 import org.argeo.connect.tracker.TrackerException;
@@ -18,6 +17,7 @@ import org.argeo.connect.tracker.TrackerService;
 import org.argeo.connect.tracker.core.TrackerUtils;
 import org.argeo.connect.tracker.internal.ui.controls.MilestoneDropDown;
 import org.argeo.connect.tracker.internal.ui.controls.VersionDropDown;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
@@ -147,7 +147,7 @@ public class NewIssueWizard extends Wizard {
 			parent.setLayout(new GridLayout(4, false));
 
 			// TITLE
-			PeopleRapUtils.createBoldLabel(parent, "Title");
+			ConnectWorkbenchUtils.createBoldLabel(parent, "Title");
 			titleTxt = new Text(parent, SWT.BORDER);
 			titleTxt.setMessage("To be shown in the various lists");
 			GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -155,21 +155,21 @@ public class NewIssueWizard extends Wizard {
 			titleTxt.setLayoutData(gd);
 
 			// Versions
-			PeopleRapUtils.createBoldLabel(parent, "Impacted Version");
+			ConnectWorkbenchUtils.createBoldLabel(parent, "Impacted Version");
 			Text versionTxt = new Text(parent, SWT.BORDER);
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 			versionTxt.setLayoutData(gd);
 			versionDD = new VersionDropDown(project, versionTxt);
 
 			// Target milestone
-			PeopleRapUtils.createBoldLabel(parent, "Target milestone");
+			ConnectWorkbenchUtils.createBoldLabel(parent, "Target milestone");
 			Text milestoneTxt = new Text(parent, SWT.BORDER);
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 			milestoneTxt.setLayoutData(gd);
 			targetDD = new MilestoneDropDown(project, milestoneTxt);
 
 			// Importance
-			PeopleRapUtils.createBoldLabel(parent, "Importance");
+			ConnectWorkbenchUtils.createBoldLabel(parent, "Importance");
 			importanceCmb = new Combo(parent, SWT.READ_ONLY);
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 			importanceCmb.setLayoutData(gd);
@@ -177,7 +177,7 @@ public class NewIssueWizard extends Wizard {
 			importanceCmb.select(0);
 
 			// Priority
-			PeopleRapUtils.createBoldLabel(parent, "Priority");
+			ConnectWorkbenchUtils.createBoldLabel(parent, "Priority");
 			priorityCmb = new Combo(parent, SWT.READ_ONLY);
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 			priorityCmb.setLayoutData(gd);
@@ -248,7 +248,7 @@ public class NewIssueWizard extends Wizard {
 	}
 
 	private Text createBoldLT(Composite parent, String title, String message, String tooltip, int colspan) {
-		PeopleRapUtils.createBoldLabel(parent, title);
+		ConnectWorkbenchUtils.createBoldLabel(parent, title);
 		Text text = new Text(parent, SWT.BOTTOM | SWT.BORDER);
 		text.setLayoutData(EclipseUiUtils.fillAll(colspan, 1));
 		text.setMessage(message);

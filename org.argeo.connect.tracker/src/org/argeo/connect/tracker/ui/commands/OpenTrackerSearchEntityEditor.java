@@ -1,11 +1,11 @@
 package org.argeo.connect.tracker.ui.commands;
 
-import org.argeo.connect.people.workbench.rap.commands.OpenSearchEntityEditor;
-import org.argeo.connect.people.workbench.rap.editors.util.SearchNodeEditorInput;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerTypes;
 import org.argeo.connect.tracker.internal.ui.parts.AllProjectsEditor;
 import org.argeo.connect.tracker.ui.TrackerUiPlugin;
+import org.argeo.connect.ui.workbench.commands.OpenSearchEntityEditor;
+import org.argeo.connect.ui.workbench.parts.SearchNodeEditorInput;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.IWorkbenchPage;

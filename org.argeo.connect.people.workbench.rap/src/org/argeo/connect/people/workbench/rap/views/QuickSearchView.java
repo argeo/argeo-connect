@@ -22,7 +22,7 @@ import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.workbench.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.workbench.rap.providers.EntitySingleColumnLabelProvider;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -55,7 +55,7 @@ public class QuickSearchView extends ViewPart {
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private Session session;
-	private ResourceService resourceService;
+	private ResourcesService resourceService;
 	private PeopleService peopleService;
 	private AppWorkbenchService appWorkbenchService;
 
@@ -205,7 +205,7 @@ public class QuickSearchView extends ViewPart {
 		this.repository = repository;
 	}
 
-	public void setResourceService(ResourceService resourceService) {
+	public void setResourceService(ResourcesService resourceService) {
 		this.resourceService = resourceService;
 	}
 

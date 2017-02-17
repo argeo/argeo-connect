@@ -10,7 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.web.PeopleWebConstants;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -36,7 +36,7 @@ public class SearchEntitiesLP implements ILabelProvider {
 	// Cache local images
 	private Map<String, Image> icons;
 
-	public SearchEntitiesLP(ResourceService resourceService, PeopleService peopleService, Display display,
+	public SearchEntitiesLP(ResourcesService resourceService, PeopleService peopleService, Display display,
 			Map<String, String> iconPathes) {
 		this.peopleService = peopleService;
 		personOLP = new PersonOverviewLP(resourceService, peopleService,

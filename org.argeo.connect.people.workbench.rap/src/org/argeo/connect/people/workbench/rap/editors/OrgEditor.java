@@ -12,7 +12,6 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.editors.parts.TagLikeListPart;
 import org.argeo.connect.people.workbench.rap.editors.tabs.ActivityList;
 import org.argeo.connect.people.workbench.rap.editors.tabs.ContactList;
@@ -22,6 +21,7 @@ import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEdi
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.workbench.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -75,14 +75,14 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 		populateTitleComposite(titleCmp);
 
 		// Tag Management
-		Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourceService(),
+		Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
 				getAppWorkbenchService(), ConnectConstants.RESOURCE_TAG, org, PeopleNames.PEOPLE_TAGS,
 				"Enter a new tag");
 
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// Mailing list management
-		Composite mlCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourceService(),
+		Composite mlCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
 				getAppWorkbenchService(), PeopleTypes.PEOPLE_MAILING_LIST, org, PeopleNames.PEOPLE_MAILING_LISTS,
 				"Add a mailing");
 
@@ -92,7 +92,7 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 	protected void populateTabFolder(CTabFolder folder) {
 		// Contact informations
 		String tooltip = "Contact information for " + JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-		LazyCTabControl cpc = new ContactList(folder, SWT.NO_FOCUS, this, getNode(), getResourceService(),
+		LazyCTabControl cpc = new ContactList(folder, SWT.NO_FOCUS, this, getNode(), getResourcesService(),
 				getPeopleService(), getAppWorkbenchService());
 		cpc.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, cpc, "Details", PeopleRapConstants.CTAB_CONTACT_DETAILS, tooltip);
@@ -100,13 +100,13 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 		// Activities and tasks
 		tooltip = "Activities and tasks related to " + JcrUtils.get(org, Property.JCR_TITLE);
 		LazyCTabControl activitiesCmp = new ActivityList(folder, SWT.NO_FOCUS, this, getUserAdminService(),
-				getResourceService(), getActivityService(), getAppWorkbenchService(), org);
+				getResourcesService(), getActivitiesService(), getAppWorkbenchService(), org);
 		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, activitiesCmp, "Activity log", PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 
 		// Employees
 		tooltip = "Known employees of " + JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-		LazyCTabControl employeesCmp = new JobList(folder, SWT.NO_FOCUS, this, getResourceService(), getPeopleService(),
+		LazyCTabControl employeesCmp = new JobList(folder, SWT.NO_FOCUS, this, getResourcesService(), getPeopleService(),
 				getAppWorkbenchService(), org);
 		employeesCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, employeesCmp, "Team", PeopleRapConstants.CTAB_EMPLOYEES, tooltip);
@@ -123,22 +123,22 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 			parent.setLayout(new FormLayout());
 			// READ ONLY
 			final Composite roPanelCmp = getFormToolkit().createComposite(parent, SWT.NO_FOCUS);
-			PeopleRapUtils.setSwitchingFormData(roPanelCmp);
+			ConnectWorkbenchUtils.setSwitchingFormData(roPanelCmp);
 			roPanelCmp.setLayout(new GridLayout());
 
 			// Add a label with info provided by the OrgOverviewLabelProvider
 			final Label orgInfoROLbl = getFormToolkit().createLabel(roPanelCmp, "", SWT.WRAP);
 			orgInfoROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-			final ColumnLabelProvider orgLP = new OrgOverviewLabelProvider(false, getResourceService(),
+			final ColumnLabelProvider orgLP = new OrgOverviewLabelProvider(false, getResourcesService(),
 					getPeopleService(), getAppWorkbenchService());
 
 			// EDIT
 			final Composite editPanelCmp = getFormToolkit().createComposite(parent, SWT.NONE);
-			PeopleRapUtils.setSwitchingFormData(editPanelCmp);
+			ConnectWorkbenchUtils.setSwitchingFormData(editPanelCmp);
 			editPanelCmp.setLayout(new GridLayout(2, false));
 
 			// Create edit text
-			final Text displayNameTxt = PeopleRapUtils.createGDText(getFormToolkit(), editPanelCmp, "Display name",
+			final Text displayNameTxt = ConnectWorkbenchUtils.createGDText(getFormToolkit(), editPanelCmp, "Display name",
 					"Display name used for this organisation", 300, 1);
 			final Button useDistinctDisplayBtn = getFormToolkit().createButton(editPanelCmp,
 					"Use a specific display name", SWT.CHECK);
@@ -149,7 +149,7 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 				public void refresh() {
 					super.refresh();
 					// EDIT PART
-					boolean useDistinct = PeopleRapUtils.refreshFormCheckBox(OrgEditor.this, useDistinctDisplayBtn, org,
+					boolean useDistinct = ConnectWorkbenchUtils.refreshFormCheckBox(OrgEditor.this, useDistinctDisplayBtn, org,
 							PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 
 					if (useDistinct) {
@@ -172,7 +172,7 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 				}
 			};
 
-			PeopleRapUtils.addModifyListener(displayNameTxt, org, Property.JCR_TITLE, editPart);
+			ConnectWorkbenchUtils.addModifyListener(displayNameTxt, org, Property.JCR_TITLE, editPart);
 
 			useDistinctDisplayBtn.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;

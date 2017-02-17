@@ -20,9 +20,8 @@ import org.argeo.cms.CmsTypes;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.activities.ActivitiesTypes;
-import org.argeo.connect.activities.core.ActivityServiceImpl;
+import org.argeo.connect.activities.core.ActivitiesServiceImpl;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerNames;
 import org.argeo.connect.tracker.TrackerService;
@@ -33,14 +32,7 @@ import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
-public class TrackerServiceImpl extends ActivityServiceImpl implements TrackerService {
-
-	// private PeopleService aoService;
-
-	public TrackerServiceImpl(PeopleService peopleService) {
-		// super((PeopleService) peopleService);
-		// this.aoService = peopleService;
-	}
+public class TrackerServiceImpl extends ActivitiesServiceImpl implements TrackerService {
 
 	/**
 	 * Centralises the management of known types to provide corresponding base
@@ -137,8 +129,8 @@ public class TrackerServiceImpl extends ActivityServiceImpl implements TrackerSe
 
 	/** Encapsulate the activity service create task to enhance read-ability */
 	private Node createTask(Node parentNode, String title, String description, String assignedTo) {
-		return createTask(null, parentNode, ActivitiesTypes.ACTIVITIES_TASK, null, title, description, assignedTo, null, null,
-				null, null);
+		return createTask(null, parentNode, ActivitiesTypes.ACTIVITIES_TASK, null, title, description, assignedTo, null,
+				null, null, null);
 	}
 
 	@Override

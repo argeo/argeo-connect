@@ -14,12 +14,12 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.workbench.rap.providers.BasicNodeListContentProvider;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesTypes;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -54,7 +54,7 @@ public class TemplateList extends EditorPart implements PeopleNames, Refreshable
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private PeopleService peopleService;
-	private ResourceService resourceService;
+	private ResourcesService resourceService;
 	private PeopleWorkbenchService peopleWorkbenchService;
 
 	// Context
@@ -104,14 +104,14 @@ public class TemplateList extends EditorPart implements PeopleNames, Refreshable
 	protected void createListPart(Composite parent) {
 		tableViewer = new TableViewer(parent, SWT.V_SCROLL);
 
-		PeopleRapUtils.setTableDefaultStyle(tableViewer, 25);
+		ConnectWorkbenchUtils.setTableDefaultStyle(tableViewer, 25);
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 		TableViewerColumn col;
 		int[] bounds = { 120, 110, 100, 50 };
 
 		// Name
 		col = ViewerUtils.createTableViewerColumn(tableViewer, "", SWT.LEFT, bounds[0]);
-		col.setLabelProvider(new NodeTypeLabelProvider(ResourcesNames.PEOPLE_TEMPLATE_ID));
+		col.setLabelProvider(new NodeTypeLabelProvider(ResourcesNames.CONNECT_TEMPLATE_ID));
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(100, 150, true));
 
 		// Providers and listeners
@@ -132,7 +132,7 @@ public class TemplateList extends EditorPart implements PeopleNames, Refreshable
 			NodeIterator nit = parent.getNodes();
 			while (nit.hasNext()) {
 				Node currNode = nit.nextNode();
-				if (currNode.isNodeType(ResourcesTypes.PEOPLE_NODE_TEMPLATE))
+				if (currNode.isNodeType(ResourcesTypes.RESOURCES_NODE_TEMPLATE))
 					templates.add(currNode);
 			}
 
@@ -185,7 +185,7 @@ public class TemplateList extends EditorPart implements PeopleNames, Refreshable
 		this.peopleService = peopleService;
 	}
 
-	public void setResourceService(ResourceService resourceService) {
+	public void setResourceService(ResourcesService resourceService) {
 		this.resourceService = resourceService;
 	}
 

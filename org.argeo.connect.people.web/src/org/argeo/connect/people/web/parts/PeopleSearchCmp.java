@@ -20,7 +20,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.web.providers.SearchEntitiesLP;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -43,7 +43,7 @@ public class PeopleSearchCmp extends Composite {
 	private static final long serialVersionUID = 8520892609661053149L;
 
 	private final PeopleService peopleService;
-	private final ResourceService resourceService;
+	private final ResourcesService resourceService;
 	private final Map<String, String> iconPaths;
 
 	// We search only in this node subtree.
@@ -53,7 +53,7 @@ public class PeopleSearchCmp extends Composite {
 	private TableViewer viewer;
 	private Text entityFilterTxt;
 
-	public PeopleSearchCmp(Composite parent, int style, ResourceService resourceService, PeopleService peopleService,
+	public PeopleSearchCmp(Composite parent, int style, ResourcesService resourceService, PeopleService peopleService,
 			Map<String, String> iconPaths) {
 		super(parent, style);
 		this.peopleService = peopleService;

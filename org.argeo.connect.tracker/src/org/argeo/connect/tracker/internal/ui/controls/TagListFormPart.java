@@ -13,11 +13,11 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
-import org.argeo.connect.people.workbench.rap.composites.dropdowns.PeopleAbstractDropDown;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.internal.ui.AbstractTrackerEditor;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.widgets.ConnectAbstractDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -304,7 +304,7 @@ public abstract class TagListFormPart extends Composite {
 		}
 	}
 
-	private class TagLikeDropDown extends PeopleAbstractDropDown {
+	private class TagLikeDropDown extends ConnectAbstractDropDown {
 
 		public TagLikeDropDown(Text text) {
 			super(text);

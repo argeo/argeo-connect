@@ -12,7 +12,7 @@ import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.dialogs.EditJobDialog;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -43,7 +43,7 @@ public class EditJob extends AbstractHandler {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private ResourceService resourceService;
+	private ResourcesService resourcesService;
 	private PeopleService peopleService;
 	private AppWorkbenchService appWorkbenchService;
 
@@ -63,11 +63,11 @@ public class EditJob extends AbstractHandler {
 				// Edit an existing job
 				isBackward = new Boolean(event.getParameter(PARAM_IS_BACKWARD));
 				diag = new EditJobDialog(HandlerUtil.getActiveShell(event), "Edit employee information",
-						resourceService, peopleService, appWorkbenchService, relevantNode, null, isBackward);
+						resourcesService, peopleService, appWorkbenchService, relevantNode, null, isBackward);
 			} else {
 				// Create a new job
 				isBackward = relevantNode.isNodeType(PeopleTypes.PEOPLE_ORG);
-				diag = new EditJobDialog(HandlerUtil.getActiveShell(event), "Edit position", resourceService,
+				diag = new EditJobDialog(HandlerUtil.getActiveShell(event), "Edit position", resourcesService,
 						peopleService, appWorkbenchService, null, relevantNode, isBackward);
 			}
 
@@ -90,8 +90,8 @@ public class EditJob extends AbstractHandler {
 		this.repository = repository;
 	}
 
-	public void setResourceService(ResourceService resourceService) {
-		this.resourceService = resourceService;
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 
 	public void setPeopleService(PeopleService peopleService) {
@@ -101,5 +101,4 @@ public class EditJob extends AbstractHandler {
 	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
 		this.appWorkbenchService = peopleWorkbenchService;
 	}
-
 }

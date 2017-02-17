@@ -11,11 +11,9 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
 
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -24,15 +22,16 @@ import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.dialogs.AskTitleDescriptionDialog;
-import org.argeo.connect.people.workbench.rap.editors.util.SearchNodeEditorInput;
 import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.workbench.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.people.workbench.rap.wizards.EditTagWizard;
-import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.resources.ResourcesNames;
+import org.argeo.connect.resources.ResourcesRole;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.Refreshable;
+import org.argeo.connect.ui.workbench.parts.SearchNodeEditorInput;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -69,7 +68,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private ResourceService resourceService;
+	private ResourcesService resourceService;
 	private PeopleService peopleService;
 	private AppWorkbenchService appWorkbenchService;
 
@@ -100,8 +99,8 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 			throw new PeopleException(
 					"Unable to retrieve tag parent with path " + basePath + "\nUnable to open search editor.", e);
 		}
-		tagInstanceType = ConnectJcrUtils.get(tagParent, ResourcesNames.PEOPLE_TAG_INSTANCE_TYPE);
-		tagId = ConnectJcrUtils.get(tagParent, ResourcesNames.PEOPLE_TAG_ID);
+		tagInstanceType = ConnectJcrUtils.get(tagParent, ResourcesNames.CONNECT_TAG_INSTANCE_TYPE);
+		tagId = ConnectJcrUtils.get(tagParent, ResourcesNames.CONNECT_TAG_ID);
 
 		// TODO this info should be stored in the parent path
 		if (tagId.equals(ConnectConstants.RESOURCE_TAG)) {
@@ -185,15 +184,14 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 	/** Refresh the table viewer based on the free text search field */
 	protected void refreshStaticFilteredList() {
 		try {
-			QueryManager queryManager = session.getWorkspace().getQueryManager();
-			String queryStr = XPathUtils.descendantFrom(peopleService.getBasePath(PeopleConstants.PEOPLE_RESOURCE))
-					+ "//element(*, " + tagInstanceType + ")";
+			String queryStr = XPathUtils.descendantFrom("/" + ResourcesNames.RESOURCES_BASE_NAME) + "//element(*, "
+					+ tagInstanceType + ")";
 			String attrQuery = XPathUtils.getFreeTextConstraint(filterTxt.getText());
 			if (EclipseUiUtils.notEmpty(attrQuery))
 				queryStr += "[" + attrQuery + "]";
 			// always order ?
-			queryStr += " order by @" + PeopleNames.JCR_TITLE;
-			Query query = queryManager.createQuery(queryStr, ConnectConstants.QUERY_XPATH);
+			queryStr += " order by @" + Property.JCR_TITLE;
+			Query query = XPathUtils.createQuery(session, queryStr);
 			NodeIterator nit = query.execute().getNodes();
 			Node[] nodes = ConnectJcrUtils.nodeIteratorToArray(nit);
 			setViewerInput(nodes);
@@ -244,7 +242,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 	}
 
 	private boolean canEdit() {
-		return CurrentUser.isInRole(PeopleConstants.ROLE_BUSINESS_ADMIN);
+		return CurrentUser.isInRole(ResourcesRole.editor.dn());
 	}
 
 	private boolean canDelete(Node currNode) {
@@ -329,7 +327,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 		this.repository = repository;
 	}
 
-	public void setResourceService(ResourceService resourceService) {
+	public void setResourceService(ResourcesService resourceService) {
 		this.resourceService = resourceService;
 	}
 

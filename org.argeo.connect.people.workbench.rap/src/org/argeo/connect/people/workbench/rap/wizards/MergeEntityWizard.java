@@ -21,11 +21,11 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
-import org.argeo.connect.people.workbench.rap.editors.util.EntityEditorInput;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.ui.workbench.commands.ForceRefresh;
+import org.argeo.connect.ui.workbench.parts.EntityEditorInput;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
@@ -365,83 +365,87 @@ public class MergeEntityWizard extends Wizard implements PeopleNames {
 		}
 
 		protected IStatus doRun(IProgressMonitor progressMonitor) {
-			try {
-				JcrMonitor monitor = new EclipseJcrMonitor(progressMonitor);
-				if (monitor != null && !monitor.isCanceled()) {
-					monitor.beginTask("Updating objects",
-							modifiedPathes.size() + 1);
-					session = repository.login();
-					Node masterNode = session.getNode(masterPath);
-
-					loop: for (String currPath : slavePathes) {
-						if (masterPath.equals(currPath))
-							continue loop;
-						else {
-							Node currSlave = session.getNode(currPath);
-							peopleService.getImportService().mergeNodes(
-									masterNode, currSlave);
-							if (log.isDebugEnabled()) {
-								log.debug("About to remove node "
-										+ currSlave.getPath()
-										+ "\n with title: "
-										+ ConnectJcrUtils.get(currSlave,
-												Property.JCR_TITLE));
-							}
-							removedIds.add(currSlave.getIdentifier());
-							currSlave.remove();
-						}
-						monitor.worked(1);
-					}
-
-					if (session.hasPendingChanges()) {
-						session.save();
-						if (!modifiedPathes.contains(masterPath))
-							modifiedPathes.add(masterPath);
-					}
-					ConnectJcrUtils.checkPoint(session, modifiedPathes, true);
-					monitor.worked(1);
-				}
-
-				// Update the user interface asynchronously
-				Display currDisplay = callingPage.getWorkbenchWindow()
-						.getShell().getDisplay();
-				currDisplay.asyncExec(new Runnable() {
-					public void run() {
-						try {
-							EntityEditorInput eei;
-							// Close removed node editors
-							for (String jcrId : removedIds) {
-								eei = new EntityEditorInput(jcrId);
-								IEditorPart iep = callingPage.findEditor(eei);
-								if (iep != null)
-									callingPage.closeEditor(iep, false);
-							}
-
-							// Refresh master editor if opened
-							eei = new EntityEditorInput(masterNode
-									.getIdentifier());
-							IEditorPart iep = callingPage.findEditor(eei);
-							if (iep != null && iep instanceof Refreshable)
-								((Refreshable) iep).forceRefresh(null);
-
-							// Refresh list
-							CommandUtils.callCommand(ForceRefresh.ID);
-						} catch (Exception e) {
-							// Fail without notifying the user
-							log.error("Unable to refresh the workbench after merge");
-							e.printStackTrace();
-						}
-					}
-
-				});
-			} catch (Exception e) {
-				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
-						"Unable to perform merge update on " + masterPath
-								+ " for " + selectorName + " row list ", e);
-			} finally {
-				JcrUtils.logoutQuietly(session);
-			}
-			return Status.OK_STATUS;
+			
+			throw new RuntimeException("Unimplemented in Connect 2.2.");
+//			try {
+//				JcrMonitor monitor = new EclipseJcrMonitor(progressMonitor);
+//				if (monitor != null && !monitor.isCanceled()) {
+//					monitor.beginTask("Updating objects",
+//							modifiedPathes.size() + 1);
+//					session = repository.login();
+//					Node masterNode = session.getNode(masterPath);
+//
+//					loop: for (String currPath : slavePathes) {
+//						if (masterPath.equals(currPath))
+//							continue loop;
+//						else {
+//							Node currSlave = session.getNode(currPath);
+//							
+//							
+////							peopleService.getImportService().mergeNodes(
+////									masterNode, currSlave);
+//							if (log.isDebugEnabled()) {
+//								log.debug("About to remove node "
+//										+ currSlave.getPath()
+//										+ "\n with title: "
+//										+ ConnectJcrUtils.get(currSlave,
+//												Property.JCR_TITLE));
+//							}
+//							removedIds.add(currSlave.getIdentifier());
+//							currSlave.remove();
+//						}
+//						monitor.worked(1);
+//					}
+//
+//					if (session.hasPendingChanges()) {
+//						session.save();
+//						if (!modifiedPathes.contains(masterPath))
+//							modifiedPathes.add(masterPath);
+//					}
+//					ConnectJcrUtils.checkPoint(session, modifiedPathes, true);
+//					monitor.worked(1);
+//				}
+//
+//				// Update the user interface asynchronously
+//				Display currDisplay = callingPage.getWorkbenchWindow()
+//						.getShell().getDisplay();
+//				currDisplay.asyncExec(new Runnable() {
+//					public void run() {
+//						try {
+//							EntityEditorInput eei;
+//							// Close removed node editors
+//							for (String jcrId : removedIds) {
+//								eei = new EntityEditorInput(jcrId);
+//								IEditorPart iep = callingPage.findEditor(eei);
+//								if (iep != null)
+//									callingPage.closeEditor(iep, false);
+//							}
+//
+//							// Refresh master editor if opened
+//							eei = new EntityEditorInput(masterNode
+//									.getIdentifier());
+//							IEditorPart iep = callingPage.findEditor(eei);
+//							if (iep != null && iep instanceof Refreshable)
+//								((Refreshable) iep).forceRefresh(null);
+//
+//							// Refresh list
+//							CommandUtils.callCommand(ForceRefresh.ID);
+//						} catch (Exception e) {
+//							// Fail without notifying the user
+//							log.error("Unable to refresh the workbench after merge");
+//							e.printStackTrace();
+//						}
+//					}
+//
+//				});
+//			} catch (Exception e) {
+//				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
+//						"Unable to perform merge update on " + masterPath
+//								+ " for " + selectorName + " row list ", e);
+//			} finally {
+//				JcrUtils.logoutQuietly(session);
+//			}
+//			return Status.OK_STATUS;
 		}
 	}
 }

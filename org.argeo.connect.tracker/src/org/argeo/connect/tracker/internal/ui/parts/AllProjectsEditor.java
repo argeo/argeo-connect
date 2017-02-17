@@ -7,12 +7,9 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractSearchEntityEditor;
 import org.argeo.connect.people.workbench.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.tracker.TrackerException;
@@ -63,15 +60,14 @@ public class AllProjectsEditor extends AbstractSearchEntityEditor {
 	/** Refresh the table viewer based on the free text search field */
 	protected void refreshFilteredList() {
 		try {
-			QueryManager queryManager = getSession().getWorkspace().getQueryManager();
 			// XPath
 			StringBuilder builder = new StringBuilder();
 			builder.append("//element(*, ").append(getEntityType()).append(")");
 			String filter = getFilterText().getText();
 			if (EclipseUiUtils.notEmpty(filter))
 				builder.append("[").append(XPathUtils.getFreeTextConstraint(filter)).append("]");
-			builder.append(" order by @").append(PeopleNames.JCR_TITLE).append(" ascending");
-			Query query = queryManager.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH);
+			builder.append(" order by @").append(Property.JCR_TITLE).append(" ascending");
+			Query query = XPathUtils.createQuery(getSession(), builder.toString());
 			QueryResult result = query.execute();
 			Node[] nodes = ConnectJcrUtils.nodeIteratorToArray(result.getNodes());
 			setViewerInput(nodes);

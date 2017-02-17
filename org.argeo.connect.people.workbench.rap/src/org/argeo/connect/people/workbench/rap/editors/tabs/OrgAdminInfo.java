@@ -10,10 +10,10 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.util.OrgJcrUtils;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.composites.BankAccountComposite;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
@@ -77,38 +77,38 @@ public class OrgAdminInfo extends LazyCTabControl {
 		parent.setLayout(new GridLayout(4, false));
 
 		// Legal Name
-		PeopleRapUtils.createBoldLabel(toolkit, parent, "Legal Name");
+		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Legal Name");
 		final Text legalNameTxt = toolkit.createText(parent, "", SWT.BORDER);
 		legalNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,
 				3, 1));
 
 		// Legal form
-		PeopleRapUtils.createBoldLabel(toolkit, parent, "Legal Form");
+		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Legal Form");
 		final Text legalFormTxt = toolkit.createText(parent, "", SWT.BORDER);
 		legalFormTxt
 				.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// VAT ID Number
-		PeopleRapUtils.createBoldLabel(toolkit, parent, "VAT ID");
+		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "VAT ID");
 		final Text vatIDTxt = toolkit.createText(parent, "", SWT.BORDER);
 		vatIDTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		notePart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
-				PeopleRapUtils.refreshFormTextWidget(editor, legalNameTxt,
+				ConnectWorkbenchUtils.refreshFormTextWidget(editor, legalNameTxt,
 						entity, PeopleNames.PEOPLE_LEGAL_NAME);
-				PeopleRapUtils.refreshFormTextWidget(editor, legalFormTxt,
+				ConnectWorkbenchUtils.refreshFormTextWidget(editor, legalFormTxt,
 						entity, PeopleNames.PEOPLE_LEGAL_FORM);
-				PeopleRapUtils.refreshFormTextWidget(editor, vatIDTxt, entity,
+				ConnectWorkbenchUtils.refreshFormTextWidget(editor, vatIDTxt, entity,
 						PeopleNames.PEOPLE_VAT_ID_NB);
 			}
 		};
 
 		// Listeners
-		PeopleRapUtils.addModifyListener(legalFormTxt, entity,
+		ConnectWorkbenchUtils.addModifyListener(legalFormTxt, entity,
 				PeopleNames.PEOPLE_LEGAL_FORM, notePart);
-		PeopleRapUtils.addModifyListener(vatIDTxt, entity,
+		ConnectWorkbenchUtils.addModifyListener(vatIDTxt, entity,
 				PeopleNames.PEOPLE_VAT_ID_NB, notePart);
 
 		// Specific listeners to manage correctly display name

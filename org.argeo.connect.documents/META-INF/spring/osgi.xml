@@ -13,6 +13,6 @@
 		filter="(service.pid=org.argeo.node.fsProvider)" />
 	<reference id="appWorkbenchService"
 		interface="org.argeo.connect.ui.workbench.AppWorkbenchService" />
-
 	<reference id="documentsService" interface="org.argeo.connect.documents.DocumentsService" />
+
 </beans:beans>

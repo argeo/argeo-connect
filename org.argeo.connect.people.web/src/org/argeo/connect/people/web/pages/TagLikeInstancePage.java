@@ -23,7 +23,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.web.providers.SearchEntitiesLP;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -51,8 +51,8 @@ import org.eclipse.swt.widgets.Text;
 public class TagLikeInstancePage implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
+	private ResourcesService resourcesService;
 	private PeopleService peopleService;
-	private ResourceService resourceService;
 	private Map<String, String> iconPathes;
 	private String propertyName;
 
@@ -107,7 +107,7 @@ public class TagLikeInstancePage implements CmsUiProvider {
 		CmsUtils.markup(table);
 		CmsUtils.setItemHeight(table, 23);
 		v.setContentProvider(new BasicContentProvider());
-		ILabelProvider labelProvider = new SearchEntitiesLP(resourceService, peopleService, table.getDisplay(),
+		ILabelProvider labelProvider = new SearchEntitiesLP(resourcesService, peopleService, table.getDisplay(),
 				iconPathes);
 		v.setLabelProvider(labelProvider);
 		v.addDoubleClickListener(new IDoubleClickListener() {
@@ -181,8 +181,8 @@ public class TagLikeInstancePage implements CmsUiProvider {
 		this.peopleService = peopleService;
 	}
 
-	public void setResourceService(ResourceService resourceService) {
-		this.resourceService = resourceService;
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 
 	public void setIconPathes(Map<String, String> iconPathes) {

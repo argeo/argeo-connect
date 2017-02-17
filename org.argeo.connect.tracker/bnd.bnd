@@ -1,5 +1,4 @@
-Require-Capability: cms.datamodel; filter:="(name=people)",\
-cms.datamodel; filter:="(name=cms)"
+Require-Capability: cms.datamodel; filter:="(name=activities)"
 Provide-Capability: cms.datamodel; name=tracker; cnd=/org/argeo/connect/tracker/tracker.cnd; abstract=true
 
 Bundle-Activator: org.argeo.connect.tracker.ui.TrackerUiPlugin
@@ -12,6 +11,7 @@ javax.jcr.security,\
 org.argeo.cms,\
 org.argeo.cms.auth,\
 org.argeo.connect,\
+org.argeo.naming,\
 org.argeo.connect.people,\
 org.argeo.connect.people.workbench.rap.views,\
 org.argeo.eclipse.spring,\

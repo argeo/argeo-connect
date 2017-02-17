@@ -11,7 +11,7 @@ import org.argeo.cms.ui.CmsUiProvider;
 import org.argeo.cms.ui.LifeCycleUiProvider;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -23,7 +23,7 @@ public class PeopleDynamicPages implements LifeCycleUiProvider {
 	/* DEPENDENCY INJECTION */
 	private Map<String, CmsUiProvider> dynamicPages;
 	private PeopleService peopleService;
-	private ResourceService resourceService;
+	private ResourcesService resourcesService;
 
 	private Map<String, String> iconPathes;
 
@@ -55,7 +55,7 @@ public class PeopleDynamicPages implements LifeCycleUiProvider {
 
 	@Override
 	public void init(Session adminSession) throws RepositoryException {
-		queryPage = new PeopleQueryPage(peopleService, resourceService, iconPathes);
+		queryPage = new PeopleQueryPage(peopleService, resourcesService, iconPathes);
 	}
 
 	@Override
@@ -71,8 +71,8 @@ public class PeopleDynamicPages implements LifeCycleUiProvider {
 		this.peopleService = peopleService;
 	}
 
-	public void setResourceService(ResourceService resourceService) {
-		this.resourceService = resourceService;
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 
 	public void setIconPathes(Map<String, String> iconPathes) {

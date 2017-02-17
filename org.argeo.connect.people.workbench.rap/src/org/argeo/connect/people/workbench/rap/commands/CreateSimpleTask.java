@@ -5,12 +5,12 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.activities.ActivityService;
+import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.wizards.NewSimpleTaskWizard;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -26,7 +26,7 @@ public class CreateSimpleTask extends AbstractHandler {
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private UserAdminService userAdminService;
-	private ActivityService activityService;
+	private ActivitiesService activityService;
 	private AppWorkbenchService appWorkbenchService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
@@ -48,7 +48,7 @@ public class CreateSimpleTask extends AbstractHandler {
 			JcrUtils.logoutQuietly(session);
 		}
 		if (jcrId != null)
-			PeopleRapUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
+			ConnectWorkbenchUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
 					jcrId, OpenEntityEditor.PARAM_OPEN_FOR_EDIT, "true");
 		return null;
 	}
@@ -62,7 +62,7 @@ public class CreateSimpleTask extends AbstractHandler {
 		this.userAdminService = userAdminService;
 	}
 
-	public void setActivityService(ActivityService activityService) {
+	public void setActivityService(ActivitiesService activityService) {
 		this.activityService = activityService;
 	}
 

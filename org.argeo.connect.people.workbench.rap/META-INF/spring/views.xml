@@ -16,24 +16,17 @@
 		class="org.argeo.connect.people.workbench.rap.views.QuickSearchView"
 		scope="prototype">
 		<property name="repository" ref="repository" />
+		<property name="resourcesService" ref="resourcesService" />
 		<property name="peopleService" ref="peopleService" />
-		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
+		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
 	<bean id="myTodoListView"
 		class="org.argeo.connect.people.workbench.rap.views.MyTodoListView"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="peopleService" ref="peopleService" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="activitiesService" ref="activitiesService" />
 		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
-	</bean>
-
-	<!-- Legacy -->
-	<bean id="peopleDefaultView"
-		class="org.argeo.connect.people.workbench.rap.views.PeopleDefaultView"
-		scope="prototype">
-		<property name="repository" ref="repository" />
-		<property name="peopleService" ref="peopleService" />
-		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 </beans>

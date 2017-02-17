@@ -25,7 +25,7 @@ import javax.jcr.Session;
 
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.workbench.rap.composites.SimpleJcrTableComposite;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -50,7 +50,7 @@ public class PickUpCountryDialog extends TrayDialog {
 	private static final long serialVersionUID = 3766899676609659573L;
 
 	// Context
-	private ResourceService resourceService;
+	private ResourcesService resourceService;
 	private final Session session;
 	private Node selectedNode;
 
@@ -60,11 +60,11 @@ public class PickUpCountryDialog extends TrayDialog {
 
 	private List<JcrColumnDefinition> colDefs = new ArrayList<JcrColumnDefinition>();
 	{ // By default, it displays only title
-		colDefs.add(new JcrColumnDefinition(null, ResourcesNames.PEOPLE_CODE, PropertyType.STRING, "Iso Code", 100));
+		colDefs.add(new JcrColumnDefinition(null, ResourcesNames.CONNECT_TAG_CODE, PropertyType.STRING, "Iso Code", 100));
 		colDefs.add(new JcrColumnDefinition(null, Property.JCR_TITLE, PropertyType.STRING, "Label", 240));
 	};
 
-	public PickUpCountryDialog(Shell parentShell, ResourceService resourceService, Session session, String title) {
+	public PickUpCountryDialog(Shell parentShell, ResourcesService resourceService, Session session, String title) {
 		super(parentShell);
 		this.resourceService = resourceService;
 		this.session = session;
@@ -82,7 +82,7 @@ public class PickUpCountryDialog extends TrayDialog {
 
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
 		tableCmp = new SimpleJcrTableComposite(dialogArea, style, session, ConnectJcrUtils.getPath(tagParent),
-				ResourcesTypes.PEOPLE_TAG_ENCODED_INSTANCE, colDefs, true, false);
+				ResourcesTypes.RESOURCES_TAG_ENCODED_INSTANCE, colDefs, true, false);
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// Add listeners
@@ -95,7 +95,7 @@ public class PickUpCountryDialog extends TrayDialog {
 
 	public String getSelected() {
 		if (selectedNode != null)
-			return ConnectJcrUtils.get(selectedNode, ResourcesNames.PEOPLE_CODE);
+			return ConnectJcrUtils.get(selectedNode, ResourcesNames.CONNECT_TAG_CODE);
 		else
 			return null;
 	}

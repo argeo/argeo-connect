@@ -10,9 +10,9 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleStyles;
-import org.argeo.connect.people.workbench.rap.composites.dropdowns.PeopleAbstractDropDown;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.widgets.ConnectAbstractDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -120,7 +120,7 @@ public abstract class MultiValueListWithDDPart extends Composite {
 			// This does not work
 			// CmsUtils.style(tagTxt, "add_value");
 
-			final PeopleAbstractDropDown addValueDD = new AddValueDD(tagTxt, SWT.READ_ONLY, true);
+			final ConnectAbstractDropDown addValueDD = new AddValueDD(tagTxt, SWT.READ_ONLY, true);
 
 			tagTxt.addTraverseListener(new TraverseListener() {
 				private static final long serialVersionUID = 1L;
@@ -179,7 +179,7 @@ public abstract class MultiValueListWithDDPart extends Composite {
 		};
 	}
 
-	private class AddValueDD extends PeopleAbstractDropDown {
+	private class AddValueDD extends ConnectAbstractDropDown {
 
 		public AddValueDD(Text text, int style, boolean refreshOnFocus) {
 			super(text, style, refreshOnFocus);

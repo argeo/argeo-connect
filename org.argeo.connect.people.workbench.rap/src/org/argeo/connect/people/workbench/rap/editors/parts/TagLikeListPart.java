@@ -22,7 +22,7 @@ import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
@@ -59,7 +59,7 @@ public class TagLikeListPart extends Composite {
 	private final String newTagMsg;
 
 	// Context
-	private final ResourceService resourceService;
+	private final ResourcesService resourceService;
 	private final AppWorkbenchService appWorkbenchService;
 	private final Node taggable;
 	private final Node tagParent;
@@ -84,7 +84,7 @@ public class TagLikeListPart extends Composite {
 	 * @param tagId
 	 * @param newTagMsg
 	 */
-	public TagLikeListPart(AbstractPeopleEditor editor, Composite parent, int style, ResourceService resourceService,
+	public TagLikeListPart(AbstractPeopleEditor editor, Composite parent, int style, ResourcesService resourceService,
 			AppWorkbenchService appWorkbenchService, String tagId, Node taggable, String taggablePropName,
 			String newTagMsg) {
 		super(parent, style);

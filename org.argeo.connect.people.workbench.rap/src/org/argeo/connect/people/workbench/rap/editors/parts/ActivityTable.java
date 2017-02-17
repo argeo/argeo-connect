@@ -26,13 +26,13 @@ import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.activities.ActivitiesNames;
 import org.argeo.connect.activities.ActivitiesTypes;
-import org.argeo.connect.activities.ActivityService;
+import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.activities.core.ActivityUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.workbench.rap.PeopleRapSnippets;
 import org.argeo.connect.people.workbench.rap.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.workbench.rap.util.ActivityViewerComparator;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
@@ -60,8 +60,8 @@ public class ActivityTable extends Composite {
 	private Session session;
 	private Node entity;
 	private UserAdminService userAdminService;
-	private ResourceService resourceService;
-	private ActivityService activityService;
+	private ResourcesService resourceService;
+	private ActivitiesService activityService;
 	private AppWorkbenchService appWorkbenchService;
 
 	// CONSTRUCTORS
@@ -75,7 +75,7 @@ public class ActivityTable extends Composite {
 	 * @param session
 	 */
 	public ActivityTable(Composite parent, int style, UserAdminService userAdminService,
-			ResourceService resourceService, ActivityService activityService, AppWorkbenchService appWorkbenchService,
+			ResourcesService resourceService, ActivitiesService activityService, AppWorkbenchService appWorkbenchService,
 			Node entity) {
 		super(parent, SWT.NONE);
 		session = ConnectJcrUtils.getSession(entity);

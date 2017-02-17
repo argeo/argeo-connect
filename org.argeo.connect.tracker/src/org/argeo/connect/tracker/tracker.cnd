@@ -5,7 +5,7 @@
 mixin
 - tracker:cpGroupId (STRING) // ID of the group that contains external users registered for this counterparty
 + data (nt:folder) 
-+ spec (cms:text) 
+//+ spec (cms:text) 
 + versions (nt:unstructured) // tracks also future milestones 
 + components (nt:unstructured) 
 + issues (nt:unstructured)

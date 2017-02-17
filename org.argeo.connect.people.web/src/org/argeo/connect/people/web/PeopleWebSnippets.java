@@ -6,12 +6,12 @@ import javax.jcr.Session;
 import javax.jcr.Value;
 
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiUtils;
 
 public class PeopleWebSnippets {
 	/** a snippet to display tags that are linked to the current entity */
-	public static String getTagLikeValues(ResourceService tagService, String tagId, Node taggableNode,
+	public static String getTagLikeValues(ResourcesService tagService, String tagId, Node taggableNode,
 			String taggablePropName, String prefix) {
 		StringBuilder builder = new StringBuilder();
 		try {

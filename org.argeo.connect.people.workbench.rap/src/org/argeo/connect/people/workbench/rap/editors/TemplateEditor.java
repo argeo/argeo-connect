@@ -60,8 +60,8 @@ public class TemplateEditor extends AbstractPeopleCTabEditor {
 			throw new PeopleException("Unable to add missing mixins for node template: " + nodeTemplate, e);
 		}
 
-		String shortName = getResourceService()
-				.getItemDefaultEnLabel(ConnectJcrUtils.get(nodeTemplate, ResourcesNames.PEOPLE_TEMPLATE_ID));
+		String shortName = getResourcesService()
+				.getItemDefaultEnLabel(ConnectJcrUtils.get(nodeTemplate, ResourcesNames.CONNECT_TEMPLATE_ID));
 		setPartName(shortName);
 	}
 
@@ -82,8 +82,8 @@ public class TemplateEditor extends AbstractPeopleCTabEditor {
 
 				tooltip = "Manage and edit the \"" + propLabel + "\" catalogue";
 				LazyCTabControl oneBusinessPropertyCatalogue = new TemplateValueCatalogue(folder, SWT.NO_FOCUS, this,
-						getResourceService(), getAppWorkbenchService(), nodeTemplate, propName,
-						ConnectJcrUtils.get(nodeTemplate, ResourcesNames.PEOPLE_TEMPLATE_ID));
+						getResourcesService(), getAppWorkbenchService(), nodeTemplate, propName,
+						ConnectJcrUtils.get(nodeTemplate, ResourcesNames.CONNECT_TEMPLATE_ID));
 				oneBusinessPropertyCatalogue.setLayoutData(EclipseUiUtils.fillAll());
 				addLazyTabToFolder(folder, oneBusinessPropertyCatalogue, propLabel,
 						PeopleRapConstants.CTAB_EDIT_CATALOGUE + "/" + propName, tooltip);
@@ -132,7 +132,7 @@ public class TemplateEditor extends AbstractPeopleCTabEditor {
 			StringBuilder builder = new StringBuilder();
 			builder.append("<span style='font-size:15px;'>");
 			builder.append("<b><big>");
-			builder.append(ConnectJcrUtils.get(node, ResourcesNames.PEOPLE_TEMPLATE_ID));
+			builder.append(ConnectJcrUtils.get(node, ResourcesNames.CONNECT_TEMPLATE_ID));
 			builder.append("</big></b> ");
 			builder.append("</span>");
 			return builder.toString();

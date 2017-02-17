@@ -1,8 +1,5 @@
 package org.argeo.connect;
 
-import java.net.URI;
-import java.util.Map;
-
 import javax.jcr.Session;
 
 /** Define API to manage the life cycle of a Connect App */
@@ -31,10 +28,11 @@ public interface AppMaintenanceService {
 	 */
 	public void configurePrivileges(Session session);
 
-	public void importResources(Session session, Map<String, URI> resources);
-
-	public void importData(Session session, URI uri, Map<String, URI> dataSources);
-
-	default public void doBackup(Session session, URI uri, Object resource) {
-	}
+	// public void importResources(Session session, Map<String, URI> resources);
+	//
+	// public void importData(Session session, URI uri, Map<String, URI>
+	// dataSources);
+	//
+	// default public void doBackup(Session session, URI uri, Object resource) {
+	// }
 }

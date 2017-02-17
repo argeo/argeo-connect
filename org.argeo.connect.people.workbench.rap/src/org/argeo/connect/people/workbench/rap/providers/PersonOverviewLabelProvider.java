@@ -13,7 +13,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapSnippets;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -25,12 +25,12 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements 
 
 	private static final long serialVersionUID = 1L;
 
-	private final ResourceService resourceService;
+	private final ResourcesService resourceService;
 	private final PeopleService peopleService;
 	private final AppWorkbenchService appWorkbenchService;
 	private final int listType;
 
-	public PersonOverviewLabelProvider(int listType, ResourceService resourceService, PeopleService peopleService,
+	public PersonOverviewLabelProvider(int listType, ResourcesService resourceService, PeopleService peopleService,
 			AppWorkbenchService appWorkbenchService) {
 		this.listType = listType;
 		this.resourceService = resourceService;

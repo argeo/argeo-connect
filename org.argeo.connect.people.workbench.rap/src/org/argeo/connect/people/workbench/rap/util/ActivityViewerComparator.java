@@ -6,7 +6,7 @@ import java.util.Map;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.activities.ActivityService;
+import org.argeo.connect.activities.ActivitiesService;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 
@@ -17,9 +17,9 @@ public class ActivityViewerComparator extends NodeViewerComparator {
 	public final static String RELEVANT_DATE = "RELEVANT_DATE";
 
 	private final Map<String, ColumnLabelProvider> labelProviderMap = new HashMap<String, ColumnLabelProvider>();
-	private ActivityService activityService;
+	private ActivitiesService activityService;
 
-	public ActivityViewerComparator(ActivityService activityService,
+	public ActivityViewerComparator(ActivitiesService activityService,
 			Map<String, ColumnLabelProvider> labelProviderMap) {
 		this.activityService = activityService;
 		if (labelProviderMap != null)

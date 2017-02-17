@@ -13,17 +13,18 @@ import org.argeo.connect.UserAdminService;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.composites.DateText;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.workbench.rap.wizards.TagOrUntagInstancesWizard;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.workbench.Refreshable;
+import org.argeo.connect.ui.workbench.parts.SearchNodeEditorInput;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -69,7 +70,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements P
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private Session session;
-	private ResourceService resourceService;
+	private ResourcesService resourceService;
 	private UserAdminService userAdminService;
 	private AppWorkbenchService appWorkbenchService;
 
@@ -561,7 +562,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements P
 		return userAdminService;
 	}
 
-	protected ResourceService getResourceService() {
+	protected ResourcesService getResourceService() {
 		return resourceService;
 	}
 
@@ -589,7 +590,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements P
 	}
 
 	protected Text createBoldLT(Composite parent, String title, String message, String tooltip, int colspan) {
-		PeopleRapUtils.createBoldLabel(parent, title);
+		ConnectWorkbenchUtils.createBoldLabel(parent, title);
 		Text text = new Text(parent, SWT.BOTTOM | SWT.BORDER);
 		text.setLayoutData(EclipseUiUtils.fillAll(colspan, 1));
 		text.setMessage(message);
@@ -628,7 +629,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements P
 		this.repository = repository;
 	}
 
-	public void setResourceService(ResourceService resourceService) {
+	public void setResourceService(ResourcesService resourceService) {
 		this.resourceService = resourceService;
 	}
 

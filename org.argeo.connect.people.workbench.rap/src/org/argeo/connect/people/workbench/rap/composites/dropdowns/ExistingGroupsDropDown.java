@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.argeo.connect.UserAdminService;
+import org.argeo.connect.ui.widgets.ConnectAbstractDropDown;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.service.useradmin.User;
 
 /** Drop down that displays the list of existing groups */
-public class ExistingGroupsDropDown extends PeopleAbstractDropDown {
+public class ExistingGroupsDropDown extends ConnectAbstractDropDown {
 	private final UserAdminService userService;
 	private final boolean includeUsers;
 	private final boolean includeSystemRoles;

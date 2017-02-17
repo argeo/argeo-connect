@@ -7,7 +7,7 @@ import org.argeo.cms.ui.workbench.util.PrivilegedJob;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.jcr.JcrMonitor;
 import org.argeo.jcr.JcrUtils;
@@ -31,8 +31,7 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private ResourceService resourceService;
-	// private PeopleService peopleService;
+	private ResourcesService resourceService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
@@ -51,13 +50,13 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 	private class UpdateTagAndInstancesJob extends PrivilegedJob {
 
 		private Repository repository;
-		private ResourceService resourceService;
+		private ResourcesService resourceService;
 
 		/**
 		 * @param repository
 		 * @param peopleService
 		 */
-		public UpdateTagAndInstancesJob(Repository repository, ResourceService resourceService) {
+		public UpdateTagAndInstancesJob(Repository repository, ResourcesService resourceService) {
 			super("Updating the tag and mailing list repository");
 			this.repository = repository;
 			this.resourceService = resourceService;
@@ -92,7 +91,7 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 		this.repository = repository;
 	}
 
-	public void setResourceService(ResourceService resourceService) {
+	public void setResourceService(ResourcesService resourceService) {
 		this.resourceService = resourceService;
 	}
 }

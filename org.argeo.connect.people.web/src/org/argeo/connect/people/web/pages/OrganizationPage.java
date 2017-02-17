@@ -14,7 +14,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.providers.OrgOverviewLP;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.Label;
 public class OrganizationPage implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
-	private ResourceService resourceService;
+	private ResourcesService resourceService;
 	private PeopleService peopleService;
 
 	@Override
@@ -169,7 +169,7 @@ public class OrganizationPage implements CmsUiProvider {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setResourceService(ResourceService resourceService) {
+	public void setResourceService(ResourcesService resourceService) {
 		this.resourceService = resourceService;
 	}
 

@@ -4,20 +4,21 @@ import java.util.List;
 
 import javax.jcr.Session;
 
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.widgets.ConnectAbstractDropDown;
 import org.eclipse.swt.widgets.Text;
 
 /**
  * Simple DropDown that displays the list of registered values of a tag like
  * resource
  */
-public class TagLikeDropDown extends PeopleAbstractDropDown {
+public class TagLikeDropDown extends ConnectAbstractDropDown {
 
 	private final Session session;
-	private final ResourceService resourceService;
+	private final ResourcesService resourceService;
 	private final String tagId;
 
-	public TagLikeDropDown(Session session, ResourceService resourceService,
+	public TagLikeDropDown(Session session, ResourcesService resourceService,
 			String tagId, Text text) {
 		super(text);
 		this.resourceService = resourceService;

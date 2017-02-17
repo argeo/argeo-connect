@@ -4,12 +4,12 @@ import java.util.List;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.people.workbench.rap.composites.dropdowns.PeopleAbstractDropDown;
 import org.argeo.connect.tracker.core.TrackerUtils;
+import org.argeo.connect.ui.widgets.ConnectAbstractDropDown;
 import org.eclipse.swt.widgets.Text;
 
 /** Simple DropDown that displays the list of existing versions */
-public class VersionDropDown extends PeopleAbstractDropDown {
+public class VersionDropDown extends ConnectAbstractDropDown {
 
 	private final Node project;
 

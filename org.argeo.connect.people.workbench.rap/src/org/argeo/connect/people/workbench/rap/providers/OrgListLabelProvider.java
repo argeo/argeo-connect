@@ -5,7 +5,7 @@ import javax.jcr.Node;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -15,10 +15,10 @@ import org.eclipse.jface.viewers.LabelProvider;
 public class OrgListLabelProvider extends LabelProvider implements PeopleNames {
 	private static final long serialVersionUID = -579265588183299317L;
 
-	private final ResourceService resourceService;
+	private final ResourcesService resourceService;
 	private final PeopleService peopleService;
 
-	public OrgListLabelProvider(ResourceService resourceService, PeopleService peopleService) {
+	public OrgListLabelProvider(ResourcesService resourceService, PeopleService peopleService) {
 		this.resourceService = resourceService;
 		this.peopleService = peopleService;
 	}

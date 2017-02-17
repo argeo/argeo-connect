@@ -10,7 +10,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
-import org.argeo.connect.activities.ActivityService;
+import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.activities.ActivityValueCatalogs;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.activities.ActivitiesNames;
@@ -18,14 +18,14 @@ import org.argeo.connect.activities.ActivitiesTypes;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.editors.parts.ActivityTable;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.workbench.rap.wizards.NewSimpleTaskWizard;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -56,8 +56,8 @@ public class ActivityList extends LazyCTabControl {
 
 	// Context
 	private final UserAdminService userAdminService;
-	private final ResourceService resourceService;
-	private final ActivityService activityService;
+	private final ResourcesService resourceService;
+	private final ActivitiesService activityService;
 	private final AppWorkbenchService appWorkbenchService;
 	private final Node entity;
 	private final AbstractPeopleEditor editor;
@@ -74,7 +74,7 @@ public class ActivityList extends LazyCTabControl {
 	}
 
 	public ActivityList(Composite parent, int style, AbstractPeopleEditor editor, UserAdminService userAdminService,
-			ResourceService resourceService, ActivityService activityService, AppWorkbenchService appWorkbenchService,
+			ResourcesService resourceService, ActivitiesService activityService, AppWorkbenchService appWorkbenchService,
 			Node entity) {
 		super(parent, style);
 		this.userAdminService = userAdminService;
@@ -137,11 +137,11 @@ public class ActivityList extends LazyCTabControl {
 		toolkit.adapt(typeCmb, true, true);
 
 		// Title
-		final Text titleTxt = PeopleRapUtils.createGDText(toolkit, addActivityBar, "Title",
+		final Text titleTxt = ConnectWorkbenchUtils.createGDText(toolkit, addActivityBar, "Title",
 				"Enter a short title for the activity to create", 150, 1);
 
 		// Description
-		final Text descTxt = PeopleRapUtils.createGDText(toolkit, addActivityBar, "Description",
+		final Text descTxt = ConnectWorkbenchUtils.createGDText(toolkit, addActivityBar, "Description",
 				"Enter a description for the activity to create", 300, 1);
 
 		Button validBtn = toolkit.createButton(addActivityBar, "Add activity", SWT.PUSH);

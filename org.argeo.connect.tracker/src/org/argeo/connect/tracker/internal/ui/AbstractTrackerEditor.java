@@ -12,13 +12,13 @@ import javax.jcr.version.VersionManager;
 
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.activities.ActivityService;
+import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.workbench.rap.editors.util.EntityEditorInput;
-import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerService;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.parts.EntityEditorInput;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -37,8 +37,8 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private UserAdminService userAdminService;
-	private ResourceService resourceService;
-	private ActivityService activityService;
+	private ResourcesService resourceService;
+	private ActivitiesService activityService;
 	private TrackerService trackerService;
 	private AppWorkbenchService appWorkbenchService;
 
@@ -91,11 +91,11 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 		return userAdminService;
 	}
 
-	protected ResourceService getResourceService() {
+	protected ResourcesService getResourceService() {
 		return resourceService;
 	}
 
-	protected ActivityService getActivityService() {
+	protected ActivitiesService getActivityService() {
 		return activityService;
 	}
 
@@ -175,11 +175,11 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 		this.userAdminService = userAdminService;
 	}
 
-	public void setResourceService(ResourceService resourceService) {
+	public void setResourceService(ResourcesService resourceService) {
 		this.resourceService = resourceService;
 	}
 
-	public void setActivityService(ActivityService activityService) {
+	public void setActivityService(ActivitiesService activityService) {
 		this.activityService = activityService;
 	}
 

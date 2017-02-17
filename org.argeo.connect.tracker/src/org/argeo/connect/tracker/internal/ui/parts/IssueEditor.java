@@ -21,7 +21,6 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.activities.ActivitiesNames;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerNames;
@@ -35,6 +34,7 @@ import org.argeo.connect.tracker.internal.ui.controls.MilestoneDropDown;
 import org.argeo.connect.tracker.internal.ui.controls.TagListFormPart;
 import org.argeo.connect.tracker.internal.ui.dialogs.EditFreeTextDialog;
 import org.argeo.connect.tracker.ui.TrackerUiPlugin;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.workbench.TechnicalInfoPage;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -586,7 +586,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		List<String> values = getResourceService().getTemplateCatalogue(session, TrackerTypes.TRACKER_ISSUE,
 				ActivitiesNames.ACTIVITIES_TASK_STATUS, null);
 		combo.setItems(values.toArray(new String[values.size()]));
-		PeopleRapUtils.refreshFormCombo(IssueEditor.this, combo, currTask, ActivitiesNames.ACTIVITIES_TASK_STATUS);
+		ConnectWorkbenchUtils.refreshFormCombo(IssueEditor.this, combo, currTask, ActivitiesNames.ACTIVITIES_TASK_STATUS);
 		combo.setEnabled(IssueEditor.this.isEditing());
 	}
 
